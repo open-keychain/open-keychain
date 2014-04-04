@@ -1,3 +1,9 @@
+2.5
+* fix decryption of symmetric pgp messages/files
+* refactored edit key screen (thanks to Ash Hughes)
+* new modern design for encrypt/decrypt screens
+* OpenPGP API version 3 (multiple api accounts, internal fixes, key lookup)
+
 2.4
 Thanks to all applicants of Google Summer of Code 2014 who made this release feature rich and bug free!
 Besides several small patches, a notable number of patches are made by the following people (in alphabetical order):

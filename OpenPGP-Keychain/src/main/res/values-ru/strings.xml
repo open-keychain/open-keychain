@@ -74,6 +74,7 @@
   <string name="menu_import_from_qr_code">Импорт из QR кода</string>
   <string name="menu_import">Импорт</string>
   <string name="menu_import_from_nfc">Импорт из NFC</string>
+  <string name="menu_export_public_keys">Экспорт всех открытых ключей</string>
   <string name="menu_export_secret_keys">Экспорт всех секретных ключей</string>
   <string name="menu_export_key">Экспорт в файл</string>
   <string name="menu_delete_key">Удалить ключ</string>
@@ -98,6 +99,8 @@
   <string name="menu_key_edit_cancel">Отмена</string>
   <string name="menu_encrypt_to">Зашифровать....</string>
   <string name="menu_select_all">Выбрать все</string>
+  <string name="menu_add_keys">Добавить ключи</string>
+  <string name="menu_export_keys">Экспорт ключей</string>
   <!--label-->
   <string name="label_sign">Подписать</string>
   <string name="label_message">Сообщение</string>
@@ -191,11 +194,15 @@
   <string name="set_a_passphrase">Сначала задайте пароль</string>
   <string name="no_filemanager_installed">Нет совместимого менеджера файлов.</string>
   <string name="passphrases_do_not_match">Пароли не совпадают.</string>
+  <string name="passphrase_must_not_be_empty">Пожалуйста, введите пароль.</string>
   <string name="passphrase_for_symmetric_encryption">Симметричное шифрование.</string>
   <string name="passphrase_for">Введите пароль для\n\'%s\'</string>
   <string name="file_delete_confirmation">Вы уверены, что хотите удалить\n%s ?</string>
   <string name="file_delete_successful">Удалено.</string>
   <string name="no_file_selected">Сначала выберите файл.</string>
+  <string name="decryption_successful">Расшифровано и/или проверено.</string>
+  <string name="encryption_successful">Подписано и/или зашифровано.</string>
+  <string name="encryption_to_clipboard_successful">Подписано и/или зашифровано в буфер обмена.</string>
   <string name="enter_passphrase_twice">Дважды введите пароль.</string>
   <string name="select_encryption_key">Укажите хотя бы один ключ.</string>
   <string name="select_encryption_or_signature_key">Выберите хотя бы один ключ для шифрования или подписи.</string>
@@ -430,6 +437,9 @@
   <string name="key_view_tab_main">Информация</string>
   <string name="key_view_tab_certs">Сертификация</string>
   <!--Navigation Drawer-->
+  <string name="nav_contacts">Ключи</string>
+  <string name="nav_encrypt">Подписать и зашифровать</string>
+  <string name="nav_decrypt">Расшифровать и проверить</string>
   <string name="nav_import">Импорт ключей</string>
   <string name="nav_secret_keys">Мои ключи</string>
   <string name="nav_apps">Связанные приложения</string>
@@ -442,4 +452,5 @@
   <string name="secret_key_no">не доступен</string>
   <string name="section_uids_to_sign">Подписываемые ID пользователя</string>
   <!--hints-->
+  <string name="encrypt_content_edit_text_hint">Напишите сообщение здесь, что бы зашифровать и/или подписать...</string>
 </resources>

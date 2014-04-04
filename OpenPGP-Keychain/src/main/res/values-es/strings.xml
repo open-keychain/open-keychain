@@ -74,6 +74,7 @@
   <string name="menu_import_from_qr_code">Importar desde código QR</string>
   <string name="menu_import">Importar</string>
   <string name="menu_import_from_nfc">Importar desde NFC</string>
+  <string name="menu_export_public_keys">Exportar todas las claves públicas</string>
   <string name="menu_export_secret_keys">Exportar todas las claves secretas</string>
   <string name="menu_export_key">Exportar hacia archivo</string>
   <string name="menu_delete_key">Borrar clave</string>
@@ -98,6 +99,8 @@
   <string name="menu_key_edit_cancel">Cancelar</string>
   <string name="menu_encrypt_to">Cifrar hacia...</string>
   <string name="menu_select_all">Seleccionar todo</string>
+  <string name="menu_add_keys">Añadir claves</string>
+  <string name="menu_export_keys">Exportar claves</string>
   <!--label-->
   <string name="label_sign">Firmar</string>
   <string name="label_message">Mensaje</string>
@@ -189,11 +192,15 @@
   <string name="set_a_passphrase">Establece una frase de contraseña antes.</string>
   <string name="no_filemanager_installed">No hay un gestor de archivos compatible instalado.</string>
   <string name="passphrases_do_not_match">Las frases de contraseña no coinciden.</string>
+  <string name="passphrase_must_not_be_empty">Por favor, introduce una frase de contraseña.</string>
   <string name="passphrase_for_symmetric_encryption">Cifrado simétrico.</string>
   <string name="passphrase_for">Introducir la frase de contraseña para \'%s\'</string>
   <string name="file_delete_confirmation">¿Estás seguro de que quieres borrar\n%s?</string>
   <string name="file_delete_successful">Borrado satisfactoriamente.</string>
   <string name="no_file_selected">Selecciona un archivo antes.</string>
+  <string name="decryption_successful">Descifrado y/o verificado satisfactoriamente.</string>
+  <string name="encryption_successful">Firmado y/o cifrado satisfactoriamente.</string>
+  <string name="encryption_to_clipboard_successful">Firmado y/o cifrado al portapapeles satisfactoriamente.</string>
   <string name="enter_passphrase_twice">Introduce la frase de contraseña dos veces.</string>
   <string name="select_encryption_key">Selecciona al menos una clave de cifrado.</string>
   <string name="select_encryption_or_signature_key">Selecciona al menos una clave de cifrado o de firma.</string>
@@ -205,6 +212,7 @@
   <string name="key_deletion_confirmation_multi">¿Quieres realmente borrar todas las claves seleccionadas?\n¡No podrás deshacerlo!</string>
   <string name="secret_key_deletion_confirmation">¿Quieres realmente borrar la clave SECRETA \'%s\'?\n¡No podrás deshacerlo!</string>
   <string name="ask_save_changed_key">Has hecho cambios en el almacén de claves, ¿quieres guardarlos?</string>
+  <string name="ask_empty_id_ok">Has añadido una ID de usuario vacía, ¿Estás seguro que quieres continuar?</string>
   <string name="public_key_deletetion_confirmation">¿Quieres realmente borrar la clave PÚBLICA \'%s\'?\n¡No podrás deshacerlo!</string>
   <string name="secret_key_delete_text">¿Borrar claves secretas?</string>
   <string name="also_export_secret_keys">¿Exportar también las claves secretas?</string>
@@ -298,6 +306,7 @@
     <item quantity="one">parte del archivo cargado es un objeto OpenPGP válido pero no una clave OpenPGP</item>
     <item quantity="other">partes del archivo cargado son objetos OpenPGP válidos pero no claves OpenPGP</item>
   </plurals>
+  <string name="error_change_something_first">Debes hacer cambios en el almacén de claves antes de que puedas guardarlo</string>
   <!--progress dialogs, usually ending in '…'-->
   <string name="progress_done">Hecho.</string>
   <string name="progress_cancel">Cancelar</string>
@@ -423,6 +432,9 @@
   <string name="key_view_tab_main">Información</string>
   <string name="key_view_tab_certs">Certificaciones</string>
   <!--Navigation Drawer-->
+  <string name="nav_contacts">Claves</string>
+  <string name="nav_encrypt">Firmar y cifrar</string>
+  <string name="nav_decrypt">Descifrar y verificar</string>
   <string name="nav_import">Importar claves</string>
   <string name="nav_secret_keys">Mis claves</string>
   <string name="nav_apps">Aplicaciones registradas</string>
@@ -436,4 +448,6 @@
   <string name="section_uids_to_sign">IDs de usuario para firmar</string>
   <string name="progress_re_adding_certs">Nueva aplicación de certificados</string>
   <!--hints-->
+  <string name="encrypt_content_edit_text_hint">Escribe aquí el mensaje que quieras cifrar y/o firmar...</string>
+  <string name="decrypt_content_edit_text_hint">Introduce aquí el texto cifrado para descifrarlo y/o verificarlo...</string>
 </resources>

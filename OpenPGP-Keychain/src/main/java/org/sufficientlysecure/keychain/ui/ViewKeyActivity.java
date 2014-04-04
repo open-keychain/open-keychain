@@ -18,6 +18,7 @@
 
 package org.sufficientlysecure.keychain.ui;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -157,18 +158,13 @@ public class ViewKeyActivity extends ActionBarActivity {
     }
 
     private void updateFromKeyserver(Uri dataUri) {
-        long updateKeyId = ProviderHelper.getMasterKeyId(ViewKeyActivity.this, dataUri);
-
-        if (updateKeyId == 0) {
-            Log.e(Constants.TAG, "this shouldn't happen. KeyId == 0!");
-            return;
-        }
+        byte[] fingerprintBlob = ProviderHelper.getFingerprint(this, dataUri);
+        String fingerprint = PgpKeyHelper.convertFingerprintToHex(fingerprintBlob);
 
         Intent queryIntent = new Intent(this, ImportKeysActivity.class);
-        queryIntent.setAction(ImportKeysActivity.ACTION_IMPORT_KEY_FROM_KEYSERVER);
-        queryIntent.putExtra(ImportKeysActivity.EXTRA_KEY_ID, updateKeyId);
+        queryIntent.setAction(ImportKeysActivity.ACTION_IMPORT_KEY_FROM_KEYSERVER_AND_RETURN);
+        queryIntent.putExtra(ImportKeysActivity.EXTRA_FINGERPRINT, fingerprint);
 
-        // TODO: lookup with onactivityresult!
         startActivityForResult(queryIntent, RESULT_CODE_LOOKUP_KEY);
     }
 
@@ -246,4 +242,21 @@ public class ViewKeyActivity extends ActionBarActivity {
         mExportHelper.deleteKey(dataUri, returnHandler);
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode) {
+            case RESULT_CODE_LOOKUP_KEY: {
+                if (resultCode == Activity.RESULT_OK) {
+                    // TODO: reload key??? move this into fragment?
+                }
+                break;
+            }
+
+            default: {
+                super.onActivityResult(requestCode, resultCode, data);
+
+                break;
+            }
+        }
+    }
 }

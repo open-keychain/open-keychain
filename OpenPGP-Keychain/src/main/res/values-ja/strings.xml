@@ -41,7 +41,7 @@
   <string name="section_certification_key">あなたの鍵を証明に利用します</string>
   <string name="section_upload_key">鍵のアップロード</string>
   <string name="section_key_server">鍵サーバ</string>
-  <string name="section_encrypt_and_or_sign">暗号化と/もしくは署名</string>
+  <string name="section_encrypt_and_or_sign">暗号化/署名</string>
   <string name="section_decrypt_verify">復号化と検証</string>
   <!--button-->
   <string name="btn_sign">署名</string>
@@ -74,6 +74,7 @@
   <string name="menu_import_from_qr_code">QRコードからインポート</string>
   <string name="menu_import">インポート</string>
   <string name="menu_import_from_nfc">NFCからインポート</string>
+  <string name="menu_export_public_keys">すべての公開鍵のエクスポート</string>
   <string name="menu_export_secret_keys">すべての秘密鍵のエクスポート</string>
   <string name="menu_export_key">ファイルへのエクスポート</string>
   <string name="menu_delete_key">鍵の削除</string>
@@ -98,6 +99,8 @@
   <string name="menu_key_edit_cancel">キャンセル</string>
   <string name="menu_encrypt_to">暗号化...</string>
   <string name="menu_select_all">すべて選択</string>
+  <string name="menu_add_keys">鍵の追加</string>
+  <string name="menu_export_keys">複数鍵のエクスポート</string>
   <!--label-->
   <string name="label_sign">署名</string>
   <string name="label_message">メッセージ</string>
@@ -186,11 +189,15 @@
   <string name="set_a_passphrase">最初にパスフレーズを設定してください。</string>
   <string name="no_filemanager_installed">互換性のないファイルマネージャがインストールされています。</string>
   <string name="passphrases_do_not_match">パスフレーズが一致しません。</string>
+  <string name="passphrase_must_not_be_empty">パスフレーズを入れてください。</string>
   <string name="passphrase_for_symmetric_encryption">対称暗号。</string>
   <string name="passphrase_for">\'%s\' にパスフレーズを入れてください。</string>
   <string name="file_delete_confirmation">%s を削除してもかまいませんか?</string>
   <string name="file_delete_successful">削除に成功しました。</string>
   <string name="no_file_selected">最初にファイルを選択してください。</string>
+  <string name="decryption_successful">復号化/検証に成功しました。</string>
+  <string name="encryption_successful">署名/暗号化に成功しました。</string>
+  <string name="encryption_to_clipboard_successful">クリップボードの中身の署名/暗号化に成功しました。</string>
   <string name="enter_passphrase_twice">もう一度パスフレーズを入れてください。</string>
   <string name="select_encryption_key">少なくとも1つの暗号化鍵を選択して下さい。</string>
   <string name="select_encryption_or_signature_key">少なくとも1つの暗号化鍵か署名鍵を選択して下さい。</string>
@@ -202,6 +209,7 @@
   <string name="key_deletion_confirmation_multi">選択したすべての鍵を本当に削除してよいですか?\nこれは元に戻せません。</string>
   <string name="secret_key_deletion_confirmation">秘密鍵\'%s\'を本当に削除してもよいですか?\nこれは元に戻せません!</string>
   <string name="ask_save_changed_key">あなたは鍵輪に変更を加えました、これを保存しますか?</string>
+  <string name="ask_empty_id_ok">あなたは空のユーザーIDを追加しました、このまま続けますか?</string>
   <string name="public_key_deletetion_confirmation">公開鍵\'%s\'を本当に削除してもよいですか?\nこれは元に戻せません!</string>
   <string name="secret_key_delete_text">秘密鍵を削除しますか?</string>
   <string name="also_export_secret_keys">秘密鍵もエクスポートしますか?</string>
@@ -409,6 +417,9 @@
   <string name="key_view_tab_main">情報</string>
   <string name="key_view_tab_certs">証明</string>
   <!--Navigation Drawer-->
+  <string name="nav_contacts">鍵</string>
+  <string name="nav_encrypt">署名と暗号化</string>
+  <string name="nav_decrypt">復号化と検証</string>
   <string name="nav_import">鍵のインポート</string>
   <string name="nav_secret_keys">自分の鍵</string>
   <string name="nav_apps">登録済みのアプリ</string>
@@ -422,4 +433,6 @@
   <string name="section_uids_to_sign">署名に使うユーザーID</string>
   <string name="progress_re_adding_certs">検証を再適用する</string>
   <!--hints-->
+  <string name="encrypt_content_edit_text_hint">ここに書いたメッセージを暗号化/署名..</string>
+  <string name="decrypt_content_edit_text_hint">ここに入力された暗号化テキストを復号化/検証...</string>
 </resources>

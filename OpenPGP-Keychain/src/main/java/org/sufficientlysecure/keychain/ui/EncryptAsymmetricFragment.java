@@ -239,7 +239,6 @@ public class EncryptAsymmetricFragment extends Fragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
-
             case RESULT_CODE_PUBLIC_KEYS: {
                 if (resultCode == Activity.RESULT_OK) {
                     Bundle bundle = data.getExtras();
@@ -260,11 +259,11 @@ public class EncryptAsymmetricFragment extends Fragment {
             }
 
             default: {
+                super.onActivityResult(requestCode, resultCode, data);
+
                 break;
             }
         }
-
-        super.onActivityResult(requestCode, resultCode, data);
     }
 
 }

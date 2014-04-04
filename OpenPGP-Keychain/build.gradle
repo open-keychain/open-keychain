@@ -102,4 +102,4 @@ task localTest(type: Test, dependsOn: assemble) {
     classpath = sourceSets.testLocal.runtimeClasspath
 }
 
-check.dependsOn localTest
+//check.dependsOn localTest
