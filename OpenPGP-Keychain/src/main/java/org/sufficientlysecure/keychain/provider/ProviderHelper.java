@@ -69,26 +69,14 @@ public class ProviderHelper {
 
         HashMap<String, Object> result = new HashMap<String, Object>(proj.length);
         if (cursor != null && cursor.moveToFirst()) {
-            // this is a HACK because we don't have Cursor.getType (which is api level 11)
-            CursorWindow cursorWindow;
-            if(cursor instanceof CursorWrapper) {
-                cursorWindow = ((SQLiteCursor) ((CursorWrapper) cursor).getWrappedCursor()).getWindow();
-            } else {
-                cursorWindow = ((SQLiteCursor) cursor).getWindow();
-            }
-
             int pos = 0;
             for(String p : proj) {
-                if (cursorWindow.isNull(0, pos)) {
-                    result.put(p, cursor.isNull(pos));
-                } else if (cursorWindow.isLong(0, pos)) {
-                    result.put(p, cursor.getLong(pos));
-                } else if (cursorWindow.isFloat(0, pos)) {
-                    result.put(p, cursor.getFloat(pos));
-                } else if (cursorWindow.isString(0, pos)) {
-                    result.put(p, cursor.getString(pos));
-                } else if (cursorWindow.isBlob(0, pos)) {
-                    result.put(p, cursor.getBlob(pos));
+                switch(cursor.getType(pos)) {
+                    case Cursor.FIELD_TYPE_NULL: result.put(p, cursor.isNull(pos)); break;
+                    case Cursor.FIELD_TYPE_INTEGER: result.put(p, cursor.getLong(pos)); break;
+                    case Cursor.FIELD_TYPE_FLOAT: result.put(p, cursor.getFloat(pos)); break;
+                    case Cursor.FIELD_TYPE_STRING: result.put(p, cursor.getString(pos)); break;
+                    case Cursor.FIELD_TYPE_BLOB: result.put(p, cursor.getBlob(pos)); break;
                 }
                 pos += 1;
             }
