@@ -22,7 +22,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.os.Messenger;
 import android.support.v4.app.Fragment;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -34,14 +33,12 @@ import com.beardedhen.androidbootstrap.BootstrapButton;
 import com.devspark.appmsg.AppMsg;
 
 import org.openintents.openpgp.OpenPgpSignatureResult;
-import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.ui.dialog.PassphraseDialogFragment;
-import org.sufficientlysecure.keychain.util.Log;
 
 public class DecryptFragment extends Fragment {
     private static final int RESULT_CODE_LOOKUP_KEY = 0x00007006;
@@ -158,31 +155,17 @@ public class DecryptFragment extends Fragment {
     }
 
     protected void showPassphraseDialog(long keyId) {
-        // Message is received after passphrase is cached
-        Handler returnHandler = new Handler() {
-            @Override
-            public void handleMessage(Message message) {
-                if (message.what == PassphraseDialogFragment.MESSAGE_OKAY) {
-                    String passphrase =
-                            message.getData().getString(PassphraseDialogFragment.MESSAGE_DATA_PASSPHRASE);
-                    decryptStart(passphrase);
+        PassphraseDialogFragment.show(getActivity(), keyId,
+            new Handler() {
+                @Override
+                public void handleMessage(Message message) {
+                    if (message.what == PassphraseDialogFragment.MESSAGE_OKAY) {
+                        String passphrase =
+                                message.getData().getString(PassphraseDialogFragment.MESSAGE_DATA_PASSPHRASE);
+                        decryptStart(passphrase);
+                    }
                 }
-            }
-        };
-
-        // Create a new Messenger for the communication back
-        Messenger messenger = new Messenger(returnHandler);
-
-        try {
-            PassphraseDialogFragment passphraseDialog = PassphraseDialogFragment.newInstance(getActivity(),
-                    messenger, keyId);
-
-            passphraseDialog.show(getActivity().getSupportFragmentManager(), "passphraseDialog");
-        } catch (PgpGeneralException e) {
-            Log.d(Constants.TAG, "No passphrase for this secret key, encrypt directly!");
-            // send message to handler to start encryption directly
-            returnHandler.sendEmptyMessage(PassphraseDialogFragment.MESSAGE_OKAY);
-        }
+            });
     }
 
     /**
