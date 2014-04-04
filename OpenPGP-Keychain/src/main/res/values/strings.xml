@@ -121,8 +121,8 @@
     <string name="label_share_after_encryption">Share After Encryption</string>
     <string name="label_encryption_algorithm">Encryption Algorithm</string>
     <string name="label_hash_algorithm">Hash Algorithm</string>
-    <string name="label_asymmetric">Public Key</string>
-    <string name="label_symmetric">Passphrase</string>
+    <string name="label_asymmetric">with Public Key</string>
+    <string name="label_symmetric">with Passphrase</string>
     <string name="label_passphrase_cache_ttl">Passphrase Cache</string>
     <string name="label_message_compression">Message Compression</string>
     <string name="label_file_compression">File Compression</string>
