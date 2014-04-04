@@ -57,6 +57,7 @@ import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
+import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRingData;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
 import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
 import org.sufficientlysecure.keychain.service.PassphraseCacheService;
@@ -276,8 +277,6 @@ public class EditKeyActivity extends ActionBarActivity implements EditorListener
 
             // get master key id using row id
             long masterKeyId = ProviderHelper.getMasterKeyId(this, mDataUri);
-
-            mMasterCanSign = ProviderHelper.getMasterKeyCanCertify(this, mDataUri);
             finallyEdit(masterKeyId);
         }
     }
@@ -312,15 +311,13 @@ public class EditKeyActivity extends ActionBarActivity implements EditorListener
                     Toast.makeText(this, R.string.error_save_first, Toast.LENGTH_LONG).show();
                 } else {
                     long masterKeyId = ProviderHelper.getMasterKeyId(this, mDataUri);
-                long[] ids = new long[]{masterKeyId};
-                mExportHelper.showExportKeysDialog(ids, Id.type.secret_key, Constants.Path.APP_DIR_FILE_SEC,
-                        null);
+                    mExportHelper.showExportKeysDialog(
+                            new long[] { masterKeyId }, Constants.Path.APP_DIR_FILE_SEC, true);
                     return true;
                 }
                 return true;
             case R.id.menu_key_edit_delete:
-                long rowId= ProviderHelper.getRowId(this,mDataUri);
-                Uri convertUri = KeychainContract.KeyRings.buildSecretKeyRingUri(Long.toString(rowId));
+                Uri convertUri = KeyRingData.buildSecretKeyRingUri(mDataUri);
                     // Message is received after key is deleted
                     Handler returnHandler = new Handler() {
                         @Override
@@ -346,7 +343,8 @@ public class EditKeyActivity extends ActionBarActivity implements EditorListener
             PGPSecretKey masterKey = null;
             mKeyRing = ProviderHelper.getPGPSecretKeyRing(this, masterKeyId);
             if (mKeyRing != null) {
-                masterKey = PgpKeyHelper.getMasterKey(mKeyRing);
+                masterKey = mKeyRing.getSecretKey();
+                mMasterCanSign = PgpKeyHelper.isCertificationKey(mKeyRing.getSecretKey());
                 for (PGPSecretKey key : new IterableIterator<PGPSecretKey>(mKeyRing.getSecretKeys())) {
                     mKeys.add(key);
                     mKeysUsages.add(-1); // get usage when view is created
@@ -354,6 +352,7 @@ public class EditKeyActivity extends ActionBarActivity implements EditorListener
             } else {
                 Log.e(Constants.TAG, "Keyring not found with masterKeyId: " + masterKeyId);
                 Toast.makeText(this, R.string.error_no_secret_key_found, Toast.LENGTH_LONG).show();
+                // TODO
             }
             if (masterKey != null) {
                 boolean isSet = false;

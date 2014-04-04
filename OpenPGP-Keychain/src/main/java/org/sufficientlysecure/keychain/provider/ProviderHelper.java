@@ -23,7 +23,10 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.OperationApplicationException;
 import android.database.Cursor;
+import android.database.CursorWindow;
+import android.database.CursorWrapper;
 import android.database.DatabaseUtils;
+import android.database.sqlite.SQLiteCursor;
 import android.net.Uri;
 import android.os.RemoteException;
 
@@ -40,9 +43,9 @@ import org.sufficientlysecure.keychain.pgp.PgpHelper;
 import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
 import org.sufficientlysecure.keychain.provider.KeychainContract.ApiApps;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
+import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRingData;
 import org.sufficientlysecure.keychain.provider.KeychainContract.Keys;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UserIds;
-import org.sufficientlysecure.keychain.provider.KeychainDatabase.Tables;
 import org.sufficientlysecure.keychain.remote.AccountSettings;
 import org.sufficientlysecure.keychain.remote.AppSettings;
 import org.sufficientlysecure.keychain.util.IterableIterator;
@@ -52,21 +55,81 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
 public class ProviderHelper {
 
-    /**
-     * Private helper method to get PGPKeyRing from database
+    // If we ever switch to api level 11, we can ditch this whole mess!
+    public static final int FIELD_TYPE_NULL = 1;
+    // this is called integer to stay coherent with the constants in Cursor (api level 11)
+    public static final int FIELD_TYPE_INTEGER = 2;
+    public static final int FIELD_TYPE_FLOAT = 3;
+    public static final int FIELD_TYPE_STRING = 4;
+    public static final int FIELD_TYPE_BLOB = 5;
+
+    public static Object getGenericData(Context context, Uri uri, String column, int type) {
+        return getGenericData(context, uri, new String[] { column }, new int[] { type }).get(column);
+    }
+    public static HashMap<String,Object> getGenericData(Context context, Uri uri, String[] proj, int[] types) {
+        Cursor cursor = context.getContentResolver().query(uri, proj, null, null, null);
+
+        HashMap<String, Object> result = new HashMap<String, Object>(proj.length);
+        if (cursor != null && cursor.moveToFirst()) {
+            int pos = 0;
+            for(String p : proj) {
+                switch(types[pos]) {
+                    case FIELD_TYPE_NULL: result.put(p, cursor.isNull(pos)); break;
+                    case FIELD_TYPE_INTEGER: result.put(p, cursor.getLong(pos)); break;
+                    case FIELD_TYPE_FLOAT: result.put(p, cursor.getFloat(pos)); break;
+                    case FIELD_TYPE_STRING: result.put(p, cursor.getString(pos)); break;
+                    case FIELD_TYPE_BLOB: result.put(p, cursor.getBlob(pos)); break;
+                }
+                pos += 1;
+            }
+        }
+
+        if (cursor != null) {
+            cursor.close();
+        }
+
+        return result;
+    }
+
+    public static Object getUnifiedData(Context context, long masterKeyId, String column, int type) {
+        return getUnifiedData(context, masterKeyId, new String[] { column }, new int[] { type }).get(column);
+    }
+    public static HashMap<String,Object> getUnifiedData(Context context, long masterKeyId, String[] proj, int[] types) {
+        return getGenericData(context, KeyRings.buildUnifiedKeyRingUri(Long.toString(masterKeyId)), proj, types);
+    }
+
+    /** Find the master key id related to a given query. The id will either be extracted from the
+     * query, which should work for all specific /key_rings/ queries, or will be queried if it can't.
      */
+    public static long getMasterKeyId(Context context, Uri queryUri) {
+        // try extracting from the uri first
+        String firstSegment = queryUri.getPathSegments().get(1);
+        if(!firstSegment.equals("find")) try {
+            return Long.parseLong(firstSegment);
+        } catch(NumberFormatException e) {
+            // didn't work? oh well.
+            Log.d(Constants.TAG, "Couldn't get masterKeyId from URI, querying...");
+        }
+        Object data = getGenericData(context, queryUri, KeyRings.MASTER_KEY_ID, FIELD_TYPE_INTEGER);
+        if(data != null)
+            return (Long) data;
+        // TODO better error handling?
+        return 0L;
+    }
+
     public static PGPKeyRing getPGPKeyRing(Context context, Uri queryUri) {
         Cursor cursor = context.getContentResolver().query(queryUri,
-                new String[]{KeyRings._ID, KeyRings.KEY_RING_DATA}, null, null, null);
+                new String[]{KeyRings._ID, KeyRingData.KEY_RING_DATA}, null, null, null);
 
         PGPKeyRing keyRing = null;
         if (cursor != null && cursor.moveToFirst()) {
-            int keyRingDataCol = cursor.getColumnIndex(KeyRings.KEY_RING_DATA);
+            int keyRingDataCol = cursor.getColumnIndex(KeyRingData.KEY_RING_DATA);
 
             byte[] data = cursor.getBlob(keyRingDataCol);
             if (data != null) {
@@ -81,19 +144,18 @@ public class ProviderHelper {
         return keyRing;
     }
 
-    public static PGPPublicKey getPGPPublicKeyByKeyId(Context context, long keyId) {
-        return getPGPPublicKeyRingWithKeyId(context, keyId).getPublicKey(keyId);
-    }
     public static PGPPublicKeyRing getPGPPublicKeyRingWithKeyId(Context context, long keyId) {
-        // todo do
+        Uri uri = KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(Long.toString(keyId));
+        long masterKeyId = getMasterKeyId(context, uri);
+        if(masterKeyId != 0)
+            return getPGPPublicKeyRing(context, masterKeyId);
         return null;
     }
-
-    public static PGPSecretKey getPGPSecretKeyByKeyId(Context context, long keyId) {
-        return getPGPSecretKeyRingWithKeyId(context, keyId).getSecretKey(keyId);
-    }
     public static PGPSecretKeyRing getPGPSecretKeyRingWithKeyId(Context context, long keyId) {
-        // todo do
+        Uri uri = KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(Long.toString(keyId));
+        long masterKeyId = getMasterKeyId(context, uri);
+        if(masterKeyId != 0)
+            return getPGPSecretKeyRing(context, masterKeyId);
         return null;
     }
 
@@ -102,7 +164,7 @@ public class ProviderHelper {
      */
     public static PGPPublicKeyRing getPGPPublicKeyRing(Context context,
                                                                     long masterKeyId) {
-        Uri queryUri = KeyRings.buildPublicKeyRingUri(Long.toString(masterKeyId));
+        Uri queryUri = KeyRingData.buildPublicKeyRingUri(Long.toString(masterKeyId));
         return (PGPPublicKeyRing) getPGPKeyRing(context, queryUri);
     }
 
@@ -111,7 +173,7 @@ public class ProviderHelper {
      */
     public static PGPSecretKeyRing getPGPSecretKeyRing(Context context,
                                                                     long masterKeyId) {
-        Uri queryUri = KeyRings.buildSecretKeyRingUri(Long.toString(masterKeyId));
+        Uri queryUri = KeyRingData.buildSecretKeyRingUri(Long.toString(masterKeyId));
         return (PGPSecretKeyRing) getPGPKeyRing(context, queryUri);
     }
 
@@ -124,12 +186,11 @@ public class ProviderHelper {
         long masterKeyId = masterKey.getKeyID();
 
         // IF there is a secret key, preserve it!
-        // TODO This even necessary?
-        // PGPSecretKeyRing secretRing = ProviderHelper.getPGPSecretKeyRing(context, masterKeyId);
+        PGPSecretKeyRing secretRing = ProviderHelper.getPGPSecretKeyRing(context, masterKeyId);
 
         // delete old version of this keyRing, which also deletes all keys and userIds on cascade
         try {
-            context.getContentResolver().delete(KeyRings.buildPublicKeyRingUri(Long.toString(masterKeyId)), null, null);
+            context.getContentResolver().delete(KeyRingData.buildPublicKeyRingUri(Long.toString(masterKeyId)), null, null);
         } catch (UnsupportedOperationException e) {
             Log.e(Constants.TAG, "Key could not be deleted! Maybe we are creating a new one!", e);
         }
@@ -139,11 +200,11 @@ public class ProviderHelper {
         // NOTE: If we would not use the same _ID again,
         // getting back to the ViewKeyActivity would result in Nullpointer,
         // because the currently loaded key would be gone from the database
-        values.put(KeyRings.MASTER_KEY_ID, masterKeyId);
-        values.put(KeyRings.KEY_RING_DATA, keyRing.getEncoded());
+        values.put(KeyRingData.MASTER_KEY_ID, masterKeyId);
+        values.put(KeyRingData.KEY_RING_DATA, keyRing.getEncoded());
 
         // insert new version of this keyRing
-        Uri uri = KeyRings.buildPublicKeyRingUri(Long.toString(masterKeyId));
+        Uri uri = KeyRingData.buildPublicKeyRingUri(Long.toString(masterKeyId));
         Uri insertedUri = context.getContentResolver().insert(uri, values);
 
         // save all keys and userIds included in keyRing object in database
@@ -179,31 +240,43 @@ public class ProviderHelper {
         }
 
         // Save the saved keyring (if any)
-        // TODO this even necessary? see above...
-        // if(secretRing != null)
-            // saveKeyRing(context, secretRing);
+        if(secretRing != null) {
+            saveKeyRing(context, secretRing);
+        }
 
     }
 
     /**
-     * Saves PGPSecretKeyRing with its keys and userIds in DB
+     * Saves a PGPSecretKeyRing in the DB. This will only work if a corresponding public keyring
+     * is already in the database!
      */
     @SuppressWarnings("unchecked")
     public static void saveKeyRing(Context context, PGPSecretKeyRing keyRing) throws IOException {
-        PGPSecretKey masterKey = keyRing.getSecretKey();
-        long masterKeyId = masterKey.getKeyID();
+        long masterKeyId = keyRing.getPublicKey().getKeyID();
 
-        // TODO Make sure there is a public key for this secret key in the db (create one maybe)
+        // save secret keyring
+        ContentValues values = new ContentValues();
+        values.put(KeyRingData.MASTER_KEY_ID, masterKeyId);
+        values.put(KeyRingData.KEY_RING_DATA, keyRing.getEncoded());
+        // insert new version of this keyRing
+        Uri uri = KeyRingData.buildSecretKeyRingUri(Long.toString(masterKeyId));
+        context.getContentResolver().insert(uri, values);
 
-        {
-            ContentValues values = new ContentValues();
-            values.put(KeyRings.MASTER_KEY_ID, masterKeyId);
-            values.put(KeyRings.KEY_RING_DATA, keyRing.getEncoded());
-            // insert new version of this keyRing
-            Uri uri = KeyRings.buildSecretKeyRingUri(Long.toString(masterKeyId));
-            context.getContentResolver().insert(uri, values);
-        }
+    }
 
+    /**
+     * Saves (or updates) a pair of public and secret KeyRings in the database
+     */
+    @SuppressWarnings("unchecked")
+    public static void saveKeyRing(Context context, PGPPublicKeyRing pubRing, PGPSecretKeyRing privRing) throws IOException {
+        long masterKeyId = pubRing.getPublicKey().getKeyID();
+
+        // delete secret keyring (so it isn't unnecessarily saved by public-saveKeyRing below)
+        context.getContentResolver().delete(KeyRingData.buildSecretKeyRingUri(Long.toString(masterKeyId)), null, null);
+
+        // save public keyring
+        saveKeyRing(context, pubRing);
+        saveKeyRing(context, privRing);
     }
 
     /**
@@ -260,190 +333,22 @@ public class ProviderHelper {
         return ContentProviderOperation.newInsert(uri).withValues(values).build();
     }
 
-    /**
-     * Private helper method
-     */
-    private static ArrayList<Long> getKeyRingsMasterKeyIds(Context context, Uri queryUri) {
-        Cursor cursor = context.getContentResolver().query(queryUri,
-                new String[]{KeyRings.MASTER_KEY_ID}, null, null, null);
-
-        ArrayList<Long> masterKeyIds = new ArrayList<Long>();
-        if (cursor != null) {
-            int masterKeyIdCol = cursor.getColumnIndex(KeyRings.MASTER_KEY_ID);
-            if (cursor.moveToFirst()) {
-                do {
-                    masterKeyIds.add(cursor.getLong(masterKeyIdCol));
-                } while (cursor.moveToNext());
-            }
-        }
-
-        if (cursor != null) {
-            cursor.close();
-        }
-
-        return masterKeyIds;
-    }
-
-    public static void deletePublicKeyRing(Context context, long masterKeyId) {
-        ContentResolver cr = context.getContentResolver();
-        cr.delete(KeyRings.buildPublicKeyRingUri(Long.toString(masterKeyId)), null, null);
-    }
-
-    public static void deleteSecretKeyRing(Context context, long masterKeyId) {
-        ContentResolver cr = context.getContentResolver();
-        cr.delete(KeyRings.buildSecretKeyRingUri(Long.toString(masterKeyId)), null, null);
-    }
-
-    public static boolean getMasterKeyCanCertify(Context context, Uri queryUri) {
-        // TODO redo
-
-        return false;
-
-        /*
-            String[] projection = new String[]{
-                    KeyRings.MASTER_KEY_ID,
-                    "(SELECT COUNT(sign_keys." + Keys._ID + ") FROM " + Tables.KEYS
-                            + " AS sign_keys WHERE sign_keys." + Keys.KEY_RING_ROW_ID + " = "
-                            + KeychainDatabase.Tables.KEY_RINGS + "." + KeyRings._ID
-                            + " AND sign_keys." + Keys.CAN_CERTIFY + " = '1' AND " + Keys.IS_MASTER_KEY
-                            + " = 1) AS sign",};
-
-            ContentResolver cr = context.getContentResolver();
-            Cursor cursor = cr.query(queryUri, projection, null, null, null);
-
-            long masterKeyId = -1;
-            if (cursor != null && cursor.moveToFirst()) {
-                int masterKeyIdCol = cursor.getColumnIndex("sign");
-
-                masterKeyId = cursor.getLong(masterKeyIdCol);
-            }
-
-            if (cursor != null) {
-                cursor.close();
-            }
-
-            return (masterKeyId > 0);
-        */
-    }
-
     public static boolean hasSecretKeyByMasterKeyId(Context context, long masterKeyId) {
-        Uri queryUri = KeyRings.buildSecretKeyRingUri(Long.toString(masterKeyId));
+        Uri queryUri = KeyRingData.buildSecretKeyRingUri(Long.toString(masterKeyId));
         // see if we can get our master key id back from the uri
         return getMasterKeyId(context, queryUri) == masterKeyId;
     }
 
-    /**
-     * Get master key id of key
-     */
-    public static long getMasterKeyId(Context context, Uri queryUri) {
-        String[] projection = new String[]{KeyRings.MASTER_KEY_ID};
-        Cursor cursor = context.getContentResolver().query(queryUri, projection, null, null, null);
-
-        long masterKeyId = 0;
-        try {
-            if (cursor != null && cursor.moveToFirst()) {
-                int masterKeyIdCol = cursor.getColumnIndexOrThrow(KeyRings.MASTER_KEY_ID);
-
-                masterKeyId = cursor.getLong(masterKeyIdCol);
-            }
-        } finally {
-            if (cursor != null) {
-                cursor.close();
-            }
-        }
-
-        return masterKeyId;
-    }
-
-    public static long getRowId(Context context, Uri queryUri) {
-        String[] projection = new String[]{KeyRings._ID};
-        Cursor cursor = context.getContentResolver().query(queryUri, projection, null, null, null);
-
-        long rowId = 0;
-        try {
-            if (cursor != null && cursor.moveToFirst()) {
-                int idCol = cursor.getColumnIndexOrThrow(KeyRings._ID);
-
-                rowId = cursor.getLong(idCol);
-            }
-        } finally {
-            if (cursor != null) {
-                cursor.close();
-            }
-        }
-
-        return rowId;
-    }
-
-    /**
-     * Get fingerprint of key
-     */
-    public static byte[] getFingerprint(Context context, Uri queryUri) {
-        String[] projection = new String[]{Keys.FINGERPRINT};
-        Cursor cursor = context.getContentResolver().query(queryUri, projection, null, null, null);
-
-        byte[] fingerprint = null;
-        try {
-            if (cursor != null && cursor.moveToFirst()) {
-                int col = cursor.getColumnIndexOrThrow(Keys.FINGERPRINT);
-
-                fingerprint = cursor.getBlob(col);
-            }
-        } finally {
-            if (cursor != null) {
-                cursor.close();
-            }
-        }
-
-        // FALLBACK: If fingerprint is not in database, get it from key blob!
-        // this could happen if the key was saved by a previous version of Keychain!
-        if (fingerprint == null) {
-            Log.d(Constants.TAG, "FALLBACK: fingerprint is not in database, get it from key blob!");
-
-            // get master key id
-            projection = new String[]{KeyRings.MASTER_KEY_ID};
-            cursor = context.getContentResolver().query(queryUri, projection, null, null, null);
-            long masterKeyId = 0;
-            try {
-                if (cursor != null && cursor.moveToFirst()) {
-                    int col = cursor.getColumnIndexOrThrow(KeyRings.MASTER_KEY_ID);
-
-                    masterKeyId = cursor.getLong(col);
-                }
-            } finally {
-                if (cursor != null) {
-                    cursor.close();
-                }
-            }
-
-            PGPPublicKey key = ProviderHelper.getPGPPublicKeyRing(context, masterKeyId).getPublicKey();
-            // if it is no public key get it from your own keys...
-            if (key == null) {
-                PGPSecretKey secretKey = ProviderHelper.getPGPSecretKeyRing(context, masterKeyId).getSecretKey();
-                if (secretKey == null) {
-                    Log.e(Constants.TAG, "Key could not be found!");
-                    return null;
-                }
-                key = secretKey.getPublicKey();
-            }
-
-            fingerprint = key.getFingerprint();
-        }
-
-        return fingerprint;
-    }
-
-    public static ArrayList<String> getKeyRingsAsArmoredString(Context context, Uri uri,
-                                                               long[] masterKeyIds) {
+    public static ArrayList<String> getKeyRingsAsArmoredString(Context context, long[] masterKeyIds) {
         ArrayList<String> output = new ArrayList<String>();
 
         if (masterKeyIds != null && masterKeyIds.length > 0) {
 
-            Cursor cursor = getCursorWithSelectedKeyringMasterKeyIds(context, uri, masterKeyIds);
+            Cursor cursor = getCursorWithSelectedKeyringMasterKeyIds(context, masterKeyIds);
 
             if (cursor != null) {
-                int masterIdCol = cursor.getColumnIndex(KeyRings.MASTER_KEY_ID);
-                int dataCol = cursor.getColumnIndex(KeyRings.KEY_RING_DATA);
+                int masterIdCol = cursor.getColumnIndex(KeyRingData.MASTER_KEY_ID);
+                int dataCol = cursor.getColumnIndex(KeyRingData.KEY_RING_DATA);
                 if (cursor.moveToFirst()) {
                     do {
                         Log.d(Constants.TAG, "masterKeyId: " + cursor.getLong(masterIdCol));
@@ -493,48 +398,11 @@ public class ProviderHelper {
             return null;
         }
     }
-
-    public static byte[] getKeyRingsAsByteArray(Context context, Uri uri, long[] masterKeyIds) {
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-
-        if (masterKeyIds != null && masterKeyIds.length > 0) {
-
-            Cursor cursor = getCursorWithSelectedKeyringMasterKeyIds(context, uri, masterKeyIds);
-
-            if (cursor != null) {
-                int masterIdCol = cursor.getColumnIndex(KeyRings.MASTER_KEY_ID);
-                int dataCol = cursor.getColumnIndex(KeyRings.KEY_RING_DATA);
-                if (cursor.moveToFirst()) {
-                    do {
-                        Log.d(Constants.TAG, "masterKeyId: " + cursor.getLong(masterIdCol));
-
-                        // get actual keyring data blob and write it to ByteArrayOutputStream
-                        try {
-                            bos.write(cursor.getBlob(dataCol));
-                        } catch (IOException e) {
-                            Log.e(Constants.TAG, "IOException", e);
-                        }
-                    } while (cursor.moveToNext());
-                }
-            }
-
-            if (cursor != null) {
-                cursor.close();
-            }
-
-        } else {
-            Log.e(Constants.TAG, "No master keys given!");
-        }
-
-        return bos.toByteArray();
-    }
-
-    private static Cursor getCursorWithSelectedKeyringMasterKeyIds(Context context, Uri baseUri,
-                                                                   long[] masterKeyIds) {
+    private static Cursor getCursorWithSelectedKeyringMasterKeyIds(Context context, long[] masterKeyIds) {
         Cursor cursor = null;
         if (masterKeyIds != null && masterKeyIds.length > 0) {
 
-            String inMasterKeyList = KeyRings.MASTER_KEY_ID + " IN (";
+            String inMasterKeyList = KeyRingData.MASTER_KEY_ID + " IN (";
             for (int i = 0; i < masterKeyIds.length; ++i) {
                 if (i != 0) {
                     inMasterKeyList += ", ";
@@ -543,9 +411,9 @@ public class ProviderHelper {
             }
             inMasterKeyList += ")";
 
-            cursor = context.getContentResolver().query(baseUri,
-                    new String[]{KeyRings._ID, KeyRings.MASTER_KEY_ID, KeyRings.KEY_RING_DATA},
-                    inMasterKeyList, null, null);
+            cursor = context.getContentResolver().query(KeyRingData.buildPublicKeyRingUri(), new String[] {
+                    KeyRingData._ID, KeyRingData.MASTER_KEY_ID, KeyRingData.KEY_RING_DATA
+                }, inMasterKeyList, null, null);
         }
 
         return cursor;

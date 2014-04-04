@@ -83,10 +83,9 @@ public class KeychainContract {
 
     public static final String PATH_UNIFIED = "unified";
 
-    public static final String PATH_BY_MASTER_KEY_ID = "master_key_id";
-    public static final String PATH_BY_KEY_ID = "key_id";
-    public static final String PATH_BY_EMAILS = "emails";
-    public static final String PATH_BY_LIKE_EMAIL = "like_email";
+    public static final String PATH_FIND = "find";
+    public static final String PATH_BY_EMAIL = "email";
+    public static final String PATH_BY_SUBKEY = "subkey";
 
     public static final String PATH_PUBLIC = "public";
     public static final String PATH_SECRET = "secret";
@@ -96,31 +95,49 @@ public class KeychainContract {
     public static final String BASE_API_APPS = "api_apps";
     public static final String PATH_ACCOUNTS = "accounts";
 
-    public static class KeyRings implements KeyRingsColumns, BaseColumns {
+    public static class KeyRings implements BaseColumns, KeysColumns, UserIdsColumns {
+        public static final String MASTER_KEY_ID = "master_key_id";
+        public static final String HAS_SECRET = "has_secret";
+
         public static final Uri CONTENT_URI = BASE_CONTENT_URI_INTERNAL.buildUpon()
                 .appendPath(BASE_KEY_RINGS).build();
 
-        /**
-         * Use if multiple items get returned
-         */
         public static final String CONTENT_TYPE = "vnd.android.cursor.dir/vnd.sufficientlysecure.openkeychain.key_ring";
-
-        /**
-         * Use if a single item is returned
-         */
         public static final String CONTENT_ITEM_TYPE = "vnd.android.cursor.item/vnd.sufficientlysecure.openkeychain.key_ring";
 
         public static Uri buildUnifiedKeyRingsUri() {
             return CONTENT_URI.buildUpon().appendPath(PATH_UNIFIED).build();
         }
-        public static Uri buildUnifiedKeyRingsByEmailUri(String email) {
-            return CONTENT_URI.buildUpon().appendPath("email:" + email).build();
-        }
 
         public static Uri buildGenericKeyRingUri(String masterKeyId) {
             return CONTENT_URI.buildUpon().appendPath(masterKeyId).build();
         }
+        public static Uri buildUnifiedKeyRingUri(String masterKeyId) {
+            return CONTENT_URI.buildUpon().appendPath(masterKeyId).appendPath(PATH_UNIFIED).build();
+        }
+        public static Uri buildUnifiedKeyRingUri(Uri uri) {
+            return CONTENT_URI.buildUpon().appendPath(uri.getPathSegments().get(1)).appendPath(PATH_UNIFIED).build();
+        }
 
+        public static Uri buildUnifiedKeyRingsFindByEmailUri(String email) {
+            return CONTENT_URI.buildUpon().appendPath(PATH_FIND).appendPath(PATH_BY_EMAIL).appendPath(email).build();
+        }
+        public static Uri buildUnifiedKeyRingsFindBySubkeyUri(String subkey) {
+            return CONTENT_URI.buildUpon().appendPath(PATH_FIND).appendPath(PATH_BY_SUBKEY).appendPath(subkey).build();
+        }
+
+    }
+
+    public static class KeyRingData implements KeyRingsColumns, BaseColumns {
+        public static final Uri CONTENT_URI = BASE_CONTENT_URI_INTERNAL.buildUpon()
+                .appendPath(BASE_KEY_RINGS).build();
+
+        public static final String CONTENT_TYPE = "vnd.android.cursor.dir/vnd.sufficientlysecure.openkeychain.key_ring_data";
+        public static final String CONTENT_ITEM_TYPE = "vnd.android.cursor.item/vnd.sufficientlysecure.openkeychain.key_ring_data";
+
+        public static Uri buildPublicKeyRingUri() {
+            return CONTENT_URI.buildUpon().appendPath(PATH_PUBLIC).build();
+        }
         public static Uri buildPublicKeyRingUri(String masterKeyId) {
             return CONTENT_URI.buildUpon().appendPath(masterKeyId).appendPath(PATH_PUBLIC).build();
         }
@@ -135,12 +152,6 @@ public class KeychainContract {
             return CONTENT_URI.buildUpon().appendPath(uri.getPathSegments().get(1)).appendPath(PATH_SECRET).build();
         }
 
-        public static Uri buildUnifiedKeyRingUri(String masterKeyId) {
-            return CONTENT_URI.buildUpon().appendPath(masterKeyId).appendPath(PATH_UNIFIED).build();
-        }
-        public static Uri buildUnifiedKeyRingUri(Uri uri) {
-            return CONTENT_URI.buildUpon().appendPath(uri.getPathSegments().get(1)).appendPath(PATH_UNIFIED).build();
-        }
     }
 
     public static class Keys implements KeysColumns, BaseColumns {

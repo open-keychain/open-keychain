@@ -38,17 +38,6 @@
         app:showAsAction="ifRoom|withText"
         android:icon="@drawable/ic_action_import_export"
         android:title="@string/menu_export_keys">
-        <menu>
-            <item
-                android:id="@+id/menu_key_list_export_public"
-                app:showAsAction="never"
-                android:title="@string/menu_export_public_keys" />
-
-            <item
-                android:id="@+id/menu_key_list_secret_export"
-                app:showAsAction="never"
-                android:title="@string/menu_export_secret_keys" />
-        </menu>
     </item>
 
 </menu>

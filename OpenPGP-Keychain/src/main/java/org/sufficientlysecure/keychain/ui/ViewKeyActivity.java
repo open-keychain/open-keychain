@@ -29,6 +29,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.Window;
 import android.widget.Toast;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.Id;
@@ -41,7 +42,6 @@ import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.ui.adapter.TabsAdapter;
 import org.sufficientlysecure.keychain.ui.dialog.ShareNfcDialogFragment;
 import org.sufficientlysecure.keychain.ui.dialog.ShareQrCodeDialogFragment;
-import org.sufficientlysecure.keychain.util.Log;
 
 import java.util.ArrayList;
 
@@ -60,6 +60,7 @@ public class ViewKeyActivity extends ActionBarActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
         super.onCreate(savedInstanceState);
 
         mExportHelper = new ExportHelper(this);
@@ -118,10 +119,12 @@ public class ViewKeyActivity extends ActionBarActivity {
                 uploadToKeyserver(mDataUri);
                 return true;
             case R.id.menu_key_view_export_file:
-                long masterKeyId = Long.valueOf(mDataUri.getLastPathSegment());
-                long[] ids = new long[]{masterKeyId};
-                mExportHelper.showExportKeysDialog(ids, Id.type.public_key,
-                        Constants.Path.APP_DIR_FILE_PUB, null);
+                long masterKeyId = ProviderHelper.getMasterKeyId(this, mDataUri);
+                mExportHelper.showExportKeysDialog(
+                        new long[] { masterKeyId } , Constants.Path.APP_DIR_FILE_PUB,
+                        // TODO this doesn't work?
+                        ((ViewKeyMainFragment) mTabsAdapter.getItem(0)).isSecretAvailable()
+                );
                 return true;
             case R.id.menu_key_view_share_default_fingerprint:
                 shareKey(mDataUri, true);
@@ -156,8 +159,10 @@ public class ViewKeyActivity extends ActionBarActivity {
     }
 
     private void updateFromKeyserver(Uri dataUri) {
-        byte[] fingerprintBlob = ProviderHelper.getFingerprint(this, dataUri);
-        String fingerprint = PgpKeyHelper.convertFingerprintToHex(fingerprintBlob);
+        byte[] blob = (byte[]) ProviderHelper.getGenericData(
+                this, KeychainContract.KeyRings.buildUnifiedKeyRingUri(dataUri),
+                KeychainContract.Keys.FINGERPRINT, ProviderHelper.FIELD_TYPE_BLOB);
+        String fingerprint = PgpKeyHelper.convertFingerprintToHex(blob);
 
         Intent queryIntent = new Intent(this, ImportKeysActivity.class);
         queryIntent.setAction(ImportKeysActivity.ACTION_IMPORT_KEY_FROM_KEYSERVER_AND_RETURN);
@@ -169,15 +174,22 @@ public class ViewKeyActivity extends ActionBarActivity {
     private void shareKey(Uri dataUri, boolean fingerprintOnly) {
         String content;
         if (fingerprintOnly) {
-            byte[] fingerprintBlob = ProviderHelper.getFingerprint(this, dataUri);
-            String fingerprint = PgpKeyHelper.convertFingerprintToHex(fingerprintBlob);
-
-            content = Constants.FINGERPRINT_SCHEME + ":" + fingerprint;
+            byte[] data = (byte[]) ProviderHelper.getGenericData(
+                    this, KeychainContract.KeyRings.buildUnifiedKeyRingUri(dataUri),
+                    KeychainContract.Keys.FINGERPRINT, ProviderHelper.FIELD_TYPE_BLOB);
+            if(data != null) {
+                String fingerprint = PgpKeyHelper.convertFingerprintToHex(data);
+                content = Constants.FINGERPRINT_SCHEME + ":" + fingerprint;
+            } else {
+                Toast.makeText(getApplicationContext(), "Bad key selected!",
+                        Toast.LENGTH_LONG).show();
+                return;
+            }
         } else {
             // get public keyring as ascii armored string
             long masterKeyId = ProviderHelper.getMasterKeyId(this, dataUri);
-            ArrayList<String> keyringArmored = ProviderHelper.getKeyRingsAsArmoredString(this,
-                    dataUri, new long[]{masterKeyId});
+            ArrayList<String> keyringArmored = ProviderHelper.getKeyRingsAsArmoredString(
+                    this, new long[]{ masterKeyId });
 
             content = keyringArmored.get(0);
 
@@ -207,8 +219,8 @@ public class ViewKeyActivity extends ActionBarActivity {
     private void copyToClipboard(Uri dataUri) {
         // get public keyring as ascii armored string
         long masterKeyId = ProviderHelper.getMasterKeyId(this, dataUri);
-        ArrayList<String> keyringArmored = ProviderHelper.getKeyRingsAsArmoredString(this, dataUri,
-                new long[]{masterKeyId});
+        ArrayList<String> keyringArmored = ProviderHelper.getKeyRingsAsArmoredString(
+                this, new long[]{ masterKeyId });
 
         ClipboardReflection.copyToClipboard(this, keyringArmored.get(0));
         Toast.makeText(getApplicationContext(), R.string.key_copied_to_clipboard, Toast.LENGTH_LONG)

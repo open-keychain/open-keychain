@@ -124,7 +124,6 @@ public class KeychainDatabase extends SQLiteOpenHelper {
     KeychainDatabase(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
 
-
         // make sure this is only done once, on the first instance!
         boolean iAmIt = false;
         synchronized(apg_hack) {

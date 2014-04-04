@@ -37,8 +37,10 @@ import org.spongycastle.openpgp.PGPSecretKeyRing;
 import org.sufficientlysecure.keychain.Id;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
+import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 
+import java.util.HashMap;
 import java.util.Vector;
 
 public class EncryptAsymmetricFragment extends Fragment {
@@ -145,7 +147,7 @@ public class EncryptAsymmetricFragment extends Fragment {
                     preselectedSignatureKeyId);
             PGPSecretKey masterKey;
             if (keyRing != null) {
-                masterKey = PgpKeyHelper.getMasterKey(keyRing);
+                masterKey = keyRing.getSecretKey();
                 if (masterKey != null) {
                     Vector<PGPSecretKey> signKeys = PgpKeyHelper.getUsableSigningKeys(keyRing);
                     if (signKeys.size() > 0) {
@@ -158,23 +160,11 @@ public class EncryptAsymmetricFragment extends Fragment {
         if (preselectedEncryptionKeyIds != null) {
             Vector<Long> goodIds = new Vector<Long>();
             for (int i = 0; i < preselectedEncryptionKeyIds.length; ++i) {
-                // TODO: don't use bouncy castle objects!
-
-                PGPPublicKeyRing keyRing = ProviderHelper.getPGPPublicKeyRingWithKeyId(getActivity(),
-                        preselectedEncryptionKeyIds[i]);
-                PGPPublicKey masterKey;
-                if (keyRing == null) {
-                    continue;
-                }
-                masterKey = PgpKeyHelper.getMasterKey(keyRing);
-                if (masterKey == null) {
-                    continue;
-                }
-                Vector<PGPPublicKey> encryptKeys = PgpKeyHelper.getUsableEncryptKeys(keyRing);
-                if (encryptKeys.size() == 0) {
-                    continue;
-                }
-                goodIds.add(masterKey.getKeyID());
+                long id = ProviderHelper.getMasterKeyId(getActivity(),
+                        KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(Long.toString(preselectedEncryptionKeyIds[i]))
+                );
+                // TODO check for available encrypt keys... is this even relevant?
+                goodIds.add(id);
             }
             if (goodIds.size() > 0) {
                 long[] keyIds = new long[goodIds.size()];
@@ -202,20 +192,17 @@ public class EncryptAsymmetricFragment extends Fragment {
         } else {
             String uid = getResources().getString(R.string.user_id_no_name);
             String uidExtra = "";
-            // TODO: don't use bouncy castle objects!
-            PGPSecretKeyRing keyRing = ProviderHelper.getPGPSecretKeyRingWithKeyId(getActivity(),
-                    mSecretKeyId);
-            if (keyRing != null) {
-                PGPSecretKey key = PgpKeyHelper.getMasterKey(keyRing);
-                if (key != null) {
-                    String userId = PgpKeyHelper.getMainUserIdSafe(getActivity(), key);
-                    String chunks[] = userId.split(" <", 2);
-                    uid = chunks[0];
-                    if (chunks.length > 1) {
-                        uidExtra = "<" + chunks[1];
-                    }
+            // See if we can get a user_id from a unified query
+            String user_id = (String) ProviderHelper.getUnifiedData(
+                    getActivity(), mSecretKeyId, KeyRings.USER_ID, ProviderHelper.FIELD_TYPE_STRING);
+            if(user_id != null) {
+                String chunks[] = user_id.split(" <", 2);
+                uid = chunks[0];
+                if (chunks.length > 1) {
+                    uidExtra = "<" + chunks[1];
                 }
             }
+
             mMainUserId.setText(uid);
             mMainUserIdRest.setText(uidExtra);
             mSign.setChecked(true);
