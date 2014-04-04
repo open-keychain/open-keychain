@@ -60,7 +60,6 @@ import org.sufficientlysecure.keychain.helper.ExportHelper;
 import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRingData;
-import org.sufficientlysecure.keychain.provider.KeychainContract.UserIds;
 import org.sufficientlysecure.keychain.ui.adapter.HighlightQueryCursorAdapter;
 import org.sufficientlysecure.keychain.ui.dialog.DeleteKeyDialogFragment;
 import org.sufficientlysecure.keychain.util.Log;
@@ -68,7 +67,6 @@ import se.emilsjolander.stickylistheaders.ApiLevelTooLowException;
 import se.emilsjolander.stickylistheaders.StickyListHeadersAdapter;
 import se.emilsjolander.stickylistheaders.StickyListHeadersListView;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
@@ -194,10 +192,8 @@ public class KeyListFragment extends Fragment
                         case R.id.menu_key_list_multi_export: {
                             ids = mAdapter.getCurrentSelectedMasterKeyIds();
                             ExportHelper mExportHelper = new ExportHelper((ActionBarActivity) getActivity());
-                            mExportHelper
-                                    .showExportKeysDialog(ids, Id.type.public_key,
-                                            Constants.Path.APP_DIR_FILE_PUB,
-                                            getString(R.string.also_export_secret_keys));
+                            mExportHelper.showExportKeysDialog(
+                                    ids, Constants.Path.APP_DIR_FILE_PUB, mAdapter.isAnySecretSelected());
                             break;
                         }
                         case R.id.menu_key_list_multi_select_all: {
@@ -525,6 +521,13 @@ public class KeyListFragment extends Fragment
 
         }
 
+        public boolean isSecretAvailable(int id) {
+            if (!mCursor.moveToPosition(id)) {
+                throw new IllegalStateException("couldn't move cursor to position " + id);
+            }
+
+            return mCursor.getInt(INDEX_HAS_SECRET) != 0;
+        }
         public long getMasterKeyId(int id) {
             if (!mCursor.moveToPosition(id)) {
                 throw new IllegalStateException("couldn't move cursor to position " + id);
@@ -631,6 +634,14 @@ public class KeyListFragment extends Fragment
         public void setNewSelection(int position, boolean value) {
             mSelection.put(position, value);
             notifyDataSetChanged();
+        }
+
+        public boolean isAnySecretSelected() {
+            for (int pos : mSelection.keySet()) {
+                if(mAdapter.isSecretAvailable(pos))
+                    return true;
+            }
+            return false;
         }
 
         public long[] getCurrentSelectedMasterKeyIds() {

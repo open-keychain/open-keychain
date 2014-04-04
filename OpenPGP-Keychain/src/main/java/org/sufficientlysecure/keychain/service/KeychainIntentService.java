@@ -19,6 +19,7 @@ package org.sufficientlysecure.keychain.service;
 
 import android.app.IntentService;
 import android.content.Intent;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Message;
@@ -50,6 +51,8 @@ import org.sufficientlysecure.keychain.pgp.PgpKeyOperation;
 import org.sufficientlysecure.keychain.pgp.PgpSignEncrypt;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralMsgIdException;
+import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
+import org.sufficientlysecure.keychain.provider.KeychainDatabase;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.ui.adapter.ImportKeysListEntry;
 import org.sufficientlysecure.keychain.util.HkpKeyServer;
@@ -147,7 +150,7 @@ public class KeychainIntentService extends IntentService
     // export key
     public static final String EXPORT_OUTPUT_STREAM = "export_output_stream";
     public static final String EXPORT_FILENAME = "export_filename";
-    public static final String EXPORT_KEY_TYPE = "export_key_type";
+    public static final String EXPORT_SECRET = "export_secret";
     public static final String EXPORT_ALL = "export_all";
     public static final String EXPORT_KEY_RING_MASTER_KEY_ID = "export_key_ring_id";
 
@@ -635,18 +638,12 @@ public class KeychainIntentService extends IntentService
         } else if (ACTION_EXPORT_KEYRING.equals(action)) {
             try {
 
-                /* Input */
-                int keyType = Id.type.public_key;
-                if (data.containsKey(EXPORT_KEY_TYPE)) {
-                    keyType = data.getInt(EXPORT_KEY_TYPE);
-                }
+                boolean exportSecret = data.getBoolean(EXPORT_SECRET, false);
                 long[] masterKeyIds = data.getLongArray(EXPORT_KEY_RING_MASTER_KEY_ID);
                 String outputFile = data.getString(EXPORT_FILENAME);
 
                 // If not exporting all keys get the masterKeyIds of the keys to export from the intent
                 boolean exportAll = data.getBoolean(EXPORT_ALL);
-
-                /* Operation */
 
                 // check if storage is ready
                 if (!FileHelper.isStorageMounted(outputFile)) {
@@ -655,31 +652,30 @@ public class KeychainIntentService extends IntentService
 
                 ArrayList<Long> publicMasterKeyIds = new ArrayList<Long>();
                 ArrayList<Long> secretMasterKeyIds = new ArrayList<Long>();
-                // TODO redo
-                ArrayList<Long> allPublicMasterKeyIds = null; // ProviderHelper.getPublicKeyRingsMasterKeyIds(this);
-                ArrayList<Long> allSecretMasterKeyIds = null; // ProviderHelper.getSecretKeyRingsMasterKeyIds(this);
 
-                if (exportAll) {
-                    // get all public key ring MasterKey ids
-                    if (keyType == Id.type.public_key || keyType == Id.type.public_secret_key) {
-                        publicMasterKeyIds = allPublicMasterKeyIds;
+                String selection = null;
+                if(!exportAll) {
+                    selection = KeychainDatabase.Tables.KEYS + "." + KeyRings.MASTER_KEY_ID + " IN( ";
+                    for(long l : masterKeyIds) {
+                        selection += Long.toString(l) + ",";
                     }
-                    // get all secret key ring MasterKey ids
-                    if (keyType == Id.type.secret_key || keyType == Id.type.public_secret_key) {
-                        secretMasterKeyIds = allSecretMasterKeyIds;
-                    }
-                } else {
+                    selection = selection.substring(0, selection.length()-1) + " )";
+                }
 
-                    for (long masterKeyId : masterKeyIds) {
-                        if ((keyType == Id.type.public_key || keyType == Id.type.public_secret_key)
-                                && allPublicMasterKeyIds.contains(masterKeyId)) {
-                            publicMasterKeyIds.add(masterKeyId);
-                        }
-                        if ((keyType == Id.type.secret_key || keyType == Id.type.public_secret_key)
-                                && allSecretMasterKeyIds.contains(masterKeyId)) {
-                            secretMasterKeyIds.add(masterKeyId);
-                        }
-                    }
+                Cursor cursor = getContentResolver().query(KeyRings.buildUnifiedKeyRingsUri(),
+                        new String[]{ KeyRings.MASTER_KEY_ID, KeyRings.HAS_SECRET },
+                        selection, null, null);
+                try {
+                    cursor.moveToFirst();
+                    do {
+                        // export public either way
+                        publicMasterKeyIds.add(cursor.getLong(0));
+                        // add secret if available (and requested)
+                        if(exportSecret && cursor.getInt(1) != 0)
+                            secretMasterKeyIds.add(cursor.getLong(0));
+                    } while(cursor.moveToNext());
+                } finally {
+                    cursor.close();
                 }
 
                 PgpImportExport pgpImportExport = new PgpImportExport(this, this, this);

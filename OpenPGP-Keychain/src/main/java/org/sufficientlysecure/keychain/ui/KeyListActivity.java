@@ -23,7 +23,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import org.sufficientlysecure.keychain.Constants;
-import org.sufficientlysecure.keychain.Id;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.helper.ExportHelper;
 
@@ -55,26 +54,20 @@ public class KeyListActivity extends DrawerActivity {
         switch (item.getItemId()) {
             case R.id.menu_key_list_import:
                 callIntentForDrawerItem(Constants.DrawerItems.IMPORT_KEYS);
-
                 return true;
+
             case R.id.menu_key_list_create:
                 createKey();
-
                 return true;
+
             case R.id.menu_key_list_create_expert:
                 createKeyExpert();
-
                 return true;
-            case R.id.menu_key_list_export_public:
-                mExportHelper.showExportKeysDialog(null,
-                    Id.type.public_key, Constants.Path.APP_DIR_FILE_PUB, null);
 
+            case R.id.menu_key_list_export:
+                mExportHelper.showExportKeysDialog(null, Constants.Path.APP_DIR_FILE_PUB, true);
                 return true;
-            case R.id.menu_key_list_secret_export:
-                mExportHelper.showExportKeysDialog(null, Id.type.secret_key,
-                    Constants.Path.APP_DIR_FILE_SEC, null);
 
-                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }

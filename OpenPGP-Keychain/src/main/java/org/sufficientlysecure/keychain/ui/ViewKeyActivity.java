@@ -42,7 +42,6 @@ import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.ui.adapter.TabsAdapter;
 import org.sufficientlysecure.keychain.ui.dialog.ShareNfcDialogFragment;
 import org.sufficientlysecure.keychain.ui.dialog.ShareQrCodeDialogFragment;
-import org.sufficientlysecure.keychain.util.Log;
 
 import java.util.ArrayList;
 
@@ -120,10 +119,12 @@ public class ViewKeyActivity extends ActionBarActivity {
                 uploadToKeyserver(mDataUri);
                 return true;
             case R.id.menu_key_view_export_file:
-                long masterKeyId = Long.valueOf(mDataUri.getLastPathSegment());
-                long[] ids = new long[]{masterKeyId};
-                mExportHelper.showExportKeysDialog(ids, Id.type.public_key,
-                        Constants.Path.APP_DIR_FILE_PUB, null);
+                long masterKeyId = ProviderHelper.getMasterKeyId(this, mDataUri);
+                mExportHelper.showExportKeysDialog(
+                        new long[] { masterKeyId } , Constants.Path.APP_DIR_FILE_PUB,
+                        // TODO this doesn't work?
+                        ((ViewKeyMainFragment) mTabsAdapter.getItem(0)).isSecretAvailable()
+                );
                 return true;
             case R.id.menu_key_view_share_default_fingerprint:
                 shareKey(mDataUri, true);

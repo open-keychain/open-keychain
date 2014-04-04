@@ -81,6 +81,9 @@ public class ViewKeyMainFragment extends Fragment implements
 
     private Uri mDataUri;
 
+    // for activity
+    private boolean mSecretAvailable = false;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.view_key_main_fragment, container, false);
@@ -227,9 +230,9 @@ public class ViewKeyMainFragment extends Fragment implements
                     mEmail.setText(mainUserId[1]);
                     mComment.setText(mainUserId[2]);
 
-                    if (data.getInt(INDEX_UNIFIED_HAS_SECRET) > 0) {
-                        // set this attribute. this is a LITTLE unclean, but we have the info available
-                        // right here, so why not.
+                    if (data.getInt(INDEX_UNIFIED_HAS_SECRET) != 0) {
+                        mSecretAvailable = true;
+
                         mSecretKey.setTextColor(getResources().getColor(R.color.emphasis));
                         mSecretKey.setText(R.string.secret_key_yes);
 
@@ -244,6 +247,8 @@ public class ViewKeyMainFragment extends Fragment implements
                             }
                         });
                     } else {
+                        mSecretAvailable = false;
+
                         mSecretKey.setTextColor(Color.BLACK);
                         mSecretKey.setText(getResources().getString(R.string.secret_key_no));
 
@@ -330,6 +335,11 @@ public class ViewKeyMainFragment extends Fragment implements
                 mKeysAdapter.swapCursor(null);
                 break;
         }
+    }
+
+    /** Returns true if the key current displayed is known to have a secret key. */
+    public boolean isSecretAvailable() {
+        return mSecretAvailable;
     }
 
     private void encryptToContact(Uri dataUri) {

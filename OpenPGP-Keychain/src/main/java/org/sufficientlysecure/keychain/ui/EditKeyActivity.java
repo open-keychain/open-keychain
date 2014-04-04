@@ -339,9 +339,8 @@ public class EditKeyActivity extends ActionBarActivity implements EditorListener
                     Toast.makeText(this, R.string.error_save_first, Toast.LENGTH_LONG).show();
                 } else {
                     long masterKeyId = ProviderHelper.getMasterKeyId(this, mDataUri);
-                long[] ids = new long[]{masterKeyId};
-                mExportHelper.showExportKeysDialog(ids, Id.type.secret_key, Constants.Path.APP_DIR_FILE_SEC,
-                        null);
+                    mExportHelper.showExportKeysDialog(
+                            new long[] { masterKeyId }, Constants.Path.APP_DIR_FILE_SEC, true);
                     return true;
                 }
                 return true;
