@@ -282,34 +282,6 @@ public class EditKeyActivity extends ActionBarActivity implements EditorListener
         }
     }
 
-    private void showPassphraseDialog(final long masterKeyId) {
-        // Message is received after passphrase is cached
-        Handler returnHandler = new Handler() {
-            @Override
-            public void handleMessage(Message message) {
-                if (message.what == PassphraseDialogFragment.MESSAGE_OKAY) {
-                    mCurrentPassphrase = PassphraseCacheService.getCachedPassphrase(
-                            EditKeyActivity.this, masterKeyId);
-                    checkEmptyIDsWanted();
-                }
-            }
-        };
-
-        // Create a new Messenger for the communication back
-        Messenger messenger = new Messenger(returnHandler);
-
-        try {
-            PassphraseDialogFragment passphraseDialog = PassphraseDialogFragment.newInstance(
-                    EditKeyActivity.this, messenger, masterKeyId);
-
-            passphraseDialog.show(getSupportFragmentManager(), "passphraseDialog");
-        } catch (PgpGeneralException e) {
-            Log.d(Constants.TAG, "No passphrase for this secret key!");
-            // send message to handler to start encryption directly
-            returnHandler.sendEmptyMessage(PassphraseDialogFragment.MESSAGE_OKAY);
-        }
-    }
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
@@ -539,7 +511,7 @@ public class EditKeyActivity extends ActionBarActivity implements EditorListener
     }
 
     private void saveClicked() {
-        long masterKeyId = getMasterKeyId();
+        final long masterKeyId = getMasterKeyId();
         if (needsSaving()) { //make sure, as some versions don't support invalidateOptionsMenu
             try {
                 if (!isPassphraseSet()) {
@@ -553,7 +525,17 @@ public class EditKeyActivity extends ActionBarActivity implements EditorListener
                     passphrase = "";
                 }
                 if (passphrase == null) {
-                    showPassphraseDialog(masterKeyId);
+                    PassphraseDialogFragment.show(this, masterKeyId,
+                        new Handler() {
+                            @Override
+                            public void handleMessage(Message message) {
+                                if (message.what == PassphraseDialogFragment.MESSAGE_OKAY) {
+                                    mCurrentPassphrase = PassphraseCacheService.getCachedPassphrase(
+                                            EditKeyActivity.this, masterKeyId);
+                                    checkEmptyIDsWanted();
+                                }
+                            }
+                        });
                 } else {
                     mCurrentPassphrase = passphrase;
                     checkEmptyIDsWanted();
