@@ -30,6 +30,7 @@ import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.Id;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.compatibility.DialogFragmentWorkaround;
+import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
 import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
 import org.sufficientlysecure.keychain.ui.dialog.DeleteKeyDialogFragment;
@@ -48,14 +49,12 @@ public class ExportHelper {
     }
 
     public void deleteKey(Uri dataUri, Handler deleteHandler) {
-        long keyRingRowId = Long.valueOf(dataUri.getLastPathSegment());
-
         // Create a new Messenger for the communication back
         Messenger messenger = new Messenger(deleteHandler);
+        long masterKeyId = ProviderHelper.getMasterKeyId(mActivity, dataUri);
 
         DeleteKeyDialogFragment deleteKeyDialog = DeleteKeyDialogFragment.newInstance(messenger,
-                new long[]{keyRingRowId});
-
+                new long[]{ masterKeyId });
         deleteKeyDialog.show(mActivity.getSupportFragmentManager(), "deleteKeyDialog");
     }
 

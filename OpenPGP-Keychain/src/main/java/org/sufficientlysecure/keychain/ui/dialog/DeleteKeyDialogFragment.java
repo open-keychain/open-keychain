@@ -75,7 +75,6 @@ public class DeleteKeyDialogFragment extends DialogFragment {
         return frag;
     }
 
-
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
 
@@ -122,7 +121,6 @@ public class DeleteKeyDialogFragment extends DialogFragment {
             mMainMessage.setText(R.string.key_deletion_confirmation_multi);
         }
 
-
         builder.setIcon(R.drawable.ic_dialog_alert_holo_light);
         builder.setPositiveButton(R.string.btn_delete, new DialogInterface.OnClickListener() {
             @Override
@@ -133,21 +131,16 @@ public class DeleteKeyDialogFragment extends DialogFragment {
                     int count = activity.getContentResolver().delete(
                             KeyRingData.buildPublicKeyRingUri(Long.toString(masterKeyId)), null, null
                         );
-                    if(count > 0)
-                    success = true;
+                    success = count > 0;
                 }
-
-                dismiss();
-
                 if (success) {
                     sendMessageToHandler(MESSAGE_OKAY, null);
                 } else {
                     sendMessageToHandler(MESSAGE_ERROR, null);
                 }
+                dismiss();
             }
-
-        }
-        );
+        });
         builder.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
 
             @Override

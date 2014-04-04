@@ -42,7 +42,6 @@ import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.KeychainContract.Keys;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UserIds;
-import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRingData;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.ui.adapter.ViewKeyKeysAdapter;
 import org.sufficientlysecure.keychain.ui.adapter.ViewKeyUserIdsAdapter;
@@ -205,6 +204,12 @@ public class ViewKeyMainFragment extends Fragment implements
     }
 
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+        /* TODO better error handling? May cause problems when a key is deleted,
+         * because the notification triggers faster than the activity closes.
+         */
+        // Avoid NullPointerExceptions...
+        if(data.getCount() == 0)
+            return;
         // Swap the new cursor in. (The framework will take care of closing the
         // old cursor once we return.)
         switch (loader.getId()) {
