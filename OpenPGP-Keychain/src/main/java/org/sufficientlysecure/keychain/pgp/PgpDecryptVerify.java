@@ -53,6 +53,7 @@ import org.spongycastle.openpgp.operator.jcajce.JcePublicKeyDataDecryptorFactory
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
+import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.PassphraseCacheService;
 import org.sufficientlysecure.keychain.util.InputData;
@@ -66,6 +67,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.security.SignatureException;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Set;
 
@@ -232,47 +234,51 @@ public class PgpDecryptVerify {
                 updateProgress(R.string.progress_finding_key, currentProgress, 100);
 
                 PGPPublicKeyEncryptedData encData = (PGPPublicKeyEncryptedData) obj;
-                secretKey = ProviderHelper.getPGPSecretKeyRing(mContext, encData.getKeyID()).getSecretKey();
-                if (secretKey != null) {
-                    // secret key exists in database
-
-                    // allow only a specific key for decryption?
-                    if (mAllowedKeyIds != null) {
-                        // TODO: improve this code! get master key directly!
-                        PGPSecretKeyRing secretKeyRing =
-                                ProviderHelper.getPGPSecretKeyRingWithKeyId(mContext, encData.getKeyID());
-                        long masterKeyId = secretKeyRing.getSecretKey().getKeyID();
-                        Log.d(Constants.TAG, "encData.getKeyID():" + encData.getKeyID());
-                        Log.d(Constants.TAG, "allowedKeyIds: " + mAllowedKeyIds);
-                        Log.d(Constants.TAG, "masterKeyId: " + masterKeyId);
-
-                        if (!mAllowedKeyIds.contains(masterKeyId)) {
-                            throw new PgpGeneralException(
-                                    mContext.getString(R.string.error_no_secret_key_found));
-                        }
-                    }
-
-                    encryptedDataAsymmetric = encData;
-
-                    // if no passphrase was explicitly set try to get it from the cache service
-                    if (mPassphrase == null) {
-                        // returns "" if key has no passphrase
-                        mPassphrase =
-                                PassphraseCacheService.getCachedPassphrase(mContext, encData.getKeyID());
-
-                        // if passphrase was not cached, return here
-                        // indicating that a passphrase is missing!
-                        if (mPassphrase == null) {
-                            returnData.setKeyIdPassphraseNeeded(encData.getKeyID());
-                            returnData.setStatus(PgpDecryptVerifyResult.KEY_PASSHRASE_NEEDED);
-                            return returnData;
-                        }
-                    }
-
-                    // break out of while, only get first object here
-                    // TODO???: There could be more pgp objects, which are not decrypted!
-                    break;
+                long masterKeyId = ProviderHelper.getMasterKeyId(mContext,
+                        KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(Long.toString(encData.getKeyID()))
+                );
+                PGPSecretKeyRing secretKeyRing = ProviderHelper.getPGPSecretKeyRing(mContext, masterKeyId);
+                if (secretKeyRing == null) {
+                    throw new PgpGeneralException(mContext.getString(R.string.error_no_secret_key_found));
                 }
+                secretKey = secretKeyRing.getSecretKey(encData.getKeyID());
+                if (secretKey == null) {
+                    throw new PgpGeneralException(mContext.getString(R.string.error_no_secret_key_found));
+                }
+                // secret key exists in database
+
+                // allow only a specific key for decryption?
+                if (mAllowedKeyIds != null) {
+                    Log.d(Constants.TAG, "encData.getKeyID():" + encData.getKeyID());
+                    Log.d(Constants.TAG, "allowedKeyIds: " + mAllowedKeyIds);
+                    Log.d(Constants.TAG, "masterKeyId: " + masterKeyId);
+
+                    if (!mAllowedKeyIds.contains(masterKeyId)) {
+                        throw new PgpGeneralException(
+                                mContext.getString(R.string.error_no_secret_key_found));
+                    }
+                }
+
+                encryptedDataAsymmetric = encData;
+
+                // if no passphrase was explicitly set try to get it from the cache service
+                if (mPassphrase == null) {
+                    // returns "" if key has no passphrase
+                    mPassphrase =
+                            PassphraseCacheService.getCachedPassphrase(mContext, masterKeyId);
+
+                    // if passphrase was not cached, return here
+                    // indicating that a passphrase is missing!
+                    if (mPassphrase == null) {
+                        returnData.setKeyIdPassphraseNeeded(masterKeyId);
+                        returnData.setStatus(PgpDecryptVerifyResult.KEY_PASSHRASE_NEEDED);
+                        return returnData;
+                    }
+                }
+
+                // break out of while, only get first object here
+                // TODO???: There could be more pgp objects, which are not decrypted!
+                break;
             } else if (mAllowSymmetricDecryption && obj instanceof PGPPBEEncryptedData) {
                 symmetricPacketFound = true;
 
@@ -545,25 +551,27 @@ public class PgpDecryptVerify {
         long signatureKeyId = 0;
         PGPPublicKey signatureKey = null;
         for (int i = 0; i < sigList.size(); ++i) {
+
             signature = sigList.get(i);
-            signatureKey = ProviderHelper.getPGPPublicKeyRing(mContext, signature.getKeyID()).getPublicKey();
-            if (signatureKeyId == 0) {
-                signatureKeyId = signature.getKeyID();
+            signatureKeyId = signature.getKeyID();
+
+            // find data about this subkey
+            HashMap<String, Object> data = ProviderHelper.getGenericData(mContext,
+                    KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(Long.toString(signature.getKeyID())),
+                    new String[] { KeyRings.MASTER_KEY_ID, KeyRings.USER_ID },
+                    new int[] { ProviderHelper.FIELD_TYPE_INTEGER, ProviderHelper.FIELD_TYPE_STRING });
+            // any luck? otherwise, try next.
+            if(data.get(KeyRings.MASTER_KEY_ID) == null) {
+                signature = null;
+                // do NOT reset signatureKeyId, that one is shown when no known one is found!
+                continue;
             }
 
-            if (signatureKey == null) {
-                signature = null;
-            } else {
-                signatureKeyId = signature.getKeyID();
-                String userId = null;
-                PGPPublicKeyRing signKeyRing = ProviderHelper.getPGPPublicKeyRingWithKeyId(mContext,
-                        signatureKeyId);
-                if (signKeyRing != null) {
-                    userId = PgpKeyHelper.getMainUserId(signKeyRing.getPublicKey());
-                }
-                signatureResult.setUserId(userId);
-                break;
-            }
+            // this one can't fail now (yay database constraints)
+            signatureKey = ProviderHelper.getPGPPublicKeyRing(mContext, (Long) data.get(KeyRings.MASTER_KEY_ID)).getPublicKey();
+            signatureResult.setUserId((String) data.get(KeyRings.USER_ID));
+
+            break;
         }
 
         signatureResult.setKeyId(signatureKeyId);
