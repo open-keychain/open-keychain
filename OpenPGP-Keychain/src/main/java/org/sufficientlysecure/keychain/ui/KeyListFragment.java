@@ -193,7 +193,7 @@ public class KeyListFragment extends Fragment
                             ids = mAdapter.getCurrentSelectedMasterKeyIds();
                             ExportHelper mExportHelper = new ExportHelper((ActionBarActivity) getActivity());
                             mExportHelper.showExportKeysDialog(
-                                    ids, Constants.Path.APP_DIR_FILE_PUB, mAdapter.isAnySecretSelected());
+                                    ids, Constants.Path.APP_DIR_FILE, mAdapter.isAnySecretSelected());
                             break;
                         }
                         case R.id.menu_key_list_multi_select_all: {

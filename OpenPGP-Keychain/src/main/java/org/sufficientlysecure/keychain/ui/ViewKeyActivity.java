@@ -159,7 +159,7 @@ public class ViewKeyActivity extends ActionBarActivity {
 
         mExportHelper.showExportKeysDialog(
                 new long[]{(Long) data.get(KeychainContract.KeyRings.MASTER_KEY_ID)},
-                Constants.Path.APP_DIR_FILE_PUB,
+                Constants.Path.APP_DIR_FILE,
                 ((Long) data.get(KeychainContract.KeyRings.HAS_SECRET) == 1)
         );
     }

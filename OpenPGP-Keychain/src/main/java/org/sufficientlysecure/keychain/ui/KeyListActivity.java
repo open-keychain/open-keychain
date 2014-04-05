@@ -53,7 +53,7 @@ public class KeyListActivity extends DrawerActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menu_key_list_import:
-                callIntentForDrawerItem(Constants.DrawerItems.IMPORT_KEYS);
+                importKeys();
                 return true;
 
             case R.id.menu_key_list_create:
@@ -65,12 +65,17 @@ public class KeyListActivity extends DrawerActivity {
                 return true;
 
             case R.id.menu_key_list_export:
-                mExportHelper.showExportKeysDialog(null, Constants.Path.APP_DIR_FILE_PUB, true);
+                mExportHelper.showExportKeysDialog(null, Constants.Path.APP_DIR_FILE, true);
                 return true;
 
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    private void importKeys() {
+        Intent intent = new Intent(this, ImportKeysActivity.class);
+        startActivityForResult(intent, 0);
     }
 
     private void createKey() {
