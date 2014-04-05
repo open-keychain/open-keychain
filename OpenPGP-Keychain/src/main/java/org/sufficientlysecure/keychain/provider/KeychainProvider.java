@@ -369,19 +369,29 @@ public class KeychainProvider extends ContentProvider {
             case KEY_RING_USER_IDS: {
                 HashMap<String, String> projectionMap = new HashMap<String, String>();
                 projectionMap.put(UserIds._ID, Tables.USER_IDS + ".oid AS _id");
-                projectionMap.put(UserIds.MASTER_KEY_ID, UserIds.MASTER_KEY_ID);
-                projectionMap.put(UserIds.USER_ID, UserIds.USER_ID);
-                projectionMap.put(UserIds.RANK, UserIds.RANK);
-                projectionMap.put(UserIds.IS_PRIMARY, UserIds.IS_PRIMARY);
-                projectionMap.put(UserIds.VERIFIED, "0 AS " + UserIds.VERIFIED);
+                projectionMap.put(UserIds.MASTER_KEY_ID, Tables.USER_IDS + "." + UserIds.MASTER_KEY_ID);
+                projectionMap.put(UserIds.USER_ID, Tables.USER_IDS + "." + UserIds.USER_ID);
+                projectionMap.put(UserIds.RANK, Tables.USER_IDS + "." + UserIds.RANK);
+                projectionMap.put(UserIds.IS_PRIMARY, Tables.USER_IDS + "." + UserIds.IS_PRIMARY);
+                // we take the minimum (>0) here, where "1" is "verified by known secret key"
+                projectionMap.put(UserIds.VERIFIED, "MIN(" + Certs.VERIFIED + ") AS " + UserIds.VERIFIED);
                 qb.setProjectionMap(projectionMap);
 
-                qb.setTables(Tables.USER_IDS);
-                qb.appendWhere(UserIds.MASTER_KEY_ID + " = ");
+                qb.setTables(Tables.USER_IDS
+                        + " LEFT JOIN " + Tables.CERTS + " ON ("
+                            + Tables.USER_IDS + "." + UserIds.MASTER_KEY_ID + " = "
+                                + Tables.CERTS + "." + Certs.MASTER_KEY_ID
+                            + " AND " + Tables.USER_IDS + "." + UserIds.RANK + " = "
+                                + Tables.CERTS + "." + Certs.RANK
+                            + " AND " + Tables.CERTS + "." + Certs.VERIFIED + " > 0"
+                        + ")");
+                groupBy = Tables.USER_IDS + "." + UserIds.RANK;
+
+                qb.appendWhere(Tables.USER_IDS + "." + UserIds.MASTER_KEY_ID + " = ");
                 qb.appendWhereEscapeString(uri.getPathSegments().get(1));
 
                 if (TextUtils.isEmpty(sortOrder)) {
-                    sortOrder = UserIds.RANK + " ASC";
+                    sortOrder = Tables.USER_IDS + "." + UserIds.RANK + " ASC";
                 }
 
                 break;
@@ -433,9 +443,7 @@ public class KeychainProvider extends ContentProvider {
                 projectionMap.put(Certs.KEY_ID_CERTIFIER, Tables.CERTS + "." + Certs.KEY_ID_CERTIFIER);
                 projectionMap.put(Certs.VERIFIED, Tables.CERTS + "." + Certs.VERIFIED);
                 projectionMap.put(Certs.KEY_DATA, Tables.CERTS + "." + Certs.KEY_DATA);
-                // verified key data
                 projectionMap.put(Certs.USER_ID, Tables.USER_IDS + "." + UserIds.USER_ID);
-                // verifying key data
                 projectionMap.put(Certs.SIGNER_UID, "signer." + UserIds.USER_ID + " AS " + Certs.SIGNER_UID);
                 qb.setProjectionMap(projectionMap);
 
@@ -447,7 +455,7 @@ public class KeychainProvider extends ContentProvider {
                             + Tables.CERTS + "." + Certs.RANK + " = "
                             + Tables.USER_IDS + "." + UserIds.RANK
                     + ") LEFT JOIN " + Tables.USER_IDS + " AS signer ON ("
-                            + Tables.CERTS + "." + Keys.MASTER_KEY_ID + " = "
+                            + Tables.CERTS + "." + Certs.KEY_ID_CERTIFIER + " = "
                             + "signer." + UserIds.MASTER_KEY_ID
                         + " AND "
                             + "signer." + Keys.RANK + " = 0"
@@ -553,7 +561,9 @@ public class KeychainProvider extends ContentProvider {
                     break;
 
                 case KEY_RING_CERTS:
-                    db.insertOrThrow(Tables.CERTS, null, values);
+                    // we replace here, keeping only the latest signature
+                    // TODO this would be better handled in saveKeyRing directly!
+                    db.replaceOrThrow(Tables.CERTS, null, values);
                     keyId = values.getAsLong(Certs.MASTER_KEY_ID);
                     break;
 

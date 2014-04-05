@@ -38,8 +38,8 @@ import android.widget.TextView;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
-import org.sufficientlysecure.keychain.provider.KeychainContract;
-import org.sufficientlysecure.keychain.provider.KeychainDatabase;
+import org.sufficientlysecure.keychain.provider.KeychainContract.Certs;
+import org.sufficientlysecure.keychain.provider.KeychainDatabase.Tables;
 import org.sufficientlysecure.keychain.util.Log;
 
 import se.emilsjolander.stickylistheaders.ApiLevelTooLowException;
@@ -52,20 +52,20 @@ public class ViewKeyCertsFragment extends Fragment
 
     // These are the rows that we will retrieve.
     static final String[] PROJECTION = new String[] {
-        KeychainContract.Certs._ID,
-        KeychainContract.Certs.MASTER_KEY_ID,
-        KeychainContract.Certs.VERIFIED,
-        KeychainContract.Certs.RANK,
-        KeychainContract.Certs.KEY_ID_CERTIFIER,
-        KeychainContract.Certs.USER_ID,
-        KeychainContract.Certs.SIGNER_UID
+        Certs._ID,
+        Certs.MASTER_KEY_ID,
+        Certs.VERIFIED,
+        Certs.RANK,
+        Certs.KEY_ID_CERTIFIER,
+        Certs.USER_ID,
+        Certs.SIGNER_UID
     };
 
     // sort by our user id,
     static final String SORT_ORDER =
-              KeychainDatabase.Tables.USER_IDS + "." + KeychainContract.UserIds.RANK + " ASC, "
-            + KeychainDatabase.Tables.CERTS + "." + KeychainContract.Certs.VERIFIED + " DESC, "
-            + KeychainContract.Certs.SIGNER_UID + " ASC";
+              Tables.CERTS + "." + Certs.RANK + " ASC, "
+            + Certs.VERIFIED + " DESC, "
+            + Certs.SIGNER_UID + " ASC";
 
     public static final String ARG_DATA_URI = "data_uri";
 
@@ -133,7 +133,7 @@ public class ViewKeyCertsFragment extends Fragment
         }
 
         Uri uri = getArguments().getParcelable(ARG_DATA_URI);
-        mBaseUri = KeychainContract.Certs.buildCertsUri(uri);
+        mBaseUri = Certs.buildCertsUri(uri);
 
         mStickyList.setAreHeadersSticky(true);
         mStickyList.setDrawingListUnderStickyHeader(false);
@@ -185,7 +185,7 @@ public class ViewKeyCertsFragment extends Fragment
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
         Intent viewIntent = null;
         viewIntent = new Intent(getActivity(), ViewCertActivity.class);
-        viewIntent.setData(KeychainContract.Certs.buildCertsUri(Long.toString(id)));
+        viewIntent.setData(Certs.buildCertsUri(Long.toString(id)));
         startActivity(viewIntent);
     }
 
@@ -230,12 +230,12 @@ public class ViewKeyCertsFragment extends Fragment
         private void initIndex(Cursor cursor) {
             if (cursor != null) {
 
-                mIndexCertId = cursor.getColumnIndexOrThrow(KeychainContract.Certs.MASTER_KEY_ID);
-                mIndexUserId = cursor.getColumnIndexOrThrow(KeychainContract.UserIds.USER_ID);
-                mIndexRank = cursor.getColumnIndexOrThrow(KeychainContract.UserIds.RANK);
-                mIndexVerified = cursor.getColumnIndexOrThrow(KeychainContract.Certs.VERIFIED);
-                mIndexSignerKeyId = cursor.getColumnIndexOrThrow(KeychainContract.Certs.KEY_ID_CERTIFIER);
-                mIndexSignerUserId = cursor.getColumnIndexOrThrow(KeychainContract.Certs.SIGNER_UID);
+                mIndexCertId = cursor.getColumnIndexOrThrow(Certs.MASTER_KEY_ID);
+                mIndexUserId = cursor.getColumnIndexOrThrow(Certs.USER_ID);
+                mIndexRank = cursor.getColumnIndexOrThrow(Certs.RANK);
+                mIndexVerified = cursor.getColumnIndexOrThrow(Certs.VERIFIED);
+                mIndexSignerKeyId = cursor.getColumnIndexOrThrow(Certs.KEY_ID_CERTIFIER);
+                mIndexSignerUserId = cursor.getColumnIndexOrThrow(Certs.SIGNER_UID);
             }
         }
 

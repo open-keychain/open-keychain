@@ -223,6 +223,9 @@ public class ProviderHelper {
 
         // get a list of owned secret keys, for verification filtering
         Map<Long, PGPKeyRing> allKeyRings = getPGPKeyRings(context, KeyRingData.buildSecretKeyRingUri());
+        // special case: available secret keys verify themselves!
+        if(secretRing != null)
+            allKeyRings.put(secretRing.getSecretKey().getKeyID(), secretRing);
 
         int userIdRank = 0;
         for (String userId : new IterableIterator<String>(masterKey.getUserIDs())) {
