@@ -439,10 +439,10 @@ public class KeychainProvider extends ContentProvider {
                 projectionMap.put(Certs._ID, Tables.CERTS + ".oid AS " + Certs._ID);
                 projectionMap.put(Certs.MASTER_KEY_ID, Tables.CERTS + "." + Certs.MASTER_KEY_ID);
                 projectionMap.put(Certs.RANK, Tables.CERTS + "." + Certs.RANK);
+                projectionMap.put(Certs.VERIFIED, Tables.CERTS + "." + Certs.VERIFIED);
+                projectionMap.put(Certs.TYPE, Tables.CERTS + "." + Certs.TYPE);
                 projectionMap.put(Certs.CREATION, Tables.CERTS + "." + Certs.CREATION);
                 projectionMap.put(Certs.KEY_ID_CERTIFIER, Tables.CERTS + "." + Certs.KEY_ID_CERTIFIER);
-                projectionMap.put(Certs.VERIFIED, Tables.CERTS + "." + Certs.VERIFIED);
-                projectionMap.put(Certs.KEY_DATA, Tables.CERTS + "." + Certs.KEY_DATA);
                 projectionMap.put(Certs.USER_ID, Tables.USER_IDS + "." + UserIds.USER_ID);
                 projectionMap.put(Certs.SIGNER_UID, "signer." + UserIds.USER_ID + " AS " + Certs.SIGNER_UID);
                 qb.setProjectionMap(projectionMap);

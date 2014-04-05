@@ -55,13 +55,13 @@ public class KeychainContract {
     }
 
     interface CertsColumns {
-        String MASTER_KEY_ID = "master_key_id"; // verified id, foreign key to key_rings._ID
-        String RANK = "rank"; // rank of verified key
-        String KEY_ID_CERTIFIER = "key_id_certifier"; // verifying id, not a database id
+        String MASTER_KEY_ID = "master_key_id";
+        String RANK = "rank";
+        String KEY_ID_CERTIFIER = "key_id_certifier";
+        String TYPE = "type";
+        String VERIFIED = "verified";
         String CREATION = "creation";
         String EXPIRY = "expiry";
-        String VERIFIED = "verified";
-        String KEY_DATA = "key_data"; // certification blob
     }
 
     interface ApiAppsColumns {
@@ -261,6 +261,9 @@ public class KeychainContract {
     public static class Certs implements CertsColumns, BaseColumns {
         public static final String USER_ID = UserIdsColumns.USER_ID;
         public static final String SIGNER_UID = "signer_user_id";
+
+        public static final int VERIFIED_SECRET = 1;
+        public static final int VERIFIED_SELF = 2;
 
         public static final Uri CONTENT_URI = BASE_CONTENT_URI_INTERNAL.buildUpon()
                 .appendPath(BASE_KEY_RINGS).build();

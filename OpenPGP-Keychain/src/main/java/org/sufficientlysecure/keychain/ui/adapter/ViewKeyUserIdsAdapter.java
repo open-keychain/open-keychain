@@ -30,6 +30,7 @@ import android.widget.TextView;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UserIds;
+import org.sufficientlysecure.keychain.provider.KeychainContract.Certs;
 
 import java.util.ArrayList;
 
@@ -108,12 +109,12 @@ public class ViewKeyUserIdsAdapter extends CursorAdapter {
 
         int verified = cursor.getInt(mVerifiedId);
         // TODO introduce own resources for this :)
-        if(verified == 1)
+        if(verified == Certs.VERIFIED_SECRET)
             vVerified.setImageResource(android.R.drawable.presence_online);
-        else if(verified > 1)
-            vVerified.setImageResource(android.R.drawable.presence_away);
-        else
+        else if(verified == Certs.VERIFIED_SELF)
             vVerified.setImageResource(android.R.drawable.presence_invisible);
+        else
+            vVerified.setImageResource(android.R.drawable.presence_busy);
 
         // don't care further if checkboxes aren't shown
         if (mCheckStates == null) {

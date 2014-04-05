@@ -57,7 +57,7 @@ public class ViewCertActivity extends ActionBarActivity
             Certs.CREATION,
             Certs.KEY_ID_CERTIFIER,
             Certs.SIGNER_UID,
-            Certs.KEY_DATA
+            Certs.TYPE
     };
     private static final int INDEX_MASTER_KEY_ID = 1;
     private static final int INDEX_USER_ID = 2;
@@ -65,6 +65,7 @@ public class ViewCertActivity extends ActionBarActivity
     private static final int INDEX_KEY_ID_CERTIFIER = 4;
     private static final int INDEX_UID_CERTIFIER = 5;
     private static final int INDEX_KEY_DATA = 6;
+    private static final int INDEX_KEY_TYPE = 6;
 
     private Uri mDataUri;
 

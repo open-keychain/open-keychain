@@ -29,6 +29,8 @@ import android.database.DatabaseUtils;
 import android.net.Uri;
 import android.os.RemoteException;
 
+import org.spongycastle.bcpg.SignatureSubpacketTags;
+import org.spongycastle.bcpg.sig.SignatureExpirationTime;
 import org.spongycastle.openpgp.PGPException;
 import org.spongycastle.openpgp.PGPSecretKey;
 import org.spongycastle.openpgp.operator.jcajce.JcaPGPContentVerifierBuilderProvider;
@@ -231,22 +233,37 @@ public class ProviderHelper {
         for (String userId : new IterableIterator<String>(masterKey.getUserIDs())) {
             operations.add(buildUserIdOperations(context, masterKeyId, userId, userIdRank));
 
+            // HashMap<Long, PGPSignature> certs = new HashMap<Long,PGPSignature>();
+
             // look through signatures for this specific key
             for (PGPSignature cert : new IterableIterator<PGPSignature>(
                     masterKey.getSignaturesForID(userId))) {
                 long certId = cert.getKeyID();
-                boolean verified = false;
-                // do verify signatures from our own private keys
-                if(allKeyRings.containsKey(certId)) try {
-                    // mark them as verified
-                    cert.init(
-                            new JcaPGPContentVerifierBuilderProvider().setProvider(
+                int verified = 0;
+                // verify from the key itself
+                try {
+                    // verify signatures from known private keys
+                    if(allKeyRings.containsKey(certId)) {
+                        // mark them as verified
+                        cert.init(
+                                new JcaPGPContentVerifierBuilderProvider().setProvider(
+                                        Constants.BOUNCY_CASTLE_PROVIDER_NAME),
+                                allKeyRings.get(certId).getPublicKey());
+                        verified = cert.verifyCertification(userId,  masterKey) ? Certs.VERIFIED_SECRET : 0;
+                        Log.d(Constants.TAG, "Verified sig for " + userId + " " + verified + " from "
+                                + PgpKeyHelper.convertKeyIdToHex(certId)
+                        );
+                    // if that didn't work out, is it at least an own signature?
+                    } else if(certId == masterKeyId) {
+                        cert.init(
+                                new JcaPGPContentVerifierBuilderProvider().setProvider(
                                     Constants.BOUNCY_CASTLE_PROVIDER_NAME),
-                            allKeyRings.get(certId).getPublicKey());
-                    verified = cert.verifyCertification(userId,  masterKey);
-                    Log.d(Constants.TAG, "Verified sig for " + userId + " " + verified + " from "
-                            + PgpKeyHelper.convertKeyIdToHex(cert.getKeyID())
-                    );
+                                masterKey);
+                        verified = cert.verifyCertification(userId,  masterKey) ? Certs.VERIFIED_SELF : 0;
+                        Log.d(Constants.TAG, "Verified sig for " + userId + " " + verified + " from "
+                                + PgpKeyHelper.convertKeyIdToHex(certId)
+                        );
+                    }
                 } catch(SignatureException e) {
                     Log.e(Constants.TAG, "Signature verification failed! "
                             + PgpKeyHelper.convertKeyIdToHex(masterKey.getKeyID())
@@ -263,7 +280,7 @@ public class ProviderHelper {
                 );
                 // regardless of verification, save the certification
                 operations.add(buildCertOperations(
-                        context, masterKeyId, userIdRank, masterKey.getKeyID(), cert, verified));
+                        context, masterKeyId, userIdRank, cert, verified));
             }
 
             ++userIdRank;
@@ -354,18 +371,21 @@ public class ProviderHelper {
     private static ContentProviderOperation buildCertOperations(Context context,
                                                                      long masterKeyId,
                                                                      int rank,
-                                                                     long keyId,
                                                                      PGPSignature cert,
-                                                                     boolean verified)
+                                                                     int verified)
             throws IOException {
         ContentValues values = new ContentValues();
         values.put(Certs.MASTER_KEY_ID, masterKeyId);
         values.put(Certs.RANK, rank);
         values.put(Certs.KEY_ID_CERTIFIER, cert.getKeyID());
+        values.put(Certs.TYPE, cert.getSignatureType());
         values.put(Certs.CREATION, cert.getCreationTime().getTime() / 1000);
-        values.put(Certs.EXPIRY, (String) null); // TODO
+        if(cert.getHashedSubPackets().hasSubpacket(SignatureSubpacketTags.EXPIRE_TIME)) {
+            long ext = ((SignatureExpirationTime) cert.getHashedSubPackets().getSubpacket(
+                    SignatureSubpacketTags.EXPIRE_TIME)).getTime();
+            values.put(Certs.EXPIRY, cert.getCreationTime().getTime() / 1000 + ext);
+        }
         values.put(Certs.VERIFIED, verified);
-        values.put(Certs.KEY_DATA, cert.getEncoded());
 
         Uri uri = Certs.buildCertsUri(Long.toString(masterKeyId));
 
