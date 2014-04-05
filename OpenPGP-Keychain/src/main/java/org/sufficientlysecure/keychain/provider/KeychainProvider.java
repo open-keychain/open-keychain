@@ -373,6 +373,7 @@ public class KeychainProvider extends ContentProvider {
                 projectionMap.put(UserIds.USER_ID, Tables.USER_IDS + "." + UserIds.USER_ID);
                 projectionMap.put(UserIds.RANK, Tables.USER_IDS + "." + UserIds.RANK);
                 projectionMap.put(UserIds.IS_PRIMARY, Tables.USER_IDS + "." + UserIds.IS_PRIMARY);
+                projectionMap.put(UserIds.IS_REVOKED, Tables.USER_IDS + "." + UserIds.IS_REVOKED);
                 // we take the minimum (>0) here, where "1" is "verified by known secret key"
                 projectionMap.put(UserIds.VERIFIED, "MIN(" + Certs.VERIFIED + ") AS " + UserIds.VERIFIED);
                 qb.setProjectionMap(projectionMap);

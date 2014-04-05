@@ -301,6 +301,10 @@ public class ProviderHelper {
                 operations.add(buildCertOperations(
                         masterKeyId, userIdRank, item.selfCert, Certs.VERIFIED_SELF));
             }
+            // don't bother with trusted certs if the uid is revoked, anyways
+            if(item.isRevoked) {
+                continue;
+            }
             for(int i = 0; i < item.trustedCerts.size(); i++) {
                 operations.add(buildCertOperations(
                         masterKeyId, userIdRank, item.trustedCerts.get(i), Certs.VERIFIED_SECRET));

@@ -38,7 +38,7 @@ public class ViewKeyUserIdsAdapter extends CursorAdapter {
     private LayoutInflater mInflater;
 
     private int mIndexUserId, mIndexRank;
-    private int mVerifiedId;
+    private int mVerifiedId, mIsRevoked, mIsPrimary;
 
     private final ArrayList<Boolean> mCheckStates;
 
@@ -86,6 +86,8 @@ public class ViewKeyUserIdsAdapter extends CursorAdapter {
             mIndexUserId = cursor.getColumnIndexOrThrow(UserIds.USER_ID);
             mIndexRank = cursor.getColumnIndexOrThrow(UserIds.RANK);
             mVerifiedId = cursor.getColumnIndexOrThrow(UserIds.VERIFIED);
+            mIsRevoked = cursor.getColumnIndexOrThrow(UserIds.IS_REVOKED);
+            mIsPrimary = cursor.getColumnIndexOrThrow(UserIds.IS_PRIMARY);
         }
     }
 
@@ -97,7 +99,11 @@ public class ViewKeyUserIdsAdapter extends CursorAdapter {
         TextView vAddress = (TextView) view.findViewById(R.id.address);
         ImageView vVerified = (ImageView) view.findViewById(R.id.certified);
 
-        vRank.setText(Integer.toString(cursor.getInt(mIndexRank)));
+        if(cursor.getInt(mIsPrimary) > 0) {
+            vRank.setText("+");
+        } else {
+            vRank.setText(Integer.toString(cursor.getInt(mIndexRank)));
+        }
 
         String[] userId = PgpKeyHelper.splitUserId(cursor.getString(mIndexUserId));
         if (userId[0] != null) {
@@ -107,14 +113,18 @@ public class ViewKeyUserIdsAdapter extends CursorAdapter {
         }
         vAddress.setText(userId[1]);
 
-        int verified = cursor.getInt(mVerifiedId);
-        // TODO introduce own resources for this :)
-        if(verified == Certs.VERIFIED_SECRET)
-            vVerified.setImageResource(android.R.drawable.presence_online);
-        else if(verified == Certs.VERIFIED_SELF)
-            vVerified.setImageResource(android.R.drawable.presence_invisible);
-        else
-            vVerified.setImageResource(android.R.drawable.presence_busy);
+        if(cursor.getInt(mIsRevoked) > 0) {
+            vVerified.setImageResource(android.R.drawable.presence_away);
+        } else {
+            int verified = cursor.getInt(mVerifiedId);
+            // TODO introduce own resources for this :)
+            if(verified == Certs.VERIFIED_SECRET)
+                vVerified.setImageResource(android.R.drawable.presence_online);
+            else if(verified == Certs.VERIFIED_SELF)
+                vVerified.setImageResource(android.R.drawable.presence_invisible);
+            else
+                vVerified.setImageResource(android.R.drawable.presence_busy);
+        }
 
         // don't care further if checkboxes aren't shown
         if (mCheckStates == null) {

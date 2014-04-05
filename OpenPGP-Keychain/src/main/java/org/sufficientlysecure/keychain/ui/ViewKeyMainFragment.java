@@ -175,7 +175,8 @@ public class ViewKeyMainFragment extends Fragment implements
     static final int INDEX_UNIFIED_EXPIRY = 8;
 
     static final String[] USER_IDS_PROJECTION = new String[] {
-        UserIds._ID, UserIds.USER_ID, UserIds.RANK, UserIds.VERIFIED
+        UserIds._ID, UserIds.USER_ID, UserIds.RANK,
+        UserIds.VERIFIED, UserIds.IS_PRIMARY, UserIds.IS_REVOKED
     };
 
     static final String[] KEYS_PROJECTION = new String[] {

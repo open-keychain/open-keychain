@@ -10,7 +10,7 @@
         android:layout_gravity="start|left"
         android:padding="8dp"
         android:textColor="@color/emphasis"
-        android:textSize="17sp"
+        android:textSize="14sp"
         android:textStyle="bold"
         android:text="header text" />
 
