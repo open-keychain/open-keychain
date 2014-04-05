@@ -1,5 +1,4 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:bootstrapbutton="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fillViewport="true">
@@ -8,16 +7,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
-
-        <Spinner
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/spinner"
-            android:layout_gravity="center_horizontal"
-            android:gravity="center_horizontal"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="2dp"
-            android:layout_marginBottom="2dp" />
 
         <view
             android:layout_width="match_parent"
@@ -28,7 +17,7 @@
             android:paddingLeft="16dp"
             android:layout_alignParentStart="false"
             android:layout_alignParentEnd="false"
-            android:layout_below="@+id/spinner" />
+            android:layout_below="@+id/list" />
 
         <TextView
             android:layout_width="wrap_content"

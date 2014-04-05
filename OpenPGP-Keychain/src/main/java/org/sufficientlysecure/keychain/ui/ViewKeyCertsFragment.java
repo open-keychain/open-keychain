@@ -71,8 +71,6 @@ public class ViewKeyCertsFragment extends Fragment
     public static final String ARG_DATA_URI = "data_uri";
 
     private StickyListHeadersListView mStickyList;
-    private Spinner mSpinner;
-
     private CertListAdapter mAdapter;
 
     private Uri mDataUri;
@@ -84,45 +82,9 @@ public class ViewKeyCertsFragment extends Fragment
         return view;
     }
 
-    private void changeShowState(int type) {
-        switch(type) {
-            case 0:
-                mDataUri = mBaseUri.buildUpon().appendPath("has_secret").build();
-                break;
-            case 1:
-                mDataUri = mBaseUri;
-                break;
-            case 2:
-                mDataUri = mBaseUri.buildUpon().appendPath("all").build();
-                break;
-        }
-        getLoaderManager().restartLoader(0, null, this);
-    }
-
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-
-        mSpinner = (Spinner) getActivity().findViewById(R.id.spinner);
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(),
-                android.R.layout.simple_spinner_item, new String[] {
-                getResources().getString(R.string.certs_list_known_secret),
-                getResources().getString(R.string.certs_list_known),
-                getResources().getString(R.string.certs_list_all)
-            } );
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        mSpinner.setAdapter(adapter);
-        mSpinner.setSelection(1);
-        mSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                changeShowState(i);
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
-            }
-        });
 
         mStickyList = (StickyListHeadersListView) getActivity().findViewById(R.id.list);
 
