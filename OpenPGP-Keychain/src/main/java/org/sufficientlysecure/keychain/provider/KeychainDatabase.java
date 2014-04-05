@@ -96,6 +96,7 @@ public class KeychainDatabase extends SQLiteOpenHelper {
                 + UserIdsColumns.USER_ID + " CHARMANDER, "
 
                 + UserIdsColumns.IS_PRIMARY + " BOOLEAN, "
+                + UserIdsColumns.IS_REVOKED + " BOOLEAN, "
                 + UserIdsColumns.RANK+ " INTEGER, "
 
                 + "PRIMARY KEY(" + UserIdsColumns.MASTER_KEY_ID + ", " + UserIdsColumns.USER_ID + "), "

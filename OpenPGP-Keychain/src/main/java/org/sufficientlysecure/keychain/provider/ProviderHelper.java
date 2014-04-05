@@ -32,7 +32,6 @@ import android.os.RemoteException;
 import org.spongycastle.bcpg.SignatureSubpacketTags;
 import org.spongycastle.bcpg.sig.SignatureExpirationTime;
 import org.spongycastle.openpgp.PGPException;
-import org.spongycastle.openpgp.PGPSecretKey;
 import org.spongycastle.openpgp.operator.jcajce.JcaPGPContentVerifierBuilderProvider;
 import org.spongycastle.openpgp.PGPKeyRing;
 import org.spongycastle.openpgp.PGPPublicKey;
@@ -57,8 +56,10 @@ import org.sufficientlysecure.keychain.util.Log;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.HashSet;
 import java.util.Set;
@@ -229,19 +230,40 @@ public class ProviderHelper {
         if(secretRing != null)
             allKeyRings.put(secretRing.getSecretKey().getKeyID(), secretRing);
 
-        int userIdRank = 0;
-        for (String userId : new IterableIterator<String>(masterKey.getUserIDs())) {
-            operations.add(buildUserIdOperations(context, masterKeyId, userId, userIdRank));
+        // classify and order user ids. primary are moved to the front, revoked to the back,
+        // otherwise the order in the keyfile is preserved.
+        List<UserIdItem> uids = new ArrayList<UserIdItem>();
 
-            // HashMap<Long, PGPSignature> certs = new HashMap<Long,PGPSignature>();
+        for (String userId : new IterableIterator<String>(masterKey.getUserIDs())) {
+            UserIdItem item = new UserIdItem();
+            uids.add(item);
+            item.userId = userId;
 
             // look through signatures for this specific key
             for (PGPSignature cert : new IterableIterator<PGPSignature>(
                     masterKey.getSignaturesForID(userId))) {
                 long certId = cert.getKeyID();
-                int verified = 0;
-                // verify from the key itself
                 try {
+                    // self signature
+                    if(certId == masterKeyId) {
+                        cert.init(
+                                new JcaPGPContentVerifierBuilderProvider().setProvider(
+                                        Constants.BOUNCY_CASTLE_PROVIDER_NAME),
+                                masterKey);
+                        if(!cert.verifyCertification(userId,  masterKey)) {
+                            // not verified?! dang! TODO notify user? this is kinda serious...
+                            Log.e(Constants.TAG, "Could not verify self signature for " + userId + "!");
+                            continue;
+                        }
+                        // is this the first, or a more recent certificate?
+                        if(item.selfCert == null ||
+                                item.selfCert.getCreationTime().before(cert.getCreationTime())) {
+                            item.selfCert = cert;
+                            item.isPrimary = cert.getHashedSubPackets().isPrimaryUserID();
+                            item.isRevoked =
+                                    cert.getSignatureType() == PGPSignature.CERTIFICATION_REVOCATION;
+                        }
+                    }
                     // verify signatures from known private keys
                     if(allKeyRings.containsKey(certId)) {
                         // mark them as verified
@@ -249,20 +271,9 @@ public class ProviderHelper {
                                 new JcaPGPContentVerifierBuilderProvider().setProvider(
                                         Constants.BOUNCY_CASTLE_PROVIDER_NAME),
                                 allKeyRings.get(certId).getPublicKey());
-                        verified = cert.verifyCertification(userId,  masterKey) ? Certs.VERIFIED_SECRET : 0;
-                        Log.d(Constants.TAG, "Verified sig for " + userId + " " + verified + " from "
-                                + PgpKeyHelper.convertKeyIdToHex(certId)
-                        );
-                    // if that didn't work out, is it at least an own signature?
-                    } else if(certId == masterKeyId) {
-                        cert.init(
-                                new JcaPGPContentVerifierBuilderProvider().setProvider(
-                                    Constants.BOUNCY_CASTLE_PROVIDER_NAME),
-                                masterKey);
-                        verified = cert.verifyCertification(userId,  masterKey) ? Certs.VERIFIED_SELF : 0;
-                        Log.d(Constants.TAG, "Verified sig for " + userId + " " + verified + " from "
-                                + PgpKeyHelper.convertKeyIdToHex(certId)
-                        );
+                        if(cert.verifyCertification(userId, masterKey)) {
+                            item.trustedCerts.add(cert);
+                        }
                     }
                 } catch(SignatureException e) {
                     Log.e(Constants.TAG, "Signature verification failed! "
@@ -275,15 +286,25 @@ public class ProviderHelper {
                             + " from "
                             + PgpKeyHelper.convertKeyIdToHex(cert.getKeyID()), e);
                 }
-                Log.d(Constants.TAG, "sig for " + userId + " from "
-                        + PgpKeyHelper.convertKeyIdToHex(cert.getKeyID())
-                );
-                // regardless of verification, save the certification
-                operations.add(buildCertOperations(
-                        context, masterKeyId, userIdRank, cert, verified));
             }
+        }
 
-            ++userIdRank;
+        // primary before regular before revoked (see UserIdItem.compareTo)
+        // this is a stable sort, so the order of keys is otherwise preserved.
+        Collections.sort(uids);
+        // iterate and put into db
+        for(int userIdRank = 0; userIdRank < uids.size(); userIdRank++) {
+            UserIdItem item = uids.get(userIdRank);
+            operations.add(buildUserIdOperations(masterKeyId, item, userIdRank));
+            // no self cert is bad, but allowed by the rfc...
+            if(item.selfCert != null) {
+                operations.add(buildCertOperations(
+                        masterKeyId, userIdRank, item.selfCert, Certs.VERIFIED_SELF));
+            }
+            for(int i = 0; i < item.trustedCerts.size(); i++) {
+                operations.add(buildCertOperations(
+                        masterKeyId, userIdRank, item.trustedCerts.get(i), Certs.VERIFIED_SECRET));
+            }
         }
 
         try {
@@ -299,6 +320,25 @@ public class ProviderHelper {
             saveKeyRing(context, secretRing);
         }
 
+    }
+
+    private static class UserIdItem implements Comparable<UserIdItem> {
+        String userId;
+        boolean isPrimary = false;
+        boolean isRevoked = false;
+        PGPSignature selfCert;
+        List<PGPSignature> trustedCerts = new ArrayList<PGPSignature>();
+
+        @Override
+        public int compareTo(UserIdItem o) {
+            // if one key is primary but the other isn't, the primary one always comes first
+            if(isPrimary != o.isPrimary)
+                return isPrimary ? -1 : 1;
+            // revoked keys always come last!
+            if(isRevoked != o.isRevoked)
+                return isRevoked ? 1 : -1;
+            return 0;
+        }
     }
 
     /**
@@ -368,11 +408,10 @@ public class ProviderHelper {
     /**
      * Build ContentProviderOperation to add PGPPublicKey to database corresponding to a keyRing
      */
-    private static ContentProviderOperation buildCertOperations(Context context,
-                                                                     long masterKeyId,
-                                                                     int rank,
-                                                                     PGPSignature cert,
-                                                                     int verified)
+    private static ContentProviderOperation buildCertOperations(long masterKeyId,
+                                                                int rank,
+                                                                PGPSignature cert,
+                                                                int verified)
             throws IOException {
         ContentValues values = new ContentValues();
         values.put(Certs.MASTER_KEY_ID, masterKeyId);
@@ -395,11 +434,13 @@ public class ProviderHelper {
     /**
      * Build ContentProviderOperation to add PublicUserIds to database corresponding to a keyRing
      */
-    private static ContentProviderOperation buildUserIdOperations(Context context,
-                                                                  long masterKeyId, String userId, int rank) {
+    private static ContentProviderOperation buildUserIdOperations(long masterKeyId, UserIdItem item,
+                                                                  int rank) {
         ContentValues values = new ContentValues();
         values.put(UserIds.MASTER_KEY_ID, masterKeyId);
-        values.put(UserIds.USER_ID, userId);
+        values.put(UserIds.USER_ID, item.userId);
+        values.put(UserIds.IS_PRIMARY, item.isPrimary);
+        values.put(UserIds.IS_REVOKED, item.isRevoked);
         values.put(UserIds.RANK, rank);
 
         Uri uri = UserIds.buildUserIdsUri(Long.toString(masterKeyId));

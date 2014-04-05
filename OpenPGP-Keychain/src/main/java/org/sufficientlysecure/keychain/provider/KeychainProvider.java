@@ -249,7 +249,7 @@ public class KeychainProvider extends ContentProvider {
                 projectionMap.put(KeyRings.MASTER_KEY_ID, Tables.KEYS + "." + Keys.MASTER_KEY_ID);
                 projectionMap.put(KeyRings.KEY_ID, Keys.KEY_ID);
                 projectionMap.put(KeyRings.KEY_SIZE, Keys.KEY_SIZE);
-                projectionMap.put(KeyRings.IS_REVOKED, Keys.IS_REVOKED);
+                projectionMap.put(KeyRings.IS_REVOKED, Tables.KEYS + "." + Keys.IS_REVOKED);
                 projectionMap.put(KeyRings.CAN_CERTIFY, Keys.CAN_CERTIFY);
                 projectionMap.put(KeyRings.CAN_ENCRYPT, Keys.CAN_ENCRYPT);
                 projectionMap.put(KeyRings.CAN_SIGN, Keys.CAN_SIGN);

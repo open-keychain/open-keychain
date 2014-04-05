@@ -54,18 +54,21 @@ public class ViewCertActivity extends ActionBarActivity
     static final String[] PROJECTION = new String[] {
             Certs.MASTER_KEY_ID,
             Certs.USER_ID,
+            Certs.TYPE,
             Certs.CREATION,
+            Certs.EXPIRY,
             Certs.KEY_ID_CERTIFIER,
             Certs.SIGNER_UID,
             Certs.TYPE
     };
     private static final int INDEX_MASTER_KEY_ID = 1;
     private static final int INDEX_USER_ID = 2;
-    private static final int INDEX_CREATION = 3;
-    private static final int INDEX_KEY_ID_CERTIFIER = 4;
-    private static final int INDEX_UID_CERTIFIER = 5;
-    private static final int INDEX_KEY_DATA = 6;
-    private static final int INDEX_KEY_TYPE = 6;
+    private static final int INDEX_TYPE = 3;
+    private static final int INDEX_CREATION = 4;
+    private static final int INDEX_EXPIRY = 5;
+    private static final int INDEX_KEY_ID_CERTIFIER = 6;
+    private static final int INDEX_UID_CERTIFIER = 7;
+    private static final int INDEX_KEY_TYPE = 8;
 
     private Uri mDataUri;
 
@@ -133,30 +136,26 @@ public class ViewCertActivity extends ActionBarActivity
             else
                 mSignerUid.setText(R.string.unknown_uid);
 
-            byte[] sigData = data.getBlob(INDEX_KEY_DATA);
-            PGPSignature sig = PgpConversionHelper.BytesToPGPSignature(sigData);
-            if(sig != null) {
-                String algorithmStr = PgpKeyHelper.getAlgorithmInfo(sig.getKeyAlgorithm(), 0);
-                mAlgorithm.setText(algorithmStr);
+            // String algorithmStr = PgpKeyHelper.getAlgorithmInfo(sig.getKeyAlgorithm(), 0);
+            // mAlgorithm.setText(algorithmStr);
 
-                switch(sig.getSignatureType()) {
-                    case PGPSignature.DEFAULT_CERTIFICATION:
-                        mType.setText(R.string.sig_type_default); break;
-                    case PGPSignature.NO_CERTIFICATION:
-                        mType.setText(R.string.sig_type_none); break;
-                    case PGPSignature.CASUAL_CERTIFICATION:
-                        mType.setText(R.string.sig_type_casual); break;
-                    case PGPSignature.POSITIVE_CERTIFICATION:
-                        mType.setText(R.string.sig_type_positive); break;
-                }
+            switch(data.getInt(INDEX_TYPE)) {
+                case PGPSignature.DEFAULT_CERTIFICATION:
+                    mType.setText(R.string.sig_type_default); break;
+                case PGPSignature.NO_CERTIFICATION:
+                    mType.setText(R.string.sig_type_none); break;
+                case PGPSignature.CASUAL_CERTIFICATION:
+                    mType.setText(R.string.sig_type_casual); break;
+                case PGPSignature.POSITIVE_CERTIFICATION:
+                    mType.setText(R.string.sig_type_positive); break;
+            }
 
-                long expiry = sig.getHashedSubPackets().getSignatureExpirationTime();
-                if(expiry == 0)
-                    mExpiry.setText("never");
-                else {
-                    Date expiryDate = new Date(creationDate.getTime() + expiry * 1000);
-                    mExpiry.setText(DateFormat.getDateFormat(getApplicationContext()).format(expiryDate));
-                }
+            long expiry = data.getLong(INDEX_EXPIRY);
+            if(expiry == 0)
+                mExpiry.setText("never");
+            else {
+                Date expiryDate = new Date(creationDate.getTime() + expiry * 1000);
+                mExpiry.setText(DateFormat.getDateFormat(getApplicationContext()).format(expiryDate));
             }
         }
     }
