@@ -23,10 +23,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.OperationApplicationException;
 import android.database.Cursor;
-import android.database.CursorWindow;
-import android.database.CursorWrapper;
 import android.database.DatabaseUtils;
-import android.database.sqlite.SQLiteCursor;
 import android.net.Uri;
 import android.os.RemoteException;
 
@@ -42,8 +39,8 @@ import org.sufficientlysecure.keychain.pgp.PgpConversionHelper;
 import org.sufficientlysecure.keychain.pgp.PgpHelper;
 import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
 import org.sufficientlysecure.keychain.provider.KeychainContract.ApiApps;
-import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRingData;
+import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.KeychainContract.Keys;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UserIds;
 import org.sufficientlysecure.keychain.remote.AccountSettings;
@@ -72,6 +69,7 @@ public class ProviderHelper {
     public static Object getGenericData(Context context, Uri uri, String column, int type) {
         return getGenericData(context, uri, new String[] { column }, new int[] { type }).get(column);
     }
+
     public static HashMap<String,Object> getGenericData(Context context, Uri uri, String[] proj, int[] types) {
         Cursor cursor = context.getContentResolver().query(uri, proj, null, null, null);
 
@@ -100,11 +98,13 @@ public class ProviderHelper {
     public static Object getUnifiedData(Context context, long masterKeyId, String column, int type) {
         return getUnifiedData(context, masterKeyId, new String[] { column }, new int[] { type }).get(column);
     }
+
     public static HashMap<String,Object> getUnifiedData(Context context, long masterKeyId, String[] proj, int[] types) {
         return getGenericData(context, KeyRings.buildUnifiedKeyRingUri(Long.toString(masterKeyId)), proj, types);
     }
 
-    /** Find the master key id related to a given query. The id will either be extracted from the
+    /**
+     * Find the master key id related to a given query. The id will either be extracted from the
      * query, which should work for all specific /key_rings/ queries, or will be queried if it can't.
      */
     public static long getMasterKeyId(Context context, Uri queryUri) {
@@ -333,12 +333,6 @@ public class ProviderHelper {
         return ContentProviderOperation.newInsert(uri).withValues(values).build();
     }
 
-    public static boolean hasSecretKeyByMasterKeyId(Context context, long masterKeyId) {
-        Uri queryUri = KeyRingData.buildSecretKeyRingUri(Long.toString(masterKeyId));
-        // see if we can get our master key id back from the uri
-        return getMasterKeyId(context, queryUri) == masterKeyId;
-    }
-
     public static ArrayList<String> getKeyRingsAsArmoredString(Context context, long[] masterKeyIds) {
         ArrayList<String> output = new ArrayList<String>();
 
@@ -398,6 +392,7 @@ public class ProviderHelper {
             return null;
         }
     }
+
     private static Cursor getCursorWithSelectedKeyringMasterKeyIds(Context context, long[] masterKeyIds) {
         Cursor cursor = null;
         if (masterKeyIds != null && masterKeyIds.length > 0) {
