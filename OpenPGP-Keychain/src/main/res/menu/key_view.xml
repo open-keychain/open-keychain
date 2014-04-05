@@ -5,7 +5,7 @@
     <item
         android:id="@+id/menu_key_view_share"
         android:icon="@drawable/ic_action_share"
-        app:showAsAction="ifRoom"
+        app:showAsAction="always"
         android:title="@string/menu_share">
         <menu>
             <item
@@ -48,9 +48,10 @@
             </item>
         </menu>
     </item>
+
     <item
         android:id="@+id/menu_key_keyserver"
-        android:icon="@drawable/ic_action_import_export"
+        android:icon="@drawable/ic_action_cloud"
         app:showAsAction="always"
         android:title="@string/menu_key_server">
         <menu>
@@ -64,13 +65,17 @@
                 android:title="@string/menu_export_key_to_server" />
         </menu>
     </item>
+
     <item
         android:id="@+id/menu_key_view_export_file"
-        app:showAsAction="never"
+        android:icon="@drawable/ic_action_import_export"
+        app:showAsAction="ifRoom"
         android:title="@string/menu_export_key" />
+
     <item
         android:id="@+id/menu_key_view_delete"
-        app:showAsAction="never"
+        android:icon="@drawable/ic_action_discard"
+        app:showAsAction="ifRoom"
         android:title="@string/menu_delete_key" />
 
 </menu>

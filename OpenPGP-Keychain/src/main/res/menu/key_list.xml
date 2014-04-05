@@ -2,7 +2,6 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-
     <item
         android:id="@+id/menu_key_list_search"
         android:title="@string/menu_search"
@@ -37,7 +36,6 @@
         android:id="@+id/menu_key_list_export"
         app:showAsAction="ifRoom|withText"
         android:icon="@drawable/ic_action_import_export"
-        android:title="@string/menu_export_keys">
-    </item>
+        android:title="@string/menu_export_all_keys" />
 
 </menu>
