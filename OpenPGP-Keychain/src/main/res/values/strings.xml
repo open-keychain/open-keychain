@@ -507,5 +507,10 @@
     <!-- hints -->
     <string name="encrypt_content_edit_text_hint">Write message here to encrypt and/or sign…</string>
     <string name="decrypt_content_edit_text_hint">Enter ciphertext here to decrypt and/or verify…</string>
+    <string name="cert_default">default</string>
+    <string name="cert_none">none</string>
+    <string name="cert_casual">casual</string>
+    <string name="cert_positive">positive</string>
+    <string name="cert_revoke">revoke</string>
 
 </resources>
