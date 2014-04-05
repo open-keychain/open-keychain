@@ -34,7 +34,7 @@ Development mailinglist at http://groups.google.com/d/forum/openpgp-keychain-dev
 2. Open the Android SDK Manager (shell command: ``android``).  
 Expand the Tools directory and select "Android SDK Build-tools (Version 19.0.3)".  
 Expand the Extras directory and install "Android Support Repository"  
-Select everything for the newest SDK (API-Level 19)
+Select everything for the newest SDK Platform (API-Level 19)
 3. Export ANDROID_HOME pointing to your Android SDK
 4. Execute ``./gradlew build``
 5. You can install the app with ``adb install -r OpenPGP-Keychain/build/apk/OpenPGP-Keychain-debug-unaligned.apk``
@@ -145,15 +145,9 @@ see http://help.transifex.net/features/client/index.html#user-client
 * Opening braces don't go on their own line
 * Field names: Non-public, non-static fields start with m.
 * Acronyms are words: Treat acronyms as words in names, yielding !XmlHttpRequest, getUrl(), etc.
+* Fully Qualify Imports: Do *not* use wildcard-imports such as ``import foo.*;``
 
-See http://source.android.com/source/code-style.html
-
-### XML Eclipse Settings
-* XML Maximum line width 999
-* XML: Split multiple attributes each on a new line (Eclipse: Properties -> XML -> XML Files -> Editor)
-* XML: Indent using spaces with Indention size 4 (Eclipse: Properties -> XML -> XML Files -> Editor)
-
-See http://www.androidpolice.com/2009/11/04/auto-formatting-android-xml-files-with-eclipse/
+The full coding style can be found at http://source.android.com/source/code-style.html
 
 ### Automated syntax check with CheckStyle
 
@@ -227,10 +221,6 @@ Some parts (older parts and some libraries are Apache License v2, MIT X11 Licens
 ### Images
 * icon.svg  
   modified version of kgpg_key2_kopete.svgz
-
-* key.svg  
-  http://rrze-icon-set.berlios.de/  
-  Creative Commons Attribution Share-Alike licence 3.0
   
 * Menu icons  
   http://developer.android.com/design/downloads/index.html#action-bar-icon-pack

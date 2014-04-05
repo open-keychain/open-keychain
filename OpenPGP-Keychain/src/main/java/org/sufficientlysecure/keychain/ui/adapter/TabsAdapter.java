@@ -36,12 +36,12 @@ public class TabsAdapter extends FragmentStatePagerAdapter implements ActionBar.
     private final ArrayList<TabInfo> mTabs = new ArrayList<TabInfo>();
 
     static final class TabInfo {
-        private final Class<?> mClss;
-        private final Bundle mArgs;
+        public final Class<?> clss;
+        public final Bundle args;
 
-        TabInfo(Class<?> mClss, Bundle mArgs) {
-            this.mClss = mClss;
-            this.mArgs = mArgs;
+        TabInfo(Class<?> clss, Bundle args) {
+            this.clss = clss;
+            this.args = args;
         }
     }
 
@@ -71,7 +71,7 @@ public class TabsAdapter extends FragmentStatePagerAdapter implements ActionBar.
     @Override
     public Fragment getItem(int position) {
         TabInfo info = mTabs.get(position);
-        return Fragment.instantiate(mContext, info.mClss.getName(), info.mArgs);
+        return Fragment.instantiate(mContext, info.clss.getName(), info.args);
     }
 
     public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {

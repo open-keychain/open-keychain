@@ -48,6 +48,7 @@
   <string name="btn_certify">Certifier</string>
   <string name="btn_decrypt">Déchiffrer</string>
   <string name="btn_decrypt_verify">Déchiffrer et vérifier</string>
+  <string name="btn_decrypt_verify_clipboard">À partir du presse-papiers</string>
   <string name="btn_select_encrypt_keys">Choisir les destinataires</string>
   <string name="btn_encrypt_file">Chiffrer le fichier</string>
   <string name="btn_save">Enregistrer</string>
@@ -55,8 +56,8 @@
   <string name="btn_delete">Supprimer</string>
   <string name="btn_no_date">Aucune</string>
   <string name="btn_okay">OK</string>
-  <string name="btn_change_passphrase">Changer la phrase de passe</string>
-  <string name="btn_set_passphrase">Définir la phrase de passe</string>
+  <string name="btn_change_passphrase">Changer la nouvelle phrase de passe</string>
+  <string name="btn_set_passphrase">Définir la nouvelle phrase de passe</string>
   <string name="btn_search">Rechercher</string>
   <string name="btn_export_to_server">Téléverser vers le serveur de clefs</string>
   <string name="btn_next">Suivant</string>
@@ -64,6 +65,8 @@
   <string name="btn_clipboard">Presse-papiers</string>
   <string name="btn_share">Partager avec...</string>
   <string name="btn_lookup_key">Rechercher la clef</string>
+  <string name="btn_encryption_advanced_settings_show">Afficher les paramètres avancés</string>
+  <string name="btn_encryption_advanced_settings_hide">Masquer les paramètres avancés</string>
   <!--menu-->
   <string name="menu_preferences">Paramètres</string>
   <string name="menu_help">Aide</string>
@@ -71,16 +74,18 @@
   <string name="menu_import_from_qr_code">Importer depuis un code QR</string>
   <string name="menu_import">Importer</string>
   <string name="menu_import_from_nfc">Importer avec NFC</string>
-  <string name="menu_export_keys">Exporter toutes les clefs</string>
+  <string name="menu_export_public_keys">Exporter toutes les clefs publiques</string>
+  <string name="menu_export_secret_keys">Exporter toutes les clefs secrètes</string>
   <string name="menu_export_key">Exporter vers un fichier</string>
   <string name="menu_delete_key">Supprimer la clef</string>
   <string name="menu_create_key">Créer une clef</string>
   <string name="menu_create_key_expert">Créer une clef (expert)</string>
   <string name="menu_search">Rechercher</string>
-  <string name="menu_key_server">Importer depuis le serveur de clefs</string>
+  <string name="menu_import_from_key_server">Serveur de clefs</string>
+  <string name="menu_key_server">Serveur de clefs...</string>
   <string name="menu_update_key">Mettre à jour depuis le serveur de clefs</string>
   <string name="menu_export_key_to_server">Téléverser vers le serveur de clefs</string>
-  <string name="menu_share">Partager</string>
+  <string name="menu_share">Partager...</string>
   <string name="menu_share_title_fingerprint">Partager l\'empreinte...</string>
   <string name="menu_share_title">Partager la clef entière...</string>
   <string name="menu_share_default_fingerprint">avec...</string>
@@ -94,6 +99,8 @@
   <string name="menu_key_edit_cancel">Annuler</string>
   <string name="menu_encrypt_to">Chiffrer vers...</string>
   <string name="menu_select_all">Tout sélectionner</string>
+  <string name="menu_add_keys">Ajouter des clefs</string>
+  <string name="menu_export_keys">Exporter des clefs</string>
   <!--label-->
   <string name="label_sign">Signer</string>
   <string name="label_message">Message</string>
@@ -125,8 +132,6 @@
   <string name="label_name">Nom</string>
   <string name="label_comment">Commentaire</string>
   <string name="label_email">Courriel</string>
-  <string name="label_sign_user_id">Signer l\'ID utilisateur</string>
-  <string name="label_sign_email">Signer le courriel</string>
   <string name="label_send_key">Téléverser la clef vers le serveur de clefs choisi après certification</string>
   <string name="label_fingerprint">Empreinte</string>
   <string name="select_keys_button_default">Choisir</string>
@@ -138,12 +143,17 @@
   <string name="user_id_no_name">&lt;aucun nom&gt;</string>
   <string name="none">&lt;aucune&gt;</string>
   <string name="no_key">&lt;pas de clef&gt;</string>
+  <string name="no_email">&lt;aucun courriel&gt;</string>
   <string name="unknown_status"></string>
   <string name="can_encrypt">peut chiffrer</string>
   <string name="can_sign">peut signer</string>
   <string name="expired">expiré</string>
   <string name="revoked">révoquée</string>
   <string name="user_id">ID utilisateur</string>
+  <plurals name="n_contacts">
+    <item quantity="one">1 contact</item>
+    <item quantity="other">%d contacts</item>
+  </plurals>
   <plurals name="n_key_servers">
     <item quantity="one">%d serveur de clefs</item>
     <item quantity="other">%d serveurs de clefs</item>
@@ -152,9 +162,6 @@
   <string name="secret_key">Clef secrète :</string>
   <!--choice-->
   <string name="choice_none">Aucune</string>
-  <string name="choice_sign_only">Signer seulement</string>
-  <string name="choice_encrypt_only">Chiffrer seulement</string>
-  <string name="choice_sign_and_encrypt">Signer et chiffrer</string>
   <string name="choice_15secs">15 s</string>
   <string name="choice_1min">1 min</string>
   <string name="choice_3mins">3 min</string>
@@ -174,21 +181,26 @@
   <string name="warning">Avertissement</string>
   <string name="error">Erreur</string>
   <string name="error_message">Erreur : %s</string>
+  <!--key flags-->
+  <string name="flag_certify">Certifier</string>
+  <string name="flag_sign">Signer</string>
+  <string name="flag_encrypt">Chiffrer</string>
+  <string name="flag_authenticate">Authentifier</string>
   <!--sentences-->
   <string name="wrong_passphrase">Phrase de passe erronée</string>
   <string name="using_clipboard_content">Utiliser le contenu du presse-papiers.</string>
   <string name="set_a_passphrase">Définir d\'abord une phrase de passe.</string>
   <string name="no_filemanager_installed">Aucun gestionnaire de fichiers compatible installé.</string>
   <string name="passphrases_do_not_match">Les phrases de passe ne correspondent pas.</string>
-  <string name="passphrase_must_not_be_empty">Les phrases de passe vides ne sont pas autorisées.</string>
+  <string name="passphrase_must_not_be_empty">Veuillez saisir une phrase de passe</string>
   <string name="passphrase_for_symmetric_encryption">Chriffrement symétrique.</string>
   <string name="passphrase_for">Saisir une phrase de passe pour « %s »</string>
   <string name="file_delete_confirmation">Êtes-vous sûr de vouloir supprimer\n%s ?</string>
   <string name="file_delete_successful">Supprimé avec succès.</string>
   <string name="no_file_selected">Choisir d\'abord un fichier.</string>
-  <string name="decryption_successful">Déchiffré avec succès.</string>
-  <string name="encryption_successful">Chiffré avec succès.</string>
-  <string name="encryption_to_clipboard_successful">Chiffré vers le presse-papiers avec succès.</string>
+  <string name="decryption_successful">Déchiffré et/ou vérifié avec succès</string>
+  <string name="encryption_successful">Signé et/ou chiffré avec succès</string>
+  <string name="encryption_to_clipboard_successful">Signé et/ou chiffré vers le presse-papiers avec succès</string>
   <string name="enter_passphrase_twice">Saisir la phrase de passe deux fois.</string>
   <string name="select_encryption_key">Choisir au moins une clef de chiffrement.</string>
   <string name="select_encryption_or_signature_key">Choisir au moins une clef de chiffrement ou de signature.</string>
@@ -199,6 +211,11 @@
   <string name="key_deletion_confirmation">Voulez-vous vraiment supprimer la clef %s ?\nVous ne pourrez pas la restituer !</string>
   <string name="key_deletion_confirmation_multi">Voulez-vous vraiment supprimer toutes les clefs choisies ?\nCeci est irréversible !</string>
   <string name="secret_key_deletion_confirmation">Voulez-vous vraiment supprimer la clef SECRÈTE %s ?\nVous ne pourrez pas la restituer !</string>
+  <string name="ask_save_changed_key">Vous avez apporté des changements au trousseau, voulez-vous l\'enregistrer ?</string>
+  <string name="ask_empty_id_ok">Vous avez ajouté un ID utilisateur vide, êtes-vous certain de vouloir continuer?</string>
+  <string name="public_key_deletetion_confirmation">Voulez-vous vraiment supprimer la clef PUBLIQUE « %s » ?\nVous ne pourrez pas la restituer !</string>
+  <string name="secret_key_delete_text">Supprimer les clefs privées ?</string>
+  <string name="also_export_secret_keys">Exporter aussi les clefs secrètes?</string>
   <plurals name="keys_added_and_updated_1">
     <item quantity="one">%d clef ajoutée avec succès</item>
     <item quantity="other">%d clefs ajoutées avec succès</item>
@@ -220,6 +237,7 @@
   <string name="keys_exported">%d clefs exportées avec succès.</string>
   <string name="no_keys_exported">Aucune clef exportée.</string>
   <string name="key_creation_el_gamal_info">Note : seules les sous-clefs prennent en charge ElGamal, et pour ElGamal la taille de clef la plus proche de 1 536, 2 048, 3 072, 4 096 ou  8 192 sera utilisée.</string>
+  <string name="key_creation_weak_rsa_info">Note : générer des clefs RSA d\'une longueur de 1024 bits ou moins est considéré non sécuritaire et est désactivé pour la génération de nouvelles clefs.</string>
   <string name="key_not_found">Clef %08X introuvable.</string>
   <plurals name="keys_found">
     <item quantity="one">%d clef trouvée.</item>
@@ -251,6 +269,7 @@
   <string name="error_master_key_must_not_be_el_gamal">la clef maîtresse ne peut être une clef ElGama</string>
   <string name="error_unknown_algorithm_choice">choix d\'algorhitme inconnu</string>
   <string name="error_user_id_needs_a_name">vous devez spécifier un nom</string>
+  <string name="error_user_id_no_email">aucun courriel trouvé</string>
   <string name="error_user_id_needs_an_email_address">vous devez spécifier une adresse courriel</string>
   <string name="error_key_needs_a_user_id">vous avez besoin d\'au moins un ID utilisateur</string>
   <string name="error_main_user_id_must_not_be_empty">l\'ID utilisateur principal ne doit pas être vide</string>
@@ -271,6 +290,7 @@
   <string name="error_nfc_needed">NFC n\'est pas disponible sur votre appareil !</string>
   <string name="error_nothing_import">Rien à importer !</string>
   <string name="error_expiry_must_come_after_creation">la date d\'expiration doit venir après la date de création</string>
+  <string name="error_save_first">veuillez d\'abord enregistrer le trousseau</string>
   <string name="error_can_not_delete_contact">vous ne pouvez pas supprimer ce contact car c\'est le vôtre.</string>
   <string name="error_can_not_delete_contacts">vous ne pouvez pas supprimer les contacts suivants car c\'est les vôtres.\n%s</string>
   <string name="error_keyserver_insufficient_query">Requête serveur insuffisante</string>
@@ -286,13 +306,13 @@
     <item quantity="one">une partie du fichier chargé est un objet OpenPGP valide mais pas une clef OpenPGP</item>
     <item quantity="other">certaines parties du fichier chargé sont des objets OpenPGP valides mais pas des clefs OpenPGP</item>
   </plurals>
+  <string name="error_change_something_first">Vous devez apporter des changements au trousseau avant de pouvoir l\'enregistrer</string>
   <!--progress dialogs, usually ending in '…'-->
-  <string name="progress_done">fait.</string>
-  <string name="progress_cancel">annuler</string>
+  <string name="progress_done">Terminé.</string>
+  <string name="progress_cancel">Annuler</string>
   <string name="progress_saving">sauvegarde...</string>
   <string name="progress_importing">importation...</string>
   <string name="progress_exporting">exportation...</string>
-  <string name="progress_generating">génération de la clef, ceci peut prendre jusqu\'à 3 minutes...</string>
   <string name="progress_building_key">assemblage de la clef...</string>
   <string name="progress_preparing_master_key">préparation de la clef maîtresse...</string>
   <string name="progress_certifying_master_key">certification de la clef maîtresse...</string>
@@ -302,6 +322,10 @@
   <plurals name="progress_exporting_key">
     <item quantity="one">exportation de la clef...</item>
     <item quantity="other">exportation des clefs...</item>
+  </plurals>
+  <plurals name="progress_generating">
+    <item quantity="one">génération de la clef, ceci peut prendre jusqu\'à 3 min...</item>
+    <item quantity="other">génération des clefs, ceci peut prendre jusqu\'à 3 min...</item>
   </plurals>
   <string name="progress_extracting_signature_key">extraction de la clef de signature...</string>
   <string name="progress_extracting_key">extraction de la clef...</string>
@@ -333,6 +357,7 @@
   <string name="compression_very_slow">très lent</string>
   <!--Help-->
   <string name="help_tab_start">Commencer</string>
+  <string name="help_tab_faq">FAQ</string>
   <string name="help_tab_nfc_beam">NFC Beam</string>
   <string name="help_tab_changelog">Journal des changements</string>
   <string name="help_tab_about">À propos de</string>
@@ -360,15 +385,22 @@
   <string name="intent_send_decrypt">Déchiffrer avec OpenKeychain</string>
   <!--Remote API-->
   <string name="api_no_apps">Aucune application enregistrée !\n\nLes applications tierces peuvent demander l\'accès à OpenKeychain. Après avoir autorisé l\'accès, elles seront listées ici.</string>
+  <string name="api_settings_show_info">Afficher les informations avancées</string>
+  <string name="api_settings_hide_info">Masquer les informations avancées</string>
   <string name="api_settings_show_advanced">Afficher les paramètres avancés</string>
   <string name="api_settings_hide_advanced">Masquer les paramètres avancés</string>
   <string name="api_settings_no_key">Aucune clef choisie</string>
   <string name="api_settings_select_key">Choisir une clef</string>
+  <string name="api_settings_create_key">Créer une nouvelle clef pour ce compte</string>
   <string name="api_settings_save">Enregistrer</string>
   <string name="api_settings_cancel">Annuler</string>
   <string name="api_settings_revoke">Révoquer l\'accès</string>
+  <string name="api_settings_delete_account">Supprimer le compte</string>
   <string name="api_settings_package_name">Nom du paquet</string>
   <string name="api_settings_package_signature">SHA-256 de la signature du paquet</string>
+  <string name="api_settings_accounts">Comptes</string>
+  <string name="api_settings_accounts_empty">Aucun compte n\'est attaché à cette application.</string>
+  <string name="api_create_account_text">L\'application demande la création d\'un nouveau compte. Veuillez choisir un clef privée existante ou en créer une.\nLes applications sont restreintes à l\'utilisation de clefs choisies ici.</string>
   <string name="api_register_text">L\'application affichée demande l\'accès à OpenKeychain.\nPermettre l\'accès ?\n\nAvertissement : si vous ne savez pas pourquoi cet écran est apparu, refusez l\'accès ! Vous pourrez révoquer l\'accès plus tard en utilisant l\'écran « Applications enregistrées ».</string>
   <string name="api_register_allow">Permettre l\'accès</string>
   <string name="api_register_disallow">Enlever l\'accès</string>
@@ -394,17 +426,28 @@
   <string name="key_list_empty_button_create">créer votre propre clef</string>
   <string name="key_list_empty_button_import">Importer des clefs.</string>
   <!--Key view-->
+  <string name="key_view_action_edit">Modifier cette clef</string>
   <string name="key_view_action_encrypt">Chiffrer vers ce contact</string>
   <string name="key_view_action_certify">Certifier la clef de ce contact</string>
   <string name="key_view_tab_main">Infos</string>
   <string name="key_view_tab_certs">Certifications</string>
   <!--Navigation Drawer-->
-  <string name="nav_contacts">Contacts</string>
-  <string name="nav_encrypt">Chiffrer</string>
-  <string name="nav_decrypt">Déchiffrer</string>
+  <string name="nav_contacts">Clefs</string>
+  <string name="nav_encrypt">Signer et chiffrer</string>
+  <string name="nav_decrypt">Déchiffrer et vérifier</string>
   <string name="nav_import">Importer les clefs</string>
   <string name="nav_secret_keys">Mes clefs</string>
   <string name="nav_apps">Applis enregistrées</string>
   <string name="drawer_open">Ouvrir le tiroir de navigation</string>
   <string name="drawer_close">Fermer le tiroir de navigation</string>
+  <string name="edit">Modifier</string>
+  <string name="my_keys">Mes clefs</string>
+  <string name="label_secret_key">Clef secrète</string>
+  <string name="secret_key_yes">disponible</string>
+  <string name="secret_key_no">non disponible</string>
+  <string name="section_uids_to_sign">ID utilisateur pour signer</string>
+  <string name="progress_re_adding_certs">Nouvel application des certificats</string>
+  <!--hints-->
+  <string name="encrypt_content_edit_text_hint">Écrire ici le message à chiffrer et/ou signer...</string>
+  <string name="decrypt_content_edit_text_hint">Saisir le cryptogramme à déchiffrer et/ou à vérifier ici...</string>
 </resources>

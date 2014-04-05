@@ -24,7 +24,11 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.net.Uri;
-import android.os.*;
+import android.os.Build;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.os.Messenger;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
@@ -33,22 +37,29 @@ import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.SearchView;
 import android.text.TextUtils;
-import android.view.*;
+import android.view.ActionMode;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
-import android.widget.*;
 import android.widget.AbsListView.MultiChoiceModeListener;
+import android.widget.AdapterView;
+import android.widget.Button;
+import android.widget.FrameLayout;
+import android.widget.ListView;
+import android.widget.TextView;
 import com.beardedhen.androidbootstrap.BootstrapButton;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.Id;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.helper.ExportHelper;
 import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
-import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
-import org.sufficientlysecure.keychain.provider.KeychainContract.KeyTypes;
-import org.sufficientlysecure.keychain.provider.KeychainContract.UserIds;
-import org.sufficientlysecure.keychain.provider.KeychainDatabase;
+import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRingData;
 import org.sufficientlysecure.keychain.ui.adapter.HighlightQueryCursorAdapter;
 import org.sufficientlysecure.keychain.ui.dialog.DeleteKeyDialogFragment;
 import org.sufficientlysecure.keychain.util.Log;
@@ -56,7 +67,6 @@ import se.emilsjolander.stickylistheaders.ApiLevelTooLowException;
 import se.emilsjolander.stickylistheaders.StickyListHeadersAdapter;
 import se.emilsjolander.stickylistheaders.StickyListHeadersListView;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
@@ -142,9 +152,6 @@ public class KeyListFragment extends Fragment
         } catch (ApiLevelTooLowException e) {
         }
 
-        // this view is made visible if no data is available
-        mStickyList.setEmptyView(getActivity().findViewById(R.id.key_list_empty));
-
         /*
          * ActionBarSherlock does not support MultiChoiceModeListener. Thus multi-selection is only
          * available for Android >= 3.0
@@ -178,18 +185,15 @@ public class KeyListFragment extends Fragment
                             break;
                         }
                         case R.id.menu_key_list_multi_delete: {
-                            ids = mStickyList.getWrappedList().getCheckedItemIds();
+                            ids = mAdapter.getCurrentSelectedMasterKeyIds();
                             showDeleteKeyDialog(mode, ids);
                             break;
                         }
                         case R.id.menu_key_list_multi_export: {
-                            // todo: public/secret needs to be handled differently here
-                            ids = mStickyList.getWrappedList().getCheckedItemIds();
+                            ids = mAdapter.getCurrentSelectedMasterKeyIds();
                             ExportHelper mExportHelper = new ExportHelper((ActionBarActivity) getActivity());
-                            mExportHelper
-                                    .showExportKeysDialog(ids,
-                                            Id.type.public_key,
-                                            Constants.Path.APP_DIR_FILE_PUB);
+                            mExportHelper.showExportKeysDialog(
+                                    ids, Constants.Path.APP_DIR_FILE_PUB, mAdapter.isAnySecretSelected());
                             break;
                         }
                         case R.id.menu_key_list_multi_select_all: {
@@ -243,23 +247,17 @@ public class KeyListFragment extends Fragment
 
     // These are the rows that we will retrieve.
     static final String[] PROJECTION = new String[]{
-            KeychainContract.KeyRings._ID,
-            KeychainContract.KeyRings.TYPE,
-            KeychainContract.KeyRings.MASTER_KEY_ID,
-            KeychainContract.UserIds.USER_ID,
-            KeychainContract.Keys.IS_REVOKED
+            KeyRings._ID,
+            KeyRings.MASTER_KEY_ID,
+            KeyRings.USER_ID,
+            KeyRings.IS_REVOKED,
+            KeyRings.HAS_SECRET
     };
 
-    static final int INDEX_TYPE = 1;
-    static final int INDEX_MASTER_KEY_ID = 2;
-    static final int INDEX_USER_ID = 3;
-    static final int INDEX_IS_REVOKED = 4;
-
-    static final String SORT_ORDER =
-            // show secret before public key
-            KeychainDatabase.Tables.KEY_RINGS + "." + KeyRings.TYPE + " DESC, "
-                    // sort by user id otherwise
-                    + UserIds.USER_ID + " ASC";
+    static final int INDEX_MASTER_KEY_ID = 1;
+    static final int INDEX_USER_ID = 2;
+    static final int INDEX_IS_REVOKED = 3;
+    static final int INDEX_HAS_SECRET = 4;
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
@@ -269,12 +267,12 @@ public class KeyListFragment extends Fragment
         String where = null;
         String whereArgs[] = null;
         if (mCurQuery != null) {
-            where = KeychainContract.UserIds.USER_ID + " LIKE ?";
+            where = KeyRings.USER_ID + " LIKE ?";
             whereArgs = new String[]{"%" + mCurQuery + "%"};
         }
         // Now create and return a CursorLoader that will take care of
         // creating a Cursor for the data being displayed.
-        return new CursorLoader(getActivity(), baseUri, PROJECTION, where, whereArgs, SORT_ORDER);
+        return new CursorLoader(getActivity(), baseUri, PROJECTION, where, whereArgs, null);
     }
 
     @Override
@@ -285,6 +283,9 @@ public class KeyListFragment extends Fragment
         mAdapter.swapCursor(data);
 
         mStickyList.setAdapter(mAdapter);
+
+        // this view is made visible if no data is available
+        mStickyList.setEmptyView(getActivity().findViewById(R.id.key_list_empty));
 
         // NOTE: Not supported by StickyListHeader, but reimplemented here
         // The list should now be shown.
@@ -315,17 +316,15 @@ public class KeyListFragment extends Fragment
             viewIntent = new Intent(getActivity(), ViewKeyActivityJB.class);
         }
         viewIntent.setData(
-                KeychainContract
-                        .KeyRings.buildPublicKeyRingsByMasterKeyIdUri(
-                                            Long.toString(mAdapter.getMasterKeyId(position))));
+                KeyRings.buildGenericKeyRingUri(Long.toString(mAdapter.getMasterKeyId(position))));
         startActivity(viewIntent);
     }
 
     @TargetApi(11)
-    protected void encrypt(ActionMode mode, long[] keyRingMasterKeyIds) {
+    protected void encrypt(ActionMode mode, long[] masterKeyIds) {
         Intent intent = new Intent(getActivity(), EncryptActivity.class);
         intent.setAction(EncryptActivity.ACTION_ENCRYPT);
-        intent.putExtra(EncryptActivity.EXTRA_ENCRYPTION_KEY_IDS, keyRingMasterKeyIds);
+        intent.putExtra(EncryptActivity.EXTRA_ENCRYPTION_KEY_IDS, masterKeyIds);
         // used instead of startActivity set actionbar based on callingPackage
         startActivityForResult(intent, 0);
 
@@ -335,35 +334,17 @@ public class KeyListFragment extends Fragment
     /**
      * Show dialog to delete key
      *
-     * @param keyRingRowIds
+     * @param masterKeyIds
      */
     @TargetApi(11)
     // TODO: this method needs an overhaul to handle both public and secret keys gracefully!
-    public void showDeleteKeyDialog(final ActionMode mode, long[] keyRingRowIds) {
+    public void showDeleteKeyDialog(final ActionMode mode, long[] masterKeyIds) {
         // Message is received after key is deleted
         Handler returnHandler = new Handler() {
             @Override
             public void handleMessage(Message message) {
                 if (message.what == DeleteKeyDialogFragment.MESSAGE_OKAY) {
-                    Bundle returnData = message.getData();
-                    if (returnData != null
-                            && returnData.containsKey(DeleteKeyDialogFragment.MESSAGE_NOT_DELETED)) {
-                        ArrayList<String> notDeleted =
-                                returnData.getStringArrayList(DeleteKeyDialogFragment.MESSAGE_NOT_DELETED);
-                        String notDeletedMsg = "";
-                        for (String userId : notDeleted) {
-                            notDeletedMsg += userId + "\n";
-                        }
-                        Toast.makeText(getActivity(),
-                                getString(R.string.error_can_not_delete_contacts, notDeletedMsg)
-                                + getResources()
-                                        .getQuantityString(
-                                                R.plurals.error_can_not_delete_info,
-                                                notDeleted.size()),
-                                Toast.LENGTH_LONG).show();
-
-                        mode.finish();
-                    }
+                    mode.finish();
                 }
             }
         };
@@ -372,7 +353,7 @@ public class KeyListFragment extends Fragment
         Messenger messenger = new Messenger(returnHandler);
 
         DeleteKeyDialogFragment deleteKeyDialog = DeleteKeyDialogFragment.newInstance(messenger,
-                keyRingRowIds, Id.type.public_key);
+                masterKeyIds);
 
         deleteKeyDialog.show(getActivity().getSupportFragmentManager(), "deleteKeyDialog");
     }
@@ -506,11 +487,15 @@ public class KeyListFragment extends Fragment
             }
 
             { // set edit button and revoked info, specific by key type
+                View statusDivider = (View) view.findViewById(R.id.status_divider);
+                FrameLayout statusLayout = (FrameLayout) view.findViewById(R.id.status_layout);
                 Button button = (Button) view.findViewById(R.id.edit);
                 TextView revoked = (TextView) view.findViewById(R.id.revoked);
 
-                if (cursor.getInt(KeyListFragment.INDEX_TYPE) == KeyTypes.SECRET) {
+                if (cursor.getInt(KeyListFragment.INDEX_HAS_SECRET) != 0) {
                     // this is a secret key - show the edit button
+                    statusDivider.setVisibility(View.VISIBLE);
+                    statusLayout.setVisibility(View.VISIBLE);
                     revoked.setVisibility(View.GONE);
                     button.setVisibility(View.VISIBLE);
 
@@ -518,26 +503,31 @@ public class KeyListFragment extends Fragment
                     button.setOnClickListener(new OnClickListener() {
                         public void onClick(View view) {
                             Intent editIntent = new Intent(getActivity(), EditKeyActivity.class);
-                            editIntent.setData(
-                                    KeychainContract.KeyRings.buildSecretKeyRingsByMasterKeyIdUri(
-                                            Long.toString(id)
-                                    )
-                            );
+                            editIntent.setData(KeyRingData.buildSecretKeyRingUri(Long.toString(id)));
                             editIntent.setAction(EditKeyActivity.ACTION_EDIT_KEY);
                             startActivityForResult(editIntent, 0);
                         }
                     });
                 } else {
                     // this is a public key - hide the edit button, show if it's revoked
+                    statusDivider.setVisibility(View.GONE);
                     button.setVisibility(View.GONE);
 
                     boolean isRevoked = cursor.getInt(INDEX_IS_REVOKED) > 0;
+                    statusLayout.setVisibility(isRevoked ? View.VISIBLE : View.GONE);
                     revoked.setVisibility(isRevoked ? View.VISIBLE : View.GONE);
                 }
             }
 
         }
 
+        public boolean isSecretAvailable(int id) {
+            if (!mCursor.moveToPosition(id)) {
+                throw new IllegalStateException("couldn't move cursor to position " + id);
+            }
+
+            return mCursor.getInt(INDEX_HAS_SECRET) != 0;
+        }
         public long getMasterKeyId(int id) {
             if (!mCursor.moveToPosition(id)) {
                 throw new IllegalStateException("couldn't move cursor to position " + id);
@@ -581,7 +571,7 @@ public class KeyListFragment extends Fragment
                 throw new IllegalStateException("couldn't move cursor to position " + position);
             }
 
-            if (mCursor.getInt(KeyListFragment.INDEX_TYPE) == KeyTypes.SECRET) {
+            if (mCursor.getInt(KeyListFragment.INDEX_HAS_SECRET) != 0) {
                 { // set contact count
                     int num = mCursor.getCount();
                     String contactsTotal = getResources().getQuantityString(R.plurals.n_contacts, num, num);
@@ -620,7 +610,7 @@ public class KeyListFragment extends Fragment
             }
 
             // early breakout: all secret keys are assigned id 0
-            if (mCursor.getInt(KeyListFragment.INDEX_TYPE) == KeyTypes.SECRET) {
+            if (mCursor.getInt(KeyListFragment.INDEX_HAS_SECRET) != 0) {
                 return 1L;
             }
             // otherwise, return the first character of the name as ID
@@ -643,6 +633,14 @@ public class KeyListFragment extends Fragment
         public void setNewSelection(int position, boolean value) {
             mSelection.put(position, value);
             notifyDataSetChanged();
+        }
+
+        public boolean isAnySecretSelected() {
+            for (int pos : mSelection.keySet()) {
+                if(mAdapter.isSecretAvailable(pos))
+                    return true;
+            }
+            return false;
         }
 
         public long[] getCurrentSelectedMasterKeyIds() {

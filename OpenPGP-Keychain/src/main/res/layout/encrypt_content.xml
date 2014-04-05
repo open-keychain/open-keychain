@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/content_frame"
+    android:layout_marginLeft="@dimen/drawer_content_padding"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <android.support.v4.view.ViewPager
+        android:id="@+id/encrypt_pager_mode"
+        android:layout_width="match_parent"
+        android:layout_height="150dp">
+
+        <android.support.v4.view.PagerTabStrip
+            android:id="@+id/encrypt_pager_tab_strip_mode"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="top"
+            android:background="@color/emphasis"
+            android:textColor="#fff" />
+    </android.support.v4.view.ViewPager>
+
+    <android.support.v4.view.ViewPager
+        android:id="@+id/encrypt_pager_content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <android.support.v4.view.PagerTabStrip
+            android:id="@+id/encrypt_pager_tab_strip_content"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="top"
+            android:background="@color/emphasis"
+            android:textColor="#fff" />
+    </android.support.v4.view.ViewPager>
+
+</LinearLayout>

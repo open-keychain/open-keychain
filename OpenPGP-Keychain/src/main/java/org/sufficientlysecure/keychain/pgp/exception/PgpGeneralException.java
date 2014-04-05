@@ -23,4 +23,7 @@ public class PgpGeneralException extends Exception {
     public PgpGeneralException(String message) {
         super(message);
     }
+    public PgpGeneralException(String message, Throwable cause) {
+        super(message, cause);
+    }
 }

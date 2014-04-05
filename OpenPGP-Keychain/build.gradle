@@ -1,5 +1,12 @@
 apply plugin: 'android'
 
+sourceSets {
+    testLocal {
+        java.srcDir file('src/test/java')
+        resources.srcDir file('src/test/resources')
+    }
+}
+
 dependencies {
     compile 'com.android.support:support-v4:19.0.1'
     compile 'com.android.support:appcompat-v7:19.0.1'
@@ -15,6 +22,25 @@ dependencies {
     compile project(':libraries:spongycastle:pkix')
     compile project(':libraries:spongycastle:prov')
     compile project(':libraries:Android-AppMsg:library')
+
+    // Dependencies for the `testLocal` task, make sure to list all your global dependencies here as well
+    testLocalCompile 'junit:junit:4.11'
+    testLocalCompile 'org.robolectric:robolectric:2.1.+'
+    testLocalCompile 'com.google.android:android:4.1.1.4'
+    testLocalCompile 'com.android.support:support-v4:19.0.1'
+    testLocalCompile 'com.android.support:appcompat-v7:19.0.1'
+    testLocalCompile project(':OpenPGP-Keychain-API:libraries:openpgp-api-library')
+    testLocalCompile project(':OpenPGP-Keychain-API:libraries:openkeychain-api-library')
+    testLocalCompile project(':libraries:HtmlTextView')
+    testLocalCompile project(':libraries:StickyListHeaders:library')
+    testLocalCompile project(':libraries:AndroidBootstrap')
+    testLocalCompile project(':libraries:zxing')
+    testLocalCompile project(':libraries:zxing-android-integration')
+    testLocalCompile project(':libraries:spongycastle:core')
+    testLocalCompile project(':libraries:spongycastle:pg')
+    testLocalCompile project(':libraries:spongycastle:pkix')
+    testLocalCompile project(':libraries:spongycastle:prov')
+    testLocalCompile project(':libraries:Android-AppMsg:library')
 }
 
 android {
@@ -61,3 +87,19 @@ android {
         htmlOutput file("lint-report.html")
     }
 }
+
+task localTest(type: Test, dependsOn: assemble) {
+    testClassesDir = sourceSets.testLocal.output.classesDir
+
+    android.sourceSets.main.java.srcDirs.each { dir ->
+        def buildDir = dir.getAbsolutePath().split('/')
+        buildDir =  (buildDir[0..(buildDir.length - 4)] + ['build', 'classes', 'debug']).join('/')
+
+        sourceSets.testLocal.compileClasspath += files(buildDir)
+        sourceSets.testLocal.runtimeClasspath += files(buildDir)
+    }
+
+    classpath = sourceSets.testLocal.runtimeClasspath
+}
+
+//check.dependsOn localTest

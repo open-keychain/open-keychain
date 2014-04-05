@@ -37,7 +37,9 @@ import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.PgpConversionHelper;
 import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
-import org.sufficientlysecure.keychain.provider.KeychainContract;
+import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
+import org.sufficientlysecure.keychain.provider.KeychainContract.Certs;
+import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.util.Log;
 
 import java.util.Date;
@@ -50,15 +52,14 @@ public class ViewCertActivity extends ActionBarActivity
 
     // These are the rows that we will retrieve.
     static final String[] PROJECTION = new String[] {
-            KeychainContract.Certs._ID,
-            KeychainContract.Certs.KEY_ID,
-            KeychainContract.UserIds.USER_ID,
-            KeychainContract.Certs.CREATION,
-            KeychainContract.Certs.KEY_ID_CERTIFIER,
-            "signer_uid",
-            KeychainContract.Certs.KEY_DATA
+            Certs.MASTER_KEY_ID,
+            Certs.USER_ID,
+            Certs.CREATION,
+            Certs.KEY_ID_CERTIFIER,
+            Certs.SIGNER_UID,
+            Certs.KEY_DATA
     };
-    private static final int INDEX_KEY_ID = 1;
+    private static final int INDEX_MASTER_KEY_ID = 1;
     private static final int INDEX_USER_ID = 2;
     private static final int INDEX_CREATION = 3;
     private static final int INDEX_KEY_ID_CERTIFIER = 4;
@@ -112,7 +113,7 @@ public class ViewCertActivity extends ActionBarActivity
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         if(data.moveToFirst()) {
-            String signeeKey = "0x" + PgpKeyHelper.convertKeyIdToHex(data.getLong(INDEX_KEY_ID));
+            String signeeKey = "0x" + PgpKeyHelper.convertKeyIdToHex(data.getLong(INDEX_MASTER_KEY_ID));
             mSigneeKey.setText(signeeKey);
 
             String signeeUid = data.getString(INDEX_USER_ID);
@@ -179,17 +180,21 @@ public class ViewCertActivity extends ActionBarActivity
                 return true;
             case R.id.menu_view_cert_view_signer:
                 // can't do this before the data is initialized
-                // TODO notify user of this, maybe offer download?
-                if(mSignerKeyId == 0)
-                    return true;
                 Intent viewIntent = null;
                 if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
                     viewIntent = new Intent(this, ViewKeyActivity.class);
                 } else {
                     viewIntent = new Intent(this, ViewKeyActivityJB.class);
                 }
-                viewIntent.setData(KeychainContract.KeyRings.buildPublicKeyRingsByMasterKeyIdUri(
-                                Long.toString(mSignerKeyId))
+                //
+                long signerMasterKeyId = ProviderHelper.getMasterKeyId(this,
+                        KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(Long.toString(mSignerKeyId))
+                );
+                // TODO notify user of this, maybe offer download?
+                if(mSignerKeyId == 0L)
+                    return true;
+                viewIntent.setData(KeyRings.buildGenericKeyRingUri(
+                        Long.toString(signerMasterKeyId))
                 );
                 startActivity(viewIntent);
                 return true;

@@ -48,6 +48,7 @@
   <string name="btn_certify">Certifica</string>
   <string name="btn_decrypt">Decodifica</string>
   <string name="btn_decrypt_verify">Decodifica e Verifica</string>
+  <string name="btn_decrypt_verify_clipboard">Dagli Appunti</string>
   <string name="btn_select_encrypt_keys">Seleziona Destinatari</string>
   <string name="btn_encrypt_file">Codifica File</string>
   <string name="btn_save">Salva</string>
@@ -55,8 +56,8 @@
   <string name="btn_delete">Elimina</string>
   <string name="btn_no_date">Nessuno</string>
   <string name="btn_okay">Okay</string>
-  <string name="btn_change_passphrase">Cambia Frase Di Accesso</string>
-  <string name="btn_set_passphrase">Imposta Frase di Accesso</string>
+  <string name="btn_change_passphrase">Cambia Nuova Frase di Accesso</string>
+  <string name="btn_set_passphrase">Imposta Nuova Frase di Accesso</string>
   <string name="btn_search">Cerca</string>
   <string name="btn_export_to_server">Carica sul Server delle Chiavi</string>
   <string name="btn_next">Prossimo</string>
@@ -64,6 +65,8 @@
   <string name="btn_clipboard">Appunti</string>
   <string name="btn_share">Condividi con...</string>
   <string name="btn_lookup_key">Chiave di ricerca</string>
+  <string name="btn_encryption_advanced_settings_show">Mostra impostazioni avanzate</string>
+  <string name="btn_encryption_advanced_settings_hide">Nascondi impostazioni avanzate</string>
   <!--menu-->
   <string name="menu_preferences">Impostazioni</string>
   <string name="menu_help">Aiuto</string>
@@ -71,16 +74,17 @@
   <string name="menu_import_from_qr_code">Importa da Codice QR</string>
   <string name="menu_import">Importa</string>
   <string name="menu_import_from_nfc">Importa tramite NFC</string>
-  <string name="menu_export_keys">Esporta tutte le chiavi</string>
+  <string name="menu_export_secret_keys">Esporta tutte le chiavi segrete</string>
   <string name="menu_export_key">Esporta su un file</string>
   <string name="menu_delete_key">Cancella chiave</string>
   <string name="menu_create_key">Crea chiave</string>
-  <string name="menu_create_key_expert">Crea chiave (esperto)</string>
+  <string name="menu_create_key_expert">Crea chiave (avanzato)</string>
   <string name="menu_search">Cerca</string>
-  <string name="menu_key_server">Importa dal server delle chiavi</string>
+  <string name="menu_import_from_key_server">Server delle Chiavi</string>
+  <string name="menu_key_server">Server delle Chiavi...</string>
   <string name="menu_update_key">Aggiorna dal server delle chiavi</string>
   <string name="menu_export_key_to_server">Carica chiave nel server</string>
-  <string name="menu_share">Condividi</string>
+  <string name="menu_share">Condividi...</string>
   <string name="menu_share_title_fingerprint">Condivi impronta...</string>
   <string name="menu_share_title">Condividi intera chiave...</string>
   <string name="menu_share_default_fingerprint">con..</string>
@@ -100,7 +104,7 @@
   <string name="label_file">File</string>
   <string name="label_no_passphrase">Nessuna Frase di Accesso</string>
   <string name="label_passphrase">Frase di Accesso</string>
-  <string name="label_passphrase_again">Ancora</string>
+  <string name="label_passphrase_again">Di nuovo</string>
   <string name="label_algorithm">Algortimo</string>
   <string name="label_ascii_armor">Armatura ASCII</string>
   <string name="label_select_public_keys">Destinatari</string>
@@ -125,8 +129,6 @@
   <string name="label_name">Nome</string>
   <string name="label_comment">Commento</string>
   <string name="label_email">Email</string>
-  <string name="label_sign_user_id">Firma ID Utente</string>
-  <string name="label_sign_email">Firma email</string>
   <string name="label_send_key">Carica chiave nel server delle chiavi selezionati dopo la certificazione</string>
   <string name="label_fingerprint">Impronta</string>
   <string name="select_keys_button_default">Seleziona</string>
@@ -138,12 +140,17 @@
   <string name="user_id_no_name">&lt;nessun nome&gt;</string>
   <string name="none">&lt;nessuno&gt;</string>
   <string name="no_key">&lt;nessuna chiave&gt;</string>
+  <string name="no_email">&lt;Nessuna Email&gt;</string>
   <string name="unknown_status"></string>
   <string name="can_encrypt">puo\'; codificare</string>
   <string name="can_sign">puo\' firmare</string>
   <string name="expired">scaduto</string>
   <string name="revoked">revocato</string>
   <string name="user_id">ID Utente</string>
+  <plurals name="n_contacts">
+    <item quantity="one">1 contatto</item>
+    <item quantity="other">%d contatti</item>
+  </plurals>
   <plurals name="n_key_servers">
     <item quantity="one">%d server delle chiavi</item>
     <item quantity="other">%d server delle chiavi</item>
@@ -152,9 +159,6 @@
   <string name="secret_key">Chiave Privata:</string>
   <!--choice-->
   <string name="choice_none">Nessuno</string>
-  <string name="choice_sign_only">Firma soltanto</string>
-  <string name="choice_encrypt_only">Codifica soltanto</string>
-  <string name="choice_sign_and_encrypt">Firma e Codifica</string>
   <string name="choice_15secs">15 sec</string>
   <string name="choice_1min">1 min</string>
   <string name="choice_3mins">3 min</string>
@@ -174,21 +178,22 @@
   <string name="warning">Attenzione</string>
   <string name="error">Errore</string>
   <string name="error_message">Errore: %s</string>
+  <!--key flags-->
+  <string name="flag_certify">Certifica</string>
+  <string name="flag_sign">Firma</string>
+  <string name="flag_encrypt">Codifica</string>
+  <string name="flag_authenticate">Convalida</string>
   <!--sentences-->
   <string name="wrong_passphrase">Frase di Accesso errata</string>
   <string name="using_clipboard_content">Utilizzo il contenuto degli appunti.</string>
   <string name="set_a_passphrase">Imposta prima una frase di accesso.</string>
   <string name="no_filemanager_installed">Nessun gestore file compatibile installato.</string>
   <string name="passphrases_do_not_match">Le frasi di accesso non corrispondono.</string>
-  <string name="passphrase_must_not_be_empty">Frasi di accesso vuote non consentite.</string>
   <string name="passphrase_for_symmetric_encryption">Codifica Simmetrica.</string>
   <string name="passphrase_for">Inserisci la frase di accesso per \'%s\'</string>
   <string name="file_delete_confirmation">Sei sicuro di voler cancellare\n%s?</string>
   <string name="file_delete_successful">Eliminato correttamente.</string>
   <string name="no_file_selected">Seleziona un file prima.</string>
-  <string name="decryption_successful">Decodificato correttamente.</string>
-  <string name="encryption_successful">Codificato correttamente.</string>
-  <string name="encryption_to_clipboard_successful">Codificato correttamente negli appunti.</string>
   <string name="enter_passphrase_twice">Inserisci la frase di accesso due volte.</string>
   <string name="select_encryption_key">Seleziona almeno una chiave di codifica.</string>
   <string name="select_encryption_or_signature_key">Seleziona almeno una chiave di codifica o di firma.</string>
@@ -199,6 +204,10 @@
   <string name="key_deletion_confirmation">Vuoi veramente eliminare la chiave \'%s\'?\nNon potrai annullare!</string>
   <string name="key_deletion_confirmation_multi">Vuoi veramente eliminare le chiavi selezionate?\nNon potrai annullare!</string>
   <string name="secret_key_deletion_confirmation">Vuoi veramente eliminare la chiave PRIVATA \'%s\'?\nNon potrai annullare!</string>
+  <string name="ask_save_changed_key">Hai apportato modifiche al tuo portachiavi, vuoi salvarlo?</string>
+  <string name="public_key_deletetion_confirmation">Vuoi veramente eliminare la chiave PUBBLICA \'%s\'?\nNon potrai annullare!</string>
+  <string name="secret_key_delete_text">Eliminare le Chiavi Segrete?</string>
+  <string name="also_export_secret_keys">Esportare anche le chiavi segrete?</string>
   <plurals name="keys_added_and_updated_1">
     <item quantity="one">%d chiave aggiunta correttamente</item>
     <item quantity="other">%d chiavi aggiunte correttamente</item>
@@ -220,6 +229,7 @@
   <string name="keys_exported">%d chiavi esportate correttamente.</string>
   <string name="no_keys_exported">Nessuna chiave esportata.</string>
   <string name="key_creation_el_gamal_info">Nota: solo le sottochiavi supportano ElGamal, e per ElGamal verra\' usata la grandezza chiave piu\' vicina a 1536, 2048, 3072, 4096 o 8192.</string>
+  <string name="key_creation_weak_rsa_info">Nota: la generazione di chiavi RSA con lunghezza pari a 1024 bit o inferiore è considerata non sicura ed è disabilitata per la generazione di nuove chiavi.</string>
   <string name="key_not_found">Impossibile trovare la chiave %08X.</string>
   <plurals name="keys_found">
     <item quantity="one">Trovata %d chiave.</item>
@@ -251,6 +261,7 @@
   <string name="error_master_key_must_not_be_el_gamal">La chiave principale non puo\' essere ElGamal</string>
   <string name="error_unknown_algorithm_choice">opzione algoritmo sconosciuta</string>
   <string name="error_user_id_needs_a_name">devi specificare un nome</string>
+  <string name="error_user_id_no_email">Nessuna email trovata</string>
   <string name="error_user_id_needs_an_email_address">devi specificare un indirizzo email</string>
   <string name="error_key_needs_a_user_id">necessario almeno un id utente</string>
   <string name="error_main_user_id_must_not_be_empty">id utente principale non puo\' essere vuoto</string>
@@ -271,6 +282,7 @@
   <string name="error_nfc_needed">NFC non disponibile nel tuo dispositivo!</string>
   <string name="error_nothing_import">Niente da importare!</string>
   <string name="error_expiry_must_come_after_creation">La data di scadenza deve essere postuma quella di creazione</string>
+  <string name="error_save_first">si prega di salvare il portachiavi primo</string>
   <string name="error_can_not_delete_contact">Non è possibile eliminare questo contatto, perché è il proprio.</string>
   <string name="error_can_not_delete_contacts">Non è possibile eliminare i seguenti contatti perché sono i propri:\n%s</string>
   <string name="error_keyserver_insufficient_query">Query di server insufficiente</string>
@@ -287,12 +299,11 @@
     <item quantity="other">parti del file caricato sono oggetti OpenPGP validi, ma non chavi OpenPGP</item>
   </plurals>
   <!--progress dialogs, usually ending in '…'-->
-  <string name="progress_done">fatto.</string>
-  <string name="progress_cancel">cancella</string>
+  <string name="progress_done">Fatto.</string>
+  <string name="progress_cancel">Annulla</string>
   <string name="progress_saving">salvataggio...</string>
   <string name="progress_importing">importazione...</string>
   <string name="progress_exporting">esportazione...</string>
-  <string name="progress_generating">generazione chiave, richiede fino a 3 minuti...</string>
   <string name="progress_building_key">fabbricazione chiave...</string>
   <string name="progress_preparing_master_key">preparazione chiave principale...</string>
   <string name="progress_certifying_master_key">certificazione chiave principale...</string>
@@ -302,6 +313,10 @@
   <plurals name="progress_exporting_key">
     <item quantity="one">esportazione chiave...</item>
     <item quantity="other">esportazione chiavi...</item>
+  </plurals>
+  <plurals name="progress_generating">
+    <item quantity="one">generazione chiave, sono necessari fino a 3 minuti...</item>
+    <item quantity="other">generazione chiavi, sono necessari fino a 3 minuti...</item>
   </plurals>
   <string name="progress_extracting_signature_key">estrazione chiavi di firma...</string>
   <string name="progress_extracting_key">estrazione chiave...</string>
@@ -333,6 +348,7 @@
   <string name="compression_very_slow">molto lento</string>
   <!--Help-->
   <string name="help_tab_start">Inizia</string>
+  <string name="help_tab_faq">FAQ</string>
   <string name="help_tab_nfc_beam">NFC Beam</string>
   <string name="help_tab_changelog">Novita\'</string>
   <string name="help_tab_about">Info</string>
@@ -359,16 +375,23 @@
   <string name="intent_send_encrypt">Codifica con OpenKeychain</string>
   <string name="intent_send_decrypt">Decodifica con OpenKeychain</string>
   <!--Remote API-->
-  <string name="api_no_apps">Nessuna app registrata!\n\nApp di terza parti possono richiedere accesso a OpenKeychain. Dopo aver concesso l\'accesso, saranno elencate qui.</string>
+  <string name="api_no_apps">Nessuna app registrata!\n\nApp di terze parti possono richiedere l\'accesso a OpenKeychain. Dopo aver concesso l\'accesso, le app saranno elencate qui.</string>
+  <string name="api_settings_show_info">Mostra informazioni dettagliate</string>
+  <string name="api_settings_hide_info">Nascondi informazioni dettagliate</string>
   <string name="api_settings_show_advanced">Mostra impostazioni avanzate</string>
   <string name="api_settings_hide_advanced">Nascondi impostazioni avanzate</string>
   <string name="api_settings_no_key">Nessuna chiave selezionata</string>
   <string name="api_settings_select_key">Seleziona chiave</string>
+  <string name="api_settings_create_key">Crea una nuova chiave per questo account</string>
   <string name="api_settings_save">Salva</string>
   <string name="api_settings_cancel">Annulla</string>
   <string name="api_settings_revoke">Revoca accesso</string>
+  <string name="api_settings_delete_account">Cancella account</string>
   <string name="api_settings_package_name">Nome Pacchetto</string>
   <string name="api_settings_package_signature">SHA-256 della Firma del Pacchetto</string>
+  <string name="api_settings_accounts">Account</string>
+  <string name="api_settings_accounts_empty">Nessun account collegato a questa applicazione</string>
+  <string name="api_create_account_text">L\'applicazione richiede la creazione di un nuovo account. Si prega di selezionare una chiave privata esistente o crearne una nuova.\nLe applicazioni sono limitate all\'utilizzo delle chiavi selezionate qui!</string>
   <string name="api_register_text">Le app visualizzate hanno richiesto l\'accesso a OpenKeychain.\nPermetti accesso?\n\nATTENZIONE: Se non sai perche\' questo schermata e\' apparsa, nega l\'accesso! Puoi revocare l\'accesso dopo, usando la schermata \'App Registrate\'.</string>
   <string name="api_register_allow">Permetti accesso</string>
   <string name="api_register_disallow">Nega accesso</string>
@@ -394,17 +417,23 @@
   <string name="key_list_empty_button_create">creazione della tua chiave</string>
   <string name="key_list_empty_button_import">importazione chiavi.</string>
   <!--Key view-->
+  <string name="key_view_action_edit">Modifica chiave</string>
   <string name="key_view_action_encrypt">Codifica a questo contatto</string>
   <string name="key_view_action_certify">Certifica la chiave di questo contatto</string>
   <string name="key_view_tab_main">Info</string>
   <string name="key_view_tab_certs">Certificazioni</string>
   <!--Navigation Drawer-->
-  <string name="nav_contacts">Contatti</string>
-  <string name="nav_encrypt">Codifica</string>
-  <string name="nav_decrypt">Decodifica</string>
-  <string name="nav_import">Importare Chiavi</string>
+  <string name="nav_import">Importa Chiavi</string>
   <string name="nav_secret_keys">Le Mie Chiavi</string>
   <string name="nav_apps">App Registrate</string>
   <string name="drawer_open">Apri drawer di navigazione</string>
   <string name="drawer_close">Chiudi drawer di navigazione</string>
+  <string name="edit">Modifica</string>
+  <string name="my_keys">Le Mie Chiavi</string>
+  <string name="label_secret_key">Chiave Segreta</string>
+  <string name="secret_key_yes">disponibile</string>
+  <string name="secret_key_no">non disponibile</string>
+  <string name="section_uids_to_sign">ID Utente da firmare</string>
+  <string name="progress_re_adding_certs">Riapplicazione certificati</string>
+  <!--hints-->
 </resources>

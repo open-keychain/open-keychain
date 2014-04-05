@@ -19,6 +19,8 @@ package org.sufficientlysecure.keychain.ui.adapter;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.SparseArray;
+
 import org.spongycastle.openpgp.PGPKeyRing;
 import org.spongycastle.openpgp.PGPPublicKey;
 import org.spongycastle.openpgp.PGPSecretKeyRing;
@@ -34,13 +36,13 @@ import java.util.Date;
 
 public class ImportKeysListEntry implements Serializable, Parcelable {
     private static final long serialVersionUID = -7797972103284992662L;
-    public ArrayList<String> userIds;
 
+    public ArrayList<String> userIds;
     public long keyId;
+    public String keyIdHex;
     public boolean revoked;
     public Date date; // TODO: not displayed
-    public String fingerPrint;
-    public String hexKeyId;
+    public String fingerPrintHex;
     public int bitStrength;
     public String algorithm;
     public boolean secretKey;
@@ -54,8 +56,8 @@ public class ImportKeysListEntry implements Serializable, Parcelable {
         this.keyId = b.keyId;
         this.revoked = b.revoked;
         this.date = b.date;
-        this.fingerPrint = b.fingerPrint;
-        this.hexKeyId = b.hexKeyId;
+        this.fingerPrintHex = b.fingerPrintHex;
+        this.keyIdHex = b.keyIdHex;
         this.bitStrength = b.bitStrength;
         this.algorithm = b.algorithm;
         this.secretKey = b.secretKey;
@@ -73,8 +75,8 @@ public class ImportKeysListEntry implements Serializable, Parcelable {
         dest.writeLong(keyId);
         dest.writeByte((byte) (revoked ? 1 : 0));
         dest.writeSerializable(date);
-        dest.writeString(fingerPrint);
-        dest.writeString(hexKeyId);
+        dest.writeString(fingerPrintHex);
+        dest.writeString(keyIdHex);
         dest.writeInt(bitStrength);
         dest.writeString(algorithm);
         dest.writeByte((byte) (secretKey ? 1 : 0));
@@ -91,8 +93,8 @@ public class ImportKeysListEntry implements Serializable, Parcelable {
             vr.keyId = source.readLong();
             vr.revoked = source.readByte() == 1;
             vr.date = (Date) source.readSerializable();
-            vr.fingerPrint = source.readString();
-            vr.hexKeyId = source.readString();
+            vr.fingerPrintHex = source.readString();
+            vr.keyIdHex = source.readString();
             vr.bitStrength = source.readInt();
             vr.algorithm = source.readString();
             vr.secretKey = source.readByte() == 1;
@@ -108,8 +110,8 @@ public class ImportKeysListEntry implements Serializable, Parcelable {
         }
     };
 
-    public long getKeyId() {
-        return keyId;
+    public String getKeyIdHex() {
+        return keyIdHex;
     }
 
     public byte[] getBytes() {
@@ -118,6 +120,82 @@ public class ImportKeysListEntry implements Serializable, Parcelable {
 
     public void setBytes(byte[] bytes) {
         this.mBytes = bytes;
+    }
+
+    public boolean isSelected() {
+        return mSelected;
+    }
+
+    public void setSelected(boolean selected) {
+        this.mSelected = selected;
+    }
+
+    public long getKeyId() {
+        return keyId;
+    }
+
+    public void setKeyId(long keyId) {
+        this.keyId = keyId;
+    }
+
+    public void setKeyIdHex(String keyIdHex) {
+        this.keyIdHex = keyIdHex;
+    }
+
+    public boolean isRevoked() {
+        return revoked;
+    }
+
+    public void setRevoked(boolean revoked) {
+        this.revoked = revoked;
+    }
+
+    public Date getDate() {
+        return date;
+    }
+
+    public void setDate(Date date) {
+        this.date = date;
+    }
+
+    public String getFingerPrintHex() {
+        return fingerPrintHex;
+    }
+
+    public void setFingerPrintHex(String fingerPrintHex) {
+        this.fingerPrintHex = fingerPrintHex;
+    }
+
+    public int getBitStrength() {
+        return bitStrength;
+    }
+
+    public void setBitStrength(int bitStrength) {
+        this.bitStrength = bitStrength;
+    }
+
+    public String getAlgorithm() {
+        return algorithm;
+    }
+
+    public void setAlgorithm(String algorithm) {
+        this.algorithm = algorithm;
+    }
+
+    public boolean isSecretKey() {
+        return secretKey;
+    }
+
+    public void setSecretKey(boolean secretKey) {
+        this.secretKey = secretKey;
+    }
+
+    public ArrayList<String> getUserIds() {
+        return userIds;
+    }
+
+    public void setUserIds(ArrayList<String> userIds) {
+        this.userIds = userIds;
     }
 
     /**
@@ -129,14 +207,6 @@ public class ImportKeysListEntry implements Serializable, Parcelable {
         // do not select by default
         mSelected = false;
         userIds = new ArrayList<String>();
-    }
-
-    public boolean isSelected() {
-        return mSelected;
-    }
-
-    public void setSelected(boolean selected) {
-        this.mSelected = selected;
     }
 
     /**
@@ -164,27 +234,41 @@ public class ImportKeysListEntry implements Serializable, Parcelable {
         for (String userId : new IterableIterator<String>(pgpKeyRing.getPublicKey().getUserIDs())) {
             userIds.add(userId);
         }
+
         this.keyId = pgpKeyRing.getPublicKey().getKeyID();
+        this.keyIdHex = PgpKeyHelper.convertKeyIdToHex(keyId);
 
         this.revoked = pgpKeyRing.getPublicKey().isRevoked();
-        this.fingerPrint = PgpKeyHelper.convertFingerprintToHex(pgpKeyRing.getPublicKey()
-                .getFingerprint(), true);
-        this.hexKeyId = PgpKeyHelper.convertKeyIdToHex(keyId);
+        this.fingerPrintHex = PgpKeyHelper.convertFingerprintToHex(pgpKeyRing.getPublicKey()
+                .getFingerprint());
         this.bitStrength = pgpKeyRing.getPublicKey().getBitStrength();
-        int algorithm = pgpKeyRing.getPublicKey().getAlgorithm();
-        if (algorithm == PGPPublicKey.RSA_ENCRYPT || algorithm == PGPPublicKey.RSA_GENERAL
-                || algorithm == PGPPublicKey.RSA_SIGN) {
-            this.algorithm = "RSA";
-        } else if (algorithm == PGPPublicKey.DSA) {
-            this.algorithm = "DSA";
-        } else if (algorithm == PGPPublicKey.ELGAMAL_ENCRYPT
-                || algorithm == PGPPublicKey.ELGAMAL_GENERAL) {
-            this.algorithm = "ElGamal";
-        } else if (algorithm == PGPPublicKey.EC || algorithm == PGPPublicKey.ECDSA) {
-            this.algorithm = "ECC";
-        } else {
-            // TODO: with resources
-            this.algorithm = "unknown";
-        }
+        final int algorithm = pgpKeyRing.getPublicKey().getAlgorithm();
+        this.algorithm = getAlgorithmFromId(algorithm);
+    }
+
+    /**
+     * Based on <a href="http://tools.ietf.org/html/rfc2440#section-9.1">OpenPGP Message Format</a>
+     */
+    private static final SparseArray<String> ALGORITHM_IDS = new SparseArray<String>() {{
+        put(-1, "unknown"); // TODO: with resources
+        put(0, "unencrypted");
+        put(PGPPublicKey.RSA_GENERAL, "RSA");
+        put(PGPPublicKey.RSA_ENCRYPT, "RSA");
+        put(PGPPublicKey.RSA_SIGN, "RSA");
+        put(PGPPublicKey.ELGAMAL_ENCRYPT, "ElGamal");
+        put(PGPPublicKey.ELGAMAL_GENERAL, "ElGamal");
+        put(PGPPublicKey.DSA, "DSA");
+        put(PGPPublicKey.EC, "ECC");
+        put(PGPPublicKey.ECDSA, "ECC");
+        put(PGPPublicKey.ECDH, "ECC");
+    }};
+
+    /**
+     * Based on <a href="http://tools.ietf.org/html/rfc2440#section-9.1">OpenPGP Message Format</a>
+     */
+    public static String getAlgorithmFromId(int algorithmId) {
+        return (ALGORITHM_IDS.get(algorithmId) != null ?
+                    ALGORITHM_IDS.get(algorithmId) :
+                    ALGORITHM_IDS.get(-1));
     }
 }

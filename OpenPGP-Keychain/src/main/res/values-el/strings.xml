@@ -15,8 +15,6 @@
   <string name="btn_delete">Διαγραφή</string>
   <string name="btn_no_date">Κανένα</string>
   <string name="btn_okay">ΟΚ</string>
-  <string name="btn_change_passphrase">Αλλαγή κωδικού</string>
-  <string name="btn_set_passphrase">Επέλεξε Κωδικό</string>
   <!--menu-->
   <string name="menu_delete_key">Διαγραφής κλειδιού</string>
   <string name="menu_create_key">Δημιουργίας κλειδιού</string>
@@ -34,6 +32,7 @@
   <string name="label_email">Ηλεκτρονικό ταχυδρομίο</string>
   <string name="unknown_status"></string>
   <!--choice-->
+  <!--key flags-->
   <!--sentences-->
   <!--errors
          no punctuation, all lowercase,
@@ -50,4 +49,5 @@
   <!--Key list-->
   <!--Key view-->
   <!--Navigation Drawer-->
+  <!--hints-->
 </resources>

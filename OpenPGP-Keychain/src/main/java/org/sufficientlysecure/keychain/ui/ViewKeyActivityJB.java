@@ -34,6 +34,9 @@ import android.widget.Toast;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
+import org.sufficientlysecure.keychain.util.Log;
+
+import java.io.IOException;
 
 @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
 public class ViewKeyActivityJB extends ViewKeyActivity implements CreateNdefMessageCallback,
@@ -47,26 +50,18 @@ public class ViewKeyActivityJB extends ViewKeyActivity implements CreateNdefMess
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        initNfc(mDataUri);
     }
 
     /**
      * NFC: Initialize NFC sharing if OS and device supports it
      */
-    private void initNfc(Uri dataUri) {
+    private void initNfc() {
         // check if NFC Beam is supported (>= Android 4.1)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
             // Check for available NFC Adapter
             mNfcAdapter = NfcAdapter.getDefaultAdapter(this);
             if (mNfcAdapter != null) {
                 // init nfc
-
-                // get public keyring as byte array
-                long masterKeyId = ProviderHelper.getMasterKeyId(this, dataUri);
-                mSharedKeyringBytes = ProviderHelper.getKeyRingsAsByteArray(this, dataUri,
-                        new long[]{masterKeyId});
-
                 // Register callback to set NDEF message
                 mNfcAdapter.setNdefPushMessageCallback(this, this);
                 // Register callback to listen for message-sent success
@@ -86,9 +81,19 @@ public class ViewKeyActivityJB extends ViewKeyActivity implements CreateNdefMess
          * guarantee that this activity starts when receiving a beamed message. For now, this code
          * uses the tag dispatch system.
          */
-        NdefMessage msg = new NdefMessage(NdefRecord.createMime(Constants.NFC_MIME,
-                mSharedKeyringBytes), NdefRecord.createApplicationRecord(Constants.PACKAGE_NAME));
-        return msg;
+        // get public keyring as byte array
+        long masterKeyId = ProviderHelper.getMasterKeyId(this, mDataUri);
+        try {
+            mSharedKeyringBytes = ProviderHelper.getPGPPublicKeyRing(this, masterKeyId).getEncoded();
+
+            NdefMessage msg = new NdefMessage(NdefRecord.createMime(Constants.NFC_MIME,
+                    mSharedKeyringBytes), NdefRecord.createApplicationRecord(Constants.PACKAGE_NAME));
+            return msg;
+        } catch(IOException e) {
+            // not much trouble, but leave a note
+            Log.e(Constants.TAG, "Error parsing keyring: ", e);
+            return null;
+        }
     }
 
     /**

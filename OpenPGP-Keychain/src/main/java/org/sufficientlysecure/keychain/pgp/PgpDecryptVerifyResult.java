@@ -19,27 +19,33 @@ package org.sufficientlysecure.keychain.pgp;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+
 import org.openintents.openpgp.OpenPgpSignatureResult;
 
 public class PgpDecryptVerifyResult implements Parcelable {
-    boolean mSymmetricPassphraseNeeded;
-    boolean mKeyPassphraseNeeded;
+    public static final int SUCCESS = 1;
+    public static final int KEY_PASSHRASE_NEEDED = 2;
+    public static final int SYMMETRIC_PASSHRASE_NEEDED = 3;
+
+    int mStatus;
+    long mKeyIdPassphraseNeeded;
+
     OpenPgpSignatureResult mSignatureResult;
 
-    public boolean isSymmetricPassphraseNeeded() {
-        return mSymmetricPassphraseNeeded;
+    public int getStatus() {
+        return mStatus;
     }
 
-    public void setSymmetricPassphraseNeeded(boolean symmetricPassphraseNeeded) {
-        this.mSymmetricPassphraseNeeded = symmetricPassphraseNeeded;
+    public void setStatus(int mStatus) {
+        this.mStatus = mStatus;
     }
 
-    public boolean isKeyPassphraseNeeded() {
-        return mKeyPassphraseNeeded;
+    public long getKeyIdPassphraseNeeded() {
+        return mKeyIdPassphraseNeeded;
     }
 
-    public void setKeyPassphraseNeeded(boolean keyPassphraseNeeded) {
-        this.mKeyPassphraseNeeded = keyPassphraseNeeded;
+    public void setKeyIdPassphraseNeeded(long mKeyIdPassphraseNeeded) {
+        this.mKeyIdPassphraseNeeded = mKeyIdPassphraseNeeded;
     }
 
     public OpenPgpSignatureResult getSignatureResult() {
@@ -55,8 +61,8 @@ public class PgpDecryptVerifyResult implements Parcelable {
     }
 
     public PgpDecryptVerifyResult(PgpDecryptVerifyResult b) {
-        this.mSymmetricPassphraseNeeded = b.mSymmetricPassphraseNeeded;
-        this.mKeyPassphraseNeeded = b.mKeyPassphraseNeeded;
+        this.mStatus = b.mStatus;
+        this.mKeyIdPassphraseNeeded = b.mKeyIdPassphraseNeeded;
         this.mSignatureResult = b.mSignatureResult;
     }
 
@@ -66,16 +72,16 @@ public class PgpDecryptVerifyResult implements Parcelable {
     }
 
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeByte((byte) (mSymmetricPassphraseNeeded ? 1 : 0));
-        dest.writeByte((byte) (mKeyPassphraseNeeded ? 1 : 0));
+        dest.writeInt(mStatus);
+        dest.writeLong(mKeyIdPassphraseNeeded);
         dest.writeParcelable(mSignatureResult, 0);
     }
 
     public static final Creator<PgpDecryptVerifyResult> CREATOR = new Creator<PgpDecryptVerifyResult>() {
         public PgpDecryptVerifyResult createFromParcel(final Parcel source) {
             PgpDecryptVerifyResult vr = new PgpDecryptVerifyResult();
-            vr.mSymmetricPassphraseNeeded = source.readByte() == 1;
-            vr.mKeyPassphraseNeeded = source.readByte() == 1;
+            vr.mStatus = source.readInt();
+            vr.mKeyIdPassphraseNeeded = source.readLong();
             vr.mSignatureResult = source.readParcelable(OpenPgpSignatureResult.class.getClassLoader());
             return vr;
         }

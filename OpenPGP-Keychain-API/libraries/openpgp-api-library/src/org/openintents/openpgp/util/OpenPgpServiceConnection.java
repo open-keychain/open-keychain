@@ -25,15 +25,44 @@ import android.content.ServiceConnection;
 import android.os.IBinder;
 
 public class OpenPgpServiceConnection {
+
+    // interface to create callbacks for onServiceConnected
+    public interface OnBound {
+        public void onBound(IOpenPgpService service);
+    }
+
     private Context mApplicationContext;
 
-    private boolean mBound;
     private IOpenPgpService mService;
     private String mProviderPackageName;
 
+    private OnBound mOnBoundListener;
+
+    /**
+     * Create new OpenPgpServiceConnection
+     *
+     * @param context
+     * @param providerPackageName specify package name of OpenPGP provider,
+     *                            e.g., "org.sufficientlysecure.keychain"
+     */
     public OpenPgpServiceConnection(Context context, String providerPackageName) {
         this.mApplicationContext = context.getApplicationContext();
         this.mProviderPackageName = providerPackageName;
+    }
+
+    /**
+     * Create new OpenPgpServiceConnection
+     *
+     * @param context
+     * @param providerPackageName specify package name of OpenPGP provider,
+     *                            e.g., "org.sufficientlysecure.keychain"
+     * @param onBoundListener     callback, executed when connection to service has been established
+     */
+    public OpenPgpServiceConnection(Context context, String providerPackageName,
+                                    OnBound onBoundListener) {
+        this.mApplicationContext = context.getApplicationContext();
+        this.mProviderPackageName = providerPackageName;
+        this.mOnBoundListener = onBoundListener;
     }
 
     public IOpenPgpService getService() {
@@ -41,18 +70,19 @@ public class OpenPgpServiceConnection {
     }
 
     public boolean isBound() {
-        return mBound;
+        return (mService != null);
     }
 
     private ServiceConnection mServiceConnection = new ServiceConnection() {
         public void onServiceConnected(ComponentName name, IBinder service) {
             mService = IOpenPgpService.Stub.asInterface(service);
-            mBound = true;
+            if (mOnBoundListener != null) {
+                mOnBoundListener.onBound(mService);
+            }
         }
 
         public void onServiceDisconnected(ComponentName name) {
             mService = null;
-            mBound = false;
         }
     };
 
@@ -63,7 +93,7 @@ public class OpenPgpServiceConnection {
      */
     public boolean bindToService() {
         // if not already bound...
-        if (mService == null && !mBound) {
+        if (mService == null) {
             try {
                 Intent serviceIntent = new Intent();
                 serviceIntent.setAction(IOpenPgpService.class.getName());

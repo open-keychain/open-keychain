@@ -2,8 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="org.sufficientlysecure.keychain"
     android:installLocation="auto"
-    android:versionCode="23104"
-    android:versionName="2.3.1 beta4">
+    android:versionCode="25000"
+    android:versionName="2.5">
 
     <!--
         General remarks
@@ -50,7 +50,7 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.NFC" />
-    <uses-permission android:name="android.permission.GET_ACCOUNTS"/>
+    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
 
     <!-- android:allowBackup="false": Don't allow backup over adb backup or other apps! -->
     <application
@@ -107,14 +107,12 @@
             android:name=".ui.SelectPublicKeyActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
             android:label="@string/title_select_recipients"
-            android:launchMode="singleTop">
-        </activity>
+            android:launchMode="singleTop"></activity>
         <activity
             android:name=".ui.SelectSecretKeyActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
             android:label="@string/title_select_secret_key"
-            android:launchMode="singleTop">
-        </activity>
+            android:launchMode="singleTop"></activity>
         <activity
             android:name=".ui.EncryptActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
@@ -153,23 +151,23 @@
 
             <!--&lt;!&ndash; VIEW with mimeType: TODO (from email app)  &ndash;&gt;-->
             <!--<intent-filter android:label="@string/intent_import_key">-->
-                <!--<action android:name="android.intent.action.VIEW" />-->
+            <!--<action android:name="android.intent.action.VIEW" />-->
 
-                <!--<category android:name="android.intent.category.BROWSABLE" />-->
-                <!--<category android:name="android.intent.category.DEFAULT" />-->
+            <!--<category android:name="android.intent.category.BROWSABLE" />-->
+            <!--<category android:name="android.intent.category.DEFAULT" />-->
 
-                <!--&lt;!&ndash; mime type as defined in http://tools.ietf.org/html/rfc3156 &ndash;&gt;-->
-                <!--<data android:mimeType="application/pgp-signature" />-->
+            <!--&lt;!&ndash; mime type as defined in http://tools.ietf.org/html/rfc3156 &ndash;&gt;-->
+            <!--<data android:mimeType="application/pgp-signature" />-->
             <!--</intent-filter>-->
             <!--&lt;!&ndash; VIEW with mimeType: TODO (from email app)  &ndash;&gt;-->
             <!--<intent-filter android:label="@string/intent_import_key">-->
-                <!--<action android:name="android.intent.action.VIEW" />-->
+            <!--<action android:name="android.intent.action.VIEW" />-->
 
-                <!--<category android:name="android.intent.category.BROWSABLE" />-->
-                <!--<category android:name="android.intent.category.DEFAULT" />-->
+            <!--<category android:name="android.intent.category.BROWSABLE" />-->
+            <!--<category android:name="android.intent.category.DEFAULT" />-->
 
-                <!--&lt;!&ndash; mime type as defined in http://tools.ietf.org/html/rfc3156 &ndash;&gt;-->
-                <!--<data android:mimeType="application/pgp-encrypted" />-->
+            <!--&lt;!&ndash; mime type as defined in http://tools.ietf.org/html/rfc3156 &ndash;&gt;-->
+            <!--<data android:mimeType="application/pgp-encrypted" />-->
             <!--</intent-filter>-->
             <!-- Keychain's own Actions -->
             <!-- DECRYPT with text as extra -->
@@ -245,7 +243,7 @@
         <activity
             android:name=".ui.PreferencesActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
-            android:label="@string/title_preferences" >
+            android:label="@string/title_preferences">
             <intent-filter>
                 <action android:name="org.sufficientlysecure.keychain.ui.PREFS_GEN" />
                 <category android:name="android.intent.category.DEFAULT" />
@@ -383,44 +381,49 @@
             android:exported="false"
             android:process=":passphrase_cache" />
         <service
-            android:name="org.sufficientlysecure.keychain.service.KeychainIntentService"
+            android:name=".service.KeychainIntentService"
             android:exported="false" />
 
         <provider
-            android:name="org.sufficientlysecure.keychain.provider.KeychainProvider"
+            android:name=".provider.KeychainProvider"
             android:authorities="org.sufficientlysecure.keychain.provider"
             android:exported="false" />
 
         <!-- Internal classes of the remote APIs (not exported) -->
         <activity
-            android:name="org.sufficientlysecure.keychain.service.remote.RemoteServiceActivity"
+            android:name=".remote.ui.RemoteServiceActivity"
             android:exported="false"
-            android:label="@string/app_name" />
-        <!--android:launchMode="singleTop"-->
-        <!--android:process=":remote_api"-->
+            android:label="@string/app_name"
+            android:launchMode="singleTop"
+            android:process=":remote_api" />
         <activity
-            android:name="org.sufficientlysecure.keychain.service.remote.RegisteredAppsListActivity"
+            android:name=".remote.ui.AppsListActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
             android:exported="false"
             android:label="@string/title_api_registered_apps" />
         <activity
-            android:name="org.sufficientlysecure.keychain.service.remote.AppSettingsActivity"
+            android:name=".remote.ui.AppSettingsActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
+            android:exported="false">
+
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".remote.ui.AppsListActivity" />
+        </activity>
+        <activity
+            android:name=".remote.ui.AccountSettingsActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
             android:exported="false" />
 
         <!-- OpenPGP Remote API -->
         <service
-            android:name="org.sufficientlysecure.keychain.service.remote.OpenPgpService"
+            android:name=".remote.OpenPgpService"
             android:enabled="true"
             android:exported="true"
             android:process=":remote_api">
             <intent-filter>
                 <action android:name="org.openintents.openpgp.IOpenPgpService" />
             </intent-filter>
-
-            <meta-data
-                android:name="api_version"
-                android:value="1" />
         </service>
 
         <!-- Extended Remote API -->

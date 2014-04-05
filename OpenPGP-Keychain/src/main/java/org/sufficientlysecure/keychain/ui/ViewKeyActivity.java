@@ -18,6 +18,7 @@
 
 package org.sufficientlysecure.keychain.ui;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -28,6 +29,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.Window;
 import android.widget.Toast;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.Id;
@@ -38,10 +40,8 @@ import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.ui.adapter.TabsAdapter;
-import org.sufficientlysecure.keychain.ui.dialog.DeleteKeyDialogFragment;
 import org.sufficientlysecure.keychain.ui.dialog.ShareNfcDialogFragment;
 import org.sufficientlysecure.keychain.ui.dialog.ShareQrCodeDialogFragment;
-import org.sufficientlysecure.keychain.util.Log;
 
 import java.util.ArrayList;
 
@@ -60,6 +60,7 @@ public class ViewKeyActivity extends ActionBarActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
         super.onCreate(savedInstanceState);
 
         mExportHelper = new ExportHelper(this);
@@ -83,11 +84,7 @@ public class ViewKeyActivity extends ActionBarActivity {
             selectedTab = intent.getExtras().getInt(EXTRA_SELECTED_TAB);
         }
 
-        // normalize mDataUri to a "by row id" query, to ensure it works with any
-        // given valid /public/ query
-        long rowId = ProviderHelper.getRowId(this, getIntent().getData());
-        // TODO: handle (rowId == 0) with something else than a crash
-        mDataUri = KeychainContract.KeyRings.buildPublicKeyRingsUri(Long.toString(rowId));
+        mDataUri = getIntent().getData();
 
         Bundle mainBundle = new Bundle();
         mainBundle.putParcelable(ViewKeyMainFragment.ARG_DATA_URI, mDataUri);
@@ -95,7 +92,7 @@ public class ViewKeyActivity extends ActionBarActivity {
                 ViewKeyMainFragment.class, mainBundle, (selectedTab == 0));
 
         Bundle certBundle = new Bundle();
-        certBundle.putLong(ViewKeyCertsFragment.ARG_KEYRING_ROW_ID, rowId);
+        certBundle.putParcelable(ViewKeyCertsFragment.ARG_DATA_URI, mDataUri);
         mTabsAdapter.addTab(actionBar.newTab().setText(getString(R.string.key_view_tab_certs)),
                 ViewKeyCertsFragment.class, certBundle, (selectedTab == 1));
     }
@@ -122,8 +119,12 @@ public class ViewKeyActivity extends ActionBarActivity {
                 uploadToKeyserver(mDataUri);
                 return true;
             case R.id.menu_key_view_export_file:
-                long[] ids = new long[]{Long.valueOf(mDataUri.getLastPathSegment())};
-                mExportHelper.showExportKeysDialog(ids, Id.type.public_key, Constants.Path.APP_DIR_FILE_PUB);
+                long masterKeyId = ProviderHelper.getMasterKeyId(this, mDataUri);
+                mExportHelper.showExportKeysDialog(
+                        new long[] { masterKeyId } , Constants.Path.APP_DIR_FILE_PUB,
+                        // TODO this doesn't work?
+                        ((ViewKeyMainFragment) mTabsAdapter.getItem(0)).isSecretAvailable()
+                );
                 return true;
             case R.id.menu_key_view_share_default_fingerprint:
                 shareKey(mDataUri, true);
@@ -158,33 +159,37 @@ public class ViewKeyActivity extends ActionBarActivity {
     }
 
     private void updateFromKeyserver(Uri dataUri) {
-        long updateKeyId = ProviderHelper.getMasterKeyId(ViewKeyActivity.this, dataUri);
-
-        if (updateKeyId == 0) {
-            Log.e(Constants.TAG, "this shouldn't happen. KeyId == 0!");
-            return;
-        }
+        byte[] blob = (byte[]) ProviderHelper.getGenericData(
+                this, KeychainContract.KeyRings.buildUnifiedKeyRingUri(dataUri),
+                KeychainContract.Keys.FINGERPRINT, ProviderHelper.FIELD_TYPE_BLOB);
+        String fingerprint = PgpKeyHelper.convertFingerprintToHex(blob);
 
         Intent queryIntent = new Intent(this, ImportKeysActivity.class);
-        queryIntent.setAction(ImportKeysActivity.ACTION_IMPORT_KEY_FROM_KEYSERVER);
-        queryIntent.putExtra(ImportKeysActivity.EXTRA_KEY_ID, updateKeyId);
+        queryIntent.setAction(ImportKeysActivity.ACTION_IMPORT_KEY_FROM_KEYSERVER_AND_RETURN);
+        queryIntent.putExtra(ImportKeysActivity.EXTRA_FINGERPRINT, fingerprint);
 
-        // TODO: lookup with onactivityresult!
         startActivityForResult(queryIntent, RESULT_CODE_LOOKUP_KEY);
     }
 
     private void shareKey(Uri dataUri, boolean fingerprintOnly) {
         String content;
         if (fingerprintOnly) {
-            byte[] fingerprintBlob = ProviderHelper.getFingerprint(this, dataUri);
-            String fingerprint = PgpKeyHelper.convertFingerprintToHex(fingerprintBlob, false);
-
-            content = Constants.FINGERPRINT_SCHEME + ":" + fingerprint;
+            byte[] data = (byte[]) ProviderHelper.getGenericData(
+                    this, KeychainContract.KeyRings.buildUnifiedKeyRingUri(dataUri),
+                    KeychainContract.Keys.FINGERPRINT, ProviderHelper.FIELD_TYPE_BLOB);
+            if(data != null) {
+                String fingerprint = PgpKeyHelper.convertFingerprintToHex(data);
+                content = Constants.FINGERPRINT_SCHEME + ":" + fingerprint;
+            } else {
+                Toast.makeText(getApplicationContext(), "Bad key selected!",
+                        Toast.LENGTH_LONG).show();
+                return;
+            }
         } else {
             // get public keyring as ascii armored string
             long masterKeyId = ProviderHelper.getMasterKeyId(this, dataUri);
-            ArrayList<String> keyringArmored = ProviderHelper.getKeyRingsAsArmoredString(this,
-                    dataUri, new long[]{masterKeyId});
+            ArrayList<String> keyringArmored = ProviderHelper.getKeyRingsAsArmoredString(
+                    this, new long[]{ masterKeyId });
 
             content = keyringArmored.get(0);
 
@@ -214,8 +219,8 @@ public class ViewKeyActivity extends ActionBarActivity {
     private void copyToClipboard(Uri dataUri) {
         // get public keyring as ascii armored string
         long masterKeyId = ProviderHelper.getMasterKeyId(this, dataUri);
-        ArrayList<String> keyringArmored = ProviderHelper.getKeyRingsAsArmoredString(this, dataUri,
-                new long[]{masterKeyId});
+        ArrayList<String> keyringArmored = ProviderHelper.getKeyRingsAsArmoredString(
+                this, new long[]{ masterKeyId });
 
         ClipboardReflection.copyToClipboard(this, keyringArmored.get(0));
         Toast.makeText(getApplicationContext(), R.string.key_copied_to_clipboard, Toast.LENGTH_LONG)
@@ -232,25 +237,29 @@ public class ViewKeyActivity extends ActionBarActivity {
         Handler returnHandler = new Handler() {
             @Override
             public void handleMessage(Message message) {
-                if (message.what == DeleteKeyDialogFragment.MESSAGE_OKAY) {
-                    Bundle returnData = message.getData();
-                    if (returnData != null
-                            && returnData.containsKey(DeleteKeyDialogFragment.MESSAGE_NOT_DELETED)) {
-                        // we delete only this key, so MESSAGE_NOT_DELETED will solely contain this key
-                        Toast.makeText(ViewKeyActivity.this,
-                                getString(R.string.error_can_not_delete_contact)
-                                + getResources()
-                                        .getQuantityString(R.plurals.error_can_not_delete_info, 1),
-                                Toast.LENGTH_LONG).show();
-                    } else {
-                        setResult(RESULT_CANCELED);
-                        finish();
-                    }
-                }
+                setResult(RESULT_CANCELED);
+                finish();
             }
         };
 
-        mExportHelper.deleteKey(dataUri, Id.type.public_key, returnHandler);
+        mExportHelper.deleteKey(dataUri, returnHandler);
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode) {
+            case RESULT_CODE_LOOKUP_KEY: {
+                if (resultCode == Activity.RESULT_OK) {
+                    // TODO: reload key??? move this into fragment?
+                }
+                break;
+            }
+
+            default: {
+                super.onActivityResult(requestCode, resultCode, data);
+
+                break;
+            }
+        }
+    }
 }

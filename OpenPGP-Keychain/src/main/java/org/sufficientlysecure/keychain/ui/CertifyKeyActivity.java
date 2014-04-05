@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2014 Dominik Schürmann <dominik@dominikschuermann.de>
  * Copyright (C) 2011 Senecaso
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -32,16 +32,20 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.*;
+import android.widget.ArrayAdapter;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
+import android.widget.ListView;
+import android.widget.Spinner;
+import android.widget.TextView;
+import android.widget.Toast;
 import com.beardedhen.androidbootstrap.BootstrapButton;
 import org.spongycastle.openpgp.PGPPublicKeyRing;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.helper.OtherHelper;
 import org.sufficientlysecure.keychain.helper.Preferences;
 import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
-import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainDatabase;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
@@ -140,8 +144,6 @@ public class CertifyKeyActivity extends ActionBarActivity implements
         }
         Log.e(Constants.TAG, "uri: " + mDataUri);
 
-        PGPPublicKeyRing signKey = (PGPPublicKeyRing) ProviderHelper.getPGPKeyRing(this, mDataUri);
-
         mUserIds = (ListView) findViewById(R.id.user_ids);
 
         mUserIdsAdapter = new ViewKeyUserIdsAdapter(this, null, 0, true);
@@ -150,20 +152,12 @@ public class CertifyKeyActivity extends ActionBarActivity implements
         getSupportLoaderManager().initLoader(LOADER_ID_KEYRING, null, this);
         getSupportLoaderManager().initLoader(LOADER_ID_USER_IDS, null, this);
 
-        if (signKey != null) {
-            mPubKeyId = PgpKeyHelper.getMasterKey(signKey).getKeyID();
-        }
-        if (mPubKeyId == 0) {
-            Log.e(Constants.TAG, "this shouldn't happen. KeyId == 0!");
-            finish();
-            return;
-        }
     }
 
     static final String[] KEYRING_PROJECTION =
             new String[] {
                     KeychainContract.KeyRings._ID,
-                    KeychainContract.KeyRings.MASTER_KEY_ID,
+                    KeychainContract.Keys.MASTER_KEY_ID,
                     KeychainContract.Keys.FINGERPRINT,
                     KeychainContract.UserIds.USER_ID,
             };
@@ -184,11 +178,13 @@ public class CertifyKeyActivity extends ActionBarActivity implements
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         switch(id) {
-            case LOADER_ID_KEYRING:
-                return new CursorLoader(this, mDataUri, KEYRING_PROJECTION, null, null, null);
+            case LOADER_ID_KEYRING: {
+                Uri uri = KeychainContract.KeyRings.buildUnifiedKeyRingUri(mDataUri);
+                return new CursorLoader(this, uri, KEYRING_PROJECTION, null, null, null);
+            }
             case LOADER_ID_USER_IDS: {
-                Uri baseUri = KeychainContract.UserIds.buildUserIdsUri(mDataUri);
-                return new CursorLoader(this, baseUri, USER_IDS_PROJECTION, null, null, USER_IDS_SORT_ORDER);
+                Uri uri = KeychainContract.UserIds.buildUserIdsUri(mDataUri);
+                return new CursorLoader(this, uri, USER_IDS_PROJECTION, null, null, USER_IDS_SORT_ORDER);
             }
         }
         return null;
@@ -200,20 +196,18 @@ public class CertifyKeyActivity extends ActionBarActivity implements
             case LOADER_ID_KEYRING:
                 // the first key here is our master key
                 if (data.moveToFirst()) {
-                    long keyId = data.getLong(INDEX_MASTER_KEY_ID);
-                    String keyIdStr = PgpKeyHelper.convertKeyIdToHex(keyId);
+                    // TODO: put findViewById in onCreate!
+                    mPubKeyId = data.getLong(INDEX_MASTER_KEY_ID);
+                    String keyIdStr = PgpKeyHelper.convertKeyIdToHexShort(mPubKeyId);
                     ((TextView) findViewById(R.id.key_id)).setText(keyIdStr);
 
                     String mainUserId = data.getString(INDEX_USER_ID);
                     ((TextView) findViewById(R.id.main_user_id)).setText(mainUserId);
 
                     byte[] fingerprintBlob = data.getBlob(INDEX_FINGERPRINT);
-                    if (fingerprintBlob == null) {
-                        // FALLBACK for old database entries
-                        fingerprintBlob = ProviderHelper.getFingerprint(this, mDataUri);
-                    }
-                    String fingerprint = PgpKeyHelper.convertFingerprintToHex(fingerprintBlob, true);
-                    ((TextView) findViewById(R.id.fingerprint)).setText(OtherHelper.colorizeFingerprint(fingerprint));
+                    String fingerprint = PgpKeyHelper.convertFingerprintToHex(fingerprintBlob);
+                    ((TextView) findViewById(R.id.fingerprint))
+                        .setText(PgpKeyHelper.colorizeFingerprint(fingerprint));
                 }
                 break;
             case LOADER_ID_USER_IDS:
@@ -231,37 +225,11 @@ public class CertifyKeyActivity extends ActionBarActivity implements
         }
     }
 
-    private void showPassphraseDialog(final long secretKeyId) {
-        // Message is received after passphrase is cached
-        Handler returnHandler = new Handler() {
-            @Override
-            public void handleMessage(Message message) {
-                if (message.what == PassphraseDialogFragment.MESSAGE_OKAY) {
-                    startSigning();
-                }
-            }
-        };
-
-        // Create a new Messenger for the communication back
-        Messenger messenger = new Messenger(returnHandler);
-
-        try {
-            PassphraseDialogFragment passphraseDialog = PassphraseDialogFragment.newInstance(this,
-                    messenger, secretKeyId);
-
-            passphraseDialog.show(getSupportFragmentManager(), "passphraseDialog");
-        } catch (PgpGeneralException e) {
-            Log.d(Constants.TAG, "No passphrase for this secret key!");
-            // send message to handler to start certification directly
-            returnHandler.sendEmptyMessage(PassphraseDialogFragment.MESSAGE_OKAY);
-        }
-    }
-
     /**
      * handles the UI bits of the signing process on the UI thread
      */
     private void initiateSigning() {
-        PGPPublicKeyRing pubring = ProviderHelper.getPGPPublicKeyRingByMasterKeyId(this, mPubKeyId);
+        PGPPublicKeyRing pubring = ProviderHelper.getPGPPublicKeyRing(this, mPubKeyId);
         if (pubring != null) {
             // if we have already signed this key, dont bother doing it again
             boolean alreadySigned = false;
@@ -284,7 +252,15 @@ public class CertifyKeyActivity extends ActionBarActivity implements
                  */
                 String passphrase = PassphraseCacheService.getCachedPassphrase(this, mMasterKeyId);
                 if (passphrase == null) {
-                    showPassphraseDialog(mMasterKeyId);
+                    PassphraseDialogFragment.show(this, mMasterKeyId,
+                        new Handler() {
+                            @Override
+                            public void handleMessage(Message message) {
+                                if (message.what == PassphraseDialogFragment.MESSAGE_OKAY) {
+                                    startSigning();
+                                }
+                            }
+                        });
                     // bail out; need to wait until the user has entered the passphrase before trying again
                     return;
                 } else {
@@ -307,7 +283,7 @@ public class CertifyKeyActivity extends ActionBarActivity implements
 
         // Bail out if there is not at least one user id selected
         ArrayList<String> userIds = mUserIdsAdapter.getSelectedUserIds();
-        if(userIds.isEmpty()) {
+        if (userIds.isEmpty()) {
             Toast.makeText(CertifyKeyActivity.this, "No User IDs to sign selected!",
                     Toast.LENGTH_SHORT).show();
             return;
@@ -327,11 +303,11 @@ public class CertifyKeyActivity extends ActionBarActivity implements
 
         intent.putExtra(KeychainIntentService.EXTRA_DATA, data);
 
-        // Message is received after signing is done in ApgService
+        // Message is received after signing is done in KeychainIntentService
         KeychainIntentServiceHandler saveHandler = new KeychainIntentServiceHandler(this,
                 getString(R.string.progress_signing), ProgressDialog.STYLE_SPINNER) {
             public void handleMessage(Message message) {
-                // handle messages by standard ApgHandler first
+                // handle messages by standard KeychainIntentServiceHandler first
                 super.handleMessage(message);
 
                 if (message.arg1 == KeychainIntentServiceHandler.MESSAGE_OKAY) {
@@ -380,11 +356,11 @@ public class CertifyKeyActivity extends ActionBarActivity implements
 
         intent.putExtra(KeychainIntentService.EXTRA_DATA, data);
 
-        // Message is received after uploading is done in ApgService
+        // Message is received after uploading is done in KeychainIntentService
         KeychainIntentServiceHandler saveHandler = new KeychainIntentServiceHandler(this,
                 getString(R.string.progress_exporting), ProgressDialog.STYLE_HORIZONTAL) {
             public void handleMessage(Message message) {
-                // handle messages by standard ApgHandler first
+                // handle messages by standard KeychainIntentServiceHandler first
                 super.handleMessage(message);
 
                 if (message.arg1 == KeychainIntentServiceHandler.MESSAGE_OKAY) {

@@ -1,0 +1,50 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<resources>
+  <!--title-->
+  <string name="title_manage_public_keys">Kontakty</string>
+  <string name="title_manage_secret_keys">Tajné klíče</string>
+  <string name="title_select_recipients">Zvolit veřejný klíč</string>
+  <string name="title_select_secret_key">Zvolit tajný klíč</string>
+  <string name="title_encrypt">Zašifrovat</string>
+  <string name="title_decrypt">Dešifrovat</string>
+  <string name="title_authentication">Heslo</string>
+  <string name="title_create_key">Vytvořit klíč</string>
+  <string name="title_edit_key">Upravit klíč</string>
+  <string name="title_preferences">Nastavení</string>
+  <string name="title_api_registered_apps">Registrované aplikace</string>
+  <string name="title_key_server_preference">Nastavení serveru s klíči</string>
+  <string name="title_set_passphrase">Zadat heslo</string>
+  <string name="title_send_email">Poslat zprávu...</string>
+  <string name="title_import_keys">Importovat klíče</string>
+  <string name="title_export_key">Exportovat klíč</string>
+  <string name="title_export_keys">Exportovat klíče</string>
+  <string name="title_key_not_found">Klíč nenalezen</string>
+  <string name="title_send_key">Nahrát na server s klíči</string>
+  <string name="title_help">Nápověda</string>
+  <!--section-->
+  <string name="section_keys">Klíče</string>
+  <!--button-->
+  <string name="btn_sign">Podepsat</string>
+  <!--menu-->
+  <!--label-->
+  <string name="unknown_status"></string>
+  <!--choice-->
+  <!--key flags-->
+  <!--sentences-->
+  <!--errors
+         no punctuation, all lowercase,
+         they will be put after "error_message", e.g. "Error: file not found"-->
+  <!--progress dialogs, usually ending in '…'-->
+  <!--action strings-->
+  <!--key bit length selections-->
+  <!--compression-->
+  <!--Help-->
+  <!--Import-->
+  <!--Intent labels-->
+  <!--Remote API-->
+  <!--Share-->
+  <!--Key list-->
+  <!--Key view-->
+  <!--Navigation Drawer-->
+  <!--hints-->
+</resources>

@@ -1,0 +1,119 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<resources>
+  <!--title-->
+  <string name="title_manage_public_keys">Kontaktid</string>
+  <string name="title_manage_secret_keys">Salajased võtmed</string>
+  <string name="title_select_recipients">Vali avalik võti</string>
+  <string name="title_select_secret_key">Vali salajane võti</string>
+  <string name="title_encrypt">Krüpteeri</string>
+  <string name="title_decrypt">Dekrüpteeri</string>
+  <string name="title_authentication">Salasõne</string>
+  <string name="title_create_key">Loo võti</string>
+  <string name="title_edit_key">Muuda võtit</string>
+  <string name="title_preferences">Seaded</string>
+  <string name="title_api_registered_apps">Registreeritud rakendused</string>
+  <string name="title_key_server_preference">Võtmeserveri seaded</string>
+  <string name="title_set_passphrase">Määra salasõne</string>
+  <string name="title_send_email">Saada kiri...</string>
+  <string name="title_import_keys">Impordi võtmeid</string>
+  <string name="title_export_key">Ekspordi võti</string>
+  <string name="title_export_keys">Ekspordi võtmed</string>
+  <string name="title_key_not_found">Võtit ei leitud</string>
+  <string name="title_key_server_query">Päri võtmeserverist</string>
+  <string name="title_send_key">Lae võtmeserverisse</string>
+  <string name="title_unknown_signature_key">Võõras allkirjastamise võti</string>
+  <string name="title_help">Abi</string>
+  <!--section-->
+  <string name="section_user_ids">Kasutaja ID-d</string>
+  <string name="section_keys">Võtmed</string>
+  <string name="section_general">Üldine</string>
+  <string name="section_defaults">Vaikeseaded</string>
+  <!--button-->
+  <string name="btn_sign">Allkirjasta</string>
+  <string name="btn_decrypt">Dekrüpteeri</string>
+  <string name="btn_select_encrypt_keys">Vali saajad</string>
+  <string name="btn_save">Salvesta</string>
+  <string name="btn_do_not_save">Katkesta</string>
+  <string name="btn_delete">Kustuta</string>
+  <string name="btn_search">Otsi</string>
+  <string name="btn_export_to_server">Saada võtmeserverisse</string>
+  <string name="btn_next">Järgmine</string>
+  <string name="btn_back">Tagasi</string>
+  <!--menu-->
+  <string name="menu_preferences">Seaded</string>
+  <string name="menu_delete_key">Kustuta võti</string>
+  <string name="menu_create_key">Loo võti</string>
+  <string name="menu_search">Otsi</string>
+  <string name="menu_key_server">Võtmeserver...</string>
+  <string name="menu_update_key">Uuenda võtmeserverist</string>
+  <string name="menu_export_key_to_server">Saada võtmeserverisse</string>
+  <string name="menu_share">Jaga...</string>
+  <string name="menu_sign_key">Allkirjasta võti</string>
+  <!--label-->
+  <string name="label_sign">Allkirjasta</string>
+  <string name="label_message">Sõnum</string>
+  <string name="label_file">Fail</string>
+  <string name="label_no_passphrase">Salasõnet pole</string>
+  <string name="label_passphrase">Salasõne</string>
+  <string name="label_passphrase_again">Uuesti</string>
+  <string name="label_algorithm">Algoritm</string>
+  <string name="label_select_public_keys">Saajad</string>
+  <string name="label_delete_after_encryption">Kustuta peale šifreerimist</string>
+  <string name="label_hash_algorithm">Räsialgoritm</string>
+  <string name="label_asymmetric">Avalik võti</string>
+  <string name="label_symmetric">Salasõne</string>
+  <string name="label_passphrase_cache_ttl">Salasõne puhverdus</string>
+  <string name="label_key_servers">Võtmeserverid</string>
+  <string name="label_creation">Loodud</string>
+  <string name="label_expiry">Aegub</string>
+  <string name="label_usage">Kasutusvaldkond</string>
+  <string name="label_key_size">Võtmepikkus</string>
+  <string name="label_name">Nimi</string>
+  <string name="label_comment">Kommentaar</string>
+  <string name="label_email">E-mail</string>
+  <string name="unknown_status"></string>
+  <string name="expired">aegunud</string>
+  <string name="fingerprint">Sõrmejälg:</string>
+  <string name="secret_key">Salajane võti:</string>
+  <!--choice-->
+  <string name="choice_15secs">15 sekundit</string>
+  <string name="choice_1min">1 minut</string>
+  <string name="choice_3mins">3 minutit</string>
+  <string name="choice_5mins">5 minutit</string>
+  <string name="choice_10mins">10 minutit</string>
+  <string name="choice_20mins">20 minutit</string>
+  <string name="choice_40mins">40 minutit</string>
+  <string name="choice_1hour">1 tund</string>
+  <string name="choice_2hours">2 tundi</string>
+  <string name="choice_4hours">4 tundi</string>
+  <string name="choice_8hours">8 tundi</string>
+  <string name="dsa">DSA</string>
+  <string name="elgamal">ElGamal</string>
+  <string name="rsa">RSA</string>
+  <string name="filemanager_title_open">Ava...</string>
+  <string name="warning">Hoiatus</string>
+  <string name="error">Viga</string>
+  <string name="error_message">Viga: %s</string>
+  <!--key flags-->
+  <!--sentences-->
+  <string name="wrong_passphrase">Vale salasõne</string>
+  <string name="set_a_passphrase">Määra enne salasõne.</string>
+  <string name="passphrases_do_not_match">Salasõned ei ühti.</string>
+  <string name="passphrase_for_symmetric_encryption">Sümmeetriline krüpteering</string>
+  <!--errors
+         no punctuation, all lowercase,
+         they will be put after "error_message", e.g. "Error: file not found"-->
+  <!--progress dialogs, usually ending in '…'-->
+  <!--action strings-->
+  <!--key bit length selections-->
+  <!--compression-->
+  <!--Help-->
+  <!--Import-->
+  <!--Intent labels-->
+  <!--Remote API-->
+  <!--Share-->
+  <!--Key list-->
+  <!--Key view-->
+  <!--Navigation Drawer-->
+  <!--hints-->
+</resources>

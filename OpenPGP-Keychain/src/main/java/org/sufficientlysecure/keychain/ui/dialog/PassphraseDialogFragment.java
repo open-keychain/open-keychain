@@ -24,10 +24,12 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
 import android.support.v4.app.DialogFragment;
+import android.support.v4.app.FragmentActivity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -59,9 +61,32 @@ public class PassphraseDialogFragment extends DialogFragment implements OnEditor
     public static final int MESSAGE_OKAY = 1;
     public static final int MESSAGE_CANCEL = 2;
 
+    public static final String MESSAGE_DATA_PASSPHRASE = "passphrase";
+
     private Messenger mMessenger;
     private EditText mPassphraseEditText;
     private boolean mCanKB;
+
+    /**
+     * Shows passphrase dialog to cache a new passphrase the user enters for using it later for
+     * encryption. Based on mSecretKeyId it asks for a passphrase to open a private key or it asks
+     * for a symmetric passphrase
+     */
+    public static void show(FragmentActivity context, long keyId, Handler returnHandler) {
+        // Create a new Messenger for the communication back
+        Messenger messenger = new Messenger(returnHandler);
+
+        try {
+            PassphraseDialogFragment passphraseDialog = PassphraseDialogFragment.newInstance(context,
+                    messenger, keyId);
+
+            passphraseDialog.show(context.getSupportFragmentManager(), "passphraseDialog");
+        } catch (PgpGeneralException e) {
+            Log.d(Constants.TAG, "No passphrase for this secret key, encrypt directly!");
+            // send message to handler to start encryption directly
+            returnHandler.sendEmptyMessage(PassphraseDialogFragment.MESSAGE_OKAY);
+        }
+    }
 
     /**
      * Creates new instance of this dialog fragment
@@ -114,10 +139,7 @@ public class PassphraseDialogFragment extends DialogFragment implements OnEditor
             secretKey = null;
             alert.setMessage(R.string.passphrase_for_symmetric_encryption);
         } else {
-            // TODO: by master key id???
-            secretKey = PgpKeyHelper.getMasterKey(ProviderHelper.getPGPSecretKeyRingByKeyId(activity,
-                    secretKeyId));
-            // secretKey = PGPHelper.getMasterKey(PGPMain.getSecretKeyRing(secretKeyId));
+            secretKey = ProviderHelper.getPGPSecretKeyRing(activity, secretKeyId).getSecretKey();
 
             if (secretKey == null) {
                 alert.setTitle(R.string.title_key_not_found);
@@ -173,7 +195,7 @@ public class PassphraseDialogFragment extends DialogFragment implements OnEditor
                                         return;
                                     } else {
                                         clickSecretKey = PgpKeyHelper.getKeyNum(ProviderHelper
-                                                .getPGPSecretKeyRingByKeyId(activity, secretKeyId),
+                                                .getPGPSecretKeyRingWithKeyId(activity, secretKeyId),
                                                 curKeyIndex);
                                         curKeyIndex++; // does post-increment work like C?
                                         continue;
@@ -209,7 +231,11 @@ public class PassphraseDialogFragment extends DialogFragment implements OnEditor
                             passphrase);
                 }
 
-                sendMessageToHandler(MESSAGE_OKAY);
+                // also return passphrase back to activity
+                Bundle data = new Bundle();
+                data.putString(MESSAGE_DATA_PASSPHRASE, passphrase);
+
+                sendMessageToHandler(MESSAGE_OKAY, data);
             }
         });
 
@@ -268,6 +294,27 @@ public class PassphraseDialogFragment extends DialogFragment implements OnEditor
     private void sendMessageToHandler(Integer what) {
         Message msg = Message.obtain();
         msg.what = what;
+
+        try {
+            mMessenger.send(msg);
+        } catch (RemoteException e) {
+            Log.w(Constants.TAG, "Exception sending message, Is handler present?", e);
+        } catch (NullPointerException e) {
+            Log.w(Constants.TAG, "Messenger is null!", e);
+        }
+    }
+
+    /**
+     * Send message back to handler which is initialized in a activity
+     *
+     * @param what Message integer you want to send
+     */
+    private void sendMessageToHandler(Integer what, Bundle data) {
+        Message msg = Message.obtain();
+        msg.what = what;
+        if (data != null) {
+            msg.setData(data);
+        }
 
         try {
             mMessenger.send(msg);

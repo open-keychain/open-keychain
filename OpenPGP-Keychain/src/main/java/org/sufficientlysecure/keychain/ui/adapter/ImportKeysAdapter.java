@@ -30,6 +30,7 @@ import android.widget.CheckBox;
 import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
 import android.widget.TextView;
+
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
 
@@ -43,13 +44,12 @@ public class ImportKeysAdapter extends ArrayAdapter<ImportKeysListEntry> {
     protected List<ImportKeysListEntry> mData;
 
     static class ViewHolder {
-        private TextView mMainUserId;
-        private TextView mMainUserIdRest;
-        private TextView mKeyId;
-        private TextView mFingerprint;
-        private TextView mAlgorithm;
-        private TextView mStatus;
-
+        public TextView mainUserId;
+        public TextView mainUserIdRest;
+        public TextView keyId;
+        public TextView fingerprint;
+        public TextView algorithm;
+        public TextView status;
     }
 
     public ImportKeysAdapter(Activity activity) {
@@ -100,12 +100,12 @@ public class ImportKeysAdapter extends ArrayAdapter<ImportKeysListEntry> {
         if (convertView == null) {
             holder = new ViewHolder();
             convertView = mInflater.inflate(R.layout.import_keys_list_entry, null);
-            holder.mMainUserId = (TextView) convertView.findViewById(R.id.mainUserId);
-            holder.mMainUserIdRest = (TextView) convertView.findViewById(R.id.mainUserIdRest);
-            holder.mKeyId = (TextView) convertView.findViewById(R.id.keyId);
-            holder.mFingerprint = (TextView) convertView.findViewById(R.id.fingerprint);
-            holder.mAlgorithm = (TextView) convertView.findViewById(R.id.algorithm);
-            holder.mStatus = (TextView) convertView.findViewById(R.id.status);
+            holder.mainUserId = (TextView) convertView.findViewById(R.id.mainUserId);
+            holder.mainUserIdRest = (TextView) convertView.findViewById(R.id.mainUserIdRest);
+            holder.keyId = (TextView) convertView.findViewById(R.id.keyId);
+            holder.fingerprint = (TextView) convertView.findViewById(R.id.fingerprint);
+            holder.algorithm = (TextView) convertView.findViewById(R.id.algorithm);
+            holder.status = (TextView) convertView.findViewById(R.id.status);
             convertView.setTag(holder);
         } else {
             holder = (ViewHolder) convertView.getTag();
@@ -119,36 +119,36 @@ public class ImportKeysAdapter extends ArrayAdapter<ImportKeysListEntry> {
             // show red user id if it is a secret key
             if (entry.secretKey) {
                 userIdSplit[0] = mActivity.getString(R.string.secret_key) + " " + userIdSplit[0];
-                holder.mMainUserId.setTextColor(Color.RED);
+                holder.mainUserId.setTextColor(Color.RED);
             }
-            holder.mMainUserId.setText(userIdSplit[0]);
+            holder.mainUserId.setText(userIdSplit[0]);
         } else {
-            holder.mMainUserId.setText(R.string.user_id_no_name);
+            holder.mainUserId.setText(R.string.user_id_no_name);
         }
 
         // email
         if (userIdSplit[1] != null) {
-            holder.mMainUserIdRest.setText(userIdSplit[1]);
-            holder.mMainUserIdRest.setVisibility(View.VISIBLE);
+            holder.mainUserIdRest.setText(userIdSplit[1]);
+            holder.mainUserIdRest.setVisibility(View.VISIBLE);
         } else {
-            holder.mMainUserIdRest.setVisibility(View.GONE);
+            holder.mainUserIdRest.setVisibility(View.GONE);
         }
 
-        holder.mKeyId.setText(entry.hexKeyId);
+        holder.keyId.setText(entry.keyIdHex);
 
-        if (entry.fingerPrint != null) {
-            holder.mFingerprint.setText(mActivity.getString(R.string.fingerprint) + " " + entry.fingerPrint);
-            holder.mFingerprint.setVisibility(View.VISIBLE);
+        if (entry.fingerPrintHex != null) {
+            holder.fingerprint.setText(PgpKeyHelper.colorizeFingerprint(entry.fingerPrintHex));
+            holder.fingerprint.setVisibility(View.VISIBLE);
         } else {
-            holder.mFingerprint.setVisibility(View.GONE);
+            holder.fingerprint.setVisibility(View.GONE);
         }
 
-        holder.mAlgorithm.setText("" + entry.bitStrength + "/" + entry.algorithm);
+        holder.algorithm.setText("" + entry.bitStrength + "/" + entry.algorithm);
 
         if (entry.revoked) {
-            holder.mStatus.setText(R.string.revoked);
+            holder.status.setText(R.string.revoked);
         } else {
-            holder.mStatus.setVisibility(View.GONE);
+            holder.status.setVisibility(View.GONE);
         }
 
         LinearLayout ll = (LinearLayout) convertView.findViewById(R.id.list);

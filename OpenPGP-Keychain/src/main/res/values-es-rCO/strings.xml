@@ -36,8 +36,6 @@
   <string name="btn_delete">Borrar</string>
   <string name="btn_no_date">Ninguno</string>
   <string name="btn_okay">Ok</string>
-  <string name="btn_change_passphrase">Cambiar contraseña</string>
-  <string name="btn_set_passphrase">Establecer contraseña</string>
   <string name="btn_search">Buscar</string>
   <string name="btn_next">Siguiente</string>
   <string name="btn_back">Atrás</string>
@@ -46,7 +44,6 @@
   <string name="menu_import_from_file">Importar desde archivo</string>
   <string name="menu_import_from_qr_code">Importar desde código QR</string>
   <string name="menu_import_from_nfc">Importar desde NFC</string>
-  <string name="menu_export_keys">Exportar todas las claves</string>
   <string name="menu_export_key">Exportar a archivo</string>
   <string name="menu_delete_key">Borrar clave</string>
   <string name="menu_create_key">Crear clave</string>
@@ -81,6 +78,7 @@
   <string name="label_email">Correo electrónico</string>
   <string name="unknown_status"></string>
   <!--choice-->
+  <!--key flags-->
   <!--sentences-->
   <!--errors
          no punctuation, all lowercase,
@@ -97,4 +95,5 @@
   <!--Key list-->
   <!--Key view-->
   <!--Navigation Drawer-->
+  <!--hints-->
 </resources>

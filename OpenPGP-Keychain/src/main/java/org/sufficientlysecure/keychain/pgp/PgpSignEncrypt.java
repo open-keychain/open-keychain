@@ -18,11 +18,28 @@
 package org.sufficientlysecure.keychain.pgp;
 
 import android.content.Context;
+
 import org.spongycastle.bcpg.ArmoredOutputStream;
 import org.spongycastle.bcpg.BCPGOutputStream;
-import org.spongycastle.openpgp.*;
+import org.spongycastle.openpgp.PGPCompressedDataGenerator;
+import org.spongycastle.openpgp.PGPEncryptedDataGenerator;
+import org.spongycastle.openpgp.PGPException;
+import org.spongycastle.openpgp.PGPLiteralData;
+import org.spongycastle.openpgp.PGPLiteralDataGenerator;
+import org.spongycastle.openpgp.PGPPrivateKey;
+import org.spongycastle.openpgp.PGPPublicKey;
+import org.spongycastle.openpgp.PGPSecretKey;
+import org.spongycastle.openpgp.PGPSecretKeyRing;
+import org.spongycastle.openpgp.PGPSignature;
+import org.spongycastle.openpgp.PGPSignatureGenerator;
+import org.spongycastle.openpgp.PGPSignatureSubpacketGenerator;
+import org.spongycastle.openpgp.PGPV3SignatureGenerator;
 import org.spongycastle.openpgp.operator.PBESecretKeyDecryptor;
-import org.spongycastle.openpgp.operator.jcajce.*;
+import org.spongycastle.openpgp.operator.jcajce.JcaPGPContentSignerBuilder;
+import org.spongycastle.openpgp.operator.jcajce.JcePBEKeyEncryptionMethodGenerator;
+import org.spongycastle.openpgp.operator.jcajce.JcePBESecretKeyDecryptorBuilder;
+import org.spongycastle.openpgp.operator.jcajce.JcePGPDataEncryptorBuilder;
+import org.spongycastle.openpgp.operator.jcajce.JcePublicKeyKeyEncryptionMethodGenerator;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.Id;
 import org.sufficientlysecure.keychain.R;
@@ -32,7 +49,11 @@ import org.sufficientlysecure.keychain.util.InputData;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.ProgressDialogUpdater;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.security.SignatureException;
@@ -50,7 +71,7 @@ public class PgpSignEncrypt {
     private boolean mEnableAsciiArmorOutput;
     private int mCompressionId;
     private long[] mEncryptionKeyIds;
-    private String mEncryptionPassphrase;
+    private String mSymmetricPassphrase;
     private int mSymmetricEncryptionAlgorithm;
     private long mSignatureKeyId;
     private int mSignatureHashAlgorithm;
@@ -67,7 +88,7 @@ public class PgpSignEncrypt {
         this.mEnableAsciiArmorOutput = builder.mEnableAsciiArmorOutput;
         this.mCompressionId = builder.mCompressionId;
         this.mEncryptionKeyIds = builder.mEncryptionKeyIds;
-        this.mEncryptionPassphrase = builder.mEncryptionPassphrase;
+        this.mSymmetricPassphrase = builder.mSymmetricPassphrase;
         this.mSymmetricEncryptionAlgorithm = builder.mSymmetricEncryptionAlgorithm;
         this.mSignatureKeyId = builder.mSignatureKeyId;
         this.mSignatureHashAlgorithm = builder.mSignatureHashAlgorithm;
@@ -85,8 +106,8 @@ public class PgpSignEncrypt {
         private ProgressDialogUpdater mProgress = null;
         private boolean mEnableAsciiArmorOutput = false;
         private int mCompressionId = Id.choice.compression.none;
-        private long[] mEncryptionKeyIds = new long[0];
-        private String mEncryptionPassphrase = null;
+        private long[] mEncryptionKeyIds = null;
+        private String mSymmetricPassphrase = null;
         private int mSymmetricEncryptionAlgorithm = 0;
         private long mSignatureKeyId = Id.key.none;
         private int mSignatureHashAlgorithm = 0;
@@ -119,8 +140,8 @@ public class PgpSignEncrypt {
             return this;
         }
 
-        public Builder encryptionPassphrase(String encryptionPassphrase) {
-            this.mEncryptionPassphrase = encryptionPassphrase;
+        public Builder symmetricPassphrase(String symmetricPassphrase) {
+            this.mSymmetricPassphrase = symmetricPassphrase;
             return this;
         }
 
@@ -181,7 +202,8 @@ public class PgpSignEncrypt {
             NoSuchAlgorithmException, SignatureException {
 
         boolean enableSignature = mSignatureKeyId != Id.key.none;
-        boolean enableEncryption = (mEncryptionKeyIds.length != 0 || mEncryptionPassphrase != null);
+        boolean enableEncryption = ((mEncryptionKeyIds != null && mEncryptionKeyIds.length > 0)
+                || mSymmetricPassphrase != null);
         boolean enableCompression = (enableEncryption && mCompressionId != Id.choice.compression.none);
 
         Log.d(Constants.TAG, "enableSignature:" + enableSignature
@@ -212,7 +234,7 @@ public class PgpSignEncrypt {
         PGPSecretKeyRing signingKeyRing = null;
         PGPPrivateKey signaturePrivateKey = null;
         if (enableSignature) {
-            signingKeyRing = ProviderHelper.getPGPSecretKeyRingByKeyId(mContext, mSignatureKeyId);
+            signingKeyRing = ProviderHelper.getPGPSecretKeyRingWithKeyId(mContext, mSignatureKeyId);
             signingKey = PgpKeyHelper.getSigningKey(mContext, mSignatureKeyId);
             if (signingKey == null) {
                 throw new PgpGeneralException(mContext.getString(R.string.error_signature_failed));
@@ -246,12 +268,12 @@ public class PgpSignEncrypt {
 
             cPk = new PGPEncryptedDataGenerator(encryptorBuilder);
 
-            if (mEncryptionKeyIds.length == 0) {
+            if (mSymmetricPassphrase != null) {
                 // Symmetric encryption
                 Log.d(Constants.TAG, "encryptionKeyIds length is 0 -> symmetric encryption");
 
                 JcePBEKeyEncryptionMethodGenerator symmetricEncryptionGenerator =
-                        new JcePBEKeyEncryptionMethodGenerator(mEncryptionPassphrase.toCharArray());
+                        new JcePBEKeyEncryptionMethodGenerator(mSymmetricPassphrase.toCharArray());
                 cPk.addMethod(symmetricEncryptionGenerator);
             } else {
                 // Asymmetric encryption
@@ -284,7 +306,7 @@ public class PgpSignEncrypt {
                 signatureGenerator = new PGPSignatureGenerator(contentSignerBuilder);
                 signatureGenerator.init(signatureType, signaturePrivateKey);
 
-                String userId = PgpKeyHelper.getMainUserId(PgpKeyHelper.getMasterKey(signingKeyRing));
+                String userId = PgpKeyHelper.getMainUserId(signingKeyRing.getSecretKey());
                 PGPSignatureSubpacketGenerator spGen = new PGPSignatureSubpacketGenerator();
                 spGen.setSignerUserID(false, userId);
                 signatureGenerator.setHashedSubpackets(spGen.generate());
@@ -442,7 +464,7 @@ public class PgpSignEncrypt {
         }
 
         PGPSecretKeyRing signingKeyRing =
-                ProviderHelper.getPGPSecretKeyRingByKeyId(mContext, mSignatureKeyId);
+                ProviderHelper.getPGPSecretKeyRingWithKeyId(mContext, mSignatureKeyId);
         PGPSecretKey signingKey = PgpKeyHelper.getSigningKey(mContext, mSignatureKeyId);
         if (signingKey == null) {
             throw new PgpGeneralException(mContext.getString(R.string.error_signature_failed));
@@ -483,7 +505,7 @@ public class PgpSignEncrypt {
             signatureGenerator.init(type, signaturePrivateKey);
 
             PGPSignatureSubpacketGenerator spGen = new PGPSignatureSubpacketGenerator();
-            String userId = PgpKeyHelper.getMainUserId(PgpKeyHelper.getMasterKey(signingKeyRing));
+            String userId = PgpKeyHelper.getMainUserId(signingKeyRing.getSecretKey());
             spGen.setSignerUserID(false, userId);
             signatureGenerator.setHashedSubpackets(spGen.generate());
         }

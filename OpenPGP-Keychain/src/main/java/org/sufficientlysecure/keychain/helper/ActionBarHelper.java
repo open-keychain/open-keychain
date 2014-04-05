@@ -37,7 +37,6 @@ public class ActionBarHelper {
      * @param activity
      */
     public static void setBackButton(ActionBarActivity activity) {
-        // set actionbar without home button if called from another app
         final ActionBar actionBar = activity.getSupportActionBar();
         Log.d(Constants.TAG, "calling package (only set when using startActivityForResult)="
                 + activity.getCallingPackage());

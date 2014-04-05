@@ -12,7 +12,8 @@
         android:descendantFocusability="beforeDescendants"
         android:orientation="vertical"
         android:paddingLeft="16dp"
-        android:paddingRight="16dp">
+        android:paddingRight="16dp"
+        android:id="@+id/container">
 
         <TextView
             style="@style/SectionHeader"
@@ -130,6 +131,25 @@
                     android:text="" />
             </TableRow>
 
+            <TableRow
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:id="@+id/tableRow">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:paddingRight="10dip"
+                    android:text="@string/label_fingerprint" />
+
+                <TextView
+                    android:id="@+id/fingerprint"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:typeface="monospace" />
+            </TableRow>
+
             <TableRow>
 
                 <TextView
@@ -158,25 +178,6 @@
                     android:id="@+id/expiry"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
-            </TableRow>
-
-            <TableRow
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent"
-                android:id="@+id/tableRow">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:paddingRight="10dip"
-                    android:text="@string/label_fingerprint" />
-
-                <TextView
-                    android:id="@+id/fingerprint"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:typeface="monospace" />
             </TableRow>
 
             <TableRow>
@@ -226,16 +227,15 @@
             style="@style/SectionHeader"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="4dp"
             android:layout_marginTop="14dp"
             android:text="@string/section_actions" />
 
         <com.beardedhen.androidbootstrap.BootstrapButton
             android:id="@+id/action_edit"
             android:layout_width="match_parent"
-            android:layout_height="60dp"
-            android:padding="4dp"
-            android:layout_marginBottom="10dp"
+            android:layout_height="50dp"
+            android:layout_marginTop="4dp"
+            android:layout_marginBottom="4dp"
             android:text="@string/key_view_action_edit"
             bootstrapbutton:bb_icon_left="fa-key"
             bootstrapbutton:bb_type="info"
@@ -244,20 +244,19 @@
         <com.beardedhen.androidbootstrap.BootstrapButton
             android:id="@+id/action_encrypt"
             android:layout_width="match_parent"
-            android:layout_height="60dp"
-            android:padding="4dp"
-            android:layout_marginBottom="10dp"
+            android:layout_height="50dp"
+            android:layout_marginTop="4dp"
+            android:layout_marginBottom="4dp"
             android:text="@string/key_view_action_encrypt"
             bootstrapbutton:bb_icon_left="fa-lock"
             bootstrapbutton:bb_type="info" />
 
-
         <com.beardedhen.androidbootstrap.BootstrapButton
             android:id="@+id/action_certify"
             android:layout_width="match_parent"
-            android:layout_height="60dp"
-            android:padding="4dp"
-            android:layout_marginBottom="10dp"
+            android:layout_height="50dp"
+            android:layout_marginTop="4dp"
+            android:layout_marginBottom="4dp"
             android:text="@string/key_view_action_certify"
             bootstrapbutton:bb_icon_left="fa-pencil"
             bootstrapbutton:bb_type="info" />

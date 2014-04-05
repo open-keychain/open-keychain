@@ -46,7 +46,7 @@ public abstract class KeyServer {
     abstract List<ImportKeysListEntry> search(String query) throws QueryException, TooManyResponses,
             InsufficientQuery;
 
-    abstract String get(long keyId) throws QueryException;
+    abstract String get(String keyIdHex) throws QueryException;
 
-    abstract void add(String armoredText) throws AddKeyException;
+    abstract void add(String armoredKey) throws AddKeyException;
 }

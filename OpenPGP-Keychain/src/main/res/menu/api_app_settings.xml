@@ -6,9 +6,5 @@
         android:id="@+id/menu_api_settings_revoke"
         android:title="@string/api_settings_revoke"
         app:showAsAction="never" />
-    <item
-        android:id="@+id/menu_api_settings_cancel"
-        android:title="@string/api_settings_cancel"
-        app:showAsAction="never" />
 
 </menu>

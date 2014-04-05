@@ -53,20 +53,21 @@ public class ViewKeyCertsFragment extends Fragment
     // These are the rows that we will retrieve.
     static final String[] PROJECTION = new String[] {
         KeychainContract.Certs._ID,
+        KeychainContract.Certs.MASTER_KEY_ID,
         KeychainContract.Certs.VERIFIED,
         KeychainContract.Certs.RANK,
         KeychainContract.Certs.KEY_ID_CERTIFIER,
-        KeychainContract.UserIds.USER_ID,
-        "signer_uid"
+        KeychainContract.Certs.USER_ID,
+        KeychainContract.Certs.SIGNER_UID
     };
 
     // sort by our user id,
     static final String SORT_ORDER =
               KeychainDatabase.Tables.USER_IDS + "." + KeychainContract.UserIds.RANK + " ASC, "
             + KeychainDatabase.Tables.CERTS + "." + KeychainContract.Certs.VERIFIED + " DESC, "
-            + "signer_uid ASC";
+            + KeychainContract.Certs.SIGNER_UID + " ASC";
 
-    public static final String ARG_KEYRING_ROW_ID = "row_id";
+    public static final String ARG_DATA_URI = "data_uri";
 
     private StickyListHeadersListView mStickyList;
     private Spinner mSpinner;
@@ -125,14 +126,14 @@ public class ViewKeyCertsFragment extends Fragment
 
         mStickyList = (StickyListHeadersListView) getActivity().findViewById(R.id.list);
 
-        if (!getArguments().containsKey(ARG_KEYRING_ROW_ID)) {
+        if (!getArguments().containsKey(ARG_DATA_URI)) {
             Log.e(Constants.TAG, "Data missing. Should be Uri of key!");
             getActivity().finish();
             return;
         }
 
-        long rowId = getArguments().getLong(ARG_KEYRING_ROW_ID);
-        mBaseUri = KeychainContract.Certs.buildCertsByKeyRowIdUri(Long.toString(rowId));
+        Uri uri = getArguments().getParcelable(ARG_DATA_URI);
+        mBaseUri = KeychainContract.Certs.buildCertsUri(uri);
 
         mStickyList.setAreHeadersSticky(true);
         mStickyList.setDrawingListUnderStickyHeader(false);
@@ -229,12 +230,12 @@ public class ViewKeyCertsFragment extends Fragment
         private void initIndex(Cursor cursor) {
             if (cursor != null) {
 
-                mIndexCertId = cursor.getColumnIndexOrThrow(KeychainContract.Certs._ID);
+                mIndexCertId = cursor.getColumnIndexOrThrow(KeychainContract.Certs.MASTER_KEY_ID);
                 mIndexUserId = cursor.getColumnIndexOrThrow(KeychainContract.UserIds.USER_ID);
                 mIndexRank = cursor.getColumnIndexOrThrow(KeychainContract.UserIds.RANK);
                 mIndexVerified = cursor.getColumnIndexOrThrow(KeychainContract.Certs.VERIFIED);
                 mIndexSignerKeyId = cursor.getColumnIndexOrThrow(KeychainContract.Certs.KEY_ID_CERTIFIER);
-                mIndexSignerUserId = cursor.getColumnIndexOrThrow("signer_uid");
+                mIndexSignerUserId = cursor.getColumnIndexOrThrow(KeychainContract.Certs.SIGNER_UID);
             }
         }
 

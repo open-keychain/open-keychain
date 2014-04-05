@@ -18,8 +18,18 @@
 package org.sufficientlysecure.keychain.pgp;
 
 import android.content.Context;
+import android.graphics.Color;
+import android.text.Spannable;
+import android.text.SpannableStringBuilder;
+import android.text.style.ForegroundColorSpan;
+
 import org.spongycastle.bcpg.sig.KeyFlags;
-import org.spongycastle.openpgp.*;
+import org.spongycastle.openpgp.PGPPublicKey;
+import org.spongycastle.openpgp.PGPPublicKeyRing;
+import org.spongycastle.openpgp.PGPSecretKey;
+import org.spongycastle.openpgp.PGPSecretKeyRing;
+import org.spongycastle.openpgp.PGPSignature;
+import org.spongycastle.openpgp.PGPSignatureSubpacketVector;
 import org.spongycastle.util.encoders.Hex;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
@@ -27,7 +37,14 @@ import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.util.IterableIterator;
 import org.sufficientlysecure.keychain.util.Log;
 
-import java.util.*;
+import java.security.DigestException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.Locale;
+import java.util.Vector;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -41,34 +58,6 @@ public class PgpKeyHelper {
 
     public static Date getCreationDate(PGPSecretKey key) {
         return key.getPublicKey().getCreationTime();
-    }
-
-    @SuppressWarnings("unchecked")
-    public static PGPPublicKey getMasterKey(PGPPublicKeyRing keyRing) {
-        if (keyRing == null) {
-            return null;
-        }
-        for (PGPPublicKey key : new IterableIterator<PGPPublicKey>(keyRing.getPublicKeys())) {
-            if (key.isMasterKey()) {
-                return key;
-            }
-        }
-
-        return null;
-    }
-
-    @SuppressWarnings("unchecked")
-    public static PGPSecretKey getMasterKey(PGPSecretKeyRing keyRing) {
-        if (keyRing == null) {
-            return null;
-        }
-        for (PGPSecretKey key : new IterableIterator<PGPSecretKey>(keyRing.getSecretKeys())) {
-            if (key.isMasterKey()) {
-                return key;
-            }
-        }
-
-        return null;
     }
 
     @SuppressWarnings("unchecked")
@@ -202,9 +191,8 @@ public class PgpKeyHelper {
         Calendar calendar = GregorianCalendar.getInstance();
         calendar.setTime(creationDate);
         calendar.add(Calendar.DATE, key.getValidDays());
-        Date expiryDate = calendar.getTime();
 
-        return expiryDate;
+        return calendar.getTime();
     }
 
     public static Date getExpiryDate(PGPSecretKey key) {
@@ -212,8 +200,7 @@ public class PgpKeyHelper {
     }
 
     public static PGPPublicKey getEncryptPublicKey(Context context, long masterKeyId) {
-        PGPPublicKeyRing keyRing = ProviderHelper.getPGPPublicKeyRingByMasterKeyId(context,
-                masterKeyId);
+        PGPPublicKeyRing keyRing = ProviderHelper.getPGPPublicKeyRing(context, masterKeyId);
         if (keyRing == null) {
             Log.e(Constants.TAG, "keyRing is null!");
             return null;
@@ -227,8 +214,7 @@ public class PgpKeyHelper {
     }
 
     public static PGPSecretKey getCertificationKey(Context context, long masterKeyId) {
-        PGPSecretKeyRing keyRing = ProviderHelper.getPGPSecretKeyRingByMasterKeyId(context,
-                masterKeyId);
+        PGPSecretKeyRing keyRing = ProviderHelper.getPGPSecretKeyRing(context, masterKeyId);
         if (keyRing == null) {
             return null;
         }
@@ -240,8 +226,7 @@ public class PgpKeyHelper {
     }
 
     public static PGPSecretKey getSigningKey(Context context, long masterKeyId) {
-        PGPSecretKeyRing keyRing = ProviderHelper.getPGPSecretKeyRingByMasterKeyId(context,
-                masterKeyId);
+        PGPSecretKeyRing keyRing = ProviderHelper.getPGPSecretKeyRing(context, masterKeyId);
         if (keyRing == null) {
             return null;
         }
@@ -282,6 +267,33 @@ public class PgpKeyHelper {
             userId = context.getString(R.string.user_id_no_name);
         }
         return userId;
+    }
+
+    public static int getKeyUsage(PGPSecretKey key) {
+        return getKeyUsage(key.getPublicKey());
+    }
+
+    @SuppressWarnings("unchecked")
+    private static int getKeyUsage(PGPPublicKey key) {
+        int usage = 0;
+        if (key.getVersion() >= 4) {
+            for (PGPSignature sig : new IterableIterator<PGPSignature>(key.getSignatures())) {
+                if (key.isMasterKey() && sig.getKeyID() != key.getKeyID()) {
+                    continue;
+                }
+
+                PGPSignatureSubpacketVector hashed = sig.getHashedSubPackets();
+                if (hashed != null) {
+                    usage |= hashed.getKeyFlags();
+                }
+
+                PGPSignatureSubpacketVector unhashed = sig.getUnhashedSubPackets();
+                if (unhashed != null) {
+                    usage |= unhashed.getKeyFlags();
+                }
+            }
+        }
+        return usage;
     }
 
     @SuppressWarnings("unchecked")
@@ -390,6 +402,36 @@ public class PgpKeyHelper {
         return false;
     }
 
+    public static boolean isAuthenticationKey(PGPSecretKey key) {
+        return isAuthenticationKey(key.getPublicKey());
+    }
+
+    @SuppressWarnings("unchecked")
+    public static boolean isAuthenticationKey(PGPPublicKey key) {
+        if (key.getVersion() <= 3) {
+            return true;
+        }
+
+        for (PGPSignature sig : new IterableIterator<PGPSignature>(key.getSignatures())) {
+            if (key.isMasterKey() && sig.getKeyID() != key.getKeyID()) {
+                continue;
+            }
+            PGPSignatureSubpacketVector hashed = sig.getHashedSubPackets();
+
+            if (hashed != null && (hashed.getKeyFlags() & KeyFlags.AUTHENTICATION) != 0) {
+                return true;
+            }
+
+            PGPSignatureSubpacketVector unhashed = sig.getUnhashedSubPackets();
+
+            if (unhashed != null && (unhashed.getKeyFlags() & KeyFlags.AUTHENTICATION) != 0) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     public static boolean isCertificationKey(PGPSecretKey key) {
         return isCertificationKey(key.getPublicKey());
     }
@@ -403,7 +445,7 @@ public class PgpKeyHelper {
     }
 
     public static String getAlgorithmInfo(int algorithm, int keySize) {
-        String algorithmStr = null;
+        String algorithmStr;
 
         switch (algorithm) {
             case PGPPublicKey.RSA_ENCRYPT:
@@ -434,21 +476,6 @@ public class PgpKeyHelper {
             return algorithmStr;
     }
 
-    public static String getFingerPrint(Context context, long keyId) {
-        PGPPublicKey key = ProviderHelper.getPGPPublicKeyByKeyId(context, keyId);
-        // if it is no public key get it from your own keys...
-        if (key == null) {
-            PGPSecretKey secretKey = ProviderHelper.getPGPSecretKeyByKeyId(context, keyId);
-            if (secretKey == null) {
-                Log.e(Constants.TAG, "Key could not be found!");
-                return null;
-            }
-            key = secretKey.getPublicKey();
-        }
-
-        return convertFingerprintToHex(key.getFingerprint(), true);
-    }
-
     /**
      * Converts fingerprint to hex (optional: with whitespaces after 4 characters)
      * <p/>
@@ -456,14 +483,10 @@ public class PgpKeyHelper {
      * better differentiate between numbers and letters when letters are lowercase.
      *
      * @param fingerprint
-     * @param split       split into 4 character chunks
      * @return
      */
-    public static String convertFingerprintToHex(byte[] fingerprint, boolean split) {
+    public static String convertFingerprintToHex(byte[] fingerprint) {
         String hexString = Hex.toHexString(fingerprint);
-        if (split) {
-            hexString = hexString.replaceAll("(.{4})(?!$)", "$1 ");
-        }
 
         return hexString;
     }
@@ -479,7 +502,16 @@ public class PgpKeyHelper {
      * @return
      */
     public static String convertKeyIdToHex(long keyId) {
+        long upper = keyId >> 32;
+        if (upper == 0) {
+            // this is a short key id
+            return convertKeyIdToHexShort(keyId);
+        }
         return "0x" + convertKeyIdToHex32bit(keyId >> 32) + convertKeyIdToHex32bit(keyId);
+    }
+
+    public static String convertKeyIdToHexShort(long keyId) {
+        return "0x" + convertKeyIdToHex32bit(keyId);
     }
 
     private static String convertKeyIdToHex32bit(long keyId) {
@@ -490,17 +522,90 @@ public class PgpKeyHelper {
         return hexString;
     }
 
+
+    public static SpannableStringBuilder colorizeFingerprint(String fingerprint) {
+        // split by 4 characters
+        fingerprint = fingerprint.replaceAll("(.{4})(?!$)", "$1 ");
+
+        // add line breaks to have a consistent "image" that can be recognized
+        char[] chars = fingerprint.toCharArray();
+        chars[24] = '\n';
+        fingerprint = String.valueOf(chars);
+
+        SpannableStringBuilder sb = new SpannableStringBuilder(fingerprint);
+        try {
+            // for each 4 characters of the fingerprint + 1 space
+            for (int i = 0; i < fingerprint.length(); i += 5) {
+                int spanEnd = Math.min(i + 4, fingerprint.length());
+                String fourChars = fingerprint.substring(i, spanEnd);
+
+                int raw = Integer.parseInt(fourChars, 16);
+                byte[] bytes = {(byte) ((raw >> 8) & 0xff - 128), (byte) (raw & 0xff - 128)};
+                int[] color = getRgbForData(bytes);
+                int r = color[0];
+                int g = color[1];
+                int b = color[2];
+
+                // we cannot change black by multiplication, so adjust it to an almost-black grey,
+                // which will then be brightened to the minimal brightness level
+                if (r == 0 && g == 0 && b == 0) {
+                    r = 1;
+                    g = 1;
+                    b = 1;
+                }
+
+                // Convert rgb to brightness
+                double brightness = 0.2126 * r + 0.7152 * g + 0.0722 * b;
+
+                // If a color is too dark to be seen on black,
+                // then brighten it up to a minimal brightness.
+                if (brightness < 80) {
+                    double factor = 80.0 / brightness;
+                    r = Math.min(255, (int) (r * factor));
+                    g = Math.min(255, (int) (g * factor));
+                    b = Math.min(255, (int) (b * factor));
+
+                    // If it is too light, then darken it to a respective maximal brightness.
+                } else if (brightness > 180) {
+                    double factor = 180.0 / brightness;
+                    r = (int) (r * factor);
+                    g = (int) (g * factor);
+                    b = (int) (b * factor);
+                }
+
+                // Create a foreground color with the 3 digest integers as RGB
+                // and then converting that int to hex to use as a color
+                sb.setSpan(new ForegroundColorSpan(Color.rgb(r, g, b)),
+                        i, spanEnd, Spannable.SPAN_INCLUSIVE_INCLUSIVE);
+            }
+        } catch (Exception e) {
+            Log.e(Constants.TAG, "Colorization failed", e);
+            // if anything goes wrong, then just display the fingerprint without colour,
+            // instead of partially correct colour or wrong colours
+            return new SpannableStringBuilder(fingerprint);
+        }
+
+        return sb;
+    }
+
     /**
-     * Used in HkpKeyServer to convert hex encoded key ids back to long.
+     * Converts the given bytes to a unique RGB color using SHA1 algorithm
      *
-     * @param hexString
-     * @return
+     * @param bytes
+     * @return an integer array containing 3 numeric color representations (Red, Green, Black)
+     * @throws java.security.NoSuchAlgorithmException
+     * @throws java.security.DigestException
      */
-    public static long convertHexToKeyId(String hexString) {
-        int len = hexString.length();
-        String s2 = hexString.substring(len - 8);
-        String s1 = hexString.substring(0, len - 8);
-        return (Long.parseLong(s1, 16) << 32) | Long.parseLong(s2, 16);
+    private static int[] getRgbForData(byte[] bytes) throws NoSuchAlgorithmException, DigestException {
+        MessageDigest md = MessageDigest.getInstance("SHA1");
+
+        md.update(bytes);
+        byte[] digest = md.digest();
+
+        int[] result = {((int) digest[0] + 256) % 256,
+                ((int) digest[1] + 256) % 256,
+                ((int) digest[2] + 256) % 256};
+        return result;
     }
 
     /**

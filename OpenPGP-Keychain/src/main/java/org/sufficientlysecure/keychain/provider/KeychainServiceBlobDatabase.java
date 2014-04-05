@@ -25,7 +25,7 @@ import android.provider.BaseColumns;
 import org.sufficientlysecure.keychain.provider.KeychainServiceBlobContract.BlobsColumns;
 
 public class KeychainServiceBlobDatabase extends SQLiteOpenHelper {
-    private static final String DATABASE_NAME = "apg_blob.db";
+    private static final String DATABASE_NAME = "openkeychain_blob.db";
     private static final int DATABASE_VERSION = 2;
 
     public static final String TABLE = "data";

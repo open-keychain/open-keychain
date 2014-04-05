@@ -39,7 +39,7 @@ public class ViewKeyUserIdsAdapter extends CursorAdapter {
     private int mIndexUserId, mIndexRank;
     private int mVerifiedId;
 
-    final private ArrayList<Boolean> mCheckStates;
+    private final ArrayList<Boolean> mCheckStates;
 
     public ViewKeyUserIdsAdapter(Context context, Cursor c, int flags, boolean showCheckBoxes) {
         super(context, c, flags);
@@ -57,9 +57,9 @@ public class ViewKeyUserIdsAdapter extends CursorAdapter {
     @Override
     public Cursor swapCursor(Cursor newCursor) {
         initIndex(newCursor);
-        if(mCheckStates != null) {
+        if (mCheckStates != null) {
             mCheckStates.clear();
-            if(newCursor != null) {
+            if (newCursor != null) {
                 int count = newCursor.getCount();
                 mCheckStates.ensureCapacity(count);
                 // initialize to true (use case knowledge: we usually want to sign all uids)
@@ -84,7 +84,7 @@ public class ViewKeyUserIdsAdapter extends CursorAdapter {
         if (cursor != null) {
             mIndexUserId = cursor.getColumnIndexOrThrow(UserIds.USER_ID);
             mIndexRank = cursor.getColumnIndexOrThrow(UserIds.RANK);
-            mVerifiedId = cursor.getColumnIndexOrThrow("verified");
+            // mVerifiedId = cursor.getColumnIndexOrThrow(UserIds.VERIFIED);
         }
     }
 
@@ -106,7 +106,7 @@ public class ViewKeyUserIdsAdapter extends CursorAdapter {
         }
         vAddress.setText(userId[1]);
 
-        int verified = cursor.getInt(mVerifiedId);
+        int verified = 1; // cursor.getInt(mVerifiedId);
         // TODO introduce own resource for this :)
         if(verified > 0)
             vVerified.setImageResource(android.R.drawable.presence_online);
@@ -114,8 +114,9 @@ public class ViewKeyUserIdsAdapter extends CursorAdapter {
             vVerified.setImageResource(android.R.drawable.presence_invisible);
 
         // don't care further if checkboxes aren't shown
-        if(mCheckStates == null)
+        if (mCheckStates == null) {
             return;
+        }
 
         final CheckBox vCheckBox = (CheckBox) view.findViewById(R.id.checkBox);
         final int position = cursor.getPosition();
@@ -138,8 +139,8 @@ public class ViewKeyUserIdsAdapter extends CursorAdapter {
 
     public ArrayList<String> getSelectedUserIds() {
         ArrayList<String> result = new ArrayList<String>();
-        for(int i = 0; i < mCheckStates.size(); i++) {
-            if(mCheckStates.get(i)) {
+        for (int i = 0; i < mCheckStates.size(); i++) {
+            if (mCheckStates.get(i)) {
                 mCursor.moveToPosition(i);
                 result.add(mCursor.getString(mIndexUserId));
             }

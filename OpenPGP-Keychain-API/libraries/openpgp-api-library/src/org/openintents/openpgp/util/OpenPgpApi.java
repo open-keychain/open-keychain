@@ -32,7 +32,7 @@ public class OpenPgpApi {
 
     public static final String TAG = "OpenPgp API";
 
-    public static final int API_VERSION = 2;
+    public static final int API_VERSION = 3;
     public static final String SERVICE_INTENT = "org.openintents.openpgp.IOpenPgpService";
     
     /**
@@ -125,6 +125,8 @@ public class OpenPgpApi {
 
     /* Intent extras */
     public static final String EXTRA_API_VERSION = "api_version";
+
+    public static final String EXTRA_ACCOUNT_NAME = "account_name";
 
     // SIGN, ENCRYPT, SIGN_AND_ENCRYPT, DECRYPT_VERIFY
     // request ASCII Armor for output

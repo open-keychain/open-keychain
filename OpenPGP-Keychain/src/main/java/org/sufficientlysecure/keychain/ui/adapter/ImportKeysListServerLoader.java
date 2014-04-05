@@ -19,6 +19,7 @@ package org.sufficientlysecure.keychain.ui.adapter;
 
 import android.content.Context;
 import android.support.v4.content.AsyncTaskLoader;
+
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.util.HkpKeyServer;
 import org.sufficientlysecure.keychain.util.KeyServer;
@@ -53,7 +54,12 @@ public class ImportKeysListServerLoader
             return mEntryListWrapper;
         }
 
-        queryServer(mServerQuery, mKeyServer);
+        if (mServerQuery.startsWith("0x") && mServerQuery.length() == 42) {
+            Log.d(Constants.TAG, "This search is based on a unique fingerprint. Enforce a fingerprint check!");
+            queryServer(mServerQuery, mKeyServer, true);
+        } else {
+            queryServer(mServerQuery, mKeyServer, false);
+        }
 
         return mEntryListWrapper;
     }
@@ -84,14 +90,30 @@ public class ImportKeysListServerLoader
     /**
      * Query keyserver
      */
-    private void queryServer(String query, String keyServer) {
+    private void queryServer(String query, String keyServer, boolean enforceFingerprint) {
         HkpKeyServer server = new HkpKeyServer(keyServer);
         try {
             ArrayList<ImportKeysListEntry> searchResult = server.search(query);
 
             mEntryList.clear();
             // add result to data
-            mEntryList.addAll(searchResult);
+            if (enforceFingerprint) {
+                String fingerprint = query.substring(2);
+                Log.d(Constants.TAG, "fingerprint: " + fingerprint);
+                // query must return only one result!
+                if (searchResult.size() > 0) {
+                    ImportKeysListEntry uniqueEntry = searchResult.get(0);
+                    /*
+                     * set fingerprint explicitly after query
+                     * to enforce a check when the key is imported by KeychainIntentService
+                     */
+                    uniqueEntry.setFingerPrintHex(fingerprint);
+                    uniqueEntry.setSelected(true);
+                    mEntryList.add(uniqueEntry);
+                }
+            } else {
+                mEntryList.addAll(searchResult);
+            }
             mEntryListWrapper = new AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>>(mEntryList, null);
         } catch (KeyServer.InsufficientQuery e) {
             Log.e(Constants.TAG, "InsufficientQuery", e);

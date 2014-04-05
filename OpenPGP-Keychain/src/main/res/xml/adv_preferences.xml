@@ -35,7 +35,7 @@
             android:title="@string/label_file_compression" />
 
         <CheckBoxPreference
-            android:key="defaultAsciiArmour"
+            android:key="defaultAsciiArmor"
             android:persistent="false"
             android:title="@string/label_ascii_armor" />
     </PreferenceCategory>
