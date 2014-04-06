@@ -220,9 +220,6 @@ public class ViewCertActivity extends ActionBarActivity
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.menu_view_cert_verify:
-                // TODO verification routine
-                return true;
             case R.id.menu_view_cert_view_signer:
                 // can't do this before the data is initialized
                 Intent viewIntent = null;
