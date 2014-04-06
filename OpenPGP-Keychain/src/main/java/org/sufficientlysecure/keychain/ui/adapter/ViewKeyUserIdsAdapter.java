@@ -23,6 +23,7 @@ import android.support.v4.widget.CursorAdapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
@@ -34,13 +35,18 @@ import org.sufficientlysecure.keychain.provider.KeychainContract.Certs;
 
 import java.util.ArrayList;
 
-public class ViewKeyUserIdsAdapter extends CursorAdapter {
+public class ViewKeyUserIdsAdapter extends CursorAdapter implements AdapterView.OnItemClickListener {
     private LayoutInflater mInflater;
 
     private int mIndexUserId, mIndexRank;
     private int mVerifiedId, mIsRevoked, mIsPrimary;
 
     private final ArrayList<Boolean> mCheckStates;
+
+    public static final String[] USER_IDS_PROJECTION = new String[] {
+            UserIds._ID, UserIds.USER_ID, UserIds.RANK,
+            UserIds.VERIFIED, UserIds.IS_PRIMARY, UserIds.IS_REVOKED
+    };
 
     public ViewKeyUserIdsAdapter(Context context, Cursor c, int flags, boolean showCheckBoxes) {
         super(context, c, flags);
@@ -67,7 +73,7 @@ public class ViewKeyUserIdsAdapter extends CursorAdapter {
                 for(int i = 0; i < count; i++) {
                     newCursor.moveToPosition(i);
                     int verified = newCursor.getInt(mVerifiedId);
-                    mCheckStates.add(verified == 0);
+                    mCheckStates.add(verified != Certs.VERIFIED_SECRET);
                 }
             }
         }
@@ -114,6 +120,7 @@ public class ViewKeyUserIdsAdapter extends CursorAdapter {
         vAddress.setText(userId[1]);
 
         if(cursor.getInt(mIsRevoked) > 0) {
+            vRank.setText(" ");
             vVerified.setImageResource(android.R.drawable.presence_away);
         } else {
             int verified = cursor.getInt(mVerifiedId);
@@ -141,13 +148,15 @@ public class ViewKeyUserIdsAdapter extends CursorAdapter {
                 mCheckStates.set(position, b);
             }
         });
-        view.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                vCheckBox.toggle();
-            }
-        });
+        vCheckBox.setClickable(false);
 
+    }
+
+    public void onItemClick(AdapterView<?> adapter, View view, int position, long id) {
+        CheckBox box = ((CheckBox) view.findViewById(R.id.checkBox));
+        if(box != null) {
+            box.toggle();
+        }
     }
 
     public ArrayList<String> getSelectedUserIds() {

@@ -9,7 +9,9 @@
     <CheckBox
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/checkBox" />
+        android:id="@+id/checkBox"
+        android:clickable="false"
+        android:focusable="false" />
 
     <TextView
         android:id="@+id/rank"
@@ -19,7 +21,8 @@
         android:text="0"
         android:paddingLeft="10dp"
         android:paddingRight="10dp"
-        android:layout_gravity="center_vertical" />
+        android:layout_gravity="center_vertical"
+        android:width="30sp" />
 
     <LinearLayout
         android:orientation="vertical"
