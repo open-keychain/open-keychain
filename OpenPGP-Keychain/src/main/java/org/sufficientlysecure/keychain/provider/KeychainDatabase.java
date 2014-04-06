@@ -114,7 +114,8 @@ public class KeychainDatabase extends SQLiteOpenHelper {
                 + CertsColumns.TYPE + " INTEGER, "
                 + CertsColumns.VERIFIED + " INTEGER, "
                 + CertsColumns.CREATION + " INTEGER, "
-                + CertsColumns.EXPIRY + " INTEGER, "
+
+                + CertsColumns.DATA + " BLOB, "
 
                 + "PRIMARY KEY(" + CertsColumns.MASTER_KEY_ID + ", " + CertsColumns.RANK + ", "
                     + CertsColumns.KEY_ID_CERTIFIER + "), "

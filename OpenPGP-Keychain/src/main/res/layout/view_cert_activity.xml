@@ -14,6 +14,26 @@
         android:paddingLeft="16dp"
         android:paddingRight="16dp">
 
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:layout_marginTop="14dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Verification Status" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="ok"
+                android:id="@+id/status"
+                android:layout_marginLeft="30dp" />
+        </LinearLayout>
+
         <TextView
             style="@style/SectionHeader"
             android:layout_width="wrap_content"
@@ -96,6 +116,25 @@
                     android:paddingRight="5dip" />
             </TableRow>
 
+            <TableRow
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:id="@+id/row_reason">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="top"
+                    android:paddingRight="10dip"
+                    android:text="Revocation Reason" />
+
+                <TextView
+                    android:id="@+id/reason"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:paddingRight="5dip" />
+            </TableRow>
+
             <TableRow>
 
                 <TextView
@@ -107,24 +146,6 @@
 
                 <TextView
                     android:id="@+id/creation"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:paddingRight="5dip" />
-            </TableRow>
-
-            <TableRow
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="top"
-                    android:paddingRight="10dip"
-                    android:text="Expires" />
-
-                <TextView
-                    android:id="@+id/expiry"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:paddingRight="5dip" />

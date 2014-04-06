@@ -246,10 +246,8 @@ public class ProviderHelper {
                 try {
                     // self signature
                     if(certId == masterKeyId) {
-                        cert.init(
-                                new JcaPGPContentVerifierBuilderProvider().setProvider(
-                                        Constants.BOUNCY_CASTLE_PROVIDER_NAME),
-                                masterKey);
+                        cert.init(new JcaPGPContentVerifierBuilderProvider().setProvider(
+                                        Constants.BOUNCY_CASTLE_PROVIDER_NAME), masterKey);
                         if(!cert.verifyCertification(userId,  masterKey)) {
                             // not verified?! dang! TODO notify user? this is kinda serious...
                             Log.e(Constants.TAG, "Could not verify self signature for " + userId + "!");
@@ -267,8 +265,7 @@ public class ProviderHelper {
                     // verify signatures from known private keys
                     if(allKeyRings.containsKey(certId)) {
                         // mark them as verified
-                        cert.init(
-                                new JcaPGPContentVerifierBuilderProvider().setProvider(
+                        cert.init(new JcaPGPContentVerifierBuilderProvider().setProvider(
                                         Constants.BOUNCY_CASTLE_PROVIDER_NAME),
                                 allKeyRings.get(certId).getPublicKey());
                         if(cert.verifyCertification(userId, masterKey)) {
@@ -423,12 +420,8 @@ public class ProviderHelper {
         values.put(Certs.KEY_ID_CERTIFIER, cert.getKeyID());
         values.put(Certs.TYPE, cert.getSignatureType());
         values.put(Certs.CREATION, cert.getCreationTime().getTime() / 1000);
-        if(cert.getHashedSubPackets().hasSubpacket(SignatureSubpacketTags.EXPIRE_TIME)) {
-            long ext = ((SignatureExpirationTime) cert.getHashedSubPackets().getSubpacket(
-                    SignatureSubpacketTags.EXPIRE_TIME)).getTime();
-            values.put(Certs.EXPIRY, cert.getCreationTime().getTime() / 1000 + ext);
-        }
         values.put(Certs.VERIFIED, verified);
+        values.put(Certs.DATA, cert.getEncoded());
 
         Uri uri = Certs.buildCertsUri(Long.toString(masterKeyId));
 

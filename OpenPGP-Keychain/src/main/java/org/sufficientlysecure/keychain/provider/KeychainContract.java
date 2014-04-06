@@ -62,7 +62,7 @@ public class KeychainContract {
         String TYPE = "type";
         String VERIFIED = "verified";
         String CREATION = "creation";
-        String EXPIRY = "expiry";
+        String DATA = "data";
     }
 
     interface ApiAppsColumns {
