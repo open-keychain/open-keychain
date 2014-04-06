@@ -68,6 +68,7 @@ import se.emilsjolander.stickylistheaders.ApiLevelTooLowException;
 import se.emilsjolander.stickylistheaders.StickyListHeadersAdapter;
 import se.emilsjolander.stickylistheaders.StickyListHeadersListView;
 
+import java.util.Date;
 import java.util.HashMap;
 
 /**
@@ -252,6 +253,7 @@ public class KeyListFragment extends Fragment
             KeyRings.MASTER_KEY_ID,
             KeyRings.USER_ID,
             KeyRings.IS_REVOKED,
+            KeyRings.EXPIRY,
             KeyRings.VERIFIED,
             KeyRings.HAS_SECRET
     };
@@ -259,8 +261,9 @@ public class KeyListFragment extends Fragment
     static final int INDEX_MASTER_KEY_ID = 1;
     static final int INDEX_USER_ID = 2;
     static final int INDEX_IS_REVOKED = 3;
-    static final int INDEX_VERIFIED = 4;
-    static final int INDEX_HAS_SECRET = 5;
+    static final int INDEX_EXPIRY = 4;
+    static final int INDEX_VERIFIED = 5;
+    static final int INDEX_HAS_SECRET = 6;
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
@@ -519,10 +522,13 @@ public class KeyListFragment extends Fragment
                     button.setVisibility(View.GONE);
 
                     boolean isRevoked = cursor.getInt(INDEX_IS_REVOKED) > 0;
-                    if(isRevoked) {
-                        statusLayout.setVisibility(isRevoked ? View.VISIBLE : View.GONE);
-                        revoked.setVisibility(isRevoked ? View.VISIBLE : View.GONE);
+                    boolean isExpired = !cursor.isNull(INDEX_EXPIRY)
+                            && new Date(cursor.getLong(INDEX_EXPIRY)*1000).before(new Date());
+                    if(isRevoked || isExpired) {
+                        statusLayout.setVisibility(View.VISIBLE);
+                        revoked.setVisibility(View.VISIBLE);
                         verified.setVisibility(View.GONE);
+                        revoked.setText(isRevoked ? R.string.revoked : R.string.expired);
                     } else {
                         boolean isVerified = cursor.getInt(INDEX_VERIFIED) > 0;
                         statusLayout.setVisibility(isVerified ? View.VISIBLE : View.GONE);
