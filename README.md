@@ -52,7 +52,7 @@ I am using the newest [Android Studio](http://developer.android.com/sdk/installi
 1. Clone the project from github
 2. From Android Studio: File -> Import Project ->  ...
   * Select the cloned top folder if you want to develop on the main project
-  * Select the "OpenPGP-Keychain-API" folder if you want to develop on the API example
+  * Select the "OpenKeychain-API" folder if you want to develop on the API example
 3. Import project from external model -> choose Gradle
 
 ## OpenKeychain's API
