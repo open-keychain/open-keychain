@@ -1,6 +1,5 @@
 /*
  * Copyright (C) 2013-2014 Dominik Schürmann <dominik@dominikschuermann.de>
- * Copyright (C) 2013 Bahtiar 'kalkin' Gadimov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,7 +18,6 @@
 package org.sufficientlysecure.keychain.ui;
 
 import android.annotation.TargetApi;
-import android.net.Uri;
 import android.nfc.NdefMessage;
 import android.nfc.NdefRecord;
 import android.nfc.NfcAdapter;
@@ -31,6 +29,9 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.widget.Toast;
+
+import com.devspark.appmsg.AppMsg;
+
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
@@ -42,7 +43,6 @@ import java.io.IOException;
 public class ViewKeyActivityJB extends ViewKeyActivity implements CreateNdefMessageCallback,
         OnNdefPushCompleteCallback {
 
-    // NFC
     private NfcAdapter mNfcAdapter;
     private byte[] mSharedKeyringBytes;
     private static final int NFC_SENT = 1;
@@ -50,6 +50,8 @@ public class ViewKeyActivityJB extends ViewKeyActivity implements CreateNdefMess
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        initNfc();
     }
 
     /**
@@ -81,17 +83,15 @@ public class ViewKeyActivityJB extends ViewKeyActivity implements CreateNdefMess
          * guarantee that this activity starts when receiving a beamed message. For now, this code
          * uses the tag dispatch system.
          */
-        // get public keyring as byte array
-        long masterKeyId = ProviderHelper.getMasterKeyId(this, mDataUri);
         try {
-            mSharedKeyringBytes = ProviderHelper.getPGPPublicKeyRing(this, masterKeyId).getEncoded();
+            // get public keyring as byte array
+            mSharedKeyringBytes = ProviderHelper.getPGPKeyRing(this, mDataUri).getEncoded();
 
             NdefMessage msg = new NdefMessage(NdefRecord.createMime(Constants.NFC_MIME,
                     mSharedKeyringBytes), NdefRecord.createApplicationRecord(Constants.PACKAGE_NAME));
             return msg;
         } catch(IOException e) {
-            // not much trouble, but leave a note
-            Log.e(Constants.TAG, "Error parsing keyring: ", e);
+            Log.e(Constants.TAG, "Error parsing keyring", e);
             return null;
         }
     }
@@ -114,8 +114,8 @@ public class ViewKeyActivityJB extends ViewKeyActivity implements CreateNdefMess
         public void handleMessage(Message msg) {
             switch (msg.what) {
                 case NFC_SENT:
-                    Toast.makeText(getApplicationContext(), R.string.nfc_successfull, Toast.LENGTH_LONG)
-                            .show();
+                    AppMsg.makeText(ViewKeyActivityJB.this, R.string.nfc_successfull,
+                            AppMsg.STYLE_INFO).show();
                     break;
             }
         }

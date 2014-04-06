@@ -78,8 +78,6 @@
     <string name="menu_import_from_qr_code">Import from QR Code</string>
     <string name="menu_import">Import</string>
     <string name="menu_import_from_nfc">Import from NFC</string>
-    <string name="menu_export_public_keys">Export all public keys</string>
-    <string name="menu_export_secret_keys">Export all secret keys</string>
     <string name="menu_export_key">Export to file</string>
     <string name="menu_delete_key">Delete key</string>
     <string name="menu_create_key">Create key</string>
@@ -104,7 +102,7 @@
     <string name="menu_encrypt_to">Encrypt to…</string>
     <string name="menu_select_all">Select all</string>
     <string name="menu_add_keys">Add keys</string>
-    <string name="menu_export_keys">Export keys</string>
+    <string name="menu_export_all_keys">Export all keys</string>
 
     <!-- label -->
     <string name="label_sign">Sign</string>

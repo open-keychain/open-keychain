@@ -31,8 +31,6 @@ import android.os.Messenger;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.ActionBarActivity;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
@@ -40,29 +38,26 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.LinearLayout;
-import android.widget.Toast;
 
 import com.beardedhen.androidbootstrap.BootstrapButton;
 import com.devspark.appmsg.AppMsg;
 
 import org.spongycastle.openpgp.PGPSecretKey;
 import org.spongycastle.openpgp.PGPSecretKeyRing;
-
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.Id;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.helper.ActionBarHelper;
 import org.sufficientlysecure.keychain.helper.ExportHelper;
 import org.sufficientlysecure.keychain.pgp.PgpConversionHelper;
 import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
-import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRingData;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
 import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
 import org.sufficientlysecure.keychain.service.PassphraseCacheService;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
-import org.sufficientlysecure.keychain.ui.dialog.DeleteKeyDialogFragment;
 import org.sufficientlysecure.keychain.ui.dialog.PassphraseDialogFragment;
 import org.sufficientlysecure.keychain.ui.dialog.SetPassphraseDialogFragment;
 import org.sufficientlysecure.keychain.ui.widget.Editor;
@@ -142,9 +137,24 @@ public class EditKeyActivity extends ActionBarActivity implements EditorListener
 
         mExportHelper = new ExportHelper(this);
 
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setIcon(android.R.color.transparent);
-        getSupportActionBar().setHomeButtonEnabled(true);
+        // Inflate a "Done"/"Cancel" custom action bar view
+        ActionBarHelper.setTwoButtonView(getSupportActionBar(),
+                R.string.btn_save, R.drawable.ic_action_save,
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        // Save
+                        saveClicked();
+                    }
+                }, R.string.menu_key_edit_cancel, R.drawable.ic_action_cancel,
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        // Cancel
+                        cancelClicked();
+                    }
+                }
+        );
 
         mUserIds = new Vector<String>();
         mKeys = new Vector<PGPSecretKey>();
@@ -281,62 +291,6 @@ public class EditKeyActivity extends ActionBarActivity implements EditorListener
         }
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        super.onCreateOptionsMenu(menu);
-        getMenuInflater().inflate(R.menu.key_edit, menu);
-        //totally get rid of some actions for new keys
-        if (mDataUri == null) {
-            MenuItem mButton = menu.findItem(R.id.menu_key_edit_export_file);
-            mButton.setVisible(false);
-            mButton = menu.findItem(R.id.menu_key_edit_delete);
-            mButton.setVisible(false);
-        }
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                cancelClicked();
-                // TODO: why isn't this triggered on my tablet - one of many ui problems
-                // I've had with this device. A code compatibility issue or a Samsung fail?
-                return true;
-            case R.id.menu_key_edit_cancel:
-                cancelClicked();
-                return true;
-            case R.id.menu_key_edit_export_file:
-                if (needsSaving()) {
-                    Toast.makeText(this, R.string.error_save_first, Toast.LENGTH_LONG).show();
-                } else {
-                    long masterKeyId = ProviderHelper.getMasterKeyId(this, mDataUri);
-                    mExportHelper.showExportKeysDialog(
-                            new long[] { masterKeyId }, Constants.Path.APP_DIR_FILE_SEC, true);
-                    return true;
-                }
-                return true;
-            case R.id.menu_key_edit_delete:
-                Uri convertUri = KeyRingData.buildSecretKeyRingUri(mDataUri);
-                    // Message is received after key is deleted
-                    Handler returnHandler = new Handler() {
-                        @Override
-                        public void handleMessage(Message message) {
-                            if (message.what == DeleteKeyDialogFragment.MESSAGE_OKAY) {
-                                setResult(RESULT_CANCELED);
-                                finish();
-                            }
-                    }};
-                mExportHelper.deleteKey(convertUri, returnHandler);
-                return true;
-
-            case R.id.menu_key_edit_save:
-                saveClicked();
-                return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
     @SuppressWarnings("unchecked")
     private void finallyEdit(final long masterKeyId) {
         if (masterKeyId != 0) {
@@ -351,7 +305,7 @@ public class EditKeyActivity extends ActionBarActivity implements EditorListener
                 }
             } else {
                 Log.e(Constants.TAG, "Keyring not found with masterKeyId: " + masterKeyId);
-                Toast.makeText(this, R.string.error_no_secret_key_found, Toast.LENGTH_LONG).show();
+                AppMsg.makeText(this, R.string.error_no_secret_key_found, AppMsg.STYLE_ALERT).show();
                 // TODO
             }
             if (masterKey != null) {
@@ -525,23 +479,23 @@ public class EditKeyActivity extends ActionBarActivity implements EditorListener
                 }
                 if (passphrase == null) {
                     PassphraseDialogFragment.show(this, masterKeyId,
-                        new Handler() {
-                            @Override
-                            public void handleMessage(Message message) {
-                                if (message.what == PassphraseDialogFragment.MESSAGE_OKAY) {
-                                    mCurrentPassphrase = PassphraseCacheService.getCachedPassphrase(
-                                            EditKeyActivity.this, masterKeyId);
-                                    checkEmptyIDsWanted();
+                            new Handler() {
+                                @Override
+                                public void handleMessage(Message message) {
+                                    if (message.what == PassphraseDialogFragment.MESSAGE_OKAY) {
+                                        mCurrentPassphrase = PassphraseCacheService.getCachedPassphrase(
+                                                EditKeyActivity.this, masterKeyId);
+                                        checkEmptyIDsWanted();
+                                    }
                                 }
-                            }
-                        });
+                            });
                 } else {
                     mCurrentPassphrase = passphrase;
                     checkEmptyIDsWanted();
                 }
             } catch (PgpGeneralException e) {
-                Toast.makeText(this, getString(R.string.error_message, e.getMessage()),
-                        Toast.LENGTH_SHORT).show();
+                AppMsg.makeText(this, getString(R.string.error_message, e.getMessage()),
+                        AppMsg.STYLE_ALERT).show();
             }
         } else {
             AppMsg.makeText(this, R.string.error_change_something_first, AppMsg.STYLE_ALERT).show();
@@ -586,8 +540,7 @@ public class EditKeyActivity extends ActionBarActivity implements EditorListener
             }
         } catch (PgpGeneralException e) {
             Log.e(Constants.TAG, getString(R.string.error_message, e.getMessage()));
-            Toast.makeText(this, getString(R.string.error_message, e.getMessage()),
-                    Toast.LENGTH_SHORT).show();
+            AppMsg.makeText(this, getString(R.string.error_message, e.getMessage()), AppMsg.STYLE_ALERT).show();
         }
         finallySaveClicked();
     }
@@ -663,8 +616,8 @@ public class EditKeyActivity extends ActionBarActivity implements EditorListener
             startService(intent);
         } catch (PgpGeneralException e) {
             Log.e(Constants.TAG, getString(R.string.error_message, e.getMessage()));
-            Toast.makeText(this, getString(R.string.error_message, e.getMessage()),
-                    Toast.LENGTH_SHORT).show();
+            AppMsg.makeText(this, getString(R.string.error_message, e.getMessage()),
+                    AppMsg.STYLE_ALERT).show();
         }
     }
 

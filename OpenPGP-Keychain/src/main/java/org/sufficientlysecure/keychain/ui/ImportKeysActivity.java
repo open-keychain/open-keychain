@@ -32,6 +32,7 @@ import android.os.Parcelable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBar;
+import android.support.v7.app.ActionBarActivity;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ArrayAdapter;
@@ -41,6 +42,7 @@ import com.devspark.appmsg.AppMsg;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.helper.ActionBarHelper;
 import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
 import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
@@ -51,7 +53,7 @@ import org.sufficientlysecure.keychain.util.Log;
 import java.util.ArrayList;
 import java.util.Locale;
 
-public class ImportKeysActivity extends DrawerActivity implements ActionBar.OnNavigationListener {
+public class ImportKeysActivity extends ActionBarActivity implements ActionBar.OnNavigationListener {
     public static final String ACTION_IMPORT_KEY = Constants.INTENT_PREFIX + "IMPORT_KEY";
     public static final String ACTION_IMPORT_KEY_FROM_QR_CODE = Constants.INTENT_PREFIX
             + "IMPORT_KEY_FROM_QR_CODE";
@@ -113,9 +115,8 @@ public class ImportKeysActivity extends DrawerActivity implements ActionBar.OnNa
         if (ACTION_IMPORT_KEY_FROM_KEYSERVER_AND_RETURN.equals(getIntent().getAction())) {
             setTitle(R.string.nav_import);
         } else {
+            ActionBarHelper.setBackButton(this);
             getSupportActionBar().setDisplayShowTitleEnabled(false);
-
-            setupDrawerNavigation(savedInstanceState);
 
             // set drop down navigation
             Context context = getSupportActionBar().getThemedContext();
@@ -127,7 +128,6 @@ public class ImportKeysActivity extends DrawerActivity implements ActionBar.OnNa
 
         handleActions(savedInstanceState, getIntent());
     }
-
 
     protected void handleActions(Bundle savedInstanceState, Intent intent) {
         String action = intent.getAction();

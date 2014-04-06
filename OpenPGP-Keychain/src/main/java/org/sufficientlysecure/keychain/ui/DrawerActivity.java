@@ -81,7 +81,6 @@ public class DrawerActivity extends ActionBarActivity {
                 new NavItem("fa-user", getString(R.string.nav_contacts)),
                 new NavItem("fa-lock", getString(R.string.nav_encrypt)),
                 new NavItem("fa-unlock", getString(R.string.nav_decrypt)),
-                new NavItem("fa-download", getString(R.string.nav_import)),
                 new NavItem("fa-android", getString(R.string.nav_apps))};
 
         mDrawerList.setAdapter(new NavigationDrawerAdapter(this, R.layout.drawer_list_item,
@@ -264,7 +263,7 @@ public class DrawerActivity extends ActionBarActivity {
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
             View row = convertView;
-            NavItemHolder holder = null;
+            NavItemHolder holder;
 
             if (row == null) {
                 LayoutInflater inflater = ((Activity) mContext).getLayoutInflater();
