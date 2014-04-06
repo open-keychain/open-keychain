@@ -167,8 +167,9 @@ The full coding style can be found at http://source.android.com/source/code-styl
 3. Start code inspection and see the results by selecting Analyze > Inspect Code from Android-Studio.
 
 ## Licenses
-OpenPGP Kechain is licensed under GPLv3+.
-Some parts (older parts and some libraries are Apache License v2, MIT X11 License)
+OpenKechain is licensed under GPLv3+.
+The full license text can be found in the [LICENSE file](https://github.com/open-keychain/open-keychain/blob/master/LICENSE).
+Some parts and some libraries are Apache License v2, MIT X11 License (see below).
 
 > This program is free software: you can redistribute it and/or modify
 > it under the terms of the GNU General Public License as published by
