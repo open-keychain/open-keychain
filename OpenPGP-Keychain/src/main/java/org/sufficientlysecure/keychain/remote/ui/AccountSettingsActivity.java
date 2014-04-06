@@ -65,7 +65,7 @@ public class AccountSettingsActivity extends ActionBarActivity {
             return;
         } else {
             Log.d(Constants.TAG, "uri: " + mAccountUri);
-            loadData(savedInstanceState, mAccountUri);
+            loadData(mAccountUri);
         }
     }
 
@@ -89,8 +89,7 @@ public class AccountSettingsActivity extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    private void loadData(Bundle savedInstanceState, Uri accountUri) {
-        // TODO: load this also like other fragment with newInstance arguments?
+    private void loadData(Uri accountUri) {
         AccountSettings settings = ProviderHelper.getApiAccountSettings(this, accountUri);
         mAccountSettingsFragment.setAccSettings(settings);
     }
@@ -104,7 +103,6 @@ public class AccountSettingsActivity extends ActionBarActivity {
 
     private void save() {
         ProviderHelper.updateApiAccount(this, mAccountSettingsFragment.getAccSettings(), mAccountUri);
-
         finish();
     }
 

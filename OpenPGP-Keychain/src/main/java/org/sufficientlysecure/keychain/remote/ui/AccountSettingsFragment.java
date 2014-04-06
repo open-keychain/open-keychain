@@ -166,7 +166,7 @@ public class AccountSettingsFragment extends Fragment implements
         Intent intent = new Intent(getActivity(), EditKeyActivity.class);
         intent.setAction(EditKeyActivity.ACTION_CREATE_KEY);
         intent.putExtra(EditKeyActivity.EXTRA_GENERATE_DEFAULT_KEYS, true);
-        // set default user id to account name TODO: not working currently in EditKey
+        // set default user id to account name
         intent.putExtra(EditKeyActivity.EXTRA_USER_IDS, mAccSettings.getAccountName());
         startActivityForResult(intent, REQUEST_CODE_CREATE_KEY);
     }

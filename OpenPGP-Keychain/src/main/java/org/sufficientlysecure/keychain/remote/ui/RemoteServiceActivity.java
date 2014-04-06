@@ -21,7 +21,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.os.Messenger;
 import android.support.v7.app.ActionBarActivity;
 import android.view.View;
 
@@ -31,7 +30,6 @@ import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.Id;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.helper.ActionBarHelper;
-import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.remote.AccountSettings;
@@ -299,43 +297,6 @@ public class RemoteServiceActivity extends ActionBarActivity {
         } else {
             Log.e(Constants.TAG, "Action does not exist!");
             setResult(RESULT_CANCELED);
-            finish();
-        }
-    }
-
-    /**
-     * Shows passphrase dialog to cache a new passphrase the user enters for using it later for
-     * encryption. Based on mSecretKeyId it asks for a passphrase to open a private key or it asks
-     * for a symmetric passphrase
-     */
-    private void showPassphraseDialog(final Intent data, long secretKeyId) {
-        // Message is received after passphrase is cached
-        Handler returnHandler = new Handler() {
-            @Override
-            public void handleMessage(Message message) {
-                if (message.what == PassphraseDialogFragment.MESSAGE_OKAY) {
-                    // return given params again, for calling the service method again
-                    RemoteServiceActivity.this.setResult(RESULT_OK, data);
-                } else {
-                    RemoteServiceActivity.this.setResult(RESULT_CANCELED);
-                }
-
-                RemoteServiceActivity.this.finish();
-            }
-        };
-
-        // Create a new Messenger for the communication back
-        Messenger messenger = new Messenger(returnHandler);
-
-        try {
-            PassphraseDialogFragment passphraseDialog = PassphraseDialogFragment.newInstance(this,
-                    messenger, secretKeyId);
-
-            passphraseDialog.show(getSupportFragmentManager(), "passphraseDialog");
-        } catch (PgpGeneralException e) {
-            Log.d(Constants.TAG, "No passphrase for this secret key, do pgp operation directly!");
-            // return given params again, for calling the service method again
-            setResult(RESULT_OK, data);
             finish();
         }
     }

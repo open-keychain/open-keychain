@@ -164,7 +164,7 @@ public class AccountsListFragment extends ListFragment implements
 
         /**
          * Similar to CursorAdapter.getItemId().
-         * Required to build Uris for api app view, which is not based on row ids
+         * Required to build Uris for api accounts, which are not based on row ids
          *
          * @param position
          * @return

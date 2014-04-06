@@ -85,7 +85,6 @@ public class AppSettingsActivity extends ActionBarActivity {
     }
 
     private void loadData(Bundle savedInstanceState, Uri appUri) {
-        // TODO: load this also like other fragment with newInstance arguments?
         AppSettings settings = ProviderHelper.getApiAppSettings(this, appUri);
         mSettingsFragment.setAppSettings(settings);
 
