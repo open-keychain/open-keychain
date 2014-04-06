@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012-2013 Dominik Schürmann <dominik@dominikschuermann.de>
+ * Copyright (C) 2012-2014 Dominik Schürmann <dominik@dominikschuermann.de>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -41,7 +41,7 @@ import java.io.IOException;
 public class KeychainDatabase extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "openkeychain.db";
     private static final int DATABASE_VERSION = 1;
-    static Boolean apg_hack = false;
+    static Boolean apgHack = false;
 
     public interface Tables {
         String KEY_RINGS_PUBLIC = "keyrings_public";
@@ -148,10 +148,10 @@ public class KeychainDatabase extends SQLiteOpenHelper {
 
         // make sure this is only done once, on the first instance!
         boolean iAmIt = false;
-        synchronized(apg_hack) {
-            if(!apg_hack) {
+        synchronized(apgHack) {
+            if(!apgHack) {
                 iAmIt = true;
-                apg_hack = true;
+                apgHack = true;
             }
         }
         // if it's us, do the import
