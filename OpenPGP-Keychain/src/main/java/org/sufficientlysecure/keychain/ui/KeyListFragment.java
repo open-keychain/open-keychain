@@ -50,6 +50,7 @@ import android.widget.AbsListView.MultiChoiceModeListener;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import com.beardedhen.androidbootstrap.BootstrapButton;
@@ -251,13 +252,15 @@ public class KeyListFragment extends Fragment
             KeyRings.MASTER_KEY_ID,
             KeyRings.USER_ID,
             KeyRings.IS_REVOKED,
+            KeyRings.VERIFIED,
             KeyRings.HAS_SECRET
     };
 
     static final int INDEX_MASTER_KEY_ID = 1;
     static final int INDEX_USER_ID = 2;
     static final int INDEX_IS_REVOKED = 3;
-    static final int INDEX_HAS_SECRET = 4;
+    static final int INDEX_VERIFIED = 4;
+    static final int INDEX_HAS_SECRET = 5;
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
@@ -461,8 +464,8 @@ public class KeyListFragment extends Fragment
         /**
          * Bind cursor data to the item list view
          * <p/>
-         * NOTE: CursorAdapter already implements the ViewHolder pattern in its getView() method. Thus
-         * no ViewHolder is required here.
+         * NOTE: CursorAdapter already implements the ViewHolder pattern in its getView() method.
+         * Thus no ViewHolder is required here.
          */
         @Override
         public void bindView(View view, Context context, Cursor cursor) {
@@ -491,12 +494,14 @@ public class KeyListFragment extends Fragment
                 FrameLayout statusLayout = (FrameLayout) view.findViewById(R.id.status_layout);
                 Button button = (Button) view.findViewById(R.id.edit);
                 TextView revoked = (TextView) view.findViewById(R.id.revoked);
+                ImageView verified = (ImageView) view.findViewById(R.id.verified);
 
                 if (cursor.getInt(KeyListFragment.INDEX_HAS_SECRET) != 0) {
                     // this is a secret key - show the edit button
                     statusDivider.setVisibility(View.VISIBLE);
                     statusLayout.setVisibility(View.VISIBLE);
                     revoked.setVisibility(View.GONE);
+                    verified.setVisibility(View.GONE);
                     button.setVisibility(View.VISIBLE);
 
                     final long id = cursor.getLong(INDEX_MASTER_KEY_ID);
@@ -514,8 +519,16 @@ public class KeyListFragment extends Fragment
                     button.setVisibility(View.GONE);
 
                     boolean isRevoked = cursor.getInt(INDEX_IS_REVOKED) > 0;
-                    statusLayout.setVisibility(isRevoked ? View.VISIBLE : View.GONE);
-                    revoked.setVisibility(isRevoked ? View.VISIBLE : View.GONE);
+                    if(isRevoked) {
+                        statusLayout.setVisibility(isRevoked ? View.VISIBLE : View.GONE);
+                        revoked.setVisibility(isRevoked ? View.VISIBLE : View.GONE);
+                        verified.setVisibility(View.GONE);
+                    } else {
+                        boolean isVerified = cursor.getInt(INDEX_VERIFIED) > 0;
+                        statusLayout.setVisibility(isVerified ? View.VISIBLE : View.GONE);
+                        revoked.setVisibility(View.GONE);
+                        verified.setVisibility(isVerified ? View.VISIBLE : View.GONE);
+                    }
                 }
             }
 
@@ -587,8 +600,7 @@ public class KeyListFragment extends Fragment
             String userId = mCursor.getString(KeyListFragment.INDEX_USER_ID);
             String headerText = convertView.getResources().getString(R.string.user_id_no_name);
             if (userId != null && userId.length() > 0) {
-                headerText = "" +
-                            mCursor.getString(KeyListFragment.INDEX_USER_ID).subSequence(0, 1).charAt(0);
+                headerText = "" + userId.subSequence(0, 1).charAt(0);
             }
             holder.mText.setText(headerText);
             holder.mCount.setVisibility(View.GONE);

@@ -454,7 +454,6 @@ public class PgpKeyHelper {
                 algorithmStr = "RSA";
                 break;
             }
-
             case PGPPublicKey.DSA: {
                 algorithmStr = "DSA";
                 break;
@@ -471,7 +470,10 @@ public class PgpKeyHelper {
                 break;
             }
         }
-        return algorithmStr + ", " + keySize + " bit";
+        if(keySize > 0)
+            return algorithmStr + ", " + keySize + " bit";
+        else
+            return algorithmStr;
     }
 
     /**

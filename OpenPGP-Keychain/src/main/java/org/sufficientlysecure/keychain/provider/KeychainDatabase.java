@@ -30,14 +30,13 @@ import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.pgp.PgpConversionHelper;
 import org.sufficientlysecure.keychain.provider.KeychainContract.ApiAppsColumns;
 import org.sufficientlysecure.keychain.provider.KeychainContract.ApiAppsAccountsColumns;
-import org.sufficientlysecure.keychain.provider.KeychainContract.ApiAppsColumns;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRingsColumns;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeysColumns;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UserIdsColumns;
+import org.sufficientlysecure.keychain.provider.KeychainContract.CertsColumns;
 import org.sufficientlysecure.keychain.util.Log;
 
 import java.io.IOException;
-import java.util.Arrays;
 
 public class KeychainDatabase extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "openkeychain.db";
@@ -49,6 +48,7 @@ public class KeychainDatabase extends SQLiteOpenHelper {
         String KEY_RINGS_SECRET = "keyrings_secret";
         String KEYS = "keys";
         String USER_IDS = "user_ids";
+        String CERTS = "certs";
         String API_APPS = "api_apps";
         String API_ACCOUNTS = "api_accounts";
     }
@@ -96,11 +96,33 @@ public class KeychainDatabase extends SQLiteOpenHelper {
                 + UserIdsColumns.USER_ID + " CHARMANDER, "
 
                 + UserIdsColumns.IS_PRIMARY + " BOOLEAN, "
+                + UserIdsColumns.IS_REVOKED + " BOOLEAN, "
                 + UserIdsColumns.RANK+ " INTEGER, "
 
-                + "PRIMARY KEY(" + UserIdsColumns.MASTER_KEY_ID + ", " + UserIdsColumns.USER_ID + "),"
+                + "PRIMARY KEY(" + UserIdsColumns.MASTER_KEY_ID + ", " + UserIdsColumns.USER_ID + "), "
+                + "UNIQUE (" + UserIdsColumns.MASTER_KEY_ID + ", " + UserIdsColumns.RANK + "), "
                 + "FOREIGN KEY(" + UserIdsColumns.MASTER_KEY_ID + ") REFERENCES "
                     + Tables.KEY_RINGS_PUBLIC + "(" + KeyRingsColumns.MASTER_KEY_ID + ") ON DELETE CASCADE"
+            + ")";
+
+    private static final String CREATE_CERTS =
+            "CREATE TABLE IF NOT EXISTS " + Tables.CERTS + "("
+                + CertsColumns.MASTER_KEY_ID + " INTEGER,"
+                + CertsColumns.RANK + " INTEGER, " // rank of certified uid
+
+                + CertsColumns.KEY_ID_CERTIFIER + " INTEGER, " // certifying key
+                + CertsColumns.TYPE + " INTEGER, "
+                + CertsColumns.VERIFIED + " INTEGER, "
+                + CertsColumns.CREATION + " INTEGER, "
+
+                + CertsColumns.DATA + " BLOB, "
+
+                + "PRIMARY KEY(" + CertsColumns.MASTER_KEY_ID + ", " + CertsColumns.RANK + ", "
+                    + CertsColumns.KEY_ID_CERTIFIER + "), "
+                + "FOREIGN KEY(" + CertsColumns.MASTER_KEY_ID + ") REFERENCES "
+                    + Tables.KEY_RINGS_PUBLIC + "(" + KeyRingsColumns.MASTER_KEY_ID + ") ON DELETE CASCADE,"
+                + "FOREIGN KEY(" + CertsColumns.MASTER_KEY_ID + ", " + CertsColumns.RANK + ") REFERENCES "
+                    + Tables.USER_IDS + "(" + UserIdsColumns.MASTER_KEY_ID + ", " + UserIdsColumns.RANK + ") ON DELETE CASCADE"
             + ")";
 
     private static final String CREATE_API_APPS = "CREATE TABLE IF NOT EXISTS " + Tables.API_APPS
@@ -145,6 +167,7 @@ public class KeychainDatabase extends SQLiteOpenHelper {
         db.execSQL(CREATE_KEYRINGS_SECRET);
         db.execSQL(CREATE_KEYS);
         db.execSQL(CREATE_USER_IDS);
+        db.execSQL(CREATE_CERTS);
         db.execSQL(CREATE_API_APPS);
         db.execSQL(CREATE_API_APPS_ACCOUNTS);
     }
@@ -155,6 +178,11 @@ public class KeychainDatabase extends SQLiteOpenHelper {
         if (!db.isReadOnly()) {
             // Enable foreign key constraints
             db.execSQL("PRAGMA foreign_keys=ON;");
+            // TODO remove, once we remove the "always migrate" debug stuff
+            // db.execSQL("DROP TABLE certs;");
+            // db.execSQL("DROP TABLE user_ids;");
+            db.execSQL(CREATE_USER_IDS);
+            db.execSQL(CREATE_CERTS);
         }
     }
 
@@ -166,8 +194,8 @@ public class KeychainDatabase extends SQLiteOpenHelper {
     /** This method tries to import data from a provided database.
      *
      * The sole assumptions made on this db are that there is a key_rings table
-     * with a key_ring_data and a type column, the latter of which should be bigger
-     * for secret keys.
+     * with a key_ring_data, a master_key_id and a type column, the latter of
+     * which should be 1 for secret keys and 0 for public keys.
      */
     public void checkAndImportApg(Context context) {
 
@@ -212,8 +240,32 @@ public class KeychainDatabase extends SQLiteOpenHelper {
             Log.d(Constants.TAG, "Ok.");
         }
 
-        Cursor c = db.rawQuery("SELECT key_ring_data FROM key_rings ORDER BY type ASC", null);
+        Cursor c = null;
         try {
+            // we insert in two steps: first, all public keys that have secret keys
+            c = db.rawQuery("SELECT key_ring_data FROM key_rings WHERE type = 1 OR EXISTS ("
+                    + " SELECT 1 FROM key_rings d2 WHERE key_rings.master_key_id = d2.master_key_id"
+                    + " AND d2.type = 1) ORDER BY type ASC", null);
+            Log.d(Constants.TAG, "Importing " + c.getCount() + " secret keyrings from apg.db...");
+            for(int i = 0; i < c.getCount(); i++) {
+                c.moveToPosition(i);
+                byte[] data = c.getBlob(0);
+                PGPKeyRing ring = PgpConversionHelper.BytesToPGPKeyRing(data);
+                if(ring instanceof PGPPublicKeyRing)
+                    ProviderHelper.saveKeyRing(context, (PGPPublicKeyRing) ring);
+                else if(ring instanceof PGPSecretKeyRing)
+                    ProviderHelper.saveKeyRing(context, (PGPSecretKeyRing) ring);
+                else {
+                    Log.e(Constants.TAG, "Unknown blob data type!");
+                }
+            }
+
+            // afterwards, insert all keys, starting with public keys that have secret keys, then
+            // secret keys, then all others. this order is necessary to ensure all certifications
+            // are recognized properly.
+            c = db.rawQuery("SELECT key_ring_data FROM key_rings ORDER BY (type = 0 AND EXISTS ("
+                    + " SELECT 1 FROM key_rings d2 WHERE key_rings.master_key_id = d2.master_key_id AND"
+                    + " d2.type = 1)) DESC, type DESC", null);
             // import from old database
             Log.d(Constants.TAG, "Importing " + c.getCount() + " keyrings from apg.db...");
             for(int i = 0; i < c.getCount(); i++) {

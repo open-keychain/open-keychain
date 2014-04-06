@@ -171,10 +171,6 @@ public class ViewKeyMainFragment extends Fragment implements
     static final int INDEX_UNIFIED_CREATION = 7;
     static final int INDEX_UNIFIED_EXPIRY = 8;
 
-    static final String[] USER_IDS_PROJECTION = new String[] {
-        UserIds._ID, UserIds.USER_ID, UserIds.RANK,
-    };
-
     static final String[] KEYS_PROJECTION = new String[] {
             Keys._ID,
             Keys.KEY_ID, Keys.RANK, Keys.ALGORITHM, Keys.KEY_SIZE,
@@ -191,7 +187,7 @@ public class ViewKeyMainFragment extends Fragment implements
             }
             case LOADER_ID_USER_IDS: {
                 Uri baseUri = UserIds.buildUserIdsUri(mDataUri);
-                return new CursorLoader(getActivity(), baseUri, USER_IDS_PROJECTION, null, null, null);
+                return new CursorLoader(getActivity(), baseUri, ViewKeyUserIdsAdapter.USER_IDS_PROJECTION, null, null, null);
             }
             case LOADER_ID_KEYS: {
                 Uri baseUri = Keys.buildKeysUri(mDataUri);

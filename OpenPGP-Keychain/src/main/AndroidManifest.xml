@@ -95,6 +95,15 @@
                 android:value=".ui.KeyListActivity" />
         </activity>
         <activity
+            android:name=".ui.ViewCertActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
+            android:label="View Certificate Details"
+            android:parentActivityName=".ui.ViewKeyActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".ui.ViewKeyActivity" />
+        </activity>
+        <activity
             android:name=".ui.SelectPublicKeyActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
             android:label="@string/title_select_recipients"

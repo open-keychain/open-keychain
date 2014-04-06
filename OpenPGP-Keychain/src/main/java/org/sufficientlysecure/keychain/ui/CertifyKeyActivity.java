@@ -46,7 +46,8 @@ import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.helper.Preferences;
 import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
-import org.sufficientlysecure.keychain.provider.KeychainContract;
+import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
+import org.sufficientlysecure.keychain.provider.KeychainContract.UserIds;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
 import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
@@ -147,42 +148,37 @@ public class CertifyKeyActivity extends ActionBarActivity implements
 
         mUserIdsAdapter = new ViewKeyUserIdsAdapter(this, null, 0, true);
         mUserIds.setAdapter(mUserIdsAdapter);
+        mUserIds.setOnItemClickListener(mUserIdsAdapter);
 
         getSupportLoaderManager().initLoader(LOADER_ID_KEYRING, null, this);
         getSupportLoaderManager().initLoader(LOADER_ID_USER_IDS, null, this);
 
     }
 
+    static final String USER_IDS_SELECTION = UserIds.IS_REVOKED + " = 0";
+
     static final String[] KEYRING_PROJECTION =
             new String[] {
-                    KeychainContract.KeyRings._ID,
-                    KeychainContract.Keys.MASTER_KEY_ID,
-                    KeychainContract.Keys.FINGERPRINT,
-                    KeychainContract.UserIds.USER_ID
+                    KeyRings._ID,
+                    KeyRings.MASTER_KEY_ID,
+                    KeyRings.FINGERPRINT,
+                    KeyRings.USER_ID,
             };
     static final int INDEX_MASTER_KEY_ID = 1;
     static final int INDEX_FINGERPRINT = 2;
     static final int INDEX_USER_ID = 3;
 
-    static final String[] USER_IDS_PROJECTION =
-            new String[]{
-                    KeychainContract.UserIds._ID,
-                    KeychainContract.UserIds.USER_ID,
-                    KeychainContract.UserIds.RANK
-            };
-    static final String USER_IDS_SORT_ORDER =
-            KeychainContract.UserIds.RANK + " ASC";
-
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         switch(id) {
             case LOADER_ID_KEYRING: {
-                Uri uri = KeychainContract.KeyRings.buildUnifiedKeyRingUri(mDataUri);
+                Uri uri = KeyRings.buildUnifiedKeyRingUri(mDataUri);
                 return new CursorLoader(this, uri, KEYRING_PROJECTION, null, null, null);
             }
             case LOADER_ID_USER_IDS: {
-                Uri uri = KeychainContract.UserIds.buildUserIdsUri(mDataUri);
-                return new CursorLoader(this, uri, USER_IDS_PROJECTION, null, null, USER_IDS_SORT_ORDER);
+                Uri uri = UserIds.buildUserIdsUri(mDataUri);
+                return new CursorLoader(this, uri,
+                        ViewKeyUserIdsAdapter.USER_IDS_PROJECTION, USER_IDS_SELECTION, null, null);
             }
         }
         return null;

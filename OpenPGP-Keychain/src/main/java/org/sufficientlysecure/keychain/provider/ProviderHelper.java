@@ -17,6 +17,8 @@
 
 package org.sufficientlysecure.keychain.provider;
 
+import java.security.SignatureException;
+import org.spongycastle.bcpg.ArmoredOutputStream;
 import android.content.ContentProviderOperation;
 import android.content.ContentResolver;
 import android.content.ContentValues;
@@ -27,11 +29,13 @@ import android.database.DatabaseUtils;
 import android.net.Uri;
 import android.os.RemoteException;
 
-import org.spongycastle.bcpg.ArmoredOutputStream;
+import org.spongycastle.bcpg.SignatureSubpacketTags;
+import org.spongycastle.bcpg.sig.SignatureExpirationTime;
+import org.spongycastle.openpgp.PGPException;
+import org.spongycastle.openpgp.operator.jcajce.JcaPGPContentVerifierBuilderProvider;
 import org.spongycastle.openpgp.PGPKeyRing;
 import org.spongycastle.openpgp.PGPPublicKey;
 import org.spongycastle.openpgp.PGPPublicKeyRing;
-import org.spongycastle.openpgp.PGPSecretKey;
 import org.spongycastle.openpgp.PGPSecretKeyRing;
 import org.spongycastle.openpgp.PGPSignature;
 import org.sufficientlysecure.keychain.Constants;
@@ -43,6 +47,7 @@ import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRingData;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.KeychainContract.Keys;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UserIds;
+import org.sufficientlysecure.keychain.provider.KeychainContract.Certs;
 import org.sufficientlysecure.keychain.remote.AccountSettings;
 import org.sufficientlysecure.keychain.remote.AppSettings;
 import org.sufficientlysecure.keychain.util.IterableIterator;
@@ -51,8 +56,11 @@ import org.sufficientlysecure.keychain.util.Log;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -123,25 +131,31 @@ public class ProviderHelper {
         return 0L;
     }
 
-    public static PGPKeyRing getPGPKeyRing(Context context, Uri queryUri) {
+    public static Map<Long, PGPKeyRing> getPGPKeyRings(Context context, Uri queryUri) {
         Cursor cursor = context.getContentResolver().query(queryUri,
-                new String[]{KeyRings._ID, KeyRingData.KEY_RING_DATA}, null, null, null);
+                new String[]{KeyRingData.MASTER_KEY_ID, KeyRingData.KEY_RING_DATA },
+                null, null, null);
 
-        PGPKeyRing keyRing = null;
-        if (cursor != null && cursor.moveToFirst()) {
-            int keyRingDataCol = cursor.getColumnIndex(KeyRingData.KEY_RING_DATA);
-
-            byte[] data = cursor.getBlob(keyRingDataCol);
+        Map<Long, PGPKeyRing> result = new HashMap<Long, PGPKeyRing>(cursor.getCount());
+        if (cursor != null && cursor.moveToFirst()) do {
+            long masterKeyId = cursor.getLong(0);
+            byte[] data = cursor.getBlob(1);
             if (data != null) {
-                keyRing = PgpConversionHelper.BytesToPGPKeyRing(data);
+                result.put(masterKeyId, PgpConversionHelper.BytesToPGPKeyRing(data));
             }
-        }
+        } while(cursor.moveToNext());
 
         if (cursor != null) {
             cursor.close();
         }
 
-        return keyRing;
+        return result;
+    }
+    public static PGPKeyRing getPGPKeyRing(Context context, Uri queryUri) {
+        Map<Long, PGPKeyRing> result = getPGPKeyRings(context, queryUri);
+        if(result.isEmpty())
+            return null;
+        return result.values().iterator().next();
     }
 
     public static PGPPublicKeyRing getPGPPublicKeyRingWithKeyId(Context context, long keyId) {
@@ -216,19 +230,88 @@ public class ProviderHelper {
             ++rank;
         }
 
-        int userIdRank = 0;
+        // get a list of owned secret keys, for verification filtering
+        Map<Long, PGPKeyRing> allKeyRings = getPGPKeyRings(context, KeyRingData.buildSecretKeyRingUri());
+        // special case: available secret keys verify themselves!
+        if(secretRing != null)
+            allKeyRings.put(secretRing.getSecretKey().getKeyID(), secretRing);
+
+        // classify and order user ids. primary are moved to the front, revoked to the back,
+        // otherwise the order in the keyfile is preserved.
+        List<UserIdItem> uids = new ArrayList<UserIdItem>();
+
         for (String userId : new IterableIterator<String>(masterKey.getUserIDs())) {
-            operations.add(buildUserIdOperations(context, masterKeyId, userId, userIdRank));
-            ++userIdRank;
+            UserIdItem item = new UserIdItem();
+            uids.add(item);
+            item.userId = userId;
+
+            // look through signatures for this specific key
+            for (PGPSignature cert : new IterableIterator<PGPSignature>(
+                    masterKey.getSignaturesForID(userId))) {
+                long certId = cert.getKeyID();
+                try {
+                    // self signature
+                    if(certId == masterKeyId) {
+                        cert.init(new JcaPGPContentVerifierBuilderProvider().setProvider(
+                                        Constants.BOUNCY_CASTLE_PROVIDER_NAME), masterKey);
+                        if(!cert.verifyCertification(userId,  masterKey)) {
+                            // not verified?! dang! TODO notify user? this is kinda serious...
+                            Log.e(Constants.TAG, "Could not verify self signature for " + userId + "!");
+                            continue;
+                        }
+                        // is this the first, or a more recent certificate?
+                        if(item.selfCert == null ||
+                                item.selfCert.getCreationTime().before(cert.getCreationTime())) {
+                            item.selfCert = cert;
+                            item.isPrimary = cert.getHashedSubPackets().isPrimaryUserID();
+                            item.isRevoked =
+                                    cert.getSignatureType() == PGPSignature.CERTIFICATION_REVOCATION;
+                        }
+                    }
+                    // verify signatures from known private keys
+                    if(allKeyRings.containsKey(certId)) {
+                        // mark them as verified
+                        cert.init(new JcaPGPContentVerifierBuilderProvider().setProvider(
+                                        Constants.BOUNCY_CASTLE_PROVIDER_NAME),
+                                allKeyRings.get(certId).getPublicKey());
+                        if(cert.verifyCertification(userId, masterKey)) {
+                            item.trustedCerts.add(cert);
+                        }
+                    }
+                } catch(SignatureException e) {
+                    Log.e(Constants.TAG, "Signature verification failed! "
+                            + PgpKeyHelper.convertKeyIdToHex(masterKey.getKeyID())
+                            + " from "
+                            + PgpKeyHelper.convertKeyIdToHex(cert.getKeyID()), e);
+                } catch(PGPException e) {
+                    Log.e(Constants.TAG, "Signature verification failed! "
+                            + PgpKeyHelper.convertKeyIdToHex(masterKey.getKeyID())
+                            + " from "
+                            + PgpKeyHelper.convertKeyIdToHex(cert.getKeyID()), e);
+                }
+            }
         }
 
-        for (PGPSignature certification :
-                new IterableIterator<PGPSignature>(
-                        masterKey.getSignaturesOfType(PGPSignature.POSITIVE_CERTIFICATION))) {
-            // TODO: how to do this??
-            // we need to verify the signatures again and again when they are displayed...
-//            if (certification.verify
-//            operations.add(buildPublicKeyOperations(context, keyRingRowId, key, rank));
+        // primary before regular before revoked (see UserIdItem.compareTo)
+        // this is a stable sort, so the order of keys is otherwise preserved.
+        Collections.sort(uids);
+        // iterate and put into db
+        for(int userIdRank = 0; userIdRank < uids.size(); userIdRank++) {
+            UserIdItem item = uids.get(userIdRank);
+            operations.add(buildUserIdOperations(masterKeyId, item, userIdRank));
+            // no self cert is bad, but allowed by the rfc...
+            if(item.selfCert != null) {
+                operations.add(buildCertOperations(
+                        masterKeyId, userIdRank, item.selfCert, Certs.VERIFIED_SELF));
+            }
+            // don't bother with trusted certs if the uid is revoked, anyways
+            if(item.isRevoked) {
+                continue;
+            }
+            for(int i = 0; i < item.trustedCerts.size(); i++) {
+                operations.add(buildCertOperations(
+                        masterKeyId, userIdRank, item.trustedCerts.get(i), Certs.VERIFIED_SECRET));
+            }
         }
 
         try {
@@ -244,6 +327,25 @@ public class ProviderHelper {
             saveKeyRing(context, secretRing);
         }
 
+    }
+
+    private static class UserIdItem implements Comparable<UserIdItem> {
+        String userId;
+        boolean isPrimary = false;
+        boolean isRevoked = false;
+        PGPSignature selfCert;
+        List<PGPSignature> trustedCerts = new ArrayList<PGPSignature>();
+
+        @Override
+        public int compareTo(UserIdItem o) {
+            // if one key is primary but the other isn't, the primary one always comes first
+            if(isPrimary != o.isPrimary)
+                return isPrimary ? -1 : 1;
+            // revoked keys always come last!
+            if(isRevoked != o.isRevoked)
+                return isRevoked ? 1 : -1;
+            return 0;
+        }
     }
 
     /**
@@ -311,21 +413,37 @@ public class ProviderHelper {
     }
 
     /**
-     * Build ContentProviderOperation to add PGPSecretKey to database corresponding to a keyRing
+     * Build ContentProviderOperation to add PGPPublicKey to database corresponding to a keyRing
      */
-    private static ContentProviderOperation buildSecretKeyOperations(Context context,
-                                                                     long masterKeyId, PGPSecretKey key, int rank) throws IOException {
-        return buildPublicKeyOperations(context, masterKeyId, key.getPublicKey(), rank);
+    private static ContentProviderOperation buildCertOperations(long masterKeyId,
+                                                                int rank,
+                                                                PGPSignature cert,
+                                                                int verified)
+            throws IOException {
+        ContentValues values = new ContentValues();
+        values.put(Certs.MASTER_KEY_ID, masterKeyId);
+        values.put(Certs.RANK, rank);
+        values.put(Certs.KEY_ID_CERTIFIER, cert.getKeyID());
+        values.put(Certs.TYPE, cert.getSignatureType());
+        values.put(Certs.CREATION, cert.getCreationTime().getTime() / 1000);
+        values.put(Certs.VERIFIED, verified);
+        values.put(Certs.DATA, cert.getEncoded());
+
+        Uri uri = Certs.buildCertsUri(Long.toString(masterKeyId));
+
+        return ContentProviderOperation.newInsert(uri).withValues(values).build();
     }
 
     /**
      * Build ContentProviderOperation to add PublicUserIds to database corresponding to a keyRing
      */
-    private static ContentProviderOperation buildUserIdOperations(Context context,
-                                                                  long masterKeyId, String userId, int rank) {
+    private static ContentProviderOperation buildUserIdOperations(long masterKeyId, UserIdItem item,
+                                                                  int rank) {
         ContentValues values = new ContentValues();
         values.put(UserIds.MASTER_KEY_ID, masterKeyId);
-        values.put(UserIds.USER_ID, userId);
+        values.put(UserIds.USER_ID, item.userId);
+        values.put(UserIds.IS_PRIMARY, item.isPrimary);
+        values.put(UserIds.IS_REVOKED, item.isRevoked);
         values.put(UserIds.RANK, rank);
 
         Uri uri = UserIds.buildUserIdsUri(Long.toString(masterKeyId));

@@ -23,21 +23,30 @@ import android.support.v4.widget.CursorAdapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UserIds;
+import org.sufficientlysecure.keychain.provider.KeychainContract.Certs;
 
 import java.util.ArrayList;
 
-public class ViewKeyUserIdsAdapter extends CursorAdapter {
+public class ViewKeyUserIdsAdapter extends CursorAdapter implements AdapterView.OnItemClickListener {
     private LayoutInflater mInflater;
 
     private int mIndexUserId, mIndexRank;
+    private int mVerifiedId, mIsRevoked, mIsPrimary;
 
     private final ArrayList<Boolean> mCheckStates;
+
+    public static final String[] USER_IDS_PROJECTION = new String[] {
+            UserIds._ID, UserIds.USER_ID, UserIds.RANK,
+            UserIds.VERIFIED, UserIds.IS_PRIMARY, UserIds.IS_REVOKED
+    };
 
     public ViewKeyUserIdsAdapter(Context context, Cursor c, int flags, boolean showCheckBoxes) {
         super(context, c, flags);
@@ -61,8 +70,10 @@ public class ViewKeyUserIdsAdapter extends CursorAdapter {
                 int count = newCursor.getCount();
                 mCheckStates.ensureCapacity(count);
                 // initialize to true (use case knowledge: we usually want to sign all uids)
-                for (int i = 0; i < count; i++) {
-                    mCheckStates.add(true);
+                for(int i = 0; i < count; i++) {
+                    newCursor.moveToPosition(i);
+                    int verified = newCursor.getInt(mVerifiedId);
+                    mCheckStates.add(verified != Certs.VERIFIED_SECRET);
                 }
             }
         }
@@ -80,6 +91,9 @@ public class ViewKeyUserIdsAdapter extends CursorAdapter {
         if (cursor != null) {
             mIndexUserId = cursor.getColumnIndexOrThrow(UserIds.USER_ID);
             mIndexRank = cursor.getColumnIndexOrThrow(UserIds.RANK);
+            mVerifiedId = cursor.getColumnIndexOrThrow(UserIds.VERIFIED);
+            mIsRevoked = cursor.getColumnIndexOrThrow(UserIds.IS_REVOKED);
+            mIsPrimary = cursor.getColumnIndexOrThrow(UserIds.IS_PRIMARY);
         }
     }
 
@@ -89,8 +103,13 @@ public class ViewKeyUserIdsAdapter extends CursorAdapter {
         TextView vRank = (TextView) view.findViewById(R.id.rank);
         TextView vUserId = (TextView) view.findViewById(R.id.userId);
         TextView vAddress = (TextView) view.findViewById(R.id.address);
+        ImageView vVerified = (ImageView) view.findViewById(R.id.certified);
 
-        vRank.setText(Integer.toString(cursor.getInt(mIndexRank)));
+        if(cursor.getInt(mIsPrimary) > 0) {
+            vRank.setText("+");
+        } else {
+            vRank.setText(Integer.toString(cursor.getInt(mIndexRank)));
+        }
 
         String[] userId = PgpKeyHelper.splitUserId(cursor.getString(mIndexUserId));
         if (userId[0] != null) {
@@ -100,6 +119,20 @@ public class ViewKeyUserIdsAdapter extends CursorAdapter {
         }
         vAddress.setText(userId[1]);
 
+        if(cursor.getInt(mIsRevoked) > 0) {
+            vRank.setText(" ");
+            vVerified.setImageResource(android.R.drawable.presence_away);
+        } else {
+            int verified = cursor.getInt(mVerifiedId);
+            // TODO introduce own resources for this :)
+            if(verified == Certs.VERIFIED_SECRET)
+                vVerified.setImageResource(android.R.drawable.presence_online);
+            else if(verified == Certs.VERIFIED_SELF)
+                vVerified.setImageResource(android.R.drawable.presence_invisible);
+            else
+                vVerified.setImageResource(android.R.drawable.presence_busy);
+        }
+
         // don't care further if checkboxes aren't shown
         if (mCheckStates == null) {
             return;
@@ -107,7 +140,7 @@ public class ViewKeyUserIdsAdapter extends CursorAdapter {
 
         final CheckBox vCheckBox = (CheckBox) view.findViewById(R.id.checkBox);
         final int position = cursor.getPosition();
-        vCheckBox.setClickable(false);
+        vCheckBox.setOnCheckedChangeListener(null);
         vCheckBox.setChecked(mCheckStates.get(position));
         vCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -115,13 +148,15 @@ public class ViewKeyUserIdsAdapter extends CursorAdapter {
                 mCheckStates.set(position, b);
             }
         });
-        view.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                vCheckBox.toggle();
-            }
-        });
+        vCheckBox.setClickable(false);
 
+    }
+
+    public void onItemClick(AdapterView<?> adapter, View view, int position, long id) {
+        CheckBox box = ((CheckBox) view.findViewById(R.id.checkBox));
+        if(box != null) {
+            box.toggle();
+        }
     }
 
     public ArrayList<String> getSelectedUserIds() {

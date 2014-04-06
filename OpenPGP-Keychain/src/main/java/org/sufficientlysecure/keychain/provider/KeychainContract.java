@@ -52,6 +52,17 @@ public class KeychainContract {
         String USER_ID = "user_id"; // not a database id
         String RANK = "rank"; // ONLY used for sorting! no key, no nothing!
         String IS_PRIMARY = "is_primary";
+        String IS_REVOKED = "is_revoked";
+    }
+
+    interface CertsColumns {
+        String MASTER_KEY_ID = "master_key_id";
+        String RANK = "rank";
+        String KEY_ID_CERTIFIER = "key_id_certifier";
+        String TYPE = "type";
+        String VERIFIED = "verified";
+        String CREATION = "creation";
+        String DATA = "data";
     }
 
     interface ApiAppsColumns {
@@ -91,12 +102,15 @@ public class KeychainContract {
     public static final String PATH_SECRET = "secret";
     public static final String PATH_USER_IDS = "user_ids";
     public static final String PATH_KEYS = "keys";
+    public static final String PATH_CERTS = "certs";
 
     public static final String BASE_API_APPS = "api_apps";
     public static final String PATH_ACCOUNTS = "accounts";
 
     public static class KeyRings implements BaseColumns, KeysColumns, UserIdsColumns {
-        public static final String MASTER_KEY_ID = "master_key_id";
+        public static final String MASTER_KEY_ID = KeysColumns.MASTER_KEY_ID;
+        public static final String IS_REVOKED = KeysColumns.IS_REVOKED;
+        public static final String VERIFIED = CertsColumns.VERIFIED;
         public static final String HAS_SECRET = "has_secret";
 
         public static final Uri CONTENT_URI = BASE_CONTENT_URI_INTERNAL.buildUpon()
@@ -145,6 +159,9 @@ public class KeychainContract {
             return CONTENT_URI.buildUpon().appendPath(uri.getPathSegments().get(1)).appendPath(PATH_PUBLIC).build();
         }
 
+        public static Uri buildSecretKeyRingUri() {
+            return CONTENT_URI.buildUpon().appendPath(PATH_SECRET).build();
+        }
         public static Uri buildSecretKeyRingUri(String masterKeyId) {
             return CONTENT_URI.buildUpon().appendPath(masterKeyId).appendPath(PATH_SECRET).build();
         }
@@ -178,6 +195,7 @@ public class KeychainContract {
     }
 
     public static class UserIds implements UserIdsColumns, BaseColumns {
+        public static final String VERIFIED = "verified";
         public static final Uri CONTENT_URI = BASE_CONTENT_URI_INTERNAL.buildUpon()
                 .appendPath(BASE_KEY_RINGS).build();
 
@@ -241,6 +259,28 @@ public class KeychainContract {
             return CONTENT_URI.buildUpon().appendEncodedPath(packageName).appendPath(PATH_ACCOUNTS)
                     .appendEncodedPath(accountName).build();
         }
+    }
+
+    public static class Certs implements CertsColumns, BaseColumns {
+        public static final String USER_ID = UserIdsColumns.USER_ID;
+        public static final String SIGNER_UID = "signer_user_id";
+
+        public static final int VERIFIED_SECRET = 1;
+        public static final int VERIFIED_SELF = 2;
+
+        public static final Uri CONTENT_URI = BASE_CONTENT_URI_INTERNAL.buildUpon()
+                .appendPath(BASE_KEY_RINGS).build();
+
+        public static Uri buildCertsUri(String masterKeyId) {
+            return CONTENT_URI.buildUpon().appendPath(masterKeyId).appendPath(PATH_CERTS).build();
+        }
+        public static Uri buildCertsSpecificUri(String masterKeyId, String rank, String certifier) {
+            return CONTENT_URI.buildUpon().appendPath(masterKeyId).appendPath(PATH_CERTS).appendPath(rank).appendPath(certifier).build();
+        }
+        public static Uri buildCertsUri(Uri uri) {
+            return CONTENT_URI.buildUpon().appendPath(uri.getPathSegments().get(1)).appendPath(PATH_CERTS).build();
+        }
+
     }
 
     public static class DataStream {

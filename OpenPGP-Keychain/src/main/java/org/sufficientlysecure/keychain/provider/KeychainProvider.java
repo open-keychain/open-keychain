@@ -34,6 +34,7 @@ import org.sufficientlysecure.keychain.provider.KeychainContract.ApiApps;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRingData;
 import org.sufficientlysecure.keychain.provider.KeychainContract.Keys;
+import org.sufficientlysecure.keychain.provider.KeychainContract.Certs;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UserIds;
 import org.sufficientlysecure.keychain.provider.KeychainDatabase.Tables;
 import org.sufficientlysecure.keychain.util.Log;
@@ -45,12 +46,15 @@ public class KeychainProvider extends ContentProvider {
 
     private static final int KEY_RINGS_UNIFIED = 101;
     private static final int KEY_RINGS_PUBLIC = 102;
+    private static final int KEY_RINGS_SECRET = 103;
 
     private static final int KEY_RING_UNIFIED = 200;
     private static final int KEY_RING_KEYS = 201;
     private static final int KEY_RING_USER_IDS = 202;
     private static final int KEY_RING_PUBLIC = 203;
     private static final int KEY_RING_SECRET = 204;
+    private static final int KEY_RING_CERTS = 205;
+    private static final int KEY_RING_CERTS_SPECIFIC = 206;
 
     private static final int API_APPS = 301;
     private static final int API_APPS_BY_PACKAGE_NAME = 303;
@@ -87,6 +91,9 @@ public class KeychainProvider extends ContentProvider {
         matcher.addURI(authority, KeychainContract.BASE_KEY_RINGS
                 + "/" + KeychainContract.PATH_PUBLIC,
                 KEY_RINGS_PUBLIC);
+        matcher.addURI(authority, KeychainContract.BASE_KEY_RINGS
+                + "/" + KeychainContract.PATH_SECRET,
+                KEY_RINGS_SECRET);
 
         /**
          * find by criteria other than master key id
@@ -111,6 +118,8 @@ public class KeychainProvider extends ContentProvider {
          * key_rings/_/user_ids
          * key_rings/_/public
          * key_rings/_/secret
+         * key_rings/_/certs
+         * key_rings/_/certs/_/_
          * </pre>
          */
         matcher.addURI(authority, KeychainContract.BASE_KEY_RINGS + "/*/"
@@ -128,6 +137,12 @@ public class KeychainProvider extends ContentProvider {
         matcher.addURI(authority, KeychainContract.BASE_KEY_RINGS + "/*/"
                 + KeychainContract.PATH_SECRET,
                 KEY_RING_SECRET);
+        matcher.addURI(authority, KeychainContract.BASE_KEY_RINGS + "/*/"
+                + KeychainContract.PATH_CERTS,
+                KEY_RING_CERTS);
+        matcher.addURI(authority, KeychainContract.BASE_KEY_RINGS + "/*/"
+                        + KeychainContract.PATH_CERTS + "/*/*",
+                KEY_RING_CERTS_SPECIFIC);
 
         /**
          * API apps
@@ -238,15 +253,16 @@ public class KeychainProvider extends ContentProvider {
                 projectionMap.put(KeyRings.MASTER_KEY_ID, Tables.KEYS + "." + Keys.MASTER_KEY_ID);
                 projectionMap.put(KeyRings.KEY_ID, Keys.KEY_ID);
                 projectionMap.put(KeyRings.KEY_SIZE, Keys.KEY_SIZE);
-                projectionMap.put(KeyRings.IS_REVOKED, Keys.IS_REVOKED);
+                projectionMap.put(KeyRings.IS_REVOKED, Tables.KEYS + "." + Keys.IS_REVOKED);
                 projectionMap.put(KeyRings.CAN_CERTIFY, Keys.CAN_CERTIFY);
                 projectionMap.put(KeyRings.CAN_ENCRYPT, Keys.CAN_ENCRYPT);
                 projectionMap.put(KeyRings.CAN_SIGN, Keys.CAN_SIGN);
-                projectionMap.put(KeyRings.CREATION, Keys.CREATION);
+                projectionMap.put(KeyRings.CREATION, Tables.KEYS + "." + Keys.CREATION);
                 projectionMap.put(KeyRings.EXPIRY, Keys.EXPIRY);
                 projectionMap.put(KeyRings.ALGORITHM, Keys.ALGORITHM);
                 projectionMap.put(KeyRings.FINGERPRINT, Keys.FINGERPRINT);
                 projectionMap.put(KeyRings.USER_ID, UserIds.USER_ID);
+                projectionMap.put(KeyRings.VERIFIED, KeyRings.VERIFIED);
                 projectionMap.put(KeyRings.HAS_SECRET, "(" + Tables.KEY_RINGS_SECRET + "." + KeyRings.MASTER_KEY_ID + " IS NOT NULL) AS " + KeyRings.HAS_SECRET);
                 qb.setProjectionMap(projectionMap);
 
@@ -261,9 +277,17 @@ public class KeychainProvider extends ContentProvider {
                             + Tables.KEYS + "." + Keys.MASTER_KEY_ID
                                 + " = "
                             + Tables.KEY_RINGS_SECRET + "." + KeyRings.MASTER_KEY_ID
+                        + ") LEFT JOIN " + Tables.CERTS + " ON ("
+                            + Tables.KEYS + "." + Keys.MASTER_KEY_ID
+                                + " = "
+                            + Tables.CERTS + "." + KeyRings.MASTER_KEY_ID
+                            + " AND " + Tables.CERTS + "." + Certs.VERIFIED
+                                + " = " + Certs.VERIFIED_SECRET
                         + ")"
                     );
                 qb.appendWhere(Tables.KEYS + "." + Keys.RANK + " = 0");
+                // in case there are multiple verifying certificates
+                groupBy = Tables.KEYS + "." + Keys.MASTER_KEY_ID;
 
                 switch(match) {
                     case KEY_RING_UNIFIED: {
@@ -358,18 +382,30 @@ public class KeychainProvider extends ContentProvider {
             case KEY_RING_USER_IDS: {
                 HashMap<String, String> projectionMap = new HashMap<String, String>();
                 projectionMap.put(UserIds._ID, Tables.USER_IDS + ".oid AS _id");
-                projectionMap.put(UserIds.MASTER_KEY_ID, UserIds.MASTER_KEY_ID);
-                projectionMap.put(UserIds.USER_ID, UserIds.USER_ID);
-                projectionMap.put(UserIds.RANK, UserIds.RANK);
-                projectionMap.put(UserIds.IS_PRIMARY, UserIds.IS_PRIMARY);
+                projectionMap.put(UserIds.MASTER_KEY_ID, Tables.USER_IDS + "." + UserIds.MASTER_KEY_ID);
+                projectionMap.put(UserIds.USER_ID, Tables.USER_IDS + "." + UserIds.USER_ID);
+                projectionMap.put(UserIds.RANK, Tables.USER_IDS + "." + UserIds.RANK);
+                projectionMap.put(UserIds.IS_PRIMARY, Tables.USER_IDS + "." + UserIds.IS_PRIMARY);
+                projectionMap.put(UserIds.IS_REVOKED, Tables.USER_IDS + "." + UserIds.IS_REVOKED);
+                // we take the minimum (>0) here, where "1" is "verified by known secret key"
+                projectionMap.put(UserIds.VERIFIED, "MIN(" + Certs.VERIFIED + ") AS " + UserIds.VERIFIED);
                 qb.setProjectionMap(projectionMap);
 
-                qb.setTables(Tables.USER_IDS);
-                qb.appendWhere(UserIds.MASTER_KEY_ID + " = ");
+                qb.setTables(Tables.USER_IDS
+                        + " LEFT JOIN " + Tables.CERTS + " ON ("
+                            + Tables.USER_IDS + "." + UserIds.MASTER_KEY_ID + " = "
+                                + Tables.CERTS + "." + Certs.MASTER_KEY_ID
+                            + " AND " + Tables.USER_IDS + "." + UserIds.RANK + " = "
+                                + Tables.CERTS + "." + Certs.RANK
+                            + " AND " + Tables.CERTS + "." + Certs.VERIFIED + " > 0"
+                        + ")");
+                groupBy = Tables.USER_IDS + "." + UserIds.RANK;
+
+                qb.appendWhere(Tables.USER_IDS + "." + UserIds.MASTER_KEY_ID + " = ");
                 qb.appendWhereEscapeString(uri.getPathSegments().get(1));
 
                 if (TextUtils.isEmpty(sortOrder)) {
-                    sortOrder = UserIds.RANK + " ASC";
+                    sortOrder = Tables.USER_IDS + "." + UserIds.RANK + " ASC";
                 }
 
                 break;
@@ -394,6 +430,7 @@ public class KeychainProvider extends ContentProvider {
                 break;
             }
 
+            case KEY_RINGS_SECRET:
             case KEY_RING_SECRET: {
                 HashMap<String, String> projectionMap = new HashMap<String, String>();
                 projectionMap.put(KeyRingData._ID, Tables.KEY_RINGS_SECRET + ".oid AS _id");
@@ -402,8 +439,55 @@ public class KeychainProvider extends ContentProvider {
                 qb.setProjectionMap(projectionMap);
 
                 qb.setTables(Tables.KEY_RINGS_SECRET);
-                qb.appendWhere(KeyRings.MASTER_KEY_ID + " = ");
+
+                if(match == KEY_RING_SECRET) {
+                    qb.appendWhere(KeyRings.MASTER_KEY_ID + " = ");
+                    qb.appendWhereEscapeString(uri.getPathSegments().get(1));
+                }
+
+                break;
+            }
+
+            case KEY_RING_CERTS:
+            case KEY_RING_CERTS_SPECIFIC: {
+                HashMap<String, String> projectionMap = new HashMap<String, String>();
+                projectionMap.put(Certs._ID, Tables.CERTS + ".oid AS " + Certs._ID);
+                projectionMap.put(Certs.MASTER_KEY_ID, Tables.CERTS + "." + Certs.MASTER_KEY_ID);
+                projectionMap.put(Certs.RANK, Tables.CERTS + "." + Certs.RANK);
+                projectionMap.put(Certs.VERIFIED, Tables.CERTS + "." + Certs.VERIFIED);
+                projectionMap.put(Certs.TYPE, Tables.CERTS + "." + Certs.TYPE);
+                projectionMap.put(Certs.CREATION, Tables.CERTS + "." + Certs.CREATION);
+                projectionMap.put(Certs.KEY_ID_CERTIFIER, Tables.CERTS + "." + Certs.KEY_ID_CERTIFIER);
+                projectionMap.put(Certs.DATA, Tables.CERTS + "." + Certs.DATA);
+                projectionMap.put(Certs.USER_ID, Tables.USER_IDS + "." + UserIds.USER_ID);
+                projectionMap.put(Certs.SIGNER_UID, "signer." + UserIds.USER_ID + " AS " + Certs.SIGNER_UID);
+                qb.setProjectionMap(projectionMap);
+
+                qb.setTables(Tables.CERTS
+                    + " JOIN " + Tables.USER_IDS + " ON ("
+                            + Tables.CERTS + "." + Certs.MASTER_KEY_ID + " = "
+                            + Tables.USER_IDS + "." + UserIds.MASTER_KEY_ID
+                        + " AND "
+                            + Tables.CERTS + "." + Certs.RANK + " = "
+                            + Tables.USER_IDS + "." + UserIds.RANK
+                    + ") LEFT JOIN " + Tables.USER_IDS + " AS signer ON ("
+                            + Tables.CERTS + "." + Certs.KEY_ID_CERTIFIER + " = "
+                            + "signer." + UserIds.MASTER_KEY_ID
+                        + " AND "
+                            + "signer." + Keys.RANK + " = 0"
+                    + ")");
+
+                groupBy = Tables.CERTS + "." + Certs.RANK + ", "
+                        + Tables.CERTS + "." + Certs.KEY_ID_CERTIFIER;
+
+                qb.appendWhere(Tables.CERTS + "." + Certs.MASTER_KEY_ID + " = ");
                 qb.appendWhereEscapeString(uri.getPathSegments().get(1));
+                if(match == KEY_RING_CERTS_SPECIFIC) {
+                    qb.appendWhere(" AND " + Tables.CERTS + "." + Certs.RANK + " = ");
+                    qb.appendWhereEscapeString(uri.getPathSegments().get(3));
+                    qb.appendWhere(" AND " + Tables.CERTS + "." + Certs.KEY_ID_CERTIFIER+ " = ");
+                    qb.appendWhereEscapeString(uri.getPathSegments().get(4));
+                }
 
                 break;
             }
@@ -497,6 +581,13 @@ public class KeychainProvider extends ContentProvider {
                 case KEY_RING_USER_IDS:
                     db.insertOrThrow(Tables.USER_IDS, null, values);
                     keyId = values.getAsLong(UserIds.MASTER_KEY_ID);
+                    break;
+
+                case KEY_RING_CERTS:
+                    // we replace here, keeping only the latest signature
+                    // TODO this would be better handled in saveKeyRing directly!
+                    db.replaceOrThrow(Tables.CERTS, null, values);
+                    keyId = values.getAsLong(Certs.MASTER_KEY_ID);
                     break;
 
                 case API_APPS:
