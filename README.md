@@ -11,12 +11,12 @@ For a more detailed description and installation instructions go to http://www.o
 
 ### Translate the application
 
-Translations are managed at Transifex, please contribute there at https://www.transifex.com/projects/p/openpgp-keychain/
+Translations are managed at Transifex, please contribute there at https://www.transifex.com/projects/p/open-keychain/
 
 ### Contribute Code
 
 1. Join the development mailinglist at http://groups.google.com/d/forum/openpgp-keychain-dev
-2. Lookout for interesting issues on our issue page at Github: https://github.com/openpgp-keychain/openpgp-keychain/issues
+2. Lookout for interesting issues on our issue page at Github: https://github.com/open-keychain/open-keychain/issues
 3. Tell us about your plans on the mailinglist
 4. Read this README, especially the notes about coding style
 5. Fork OpenKeychain and contribute code (the best part ;) )
@@ -37,12 +37,12 @@ Expand the Extras directory and install "Android Support Repository"
 Select everything for the newest SDK Platform (API-Level 19)
 3. Export ANDROID_HOME pointing to your Android SDK
 4. Execute ``./gradlew build``
-5. You can install the app with ``adb install -r OpenPGP-Keychain/build/apk/OpenPGP-Keychain-debug-unaligned.apk``
+5. You can install the app with ``adb install -r OpenKeychain/build/apk/OpenKeychain-debug-unaligned.apk``
 
 ### Build API Demo with Gradle
 
 1. Follow 1-3 from above
-2. Change to API Demo directory ``cd OpenPGP-Keychain-API``
+2. Change to API Demo directory ``cd OpenKeychain-API``
 3. Execute ``./gradlew build``
 
 ### Development with Android Studio
@@ -64,8 +64,8 @@ The Remote OpenPGP API is more sophisticated and allows to to operations without
 When utilizing this API, OpenKeychain asks the user on first use to grant access for the calling client application.
 
 More technical information and examples about these APIs can be found in the project's wiki:  
-* [Intent API](https://github.com/openpgp-keychain/openpgp-keychain/wiki/Intent-API)
-* [Remote OpenPGP API](https://github.com/openpgp-keychain/openpgp-keychain/wiki/OpenPGP-API)
+* [Intent API](https://github.com/open-keychain/open-keychain/wiki/Intent-API)
+* [Remote OpenPGP API](https://github.com/open-keychain/open-keychain/wiki/OpenPGP-API)
 
 
 ## Libraries
@@ -119,10 +119,10 @@ When changing build files or dependencies, respect the following requirements:
 * In order to update the build system to a newer gradle version you need to:
   * Update every build.gradle file with the new gradle version and/or gradle plugin version
     * build.gradle
-    * OpenPGP-Keychain/build.gradle
-    * OpenPGP-Keychain-API/build.gradle
-    * OpenPGP-Keychain-API/example-app/build.gradle
-    * OpenPGP-Keychain-API/libraries/keychain-api-library/build.gradle
+    * OpenKeychain/build.gradle
+    * OpenKeychain-API/build.gradle
+    * OpenKeychain-API/example-app/build.gradle
+    * OpenKeychain-API/libraries/keychain-api-library/build.gradle
   * run ./gradlew wrapper twice to update gradle and download the new jar file
   * commit the new jar and property files
 
