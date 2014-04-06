@@ -1,18 +1,18 @@
 /*
- * Copyright (C) 2012-2014 Dominik Schürmann <dominik@dominikschuermann.de>
- * Copyright (C) 2011 Senecaso
+ * Copyright (C) 2013-2014 Dominik Schürmann <dominik@dominikschuermann.de>
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package org.sufficientlysecure.keychain.ui;
@@ -53,14 +53,11 @@ import org.sufficientlysecure.keychain.util.Log;
 import java.security.SignatureException;
 import java.util.Date;
 
-/**
- * Swag
- */
 public class ViewCertActivity extends ActionBarActivity
         implements LoaderManager.LoaderCallbacks<Cursor> {
 
     // These are the rows that we will retrieve.
-    static final String[] PROJECTION = new String[] {
+    static final String[] PROJECTION = new String[]{
             Certs.MASTER_KEY_ID,
             Certs.USER_ID,
             Certs.TYPE,
@@ -115,7 +112,6 @@ public class ViewCertActivity extends ActionBarActivity
         }
 
         getSupportLoaderManager().initLoader(0, null, this);
-
     }
 
     @Override
@@ -127,7 +123,7 @@ public class ViewCertActivity extends ActionBarActivity
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        if(data.moveToFirst()) {
+        if (data.moveToFirst()) {
             String signeeKey = "0x" + PgpKeyHelper.convertKeyIdToHex(data.getLong(INDEX_MASTER_KEY_ID));
             mSigneeKey.setText(signeeKey);
 
@@ -142,32 +138,38 @@ public class ViewCertActivity extends ActionBarActivity
             mSignerKey.setText(signerKey);
 
             String signerUid = data.getString(INDEX_SIGNER_UID);
-            if(signerUid != null)
+            if (signerUid != null) {
                 mSignerUid.setText(signerUid);
-            else
+            } else {
                 mSignerUid.setText(R.string.unknown_uid);
+            }
 
             PGPSignature sig = PgpConversionHelper.BytesToPGPSignature(data.getBlob(INDEX_DATA));
             PGPKeyRing signeeRing = ProviderHelper.getPGPKeyRing(this,
-                    KeychainContract.KeyRingData.buildPublicKeyRingUri(Long.toString(data.getLong(INDEX_MASTER_KEY_ID))));
+                    KeychainContract.KeyRingData.buildPublicKeyRingUri(
+                            Long.toString(data.getLong(INDEX_MASTER_KEY_ID))));
             PGPKeyRing signerRing = ProviderHelper.getPGPKeyRing(this,
-                    KeychainContract.KeyRingData.buildPublicKeyRingUri(Long.toString(sig.getKeyID())));
-            if(signerRing != null) try {
-                sig.init(new JcaPGPContentVerifierBuilderProvider().setProvider(
-                        Constants.BOUNCY_CASTLE_PROVIDER_NAME), signeeRing.getPublicKey());
-                if (sig.verifyCertification(signeeUid, signerRing.getPublicKey())) {
-                    mStatus.setText("ok");
-                    mStatus.setTextColor(getResources().getColor(R.color.bbutton_success));
-                } else {
-                    mStatus.setText("failed!");
+                    KeychainContract.KeyRingData.buildPublicKeyRingUri(
+                            Long.toString(sig.getKeyID())));
+
+            if (signerRing != null) {
+                try {
+                    sig.init(new JcaPGPContentVerifierBuilderProvider().setProvider(
+                            Constants.BOUNCY_CASTLE_PROVIDER_NAME), signeeRing.getPublicKey());
+                    if (sig.verifyCertification(signeeUid, signerRing.getPublicKey())) {
+                        mStatus.setText("ok");
+                        mStatus.setTextColor(getResources().getColor(R.color.bbutton_success));
+                    } else {
+                        mStatus.setText("failed!");
+                        mStatus.setTextColor(getResources().getColor(R.color.alert));
+                    }
+                } catch (SignatureException e) {
+                    mStatus.setText("error!");
+                    mStatus.setTextColor(getResources().getColor(R.color.alert));
+                } catch (PGPException e) {
+                    mStatus.setText("error!");
                     mStatus.setTextColor(getResources().getColor(R.color.alert));
                 }
-            } catch(SignatureException e) {
-                mStatus.setText("error!");
-                mStatus.setTextColor(getResources().getColor(R.color.alert));
-            } catch(PGPException e) {
-                mStatus.setText("error!");
-                mStatus.setTextColor(getResources().getColor(R.color.alert));
             } else {
                 mStatus.setText("key unavailable");
                 mStatus.setTextColor(getResources().getColor(R.color.black));
@@ -177,22 +179,26 @@ public class ViewCertActivity extends ActionBarActivity
             mAlgorithm.setText(algorithmStr);
 
             mRowReason.setVisibility(View.GONE);
-            switch(data.getInt(INDEX_TYPE)) {
+            switch (data.getInt(INDEX_TYPE)) {
                 case PGPSignature.DEFAULT_CERTIFICATION:
-                    mType.setText(R.string.cert_default); break;
+                    mType.setText(R.string.cert_default);
+                    break;
                 case PGPSignature.NO_CERTIFICATION:
-                    mType.setText(R.string.cert_none); break;
+                    mType.setText(R.string.cert_none);
+                    break;
                 case PGPSignature.CASUAL_CERTIFICATION:
-                    mType.setText(R.string.cert_casual); break;
+                    mType.setText(R.string.cert_casual);
+                    break;
                 case PGPSignature.POSITIVE_CERTIFICATION:
-                    mType.setText(R.string.cert_positive); break;
+                    mType.setText(R.string.cert_positive);
+                    break;
                 case PGPSignature.CERTIFICATION_REVOCATION: {
                     mType.setText(R.string.cert_revoke);
-                    if(sig.getHashedSubPackets().hasSubpacket(SignatureSubpacketTags.REVOCATION_REASON)) {
+                    if (sig.getHashedSubPackets().hasSubpacket(SignatureSubpacketTags.REVOCATION_REASON)) {
                         SignatureSubpacket p = sig.getHashedSubPackets().getSubpacket(
                                 SignatureSubpacketTags.REVOCATION_REASON);
                         // For some reason, this is missing in SignatureSubpacketInputStream:146
-                        if(!(p instanceof RevocationReason)) {
+                        if (!(p instanceof RevocationReason)) {
                             p = new RevocationReason(false, p.getData());
                         }
                         String reason = ((RevocationReason) p).getRevocationDescription();
@@ -233,7 +239,7 @@ public class ViewCertActivity extends ActionBarActivity
                         KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(Long.toString(mSignerKeyId))
                 );
                 // TODO notify user of this, maybe offer download?
-                if(mSignerKeyId == 0L)
+                if (mSignerKeyId == 0L)
                     return true;
                 viewIntent.setData(KeyRings.buildGenericKeyRingUri(
                         Long.toString(signerMasterKeyId))

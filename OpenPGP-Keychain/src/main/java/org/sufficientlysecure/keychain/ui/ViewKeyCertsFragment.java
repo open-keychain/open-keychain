@@ -31,8 +31,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.Spinner;
 import android.widget.TextView;
 
 import org.spongycastle.openpgp.PGPSignature;
@@ -118,7 +116,6 @@ public class ViewKeyCertsFragment extends Fragment
         mStickyList.setAdapter(mAdapter);
 
         getLoaderManager().initLoader(0, null, this);
-
     }
 
     @Override
@@ -193,7 +190,6 @@ public class ViewKeyCertsFragment extends Fragment
          */
         private void initIndex(Cursor cursor) {
             if (cursor != null) {
-
                 mIndexMasterKeyId = cursor.getColumnIndexOrThrow(Certs.MASTER_KEY_ID);
                 mIndexUserId = cursor.getColumnIndexOrThrow(Certs.USER_ID);
                 mIndexRank = cursor.getColumnIndexOrThrow(Certs.RANK);
@@ -239,7 +235,6 @@ public class ViewKeyCertsFragment extends Fragment
             view.setTag(R.id.tag_mki, cursor.getLong(mIndexMasterKeyId));
             view.setTag(R.id.tag_rank, cursor.getLong(mIndexRank));
             view.setTag(R.id.tag_certifierId, cursor.getLong(mIndexSignerKeyId));
-
         }
 
         @Override
