@@ -194,8 +194,8 @@ public class KeychainDatabase extends SQLiteOpenHelper {
     /** This method tries to import data from a provided database.
      *
      * The sole assumptions made on this db are that there is a key_rings table
-     * with a key_ring_data and a type column, the latter of which should be bigger
-     * for secret keys.
+     * with a key_ring_data, a master_key_id and a type column, the latter of
+     * which should be 1 for secret keys and 0 for public keys.
      */
     public void checkAndImportApg(Context context) {
 
@@ -240,8 +240,32 @@ public class KeychainDatabase extends SQLiteOpenHelper {
             Log.d(Constants.TAG, "Ok.");
         }
 
-        Cursor c = db.rawQuery("SELECT key_ring_data FROM key_rings ORDER BY type ASC", null);
+        Cursor c = null;
         try {
+            // we insert in two steps: first, all public keys that have secret keys
+            c = db.rawQuery("SELECT key_ring_data FROM key_rings WHERE type = 1 OR EXISTS ("
+                    + " SELECT 1 FROM key_rings d2 WHERE key_rings.master_key_id = d2.master_key_id"
+                    + " AND d2.type = 1) ORDER BY type ASC", null);
+            Log.d(Constants.TAG, "Importing " + c.getCount() + " secret keyrings from apg.db...");
+            for(int i = 0; i < c.getCount(); i++) {
+                c.moveToPosition(i);
+                byte[] data = c.getBlob(0);
+                PGPKeyRing ring = PgpConversionHelper.BytesToPGPKeyRing(data);
+                if(ring instanceof PGPPublicKeyRing)
+                    ProviderHelper.saveKeyRing(context, (PGPPublicKeyRing) ring);
+                else if(ring instanceof PGPSecretKeyRing)
+                    ProviderHelper.saveKeyRing(context, (PGPSecretKeyRing) ring);
+                else {
+                    Log.e(Constants.TAG, "Unknown blob data type!");
+                }
+            }
+
+            // afterwards, insert all keys, starting with public keys that have secret keys, then
+            // secret keys, then all others. this order is necessary to ensure all certifications
+            // are recognized properly.
+            c = db.rawQuery("SELECT key_ring_data FROM key_rings ORDER BY (type = 0 AND EXISTS ("
+                    + " SELECT 1 FROM key_rings d2 WHERE key_rings.master_key_id = d2.master_key_id AND"
+                    + " d2.type = 1)) DESC, type DESC", null);
             // import from old database
             Log.d(Constants.TAG, "Importing " + c.getCount() + " keyrings from apg.db...");
             for(int i = 0; i < c.getCount(); i++) {
