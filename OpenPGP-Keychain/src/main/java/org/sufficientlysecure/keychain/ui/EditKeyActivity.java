@@ -513,7 +513,7 @@ public class EditKeyActivity extends ActionBarActivity implements EditorListener
                     AlertDialog.Builder alert = new AlertDialog.Builder(
                             EditKeyActivity.this);
 
-                    alert.setIcon(android.R.drawable.ic_dialog_alert);
+                    alert.setIcon(R.drawable.ic_dialog_alert_holo_light);
                     alert.setTitle(R.string.warning);
                     alert.setMessage(EditKeyActivity.this.getString(R.string.ask_empty_id_ok));
 
@@ -626,7 +626,7 @@ public class EditKeyActivity extends ActionBarActivity implements EditorListener
             AlertDialog.Builder alert = new AlertDialog.Builder(
                     EditKeyActivity.this);
 
-            alert.setIcon(android.R.drawable.ic_dialog_alert);
+            alert.setIcon(R.drawable.ic_dialog_alert_holo_light);
             alert.setTitle(R.string.warning);
             alert.setMessage(EditKeyActivity.this.getString(R.string.ask_save_changed_key));
 
