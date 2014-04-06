@@ -59,16 +59,14 @@ public class ViewCertActivity extends ActionBarActivity
             Certs.EXPIRY,
             Certs.KEY_ID_CERTIFIER,
             Certs.SIGNER_UID,
-            Certs.TYPE
     };
-    private static final int INDEX_MASTER_KEY_ID = 1;
-    private static final int INDEX_USER_ID = 2;
-    private static final int INDEX_TYPE = 3;
-    private static final int INDEX_CREATION = 4;
-    private static final int INDEX_EXPIRY = 5;
-    private static final int INDEX_KEY_ID_CERTIFIER = 6;
-    private static final int INDEX_UID_CERTIFIER = 7;
-    private static final int INDEX_KEY_TYPE = 8;
+    private static final int INDEX_MASTER_KEY_ID = 0;
+    private static final int INDEX_USER_ID = 1;
+    private static final int INDEX_TYPE = 2;
+    private static final int INDEX_CREATION = 3;
+    private static final int INDEX_EXPIRY = 4;
+    private static final int INDEX_KEY_ID_CERTIFIER = 5;
+    private static final int INDEX_SIGNER_UID = 6;
 
     private Uri mDataUri;
 
@@ -130,7 +128,7 @@ public class ViewCertActivity extends ActionBarActivity
             String signerKey = "0x" + PgpKeyHelper.convertKeyIdToHex(mSignerKeyId);
             mSignerKey.setText(signerKey);
 
-            String signerUid = data.getString(INDEX_UID_CERTIFIER);
+            String signerUid = data.getString(INDEX_SIGNER_UID);
             if(signerUid != null)
                 mSignerUid.setText(signerUid);
             else
@@ -141,19 +139,21 @@ public class ViewCertActivity extends ActionBarActivity
 
             switch(data.getInt(INDEX_TYPE)) {
                 case PGPSignature.DEFAULT_CERTIFICATION:
-                    mType.setText(R.string.sig_type_default); break;
+                    mType.setText(R.string.cert_default); break;
                 case PGPSignature.NO_CERTIFICATION:
-                    mType.setText(R.string.sig_type_none); break;
+                    mType.setText(R.string.cert_none); break;
                 case PGPSignature.CASUAL_CERTIFICATION:
-                    mType.setText(R.string.sig_type_casual); break;
+                    mType.setText(R.string.cert_casual); break;
                 case PGPSignature.POSITIVE_CERTIFICATION:
-                    mType.setText(R.string.sig_type_positive); break;
+                    mType.setText(R.string.cert_positive); break;
+                case PGPSignature.CERTIFICATION_REVOCATION:
+                    mType.setText(R.string.cert_revoke); break;
             }
 
             long expiry = data.getLong(INDEX_EXPIRY);
-            if(expiry == 0)
-                mExpiry.setText("never");
-            else {
+            if(expiry == 0) {
+                mExpiry.setText(R.string.never);
+            } else {
                 Date expiryDate = new Date(creationDate.getTime() + expiry * 1000);
                 mExpiry.setText(DateFormat.getDateFormat(getApplicationContext()).format(expiryDate));
             }

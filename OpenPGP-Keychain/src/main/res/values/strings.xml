@@ -486,14 +486,14 @@
     <string name="secret_key_yes">available</string>
     <string name="secret_key_no">unavailable</string>
 
+    <!-- hints -->
+    <string name="encrypt_content_edit_text_hint">Write message here to encrypt and/or sign…</string>
+    <string name="decrypt_content_edit_text_hint">Enter ciphertext here to decrypt and/or verify…</string>
+
     <!-- unsorted -->
     <string name="show_unknown_signatures">Show unknown signatures</string>
     <string name="section_signer_id">Signer</string>
     <string name="section_cert">Certificate Details</string>
-    <string name="sig_type_default">default</string>
-    <string name="sig_type_none">none</string>
-    <string name="sig_type_casual">casual</string>
-    <string name="sig_type_positive">positive</string>
     <string name="label_user_id">User ID</string>
     <string name="label_subkey_rank">Subkey Rank</string>
     <string name="unknown_uid"><![CDATA[<unknown>]]></string>
@@ -503,14 +503,11 @@
     <string name="certs_list_known_secret">Show by known secret keys</string>
     <string name="certs_list_known">Show by known public keys</string>
     <string name="certs_list_all">Show all certificates</string>
-
-    <!-- hints -->
-    <string name="encrypt_content_edit_text_hint">Write message here to encrypt and/or sign…</string>
-    <string name="decrypt_content_edit_text_hint">Enter ciphertext here to decrypt and/or verify…</string>
     <string name="cert_default">default</string>
     <string name="cert_none">none</string>
     <string name="cert_casual">casual</string>
     <string name="cert_positive">positive</string>
     <string name="cert_revoke">revoke</string>
+    <string name="never">never</string>
 
 </resources>

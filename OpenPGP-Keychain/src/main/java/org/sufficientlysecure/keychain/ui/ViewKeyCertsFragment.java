@@ -142,10 +142,16 @@ public class ViewKeyCertsFragment extends Fragment
      */
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-        Intent viewIntent = null;
-        viewIntent = new Intent(getActivity(), ViewCertActivity.class);
-        viewIntent.setData(Certs.buildCertsUri(Long.toString(id)));
-        startActivity(viewIntent);
+        if(view.getTag(R.id.tag_mki) != null) {
+            long masterKeyId = (Long) view.getTag(R.id.tag_mki);
+            long rank = (Long) view.getTag(R.id.tag_rank);
+            long certifierId = (Long) view.getTag(R.id.tag_certifierId);
+
+            Intent viewIntent = new Intent(getActivity(), ViewCertActivity.class);
+            viewIntent.setData(Certs.buildCertsSpecificUri(
+                    Long.toString(masterKeyId), Long.toString(rank), Long.toString(certifierId)));
+            startActivity(viewIntent);
+        }
     }
 
     @Override
@@ -161,8 +167,7 @@ public class ViewKeyCertsFragment extends Fragment
      */
     private class CertListAdapter extends CursorAdapter implements StickyListHeadersAdapter {
         private LayoutInflater mInflater;
-        private int mIndexCertId;
-        private int mIndexUserId, mIndexRank;
+        private int mIndexMasterKeyId, mIndexUserId, mIndexRank;
         private int mIndexSignerKeyId, mIndexSignerUserId;
         private int mIndexVerified, mIndexType;
 
@@ -189,7 +194,7 @@ public class ViewKeyCertsFragment extends Fragment
         private void initIndex(Cursor cursor) {
             if (cursor != null) {
 
-                mIndexCertId = cursor.getColumnIndexOrThrow(Certs.MASTER_KEY_ID);
+                mIndexMasterKeyId = cursor.getColumnIndexOrThrow(Certs.MASTER_KEY_ID);
                 mIndexUserId = cursor.getColumnIndexOrThrow(Certs.USER_ID);
                 mIndexRank = cursor.getColumnIndexOrThrow(Certs.RANK);
                 mIndexType = cursor.getColumnIndexOrThrow(Certs.TYPE);
@@ -230,6 +235,10 @@ public class ViewKeyCertsFragment extends Fragment
 
             wSignerUserId.setText(signerUserId);
             wSignerKeyId.setText(signerKeyId);
+
+            view.setTag(R.id.tag_mki, cursor.getLong(mIndexMasterKeyId));
+            view.setTag(R.id.tag_rank, cursor.getLong(mIndexRank));
+            view.setTag(R.id.tag_certifierId, cursor.getLong(mIndexSignerKeyId));
 
         }
 

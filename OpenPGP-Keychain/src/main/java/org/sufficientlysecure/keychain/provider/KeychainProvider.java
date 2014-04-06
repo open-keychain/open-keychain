@@ -54,6 +54,7 @@ public class KeychainProvider extends ContentProvider {
     private static final int KEY_RING_PUBLIC = 203;
     private static final int KEY_RING_SECRET = 204;
     private static final int KEY_RING_CERTS = 205;
+    private static final int KEY_RING_CERTS_SPECIFIC = 206;
 
     private static final int API_APPS = 301;
     private static final int API_APPS_BY_PACKAGE_NAME = 303;
@@ -62,8 +63,6 @@ public class KeychainProvider extends ContentProvider {
 
     private static final int KEY_RINGS_FIND_BY_EMAIL = 400;
     private static final int KEY_RINGS_FIND_BY_SUBKEY = 401;
-
-    private static final int CERTS_FIND_BY_CERTIFIER_ID = 501;
 
     // private static final int DATA_STREAM = 501;
 
@@ -119,6 +118,8 @@ public class KeychainProvider extends ContentProvider {
          * key_rings/_/user_ids
          * key_rings/_/public
          * key_rings/_/secret
+         * key_rings/_/certs
+         * key_rings/_/certs/_/_
          * </pre>
          */
         matcher.addURI(authority, KeychainContract.BASE_KEY_RINGS + "/*/"
@@ -139,6 +140,9 @@ public class KeychainProvider extends ContentProvider {
         matcher.addURI(authority, KeychainContract.BASE_KEY_RINGS + "/*/"
                 + KeychainContract.PATH_CERTS,
                 KEY_RING_CERTS);
+        matcher.addURI(authority, KeychainContract.BASE_KEY_RINGS + "/*/"
+                        + KeychainContract.PATH_CERTS + "/*/*",
+                KEY_RING_CERTS_SPECIFIC);
 
         /**
          * API apps
@@ -436,6 +440,7 @@ public class KeychainProvider extends ContentProvider {
             }
 
             case KEY_RING_CERTS:
+            case KEY_RING_CERTS_SPECIFIC: {
                 HashMap<String, String> projectionMap = new HashMap<String, String>();
                 projectionMap.put(Certs._ID, Tables.CERTS + ".oid AS " + Certs._ID);
                 projectionMap.put(Certs.MASTER_KEY_ID, Tables.CERTS + "." + Certs.MASTER_KEY_ID);
@@ -443,6 +448,7 @@ public class KeychainProvider extends ContentProvider {
                 projectionMap.put(Certs.VERIFIED, Tables.CERTS + "." + Certs.VERIFIED);
                 projectionMap.put(Certs.TYPE, Tables.CERTS + "." + Certs.TYPE);
                 projectionMap.put(Certs.CREATION, Tables.CERTS + "." + Certs.CREATION);
+                projectionMap.put(Certs.EXPIRY, Tables.CERTS + "." + Certs.EXPIRY);
                 projectionMap.put(Certs.KEY_ID_CERTIFIER, Tables.CERTS + "." + Certs.KEY_ID_CERTIFIER);
                 projectionMap.put(Certs.USER_ID, Tables.USER_IDS + "." + UserIds.USER_ID);
                 projectionMap.put(Certs.SIGNER_UID, "signer." + UserIds.USER_ID + " AS " + Certs.SIGNER_UID);
@@ -450,7 +456,7 @@ public class KeychainProvider extends ContentProvider {
 
                 qb.setTables(Tables.CERTS
                     + " JOIN " + Tables.USER_IDS + " ON ("
-                            + Tables.CERTS + "." + Certs.MASTER_KEY_ID  + " = "
+                            + Tables.CERTS + "." + Certs.MASTER_KEY_ID + " = "
                             + Tables.USER_IDS + "." + UserIds.MASTER_KEY_ID
                         + " AND "
                             + Tables.CERTS + "." + Certs.RANK + " = "
@@ -465,10 +471,17 @@ public class KeychainProvider extends ContentProvider {
                 groupBy = Tables.CERTS + "." + Certs.RANK + ", "
                         + Tables.CERTS + "." + Certs.KEY_ID_CERTIFIER;
 
-                qb.appendWhere(Tables.CERTS + "." + KeyRings.MASTER_KEY_ID + " = ");
+                qb.appendWhere(Tables.CERTS + "." + Certs.MASTER_KEY_ID + " = ");
                 qb.appendWhereEscapeString(uri.getPathSegments().get(1));
+                if(match == KEY_RING_CERTS_SPECIFIC) {
+                    qb.appendWhere(" AND " + Tables.CERTS + "." + Certs.RANK + " = ");
+                    qb.appendWhereEscapeString(uri.getPathSegments().get(3));
+                    qb.appendWhere(" AND " + Tables.CERTS + "." + Certs.KEY_ID_CERTIFIER+ " = ");
+                    qb.appendWhereEscapeString(uri.getPathSegments().get(4));
+                }
 
                 break;
+            }
 
             case API_APPS:
                 qb.setTables(Tables.API_APPS);
