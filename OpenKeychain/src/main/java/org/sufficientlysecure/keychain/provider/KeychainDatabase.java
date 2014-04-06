@@ -179,7 +179,6 @@ public class KeychainDatabase extends SQLiteOpenHelper {
             // Enable foreign key constraints
             db.execSQL("PRAGMA foreign_keys=ON;");
             // TODO remove, once we remove the "always migrate" debug stuff
-            // db.execSQL("DROP TABLE certs;");
             // db.execSQL("DROP TABLE user_ids;");
             db.execSQL(CREATE_USER_IDS);
             db.execSQL(CREATE_CERTS);
