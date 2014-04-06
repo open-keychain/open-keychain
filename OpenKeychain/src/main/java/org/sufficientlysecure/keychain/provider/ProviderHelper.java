@@ -207,17 +207,12 @@ public class ProviderHelper {
             Log.e(Constants.TAG, "Key could not be deleted! Maybe we are creating a new one!", e);
         }
 
+        // insert new version of this keyRing
         ContentValues values = new ContentValues();
-        // use exactly the same _ID again to replace key in-place.
-        // NOTE: If we would not use the same _ID again,
-        // getting back to the ViewKeyActivity would result in Nullpointer,
-        // because the currently loaded key would be gone from the database
         values.put(KeyRingData.MASTER_KEY_ID, masterKeyId);
         values.put(KeyRingData.KEY_RING_DATA, keyRing.getEncoded());
-
-        // insert new version of this keyRing
         Uri uri = KeyRingData.buildPublicKeyRingUri(Long.toString(masterKeyId));
-        Uri insertedUri = context.getContentResolver().insert(uri, values);
+        context.getContentResolver().insert(uri, values);
 
         // save all keys and userIds included in keyRing object in database
         ArrayList<ContentProviderOperation> operations = new ArrayList<ContentProviderOperation>();
