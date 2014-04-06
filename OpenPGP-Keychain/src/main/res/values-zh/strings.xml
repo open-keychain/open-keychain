@@ -67,8 +67,6 @@
   <string name="label_delete_after_decryption">解密后删除</string>
   <string name="label_encryption_algorithm">加密算法</string>
   <string name="label_hash_algorithm">哈希算法</string>
-  <string name="label_asymmetric">公共密钥</string>
-  <string name="label_symmetric">密语</string>
   <string name="label_passphrase_cache_ttl">密语缓存</string>
   <string name="label_comment">注解</string>
   <string name="label_email">电子邮件</string>
@@ -179,4 +177,5 @@
   <string name="nav_import">导入密钥</string>
   <string name="nav_secret_keys">我的密钥</string>
   <!--hints-->
+  <!--unsorted-->
 </resources>

@@ -52,7 +52,6 @@
   <string name="label_file">Dosya</string>
   <string name="label_passphrase_again">Tekrar</string>
   <string name="label_algorithm">Algoritma</string>
-  <string name="label_asymmetric">Açık Anahtar</string>
   <string name="label_creation">Oluşturma</string>
   <string name="label_usage">Kullanım</string>
   <string name="label_key_size">Anahtar Boyutu</string>
@@ -135,4 +134,5 @@
   <!--Key view-->
   <!--Navigation Drawer-->
   <!--hints-->
+  <!--unsorted-->
 </resources>

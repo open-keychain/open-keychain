@@ -60,8 +60,6 @@
   <string name="label_select_public_keys">Saajad</string>
   <string name="label_delete_after_encryption">Kustuta peale šifreerimist</string>
   <string name="label_hash_algorithm">Räsialgoritm</string>
-  <string name="label_asymmetric">Avalik võti</string>
-  <string name="label_symmetric">Salasõne</string>
   <string name="label_passphrase_cache_ttl">Salasõne puhverdus</string>
   <string name="label_key_servers">Võtmeserverid</string>
   <string name="label_creation">Loodud</string>
@@ -116,4 +114,5 @@
   <!--Key view-->
   <!--Navigation Drawer-->
   <!--hints-->
+  <!--unsorted-->
 </resources>

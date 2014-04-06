@@ -74,8 +74,6 @@
   <string name="menu_import_from_qr_code">QRコードからインポート</string>
   <string name="menu_import">インポート</string>
   <string name="menu_import_from_nfc">NFCからインポート</string>
-  <string name="menu_export_public_keys">すべての公開鍵のエクスポート</string>
-  <string name="menu_export_secret_keys">すべての秘密鍵のエクスポート</string>
   <string name="menu_export_key">ファイルへのエクスポート</string>
   <string name="menu_delete_key">鍵の削除</string>
   <string name="menu_create_key">鍵の生成</string>
@@ -100,7 +98,6 @@
   <string name="menu_encrypt_to">暗号化...</string>
   <string name="menu_select_all">すべて選択</string>
   <string name="menu_add_keys">鍵の追加</string>
-  <string name="menu_export_keys">複数鍵のエクスポート</string>
   <!--label-->
   <string name="label_sign">署名</string>
   <string name="label_message">メッセージ</string>
@@ -116,8 +113,8 @@
   <string name="label_share_after_encryption">暗号化して共有</string>
   <string name="label_encryption_algorithm">暗号化アルゴリズム</string>
   <string name="label_hash_algorithm">ハッシュアルゴリズム</string>
-  <string name="label_asymmetric">公開鍵</string>
-  <string name="label_symmetric">パスフレーズ</string>
+  <string name="label_asymmetric">公開鍵で</string>
+  <string name="label_symmetric">パスフレーズで</string>
   <string name="label_passphrase_cache_ttl">パスフレーズキャッシュ</string>
   <string name="label_message_compression">メッセージの圧縮</string>
   <string name="label_file_compression">ファイルの圧縮</string>
@@ -359,7 +356,7 @@
   <string name="import_qr_code_start_with_one">QRコードをID 1で始めてください</string>
   <string name="import_qr_code_wrong">不適QRコード! もう一度!</string>
   <string name="import_qr_code_finished">QRコードの読み取り完了!</string>
-  <string name="import_qr_code_too_short_fingerprint">QRコードに含まれる指紋が短かすぎます (&lt; 16 文字)</string>
+  <string name="import_qr_code_too_short_fingerprint">指紋が短かすぎます (&lt; 16 文字)</string>
   <string name="import_qr_scan_button">\'バーコードスキャナー\'でQRコードをスキャンする</string>
   <string name="import_nfc_text">NFCで鍵を受信しました、デバイスのロックを解除する必要があります。</string>
   <string name="import_nfc_help_button">ヘルプ</string>
@@ -430,9 +427,10 @@
   <string name="label_secret_key">秘密鍵</string>
   <string name="secret_key_yes">存在する</string>
   <string name="secret_key_no">存在しない</string>
-  <string name="section_uids_to_sign">署名に使うユーザーID</string>
-  <string name="progress_re_adding_certs">検証を再適用する</string>
   <!--hints-->
   <string name="encrypt_content_edit_text_hint">ここに書いたメッセージを暗号化/署名..</string>
   <string name="decrypt_content_edit_text_hint">ここに入力された暗号化テキストを復号化/検証...</string>
+  <!--unsorted-->
+  <string name="section_uids_to_sign">署名に使うユーザーID</string>
+  <string name="progress_re_adding_certs">検証を再適用する</string>
 </resources>

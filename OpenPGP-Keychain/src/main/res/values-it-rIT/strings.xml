@@ -55,7 +55,7 @@
   <string name="btn_do_not_save">Annulla</string>
   <string name="btn_delete">Elimina</string>
   <string name="btn_no_date">Nessuno</string>
-  <string name="btn_okay">Okay</string>
+  <string name="btn_okay">OK</string>
   <string name="btn_change_passphrase">Cambia Nuova Frase di Accesso</string>
   <string name="btn_set_passphrase">Imposta Nuova Frase di Accesso</string>
   <string name="btn_search">Cerca</string>
@@ -63,7 +63,7 @@
   <string name="btn_next">Prossimo</string>
   <string name="btn_back">Precedente</string>
   <string name="btn_clipboard">Appunti</string>
-  <string name="btn_share">Condividi con...</string>
+  <string name="btn_share">Condividi...</string>
   <string name="btn_lookup_key">Chiave di ricerca</string>
   <string name="btn_encryption_advanced_settings_show">Mostra impostazioni avanzate</string>
   <string name="btn_encryption_advanced_settings_hide">Nascondi impostazioni avanzate</string>
@@ -74,7 +74,6 @@
   <string name="menu_import_from_qr_code">Importa da Codice QR</string>
   <string name="menu_import">Importa</string>
   <string name="menu_import_from_nfc">Importa tramite NFC</string>
-  <string name="menu_export_secret_keys">Esporta tutte le chiavi segrete</string>
   <string name="menu_export_key">Esporta su un file</string>
   <string name="menu_delete_key">Cancella chiave</string>
   <string name="menu_create_key">Crea chiave</string>
@@ -98,6 +97,7 @@
   <string name="menu_key_edit_cancel">Annulla</string>
   <string name="menu_encrypt_to">Codifica su...</string>
   <string name="menu_select_all">Seleziona tutto</string>
+  <string name="menu_add_keys">Aggiungi chiavi</string>
   <!--label-->
   <string name="label_sign">Firma</string>
   <string name="label_message">Messaggio</string>
@@ -113,8 +113,8 @@
   <string name="label_share_after_encryption">Condividi Dopo la Codifica</string>
   <string name="label_encryption_algorithm">Algoritmo di Codifica</string>
   <string name="label_hash_algorithm">Algoritmo di Hash</string>
-  <string name="label_asymmetric">Chiave Pubblica</string>
-  <string name="label_symmetric">Frase di Accesso</string>
+  <string name="label_asymmetric">con Chiave Pubblica</string>
+  <string name="label_symmetric">con Frase di Accesso</string>
   <string name="label_passphrase_cache_ttl">Cache Frase di Accesso</string>
   <string name="label_message_compression">Compressione Messaggio</string>
   <string name="label_file_compression">Compressione File</string>
@@ -142,7 +142,7 @@
   <string name="no_key">&lt;nessuna chiave&gt;</string>
   <string name="no_email">&lt;Nessuna Email&gt;</string>
   <string name="unknown_status"></string>
-  <string name="can_encrypt">puo\'; codificare</string>
+  <string name="can_encrypt">puo\' codificare</string>
   <string name="can_sign">puo\' firmare</string>
   <string name="expired">scaduto</string>
   <string name="revoked">revocato</string>
@@ -189,11 +189,15 @@
   <string name="set_a_passphrase">Imposta prima una frase di accesso.</string>
   <string name="no_filemanager_installed">Nessun gestore file compatibile installato.</string>
   <string name="passphrases_do_not_match">Le frasi di accesso non corrispondono.</string>
+  <string name="passphrase_must_not_be_empty">Si prega di inserire una frase di accesso.</string>
   <string name="passphrase_for_symmetric_encryption">Codifica Simmetrica.</string>
   <string name="passphrase_for">Inserisci la frase di accesso per \'%s\'</string>
   <string name="file_delete_confirmation">Sei sicuro di voler cancellare\n%s?</string>
   <string name="file_delete_successful">Eliminato correttamente.</string>
   <string name="no_file_selected">Seleziona un file prima.</string>
+  <string name="decryption_successful">Decodifica e/o verifica eseguita con successo.</string>
+  <string name="encryption_successful">Firmato e/o codificato con successo.</string>
+  <string name="encryption_to_clipboard_successful">Firmato e/o codificato con successo negli appunti.</string>
   <string name="enter_passphrase_twice">Inserisci la frase di accesso due volte.</string>
   <string name="select_encryption_key">Seleziona almeno una chiave di codifica.</string>
   <string name="select_encryption_or_signature_key">Seleziona almeno una chiave di codifica o di firma.</string>
@@ -205,6 +209,7 @@
   <string name="key_deletion_confirmation_multi">Vuoi veramente eliminare le chiavi selezionate?\nNon potrai annullare!</string>
   <string name="secret_key_deletion_confirmation">Vuoi veramente eliminare la chiave PRIVATA \'%s\'?\nNon potrai annullare!</string>
   <string name="ask_save_changed_key">Hai apportato modifiche al tuo portachiavi, vuoi salvarlo?</string>
+  <string name="ask_empty_id_ok">È stato aggiunto un ID utente vuoto, sei sicuro di voler continuare?</string>
   <string name="public_key_deletetion_confirmation">Vuoi veramente eliminare la chiave PUBBLICA \'%s\'?\nNon potrai annullare!</string>
   <string name="secret_key_delete_text">Eliminare le Chiavi Segrete?</string>
   <string name="also_export_secret_keys">Esportare anche le chiavi segrete?</string>
@@ -298,6 +303,7 @@
     <item quantity="one">parte del file caricato e\' un oggetto OpenPGP valido, ma non una chave OpenPGP</item>
     <item quantity="other">parti del file caricato sono oggetti OpenPGP validi, ma non chavi OpenPGP</item>
   </plurals>
+  <string name="error_change_something_first">È necessario apportare modifiche al portachiavi prima prima che sia possibile salvarlo</string>
   <!--progress dialogs, usually ending in '…'-->
   <string name="progress_done">Fatto.</string>
   <string name="progress_cancel">Annulla</string>
@@ -364,7 +370,7 @@
   <string name="import_qr_code_start_with_one">Perfavore inizia col Codice QR con ID 1</string>
   <string name="import_qr_code_wrong">Codica QR deformato! Prova di nuovo!</string>
   <string name="import_qr_code_finished">Scansione codice QR completata!</string>
-  <string name="import_qr_code_too_short_fingerprint">Impronta contenuta nel Codice QR troppo corta (&lt; 16 caratteri)</string>
+  <string name="import_qr_code_too_short_fingerprint">Impronta troppo corta (&lt; 16 caratteri)</string>
   <string name="import_qr_scan_button">Scansiona il Codice QR con \'Barcode Scanner\'</string>
   <string name="import_nfc_text">Per ricevere le chiavi via NFC, il dispositivo deve essere sbloccato.</string>
   <string name="import_nfc_help_button">Aiuto</string>
@@ -423,6 +429,9 @@
   <string name="key_view_tab_main">Info</string>
   <string name="key_view_tab_certs">Certificazioni</string>
   <!--Navigation Drawer-->
+  <string name="nav_contacts">Chiavi</string>
+  <string name="nav_encrypt">Firma e Codifica</string>
+  <string name="nav_decrypt">Decodifica e Verifica</string>
   <string name="nav_import">Importa Chiavi</string>
   <string name="nav_secret_keys">Le Mie Chiavi</string>
   <string name="nav_apps">App Registrate</string>
@@ -433,7 +442,10 @@
   <string name="label_secret_key">Chiave Segreta</string>
   <string name="secret_key_yes">disponibile</string>
   <string name="secret_key_no">non disponibile</string>
+  <!--hints-->
+  <string name="encrypt_content_edit_text_hint">Scrivi qui il messaggio da codificare e/o firmare...</string>
+  <string name="decrypt_content_edit_text_hint">Inserisci il testo cifrato qui per la decodifica e/o verifica...</string>
+  <!--unsorted-->
   <string name="section_uids_to_sign">ID Utente da firmare</string>
   <string name="progress_re_adding_certs">Riapplicazione certificati</string>
-  <!--hints-->
 </resources>

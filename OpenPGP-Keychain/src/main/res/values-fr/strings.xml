@@ -74,8 +74,6 @@
   <string name="menu_import_from_qr_code">Importer depuis un code QR</string>
   <string name="menu_import">Importer</string>
   <string name="menu_import_from_nfc">Importer avec NFC</string>
-  <string name="menu_export_public_keys">Exporter toutes les clefs publiques</string>
-  <string name="menu_export_secret_keys">Exporter toutes les clefs secrètes</string>
   <string name="menu_export_key">Exporter vers un fichier</string>
   <string name="menu_delete_key">Supprimer la clef</string>
   <string name="menu_create_key">Créer une clef</string>
@@ -100,7 +98,6 @@
   <string name="menu_encrypt_to">Chiffrer vers...</string>
   <string name="menu_select_all">Tout sélectionner</string>
   <string name="menu_add_keys">Ajouter des clefs</string>
-  <string name="menu_export_keys">Exporter des clefs</string>
   <!--label-->
   <string name="label_sign">Signer</string>
   <string name="label_message">Message</string>
@@ -116,8 +113,8 @@
   <string name="label_share_after_encryption">Partager après chiffrement</string>
   <string name="label_encryption_algorithm">Algorithme de chiffrement</string>
   <string name="label_hash_algorithm">Algorithme de hachage</string>
-  <string name="label_asymmetric">Clef publique</string>
-  <string name="label_symmetric">Phrase de passe</string>
+  <string name="label_asymmetric">avec une clef publique</string>
+  <string name="label_symmetric">avec une phrase de passe</string>
   <string name="label_passphrase_cache_ttl">Cache de la phrase de passe</string>
   <string name="label_message_compression">Compression des messages</string>
   <string name="label_file_compression">Compression des fichiers</string>
@@ -373,7 +370,7 @@
   <string name="import_qr_code_start_with_one">Veuillez commencer par le code QR avec l\'ID 1</string>
   <string name="import_qr_code_wrong">Code QR incorrecte ! Veuillez réessayer !</string>
   <string name="import_qr_code_finished">Balayage de code QR terminé !</string>
-  <string name="import_qr_code_too_short_fingerprint">L\'empreinte contenue dans ce code QR est trop courte (&lt; 16 caractères)</string>
+  <string name="import_qr_code_too_short_fingerprint">L\'empreinte est trop courte (&lt; 16 caractères)</string>
   <string name="import_qr_scan_button">Numériser le code QR avec le lecteur de code-barres</string>
   <string name="import_nfc_text">Pour recevoir des clefs par NFC, les appareils doivent être déverrouillés.</string>
   <string name="import_nfc_help_button">Aide</string>
@@ -445,9 +442,10 @@
   <string name="label_secret_key">Clef secrète</string>
   <string name="secret_key_yes">disponible</string>
   <string name="secret_key_no">non disponible</string>
-  <string name="section_uids_to_sign">ID utilisateur pour signer</string>
-  <string name="progress_re_adding_certs">Nouvel application des certificats</string>
   <!--hints-->
   <string name="encrypt_content_edit_text_hint">Écrire ici le message à chiffrer et/ou signer...</string>
   <string name="decrypt_content_edit_text_hint">Saisir le cryptogramme à déchiffrer et/ou à vérifier ici...</string>
+  <!--unsorted-->
+  <string name="section_uids_to_sign">ID utilisateur pour signer</string>
+  <string name="progress_re_adding_certs">Nouvel application des certificats</string>
 </resources>

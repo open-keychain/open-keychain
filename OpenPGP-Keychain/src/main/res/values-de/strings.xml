@@ -55,6 +55,8 @@
   <string name="btn_delete">Löschen</string>
   <string name="btn_no_date">Keine</string>
   <string name="btn_okay">Okay</string>
+  <string name="btn_change_passphrase">Passwort ändern</string>
+  <string name="btn_set_passphrase">Neues Passwort setzen</string>
   <string name="btn_search">Suchen</string>
   <string name="btn_export_to_server">Auf Schlüsselserver hochladen</string>
   <string name="btn_next">Weiter</string>
@@ -71,7 +73,6 @@
   <string name="menu_import_from_qr_code">QR-Code</string>
   <string name="menu_import">Importieren</string>
   <string name="menu_import_from_nfc">NFC</string>
-  <string name="menu_export_secret_keys">Alle geheimen Schlüssel exportieren</string>
   <string name="menu_export_key">In Datei exportieren</string>
   <string name="menu_delete_key">Schlüssel löschen</string>
   <string name="menu_create_key">Schlüssel erstellen</string>
@@ -95,6 +96,8 @@
   <string name="menu_key_edit_cancel">Abbrechen</string>
   <string name="menu_encrypt_to">Verschlüsseln nach…</string>
   <string name="menu_select_all">Alles auswählen</string>
+  <string name="menu_add_keys">Schlüssel hinzufügen</string>
+  <string name="menu_export_all_keys">Alle Schlüssel exportieren</string>
   <!--label-->
   <string name="label_sign">Signieren</string>
   <string name="label_message">Nachricht</string>
@@ -110,8 +113,8 @@
   <string name="label_share_after_encryption">Nach dem Verschlüsseln teilen</string>
   <string name="label_encryption_algorithm">Verschlüsselungsalgorithmus</string>
   <string name="label_hash_algorithm">Hash-Algorithmus</string>
-  <string name="label_asymmetric">Öffentlicher Schlüssel</string>
-  <string name="label_symmetric">Passwort</string>
+  <string name="label_asymmetric">mit Öffentlichem Schlüssel</string>
+  <string name="label_symmetric">mit Passwort</string>
   <string name="label_passphrase_cache_ttl">Passwort-Cache</string>
   <string name="label_message_compression">Nachrichten-Komprimierung</string>
   <string name="label_file_compression">Datei-Komprimierung</string>
@@ -176,6 +179,10 @@
   <string name="error">Fehler</string>
   <string name="error_message">Fehler: %s</string>
   <!--key flags-->
+  <string name="flag_certify">Beglaubigen</string>
+  <string name="flag_sign">Signieren</string>
+  <string name="flag_encrypt">Verschlüsseln</string>
+  <string name="flag_authenticate">Authentifizieren</string>
   <!--sentences-->
   <string name="wrong_passphrase">Falsches Passwort.</string>
   <string name="using_clipboard_content">Verwende Inhalt der Zwischenablage.</string>
@@ -197,6 +204,7 @@
   <string name="key_deletion_confirmation">Soll der Schlüssel \'%s\' wirklich gelöscht werden?\nDies kann nicht rückgängig gemacht werden! </string>
   <string name="key_deletion_confirmation_multi">Möchtest du wirklich alle ausgewählten Schlüssel löschen?\nDies kann nicht rückgängig gemacht werden!</string>
   <string name="secret_key_deletion_confirmation">Soll der PRIVATE Schlüssel \'%s\' wirklich gelöscht werden?\nDies kann nicht rückgängig gemacht werden!</string>
+  <string name="public_key_deletetion_confirmation">Soll der öffentliche Schlüssel \'%s\' wirklich gelöscht werden?\nDies kann nicht rückgängig gemacht werden! </string>
   <string name="also_export_secret_keys">Private Schlüssel auch exportieren</string>
   <plurals name="keys_added_and_updated_1">
     <item quantity="one">%d Schlüssel erfolgreich hinzugefügt</item>
@@ -353,7 +361,7 @@
   <string name="import_qr_code_start_with_one">Bitte fange mit QR-Code der ID 1 an</string>
   <string name="import_qr_code_wrong">Falsch formatierter QR-Code! Bitte erneut versuchen!</string>
   <string name="import_qr_code_finished">QR-Code wurde erfolgreich eingescannt!</string>
-  <string name="import_qr_code_too_short_fingerprint">Der Fingerabdruck in diesem QR-Code ist zu kurz (&lt; 16 Zeichen)</string>
+  <string name="import_qr_code_too_short_fingerprint">Der Fingerabdruck ist zu kurz (&lt; 16 Zeichen)</string>
   <string name="import_qr_scan_button">Qr-Code mittels \'Barcode Scanner\' einscannen</string>
   <string name="import_nfc_text">Um Schlüssel über NFC zu erhalten muss das Gerät entsperrt sein.</string>
   <string name="import_nfc_help_button">Hilfe</string>
@@ -365,6 +373,8 @@
   <string name="intent_send_decrypt">Mit OpenKeychain entschlüsseln</string>
   <!--Remote API-->
   <string name="api_no_apps">Keine registrierten Anwendungen vorhanden!\n\nAnwendungen von Dritten können Zugriff auf OpenKeychain erbitten. Nachdem Zugriff gewährt wurde, werden diese hier aufgelistet.</string>
+  <string name="api_settings_show_info">Erweiterte Informationen anzeigen</string>
+  <string name="api_settings_hide_info">Erweiterte Informationen ausblenden</string>
   <string name="api_settings_show_advanced">Erweiterte Einstellungen anzeigen</string>
   <string name="api_settings_hide_advanced">Erweiterte Einstellungen ausblenden</string>
   <string name="api_settings_no_key">Kein Schlüssel ausgewählt</string>
@@ -374,6 +384,7 @@
   <string name="api_settings_revoke">Zugriff widerufen</string>
   <string name="api_settings_package_name">Paketname</string>
   <string name="api_settings_package_signature">SHA-256 der Paketsignatur</string>
+  <string name="api_settings_accounts">Konten</string>
   <string name="api_register_text">Folgende Anwendung beantragt Zugriff zur API von OpenKeychain.\nZugriff erlauben?\n\nVORSICHT: Sollten Sie nicht wissen, warum dieses Fenster erscheint, sollten Sie den Zugriff nicht gewähren! Sie können Zugriffe später über das Menü \'Registrierte Anwendungen\' widerrufen.</string>
   <string name="api_register_allow">Zugriff erlauben</string>
   <string name="api_register_disallow">Zugriff verbieten</string>
@@ -405,6 +416,9 @@
   <string name="key_view_tab_main">Info</string>
   <string name="key_view_tab_certs">Zertifikationen</string>
   <!--Navigation Drawer-->
+  <string name="nav_contacts">Schlüssel</string>
+  <string name="nav_encrypt">Signieren und Verschlüsseln</string>
+  <string name="nav_decrypt">Entschlüsseln und Verifizieren</string>
   <string name="nav_import">Schlüssel Importieren</string>
   <string name="nav_secret_keys">Meine Schlüssel</string>
   <string name="nav_apps">Registrierte Anwendungen</string>
@@ -415,7 +429,8 @@
   <string name="label_secret_key">Geheime Schlüssel</string>
   <string name="secret_key_yes">verfügbar</string>
   <string name="secret_key_no">nicht verfügbar</string>
+  <!--hints-->
+  <!--unsorted-->
   <string name="section_uids_to_sign">Benutzer-IDs, die beglaubigt werden sollen</string>
   <string name="progress_re_adding_certs">Wiederhinzufügen der Zertifikate</string>
-  <!--hints-->
 </resources>

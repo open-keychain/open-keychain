@@ -64,8 +64,6 @@
   <string name="label_delete_after_decryption">Verwijderen na ontsleuteling</string>
   <string name="label_encryption_algorithm">Versleutelingsalgoritme</string>
   <string name="label_hash_algorithm">Verificatie-algoritme</string>
-  <string name="label_asymmetric">Publieke sleutel</string>
-  <string name="label_symmetric">Wachtwoord</string>
   <string name="label_passphrase_cache_ttl">Wachtwoordcache</string>
   <string name="label_message_compression">Berichtcompressie</string>
   <string name="label_file_compression">Bestandscompressie</string>
@@ -227,4 +225,5 @@
   <!--Key view-->
   <!--Navigation Drawer-->
   <!--hints-->
+  <!--unsorted-->
 </resources>

@@ -63,8 +63,6 @@
   <string name="label_delete_after_decryption">Borrar después de descifrar</string>
   <string name="label_encryption_algorithm">Algoritmo de cifrado</string>
   <string name="label_hash_algorithm">Algoritmo de Hash</string>
-  <string name="label_asymmetric">Clave pública</string>
-  <string name="label_symmetric">Contraseña</string>
   <string name="label_message_compression">Compresión de mensaje</string>
   <string name="label_file_compression">Compresión de archivo</string>
   <string name="label_key_id">ID de clave</string>
@@ -96,4 +94,5 @@
   <!--Key view-->
   <!--Navigation Drawer-->
   <!--hints-->
+  <!--unsorted-->
 </resources>

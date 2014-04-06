@@ -74,8 +74,6 @@
   <string name="menu_import_from_qr_code">Импорт из QR кода</string>
   <string name="menu_import">Импорт</string>
   <string name="menu_import_from_nfc">Импорт из NFC</string>
-  <string name="menu_export_public_keys">Экспорт всех открытых ключей</string>
-  <string name="menu_export_secret_keys">Экспорт всех секретных ключей</string>
   <string name="menu_export_key">Экспорт в файл</string>
   <string name="menu_delete_key">Удалить ключ</string>
   <string name="menu_create_key">Создать ключ</string>
@@ -100,7 +98,6 @@
   <string name="menu_encrypt_to">Зашифровать....</string>
   <string name="menu_select_all">Выбрать все</string>
   <string name="menu_add_keys">Добавить ключи</string>
-  <string name="menu_export_keys">Экспорт ключей</string>
   <!--label-->
   <string name="label_sign">Подписать</string>
   <string name="label_message">Сообщение</string>
@@ -116,8 +113,6 @@
   <string name="label_share_after_encryption">Отправить после шифрования</string>
   <string name="label_encryption_algorithm">Алгоритм шифрования</string>
   <string name="label_hash_algorithm">Hash-алгоритм</string>
-  <string name="label_asymmetric">Публичный ключ</string>
-  <string name="label_symmetric">Пароль</string>
   <string name="label_passphrase_cache_ttl">Помнить пароль</string>
   <string name="label_message_compression">Сжатие сообщения</string>
   <string name="label_file_compression">Сжатие файла</string>
@@ -382,7 +377,6 @@
   <string name="import_qr_code_start_with_one">Пожалуйста, начните с QR кода с id 1</string>
   <string name="import_qr_code_wrong">Некорректный QR код. Попробуйте снова!</string>
   <string name="import_qr_code_finished">Сканирование QR завершено!</string>
-  <string name="import_qr_code_too_short_fingerprint">QR код содержит слишком короткий отпечаток (&lt; 16 символов)</string>
   <string name="import_qr_scan_button">Сканировать QR код с \'Barcode Scanner\'</string>
   <string name="import_nfc_text">Разблокируйте устройство, что бы получить ключ через NFC.</string>
   <string name="import_nfc_help_button">Помощь</string>
@@ -400,11 +394,16 @@
   <string name="api_settings_hide_advanced">Скрыть расширенные настройки</string>
   <string name="api_settings_no_key">Ключ не выбран</string>
   <string name="api_settings_select_key">Выбрать ключ</string>
+  <string name="api_settings_create_key">Создать новый ключ для этого аккаунта</string>
   <string name="api_settings_save">Сохранить</string>
   <string name="api_settings_cancel">Отмена</string>
   <string name="api_settings_revoke">Отозвать доступ</string>
+  <string name="api_settings_delete_account">Удалить аккаунт</string>
   <string name="api_settings_package_name">Наименование пакета</string>
   <string name="api_settings_package_signature">SHA-256 подписи пакета</string>
+  <string name="api_settings_accounts">Аккаунты</string>
+  <string name="api_settings_accounts_empty">Нет аккаунтов, связанных с этим приложением.</string>
+  <string name="api_create_account_text">Приложение запрашивает создание нового аккаунта. Выберите секретный ключ или создайте новый.\nПриложения ограничены в доступе только к выбраным здесь ключам!</string>
   <string name="api_register_text">Данное приложение запрашивает доступ к OpenKeychain.\nРазрешить доступ?\n\nВНИМАНИЕ: Если вы не знаете почему возник этот запрос, откажите в доступе!\nПозже вы можете отозвать право доступа в разделе \"Зарегистрированные программы\".</string>
   <string name="api_register_allow">Разрешить доступ</string>
   <string name="api_register_disallow">Запретить доступ</string>
@@ -450,7 +449,8 @@
   <string name="label_secret_key">Секретный ключ</string>
   <string name="secret_key_yes">доступен</string>
   <string name="secret_key_no">не доступен</string>
-  <string name="section_uids_to_sign">Подписываемые ID пользователя</string>
   <!--hints-->
   <string name="encrypt_content_edit_text_hint">Напишите сообщение здесь, что бы зашифровать и/или подписать...</string>
+  <!--unsorted-->
+  <string name="section_uids_to_sign">Подписываемые ID пользователя</string>
 </resources>

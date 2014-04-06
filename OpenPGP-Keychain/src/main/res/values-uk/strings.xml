@@ -74,8 +74,6 @@
   <string name="menu_import_from_qr_code">Імпорт з штрих-коду</string>
   <string name="menu_import">Імпорт</string>
   <string name="menu_import_from_nfc">Імпорт з NFC</string>
-  <string name="menu_export_public_keys">Експортувати усі публічні ключі</string>
-  <string name="menu_export_secret_keys">Експортувати усі секретні ключі</string>
   <string name="menu_export_key">Експорт до файлу</string>
   <string name="menu_delete_key">Вилучити ключ</string>
   <string name="menu_create_key">Створити ключ</string>
@@ -100,7 +98,7 @@
   <string name="menu_encrypt_to">Зашифрувати…</string>
   <string name="menu_select_all">Вибрати усе</string>
   <string name="menu_add_keys">Додати ключі</string>
-  <string name="menu_export_keys">Експортувати ключі</string>
+  <string name="menu_export_all_keys">Експортувати усі ключі</string>
   <!--label-->
   <string name="label_sign">Підпис</string>
   <string name="label_message">Повідомлення</string>
@@ -116,8 +114,8 @@
   <string name="label_share_after_encryption">Поширити після шифрування</string>
   <string name="label_encryption_algorithm">Алгоритм шифрування</string>
   <string name="label_hash_algorithm">Хеш алгоритм</string>
-  <string name="label_asymmetric">Публічний ключ</string>
-  <string name="label_symmetric">Парольна фраза</string>
+  <string name="label_asymmetric">з публічним ключем</string>
+  <string name="label_symmetric">з парольною фразою</string>
   <string name="label_passphrase_cache_ttl">Кеш парольної фрази</string>
   <string name="label_message_compression">Стиснення повідомлення</string>
   <string name="label_file_compression">Стиснення файлу</string>
@@ -387,7 +385,7 @@
   <string name="import_qr_code_start_with_one">Будь ласка, почніть з QR коду із ІД 1</string>
   <string name="import_qr_code_wrong">Невірний штрих-код! Спробуйте знову!</string>
   <string name="import_qr_code_finished">Сканування штрих-коду завершено!</string>
-  <string name="import_qr_code_too_short_fingerprint">Штрих-код містить надто короткий відбиток (&lt; 16 символів)</string>
+  <string name="import_qr_code_too_short_fingerprint">Відбиток надто короткий (&lt; 16 символів)</string>
   <string name="import_qr_scan_button">Сканувати QR код з \'Barcode Scanner\'</string>
   <string name="import_nfc_text">Розблокуйте пристрій, щоб отримати ключ через NFC.</string>
   <string name="import_nfc_help_button">Довідка</string>
@@ -460,9 +458,10 @@
   <string name="label_secret_key">Секретний ключ</string>
   <string name="secret_key_yes">доступний</string>
   <string name="secret_key_no">недоступний</string>
-  <string name="section_uids_to_sign">ІД користувача для реєстрації</string>
-  <string name="progress_re_adding_certs">Перезастосування сертифікатів</string>
   <!--hints-->
   <string name="encrypt_content_edit_text_hint">Напишіть повідомлення для шифрування та/або підпису…</string>
   <string name="decrypt_content_edit_text_hint">Уведіть зашифрований текст тут для його розшифрування та/або перевірки…</string>
+  <!--unsorted-->
+  <string name="section_uids_to_sign">ІД користувача для реєстрації</string>
+  <string name="progress_re_adding_certs">Перезастосування сертифікатів</string>
 </resources>
