@@ -10,8 +10,8 @@ sourceSets {
 dependencies {
     compile 'com.android.support:support-v4:19.0.1'
     compile 'com.android.support:appcompat-v7:19.0.1'
-    compile project(':OpenPGP-Keychain-API:libraries:openpgp-api-library')
-    compile project(':OpenPGP-Keychain-API:libraries:openkeychain-api-library')
+    compile project(':OpenKeychain-API:libraries:openpgp-api-library')
+    compile project(':OpenKeychain-API:libraries:openkeychain-api-library')
     compile project(':libraries:HtmlTextView')
     compile project(':libraries:StickyListHeaders:library')
     compile project(':libraries:AndroidBootstrap')
@@ -29,8 +29,8 @@ dependencies {
     testLocalCompile 'com.google.android:android:4.1.1.4'
     testLocalCompile 'com.android.support:support-v4:19.0.1'
     testLocalCompile 'com.android.support:appcompat-v7:19.0.1'
-    testLocalCompile project(':OpenPGP-Keychain-API:libraries:openpgp-api-library')
-    testLocalCompile project(':OpenPGP-Keychain-API:libraries:openkeychain-api-library')
+    testLocalCompile project(':OpenKeychain-API:libraries:openpgp-api-library')
+    testLocalCompile project(':OpenKeychain-API:libraries:openkeychain-api-library')
     testLocalCompile project(':libraries:HtmlTextView')
     testLocalCompile project(':libraries:StickyListHeaders:library')
     testLocalCompile project(':libraries:AndroidBootstrap')
