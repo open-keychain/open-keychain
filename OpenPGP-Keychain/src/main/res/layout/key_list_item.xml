@@ -73,6 +73,14 @@
             android:text="@string/revoked"
             android:textColor="#e00"
             android:layout_gravity="center" />
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/verified"
+            android:layout_gravity="center"
+            android:src="@android:drawable/presence_online"
+            android:paddingLeft="25dp" />
     </FrameLayout>
 
 </LinearLayout>

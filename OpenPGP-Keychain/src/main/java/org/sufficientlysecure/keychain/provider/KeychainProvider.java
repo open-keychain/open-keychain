@@ -257,11 +257,12 @@ public class KeychainProvider extends ContentProvider {
                 projectionMap.put(KeyRings.CAN_CERTIFY, Keys.CAN_CERTIFY);
                 projectionMap.put(KeyRings.CAN_ENCRYPT, Keys.CAN_ENCRYPT);
                 projectionMap.put(KeyRings.CAN_SIGN, Keys.CAN_SIGN);
-                projectionMap.put(KeyRings.CREATION, Keys.CREATION);
+                projectionMap.put(KeyRings.CREATION, Tables.KEYS + "." + Keys.CREATION);
                 projectionMap.put(KeyRings.EXPIRY, Keys.EXPIRY);
                 projectionMap.put(KeyRings.ALGORITHM, Keys.ALGORITHM);
                 projectionMap.put(KeyRings.FINGERPRINT, Keys.FINGERPRINT);
                 projectionMap.put(KeyRings.USER_ID, UserIds.USER_ID);
+                projectionMap.put(KeyRings.VERIFIED, KeyRings.VERIFIED);
                 projectionMap.put(KeyRings.HAS_SECRET, "(" + Tables.KEY_RINGS_SECRET + "." + KeyRings.MASTER_KEY_ID + " IS NOT NULL) AS " + KeyRings.HAS_SECRET);
                 qb.setProjectionMap(projectionMap);
 
@@ -276,9 +277,17 @@ public class KeychainProvider extends ContentProvider {
                             + Tables.KEYS + "." + Keys.MASTER_KEY_ID
                                 + " = "
                             + Tables.KEY_RINGS_SECRET + "." + KeyRings.MASTER_KEY_ID
+                        + ") LEFT JOIN " + Tables.CERTS + " ON ("
+                            + Tables.KEYS + "." + Keys.MASTER_KEY_ID
+                                + " = "
+                            + Tables.CERTS + "." + KeyRings.MASTER_KEY_ID
+                            + " AND " + Tables.CERTS + "." + Certs.VERIFIED
+                                + " = " + Certs.VERIFIED_SECRET
                         + ")"
                     );
                 qb.appendWhere(Tables.KEYS + "." + Keys.RANK + " = 0");
+                // in case there are multiple verifying certificates
+                groupBy = Tables.KEYS + "." + Keys.MASTER_KEY_ID;
 
                 switch(match) {
                     case KEY_RING_UNIFIED: {
