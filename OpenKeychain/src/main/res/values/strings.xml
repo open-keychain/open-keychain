@@ -378,6 +378,9 @@
     <string name="key_size_1024">1024</string>
     <string name="key_size_2048">2048</string>
     <string name="key_size_4096">4096</string>
+    <string name="key_size_8192">8192</string>
+    <string name="key_size_custom">Custom key size</string>
+    <string name="key_size_custom_info">Type custom key length (in bits):</string>
 
     <!-- compression -->
     <string name="compression_fast">fast</string>
