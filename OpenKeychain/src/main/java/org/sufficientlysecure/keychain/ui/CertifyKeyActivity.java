@@ -39,8 +39,9 @@ import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 import com.beardedhen.androidbootstrap.BootstrapButton;
+import com.devspark.appmsg.AppMsg;
+
 import org.spongycastle.openpgp.PGPPublicKeyRing;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
@@ -261,7 +262,7 @@ public class CertifyKeyActivity extends ActionBarActivity implements
                     startSigning();
                 }
             } else {
-                Toast.makeText(this, R.string.key_has_already_been_signed, Toast.LENGTH_SHORT)
+                AppMsg.makeText(this, R.string.key_has_already_been_signed, AppMsg.STYLE_ALERT)
                         .show();
 
                 setResult(RESULT_CANCELED);
@@ -278,8 +279,8 @@ public class CertifyKeyActivity extends ActionBarActivity implements
         // Bail out if there is not at least one user id selected
         ArrayList<String> userIds = mUserIdsAdapter.getSelectedUserIds();
         if (userIds.isEmpty()) {
-            Toast.makeText(CertifyKeyActivity.this, "No User IDs to sign selected!",
-                    Toast.LENGTH_SHORT).show();
+            AppMsg.makeText(CertifyKeyActivity.this, "No User IDs to sign selected!",
+                    AppMsg.STYLE_ALERT).show();
             return;
         }
 
@@ -306,8 +307,8 @@ public class CertifyKeyActivity extends ActionBarActivity implements
 
                 if (message.arg1 == KeychainIntentServiceHandler.MESSAGE_OKAY) {
 
-                    Toast.makeText(CertifyKeyActivity.this, R.string.key_sign_success,
-                            Toast.LENGTH_SHORT).show();
+                    AppMsg.makeText(CertifyKeyActivity.this, R.string.key_sign_success,
+                            AppMsg.STYLE_INFO).show();
 
                     // check if we need to send the key to the server or not
                     if (mUploadKeyCheckbox.isChecked()) {
@@ -358,8 +359,8 @@ public class CertifyKeyActivity extends ActionBarActivity implements
                 super.handleMessage(message);
 
                 if (message.arg1 == KeychainIntentServiceHandler.MESSAGE_OKAY) {
-                    Toast.makeText(CertifyKeyActivity.this, R.string.key_send_success,
-                            Toast.LENGTH_SHORT).show();
+                    AppMsg.makeText(CertifyKeyActivity.this, R.string.key_send_success,
+                            AppMsg.STYLE_INFO).show();
 
                     setResult(RESULT_OK);
                     finish();
