@@ -161,8 +161,9 @@ public class CreateKeyDialogFragment extends DialogFragment {
         final AdapterView.OnItemSelectedListener weakRsaListener = new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                if (mKeySizeSpinner == parent)
+                if (mKeySizeSpinner == parent) {
                     customKeySelectedLisener.onItemSelected(parent, view, position, id);
+                }
                 setOkButtonAvailability(alertDialog);
             }
 
@@ -233,15 +234,17 @@ public class CreateKeyDialogFragment extends DialogFragment {
                 break;
             case Id.choice.algorithm.elgamal:
                 int[] elGammalKeyDiff = new int[elGamalSupportedLengths.length];
-                for (int i = 0; i < elGamalSupportedLengths.length; i++)
+                for (int i = 0; i < elGamalSupportedLengths.length; i++) {
                     elGammalKeyDiff[i] = Math.abs(elGamalSupportedLengths[i] - currentKeyLength);
+                }
                 int minimalValue = Integer.MAX_VALUE;
                 int minimalIndex = -1;
-                for (int i = 0; i < elGammalKeyDiff.length; i++)
+                for (int i = 0; i < elGammalKeyDiff.length; i++) {
                     if (elGammalKeyDiff[i] <= minimalValue) {
                         minimalValue = elGammalKeyDiff[i];
                         minimalIndex = i;
                     }
+                }
                 properKeyLength = elGamalSupportedLengths[minimalIndex];
                 break;
             case Id.choice.algorithm.dsa:
