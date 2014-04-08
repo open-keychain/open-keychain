@@ -74,6 +74,13 @@
                 android:inputType="number"
                 android:visibility="gone"/>
 
+        <TextView
+                android:id="@+id/custom_key_size_info"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:padding="4dp" />
+
     </TableLayout>
 
 </ScrollView>
