@@ -25,6 +25,7 @@ import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.ListView;
 import android.widget.TextView;
+
 import org.sufficientlysecure.keychain.Id;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
@@ -91,8 +92,6 @@ public class SelectKeyCursorAdapter extends HighlightQueryCursorAdapter {
 
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
-        boolean valid = cursor.getInt(mIndexProjectionValid) > 0;
-
         TextView mainUserId = (TextView) view.findViewById(R.id.mainUserId);
         TextView mainUserIdRest = (TextView) view.findViewById(R.id.mainUserIdRest);
         TextView keyId = (TextView) view.findViewById(R.id.keyId);
@@ -112,13 +111,10 @@ public class SelectKeyCursorAdapter extends HighlightQueryCursorAdapter {
             mainUserIdRest.setText("");
         }
 
-        // TODO: needed to key id to no?
-        keyId.setText(R.string.no_key);
         long masterKeyId = cursor.getLong(mIndexMasterKeyId);
         keyId.setText(PgpKeyHelper.convertKeyIdToHexShort(masterKeyId));
 
-        // TODO: needed to set unknown_status?
-        status.setText(R.string.unknown_status);
+        boolean valid = cursor.getInt(mIndexProjectionValid) > 0;
         if (valid) {
             if (mKeyType == Id.type.public_key) {
                 status.setText(R.string.can_encrypt);
@@ -148,8 +144,6 @@ public class SelectKeyCursorAdapter extends HighlightQueryCursorAdapter {
         } else {
             selected.setVisibility(View.GONE);
         }
-
-        status.setText(status.getText() + " ");
 
         view.setEnabled(valid);
         mainUserId.setEnabled(valid);

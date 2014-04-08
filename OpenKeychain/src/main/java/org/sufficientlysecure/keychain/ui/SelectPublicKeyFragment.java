@@ -244,7 +244,7 @@ public class SelectPublicKeyFragment extends ListFragmentWorkaround implements T
         Vector<String> userIds = new Vector<String>();
         for (int i = 0; i < getListView().getCount(); ++i) {
             if (getListView().isItemChecked(i)) {
-                userIds.add((String) mAdapter.getUserId(i));
+                userIds.add(mAdapter.getUserId(i));
             }
         }
 
