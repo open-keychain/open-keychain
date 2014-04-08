@@ -87,7 +87,7 @@ public class DecryptMessageFragment extends DecryptFragment {
 
         String ciphertext = getArguments().getString(ARG_CIPHERTEXT);
         if (ciphertext != null) {
-            mMessage.setText(ciphertext);
+            mCiphertext = ciphertext;
             decryptStart(null);
         }
     }
