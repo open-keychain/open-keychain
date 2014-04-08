@@ -28,6 +28,7 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
@@ -194,7 +195,7 @@ public class CreateKeyDialogFragment extends DialogFragment {
         final String customLengthString = getResources().getString(R.string.key_size_custom);
         final boolean customSelected = customLengthString.equals(selectedItemString);
         String keyLengthString = customSelected ? mCustomKeyEditText.getText().toString() : selectedItemString;
-        int keySize = 0;
+        int keySize;
         try {
             keySize = Integer.parseInt(keyLengthString);
         } catch (NumberFormatException e) {
@@ -268,6 +269,13 @@ public class CreateKeyDialogFragment extends DialogFragment {
         mCustomKeyEditText.setVisibility(visibility);
         mCustomKeyTextView.setVisibility(visibility);
         mCustomKeyInfoTextView.setVisibility(visibility);
+
+        // hide keyboard after setting visibility to gone
+        if (visibility == View.GONE) {
+            InputMethodManager imm = (InputMethodManager)
+                    getActivity().getSystemService(getActivity().INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(mCustomKeyEditText.getWindowToken(), 0);
+        }
     }
 
     private void setKeyLengthSpinnerValuesForAlgorithm(int algorithmId) {
