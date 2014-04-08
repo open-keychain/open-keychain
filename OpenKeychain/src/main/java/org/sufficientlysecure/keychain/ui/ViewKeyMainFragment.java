@@ -328,14 +328,18 @@ public class ViewKeyMainFragment extends Fragment implements
 
     private void encryptToContact(Uri dataUri) {
         // TODO preselect from uri? should be feasible without trivial query
-        long keyId = ProviderHelper.getMasterKeyId(getActivity(), dataUri);
+        try {
+            long keyId = ProviderHelper.getMasterKeyId(getActivity(), dataUri);
 
-        long[] encryptionKeyIds = new long[]{ keyId };
-        Intent intent = new Intent(getActivity(), EncryptActivity.class);
-        intent.setAction(EncryptActivity.ACTION_ENCRYPT);
-        intent.putExtra(EncryptActivity.EXTRA_ENCRYPTION_KEY_IDS, encryptionKeyIds);
-        // used instead of startActivity set actionbar based on callingPackage
-        startActivityForResult(intent, 0);
+            long[] encryptionKeyIds = new long[]{ keyId };
+            Intent intent = new Intent(getActivity(), EncryptActivity.class);
+            intent.setAction(EncryptActivity.ACTION_ENCRYPT);
+            intent.putExtra(EncryptActivity.EXTRA_ENCRYPTION_KEY_IDS, encryptionKeyIds);
+            // used instead of startActivity set actionbar based on callingPackage
+            startActivityForResult(intent, 0);
+        } catch (ProviderHelper.NotFoundException e) {
+            Log.e(Constants.TAG, "key not found!", e);
+        }
     }
 
     private void certifyKey(Uri dataUri) {

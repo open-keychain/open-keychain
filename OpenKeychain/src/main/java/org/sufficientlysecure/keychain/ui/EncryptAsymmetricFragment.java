@@ -34,11 +34,14 @@ import org.spongycastle.openpgp.PGPPublicKey;
 import org.spongycastle.openpgp.PGPPublicKeyRing;
 import org.spongycastle.openpgp.PGPSecretKey;
 import org.spongycastle.openpgp.PGPSecretKeyRing;
+import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.Id;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
+import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
+import org.sufficientlysecure.keychain.util.Log;
 
 import java.util.HashMap;
 import java.util.Vector;
@@ -160,11 +163,15 @@ public class EncryptAsymmetricFragment extends Fragment {
         if (preselectedEncryptionKeyIds != null) {
             Vector<Long> goodIds = new Vector<Long>();
             for (int i = 0; i < preselectedEncryptionKeyIds.length; ++i) {
-                long id = ProviderHelper.getMasterKeyId(getActivity(),
-                        KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(Long.toString(preselectedEncryptionKeyIds[i]))
-                );
                 // TODO check for available encrypt keys... is this even relevant?
-                goodIds.add(id);
+                try {
+                    long id = ProviderHelper.getMasterKeyId(getActivity(),
+                            KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(Long.toString(preselectedEncryptionKeyIds[i]))
+                    );
+                    goodIds.add(id);
+                } catch (ProviderHelper.NotFoundException e) {
+                    Log.e(Constants.TAG, "key not found!", e);
+                }
             }
             if (goodIds.size() > 0) {
                 long[] keyIds = new long[goodIds.size()];

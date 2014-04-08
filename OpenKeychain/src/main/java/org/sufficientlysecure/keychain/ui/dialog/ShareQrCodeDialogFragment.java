@@ -33,6 +33,7 @@ import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
+import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.QrCodeUtils;
 
 import java.util.ArrayList;
@@ -106,7 +107,12 @@ public class ShareQrCodeDialogFragment extends DialogFragment {
             mText.setText(R.string.share_qr_code_dialog_start);
 
             // TODO works, but
-            long masterKeyId = ProviderHelper.getMasterKeyId(getActivity(), dataUri);
+            long masterKeyId = 0;
+            try {
+                masterKeyId = ProviderHelper.getMasterKeyId(getActivity(), dataUri);
+            } catch (ProviderHelper.NotFoundException e) {
+                Log.e(Constants.TAG, "key not found!", e);
+            }
             // get public keyring as ascii armored string
             ArrayList<String> keyringArmored = ProviderHelper.getKeyRingsAsArmoredString(
                     getActivity(), new long[] { masterKeyId });

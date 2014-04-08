@@ -54,6 +54,7 @@ import org.spongycastle.openpgp.operator.jcajce.JcePublicKeyDataDecryptorFactory
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
+import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.PassphraseCacheService;
@@ -235,10 +236,19 @@ public class PgpDecryptVerify {
                 updateProgress(R.string.progress_finding_key, currentProgress, 100);
 
                 PGPPublicKeyEncryptedData encData = (PGPPublicKeyEncryptedData) obj;
-                long masterKeyId = ProviderHelper.getMasterKeyId(mContext,
-                        KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(Long.toString(encData.getKeyID()))
-                );
+
+                // get master key id for this encryption key id
+                long masterKeyId = 0;
+                try {
+                    masterKeyId = ProviderHelper.getMasterKeyId(mContext,
+                            KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(Long.toString(encData.getKeyID()))
+                    );
+                } catch (ProviderHelper.NotFoundException e) {
+                    Log.e(Constants.TAG, "key not found!", e);
+                }
+                // get actual keyring object based on master key id
                 PGPSecretKeyRing secretKeyRing = ProviderHelper.getPGPSecretKeyRing(mContext, masterKeyId);
+
                 if (secretKeyRing == null) {
                     throw new PgpGeneralException(mContext.getString(R.string.error_no_secret_key_found));
                 }

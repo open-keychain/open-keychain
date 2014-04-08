@@ -50,13 +50,17 @@ public class ExportHelper {
     }
 
     public void deleteKey(Uri dataUri, Handler deleteHandler) {
-        // Create a new Messenger for the communication back
-        Messenger messenger = new Messenger(deleteHandler);
-        long masterKeyId = ProviderHelper.getMasterKeyId(mActivity, dataUri);
+        try {
+            long masterKeyId = ProviderHelper.getMasterKeyId(mActivity, dataUri);
 
-        DeleteKeyDialogFragment deleteKeyDialog = DeleteKeyDialogFragment.newInstance(messenger,
-                new long[]{ masterKeyId });
-        deleteKeyDialog.show(mActivity.getSupportFragmentManager(), "deleteKeyDialog");
+            // Create a new Messenger for the communication back
+            Messenger messenger = new Messenger(deleteHandler);
+            DeleteKeyDialogFragment deleteKeyDialog = DeleteKeyDialogFragment.newInstance(messenger,
+                    new long[]{ masterKeyId });
+            deleteKeyDialog.show(mActivity.getSupportFragmentManager(), "deleteKeyDialog");
+        } catch (ProviderHelper.NotFoundException e) {
+            Log.e(Constants.TAG, "key not found!", e);
+        }
     }
 
     /**

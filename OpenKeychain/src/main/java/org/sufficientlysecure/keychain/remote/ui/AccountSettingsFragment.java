@@ -32,6 +32,7 @@ import android.widget.TextView;
 
 import com.beardedhen.androidbootstrap.BootstrapButton;
 
+import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
@@ -40,6 +41,7 @@ import org.sufficientlysecure.keychain.ui.EditKeyActivity;
 import org.sufficientlysecure.keychain.ui.SelectSecretKeyLayoutFragment;
 import org.sufficientlysecure.keychain.ui.adapter.KeyValueSpinnerAdapter;
 import org.sufficientlysecure.keychain.util.AlgorithmNames;
+import org.sufficientlysecure.keychain.util.Log;
 
 public class AccountSettingsFragment extends Fragment implements
         SelectSecretKeyLayoutFragment.SelectSecretKeyCallback {
@@ -177,8 +179,12 @@ public class AccountSettingsFragment extends Fragment implements
             case REQUEST_CODE_CREATE_KEY: {
                 if (resultCode == Activity.RESULT_OK) {
                     // select newly created key
-                    long masterKeyId = ProviderHelper.getMasterKeyId(getActivity(), data.getData());
-                    mSelectKeyFragment.selectKey(masterKeyId);
+                    try {
+                        long masterKeyId = ProviderHelper.getMasterKeyId(getActivity(), data.getData());
+                        mSelectKeyFragment.selectKey(masterKeyId);
+                    } catch (ProviderHelper.NotFoundException e) {
+                        Log.e(Constants.TAG, "key not found!", e);
+                    }
                 }
                 break;
             }

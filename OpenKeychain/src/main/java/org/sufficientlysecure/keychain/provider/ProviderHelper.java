@@ -64,6 +64,15 @@ import java.util.Set;
 
 public class ProviderHelper {
 
+    public static class NotFoundException extends Exception {
+        public NotFoundException() {
+        }
+
+        public NotFoundException(String name) {
+            super(name);
+        }
+    }
+
     // If we ever switch to api level 11, we can ditch this whole mess!
     public static final int FIELD_TYPE_NULL = 1;
     // this is called integer to stay coherent with the constants in Cursor (api level 11)
@@ -113,7 +122,7 @@ public class ProviderHelper {
      * Find the master key id related to a given query. The id will either be extracted from the
      * query, which should work for all specific /key_rings/ queries, or will be queried if it can't.
      */
-    public static long getMasterKeyId(Context context, Uri queryUri) {
+    public static long getMasterKeyId(Context context, Uri queryUri) throws NotFoundException {
         // try extracting from the uri first
         String firstSegment = queryUri.getPathSegments().get(1);
         if(!firstSegment.equals("find")) try {
@@ -123,10 +132,11 @@ public class ProviderHelper {
             Log.d(Constants.TAG, "Couldn't get masterKeyId from URI, querying...");
         }
         Object data = getGenericData(context, queryUri, KeyRings.MASTER_KEY_ID, FIELD_TYPE_INTEGER);
-        if(data != null)
+        if(data != null) {
             return (Long) data;
-        // TODO better error handling?
-        return 0L;
+        } else {
+            throw new NotFoundException();
+        }
     }
 
     public static Map<Long, PGPKeyRing> getPGPKeyRings(Context context, Uri queryUri) {
@@ -158,17 +168,23 @@ public class ProviderHelper {
 
     public static PGPPublicKeyRing getPGPPublicKeyRingWithKeyId(Context context, long keyId) {
         Uri uri = KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(Long.toString(keyId));
-        long masterKeyId = getMasterKeyId(context, uri);
-        if(masterKeyId != 0)
+        long masterKeyId;
+        try {
+            masterKeyId = getMasterKeyId(context, uri);
             return getPGPPublicKeyRing(context, masterKeyId);
-        return null;
+        } catch (NotFoundException e) {
+            return null;
+        }
     }
     public static PGPSecretKeyRing getPGPSecretKeyRingWithKeyId(Context context, long keyId) {
         Uri uri = KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(Long.toString(keyId));
-        long masterKeyId = getMasterKeyId(context, uri);
-        if(masterKeyId != 0)
+        long masterKeyId;
+        try {
+            masterKeyId = getMasterKeyId(context, uri);
             return getPGPSecretKeyRing(context, masterKeyId);
-        return null;
+        } catch (NotFoundException notFound) {
+            return null;
+        }
     }
 
     /**

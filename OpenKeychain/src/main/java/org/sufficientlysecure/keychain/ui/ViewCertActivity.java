@@ -234,17 +234,20 @@ public class ViewCertActivity extends ActionBarActivity
                 } else {
                     viewIntent = new Intent(this, ViewKeyActivityJB.class);
                 }
-                //
-                long signerMasterKeyId = ProviderHelper.getMasterKeyId(this,
-                        KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(Long.toString(mSignerKeyId))
-                );
-                // TODO notify user of this, maybe offer download?
-                if (mSignerKeyId == 0L)
-                    return true;
-                viewIntent.setData(KeyRings.buildGenericKeyRingUri(
-                        Long.toString(signerMasterKeyId))
-                );
-                startActivity(viewIntent);
+
+                try {
+                    long signerMasterKeyId = ProviderHelper.getMasterKeyId(this,
+                            KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(Long.toString(mSignerKeyId))
+                    );
+                    viewIntent.setData(KeyRings.buildGenericKeyRingUri(
+                            Long.toString(signerMasterKeyId))
+                    );
+                    startActivity(viewIntent);
+                } catch (ProviderHelper.NotFoundException e) {
+                    // TODO notify user of this, maybe offer download?
+                    Log.e(Constants.TAG, "key not found!", e);
+                }
+
                 return true;
         }
         return super.onOptionsItemSelected(item);

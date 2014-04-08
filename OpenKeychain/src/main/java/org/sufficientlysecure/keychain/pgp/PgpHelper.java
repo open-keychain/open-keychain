@@ -24,17 +24,12 @@ import android.content.pm.PackageManager.NameNotFoundException;
 
 import org.spongycastle.openpgp.PGPEncryptedDataList;
 import org.spongycastle.openpgp.PGPObjectFactory;
-import org.spongycastle.openpgp.PGPPublicKeyEncryptedData;
 import org.spongycastle.openpgp.PGPPublicKeyRing;
-import org.spongycastle.openpgp.PGPSecretKey;
 import org.spongycastle.openpgp.PGPSecretKeyRing;
 import org.spongycastle.openpgp.PGPUtil;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.Id;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.pgp.exception.NoAsymmetricEncryptionException;
-import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
-import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.ProgressDialogUpdater;
 
@@ -43,7 +38,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.RandomAccessFile;
 import java.security.SecureRandom;
-import java.util.Iterator;
 import java.util.regex.Pattern;
 
 public class PgpHelper {
@@ -74,52 +68,6 @@ public class PgpHelper {
 
     public static String getFullVersion(Context context) {
         return "OpenPGP Keychain v" + getVersion(context);
-    }
-
-    public static long getDecryptionKeyId(Context context, InputStream inputStream)
-            throws PgpGeneralException, NoAsymmetricEncryptionException, IOException {
-        InputStream in = PGPUtil.getDecoderStream(inputStream);
-        PGPObjectFactory pgpF = new PGPObjectFactory(in);
-        PGPEncryptedDataList enc;
-        Object o = pgpF.nextObject();
-
-        // the first object might be a PGP marker packet.
-        if (o instanceof PGPEncryptedDataList) {
-            enc = (PGPEncryptedDataList) o;
-        } else {
-            enc = (PGPEncryptedDataList) pgpF.nextObject();
-        }
-
-        if (enc == null) {
-            throw new PgpGeneralException(context.getString(R.string.error_invalid_data));
-        }
-
-        // TODO: currently we always only look at the first known key
-        // find the secret key
-        PGPSecretKey secretKey = null;
-        Iterator<?> it = enc.getEncryptedDataObjects();
-        boolean gotAsymmetricEncryption = false;
-        while (it.hasNext()) {
-            Object obj = it.next();
-            if (obj instanceof PGPPublicKeyEncryptedData) {
-                gotAsymmetricEncryption = true;
-                PGPPublicKeyEncryptedData pbe = (PGPPublicKeyEncryptedData) obj;
-                secretKey = ProviderHelper.getPGPSecretKeyRing(context, pbe.getKeyID()).getSecretKey();
-                if (secretKey != null) {
-                    break;
-                }
-            }
-        }
-
-        if (!gotAsymmetricEncryption) {
-            throw new NoAsymmetricEncryptionException();
-        }
-
-        if (secretKey == null) {
-            return Id.key.none;
-        }
-
-        return secretKey.getKeyID();
     }
 
     public static int getStreamContent(Context context, InputStream inStream) throws IOException {
