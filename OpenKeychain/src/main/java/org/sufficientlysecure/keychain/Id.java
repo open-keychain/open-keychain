@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2010 Thialfihar <thi@thialfihar.org>
+ * Copyright (C) 2010-2014 Thialfihar <thi@thialfihar.org>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,11 +19,11 @@ package org.sufficientlysecure.keychain;
 import org.spongycastle.bcpg.CompressionAlgorithmTags;
 
 /**
- * 
+ *
  * TODO:
- * 
+ *
  * - refactor ids, some are not needed and can be done with xml
- * 
+ *
  */
 public final class Id {
 
