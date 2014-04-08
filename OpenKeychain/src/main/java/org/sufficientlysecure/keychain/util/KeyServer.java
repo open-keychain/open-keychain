@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2012-2014 Dominik Schürmann <dominik@dominikschuermann.de>
- * Copyright (C) 2011 Thialfihar <thi@thialfihar.org>
+ * Copyright (C) 2011-2014 Thialfihar <thi@thialfihar.org>
  * Copyright (C) 2011 Senecaso
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
