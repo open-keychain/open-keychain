@@ -200,7 +200,7 @@ public class PgpDecryptVerify {
      */
     private PgpDecryptVerifyResult decryptVerify(InputStream in)
             throws IOException, PgpGeneralException, PGPException, SignatureException {
-        PgpDecryptVerifyResult returnData = new PgpDecryptVerifyResult();
+        PgpDecryptVerifyResult result = new PgpDecryptVerifyResult();
 
         PGPObjectFactory pgpF = new PGPObjectFactory(in);
         PGPEncryptedDataList enc;
@@ -228,6 +228,7 @@ public class PgpDecryptVerify {
         PGPPBEEncryptedData encryptedDataSymmetric = null;
         PGPSecretKey secretKey = null;
         Iterator<?> it = enc.getEncryptedDataObjects();
+        boolean asymmetricPacketFound = false;
         boolean symmetricPacketFound = false;
         // find secret key
         while (it.hasNext()) {
@@ -245,18 +246,22 @@ public class PgpDecryptVerify {
                     );
                 } catch (ProviderHelper.NotFoundException e) {
                     Log.e(Constants.TAG, "key not found!", e);
+                    // continue with the next packet in the while loop
+                    continue;
                 }
                 // get actual keyring object based on master key id
                 PGPSecretKeyRing secretKeyRing = ProviderHelper.getPGPSecretKeyRing(mContext, masterKeyId);
-
                 if (secretKeyRing == null) {
-                    throw new PgpGeneralException(mContext.getString(R.string.error_no_secret_key_found));
+                    // continue with the next packet in the while loop
+                    continue;
                 }
                 secretKey = secretKeyRing.getSecretKey(encData.getKeyID());
                 if (secretKey == null) {
-                    throw new PgpGeneralException(mContext.getString(R.string.error_no_secret_key_found));
+                    // continue with the next packet in the while loop
+                    continue;
                 }
-                // secret key exists in database
+
+                /* secret key exists in database! */
 
                 // allow only a specific key for decryption?
                 if (mAllowedKeyIds != null) {
@@ -265,10 +270,14 @@ public class PgpDecryptVerify {
                     Log.d(Constants.TAG, "masterKeyId: " + masterKeyId);
 
                     if (!mAllowedKeyIds.contains(masterKeyId)) {
-                        throw new PgpGeneralException(
-                                mContext.getString(R.string.error_no_secret_key_found));
+                        // this key is in our db, but NOT allowed!
+                        // continue with the next packet in the while loop
+                        continue;
                     }
                 }
+
+                /* secret key exists in database and is allowed! */
+                asymmetricPacketFound = true;
 
                 encryptedDataAsymmetric = encData;
 
@@ -281,16 +290,20 @@ public class PgpDecryptVerify {
                     // if passphrase was not cached, return here
                     // indicating that a passphrase is missing!
                     if (mPassphrase == null) {
-                        returnData.setKeyIdPassphraseNeeded(masterKeyId);
-                        returnData.setStatus(PgpDecryptVerifyResult.KEY_PASSHRASE_NEEDED);
-                        return returnData;
+                        result.setKeyIdPassphraseNeeded(masterKeyId);
+                        result.setStatus(PgpDecryptVerifyResult.KEY_PASSHRASE_NEEDED);
+                        return result;
                     }
                 }
 
-                // break out of while, only get first object here
+                // break out of while, only decrypt the first packet where we have a key
                 // TODO???: There could be more pgp objects, which are not decrypted!
                 break;
             } else if (mAllowSymmetricDecryption && obj instanceof PGPPBEEncryptedData) {
+                /*
+                 * When mAllowSymmetricDecryption == true and we find a data packet here,
+                 * we do not search for other available asymmetric packets!
+                 */
                 symmetricPacketFound = true;
 
                 encryptedDataSymmetric = (PGPPBEEncryptedData) obj;
@@ -298,11 +311,11 @@ public class PgpDecryptVerify {
                 // if no passphrase is given, return here
                 // indicating that a passphrase is missing!
                 if (mPassphrase == null) {
-                    returnData.setStatus(PgpDecryptVerifyResult.SYMMETRIC_PASSHRASE_NEEDED);
-                    return returnData;
+                    result.setStatus(PgpDecryptVerifyResult.SYMMETRIC_PASSHRASE_NEEDED);
+                    return result;
                 }
 
-                // break out of while, only get first object here
+                // break out of while, only decrypt the first packet
                 // TODO???: There could be more pgp objects, which are not decrypted!
                 break;
             }
@@ -321,11 +334,7 @@ public class PgpDecryptVerify {
 
             encryptedData = encryptedDataSymmetric;
             currentProgress += 5;
-        } else {
-            if (secretKey == null) {
-                throw new PgpGeneralException(mContext.getString(R.string.error_no_secret_key_found));
-            }
-
+        } else if (asymmetricPacketFound) {
             currentProgress += 5;
             updateProgress(R.string.progress_extracting_key, currentProgress, 100);
             PGPPrivateKey privateKey;
@@ -351,6 +360,9 @@ public class PgpDecryptVerify {
 
             encryptedData = encryptedDataAsymmetric;
             currentProgress += 5;
+        } else {
+            // no packet has been found where we have the corresponding secret key in our db
+            throw new PgpGeneralException(mContext.getString(R.string.error_no_secret_key_found));
         }
 
         PGPObjectFactory plainFact = new PGPObjectFactory(clear);
@@ -379,7 +391,7 @@ public class PgpDecryptVerify {
             for (int i = 0; i < sigList.size(); ++i) {
                 signature = sigList.get(i);
                 signatureKey = ProviderHelper
-                        .getPGPPublicKeyRing(mContext, signature.getKeyID()).getPublicKey();
+                        .getPGPPublicKeyRingWithKeyId(mContext, signature.getKeyID()).getPublicKey();
                 if (signatureKeyId == 0) {
                     signatureKeyId = signature.getKeyID();
                 }
@@ -408,6 +420,7 @@ public class PgpDecryptVerify {
 
                 signature.init(contentVerifierBuilderProvider, signatureKey);
             } else {
+                Log.d(Constants.TAG, "SIGNATURE_UNKNOWN_PUB_KEY");
                 signatureResult.setStatus(OpenPgpSignatureResult.SIGNATURE_UNKNOWN_PUB_KEY);
             }
 
@@ -446,6 +459,7 @@ public class PgpDecryptVerify {
                     try {
                         signature.update(buffer, 0, n);
                     } catch (SignatureException e) {
+                        Log.d(Constants.TAG, "SIGNATURE_ERROR");
                         signatureResult.setStatus(OpenPgpSignatureResult.SIGNATURE_ERROR);
                         signature = null;
                     }
@@ -479,7 +493,12 @@ public class PgpDecryptVerify {
 
                 // TODO: implement CERTIFIED!
                 if (validKeyBinding & validSignature) {
+                    Log.d(Constants.TAG, "SIGNATURE_SUCCESS_UNCERTIFIED");
                     signatureResult.setStatus(OpenPgpSignatureResult.SIGNATURE_SUCCESS_UNCERTIFIED);
+                } else {
+                    signatureResult.setStatus(OpenPgpSignatureResult.SIGNATURE_ERROR);
+                    Log.e(Constants.TAG, "Error!\nvalidKeyBinding: " + validKeyBinding
+                            + "\nvalidSignature: " + validSignature);
                 }
             }
         }
@@ -503,8 +522,8 @@ public class PgpDecryptVerify {
 
         updateProgress(R.string.progress_done, 100, 100);
 
-        returnData.setSignatureResult(signatureResult);
-        return returnData;
+        result.setSignatureResult(signatureResult);
+        return result;
     }
 
     /**
@@ -522,7 +541,7 @@ public class PgpDecryptVerify {
      */
     private PgpDecryptVerifyResult verifyCleartextSignature(ArmoredInputStream aIn)
             throws IOException, PgpGeneralException, PGPException, SignatureException {
-        PgpDecryptVerifyResult returnData = new PgpDecryptVerifyResult();
+        PgpDecryptVerifyResult result = new PgpDecryptVerifyResult();
         OpenPgpSignatureResult signatureResult = new OpenPgpSignatureResult();
         // cleartext signatures are never encrypted ;)
         signatureResult.setSignatureOnly(true);
@@ -569,10 +588,10 @@ public class PgpDecryptVerify {
             // find data about this subkey
             HashMap<String, Object> data = ProviderHelper.getGenericData(mContext,
                     KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(Long.toString(signature.getKeyID())),
-                    new String[] { KeyRings.MASTER_KEY_ID, KeyRings.USER_ID },
-                    new int[] { ProviderHelper.FIELD_TYPE_INTEGER, ProviderHelper.FIELD_TYPE_STRING });
+                    new String[]{KeyRings.MASTER_KEY_ID, KeyRings.USER_ID},
+                    new int[]{ProviderHelper.FIELD_TYPE_INTEGER, ProviderHelper.FIELD_TYPE_STRING});
             // any luck? otherwise, try next.
-            if(data.get(KeyRings.MASTER_KEY_ID) == null) {
+            if (data.get(KeyRings.MASTER_KEY_ID) == null) {
                 signature = null;
                 // do NOT reset signatureKeyId, that one is shown when no known one is found!
                 continue;
@@ -588,11 +607,12 @@ public class PgpDecryptVerify {
         signatureResult.setKeyId(signatureKeyId);
 
         if (signature == null) {
+            Log.d(Constants.TAG, "SIGNATURE_UNKNOWN_PUB_KEY");
             signatureResult.setStatus(OpenPgpSignatureResult.SIGNATURE_UNKNOWN_PUB_KEY);
-            returnData.setSignatureResult(signatureResult);
+            result.setSignatureResult(signatureResult);
 
             updateProgress(R.string.progress_done, 100, 100);
-            return returnData;
+            return result;
         }
 
         JcaPGPContentVerifierBuilderProvider contentVerifierBuilderProvider =
@@ -622,16 +642,21 @@ public class PgpDecryptVerify {
         boolean validKeyBinding = verifyKeyBinding(mContext, signature, signatureKey);
         boolean validSignature = signature.verify();
 
-        if (validSignature & validKeyBinding) {
+        if (validKeyBinding & validSignature) {
+            Log.d(Constants.TAG, "SIGNATURE_SUCCESS_UNCERTIFIED");
             signatureResult.setStatus(OpenPgpSignatureResult.SIGNATURE_SUCCESS_UNCERTIFIED);
+        } else {
+            signatureResult.setStatus(OpenPgpSignatureResult.SIGNATURE_ERROR);
+            Log.e(Constants.TAG, "Error!\nvalidKeyBinding: " + validKeyBinding
+                    + "\nvalidSignature: " + validSignature);
         }
 
         // TODO: what about SIGNATURE_SUCCESS_CERTIFIED and SIGNATURE_ERROR????
 
-        returnData.setSignatureResult(signatureResult);
+        result.setSignatureResult(signatureResult);
 
         updateProgress(R.string.progress_done, 100, 100);
-        return returnData;
+        return result;
     }
 
     private static boolean verifyKeyBinding(Context context,
