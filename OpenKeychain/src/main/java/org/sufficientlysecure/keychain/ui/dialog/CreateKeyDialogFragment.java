@@ -20,6 +20,7 @@ package org.sufficientlysecure.keychain.ui.dialog;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
@@ -37,6 +38,7 @@ import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.util.Choice;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class CreateKeyDialogFragment extends DialogFragment {
 
@@ -53,6 +55,7 @@ public class CreateKeyDialogFragment extends DialogFragment {
     private Spinner mKeySizeSpinner;
     private TextView mCustomKeyTextView;
     private EditText mCustomKeyEditText;
+    private TextView mCustomKeyInfoTextView;
 
     public void setOnAlgorithmSelectedListener(OnAlgorithmSelectedListener listener) {
         mAlgorithmSelectedListener = listener;
@@ -110,32 +113,16 @@ public class CreateKeyDialogFragment extends DialogFragment {
         }
 
         mKeySizeSpinner = (Spinner) view.findViewById(R.id.create_key_size);
-        ArrayAdapter<CharSequence> keySizeAdapter = ArrayAdapter.createFromResource(
-                context, R.array.key_size_spinner_values,
-                android.R.layout.simple_spinner_item);
-        keySizeAdapter
-                .setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        // dynamic ArrayAdapter must be created (instead of ArrayAdapter.getFromResource), because it's content may change
+        ArrayAdapter<CharSequence> keySizeAdapter = new ArrayAdapter<CharSequence>(context, android.R.layout.simple_spinner_item,
+                new ArrayList<CharSequence>(Arrays.asList(getResources().getStringArray(R.array.rsa_key_size_spinner_values))));
+        keySizeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         mKeySizeSpinner.setAdapter(keySizeAdapter);
-        mKeySizeSpinner.setSelection(3); // Default to 4096 for the key length
+        mKeySizeSpinner.setSelection(1); // Default to 4096 for the key length
 
         mCustomKeyTextView = (TextView) view.findViewById(R.id.custom_key_size_label);
         mCustomKeyEditText = (EditText) view.findViewById(R.id.custom_key_size_input);
-
-        final AdapterView.OnItemSelectedListener customKeySelectedLisener = new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                final String selectedItemString = (String) parent.getSelectedItem();
-                final String customLengthString = getResources().getString(R.string.key_size_custom);
-                final boolean customSelected = customLengthString.equals(selectedItemString);
-                final int visibility = customSelected ? View.VISIBLE : View.GONE;
-                mCustomKeyEditText.setVisibility(visibility);
-                mCustomKeyTextView.setVisibility(visibility);
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-            }
-        };
+        mCustomKeyInfoTextView = (TextView) view.findViewById(R.id.custom_key_size_info);
 
         dialog.setPositiveButton(android.R.string.ok,
                 new DialogInterface.OnClickListener() {
@@ -158,20 +145,6 @@ public class CreateKeyDialogFragment extends DialogFragment {
 
         final AlertDialog alertDialog = dialog.create();
 
-        final AdapterView.OnItemSelectedListener weakRsaListener = new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                if (mKeySizeSpinner == parent) {
-                    customKeySelectedLisener.onItemSelected(parent, view, position, id);
-                }
-                setOkButtonAvailability(alertDialog);
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-            }
-        };
-
         mCustomKeyEditText.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -187,8 +160,31 @@ public class CreateKeyDialogFragment extends DialogFragment {
             }
         });
 
-        mKeySizeSpinner.setOnItemSelectedListener(weakRsaListener);
-        mAlgorithmSpinner.setOnItemSelectedListener(weakRsaListener);
+        mKeySizeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                setCustomKeyVisibility();
+                setOkButtonAvailability(alertDialog);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+            }
+        });
+
+        mAlgorithmSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                setKeyLengthSpinnerValuesForAlgorithm(((Choice) parent.getSelectedItem()).getId());
+
+                setCustomKeyVisibility();
+                setOkButtonAvailability(alertDialog);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+            }
+        });
 
         return alertDialog;
     }
@@ -261,6 +257,57 @@ public class CreateKeyDialogFragment extends DialogFragment {
         final int selectedKeySize = getSelectedKeyLength(); //Integer.parseInt((String) mKeySizeSpinner.getSelectedItem());
         final int properKeyLength = getProperKeyLength(selectedAlgorithm.getId(), selectedKeySize);
         alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(properKeyLength > 0);
+    }
+
+    private void setCustomKeyVisibility() {
+        final String selectedItemString = (String) mKeySizeSpinner.getSelectedItem();
+        final String customLengthString = getResources().getString(R.string.key_size_custom);
+        final boolean customSelected = customLengthString.equals(selectedItemString);
+        final int visibility = customSelected ? View.VISIBLE : View.GONE;
+
+        mCustomKeyEditText.setVisibility(visibility);
+        mCustomKeyTextView.setVisibility(visibility);
+        mCustomKeyInfoTextView.setVisibility(visibility);
+    }
+
+    private void setKeyLengthSpinnerValuesForAlgorithm(int algorithmId) {
+        final ArrayAdapter<CharSequence> keySizeAdapter = (ArrayAdapter<CharSequence>) mKeySizeSpinner.getAdapter();
+        final Object selectedItem = mKeySizeSpinner.getSelectedItem();
+        keySizeAdapter.clear();
+        switch (algorithmId) {
+            case Id.choice.algorithm.rsa:
+                replaceArrayAdapterContent(keySizeAdapter, R.array.rsa_key_size_spinner_values);
+                mCustomKeyInfoTextView.setText(getResources().getString(R.string.key_size_custom_info_rsa));
+                break;
+            case Id.choice.algorithm.elgamal:
+                replaceArrayAdapterContent(keySizeAdapter, R.array.elgamal_key_size_spinner_values);
+                mCustomKeyInfoTextView.setText(""); // ElGamal does not support custom key length
+                break;
+            case Id.choice.algorithm.dsa:
+                replaceArrayAdapterContent(keySizeAdapter, R.array.dsa_key_size_spinner_values);
+                mCustomKeyInfoTextView.setText(getResources().getString(R.string.key_size_custom_info_dsa));
+                break;
+        }
+        keySizeAdapter.notifyDataSetChanged();
+
+        // when switching algorithm, try to select same key length as before
+        for (int i = 0; i < keySizeAdapter.getCount(); i++) {
+            if (selectedItem.equals(keySizeAdapter.getItem(i))) {
+                mKeySizeSpinner.setSelection(i);
+                break;
+            }
+        }
+    }
+
+    private void replaceArrayAdapterContent(ArrayAdapter<CharSequence> arrayAdapter, int stringArrayResourceId) {
+        final String[] spinnerValuesStringArray = getResources().getStringArray(stringArrayResourceId);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+            arrayAdapter.addAll(spinnerValuesStringArray);
+        } else {
+            for (final String value : spinnerValuesStringArray) {
+                arrayAdapter.add(value);
+            }
+        }
     }
 
 }
