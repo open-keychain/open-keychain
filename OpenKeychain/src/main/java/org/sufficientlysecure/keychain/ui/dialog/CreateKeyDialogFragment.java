@@ -23,11 +23,15 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.TextView;
 import org.sufficientlysecure.keychain.Id;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.util.Choice;
@@ -45,6 +49,10 @@ public class CreateKeyDialogFragment extends DialogFragment {
     private int mNewKeySize;
     private Choice mNewKeyAlgorithmChoice;
     private OnAlgorithmSelectedListener mAlgorithmSelectedListener;
+    private Spinner mAlgorithmSpinner;
+    private Spinner mKeySizeSpinner;
+    private TextView mCustomKeyTextView;
+    private EditText mCustomKeyEditText;
 
     public void setOnAlgorithmSelectedListener(OnAlgorithmSelectedListener listener) {
         mAlgorithmSelectedListener = listener;
@@ -77,7 +85,7 @@ public class CreateKeyDialogFragment extends DialogFragment {
 
         boolean wouldBeMasterKey = (childCount == 0);
 
-        final Spinner algorithm = (Spinner) view.findViewById(R.id.create_key_algorithm);
+        mAlgorithmSpinner = (Spinner) view.findViewById(R.id.create_key_algorithm);
         ArrayList<Choice> choices = new ArrayList<Choice>();
         choices.add(new Choice(Id.choice.algorithm.dsa, getResources().getString(
                 R.string.dsa)));
@@ -92,38 +100,53 @@ public class CreateKeyDialogFragment extends DialogFragment {
         ArrayAdapter<Choice> adapter = new ArrayAdapter<Choice>(context,
                 android.R.layout.simple_spinner_item, choices);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        algorithm.setAdapter(adapter);
+        mAlgorithmSpinner.setAdapter(adapter);
         // make RSA the default
         for (int i = 0; i < choices.size(); ++i) {
             if (choices.get(i).getId() == Id.choice.algorithm.rsa) {
-                algorithm.setSelection(i);
+                mAlgorithmSpinner.setSelection(i);
                 break;
             }
         }
 
-        final Spinner keySize = (Spinner) view.findViewById(R.id.create_key_size);
+        mKeySizeSpinner = (Spinner) view.findViewById(R.id.create_key_size);
         ArrayAdapter<CharSequence> keySizeAdapter = ArrayAdapter.createFromResource(
                 context, R.array.key_size_spinner_values,
                 android.R.layout.simple_spinner_item);
         keySizeAdapter
                 .setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        keySize.setAdapter(keySizeAdapter);
-        keySize.setSelection(3); // Default to 4096 for the key length
+        mKeySizeSpinner.setAdapter(keySizeAdapter);
+        mKeySizeSpinner.setSelection(3); // Default to 4096 for the key length
+
+        mCustomKeyTextView = (TextView) view.findViewById(R.id.custom_key_size_label);
+        mCustomKeyEditText = (EditText) view.findViewById(R.id.custom_key_size_input);
+
+        final AdapterView.OnItemSelectedListener customKeySelectedLisener = new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                final String selectedItemString = (String) parent.getSelectedItem();
+                final String customLengthString = getResources().getString(R.string.key_size_custom);
+                final boolean customSelected = customLengthString.equals(selectedItemString);
+                final int visibility = customSelected ? View.VISIBLE : View.GONE;
+                mCustomKeyEditText.setVisibility(visibility);
+                mCustomKeyTextView.setVisibility(visibility);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+            }
+        };
+
         dialog.setPositiveButton(android.R.string.ok,
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface di, int id) {
                         di.dismiss();
-                        try {
-                            final String selectedItem = (String) keySize.getSelectedItem();
-                            mNewKeySize = Integer.parseInt(selectedItem);
-                        } catch (NumberFormatException e) {
-                            mNewKeySize = 0;
-                        }
-
-                        mNewKeyAlgorithmChoice = (Choice) algorithm.getSelectedItem();
+                        mNewKeyAlgorithmChoice = (Choice) mAlgorithmSpinner.getSelectedItem();
+                        mNewKeySize = getProperKeyLength(mNewKeyAlgorithmChoice.getId(), getSelectedKeyLength());
                         mAlgorithmSelectedListener.onAlgorithmSelected(mNewKeyAlgorithmChoice, mNewKeySize);
                     }
-                });
+                }
+        );
 
         dialog.setCancelable(true);
         dialog.setNegativeButton(android.R.string.cancel,
@@ -138,11 +161,10 @@ public class CreateKeyDialogFragment extends DialogFragment {
         final AdapterView.OnItemSelectedListener weakRsaListener = new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                final Choice selectedAlgorithm = (Choice) algorithm.getSelectedItem();
-                final int selectedKeySize = Integer.parseInt((String) keySize.getSelectedItem());
-                final boolean isWeakRsa = (selectedAlgorithm.getId() == Id.choice.algorithm.rsa &&
-                                            selectedKeySize <= 1024);
-                alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(!isWeakRsa);
+                if (mKeySizeSpinner == parent) {
+                    customKeySelectedLisener.onItemSelected(parent, view, position, id);
+                }
+                setOkButtonAvailability(alertDialog);
             }
 
             @Override
@@ -150,10 +172,95 @@ public class CreateKeyDialogFragment extends DialogFragment {
             }
         };
 
-        keySize.setOnItemSelectedListener(weakRsaListener);
-        algorithm.setOnItemSelectedListener(weakRsaListener);
+        mCustomKeyEditText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                setOkButtonAvailability(alertDialog);
+            }
+        });
+
+        mKeySizeSpinner.setOnItemSelectedListener(weakRsaListener);
+        mAlgorithmSpinner.setOnItemSelectedListener(weakRsaListener);
 
         return alertDialog;
+    }
+
+    private int getSelectedKeyLength() {
+        final String selectedItemString = (String) mKeySizeSpinner.getSelectedItem();
+        final String customLengthString = getResources().getString(R.string.key_size_custom);
+        final boolean customSelected = customLengthString.equals(selectedItemString);
+        String keyLengthString = customSelected ? mCustomKeyEditText.getText().toString() : selectedItemString;
+        int keySize = 0;
+        try {
+            keySize = Integer.parseInt(keyLengthString);
+        } catch (NumberFormatException e) {
+            keySize = 0;
+        }
+        return keySize;
+    }
+
+    /**
+     * <h3>RSA</h3>
+     * <p>for RSA algorithm, key length must be greater than 1024 (according to
+     * <a href="https://github.com/open-keychain/open-keychain/issues/102">#102</a>). Possibility to generate keys bigger
+     * than 8192 bits is currently disabled, because it's almost impossible to generate them on a mobile device (check
+     * <a href="http://www.javamex.com/tutorials/cryptography/rsa_key_length.shtml">RSA key length plot</a> and
+     * <a href="http://www.keylength.com/">Cryptographic Key Length Recommendation</a>). Also, key length must be a
+     * multiplicity of 8.</p>
+     * <h3>ElGamal</h3>
+     * <p>For ElGamal algorithm, supported key lengths are 1536, 2048, 3072, 4096 or 8192 bits.</p>
+     * <h3>DSA</h3>
+     * <p>For DSA algorithm key length must be between 512 and 1024. Also, it must me dividable by 64.</p>
+     *
+     * @return correct key length, according to SpongyCastle specification. Returns <code>-1</code>, if key length is
+     * inappropriate.
+     */
+    private int getProperKeyLength(int algorithmId, int currentKeyLength) {
+        final int[] elGamalSupportedLengths = {1536, 2048, 3072, 4096, 8192};
+        int properKeyLength = -1;
+        switch (algorithmId) {
+            case Id.choice.algorithm.rsa:
+                if (currentKeyLength > 1024 && currentKeyLength <= 8192) {
+                    properKeyLength = currentKeyLength + ((8 - (currentKeyLength % 8)) % 8);
+                }
+                break;
+            case Id.choice.algorithm.elgamal:
+                int[] elGammalKeyDiff = new int[elGamalSupportedLengths.length];
+                for (int i = 0; i < elGamalSupportedLengths.length; i++) {
+                    elGammalKeyDiff[i] = Math.abs(elGamalSupportedLengths[i] - currentKeyLength);
+                }
+                int minimalValue = Integer.MAX_VALUE;
+                int minimalIndex = -1;
+                for (int i = 0; i < elGammalKeyDiff.length; i++) {
+                    if (elGammalKeyDiff[i] <= minimalValue) {
+                        minimalValue = elGammalKeyDiff[i];
+                        minimalIndex = i;
+                    }
+                }
+                properKeyLength = elGamalSupportedLengths[minimalIndex];
+                break;
+            case Id.choice.algorithm.dsa:
+                if (currentKeyLength >= 512 && currentKeyLength <= 1024) {
+                    properKeyLength = currentKeyLength + ((64 - (currentKeyLength % 64)) % 64);
+                }
+                break;
+        }
+        return properKeyLength;
+    }
+
+    private void setOkButtonAvailability(AlertDialog alertDialog) {
+        final Choice selectedAlgorithm = (Choice) mAlgorithmSpinner.getSelectedItem();
+        final int selectedKeySize = getSelectedKeyLength(); //Integer.parseInt((String) mKeySizeSpinner.getSelectedItem());
+        final int properKeyLength = getProperKeyLength(selectedAlgorithm.getId(), selectedKeySize);
+        alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(properKeyLength > 0);
     }
 
 }

@@ -34,6 +34,8 @@
         <item>@string/key_size_1024</item>
         <item>@string/key_size_2048</item>
         <item>@string/key_size_4096</item>
+        <item>@string/key_size_8192</item>
+        <item>@string/key_size_custom</item>
     </string-array>
     <string-array name="import_action_list" translatable="false">
         <item>@string/menu_import_from_key_server</item>

@@ -56,6 +56,24 @@
                 android:gravity="right"
                 android:padding="4dp" />
         </TableRow>
+
+        <TextView
+                android:id="@+id/custom_key_size_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:padding="4dp"
+                android:text="@string/key_size_custom_info"
+                android:visibility="gone"/>
+
+        <EditText
+                android:id="@+id/custom_key_size_input"
+                android:layout_width="0dip"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:inputType="number"
+                android:visibility="gone"/>
+
     </TableLayout>
 
 </ScrollView>
