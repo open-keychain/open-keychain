@@ -93,6 +93,9 @@ public class ViewKeyActivityJB extends ViewKeyActivity implements CreateNdefMess
         } catch(IOException e) {
             Log.e(Constants.TAG, "Error parsing keyring", e);
             return null;
+        } catch (ProviderHelper.NotFoundException e) {
+            Log.e(Constants.TAG, "key not found!", e);
+            return null;
         }
     }
 

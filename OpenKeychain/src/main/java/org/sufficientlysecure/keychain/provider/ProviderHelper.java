@@ -159,39 +159,35 @@ public class ProviderHelper {
 
         return result;
     }
-    public static PGPKeyRing getPGPKeyRing(Context context, Uri queryUri) {
+
+    public static PGPKeyRing getPGPKeyRing(Context context, Uri queryUri) throws NotFoundException {
         Map<Long, PGPKeyRing> result = getPGPKeyRings(context, queryUri);
-        if(result.isEmpty())
-            return null;
-        return result.values().iterator().next();
+        if(result.isEmpty()) {
+            throw new NotFoundException("PGPKeyRing object not found!");
+        } else {
+            return result.values().iterator().next();
+        }
     }
 
-    public static PGPPublicKeyRing getPGPPublicKeyRingWithKeyId(Context context, long keyId) {
+    public static PGPPublicKeyRing getPGPPublicKeyRingWithKeyId(Context context, long keyId)
+            throws NotFoundException {
         Uri uri = KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(Long.toString(keyId));
-        long masterKeyId;
-        try {
-            masterKeyId = getMasterKeyId(context, uri);
-            return getPGPPublicKeyRing(context, masterKeyId);
-        } catch (NotFoundException e) {
-            return null;
-        }
+        long masterKeyId = getMasterKeyId(context, uri);
+        return getPGPPublicKeyRing(context, masterKeyId);
     }
-    public static PGPSecretKeyRing getPGPSecretKeyRingWithKeyId(Context context, long keyId) {
+
+    public static PGPSecretKeyRing getPGPSecretKeyRingWithKeyId(Context context, long keyId)
+            throws NotFoundException {
         Uri uri = KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(Long.toString(keyId));
-        long masterKeyId;
-        try {
-            masterKeyId = getMasterKeyId(context, uri);
-            return getPGPSecretKeyRing(context, masterKeyId);
-        } catch (NotFoundException notFound) {
-            return null;
-        }
+        long masterKeyId = getMasterKeyId(context, uri);
+        return getPGPSecretKeyRing(context, masterKeyId);
     }
 
     /**
      * Retrieves the actual PGPPublicKeyRing object from the database blob based on the masterKeyId
      */
     public static PGPPublicKeyRing getPGPPublicKeyRing(Context context,
-                                                                    long masterKeyId) {
+                                                       long masterKeyId) throws NotFoundException {
         Uri queryUri = KeyRingData.buildPublicKeyRingUri(Long.toString(masterKeyId));
         return (PGPPublicKeyRing) getPGPKeyRing(context, queryUri);
     }
@@ -200,7 +196,7 @@ public class ProviderHelper {
      * Retrieves the actual PGPSecretKeyRing object from the database blob based on the maserKeyId
      */
     public static PGPSecretKeyRing getPGPSecretKeyRing(Context context,
-                                                                    long masterKeyId) {
+                                                       long masterKeyId) throws NotFoundException {
         Uri queryUri = KeyRingData.buildSecretKeyRingUri(Long.toString(masterKeyId));
         return (PGPSecretKeyRing) getPGPKeyRing(context, queryUri);
     }
@@ -214,7 +210,12 @@ public class ProviderHelper {
         long masterKeyId = masterKey.getKeyID();
 
         // IF there is a secret key, preserve it!
-        PGPSecretKeyRing secretRing = ProviderHelper.getPGPSecretKeyRing(context, masterKeyId);
+        PGPSecretKeyRing secretRing = null;
+        try {
+            secretRing = ProviderHelper.getPGPSecretKeyRing(context, masterKeyId);
+        } catch (NotFoundException e) {
+            Log.e(Constants.TAG, "key not found!");
+        }
 
         // delete old version of this keyRing, which also deletes all keys and userIds on cascade
         try {

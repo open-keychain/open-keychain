@@ -139,9 +139,9 @@ public class PassphraseDialogFragment extends DialogFragment implements OnEditor
             secretKey = null;
             alert.setMessage(R.string.passphrase_for_symmetric_encryption);
         } else {
-            secretKey = ProviderHelper.getPGPSecretKeyRing(activity, secretKeyId).getSecretKey();
-
-            if (secretKey == null) {
+            try {
+                secretKey = ProviderHelper.getPGPSecretKeyRing(activity, secretKeyId).getSecretKey();
+            } catch (ProviderHelper.NotFoundException e) {
                 alert.setTitle(R.string.title_key_not_found);
                 alert.setMessage(getString(R.string.key_not_found, secretKeyId));
                 alert.setPositiveButton(android.R.string.ok, new OnClickListener() {
@@ -153,6 +153,7 @@ public class PassphraseDialogFragment extends DialogFragment implements OnEditor
                 mCanKB = false;
                 return alert.create();
             }
+
             String userId = PgpKeyHelper.getMainUserIdSafe(activity, secretKey);
 
             Log.d(Constants.TAG, "User id: '" + userId + "'");
@@ -194,9 +195,13 @@ public class PassphraseDialogFragment extends DialogFragment implements OnEditor
                                         sendMessageToHandler(MESSAGE_CANCEL);
                                         return;
                                     } else {
-                                        clickSecretKey = PgpKeyHelper.getKeyNum(ProviderHelper
-                                                .getPGPSecretKeyRingWithKeyId(activity, secretKeyId),
-                                                curKeyIndex);
+                                        try {
+                                            clickSecretKey = PgpKeyHelper.getKeyNum(ProviderHelper
+                                                    .getPGPSecretKeyRingWithKeyId(activity, secretKeyId),
+                                                    curKeyIndex);
+                                        } catch (ProviderHelper.NotFoundException e) {
+                                            Log.e(Constants.TAG, "key not found!", e);
+                                        }
                                         curKeyIndex++; // does post-increment work like C?
                                         continue;
                                     }

@@ -33,7 +33,6 @@ import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
 import android.support.v4.util.LongSparseArray;
-import android.util.Log;
 
 import org.spongycastle.openpgp.PGPException;
 import org.spongycastle.openpgp.PGPPrivateKey;
@@ -48,6 +47,7 @@ import org.sufficientlysecure.keychain.helper.Preferences;
 import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
+import org.sufficientlysecure.keychain.util.Log;
 
 import java.util.Date;
 import java.util.Iterator;
@@ -231,6 +231,8 @@ public class PassphraseCacheService extends Service {
             }
         } catch (PGPException e) {
             // silently catch
+        } catch (ProviderHelper.NotFoundException e) {
+            Log.e(Constants.TAG, "key not found!", e);
         }
 
         return true;

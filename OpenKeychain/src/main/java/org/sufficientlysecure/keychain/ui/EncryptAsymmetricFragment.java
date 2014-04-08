@@ -146,17 +146,19 @@ public class EncryptAsymmetricFragment extends Fragment {
     private void preselectKeys(long preselectedSignatureKeyId, long[] preselectedEncryptionKeyIds) {
         if (preselectedSignatureKeyId != 0) {
             // TODO: don't use bouncy castle objects!
-            PGPSecretKeyRing keyRing = ProviderHelper.getPGPSecretKeyRingWithKeyId(getActivity(),
-                    preselectedSignatureKeyId);
-            PGPSecretKey masterKey;
-            if (keyRing != null) {
-                masterKey = keyRing.getSecretKey();
+            try {
+                PGPSecretKeyRing keyRing = ProviderHelper.getPGPSecretKeyRingWithKeyId(getActivity(),
+                        preselectedSignatureKeyId);
+
+                PGPSecretKey masterKey = keyRing.getSecretKey();
                 if (masterKey != null) {
                     Vector<PGPSecretKey> signKeys = PgpKeyHelper.getUsableSigningKeys(keyRing);
                     if (signKeys.size() > 0) {
                         setSignatureKeyId(masterKey.getKeyID());
                     }
                 }
+            } catch (ProviderHelper.NotFoundException e) {
+                Log.e(Constants.TAG, "key not found!", e);
             }
         }
 

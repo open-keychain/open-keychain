@@ -201,9 +201,12 @@ public class PgpKeyHelper {
     }
 
     public static PGPPublicKey getEncryptPublicKey(Context context, long masterKeyId) {
-        PGPPublicKeyRing keyRing = ProviderHelper.getPGPPublicKeyRing(context, masterKeyId);
-        if (keyRing == null) {
-            Log.e(Constants.TAG, "keyRing is null!");
+        PGPPublicKeyRing keyRing = null;
+        try {
+            keyRing = ProviderHelper.getPGPPublicKeyRing(context, masterKeyId);
+        } catch (ProviderHelper.NotFoundException e) {
+            Log.e(Constants.TAG, "key not found!", e);
+            // TODO: throw exception here!
             return null;
         }
         Vector<PGPPublicKey> encryptKeys = getUsableEncryptKeys(keyRing);
@@ -215,8 +218,12 @@ public class PgpKeyHelper {
     }
 
     public static PGPSecretKey getCertificationKey(Context context, long masterKeyId) {
-        PGPSecretKeyRing keyRing = ProviderHelper.getPGPSecretKeyRing(context, masterKeyId);
-        if (keyRing == null) {
+        PGPSecretKeyRing keyRing = null;
+        try {
+            keyRing = ProviderHelper.getPGPSecretKeyRing(context, masterKeyId);
+        } catch (ProviderHelper.NotFoundException e) {
+            Log.e(Constants.TAG, "key not found!", e);
+            // TODO: throw exception here!
             return null;
         }
         Vector<PGPSecretKey> signingKeys = getUsableCertificationKeys(keyRing);
@@ -227,8 +234,12 @@ public class PgpKeyHelper {
     }
 
     public static PGPSecretKey getSigningKey(Context context, long masterKeyId) {
-        PGPSecretKeyRing keyRing = ProviderHelper.getPGPSecretKeyRing(context, masterKeyId);
-        if (keyRing == null) {
+        PGPSecretKeyRing keyRing = null;
+        try {
+            keyRing = ProviderHelper.getPGPSecretKeyRing(context, masterKeyId);
+        } catch (ProviderHelper.NotFoundException e) {
+            Log.e(Constants.TAG, "key not found!", e);
+            // TODO: throw exception here!
             return null;
         }
         Vector<PGPSecretKey> signingKeys = getUsableSigningKeys(keyRing);

@@ -145,14 +145,14 @@ public class ViewCertActivity extends ActionBarActivity
             }
 
             PGPSignature sig = PgpConversionHelper.BytesToPGPSignature(data.getBlob(INDEX_DATA));
-            PGPKeyRing signeeRing = ProviderHelper.getPGPKeyRing(this,
-                    KeychainContract.KeyRingData.buildPublicKeyRingUri(
-                            Long.toString(data.getLong(INDEX_MASTER_KEY_ID))));
-            PGPKeyRing signerRing = ProviderHelper.getPGPKeyRing(this,
-                    KeychainContract.KeyRingData.buildPublicKeyRingUri(
-                            Long.toString(sig.getKeyID())));
+            try {
+                PGPKeyRing signeeRing = ProviderHelper.getPGPKeyRing(this,
+                        KeychainContract.KeyRingData.buildPublicKeyRingUri(
+                                Long.toString(data.getLong(INDEX_MASTER_KEY_ID))));
+                PGPKeyRing signerRing = ProviderHelper.getPGPKeyRing(this,
+                        KeychainContract.KeyRingData.buildPublicKeyRingUri(
+                                Long.toString(sig.getKeyID())));
 
-            if (signerRing != null) {
                 try {
                     sig.init(new JcaPGPContentVerifierBuilderProvider().setProvider(
                             Constants.BOUNCY_CASTLE_PROVIDER_NAME), signeeRing.getPublicKey());
@@ -170,7 +170,7 @@ public class ViewCertActivity extends ActionBarActivity
                     mStatus.setText("error!");
                     mStatus.setTextColor(getResources().getColor(R.color.alert));
                 }
-            } else {
+            } catch (ProviderHelper.NotFoundException e) {
                 mStatus.setText("key unavailable");
                 mStatus.setTextColor(getResources().getColor(R.color.black));
             }

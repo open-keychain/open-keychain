@@ -238,19 +238,19 @@ public class PgpDecryptVerify {
 
                 PGPPublicKeyEncryptedData encData = (PGPPublicKeyEncryptedData) obj;
 
-                // get master key id for this encryption key id
                 long masterKeyId = 0;
+                PGPSecretKeyRing secretKeyRing = null;
                 try {
+                    // get master key id for this encryption key id
                     masterKeyId = ProviderHelper.getMasterKeyId(mContext,
                             KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(Long.toString(encData.getKeyID()))
                     );
+                    // get actual keyring object based on master key id
+                    secretKeyRing = ProviderHelper.getPGPSecretKeyRing(mContext, masterKeyId);
                 } catch (ProviderHelper.NotFoundException e) {
-                    Log.e(Constants.TAG, "key not found!", e);
                     // continue with the next packet in the while loop
                     continue;
                 }
-                // get actual keyring object based on master key id
-                PGPSecretKeyRing secretKeyRing = ProviderHelper.getPGPSecretKeyRing(mContext, masterKeyId);
                 if (secretKeyRing == null) {
                     // continue with the next packet in the while loop
                     continue;
@@ -390,8 +390,14 @@ public class PgpDecryptVerify {
             PGPOnePassSignatureList sigList = (PGPOnePassSignatureList) dataChunk;
             for (int i = 0; i < sigList.size(); ++i) {
                 signature = sigList.get(i);
-                signatureKey = ProviderHelper
-                        .getPGPPublicKeyRingWithKeyId(mContext, signature.getKeyID()).getPublicKey();
+
+                // TODO: rework this code, seems wonky!
+                try {
+                    signatureKey = ProviderHelper
+                            .getPGPPublicKeyRingWithKeyId(mContext, signature.getKeyID()).getPublicKey();
+                } catch (ProviderHelper.NotFoundException e) {
+                    Log.d(Constants.TAG, "key not found!");
+                }
                 if (signatureKeyId == 0) {
                     signatureKeyId = signature.getKeyID();
                 }
@@ -401,10 +407,12 @@ public class PgpDecryptVerify {
                     signatureIndex = i;
                     signatureKeyId = signature.getKeyID();
                     String userId = null;
-                    PGPPublicKeyRing signKeyRing = ProviderHelper.getPGPPublicKeyRingWithKeyId(
-                            mContext, signatureKeyId);
-                    if (signKeyRing != null) {
+                    try {
+                        PGPPublicKeyRing signKeyRing = ProviderHelper.getPGPPublicKeyRingWithKeyId(
+                                mContext, signatureKeyId);
                         userId = PgpKeyHelper.getMainUserId(signKeyRing.getPublicKey());
+                    } catch (ProviderHelper.NotFoundException e) {
+                        Log.d(Constants.TAG, "key not found!");
                     }
                     signatureResult.setUserId(userId);
                     break;
@@ -598,7 +606,11 @@ public class PgpDecryptVerify {
             }
 
             // this one can't fail now (yay database constraints)
-            signatureKey = ProviderHelper.getPGPPublicKeyRing(mContext, (Long) data.get(KeyRings.MASTER_KEY_ID)).getPublicKey();
+            try {
+                signatureKey = ProviderHelper.getPGPPublicKeyRing(mContext, (Long) data.get(KeyRings.MASTER_KEY_ID)).getPublicKey();
+            } catch (ProviderHelper.NotFoundException e) {
+                Log.e(Constants.TAG, "key not found!", e);
+            }
             signatureResult.setUserId((String) data.get(KeyRings.USER_ID));
 
             break;
@@ -664,11 +676,13 @@ public class PgpDecryptVerify {
         long signatureKeyId = signature.getKeyID();
         boolean validKeyBinding = false;
 
-        PGPPublicKeyRing signKeyRing = ProviderHelper.getPGPPublicKeyRingWithKeyId(context,
-                signatureKeyId);
         PGPPublicKey mKey = null;
-        if (signKeyRing != null) {
+        try {
+            PGPPublicKeyRing signKeyRing = ProviderHelper.getPGPPublicKeyRingWithKeyId(context,
+                    signatureKeyId);
             mKey = signKeyRing.getPublicKey();
+        } catch (ProviderHelper.NotFoundException e) {
+            Log.d(Constants.TAG, "key not found");
         }
 
         if (signature.getKeyID() != mKey.getKeyID()) {

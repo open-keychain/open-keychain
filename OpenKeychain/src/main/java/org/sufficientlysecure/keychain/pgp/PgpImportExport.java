@@ -194,11 +194,14 @@ public class PgpImportExport {
             arOutStream.setHeader("Version", PgpHelper.getFullVersion(mContext));
 
             updateProgress(progress * 100 / masterKeyIdsSize, 100);
-            PGPPublicKeyRing publicKeyRing =
-                    ProviderHelper.getPGPPublicKeyRing(mContext, pubKeyMasterId);
 
-            if (publicKeyRing != null) {
+            try {
+                PGPPublicKeyRing publicKeyRing = ProviderHelper.getPGPPublicKeyRing(mContext, pubKeyMasterId);
+
                 publicKeyRing.encode(arOutStream);
+            } catch (ProviderHelper.NotFoundException e) {
+                Log.e(Constants.TAG, "key not found!", e);
+                // TODO: inform user?
             }
 
             if (mKeychainServiceListener.hasServiceStopped()) {
@@ -217,12 +220,15 @@ public class PgpImportExport {
             arOutStream.setHeader("Version", PgpHelper.getFullVersion(mContext));
 
             updateProgress(progress * 100 / masterKeyIdsSize, 100);
-            PGPSecretKeyRing secretKeyRing =
-                    ProviderHelper.getPGPSecretKeyRing(mContext, secretKeyMasterId);
 
-            if (secretKeyRing != null) {
+            try {
+                PGPSecretKeyRing secretKeyRing = ProviderHelper.getPGPSecretKeyRing(mContext, secretKeyMasterId);
                 secretKeyRing.encode(arOutStream);
+            } catch (ProviderHelper.NotFoundException e) {
+                Log.e(Constants.TAG, "key not found!", e);
+                // TODO: inform user?
             }
+
             if (mKeychainServiceListener.hasServiceStopped()) {
                 arOutStream.close();
                 return null;

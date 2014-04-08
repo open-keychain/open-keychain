@@ -224,8 +224,9 @@ public class CertifyKeyActivity extends ActionBarActivity implements
      * handles the UI bits of the signing process on the UI thread
      */
     private void initiateSigning() {
-        PGPPublicKeyRing pubring = ProviderHelper.getPGPPublicKeyRing(this, mPubKeyId);
-        if (pubring != null) {
+        try {
+            PGPPublicKeyRing pubring = ProviderHelper.getPGPPublicKeyRing(this, mPubKeyId);
+
             // if we have already signed this key, dont bother doing it again
             boolean alreadySigned = false;
 
@@ -248,14 +249,14 @@ public class CertifyKeyActivity extends ActionBarActivity implements
                 String passphrase = PassphraseCacheService.getCachedPassphrase(this, mMasterKeyId);
                 if (passphrase == null) {
                     PassphraseDialogFragment.show(this, mMasterKeyId,
-                        new Handler() {
-                            @Override
-                            public void handleMessage(Message message) {
-                                if (message.what == PassphraseDialogFragment.MESSAGE_OKAY) {
-                                    startSigning();
+                            new Handler() {
+                                @Override
+                                public void handleMessage(Message message) {
+                                    if (message.what == PassphraseDialogFragment.MESSAGE_OKAY) {
+                                        startSigning();
+                                    }
                                 }
-                            }
-                        });
+                            });
                     // bail out; need to wait until the user has entered the passphrase before trying again
                     return;
                 } else {
@@ -268,6 +269,8 @@ public class CertifyKeyActivity extends ActionBarActivity implements
                 setResult(RESULT_CANCELED);
                 finish();
             }
+        } catch (ProviderHelper.NotFoundException e) {
+            Log.e(Constants.TAG, "key not found!", e);
         }
     }
 
