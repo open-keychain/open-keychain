@@ -1,34 +1,26 @@
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:fillViewport="true">
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
 
-    <RelativeLayout
+    <se.emilsjolander.stickylistheaders.StickyListHeadersListView
         android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/list"
+        android:fastScrollEnabled="true"
+        android:paddingBottom="16dp"
+        android:paddingLeft="16dp"
+        android:paddingRight="32dp"
+        android:scrollbarStyle="outsideOverlay" />
+
+    <TextView
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="@string/empty_certs"
+        android:id="@+id/empty"
+        android:visibility="gone"
+        android:gravity="center"
+        android:paddingBottom="32dp" />
 
-        <view
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            class="se.emilsjolander.stickylistheaders.StickyListHeadersListView"
-            android:id="@+id/list"
-            android:paddingRight="32dp"
-            android:paddingLeft="16dp"
-            android:layout_alignParentStart="false"
-            android:layout_alignParentEnd="false"
-            android:layout_below="@+id/list" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:text="@string/empty_certs"
-            android:id="@+id/empty"
-            android:visibility="gone"
-            android:layout_centerInParent="true"
-            android:paddingBottom="32dp" />
-
-    </RelativeLayout>
-
-</ScrollView>
+</FrameLayout>
