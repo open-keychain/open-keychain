@@ -18,6 +18,7 @@
 package org.sufficientlysecure.keychain.ui;
 
 import android.annotation.TargetApi;
+import android.net.Uri;
 import android.nfc.NdefMessage;
 import android.nfc.NdefRecord;
 import android.nfc.NfcAdapter;
@@ -29,12 +30,12 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.widget.Toast;
 
 import com.devspark.appmsg.AppMsg;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.util.Log;
 
@@ -63,29 +64,40 @@ public class ViewKeyActivityJB extends ViewKeyActivity implements CreateNdefMess
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
             // Check for available NFC Adapter
             mNfcAdapter = NfcAdapter.getDefaultAdapter(this);
+            if (mNfcAdapter != null) {
+                /*
+                 * Retrieve mSharedKeyringBytes here asynchronously (to not block the UI)
+                 * and init nfc adapter afterwards.
+                 * mSharedKeyringBytes can not be retrieved in createNdefMessage, because this process
+                 * has no permissions to query the Uri.
+                 */
+                AsyncTask<NfcAdapter, Void, Void> initTask =
+                        new AsyncTask<NfcAdapter, Void, Void>() {
+                            protected Void doInBackground(NfcAdapter... adapter) {
+                                try {
+                                    Uri dataUri = KeychainContract.KeyRingData.buildPublicKeyRingUri(mDataUri);
+                                    mSharedKeyringBytes = ProviderHelper.getPGPKeyRing(
+                                            ViewKeyActivityJB.this, dataUri).getEncoded();
+                                } catch (IOException e) {
+                                    Log.e(Constants.TAG, "Error parsing keyring", e);
+                                } catch (ProviderHelper.NotFoundException e) {
+                                    Log.e(Constants.TAG, "key not found!", e);
+                                }
+                                return null;
+                            }
 
-//            AsyncTask<NfcAdapter, Void, Void> registerTask =
-//                    new AsyncTask<NfcAdapter, Void, Void>() {
-//                protected Void doInBackground(NfcAdapter... adapter) {
-//                    if (adapter != null) {
-//                        // init nfc
-//                        // Register callback to set NDEF message
-//                        adapter.setNdefPushMessageCallback(ViewKeyActivityJB.this, ViewKeyActivityJB.this);
-//                        // Register callback to listen for message-sent success
-//                        adapter.setOnNdefPushCompleteCallback(this, this);
-//                    }
-//                    return null;
-//                }
-//
-//                protected void onProgressUpdate() {
-//                }
-//
-//                protected void onPostExecute(Void result) {
-//
-//                }
-//            };
+                            protected void onPostExecute(Void result) {
+                                // Register callback to set NDEF message
+                                mNfcAdapter.setNdefPushMessageCallback(ViewKeyActivityJB.this
+                                        , ViewKeyActivityJB.this);
+                                // Register callback to listen for message-sent success
+                                mNfcAdapter.setOnNdefPushCompleteCallback(ViewKeyActivityJB.this,
+                                        ViewKeyActivityJB.this);
+                            }
+                        };
 
-
+                initTask.execute();
+            }
         }
     }
 
@@ -100,21 +112,9 @@ public class ViewKeyActivityJB extends ViewKeyActivity implements CreateNdefMess
          * guarantee that this activity starts when receiving a beamed message. For now, this code
          * uses the tag dispatch system.
          */
-//        try {
-            // get public keyring as byte array
-//            event.nfcAdapter.
-//            mSharedKeyringBytes = ProviderHelper.getPGPKeyRing(this, mDataUri).getEncoded();
-//
-//            NdefMessage msg = new NdefMessage(NdefRecord.createMime(Constants.NFC_MIME,
-//                    mSharedKeyringBytes), NdefRecord.createApplicationRecord(Constants.PACKAGE_NAME));
-//            return msg;
-//        } catch(IOException e) {
-//            Log.e(Constants.TAG, "Error parsing keyring", e);
-//            return null;
-//        } catch (ProviderHelper.NotFoundException e) {
-//            Log.e(Constants.TAG, "key not found!", e);
-            return null;
-//        }
+        NdefMessage msg = new NdefMessage(NdefRecord.createMime(Constants.NFC_MIME,
+                mSharedKeyringBytes), NdefRecord.createApplicationRecord(Constants.PACKAGE_NAME));
+        return msg;
     }
 
     /**

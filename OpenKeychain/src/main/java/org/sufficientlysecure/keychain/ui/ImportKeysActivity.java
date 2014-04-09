@@ -93,6 +93,11 @@ public class ImportKeysActivity extends ActionBarActivity implements ActionBar.O
             ImportKeysClipboardFragment.class,
             ImportKeysNFCFragment.class
     };
+    private static final int NAV_SERVER = 0;
+    private static final int NAV_FILE = 1;
+    private static final int NAV_QR_CODE = 2;
+    private static final int NAV_CLIPBOARD = 3;
+    private static final int NAV_NFC = 4;
 
     private int mCurrentNavPosition = -1;
 
@@ -152,7 +157,7 @@ public class ImportKeysActivity extends ActionBarActivity implements ActionBar.O
             /* Keychain's own Actions */
 
             // display file fragment
-            loadNavFragment(1, null);
+            loadNavFragment(NAV_FILE, null);
 
             if (dataUri != null) {
                 // action: directly load data
@@ -187,7 +192,7 @@ public class ImportKeysActivity extends ActionBarActivity implements ActionBar.O
                     // display keyserver fragment with query
                     Bundle args = new Bundle();
                     args.putString(ImportKeysServerFragment.ARG_QUERY, query);
-                    loadNavFragment(0, args);
+                    loadNavFragment(NAV_SERVER, args);
 
                     // action: search immediately
                     startListFragment(savedInstanceState, null, null, query);
@@ -212,7 +217,7 @@ public class ImportKeysActivity extends ActionBarActivity implements ActionBar.O
         } else if (ACTION_IMPORT_KEY_FROM_FILE.equals(action)) {
 
             // NOTE: this only displays the appropriate fragment, no actions are taken
-            loadNavFragment(1, null);
+            loadNavFragment(NAV_FILE, null);
 
             // no immediate actions!
             startListFragment(savedInstanceState, null, null, null);
@@ -220,14 +225,14 @@ public class ImportKeysActivity extends ActionBarActivity implements ActionBar.O
             // also exposed in AndroidManifest
 
             // NOTE: this only displays the appropriate fragment, no actions are taken
-            loadNavFragment(2, null);
+            loadNavFragment(NAV_QR_CODE, null);
 
             // no immediate actions!
             startListFragment(savedInstanceState, null, null, null);
         } else if (ACTION_IMPORT_KEY_FROM_NFC.equals(action)) {
 
             // NOTE: this only displays the appropriate fragment, no actions are taken
-            loadNavFragment(3, null);
+            loadNavFragment(NAV_NFC, null);
 
             // no immediate actions!
             startListFragment(savedInstanceState, null, null, null);
@@ -327,7 +332,7 @@ public class ImportKeysActivity extends ActionBarActivity implements ActionBar.O
         Bundle args = new Bundle();
         args.putString(ImportKeysServerFragment.ARG_QUERY, query);
         args.putBoolean(ImportKeysServerFragment.ARG_DISABLE_QUERY_EDIT, true);
-        loadNavFragment(0, args);
+        loadNavFragment(NAV_SERVER, args);
 
         // action: search directly
         startListFragment(savedInstanceState, null, null, query);
