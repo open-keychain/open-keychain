@@ -253,9 +253,6 @@ public class ViewKeyActivity extends ActionBarActivity {
         } catch (ProviderHelper.NotFoundException e) {
             Log.e(Constants.TAG, "key not found!", e);
         }
-        ClipboardReflection.copyToClipboard(this, keyringArmored.get(0));
-        AppMsg.makeText(this, R.string.key_copied_to_clipboard, AppMsg.STYLE_INFO)
-                .show();
     }
 
     private void shareNfc() {
