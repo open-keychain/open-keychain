@@ -39,6 +39,7 @@ import com.beardedhen.androidbootstrap.BootstrapButton;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
+import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRingData;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.KeychainContract.Keys;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UserIds;
@@ -204,8 +205,9 @@ public class ViewKeyMainFragment extends Fragment implements
          * because the notification triggers faster than the activity closes.
          */
         // Avoid NullPointerExceptions...
-        if(data.getCount() == 0)
+        if(data.getCount() == 0) {
             return;
+        }
         // Swap the new cursor in. (The framework will take care of closing the
         // old cursor once we return.)
         switch (loader.getId()) {
@@ -232,7 +234,8 @@ public class ViewKeyMainFragment extends Fragment implements
                         mActionEdit.setOnClickListener(new View.OnClickListener() {
                             public void onClick(View view) {
                                 Intent editIntent = new Intent(getActivity(), EditKeyActivity.class);
-                                editIntent.setData(mDataUri);
+                                editIntent.setData(
+                                        KeyRingData.buildSecretKeyRingUri(mDataUri));
                                 editIntent.setAction(EditKeyActivity.ACTION_EDIT_KEY);
                                 startActivityForResult(editIntent, 0);
                             }
@@ -330,7 +333,8 @@ public class ViewKeyMainFragment extends Fragment implements
     private void encryptToContact(Uri dataUri) {
         // TODO preselect from uri? should be feasible without trivial query
         try {
-            long keyId = ProviderHelper.getMasterKeyId(getActivity(), dataUri);
+            long keyId = ProviderHelper.getMasterKeyId(getActivity(),
+                    KeyRingData.buildPublicKeyRingUri(dataUri));
 
             long[] encryptionKeyIds = new long[]{ keyId };
             Intent intent = new Intent(getActivity(), EncryptActivity.class);

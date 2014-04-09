@@ -3,14 +3,14 @@
     xmlns:bootstrapbutton="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
-    android:layout_height="match_parent" >
+    android:layout_height="match_parent">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingLeft="16dp"
         android:paddingRight="16dp"
-        android:orientation="vertical" >
+        android:orientation="vertical">
 
         <TextView
             style="@style/SectionHeader"
@@ -77,8 +77,7 @@
                 <TextView
                     android:id="@+id/main_user_id"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:typeface="monospace" />
+                    android:layout_height="wrap_content" />
 
             </TableRow>
 

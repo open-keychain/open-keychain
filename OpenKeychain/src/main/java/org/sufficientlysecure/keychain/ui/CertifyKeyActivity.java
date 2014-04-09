@@ -193,7 +193,7 @@ public class CertifyKeyActivity extends ActionBarActivity implements
                 if (data.moveToFirst()) {
                     // TODO: put findViewById in onCreate!
                     mPubKeyId = data.getLong(INDEX_MASTER_KEY_ID);
-                    String keyIdStr = PgpKeyHelper.convertKeyIdToHexShort(mPubKeyId);
+                    String keyIdStr = PgpKeyHelper.convertKeyIdToHex(mPubKeyId);
                     ((TextView) findViewById(R.id.key_id)).setText(keyIdStr);
 
                     String mainUserId = data.getString(INDEX_USER_ID);

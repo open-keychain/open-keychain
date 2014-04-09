@@ -61,7 +61,8 @@
                     android:id="@+id/signee_key"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:paddingRight="5dip" />
+                    android:paddingRight="5dip"
+                    android:typeface="monospace" />
             </TableRow>
 
             <TableRow>
