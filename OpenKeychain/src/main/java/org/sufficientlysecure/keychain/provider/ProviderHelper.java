@@ -124,13 +124,13 @@ public class ProviderHelper {
      */
     public static long getMasterKeyId(Context context, Uri queryUri) throws NotFoundException {
         // try extracting from the uri first
-        String firstSegment = queryUri.getPathSegments().get(1);
-        if(!firstSegment.equals("find")) try {
-            return Long.parseLong(firstSegment);
-        } catch(NumberFormatException e) {
-            // didn't work? oh well.
-            Log.d(Constants.TAG, "Couldn't get masterKeyId from URI, querying...");
-        }
+//        String firstSegment = queryUri.getPathSegments().get(1);
+//        if(!firstSegment.equals("find")) try {
+//            return Long.parseLong(firstSegment);
+//        } catch(NumberFormatException e) {
+//            // didn't work? oh well.
+//            Log.d(Constants.TAG, "Couldn't get masterKeyId from URI, querying...");
+//        }
         Object data = getGenericData(context, queryUri, KeyRings.MASTER_KEY_ID, FIELD_TYPE_INTEGER);
         if(data != null) {
             return (Long) data;
