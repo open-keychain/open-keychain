@@ -24,6 +24,7 @@ import android.nfc.NfcAdapter;
 import android.nfc.NfcAdapter.CreateNdefMessageCallback;
 import android.nfc.NfcAdapter.OnNdefPushCompleteCallback;
 import android.nfc.NfcEvent;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -62,13 +63,29 @@ public class ViewKeyActivityJB extends ViewKeyActivity implements CreateNdefMess
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
             // Check for available NFC Adapter
             mNfcAdapter = NfcAdapter.getDefaultAdapter(this);
-            if (mNfcAdapter != null) {
-                // init nfc
-                // Register callback to set NDEF message
-                mNfcAdapter.setNdefPushMessageCallback(this, this);
-                // Register callback to listen for message-sent success
-                mNfcAdapter.setOnNdefPushCompleteCallback(this, this);
-            }
+
+//            AsyncTask<NfcAdapter, Void, Void> registerTask =
+//                    new AsyncTask<NfcAdapter, Void, Void>() {
+//                protected Void doInBackground(NfcAdapter... adapter) {
+//                    if (adapter != null) {
+//                        // init nfc
+//                        // Register callback to set NDEF message
+//                        adapter.setNdefPushMessageCallback(ViewKeyActivityJB.this, ViewKeyActivityJB.this);
+//                        // Register callback to listen for message-sent success
+//                        adapter.setOnNdefPushCompleteCallback(this, this);
+//                    }
+//                    return null;
+//                }
+//
+//                protected void onProgressUpdate() {
+//                }
+//
+//                protected void onPostExecute(Void result) {
+//
+//                }
+//            };
+
+
         }
     }
 
@@ -83,20 +100,21 @@ public class ViewKeyActivityJB extends ViewKeyActivity implements CreateNdefMess
          * guarantee that this activity starts when receiving a beamed message. For now, this code
          * uses the tag dispatch system.
          */
-        try {
+//        try {
             // get public keyring as byte array
-            mSharedKeyringBytes = ProviderHelper.getPGPKeyRing(this, mDataUri).getEncoded();
-
-            NdefMessage msg = new NdefMessage(NdefRecord.createMime(Constants.NFC_MIME,
-                    mSharedKeyringBytes), NdefRecord.createApplicationRecord(Constants.PACKAGE_NAME));
-            return msg;
-        } catch(IOException e) {
-            Log.e(Constants.TAG, "Error parsing keyring", e);
+//            event.nfcAdapter.
+//            mSharedKeyringBytes = ProviderHelper.getPGPKeyRing(this, mDataUri).getEncoded();
+//
+//            NdefMessage msg = new NdefMessage(NdefRecord.createMime(Constants.NFC_MIME,
+//                    mSharedKeyringBytes), NdefRecord.createApplicationRecord(Constants.PACKAGE_NAME));
+//            return msg;
+//        } catch(IOException e) {
+//            Log.e(Constants.TAG, "Error parsing keyring", e);
+//            return null;
+//        } catch (ProviderHelper.NotFoundException e) {
+//            Log.e(Constants.TAG, "key not found!", e);
             return null;
-        } catch (ProviderHelper.NotFoundException e) {
-            Log.e(Constants.TAG, "key not found!", e);
-            return null;
-        }
+//        }
     }
 
     /**

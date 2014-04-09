@@ -480,9 +480,9 @@ public class KeychainIntentService extends IntentService
         } else if (ACTION_SAVE_KEYRING.equals(action)) {
             try {
                 /* Input */
-                SaveKeyringParcel saveParams = data.getParcelable(SAVE_KEYRING_PARCEL);
-                String oldPassphrase = saveParams.oldPassphrase;
-                String newPassphrase = saveParams.newPassphrase;
+                SaveKeyringParcel saveParcel = data.getParcelable(SAVE_KEYRING_PARCEL);
+                String oldPassphrase = saveParcel.oldPassphrase;
+                String newPassphrase = saveParcel.newPassphrase;
                 boolean canSign = true;
 
                 if (data.containsKey(SAVE_KEYRING_CAN_SIGN)) {
@@ -493,7 +493,7 @@ public class KeychainIntentService extends IntentService
                     newPassphrase = oldPassphrase;
                 }
 
-                long masterKeyId = saveParams.keys.get(0).getKeyID();
+                long masterKeyId = saveParcel.keys.get(0).getKeyID();
 
                 /* Operation */
                 if (!canSign) {
@@ -506,10 +506,16 @@ public class KeychainIntentService extends IntentService
                     setProgress(R.string.progress_done, 100, 100);
                 } else {
                     PgpKeyOperation keyOperations = new PgpKeyOperation(new ProgressScaler(this, 0, 90, 100));
-                    PGPSecretKeyRing privkey = ProviderHelper.getPGPSecretKeyRing(this, masterKeyId);
-                    PGPPublicKeyRing pubkey = ProviderHelper.getPGPPublicKeyRing(this, masterKeyId);
-                    PgpKeyOperation.Pair<PGPSecretKeyRing,PGPPublicKeyRing> pair =
-                        keyOperations.buildSecretKey(privkey, pubkey, saveParams);
+                    PgpKeyOperation.Pair<PGPSecretKeyRing, PGPPublicKeyRing> pair;
+                    try {
+                        PGPSecretKeyRing privkey = ProviderHelper.getPGPSecretKeyRing(this, masterKeyId);
+                        PGPPublicKeyRing pubkey = ProviderHelper.getPGPPublicKeyRing(this, masterKeyId);
+
+                        pair = keyOperations.buildSecretKey(privkey, pubkey, saveParcel); // edit existing
+                    } catch (ProviderHelper.NotFoundException e) {
+                        pair = keyOperations.buildNewSecretKey(saveParcel); //new Keyring
+                    }
+
                     setProgress(R.string.progress_saving_key_ring, 90, 100);
                     // save the pair
                     ProviderHelper.saveKeyRing(this, pair.second, pair.first);
@@ -654,16 +660,16 @@ public class KeychainIntentService extends IntentService
                 ArrayList<Long> secretMasterKeyIds = new ArrayList<Long>();
 
                 String selection = null;
-                if(!exportAll) {
+                if (!exportAll) {
                     selection = KeychainDatabase.Tables.KEYS + "." + KeyRings.MASTER_KEY_ID + " IN( ";
-                    for(long l : masterKeyIds) {
+                    for (long l : masterKeyIds) {
                         selection += Long.toString(l) + ",";
                     }
-                    selection = selection.substring(0, selection.length()-1) + " )";
+                    selection = selection.substring(0, selection.length() - 1) + " )";
                 }
 
                 Cursor cursor = getContentResolver().query(KeyRings.buildUnifiedKeyRingsUri(),
-                        new String[]{ KeyRings.MASTER_KEY_ID, KeyRings.HAS_SECRET },
+                        new String[]{KeyRings.MASTER_KEY_ID, KeyRings.HAS_SECRET},
                         selection, null, null);
                 try {
                     cursor.moveToFirst();
@@ -671,9 +677,9 @@ public class KeychainIntentService extends IntentService
                         // export public either way
                         publicMasterKeyIds.add(cursor.getLong(0));
                         // add secret if available (and requested)
-                        if(exportSecret && cursor.getInt(1) != 0)
+                        if (exportSecret && cursor.getInt(1) != 0)
                             secretMasterKeyIds.add(cursor.getLong(0));
-                    } while(cursor.moveToNext());
+                    } while (cursor.moveToNext());
                 } finally {
                     cursor.close();
                 }
@@ -757,13 +763,13 @@ public class KeychainIntentService extends IntentService
                     // verify downloaded key by comparing fingerprints
                     if (entry.getFingerPrintHex() != null) {
                         String downloadedKeyFp = PgpKeyHelper.convertFingerprintToHex(
-                            downloadedKey.getPublicKey().getFingerprint());
+                                downloadedKey.getPublicKey().getFingerprint());
                         if (downloadedKeyFp.equals(entry.getFingerPrintHex())) {
                             Log.d(Constants.TAG, "fingerprint of downloaded key is the same as " +
                                     "the requested fingerprint!");
                         } else {
                             throw new PgpGeneralException("fingerprint of downloaded key is " +
-                                "NOT the same as the requested fingerprint!");
+                                    "NOT the same as the requested fingerprint!");
                         }
                     }
 

@@ -29,7 +29,7 @@ import java.util.GregorianCalendar;
 
 public class SaveKeyringParcel implements Parcelable {
 
-    public ArrayList<String> userIDs;
+    public ArrayList<String> userIds;
     public ArrayList<String> originalIDs;
     public ArrayList<String> deletedIDs;
     public boolean[] newIDs;
@@ -47,7 +47,7 @@ public class SaveKeyringParcel implements Parcelable {
     public SaveKeyringParcel() {}
 
     private SaveKeyringParcel(Parcel source) {
-        userIDs = (ArrayList<String>) source.readSerializable();
+        userIds = (ArrayList<String>) source.readSerializable();
         originalIDs = (ArrayList<String>) source.readSerializable();
         deletedIDs = (ArrayList<String>) source.readSerializable();
         newIDs = source.createBooleanArray();
@@ -70,7 +70,7 @@ public class SaveKeyringParcel implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel destination, int flags) {
-        destination.writeSerializable(userIDs); //might not be the best method to store.
+        destination.writeSerializable(userIds); //might not be the best method to store.
         destination.writeSerializable(originalIDs);
         destination.writeSerializable(deletedIDs);
         destination.writeBooleanArray(newIDs);

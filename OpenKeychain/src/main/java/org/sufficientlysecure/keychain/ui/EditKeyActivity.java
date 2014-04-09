@@ -568,7 +568,7 @@ public class EditKeyActivity extends ActionBarActivity implements EditorListener
             intent.setAction(KeychainIntentService.ACTION_SAVE_KEYRING);
 
             SaveKeyringParcel saveParams = new SaveKeyringParcel();
-            saveParams.userIDs = getUserIds(mUserIdsView);
+            saveParams.userIds = getUserIds(mUserIdsView);
             saveParams.originalIDs = mUserIdsView.getOriginalIDs();
             saveParams.deletedIDs = mUserIdsView.getDeletedIDs();
             saveParams.newIDs = toPrimitiveArray(mUserIdsView.getNewIDFlags());

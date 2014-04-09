@@ -19,6 +19,7 @@
 package org.sufficientlysecure.keychain.pgp;
 
 import android.content.Context;
+import android.net.Uri;
 
 import org.openintents.openpgp.OpenPgpSignatureResult;
 import org.spongycastle.bcpg.ArmoredInputStream;
@@ -382,52 +383,44 @@ public class PgpDecryptVerify {
             currentProgress += 10;
         }
 
-        long signatureKeyId = 0;
         if (dataChunk instanceof PGPOnePassSignatureList) {
             updateProgress(R.string.progress_processing_signature, currentProgress, 100);
 
             signatureResult = new OpenPgpSignatureResult();
             PGPOnePassSignatureList sigList = (PGPOnePassSignatureList) dataChunk;
+            Long masterKeyId = null;
             for (int i = 0; i < sigList.size(); ++i) {
-                signature = sigList.get(i);
-
-                // TODO: rework this code, seems wonky!
                 try {
-                    signatureKey = ProviderHelper
-                            .getPGPPublicKeyRingWithKeyId(mContext, signature.getKeyID()).getPublicKey();
+                    Uri uri = KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(
+                            Long.toString(sigList.get(i).getKeyID()));
+                    masterKeyId = ProviderHelper.getMasterKeyId(mContext, uri);
+                    signatureIndex = i;
                 } catch (ProviderHelper.NotFoundException e) {
                     Log.d(Constants.TAG, "key not found!");
                 }
-                if (signatureKeyId == 0) {
-                    signatureKeyId = signature.getKeyID();
-                }
-                if (signatureKey == null) {
-                    signature = null;
-                } else {
-                    signatureIndex = i;
-                    signatureKeyId = signature.getKeyID();
-                    String userId = null;
-                    try {
-                        PGPPublicKeyRing signKeyRing = ProviderHelper.getPGPPublicKeyRingWithKeyId(
-                                mContext, signatureKeyId);
-                        userId = PgpKeyHelper.getMainUserId(signKeyRing.getPublicKey());
-                    } catch (ProviderHelper.NotFoundException e) {
-                        Log.d(Constants.TAG, "key not found!");
-                    }
-                    signatureResult.setUserId(userId);
-                    break;
-                }
             }
 
-            signatureResult.setKeyId(signatureKeyId);
+            if(masterKeyId == null) {
+                try {
+                    signatureKey = ProviderHelper
+                            .getPGPPublicKeyRing(mContext, masterKeyId).getPublicKey();
+                } catch (ProviderHelper.NotFoundException e) {
+                    // can't happen
+                }
 
-            if (signature != null) {
+                signature = sigList.get(signatureIndex);
+                signatureResult.setUserId(PgpKeyHelper.getMainUserId(signatureKey));
+                signatureResult.setKeyId(signature.getKeyID());
                 JcaPGPContentVerifierBuilderProvider contentVerifierBuilderProvider =
                         new JcaPGPContentVerifierBuilderProvider()
                                 .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME);
-
                 signature.init(contentVerifierBuilderProvider, signatureKey);
+
             } else {
+                if(!sigList.isEmpty()) {
+                    signatureResult.setKeyId(sigList.get(0).getKeyID());
+                }
+
                 Log.d(Constants.TAG, "SIGNATURE_UNKNOWN_PUB_KEY");
                 signatureResult.setStatus(OpenPgpSignatureResult.SIGNATURE_UNKNOWN_PUB_KEY);
             }
@@ -500,7 +493,7 @@ public class PgpDecryptVerify {
                 boolean validSignature = signature.verify(messageSignature);
 
                 // TODO: implement CERTIFIED!
-                if (validKeyBinding & validSignature) {
+                if (validKeyBinding && validSignature) {
                     Log.d(Constants.TAG, "SIGNATURE_SUCCESS_UNCERTIFIED");
                     signatureResult.setStatus(OpenPgpSignatureResult.SIGNATURE_SUCCESS_UNCERTIFIED);
                 } else {
@@ -654,7 +647,7 @@ public class PgpDecryptVerify {
         boolean validKeyBinding = verifyKeyBinding(mContext, signature, signatureKey);
         boolean validSignature = signature.verify();
 
-        if (validKeyBinding & validSignature) {
+        if (validKeyBinding && validSignature) {
             Log.d(Constants.TAG, "SIGNATURE_SUCCESS_UNCERTIFIED");
             signatureResult.setStatus(OpenPgpSignatureResult.SIGNATURE_SUCCESS_UNCERTIFIED);
         } else {
