@@ -155,8 +155,8 @@ public class ViewCertActivity extends ActionBarActivity
 
                 try {
                     sig.init(new JcaPGPContentVerifierBuilderProvider().setProvider(
-                            Constants.BOUNCY_CASTLE_PROVIDER_NAME), signeeRing.getPublicKey());
-                    if (sig.verifyCertification(signeeUid, signerRing.getPublicKey())) {
+                            Constants.BOUNCY_CASTLE_PROVIDER_NAME), signerRing.getPublicKey());
+                    if (sig.verifyCertification(signeeUid, signeeRing.getPublicKey())) {
                         mStatus.setText("ok");
                         mStatus.setTextColor(getResources().getColor(R.color.bbutton_success));
                     } else {
