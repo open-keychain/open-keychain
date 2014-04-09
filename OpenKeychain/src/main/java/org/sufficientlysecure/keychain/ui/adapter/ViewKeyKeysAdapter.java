@@ -95,7 +95,7 @@ public class ViewKeyKeysAdapter extends CursorAdapter {
         ImageView signIcon = (ImageView) view.findViewById(R.id.ic_signKey);
         ImageView revokedKeyIcon = (ImageView) view.findViewById(R.id.ic_revokedKey);
 
-        String keyIdStr = PgpKeyHelper.convertKeyIdToHexShort(cursor.getLong(mIndexKeyId));
+        String keyIdStr = PgpKeyHelper.convertKeyIdToHex(cursor.getLong(mIndexKeyId));
         String algorithmStr = PgpKeyHelper.getAlgorithmInfo(cursor.getInt(mIndexAlgorithm),
                 cursor.getInt(mIndexKeySize));
 

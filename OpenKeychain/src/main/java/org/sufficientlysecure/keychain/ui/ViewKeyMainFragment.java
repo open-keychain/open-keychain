@@ -292,6 +292,7 @@ public class ViewKeyMainFragment extends Fragment implements
 
             case LOADER_ID_KEYS:
                 // hide encrypt button if no encryption key is available
+                // TODO: do with subquery!
                 boolean canEncrypt = false;
                 data.moveToFirst();
                 do {

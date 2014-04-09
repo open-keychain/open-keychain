@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
     android:paddingLeft="8dip"
-    android:paddingRight="3dip" >
+    android:paddingRight="3dip">
 
     <ImageView
         android:id="@+id/ic_masterKey"
@@ -12,56 +12,34 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
         android:paddingRight="6dip"
+        android:layout_alignParentLeft="true"
         android:src="@drawable/key_small" />
 
-    <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:paddingBottom="2dip"
-            android:paddingTop="2dip" >
-        <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-            <TextView
-                    android:id="@+id/keyId"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:paddingRight="2dip"
-                    android:text="@string/label_key_id"
-                    android:textAppearance="?android:attr/textAppearanceMedium"
-                    android:typeface="monospace" />
-
-            <TextView
-                android:id="@+id/keyDetails"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:paddingRight="5dip"
-                android:text="(RSA, 1024bit)"
-                android:textAppearance="?android:attr/textAppearanceSmall" />
-        </LinearLayout>
-            <TextView
-                android:id="@+id/keyExpiry"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="right"
-                android:text="@string/label_expiry"
-                android:textAppearance="?android:attr/textAppearanceSmall" />
-    </LinearLayout>
+    <TextView
+        android:id="@+id/keyId"
+        android:layout_toRightOf="@+id/ic_masterKey"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingRight="2dip"
+        android:text="@string/label_key_id"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:typeface="monospace" />
 
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:gravity="right"
+        android:layout_alignParentEnd="true"
         android:paddingBottom="2dip"
-        android:paddingTop="2dip" >
+        android:paddingTop="2dip"
+        android:id="@+id/linearLayout">
 
-        <ImageView android:id="@+id/ic_revokedKey"
+        <ImageView
+            android:id="@+id/ic_revokedKey"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/revoked_key_small"/>
+            android:src="@drawable/revoked_key_small" />
+
         <ImageView
             android:id="@+id/ic_certifyKey"
             android:layout_width="wrap_content"
@@ -81,4 +59,25 @@
             android:src="@drawable/signed_small" />
     </LinearLayout>
 
-</LinearLayout>
+    <TextView
+        android:id="@+id/keyDetails"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingRight="5dip"
+        android:text="(RSA, 1024bit)"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:layout_below="@+id/ic_masterKey"
+        android:layout_toRightOf="@+id/ic_masterKey" />
+
+    <TextView
+        android:id="@+id/keyExpiry"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="right"
+        android:text="@string/label_expiry"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:layout_alignTop="@+id/keyDetails"
+        android:layout_alignRight="@+id/linearLayout"
+        android:layout_alignEnd="@+id/linearLayout" />
+
+</RelativeLayout>
