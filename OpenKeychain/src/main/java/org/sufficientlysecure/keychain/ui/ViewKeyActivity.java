@@ -30,7 +30,8 @@ import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.Window;
-import android.widget.Toast;
+
+import com.devspark.appmsg.AppMsg;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.Id;
@@ -194,8 +195,8 @@ public class ViewKeyActivity extends ActionBarActivity {
                 String fingerprint = PgpKeyHelper.convertFingerprintToHex(data);
                 content = Constants.FINGERPRINT_SCHEME + ":" + fingerprint;
             } else {
-                Toast.makeText(getApplicationContext(), "Bad key selected!",
-                        Toast.LENGTH_LONG).show();
+                AppMsg.makeText(this, "Bad key selected!",
+                        AppMsg.STYLE_ALERT).show();
                 return;
             }
         } else {
@@ -211,8 +212,8 @@ public class ViewKeyActivity extends ActionBarActivity {
                 // Android will fail with android.os.TransactionTooLargeException if key is too big
                 // see http://www.lonestarprod.com/?p=34
                 if (content.length() >= 86389) {
-                    Toast.makeText(getApplicationContext(), R.string.key_too_big_for_sharing,
-                            Toast.LENGTH_LONG).show();
+                    AppMsg.makeText(this, R.string.key_too_big_for_sharing,
+                        AppMsg.STYLE_ALERT).show();
                     return;
                 }
             } catch (ProviderHelper.NotFoundException e) {
@@ -247,11 +248,14 @@ public class ViewKeyActivity extends ActionBarActivity {
                     this, new long[]{masterKeyId});
 
             ClipboardReflection.copyToClipboard(this, keyringArmored.get(0));
-            Toast.makeText(getApplicationContext(), R.string.key_copied_to_clipboard, Toast.LENGTH_LONG)
-                    .show();
+            AppMsg.makeText(this, R.string.key_copied_to_clipboard, AppMsg.STYLE_INFO)
+                .show();
         } catch (ProviderHelper.NotFoundException e) {
             Log.e(Constants.TAG, "key not found!", e);
         }
+        ClipboardReflection.copyToClipboard(this, keyringArmored.get(0));
+        AppMsg.makeText(this, R.string.key_copied_to_clipboard, AppMsg.STYLE_INFO)
+                .show();
     }
 
     private void shareNfc() {
