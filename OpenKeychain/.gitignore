@@ -27,3 +27,7 @@ pom.xml.*
 #IntelliJ IDEA
 .idea
 *.iml
+
+#Lint output
+lint-report.html
+lint-report_files/*
