@@ -140,7 +140,7 @@ public class ViewKeyActivity extends ActionBarActivity {
                 uploadToKeyserver(mDataUri);
                 return true;
             case R.id.menu_key_view_export_file:
-                exportToFile(mDataUri);
+                exportToFile(mDataUri, mExportHelper);
                 return true;
             case R.id.menu_key_view_share_default_fingerprint:
                 shareKey(mDataUri, true);
@@ -161,14 +161,14 @@ public class ViewKeyActivity extends ActionBarActivity {
                 copyToClipboard(mDataUri);
                 return true;
             case R.id.menu_key_view_delete: {
-                deleteKey(mDataUri);
+                deleteKey(mDataUri, mExportHelper);
                 return true;
             }
         }
         return super.onOptionsItemSelected(item);
     }
 
-    private void exportToFile(Uri dataUri) {
+    private void exportToFile(Uri dataUri, ExportHelper exportHelper) {
         Uri baseUri = KeychainContract.KeyRings.buildUnifiedKeyRingUri(dataUri);
 
         HashMap<String, Object> data = ProviderHelper.getGenericData(this,
@@ -176,7 +176,7 @@ public class ViewKeyActivity extends ActionBarActivity {
                 new String[]{KeychainContract.Keys.MASTER_KEY_ID, KeychainContract.KeyRings.HAS_SECRET},
                 new int[]{ProviderHelper.FIELD_TYPE_INTEGER, ProviderHelper.FIELD_TYPE_INTEGER});
 
-        mExportHelper.showExportKeysDialog(
+        exportHelper.showExportKeysDialog(
                 new long[]{(Long) data.get(KeychainContract.KeyRings.MASTER_KEY_ID)},
                 Constants.Path.APP_DIR_FILE,
                 ((Long) data.get(KeychainContract.KeyRings.HAS_SECRET) == 1)
@@ -277,7 +277,7 @@ public class ViewKeyActivity extends ActionBarActivity {
         dialog.show(getSupportFragmentManager(), "shareNfcDialog");
     }
 
-    private void deleteKey(Uri dataUri) {
+    private void deleteKey(Uri dataUri, ExportHelper exportHelper) {
         // Message is received after key is deleted
         Handler returnHandler = new Handler() {
             @Override
@@ -287,7 +287,7 @@ public class ViewKeyActivity extends ActionBarActivity {
             }
         };
 
-        mExportHelper.deleteKey(dataUri, returnHandler);
+        exportHelper.deleteKey(dataUri, returnHandler);
     }
 
     @Override
