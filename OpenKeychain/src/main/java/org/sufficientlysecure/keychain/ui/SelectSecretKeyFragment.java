@@ -18,6 +18,7 @@
 
 package org.sufficientlysecure.keychain.ui;
 
+import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -30,23 +31,15 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 
-import org.sufficientlysecure.keychain.Id;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
-import org.sufficientlysecure.keychain.provider.KeychainContract.Keys;
-import org.sufficientlysecure.keychain.provider.KeychainContract.UserIds;
-import org.sufficientlysecure.keychain.provider.KeychainDatabase;
-import org.sufficientlysecure.keychain.provider.KeychainDatabase.Tables;
 import org.sufficientlysecure.keychain.ui.adapter.SelectKeyCursorAdapter;
-
-import java.util.Date;
 
 public class SelectSecretKeyFragment extends ListFragment implements
         LoaderManager.LoaderCallbacks<Cursor> {
 
     private SelectSecretKeyActivity mActivity;
     private SelectKeyCursorAdapter mAdapter;
-    private ListView mListView;
 
     private boolean mFilterCertify;
 
@@ -80,9 +73,9 @@ public class SelectSecretKeyFragment extends ListFragment implements
         super.onActivityCreated(savedInstanceState);
 
         mActivity = (SelectSecretKeyActivity) getActivity();
-        mListView = getListView();
 
-        mListView.setOnItemClickListener(new OnItemClickListener() {
+        ListView listView = getListView();
+        listView.setOnItemClickListener(new OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
                 long masterKeyId = mAdapter.getMasterKeyId(position);
@@ -97,7 +90,7 @@ public class SelectSecretKeyFragment extends ListFragment implements
         // application this would come from a resource.
         setEmptyText(getString(R.string.list_empty));
 
-        mAdapter = new SelectKeyCursorAdapter(mActivity, null, 0, mListView, Id.type.secret_key);
+        mAdapter = new SelectSecretKeyCursorAdapter(mActivity, null, 0, listView);
 
         setListAdapter(mAdapter);
 
@@ -116,41 +109,22 @@ public class SelectSecretKeyFragment extends ListFragment implements
         Uri baseUri = KeyRings.buildUnifiedKeyRingsUri();
 
         // These are the rows that we will retrieve.
-        long now = new Date().getTime() / 1000;
         String[] projection = new String[]{
                 KeyRings._ID,
                 KeyRings.MASTER_KEY_ID,
-                UserIds.USER_ID,
-                "(SELECT COUNT(*) FROM " + Tables.KEYS + " AS k"
-                    + " WHERE k." + Keys.MASTER_KEY_ID + " = "
-                        + KeychainDatabase.Tables.KEYS + "." + KeyRings.MASTER_KEY_ID
-                            + " AND k." + Keys.CAN_CERTIFY + " = '1'"
-                    + ") AS cert",
-                "(SELECT COUNT(*) FROM " + Tables.KEYS + " AS k"
-                    +" WHERE k." + Keys.MASTER_KEY_ID + " = "
-                        + KeychainDatabase.Tables.KEYS + "." + Keys.MASTER_KEY_ID
-                            + " AND k." + Keys.IS_REVOKED + " = '0'"
-                            + " AND k." + Keys.CAN_SIGN + " = '1'"
-                    + ") AS " + SelectKeyCursorAdapter.PROJECTION_ROW_AVAILABLE,
-                "(SELECT COUNT(*) FROM " + Tables.KEYS + " AS k"
-                    + " WHERE k." + Keys.MASTER_KEY_ID + " = "
-                        + KeychainDatabase.Tables.KEYS + "." + Keys.MASTER_KEY_ID
-                            + " AND k." + Keys.IS_REVOKED + " = '0'"
-                            + " AND k." + Keys.CAN_SIGN + " = '1'"
-                            + " AND k." + Keys.CREATION + " <= '" + now + "'"
-                            + " AND ( k." + Keys.EXPIRY + " IS NULL OR k." + Keys.EXPIRY + " >= '" + now + "' )"
-                    + ") AS " + SelectKeyCursorAdapter.PROJECTION_ROW_VALID, };
+                KeyRings.USER_ID,
+                KeyRings.EXPIRY,
+                KeyRings.IS_REVOKED,
+                KeyRings.CAN_CERTIFY,
+                KeyRings.HAS_SIGN,
+                KeyRings.HAS_SECRET
+        };
 
-        String orderBy = UserIds.USER_ID + " ASC";
-
-        String where = Tables.KEY_RINGS_SECRET + "." + KeyRings.MASTER_KEY_ID + " IS NOT NULL";
-        if (mFilterCertify) {
-            where += " AND (cert > 0)";
-        }
+        String where = KeyRings.HAS_SECRET + " = 1";
 
         // Now create and return a CursorLoader that will take care of
         // creating a Cursor for the data being displayed.
-        return new CursorLoader(getActivity(), baseUri, projection, where, null, orderBy);
+        return new CursorLoader(getActivity(), baseUri, projection, where, null, null);
     }
 
     @Override
@@ -174,4 +148,57 @@ public class SelectSecretKeyFragment extends ListFragment implements
         // longer using it.
         mAdapter.swapCursor(null);
     }
+
+    private class SelectSecretKeyCursorAdapter extends SelectKeyCursorAdapter {
+
+        private int mIndexHasSign, mIndexCanCertify;
+
+        public SelectSecretKeyCursorAdapter(Context context, Cursor c, int flags, ListView listView) {
+            super(context, c, flags, listView);
+        }
+
+        @Override
+        protected void initIndex(Cursor cursor) {
+            super.initIndex(cursor);
+            if (cursor != null) {
+                mIndexCanCertify = cursor.getColumnIndexOrThrow(KeyRings.CAN_CERTIFY);
+                mIndexHasSign = cursor.getColumnIndexOrThrow(KeyRings.HAS_SIGN);
+            }
+        }
+
+        @Override
+        public void bindView(View view, Context context, Cursor cursor) {
+            super.bindView(view, context, cursor);
+            ViewHolderItem h = (SelectKeyCursorAdapter.ViewHolderItem) view.getTag();
+
+            // We don't care about the checkbox
+            h.selected.setVisibility(View.GONE);
+
+            // Special from superclass: Te
+            boolean enabled = false;
+            if((Boolean) h.status.getTag()) {
+                // Check if key is viable for our purposes (certify or sign)
+                if(mFilterCertify) {
+                    if (cursor.getInt(mIndexCanCertify) == 0) {
+                        h.status.setText(R.string.can_certify_not);
+                    } else {
+                        h.status.setText(R.string.can_certify);
+                        enabled = true;
+                    }
+                } else {
+                    if (cursor.getInt(mIndexHasSign) == 0) {
+                        h.status.setText(R.string.no_key);
+                    } else {
+                        h.status.setText(R.string.can_sign);
+                        enabled = true;
+                    }
+                }
+            }
+            h.setEnabled(enabled);
+            // refresh this, too, for use in the ItemClickListener above
+            h.status.setTag(enabled);
+        }
+
+    }
+
 }

@@ -38,9 +38,11 @@ import org.sufficientlysecure.keychain.provider.KeychainContract.Keys;
 import org.sufficientlysecure.keychain.provider.KeychainContract.Certs;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UserIds;
 import org.sufficientlysecure.keychain.provider.KeychainDatabase.Tables;
+import org.sufficientlysecure.keychain.ui.adapter.SelectKeyCursorAdapter;
 import org.sufficientlysecure.keychain.util.Log;
 
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 
 public class KeychainProvider extends ContentProvider {
@@ -264,7 +266,29 @@ public class KeychainProvider extends ContentProvider {
                 projectionMap.put(KeyRings.FINGERPRINT, Keys.FINGERPRINT);
                 projectionMap.put(KeyRings.USER_ID, UserIds.USER_ID);
                 projectionMap.put(KeyRings.VERIFIED, KeyRings.VERIFIED);
-                projectionMap.put(KeyRings.HAS_SECRET, "(" + Tables.KEY_RINGS_SECRET + "." + KeyRings.MASTER_KEY_ID + " IS NOT NULL) AS " + KeyRings.HAS_SECRET);
+                projectionMap.put(KeyRings.HAS_SECRET,
+                    "(EXISTS (SELECT * FROM " + Tables.KEY_RINGS_SECRET
+                        + " WHERE " + Tables.KEY_RINGS_SECRET + "." + KeyRingData.MASTER_KEY_ID
+                            + " = " + Tables.KEYS + "." + Keys.MASTER_KEY_ID
+                        + ")) AS " + KeyRings.HAS_SECRET);
+                projectionMap.put(KeyRings.HAS_ENCRYPT,
+                    "(EXISTS (SELECT COUNT(*) FROM " + Tables.KEYS + " AS k"
+                        +" WHERE k." + Keys.MASTER_KEY_ID
+                            + " = " + Tables.KEYS + "." + Keys.MASTER_KEY_ID
+                        + " AND k." + Keys.IS_REVOKED + " = 0"
+                        + " AND k." + Keys.CAN_ENCRYPT + " = 1"
+                        + " AND ( k." + Keys.EXPIRY + " IS NULL OR k." + Keys.EXPIRY
+                            + " >= '" + new Date().getTime() / 1000 + "' )"
+                        + ")) AS " + KeyRings.HAS_ENCRYPT);
+                projectionMap.put(KeyRings.HAS_SIGN,
+                        "(EXISTS (SELECT COUNT(*) FROM " + Tables.KEYS + " AS k"
+                                +" WHERE k." + Keys.MASTER_KEY_ID
+                                + " = " + Tables.KEYS + "." + Keys.MASTER_KEY_ID
+                                + " AND k." + Keys.IS_REVOKED + " = 0"
+                                + " AND k." + Keys.CAN_SIGN + " = 1"
+                                + " AND ( k." + Keys.EXPIRY + " IS NULL OR k." + Keys.EXPIRY
+                                + " >= '" + new Date().getTime() / 1000 + "' )"
+                                + ")) AS " + KeyRings.HAS_SIGN);
                 qb.setProjectionMap(projectionMap);
 
                 qb.setTables(
@@ -274,10 +298,6 @@ public class KeychainProvider extends ContentProvider {
                                 + " = "
                                     + Tables.USER_IDS + "." + UserIds.MASTER_KEY_ID
                             + " AND " + Tables.USER_IDS + "." + UserIds.RANK + " = 0"
-                        + ") LEFT JOIN " + Tables.KEY_RINGS_SECRET + " ON ("
-                            + Tables.KEYS + "." + Keys.MASTER_KEY_ID
-                                + " = "
-                            + Tables.KEY_RINGS_SECRET + "." + KeyRings.MASTER_KEY_ID
                         + ") LEFT JOIN " + Tables.CERTS + " ON ("
                             + Tables.KEYS + "." + Keys.MASTER_KEY_ID
                                 + " = "
@@ -345,9 +365,7 @@ public class KeychainProvider extends ContentProvider {
                 }
 
                 if (TextUtils.isEmpty(sortOrder)) {
-                    sortOrder =
-                            Tables.KEY_RINGS_SECRET + "." + KeyRings.MASTER_KEY_ID + " IS NULL ASC, "
-                                    + Tables.USER_IDS + "." + UserIds.USER_ID + " ASC";
+                    sortOrder = Tables.USER_IDS + "." + UserIds.USER_ID + " ASC";
                 }
 
                 // uri to watch is all /key_rings/

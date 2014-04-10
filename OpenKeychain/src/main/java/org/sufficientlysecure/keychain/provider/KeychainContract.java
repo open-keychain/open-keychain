@@ -112,6 +112,8 @@ public class KeychainContract {
         public static final String IS_REVOKED = KeysColumns.IS_REVOKED;
         public static final String VERIFIED = CertsColumns.VERIFIED;
         public static final String HAS_SECRET = "has_secret";
+        public static final String HAS_ENCRYPT = "has_encrypt";
+        public static final String HAS_SIGN = "has_encrypt";
 
         public static final Uri CONTENT_URI = BASE_CONTENT_URI_INTERNAL.buildUpon()
                 .appendPath(BASE_KEY_RINGS).build();

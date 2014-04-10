@@ -265,6 +265,10 @@ public class KeyListFragment extends Fragment
     static final int INDEX_VERIFIED = 5;
     static final int INDEX_HAS_SECRET = 6;
 
+    static final String ORDER = // IN THE COURT
+            KeyRings.HAS_SECRET + " DESC, " + KeyRings.USER_ID + " ASC";
+
+
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         // This is called when a new Loader needs to be created. This
@@ -276,9 +280,10 @@ public class KeyListFragment extends Fragment
             where = KeyRings.USER_ID + " LIKE ?";
             whereArgs = new String[]{"%" + mCurQuery + "%"};
         }
+
         // Now create and return a CursorLoader that will take care of
         // creating a Cursor for the data being displayed.
-        return new CursorLoader(getActivity(), baseUri, PROJECTION, where, whereArgs, null);
+        return new CursorLoader(getActivity(), baseUri, PROJECTION, where, whereArgs, ORDER);
     }
 
     @Override
