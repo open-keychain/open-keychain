@@ -40,8 +40,6 @@ import android.view.Window;
 
 import com.devspark.appmsg.AppMsg;
 
-import com.devspark.appmsg.AppMsg;
-
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.Id;
 import org.sufficientlysecure.keychain.R;
