@@ -200,6 +200,26 @@ public class PassphraseCacheService extends Service {
         return cachedPassphrase;
     }
 
+    public static boolean hasPassphrase(PGPSecretKeyRing secretKeyRing) throws PGPException {
+        PGPSecretKey secretKey = null;
+        boolean foundValidKey = false;
+        for (Iterator keys = secretKeyRing.getSecretKeys(); keys.hasNext(); ) {
+            secretKey = (PGPSecretKey) keys.next();
+            if (!secretKey.isPrivateKeyEmpty()) {
+                foundValidKey = true;
+                break;
+            }
+        }
+        if(!foundValidKey) {
+            return false;
+        }
+
+        PBESecretKeyDecryptor keyDecryptor = new JcePBESecretKeyDecryptorBuilder()
+                .setProvider("SC").build("".toCharArray());
+        PGPPrivateKey testKey = secretKey.extractPrivateKey(keyDecryptor);
+        return testKey == null;
+    }
+
     /**
      * Checks if key has a passphrase.
      *
@@ -210,25 +230,7 @@ public class PassphraseCacheService extends Service {
         // check if the key has no passphrase
         try {
             PGPSecretKeyRing secRing = ProviderHelper.getPGPSecretKeyRing(context, secretKeyId);
-            PGPSecretKey secretKey = null;
-            boolean foundValidKey = false;
-            for (Iterator keys = secRing.getSecretKeys(); keys.hasNext(); ) {
-                secretKey = (PGPSecretKey) keys.next();
-                if (!secretKey.isPrivateKeyEmpty()) {
-                    foundValidKey = true;
-                    break;
-                }
-            }
-
-            if (!foundValidKey) {
-                return false;
-            }
-            PBESecretKeyDecryptor keyDecryptor = new JcePBESecretKeyDecryptorBuilder().setProvider(
-                    "SC").build("".toCharArray());
-            PGPPrivateKey testKey = secretKey.extractPrivateKey(keyDecryptor);
-            if (testKey != null) {
-                return false;
-            }
+            return hasPassphrase(secRing);
         } catch (PGPException e) {
             // silently catch
         } catch (ProviderHelper.NotFoundException e) {
