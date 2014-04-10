@@ -523,5 +523,7 @@
     <string name="label_revocation">Revocation Reason</string>
     <string name="label_verify_status">Verification Status</string>
     <string name="label_cert_type">Type</string>
+    <string name="can_certify">can certify</string>
+    <string name="can_certify_not">cannot certify</string>
 
 </resources>

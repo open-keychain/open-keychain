@@ -40,17 +40,12 @@ import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import org.sufficientlysecure.keychain.Id;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.compatibility.ListFragmentWorkaround;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
-import org.sufficientlysecure.keychain.provider.KeychainContract.Keys;
-import org.sufficientlysecure.keychain.provider.KeychainContract.UserIds;
-import org.sufficientlysecure.keychain.provider.KeychainDatabase;
 import org.sufficientlysecure.keychain.provider.KeychainDatabase.Tables;
 import org.sufficientlysecure.keychain.ui.adapter.SelectKeyCursorAdapter;
 
-import java.util.Date;
 import java.util.Vector;
 
 public class SelectPublicKeyFragment extends ListFragmentWorkaround implements TextWatcher,
@@ -180,7 +175,7 @@ public class SelectPublicKeyFragment extends ListFragmentWorkaround implements T
 
         mSearchView.addTextChangedListener(this);
 
-        mAdapter = new SelectKeyCursorAdapter(getActivity(), null, 0, getListView(), Id.type.public_key);
+        mAdapter = new SelectPublicKeyCursorAdapter(getActivity(), null, 0, getListView());
 
         setListAdapter(mAdapter);
 
@@ -258,25 +253,14 @@ public class SelectPublicKeyFragment extends ListFragmentWorkaround implements T
         Uri baseUri = KeyRings.buildUnifiedKeyRingsUri();
 
         // These are the rows that we will retrieve.
-        long now = new Date().getTime() / 1000;
         String[] projection = new String[]{
                 KeyRings._ID,
                 KeyRings.MASTER_KEY_ID,
-                UserIds.USER_ID,
-                "(SELECT COUNT(*) FROM " + Tables.KEYS + " AS k"
-                        +" WHERE k." + Keys.MASTER_KEY_ID + " = "
-                            + KeychainDatabase.Tables.KEYS + "." + Keys.MASTER_KEY_ID
-                            + " AND k." + Keys.IS_REVOKED + " = '0'"
-                            + " AND k." + Keys.CAN_ENCRYPT + " = '1'"
-                        + ") AS " + SelectKeyCursorAdapter.PROJECTION_ROW_AVAILABLE,
-                "(SELECT COUNT(*) FROM " + Tables.KEYS + " AS k"
-                        + " WHERE k." + Keys.MASTER_KEY_ID + " = "
-                            + KeychainDatabase.Tables.KEYS + "." + Keys.MASTER_KEY_ID
-                            + " AND k." + Keys.IS_REVOKED + " = '0'"
-                            + " AND k." + Keys.CAN_ENCRYPT + " = '1'"
-                            + " AND k." + Keys.CREATION + " <= '" + now + "'"
-                            + " AND ( k." + Keys.EXPIRY + " IS NULL OR k." + Keys.EXPIRY + " >= '" + now + "' )"
-                        + ") AS " + SelectKeyCursorAdapter.PROJECTION_ROW_VALID, };
+                KeyRings.USER_ID,
+                KeyRings.EXPIRY,
+                KeyRings.IS_REVOKED,
+                KeyRings.HAS_ENCRYPT,
+        };
 
         String inMasterKeyList = null;
         if (mSelectedMasterKeyIds != null && mSelectedMasterKeyIds.length > 0) {
@@ -290,7 +274,7 @@ public class SelectPublicKeyFragment extends ListFragmentWorkaround implements T
             inMasterKeyList += ")";
         }
 
-        String orderBy = UserIds.USER_ID + " ASC";
+        String orderBy = KeyRings.USER_ID + " ASC";
         if (inMasterKeyList != null) {
             // sort by selected master keys
             orderBy = inMasterKeyList + " DESC, " + orderBy;
@@ -298,7 +282,7 @@ public class SelectPublicKeyFragment extends ListFragmentWorkaround implements T
         String where = null;
         String whereArgs[] = null;
         if (mCurQuery != null) {
-            where = UserIds.USER_ID + " LIKE ?";
+            where = KeyRings.USER_ID + " LIKE ?";
             whereArgs = new String[]{"%" + mCurQuery + "%"};
         }
 
@@ -348,4 +332,47 @@ public class SelectPublicKeyFragment extends ListFragmentWorkaround implements T
         mCurQuery = !TextUtils.isEmpty(editable.toString()) ? editable.toString() : null;
         getLoaderManager().restartLoader(0, null, this);
     }
+
+    private class SelectPublicKeyCursorAdapter extends SelectKeyCursorAdapter {
+
+        private int mIndexHasEncrypt;
+
+        public SelectPublicKeyCursorAdapter(Context context, Cursor c, int flags, ListView listView) {
+            super(context, c, flags, listView);
+        }
+
+        @Override
+        protected void initIndex(Cursor cursor) {
+            super.initIndex(cursor);
+            if (cursor != null) {
+                mIndexHasEncrypt = cursor.getColumnIndexOrThrow(KeyRings.HAS_ENCRYPT);
+            }
+        }
+
+        @Override
+        public void bindView(View view, Context context, Cursor cursor) {
+            super.bindView(view, context, cursor);
+            ViewHolderItem h = (SelectKeyCursorAdapter.ViewHolderItem) view.getTag();
+
+            // We care about the checkbox
+            h.selected.setVisibility(View.VISIBLE);
+            // the getListView works because this is not a static subclass!
+            h.selected.setChecked(getListView().isItemChecked(cursor.getPosition()));
+
+            boolean enabled = false;
+            if((Boolean) h.status.getTag()) {
+                // Check if key is viable for our purposes
+                if (cursor.getInt(mIndexHasEncrypt) == 0) {
+                    h.status.setText(R.string.no_key);
+                } else {
+                    h.status.setText(R.string.can_encrypt);
+                    enabled = true;
+                }
+            }
+
+            h.setEnabled(enabled);
+        }
+
+    }
+
 }

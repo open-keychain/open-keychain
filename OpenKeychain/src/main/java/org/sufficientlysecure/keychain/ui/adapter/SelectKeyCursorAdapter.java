@@ -26,35 +26,25 @@ import android.widget.CheckBox;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import org.sufficientlysecure.keychain.Id;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
-import org.sufficientlysecure.keychain.provider.KeychainContract.UserIds;
+
+import java.util.Date;
 
 
-public class SelectKeyCursorAdapter extends HighlightQueryCursorAdapter {
-
-    protected int mKeyType;
+/**
+ * Yes this class is abstract!
+ */
+abstract public class SelectKeyCursorAdapter extends HighlightQueryCursorAdapter {
 
     private LayoutInflater mInflater;
-    private ListView mListView;
 
-    private int mIndexUserId;
-    private int mIndexMasterKeyId;
-    private int mIndexProjectionValid;
-    private int mIndexProjectionAvailable;
+    protected int mIndexUserId, mIndexMasterKeyId, mIndexRevoked, mIndexExpiry;
 
-    public static final String PROJECTION_ROW_AVAILABLE = "available";
-    public static final String PROJECTION_ROW_VALID = "valid";
-
-    public SelectKeyCursorAdapter(Context context, Cursor c, int flags, ListView listView,
-                                  int keyType) {
+    public SelectKeyCursorAdapter(Context context, Cursor c, int flags, ListView listView) {
         super(context, c, flags);
-
         mInflater = LayoutInflater.from(context);
-        mListView = listView;
-        mKeyType = keyType;
         initIndex(c);
     }
 
@@ -71,12 +61,12 @@ public class SelectKeyCursorAdapter extends HighlightQueryCursorAdapter {
      *
      * @param cursor
      */
-    private void initIndex(Cursor cursor) {
+    protected void initIndex(Cursor cursor) {
         if (cursor != null) {
-            mIndexUserId = cursor.getColumnIndexOrThrow(UserIds.USER_ID);
+            mIndexUserId = cursor.getColumnIndexOrThrow(KeyRings.USER_ID);
             mIndexMasterKeyId = cursor.getColumnIndexOrThrow(KeyRings.MASTER_KEY_ID);
-            mIndexProjectionValid = cursor.getColumnIndexOrThrow(PROJECTION_ROW_VALID);
-            mIndexProjectionAvailable = cursor.getColumnIndexOrThrow(PROJECTION_ROW_AVAILABLE);
+            mIndexExpiry= cursor.getColumnIndexOrThrow(KeyRings.EXPIRY);
+            mIndexRevoked= cursor.getColumnIndexOrThrow(KeyRings.IS_REVOKED);
         }
     }
 
@@ -90,70 +80,73 @@ public class SelectKeyCursorAdapter extends HighlightQueryCursorAdapter {
         return mCursor.getLong(mIndexMasterKeyId);
     }
 
+    public static class ViewHolderItem {
+        public View view;
+        public TextView mainUserId, mainUserIdRest, keyId, status;
+        public CheckBox selected;
+
+        public void setEnabled(boolean enabled) {
+            view.setEnabled(enabled);
+            selected.setEnabled(enabled);
+            mainUserId.setEnabled(enabled);
+            mainUserIdRest.setEnabled(enabled);
+            keyId.setEnabled(enabled);
+            status.setEnabled(enabled);
+
+            // Sorta special: We set an item as clickable to disable it in the ListView. This works
+            // because the list item will handle the clicks itself (which is a nop)
+            view.setClickable(!enabled);
+        }
+    }
+
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
-        TextView mainUserId = (TextView) view.findViewById(R.id.mainUserId);
-        TextView mainUserIdRest = (TextView) view.findViewById(R.id.mainUserIdRest);
-        TextView keyId = (TextView) view.findViewById(R.id.keyId);
-        TextView status = (TextView) view.findViewById(R.id.status);
+        ViewHolderItem h = (ViewHolderItem) view.getTag();
 
         String userId = cursor.getString(mIndexUserId);
         String[] userIdSplit = PgpKeyHelper.splitUserId(userId);
 
         if (userIdSplit[0] != null) {
-            mainUserId.setText(highlightSearchQuery(userIdSplit[0]));
+            h.mainUserId.setText(highlightSearchQuery(userIdSplit[0]));
         } else {
-            mainUserId.setText(R.string.user_id_no_name);
+            h.mainUserId.setText(R.string.user_id_no_name);
         }
         if (userIdSplit[1] != null) {
-            mainUserIdRest.setText(highlightSearchQuery(userIdSplit[1]));
+            h.mainUserIdRest.setText(highlightSearchQuery(userIdSplit[1]));
         } else {
-            mainUserIdRest.setText("");
+            h.mainUserIdRest.setText("");
         }
 
         long masterKeyId = cursor.getLong(mIndexMasterKeyId);
-        keyId.setText(PgpKeyHelper.convertKeyIdToHexShort(masterKeyId));
+        h.keyId.setText(PgpKeyHelper.convertKeyIdToHexShort(masterKeyId));
 
-        boolean valid = cursor.getInt(mIndexProjectionValid) > 0;
-        if (valid) {
-            if (mKeyType == Id.type.public_key) {
-                status.setText(R.string.can_encrypt);
-            } else {
-                status.setText(R.string.can_sign);
-            }
+        boolean enabled = true;
+        if(cursor.getInt(mIndexRevoked) != 0) {
+            h.status.setText(R.string.revoked);
+            enabled = false;
+        } else if (!cursor.isNull(mIndexExpiry)
+                && new Date(cursor.getLong(mIndexExpiry) * 1000).before(new Date())) {
+            h.status.setText(R.string.expired);
+            enabled = false;
         } else {
-            if (cursor.getInt(mIndexProjectionAvailable) > 0) {
-                // has some CAN_ENCRYPT keys, but col(ROW_VALID) = 0, so must be revoked or
-                // expired
-                status.setText(R.string.expired);
-            } else {
-                status.setText(R.string.no_key);
-            }
+            h.status.setText("");
         }
 
-        CheckBox selected = (CheckBox) view.findViewById(R.id.selected);
-        if (mKeyType == Id.type.public_key) {
-            selected.setVisibility(View.VISIBLE);
+        h.status.setTag(enabled);
 
-            if (!valid) {
-                mListView.setItemChecked(cursor.getPosition(), false);
-            }
-
-            selected.setChecked(mListView.isItemChecked(cursor.getPosition()));
-            selected.setEnabled(valid);
-        } else {
-            selected.setVisibility(View.GONE);
-        }
-
-        view.setEnabled(valid);
-        mainUserId.setEnabled(valid);
-        mainUserIdRest.setEnabled(valid);
-        keyId.setEnabled(valid);
-        status.setEnabled(valid);
     }
 
     @Override
     public View newView(Context context, Cursor cursor, ViewGroup parent) {
-        return mInflater.inflate(R.layout.select_key_item, null);
+        View view = mInflater.inflate(R.layout.select_key_item, null);
+        ViewHolderItem holder = new ViewHolderItem();
+        holder.view = view;
+        holder.mainUserId = (TextView) view.findViewById(R.id.mainUserId);
+        holder.mainUserIdRest = (TextView) view.findViewById(R.id.mainUserIdRest);
+        holder.keyId = (TextView) view.findViewById(R.id.keyId);
+        holder.status = (TextView) view.findViewById(R.id.status);
+        holder.selected = (CheckBox) view.findViewById(R.id.selected);
+        view.setTag(holder);
+        return view;
     }
 }
