@@ -315,12 +315,7 @@ public class KeyListFragment extends Fragment
      */
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-        Intent viewIntent = null;
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
-            viewIntent = new Intent(getActivity(), ViewKeyActivity.class);
-        } else {
-            viewIntent = new Intent(getActivity(), ViewKeyActivityJB.class);
-        }
+        Intent viewIntent = new Intent(getActivity(), ViewKeyActivity.class);
         viewIntent.setData(
                 KeyRings.buildGenericKeyRingUri(Long.toString(mAdapter.getMasterKeyId(position))));
         startActivity(viewIntent);

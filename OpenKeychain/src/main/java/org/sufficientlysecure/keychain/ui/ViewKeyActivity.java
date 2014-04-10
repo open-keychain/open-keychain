@@ -18,9 +18,16 @@
 
 package org.sufficientlysecure.keychain.ui;
 
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
+import android.nfc.NdefMessage;
+import android.nfc.NdefRecord;
+import android.nfc.NfcAdapter;
+import android.nfc.NfcEvent;
+import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -31,6 +38,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.Window;
 import android.widget.Toast;
+
+import com.devspark.appmsg.AppMsg;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.Id;
@@ -45,6 +54,7 @@ import org.sufficientlysecure.keychain.ui.dialog.ShareNfcDialogFragment;
 import org.sufficientlysecure.keychain.ui.dialog.ShareQrCodeDialogFragment;
 import org.sufficientlysecure.keychain.util.Log;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -60,6 +70,13 @@ public class ViewKeyActivity extends ActionBarActivity {
     TabsAdapter mTabsAdapter;
 
     private static final int RESULT_CODE_LOOKUP_KEY = 0x00007006;
+
+    // NFC
+    private NfcAdapter mNfcAdapter;
+    private NfcAdapter.CreateNdefMessageCallback mNdefCallback;
+    private NfcAdapter.OnNdefPushCompleteCallback mNdefCompleteCallback;
+    private byte[] mNfcKeyringBytes;
+    private static final int NFC_SENT = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,6 +105,8 @@ public class ViewKeyActivity extends ActionBarActivity {
         }
 
         mDataUri = getIntent().getData();
+
+        initNfc(mDataUri);
 
         Bundle mainBundle = new Bundle();
         mainBundle.putParcelable(ViewKeyMainFragment.ARG_DATA_URI, mDataUri);
@@ -289,4 +308,94 @@ public class ViewKeyActivity extends ActionBarActivity {
             }
         }
     }
+
+    /**
+     * NFC: Initialize NFC sharing if OS and device supports it
+     */
+    @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
+    private void initNfc(final Uri dataUri) {
+        // check if NFC Beam is supported (>= Android 4.1)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+
+            // Implementation for the CreateNdefMessageCallback interface
+            mNdefCallback = new NfcAdapter.CreateNdefMessageCallback() {
+                @Override
+                public NdefMessage createNdefMessage(NfcEvent event) {
+                    /*
+                     * When a device receives a push with an AAR in it, the application specified in the AAR is
+                     * guaranteed to run. The AAR overrides the tag dispatch system. You can add it back in to
+                     * guarantee that this activity starts when receiving a beamed message. For now, this code
+                     * uses the tag dispatch system.
+                     */
+                    NdefMessage msg = new NdefMessage(NdefRecord.createMime(Constants.NFC_MIME,
+                            mNfcKeyringBytes), NdefRecord.createApplicationRecord(Constants.PACKAGE_NAME));
+                    return msg;
+                }
+            };
+
+            // Implementation for the OnNdefPushCompleteCallback interface
+            mNdefCompleteCallback = new NfcAdapter.OnNdefPushCompleteCallback() {
+                @Override
+                public void onNdefPushComplete(NfcEvent event) {
+                    // A handler is needed to send messages to the activity when this
+                    // callback occurs, because it happens from a binder thread
+                    mNfcHandler.obtainMessage(NFC_SENT).sendToTarget();
+                }
+            };
+
+            // Check for available NFC Adapter
+            mNfcAdapter = NfcAdapter.getDefaultAdapter(this);
+            if (mNfcAdapter != null) {
+                /*
+                 * Retrieve mNfcKeyringBytes here asynchronously (to not block the UI)
+                 * and init nfc adapter afterwards.
+                 * mNfcKeyringBytes can not be retrieved in createNdefMessage, because this process
+                 * has no permissions to query the Uri.
+                 */
+                AsyncTask<NfcAdapter, Void, Void> initTask =
+                        new AsyncTask<NfcAdapter, Void, Void>() {
+                            protected Void doInBackground(NfcAdapter... adapter) {
+                                try {
+                                    Uri blobUri =
+                                            KeychainContract.KeyRingData.buildPublicKeyRingUri(dataUri);
+                                    mNfcKeyringBytes = ProviderHelper.getPGPKeyRing(
+                                            ViewKeyActivity.this, blobUri).getEncoded();
+                                } catch (IOException e) {
+                                    Log.e(Constants.TAG, "Error parsing keyring", e);
+                                } catch (ProviderHelper.NotFoundException e) {
+                                    Log.e(Constants.TAG, "key not found!", e);
+                                }
+                                return null;
+                            }
+
+                            protected void onPostExecute(Void result) {
+                                // Register callback to set NDEF message
+                                mNfcAdapter.setNdefPushMessageCallback(mNdefCallback
+                                        , ViewKeyActivity.this);
+                                // Register callback to listen for message-sent success
+                                mNfcAdapter.setOnNdefPushCompleteCallback(mNdefCompleteCallback,
+                                        ViewKeyActivity.this);
+                            }
+                        };
+
+                initTask.execute();
+            }
+        }
+    }
+
+    /**
+     * NFC: This handler receives a message from onNdefPushComplete
+     */
+    private final Handler mNfcHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what) {
+                case NFC_SENT:
+                    AppMsg.makeText(ViewKeyActivity.this, R.string.nfc_successfull,
+                            AppMsg.STYLE_INFO).show();
+                    break;
+            }
+        }
+    };
+
 }

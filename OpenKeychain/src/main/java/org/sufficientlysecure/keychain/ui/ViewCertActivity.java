@@ -228,12 +228,7 @@ public class ViewCertActivity extends ActionBarActivity
         switch (item.getItemId()) {
             case R.id.menu_view_cert_view_signer:
                 // can't do this before the data is initialized
-                Intent viewIntent = null;
-                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
-                    viewIntent = new Intent(this, ViewKeyActivity.class);
-                } else {
-                    viewIntent = new Intent(this, ViewKeyActivityJB.class);
-                }
+                Intent viewIntent = new Intent(this, ViewKeyActivity.class);
 
                 try {
                     long signerMasterKeyId = ProviderHelper.getMasterKeyId(this,
