@@ -191,4 +191,24 @@ public class ViewKeyUserIdsAdapter extends CursorAdapter implements AdapterView.
         return view;
     }
 
+    // Disable selection of items for lists without checkboxes, http://stackoverflow.com/a/4075045
+    @Override
+    public boolean areAllItemsEnabled() {
+        if (mCheckStates == null) {
+            return false;
+        } else {
+            return super.areAllItemsEnabled();
+        }
+    }
+
+    // Disable selection of items for lists without checkboxes, http://stackoverflow.com/a/4075045
+    @Override
+    public boolean isEnabled(int position) {
+        if (mCheckStates == null) {
+            return false;
+        } else {
+            return super.isEnabled(position);
+        }
+    }
+
 }

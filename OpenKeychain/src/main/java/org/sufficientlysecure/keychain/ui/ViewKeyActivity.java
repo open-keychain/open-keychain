@@ -371,8 +371,8 @@ public class ViewKeyActivity extends ActionBarActivity {
 
                             protected void onPostExecute(Void unused) {
                                 // Register callback to set NDEF message
-                                mNfcAdapter.setNdefPushMessageCallback(mNdefCallback
-                                        , ViewKeyActivity.this);
+                                mNfcAdapter.setNdefPushMessageCallback(mNdefCallback,
+                                        ViewKeyActivity.this);
                                 // Register callback to listen for message-sent success
                                 mNfcAdapter.setOnNdefPushCompleteCallback(mNdefCompleteCallback,
                                         ViewKeyActivity.this);

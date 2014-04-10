@@ -27,6 +27,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.helper.OtherHelper;
 import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
@@ -170,6 +171,18 @@ public class ViewKeyKeysAdapter extends CursorAdapter {
             mDefaultTextColor = keyId.getTextColors();
         }
         return view;
+    }
+
+    // Disable selection of items, http://stackoverflow.com/a/4075045
+    @Override
+    public boolean areAllItemsEnabled() {
+        return false;
+    }
+
+    // Disable selection of items, http://stackoverflow.com/a/4075045
+    @Override
+    public boolean isEnabled(int position) {
+        return false;
     }
 
 }
