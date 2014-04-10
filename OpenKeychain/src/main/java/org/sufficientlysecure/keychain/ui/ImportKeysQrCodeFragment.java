@@ -29,9 +29,9 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.beardedhen.androidbootstrap.BootstrapButton;
+import com.devspark.appmsg.AppMsg;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
@@ -123,7 +123,7 @@ public class ImportKeysQrCodeFragment extends Fragment {
                     }
 
                     // fail...
-                    Toast.makeText(getActivity(), R.string.import_qr_code_wrong, Toast.LENGTH_LONG)
+                    AppMsg.makeText(getActivity(), R.string.import_qr_code_wrong, AppMsg.STYLE_ALERT)
                             .show();
                 }
 
@@ -159,7 +159,7 @@ public class ImportKeysQrCodeFragment extends Fragment {
         }
 
         if (mScannedContent == null || counter > mScannedContent.length) {
-            Toast.makeText(getActivity(), R.string.import_qr_code_start_with_one, Toast.LENGTH_LONG)
+            AppMsg.makeText(getActivity(), R.string.import_qr_code_start_with_one, AppMsg.STYLE_ALERT)
                     .show();
             return;
         }
