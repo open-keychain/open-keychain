@@ -230,7 +230,7 @@ public class ViewKeyActivity extends ActionBarActivity {
                 // see http://www.lonestarprod.com/?p=34
                 if (content.length() >= 86389) {
                     AppMsg.makeText(this, R.string.key_too_big_for_sharing,
-                        AppMsg.STYLE_ALERT).show();
+                            AppMsg.STYLE_ALERT).show();
                     return;
                 }
             } catch (ProviderHelper.NotFoundException e) {
@@ -266,7 +266,7 @@ public class ViewKeyActivity extends ActionBarActivity {
 
             ClipboardReflection.copyToClipboard(this, keyringArmored.get(0));
             AppMsg.makeText(this, R.string.key_copied_to_clipboard, AppMsg.STYLE_INFO)
-                .show();
+                    .show();
         } catch (ProviderHelper.NotFoundException e) {
             Log.e(Constants.TAG, "key not found!", e);
         }
@@ -351,9 +351,9 @@ public class ViewKeyActivity extends ActionBarActivity {
                  * mNfcKeyringBytes can not be retrieved in createNdefMessage, because this process
                  * has no permissions to query the Uri.
                  */
-                AsyncTask<NfcAdapter, Void, Void> initTask =
-                        new AsyncTask<NfcAdapter, Void, Void>() {
-                            protected Void doInBackground(NfcAdapter... adapter) {
+                AsyncTask<Void, Void, Void> initTask =
+                        new AsyncTask<Void, Void, Void>() {
+                            protected Void doInBackground(Void... unused) {
                                 try {
                                     Uri blobUri =
                                             KeychainContract.KeyRingData.buildPublicKeyRingUri(dataUri);
@@ -364,10 +364,12 @@ public class ViewKeyActivity extends ActionBarActivity {
                                 } catch (ProviderHelper.NotFoundException e) {
                                     Log.e(Constants.TAG, "key not found!", e);
                                 }
+
+                                // no AsyncTask return (Void)
                                 return null;
                             }
 
-                            protected void onPostExecute(Void result) {
+                            protected void onPostExecute(Void unused) {
                                 // Register callback to set NDEF message
                                 mNfcAdapter.setNdefPushMessageCallback(mNdefCallback
                                         , ViewKeyActivity.this);
