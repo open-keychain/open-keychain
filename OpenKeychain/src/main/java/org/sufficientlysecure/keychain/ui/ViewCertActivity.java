@@ -20,7 +20,6 @@ package org.sufficientlysecure.keychain.ui;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
@@ -157,21 +156,21 @@ public class ViewCertActivity extends ActionBarActivity
                     sig.init(new JcaPGPContentVerifierBuilderProvider().setProvider(
                             Constants.BOUNCY_CASTLE_PROVIDER_NAME), signerRing.getPublicKey());
                     if (sig.verifyCertification(signeeUid, signeeRing.getPublicKey())) {
-                        mStatus.setText("ok");
+                        mStatus.setText(R.string.cert_verify_ok);
                         mStatus.setTextColor(getResources().getColor(R.color.bbutton_success));
                     } else {
-                        mStatus.setText("failed!");
+                        mStatus.setText(R.string.cert_verify_failed);
                         mStatus.setTextColor(getResources().getColor(R.color.alert));
                     }
                 } catch (SignatureException e) {
-                    mStatus.setText("error!");
+                    mStatus.setText(R.string.cert_verify_error);
                     mStatus.setTextColor(getResources().getColor(R.color.alert));
                 } catch (PGPException e) {
-                    mStatus.setText("error!");
+                    mStatus.setText(R.string.cert_verify_error);
                     mStatus.setTextColor(getResources().getColor(R.color.alert));
                 }
             } catch (ProviderHelper.NotFoundException e) {
-                mStatus.setText("key unavailable");
+                mStatus.setText(R.string.cert_verify_unavailable);
                 mStatus.setTextColor(getResources().getColor(R.color.black));
             }
 

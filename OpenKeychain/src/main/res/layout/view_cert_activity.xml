@@ -1,5 +1,4 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:bootstrapbutton="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -24,12 +23,12 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Verification Status" />
+                android:text="@string/label_verify_status" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="ok"
+                android:text="@string/cert_verify_ok"
                 android:id="@+id/status"
                 android:layout_marginLeft="30dp" />
         </LinearLayout>
@@ -108,7 +107,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="top"
                     android:paddingRight="10dip"
-                    android:text="Type" />
+                    android:text="@string/label_cert_type" />
 
                 <TextView
                     android:id="@+id/signature_type"
@@ -127,7 +126,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="top"
                     android:paddingRight="10dip"
-                    android:text="Revocation Reason" />
+                    android:text="@string/label_revocation" />
 
                 <TextView
                     android:id="@+id/reason"
@@ -143,7 +142,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="top"
                     android:paddingRight="10dip"
-                    android:text="Creation" />
+                    android:text="@string/label_creation" />
 
                 <TextView
                     android:id="@+id/creation"
@@ -182,7 +181,6 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:paddingRight="5dip"
-                    android:text=""
                     android:typeface="monospace" />
             </TableRow>
 
@@ -200,8 +198,7 @@
                     android:id="@+id/signer_uid"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:paddingRight="5dip"
-                    android:text="" />
+                    android:paddingRight="5dip"/>
             </TableRow>
 
         </TableLayout>

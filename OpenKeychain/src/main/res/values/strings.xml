@@ -515,5 +515,13 @@
     <string name="cert_positive">positive</string>
     <string name="cert_revoke">revoke</string>
     <string name="never">never</string>
+    <string name="help_tab_wot">Web of Trust</string>
+    <string name="cert_verify_ok">ok</string>
+    <string name="cert_verify_failed">failed!</string>
+    <string name="cert_verify_error">error!</string>
+    <string name="cert_verify_unavailable">key unavailable</string>
+    <string name="label_revocation">Revocation Reason</string>
+    <string name="label_verify_status">Verification Status</string>
+    <string name="label_cert_type">Type</string>
 
 </resources>
