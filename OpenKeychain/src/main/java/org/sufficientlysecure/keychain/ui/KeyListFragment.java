@@ -464,6 +464,31 @@ public class KeyListFragment extends Fragment
             return super.swapCursor(newCursor);
         }
 
+        private class ItemViewHolder {
+            TextView mMainUserId;
+            TextView mMainUserIdRest;
+            View mStatusDivider;
+            FrameLayout mStatusLayout;
+            Button mButton;
+            TextView mRevoked;
+            ImageView mVerified;
+        }
+
+        @Override
+        public View newView(Context context, Cursor cursor, ViewGroup parent) {
+            View view = mInflater.inflate(R.layout.key_list_item, parent, false);
+            ItemViewHolder holder = new ItemViewHolder();
+            holder.mMainUserId = (TextView) view.findViewById(R.id.mainUserId);
+            holder.mMainUserIdRest = (TextView) view.findViewById(R.id.mainUserIdRest);
+            holder.mStatusDivider = (View) view.findViewById(R.id.status_divider);
+            holder.mStatusLayout = (FrameLayout) view.findViewById(R.id.status_layout);
+            holder.mButton = (Button) view.findViewById(R.id.edit);
+            holder.mRevoked = (TextView) view.findViewById(R.id.revoked);
+            holder.mVerified = (ImageView) view.findViewById(R.id.verified);
+            view.setTag(holder);
+            return view;
+        }
+
         /**
          * Bind cursor data to the item list view
          * <p/>
@@ -472,43 +497,36 @@ public class KeyListFragment extends Fragment
          */
         @Override
         public void bindView(View view, Context context, Cursor cursor) {
+            ItemViewHolder h = (ItemViewHolder) view.getTag();
 
             { // set name and stuff, common to both key types
-                TextView mainUserId = (TextView) view.findViewById(R.id.mainUserId);
-                TextView mainUserIdRest = (TextView) view.findViewById(R.id.mainUserIdRest);
-
                 String userId = cursor.getString(INDEX_USER_ID);
                 String[] userIdSplit = PgpKeyHelper.splitUserId(userId);
                 if (userIdSplit[0] != null) {
-                    mainUserId.setText(highlightSearchQuery(userIdSplit[0]));
+                    h.mMainUserId.setText(highlightSearchQuery(userIdSplit[0]));
                 } else {
-                    mainUserId.setText(R.string.user_id_no_name);
+                    h.mMainUserId.setText(R.string.user_id_no_name);
                 }
                 if (userIdSplit[1] != null) {
-                    mainUserIdRest.setText(highlightSearchQuery(userIdSplit[1]));
-                    mainUserIdRest.setVisibility(View.VISIBLE);
+                    h.mMainUserIdRest.setText(highlightSearchQuery(userIdSplit[1]));
+                    h.mMainUserIdRest.setVisibility(View.VISIBLE);
                 } else {
-                    mainUserIdRest.setVisibility(View.GONE);
+                    h.mMainUserIdRest.setVisibility(View.GONE);
                 }
             }
 
             { // set edit button and revoked info, specific by key type
-                View statusDivider = (View) view.findViewById(R.id.status_divider);
-                FrameLayout statusLayout = (FrameLayout) view.findViewById(R.id.status_layout);
-                Button button = (Button) view.findViewById(R.id.edit);
-                TextView revoked = (TextView) view.findViewById(R.id.revoked);
-                ImageView verified = (ImageView) view.findViewById(R.id.verified);
 
                 if (cursor.getInt(KeyListFragment.INDEX_HAS_SECRET) != 0) {
-                    // this is a secret key - show the edit button
-                    statusDivider.setVisibility(View.VISIBLE);
-                    statusLayout.setVisibility(View.VISIBLE);
-                    revoked.setVisibility(View.GONE);
-                    verified.setVisibility(View.GONE);
-                    button.setVisibility(View.VISIBLE);
+                    // this is a secret key - show the edit mButton
+                    h.mStatusDivider.setVisibility(View.VISIBLE);
+                    h.mStatusLayout.setVisibility(View.VISIBLE);
+                    h.mRevoked.setVisibility(View.GONE);
+                    h.mVerified.setVisibility(View.GONE);
+                    h.mButton.setVisibility(View.VISIBLE);
 
                     final long id = cursor.getLong(INDEX_MASTER_KEY_ID);
-                    button.setOnClickListener(new OnClickListener() {
+                    h.mButton.setOnClickListener(new OnClickListener() {
                         public void onClick(View view) {
                             Intent editIntent = new Intent(getActivity(), EditKeyActivity.class);
                             editIntent.setData(KeyRingData.buildSecretKeyRingUri(Long.toString(id)));
@@ -517,23 +535,23 @@ public class KeyListFragment extends Fragment
                         }
                     });
                 } else {
-                    // this is a public key - hide the edit button, show if it's revoked
-                    statusDivider.setVisibility(View.GONE);
-                    button.setVisibility(View.GONE);
+                    // this is a public key - hide the edit mButton, show if it's revoked
+                    h.mStatusDivider.setVisibility(View.GONE);
+                    h.mButton.setVisibility(View.GONE);
 
                     boolean isRevoked = cursor.getInt(INDEX_IS_REVOKED) > 0;
                     boolean isExpired = !cursor.isNull(INDEX_EXPIRY)
                             && new Date(cursor.getLong(INDEX_EXPIRY)*1000).before(new Date());
                     if(isRevoked || isExpired) {
-                        statusLayout.setVisibility(View.VISIBLE);
-                        revoked.setVisibility(View.VISIBLE);
-                        verified.setVisibility(View.GONE);
-                        revoked.setText(isRevoked ? R.string.revoked : R.string.expired);
+                        h.mStatusLayout.setVisibility(View.VISIBLE);
+                        h.mRevoked.setVisibility(View.VISIBLE);
+                        h.mVerified.setVisibility(View.GONE);
+                        h.mRevoked.setText(isRevoked ? R.string.revoked : R.string.expired);
                     } else {
                         boolean isVerified = cursor.getInt(INDEX_VERIFIED) > 0;
-                        statusLayout.setVisibility(isVerified ? View.VISIBLE : View.GONE);
-                        revoked.setVisibility(View.GONE);
-                        verified.setVisibility(isVerified ? View.VISIBLE : View.GONE);
+                        h.mStatusLayout.setVisibility(isVerified ? View.VISIBLE : View.GONE);
+                        h.mRevoked.setVisibility(View.GONE);
+                        h.mVerified.setVisibility(isVerified ? View.VISIBLE : View.GONE);
                     }
                 }
             }
@@ -553,11 +571,6 @@ public class KeyListFragment extends Fragment
             }
 
             return mCursor.getLong(INDEX_MASTER_KEY_ID);
-        }
-
-        @Override
-        public View newView(Context context, Cursor cursor, ViewGroup parent) {
-            return mInflater.inflate(R.layout.key_list_item, parent, false);
         }
 
         /**
@@ -641,7 +654,7 @@ public class KeyListFragment extends Fragment
             }
         }
 
-        class HeaderViewHolder {
+        private class HeaderViewHolder {
             TextView mText;
             TextView mCount;
         }
