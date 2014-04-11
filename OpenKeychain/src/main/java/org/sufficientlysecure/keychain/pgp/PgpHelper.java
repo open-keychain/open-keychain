@@ -48,8 +48,8 @@ public class PgpHelper {
 
     public static final Pattern PGP_CLEARTEXT_SIGNATURE = Pattern
             .compile(".*?(-----BEGIN PGP SIGNED MESSAGE-----.*?-----" +
-                     "BEGIN PGP SIGNATURE-----.*?-----END PGP SIGNATURE-----).*",
-                     Pattern.DOTALL);
+                    "BEGIN PGP SIGNATURE-----.*?-----END PGP SIGNATURE-----).*",
+                    Pattern.DOTALL);
 
     public static final Pattern PGP_PUBLIC_KEY = Pattern.compile(
             ".*?(-----BEGIN PGP PUBLIC KEY BLOCK-----.*?-----END PGP PUBLIC KEY BLOCK-----).*",
@@ -71,21 +71,28 @@ public class PgpHelper {
         return "OpenPGP Keychain v" + getVersion(context);
     }
 
-    public static int getStreamContent(Context context, InputStream inStream) throws IOException {
-        InputStream in = PGPUtil.getDecoderStream(inStream);
-        PGPObjectFactory pgpF = new PGPObjectFactory(in);
-        Object object = pgpF.nextObject();
-        while (object != null) {
-            if (object instanceof PGPPublicKeyRing || object instanceof PGPSecretKeyRing) {
-                return Id.content.keys;
-            } else if (object instanceof PGPEncryptedDataList) {
-                return Id.content.encrypted_data;
-            }
-            object = pgpF.nextObject();
-        }
-
-        return Id.content.unknown;
-    }
+//    public static final class content {
+//        public static final int unknown = 0;
+//        public static final int encrypted_data = 1;
+//        public static final int keys = 2;
+//    }
+//
+//    public static int getStreamContent(Context context, InputStream inStream) throws IOException {
+//
+//        InputStream in = PGPUtil.getDecoderStream(inStream);
+//        PGPObjectFactory pgpF = new PGPObjectFactory(in);
+//        Object object = pgpF.nextObject();
+//        while (object != null) {
+//            if (object instanceof PGPPublicKeyRing || object instanceof PGPSecretKeyRing) {
+//                return Id.content.keys;
+//            } else if (object instanceof PGPEncryptedDataList) {
+//                return Id.content.encrypted_data;
+//            }
+//            object = pgpF.nextObject();
+//        }
+//
+//        return Id.content.unknown;
+//    }
 
     /**
      * Generate a random filename

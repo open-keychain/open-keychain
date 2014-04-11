@@ -24,7 +24,9 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
 import com.beardedhen.androidbootstrap.BootstrapButton;
+
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.Id;
 import org.sufficientlysecure.keychain.R;
@@ -79,7 +81,7 @@ public class ImportKeysFileFragment extends Fragment {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        switch (requestCode & 0xFFFF) {
+        switch (requestCode) {
             case REQUEST_CODE_FILE: {
                 if (resultCode == Activity.RESULT_OK && data != null) {
 

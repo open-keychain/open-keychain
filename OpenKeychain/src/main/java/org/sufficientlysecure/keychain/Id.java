@@ -20,11 +20,9 @@ package org.sufficientlysecure.keychain;
 import org.spongycastle.bcpg.CompressionAlgorithmTags;
 
 /**
- *
  * TODO:
- *
+ * <p/>
  * - refactor ids, some are not needed and can be done with xml
- *
  */
 public final class Id {
 
@@ -34,7 +32,6 @@ public final class Id {
         public static final int secret_key = 0x21070002;
         public static final int user_id = 0x21070003;
         public static final int key = 0x21070004;
-        public static final int public_secret_key = 0x21070005;
     }
 
     public static final class choice {
@@ -50,19 +47,6 @@ public final class Id {
             public static final int bzip2 = CompressionAlgorithmTags.BZIP2;
             public static final int zip = CompressionAlgorithmTags.ZIP;
         }
-
-        public static final class usage {
-            public static final int sign_only = 0x21070001;
-            public static final int encrypt_only = 0x21070002;
-            public static final int sign_and_encrypt = 0x21070003;
-        }
-
-        public static final class action {
-            public static final int encrypt = 0x21070001;
-            public static final int decrypt = 0x21070002;
-            public static final int import_public = 0x21070003;
-            public static final int import_secret = 0x21070004;
-        }
     }
 
     public static final class return_value {
@@ -73,34 +57,9 @@ public final class Id {
         public static final int bad = -3;
     }
 
-    public static final class target {
-        public static final int clipboard = 0x21070001;
-        public static final int email = 0x21070002;
-        public static final int file = 0x21070003;
-        public static final int message = 0x21070004;
-    }
-
-    public static final class mode {
-        public static final int undefined = 0x21070001;
-        public static final int byte_array = 0x21070002;
-        public static final int file = 0x21070003;
-        public static final int stream = 0x21070004;
-    }
-
     public static final class key {
         public static final int none = 0;
         public static final int symmetric = -1;
     }
 
-    public static final class content {
-        public static final int unknown = 0;
-        public static final int encrypted_data = 1;
-        public static final int keys = 2;
-    }
-
-    public static final class keyserver {
-        public static final int search = 0x21070001;
-        public static final int get = 0x21070002;
-        public static final int add = 0x21070003;
-    }
 }
