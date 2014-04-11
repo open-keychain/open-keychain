@@ -276,14 +276,6 @@ public class PgpSignEncrypt {
             mEncryptionMasterKeyIds[mEncryptionMasterKeyIds.length - 1] = mSignatureMasterKeyId;
         }
 
-        int signatureType;
-        if (mEnableAsciiArmorOutput && enableSignature && !enableEncryption && !enableCompression) {
-            // for sign-only ascii text
-            signatureType = PGPSignature.CANONICAL_TEXT_DOCUMENT;
-        } else {
-            signatureType = PGPSignature.BINARY_DOCUMENT;
-        }
-
         ArmoredOutputStream armorOut = null;
         OutputStream out;
         if (mEnableAsciiArmorOutput) {
@@ -376,6 +368,14 @@ public class PgpSignEncrypt {
             JcaPGPContentSignerBuilder contentSignerBuilder = new JcaPGPContentSignerBuilder(
                     signingKey.getPublicKey().getAlgorithm(), mSignatureHashAlgorithm)
                     .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME);
+
+            int signatureType;
+            if (mEnableAsciiArmorOutput && !enableEncryption) {
+                // for sign-only ascii text and sign-only binary input (files)
+                signatureType = PGPSignature.CANONICAL_TEXT_DOCUMENT;
+            } else {
+                signatureType = PGPSignature.BINARY_DOCUMENT;
+            }
 
             if (mSignatureForceV3) {
                 signatureV3Generator = new PGPV3SignatureGenerator(contentSignerBuilder);
