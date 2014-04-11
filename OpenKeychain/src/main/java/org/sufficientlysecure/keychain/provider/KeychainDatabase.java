@@ -182,10 +182,6 @@ public class KeychainDatabase extends SQLiteOpenHelper {
         if (!db.isReadOnly()) {
             // Enable foreign key constraints
             db.execSQL("PRAGMA foreign_keys=ON;");
-            // TODO remove, once we remove the "always migrate" debug stuff
-            // db.execSQL("DROP TABLE user_ids;");
-            db.execSQL(CREATE_USER_IDS);
-            db.execSQL(CREATE_CERTS);
         }
     }
 
@@ -208,12 +204,13 @@ public class KeychainDatabase extends SQLiteOpenHelper {
             for(String db : dbs) {
                 if(db.equals("apg.db")) {
                     hasApgDb = true;
-                    break;
+                } else if(db.equals("apg_old.db")) {
+                    Log.d(Constants.TAG, "Found apg_old.db");
                 }
             }
         }
 
-        if(!hasApgDb || true)
+        if(!hasApgDb)
             return;
 
         Log.d(Constants.TAG, "apg.db exists! Importing...");
@@ -286,9 +283,12 @@ public class KeychainDatabase extends SQLiteOpenHelper {
                 }
             }
 
+            // Move to a different file (but don't delete, just to be safe)
+            Log.d(Constants.TAG, "All done - moving apg.db to apg_old.db");
+            context.getDatabasePath("apg.db").renameTo(context.getDatabasePath("apg_old.db"));
+
         } catch(IOException e) {
-            Log.e(Constants.TAG, "Error importing apg db!", e);
-            return;
+            Log.e(Constants.TAG, "Error importing apg.db!", e);
         } finally {
             if(c != null) {
                 c.close();
@@ -297,10 +297,6 @@ public class KeychainDatabase extends SQLiteOpenHelper {
                 db.close();
             }
         }
-
-        // TODO delete old db, if we are sure this works
-        // context.deleteDatabase("apg.db");
-        Log.d(Constants.TAG, "All done, (not) deleting apg.db");
 
     }
 
