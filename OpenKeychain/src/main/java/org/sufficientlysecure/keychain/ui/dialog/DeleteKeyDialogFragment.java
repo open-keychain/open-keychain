@@ -102,7 +102,7 @@ public class DeleteKeyDialogFragment extends DialogFragment {
 
             long masterKeyId = masterKeyIds[0];
 
-            HashMap<String, Object> data = ProviderHelper.getUnifiedData(activity, masterKeyId, new String[]{
+            HashMap<String, Object> data = new ProviderHelper(activity).getUnifiedData(masterKeyId, new String[]{
                     KeyRings.USER_ID,
                     KeyRings.HAS_SECRET
             }, new int[] { ProviderHelper.FIELD_TYPE_STRING, ProviderHelper.FIELD_TYPE_INTEGER });

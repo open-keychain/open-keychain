@@ -145,10 +145,11 @@ public class ViewCertActivity extends ActionBarActivity
 
             PGPSignature sig = PgpConversionHelper.BytesToPGPSignature(data.getBlob(INDEX_DATA));
             try {
-                PGPKeyRing signeeRing = ProviderHelper.getPGPKeyRing(this,
+                ProviderHelper providerHelper = new ProviderHelper(this);
+                PGPKeyRing signeeRing = providerHelper.getPGPKeyRing(
                         KeychainContract.KeyRingData.buildPublicKeyRingUri(
                                 Long.toString(data.getLong(INDEX_MASTER_KEY_ID))));
-                PGPKeyRing signerRing = ProviderHelper.getPGPKeyRing(this,
+                PGPKeyRing signerRing = providerHelper.getPGPKeyRing(
                         KeychainContract.KeyRingData.buildPublicKeyRingUri(
                                 Long.toString(sig.getKeyID())));
 
@@ -230,7 +231,8 @@ public class ViewCertActivity extends ActionBarActivity
                 Intent viewIntent = new Intent(this, ViewKeyActivity.class);
 
                 try {
-                    long signerMasterKeyId = ProviderHelper.getMasterKeyId(this,
+                    ProviderHelper providerHelper = new ProviderHelper(this);
+                    long signerMasterKeyId = providerHelper.getMasterKeyId(
                             KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(Long.toString(mSignerKeyId))
                     );
                     viewIntent.setData(KeyRings.buildGenericKeyRingUri(

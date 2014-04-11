@@ -496,20 +496,21 @@ public class KeychainIntentService extends IntentService
                 long masterKeyId = saveParcel.keys.get(0).getKeyID();
 
                 /* Operation */
+                ProviderHelper providerHelper = new ProviderHelper(this);
                 if (!canSign) {
                     PgpKeyOperation keyOperations = new PgpKeyOperation(new ProgressScaler(this, 0, 50, 100));
-                    PGPSecretKeyRing keyRing = ProviderHelper.getPGPSecretKeyRing(this, masterKeyId);
+                    PGPSecretKeyRing keyRing = providerHelper.getPGPSecretKeyRing(masterKeyId);
                     keyRing = keyOperations.changeSecretKeyPassphrase(keyRing,
                             oldPassphrase, newPassphrase);
                     setProgress(R.string.progress_saving_key_ring, 50, 100);
-                    ProviderHelper.saveKeyRing(this, keyRing);
+                    providerHelper.saveKeyRing(keyRing);
                     setProgress(R.string.progress_done, 100, 100);
                 } else {
                     PgpKeyOperation keyOperations = new PgpKeyOperation(new ProgressScaler(this, 0, 90, 100));
                     PgpKeyOperation.Pair<PGPSecretKeyRing, PGPPublicKeyRing> pair;
                     try {
-                        PGPSecretKeyRing privkey = ProviderHelper.getPGPSecretKeyRing(this, masterKeyId);
-                        PGPPublicKeyRing pubkey = ProviderHelper.getPGPPublicKeyRing(this, masterKeyId);
+                        PGPSecretKeyRing privkey = providerHelper.getPGPSecretKeyRing(masterKeyId);
+                        PGPPublicKeyRing pubkey = providerHelper.getPGPPublicKeyRing(masterKeyId);
 
                         pair = keyOperations.buildSecretKey(privkey, pubkey, saveParcel); // edit existing
                     } catch (ProviderHelper.NotFoundException e) {
@@ -518,7 +519,7 @@ public class KeychainIntentService extends IntentService
 
                     setProgress(R.string.progress_saving_key_ring, 90, 100);
                     // save the pair
-                    ProviderHelper.saveKeyRing(this, pair.second, pair.first);
+                    providerHelper.saveKeyRing(pair.second, pair.first);
                     setProgress(R.string.progress_done, 100, 100);
                 }
                 PassphraseCacheService.addCachedPassphrase(this, masterKeyId, newPassphrase);
@@ -707,7 +708,8 @@ public class KeychainIntentService extends IntentService
                 /* Operation */
                 HkpKeyServer server = new HkpKeyServer(keyServer);
 
-                PGPPublicKeyRing keyring = (PGPPublicKeyRing) ProviderHelper.getPGPKeyRing(this, dataUri);
+                ProviderHelper providerHelper = new ProviderHelper(this);
+                PGPPublicKeyRing keyring = (PGPPublicKeyRing) providerHelper.getPGPKeyRing(dataUri);
                 if (keyring != null) {
                     PgpImportExport pgpImportExport = new PgpImportExport(this, null);
 
@@ -808,12 +810,13 @@ public class KeychainIntentService extends IntentService
                     throw new PgpGeneralException("Unable to obtain passphrase");
                 }
 
+                ProviderHelper providerHelper = new ProviderHelper(this);
                 PgpKeyOperation keyOperation = new PgpKeyOperation(new ProgressScaler(this, 0, 100, 100));
-                PGPPublicKeyRing publicRing = ProviderHelper.getPGPPublicKeyRing(this, pubKeyId);
+                PGPPublicKeyRing publicRing = providerHelper.getPGPPublicKeyRing(pubKeyId);
                 PGPPublicKey publicKey = publicRing.getPublicKey(pubKeyId);
                 PGPSecretKeyRing secretKeyRing = null;
                 try {
-                    secretKeyRing = ProviderHelper.getPGPSecretKeyRing(this, masterKeyId);
+                    secretKeyRing = providerHelper.getPGPSecretKeyRing(masterKeyId);
                 } catch (ProviderHelper.NotFoundException e) {
                     Log.e(Constants.TAG, "key not found!", e);
                     // TODO: throw exception here!

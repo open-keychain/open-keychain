@@ -140,7 +140,7 @@ public class PassphraseDialogFragment extends DialogFragment implements OnEditor
             alert.setMessage(R.string.passphrase_for_symmetric_encryption);
         } else {
             try {
-                secretKey = ProviderHelper.getPGPSecretKeyRing(activity, secretKeyId).getSecretKey();
+                secretKey = new ProviderHelper(activity).getPGPSecretKeyRing(secretKeyId).getSecretKey();
             } catch (ProviderHelper.NotFoundException e) {
                 alert.setTitle(R.string.title_key_not_found);
                 alert.setMessage(getString(R.string.key_not_found, secretKeyId));
@@ -196,8 +196,8 @@ public class PassphraseDialogFragment extends DialogFragment implements OnEditor
                                         return;
                                     } else {
                                         try {
-                                            clickSecretKey = PgpKeyHelper.getKeyNum(ProviderHelper
-                                                    .getPGPSecretKeyRingWithKeyId(activity, secretKeyId),
+                                            clickSecretKey = PgpKeyHelper.getKeyNum(new ProviderHelper(activity)
+                                                    .getPGPSecretKeyRingWithKeyId(secretKeyId),
                                                     curKeyIndex);
                                         } catch (ProviderHelper.NotFoundException e) {
                                             Log.e(Constants.TAG, "key not found!", e);

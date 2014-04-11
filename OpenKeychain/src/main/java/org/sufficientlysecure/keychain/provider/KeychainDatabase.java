@@ -250,10 +250,11 @@ public class KeychainDatabase extends SQLiteOpenHelper {
                 c.moveToPosition(i);
                 byte[] data = c.getBlob(0);
                 PGPKeyRing ring = PgpConversionHelper.BytesToPGPKeyRing(data);
+                ProviderHelper providerHelper = new ProviderHelper(context);
                 if(ring instanceof PGPPublicKeyRing)
-                    ProviderHelper.saveKeyRing(context, (PGPPublicKeyRing) ring);
+                    providerHelper.saveKeyRing((PGPPublicKeyRing) ring);
                 else if(ring instanceof PGPSecretKeyRing)
-                    ProviderHelper.saveKeyRing(context, (PGPSecretKeyRing) ring);
+                    providerHelper.saveKeyRing((PGPSecretKeyRing) ring);
                 else {
                     Log.e(Constants.TAG, "Unknown blob data type!");
                 }
@@ -271,10 +272,11 @@ public class KeychainDatabase extends SQLiteOpenHelper {
                 c.moveToPosition(i);
                 byte[] data = c.getBlob(0);
                 PGPKeyRing ring = PgpConversionHelper.BytesToPGPKeyRing(data);
+                ProviderHelper providerHelper = new ProviderHelper(context);
                 if(ring instanceof PGPPublicKeyRing)
-                    ProviderHelper.saveKeyRing(context, (PGPPublicKeyRing) ring);
+                    providerHelper.saveKeyRing((PGPPublicKeyRing) ring);
                 else if(ring instanceof PGPSecretKeyRing)
-                    ProviderHelper.saveKeyRing(context, (PGPSecretKeyRing) ring);
+                    providerHelper.saveKeyRing((PGPSecretKeyRing) ring);
                 else {
                     Log.e(Constants.TAG, "Unknown blob data type!");
                 }

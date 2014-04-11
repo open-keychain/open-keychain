@@ -53,6 +53,8 @@ public class EncryptAsymmetricFragment extends Fragment {
     public static final int RESULT_CODE_PUBLIC_KEYS = 0x00007001;
     public static final int RESULT_CODE_SECRET_KEYS = 0x00007002;
 
+    ProviderHelper mProviderHelper;
+
     OnAsymmetricKeySelection mKeySelectionListener;
 
     // view
@@ -133,8 +135,10 @@ public class EncryptAsymmetricFragment extends Fragment {
         long signatureKeyId = getArguments().getLong(ARG_SIGNATURE_KEY_ID);
         long[] encryptionKeyIds = getArguments().getLongArray(ARG_ENCRYPTION_KEY_IDS);
 
+        mProviderHelper = new ProviderHelper(getActivity());
+
         // preselect keys given by arguments (given by Intent to EncryptActivity)
-        preselectKeys(signatureKeyId, encryptionKeyIds);
+        preselectKeys(signatureKeyId, encryptionKeyIds, mProviderHelper);
     }
 
     /**
@@ -143,11 +147,12 @@ public class EncryptAsymmetricFragment extends Fragment {
      * @param preselectedSignatureKeyId
      * @param preselectedEncryptionKeyIds
      */
-    private void preselectKeys(long preselectedSignatureKeyId, long[] preselectedEncryptionKeyIds) {
+    private void preselectKeys(long preselectedSignatureKeyId, long[] preselectedEncryptionKeyIds,
+                               ProviderHelper providerHelper) {
         if (preselectedSignatureKeyId != 0) {
             // TODO: don't use bouncy castle objects!
             try {
-                PGPSecretKeyRing keyRing = ProviderHelper.getPGPSecretKeyRingWithKeyId(getActivity(),
+                PGPSecretKeyRing keyRing = providerHelper.getPGPSecretKeyRingWithKeyId(
                         preselectedSignatureKeyId);
 
                 PGPSecretKey masterKey = keyRing.getSecretKey();
@@ -167,7 +172,7 @@ public class EncryptAsymmetricFragment extends Fragment {
             for (int i = 0; i < preselectedEncryptionKeyIds.length; ++i) {
                 // TODO One query per selected key?! wtf
                 try {
-                    long id = ProviderHelper.getMasterKeyId(getActivity(),
+                    long id = providerHelper.getMasterKeyId(
                             KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(
                                     Long.toString(preselectedEncryptionKeyIds[i]))
                     );
@@ -201,8 +206,8 @@ public class EncryptAsymmetricFragment extends Fragment {
             mMainUserIdRest.setText("");
         } else {
             // See if we can get a user_id from a unified query
-            String userIdResult = (String) ProviderHelper.getUnifiedData(
-                    getActivity(), mSecretKeyId, KeyRings.USER_ID, ProviderHelper.FIELD_TYPE_STRING);
+            String userIdResult = (String) mProviderHelper.getUnifiedData(
+                    mSecretKeyId, KeyRings.USER_ID, ProviderHelper.FIELD_TYPE_STRING);
             String[] userId = PgpKeyHelper.splitUserId(userIdResult);
             if (userId[0] != null) {
                 mMainUserId.setText(userId[0]);

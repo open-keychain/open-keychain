@@ -103,7 +103,7 @@ public class RemoteServiceActivity extends ActionBarActivity {
                         public void onClick(View v) {
                             // Allow
 
-                            ProviderHelper.insertApiApp(RemoteServiceActivity.this,
+                            new ProviderHelper(RemoteServiceActivity.this).insertApiApp(
                                     mAppSettingsFragment.getAppSettings());
 
                             // give data through for new service call
@@ -146,7 +146,7 @@ public class RemoteServiceActivity extends ActionBarActivity {
                                 mAccSettingsFragment.setErrorOnSelectKeyFragment(
                                         getString(R.string.api_register_error_select_key));
                             } else {
-                                ProviderHelper.insertApiAccount(RemoteServiceActivity.this,
+                                new ProviderHelper(RemoteServiceActivity.this).insertApiAccount(
                                         KeychainContract.ApiAccounts.buildBaseUri(packageName),
                                         mAccSettingsFragment.getAccSettings());
 
@@ -179,19 +179,19 @@ public class RemoteServiceActivity extends ActionBarActivity {
             final Intent resultData = extras.getParcelable(EXTRA_DATA);
 
             PassphraseDialogFragment.show(this, secretKeyId,
-                new Handler() {
-                    @Override
-                    public void handleMessage(Message message) {
-                        if (message.what == PassphraseDialogFragment.MESSAGE_OKAY) {
-                            // return given params again, for calling the service method again
-                            RemoteServiceActivity.this.setResult(RESULT_OK, resultData);
-                        } else {
-                            RemoteServiceActivity.this.setResult(RESULT_CANCELED);
-                        }
+                    new Handler() {
+                        @Override
+                        public void handleMessage(Message message) {
+                            if (message.what == PassphraseDialogFragment.MESSAGE_OKAY) {
+                                // return given params again, for calling the service method again
+                                RemoteServiceActivity.this.setResult(RESULT_OK, resultData);
+                            } else {
+                                RemoteServiceActivity.this.setResult(RESULT_CANCELED);
+                            }
 
-                        RemoteServiceActivity.this.finish();
-                    }
-                });
+                            RemoteServiceActivity.this.finish();
+                        }
+                    });
 
         } else if (ACTION_SELECT_PUB_KEYS.equals(action)) {
             long[] selectedMasterKeyIds = intent.getLongArrayExtra(EXTRA_SELECTED_MASTER_KEY_IDS);

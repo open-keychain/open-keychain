@@ -67,6 +67,7 @@ import java.util.Date;
  */
 public class PgpSignEncrypt {
     private Context mContext;
+    private ProviderHelper mProviderHelper;
     private InputData mData;
     private OutputStream mOutStream;
 
@@ -85,6 +86,7 @@ public class PgpSignEncrypt {
     private PgpSignEncrypt(Builder builder) {
         // private Constructor can only be called from Builder
         this.mContext = builder.mContext;
+        this.mProviderHelper = new ProviderHelper(mContext);
         this.mData = builder.mData;
         this.mOutStream = builder.mOutStream;
 
@@ -252,7 +254,7 @@ public class PgpSignEncrypt {
         PGPPrivateKey signaturePrivateKey = null;
         if (enableSignature) {
             try {
-                signingKeyRing = ProviderHelper.getPGPSecretKeyRingWithKeyId(mContext, mSignatureMasterKeyId);
+                signingKeyRing = mProviderHelper.getPGPSecretKeyRingWithKeyId(mSignatureMasterKeyId);
             } catch (ProviderHelper.NotFoundException e) {
                 throw new PgpGeneralException(mContext.getString(R.string.error_signature_failed));
             }
@@ -300,7 +302,7 @@ public class PgpSignEncrypt {
                 // Asymmetric encryption
                 for (long id : mEncryptionMasterKeyIds) {
                     try {
-                        PGPPublicKeyRing keyRing = ProviderHelper.getPGPPublicKeyRing(mContext, id);
+                        PGPPublicKeyRing keyRing = mProviderHelper.getPGPPublicKeyRing(id);
                         PGPPublicKey key = PgpKeyHelper.getEncryptPublicKey(keyRing);
                         if (key != null) {
                             JcePublicKeyKeyEncryptionMethodGenerator pubKeyEncryptionGenerator =
@@ -491,7 +493,7 @@ public class PgpSignEncrypt {
 
         PGPSecretKeyRing signingKeyRing;
         try {
-            signingKeyRing = ProviderHelper.getPGPSecretKeyRingWithKeyId(mContext, mSignatureMasterKeyId);
+            signingKeyRing = mProviderHelper.getPGPSecretKeyRingWithKeyId(mSignatureMasterKeyId);
         } catch (ProviderHelper.NotFoundException e) {
             throw new PgpGeneralException(mContext.getString(R.string.error_signature_failed));
         }

@@ -39,6 +39,7 @@ import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
+
 import com.beardedhen.androidbootstrap.BootstrapButton;
 import com.devspark.appmsg.AppMsg;
 
@@ -159,7 +160,7 @@ public class CertifyKeyActivity extends ActionBarActivity implements
     static final String USER_IDS_SELECTION = UserIds.IS_REVOKED + " = 0";
 
     static final String[] KEYRING_PROJECTION =
-            new String[] {
+            new String[]{
                     KeyRings._ID,
                     KeyRings.MASTER_KEY_ID,
                     KeyRings.FINGERPRINT,
@@ -171,7 +172,7 @@ public class CertifyKeyActivity extends ActionBarActivity implements
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        switch(id) {
+        switch (id) {
             case LOADER_ID_KEYRING: {
                 Uri uri = KeyRings.buildUnifiedKeyRingUri(mDataUri);
                 return new CursorLoader(this, uri, KEYRING_PROJECTION, null, null, null);
@@ -187,7 +188,7 @@ public class CertifyKeyActivity extends ActionBarActivity implements
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        switch(loader.getId()) {
+        switch (loader.getId()) {
             case LOADER_ID_KEYRING:
                 // the first key here is our master key
                 if (data.moveToFirst()) {
@@ -202,7 +203,7 @@ public class CertifyKeyActivity extends ActionBarActivity implements
                     byte[] fingerprintBlob = data.getBlob(INDEX_FINGERPRINT);
                     String fingerprint = PgpKeyHelper.convertFingerprintToHex(fingerprintBlob);
                     ((TextView) findViewById(R.id.fingerprint))
-                        .setText(PgpKeyHelper.colorizeFingerprint(fingerprint));
+                            .setText(PgpKeyHelper.colorizeFingerprint(fingerprint));
                 }
                 break;
             case LOADER_ID_USER_IDS:
@@ -213,7 +214,7 @@ public class CertifyKeyActivity extends ActionBarActivity implements
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
-        switch(loader.getId()) {
+        switch (loader.getId()) {
             case LOADER_ID_USER_IDS:
                 mUserIdsAdapter.swapCursor(null);
                 break;
@@ -225,7 +226,7 @@ public class CertifyKeyActivity extends ActionBarActivity implements
      */
     private void initiateSigning() {
         try {
-            PGPPublicKeyRing pubring = ProviderHelper.getPGPPublicKeyRing(this, mPubKeyId);
+            PGPPublicKeyRing pubring = new ProviderHelper(this).getPGPPublicKeyRing(mPubKeyId);
 
             // if we have already signed this key, dont bother doing it again
             boolean alreadySigned = false;

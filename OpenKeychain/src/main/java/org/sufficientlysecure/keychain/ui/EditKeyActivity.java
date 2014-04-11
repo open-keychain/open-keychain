@@ -290,7 +290,7 @@ public class EditKeyActivity extends ActionBarActivity implements EditorListener
 
             try {
                 Uri secretUri = KeychainContract.KeyRingData.buildSecretKeyRingUri(mDataUri);
-                mKeyRing = (PGPSecretKeyRing) ProviderHelper.getPGPKeyRing(this, secretUri);
+                mKeyRing = (PGPSecretKeyRing) new ProviderHelper(this).getPGPKeyRing(secretUri);
 
                 PGPSecretKey masterKey = mKeyRing.getSecretKey();
                 mMasterCanSign = PgpKeyHelper.isCertificationKey(mKeyRing.getSecretKey());

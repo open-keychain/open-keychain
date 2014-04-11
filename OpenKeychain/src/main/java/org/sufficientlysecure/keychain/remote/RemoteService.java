@@ -45,6 +45,7 @@ import java.util.Arrays;
  */
 public abstract class RemoteService extends Service {
     Context mContext;
+    ProviderHelper mProviderHelper;
 
     public Context getContext() {
         return mContext;
@@ -148,7 +149,7 @@ public abstract class RemoteService extends Service {
 
         Uri uri = KeychainContract.ApiAccounts.buildByPackageAndAccountUri(currentPkg, accountName);
 
-        AccountSettings settings = ProviderHelper.getApiAccountSettings(this, uri);
+        AccountSettings settings = mProviderHelper.getApiAccountSettings(uri);
 
         return settings; // can be null!
     }
@@ -221,7 +222,7 @@ public abstract class RemoteService extends Service {
     private boolean isPackageAllowed(String packageName) throws WrongPackageSignatureException {
         Log.d(Constants.TAG, "isPackageAllowed packageName: " + packageName);
 
-        ArrayList<String> allowedPkgs = ProviderHelper.getRegisteredApiApps(this);
+        ArrayList<String> allowedPkgs = mProviderHelper.getRegisteredApiApps();
         Log.d(Constants.TAG, "allowed: " + allowedPkgs);
 
         // check if package is allowed to use our service
@@ -236,7 +237,7 @@ public abstract class RemoteService extends Service {
                 throw new WrongPackageSignatureException(e.getMessage());
             }
 
-            byte[] storedSig = ProviderHelper.getApiAppSignature(this, packageName);
+            byte[] storedSig = mProviderHelper.getApiAppSignature(packageName);
             if (Arrays.equals(currentSig, storedSig)) {
                 Log.d(Constants.TAG,
                         "Package signature is correct! (equals signature from database)");
@@ -244,7 +245,7 @@ public abstract class RemoteService extends Service {
             } else {
                 throw new WrongPackageSignatureException(
                         "PACKAGE NOT ALLOWED! Signature wrong! (Signature not " +
-                            "equals signature from database)");
+                                "equals signature from database)");
             }
         }
 
@@ -256,6 +257,7 @@ public abstract class RemoteService extends Service {
     public void onCreate() {
         super.onCreate();
         mContext = this;
+        mProviderHelper = new ProviderHelper(this);
     }
 
 }

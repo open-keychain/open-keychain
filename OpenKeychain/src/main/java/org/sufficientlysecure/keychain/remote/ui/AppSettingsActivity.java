@@ -85,7 +85,7 @@ public class AppSettingsActivity extends ActionBarActivity {
     }
 
     private void loadData(Bundle savedInstanceState, Uri appUri) {
-        AppSettings settings = ProviderHelper.getApiAppSettings(this, appUri);
+        AppSettings settings = new ProviderHelper(this).getApiAppSettings(appUri);
         mSettingsFragment.setAppSettings(settings);
 
         String appName;

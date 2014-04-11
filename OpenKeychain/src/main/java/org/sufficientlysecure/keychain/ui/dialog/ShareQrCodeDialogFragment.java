@@ -41,6 +41,7 @@ import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.QrCodeUtils;
 
 import java.io.IOException;
+import java.security.Provider;
 import java.util.ArrayList;
 
 public class ShareQrCodeDialogFragment extends DialogFragment {
@@ -91,14 +92,15 @@ public class ShareQrCodeDialogFragment extends DialogFragment {
         mImage = (ImageView) view.findViewById(R.id.share_qr_code_dialog_image);
         mText = (TextView) view.findViewById(R.id.share_qr_code_dialog_text);
 
+        ProviderHelper providerHelper = new ProviderHelper(getActivity());
         String content = null;
         if (mFingerprintOnly) {
             alert.setPositiveButton(R.string.btn_okay, null);
 
-            byte[] blob = (byte[]) ProviderHelper.getGenericData(
-                    getActivity(), KeyRings.buildUnifiedKeyRingUri(dataUri),
+            byte[] blob = (byte[]) providerHelper.getGenericData(
+                    KeyRings.buildUnifiedKeyRingUri(dataUri),
                     KeyRings.FINGERPRINT, ProviderHelper.FIELD_TYPE_BLOB);
-            if(blob == null) {
+            if (blob == null) {
                 Log.e(Constants.TAG, "key not found!");
                 AppMsg.makeText(getActivity(), R.string.error_key_not_found, AppMsg.STYLE_ALERT).show();
                 return null;
@@ -113,7 +115,7 @@ public class ShareQrCodeDialogFragment extends DialogFragment {
 
             try {
                 Uri uri = KeychainContract.KeyRingData.buildPublicKeyRingUri(dataUri);
-                content = ProviderHelper.getKeyRingAsArmoredString(getActivity(), uri);
+                content = providerHelper.getKeyRingAsArmoredString(uri);
             } catch (IOException e) {
                 Log.e(Constants.TAG, "error processing key!", e);
                 AppMsg.makeText(getActivity(), R.string.error_invalid_data, AppMsg.STYLE_ALERT).show();

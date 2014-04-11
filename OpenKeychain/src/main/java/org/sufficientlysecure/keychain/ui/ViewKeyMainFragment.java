@@ -332,7 +332,7 @@ public class ViewKeyMainFragment extends Fragment implements
 
     private void encryptToContact(Uri dataUri) {
         try {
-            long keyId = ProviderHelper.extractOrGetMasterKeyId(getActivity(), dataUri);
+            long keyId = new ProviderHelper(getActivity()).extractOrGetMasterKeyId(dataUri);
             long[] encryptionKeyIds = new long[]{ keyId };
             Intent intent = new Intent(getActivity(), EncryptActivity.class);
             intent.setAction(EncryptActivity.ACTION_ENCRYPT);

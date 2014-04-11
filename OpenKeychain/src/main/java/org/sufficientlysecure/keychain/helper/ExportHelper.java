@@ -51,7 +51,7 @@ public class ExportHelper {
 
     public void deleteKey(Uri dataUri, Handler deleteHandler) {
         try {
-            long masterKeyId = ProviderHelper.extractOrGetMasterKeyId(mActivity, dataUri);
+            long masterKeyId = new ProviderHelper(mActivity).extractOrGetMasterKeyId(dataUri);
 
             // Create a new Messenger for the communication back
             Messenger messenger = new Messenger(deleteHandler);

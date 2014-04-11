@@ -180,8 +180,8 @@ public class AccountSettingsFragment extends Fragment implements
                 if (resultCode == Activity.RESULT_OK) {
                     // select newly created key
                     try {
-                        long masterKeyId = ProviderHelper.extractOrGetMasterKeyId(
-                                getActivity(), data.getData());
+                        long masterKeyId = new ProviderHelper(getActivity())
+                                .extractOrGetMasterKeyId(data.getData());
                         mSelectKeyFragment.selectKey(masterKeyId);
                     } catch (ProviderHelper.NotFoundException e) {
                         Log.e(Constants.TAG, "key not found!", e);
