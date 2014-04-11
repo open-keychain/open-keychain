@@ -254,7 +254,7 @@ public class PgpSignEncrypt {
         PGPPrivateKey signaturePrivateKey = null;
         if (enableSignature) {
             try {
-                signingKeyRing = mProviderHelper.getPGPSecretKeyRingWithKeyId(mSignatureMasterKeyId);
+                signingKeyRing = mProviderHelper.getPGPSecretKeyRing(mSignatureMasterKeyId);
             } catch (ProviderHelper.NotFoundException e) {
                 throw new PgpGeneralException(mContext.getString(R.string.error_signature_failed));
             }
@@ -493,7 +493,7 @@ public class PgpSignEncrypt {
 
         PGPSecretKeyRing signingKeyRing;
         try {
-            signingKeyRing = mProviderHelper.getPGPSecretKeyRingWithKeyId(mSignatureMasterKeyId);
+            signingKeyRing = mProviderHelper.getPGPSecretKeyRing(mSignatureMasterKeyId);
         } catch (ProviderHelper.NotFoundException e) {
             throw new PgpGeneralException(mContext.getString(R.string.error_signature_failed));
         }
