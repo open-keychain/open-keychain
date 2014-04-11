@@ -165,10 +165,11 @@ public class EncryptAsymmetricFragment extends Fragment {
         if (preselectedEncryptionKeyIds != null) {
             Vector<Long> goodIds = new Vector<Long>();
             for (int i = 0; i < preselectedEncryptionKeyIds.length; ++i) {
-                // TODO check for available encrypt keys... is this even relevant?
+                // TODO One query per selected key?! wtf
                 try {
                     long id = ProviderHelper.getMasterKeyId(getActivity(),
-                            KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(Long.toString(preselectedEncryptionKeyIds[i]))
+                            KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(
+                                    Long.toString(preselectedEncryptionKeyIds[i]))
                     );
                     goodIds.add(id);
                 } catch (ProviderHelper.NotFoundException e) {

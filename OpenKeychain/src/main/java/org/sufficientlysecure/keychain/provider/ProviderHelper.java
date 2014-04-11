@@ -461,70 +461,49 @@ public class ProviderHelper {
         return ContentProviderOperation.newInsert(uri).withValues(values).build();
     }
 
-    public static ArrayList<String> getKeyRingsAsArmoredString(Context context, long[] masterKeyIds) {
-        ArrayList<String> output = new ArrayList<String>();
-
-        if (masterKeyIds != null && masterKeyIds.length > 0) {
-
-            Cursor cursor = getCursorWithSelectedKeyringMasterKeyIds(context, masterKeyIds);
-
-            if (cursor != null) {
-                int masterIdCol = cursor.getColumnIndex(KeyRingData.MASTER_KEY_ID);
-                int dataCol = cursor.getColumnIndex(KeyRingData.KEY_RING_DATA);
-                if (cursor.moveToFirst()) {
-                    do {
-                        Log.d(Constants.TAG, "masterKeyId: " + cursor.getLong(masterIdCol));
-
-                        // get actual keyring data blob and write it to ByteArrayOutputStream
-                        try {
-                            Object keyRing = null;
-                            byte[] data = cursor.getBlob(dataCol);
-                            if (data != null) {
-                                keyRing = PgpConversionHelper.BytesToPGPKeyRing(data);
-                            }
-
-                            ByteArrayOutputStream bos = new ByteArrayOutputStream();
-                            ArmoredOutputStream aos = new ArmoredOutputStream(bos);
-                            aos.setHeader("Version", PgpHelper.getFullVersion(context));
-
-                            if (keyRing instanceof PGPSecretKeyRing) {
-                                aos.write(((PGPSecretKeyRing) keyRing).getEncoded());
-                            } else if (keyRing instanceof PGPPublicKeyRing) {
-                                aos.write(((PGPPublicKeyRing) keyRing).getEncoded());
-                            }
-                            aos.close();
-
-                            String armoredKey = bos.toString("UTF-8");
-
-                            Log.d(Constants.TAG, "armoredKey:" + armoredKey);
-
-                            output.add(armoredKey);
-                        } catch (IOException e) {
-                            Log.e(Constants.TAG, "IOException", e);
-                        }
-                    } while (cursor.moveToNext());
-                }
-            }
-
-            if (cursor != null) {
-                cursor.close();
-            }
-
-        } else {
-            Log.e(Constants.TAG, "No master keys given!");
+    private static String getKeyRingAsArmoredString(Context context, byte[] data) throws IOException {
+        Object keyRing = null;
+        if (data != null) {
+            keyRing = PgpConversionHelper.BytesToPGPKeyRing(data);
         }
 
-        if (output.size() > 0) {
-            return output;
-        } else {
-            return null;
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        ArmoredOutputStream aos = new ArmoredOutputStream(bos);
+        aos.setHeader("Version", PgpHelper.getFullVersion(context));
+
+        if (keyRing instanceof PGPSecretKeyRing) {
+            aos.write(((PGPSecretKeyRing) keyRing).getEncoded());
+        } else if (keyRing instanceof PGPPublicKeyRing) {
+            aos.write(((PGPPublicKeyRing) keyRing).getEncoded());
         }
+        aos.close();
+
+        String armoredKey = bos.toString("UTF-8");
+
+        Log.d(Constants.TAG, "armoredKey:" + armoredKey);
+
+        return armoredKey;
     }
 
-    private static Cursor getCursorWithSelectedKeyringMasterKeyIds(Context context, long[] masterKeyIds) {
-        Cursor cursor = null;
-        if (masterKeyIds != null && masterKeyIds.length > 0) {
+    public static String getKeyRingAsArmoredString(Context context, Uri uri)
+            throws NotFoundException, IOException {
+        byte[] data = (byte[]) ProviderHelper.getGenericData(
+                context, uri, KeyRingData.KEY_RING_DATA, ProviderHelper.FIELD_TYPE_BLOB);
+        return getKeyRingAsArmoredString(context, data);
+    }
 
+    // TODO This method is NOT ACTUALLY USED. Is this preparation for something, or just dead code?
+    public static ArrayList<String> getKeyRingsAsArmoredString(Context context, long[] masterKeyIds)
+            throws IOException {
+        ArrayList<String> output = new ArrayList<String>();
+
+        if (masterKeyIds == null || masterKeyIds.length == 0) {
+            Log.e(Constants.TAG, "No master keys given!");
+            return output;
+        }
+
+        // Build a cursor for the selected masterKeyIds
+        Cursor cursor = null; {
             String inMasterKeyList = KeyRingData.MASTER_KEY_ID + " IN (";
             for (int i = 0; i < masterKeyIds.length; ++i) {
                 if (i != 0) {
@@ -536,10 +515,37 @@ public class ProviderHelper {
 
             cursor = context.getContentResolver().query(KeyRingData.buildPublicKeyRingUri(), new String[] {
                     KeyRingData._ID, KeyRingData.MASTER_KEY_ID, KeyRingData.KEY_RING_DATA
-                }, inMasterKeyList, null, null);
+            }, inMasterKeyList, null, null);
         }
 
-        return cursor;
+        if (cursor != null) {
+            int masterIdCol = cursor.getColumnIndex(KeyRingData.MASTER_KEY_ID);
+            int dataCol = cursor.getColumnIndex(KeyRingData.KEY_RING_DATA);
+            if (cursor.moveToFirst()) {
+                do {
+                    Log.d(Constants.TAG, "masterKeyId: " + cursor.getLong(masterIdCol));
+
+                    byte[] data = cursor.getBlob(dataCol);
+
+                    // get actual keyring data blob and write it to ByteArrayOutputStream
+                    try {
+                        output.add(getKeyRingAsArmoredString(context, data));
+                    } catch (IOException e) {
+                        Log.e(Constants.TAG, "IOException", e);
+                    }
+                } while (cursor.moveToNext());
+            }
+        }
+
+        if (cursor != null) {
+            cursor.close();
+        }
+
+        if (output.size() > 0) {
+            return output;
+        } else {
+            return null;
+        }
     }
 
     public static ArrayList<String> getRegisteredApiApps(Context context) {

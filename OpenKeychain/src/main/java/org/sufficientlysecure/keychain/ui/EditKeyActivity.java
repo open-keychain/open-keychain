@@ -326,10 +326,6 @@ public class EditKeyActivity extends ActionBarActivity implements EditorListener
                 Log.e(Constants.TAG, "Keyring not found: " + e.getMessage(), e);
                 Toast.makeText(this, R.string.error_no_secret_key_found, Toast.LENGTH_SHORT).show();
                 finish();
-            } catch (PGPException e) {
-                Log.e(Constants.TAG, "Error extracting key: " + e.getMessage(), e);
-                Toast.makeText(this, R.string.error_no_secret_key_found, Toast.LENGTH_LONG).show();
-                finish();
             }
 
         }

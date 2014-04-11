@@ -525,5 +525,7 @@
     <string name="label_cert_type">Type</string>
     <string name="can_certify">can certify</string>
     <string name="can_certify_not">cannot certify</string>
+    <string name="error_key_not_found">Key not found!</string>
+    <string name="error_key_processing">Error processing key!</string>
 
 </resources>

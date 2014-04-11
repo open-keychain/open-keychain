@@ -28,14 +28,19 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.devspark.appmsg.AppMsg;
+
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
+import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.QrCodeUtils;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 public class ShareQrCodeDialogFragment extends DialogFragment {
@@ -106,20 +111,18 @@ public class ShareQrCodeDialogFragment extends DialogFragment {
         } else {
             mText.setText(R.string.share_qr_code_dialog_start);
 
-            // TODO works, but
-            long masterKeyId = 0;
             try {
-                masterKeyId = ProviderHelper.getMasterKeyId(getActivity(), dataUri);
+                Uri uri = KeychainContract.KeyRingData.buildPublicKeyRingUri(dataUri);
+                content = ProviderHelper.getKeyRingAsArmoredString(getActivity(), uri);
+            } catch (IOException e) {
+                Log.e(Constants.TAG, "error processing key!", e);
+                AppMsg.makeText(getActivity(), R.string.error_invalid_data, AppMsg.STYLE_ALERT).show();
+                return null;
             } catch (ProviderHelper.NotFoundException e) {
                 Log.e(Constants.TAG, "key not found!", e);
+                AppMsg.makeText(getActivity(), R.string.error_key_not_found, AppMsg.STYLE_ALERT).show();
+                return null;
             }
-            // get public keyring as ascii armored string
-            ArrayList<String> keyringArmored = ProviderHelper.getKeyRingsAsArmoredString(
-                    getActivity(), new long[] { masterKeyId });
-
-            // TODO: binary?
-
-            content = keyringArmored.get(0);
 
             // OnClickListener are set in onResume to prevent automatic dismissing of Dialogs
             // http://bit.ly/O5vfaR

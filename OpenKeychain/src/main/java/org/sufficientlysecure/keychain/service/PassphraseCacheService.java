@@ -200,7 +200,7 @@ public class PassphraseCacheService extends Service {
         return cachedPassphrase;
     }
 
-    public static boolean hasPassphrase(PGPSecretKeyRing secretKeyRing) throws PGPException {
+    public static boolean hasPassphrase(PGPSecretKeyRing secretKeyRing) {
         PGPSecretKey secretKey = null;
         boolean foundValidKey = false;
         for (Iterator keys = secretKeyRing.getSecretKeys(); keys.hasNext(); ) {
@@ -214,10 +214,15 @@ public class PassphraseCacheService extends Service {
             return false;
         }
 
-        PBESecretKeyDecryptor keyDecryptor = new JcePBESecretKeyDecryptorBuilder()
-                .setProvider("SC").build("".toCharArray());
-        PGPPrivateKey testKey = secretKey.extractPrivateKey(keyDecryptor);
-        return testKey == null;
+        try {
+            PBESecretKeyDecryptor keyDecryptor = new JcePBESecretKeyDecryptorBuilder()
+                    .setProvider("SC").build("".toCharArray());
+            PGPPrivateKey testKey = secretKey.extractPrivateKey(keyDecryptor);
+            return testKey == null;
+        } catch(PGPException e) {
+            // this means the crc check failed -> passphrase required
+            return true;
+        }
     }
 
     /**
@@ -231,8 +236,6 @@ public class PassphraseCacheService extends Service {
         try {
             PGPSecretKeyRing secRing = ProviderHelper.getPGPSecretKeyRing(context, secretKeyId);
             return hasPassphrase(secRing);
-        } catch (PGPException e) {
-            // silently catch
         } catch (ProviderHelper.NotFoundException e) {
             Log.e(Constants.TAG, "key not found!", e);
         }
