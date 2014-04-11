@@ -17,94 +17,90 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:paddingLeft="3dip"
+    android:orientation="horizontal"
+    android:paddingLeft="4dp"
     android:paddingRight="?android:attr/scrollbarSize"
-    android:singleLine="true" >
+    android:singleLine="true">
+
+
+    <CheckBox
+        android:id="@+id/selected"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:clickable="false"
+        android:focusable="false"
+        android:focusableInTouchMode="false" />
+    <!-- focusable and clickable MUST be false to handle click and longClick in ListView Activity -->
 
     <LinearLayout
-        android:layout_width="match_parent"
+        android:layout_width="0dip"
         android:layout_height="wrap_content"
-        android:orientation="horizontal" >
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:paddingLeft="5dip"
+        android:paddingRight="5dip">
 
-        <CheckBox
-            android:id="@+id/selected"
+        <TextView
+            android:id="@+id/mainUserId"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:clickable="false"
-            android:focusable="false"
-            android:focusableInTouchMode="false" />
-        <!-- focusable and clickable MUST be false to handle click and longClick in ListView Activity -->
+            android:text="Alice"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
 
-        <LinearLayout
-            android:layout_width="0dip"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="vertical"
-            android:paddingLeft="5dip"
-            android:paddingRight="5dip" >
-
-            <TextView
-                android:id="@+id/mainUserId"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/label_main_user_id"
-                android:textAppearance="?android:attr/textAppearanceMedium" />
-
-            <TextView
-                android:id="@+id/mainUserIdRest"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="&lt;user@somewhere.com>"
-                android:textAppearance="?android:attr/textAppearanceSmall" />
-        </LinearLayout>
-
-        <LinearLayout
+        <TextView
+            android:id="@+id/mainUserIdRest"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:gravity="right"
-            android:minWidth="90dip"
-            android:orientation="vertical"
-            android:paddingLeft="3dip" >
+            android:text="alice@example.com"
+            android:textAppearance="?android:attr/textAppearanceSmall" />
 
-            <TextView
-                android:id="@+id/keyId"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="0xBBBBBBBBBBBBBBBB"
-                android:textAppearance="?android:attr/textAppearanceSmall"
-                android:typeface="monospace"
-                android:layout_weight="1" />
+        <LinearLayout
+            android:id="@+id/user_ids_list"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="36dip"
+            android:orientation="vertical" />
 
-            <TextView
-                android:id="@+id/algorithm"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceSmall" />
+        <TextView
+            android:id="@+id/keyId"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="0xBBBBBBBBBBBBBBBB"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:typeface="monospace" />
 
-            <TextView
-                android:id="@+id/fingerprint"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="fingerprint"
-                android:typeface="monospace"
-                android:textAppearance="?android:attr/textAppearanceSmall" />
-
-            <TextView
-                android:id="@+id/status"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceSmall"
-                android:textColor="#e00" />
-        </LinearLayout>
+        <TextView
+            android:id="@+id/fingerprint"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="0000 0000 0000 0000 0000\n0000 0000 0000 0000 0000"
+            android:typeface="monospace"
+            android:textAppearance="?android:attr/textAppearanceSmall" />
     </LinearLayout>
 
     <LinearLayout
-        android:id="@+id/list"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="36dip"
-        android:orientation="vertical" >
+        android:gravity="right"
+        android:minWidth="90dip"
+        android:orientation="vertical"
+        android:paddingLeft="3dip">
+
+        <TextView
+            android:id="@+id/status"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="status"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:textColor="#e00" />
+
+        <TextView
+            android:id="@+id/algorithm"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="RSA"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:layout_gravity="right" />
     </LinearLayout>
 
 </LinearLayout>

@@ -151,10 +151,10 @@ public class ImportKeysAdapter extends ArrayAdapter<ImportKeysListEntry> {
             holder.status.setVisibility(View.GONE);
         }
 
-        LinearLayout ll = (LinearLayout) convertView.findViewById(R.id.list);
-        ll.removeAllViews();
+        LinearLayout userIdsLL = (LinearLayout) convertView.findViewById(R.id.user_ids_list);
+        userIdsLL.removeAllViews();
         if (entry.userIds.size() == 1) {
-            ll.setVisibility(View.GONE);
+            userIdsLL.setVisibility(View.GONE);
         } else {
             boolean first = true;
             boolean second = true;
@@ -167,12 +167,12 @@ public class ImportKeysAdapter extends ArrayAdapter<ImportKeysListEntry> {
                     View sep = new View(mActivity);
                     sep.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, 1));
                     sep.setBackgroundResource(android.R.drawable.divider_horizontal_dark);
-                    ll.addView(sep);
+                    userIdsLL.addView(sep);
                 }
                 TextView uidView = (TextView) mInflater.inflate(
                         R.layout.import_keys_list_entry_user_id, null);
                 uidView.setText(uid);
-                ll.addView(uidView);
+                userIdsLL.addView(uidView);
                 second = false;
             }
         }

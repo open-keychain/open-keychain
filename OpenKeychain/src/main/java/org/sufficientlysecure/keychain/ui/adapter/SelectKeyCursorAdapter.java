@@ -112,13 +112,14 @@ abstract public class SelectKeyCursorAdapter extends HighlightQueryCursorAdapter
             h.mainUserId.setText(R.string.user_id_no_name);
         }
         if (userIdSplit[1] != null) {
+            h.mainUserIdRest.setVisibility(View.VISIBLE);
             h.mainUserIdRest.setText(highlightSearchQuery(userIdSplit[1]));
         } else {
-            h.mainUserIdRest.setText("");
+            h.mainUserIdRest.setVisibility(View.GONE);
         }
 
         long masterKeyId = cursor.getLong(mIndexMasterKeyId);
-        h.keyId.setText(PgpKeyHelper.convertKeyIdToHexShort(masterKeyId));
+        h.keyId.setText(PgpKeyHelper.convertKeyIdToHex(masterKeyId));
 
         boolean enabled = true;
         if(cursor.getInt(mIndexRevoked) != 0) {
