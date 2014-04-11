@@ -84,7 +84,6 @@ public class SelectSecretKeyLayoutFragment extends Fragment implements LoaderMan
     }
 
     public void setSelectedKeyData(String userName, String email, String masterKeyHex) {
-
         mNoKeySelected.setVisibility(View.GONE);
 
         mKeyUserId.setText(userName);

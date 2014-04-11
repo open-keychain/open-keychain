@@ -138,7 +138,7 @@ public class EncryptAsymmetricFragment extends Fragment {
     }
 
     /**
-     * If an Intent gives a signatureKeyId and/or encryptionKeyIds, preselect those!
+     * If an Intent gives a signatureMasterKeyId and/or encryptionMasterKeyIds, preselect those!
      *
      * @param preselectedSignatureKeyId
      * @param preselectedEncryptionKeyIds

@@ -594,7 +594,7 @@ public class PgpDecryptVerify {
             // any luck? otherwise, try next.
             if (data.get(KeyRings.MASTER_KEY_ID) == null) {
                 signature = null;
-                // do NOT reset signatureKeyId, that one is shown when no known one is found!
+                // do NOT reset signatureMasterKeyId, that one is shown when no known one is found!
                 continue;
             }
 

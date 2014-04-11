@@ -169,7 +169,7 @@ public class OpenPgpService extends RemoteService {
                 builder.enableAsciiArmorOutput(asciiArmor)
                         .signatureHashAlgorithm(accSettings.getHashAlgorithm())
                         .signatureForceV3(false)
-                        .signatureKeyId(accSettings.getKeyId())
+                        .signatureMasterKeyId(accSettings.getKeyId())
                         .signaturePassphrase(passphrase);
                 builder.build().execute();
             } finally {
@@ -235,7 +235,7 @@ public class OpenPgpService extends RemoteService {
                 builder.enableAsciiArmorOutput(asciiArmor)
                         .compressionId(accSettings.getCompression())
                         .symmetricEncryptionAlgorithm(accSettings.getEncryptionAlgorithm())
-                        .encryptionKeyIds(keyIds);
+                        .encryptionMasterKeyIds(keyIds);
 
                 if (sign) {
                     String passphrase;
@@ -254,11 +254,11 @@ public class OpenPgpService extends RemoteService {
                     // sign and encrypt
                     builder.signatureHashAlgorithm(accSettings.getHashAlgorithm())
                             .signatureForceV3(false)
-                            .signatureKeyId(accSettings.getKeyId())
+                            .signatureMasterKeyId(accSettings.getKeyId())
                             .signaturePassphrase(passphrase);
                 } else {
                     // encrypt only
-                    builder.signatureKeyId(Id.key.none);
+                    builder.signatureMasterKeyId(Id.key.none);
                 }
                 // execute PGP operation!
                 builder.build().execute();

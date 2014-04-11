@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012-2013 Dominik Schürmann <dominik@dominikschuermann.de>
+ * Copyright (C) 2012-2014 Dominik Schürmann <dominik@dominikschuermann.de>
  * Copyright (C) 2010-2014 Thialfihar <thi@thialfihar.org>
  *
  * This program is free software: you can redistribute it and/or modify
@@ -34,7 +34,6 @@ import org.spongycastle.openpgp.PGPSignatureSubpacketVector;
 import org.spongycastle.util.encoders.Hex;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.util.IterableIterator;
 import org.sufficientlysecure.keychain.util.Log;
 
@@ -200,15 +199,7 @@ public class PgpKeyHelper {
         return getExpiryDate(key.getPublicKey());
     }
 
-    public static PGPPublicKey getEncryptPublicKey(Context context, long masterKeyId) {
-        PGPPublicKeyRing keyRing = null;
-        try {
-            keyRing = ProviderHelper.getPGPPublicKeyRing(context, masterKeyId);
-        } catch (ProviderHelper.NotFoundException e) {
-            Log.e(Constants.TAG, "key not found!", e);
-            // TODO: throw exception here!
-            return null;
-        }
+    public static PGPPublicKey getEncryptPublicKey(PGPPublicKeyRing keyRing) {
         Vector<PGPPublicKey> encryptKeys = getUsableEncryptKeys(keyRing);
         if (encryptKeys.size() == 0) {
             Log.e(Constants.TAG, "encryptKeys is null!");
@@ -217,15 +208,7 @@ public class PgpKeyHelper {
         return encryptKeys.get(0);
     }
 
-    public static PGPSecretKey getCertificationKey(Context context, long masterKeyId) {
-        PGPSecretKeyRing keyRing = null;
-        try {
-            keyRing = ProviderHelper.getPGPSecretKeyRing(context, masterKeyId);
-        } catch (ProviderHelper.NotFoundException e) {
-            Log.e(Constants.TAG, "key not found!", e);
-            // TODO: throw exception here!
-            return null;
-        }
+    public static PGPSecretKey getCertificationKey(PGPSecretKeyRing keyRing) {
         Vector<PGPSecretKey> signingKeys = getUsableCertificationKeys(keyRing);
         if (signingKeys.size() == 0) {
             return null;
@@ -233,15 +216,7 @@ public class PgpKeyHelper {
         return signingKeys.get(0);
     }
 
-    public static PGPSecretKey getSigningKey(Context context, long masterKeyId) {
-        PGPSecretKeyRing keyRing = null;
-        try {
-            keyRing = ProviderHelper.getPGPSecretKeyRing(context, masterKeyId);
-        } catch (ProviderHelper.NotFoundException e) {
-            Log.e(Constants.TAG, "key not found!", e);
-            // TODO: throw exception here!
-            return null;
-        }
+    public static PGPSecretKey getSigningKey(PGPSecretKeyRing keyRing) {
         Vector<PGPSecretKey> signingKeys = getUsableSigningKeys(keyRing);
         if (signingKeys.size() == 0) {
             return null;
@@ -482,7 +457,7 @@ public class PgpKeyHelper {
                 break;
             }
         }
-        if(keySize > 0)
+        if (keySize > 0)
             return algorithmStr + ", " + keySize + " bit";
         else
             return algorithmStr;

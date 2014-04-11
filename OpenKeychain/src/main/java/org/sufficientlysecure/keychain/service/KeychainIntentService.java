@@ -319,9 +319,9 @@ public class KeychainIntentService extends IntentService
                         .symmetricEncryptionAlgorithm(
                                 Preferences.getPreferences(this).getDefaultEncryptionAlgorithm())
                         .signatureForceV3(Preferences.getPreferences(this).getForceV3Signatures())
-                        .encryptionKeyIds(encryptionKeyIds)
+                        .encryptionMasterKeyIds(encryptionKeyIds)
                         .symmetricPassphrase(symmetricPassphrase)
-                        .signatureKeyId(signatureKeyId)
+                        .signatureMasterKeyId(signatureKeyId)
                         .signatureHashAlgorithm(
                                 Preferences.getPreferences(this).getDefaultHashAlgorithm())
                         .signaturePassphrase(
@@ -811,8 +811,14 @@ public class KeychainIntentService extends IntentService
                 PgpKeyOperation keyOperation = new PgpKeyOperation(new ProgressScaler(this, 0, 100, 100));
                 PGPPublicKeyRing publicRing = ProviderHelper.getPGPPublicKeyRing(this, pubKeyId);
                 PGPPublicKey publicKey = publicRing.getPublicKey(pubKeyId);
-                PGPSecretKey certificationKey = PgpKeyHelper.getCertificationKey(this,
-                        masterKeyId);
+                PGPSecretKeyRing secretKeyRing = null;
+                try {
+                    secretKeyRing = ProviderHelper.getPGPSecretKeyRing(this, masterKeyId);
+                } catch (ProviderHelper.NotFoundException e) {
+                    Log.e(Constants.TAG, "key not found!", e);
+                    // TODO: throw exception here!
+                }
+                PGPSecretKey certificationKey = PgpKeyHelper.getCertificationKey(secretKeyRing);
                 publicKey = keyOperation.certifyKey(certificationKey, publicKey,
                         userIds, signaturePassphrase);
                 publicRing = PGPPublicKeyRing.insertPublicKey(publicRing, publicKey);
