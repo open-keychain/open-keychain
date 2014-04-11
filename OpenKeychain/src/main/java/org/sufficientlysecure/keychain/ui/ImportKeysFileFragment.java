@@ -34,6 +34,8 @@ public class ImportKeysFileFragment extends Fragment {
     private ImportKeysActivity mImportActivity;
     private BootstrapButton mBrowse;
 
+    public static final int REQUEST_CODE_FILE = 0x00007003;
+
     /**
      * Creates new instance of this fragment
      */
@@ -61,7 +63,7 @@ public class ImportKeysFileFragment extends Fragment {
                 // setting it to text/plain prevents Cynaogenmod's file manager from selecting asc
                 // or gpg types!
                 FileHelper.openFile(ImportKeysFileFragment.this, Constants.Path.APP_DIR + "/",
-                        "*/*", Id.request.filename);
+                        "*/*", REQUEST_CODE_FILE);
             }
         });
 
@@ -78,7 +80,7 @@ public class ImportKeysFileFragment extends Fragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode & 0xFFFF) {
-            case Id.request.filename: {
+            case REQUEST_CODE_FILE: {
                 if (resultCode == Activity.RESULT_OK && data != null) {
 
                     // load data

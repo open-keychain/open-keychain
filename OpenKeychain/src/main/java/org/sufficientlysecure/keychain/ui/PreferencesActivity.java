@@ -44,6 +44,8 @@ public class PreferencesActivity extends PreferenceActivity {
     public static final String ACTION_PREFS_GEN = "org.sufficientlysecure.keychain.ui.PREFS_GEN";
     public static final String ACTION_PREFS_ADV = "org.sufficientlysecure.keychain.ui.PREFS_ADV";
 
+    public static final int REQUEST_CODE_KEYSERVER_PREF = 0x00007005;
+
     private PreferenceScreen mKeyServerPreference = null;
     private static Preferences sPreferences;
 
@@ -76,7 +78,7 @@ public class PreferencesActivity extends PreferenceActivity {
                                     PreferencesKeyServerActivity.class);
                             intent.putExtra(PreferencesKeyServerActivity.EXTRA_KEY_SERVERS,
                                     sPreferences.getKeyServers());
-                            startActivityForResult(intent, Id.request.key_server_preference);
+                            startActivityForResult(intent, REQUEST_CODE_KEYSERVER_PREF);
                             return false;
                         }
                     });
@@ -88,12 +90,12 @@ public class PreferencesActivity extends PreferenceActivity {
                     (IntegerListPreference) findPreference(Constants.Pref.DEFAULT_ENCRYPTION_ALGORITHM));
 
             int[] valueIds = new int[]{Id.choice.compression.none, Id.choice.compression.zip,
-                    Id.choice.compression.zlib, Id.choice.compression.bzip2, };
+                    Id.choice.compression.zlib, Id.choice.compression.bzip2,};
             String[] entries = new String[]{
                     getString(R.string.choice_none) + " (" + getString(R.string.compression_fast) + ")",
                     "ZIP (" + getString(R.string.compression_fast) + ")",
                     "ZLIB (" + getString(R.string.compression_fast) + ")",
-                    "BZIP2 (" + getString(R.string.compression_very_slow) + ")", };
+                    "BZIP2 (" + getString(R.string.compression_very_slow) + ")",};
             String[] values = new String[valueIds.length];
             for (int i = 0; i < values.length; ++i) {
                 values[i] = "" + valueIds[i];
@@ -126,7 +128,7 @@ public class PreferencesActivity extends PreferenceActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
-            case Id.request.key_server_preference: {
+            case REQUEST_CODE_KEYSERVER_PREF: {
                 if (resultCode == RESULT_CANCELED || data == null) {
                     return;
                 }
@@ -180,7 +182,7 @@ public class PreferencesActivity extends PreferenceActivity {
                                     PreferencesKeyServerActivity.class);
                             intent.putExtra(PreferencesKeyServerActivity.EXTRA_KEY_SERVERS,
                                     sPreferences.getKeyServers());
-                            startActivityForResult(intent, Id.request.key_server_preference);
+                            startActivityForResult(intent, REQUEST_CODE_KEYSERVER_PREF);
                             return false;
                         }
                     });
@@ -189,7 +191,7 @@ public class PreferencesActivity extends PreferenceActivity {
         @Override
         public void onActivityResult(int requestCode, int resultCode, Intent data) {
             switch (requestCode) {
-                case Id.request.key_server_preference: {
+                case REQUEST_CODE_KEYSERVER_PREF: {
                     if (resultCode == RESULT_CANCELED || data == null) {
                         return;
                     }
@@ -225,12 +227,12 @@ public class PreferencesActivity extends PreferenceActivity {
                     (IntegerListPreference) findPreference(Constants.Pref.DEFAULT_ENCRYPTION_ALGORITHM));
 
             int[] valueIds = new int[]{Id.choice.compression.none, Id.choice.compression.zip,
-                    Id.choice.compression.zlib, Id.choice.compression.bzip2, };
+                    Id.choice.compression.zlib, Id.choice.compression.bzip2,};
             String[] entries = new String[]{
                     getString(R.string.choice_none) + " (" + getString(R.string.compression_fast) + ")",
                     "ZIP (" + getString(R.string.compression_fast) + ")",
                     "ZLIB (" + getString(R.string.compression_fast) + ")",
-                    "BZIP2 (" + getString(R.string.compression_very_slow) + ")", };
+                    "BZIP2 (" + getString(R.string.compression_very_slow) + ")",};
             String[] values = new String[valueIds.length];
             for (int i = 0; i < values.length; ++i) {
                 values[i] = "" + valueIds[i];
@@ -280,9 +282,9 @@ public class PreferencesActivity extends PreferenceActivity {
         int valueIds[] = {PGPEncryptedData.AES_128, PGPEncryptedData.AES_192,
                 PGPEncryptedData.AES_256, PGPEncryptedData.BLOWFISH, PGPEncryptedData.TWOFISH,
                 PGPEncryptedData.CAST5, PGPEncryptedData.DES, PGPEncryptedData.TRIPLE_DES,
-                PGPEncryptedData.IDEA, };
+                PGPEncryptedData.IDEA,};
         String entries[] = {"AES-128", "AES-192", "AES-256", "Blowfish", "Twofish", "CAST5",
-                "DES", "Triple DES", "IDEA", };
+                "DES", "Triple DES", "IDEA",};
         String values[] = new String[valueIds.length];
         for (int i = 0; i < values.length; ++i) {
             values[i] = "" + valueIds[i];
@@ -307,9 +309,9 @@ public class PreferencesActivity extends PreferenceActivity {
             (final IntegerListPreference mHashAlgorithm, int[] valueIds, String[] entries, String[] values) {
         valueIds = new int[]{HashAlgorithmTags.MD5, HashAlgorithmTags.RIPEMD160,
                 HashAlgorithmTags.SHA1, HashAlgorithmTags.SHA224, HashAlgorithmTags.SHA256,
-                HashAlgorithmTags.SHA384, HashAlgorithmTags.SHA512, };
+                HashAlgorithmTags.SHA384, HashAlgorithmTags.SHA512,};
         entries = new String[]{"MD5", "RIPEMD-160", "SHA-1", "SHA-224", "SHA-256", "SHA-384",
-                "SHA-512", };
+                "SHA-512",};
         values = new String[valueIds.length];
         for (int i = 0; i < values.length; ++i) {
             values[i] = "" + valueIds[i];

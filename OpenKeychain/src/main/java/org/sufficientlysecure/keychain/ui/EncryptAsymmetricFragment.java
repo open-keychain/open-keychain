@@ -30,28 +30,24 @@ import android.widget.TextView;
 
 import com.beardedhen.androidbootstrap.BootstrapButton;
 
-import org.spongycastle.openpgp.PGPPublicKey;
-import org.spongycastle.openpgp.PGPPublicKeyRing;
 import org.spongycastle.openpgp.PGPSecretKey;
 import org.spongycastle.openpgp.PGPSecretKeyRing;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.Id;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
-import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.util.Log;
 
-import java.util.HashMap;
 import java.util.Vector;
 
 public class EncryptAsymmetricFragment extends Fragment {
     public static final String ARG_SIGNATURE_KEY_ID = "signature_key_id";
     public static final String ARG_ENCRYPTION_KEY_IDS = "encryption_key_ids";
 
-    public static final int RESULT_CODE_PUBLIC_KEYS = 0x00007001;
-    public static final int RESULT_CODE_SECRET_KEYS = 0x00007002;
+    public static final int REQUEST_CODE_PUBLIC_KEYS = 0x00007001;
+    public static final int REQUEST_CODE_SECRET_KEYS = 0x00007002;
 
     ProviderHelper mProviderHelper;
 
@@ -242,18 +238,18 @@ public class EncryptAsymmetricFragment extends Fragment {
             }
         }
         intent.putExtra(SelectPublicKeyActivity.EXTRA_SELECTED_MASTER_KEY_IDS, initialKeyIds);
-        startActivityForResult(intent, Id.request.public_keys);
+        startActivityForResult(intent, REQUEST_CODE_PUBLIC_KEYS);
     }
 
     private void selectSecretKey() {
         Intent intent = new Intent(getActivity(), SelectSecretKeyActivity.class);
-        startActivityForResult(intent, Id.request.secret_keys);
+        startActivityForResult(intent, REQUEST_CODE_SECRET_KEYS);
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
-            case RESULT_CODE_PUBLIC_KEYS: {
+            case REQUEST_CODE_PUBLIC_KEYS: {
                 if (resultCode == Activity.RESULT_OK) {
                     Bundle bundle = data.getExtras();
                     setEncryptionKeyIds(bundle
@@ -262,7 +258,7 @@ public class EncryptAsymmetricFragment extends Fragment {
                 break;
             }
 
-            case RESULT_CODE_SECRET_KEYS: {
+            case REQUEST_CODE_SECRET_KEYS: {
                 if (resultCode == Activity.RESULT_OK) {
                     Uri uriMasterKey = data.getData();
                     setSignatureKeyId(Long.valueOf(uriMasterKey.getLastPathSegment()));

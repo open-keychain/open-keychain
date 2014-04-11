@@ -43,7 +43,6 @@ import org.spongycastle.openpgp.operator.jcajce.JcePublicKeyKeyEncryptionMethodG
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.Id;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.util.InputData;
 import org.sufficientlysecure.keychain.util.Log;
@@ -248,16 +247,9 @@ public class PgpSignEncrypt {
 
     /**
      * Signs and/or encrypts data based on parameters of class
-     *
-     * @throws IOException
-     * @throws PgpGeneralException
-     * @throws PGPException
-     * @throws NoSuchProviderException
-     * @throws NoSuchAlgorithmException
-     * @throws SignatureException
      */
     public void execute()
-            throws IOException, PgpGeneralException, PGPException, NoSuchProviderException,
+            throws IOException, PGPException, NoSuchProviderException,
             NoSuchAlgorithmException, SignatureException, KeyExtractionException, NoSigningKeyException, NoPassphraseException {
 
         boolean enableSignature = mSignatureMasterKeyId != Id.key.none;

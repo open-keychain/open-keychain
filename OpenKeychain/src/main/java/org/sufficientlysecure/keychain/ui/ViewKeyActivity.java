@@ -41,7 +41,6 @@ import android.view.Window;
 import com.devspark.appmsg.AppMsg;
 
 import org.sufficientlysecure.keychain.Constants;
-import org.sufficientlysecure.keychain.Id;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.compatibility.ClipboardReflection;
 import org.sufficientlysecure.keychain.helper.ExportHelper;
@@ -54,8 +53,6 @@ import org.sufficientlysecure.keychain.ui.dialog.ShareQrCodeDialogFragment;
 import org.sufficientlysecure.keychain.util.Log;
 
 import java.io.IOException;
-import java.security.Provider;
-import java.util.ArrayList;
 import java.util.HashMap;
 
 public class ViewKeyActivity extends ActionBarActivity {
@@ -70,7 +67,7 @@ public class ViewKeyActivity extends ActionBarActivity {
     ViewPager mViewPager;
     TabsAdapter mTabsAdapter;
 
-    private static final int RESULT_CODE_LOOKUP_KEY = 0x00007006;
+    public static final int REQUEST_CODE_LOOKUP_KEY = 0x00007006;
 
     // NFC
     private NfcAdapter mNfcAdapter;
@@ -189,7 +186,7 @@ public class ViewKeyActivity extends ActionBarActivity {
     private void uploadToKeyserver(Uri dataUri) {
         Intent uploadIntent = new Intent(this, UploadKeyActivity.class);
         uploadIntent.setData(dataUri);
-        startActivityForResult(uploadIntent, Id.request.export_to_server);
+        startActivityForResult(uploadIntent, 0);
     }
 
     private void updateFromKeyserver(Uri dataUri, ProviderHelper providerHelper) {
@@ -202,7 +199,7 @@ public class ViewKeyActivity extends ActionBarActivity {
         queryIntent.setAction(ImportKeysActivity.ACTION_IMPORT_KEY_FROM_KEYSERVER_AND_RETURN);
         queryIntent.putExtra(ImportKeysActivity.EXTRA_FINGERPRINT, fingerprint);
 
-        startActivityForResult(queryIntent, RESULT_CODE_LOOKUP_KEY);
+        startActivityForResult(queryIntent, REQUEST_CODE_LOOKUP_KEY);
     }
 
     private void shareKey(Uri dataUri, boolean fingerprintOnly, ProviderHelper providerHelper) {
@@ -298,7 +295,7 @@ public class ViewKeyActivity extends ActionBarActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
-            case RESULT_CODE_LOOKUP_KEY: {
+            case REQUEST_CODE_LOOKUP_KEY: {
                 if (resultCode == Activity.RESULT_OK) {
                     // TODO: reload key??? move this into fragment?
                 }
