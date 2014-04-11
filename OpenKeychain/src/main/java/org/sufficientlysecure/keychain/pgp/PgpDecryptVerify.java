@@ -18,7 +18,6 @@
 
 package org.sufficientlysecure.keychain.pgp;
 
-import android.content.Context;
 import android.net.Uri;
 
 import org.openintents.openpgp.OpenPgpSignatureResult;
@@ -55,10 +54,8 @@ import org.spongycastle.openpgp.operator.jcajce.JcePublicKeyDataDecryptorFactory
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
-import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
-import org.sufficientlysecure.keychain.service.PassphraseCacheService;
 import org.sufficientlysecure.keychain.util.InputData;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.ProgressDialogUpdater;
@@ -78,8 +75,8 @@ import java.util.Set;
  * This class uses a Builder pattern!
  */
 public class PgpDecryptVerify {
-    private Context mContext;
     private ProviderHelper mProviderHelper;
+    private PassphraseCache mPassphraseCache;
     private InputData mData;
     private OutputStream mOutStream;
 
@@ -90,8 +87,8 @@ public class PgpDecryptVerify {
 
     private PgpDecryptVerify(Builder builder) {
         // private Constructor can only be called from Builder
-        this.mContext = builder.mContext;
-        this.mProviderHelper = new ProviderHelper(mContext);
+        this.mProviderHelper = builder.mProviderHelper;
+        this.mPassphraseCache = builder.mPassphraseCache;
         this.mData = builder.mData;
         this.mOutStream = builder.mOutStream;
 
@@ -103,7 +100,8 @@ public class PgpDecryptVerify {
 
     public static class Builder {
         // mandatory parameter
-        private Context mContext;
+        private ProviderHelper mProviderHelper;
+        private PassphraseCache mPassphraseCache;
         private InputData mData;
         private OutputStream mOutStream;
 
@@ -113,8 +111,10 @@ public class PgpDecryptVerify {
         private String mPassphrase = null;
         private Set<Long> mAllowedKeyIds = null;
 
-        public Builder(Context context, InputData data, OutputStream outStream) {
-            this.mContext = context;
+        public Builder(ProviderHelper providerHelper, PassphraseCache passphraseCache,
+                       InputData data, OutputStream outStream) {
+            this.mProviderHelper = providerHelper;
+            this.mPassphraseCache = passphraseCache;
             this.mData = data;
             this.mOutStream = outStream;
         }
@@ -163,6 +163,35 @@ public class PgpDecryptVerify {
         }
     }
 
+    public interface PassphraseCache {
+        public String getCachedPassphrase(long masterKeyId);
+    }
+
+    public static class InvalidDataException extends Exception {
+        public InvalidDataException() {
+        }
+    }
+
+    public static class KeyExtractionException extends Exception {
+        public KeyExtractionException() {
+        }
+    }
+
+    public static class WrongPassphraseException extends Exception {
+        public WrongPassphraseException() {
+        }
+    }
+
+    public static class NoSecretKeyException extends Exception {
+        public NoSecretKeyException() {
+        }
+    }
+
+    public static class IntegrityCheckFailedException extends Exception {
+        public IntegrityCheckFailedException() {
+        }
+    }
+
     /**
      * Decrypts and/or verifies data based on parameters of class
      *
@@ -173,7 +202,9 @@ public class PgpDecryptVerify {
      * @throws SignatureException
      */
     public PgpDecryptVerifyResult execute()
-            throws IOException, PgpGeneralException, PGPException, SignatureException {
+            throws IOException, PgpGeneralException, PGPException, SignatureException,
+            WrongPassphraseException, NoSecretKeyException, KeyExtractionException,
+            InvalidDataException, IntegrityCheckFailedException {
         // automatically works with ascii armor input and binary
         InputStream in = PGPUtil.getDecoderStream(mData.getInputStream());
         if (in instanceof ArmoredInputStream) {
@@ -202,7 +233,9 @@ public class PgpDecryptVerify {
      * @throws SignatureException
      */
     private PgpDecryptVerifyResult decryptVerify(InputStream in)
-            throws IOException, PgpGeneralException, PGPException, SignatureException {
+            throws IOException, PgpGeneralException, PGPException, SignatureException,
+            WrongPassphraseException, KeyExtractionException, NoSecretKeyException,
+            InvalidDataException, IntegrityCheckFailedException {
         PgpDecryptVerifyResult result = new PgpDecryptVerifyResult();
 
         PGPObjectFactory pgpF = new PGPObjectFactory(in);
@@ -219,7 +252,8 @@ public class PgpDecryptVerify {
         }
 
         if (enc == null) {
-            throw new PgpGeneralException(mContext.getString(R.string.error_invalid_data));
+//            throw new PgpGeneralException(mContext.getString(R.string.error_invalid_data));
+            throw new InvalidDataException();
         }
 
         InputStream clear;
@@ -287,8 +321,9 @@ public class PgpDecryptVerify {
                 // if no passphrase was explicitly set try to get it from the cache service
                 if (mPassphrase == null) {
                     // returns "" if key has no passphrase
-                    mPassphrase =
-                            PassphraseCacheService.getCachedPassphrase(mContext, masterKeyId);
+                    mPassphrase = mPassphraseCache.getCachedPassphrase(masterKeyId);
+//                    mPassphrase =
+//                            PassphraseCacheService.getCachedPassphrase(mContext, masterKeyId);
 
                     // if passphrase was not cached, return here
                     // indicating that a passphrase is missing!
@@ -347,11 +382,13 @@ public class PgpDecryptVerify {
                                 mPassphrase.toCharArray());
                 privateKey = secretKey.extractPrivateKey(keyDecryptor);
             } catch (PGPException e) {
-                throw new PGPException(mContext.getString(R.string.error_wrong_passphrase));
+//                throw new PGPException(mContext.getString(R.string.error_wrong_passphrase));
+                throw new WrongPassphraseException();
             }
             if (privateKey == null) {
-                throw new PgpGeneralException(
-                        mContext.getString(R.string.error_could_not_extract_private_key));
+//                throw new PgpGeneralException(
+//                        mContext.getString(R.string.error_could_not_extract_private_key));
+                throw new KeyExtractionException();
             }
             currentProgress += 5;
             updateProgress(R.string.progress_preparing_streams, currentProgress, 100);
@@ -365,7 +402,8 @@ public class PgpDecryptVerify {
             currentProgress += 5;
         } else {
             // no packet has been found where we have the corresponding secret key in our db
-            throw new PgpGeneralException(mContext.getString(R.string.error_no_secret_key_found));
+//            throw new PgpGeneralException(mContext.getString(R.string.error_no_secret_key_found));
+            throw new NoSecretKeyException();
         }
 
         PGPObjectFactory plainFact = new PGPObjectFactory(clear);
@@ -515,7 +553,8 @@ public class PgpDecryptVerify {
             } else {
                 // failed
                 Log.d(Constants.TAG, "Integrity verification: failed!");
-                throw new PgpGeneralException(mContext.getString(R.string.error_integrity_check_failed));
+//                throw new PgpGeneralException(mContext.getString(R.string.error_integrity_check_failed));
+                throw new IntegrityCheckFailedException();
             }
         } else {
             // no integrity check
@@ -543,7 +582,7 @@ public class PgpDecryptVerify {
      * @throws SignatureException
      */
     private PgpDecryptVerifyResult verifyCleartextSignature(ArmoredInputStream aIn)
-            throws IOException, PgpGeneralException, PGPException, SignatureException {
+            throws IOException, PgpGeneralException, PGPException, SignatureException, InvalidDataException {
         PgpDecryptVerifyResult result = new PgpDecryptVerifyResult();
         OpenPgpSignatureResult signatureResult = new OpenPgpSignatureResult();
         // cleartext signatures are never encrypted ;)
@@ -578,7 +617,8 @@ public class PgpDecryptVerify {
 
         PGPSignatureList sigList = (PGPSignatureList) pgpFact.nextObject();
         if (sigList == null) {
-            throw new PgpGeneralException(mContext.getString(R.string.error_corrupt_data));
+//            throw new PgpGeneralException(mContext.getString(R.string.error_corrupt_data));
+            throw new InvalidDataException();
         }
         PGPSignature signature = null;
         long signatureKeyId = 0;

@@ -444,7 +444,16 @@ public class KeychainIntentService extends IntentService
 
                 // verifyText and decrypt returning additional resultData values for the
                 // verification of signatures
-                PgpDecryptVerify.Builder builder = new PgpDecryptVerify.Builder(this, inputData, outStream);
+                PgpDecryptVerify.Builder builder = new PgpDecryptVerify.Builder(
+                        new ProviderHelper(this),
+                        new PgpDecryptVerify.PassphraseCache() {
+                            @Override
+                            public String getCachedPassphrase(long masterKeyId) {
+                                return PassphraseCacheService.getCachedPassphrase(
+                                        KeychainIntentService.this, masterKeyId);
+                            }
+                        },
+                        inputData, outStream);
                 builder.progressDialogUpdater(this);
 
                 builder.allowSymmetricDecryption(true)

@@ -300,7 +300,16 @@ public class OpenPgpService extends RemoteService {
                 long inputLength = is.available();
                 InputData inputData = new InputData(is, inputLength);
 
-                PgpDecryptVerify.Builder builder = new PgpDecryptVerify.Builder(this, inputData, os);
+                PgpDecryptVerify.Builder builder = new PgpDecryptVerify.Builder(
+                        new ProviderHelper(this),
+                        new PgpDecryptVerify.PassphraseCache() {
+                            @Override
+                            public String getCachedPassphrase(long masterKeyId) {
+                                return PassphraseCacheService.getCachedPassphrase(
+                                        OpenPgpService.this, masterKeyId);
+                            }
+                        },
+                        inputData, os);
                 builder.allowSymmetricDecryption(false) // no support for symmetric encryption
                         .allowedKeyIds(allowedKeyIds) // allow only private keys associated with
                                 // accounts of this app
