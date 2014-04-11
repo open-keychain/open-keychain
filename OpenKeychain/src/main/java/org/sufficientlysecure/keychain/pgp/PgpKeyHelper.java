@@ -199,7 +199,7 @@ public class PgpKeyHelper {
         return getExpiryDate(key.getPublicKey());
     }
 
-    public static PGPPublicKey getEncryptPublicKey(PGPPublicKeyRing keyRing) {
+    public static PGPPublicKey getFirstEncryptSubkey(PGPPublicKeyRing keyRing) {
         Vector<PGPPublicKey> encryptKeys = getUsableEncryptKeys(keyRing);
         if (encryptKeys.size() == 0) {
             Log.e(Constants.TAG, "encryptKeys is null!");
@@ -208,7 +208,7 @@ public class PgpKeyHelper {
         return encryptKeys.get(0);
     }
 
-    public static PGPSecretKey getCertificationKey(PGPSecretKeyRing keyRing) {
+    public static PGPSecretKey getFirstCertificationSubkey(PGPSecretKeyRing keyRing) {
         Vector<PGPSecretKey> signingKeys = getUsableCertificationKeys(keyRing);
         if (signingKeys.size() == 0) {
             return null;
@@ -216,7 +216,7 @@ public class PgpKeyHelper {
         return signingKeys.get(0);
     }
 
-    public static PGPSecretKey getSigningKey(PGPSecretKeyRing keyRing) {
+    public static PGPSecretKey getFirstSigningSubkey(PGPSecretKeyRing keyRing) {
         Vector<PGPSecretKey> signingKeys = getUsableSigningKeys(keyRing);
         if (signingKeys.size() == 0) {
             return null;

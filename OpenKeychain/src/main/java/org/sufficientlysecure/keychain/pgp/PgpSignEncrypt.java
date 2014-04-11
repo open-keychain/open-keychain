@@ -289,7 +289,7 @@ public class PgpSignEncrypt {
                 throw new NoSigningKeyException();
 //                throw new PgpGeneralException(mContext.getString(R.string.error_signature_failed));
             }
-            signingKey = PgpKeyHelper.getSigningKey(signingKeyRing);
+            signingKey = PgpKeyHelper.getFirstSigningSubkey(signingKeyRing);
             if (signingKey == null) {
                 throw new NoSigningKeyException();
 //                throw new PgpGeneralException(mContext.getString(R.string.error_signature_failed));
@@ -337,7 +337,7 @@ public class PgpSignEncrypt {
                 for (long id : mEncryptionMasterKeyIds) {
                     try {
                         PGPPublicKeyRing keyRing = mProviderHelper.getPGPPublicKeyRing(id);
-                        PGPPublicKey key = PgpKeyHelper.getEncryptPublicKey(keyRing);
+                        PGPPublicKey key = PgpKeyHelper.getFirstEncryptSubkey(keyRing);
                         if (key != null) {
                             JcePublicKeyKeyEncryptionMethodGenerator pubKeyEncryptionGenerator =
                                     new JcePublicKeyKeyEncryptionMethodGenerator(key);
