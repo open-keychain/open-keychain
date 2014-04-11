@@ -311,7 +311,10 @@ public class KeychainIntentService extends IntentService
 
                 /* Operation */
                 PgpSignEncrypt.Builder builder =
-                        new PgpSignEncrypt.Builder(this, inputData, outStream);
+                        new PgpSignEncrypt.Builder(
+                                new ProviderHelper(this),
+                                PgpHelper.getFullVersion(this),
+                                inputData, outStream);
                 builder.progress(this);
 
                 builder.enableAsciiArmorOutput(useAsciiArmor)

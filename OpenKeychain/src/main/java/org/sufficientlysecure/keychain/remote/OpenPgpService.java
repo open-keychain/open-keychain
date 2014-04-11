@@ -33,6 +33,7 @@ import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.Id;
 import org.sufficientlysecure.keychain.pgp.PgpDecryptVerify;
 import org.sufficientlysecure.keychain.pgp.PgpDecryptVerifyResult;
+import org.sufficientlysecure.keychain.pgp.PgpHelper;
 import org.sufficientlysecure.keychain.pgp.PgpSignEncrypt;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
@@ -165,7 +166,10 @@ public class OpenPgpService extends RemoteService {
                 InputData inputData = new InputData(is, inputLength);
 
                 // sign-only
-                PgpSignEncrypt.Builder builder = new PgpSignEncrypt.Builder(getContext(), inputData, os);
+                PgpSignEncrypt.Builder builder = new PgpSignEncrypt.Builder(
+                        new ProviderHelper(getContext()),
+                        PgpHelper.getFullVersion(getContext()),
+                        inputData, os);
                 builder.enableAsciiArmorOutput(asciiArmor)
                         .signatureHashAlgorithm(accSettings.getHashAlgorithm())
                         .signatureForceV3(false)
@@ -231,7 +235,10 @@ public class OpenPgpService extends RemoteService {
                 long inputLength = is.available();
                 InputData inputData = new InputData(is, inputLength);
 
-                PgpSignEncrypt.Builder builder = new PgpSignEncrypt.Builder(getContext(), inputData, os);
+                PgpSignEncrypt.Builder builder = new PgpSignEncrypt.Builder(
+                        new ProviderHelper(getContext()),
+                        PgpHelper.getFullVersion(getContext()),
+                        inputData, os);
                 builder.enableAsciiArmorOutput(asciiArmor)
                         .compressionId(accSettings.getCompression())
                         .symmetricEncryptionAlgorithm(accSettings.getEncryptionAlgorithm())

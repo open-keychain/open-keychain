@@ -27,6 +27,7 @@ import org.spongycastle.openpgp.PGPObjectFactory;
 import org.spongycastle.openpgp.PGPPublicKeyRing;
 import org.spongycastle.openpgp.PGPSecretKeyRing;
 import org.spongycastle.openpgp.PGPUtil;
+import org.sufficientlysecure.keychain.BuildConfig;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.Id;
 import org.sufficientlysecure.keychain.R;
@@ -55,14 +56,14 @@ public class PgpHelper {
             Pattern.DOTALL);
 
     public static String getVersion(Context context) {
-        String version = null;
+        String version;
         try {
             PackageInfo pi = context.getPackageManager().getPackageInfo(Constants.PACKAGE_NAME, 0);
             version = pi.versionName;
             return version;
         } catch (NameNotFoundException e) {
             Log.e(Constants.TAG, "Version could not be retrieved!", e);
-            return "0.0.0";
+            return "0.0";
         }
     }
 
