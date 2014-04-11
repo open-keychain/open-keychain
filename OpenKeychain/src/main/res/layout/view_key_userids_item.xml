@@ -8,7 +8,7 @@
 
     <CheckBox
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:id="@+id/checkBox"
         android:clickable="false"
         android:focusable="false" />
@@ -26,7 +26,7 @@
 
     <LinearLayout
         android:orientation="vertical"
-        android:layout_width="fill_parent"
+        android:layout_width="0dip"
         android:layout_height="wrap_content"
         android:layout_weight="1">
 
@@ -34,14 +34,14 @@
             android:id="@+id/userId"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/user_id_no_name"
+            android:text="Alice"
             android:textAppearance="?android:attr/textAppearanceSmall" />
 
         <TextView
             android:id="@+id/address"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/label_email"
+            android:text="alice@example.com"
             android:textAppearance="?android:attr/textAppearanceSmall" />
 
     </LinearLayout>
