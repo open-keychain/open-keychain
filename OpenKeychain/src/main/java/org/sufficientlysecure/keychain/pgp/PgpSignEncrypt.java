@@ -56,6 +56,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.security.SignatureException;
@@ -82,6 +83,18 @@ public class PgpSignEncrypt {
     private boolean mSignatureForceV3;
     private String mSignaturePassphrase;
     private boolean mEncryptToSigner;
+    private boolean mBinaryInput;
+
+    private static byte[] NEW_LINE;
+
+    static {
+        try {
+            NEW_LINE = "\r\n".getBytes("UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            Log.e(Constants.TAG, "UnsupportedEncodingException", e);
+        }
+    }
+
 
     private PgpSignEncrypt(Builder builder) {
         // private Constructor can only be called from Builder
@@ -101,6 +114,7 @@ public class PgpSignEncrypt {
         this.mSignatureForceV3 = builder.mSignatureForceV3;
         this.mSignaturePassphrase = builder.mSignaturePassphrase;
         this.mEncryptToSigner = builder.mEncryptToSigner;
+        this.mBinaryInput = builder.mBinaryInput;
     }
 
     public static class Builder {
@@ -121,6 +135,7 @@ public class PgpSignEncrypt {
         private boolean mSignatureForceV3 = false;
         private String mSignaturePassphrase = null;
         private boolean mEncryptToSigner = false;
+        private boolean mBinaryInput = false;
 
         public Builder(Context context, InputData data, OutputStream outStream) {
             this.mContext = context;
@@ -178,8 +193,25 @@ public class PgpSignEncrypt {
             return this;
         }
 
+        /**
+         * TODO: test this option!
+         *
+         * @param encryptToSigner
+         * @return
+         */
         public Builder encryptToSigner(boolean encryptToSigner) {
             this.mEncryptToSigner = encryptToSigner;
+            return this;
+        }
+
+        /**
+         * TODO: test this option!
+         *
+         * @param binaryInput
+         * @return
+         */
+        public Builder binaryInput(boolean binaryInput) {
+            this.mBinaryInput = binaryInput;
             return this;
         }
 
@@ -394,21 +426,20 @@ public class PgpSignEncrypt {
             }
 
             literalGen.close();
-        } else if (mEnableAsciiArmorOutput && enableSignature && !enableEncryption && !enableCompression) {
-            /* sign-only of ascii text */
+        } else if (!mBinaryInput && mEnableAsciiArmorOutput && enableSignature && !enableEncryption && !enableCompression) {
+            /* cleartext signature: sign-only of ascii text */
 
             updateProgress(R.string.progress_signing, 40, 100);
 
-            // write directly on armor output stream
+            // write -----BEGIN PGP SIGNED MESSAGE-----
             armorOut.beginClearText(mSignatureHashAlgorithm);
 
             InputStream in = mData.getInputStream();
             final BufferedReader reader = new BufferedReader(new InputStreamReader(in));
 
-            final byte[] newline = "\r\n".getBytes("UTF-8");
-
+            // update signature buffer with first line
             if (mSignatureForceV3) {
-                processLine(reader.readLine(), armorOut, signatureV3Generator);
+                processLineV3(reader.readLine(), armorOut, signatureV3Generator);
             } else {
                 processLine(reader.readLine(), armorOut, signatureGenerator);
             }
@@ -416,28 +447,62 @@ public class PgpSignEncrypt {
             while (true) {
                 String line = reader.readLine();
 
+                // end cleartext signature with newline, see http://tools.ietf.org/html/rfc4880#section-7
                 if (line == null) {
-                    armorOut.write(newline);
+                    armorOut.write(NEW_LINE);
                     break;
                 }
 
-                armorOut.write(newline);
+                armorOut.write(NEW_LINE);
 
                 // update signature buffer with input line
                 if (mSignatureForceV3) {
-                    signatureV3Generator.update(newline);
-                    processLine(line, armorOut, signatureV3Generator);
+                    signatureV3Generator.update(NEW_LINE);
+                    processLineV3(line, armorOut, signatureV3Generator);
                 } else {
-                    signatureGenerator.update(newline);
+                    signatureGenerator.update(NEW_LINE);
                     processLine(line, armorOut, signatureGenerator);
                 }
             }
 
             armorOut.endClearText();
 
+
             pOut = new BCPGOutputStream(armorOut);
+        } else if (mBinaryInput && enableSignature && !enableEncryption && !enableCompression) {
+            // TODO: This part of the code is not tested!!!
+            /* sign-only binaries (files) */
+
+            updateProgress(R.string.progress_signing, 40, 100);
+
+            InputStream in = mData.getInputStream();
+            if (mEnableAsciiArmorOutput) {
+                final BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    if (mSignatureForceV3) {
+                        processLineV3(line, null, signatureV3Generator);
+                        signatureV3Generator.update(NEW_LINE);
+                    } else {
+                        processLine(line, null, signatureGenerator);
+                        signatureGenerator.update(NEW_LINE);
+                    }
+                }
+            } else {
+                byte[] buffer = new byte[1 << 16];
+                int n;
+                while ((n = in.read(buffer)) > 0) {
+                    if (mSignatureForceV3) {
+                        signatureV3Generator.update(buffer, 0, n);
+                    } else {
+                        signatureGenerator.update(buffer, 0, n);
+                    }
+                }
+            }
+
+            pOut = new BCPGOutputStream(out);
         } else {
-            // TODO: implement sign-only for files!
             pOut = null;
             Log.e(Constants.TAG, "not supported!");
         }
@@ -471,119 +536,6 @@ public class PgpSignEncrypt {
         updateProgress(R.string.progress_done, 100, 100);
     }
 
-    // TODO: merge this into execute method!
-    // TODO: allow binary input for this class
-    public void generateSignature()
-            throws PgpGeneralException, PGPException, IOException, NoSuchAlgorithmException,
-            SignatureException {
-
-        OutputStream out;
-        if (mEnableAsciiArmorOutput) {
-            // Ascii Armor (Radix-64)
-            ArmoredOutputStream armorOut = new ArmoredOutputStream(mOutStream);
-            armorOut.setHeader("Version", PgpHelper.getFullVersion(mContext));
-            out = armorOut;
-        } else {
-            out = mOutStream;
-        }
-
-        if (mSignatureMasterKeyId == 0) {
-            throw new PgpGeneralException(mContext.getString(R.string.error_no_signature_key));
-        }
-
-        PGPSecretKeyRing signingKeyRing;
-        try {
-            signingKeyRing = mProviderHelper.getPGPSecretKeyRing(mSignatureMasterKeyId);
-        } catch (ProviderHelper.NotFoundException e) {
-            throw new PgpGeneralException(mContext.getString(R.string.error_signature_failed));
-        }
-        PGPSecretKey signingKey = PgpKeyHelper.getSigningKey(signingKeyRing);
-        if (signingKey == null) {
-            throw new PgpGeneralException(mContext.getString(R.string.error_signature_failed));
-        }
-
-        if (mSignaturePassphrase == null) {
-            throw new PgpGeneralException(mContext.getString(R.string.error_no_signature_passphrase));
-        }
-
-        PBESecretKeyDecryptor keyDecryptor = new JcePBESecretKeyDecryptorBuilder().setProvider(
-                Constants.BOUNCY_CASTLE_PROVIDER_NAME).build(mSignaturePassphrase.toCharArray());
-        PGPPrivateKey signaturePrivateKey = signingKey.extractPrivateKey(keyDecryptor);
-        if (signaturePrivateKey == null) {
-            throw new PgpGeneralException(
-                    mContext.getString(R.string.error_could_not_extract_private_key));
-        }
-        updateProgress(R.string.progress_preparing_streams, 0, 100);
-
-        updateProgress(R.string.progress_preparing_signature, 30, 100);
-
-        int type = PGPSignature.CANONICAL_TEXT_DOCUMENT;
-//        if (binary) {
-//            type = PGPSignature.BINARY_DOCUMENT;
-//        }
-
-        // content signer based on signing key algorithm and chosen hash algorithm
-        JcaPGPContentSignerBuilder contentSignerBuilder = new JcaPGPContentSignerBuilder(signingKey
-                .getPublicKey().getAlgorithm(), mSignatureHashAlgorithm)
-                .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME);
-
-        PGPSignatureGenerator signatureGenerator = null;
-        PGPV3SignatureGenerator signatureV3Generator = null;
-        if (mSignatureForceV3) {
-            signatureV3Generator = new PGPV3SignatureGenerator(contentSignerBuilder);
-            signatureV3Generator.init(type, signaturePrivateKey);
-        } else {
-            signatureGenerator = new PGPSignatureGenerator(contentSignerBuilder);
-            signatureGenerator.init(type, signaturePrivateKey);
-
-            PGPSignatureSubpacketGenerator spGen = new PGPSignatureSubpacketGenerator();
-            String userId = PgpKeyHelper.getMainUserId(signingKeyRing.getSecretKey());
-            spGen.setSignerUserID(false, userId);
-            signatureGenerator.setHashedSubpackets(spGen.generate());
-        }
-
-        updateProgress(R.string.progress_signing, 40, 100);
-
-        InputStream inStream = mData.getInputStream();
-//        if (binary) {
-//            byte[] buffer = new byte[1 << 16];
-//            int n = 0;
-//            while ((n = inStream.read(buffer)) > 0) {
-//                if (signatureForceV3) {
-//                    signatureV3Generator.update(buffer, 0, n);
-//                } else {
-//                    signatureGenerator.update(buffer, 0, n);
-//                }
-//            }
-//        } else {
-        final BufferedReader reader = new BufferedReader(new InputStreamReader(inStream));
-        final byte[] newline = "\r\n".getBytes("UTF-8");
-
-        String line;
-        while ((line = reader.readLine()) != null) {
-            if (mSignatureForceV3) {
-                processLine(line, null, signatureV3Generator);
-                signatureV3Generator.update(newline);
-            } else {
-                processLine(line, null, signatureGenerator);
-                signatureGenerator.update(newline);
-            }
-        }
-//        }
-
-        BCPGOutputStream bOut = new BCPGOutputStream(out);
-        if (mSignatureForceV3) {
-            signatureV3Generator.generate().encode(bOut);
-        } else {
-            signatureGenerator.generate().encode(bOut);
-        }
-        out.close();
-        mOutStream.close();
-
-        updateProgress(R.string.progress_done, 100, 100);
-    }
-
-
     private static void processLine(final String pLine, final ArmoredOutputStream pArmoredOutput,
                                     final PGPSignatureGenerator pSignatureGenerator)
             throws IOException, SignatureException {
@@ -610,8 +562,8 @@ public class PgpSignEncrypt {
         pSignatureGenerator.update(data);
     }
 
-    private static void processLine(final String pLine, final ArmoredOutputStream pArmoredOutput,
-                                    final PGPV3SignatureGenerator pSignatureGenerator)
+    private static void processLineV3(final String pLine, final ArmoredOutputStream pArmoredOutput,
+                                      final PGPV3SignatureGenerator pSignatureGenerator)
             throws IOException, SignatureException {
 
         if (pLine == null) {
