@@ -21,9 +21,12 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.SparseArray;
 
+import org.spongycastle.bcpg.SignatureSubpacketTags;
 import org.spongycastle.openpgp.PGPKeyRing;
 import org.spongycastle.openpgp.PGPPublicKey;
 import org.spongycastle.openpgp.PGPSecretKeyRing;
+import org.spongycastle.openpgp.PGPSignature;
+import org.spongycastle.openpgp.operator.jcajce.JcaPGPContentVerifierBuilderProvider;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
 import org.sufficientlysecure.keychain.util.IterableIterator;
@@ -46,24 +49,11 @@ public class ImportKeysListEntry implements Serializable, Parcelable {
     public int bitStrength;
     public String algorithm;
     public boolean secretKey;
+    public String mPrimaryUserId;
 
     private boolean mSelected;
 
     private byte[] mBytes = new byte[]{};
-
-    public ImportKeysListEntry(ImportKeysListEntry b) {
-        this.userIds = b.userIds;
-        this.keyId = b.keyId;
-        this.revoked = b.revoked;
-        this.date = b.date;
-        this.fingerPrintHex = b.fingerPrintHex;
-        this.keyIdHex = b.keyIdHex;
-        this.bitStrength = b.bitStrength;
-        this.algorithm = b.algorithm;
-        this.secretKey = b.secretKey;
-        this.mSelected = b.mSelected;
-        this.mBytes = b.mBytes;
-    }
 
     public int describeContents() {
         return 0;
@@ -71,6 +61,7 @@ public class ImportKeysListEntry implements Serializable, Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(mPrimaryUserId);
         dest.writeStringList(userIds);
         dest.writeLong(keyId);
         dest.writeByte((byte) (revoked ? 1 : 0));
@@ -88,6 +79,7 @@ public class ImportKeysListEntry implements Serializable, Parcelable {
     public static final Creator<ImportKeysListEntry> CREATOR = new Creator<ImportKeysListEntry>() {
         public ImportKeysListEntry createFromParcel(final Parcel source) {
             ImportKeysListEntry vr = new ImportKeysListEntry();
+            vr.mPrimaryUserId = source.readString();
             vr.userIds = new ArrayList<String>();
             source.readStringList(vr.userIds);
             vr.keyId = source.readLong();
@@ -198,6 +190,14 @@ public class ImportKeysListEntry implements Serializable, Parcelable {
         this.userIds = userIds;
     }
 
+    public String getPrimaryUserId() {
+        return mPrimaryUserId;
+    }
+
+    public void setPrimaryUserId(String uid) {
+        mPrimaryUserId = uid;
+    }
+
     /**
      * Constructor for later querying from keyserver
      */
@@ -229,20 +229,39 @@ public class ImportKeysListEntry implements Serializable, Parcelable {
         } else {
             secretKey = false;
         }
+        PGPPublicKey key = pgpKeyRing.getPublicKey();
 
         userIds = new ArrayList<String>();
-        for (String userId : new IterableIterator<String>(pgpKeyRing.getPublicKey().getUserIDs())) {
+        for (String userId : new IterableIterator<String>(key.getUserIDs())) {
             userIds.add(userId);
+            for(PGPSignature sig : new IterableIterator<PGPSignature>(key.getSignaturesForID(userId))) {
+                if(sig.getHashedSubPackets().hasSubpacket(SignatureSubpacketTags.PRIMARY_USER_ID)) {
+                    try {
+                        // make sure it's actually valid
+                        sig.init(new JcaPGPContentVerifierBuilderProvider().setProvider(
+                                Constants.BOUNCY_CASTLE_PROVIDER_NAME), key);
+                        if (sig.verifyCertification(userId, key)) {
+                            mPrimaryUserId = userId;
+                        }
+                    } catch(Exception e) {
+                        // nothing bad happens, the key is just not considered the primary key id
+                    }
+                }
+
+            }
+        }
+        // if there was no user id flagged as primary, use the first one
+        if(mPrimaryUserId == null) {
+            mPrimaryUserId = userIds.get(0);
         }
 
-        this.keyId = pgpKeyRing.getPublicKey().getKeyID();
+        this.keyId = key.getKeyID();
         this.keyIdHex = PgpKeyHelper.convertKeyIdToHex(keyId);
 
-        this.revoked = pgpKeyRing.getPublicKey().isRevoked();
-        this.fingerPrintHex = PgpKeyHelper.convertFingerprintToHex(pgpKeyRing.getPublicKey()
-                .getFingerprint());
-        this.bitStrength = pgpKeyRing.getPublicKey().getBitStrength();
-        final int algorithm = pgpKeyRing.getPublicKey().getAlgorithm();
+        this.revoked = key.isRevoked();
+        this.fingerPrintHex = PgpKeyHelper.convertFingerprintToHex(key.getFingerprint());
+        this.bitStrength = key.getBitStrength();
+        final int algorithm = key.getAlgorithm();
         this.algorithm = getAlgorithmFromId(algorithm);
     }
 

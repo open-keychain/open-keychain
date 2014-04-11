@@ -39,10 +39,12 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import com.beardedhen.androidbootstrap.BootstrapButton;
 import com.devspark.appmsg.AppMsg;
 
+import org.spongycastle.openpgp.PGPException;
 import org.spongycastle.openpgp.PGPSecretKey;
 import org.spongycastle.openpgp.PGPSecretKeyRing;
 import org.sufficientlysecure.keychain.Constants;
@@ -287,34 +289,16 @@ public class EditKeyActivity extends ActionBarActivity implements EditorListener
             Log.d(Constants.TAG, "uri: " + mDataUri);
 
             try {
-                // get master key id using row id
-                long masterKeyId = ProviderHelper.getMasterKeyId(this, mDataUri);
-                finallyEdit(masterKeyId);
-            } catch (ProviderHelper.NotFoundException e) {
-                Log.e(Constants.TAG, "key not found!", e);
-            }
-        }
-    }
+                Uri secretUri = KeychainContract.KeyRingData.buildSecretKeyRingUri(mDataUri);
+                mKeyRing = (PGPSecretKeyRing) ProviderHelper.getPGPKeyRing(this, secretUri);
 
-    @SuppressWarnings("unchecked")
-    private void finallyEdit(final long masterKeyId) {
-        if (masterKeyId != 0) {
-            PGPSecretKey masterKey = null;
-            try {
-                mKeyRing = ProviderHelper.getPGPSecretKeyRing(this, masterKeyId);
-
-                masterKey = mKeyRing.getSecretKey();
+                PGPSecretKey masterKey = mKeyRing.getSecretKey();
                 mMasterCanSign = PgpKeyHelper.isCertificationKey(mKeyRing.getSecretKey());
                 for (PGPSecretKey key : new IterableIterator<PGPSecretKey>(mKeyRing.getSecretKeys())) {
                     mKeys.add(key);
                     mKeysUsages.add(-1); // get usage when view is created
                 }
-            } catch (ProviderHelper.NotFoundException e) {
-                Log.e(Constants.TAG, "Keyring not found with masterKeyId: " + masterKeyId);
-                AppMsg.makeText(this, R.string.error_no_secret_key_found, AppMsg.STYLE_ALERT).show();
-                // TODO
-            }
-            if (masterKey != null) {
+
                 boolean isSet = false;
                 for (String userId : new IterableIterator<String>(masterKey.getUserIDs())) {
                     Log.d(Constants.TAG, "Added userId " + userId);
@@ -327,17 +311,23 @@ public class EditKeyActivity extends ActionBarActivity implements EditorListener
                     }
                     mUserIds.add(userId);
                 }
+
+                buildLayout(false);
+
+                mCurrentPassphrase = "";
+                mIsPassphraseSet = PassphraseCacheService.hasPassphrase(mKeyRing);
+                if (!mIsPassphraseSet) {
+                    // check "no passphrase" checkbox and remove button
+                    mNoPassphrase.setChecked(true);
+                    mChangePassphrase.setVisibility(View.GONE);
+                }
+
+            } catch (ProviderHelper.NotFoundException e) {
+                Log.e(Constants.TAG, "Keyring not found: " + e.getMessage(), e);
+                Toast.makeText(this, R.string.error_no_secret_key_found, Toast.LENGTH_SHORT).show();
+                finish();
             }
-        }
 
-        mCurrentPassphrase = "";
-        buildLayout(false);
-
-        mIsPassphraseSet = PassphraseCacheService.hasPassphrase(this, masterKeyId);
-        if (!mIsPassphraseSet) {
-            // check "no passphrase" checkbox and remove button
-            mNoPassphrase.setChecked(true);
-            mChangePassphrase.setVisibility(View.GONE);
         }
     }
 

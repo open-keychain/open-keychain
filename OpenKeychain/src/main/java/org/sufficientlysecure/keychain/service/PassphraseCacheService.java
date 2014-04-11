@@ -200,6 +200,31 @@ public class PassphraseCacheService extends Service {
         return cachedPassphrase;
     }
 
+    public static boolean hasPassphrase(PGPSecretKeyRing secretKeyRing) {
+        PGPSecretKey secretKey = null;
+        boolean foundValidKey = false;
+        for (Iterator keys = secretKeyRing.getSecretKeys(); keys.hasNext(); ) {
+            secretKey = (PGPSecretKey) keys.next();
+            if (!secretKey.isPrivateKeyEmpty()) {
+                foundValidKey = true;
+                break;
+            }
+        }
+        if(!foundValidKey) {
+            return false;
+        }
+
+        try {
+            PBESecretKeyDecryptor keyDecryptor = new JcePBESecretKeyDecryptorBuilder()
+                    .setProvider("SC").build("".toCharArray());
+            PGPPrivateKey testKey = secretKey.extractPrivateKey(keyDecryptor);
+            return testKey == null;
+        } catch(PGPException e) {
+            // this means the crc check failed -> passphrase required
+            return true;
+        }
+    }
+
     /**
      * Checks if key has a passphrase.
      *
@@ -210,27 +235,7 @@ public class PassphraseCacheService extends Service {
         // check if the key has no passphrase
         try {
             PGPSecretKeyRing secRing = ProviderHelper.getPGPSecretKeyRing(context, secretKeyId);
-            PGPSecretKey secretKey = null;
-            boolean foundValidKey = false;
-            for (Iterator keys = secRing.getSecretKeys(); keys.hasNext(); ) {
-                secretKey = (PGPSecretKey) keys.next();
-                if (!secretKey.isPrivateKeyEmpty()) {
-                    foundValidKey = true;
-                    break;
-                }
-            }
-
-            if (!foundValidKey) {
-                return false;
-            }
-            PBESecretKeyDecryptor keyDecryptor = new JcePBESecretKeyDecryptorBuilder().setProvider(
-                    "SC").build("".toCharArray());
-            PGPPrivateKey testKey = secretKey.extractPrivateKey(keyDecryptor);
-            if (testKey != null) {
-                return false;
-            }
-        } catch (PGPException e) {
-            // silently catch
+            return hasPassphrase(secRing);
         } catch (ProviderHelper.NotFoundException e) {
             Log.e(Constants.TAG, "key not found!", e);
         }
