@@ -487,6 +487,8 @@ public class PgpSignEncrypt {
 
             InputStream in = mData.getInputStream();
             if (mEnableAsciiArmorOutput) {
+                // TODO: this requires a ascii text, this is currently not checked
+                // mEnableAsciiArmorOutput does not mean that the input is ascii
                 final BufferedReader reader = new BufferedReader(new InputStreamReader(in));
 
                 String line;
