@@ -122,15 +122,20 @@ public class ProviderHelper {
      * Find the master key id related to a given query. The id will either be extracted from the
      * query, which should work for all specific /key_rings/ queries, or will be queried if it can't.
      */
-    public static long getMasterKeyId(Context context, Uri queryUri) throws NotFoundException {
+    public static long extractOrGetMasterKeyId(Context context, Uri queryUri)
+            throws NotFoundException {
         // try extracting from the uri first
-//        String firstSegment = queryUri.getPathSegments().get(1);
-//        if(!firstSegment.equals("find")) try {
-//            return Long.parseLong(firstSegment);
-//        } catch(NumberFormatException e) {
-//            // didn't work? oh well.
-//            Log.d(Constants.TAG, "Couldn't get masterKeyId from URI, querying...");
-//        }
+        String firstSegment = queryUri.getPathSegments().get(1);
+        if(!firstSegment.equals("find")) try {
+            return Long.parseLong(firstSegment);
+        } catch(NumberFormatException e) {
+            // didn't work? oh well.
+            Log.d(Constants.TAG, "Couldn't get masterKeyId from URI, querying...");
+        }
+        return getMasterKeyId(context, queryUri);
+    }
+
+    public static long getMasterKeyId(Context context, Uri queryUri) throws NotFoundException {
         Object data = getGenericData(context, queryUri, KeyRings.MASTER_KEY_ID, FIELD_TYPE_INTEGER);
         if(data != null) {
             return (Long) data;

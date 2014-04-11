@@ -82,7 +82,6 @@ public class ShareQrCodeDialogFragment extends DialogFragment {
         mFingerprintOnly = getArguments().getBoolean(ARG_FINGERPRINT_ONLY);
 
         AlertDialog.Builder alert = new AlertDialog.Builder(getActivity());
-
         alert.setTitle(R.string.share_qr_code_dialog_title);
 
         LayoutInflater inflater = activity.getLayoutInflater();
@@ -100,7 +99,8 @@ public class ShareQrCodeDialogFragment extends DialogFragment {
                     getActivity(), KeyRings.buildUnifiedKeyRingUri(dataUri),
                     KeyRings.FINGERPRINT, ProviderHelper.FIELD_TYPE_BLOB);
             if(blob == null) {
-                // TODO error handling?!
+                Log.e(Constants.TAG, "key not found!");
+                AppMsg.makeText(getActivity(), R.string.error_key_not_found, AppMsg.STYLE_ALERT).show();
                 return null;
             }
 

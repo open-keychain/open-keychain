@@ -331,11 +331,8 @@ public class ViewKeyMainFragment extends Fragment implements
     }
 
     private void encryptToContact(Uri dataUri) {
-        // TODO preselect from uri? should be feasible without trivial query
         try {
-            long keyId = ProviderHelper.getMasterKeyId(getActivity(),
-                    KeyRingData.buildPublicKeyRingUri(dataUri));
-
+            long keyId = ProviderHelper.extractOrGetMasterKeyId(getActivity(), dataUri);
             long[] encryptionKeyIds = new long[]{ keyId };
             Intent intent = new Intent(getActivity(), EncryptActivity.class);
             intent.setAction(EncryptActivity.ACTION_ENCRYPT);
