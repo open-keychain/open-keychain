@@ -31,4 +31,16 @@
         app:showAsAction="never"
         android:title="@string/menu_create_key_expert" />
 
+    <item
+        android:id="@+id/menu_key_list_debug_read"
+        app:showAsAction="never"
+        android:title="Debug / DB restore"
+        android:visible="false" />
+
+    <item
+        android:id="@+id/menu_key_list_debug_write"
+        app:showAsAction="never"
+        android:title="Debug / DB backup"
+        android:visible="false" />
+
 </menu>
