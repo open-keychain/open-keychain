@@ -28,15 +28,12 @@ import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.CheckBox;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRingData;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
-import org.sufficientlysecure.keychain.provider.KeychainDatabase;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.util.Log;
 
@@ -49,11 +46,7 @@ public class DeleteKeyDialogFragment extends DialogFragment {
     public static final int MESSAGE_OKAY = 1;
     public static final int MESSAGE_ERROR = 0;
 
-    private boolean mIsSingleSelection = false;
-
     private TextView mMainMessage;
-    private CheckBox mCheckDeleteSecret;
-    private LinearLayout mDeleteSecretKeyView;
     private View mInflateView;
 
     private Messenger mMessenger;
@@ -61,14 +54,12 @@ public class DeleteKeyDialogFragment extends DialogFragment {
     /**
      * Creates new instance of this delete file dialog fragment
      */
-    public static DeleteKeyDialogFragment newInstance(Messenger messenger,
-                                                      long[] masterKeyIds) {
+    public static DeleteKeyDialogFragment newInstance(Messenger messenger, long[] masterKeyIds) {
         DeleteKeyDialogFragment frag = new DeleteKeyDialogFragment();
         Bundle args = new Bundle();
 
         args.putParcelable(ARG_MESSENGER, messenger);
         args.putLongArray(ARG_DELETE_MASTER_KEY_IDS, masterKeyIds);
-        //We don't need the key type
 
         frag.setArguments(args);
 
@@ -85,39 +76,32 @@ public class DeleteKeyDialogFragment extends DialogFragment {
 
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
 
-        //Setup custom View to display in AlertDialog
+        // Setup custom View to display in AlertDialog
         LayoutInflater inflater = activity.getLayoutInflater();
         mInflateView = inflater.inflate(R.layout.view_key_delete_fragment, null);
         builder.setView(mInflateView);
 
-        mDeleteSecretKeyView = (LinearLayout) mInflateView.findViewById(R.id.deleteSecretKeyView);
         mMainMessage = (TextView) mInflateView.findViewById(R.id.mainMessage);
-        mCheckDeleteSecret = (CheckBox) mInflateView.findViewById(R.id.checkDeleteSecret);
 
         builder.setTitle(R.string.warning);
 
         // If only a single key has been selected
         if (masterKeyIds.length == 1) {
-            mIsSingleSelection = true;
-
             long masterKeyId = masterKeyIds[0];
 
             HashMap<String, Object> data = new ProviderHelper(activity).getUnifiedData(masterKeyId, new String[]{
                     KeyRings.USER_ID,
                     KeyRings.HAS_SECRET
-            }, new int[] { ProviderHelper.FIELD_TYPE_STRING, ProviderHelper.FIELD_TYPE_INTEGER });
+            }, new int[]{ProviderHelper.FIELD_TYPE_STRING, ProviderHelper.FIELD_TYPE_INTEGER});
             String userId = (String) data.get(KeyRings.USER_ID);
             boolean hasSecret = ((Long) data.get(KeyRings.HAS_SECRET)) == 1;
 
-            // Hide the Checkbox and TextView since this is a single selection,user will be notified through message
-            mDeleteSecretKeyView.setVisibility(View.GONE);
             // Set message depending on which key it is.
             mMainMessage.setText(getString(
                     hasSecret ? R.string.secret_key_deletion_confirmation
-                              : R.string.public_key_deletetion_confirmation,
+                            : R.string.public_key_deletetion_confirmation,
                     userId));
         } else {
-            mDeleteSecretKeyView.setVisibility(View.VISIBLE);
             mMainMessage.setText(R.string.key_deletion_confirmation_multi);
         }
 
@@ -127,10 +111,10 @@ public class DeleteKeyDialogFragment extends DialogFragment {
             public void onClick(DialogInterface dialog, int which) {
 
                 boolean success = false;
-                for(long masterKeyId : masterKeyIds) {
+                for (long masterKeyId : masterKeyIds) {
                     int count = activity.getContentResolver().delete(
                             KeyRingData.buildPublicKeyRingUri(Long.toString(masterKeyId)), null, null
-                        );
+                    );
                     success = count > 0;
                 }
                 if (success) {
