@@ -330,6 +330,11 @@ public class KeychainIntentService extends IntentService
                         .signaturePassphrase(
                                 PassphraseCacheService.getCachedPassphrase(this, signatureKeyId));
 
+                // this assumes that the bytes are cleartext (valid for current implementation!)
+                if (target == TARGET_BYTES) {
+                    builder.cleartextInput(true);
+                }
+
                 builder.build().execute();
 
                 outStream.close();

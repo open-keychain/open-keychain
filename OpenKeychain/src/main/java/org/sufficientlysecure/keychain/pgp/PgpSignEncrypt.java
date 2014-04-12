@@ -80,7 +80,7 @@ public class PgpSignEncrypt {
     private boolean mSignatureForceV3;
     private String mSignaturePassphrase;
     private boolean mEncryptToSigner;
-    private boolean mBinaryInput;
+    private boolean mCleartextInput;
 
     private static byte[] NEW_LINE;
 
@@ -110,7 +110,7 @@ public class PgpSignEncrypt {
         this.mSignatureForceV3 = builder.mSignatureForceV3;
         this.mSignaturePassphrase = builder.mSignaturePassphrase;
         this.mEncryptToSigner = builder.mEncryptToSigner;
-        this.mBinaryInput = builder.mBinaryInput;
+        this.mCleartextInput = builder.mCleartextInput;
     }
 
     public static class Builder {
@@ -132,7 +132,7 @@ public class PgpSignEncrypt {
         private boolean mSignatureForceV3 = false;
         private String mSignaturePassphrase = null;
         private boolean mEncryptToSigner = false;
-        private boolean mBinaryInput = false;
+        private boolean mCleartextInput = false;
 
         public Builder(ProviderHelper providerHelper, String versionHeader, InputData data, OutputStream outStream) {
             this.mProviderHelper = providerHelper;
@@ -205,11 +205,11 @@ public class PgpSignEncrypt {
         /**
          * TODO: test this option!
          *
-         * @param binaryInput
+         * @param cleartextInput
          * @return
          */
-        public Builder binaryInput(boolean binaryInput) {
-            this.mBinaryInput = binaryInput;
+        public Builder cleartextInput(boolean cleartextInput) {
+            this.mCleartextInput = cleartextInput;
             return this;
         }
 
@@ -255,7 +255,7 @@ public class PgpSignEncrypt {
         boolean enableSignature = mSignatureMasterKeyId != Id.key.none;
         boolean enableEncryption = ((mEncryptionMasterKeyIds != null && mEncryptionMasterKeyIds.length > 0)
                 || mSymmetricPassphrase != null);
-        boolean enableCompression = (enableEncryption && mCompressionId != Id.choice.compression.none);
+        boolean enableCompression = (mCompressionId != Id.choice.compression.none);
 
         Log.d(Constants.TAG, "enableSignature:" + enableSignature
                 + "\nenableEncryption:" + enableEncryption
@@ -362,8 +362,8 @@ public class PgpSignEncrypt {
                     .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME);
 
             int signatureType;
-            if (mEnableAsciiArmorOutput && !enableEncryption) {
-                // for sign-only ascii text and sign-only binary input (files)
+            if (mCleartextInput && mEnableAsciiArmorOutput && !enableEncryption) {
+                // for sign-only ascii text
                 signatureType = PGPSignature.CANONICAL_TEXT_DOCUMENT;
             } else {
                 signatureType = PGPSignature.BINARY_DOCUMENT;
@@ -436,7 +436,7 @@ public class PgpSignEncrypt {
             }
 
             literalGen.close();
-        } else if (!mBinaryInput && mEnableAsciiArmorOutput && enableSignature && !enableEncryption && !enableCompression) {
+        } else if (enableSignature && mCleartextInput && mEnableAsciiArmorOutput) {
             /* cleartext signature: sign-only of ascii text */
 
             updateProgress(R.string.progress_signing, 40, 100);
@@ -477,43 +477,45 @@ public class PgpSignEncrypt {
 
             armorOut.endClearText();
 
-
             pOut = new BCPGOutputStream(armorOut);
-        } else if (mBinaryInput && enableSignature && !enableEncryption && !enableCompression) {
-            // TODO: This part of the code is not tested!!!
-            /* sign-only binaries (files) */
+        } else if (enableSignature && !mCleartextInput) {
+            /* sign-only binary (files/data stream) */
 
             updateProgress(R.string.progress_signing, 40, 100);
 
             InputStream in = mData.getInputStream();
-            if (mEnableAsciiArmorOutput) {
-                // TODO: this requires a ascii text, this is currently not checked
-                // mEnableAsciiArmorOutput does not mean that the input is ascii
-                final BufferedReader reader = new BufferedReader(new InputStreamReader(in));
 
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    if (mSignatureForceV3) {
-                        processLineV3(line, null, signatureV3Generator);
-                        signatureV3Generator.update(NEW_LINE);
-                    } else {
-                        processLine(line, null, signatureGenerator);
-                        signatureGenerator.update(NEW_LINE);
-                    }
-                }
+            if (enableCompression) {
+                compressGen = new PGPCompressedDataGenerator(mCompressionId);
+                bcpgOut = new BCPGOutputStream(compressGen.open(out));
             } else {
-                byte[] buffer = new byte[1 << 16];
-                int n;
-                while ((n = in.read(buffer)) > 0) {
-                    if (mSignatureForceV3) {
-                        signatureV3Generator.update(buffer, 0, n);
-                    } else {
-                        signatureGenerator.update(buffer, 0, n);
-                    }
+                bcpgOut = new BCPGOutputStream(out);
+            }
+
+            if (mSignatureForceV3) {
+                signatureV3Generator.generateOnePassVersion(false).encode(bcpgOut);
+            } else {
+                signatureGenerator.generateOnePassVersion(false).encode(bcpgOut);
+            }
+
+            PGPLiteralDataGenerator literalGen = new PGPLiteralDataGenerator();
+            // file name not needed, so empty string
+            pOut = literalGen.open(bcpgOut, PGPLiteralData.BINARY, "", new Date(),
+                    new byte[1 << 16]);
+
+            byte[] buffer = new byte[1 << 16];
+            int n;
+            while ((n = in.read(buffer)) > 0) {
+                pOut.write(buffer, 0, n);
+
+                if (mSignatureForceV3) {
+                    signatureV3Generator.update(buffer, 0, n);
+                } else {
+                    signatureGenerator.update(buffer, 0, n);
                 }
             }
 
-            pOut = new BCPGOutputStream(out);
+            literalGen.close();
         } else {
             pOut = null;
             Log.e(Constants.TAG, "not supported!");

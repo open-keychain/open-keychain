@@ -175,6 +175,10 @@ public class OpenPgpService extends RemoteService {
                         .signatureForceV3(false)
                         .signatureMasterKeyId(accSettings.getKeyId())
                         .signaturePassphrase(passphrase);
+
+                // TODO: currently always assume cleartext input, no sign-only of binary currently!
+                builder.cleartextInput(true);
+
                 builder.build().execute();
             } finally {
                 is.close();
