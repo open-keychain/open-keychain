@@ -44,6 +44,15 @@ import java.util.Arrays;
  * Abstract service class for remote APIs that handle app registration and user input.
  */
 public abstract class RemoteService extends Service {
+
+    public static class WrongPackageSignatureException extends Exception {
+        private static final long serialVersionUID = -8294642703122196028L;
+
+        public WrongPackageSignatureException(String message) {
+            super(message);
+        }
+    }
+
     Context mContext;
     ProviderHelper mProviderHelper;
 
@@ -51,6 +60,12 @@ public abstract class RemoteService extends Service {
         return mContext;
     }
 
+    /**
+     * Checks if caller is allowed to access the API
+     *
+     * @param data
+     * @return null if caller is allowed, or a Bundle with a PendingIntent
+     */
     protected Intent isAllowed(Intent data) {
         try {
             if (isCallerAllowed(false)) {

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="org.sufficientlysecure.keychain"
     android:installLocation="auto"
     android:versionCode="25000"
@@ -78,15 +79,6 @@
             android:windowSoftInputMode="stateHidden" />
         <activity
             android:name=".ui.ViewKeyActivity"
-            android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
-            android:label="@string/title_key_details"
-            android:parentActivityName=".ui.KeyListActivity">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".ui.KeyListActivity" />
-        </activity>
-        <activity
-            android:name=".ui.ViewKeyActivityJB"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
             android:label="@string/title_key_details"
             android:parentActivityName=".ui.KeyListActivity">
@@ -423,28 +415,13 @@
             android:name=".remote.OpenPgpService"
             android:enabled="true"
             android:exported="true"
-            android:process=":remote_api">
+            android:process=":remote_api"
+            tools:ignore="ExportedService">
             <intent-filter>
                 <action android:name="org.openintents.openpgp.IOpenPgpService" />
             </intent-filter>
         </service>
 
-        <!-- Extended Remote API -->
-        <!--<service-->
-        <!--android:name="org.sufficientlysecure.keychain.service.remote.ExtendedApiService"-->
-        <!--android:enabled="true"-->
-        <!--android:exported="true"-->
-        <!--android:process=":remote_api">-->
-        <!--<intent-filter>-->
-        <!--<action android:name="org.sufficientlysecure.keychain.service.remote.IExtendedApiService" />-->
-        <!--</intent-filter>-->
-        <!--</service>-->
-
-        <!-- TODO: authority! Make this API with content provider uris -->
-        <!-- <provider -->
-        <!-- android:name="org.sufficientlysecure.keychain.provider.KeychainServiceBlobProvider" -->
-        <!-- android:authorities="org.sufficientlysecure.keychain.provider.KeychainServiceBlobProvider" -->
-        <!-- android:permission="org.sufficientlysecure.keychain.permission.ACCESS_API" /> -->
     </application>
 
 </manifest>

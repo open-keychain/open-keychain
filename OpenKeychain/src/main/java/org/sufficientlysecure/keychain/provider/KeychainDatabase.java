@@ -155,8 +155,9 @@ public class KeychainDatabase extends SQLiteOpenHelper {
             }
         }
         // if it's us, do the import
-        if(iAmIt)
+        if (iAmIt) {
             checkAndImportApg(context);
+        }
     }
 
     @Override
@@ -273,11 +274,11 @@ public class KeychainDatabase extends SQLiteOpenHelper {
                 byte[] data = c.getBlob(0);
                 PGPKeyRing ring = PgpConversionHelper.BytesToPGPKeyRing(data);
                 ProviderHelper providerHelper = new ProviderHelper(context);
-                if(ring instanceof PGPPublicKeyRing)
+                if (ring instanceof PGPPublicKeyRing) {
                     providerHelper.saveKeyRing((PGPPublicKeyRing) ring);
-                else if(ring instanceof PGPSecretKeyRing)
+                } else if(ring instanceof PGPSecretKeyRing) {
                     providerHelper.saveKeyRing((PGPSecretKeyRing) ring);
-                else {
+                } else {
                     Log.e(Constants.TAG, "Unknown blob data type!");
                 }
             }
@@ -286,17 +287,17 @@ public class KeychainDatabase extends SQLiteOpenHelper {
             Log.e(Constants.TAG, "Error importing apg db!", e);
             return;
         } finally {
-            if(c != null)
+            if(c != null) {
                 c.close();
-            if(db != null)
+            }
+            if(db != null) {
                 db.close();
+            }
         }
 
         // TODO delete old db, if we are sure this works
         // context.deleteDatabase("apg.db");
         Log.d(Constants.TAG, "All done, (not) deleting apg.db");
 
-
     }
-
 }

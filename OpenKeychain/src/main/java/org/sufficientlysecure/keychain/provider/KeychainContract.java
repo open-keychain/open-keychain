@@ -79,11 +79,6 @@ public class KeychainContract {
         String PACKAGE_NAME = "package_name"; // foreign key to api_apps.package_name
     }
 
-    public static final class KeyTypes {
-        public static final int PUBLIC = 0;
-        public static final int SECRET = 1;
-    }
-
     public static final String CONTENT_AUTHORITY = Constants.PACKAGE_NAME + ".provider";
 
     private static final Uri BASE_CONTENT_URI_INTERNAL = Uri
@@ -283,15 +278,6 @@ public class KeychainContract {
             return CONTENT_URI.buildUpon().appendPath(uri.getPathSegments().get(1)).appendPath(PATH_CERTS).build();
         }
 
-    }
-
-    public static class DataStream {
-        public static final Uri CONTENT_URI = BASE_CONTENT_URI_INTERNAL.buildUpon()
-                .appendPath(BASE_DATA).build();
-
-        public static Uri buildDataStreamUri(String streamFilename) {
-            return CONTENT_URI.buildUpon().appendPath(streamFilename).build();
-        }
     }
 
     private KeychainContract() {

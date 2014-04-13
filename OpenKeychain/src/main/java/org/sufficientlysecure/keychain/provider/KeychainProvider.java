@@ -32,13 +32,12 @@ import android.text.TextUtils;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.provider.KeychainContract.ApiAccounts;
 import org.sufficientlysecure.keychain.provider.KeychainContract.ApiApps;
-import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
-import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRingData;
-import org.sufficientlysecure.keychain.provider.KeychainContract.Keys;
 import org.sufficientlysecure.keychain.provider.KeychainContract.Certs;
+import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRingData;
+import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
+import org.sufficientlysecure.keychain.provider.KeychainContract.Keys;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UserIds;
 import org.sufficientlysecure.keychain.provider.KeychainDatabase.Tables;
-import org.sufficientlysecure.keychain.ui.adapter.SelectKeyCursorAdapter;
 import org.sufficientlysecure.keychain.util.Log;
 
 import java.util.Arrays;
@@ -66,8 +65,6 @@ public class KeychainProvider extends ContentProvider {
 
     private static final int KEY_RINGS_FIND_BY_EMAIL = 400;
     private static final int KEY_RINGS_FIND_BY_SUBKEY = 401;
-
-    // private static final int DATA_STREAM = 501;
 
     protected UriMatcher mUriMatcher;
 
@@ -165,15 +162,6 @@ public class KeychainProvider extends ContentProvider {
                 + KeychainContract.PATH_ACCOUNTS, API_ACCOUNTS);
         matcher.addURI(authority, KeychainContract.BASE_API_APPS + "/*/"
                 + KeychainContract.PATH_ACCOUNTS + "/*", API_ACCOUNTS_BY_ACCOUNT_NAME);
-
-        /**
-         * data stream
-         *
-         * <pre>
-         * data / _
-         * </pre>
-         */
-        // matcher.addURI(authority, KeychainContract.BASE_DATA + "/*", DATA_STREAM);
 
         return matcher;
     }
@@ -592,7 +580,6 @@ public class KeychainProvider extends ContentProvider {
                     break;
 
                 case KEY_RING_KEYS:
-                    Log.d(Constants.TAG, "keys");
                     db.insertOrThrow(Tables.KEYS, null, values);
                     keyId = values.getAsLong(Keys.MASTER_KEY_ID);
                     break;
@@ -708,7 +695,6 @@ public class KeychainProvider extends ContentProvider {
 
         final SQLiteDatabase db = mKeychainDatabase.getWritableDatabase();
 
-        String defaultSelection = null;
         int count = 0;
         try {
             final int match = mUriMatcher.match(uri);
