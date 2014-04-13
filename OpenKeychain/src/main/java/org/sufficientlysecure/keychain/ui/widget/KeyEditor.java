@@ -1,4 +1,5 @@
 /*
+ * Copyright (C) 2014 Dominik Schürmann <dominik@dominikschuermann.de>
  * Copyright (C) 2010-2014 Thialfihar <thi@thialfihar.org>
  *
  * This program is free software: you can redistribute it and/or modify
@@ -74,11 +75,9 @@ public class KeyEditor extends LinearLayout implements Editor, OnClickListener {
     int mOriginalUsage;
     boolean mIsNewKey;
 
-    private CheckBox.OnCheckedChangeListener mCheckChanged = new CheckBox.OnCheckedChangeListener()
-    {
+    private CheckBox.OnCheckedChangeListener mCheckChanged = new CheckBox.OnCheckedChangeListener() {
         @Override
-        public void onCheckedChanged(CompoundButton buttonView, boolean isChecked)
-        {
+        public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
             if (mEditorListener != null) {
                 mEditorListener.onEdited();
             }
@@ -89,28 +88,28 @@ public class KeyEditor extends LinearLayout implements Editor, OnClickListener {
     private int mDatePickerResultCount = 0;
     private DatePickerDialog.OnDateSetListener mExpiryDateSetListener =
             new DatePickerDialog.OnDateSetListener() {
-        public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-            // Note: Ignore results after the first one - android sends multiples.
-            if (mDatePickerResultCount++ == 0) {
-                GregorianCalendar date = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
-                date.set(year, monthOfYear, dayOfMonth);
-                if (mOriginalExpiryDate != null) {
-                    long numDays = (date.getTimeInMillis() / 86400000) -
-                        (mOriginalExpiryDate.getTimeInMillis() / 86400000);
-                    if (numDays == 0) {
-                        setExpiryDate(mOriginalExpiryDate);
-                    } else {
-                        setExpiryDate(date);
+                public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+                    // Note: Ignore results after the first one - android sends multiples.
+                    if (mDatePickerResultCount++ == 0) {
+                        GregorianCalendar date = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
+                        date.set(year, monthOfYear, dayOfMonth);
+                        if (mOriginalExpiryDate != null) {
+                            long numDays = (date.getTimeInMillis() / 86400000) -
+                                    (mOriginalExpiryDate.getTimeInMillis() / 86400000);
+                            if (numDays == 0) {
+                                setExpiryDate(mOriginalExpiryDate);
+                            } else {
+                                setExpiryDate(date);
+                            }
+                        } else {
+                            setExpiryDate(date);
+                        }
+                        if (mEditorListener != null) {
+                            mEditorListener.onEdited();
+                        }
                     }
-                } else {
-                    setExpiryDate(date);
                 }
-                if (mEditorListener != null) {
-                    mEditorListener.onEdited();
-                }
-            }
-        }
-    };
+            };
 
     public KeyEditor(Context context) {
         super(context);
@@ -132,13 +131,13 @@ public class KeyEditor extends LinearLayout implements Editor, OnClickListener {
 
         mDeleteButton = (BootstrapButton) findViewById(R.id.delete);
         mDeleteButton.setOnClickListener(this);
-        mChkCertify =  (CheckBox) findViewById(R.id.chkCertify);
+        mChkCertify = (CheckBox) findViewById(R.id.chkCertify);
         mChkCertify.setOnCheckedChangeListener(mCheckChanged);
-        mChkSign =  (CheckBox) findViewById(R.id.chkSign);
+        mChkSign = (CheckBox) findViewById(R.id.chkSign);
         mChkSign.setOnCheckedChangeListener(mCheckChanged);
-        mChkEncrypt =  (CheckBox) findViewById(R.id.chkEncrypt);
+        mChkEncrypt = (CheckBox) findViewById(R.id.chkEncrypt);
         mChkEncrypt.setOnCheckedChangeListener(mCheckChanged);
-        mChkAuthenticate =  (CheckBox) findViewById(R.id.chkAuthenticate);
+        mChkAuthenticate = (CheckBox) findViewById(R.id.chkAuthenticate);
         mChkAuthenticate.setOnCheckedChangeListener(mCheckChanged);
 
         setExpiryDate(null);
@@ -320,16 +319,16 @@ public class KeyEditor extends LinearLayout implements Editor, OnClickListener {
     }
 
     public int getUsage() {
-        mUsage  = (mUsage & ~KeyFlags.CERTIFY_OTHER) |
-            (mChkCertify.isChecked() ? KeyFlags.CERTIFY_OTHER : 0);
-        mUsage  = (mUsage & ~KeyFlags.SIGN_DATA) |
-            (mChkSign.isChecked() ? KeyFlags.SIGN_DATA : 0);
-        mUsage  = (mUsage & ~KeyFlags.ENCRYPT_COMMS) |
-            (mChkEncrypt.isChecked() ? KeyFlags.ENCRYPT_COMMS : 0);
-        mUsage  = (mUsage & ~KeyFlags.ENCRYPT_STORAGE) |
-            (mChkEncrypt.isChecked() ? KeyFlags.ENCRYPT_STORAGE : 0);
-        mUsage  = (mUsage & ~KeyFlags.AUTHENTICATION) |
-            (mChkAuthenticate.isChecked() ? KeyFlags.AUTHENTICATION : 0);
+        mUsage = (mUsage & ~KeyFlags.CERTIFY_OTHER) |
+                (mChkCertify.isChecked() ? KeyFlags.CERTIFY_OTHER : 0);
+        mUsage = (mUsage & ~KeyFlags.SIGN_DATA) |
+                (mChkSign.isChecked() ? KeyFlags.SIGN_DATA : 0);
+        mUsage = (mUsage & ~KeyFlags.ENCRYPT_COMMS) |
+                (mChkEncrypt.isChecked() ? KeyFlags.ENCRYPT_COMMS : 0);
+        mUsage = (mUsage & ~KeyFlags.ENCRYPT_STORAGE) |
+                (mChkEncrypt.isChecked() ? KeyFlags.ENCRYPT_STORAGE : 0);
+        mUsage = (mUsage & ~KeyFlags.AUTHENTICATION) |
+                (mChkAuthenticate.isChecked() ? KeyFlags.AUTHENTICATION : 0);
 
         return mUsage;
     }

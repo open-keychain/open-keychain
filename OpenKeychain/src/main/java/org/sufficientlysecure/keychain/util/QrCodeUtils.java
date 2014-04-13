@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Dominik Schürmann <dominik@dominikschuermann.de>
+ * Copyright (C) 2013-2014 Dominik Schürmann <dominik@dominikschuermann.de>
  * Copyright (C) 2011 Andreas Schildbach
  *
  * This program is free software: you can redistribute it and/or modify
