@@ -195,9 +195,9 @@
   <string name="file_delete_confirmation">Sei sicuro di voler cancellare\n%s?</string>
   <string name="file_delete_successful">Eliminato correttamente.</string>
   <string name="no_file_selected">Seleziona un file prima.</string>
-  <string name="decryption_successful">Decodifica e/o verifica eseguita con successo.</string>
-  <string name="encryption_successful">Firmato e/o codificato con successo.</string>
-  <string name="encryption_to_clipboard_successful">Firmato e/o codificato con successo negli appunti.</string>
+  <string name="decrypt_successful">Decodifica e/o verifica eseguita con successo.</string>
+  <string name="encrypt_sign_successful">Firmato e/o codificato con successo.</string>
+  <string name="encrypt_sign_clipboard_successful">Firmato e/o codificato con successo negli appunti.</string>
   <string name="enter_passphrase_twice">Inserisci la frase di accesso due volte.</string>
   <string name="select_encryption_key">Seleziona almeno una chiave di codifica.</string>
   <string name="select_encryption_or_signature_key">Seleziona almeno una chiave di codifica o di firma.</string>

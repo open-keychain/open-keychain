@@ -26,6 +26,7 @@ import android.support.v4.app.Fragment;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -34,10 +35,8 @@ import com.devspark.appmsg.AppMsg;
 
 import org.openintents.openpgp.OpenPgpSignatureResult;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.pgp.PgpDecryptVerifyResult;
 import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
-import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
-import org.sufficientlysecure.keychain.provider.KeychainContract;
-import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.ui.dialog.PassphraseDialogFragment;
 
 public class DecryptFragment extends Fragment {
@@ -45,19 +44,24 @@ public class DecryptFragment extends Fragment {
 
     protected long mSignatureKeyId = 0;
 
-    protected RelativeLayout mSignatureLayout = null;
-    protected ImageView mSignatureStatusImage = null;
-    protected TextView mUserId = null;
-    protected TextView mUserIdRest = null;
+    protected LinearLayout mResultLayout;
+    protected RelativeLayout mSignatureLayout;
+    protected TextView mResultText;
 
-    protected BootstrapButton mLookupKey = null;
+    protected ImageView mSignatureStatusImage;
+    protected TextView mUserId;
+    protected TextView mUserIdRest;
+
+    protected BootstrapButton mLookupKey;
 
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        mSignatureLayout = (RelativeLayout) getView().findViewById(R.id.signature);
+        mResultLayout = (LinearLayout) getView().findViewById(R.id.result);
+        mResultText = (TextView) getView().findViewById(R.id.result_text);
+        mSignatureLayout = (RelativeLayout) getView().findViewById(R.id.result_signature);
         mSignatureStatusImage = (ImageView) getView().findViewById(R.id.ic_signature_status);
         mUserId = (TextView) getView().findViewById(R.id.mainUserId);
         mUserIdRest = (TextView) getView().findViewById(R.id.mainUserIdRest);
@@ -68,8 +72,8 @@ public class DecryptFragment extends Fragment {
                 lookupUnknownKey(mSignatureKeyId);
             }
         });
-        mSignatureLayout.setVisibility(View.GONE);
-        mSignatureLayout.setOnClickListener(new OnClickListener() {
+        mResultLayout.setVisibility(View.GONE);
+        mResultLayout.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
                 lookupUnknownKey(mSignatureKeyId);
             }
@@ -102,10 +106,13 @@ public class DecryptFragment extends Fragment {
         }
     }
 
-    protected void onSignatureResult(OpenPgpSignatureResult signatureResult) {
+    protected void onResult(PgpDecryptVerifyResult decryptVerifyResult) {
+        OpenPgpSignatureResult signatureResult = decryptVerifyResult.getSignatureResult();
+
         mSignatureKeyId = 0;
-        mSignatureLayout.setVisibility(View.GONE);
+        mResultLayout.setVisibility(View.VISIBLE);
         if (signatureResult != null) {
+            mSignatureStatusImage.setVisibility(View.VISIBLE);
 
             mSignatureKeyId = signatureResult.getKeyId();
 
@@ -124,48 +131,63 @@ public class DecryptFragment extends Fragment {
             }
 
             switch (signatureResult.getStatus()) {
-                case OpenPgpSignatureResult.SIGNATURE_SUCCESS_UNCERTIFIED: {
+                case OpenPgpSignatureResult.SIGNATURE_SUCCESS_CERTIFIED: {
+                    mResultText.setText(R.string.decrypt_verified_successful);
+
+                    mResultLayout.setBackgroundColor(getResources().getColor(R.color.result_green));
                     mSignatureStatusImage.setImageResource(R.drawable.overlay_ok);
                     mLookupKey.setVisibility(View.GONE);
                     break;
                 }
 
-                // TODO!
-//                            case OpenPgpSignatureResult.SIGNATURE_SUCCESS_CERTIFIED: {
-//                                break;
-//                            }
+                case OpenPgpSignatureResult.SIGNATURE_SUCCESS_UNCERTIFIED: {
+                    mResultText.setText(R.string.decrypt_verified_successful);
+
+                    mResultLayout.setBackgroundColor(getResources().getColor(R.color.result_orange));
+                    mSignatureStatusImage.setImageResource(R.drawable.overlay_ok);
+                    mLookupKey.setVisibility(View.GONE);
+                    break;
+                }
 
                 case OpenPgpSignatureResult.SIGNATURE_UNKNOWN_PUB_KEY: {
+                    mResultText.setText(R.string.unknown_signature);
+
+                    mResultLayout.setBackgroundColor(getResources().getColor(R.color.result_orange));
                     mSignatureStatusImage.setImageResource(R.drawable.overlay_error);
                     mLookupKey.setVisibility(View.VISIBLE);
-                    AppMsg.makeText(getActivity(),
-                            R.string.unknown_signature,
-                            AppMsg.STYLE_ALERT).show();
                     break;
                 }
 
                 default: {
+                    mResultText.setText(R.string.error);
+
+                    mResultLayout.setBackgroundColor(getResources().getColor(R.color.result_red));
                     mSignatureStatusImage.setImageResource(R.drawable.overlay_error);
                     mLookupKey.setVisibility(View.GONE);
                     break;
                 }
             }
-            mSignatureLayout.setVisibility(View.VISIBLE);
+        } else {
+            mSignatureLayout.setVisibility(View.GONE);
+
+            // only successful decryption
+            mResultLayout.setBackgroundColor(getResources().getColor(R.color.result_blue));
+            mResultText.setText(R.string.decrypt_successful);
         }
     }
 
     protected void showPassphraseDialog(long keyId) {
         PassphraseDialogFragment.show(getActivity(), keyId,
-            new Handler() {
-                @Override
-                public void handleMessage(Message message) {
-                    if (message.what == PassphraseDialogFragment.MESSAGE_OKAY) {
-                        String passphrase =
-                                message.getData().getString(PassphraseDialogFragment.MESSAGE_DATA_PASSPHRASE);
-                        decryptStart(passphrase);
+                new Handler() {
+                    @Override
+                    public void handleMessage(Message message) {
+                        if (message.what == PassphraseDialogFragment.MESSAGE_OKAY) {
+                            String passphrase =
+                                    message.getData().getString(PassphraseDialogFragment.MESSAGE_DATA_PASSPHRASE);
+                            decryptStart(passphrase);
+                        }
                     }
-                }
-            });
+                });
     }
 
     /**

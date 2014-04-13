@@ -64,9 +64,9 @@ public class KeyEditor extends LinearLayout implements Editor, OnClickListener {
     TextView mKeyId;
     TextView mCreationDate;
     BootstrapButton mExpiryDateButton;
-    GregorianCalendar mCreatedDate;
-    GregorianCalendar mExpiryDate;
-    GregorianCalendar mOriginalExpiryDate = null;
+    Calendar mCreatedDate;
+    Calendar mExpiryDate;
+    Calendar mOriginalExpiryDate = null;
     CheckBox mChkCertify;
     CheckBox mChkSign;
     CheckBox mChkEncrypt;
@@ -145,9 +145,9 @@ public class KeyEditor extends LinearLayout implements Editor, OnClickListener {
         mExpiryDateButton.setOnClickListener(new OnClickListener() {
             @TargetApi(11)
             public void onClick(View v) {
-                GregorianCalendar date = mExpiryDate;
-                if (date == null) {
-                    date = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
+                Calendar expiryDate = mExpiryDate;
+                if (expiryDate == null) {
+                    expiryDate = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
                 }
                 /*
                  * Using custom DatePickerDialog which overrides the setTitle because
@@ -155,8 +155,8 @@ public class KeyEditor extends LinearLayout implements Editor, OnClickListener {
                  * See: https://code.google.com/p/android/issues/detail?id=49066
                  */
                 DatePickerDialog dialog = new ExpiryDatePickerDialog(getContext(),
-                        mExpiryDateSetListener, date.get(Calendar.YEAR), date.get(Calendar.MONTH),
-                        date.get(Calendar.DAY_OF_MONTH));
+                        mExpiryDateSetListener, expiryDate.get(Calendar.YEAR), expiryDate.get(Calendar.MONTH),
+                        expiryDate.get(Calendar.DAY_OF_MONTH));
                 mDatePickerResultCount = 0;
                 dialog.setCancelable(true);
                 dialog.setButton(Dialog.BUTTON_NEGATIVE,
@@ -179,13 +179,16 @@ public class KeyEditor extends LinearLayout implements Editor, OnClickListener {
                     dialog.getDatePicker().setCalendarViewShown(false);
                 }
                 if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.HONEYCOMB) {
-                    if (dialog != null && mCreatedDate != null) {
+
+                    // will crash with IllegalArgumentException if we set a min date
+                    // that is not before expiry
+                    if (mCreatedDate != null && mCreatedDate.before(expiryDate)) {
                         dialog.getDatePicker()
                                 .setMinDate(
                                         mCreatedDate.getTime().getTime() + DateUtils.DAY_IN_MILLIS);
                     } else {
-                        //When created date isn't available
-                        dialog.getDatePicker().setMinDate(date.getTime().getTime() + DateUtils.DAY_IN_MILLIS);
+                        // When created date isn't available
+                        dialog.getDatePicker().setMinDate(expiryDate.getTime().getTime() + DateUtils.DAY_IN_MILLIS);
                     }
                 }
 
@@ -243,7 +246,6 @@ public class KeyEditor extends LinearLayout implements Editor, OnClickListener {
             mLabelUsage2.setVisibility(View.INVISIBLE);
         }
 
-        int selectId = 0;
         mIsNewKey = isNewKey;
         if (isNewKey) {
             mUsage = usage;
@@ -263,10 +265,10 @@ public class KeyEditor extends LinearLayout implements Editor, OnClickListener {
             mChkAuthenticate.setChecked(PgpKeyHelper.isAuthenticationKey(key));
         }
 
-        GregorianCalendar cal = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
+        Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
         cal.setTime(PgpKeyHelper.getCreationDate(key));
         setCreatedDate(cal);
-        cal = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
+        cal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
         Date expiryDate = PgpKeyHelper.getExpiryDate(key);
         if (expiryDate == null) {
             setExpiryDate(null);
@@ -296,7 +298,7 @@ public class KeyEditor extends LinearLayout implements Editor, OnClickListener {
         mEditorListener = listener;
     }
 
-    private void setCreatedDate(GregorianCalendar date) {
+    private void setCreatedDate(Calendar date) {
         mCreatedDate = date;
         if (date == null) {
             mCreationDate.setText(getContext().getString(R.string.none));
@@ -305,7 +307,7 @@ public class KeyEditor extends LinearLayout implements Editor, OnClickListener {
         }
     }
 
-    private void setExpiryDate(GregorianCalendar date) {
+    private void setExpiryDate(Calendar date) {
         mExpiryDate = date;
         if (date == null) {
             mExpiryDateButton.setText(getContext().getString(R.string.none));
@@ -314,7 +316,7 @@ public class KeyEditor extends LinearLayout implements Editor, OnClickListener {
         }
     }
 
-    public GregorianCalendar getExpiryDate() {
+    public Calendar getExpiryDate() {
         return mExpiryDate;
     }
 

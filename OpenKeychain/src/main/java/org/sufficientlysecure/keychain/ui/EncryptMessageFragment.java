@@ -229,7 +229,7 @@ public class EncryptMessageFragment extends Fragment {
                     if (toClipboard) {
                         ClipboardReflection.copyToClipboard(getActivity(), output);
                         AppMsg.makeText(getActivity(),
-                                R.string.encryption_to_clipboard_successful, AppMsg.STYLE_INFO)
+                                R.string.encrypt_sign_clipboard_successful, AppMsg.STYLE_INFO)
                                 .show();
                     } else {
                         Intent sendIntent = new Intent(Intent.ACTION_SEND);

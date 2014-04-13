@@ -600,7 +600,6 @@ public class PgpDecryptVerify {
             throw new InvalidDataException();
         }
 
-
         // go through all signatures
         // and find out for which signature we have a key in our database
         Long masterKeyId = null;

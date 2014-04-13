@@ -198,9 +198,9 @@
   <string name="file_delete_confirmation">Czy jesteś pewien że chcesz usunąć\n%s?</string>
   <string name="file_delete_successful">Usunięto pomyślnie.</string>
   <string name="no_file_selected">Najpierw wskaż plik.</string>
-  <string name="decryption_successful">Pomyślnie deszyfrowano i/lub zweryfikowano.</string>
-  <string name="encryption_successful">Pomyślnie podpisano i/lub zaszyfrowano.</string>
-  <string name="encryption_to_clipboard_successful">Pomyslnie podpisano i/lub zaszyfrowano do schowka.</string>
+  <string name="decrypt_successful">Pomyślnie deszyfrowano i/lub zweryfikowano.</string>
+  <string name="encrypt_sign_successful">Pomyślnie podpisano i/lub zaszyfrowano.</string>
+  <string name="encrypt_sign_clipboard_successful">Pomyslnie podpisano i/lub zaszyfrowano do schowka.</string>
   <string name="enter_passphrase_twice">Podaj hasło dwukrotnie.</string>
   <string name="select_encryption_key">Wybierz co najmniej jeden klucz szyfrujący.</string>
   <string name="select_encryption_or_signature_key">Wybierz co najmniej jeden klucz szyfrujący lub klucz podpisujący.</string>

@@ -24,6 +24,7 @@ import org.spongycastle.openpgp.PGPSecretKey;
 import org.sufficientlysecure.keychain.pgp.PgpConversionHelper;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.GregorianCalendar;
 
 public class SaveKeyringParcel implements Parcelable {
@@ -35,7 +36,7 @@ public class SaveKeyringParcel implements Parcelable {
     public boolean primaryIDChanged;
     public boolean[] moddedKeys;
     public ArrayList<PGPSecretKey> deletedKeys;
-    public ArrayList<GregorianCalendar> keysExpiryDates;
+    public ArrayList<Calendar> keysExpiryDates;
     public ArrayList<Integer> keysUsages;
     public String newPassphrase;
     public String oldPassphrase;
@@ -58,7 +59,7 @@ public class SaveKeyringParcel implements Parcelable {
         } else {
             deletedKeys = PgpConversionHelper.BytesToPGPSecretKeyList(tmp);
         }
-        keysExpiryDates = (ArrayList<GregorianCalendar>) source.readSerializable();
+        keysExpiryDates = (ArrayList<Calendar>) source.readSerializable();
         keysUsages = source.readArrayList(Integer.class.getClassLoader());
         newPassphrase = source.readString();
         oldPassphrase = source.readString();

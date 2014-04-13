@@ -4,4 +4,8 @@
     <color name="emphasis">#31b6e7</color>
     <color name="bg_gray">#cecbce</color>
 
+    <color name="result_red">#CC0000</color>
+    <color name="result_orange">#FF8800</color>
+    <color name="result_green">#669900</color>
+    <color name="result_blue">#336699</color>
 </resources>

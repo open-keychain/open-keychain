@@ -195,9 +195,9 @@
   <string name="file_delete_confirmation">¿Estás seguro de que quieres borrar\n%s?</string>
   <string name="file_delete_successful">Borrado satisfactoriamente.</string>
   <string name="no_file_selected">Selecciona un archivo antes.</string>
-  <string name="decryption_successful">Descifrado y/o verificado satisfactoriamente.</string>
-  <string name="encryption_successful">Firmado y/o cifrado satisfactoriamente.</string>
-  <string name="encryption_to_clipboard_successful">Firmado y/o cifrado al portapapeles satisfactoriamente.</string>
+  <string name="decrypt_successful">Descifrado y/o verificado satisfactoriamente.</string>
+  <string name="encrypt_sign_successful">Firmado y/o cifrado satisfactoriamente.</string>
+  <string name="encrypt_sign_clipboard_successful">Firmado y/o cifrado al portapapeles satisfactoriamente.</string>
   <string name="enter_passphrase_twice">Introduce la frase de contraseña dos veces.</string>
   <string name="select_encryption_key">Selecciona al menos una clave de cifrado.</string>
   <string name="select_encryption_or_signature_key">Selecciona al menos una clave de cifrado o de firma.</string>

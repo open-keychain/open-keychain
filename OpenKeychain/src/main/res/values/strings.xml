@@ -209,9 +209,10 @@
     <string name="file_delete_confirmation">Are you sure you want to delete\n%s?</string>
     <string name="file_delete_successful">Successfully deleted.</string>
     <string name="no_file_selected">Select a file first.</string>
-    <string name="decryption_successful">Successfully decrypted and/or verified.</string>
-    <string name="encryption_successful">Successfully signed and/or encrypted.</string>
-    <string name="encryption_to_clipboard_successful">Successfully signed and/or encrypted to clipboard.</string>
+    <string name="decrypt_successful">Successfully decrypted.</string>
+    <string name="decrypt_verified_successful">Successfully decrypted and/or verified.</string>
+    <string name="encrypt_sign_successful">Successfully signed and/or encrypted.</string>
+    <string name="encrypt_sign_clipboard_successful">Successfully signed and/or encrypted to clipboard.</string>
     <string name="enter_passphrase_twice">Enter the passphrase twice.</string>
     <string name="select_encryption_key">Select at least one encryption key.</string>
     <string name="select_encryption_or_signature_key">Select at least one encryption key or a signature key.</string>

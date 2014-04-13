@@ -204,8 +204,8 @@ public class DecryptFileFragment extends DecryptFragment {
                                     decryptVerifyResult.getStatus()) {
                         showPassphraseDialog(Id.key.symmetric);
                     } else {
-                        AppMsg.makeText(getActivity(), R.string.decryption_successful,
-                                AppMsg.STYLE_INFO).show();
+                        // display signature result in activity
+                        onResult(decryptVerifyResult);
 
                         if (mDeleteAfter.isChecked()) {
                             // Create and show dialog to delete original file
@@ -213,11 +213,6 @@ public class DecryptFileFragment extends DecryptFragment {
                                     .newInstance(mInputFilename);
                             deleteFileDialog.show(getActivity().getSupportFragmentManager(), "deleteDialog");
                         }
-
-                        OpenPgpSignatureResult signatureResult = decryptVerifyResult.getSignatureResult();
-
-                        // display signature result in activity
-                        onSignatureResult(signatureResult);
                     }
                 }
             }

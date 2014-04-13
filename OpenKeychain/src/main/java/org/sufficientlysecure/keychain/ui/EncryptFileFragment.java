@@ -320,7 +320,7 @@ public class EncryptFileFragment extends Fragment {
                 super.handleMessage(message);
 
                 if (message.arg1 == KeychainIntentServiceHandler.MESSAGE_OKAY) {
-                    AppMsg.makeText(getActivity(), R.string.encryption_successful,
+                    AppMsg.makeText(getActivity(), R.string.encrypt_sign_successful,
                             AppMsg.STYLE_INFO).show();
 
                     if (mDeleteAfter.isChecked()) {

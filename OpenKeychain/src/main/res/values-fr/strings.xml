@@ -195,9 +195,9 @@
   <string name="file_delete_confirmation">Êtes-vous sûr de vouloir supprimer\n%s ?</string>
   <string name="file_delete_successful">Supprimé avec succès.</string>
   <string name="no_file_selected">Choisir d\'abord un fichier.</string>
-  <string name="decryption_successful">Déchiffré et/ou vérifié avec succès</string>
-  <string name="encryption_successful">Signé et/ou chiffré avec succès</string>
-  <string name="encryption_to_clipboard_successful">Signé et/ou chiffré vers le presse-papiers avec succès</string>
+  <string name="decrypt_successful">Déchiffré et/ou vérifié avec succès</string>
+  <string name="encrypt_sign_successful">Signé et/ou chiffré avec succès</string>
+  <string name="encrypt_sign_clipboard_successful">Signé et/ou chiffré vers le presse-papiers avec succès</string>
   <string name="enter_passphrase_twice">Saisir la phrase de passe deux fois.</string>
   <string name="select_encryption_key">Choisir au moins une clef de chiffrement.</string>
   <string name="select_encryption_or_signature_key">Choisir au moins une clef de chiffrement ou de signature.</string>

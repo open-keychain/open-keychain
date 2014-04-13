@@ -195,9 +195,9 @@
   <string name="file_delete_confirmation">Вы уверены, что хотите удалить\n%s ?</string>
   <string name="file_delete_successful">Удалено.</string>
   <string name="no_file_selected">Сначала выберите файл.</string>
-  <string name="decryption_successful">Расшифровано и/или проверено.</string>
-  <string name="encryption_successful">Подписано и/или зашифровано.</string>
-  <string name="encryption_to_clipboard_successful">Подписано и/или зашифровано в буфер обмена.</string>
+  <string name="decrypt_successful">Расшифровано и/или проверено.</string>
+  <string name="encrypt_sign_successful">Подписано и/или зашифровано.</string>
+  <string name="encrypt_sign_clipboard_successful">Подписано и/или зашифровано в буфер обмена.</string>
   <string name="enter_passphrase_twice">Дважды введите пароль.</string>
   <string name="select_encryption_key">Укажите хотя бы один ключ.</string>
   <string name="select_encryption_or_signature_key">Выберите хотя бы один ключ для шифрования или подписи.</string>

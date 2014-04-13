@@ -199,9 +199,9 @@
   <string name="file_delete_confirmation">Ви справді хочете вилучити\n%s?</string>
   <string name="file_delete_successful">Успішно вилучено.</string>
   <string name="no_file_selected">Виберіть спершу файл.</string>
-  <string name="decryption_successful">Успішно розшифровано та/або перевірено.</string>
-  <string name="encryption_successful">Успішно підписано та/або перевірено.</string>
-  <string name="encryption_to_clipboard_successful">Успішно підписано та/або зашифровано до буфера обміну.</string>
+  <string name="decrypt_successful">Успішно розшифровано та/або перевірено.</string>
+  <string name="encrypt_sign_successful">Успішно підписано та/або перевірено.</string>
+  <string name="encrypt_sign_clipboard_successful">Успішно підписано та/або зашифровано до буфера обміну.</string>
   <string name="enter_passphrase_twice">Введіть двічі парольну фразу.</string>
   <string name="select_encryption_key">Виберіть принаймні один ключ шифрування.</string>
   <string name="select_encryption_or_signature_key">Виберіть принаймні один ключ шифрування або ключ підпису.</string>

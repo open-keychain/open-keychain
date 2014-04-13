@@ -158,18 +158,13 @@ public class DecryptMessageFragment extends DecryptFragment {
                                     decryptVerifyResult.getStatus()) {
                         showPassphraseDialog(Id.key.symmetric);
                     } else {
-                        AppMsg.makeText(getActivity(), R.string.decryption_successful,
-                                AppMsg.STYLE_INFO).show();
-
                         byte[] decryptedMessage = returnData
                                 .getByteArray(KeychainIntentService.RESULT_DECRYPTED_BYTES);
                         mMessage.setText(new String(decryptedMessage));
                         mMessage.setHorizontallyScrolling(false);
 
-                        OpenPgpSignatureResult signatureResult = decryptVerifyResult.getSignatureResult();
-
                         // display signature result in activity
-                        onSignatureResult(signatureResult);
+                        onResult(decryptVerifyResult);
                     }
                 }
             }

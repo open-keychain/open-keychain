@@ -192,9 +192,9 @@
   <string name="file_delete_confirmation">%s を削除してもかまいませんか?</string>
   <string name="file_delete_successful">削除に成功しました。</string>
   <string name="no_file_selected">最初にファイルを選択してください。</string>
-  <string name="decryption_successful">復号化/検証に成功しました。</string>
-  <string name="encryption_successful">署名/暗号化に成功しました。</string>
-  <string name="encryption_to_clipboard_successful">クリップボードの中身の署名/暗号化に成功しました。</string>
+  <string name="decrypt_successful">復号化/検証に成功しました。</string>
+  <string name="encrypt_sign_successful">署名/暗号化に成功しました。</string>
+  <string name="encrypt_sign_clipboard_successful">クリップボードの中身の署名/暗号化に成功しました。</string>
   <string name="enter_passphrase_twice">もう一度パスフレーズを入れてください。</string>
   <string name="select_encryption_key">少なくとも1つの暗号化鍵を選択して下さい。</string>
   <string name="select_encryption_or_signature_key">少なくとも1つの暗号化鍵か署名鍵を選択して下さい。</string>
