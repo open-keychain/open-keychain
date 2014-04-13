@@ -104,7 +104,6 @@ public class KeyListFragment extends Fragment
         mStickyList = (StickyListHeadersListView) root.findViewById(R.id.key_list_list);
         mStickyList.setOnItemClickListener(this);
 
-
         // empty view
         mButtonEmptyCreate = (BootstrapButton) root.findViewById(R.id.key_list_empty_button_create);
         mButtonEmptyCreate.setOnClickListener(new OnClickListener() {
