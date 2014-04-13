@@ -443,11 +443,11 @@ public class PgpDecryptVerify {
 
                 // get certification status of this key
                 Object data = mProviderHelper.getGenericData(
-                        KeychainContract.UserIds.buildUserIdsUri(Long.toString(masterKeyId)),
+                        KeychainContract.KeyRings.buildUnifiedKeyRingUri(Long.toString(masterKeyId)),
                         KeyRings.VERIFIED,
                         ProviderHelper.FIELD_TYPE_INTEGER);
 
-                isSignatureKeyCertified = (Long) data > 0;
+                isSignatureKeyCertified = ((Long) data > 0);
             } else {
                 // no key in our database -> return "unknown pub key" status including the first key id
                 if (!sigList.isEmpty()) {
@@ -639,11 +639,11 @@ public class PgpDecryptVerify {
 
             // get certification status of this key
             Object data = mProviderHelper.getGenericData(
-                    KeychainContract.UserIds.buildUserIdsUri(Long.toString(masterKeyId)),
+                    KeychainContract.KeyRings.buildUnifiedKeyRingUri(Long.toString(masterKeyId)),
                     KeyRings.VERIFIED,
                     ProviderHelper.FIELD_TYPE_INTEGER);
 
-            isSignatureKeyCertified = (Long) data > 0;
+            isSignatureKeyCertified = ((Long) data > 0);
         } else {
             // no key in our database -> return "unknown pub key" status including the first key id
             if (!sigList.isEmpty()) {
