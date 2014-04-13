@@ -862,15 +862,36 @@ public class KeychainIntentService extends IntentService
         if (this.mIsCanceled) {
             return;
         }
+        // TODO: Implement a better exception handling here
         // contextualize the exception, if necessary
+        String message;
         if (e instanceof PgpGeneralMsgIdException) {
             e = ((PgpGeneralMsgIdException) e).getContextualized(this);
+            message = e.getMessage();
+        } else if (e instanceof PgpSignEncrypt.KeyExtractionException) {
+            message = getString(R.string.error_could_not_extract_private_key);
+        } else if (e instanceof PgpSignEncrypt.NoPassphraseException) {
+            message = getString(R.string.error_no_signature_passphrase);
+        } else if (e instanceof PgpSignEncrypt.NoSigningKeyException) {
+            message = getString(R.string.error_signature_failed);
+        } else if (e instanceof PgpDecryptVerify.InvalidDataException) {
+            message = getString(R.string.error_invalid_data);
+        } else if (e instanceof PgpDecryptVerify.KeyExtractionException) {
+            message = getString(R.string.error_could_not_extract_private_key);
+        } else if (e instanceof PgpDecryptVerify.WrongPassphraseException) {
+            message = getString(R.string.error_wrong_passphrase);
+        } else if (e instanceof PgpDecryptVerify.NoSecretKeyException) {
+            message = getString(R.string.error_no_secret_key_found);
+        } else if (e instanceof PgpDecryptVerify.IntegrityCheckFailedException) {
+            message = getString(R.string.error_integrity_check_failed);
+        } else {
+            message = e.getMessage();
         }
+
         Log.e(Constants.TAG, "KeychainIntentService Exception: ", e);
-        e.printStackTrace();
 
         Bundle data = new Bundle();
-        data.putString(KeychainIntentServiceHandler.DATA_ERROR, e.getMessage());
+        data.putString(KeychainIntentServiceHandler.DATA_ERROR, message);
         sendMessageToHandler(KeychainIntentServiceHandler.MESSAGE_EXCEPTION, null, data);
     }
 
