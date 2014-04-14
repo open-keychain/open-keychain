@@ -36,6 +36,9 @@ import org.sufficientlysecure.keychain.provider.KeychainContract.UserIdsColumns;
 import org.sufficientlysecure.keychain.provider.KeychainContract.CertsColumns;
 import org.sufficientlysecure.keychain.util.Log;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 
 public class KeychainDatabase extends SQLiteOpenHelper {
@@ -179,10 +182,6 @@ public class KeychainDatabase extends SQLiteOpenHelper {
         if (!db.isReadOnly()) {
             // Enable foreign key constraints
             db.execSQL("PRAGMA foreign_keys=ON;");
-            // TODO remove, once we remove the "always migrate" debug stuff
-            // db.execSQL("DROP TABLE user_ids;");
-            db.execSQL(CREATE_USER_IDS);
-            db.execSQL(CREATE_CERTS);
         }
     }
 
@@ -205,7 +204,8 @@ public class KeychainDatabase extends SQLiteOpenHelper {
             for(String db : dbs) {
                 if(db.equals("apg.db")) {
                     hasApgDb = true;
-                    break;
+                } else if(db.equals("apg_old.db")) {
+                    Log.d(Constants.TAG, "Found apg_old.db");
                 }
             }
         }
@@ -283,9 +283,12 @@ public class KeychainDatabase extends SQLiteOpenHelper {
                 }
             }
 
+            // Move to a different file (but don't delete, just to be safe)
+            Log.d(Constants.TAG, "All done - moving apg.db to apg_old.db");
+            context.getDatabasePath("apg.db").renameTo(context.getDatabasePath("apg_old.db"));
+
         } catch(IOException e) {
-            Log.e(Constants.TAG, "Error importing apg db!", e);
-            return;
+            Log.e(Constants.TAG, "Error importing apg.db!", e);
         } finally {
             if(c != null) {
                 c.close();
@@ -295,9 +298,45 @@ public class KeychainDatabase extends SQLiteOpenHelper {
             }
         }
 
-        // TODO delete old db, if we are sure this works
-        // context.deleteDatabase("apg.db");
-        Log.d(Constants.TAG, "All done, (not) deleting apg.db");
+    }
 
+    private static void copy(File in, File out) throws IOException {
+        FileInputStream ss = new FileInputStream(in);
+        FileOutputStream ds = new FileOutputStream(out);
+        byte[] buf = new byte[512];
+        while(ss.available() > 0) {
+            int count = ss.read(buf, 0, 512);
+            ds.write(buf, 0, count);
+        }
+    }
+
+    public static void debugRead(Context context) throws IOException {
+        if(!Constants.DEBUG) {
+            return;
+        }
+        File in = context.getDatabasePath("debug.db");
+        File out = context.getDatabasePath("openkeychain.db");
+        if(!in.canRead()) {
+            throw new IOException("Cannot read " +  in.getName());
+        }
+        if(!out.canRead()) {
+            throw new IOException("Cannot write " + out.getName());
+        }
+        copy(in, out);
+    }
+
+    public static void debugWrite(Context context) throws IOException {
+        if(!Constants.DEBUG) {
+            return;
+        }
+        File in = context.getDatabasePath("openkeychain.db");
+        File out = context.getDatabasePath("debug.db");
+        if(!in.canRead()) {
+            throw new IOException("Cannot read " +  in.getName());
+        }
+        if(!out.canRead()) {
+            throw new IOException("Cannot write " + out.getName());
+        }
+        copy(in, out);
     }
 }
