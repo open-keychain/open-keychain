@@ -202,9 +202,7 @@
   <string name="specify_file_to_export_to">Bitte angeben, in welche Datei exportiert werden soll.\nWARNUNG: Datei wird überschrieben, wenn sie bereits existiert. </string>
   <string name="specify_file_to_export_secret_keys_to">Bitte angeben, in welche Datei exportiert werden soll.\nWARNUNG! Sie exportieren GEHEIME Schlüssel.\nWARNUNG! Datei wird überschrieben, wenn sie bereits existiert. </string>
   <string name="key_deletion_confirmation">Soll der Schlüssel \'%s\' wirklich gelöscht werden?\nDies kann nicht rückgängig gemacht werden! </string>
-  <string name="key_deletion_confirmation_multi">Möchtest du wirklich alle ausgewählten Schlüssel löschen?\nDies kann nicht rückgängig gemacht werden!</string>
   <string name="secret_key_deletion_confirmation">Soll der PRIVATE Schlüssel \'%s\' wirklich gelöscht werden?\nDies kann nicht rückgängig gemacht werden!</string>
-  <string name="public_key_deletetion_confirmation">Soll der öffentliche Schlüssel \'%s\' wirklich gelöscht werden?\nDies kann nicht rückgängig gemacht werden! </string>
   <string name="also_export_secret_keys">Private Schlüssel auch exportieren</string>
   <plurals name="keys_added_and_updated_1">
     <item quantity="one">%d Schlüssel erfolgreich hinzugefügt</item>
@@ -226,7 +224,6 @@
   <string name="key_exported">1 Schlüssel erfolgreich exportiert.</string>
   <string name="keys_exported">%d Schlüssel erfolgreich exportiert.</string>
   <string name="no_keys_exported">Keine Schlüssel exportiert.</string>
-  <string name="key_creation_el_gamal_info">Beachte: nur Unterschlüssel unterstützen ElGamal. Für ElGamal wird die am nächsten liegende Schlüssellänge von 1536, 2048, 3072, 4096 oder 8192 verwendet.</string>
   <string name="key_creation_weak_rsa_info">Beachte: RSA-Schlüssel mit einer Schlüssellänge von 1024-Bits oder weniger werden als unsicher angesehen und können daher nicht für neue Schlüssel erstellt werden.</string>
   <string name="key_not_found">Schlüssel %08X konnte nicht gefunden werden.</string>
   <plurals name="keys_found">

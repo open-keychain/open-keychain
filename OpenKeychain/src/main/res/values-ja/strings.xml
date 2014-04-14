@@ -26,7 +26,7 @@
   <string name="title_key_server_query">鍵サーバへの要求</string>
   <string name="title_send_key">鍵サーバへアップロード</string>
   <string name="title_unknown_signature_key">不明な署名の鍵です</string>
-  <string name="title_certify_key">鍵検証</string>
+  <string name="title_certify_key">証明鍵</string>
   <string name="title_key_details">鍵の概要</string>
   <string name="title_help">ヘルプ</string>
   <!--section-->
@@ -45,7 +45,7 @@
   <string name="section_decrypt_verify">復号化と検証</string>
   <!--button-->
   <string name="btn_sign">署名</string>
-  <string name="btn_certify">検証</string>
+  <string name="btn_certify">証明</string>
   <string name="btn_decrypt">復号化</string>
   <string name="btn_decrypt_verify">復号化と検証</string>
   <string name="btn_decrypt_verify_clipboard">クリップボードから</string>
@@ -98,6 +98,7 @@
   <string name="menu_encrypt_to">暗号化...</string>
   <string name="menu_select_all">すべて選択</string>
   <string name="menu_add_keys">鍵の追加</string>
+  <string name="menu_export_all_keys">すべての鍵のエクスポート</string>
   <!--label-->
   <string name="label_sign">署名</string>
   <string name="label_message">メッセージ</string>
@@ -176,7 +177,7 @@
   <string name="error">エラー</string>
   <string name="error_message">エラー: %s</string>
   <!--key flags-->
-  <string name="flag_certify">検証</string>
+  <string name="flag_certify">証明</string>
   <string name="flag_sign">署名</string>
   <string name="flag_encrypt">暗号化</string>
   <string name="flag_authenticate">証明</string>
@@ -192,9 +193,6 @@
   <string name="file_delete_confirmation">%s を削除してもかまいませんか?</string>
   <string name="file_delete_successful">削除に成功しました。</string>
   <string name="no_file_selected">最初にファイルを選択してください。</string>
-  <string name="decrypt_successful">復号化/検証に成功しました。</string>
-  <string name="encrypt_sign_successful">署名/暗号化に成功しました。</string>
-  <string name="encrypt_sign_clipboard_successful">クリップボードの中身の署名/暗号化に成功しました。</string>
   <string name="enter_passphrase_twice">もう一度パスフレーズを入れてください。</string>
   <string name="select_encryption_key">少なくとも1つの暗号化鍵を選択して下さい。</string>
   <string name="select_encryption_or_signature_key">少なくとも1つの暗号化鍵か署名鍵を選択して下さい。</string>
@@ -203,12 +201,11 @@
   <string name="specify_file_to_export_to">どのファイルをエクスポートするか決めてください。\n注意: 既存のファイルがあると上書きされます。</string>
   <string name="specify_file_to_export_secret_keys_to">どのファイルをエクスポートするか決めてください。\n注意: 秘密鍵をエクスポートしています。\n注意: 既存のファイルがあると上書きされます。</string>
   <string name="key_deletion_confirmation">鍵\'%s\'を本当に削除してもよいですか?\nこれは元に戻せません!</string>
-  <string name="key_deletion_confirmation_multi">選択したすべての鍵を本当に削除してよいですか?\nこれは元に戻せません。</string>
+  <string name="key_deletion_confirmation_multi">選択した鍵(秘密鍵を含みます)を本当に削除してもよいですか?\nこれは元に戻せません!</string>
   <string name="secret_key_deletion_confirmation">秘密鍵\'%s\'を本当に削除してもよいですか?\nこれは元に戻せません!</string>
   <string name="ask_save_changed_key">あなたは鍵輪に変更を加えました、これを保存しますか?</string>
   <string name="ask_empty_id_ok">あなたは空のユーザーIDを追加しました、このまま続けますか?</string>
   <string name="public_key_deletetion_confirmation">公開鍵\'%s\'を本当に削除してもよいですか?\nこれは元に戻せません!</string>
-  <string name="secret_key_delete_text">秘密鍵を削除しますか?</string>
   <string name="also_export_secret_keys">秘密鍵もエクスポートしますか?</string>
   <plurals name="keys_added_and_updated_1">
     <item quantity="other">%d の鍵を追加しました</item>
@@ -226,7 +223,7 @@
   <string name="key_exported">1つの鍵をエクスポートしました。</string>
   <string name="keys_exported">%d の鍵をエクスポートしました。</string>
   <string name="no_keys_exported">鍵をエクスポートしていません。</string>
-  <string name="key_creation_el_gamal_info">備考: 副鍵として ElGamalだけがサポートされ, ElGamal は鍵サイズとして1536, 2048, 3072, 4096, 8192 だけが使えます。</string>
+  <string name="key_creation_el_gamal_info">ノート: 副鍵はElGamalでのみサポートされます。</string>
   <string name="key_creation_weak_rsa_info">付記: 長さ1024bitかそれ以下で生成されたRSA鍵は安全とはみなされず、新な鍵の生成は無効にされています。</string>
   <string name="key_not_found">鍵 %08X は見付かりませんでした。</string>
   <plurals name="keys_found">
@@ -301,7 +298,7 @@
   <string name="progress_exporting">エクスポート...</string>
   <string name="progress_building_key">鍵の構築中...</string>
   <string name="progress_preparing_master_key">主鍵の準備中...</string>
-  <string name="progress_certifying_master_key">主鍵の検証中...</string>
+  <string name="progress_certifying_master_key">主鍵の証明中...</string>
   <string name="progress_building_master_key">主鍵輪の構築中...</string>
   <string name="progress_adding_sub_keys">副鍵の追加中...</string>
   <string name="progress_saving_key_ring">鍵の保存...</string>
@@ -333,9 +330,17 @@
   <string name="action_share_key_with">...で鍵の共有</string>
   <!--key bit length selections-->
   <string name="key_size_512">512</string>
+  <string name="key_size_768">768</string>
   <string name="key_size_1024">1024</string>
+  <string name="key_size_1536">1536</string>
   <string name="key_size_2048">2048</string>
+  <string name="key_size_3072">3072</string>
   <string name="key_size_4096">4096</string>
+  <string name="key_size_8192">8192</string>
+  <string name="key_size_custom">カスタムの鍵サイズ</string>
+  <string name="key_size_custom_info">カスタムの鍵長を入力(ビット数):</string>
+  <string name="key_size_custom_info_rsa">RSA鍵の長さは1024より長い必要があり、最も一般的には8192です。そして8の倍数である必要があります。</string>
+  <string name="key_size_custom_info_dsa">DSA鍵の長さは最低512の必要があり、最も一般的には1024です。そして64の倍数である必要があります。</string>
   <!--compression-->
   <string name="compression_fast">早い</string>
   <string name="compression_very_slow">とても遅い</string>
@@ -410,7 +415,7 @@
   <!--Key view-->
   <string name="key_view_action_edit">この鍵の編集</string>
   <string name="key_view_action_encrypt">この連絡先を暗号化</string>
-  <string name="key_view_action_certify">この連絡先の鍵を検証</string>
+  <string name="key_view_action_certify">この連絡先の鍵を証明</string>
   <string name="key_view_tab_main">情報</string>
   <string name="key_view_tab_certs">証明</string>
   <!--Navigation Drawer-->
@@ -431,6 +436,34 @@
   <string name="encrypt_content_edit_text_hint">ここに書いたメッセージを暗号化/署名..</string>
   <string name="decrypt_content_edit_text_hint">ここに入力された暗号化テキストを復号化/検証...</string>
   <!--unsorted-->
+  <string name="show_unknown_signatures">不明な署名を表示する</string>
+  <string name="section_signer_id">署名者</string>
+  <string name="section_cert">証明の詳細</string>
+  <string name="label_user_id">ユーザーID</string>
+  <string name="label_subkey_rank">副鍵の優先度</string>
+  <string name="unknown_uid"><![CDATA[<unknown>]]></string>
+  <string name="empty_certs">この鍵に証明がない</string>
   <string name="section_uids_to_sign">署名に使うユーザーID</string>
-  <string name="progress_re_adding_certs">検証を再適用する</string>
+  <string name="progress_re_adding_certs">証明を再適用する</string>
+  <string name="certs_list_known_secret">既知の秘密鍵で表示</string>
+  <string name="certs_list_known">既知の公開鍵で表示</string>
+  <string name="certs_list_all">すべての証明を表示</string>
+  <string name="cert_default">デフォルト</string>
+  <string name="cert_none">無し</string>
+  <string name="cert_casual">因果</string>
+  <string name="cert_positive">肯定的</string>
+  <string name="cert_revoke">破棄</string>
+  <string name="never">永遠</string>
+  <string name="help_tab_wot">信頼の輪</string>
+  <string name="cert_verify_ok">OK</string>
+  <string name="cert_verify_failed">失敗!</string>
+  <string name="cert_verify_error">エラー!</string>
+  <string name="cert_verify_unavailable">鍵がありません</string>
+  <string name="label_revocation">破棄の理由</string>
+  <string name="label_verify_status">検証ステータス</string>
+  <string name="label_cert_type">種別</string>
+  <string name="can_certify">検証可能</string>
+  <string name="can_certify_not">検証不能</string>
+  <string name="error_key_not_found">鍵が見当りません!</string>
+  <string name="error_key_processing">鍵処理のエラー!</string>
 </resources>

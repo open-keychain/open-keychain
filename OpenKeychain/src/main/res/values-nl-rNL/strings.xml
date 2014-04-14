@@ -124,7 +124,6 @@
   <string name="no_keys_added_or_updated">Geen sleutels toegevoegd of bijgewerkt.</string>
   <string name="key_exported">1 sleutel succesvol geëxporteerd.</string>
   <string name="no_keys_exported">Geen sleutels geëxporteerd.</string>
-  <string name="key_creation_el_gamal_info">Opmerking: alleen sub-sleutels ondersteunen ElGamal, en voor ElGamal wordt de dichtstbijzijnde sleutelgrootte van 1536, 2048, 4096 of 8192 gebruikt.</string>
   <string name="key_not_found">Kan de sleutel %08X niet vinden.</string>
   <string name="key_sign_success">Sleutel succesvol ondertekend</string>
   <string name="list_empty">Lijst is leeg</string>

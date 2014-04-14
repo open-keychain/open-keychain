@@ -98,6 +98,7 @@
   <string name="menu_encrypt_to">Зашифровать....</string>
   <string name="menu_select_all">Выбрать все</string>
   <string name="menu_add_keys">Добавить ключи</string>
+  <string name="menu_export_all_keys">Экспорт всех ключей</string>
   <!--label-->
   <string name="label_sign">Подписать</string>
   <string name="label_message">Сообщение</string>
@@ -113,6 +114,8 @@
   <string name="label_share_after_encryption">Отправить после шифрования</string>
   <string name="label_encryption_algorithm">Алгоритм шифрования</string>
   <string name="label_hash_algorithm">Hash-алгоритм</string>
+  <string name="label_asymmetric">Публичным ключом</string>
+  <string name="label_symmetric">Паролем</string>
   <string name="label_passphrase_cache_ttl">Помнить пароль</string>
   <string name="label_message_compression">Сжатие сообщения</string>
   <string name="label_file_compression">Сжатие файла</string>
@@ -195,9 +198,6 @@
   <string name="file_delete_confirmation">Вы уверены, что хотите удалить\n%s ?</string>
   <string name="file_delete_successful">Удалено.</string>
   <string name="no_file_selected">Сначала выберите файл.</string>
-  <string name="decrypt_successful">Расшифровано и/или проверено.</string>
-  <string name="encrypt_sign_successful">Подписано и/или зашифровано.</string>
-  <string name="encrypt_sign_clipboard_successful">Подписано и/или зашифровано в буфер обмена.</string>
   <string name="enter_passphrase_twice">Дважды введите пароль.</string>
   <string name="select_encryption_key">Укажите хотя бы один ключ.</string>
   <string name="select_encryption_or_signature_key">Выберите хотя бы один ключ для шифрования или подписи.</string>
@@ -206,10 +206,7 @@
   <string name="specify_file_to_export_to">Пожалуйста, выберите файл для экспорта.\nВНИМАНИЕ! Если файл существует, он будет перезаписан.</string>
   <string name="specify_file_to_export_secret_keys_to">Пожалуйста, выберите файл для экспорта.\nВНИМАНИЕ: Вы экспортируете СЕКРЕТНЫЙ ключ.\nВНИМАНИЕ: Если файл существует, он будет перезаписан.</string>
   <string name="key_deletion_confirmation">Вы уверены, что ходите удалить ключ \'%s\'?\nЭто действие нельзя отменить!</string>
-  <string name="key_deletion_confirmation_multi">Вы уверены, что хотите удалить ВСЕ выбранные ключи?\nЭто действие нельзя отменить!</string>
   <string name="secret_key_deletion_confirmation">Вы уверены, что ходите удалить СЕКРЕТНЫЙ ключ \'%s\'?\nЭто действие нельзя отменить!</string>
-  <string name="public_key_deletetion_confirmation">Вы правда хотите удалить ПУБЛИЧНЫЙ ключ \'%s\'?\nЭто нельзя отменить!</string>
-  <string name="secret_key_delete_text">Удалить секретные ключи?</string>
   <string name="also_export_secret_keys">Экспортировать секретные ключи?</string>
   <plurals name="keys_added_and_updated_1">
     <item quantity="one">Успешно добавлено %d ключ</item>
@@ -235,7 +232,6 @@
   <string name="key_exported">Успешный экспорт 1 ключа.</string>
   <string name="keys_exported">Экспортировано %d ключей.</string>
   <string name="no_keys_exported">Ключи не были экспортированы.</string>
-  <string name="key_creation_el_gamal_info">Инфо: ElGamal подходит только для дополнительных ключей. При создании ключа будет использован ближайший из размеров: 1536, 2048, 3072, 4096, или 8192.</string>
   <string name="key_creation_weak_rsa_info">Внимание: создание ключей RSA длиной 1024 бита и менее признано небезопасным. Данная возможность отключена.</string>
   <string name="key_not_found">Не удается найти ключ %08X.</string>
   <plurals name="keys_found">
@@ -377,6 +373,7 @@
   <string name="import_qr_code_start_with_one">Пожалуйста, начните с QR кода с id 1</string>
   <string name="import_qr_code_wrong">Некорректный QR код. Попробуйте снова!</string>
   <string name="import_qr_code_finished">Сканирование QR завершено!</string>
+  <string name="import_qr_code_too_short_fingerprint">Отпечаток слишком коротнкий (&lt; 16 символов)</string>
   <string name="import_qr_scan_button">Сканировать QR код с \'Barcode Scanner\'</string>
   <string name="import_nfc_text">Разблокируйте устройство, что бы получить ключ через NFC.</string>
   <string name="import_nfc_help_button">Помощь</string>
@@ -451,6 +448,20 @@
   <string name="secret_key_no">не доступен</string>
   <!--hints-->
   <string name="encrypt_content_edit_text_hint">Напишите сообщение здесь, что бы зашифровать и/или подписать...</string>
+  <string name="decrypt_content_edit_text_hint">Введите сюда шифр для расшифровки и/или проверки...</string>
   <!--unsorted-->
+  <string name="show_unknown_signatures">Показывать неизвестные подписи</string>
+  <string name="section_signer_id">Подписант</string>
+  <string name="section_cert">Детали сертификации</string>
+  <string name="label_user_id">ID пользователя</string>
+  <string name="label_subkey_rank">Рейтинг ключа</string>
+  <string name="empty_certs">Этот ключ не сертифицирован</string>
   <string name="section_uids_to_sign">Подписываемые ID пользователя</string>
+  <string name="certs_list_known_secret">Показать по известным секретным ключам</string>
+  <string name="certs_list_known">Показать по известным открытым ключам</string>
+  <string name="certs_list_all">Показать все сертификаты</string>
+  <string name="cert_default">по умолчанию</string>
+  <string name="cert_none">нет</string>
+  <string name="cert_revoke">отозвать</string>
+  <string name="never">никогда</string>
 </resources>

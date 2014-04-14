@@ -33,7 +33,7 @@
   <string name="section_user_ids">IDs utilisateurs</string>
   <string name="section_keys">Clefs</string>
   <string name="section_general">Général</string>
-  <string name="section_defaults">Valeur par défaut</string>
+  <string name="section_defaults">Valeurs par défaut</string>
   <string name="section_advanced">Avancé</string>
   <string name="section_master_key">Clef maîtresse</string>
   <string name="section_master_user_id">ID utilisateur maître</string>
@@ -98,6 +98,7 @@
   <string name="menu_encrypt_to">Chiffrer vers...</string>
   <string name="menu_select_all">Tout sélectionner</string>
   <string name="menu_add_keys">Ajouter des clefs</string>
+  <string name="menu_export_all_keys">Exporter toutes les clefs</string>
   <!--label-->
   <string name="label_sign">Signer</string>
   <string name="label_message">Message</string>
@@ -195,9 +196,6 @@
   <string name="file_delete_confirmation">Êtes-vous sûr de vouloir supprimer\n%s ?</string>
   <string name="file_delete_successful">Supprimé avec succès.</string>
   <string name="no_file_selected">Choisir d\'abord un fichier.</string>
-  <string name="decrypt_successful">Déchiffré et/ou vérifié avec succès</string>
-  <string name="encrypt_sign_successful">Signé et/ou chiffré avec succès</string>
-  <string name="encrypt_sign_clipboard_successful">Signé et/ou chiffré vers le presse-papiers avec succès</string>
   <string name="enter_passphrase_twice">Saisir la phrase de passe deux fois.</string>
   <string name="select_encryption_key">Choisir au moins une clef de chiffrement.</string>
   <string name="select_encryption_or_signature_key">Choisir au moins une clef de chiffrement ou de signature.</string>
@@ -206,12 +204,11 @@
   <string name="specify_file_to_export_to">Veuillez spécifier vers quel fichier exporter.\nAVERTISSEMENT ! Le fichier sera écrasé s\'il existe.</string>
   <string name="specify_file_to_export_secret_keys_to">Veuillez spécifier vers quel fichier exporter.\nAVERTISSEMENT ! Vous allez exporter les clefs SECRÈTES.\nAVERTISSEMENT ! Le fichier sera écrasé s\'il existe.</string>
   <string name="key_deletion_confirmation">Voulez-vous vraiment supprimer la clef %s ?\nVous ne pourrez pas la restituer !</string>
-  <string name="key_deletion_confirmation_multi">Voulez-vous vraiment supprimer toutes les clefs choisies ?\nCeci est irréversible !</string>
+  <string name="key_deletion_confirmation_multi">Voulez-vous vraiment supprimer toutes les clefs choisies (incluant les clefs secrètes) ?\nCeci est irréversible !</string>
   <string name="secret_key_deletion_confirmation">Voulez-vous vraiment supprimer la clef SECRÈTE %s ?\nVous ne pourrez pas la restituer !</string>
   <string name="ask_save_changed_key">Vous avez apporté des changements au trousseau, voulez-vous l\'enregistrer ?</string>
   <string name="ask_empty_id_ok">Vous avez ajouté un ID utilisateur vide, êtes-vous certain de vouloir continuer?</string>
-  <string name="public_key_deletetion_confirmation">Voulez-vous vraiment supprimer la clef PUBLIQUE « %s » ?\nVous ne pourrez pas la restituer !</string>
-  <string name="secret_key_delete_text">Supprimer les clefs privées ?</string>
+  <string name="public_key_deletetion_confirmation">Voulez-vous vraiment supprimer la clef publique %s ?\nCeci est irréversible !</string>
   <string name="also_export_secret_keys">Exporter aussi les clefs secrètes?</string>
   <plurals name="keys_added_and_updated_1">
     <item quantity="one">%d clef ajoutée avec succès</item>
@@ -233,7 +230,7 @@
   <string name="key_exported">1 clef exportée avec succès.</string>
   <string name="keys_exported">%d clefs exportées avec succès.</string>
   <string name="no_keys_exported">Aucune clef exportée.</string>
-  <string name="key_creation_el_gamal_info">Note : seules les sous-clefs prennent en charge ElGamal, et pour ElGamal la taille de clef la plus proche de 1 536, 2 048, 3 072, 4 096 ou  8 192 sera utilisée.</string>
+  <string name="key_creation_el_gamal_info">Note : seules les sous-clefs prennent en charge ElGamal.</string>
   <string name="key_creation_weak_rsa_info">Note : générer des clefs RSA d\'une longueur de 1024 bits ou moins est considéré non sécuritaire et est désactivé pour la génération de nouvelles clefs.</string>
   <string name="key_not_found">Clef %08X introuvable.</string>
   <plurals name="keys_found">
@@ -346,9 +343,17 @@
   <string name="action_share_key_with">Partager la clef avec...</string>
   <!--key bit length selections-->
   <string name="key_size_512">512</string>
+  <string name="key_size_768">768</string>
   <string name="key_size_1024">1024</string>
+  <string name="key_size_1536">1536</string>
   <string name="key_size_2048">2048</string>
+  <string name="key_size_3072">3072</string>
   <string name="key_size_4096">4096</string>
+  <string name="key_size_8192">8192</string>
+  <string name="key_size_custom">Taille de clef personnalisée</string>
+  <string name="key_size_custom_info">Taper la longueur de la clef personnalisée (bits)</string>
+  <string name="key_size_custom_info_rsa">La longueur d\'une clef RSA doit être comprise entre 1024 et 8192 inclusivement. Elle doit aussi être un multiple de 8.</string>
+  <string name="key_size_custom_info_dsa">La longueur d\'une clef DSA doit être comprise entre 512 et 1024 inclusivement. Elle doit aussi être un multiple de 64.</string>
   <!--compression-->
   <string name="compression_fast">rapide</string>
   <string name="compression_very_slow">très lent</string>
@@ -446,6 +451,34 @@
   <string name="encrypt_content_edit_text_hint">Écrire ici le message à chiffrer et/ou signer...</string>
   <string name="decrypt_content_edit_text_hint">Saisir le cryptogramme à déchiffrer et/ou à vérifier ici...</string>
   <!--unsorted-->
+  <string name="show_unknown_signatures">Afficher les signatures inconnues</string>
+  <string name="section_signer_id">Signataire</string>
+  <string name="section_cert">Détails du certificat</string>
+  <string name="label_user_id">ID utilisateur</string>
+  <string name="label_subkey_rank">Rang de la sous-clef</string>
+  <string name="unknown_uid"><![CDATA[<unknown>]]></string>
+  <string name="empty_certs">Aucun certificat pour cette clef</string>
   <string name="section_uids_to_sign">ID utilisateur pour signer</string>
   <string name="progress_re_adding_certs">Nouvel application des certificats</string>
+  <string name="certs_list_known_secret">Afficher par clefs secrètes connues</string>
+  <string name="certs_list_known">Afficher par clefs publiques connues</string>
+  <string name="certs_list_all">Afficher tous les certificats</string>
+  <string name="cert_default">valeur par défaut</string>
+  <string name="cert_none">aucun</string>
+  <string name="cert_casual">rapide</string>
+  <string name="cert_positive">positif</string>
+  <string name="cert_revoke">révoquer</string>
+  <string name="never">jamais</string>
+  <string name="help_tab_wot">Toile de confiance</string>
+  <string name="cert_verify_ok">ok</string>
+  <string name="cert_verify_failed">échec!</string>
+  <string name="cert_verify_error">erreur!</string>
+  <string name="cert_verify_unavailable">clef non disponible</string>
+  <string name="label_revocation">Raison de la révocation</string>
+  <string name="label_verify_status">État de vérification</string>
+  <string name="label_cert_type">Type</string>
+  <string name="can_certify">peut certifier</string>
+  <string name="can_certify_not">ne peut pas certifier</string>
+  <string name="error_key_not_found">Clef introuvable !</string>
+  <string name="error_key_processing">Erreur lors du traitement de la clef !</string>
 </resources>

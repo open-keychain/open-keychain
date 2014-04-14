@@ -199,7 +199,8 @@
   <string name="file_delete_confirmation">Ви справді хочете вилучити\n%s?</string>
   <string name="file_delete_successful">Успішно вилучено.</string>
   <string name="no_file_selected">Виберіть спершу файл.</string>
-  <string name="decrypt_successful">Успішно розшифровано та/або перевірено.</string>
+  <string name="decrypt_successful">Успішно розшифровано.</string>
+  <string name="decrypt_verified_successful">Успішно розшифровано та/або перевірено.</string>
   <string name="encrypt_sign_successful">Успішно підписано та/або перевірено.</string>
   <string name="encrypt_sign_clipboard_successful">Успішно підписано та/або зашифровано до буфера обміну.</string>
   <string name="enter_passphrase_twice">Введіть двічі парольну фразу.</string>
@@ -210,12 +211,11 @@
   <string name="specify_file_to_export_to">Будь ласка, виберіть файл для експорту.\nУВАГА! Якщо файл існує, то він буде переписаний.</string>
   <string name="specify_file_to_export_secret_keys_to">Будь ласка, виберіть файл для експорту.\nУВАГА: Ви експортуєте СЕКРЕТНИЙ ключ.\nУВАГА: Якщо файл існує, то він буде переписаний.</string>
   <string name="key_deletion_confirmation">Ви справді хочете вилучити ключ \'%s\'?\nВи не зможете це відмінити!</string>
-  <string name="key_deletion_confirmation_multi">Ви справді хочете вилучити усі вибрані ключі?\nВи не зможете це відмінити!</string>
+  <string name="key_deletion_confirmation_multi">Ви справді хочете вилучити усі вибрані ключі (включаючи секретні)?\nВи не зможете це відмінити!</string>
   <string name="secret_key_deletion_confirmation">Ви справді хочете вилучити секретний ключ \'%s\'?\nВи не зможете це відмінити!</string>
   <string name="ask_save_changed_key">Ви внесли зміни до в\'язки ключів, ви б хотіли. Волієте їх зберегти?</string>
   <string name="ask_empty_id_ok">Ви вже додали порожній ідентифікатор користувача. Справді хочете продовжити?</string>
-  <string name="public_key_deletetion_confirmation">Справді волієте вилучити ВІДКРИТИЙ ключ \'%s\'?\nВи е зможете відмінити цю дію!</string>
-  <string name="secret_key_delete_text">Видалити секретні ключі?</string>
+  <string name="public_key_deletetion_confirmation">Ви справді хочете вилучити відкритий ключ \'%s\'?\nВи не зможете це відмінити!</string>
   <string name="also_export_secret_keys">Також експортувати секретні ключі?</string>
   <plurals name="keys_added_and_updated_1">
     <item quantity="one">Успішно додано %d ключ</item>
@@ -241,7 +241,7 @@
   <string name="key_exported">Успішно експортовано 1 ключ.</string>
   <string name="keys_exported">Успішно експортовано %d ключів.</string>
   <string name="no_keys_exported">Жодного ключа не експортовано.</string>
-  <string name="key_creation_el_gamal_info">Примітка: тільки підключі підтримують ElGamal, а для ElGamal буде використаний найближчий розмір ключа з 1536, 2048, 3072, 4096, або 8192.</string>
+  <string name="key_creation_el_gamal_info">Примітка: лише підключі підтримують ElGamal.</string>
   <string name="key_creation_weak_rsa_info">Примітка: генерація ключа RSA з довжиною 1024 біти і менше вважається небезпечною і вона вимкнена для генерації нових ключів.</string>
   <string name="key_not_found">Не можливо знайти ключ %08X.</string>
   <plurals name="keys_found">
@@ -360,9 +360,17 @@
   <string name="action_share_key_with">Поділитися ключем з…</string>
   <!--key bit length selections-->
   <string name="key_size_512">512</string>
+  <string name="key_size_768">768</string>
   <string name="key_size_1024">1024</string>
+  <string name="key_size_1536">1536</string>
   <string name="key_size_2048">2048</string>
+  <string name="key_size_3072">3072</string>
   <string name="key_size_4096">4096</string>
+  <string name="key_size_8192">8192</string>
+  <string name="key_size_custom">Особливий розмір ключа</string>
+  <string name="key_size_custom_info">Введіть інший розмір ключа (у бітах):</string>
+  <string name="key_size_custom_info_rsa">Довжина ключа RSA має бути більша за 1024 та менша за 8192. Також він має мати кратність 8.</string>
+  <string name="key_size_custom_info_dsa">Довжина ключа DSA має бути більша за 512 та менша за 1024. Також він має мати кратність 64.</string>
   <!--compression-->
   <string name="compression_fast">швидке</string>
   <string name="compression_very_slow">дуже повільне</string>
@@ -462,6 +470,34 @@
   <string name="encrypt_content_edit_text_hint">Напишіть повідомлення для шифрування та/або підпису…</string>
   <string name="decrypt_content_edit_text_hint">Уведіть зашифрований текст тут для його розшифрування та/або перевірки…</string>
   <!--unsorted-->
+  <string name="show_unknown_signatures">Показати невідомі підписи</string>
+  <string name="section_signer_id">Підписувач</string>
+  <string name="section_cert">Дані сертифікату</string>
+  <string name="label_user_id">ІД користувача</string>
+  <string name="label_subkey_rank">Ранг підключа</string>
+  <string name="unknown_uid"><![CDATA[<unknown>]]></string>
+  <string name="empty_certs">Немає сертифікатів для цього ключа</string>
   <string name="section_uids_to_sign">ІД користувача для реєстрації</string>
   <string name="progress_re_adding_certs">Перезастосування сертифікатів</string>
+  <string name="certs_list_known_secret">Показати за відомими таємними ключами</string>
+  <string name="certs_list_known">Показати за відомими відкритими ключами</string>
+  <string name="certs_list_all">Показати усі сертифікати</string>
+  <string name="cert_default">типово</string>
+  <string name="cert_none">жоден</string>
+  <string name="cert_casual">випадковий</string>
+  <string name="cert_positive">додатний</string>
+  <string name="cert_revoke">відхилити</string>
+  <string name="never">ніколи</string>
+  <string name="help_tab_wot">Мережа довіри</string>
+  <string name="cert_verify_ok">Гаразд</string>
+  <string name="cert_verify_failed">Невдача!</string>
+  <string name="cert_verify_error">Помилка!</string>
+  <string name="cert_verify_unavailable">Недоступний ключ</string>
+  <string name="label_revocation">Причина відхилення</string>
+  <string name="label_verify_status">Стан перевірки</string>
+  <string name="label_cert_type">Тип</string>
+  <string name="can_certify">можна сертифікувати</string>
+  <string name="can_certify_not">не можна сертифікувати</string>
+  <string name="error_key_not_found">Ключ не знайдено!</string>
+  <string name="error_key_processing">Помилка опрацювання ключа!</string>
 </resources>
