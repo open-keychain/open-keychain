@@ -128,23 +128,28 @@ public class KeychainDatabase extends SQLiteOpenHelper {
                     + Tables.USER_IDS + "(" + UserIdsColumns.MASTER_KEY_ID + ", " + UserIdsColumns.RANK + ") ON DELETE CASCADE"
             + ")";
 
-    private static final String CREATE_API_APPS = "CREATE TABLE IF NOT EXISTS " + Tables.API_APPS
-            + " (" + BaseColumns._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
-            + ApiAppsColumns.PACKAGE_NAME + " TEXT NOT NULL UNIQUE, "
-            + ApiAppsColumns.PACKAGE_SIGNATURE + " BLOB)";
+    private static final String CREATE_API_APPS =
+            "CREATE TABLE IF NOT EXISTS " + Tables.API_APPS + " ("
+                + BaseColumns._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+                + ApiAppsColumns.PACKAGE_NAME + " TEXT NOT NULL UNIQUE, "
+                + ApiAppsColumns.PACKAGE_SIGNATURE + " BLOB"
+            + ")";
 
-    private static final String CREATE_API_APPS_ACCOUNTS = "CREATE TABLE IF NOT EXISTS " + Tables.API_ACCOUNTS
-            + " (" + BaseColumns._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
-            + ApiAppsAccountsColumns.ACCOUNT_NAME + " TEXT NOT NULL, "
-            + ApiAppsAccountsColumns.KEY_ID + " INT64, "
-            + ApiAppsAccountsColumns.ENCRYPTION_ALGORITHM + " INTEGER, "
-            + ApiAppsAccountsColumns.HASH_ALORITHM + " INTEGER, "
-            + ApiAppsAccountsColumns.COMPRESSION + " INTEGER, "
-            + ApiAppsAccountsColumns.PACKAGE_NAME + " TEXT NOT NULL, "
-            + "UNIQUE(" + ApiAppsAccountsColumns.ACCOUNT_NAME + ", "
-            + ApiAppsAccountsColumns.PACKAGE_NAME + "), "
-            + "FOREIGN KEY(" + ApiAppsAccountsColumns.PACKAGE_NAME + ") REFERENCES "
-            + Tables.API_APPS + "(" + ApiAppsColumns.PACKAGE_NAME + ") ON DELETE CASCADE)";
+    private static final String CREATE_API_APPS_ACCOUNTS =
+            "CREATE TABLE IF NOT EXISTS " + Tables.API_ACCOUNTS + " ("
+                + BaseColumns._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+                + ApiAppsAccountsColumns.ACCOUNT_NAME + " TEXT NOT NULL, "
+                + ApiAppsAccountsColumns.KEY_ID + " INT64, "
+                + ApiAppsAccountsColumns.ENCRYPTION_ALGORITHM + " INTEGER, "
+                + ApiAppsAccountsColumns.HASH_ALORITHM + " INTEGER, "
+                + ApiAppsAccountsColumns.COMPRESSION + " INTEGER, "
+                + ApiAppsAccountsColumns.PACKAGE_NAME + " TEXT NOT NULL, "
+
+                + "UNIQUE(" + ApiAppsAccountsColumns.ACCOUNT_NAME + ", "
+                    + ApiAppsAccountsColumns.PACKAGE_NAME + "), "
+                + "FOREIGN KEY(" + ApiAppsAccountsColumns.PACKAGE_NAME + ") REFERENCES "
+                    + Tables.API_APPS + "(" + ApiAppsColumns.PACKAGE_NAME + ") ON DELETE CASCADE"
+            + ")";
 
     KeychainDatabase(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -198,7 +203,8 @@ public class KeychainDatabase extends SQLiteOpenHelper {
      */
     public void checkAndImportApg(Context context) {
 
-        boolean hasApgDb = false; {
+        boolean hasApgDb = false;
+        {
             // It's the Java way =(
             String[] dbs = context.databaseList();
             for(String db : dbs) {
@@ -210,8 +216,9 @@ public class KeychainDatabase extends SQLiteOpenHelper {
             }
         }
 
-        if(!hasApgDb)
+        if (!hasApgDb) {
             return;
+        }
 
         Log.d(Constants.TAG, "apg.db exists! Importing...");
 
@@ -286,8 +293,7 @@ public class KeychainDatabase extends SQLiteOpenHelper {
             // Move to a different file (but don't delete, just to be safe)
             Log.d(Constants.TAG, "All done - moving apg.db to apg_old.db");
             context.getDatabasePath("apg.db").renameTo(context.getDatabasePath("apg_old.db"));
-
-        } catch(IOException e) {
+        } catch (IOException e) {
             Log.e(Constants.TAG, "Error importing apg.db!", e);
         } finally {
             if(c != null) {
