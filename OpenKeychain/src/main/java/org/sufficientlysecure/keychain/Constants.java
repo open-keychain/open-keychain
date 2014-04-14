@@ -24,7 +24,6 @@ import org.spongycastle.jce.provider.BouncyCastleProvider;
 import org.sufficientlysecure.keychain.remote.ui.AppsListActivity;
 import org.sufficientlysecure.keychain.ui.DecryptActivity;
 import org.sufficientlysecure.keychain.ui.EncryptActivity;
-import org.sufficientlysecure.keychain.ui.ImportKeysActivity;
 import org.sufficientlysecure.keychain.ui.KeyListActivity;
 
 public final class Constants {
@@ -84,12 +83,14 @@ public final class Constants {
 
     public static final class choice {
         public static final class algorithm {
+            // TODO: legacy reasons :/ better: PublicKeyAlgorithmTags
             public static final int dsa = 0x21070001;
             public static final int elgamal = 0x21070002;
             public static final int rsa = 0x21070003;
         }
 
         public static final class compression {
+            // TODO: legacy reasons :/ better: CompressionAlgorithmTags.UNCOMPRESSED
             public static final int none = 0x21070001;
             public static final int zlib = CompressionAlgorithmTags.ZLIB;
             public static final int bzip2 = CompressionAlgorithmTags.BZIP2;
