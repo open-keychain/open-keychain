@@ -28,7 +28,6 @@ import android.os.Messenger;
 import android.support.v7.app.ActionBarActivity;
 import android.widget.Toast;
 import org.sufficientlysecure.keychain.Constants;
-import org.sufficientlysecure.keychain.Id;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.compatibility.DialogFragmentWorkaround;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;

@@ -36,7 +36,6 @@ import org.spongycastle.openpgp.PGPSecretKeyRing;
 import org.spongycastle.openpgp.PGPUtil;
 
 import org.sufficientlysecure.keychain.Constants;
-import org.sufficientlysecure.keychain.Id;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.helper.FileHelper;
 import org.sufficientlysecure.keychain.helper.OtherHelper;
@@ -588,21 +587,21 @@ public class KeychainIntentService extends IntentService
                         keysTotal);
                 PgpKeyOperation keyOperations = new PgpKeyOperation(new ProgressScaler(this, 0, 100, 100));
 
-                PGPSecretKey masterKey = keyOperations.createKey(Id.choice.algorithm.rsa,
+                PGPSecretKey masterKey = keyOperations.createKey(Constants.choice.algorithm.rsa,
                         4096, passphrase, true);
                 newKeys.add(masterKey);
                 keyUsageList.add(KeyFlags.CERTIFY_OTHER);
                 keysCreated++;
                 setProgress(keysCreated, keysTotal);
 
-                PGPSecretKey subKey = keyOperations.createKey(Id.choice.algorithm.rsa,
+                PGPSecretKey subKey = keyOperations.createKey(Constants.choice.algorithm.rsa,
                         4096, passphrase, false);
                 newKeys.add(subKey);
                 keyUsageList.add(KeyFlags.ENCRYPT_COMMS | KeyFlags.ENCRYPT_STORAGE);
                 keysCreated++;
                 setProgress(keysCreated, keysTotal);
 
-                subKey = keyOperations.createKey(Id.choice.algorithm.rsa,
+                subKey = keyOperations.createKey(Constants.choice.algorithm.rsa,
                         4096, passphrase, false);
                 newKeys.add(subKey);
                 keyUsageList.add(KeyFlags.SIGN_DATA);
@@ -846,7 +845,7 @@ public class KeychainIntentService extends IntentService
                 // store the signed key in our local cache
                 PgpImportExport pgpImportExport = new PgpImportExport(this, null);
                 int retval = pgpImportExport.storeKeyRingInCache(publicRing);
-                if (retval != Id.return_value.ok && retval != Id.return_value.updated) {
+                if (retval != PgpImportExport.RETURN_OK && retval != PgpImportExport.RETURN_UPDATED) {
                     throw new PgpGeneralException("Failed to store signed key in local cache");
                 }
 

@@ -27,7 +27,6 @@ import android.view.View;
 import org.openintents.openpgp.util.OpenPgpApi;
 import org.sufficientlysecure.htmltextview.HtmlTextView;
 import org.sufficientlysecure.keychain.Constants;
-import org.sufficientlysecure.keychain.Id;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.helper.ActionBarHelper;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
@@ -142,7 +141,7 @@ public class RemoteServiceActivity extends ActionBarActivity {
                             // Save
 
                             // user needs to select a key!
-                            if (mAccSettingsFragment.getAccSettings().getKeyId() == Id.key.none) {
+                            if (mAccSettingsFragment.getAccSettings().getKeyId() == Constants.key.none) {
                                 mAccSettingsFragment.setErrorOnSelectKeyFragment(
                                         getString(R.string.api_register_error_select_key));
                             } else {

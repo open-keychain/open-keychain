@@ -19,11 +19,11 @@ package org.sufficientlysecure.keychain.remote;
 
 import org.spongycastle.bcpg.HashAlgorithmTags;
 import org.spongycastle.openpgp.PGPEncryptedData;
-import org.sufficientlysecure.keychain.Id;
+import org.sufficientlysecure.keychain.Constants;
 
 public class AccountSettings {
     private String mAccountName;
-    private long mKeyId = Id.key.none;
+    private long mKeyId = Constants.key.none;
     private int mEncryptionAlgorithm;
     private int mHashAlgorithm;
     private int mCompression;
@@ -39,7 +39,7 @@ public class AccountSettings {
         // defaults:
         this.mEncryptionAlgorithm = PGPEncryptedData.AES_256;
         this.mHashAlgorithm = HashAlgorithmTags.SHA512;
-        this.mCompression = Id.choice.compression.zlib;
+        this.mCompression = Constants.choice.compression.zlib;
     }
 
     public String getAccountName() {

@@ -33,7 +33,6 @@ import com.beardedhen.androidbootstrap.BootstrapButton;
 import org.spongycastle.openpgp.PGPSecretKey;
 import org.spongycastle.openpgp.PGPSecretKeyRing;
 import org.sufficientlysecure.keychain.Constants;
-import org.sufficientlysecure.keychain.Id;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
@@ -60,7 +59,7 @@ public class EncryptAsymmetricFragment extends Fragment {
     private TextView mMainUserIdRest;
 
     // model
-    private long mSecretKeyId = Id.key.none;
+    private long mSecretKeyId = Constants.key.none;
     private long mEncryptionKeyIds[] = null;
 
     // Container Activity must implement this interface
@@ -116,7 +115,7 @@ public class EncryptAsymmetricFragment extends Fragment {
                 if (checkBox.isChecked()) {
                     selectSecretKey();
                 } else {
-                    setSignatureKeyId(Id.key.none);
+                    setSignatureKeyId(Constants.key.none);
                 }
             }
         });
@@ -196,7 +195,7 @@ public class EncryptAsymmetricFragment extends Fragment {
                     mEncryptionKeyIds.length));
         }
 
-        if (mSecretKeyId == Id.key.none) {
+        if (mSecretKeyId == Constants.key.none) {
             mSign.setChecked(false);
             mMainUserId.setText("");
             mMainUserIdRest.setText("");
@@ -263,7 +262,7 @@ public class EncryptAsymmetricFragment extends Fragment {
                     Uri uriMasterKey = data.getData();
                     setSignatureKeyId(Long.valueOf(uriMasterKey.getLastPathSegment()));
                 } else {
-                    setSignatureKeyId(Id.key.none);
+                    setSignatureKeyId(Constants.key.none);
                 }
                 break;
             }

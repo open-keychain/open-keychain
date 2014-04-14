@@ -44,11 +44,9 @@ import android.widget.Toast;
 import com.beardedhen.androidbootstrap.BootstrapButton;
 import com.devspark.appmsg.AppMsg;
 
-import org.spongycastle.openpgp.PGPException;
 import org.spongycastle.openpgp.PGPSecretKey;
 import org.spongycastle.openpgp.PGPSecretKeyRing;
 import org.sufficientlysecure.keychain.Constants;
-import org.sufficientlysecure.keychain.Id;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.helper.ActionBarHelper;
 import org.sufficientlysecure.keychain.helper.ExportHelper;
@@ -73,7 +71,6 @@ import org.sufficientlysecure.keychain.util.Log;
 
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Vector;
 
@@ -391,13 +388,13 @@ public class EditKeyActivity extends ActionBarActivity implements EditorListener
             mChangePassphrase.setText(getString(R.string.btn_change_passphrase));
         }
         mUserIdsView = (SectionView) inflater.inflate(R.layout.edit_key_section, container, false);
-        mUserIdsView.setType(Id.type.user_id);
+        mUserIdsView.setType(SectionView.TYPE_USER_ID);
         mUserIdsView.setCanBeEdited(mMasterCanSign);
         mUserIdsView.setUserIds(mUserIds);
         mUserIdsView.setEditorListener(this);
         container.addView(mUserIdsView);
         mKeysView = (SectionView) inflater.inflate(R.layout.edit_key_section, container, false);
-        mKeysView.setType(Id.type.key);
+        mKeysView.setType(SectionView.TYPE_KEY);
         mKeysView.setCanBeEdited(mMasterCanSign);
         mKeysView.setKeys(mKeys, mKeysUsages, newKeys);
         mKeysView.setEditorListener(this);

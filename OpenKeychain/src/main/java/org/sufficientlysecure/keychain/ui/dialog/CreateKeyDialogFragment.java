@@ -34,7 +34,8 @@ import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
-import org.sufficientlysecure.keychain.Id;
+
+import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.util.Choice;
 
@@ -91,14 +92,14 @@ public class CreateKeyDialogFragment extends DialogFragment {
 
         mAlgorithmSpinner = (Spinner) view.findViewById(R.id.create_key_algorithm);
         ArrayList<Choice> choices = new ArrayList<Choice>();
-        choices.add(new Choice(Id.choice.algorithm.dsa, getResources().getString(
+        choices.add(new Choice(Constants.choice.algorithm.dsa, getResources().getString(
                 R.string.dsa)));
         if (!wouldBeMasterKey) {
-            choices.add(new Choice(Id.choice.algorithm.elgamal, getResources().getString(
+            choices.add(new Choice(Constants.choice.algorithm.elgamal, getResources().getString(
                     R.string.elgamal)));
         }
 
-        choices.add(new Choice(Id.choice.algorithm.rsa, getResources().getString(
+        choices.add(new Choice(Constants.choice.algorithm.rsa, getResources().getString(
                 R.string.rsa)));
 
         ArrayAdapter<Choice> adapter = new ArrayAdapter<Choice>(context,
@@ -107,7 +108,7 @@ public class CreateKeyDialogFragment extends DialogFragment {
         mAlgorithmSpinner.setAdapter(adapter);
         // make RSA the default
         for (int i = 0; i < choices.size(); ++i) {
-            if (choices.get(i).getId() == Id.choice.algorithm.rsa) {
+            if (choices.get(i).getId() == Constants.choice.algorithm.rsa) {
                 mAlgorithmSpinner.setSelection(i);
                 break;
             }
@@ -224,12 +225,12 @@ public class CreateKeyDialogFragment extends DialogFragment {
         final int[] elGamalSupportedLengths = {1536, 2048, 3072, 4096, 8192};
         int properKeyLength = -1;
         switch (algorithmId) {
-            case Id.choice.algorithm.rsa:
+            case Constants.choice.algorithm.rsa:
                 if (currentKeyLength > 1024 && currentKeyLength <= 8192) {
                     properKeyLength = currentKeyLength + ((8 - (currentKeyLength % 8)) % 8);
                 }
                 break;
-            case Id.choice.algorithm.elgamal:
+            case Constants.choice.algorithm.elgamal:
                 int[] elGammalKeyDiff = new int[elGamalSupportedLengths.length];
                 for (int i = 0; i < elGamalSupportedLengths.length; i++) {
                     elGammalKeyDiff[i] = Math.abs(elGamalSupportedLengths[i] - currentKeyLength);
@@ -244,7 +245,7 @@ public class CreateKeyDialogFragment extends DialogFragment {
                 }
                 properKeyLength = elGamalSupportedLengths[minimalIndex];
                 break;
-            case Id.choice.algorithm.dsa:
+            case Constants.choice.algorithm.dsa:
                 if (currentKeyLength >= 512 && currentKeyLength <= 1024) {
                     properKeyLength = currentKeyLength + ((64 - (currentKeyLength % 64)) % 64);
                 }
@@ -283,15 +284,15 @@ public class CreateKeyDialogFragment extends DialogFragment {
         final Object selectedItem = mKeySizeSpinner.getSelectedItem();
         keySizeAdapter.clear();
         switch (algorithmId) {
-            case Id.choice.algorithm.rsa:
+            case Constants.choice.algorithm.rsa:
                 replaceArrayAdapterContent(keySizeAdapter, R.array.rsa_key_size_spinner_values);
                 mCustomKeyInfoTextView.setText(getResources().getString(R.string.key_size_custom_info_rsa));
                 break;
-            case Id.choice.algorithm.elgamal:
+            case Constants.choice.algorithm.elgamal:
                 replaceArrayAdapterContent(keySizeAdapter, R.array.elgamal_key_size_spinner_values);
                 mCustomKeyInfoTextView.setText(""); // ElGamal does not support custom key length
                 break;
-            case Id.choice.algorithm.dsa:
+            case Constants.choice.algorithm.dsa:
                 replaceArrayAdapterContent(keySizeAdapter, R.array.dsa_key_size_spinner_values);
                 mCustomKeyInfoTextView.setText(getResources().getString(R.string.key_size_custom_info_dsa));
                 break;

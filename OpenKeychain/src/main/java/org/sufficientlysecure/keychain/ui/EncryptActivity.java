@@ -26,7 +26,6 @@ import android.support.v4.view.ViewPager;
 import android.widget.Toast;
 
 import org.sufficientlysecure.keychain.Constants;
-import org.sufficientlysecure.keychain.Id;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.helper.ActionBarHelper;
 import org.sufficientlysecure.keychain.helper.FileHelper;
@@ -74,7 +73,7 @@ public class EncryptActivity extends DrawerActivity implements
 
     // model useb by message and file fragment
     private long mEncryptionKeyIds[] = null;
-    private long mSigningKeyId = Id.key.none;
+    private long mSigningKeyId = Constants.key.none;
     private String mPassphrase;
     private String mPassphraseAgain;
 

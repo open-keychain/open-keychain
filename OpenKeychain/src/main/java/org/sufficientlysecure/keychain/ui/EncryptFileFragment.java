@@ -38,7 +38,6 @@ import com.beardedhen.androidbootstrap.BootstrapButton;
 import com.devspark.appmsg.AppMsg;
 
 import org.sufficientlysecure.keychain.Constants;
-import org.sufficientlysecure.keychain.Id;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.helper.FileHelper;
 import org.sufficientlysecure.keychain.helper.Preferences;
@@ -112,13 +111,13 @@ public class EncryptFileFragment extends Fragment {
 
         mFileCompression = (Spinner) view.findViewById(R.id.fileCompression);
         Choice[] choices = new Choice[]{
-                new Choice(Id.choice.compression.none, getString(R.string.choice_none) + " ("
+                new Choice(Constants.choice.compression.none, getString(R.string.choice_none) + " ("
                         + getString(R.string.compression_fast) + ")"),
-                new Choice(Id.choice.compression.zip, "ZIP ("
+                new Choice(Constants.choice.compression.zip, "ZIP ("
                         + getString(R.string.compression_fast) + ")"),
-                new Choice(Id.choice.compression.zlib, "ZLIB ("
+                new Choice(Constants.choice.compression.zlib, "ZLIB ("
                         + getString(R.string.compression_fast) + ")"),
-                new Choice(Id.choice.compression.bzip2, "BZIP2 ("
+                new Choice(Constants.choice.compression.bzip2, "BZIP2 ("
                         + getString(R.string.compression_very_slow) + ")"),
         };
         ArrayAdapter<Choice> adapter = new ArrayAdapter<Choice>(getActivity(),

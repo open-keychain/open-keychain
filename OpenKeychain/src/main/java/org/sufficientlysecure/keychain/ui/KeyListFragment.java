@@ -55,7 +55,6 @@ import android.widget.ListView;
 import android.widget.TextView;
 import com.beardedhen.androidbootstrap.BootstrapButton;
 import org.sufficientlysecure.keychain.Constants;
-import org.sufficientlysecure.keychain.Id;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.helper.ExportHelper;
 import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
@@ -238,7 +237,7 @@ public class KeyListFragment extends Fragment
         setListShown(false);
 
         // Create an empty adapter we will use to display the loaded data.
-        mAdapter = new KeyListAdapter(getActivity(), null, Id.type.public_key);
+        mAdapter = new KeyListAdapter(getActivity(), null, 0);
         mStickyList.setAdapter(mAdapter);
 
         // Prepare the loader. Either re-connect with an existing one,

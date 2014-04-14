@@ -23,7 +23,6 @@ import android.content.SharedPreferences;
 import org.spongycastle.bcpg.HashAlgorithmTags;
 import org.spongycastle.openpgp.PGPEncryptedData;
 import org.sufficientlysecure.keychain.Constants;
-import org.sufficientlysecure.keychain.Id;
 
 import java.util.Vector;
 
@@ -99,7 +98,7 @@ public class Preferences {
 
     public int getDefaultMessageCompression() {
         return mSharedPreferences.getInt(Constants.Pref.DEFAULT_MESSAGE_COMPRESSION,
-                Id.choice.compression.zlib);
+                Constants.choice.compression.zlib);
     }
 
     public void setDefaultMessageCompression(int value) {
@@ -110,7 +109,7 @@ public class Preferences {
 
     public int getDefaultFileCompression() {
         return mSharedPreferences.getInt(Constants.Pref.DEFAULT_FILE_COMPRESSION,
-                Id.choice.compression.none);
+                Constants.choice.compression.none);
     }
 
     public void setDefaultFileCompression(int value) {

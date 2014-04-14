@@ -33,9 +33,7 @@ import android.widget.EditText;
 import com.beardedhen.androidbootstrap.BootstrapButton;
 import com.devspark.appmsg.AppMsg;
 
-import org.openintents.openpgp.OpenPgpSignatureResult;
 import org.sufficientlysecure.keychain.Constants;
-import org.sufficientlysecure.keychain.Id;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.helper.FileHelper;
 import org.sufficientlysecure.keychain.pgp.PgpDecryptVerifyResult;
@@ -202,7 +200,7 @@ public class DecryptFileFragment extends DecryptFragment {
                         showPassphraseDialog(decryptVerifyResult.getKeyIdPassphraseNeeded());
                     } else if (PgpDecryptVerifyResult.SYMMETRIC_PASSHRASE_NEEDED ==
                                     decryptVerifyResult.getStatus()) {
-                        showPassphraseDialog(Id.key.symmetric);
+                        showPassphraseDialog(Constants.key.symmetric);
                     } else {
                         // display signature result in activity
                         onResult(decryptVerifyResult);

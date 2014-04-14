@@ -48,7 +48,6 @@ import org.spongycastle.openpgp.operator.jcajce.JcePBESecretKeyDecryptorBuilder;
 import org.spongycastle.openpgp.operator.jcajce.JcePBESecretKeyEncryptorBuilder;
 
 import org.sufficientlysecure.keychain.Constants;
-import org.sufficientlysecure.keychain.Id;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralMsgIdException;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
@@ -144,14 +143,14 @@ public class PgpKeyOperation {
         KeyPairGenerator keyGen;
 
         switch (algorithmChoice) {
-            case Id.choice.algorithm.dsa: {
+            case Constants.choice.algorithm.dsa: {
                 keyGen = KeyPairGenerator.getInstance("DSA", Constants.BOUNCY_CASTLE_PROVIDER_NAME);
                 keyGen.initialize(keySize, new SecureRandom());
                 algorithm = PGPPublicKey.DSA;
                 break;
             }
 
-            case Id.choice.algorithm.elgamal: {
+            case Constants.choice.algorithm.elgamal: {
                 if (isMasterKey) {
                     throw new PgpGeneralMsgIdException(R.string.error_master_key_must_not_be_el_gamal);
                 }
@@ -166,7 +165,7 @@ public class PgpKeyOperation {
                 break;
             }
 
-            case Id.choice.algorithm.rsa: {
+            case Constants.choice.algorithm.rsa: {
                 keyGen = KeyPairGenerator.getInstance("RSA", Constants.BOUNCY_CASTLE_PROVIDER_NAME);
                 keyGen.initialize(keySize, new SecureRandom());
 

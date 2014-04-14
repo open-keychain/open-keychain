@@ -42,9 +42,7 @@ import org.spongycastle.openpgp.operator.PBESecretKeyDecryptor;
 import org.spongycastle.openpgp.operator.jcajce.JcePBESecretKeyDecryptorBuilder;
 
 import org.sufficientlysecure.keychain.Constants;
-import org.sufficientlysecure.keychain.Id;
 import org.sufficientlysecure.keychain.helper.Preferences;
-import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.util.Log;
@@ -170,7 +168,7 @@ public class PassphraseCacheService extends Service {
 
         // try to get master key id which is used as an identifier for cached passphrases
         long masterKeyId = keyId;
-        if (masterKeyId != Id.key.symmetric) {
+        if (masterKeyId != Constants.key.symmetric) {
             try {
                 masterKeyId = new ProviderHelper(this).getMasterKeyId(
                         KeychainContract.KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(Long.toString(keyId)));

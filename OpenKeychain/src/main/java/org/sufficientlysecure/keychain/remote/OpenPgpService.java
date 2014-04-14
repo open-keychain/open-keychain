@@ -30,7 +30,6 @@ import org.openintents.openpgp.OpenPgpSignatureResult;
 import org.openintents.openpgp.util.OpenPgpApi;
 import org.spongycastle.util.Arrays;
 import org.sufficientlysecure.keychain.Constants;
-import org.sufficientlysecure.keychain.Id;
 import org.sufficientlysecure.keychain.pgp.PgpDecryptVerify;
 import org.sufficientlysecure.keychain.pgp.PgpDecryptVerifyResult;
 import org.sufficientlysecure.keychain.pgp.PgpHelper;
@@ -269,7 +268,7 @@ public class OpenPgpService extends RemoteService {
                             .signaturePassphrase(passphrase);
                 } else {
                     // encrypt only
-                    builder.signatureMasterKeyId(Id.key.none);
+                    builder.signatureMasterKeyId(Constants.key.none);
                 }
                 // execute PGP operation!
                 builder.build().execute();

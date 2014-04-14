@@ -46,7 +46,6 @@ import org.spongycastle.openpgp.PGPSecretKey;
 import org.spongycastle.openpgp.operator.PBESecretKeyDecryptor;
 import org.spongycastle.openpgp.operator.jcajce.JcePBESecretKeyDecryptorBuilder;
 import org.sufficientlysecure.keychain.Constants;
-import org.sufficientlysecure.keychain.Id;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
@@ -99,7 +98,7 @@ public class PassphraseDialogFragment extends DialogFragment implements OnEditor
     public static PassphraseDialogFragment newInstance(Context context, Messenger messenger,
                                                        long secretKeyId) throws PgpGeneralException {
         // check if secret key has a passphrase
-        if (!(secretKeyId == Id.key.symmetric || secretKeyId == Id.key.none)) {
+        if (!(secretKeyId == Constants.key.symmetric || secretKeyId == Constants.key.none)) {
             if (!PassphraseCacheService.hasPassphrase(context, secretKeyId)) {
                 throw new PgpGeneralException("No passphrase! No passphrase dialog needed!");
             }
@@ -135,7 +134,7 @@ public class PassphraseDialogFragment extends DialogFragment implements OnEditor
 
         final PGPSecretKey secretKey;
 
-        if (secretKeyId == Id.key.symmetric || secretKeyId == Id.key.none) {
+        if (secretKeyId == Constants.key.symmetric || secretKeyId == Constants.key.none) {
             secretKey = null;
             alert.setMessage(R.string.passphrase_for_symmetric_encryption);
         } else {
@@ -225,7 +224,7 @@ public class PassphraseDialogFragment extends DialogFragment implements OnEditor
                     }
                     keyId = secretKey.getKeyID();
                 } else {
-                    keyId = Id.key.symmetric;
+                    keyId = Constants.key.symmetric;
                 }
 
                 // cache the new passphrase

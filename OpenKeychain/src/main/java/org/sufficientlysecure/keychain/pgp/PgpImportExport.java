@@ -31,7 +31,6 @@ import org.spongycastle.openpgp.PGPSecretKey;
 import org.spongycastle.openpgp.PGPSecretKeyRing;
 import org.spongycastle.openpgp.operator.jcajce.JcaKeyFingerprintCalculator;
 import org.sufficientlysecure.keychain.Constants;
-import org.sufficientlysecure.keychain.Id;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
@@ -58,6 +57,11 @@ public class PgpImportExport {
     private KeychainServiceListener mKeychainServiceListener;
 
     private ProviderHelper mProviderHelper;
+
+    public static final int RETURN_OK = 0;
+    public static final int RETURN_ERROR = -1;
+    public static final int RETURN_BAD = -2;
+    public static final int RETURN_UPDATED = 1;
 
     public PgpImportExport(Context context, ProgressDialogUpdater progress) {
         super();
@@ -112,8 +116,12 @@ public class PgpImportExport {
             return false;
         } finally {
             try {
-                if (aos != null) { aos.close(); }
-                if (bos != null) { bos.close(); }
+                if (aos != null) {
+                    aos.close();
+                }
+                if (bos != null) {
+                    bos.close();
+                }
             } catch (IOException e) {
             }
         }
@@ -142,17 +150,17 @@ public class PgpImportExport {
 
                     int status = storeKeyRingInCache(keyring);
 
-                    if (status == Id.return_value.error) {
+                    if (status == RETURN_ERROR) {
                         throw new PgpGeneralException(
                                 mContext.getString(R.string.error_saving_keys));
                     }
 
                     // update the counts to display to the user at the end
-                    if (status == Id.return_value.updated) {
+                    if (status == RETURN_UPDATED) {
                         ++oldKeys;
-                    } else if (status == Id.return_value.ok) {
+                    } else if (status == RETURN_OK) {
                         ++newKeys;
-                    } else if (status == Id.return_value.bad) {
+                    } else if (status == RETURN_BAD) {
                         ++badKeys;
                     }
                 } else {
@@ -248,12 +256,9 @@ public class PgpImportExport {
         return returnData;
     }
 
-    /**
-     * TODO: implement Id.return_value.updated as status when key already existed
-     */
     @SuppressWarnings("unchecked")
     public int storeKeyRingInCache(PGPKeyRing keyring) {
-        int status = Integer.MIN_VALUE; // out of bounds value (Id.return_value.*)
+        int status = RETURN_ERROR;
         try {
             if (keyring instanceof PGPSecretKeyRing) {
                 PGPSecretKeyRing secretKeyRing = (PGPSecretKeyRing) keyring;
@@ -265,7 +270,7 @@ public class PgpImportExport {
                         if (testSecretKey.isPrivateKeyEmpty()) {
                             // this is bad, something is very wrong...
                             save = false;
-                            status = Id.return_value.bad;
+                            status = RETURN_BAD;
                         }
                     }
                 }
@@ -286,17 +291,15 @@ public class PgpImportExport {
                         mProviderHelper.saveKeyRing(newPubRing);
                     }
                     mProviderHelper.saveKeyRing(secretKeyRing);
-                    // TODO: remove status returns, use exceptions!
-                    status = Id.return_value.ok;
+                    status = RETURN_OK;
                 }
             } else if (keyring instanceof PGPPublicKeyRing) {
                 PGPPublicKeyRing publicKeyRing = (PGPPublicKeyRing) keyring;
                 mProviderHelper.saveKeyRing(publicKeyRing);
-                // TODO: remove status returns, use exceptions!
-                status = Id.return_value.ok;
+                status = RETURN_OK;
             }
         } catch (IOException e) {
-            status = Id.return_value.error;
+            status = RETURN_ERROR;
         }
 
         return status;
