@@ -63,17 +63,22 @@ public class HelpActivity extends ActionBarActivity {
         mTabsAdapter.addTab(actionBar.newTab().setText(getString(R.string.help_tab_faq)),
                 HelpHtmlFragment.class, faqBundle, (selectedTab == 1));
 
+        Bundle wotBundle = new Bundle();
+        wotBundle.putInt(HelpHtmlFragment.ARG_HTML_FILE, R.raw.help_wot);
+        mTabsAdapter.addTab(actionBar.newTab().setText(getString(R.string.help_tab_wot)),
+                HelpHtmlFragment.class, wotBundle, (selectedTab == 2));
+
         Bundle nfcBundle = new Bundle();
         nfcBundle.putInt(HelpHtmlFragment.ARG_HTML_FILE, R.raw.help_nfc_beam);
         mTabsAdapter.addTab(actionBar.newTab().setText(getString(R.string.help_tab_nfc_beam)),
-                HelpHtmlFragment.class, nfcBundle, (selectedTab == 2));
+                HelpHtmlFragment.class, nfcBundle, (selectedTab == 3));
 
         Bundle changelogBundle = new Bundle();
         changelogBundle.putInt(HelpHtmlFragment.ARG_HTML_FILE, R.raw.help_changelog);
         mTabsAdapter.addTab(actionBar.newTab().setText(getString(R.string.help_tab_changelog)),
-                HelpHtmlFragment.class, changelogBundle, (selectedTab == 3));
+                HelpHtmlFragment.class, changelogBundle, (selectedTab == 4));
 
         mTabsAdapter.addTab(actionBar.newTab().setText(getString(R.string.help_tab_about)),
-                HelpAboutFragment.class, null, (selectedTab == 4));
+                HelpAboutFragment.class, null, (selectedTab == 5));
     }
 }
