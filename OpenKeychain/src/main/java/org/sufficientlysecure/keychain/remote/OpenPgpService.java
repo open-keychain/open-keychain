@@ -30,6 +30,7 @@ import org.openintents.openpgp.OpenPgpSignatureResult;
 import org.openintents.openpgp.util.OpenPgpApi;
 import org.spongycastle.util.Arrays;
 import org.sufficientlysecure.keychain.Constants;
+import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.PgpDecryptVerify;
 import org.sufficientlysecure.keychain.pgp.PgpDecryptVerifyResult;
 import org.sufficientlysecure.keychain.pgp.PgpHelper;
@@ -178,7 +179,17 @@ public class OpenPgpService extends RemoteService {
                 // TODO: currently always assume cleartext input, no sign-only of binary currently!
                 builder.cleartextInput(true);
 
-                builder.build().execute();
+                try {
+                    builder.build().execute();
+
+                    // throw exceptions upwards to client with meaningful messages
+                } catch (PgpSignEncrypt.KeyExtractionException e) {
+                    throw new Exception(getString(R.string.error_could_not_extract_private_key));
+                } catch (PgpSignEncrypt.NoPassphraseException e) {
+                    throw new Exception(getString(R.string.error_no_signature_passphrase));
+                } catch (PgpSignEncrypt.NoSigningKeyException e) {
+                    throw new Exception(getString(R.string.error_signature_failed));
+                }
             } finally {
                 is.close();
                 os.close();
@@ -270,8 +281,19 @@ public class OpenPgpService extends RemoteService {
                     // encrypt only
                     builder.signatureMasterKeyId(Constants.key.none);
                 }
-                // execute PGP operation!
-                builder.build().execute();
+
+                try {
+                    // execute PGP operation!
+                    builder.build().execute();
+
+                    // throw exceptions upwards to client with meaningful messages
+                } catch (PgpSignEncrypt.KeyExtractionException e) {
+                    throw new Exception(getString(R.string.error_could_not_extract_private_key));
+                } catch (PgpSignEncrypt.NoPassphraseException e) {
+                    throw new Exception(getString(R.string.error_no_signature_passphrase));
+                } catch (PgpSignEncrypt.NoSigningKeyException e) {
+                    throw new Exception(getString(R.string.error_signature_failed));
+                }
             } finally {
                 is.close();
                 os.close();
@@ -318,8 +340,23 @@ public class OpenPgpService extends RemoteService {
                                 // accounts of this app
                         .passphrase(passphrase);
 
-                // TODO: currently does not support binary signed-only content
-                PgpDecryptVerifyResult decryptVerifyResult = builder.build().execute();
+                PgpDecryptVerifyResult decryptVerifyResult;
+                try {
+                    // TODO: currently does not support binary signed-only content
+                    decryptVerifyResult = builder.build().execute();
+
+                    // throw exceptions upwards to client with meaningful messages
+                } catch (PgpDecryptVerify.InvalidDataException e) {
+                    throw new Exception(getString(R.string.error_invalid_data));
+                } catch (PgpDecryptVerify.KeyExtractionException e) {
+                    throw new Exception(getString(R.string.error_could_not_extract_private_key));
+                } catch (PgpDecryptVerify.WrongPassphraseException e) {
+                    throw new Exception(getString(R.string.error_wrong_passphrase));
+                } catch (PgpDecryptVerify.NoSecretKeyException e) {
+                    throw new Exception(getString(R.string.error_no_secret_key_found));
+                } catch (PgpDecryptVerify.IntegrityCheckFailedException e) {
+                    throw new Exception(getString(R.string.error_integrity_check_failed));
+                }
 
                 if (PgpDecryptVerifyResult.KEY_PASSHRASE_NEEDED == decryptVerifyResult.getStatus()) {
                     // get PendingIntent for passphrase input, add it to given params and return to client
@@ -333,6 +370,8 @@ public class OpenPgpService extends RemoteService {
 
                 OpenPgpSignatureResult signatureResult = decryptVerifyResult.getSignatureResult();
                 if (signatureResult != null) {
+                    result.putExtra(OpenPgpApi.RESULT_SIGNATURE, signatureResult);
+
                     if (signatureResult.getStatus() == OpenPgpSignatureResult.SIGNATURE_UNKNOWN_PUB_KEY) {
                         // If signature is unknown we return an _additional_ PendingIntent
                         // to retrieve the missing key
@@ -347,8 +386,6 @@ public class OpenPgpService extends RemoteService {
 
                         result.putExtra(OpenPgpApi.RESULT_INTENT, pi);
                     }
-
-                    result.putExtra(OpenPgpApi.RESULT_SIGNATURE, signatureResult);
                 }
 
             } finally {
