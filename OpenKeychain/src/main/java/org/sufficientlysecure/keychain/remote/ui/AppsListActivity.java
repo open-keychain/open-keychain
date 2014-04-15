@@ -18,6 +18,7 @@
 package org.sufficientlysecure.keychain.remote.ui;
 
 import android.os.Bundle;
+
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.ui.DrawerActivity;
 

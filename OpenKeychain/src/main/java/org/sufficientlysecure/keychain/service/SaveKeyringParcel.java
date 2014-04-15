@@ -25,7 +25,6 @@ import org.sufficientlysecure.keychain.pgp.PgpConversionHelper;
 
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.GregorianCalendar;
 
 public class SaveKeyringParcel implements Parcelable {
 

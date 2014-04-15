@@ -37,7 +37,6 @@ import com.beardedhen.androidbootstrap.BootstrapButton;
 
 import org.spongycastle.openpgp.PGPKeyFlags;
 import org.spongycastle.openpgp.PGPSecretKey;
-
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.PgpConversionHelper;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;

@@ -17,8 +17,6 @@
 
 package org.sufficientlysecure.keychain.ui;
 
-import com.google.zxing.integration.android.IntentResult;
-
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -32,6 +30,7 @@ import android.widget.TextView;
 
 import com.beardedhen.androidbootstrap.BootstrapButton;
 import com.devspark.appmsg.AppMsg;
+import com.google.zxing.integration.android.IntentResult;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;

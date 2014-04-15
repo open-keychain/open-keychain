@@ -20,6 +20,7 @@ package org.sufficientlysecure.keychain.helper;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+
 import org.spongycastle.bcpg.HashAlgorithmTags;
 import org.spongycastle.openpgp.PGPEncryptedData;
 import org.sufficientlysecure.keychain.Constants;

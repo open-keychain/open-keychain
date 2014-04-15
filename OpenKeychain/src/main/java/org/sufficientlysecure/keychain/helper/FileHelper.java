@@ -26,6 +26,7 @@ import android.net.Uri;
 import android.os.Environment;
 import android.support.v4.app.Fragment;
 import android.widget.Toast;
+
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.util.Log;

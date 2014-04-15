@@ -23,6 +23,7 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
+
 import org.sufficientlysecure.keychain.R;
 
 public class BadImportKeyDialogFragment extends DialogFragment {

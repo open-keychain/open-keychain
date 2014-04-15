@@ -21,7 +21,6 @@ import android.app.Application;
 import android.os.Environment;
 
 import org.spongycastle.jce.provider.BouncyCastleProvider;
-
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.PRNGFixes;
 

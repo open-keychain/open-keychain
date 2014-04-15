@@ -20,8 +20,8 @@ package org.sufficientlysecure.keychain.helper;
 import android.os.Bundle;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
-
 import android.text.style.StrikethroughSpan;
+
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.util.Log;
 

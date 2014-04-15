@@ -26,7 +26,9 @@ import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
 import com.beardedhen.androidbootstrap.FontAwesomeText;
+
 import org.sufficientlysecure.keychain.R;
 
 /**

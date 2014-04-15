@@ -28,6 +28,7 @@ import android.os.Bundle;
 import android.provider.Settings;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
+
 import org.sufficientlysecure.htmltextview.HtmlTextView;
 import org.sufficientlysecure.keychain.R;
 

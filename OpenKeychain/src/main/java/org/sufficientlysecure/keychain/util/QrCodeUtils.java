@@ -18,15 +18,15 @@
 
 package org.sufficientlysecure.keychain.util;
 
+import android.graphics.Bitmap;
+import android.graphics.Color;
+
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.EncodeHintType;
 import com.google.zxing.WriterException;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.QRCodeWriter;
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
-
-import android.graphics.Bitmap;
-import android.graphics.Color;
 
 import org.sufficientlysecure.keychain.Constants;
 

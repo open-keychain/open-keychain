@@ -25,6 +25,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ScrollView;
+
 import org.sufficientlysecure.htmltextview.HtmlTextView;
 
 public class HelpHtmlFragment extends Fragment {

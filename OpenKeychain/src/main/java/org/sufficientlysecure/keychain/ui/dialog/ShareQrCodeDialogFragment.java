@@ -41,7 +41,6 @@ import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.QrCodeUtils;
 
 import java.io.IOException;
-import java.security.Provider;
 import java.util.ArrayList;
 
 public class ShareQrCodeDialogFragment extends DialogFragment {

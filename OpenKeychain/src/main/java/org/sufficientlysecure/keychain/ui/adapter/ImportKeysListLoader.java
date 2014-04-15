@@ -19,6 +19,7 @@ package org.sufficientlysecure.keychain.ui.adapter;
 
 import android.content.Context;
 import android.support.v4.content.AsyncTaskLoader;
+
 import org.spongycastle.openpgp.PGPKeyRing;
 import org.spongycastle.openpgp.PGPObjectFactory;
 import org.spongycastle.openpgp.PGPUtil;

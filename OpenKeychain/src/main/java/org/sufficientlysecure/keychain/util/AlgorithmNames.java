@@ -19,6 +19,7 @@ package org.sufficientlysecure.keychain.util;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+
 import org.spongycastle.bcpg.HashAlgorithmTags;
 import org.spongycastle.openpgp.PGPEncryptedData;
 import org.sufficientlysecure.keychain.Constants;
