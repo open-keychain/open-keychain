@@ -234,8 +234,9 @@ public class ImportKeysListEntry implements Serializable, Parcelable {
         userIds = new ArrayList<String>();
         for (String userId : new IterableIterator<String>(key.getUserIDs())) {
             userIds.add(userId);
-            for(PGPSignature sig : new IterableIterator<PGPSignature>(key.getSignaturesForID(userId))) {
-                if(sig.getHashedSubPackets().hasSubpacket(SignatureSubpacketTags.PRIMARY_USER_ID)) {
+            for (PGPSignature sig : new IterableIterator<PGPSignature>(key.getSignaturesForID(userId))) {
+                if (sig.getHashedSubPackets() != null
+                        && sig.getHashedSubPackets().hasSubpacket(SignatureSubpacketTags.PRIMARY_USER_ID)) {
                     try {
                         // make sure it's actually valid
                         sig.init(new JcaPGPContentVerifierBuilderProvider().setProvider(
@@ -243,7 +244,7 @@ public class ImportKeysListEntry implements Serializable, Parcelable {
                         if (sig.verifyCertification(userId, key)) {
                             mPrimaryUserId = userId;
                         }
-                    } catch(Exception e) {
+                    } catch (Exception e) {
                         // nothing bad happens, the key is just not considered the primary key id
                     }
                 }
@@ -251,7 +252,7 @@ public class ImportKeysListEntry implements Serializable, Parcelable {
             }
         }
         // if there was no user id flagged as primary, use the first one
-        if(mPrimaryUserId == null) {
+        if (mPrimaryUserId == null) {
             mPrimaryUserId = userIds.get(0);
         }
 
@@ -287,7 +288,7 @@ public class ImportKeysListEntry implements Serializable, Parcelable {
      */
     public static String getAlgorithmFromId(int algorithmId) {
         return (ALGORITHM_IDS.get(algorithmId) != null ?
-                    ALGORITHM_IDS.get(algorithmId) :
-                    ALGORITHM_IDS.get(-1));
+                ALGORITHM_IDS.get(algorithmId) :
+                ALGORITHM_IDS.get(-1));
     }
 }
