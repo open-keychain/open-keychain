@@ -27,7 +27,6 @@ import org.sufficientlysecure.keychain.util.Log;
  */
 public class OpenPgpSignatureResultBuilder {
     // OpenPgpSignatureResult
-    private int mStatus = OpenPgpSignatureResult.SIGNATURE_ERROR;
     private boolean mSignatureOnly = false;
     private String mUserId;
     private long mKeyId;
@@ -38,10 +37,6 @@ public class OpenPgpSignatureResultBuilder {
     private boolean mValidSignature = false;
     private boolean mValidKeyBinding = false;
     private boolean mIsSignatureKeyCertified = false;
-
-    public void status(int status) {
-        this.mStatus = status;
-    }
 
     public void signatureOnly(boolean signatureOnly) {
         this.mSignatureOnly = signatureOnly;
@@ -80,9 +75,9 @@ public class OpenPgpSignatureResultBuilder {
             OpenPgpSignatureResult result = new OpenPgpSignatureResult();
             result.setSignatureOnly(mSignatureOnly);
 
-            if (mValidKeyBinding && mValidSignature) {
-                // valid sig!
-                if (mKnownKey) {
+            // valid sig!
+            if (mKnownKey) {
+                if (mValidKeyBinding && mValidSignature) {
                     result.setKeyId(mKeyId);
                     result.setUserId(mUserId);
 
@@ -94,15 +89,15 @@ public class OpenPgpSignatureResultBuilder {
                         result.setStatus(OpenPgpSignatureResult.SIGNATURE_SUCCESS_UNCERTIFIED);
                     }
                 } else {
-                    result.setKeyId(mKeyId);
-
-                    Log.d(Constants.TAG, "SIGNATURE_UNKNOWN_PUB_KEY");
-                    result.setStatus(OpenPgpSignatureResult.SIGNATURE_UNKNOWN_PUB_KEY);
+                    Log.d(Constants.TAG, "Error!\nvalidKeyBinding: " + mValidKeyBinding
+                            + "\nvalidSignature: " + mValidSignature);
+                    result.setStatus(OpenPgpSignatureResult.SIGNATURE_ERROR);
                 }
             } else {
-                Log.d(Constants.TAG, "Error!\nvalidKeyBinding: " + mValidKeyBinding
-                        + "\nvalidSignature: " + mValidSignature);
-                result.setStatus(OpenPgpSignatureResult.SIGNATURE_ERROR);
+                result.setKeyId(mKeyId);
+
+                Log.d(Constants.TAG, "SIGNATURE_UNKNOWN_PUB_KEY");
+                result.setStatus(OpenPgpSignatureResult.SIGNATURE_UNKNOWN_PUB_KEY);
             }
 
             return result;

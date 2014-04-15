@@ -67,19 +67,17 @@
             android:layout_toRightOf="@+id/result_signature_image"
             android:textColor="@color/white" />
 
-        <com.beardedhen.androidbootstrap.BootstrapButton
-            android:id="@+id/lookup_key"
-            android:layout_width="wrap_content"
-            android:layout_height="50dp"
-            android:padding="4dp"
-            android:text="@string/btn_lookup_key"
-            bootstrapbutton:bb_icon_left="fa-download"
-            bootstrapbutton:bb_type="info"
-            bootstrapbutton:bb_size="small"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentEnd="true" />
-
     </RelativeLayout>
+
+    <com.beardedhen.androidbootstrap.BootstrapButton
+        android:id="@+id/lookup_key"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:layout_marginBottom="4dp"
+        android:text="@string/btn_lookup_key"
+        bootstrapbutton:bb_icon_left="fa-download"
+        bootstrapbutton:bb_type="info"
+        bootstrapbutton:bb_size="small" />
 
 </LinearLayout>
