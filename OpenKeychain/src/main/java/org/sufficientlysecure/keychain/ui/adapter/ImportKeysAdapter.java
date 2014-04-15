@@ -35,6 +35,7 @@ import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 public class ImportKeysAdapter extends ArrayAdapter<ImportKeysListEntry> {
@@ -50,6 +51,8 @@ public class ImportKeysAdapter extends ArrayAdapter<ImportKeysListEntry> {
         public TextView fingerprint;
         public TextView algorithm;
         public TextView status;
+        public LinearLayout userIdsList;
+        public CheckBox checkBox;
     }
 
     public ImportKeysAdapter(Activity activity) {
@@ -106,10 +109,13 @@ public class ImportKeysAdapter extends ArrayAdapter<ImportKeysListEntry> {
             holder.fingerprint = (TextView) convertView.findViewById(R.id.fingerprint);
             holder.algorithm = (TextView) convertView.findViewById(R.id.algorithm);
             holder.status = (TextView) convertView.findViewById(R.id.status);
+            holder.userIdsList = (LinearLayout) convertView.findViewById(R.id.user_ids_list);
+            holder.checkBox = (CheckBox) convertView.findViewById(R.id.selected);
             convertView.setTag(holder);
         } else {
             holder = (ViewHolder) convertView.getTag();
         }
+
         // main user id
         String userId = entry.userIds.get(0);
         String[] userIdSplit = PgpKeyHelper.splitUserId(userId);
@@ -118,18 +124,22 @@ public class ImportKeysAdapter extends ArrayAdapter<ImportKeysListEntry> {
         if (userIdSplit[0] != null) {
             // show red user id if it is a secret key
             if (entry.secretKey) {
-                userIdSplit[0] = mActivity.getString(R.string.secret_key) + " " + userIdSplit[0];
+                holder.mainUserId.setText(mActivity.getString(R.string.secret_key)
+                        + " " + userIdSplit[0]);
                 holder.mainUserId.setTextColor(Color.RED);
+            } else {
+                holder.mainUserId.setText(userIdSplit[0]);
+                holder.mainUserId.setTextColor(Color.BLACK);
             }
-            holder.mainUserId.setText(userIdSplit[0]);
         } else {
+            holder.mainUserId.setTextColor(Color.BLACK);
             holder.mainUserId.setText(R.string.user_id_no_name);
         }
 
         // email
         if (userIdSplit[1] != null) {
-            holder.mainUserIdRest.setText(userIdSplit[1]);
             holder.mainUserIdRest.setVisibility(View.VISIBLE);
+            holder.mainUserIdRest.setText(userIdSplit[1]);
         } else {
             holder.mainUserIdRest.setVisibility(View.GONE);
         }
@@ -137,8 +147,8 @@ public class ImportKeysAdapter extends ArrayAdapter<ImportKeysListEntry> {
         holder.keyId.setText(entry.keyIdHex);
 
         if (entry.fingerPrintHex != null) {
-            holder.fingerprint.setText(PgpKeyHelper.colorizeFingerprint(entry.fingerPrintHex));
             holder.fingerprint.setVisibility(View.VISIBLE);
+            holder.fingerprint.setText(PgpKeyHelper.colorizeFingerprint(entry.fingerPrintHex));
         } else {
             holder.fingerprint.setVisibility(View.GONE);
         }
@@ -146,39 +156,33 @@ public class ImportKeysAdapter extends ArrayAdapter<ImportKeysListEntry> {
         holder.algorithm.setText("" + entry.bitStrength + "/" + entry.algorithm);
 
         if (entry.revoked) {
+            holder.status.setVisibility(View.VISIBLE);
             holder.status.setText(R.string.revoked);
         } else {
             holder.status.setVisibility(View.GONE);
         }
 
-        LinearLayout userIdsLL = (LinearLayout) convertView.findViewById(R.id.user_ids_list);
-        userIdsLL.removeAllViews();
         if (entry.userIds.size() == 1) {
-            userIdsLL.setVisibility(View.GONE);
+            holder.userIdsList.setVisibility(View.GONE);
         } else {
-            boolean first = true;
-            boolean second = true;
-            for (String uid : entry.userIds) {
-                if (first) {
-                    first = false;
-                    continue;
-                }
-                if (!second) {
-                    View sep = new View(mActivity);
-                    sep.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, 1));
-                    sep.setBackgroundResource(android.R.drawable.divider_horizontal_dark);
-                    userIdsLL.addView(sep);
-                }
+            holder.userIdsList.setVisibility(View.VISIBLE);
+
+            // clear view from holder
+            holder.userIdsList.removeAllViews();
+
+            Iterator<String> it = entry.userIds.iterator();
+            // skip primary user id
+            it.next();
+            while (it.hasNext()) {
+                String uid = it.next();
                 TextView uidView = (TextView) mInflater.inflate(
                         R.layout.import_keys_list_entry_user_id, null);
                 uidView.setText(uid);
-                userIdsLL.addView(uidView);
-                second = false;
+                holder.userIdsList.addView(uidView);
             }
         }
 
-        CheckBox cBox = (CheckBox) convertView.findViewById(R.id.selected);
-        cBox.setChecked(entry.isSelected());
+        holder.checkBox.setChecked(entry.isSelected());
 
         return convertView;
     }
