@@ -19,7 +19,6 @@
         android:text="@string/empty_certs"
         android:id="@+id/empty"
         android:visibility="gone"
-        android:gravity="center"
-        android:paddingBottom="32dp" />
+        android:layout_gravity="center" />
 
 </FrameLayout>
