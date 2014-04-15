@@ -17,6 +17,11 @@ file_filter = OpenKeychain/src/main/res/raw-<lang>/help_changelog.html
 source_file = OpenKeychain/src/main/res/raw/help_changelog.html
 source_lang = en
 
+[open-keychain.help-wot]
+file_filter = OpenKeychain/src/main/res/raw-<lang>/help_wot.html
+source_file = OpenKeychain/src/main/res/raw/help_wot.html
+source_lang = en
+
 [open-keychain.help-nfc-beam]
 file_filter = OpenKeychain/src/main/res/raw-<lang>/help_nfc_beam.html
 source_file = OpenKeychain/src/main/res/raw/help_nfc_beam.html
