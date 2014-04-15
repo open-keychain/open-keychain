@@ -8,59 +8,72 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingTop="4dp"
-        android:paddingLeft="16dp"
-        android:paddingRight="16dp"
         android:orientation="vertical">
 
-        <include layout="@layout/decrypt_signature_include" />
+        <include layout="@layout/decrypt_result_include" />
 
-        <EditText
-            android:id="@+id/message"
+        <View
+            android:id="@+id/status_divider"
+            android:layout_height="1dip"
             android:layout_width="match_parent"
-            android:layout_height="0dip"
-            android:gravity="top"
-            android:hint="@string/decrypt_content_edit_text_hint"
-            android:inputType="text|textCapSentences|textMultiLine|textLongMessage"
-            android:scrollHorizontally="true"
-            android:layout_weight="1" />
-
-        <TextView
-            style="@style/SectionHeader"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/section_decrypt_verify"
-            android:id="@+id/decrypt_message_section" />
+            android:background="?android:attr/listDivider" />
 
         <LinearLayout
-            android:id="@+id/decrypt_buttons"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:layout_height="match_parent"
+            android:paddingTop="4dp"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:orientation="vertical">
 
-            <com.beardedhen.androidbootstrap.BootstrapButton
-                android:id="@+id/action_decrypt"
-                android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:layout_marginRight="4dp"
-                android:layout_marginTop="4dp"
-                android:layout_marginBottom="4dp"
-                android:layout_weight="1"
-                android:text="@string/btn_decrypt_verify"
-                bootstrapbutton:bb_icon_left="fa-unlock"
-                bootstrapbutton:bb_type="info" />
 
-            <com.beardedhen.androidbootstrap.BootstrapButton
-                android:id="@+id/action_decrypt_from_clipboard"
+            <EditText
+                android:id="@+id/message"
                 android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:layout_marginLeft="4dp"
-                android:layout_marginTop="4dp"
-                android:layout_marginBottom="4dp"
-                android:layout_weight="1"
-                android:text="@string/btn_decrypt_verify_clipboard"
-                bootstrapbutton:bb_icon_left="fa-clipboard"
-                bootstrapbutton:bb_type="info" />
+                android:layout_height="0dip"
+                android:gravity="top"
+                android:hint="@string/decrypt_content_edit_text_hint"
+                android:inputType="text|textCapSentences|textMultiLine|textLongMessage"
+                android:scrollHorizontally="true"
+                android:layout_weight="1" />
+
+            <TextView
+                style="@style/SectionHeader"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/section_decrypt_verify"
+                android:id="@+id/decrypt_message_section" />
+
+            <LinearLayout
+                android:id="@+id/decrypt_buttons"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <com.beardedhen.androidbootstrap.BootstrapButton
+                    android:id="@+id/action_decrypt"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:layout_marginRight="4dp"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginBottom="4dp"
+                    android:layout_weight="1"
+                    android:text="@string/btn_decrypt_verify"
+                    bootstrapbutton:bb_icon_left="fa-unlock"
+                    bootstrapbutton:bb_type="info" />
+
+                <com.beardedhen.androidbootstrap.BootstrapButton
+                    android:id="@+id/action_decrypt_from_clipboard"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:layout_marginLeft="4dp"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginBottom="4dp"
+                    android:layout_weight="1"
+                    android:text="@string/btn_decrypt_verify_clipboard"
+                    bootstrapbutton:bb_icon_left="fa-clipboard"
+                    bootstrapbutton:bb_type="info" />
+            </LinearLayout>
         </LinearLayout>
     </LinearLayout>
 </ScrollView>

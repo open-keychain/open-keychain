@@ -5,16 +5,19 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="4dp"
-    android:paddingLeft="10dp"
-    android:paddingRight="10dp">
+    android:paddingLeft="16dp"
+    android:paddingRight="16dp"
+    android:paddingTop="4dp"
+    android:paddingBottom="4dp"
+    android:background="@color/result_blue">
 
     <TextView
         android:id="@+id/result_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="result text" />
+        android:text="result text"
+        android:textColor="@color/white" />
 
     <RelativeLayout
         android:id="@+id/result_signature"
@@ -26,7 +29,7 @@
         <RelativeLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/relativeLayout">
+            android:id="@+id/result_signature_image">
 
             <ImageView
                 android:id="@+id/ic_signature"
@@ -45,20 +48,24 @@
             android:id="@+id/mainUserId"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginLeft="4dp"
             android:layout_gravity="left"
             android:text="@string/label_main_user_id"
             android:textAppearance="?android:attr/textAppearanceMedium"
-            android:layout_toRightOf="@+id/relativeLayout" />
+            android:layout_toRightOf="@+id/result_signature_image"
+            android:textColor="@color/white" />
 
         <TextView
             android:id="@+id/mainUserIdRest"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginLeft="4dp"
             android:layout_gravity="left"
             android:text="Main User Id Rest"
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:layout_below="@+id/mainUserId"
-            android:layout_toRightOf="@+id/relativeLayout" />
+            android:layout_toRightOf="@+id/result_signature_image"
+            android:textColor="@color/white" />
 
         <com.beardedhen.androidbootstrap.BootstrapButton
             android:id="@+id/lookup_key"
@@ -74,4 +81,5 @@
             android:layout_alignParentEnd="true" />
 
     </RelativeLayout>
+
 </LinearLayout>
