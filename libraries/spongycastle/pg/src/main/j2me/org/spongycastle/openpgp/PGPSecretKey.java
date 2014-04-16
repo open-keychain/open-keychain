@@ -282,7 +282,7 @@ public class PGPSecretKey
     /**
      * Return the S2K object used to encrypt this secret key.
      *
-     * @return an iterator of Strings.
+     * @return this secret key's s2k object'
      */
     public S2K getS2K() {
         return secret.getS2K();
