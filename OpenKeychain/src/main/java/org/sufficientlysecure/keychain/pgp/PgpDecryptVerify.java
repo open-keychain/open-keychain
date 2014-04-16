@@ -439,7 +439,7 @@ public class PgpDecryptVerify {
 
                 signatureResultBuilder.signatureAvailable(true);
                 signatureResultBuilder.knownKey(true);
-                // TODO: uses the first pubkey for information, is this the master key?
+                // TODO: uses the first user id not primary user id
                 signatureResultBuilder.userId(PgpKeyHelper.getMainUserId(publicKeyRing.getPublicKey()));
                 signatureResultBuilder.keyId(publicKeyRing.getPublicKey().getKeyID());
 
@@ -640,7 +640,7 @@ public class PgpDecryptVerify {
 
             signatureResultBuilder.signatureAvailable(true);
             signatureResultBuilder.knownKey(true);
-            // TODO: uses the first pubkey for information, is this the master key?
+            // TODO: uses the first user id not primary user id
             signatureResultBuilder.userId(PgpKeyHelper.getMainUserId(publicKeyRing.getPublicKey()));
             signatureResultBuilder.keyId(publicKeyRing.getPublicKey().getKeyID());
 
