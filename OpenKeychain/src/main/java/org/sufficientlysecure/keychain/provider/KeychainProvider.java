@@ -704,14 +704,14 @@ public class KeychainProvider extends ContentProvider {
             final int match = mUriMatcher.match(uri);
             switch (match) {
                 case KEY_RING_KEYS: {
-                    if(values.size() != 1 || !values.containsKey(Keys.HAS_SECRET)) {
+                    if (values.size() != 1 || !values.containsKey(Keys.HAS_SECRET)) {
                         throw new UnsupportedOperationException(
                                 "Only has_secret column may be updated!");
                     }
                     // make sure we get a long value here
                     Long mkid = Long.parseLong(uri.getPathSegments().get(1));
                     String actualSelection = Keys.MASTER_KEY_ID + " = " + Long.toString(mkid);
-                    if(!TextUtils.isEmpty(selection)) {
+                    if (!TextUtils.isEmpty(selection)) {
                         actualSelection += " AND (" + selection + ")";
                     }
                     count = db.update(Tables.KEYS, values, actualSelection, selectionArgs);
