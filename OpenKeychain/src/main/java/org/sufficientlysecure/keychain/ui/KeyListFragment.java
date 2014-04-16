@@ -69,7 +69,6 @@ import org.sufficientlysecure.keychain.util.Log;
 import java.util.Date;
 import java.util.HashMap;
 
-import se.emilsjolander.stickylistheaders.ApiLevelTooLowException;
 import se.emilsjolander.stickylistheaders.StickyListHeadersAdapter;
 import se.emilsjolander.stickylistheaders.StickyListHeadersListView;
 
@@ -150,16 +149,14 @@ public class KeyListFragment extends Fragment
         mStickyList.setAreHeadersSticky(true);
         mStickyList.setDrawingListUnderStickyHeader(false);
         mStickyList.setFastScrollEnabled(true);
-        try {
-            mStickyList.setFastScrollAlwaysVisible(true);
-        } catch (ApiLevelTooLowException e) {
-        }
 
         /*
          * ActionBarSherlock does not support MultiChoiceModeListener. Thus multi-selection is only
          * available for Android >= 3.0
          */
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+            mStickyList.setFastScrollAlwaysVisible(true);
+
             mStickyList.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
             mStickyList.getWrappedList().setMultiChoiceModeListener(new MultiChoiceModeListener() {
 

@@ -21,6 +21,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
@@ -41,7 +42,6 @@ import org.sufficientlysecure.keychain.provider.KeychainContract.Certs;
 import org.sufficientlysecure.keychain.provider.KeychainDatabase.Tables;
 import org.sufficientlysecure.keychain.util.Log;
 
-import se.emilsjolander.stickylistheaders.ApiLevelTooLowException;
 import se.emilsjolander.stickylistheaders.StickyListHeadersAdapter;
 import se.emilsjolander.stickylistheaders.StickyListHeadersListView;
 
@@ -100,9 +100,8 @@ public class ViewKeyCertsFragment extends Fragment
         mStickyList.setFastScrollEnabled(true);
         mStickyList.setOnItemClickListener(this);
 
-        try {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
             mStickyList.setFastScrollAlwaysVisible(true);
-        } catch (ApiLevelTooLowException e) {
         }
 
         mStickyList.setEmptyView(getActivity().findViewById(R.id.empty));

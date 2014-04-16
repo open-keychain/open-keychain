@@ -1,5 +1,0 @@
-*.gen
-build
-.gradle
-.idea
-*.iml

@@ -1,0 +1,21 @@
+[submodule "extern/StickyListHeaders"]
+	path = extern/StickyListHeaders
+	url = https://github.com/open-keychain/StickyListHeaders.git
+[submodule "extern/AndroidBootstrap"]
+	path = extern/AndroidBootstrap
+	url = https://github.com/open-keychain/Android-Bootstrap.git
+[submodule "extern/zxing-android-integration"]
+	path = extern/zxing-android-integration
+	url = https://github.com/open-keychain/zxing-android-integration.git
+[submodule "extern/zxing-qr-code"]
+	path = extern/zxing-qr-code
+	url = https://github.com/open-keychain/zxing-qr-code.git
+[submodule "extern/AppMsg"]
+	path = extern/AppMsg
+	url = https://github.com/open-keychain/Android-AppMsg.git
+[submodule "extern/spongycastle"]
+	path = extern/spongycastle
+	url = https://github.com/open-keychain/spongycastle.git
+[submodule "extern/html-textview"]
+	path = extern/html-textview
+	url = https://github.com/open-keychain/html-textview.git
