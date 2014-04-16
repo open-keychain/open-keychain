@@ -117,7 +117,7 @@ public class ViewKeyKeysAdapter extends CursorAdapter {
 
         keyId.setText(keyIdStr);
         // may be set with additional "stripped" later on
-        if(hasAnySecret && cursor.getInt(mIndexHasSecret) == 0) {
+        if (hasAnySecret && cursor.getInt(mIndexHasSecret) == 0) {
             keyDetails.setText("(" + algorithmStr + ", " +
                     context.getString(R.string.key_stripped) + ")");
         } else {
