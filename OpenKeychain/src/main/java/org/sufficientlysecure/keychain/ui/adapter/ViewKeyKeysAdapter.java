@@ -45,8 +45,11 @@ public class ViewKeyKeysAdapter extends CursorAdapter {
     private int mIndexCanCertify;
     private int mIndexCanEncrypt;
     private int mIndexCanSign;
+    private int mIndexHasSecret;
     private int mIndexRevokedKey;
     private int mIndexExpiry;
+
+    private boolean hasAnySecret;
 
     private ColorStateList mDefaultTextColor;
 
@@ -61,6 +64,17 @@ public class ViewKeyKeysAdapter extends CursorAdapter {
     @Override
     public Cursor swapCursor(Cursor newCursor) {
         initIndex(newCursor);
+
+        hasAnySecret = false;
+        if (newCursor != null) {
+            newCursor.moveToFirst();
+            do {
+                if (newCursor.getInt(mIndexHasSecret) != 0) {
+                    hasAnySecret = true;
+                    break;
+                }
+            } while(newCursor.moveToNext());
+        }
 
         return super.swapCursor(newCursor);
     }
@@ -80,6 +94,7 @@ public class ViewKeyKeysAdapter extends CursorAdapter {
             mIndexCanCertify = cursor.getColumnIndexOrThrow(Keys.CAN_CERTIFY);
             mIndexCanEncrypt = cursor.getColumnIndexOrThrow(Keys.CAN_ENCRYPT);
             mIndexCanSign = cursor.getColumnIndexOrThrow(Keys.CAN_SIGN);
+            mIndexHasSecret = cursor.getColumnIndexOrThrow(Keys.HAS_SECRET);
             mIndexRevokedKey = cursor.getColumnIndexOrThrow(Keys.IS_REVOKED);
             mIndexExpiry = cursor.getColumnIndexOrThrow(Keys.EXPIRY);
         }
@@ -101,7 +116,13 @@ public class ViewKeyKeysAdapter extends CursorAdapter {
                 cursor.getInt(mIndexKeySize));
 
         keyId.setText(keyIdStr);
-        keyDetails.setText("(" + algorithmStr + ")");
+        // may be set with additional "stripped" later on
+        if (hasAnySecret && cursor.getInt(mIndexHasSecret) == 0) {
+            keyDetails.setText("(" + algorithmStr + ", " +
+                    context.getString(R.string.key_stripped) + ")");
+        } else {
+            keyDetails.setText("(" + algorithmStr + ")");
+        }
 
         if (cursor.getInt(mIndexRank) == 0) {
             masterKeyIcon.setVisibility(View.INVISIBLE);

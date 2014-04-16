@@ -431,7 +431,16 @@ public class PGPSecretKey
     {
         return pub.getUserIDs();
     }
-    
+
+    /**
+     * Return the S2K this secret key is encrypted with.
+     *
+     * @return the S2K for this key.
+     */
+    public S2K getS2K() {
+        return secret.getS2K();
+    }
+
     /**
      * Return any user attribute vectors associated with the key.
      * 

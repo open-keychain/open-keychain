@@ -685,7 +685,7 @@ public class KeychainIntentService extends IntentService
                 }
 
                 Cursor cursor = getContentResolver().query(KeyRings.buildUnifiedKeyRingsUri(),
-                        new String[]{KeyRings.MASTER_KEY_ID, KeyRings.HAS_SECRET},
+                        new String[]{KeyRings.MASTER_KEY_ID, KeyRings.HAS_ANY_SECRET},
                         selection, null, null);
                 try {
                     cursor.moveToFirst();

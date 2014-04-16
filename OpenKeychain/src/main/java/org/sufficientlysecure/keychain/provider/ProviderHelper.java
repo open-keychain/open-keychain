@@ -28,12 +28,15 @@ import android.net.Uri;
 import android.os.RemoteException;
 
 import org.spongycastle.bcpg.ArmoredOutputStream;
+import org.spongycastle.bcpg.S2K;
 import org.spongycastle.openpgp.PGPException;
 import org.spongycastle.openpgp.PGPKeyRing;
 import org.spongycastle.openpgp.PGPPublicKey;
 import org.spongycastle.openpgp.PGPPublicKeyRing;
+import org.spongycastle.openpgp.PGPSecretKey;
 import org.spongycastle.openpgp.PGPSecretKeyRing;
 import org.spongycastle.openpgp.PGPSignature;
+import org.spongycastle.openpgp.operator.PBESecretKeyDecryptor;
 import org.spongycastle.openpgp.operator.jcajce.JcaPGPContentVerifierBuilderProvider;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.pgp.PgpConversionHelper;
@@ -387,13 +390,38 @@ public class ProviderHelper {
     public void saveKeyRing(PGPSecretKeyRing keyRing) throws IOException {
         long masterKeyId = keyRing.getPublicKey().getKeyID();
 
+        {
+            Uri uri = Keys.buildKeysUri(Long.toString(masterKeyId));
+
+            // first, mark all keys as not available
+            ContentValues values = new ContentValues();
+            values.put(Keys.HAS_SECRET, 0);
+            mContentResolver.update(uri, values, null, null);
+
+            values.put(Keys.HAS_SECRET, 1);
+            // then, mark exactly the keys we have available
+            for (PGPSecretKey sub : new IterableIterator<PGPSecretKey>(keyRing.getSecretKeys())) {
+                // Set to 1, except if the encryption type is GNU_DUMMY_S2K
+                if(sub.getS2K().getType() != S2K.GNU_DUMMY_S2K) {
+                    mContentResolver.update(uri, values, Keys.KEY_ID + " = ?", new String[]{
+                            Long.toString(sub.getKeyID())
+                    });
+                }
+            }
+            // this implicitly leaves all keys which were not in the secret key ring
+            // with has_secret = 0
+        }
+
         // save secret keyring
-        ContentValues values = new ContentValues();
-        values.put(KeyRingData.MASTER_KEY_ID, masterKeyId);
-        values.put(KeyRingData.KEY_RING_DATA, keyRing.getEncoded());
-        // insert new version of this keyRing
-        Uri uri = KeyRingData.buildSecretKeyRingUri(Long.toString(masterKeyId));
-        mContentResolver.insert(uri, values);
+        {
+            ContentValues values = new ContentValues();
+            values.put(KeyRingData.MASTER_KEY_ID, masterKeyId);
+            values.put(KeyRingData.KEY_RING_DATA, keyRing.getEncoded());
+            // insert new version of this keyRing
+            Uri uri = KeyRingData.buildSecretKeyRingUri(Long.toString(masterKeyId));
+            mContentResolver.insert(uri, values);
+        }
+
     }
 
     /**

@@ -84,6 +84,7 @@ public class KeychainDatabase extends SQLiteOpenHelper {
                 + KeysColumns.CAN_SIGN + " BOOLEAN, "
                 + KeysColumns.CAN_ENCRYPT + " BOOLEAN, "
                 + KeysColumns.IS_REVOKED + " BOOLEAN, "
+                + KeysColumns.HAS_SECRET + " BOOLEAN, "
 
                 + KeysColumns.CREATION + " INTEGER, "
                 + KeysColumns.EXPIRY + " INTEGER, "
@@ -187,6 +188,11 @@ public class KeychainDatabase extends SQLiteOpenHelper {
         if (!db.isReadOnly()) {
             // Enable foreign key constraints
             db.execSQL("PRAGMA foreign_keys=ON;");
+            // TODO this is a dev hack, remove for release!
+            try {
+                db.execSQL("ALTER TABLE keys ADD COLUMN has_secret BOOLEAN");
+            } catch(Exception e) {
+            }
         }
     }
 

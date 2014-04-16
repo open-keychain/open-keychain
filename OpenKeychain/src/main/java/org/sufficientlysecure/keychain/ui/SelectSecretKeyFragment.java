@@ -117,10 +117,11 @@ public class SelectSecretKeyFragment extends ListFragment implements
                 KeyRings.IS_REVOKED,
                 KeyRings.CAN_CERTIFY,
                 KeyRings.HAS_SIGN,
-                KeyRings.HAS_SECRET
+                KeyRings.HAS_SECRET,
+                KeyRings.HAS_ANY_SECRET
         };
 
-        String where = KeyRings.HAS_SECRET + " = 1";
+        String where = KeyRings.HAS_ANY_SECRET + " = 1";
 
         // Now create and return a CursorLoader that will take care of
         // creating a Cursor for the data being displayed.
@@ -151,7 +152,7 @@ public class SelectSecretKeyFragment extends ListFragment implements
 
     private class SelectSecretKeyCursorAdapter extends SelectKeyCursorAdapter {
 
-        private int mIndexHasSign, mIndexCanCertify;
+        private int mIndexHasSecret, mIndexHasSign, mIndexCanCertify;
 
         public SelectSecretKeyCursorAdapter(Context context, Cursor c, int flags, ListView listView) {
             super(context, c, flags, listView);
@@ -161,6 +162,7 @@ public class SelectSecretKeyFragment extends ListFragment implements
         protected void initIndex(Cursor cursor) {
             super.initIndex(cursor);
             if (cursor != null) {
+                mIndexHasSecret = cursor.getColumnIndexOrThrow(KeyRings.HAS_SECRET);
                 mIndexCanCertify = cursor.getColumnIndexOrThrow(KeyRings.CAN_CERTIFY);
                 mIndexHasSign = cursor.getColumnIndexOrThrow(KeyRings.HAS_SIGN);
             }
@@ -177,8 +179,10 @@ public class SelectSecretKeyFragment extends ListFragment implements
             // Special from superclass: Te
             boolean enabled = false;
             if((Boolean) h.status.getTag()) {
+                if (cursor.getInt(mIndexHasSecret) == 0) {
+                    h.status.setText(R.string.no_subkey);
                 // Check if key is viable for our purposes (certify or sign)
-                if(mFilterCertify) {
+                } else if(mFilterCertify) {
                     if (cursor.getInt(mIndexCanCertify) == 0) {
                         h.status.setText(R.string.can_certify_not);
                     } else {

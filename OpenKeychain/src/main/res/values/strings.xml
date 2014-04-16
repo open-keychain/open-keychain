@@ -535,5 +535,7 @@
     <string name="can_certify_not">cannot certify</string>
     <string name="error_key_not_found">Key not found!</string>
     <string name="error_key_processing">Error processing key!</string>
+    <string name="no_subkey">subkey unavailable</string>
+    <string name="key_stripped">stripped</string>
 
 </resources>
