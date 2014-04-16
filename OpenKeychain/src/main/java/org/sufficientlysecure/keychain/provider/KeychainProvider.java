@@ -703,6 +703,20 @@ public class KeychainProvider extends ContentProvider {
         try {
             final int match = mUriMatcher.match(uri);
             switch (match) {
+                case KEY_RING_KEYS: {
+                    if(values.size() != 1 || !values.containsKey(Keys.HAS_SECRET)) {
+                        throw new UnsupportedOperationException(
+                                "Only has_secret column may be updated!");
+                    }
+                    // make sure we get a long value here
+                    Long mkid = Long.parseLong(uri.getPathSegments().get(1));
+                    String actualSelection = Keys.MASTER_KEY_ID + " = " + Long.toString(mkid);
+                    if(!TextUtils.isEmpty(selection)) {
+                        actualSelection += " AND (" + selection + ")";
+                    }
+                    count = db.update(Tables.KEYS, values, actualSelection, selectionArgs);
+                    break;
+                }
                 case API_APPS_BY_PACKAGE_NAME:
                     count = db.update(Tables.API_APPS, values,
                             buildDefaultApiAppsSelection(uri, selection), selectionArgs);
@@ -719,7 +733,7 @@ public class KeychainProvider extends ContentProvider {
             getContext().getContentResolver().notifyChange(uri, null);
 
         } catch (SQLiteConstraintException e) {
-            Log.e(Constants.TAG, "Constraint exception on update! Entry already existing?");
+            Log.e(Constants.TAG, "Constraint exception on update! Entry already existing?", e);
         }
 
         return count;

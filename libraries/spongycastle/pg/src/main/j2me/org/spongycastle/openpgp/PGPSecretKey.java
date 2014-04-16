@@ -278,7 +278,16 @@ public class PGPSecretKey
     {
         return pub.getUserIDs();
     }
-    
+
+    /**
+     * Return the S2K object used to encrypt this secret key.
+     *
+     * @return an iterator of Strings.
+     */
+    public S2K getS2K() {
+        return secret.getS2K();
+    }
+
     /**
      * Return any user attribute vectors associated with the key.
      * 
