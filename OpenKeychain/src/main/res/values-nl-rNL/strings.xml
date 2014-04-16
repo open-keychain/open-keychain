@@ -145,7 +145,6 @@
   <string name="error_key_needs_a_user_id">ten minste één gebruiksers-id vereist</string>
   <string name="error_main_user_id_must_not_be_empty">hoofdgebruikers-id kan niet leeg zijn</string>
   <string name="error_key_needs_master_key">ten minste een hoofdsleutel is vereist</string>
-  <string name="error_signature_failed">handtekening mislukt</string>
   <string name="error_no_signature_passphrase">geen wachtwoord opgegeven</string>
   <string name="error_no_signature_key">geen ondertekeningssleutel opgegeven</string>
   <string name="error_invalid_data">geen geldige versleutelingsgegevens</string>
@@ -153,10 +152,12 @@
   <string name="error_no_symmetric_encryption_packet">kan geen pakket vinden met symmetrische versleuteling</string>
   <string name="error_wrong_passphrase">wachtwoord verekerd</string>
   <string name="error_could_not_extract_private_key">kan privésleutel niet uitpakken</string>
+  <!--errors without preceeding Error:-->
   <string name="error_only_files_are_supported">Ruwe invoer van binaire gegevens wordt niet ondersteund, alleen bij ACTION_ENCRYPT_STREAM_AND_RETURN.</string>
   <string name="error_jelly_bean_needed">Android 4.1 Jelly Bean of hoger is vereist voor NFC Beam.</string>
   <string name="error_nfc_needed">Uw apparaat biedt geen ondersteuning voor NFC</string>
   <string name="error_nothing_import">Niets te importeren</string>
+  <!--results shown after decryption/verification-->
   <!--progress dialogs, usually ending in '…'-->
   <string name="progress_saving">opslaan...</string>
   <string name="progress_importing">importeren...</string>

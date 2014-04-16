@@ -237,7 +237,6 @@
     <item quantity="one">Trovata %d chiave.</item>
     <item quantity="other">Trovate %d chiavi.</item>
   </plurals>
-  <string name="unknown_signature">Firma sconosciuta, clicca il pulsante per ricercare la chiave mancante.</string>
   <plurals name="bad_keys_encountered">
     <item quantity="one">%d chiave segreta non valida ignorata. Forse hai esportato con opzione\n--export-secret-subkeys\nAssicurati di esportare con\n--export-secret-keys\ninvece.</item>
     <item quantity="other">%d chiavi private non valide  ignorate. Forse hai esportato con opzione\n--export-secret-subkeys\nAssicurati di esportare con\n--export-secret-keys\ninvece.</item>
@@ -269,7 +268,6 @@
   <string name="error_main_user_id_must_not_be_empty">id utente principale non puo\' essere vuoto</string>
   <string name="error_key_needs_master_key">necessaria almeno una chiave principale</string>
   <string name="error_no_encryption_keys_or_passphrase">nessuna chiave di codifica o frase di accesso fornita</string>
-  <string name="error_signature_failed">firma fallita</string>
   <string name="error_no_signature_passphrase">nessuna frase di accesso inserita</string>
   <string name="error_no_signature_key">nessuna chiave di firma inserita</string>
   <string name="error_invalid_data">dati di codifica non validi</string>
@@ -279,14 +277,15 @@
   <string name="error_wrong_passphrase">frase di accesso errata</string>
   <string name="error_saving_keys">errore nel salvataggio di alcune chiavi</string>
   <string name="error_could_not_extract_private_key">impossibile estrarre la chiave privata</string>
-  <string name="error_only_files_are_supported">Flusso di dati diretto senza file corrispettivo nel filesystem non e\' supportato. Supportato soltanto da ACTION_ENCRYPT_STREAM_AND_RETURN.</string>
-  <string name="error_jelly_bean_needed">Devi avere Android 4.1 alias Jelly Bean per usare Android NFC Beam!</string>
-  <string name="error_nfc_needed">NFC non disponibile nel tuo dispositivo!</string>
-  <string name="error_nothing_import">Niente da importare!</string>
   <string name="error_expiry_must_come_after_creation">La data di scadenza deve essere postuma quella di creazione</string>
   <string name="error_save_first">si prega di salvare il portachiavi primo</string>
   <string name="error_can_not_delete_contact">Non è possibile eliminare questo contatto, perché è il proprio.</string>
   <string name="error_can_not_delete_contacts">Non è possibile eliminare i seguenti contatti perché sono i propri:\n%s</string>
+  <!--errors without preceeding Error:-->
+  <string name="error_only_files_are_supported">Flusso di dati diretto senza file corrispettivo nel filesystem non e\' supportato. Supportato soltanto da ACTION_ENCRYPT_STREAM_AND_RETURN.</string>
+  <string name="error_jelly_bean_needed">Devi avere Android 4.1 alias Jelly Bean per usare Android NFC Beam!</string>
+  <string name="error_nfc_needed">NFC non disponibile nel tuo dispositivo!</string>
+  <string name="error_nothing_import">Niente da importare!</string>
   <string name="error_keyserver_insufficient_query">Query di server insufficiente</string>
   <string name="error_keyserver_query">Interrogazione del server delle chiavi fallita</string>
   <string name="error_keyserver_too_many_responses">Troppi responsi</string>
@@ -301,6 +300,7 @@
     <item quantity="other">parti del file caricato sono oggetti OpenPGP validi, ma non chavi OpenPGP</item>
   </plurals>
   <string name="error_change_something_first">È necessario apportare modifiche al portachiavi prima prima che sia possibile salvarlo</string>
+  <!--results shown after decryption/verification-->
   <!--progress dialogs, usually ending in '…'-->
   <string name="progress_done">Fatto.</string>
   <string name="progress_cancel">Annulla</string>

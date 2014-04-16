@@ -193,6 +193,8 @@
   <string name="file_delete_confirmation">%s を削除してもかまいませんか?</string>
   <string name="file_delete_successful">削除に成功しました。</string>
   <string name="no_file_selected">最初にファイルを選択してください。</string>
+  <string name="encrypt_sign_successful">署名/暗号化に成功しました。</string>
+  <string name="encrypt_sign_clipboard_successful">クリップボードの中身の署名/暗号化に成功しました。</string>
   <string name="enter_passphrase_twice">もう一度パスフレーズを入れてください。</string>
   <string name="select_encryption_key">少なくとも1つの暗号化鍵を選択して下さい。</string>
   <string name="select_encryption_or_signature_key">少なくとも1つの暗号化鍵か署名鍵を選択して下さい。</string>
@@ -229,7 +231,6 @@
   <plurals name="keys_found">
     <item quantity="other">%d の鍵を発見。</item>
   </plurals>
-  <string name="unknown_signature">不明な署名、ボタンを押して見付からない鍵を検出してください。</string>
   <plurals name="bad_keys_encountered">
     <item quantity="other">%d の問題ある鍵を無視しました。 おそらく次のオプションでエクスポートしています\n --export-secret-subkeys\n代りに次のオプションでエクスポートしてください。\n --export-secret-keys</item>
   </plurals>
@@ -260,7 +261,6 @@
   <string name="error_main_user_id_must_not_be_empty">主ユーザIDは空にすることはできません</string>
   <string name="error_key_needs_master_key">主鍵が最低でも1つ必要です</string>
   <string name="error_no_encryption_keys_or_passphrase">鍵が暗号化されていないかパスフレーズが与えられていません</string>
-  <string name="error_signature_failed">署名に失敗</string>
   <string name="error_no_signature_passphrase">パスフレーズが与えられていません</string>
   <string name="error_no_signature_key">署名鍵を与えられていません</string>
   <string name="error_invalid_data">暗号化データが不正です</string>
@@ -270,14 +270,15 @@
   <string name="error_wrong_passphrase">正しくないパスフレーズです</string>
   <string name="error_saving_keys">鍵の保存エラー</string>
   <string name="error_could_not_extract_private_key">秘密鍵を取り出すことができません</string>
-  <string name="error_only_files_are_supported">ファイルシステムに存在するファイルではないバイナリデータはサポートされません。 ACTION_ENCRYPT_STREAM_AND_RETURN でのみサポートされます。</string>
-  <string name="error_jelly_bean_needed">Android NFC Beam機能を使うにはAndroid 4.1 (Jelly Bean) が必要です!</string>
-  <string name="error_nfc_needed">あなたのデバイスにはNFCが存在しません!</string>
-  <string name="error_nothing_import">インポートするものがありません!</string>
   <string name="error_expiry_must_come_after_creation">期限日時は生成日時より後である必要があります</string>
   <string name="error_save_first">まず鍵輪を保存してください</string>
   <string name="error_can_not_delete_contact">この連絡先はあなたなので削除できません。</string>
   <string name="error_can_not_delete_contacts">この連絡先はあなたなので削除できません。:\n%s</string>
+  <!--errors without preceeding Error:-->
+  <string name="error_only_files_are_supported">ファイルシステムに存在するファイルではないバイナリデータはサポートされません。 ACTION_ENCRYPT_STREAM_AND_RETURN でのみサポートされます。</string>
+  <string name="error_jelly_bean_needed">Android NFC Beam機能を使うにはAndroid 4.1 (Jelly Bean) が必要です!</string>
+  <string name="error_nfc_needed">あなたのデバイスにはNFCが存在しません!</string>
+  <string name="error_nothing_import">インポートするものがありません!</string>
   <string name="error_keyserver_insufficient_query">サーバへのクエリーが不足しています</string>
   <string name="error_keyserver_query">鍵サーバへのクエリーが失敗</string>
   <string name="error_keyserver_too_many_responses">レスポンスが多すぎます</string>
@@ -290,6 +291,7 @@
     <item quantity="other">読み込んだファイルのOpenPGPオブジェクト部分は正しいですが、OpenPGPの鍵ではありません</item>
   </plurals>
   <string name="error_change_something_first">あなたは鍵輪を保存する前に変更を加えなくてはなりません</string>
+  <!--results shown after decryption/verification-->
   <!--progress dialogs, usually ending in '…'-->
   <string name="progress_done">完了。</string>
   <string name="progress_cancel">キャンセル</string>

@@ -709,7 +709,7 @@ public class PgpKeyOperation {
         {
 
             if (certificationKey == null) {
-                throw new PgpGeneralMsgIdException(R.string.error_signature_failed);
+                throw new PgpGeneralMsgIdException(R.string.error_no_signature_key);
             }
 
             PBESecretKeyDecryptor keyDecryptor = new JcePBESecretKeyDecryptorBuilder().setProvider(

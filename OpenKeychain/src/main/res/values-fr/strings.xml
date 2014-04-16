@@ -196,6 +196,8 @@
   <string name="file_delete_confirmation">Êtes-vous sûr de vouloir supprimer\n%s ?</string>
   <string name="file_delete_successful">Supprimé avec succès.</string>
   <string name="no_file_selected">Choisir d\'abord un fichier.</string>
+  <string name="encrypt_sign_successful">Signé et/ou chiffré avec succès.</string>
+  <string name="encrypt_sign_clipboard_successful">Signé et/ou chiffré vers le presse-papiers avec succès.</string>
   <string name="enter_passphrase_twice">Saisir la phrase de passe deux fois.</string>
   <string name="select_encryption_key">Choisir au moins une clef de chiffrement.</string>
   <string name="select_encryption_or_signature_key">Choisir au moins une clef de chiffrement ou de signature.</string>
@@ -237,7 +239,6 @@
     <item quantity="one">%d clef trouvée.</item>
     <item quantity="other">%d clefs trouvées.</item>
   </plurals>
-  <string name="unknown_signature">Signature inconnue. Cliquer sur le bouton pour rechercher la clef manquante.</string>
   <plurals name="bad_keys_encountered">
     <item quantity="one">%d mauvaise clef ignorée. Vous avez peut-être exporté avec l\'option\n --export-secret-subkeys\nAssurez-vous d\'exporter plutôt avec\n --export-secret-keys.</item>
     <item quantity="other">%d mauvaises clefs ignorées. Vous avez peut-être exporté avec l\'option\n --export-secret-subkeys\nAssurez-vous d\'exporter plutôt avec\n --export-secret-keys.</item>
@@ -269,7 +270,6 @@
   <string name="error_main_user_id_must_not_be_empty">l\'ID utilisateur principal ne doit pas être vide</string>
   <string name="error_key_needs_master_key">au moins une clef maîtresse est nécessaire</string>
   <string name="error_no_encryption_keys_or_passphrase">aucune clef ni phrase de passe n\'a été donnée</string>
-  <string name="error_signature_failed">échec lors de la signature</string>
   <string name="error_no_signature_passphrase">aucune phrase de passe n\'a été donnée</string>
   <string name="error_no_signature_key">aucune clef de signature n\'a été donnée</string>
   <string name="error_invalid_data">aucune donnée de chiffrement valide</string>
@@ -279,14 +279,15 @@
   <string name="error_wrong_passphrase">phrase de passe erronnée</string>
   <string name="error_saving_keys">erreur lors de la sauvegarde de certaines clefs</string>
   <string name="error_could_not_extract_private_key">impossible d\'extraire la clef privée</string>
-  <string name="error_only_files_are_supported">Les données binaires directes sans fichier dans le système de fichiers ne sont pas prises en charge. C\'est uniquement pris en charge par ACTION_ENCRYPT_STREAM_AND_RETURN.</string>
-  <string name="error_jelly_bean_needed">Vous devez avoir Android 4.1 Jelly Bean pour utiliser la fonction NFC Beam !</string>
-  <string name="error_nfc_needed">NFC n\'est pas disponible sur votre appareil !</string>
-  <string name="error_nothing_import">Rien à importer !</string>
   <string name="error_expiry_must_come_after_creation">la date d\'expiration doit venir après la date de création</string>
   <string name="error_save_first">veuillez d\'abord enregistrer le trousseau</string>
   <string name="error_can_not_delete_contact">vous ne pouvez pas supprimer ce contact car c\'est le vôtre.</string>
   <string name="error_can_not_delete_contacts">vous ne pouvez pas supprimer les contacts suivants car c\'est les vôtres.\n%s</string>
+  <!--errors without preceeding Error:-->
+  <string name="error_only_files_are_supported">Les données binaires directes sans fichier dans le système de fichiers ne sont pas prises en charge. C\'est uniquement pris en charge par ACTION_ENCRYPT_STREAM_AND_RETURN.</string>
+  <string name="error_jelly_bean_needed">Vous devez avoir Android 4.1 Jelly Bean pour utiliser la fonction NFC Beam !</string>
+  <string name="error_nfc_needed">NFC n\'est pas disponible sur votre appareil !</string>
+  <string name="error_nothing_import">Rien à importer !</string>
   <string name="error_keyserver_insufficient_query">Requête serveur insuffisante</string>
   <string name="error_keyserver_query">Échec lors de l\'interrogation du serveur de clefs</string>
   <string name="error_keyserver_too_many_responses">Trop de réponses</string>
@@ -301,6 +302,15 @@
     <item quantity="other">certaines parties du fichier chargé sont des objets OpenPGP valides mais pas des clefs OpenPGP</item>
   </plurals>
   <string name="error_change_something_first">Vous devez apporter des changements au trousseau avant de pouvoir l\'enregistrer</string>
+  <!--results shown after decryption/verification-->
+  <string name="decrypt_result_invalid_signature">Signature invalide !</string>
+  <string name="decrypt_result_signature_unknown_pub_key">Clef publique inconnue</string>
+  <string name="decrypt_result_signature_uncertified">Signature valide (non certifiée)</string>
+  <string name="decrypt_result_signature_certified">Signature valide (certifiée)</string>
+  <string name="decrypt_result_decrypted">Déchiffré avec succès</string>
+  <string name="decrypt_result_decrypted_unknown_pub_key">Déchiffré avec succès, mais la clef publique est inconnue</string>
+  <string name="decrypt_result_decrypted_and_signature_uncertified">Déchiffré avec succès et la signature est valide (non certifiée)</string>
+  <string name="decrypt_result_decrypted_and_signature_certified">Déchiffré avec succès et la signature est valide (certifiée)</string>
   <!--progress dialogs, usually ending in '…'-->
   <string name="progress_done">Terminé.</string>
   <string name="progress_cancel">Annuler</string>

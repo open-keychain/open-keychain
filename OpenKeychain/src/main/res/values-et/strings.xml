@@ -101,6 +101,8 @@
   <!--errors
          no punctuation, all lowercase,
          they will be put after "error_message", e.g. "Error: file not found"-->
+  <!--errors without preceeding Error:-->
+  <!--results shown after decryption/verification-->
   <!--progress dialogs, usually ending in '…'-->
   <!--action strings-->
   <!--key bit length selections-->

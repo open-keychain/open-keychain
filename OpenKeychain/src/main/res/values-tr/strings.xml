@@ -93,6 +93,8 @@
   <string name="error_invalid_email">geçersiz eposta \'%s\'</string>
   <string name="error_key_size_minimum512bit">anahtar uzunluğu en az 512bit olmalı</string>
   <string name="error_corrupt_data">bozuk veri</string>
+  <!--errors without preceeding Error:-->
+  <!--results shown after decryption/verification-->
   <!--progress dialogs, usually ending in '…'-->
   <string name="progress_saving">kaydediliyor...</string>
   <string name="progress_importing">alıyor...</string>

@@ -120,12 +120,13 @@
   <string name="error_key_needs_a_user_id">需要至少一个用户id</string>
   <string name="error_main_user_id_must_not_be_empty">主用户id不能是空的</string>
   <string name="error_key_needs_master_key">需要至少一个主密钥</string>
-  <string name="error_signature_failed">签名失败</string>
   <string name="error_no_signature_passphrase">没有提供密语</string>
   <string name="error_no_signature_key">没有提供密钥</string>
   <string name="error_invalid_data">不是有效的加密数据</string>
   <string name="error_corrupt_data">损坏的数据</string>
   <string name="error_wrong_passphrase">错误的密语</string>
+  <!--errors without preceeding Error:-->
+  <!--results shown after decryption/verification-->
   <!--progress dialogs, usually ending in '…'-->
   <string name="progress_saving">保存...</string>
   <string name="progress_importing">导入中...</string>

@@ -188,7 +188,7 @@ public class OpenPgpService extends RemoteService {
                 } catch (PgpSignEncrypt.NoPassphraseException e) {
                     throw new Exception(getString(R.string.error_no_signature_passphrase));
                 } catch (PgpSignEncrypt.NoSigningKeyException e) {
-                    throw new Exception(getString(R.string.error_signature_failed));
+                    throw new Exception(getString(R.string.error_no_signature_key));
                 }
             } finally {
                 is.close();
@@ -292,7 +292,7 @@ public class OpenPgpService extends RemoteService {
                 } catch (PgpSignEncrypt.NoPassphraseException e) {
                     throw new Exception(getString(R.string.error_no_signature_passphrase));
                 } catch (PgpSignEncrypt.NoSigningKeyException e) {
-                    throw new Exception(getString(R.string.error_signature_failed));
+                    throw new Exception(getString(R.string.error_no_signature_key));
                 }
             } finally {
                 is.close();

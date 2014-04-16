@@ -239,7 +239,6 @@
     <item quantity="few">Найдено %d ключей.</item>
     <item quantity="other">Найдено %d ключей.</item>
   </plurals>
-  <string name="unknown_signature">Неизвестная подпись. Нажмите кнопку, что бы найти ключ.</string>
   <plurals name="bad_keys_encountered">
     <item quantity="one">%d плохой секретный ключ проигнорирован. Возможно, вы экспортируете с параметром\n--export-secret-subkeys\nВместо этого используйте\n--export-secret-keys</item>
     <item quantity="few">%d плохих секретных ключей проигнорировано. Возможно, вы экспортируете с параметром\n--export-secret-subkeys\nВместо этого используйте\n--export-secret-keys\n</item>
@@ -272,7 +271,6 @@
   <string name="error_main_user_id_must_not_be_empty">основная запись пользователя не может быть пустой</string>
   <string name="error_key_needs_master_key">необходим основной ключ</string>
   <string name="error_no_encryption_keys_or_passphrase">не задан ключ или пароль для шифрования</string>
-  <string name="error_signature_failed">ошибка подписи</string>
   <string name="error_no_signature_passphrase">пароль не задан</string>
   <string name="error_no_signature_key">ключ для подписи не задан</string>
   <string name="error_invalid_data">некорректное шифрование</string>
@@ -282,13 +280,14 @@
   <string name="error_wrong_passphrase">неправильный пароль</string>
   <string name="error_saving_keys">ошибка сохранения ключей</string>
   <string name="error_could_not_extract_private_key">не удалось извлечь личный ключ</string>
+  <string name="error_expiry_must_come_after_creation">срок годности не может быть раньше даты создания</string>
+  <string name="error_can_not_delete_contact">нельзя удалить свой собственный контакт. Пожалуйста, удалите его в разделе \'Мои ключи\'!</string>
+  <string name="error_can_not_delete_contacts">это ваши собственные контакты, их нельзя удалить:\n%s</string>
+  <!--errors without preceeding Error:-->
   <string name="error_only_files_are_supported">Прямая передача данных без использования файла в памяти устройства не поддерживается. Это возможно только для ACTION_ENCRYPT_STREAM_AND_RETURN.</string>
   <string name="error_jelly_bean_needed">Для использования NFC Beam требуется Android 4.1+ !</string>
   <string name="error_nfc_needed">Ваше устройство не поддерживает NFC!</string>
   <string name="error_nothing_import">Нет данных для импорта!</string>
-  <string name="error_expiry_must_come_after_creation">срок годности не может быть раньше даты создания</string>
-  <string name="error_can_not_delete_contact">нельзя удалить свой собственный контакт. Пожалуйста, удалите его в разделе \'Мои ключи\'!</string>
-  <string name="error_can_not_delete_contacts">это ваши собственные контакты, их нельзя удалить:\n%s</string>
   <string name="error_keyserver_insufficient_query">Ограничение запроса сервера</string>
   <string name="error_keyserver_query">Сбой запроса сервера ключей</string>
   <string name="error_keyserver_too_many_responses">Слишком много ответов</string>
@@ -304,6 +303,7 @@
     <item quantity="few">части загруженного файла содержат данные OpenPGP, но это не ключ</item>
     <item quantity="other">части загруженного файла содержат данные OpenPGP, но это не ключ</item>
   </plurals>
+  <!--results shown after decryption/verification-->
   <!--progress dialogs, usually ending in '…'-->
   <string name="progress_done">Готово.</string>
   <string name="progress_cancel">Отмена</string>

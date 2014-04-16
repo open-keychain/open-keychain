@@ -871,7 +871,7 @@ public class KeychainIntentService extends IntentService
         } else if (e instanceof PgpSignEncrypt.NoPassphraseException) {
             message = getString(R.string.error_no_signature_passphrase);
         } else if (e instanceof PgpSignEncrypt.NoSigningKeyException) {
-            message = getString(R.string.error_signature_failed);
+            message = getString(R.string.error_no_signature_key);
         } else if (e instanceof PgpDecryptVerify.InvalidDataException) {
             message = getString(R.string.error_invalid_data);
         } else if (e instanceof PgpDecryptVerify.KeyExtractionException) {

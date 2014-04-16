@@ -245,7 +245,6 @@
     <item quantity="few">Znaleziono %d kluczy.</item>
     <item quantity="other">Znaleziono %d kluczy.</item>
   </plurals>
-  <string name="unknown_signature">Nieznany podpis, naciśnij przycisk, aby wyszukać brakujący klucz.</string>
   <plurals name="bad_keys_encountered">
     <item quantity="one">Zignorowano %d niepoprawny klucz prywatny. Prawdopodobnie został wyeksportowany przy uzyciu opcji\n --export-secret-subkeys\nUpewnij się że eksportujesz go z opcją\n --export-secret-keys\nktóra jest poprawna.</item>
     <item quantity="few">Zignorowano %d niepoprawnych kluczy prywatnych. Prawdopodobnie zostały wyeksportowane przy uzyciu opcji\n --export-secret-subkeys\nUpewnij się że eksportujesz je z opcją\n --export-secret-keys\nktóra jest poprawna.</item>
@@ -278,7 +277,6 @@
   <string name="error_main_user_id_must_not_be_empty">główny identyfikator użytkownika nie może być pusty</string>
   <string name="error_key_needs_master_key">potrzeba co najmniej klucza głównego</string>
   <string name="error_no_encryption_keys_or_passphrase">nie podano hasła ani klucza szyfrującego</string>
-  <string name="error_signature_failed">podpisywanie nie powiodło się</string>
   <string name="error_no_signature_passphrase">nie podano hasła</string>
   <string name="error_no_signature_key">nie podano klucza podpisu</string>
   <string name="error_invalid_data">nieprawidłowe dane</string>
@@ -288,14 +286,15 @@
   <string name="error_wrong_passphrase">nieprawidłowe hasło</string>
   <string name="error_saving_keys">błąd przy zapisywaniu kluczy</string>
   <string name="error_could_not_extract_private_key">nie można wyodrębnić klucza prywatnego</string>
-  <string name="error_only_files_are_supported">Dane binarne pozbawione pliku nie są obsługiwane. To jest wspierane tylko dla akcji ACTION_ENCRYPT_STREAM_AND_RETURN.</string>
-  <string name="error_jelly_bean_needed">Potrzebujesz Androida 4.1 Jelly Bean, aby korzystać z Android NFC Beam!</string>
-  <string name="error_nfc_needed">NCF jest niedostępne na twoim urządzeniu</string>
-  <string name="error_nothing_import">Nie ma nic do zaimportowania!</string>
   <string name="error_expiry_must_come_after_creation">data wygaśnięcia musi być późniejsza niż data stworzenia</string>
   <string name="error_save_first">zapisz najpierw pęk kluczy</string>
   <string name="error_can_not_delete_contact">nie możesz usunąć tego kontaktu, ponieważ należy do ciebie.</string>
   <string name="error_can_not_delete_contacts">nie możesz usunąć tych kontaktów, ponieważ należą do ciebie:\n%s</string>
+  <!--errors without preceeding Error:-->
+  <string name="error_only_files_are_supported">Dane binarne pozbawione pliku nie są obsługiwane. To jest wspierane tylko dla akcji ACTION_ENCRYPT_STREAM_AND_RETURN.</string>
+  <string name="error_jelly_bean_needed">Potrzebujesz Androida 4.1 Jelly Bean, aby korzystać z Android NFC Beam!</string>
+  <string name="error_nfc_needed">NCF jest niedostępne na twoim urządzeniu</string>
+  <string name="error_nothing_import">Nie ma nic do zaimportowania!</string>
   <string name="error_keyserver_insufficient_query">Niewystarczające zapytanie do serwera</string>
   <string name="error_keyserver_query">Odpytywanie serwera zakończone niepowodzeniem</string>
   <string name="error_keyserver_too_many_responses">Za dużo odpowiedzi</string>
@@ -312,6 +311,7 @@
     <item quantity="other">Część wczytanego pliku to poprawne obiekty OpenPGP, ale nie są kluczami OpenPGP</item>
   </plurals>
   <string name="error_change_something_first">Musisz dokonać zmian w pęku kluczy zanim będziesz mógł go zachować</string>
+  <!--results shown after decryption/verification-->
   <!--progress dialogs, usually ending in '…'-->
   <string name="progress_done">Gotowe.</string>
   <string name="progress_cancel">Anuluj</string>
