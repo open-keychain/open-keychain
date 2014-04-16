@@ -117,10 +117,10 @@ public class SelectSecretKeyFragment extends ListFragment implements
                 KeyRings.IS_REVOKED,
                 KeyRings.CAN_CERTIFY,
                 KeyRings.HAS_SIGN,
-                KeyRings.HAS_SECRET
+                KeyRings.HAS_ANY_SECRET
         };
 
-        String where = KeyRings.HAS_SECRET + " = 1";
+        String where = KeyRings.HAS_ANY_SECRET + " = 1";
 
         // Now create and return a CursorLoader that will take care of
         // creating a Cursor for the data being displayed.

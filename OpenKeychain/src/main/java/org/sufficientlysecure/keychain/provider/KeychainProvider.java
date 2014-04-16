@@ -254,16 +254,18 @@ public class KeychainProvider extends ContentProvider {
                 projectionMap.put(KeyRings.FINGERPRINT, Keys.FINGERPRINT);
                 projectionMap.put(KeyRings.USER_ID, UserIds.USER_ID);
                 projectionMap.put(KeyRings.VERIFIED, KeyRings.VERIFIED);
-                projectionMap.put(KeyRings.HAS_SECRET,
+                projectionMap.put(KeyRings.HAS_SECRET, KeyRings.HAS_SECRET);
+                projectionMap.put(KeyRings.HAS_ANY_SECRET,
                     "(EXISTS (SELECT * FROM " + Tables.KEY_RINGS_SECRET
                         + " WHERE " + Tables.KEY_RINGS_SECRET + "." + KeyRingData.MASTER_KEY_ID
                             + " = " + Tables.KEYS + "." + Keys.MASTER_KEY_ID
-                        + ")) AS " + KeyRings.HAS_SECRET);
+                        + ")) AS " + KeyRings.HAS_ANY_SECRET);
                 projectionMap.put(KeyRings.HAS_ENCRYPT,
                     "(EXISTS (SELECT COUNT(*) FROM " + Tables.KEYS + " AS k"
                         +" WHERE k." + Keys.MASTER_KEY_ID
                             + " = " + Tables.KEYS + "." + Keys.MASTER_KEY_ID
                         + " AND k." + Keys.IS_REVOKED + " = 0"
+                        + " AND k." + Keys.HAS_SECRET + " = 1"
                         + " AND k." + Keys.CAN_ENCRYPT + " = 1"
                         + " AND ( k." + Keys.EXPIRY + " IS NULL OR k." + Keys.EXPIRY
                             + " >= '" + new Date().getTime() / 1000 + "' )"
@@ -273,6 +275,7 @@ public class KeychainProvider extends ContentProvider {
                                 +" WHERE k." + Keys.MASTER_KEY_ID
                                 + " = " + Tables.KEYS + "." + Keys.MASTER_KEY_ID
                                 + " AND k." + Keys.IS_REVOKED + " = 0"
+                                + " AND k." + Keys.HAS_SECRET + " = 1"
                                 + " AND k." + Keys.CAN_SIGN + " = 1"
                                 + " AND ( k." + Keys.EXPIRY + " IS NULL OR k." + Keys.EXPIRY
                                 + " >= '" + new Date().getTime() / 1000 + "' )"
@@ -373,6 +376,7 @@ public class KeychainProvider extends ContentProvider {
                 projectionMap.put(Keys.CAN_CERTIFY, Keys.CAN_CERTIFY);
                 projectionMap.put(Keys.CAN_ENCRYPT, Keys.CAN_ENCRYPT);
                 projectionMap.put(Keys.CAN_SIGN, Keys.CAN_SIGN);
+                projectionMap.put(Keys.HAS_SECRET, Keys.HAS_SECRET);
                 projectionMap.put(Keys.CREATION, Keys.CREATION);
                 projectionMap.put(Keys.EXPIRY, Keys.EXPIRY);
                 projectionMap.put(Keys.ALGORITHM, Keys.ALGORITHM);

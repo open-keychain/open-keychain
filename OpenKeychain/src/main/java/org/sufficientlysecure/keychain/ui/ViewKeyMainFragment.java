@@ -158,13 +158,13 @@ public class ViewKeyMainFragment extends Fragment implements
     }
 
     static final String[] UNIFIED_PROJECTION = new String[] {
-        KeyRings._ID, KeyRings.MASTER_KEY_ID, KeyRings.HAS_SECRET,
+        KeyRings._ID, KeyRings.MASTER_KEY_ID, KeyRings.HAS_ANY_SECRET,
             KeyRings.USER_ID, KeyRings.FINGERPRINT,
             KeyRings.ALGORITHM, KeyRings.KEY_SIZE, KeyRings.CREATION, KeyRings.EXPIRY,
 
     };
     static final int INDEX_UNIFIED_MKI = 1;
-    static final int INDEX_UNIFIED_HAS_SECRET = 2;
+    static final int INDEX_UNIFIED_HAS_ANY_SECRET = 2;
     static final int INDEX_UNIFIED_UID = 3;
     static final int INDEX_UNIFIED_FINGERPRINT = 4;
     static final int INDEX_UNIFIED_ALGORITHM = 5;
@@ -225,7 +225,7 @@ public class ViewKeyMainFragment extends Fragment implements
                     mEmail.setText(mainUserId[1]);
                     mComment.setText(mainUserId[2]);
 
-                    if (data.getInt(INDEX_UNIFIED_HAS_SECRET) != 0) {
+                    if (data.getInt(INDEX_UNIFIED_HAS_ANY_SECRET) != 0) {
                         mSecretKey.setTextColor(getResources().getColor(R.color.emphasis));
                         mSecretKey.setText(R.string.secret_key_yes);
 

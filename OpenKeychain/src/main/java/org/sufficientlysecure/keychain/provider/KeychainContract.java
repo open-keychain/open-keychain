@@ -42,6 +42,7 @@ public class KeychainContract {
         String CAN_ENCRYPT = "can_encrypt";
         String CAN_CERTIFY = "can_certify";
         String IS_REVOKED = "is_revoked";
+        String HAS_SECRET = "has_secret";
 
         String CREATION = "creation";
         String EXPIRY = "expiry";
@@ -106,7 +107,7 @@ public class KeychainContract {
         public static final String MASTER_KEY_ID = KeysColumns.MASTER_KEY_ID;
         public static final String IS_REVOKED = KeysColumns.IS_REVOKED;
         public static final String VERIFIED = CertsColumns.VERIFIED;
-        public static final String HAS_SECRET = "has_secret";
+        public static final String HAS_ANY_SECRET = "has_any_secret";
         public static final String HAS_ENCRYPT = "has_encrypt";
         public static final String HAS_SIGN = "has_encrypt";
 
