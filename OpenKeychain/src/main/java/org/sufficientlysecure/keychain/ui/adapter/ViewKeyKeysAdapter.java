@@ -69,7 +69,7 @@ public class ViewKeyKeysAdapter extends CursorAdapter {
         if (newCursor != null) {
             newCursor.moveToFirst();
             do {
-                if(newCursor.getInt(mIndexHasSecret) != 0) {
+                if (newCursor.getInt(mIndexHasSecret) != 0) {
                     hasAnySecret = true;
                     break;
                 }
