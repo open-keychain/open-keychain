@@ -9,5 +9,8 @@ And don't add newlines before or after p tags because of transifex -->
 <p>Add a new Keyserver (or modify existing one) by going to Preferences -> General -> Keyservers. Enter the port number after the Keyserver address and preceded it by a colon. For example, "p80.pool.sks-keyservers.net:80" (without quotation marks) means that server "p80.pool.sks-keyservers.net" is working on a port 80.</p>
 <p>Default connection port is 11371 and it doesn't need to be specified.</p>
 
+<h2>A wrong primary user id is shown when searching on a Keyserver</h2>
+<p>Unfortunately, this is a bug in the SKS Keyserver software. Its machine-readable output returns the user ids in an arbitrary order. Read the <a href="https://bitbucket.org/skskeyserver/sks-keyserver/issue/28/primary-uid-in-machine-readable-index">related bug report</a> for more information.</p>
+
 </body>
 </html>
