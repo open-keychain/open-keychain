@@ -534,7 +534,11 @@ public class KeychainIntentService extends IntentService
 
                     setProgress(R.string.progress_saving_key_ring, 90, 100);
                     // save the pair
-                    providerHelper.saveKeyRing(pair.second, pair.first);
+                    try {
+                        providerHelper.saveKeyRing(pair.second, pair.first, true);
+                    } catch(IOException e) {
+                        throw new PgpGeneralException("Failed to store edited key in local cache", e);
+                    }
                     setProgress(R.string.progress_done, 100, 100);
                 }
                 PassphraseCacheService.addCachedPassphrase(this, masterKeyId, newPassphrase);
@@ -728,11 +732,12 @@ public class KeychainIntentService extends IntentService
                 if (keyring != null) {
                     PgpImportExport pgpImportExport = new PgpImportExport(this, null);
 
-                    boolean uploaded = pgpImportExport.uploadKeyRingToServer(server,
-                            (PGPPublicKeyRing) keyring);
+                    boolean uploaded = pgpImportExport.uploadKeyRingToServer(server, keyring);
                     if (!uploaded) {
                         throw new PgpGeneralException("Unable to export key to selected server");
                     }
+                    long masterKeyId = keyring.getPublicKey().getKeyID();
+                    providerHelper.updateUnsynced(masterKeyId, false);
                 }
 
                 sendMessageToHandler(KeychainIntentServiceHandler.MESSAGE_OKAY);
@@ -841,11 +846,10 @@ public class KeychainIntentService extends IntentService
                         userIds, signaturePassphrase);
                 publicRing = PGPPublicKeyRing.insertPublicKey(publicRing, publicKey);
 
-                // store the signed key in our local cache
-                PgpImportExport pgpImportExport = new PgpImportExport(this, null);
-                int retval = pgpImportExport.storeKeyRingInCache(publicRing);
-                if (retval != PgpImportExport.RETURN_OK && retval != PgpImportExport.RETURN_UPDATED) {
-                    throw new PgpGeneralException("Failed to store signed key in local cache");
+                try {
+                    providerHelper.saveKeyRing(publicRing, true);
+                } catch(IOException e) {
+                    throw new PgpGeneralException("Failed to store signed key in local cache", e);
                 }
 
                 sendMessageToHandler(KeychainIntentServiceHandler.MESSAGE_OKAY);

@@ -537,5 +537,6 @@
     <string name="error_key_processing">Error processing key!</string>
     <string name="no_subkey">subkey unavailable</string>
     <string name="key_stripped">stripped</string>
+    <string name="keyring_unsynced">Keyring has not been synchronized with a keyserver!</string>
 
 </resources>
