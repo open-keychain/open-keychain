@@ -201,15 +201,20 @@ public class EncryptAsymmetricFragment extends Fragment {
             mMainUserIdRest.setText("");
         } else {
             // See if we can get a user_id from a unified query
-            String userIdResult = (String) mProviderHelper.getUnifiedData(
-                    mSecretKeyId, KeyRings.USER_ID, ProviderHelper.FIELD_TYPE_STRING);
-            String[] userId = PgpKeyHelper.splitUserId(userIdResult);
-            if (userId[0] != null) {
+            String[] userId;
+            try {
+                String userIdResult = (String) mProviderHelper.getUnifiedData(
+                        mSecretKeyId, KeyRings.USER_ID, ProviderHelper.FIELD_TYPE_STRING);
+                userId = PgpKeyHelper.splitUserId(userIdResult);
+            } catch (ProviderHelper.NotFoundException e) {
+                userId = null;
+            }
+            if (userId != null && userId[0] != null) {
                 mMainUserId.setText(userId[0]);
             } else {
                 mMainUserId.setText(getResources().getString(R.string.user_id_no_name));
             }
-            if (userId[1] != null) {
+            if (userId != null && userId[1] != null) {
                 mMainUserIdRest.setText(userId[1]);
             } else {
                 mMainUserIdRest.setText("");

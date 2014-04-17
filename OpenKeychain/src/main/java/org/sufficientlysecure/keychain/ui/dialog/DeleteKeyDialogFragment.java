@@ -89,18 +89,30 @@ public class DeleteKeyDialogFragment extends DialogFragment {
         if (masterKeyIds.length == 1) {
             long masterKeyId = masterKeyIds[0];
 
-            HashMap<String, Object> data = new ProviderHelper(activity).getUnifiedData(masterKeyId, new String[]{
-                    KeyRings.USER_ID,
-                    KeyRings.HAS_ANY_SECRET
-            }, new int[]{ProviderHelper.FIELD_TYPE_STRING, ProviderHelper.FIELD_TYPE_INTEGER});
-            String userId = (String) data.get(KeyRings.USER_ID);
-            boolean hasSecret = ((Long) data.get(KeyRings.HAS_ANY_SECRET)) == 1;
+            try {
+                HashMap<String, Object> data = new ProviderHelper(activity).getUnifiedData(
+                        masterKeyId, new String[]{
+                                KeyRings.USER_ID,
+                                KeyRings.HAS_ANY_SECRET
+                        }, new int[]{
+                                ProviderHelper.FIELD_TYPE_STRING,
+                                ProviderHelper.FIELD_TYPE_INTEGER
+                        }
+                );
+                String userId = (String) data.get(KeyRings.USER_ID);
+                boolean hasSecret = ((Long) data.get(KeyRings.HAS_ANY_SECRET)) == 1;
 
-            // Set message depending on which key it is.
-            mMainMessage.setText(getString(
-                    hasSecret ? R.string.secret_key_deletion_confirmation
-                            : R.string.public_key_deletetion_confirmation,
-                    userId));
+                // Set message depending on which key it is.
+                mMainMessage.setText(getString(
+                        hasSecret ? R.string.secret_key_deletion_confirmation
+                                : R.string.public_key_deletetion_confirmation,
+                        userId
+                ));
+            } catch (ProviderHelper.NotFoundException e) {
+                sendMessageToHandler(MESSAGE_ERROR, null);
+                dismiss();
+                return null;
+            }
         } else {
             mMainMessage.setText(R.string.key_deletion_confirmation_multi);
         }

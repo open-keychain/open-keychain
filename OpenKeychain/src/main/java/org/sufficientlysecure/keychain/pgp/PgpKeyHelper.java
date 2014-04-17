@@ -225,38 +225,6 @@ public class PgpKeyHelper {
         return signingKeys.get(0);
     }
 
-    @SuppressWarnings("unchecked")
-    public static String getMainUserId(PGPPublicKey key) {
-        for (String userId : new IterableIterator<String>(key.getUserIDs())) {
-            return userId;
-        }
-        return null;
-    }
-
-    @SuppressWarnings("unchecked")
-    public static String getMainUserId(PGPSecretKey key) {
-        for (String userId : new IterableIterator<String>(key.getUserIDs())) {
-            return userId;
-        }
-        return null;
-    }
-
-    public static String getMainUserIdSafe(Context context, PGPPublicKey key) {
-        String userId = getMainUserId(key);
-        if (userId == null || userId.equals("")) {
-            userId = context.getString(R.string.user_id_no_name);
-        }
-        return userId;
-    }
-
-    public static String getMainUserIdSafe(Context context, PGPSecretKey key) {
-        String userId = getMainUserId(key);
-        if (userId == null || userId.equals("")) {
-            userId = context.getString(R.string.user_id_no_name);
-        }
-        return userId;
-    }
-
     public static int getKeyUsage(PGPSecretKey key) {
         return getKeyUsage(key.getPublicKey());
     }

@@ -127,48 +127,54 @@ public class ViewKeyActivity extends ActionBarActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                Intent homeIntent = new Intent(this, KeyListActivity.class);
-                homeIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                startActivity(homeIntent);
-                return true;
-            case R.id.menu_key_view_update:
-                updateFromKeyserver(mDataUri, mProviderHelper);
-                return true;
-            case R.id.menu_key_view_export_keyserver:
-                uploadToKeyserver(mDataUri);
-                return true;
-            case R.id.menu_key_view_export_file:
-                exportToFile(mDataUri, mExportHelper, mProviderHelper);
-                return true;
-            case R.id.menu_key_view_share_default_fingerprint:
-                shareKey(mDataUri, true, mProviderHelper);
-                return true;
-            case R.id.menu_key_view_share_default:
-                shareKey(mDataUri, false, mProviderHelper);
-                return true;
-            case R.id.menu_key_view_share_qr_code_fingerprint:
-                shareKeyQrCode(mDataUri, true);
-                return true;
-            case R.id.menu_key_view_share_qr_code:
-                shareKeyQrCode(mDataUri, false);
-                return true;
-            case R.id.menu_key_view_share_nfc:
-                shareNfc();
-                return true;
-            case R.id.menu_key_view_share_clipboard:
-                copyToClipboard(mDataUri, mProviderHelper);
-                return true;
-            case R.id.menu_key_view_delete: {
-                deleteKey(mDataUri, mExportHelper);
-                return true;
+        try {
+            switch (item.getItemId()) {
+                case android.R.id.home:
+                    Intent homeIntent = new Intent(this, KeyListActivity.class);
+                    homeIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    startActivity(homeIntent);
+                    return true;
+                case R.id.menu_key_view_update:
+                    updateFromKeyserver(mDataUri, mProviderHelper);
+                    return true;
+                case R.id.menu_key_view_export_keyserver:
+                    uploadToKeyserver(mDataUri);
+                    return true;
+                case R.id.menu_key_view_export_file:
+                    exportToFile(mDataUri, mExportHelper, mProviderHelper);
+                    return true;
+                case R.id.menu_key_view_share_default_fingerprint:
+                    shareKey(mDataUri, true, mProviderHelper);
+                    return true;
+                case R.id.menu_key_view_share_default:
+                    shareKey(mDataUri, false, mProviderHelper);
+                    return true;
+                case R.id.menu_key_view_share_qr_code_fingerprint:
+                    shareKeyQrCode(mDataUri, true);
+                    return true;
+                case R.id.menu_key_view_share_qr_code:
+                    shareKeyQrCode(mDataUri, false);
+                    return true;
+                case R.id.menu_key_view_share_nfc:
+                    shareNfc();
+                    return true;
+                case R.id.menu_key_view_share_clipboard:
+                    copyToClipboard(mDataUri, mProviderHelper);
+                    return true;
+                case R.id.menu_key_view_delete: {
+                    deleteKey(mDataUri, mExportHelper);
+                    return true;
+                }
             }
+        } catch (ProviderHelper.NotFoundException e) {
+            AppMsg.makeText(this, R.string.error_key_not_found, AppMsg.STYLE_ALERT).show();
+            Log.e(Constants.TAG, "Key not found", e);
         }
         return super.onOptionsItemSelected(item);
     }
 
-    private void exportToFile(Uri dataUri, ExportHelper exportHelper, ProviderHelper providerHelper) {
+    private void exportToFile(Uri dataUri, ExportHelper exportHelper, ProviderHelper providerHelper)
+            throws ProviderHelper.NotFoundException {
         Uri baseUri = KeychainContract.KeyRings.buildUnifiedKeyRingUri(dataUri);
 
         HashMap<String, Object> data = providerHelper.getGenericData(
@@ -183,13 +189,14 @@ public class ViewKeyActivity extends ActionBarActivity {
         );
     }
 
-    private void uploadToKeyserver(Uri dataUri) {
+    private void uploadToKeyserver(Uri dataUri) throws ProviderHelper.NotFoundException {
         Intent uploadIntent = new Intent(this, UploadKeyActivity.class);
         uploadIntent.setData(dataUri);
         startActivityForResult(uploadIntent, 0);
     }
 
-    private void updateFromKeyserver(Uri dataUri, ProviderHelper providerHelper) {
+    private void updateFromKeyserver(Uri dataUri, ProviderHelper providerHelper)
+            throws ProviderHelper.NotFoundException {
         byte[] blob = (byte[]) providerHelper.getGenericData(
                 KeychainContract.KeyRings.buildUnifiedKeyRingUri(dataUri),
                 KeychainContract.Keys.FINGERPRINT, ProviderHelper.FIELD_TYPE_BLOB);
@@ -202,7 +209,8 @@ public class ViewKeyActivity extends ActionBarActivity {
         startActivityForResult(queryIntent, REQUEST_CODE_LOOKUP_KEY);
     }
 
-    private void shareKey(Uri dataUri, boolean fingerprintOnly, ProviderHelper providerHelper) {
+    private void shareKey(Uri dataUri, boolean fingerprintOnly, ProviderHelper providerHelper)
+            throws ProviderHelper.NotFoundException {
         String content = null;
         if (fingerprintOnly) {
             byte[] data = (byte[]) providerHelper.getGenericData(
