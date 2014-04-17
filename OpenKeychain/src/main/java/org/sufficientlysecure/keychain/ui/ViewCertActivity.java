@@ -22,6 +22,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
+import android.support.v4.app.NavUtils;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v7.app.ActionBar;
@@ -226,6 +227,12 @@ public class ViewCertActivity extends ActionBarActivity
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
+            case android.R.id.home: {
+                Intent viewIntent = NavUtils.getParentActivityIntent(this);
+                viewIntent.setData(KeyRings.buildGenericKeyRingUri(mDataUri));
+                NavUtils.navigateUpTo(this, viewIntent);
+                return true;
+            }
             case R.id.menu_view_cert_view_signer:
                 // can't do this before the data is initialized
                 Intent viewIntent = new Intent(this, ViewKeyActivity.class);

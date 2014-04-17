@@ -90,7 +90,7 @@
         <activity
             android:name=".ui.ViewCertActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
-            android:label="View Certificate Details"
+            android:label="@string/title_view_cert"
             android:parentActivityName=".ui.ViewKeyActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"

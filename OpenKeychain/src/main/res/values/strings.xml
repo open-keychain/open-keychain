@@ -538,5 +538,6 @@
     <string name="no_subkey">subkey unavailable</string>
     <string name="key_stripped">stripped</string>
     <string name="secret_cannot_multiple">Secret keys can only be deleted individually!</string>
+    <string name="title_view_cert">View Certificate Details</string>
 
 </resources>
