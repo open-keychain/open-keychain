@@ -188,11 +188,6 @@ public class KeychainDatabase extends SQLiteOpenHelper {
         if (!db.isReadOnly()) {
             // Enable foreign key constraints
             db.execSQL("PRAGMA foreign_keys=ON;");
-            // TODO this is a dev hack, remove for release!
-            try {
-                db.execSQL("ALTER TABLE keys ADD COLUMN has_secret BOOLEAN");
-            } catch(Exception e) {
-            }
         }
     }
 
