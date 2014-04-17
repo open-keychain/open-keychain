@@ -31,9 +31,10 @@
         For OI Filemanager it makes no difference, gpg files can't be associated
     -->
 
-    <uses-sdk
-        android:minSdkVersion="9"
-        android:targetSdkVersion="19" />
+    <!-- Specified in buid.gradle -->
+    <!--<uses-sdk-->
+    <!--android:minSdkVersion="9"-->
+    <!--android:targetSdkVersion="19" />-->
 
     <uses-feature
         android:name="android.hardware.wifi"
@@ -410,7 +411,8 @@
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
             android:exported="false" />
 
-        <!-- OpenPGP Remote API -->
+        <!-- OpenPGP Remote API, this service has explicitly no permission requirements
+             because we are using our own package based allow/disallow system -->
         <service
             android:name=".remote.OpenPgpService"
             android:enabled="true"
