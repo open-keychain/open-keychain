@@ -620,12 +620,19 @@ public class PgpDecryptVerify {
         // go through all signatures
         // and find out for which signature we have a key in our database
         Long masterKeyId = null;
+        String primaryUserId = null;
         int signatureIndex = 0;
         for (int i = 0; i < sigList.size(); ++i) {
             try {
                 Uri uri = KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(
                         Long.toString(sigList.get(i).getKeyID()));
-                masterKeyId = mProviderHelper.getMasterKeyId(uri);
+                Map<String, Object> data = mProviderHelper.getGenericData(uri,
+                        new String[] { KeyRings.MASTER_KEY_ID, KeyRings.USER_ID },
+                        new int[] { ProviderHelper.FIELD_TYPE_INTEGER,
+                                ProviderHelper.FIELD_TYPE_STRING }
+                );
+                masterKeyId = (Long) data.get(KeyRings.MASTER_KEY_ID);
+                primaryUserId = (String) data.get(KeyRings.USER_ID);
                 signatureIndex = i;
             } catch (ProviderHelper.NotFoundException e) {
                 Log.d(Constants.TAG, "key not found!");
@@ -652,9 +659,8 @@ public class PgpDecryptVerify {
 
             signatureResultBuilder.signatureAvailable(true);
             signatureResultBuilder.knownKey(true);
-            // TODO: uses the first user id not primary user id
-            signatureResultBuilder.userId(PgpKeyHelper.getMainUserId(publicKeyRing.getPublicKey()));
-            signatureResultBuilder.keyId(publicKeyRing.getPublicKey().getKeyID());
+            signatureResultBuilder.userId(primaryUserId);
+            signatureResultBuilder.keyId(masterKeyId);
 
             JcaPGPContentVerifierBuilderProvider contentVerifierBuilderProvider =
                     new JcaPGPContentVerifierBuilderProvider()

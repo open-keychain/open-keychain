@@ -42,6 +42,7 @@ import org.spongycastle.openpgp.operator.jcajce.JcePGPDataEncryptorBuilder;
 import org.spongycastle.openpgp.operator.jcajce.JcePublicKeyKeyEncryptionMethodGenerator;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.util.InputData;
 import org.sufficientlysecure.keychain.util.Log;
@@ -281,9 +282,12 @@ public class PgpSignEncrypt {
         PGPSecretKey signingKey = null;
         PGPSecretKeyRing signingKeyRing = null;
         PGPPrivateKey signaturePrivateKey = null;
+        String signingUserId = null;
         if (enableSignature) {
             try {
                 signingKeyRing = mProviderHelper.getPGPSecretKeyRing(mSignatureMasterKeyId);
+                signingUserId = (String) mProviderHelper.getUnifiedData(mSignatureMasterKeyId,
+                        KeychainContract.KeyRings.USER_ID, ProviderHelper.FIELD_TYPE_STRING);
             } catch (ProviderHelper.NotFoundException e) {
                 throw new NoSigningKeyException();
             }
@@ -369,9 +373,8 @@ public class PgpSignEncrypt {
                 signatureGenerator = new PGPSignatureGenerator(contentSignerBuilder);
                 signatureGenerator.init(signatureType, signaturePrivateKey);
 
-                String userId = PgpKeyHelper.getMainUserId(signingKeyRing.getSecretKey());
                 PGPSignatureSubpacketGenerator spGen = new PGPSignatureSubpacketGenerator();
-                spGen.setSignerUserID(false, userId);
+                spGen.setSignerUserID(false, signingUserId);
                 signatureGenerator.setHashedSubpackets(spGen.generate());
             }
         }
