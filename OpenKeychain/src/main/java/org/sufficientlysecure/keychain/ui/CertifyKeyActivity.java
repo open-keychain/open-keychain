@@ -48,6 +48,7 @@ import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.helper.Preferences;
 import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
+import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UserIds;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
@@ -344,7 +345,8 @@ public class CertifyKeyActivity extends ActionBarActivity implements
         intent.setAction(KeychainIntentService.ACTION_UPLOAD_KEYRING);
 
         // set data uri as path to keyring
-        intent.setData(mDataUri);
+        Uri blobUri = KeychainContract.KeyRingData.buildPublicKeyRingUri(mDataUri);
+        intent.setData(blobUri);
 
         // fill values for this action
         Bundle data = new Bundle();
