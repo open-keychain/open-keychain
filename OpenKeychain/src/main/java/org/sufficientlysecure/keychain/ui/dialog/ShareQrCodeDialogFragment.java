@@ -93,48 +93,50 @@ public class ShareQrCodeDialogFragment extends DialogFragment {
 
         ProviderHelper providerHelper = new ProviderHelper(getActivity());
         String content = null;
-        if (mFingerprintOnly) {
-            alert.setPositiveButton(R.string.btn_okay, null);
+        try {
+            if (mFingerprintOnly) {
+                alert.setPositiveButton(R.string.btn_okay, null);
 
-            byte[] blob = (byte[]) providerHelper.getGenericData(
-                    KeyRings.buildUnifiedKeyRingUri(dataUri),
-                    KeyRings.FINGERPRINT, ProviderHelper.FIELD_TYPE_BLOB);
-            if (blob == null) {
-                Log.e(Constants.TAG, "key not found!");
-                AppMsg.makeText(getActivity(), R.string.error_key_not_found, AppMsg.STYLE_ALERT).show();
-                return null;
+                byte[] blob = (byte[]) providerHelper.getGenericData(
+                        KeyRings.buildUnifiedKeyRingUri(dataUri),
+                        KeyRings.FINGERPRINT, ProviderHelper.FIELD_TYPE_BLOB);
+                if (blob == null) {
+                    Log.e(Constants.TAG, "key not found!");
+                    AppMsg.makeText(getActivity(), R.string.error_key_not_found, AppMsg.STYLE_ALERT).show();
+                    return null;
+                }
+
+                String fingerprint = PgpKeyHelper.convertFingerprintToHex(blob);
+                mText.setText(getString(R.string.share_qr_code_dialog_fingerprint_text) + " " + fingerprint);
+                content = Constants.FINGERPRINT_SCHEME + ":" + fingerprint;
+                setQrCode(content);
+            } else {
+                mText.setText(R.string.share_qr_code_dialog_start);
+
+                try {
+                    Uri uri = KeychainContract.KeyRingData.buildPublicKeyRingUri(dataUri);
+                    content = providerHelper.getKeyRingAsArmoredString(uri);
+                } catch (IOException e) {
+                    Log.e(Constants.TAG, "error processing key!", e);
+                    AppMsg.makeText(getActivity(), R.string.error_invalid_data, AppMsg.STYLE_ALERT).show();
+                    return null;
+                }
+
+                // OnClickListener are set in onResume to prevent automatic dismissing of Dialogs
+                // http://bit.ly/O5vfaR
+                alert.setPositiveButton(R.string.btn_next, null);
+                alert.setNegativeButton(android.R.string.cancel, null);
+
+                mContentList = splitString(content, 1000);
+
+                // start with first
+                mCounter = 0;
+                updatePartsQrCode();
             }
-
-            String fingerprint = PgpKeyHelper.convertFingerprintToHex(blob);
-            mText.setText(getString(R.string.share_qr_code_dialog_fingerprint_text) + " " + fingerprint);
-            content = Constants.FINGERPRINT_SCHEME + ":" + fingerprint;
-            setQrCode(content);
-        } else {
-            mText.setText(R.string.share_qr_code_dialog_start);
-
-            try {
-                Uri uri = KeychainContract.KeyRingData.buildPublicKeyRingUri(dataUri);
-                content = providerHelper.getKeyRingAsArmoredString(uri);
-            } catch (IOException e) {
-                Log.e(Constants.TAG, "error processing key!", e);
-                AppMsg.makeText(getActivity(), R.string.error_invalid_data, AppMsg.STYLE_ALERT).show();
-                return null;
-            } catch (ProviderHelper.NotFoundException e) {
-                Log.e(Constants.TAG, "key not found!", e);
-                AppMsg.makeText(getActivity(), R.string.error_key_not_found, AppMsg.STYLE_ALERT).show();
-                return null;
-            }
-
-            // OnClickListener are set in onResume to prevent automatic dismissing of Dialogs
-            // http://bit.ly/O5vfaR
-            alert.setPositiveButton(R.string.btn_next, null);
-            alert.setNegativeButton(android.R.string.cancel, null);
-
-            mContentList = splitString(content, 1000);
-
-            // start with first
-            mCounter = 0;
-            updatePartsQrCode();
+        } catch (ProviderHelper.NotFoundException e) {
+            Log.e(Constants.TAG, "key not found!", e);
+            AppMsg.makeText(getActivity(), R.string.error_key_not_found, AppMsg.STYLE_ALERT).show();
+            return null;
         }
 
         return alert.create();
