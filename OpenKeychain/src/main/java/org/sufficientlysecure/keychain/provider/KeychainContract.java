@@ -114,8 +114,10 @@ public class KeychainContract {
         public static final Uri CONTENT_URI = BASE_CONTENT_URI_INTERNAL.buildUpon()
                 .appendPath(BASE_KEY_RINGS).build();
 
-        public static final String CONTENT_TYPE = "vnd.android.cursor.dir/vnd.sufficientlysecure.openkeychain.key_ring";
-        public static final String CONTENT_ITEM_TYPE = "vnd.android.cursor.item/vnd.sufficientlysecure.openkeychain.key_ring";
+        public static final String CONTENT_TYPE
+                = "vnd.android.cursor.dir/vnd.org.sufficientlysecure.keychain.provider.key_rings";
+        public static final String CONTENT_ITEM_TYPE
+                = "vnd.android.cursor.item/vnd.org.sufficientlysecure.keychain.provider.key_rings";
 
         public static Uri buildUnifiedKeyRingsUri() {
             return CONTENT_URI.buildUpon().appendPath(PATH_UNIFIED).build();
@@ -124,9 +126,11 @@ public class KeychainContract {
         public static Uri buildGenericKeyRingUri(String masterKeyId) {
             return CONTENT_URI.buildUpon().appendPath(masterKeyId).build();
         }
+
         public static Uri buildUnifiedKeyRingUri(String masterKeyId) {
             return CONTENT_URI.buildUpon().appendPath(masterKeyId).appendPath(PATH_UNIFIED).build();
         }
+
         public static Uri buildUnifiedKeyRingUri(Uri uri) {
             return CONTENT_URI.buildUpon().appendPath(uri.getPathSegments().get(1)).appendPath(PATH_UNIFIED).build();
         }
@@ -134,6 +138,7 @@ public class KeychainContract {
         public static Uri buildUnifiedKeyRingsFindByEmailUri(String email) {
             return CONTENT_URI.buildUpon().appendPath(PATH_FIND).appendPath(PATH_BY_EMAIL).appendPath(email).build();
         }
+
         public static Uri buildUnifiedKeyRingsFindBySubkeyUri(String subkey) {
             return CONTENT_URI.buildUpon().appendPath(PATH_FIND).appendPath(PATH_BY_SUBKEY).appendPath(subkey).build();
         }
@@ -144,15 +149,19 @@ public class KeychainContract {
         public static final Uri CONTENT_URI = BASE_CONTENT_URI_INTERNAL.buildUpon()
                 .appendPath(BASE_KEY_RINGS).build();
 
-        public static final String CONTENT_TYPE = "vnd.android.cursor.dir/vnd.sufficientlysecure.openkeychain.key_ring_data";
-        public static final String CONTENT_ITEM_TYPE = "vnd.android.cursor.item/vnd.sufficientlysecure.openkeychain.key_ring_data";
+        public static final String CONTENT_TYPE
+                = "vnd.android.cursor.dir/vnd.org.sufficientlysecure.keychain.provider.key_ring_data";
+        public static final String CONTENT_ITEM_TYPE
+                = "vnd.android.cursor.item/vnd.org.sufficientlysecure.keychain.provider.key_ring_data";
 
         public static Uri buildPublicKeyRingUri() {
             return CONTENT_URI.buildUpon().appendPath(PATH_PUBLIC).build();
         }
+
         public static Uri buildPublicKeyRingUri(String masterKeyId) {
             return CONTENT_URI.buildUpon().appendPath(masterKeyId).appendPath(PATH_PUBLIC).build();
         }
+
         public static Uri buildPublicKeyRingUri(Uri uri) {
             return CONTENT_URI.buildUpon().appendPath(uri.getPathSegments().get(1)).appendPath(PATH_PUBLIC).build();
         }
@@ -160,9 +169,11 @@ public class KeychainContract {
         public static Uri buildSecretKeyRingUri() {
             return CONTENT_URI.buildUpon().appendPath(PATH_SECRET).build();
         }
+
         public static Uri buildSecretKeyRingUri(String masterKeyId) {
             return CONTENT_URI.buildUpon().appendPath(masterKeyId).appendPath(PATH_SECRET).build();
         }
+
         public static Uri buildSecretKeyRingUri(Uri uri) {
             return CONTENT_URI.buildUpon().appendPath(uri.getPathSegments().get(1)).appendPath(PATH_SECRET).build();
         }
@@ -176,16 +187,19 @@ public class KeychainContract {
         /**
          * Use if multiple items get returned
          */
-        public static final String CONTENT_TYPE = "vnd.android.cursor.dir/vnd.sufficientlysecure.openkeychain.key";
+        public static final String CONTENT_TYPE
+                = "vnd.android.cursor.dir/vnd.org.sufficientlysecure.keychain.provider.keychain.keys";
 
         /**
          * Use if a single item is returned
          */
-        public static final String CONTENT_ITEM_TYPE = "vnd.android.cursor.item/vnd.sufficientlysecure.openkeychain.key";
+        public static final String CONTENT_ITEM_TYPE
+                = "vnd.android.cursor.item/vnd.org.sufficientlysecure.keychain.provider.keychain.keys";
 
         public static Uri buildKeysUri(String masterKeyId) {
             return CONTENT_URI.buildUpon().appendPath(masterKeyId).appendPath(PATH_KEYS).build();
         }
+
         public static Uri buildKeysUri(Uri uri) {
             return CONTENT_URI.buildUpon().appendPath(uri.getPathSegments().get(1)).appendPath(PATH_KEYS).build();
         }
@@ -200,16 +214,19 @@ public class KeychainContract {
         /**
          * Use if multiple items get returned
          */
-        public static final String CONTENT_TYPE = "vnd.android.cursor.dir/vnd.sufficientlysecure.openkeychain.user_id";
+        public static final String CONTENT_TYPE
+                = "vnd.android.cursor.dir/vnd.org.sufficientlysecure.keychain.provider.user_ids";
 
         /**
          * Use if a single item is returned
          */
-        public static final String CONTENT_ITEM_TYPE = "vnd.android.cursor.item/vnd.sufficientlysecure.openkeychain.user_id";
+        public static final String CONTENT_ITEM_TYPE
+                = "vnd.android.cursor.item/vnd.org.sufficientlysecure.keychain.provider.user_ids";
 
         public static Uri buildUserIdsUri(String masterKeyId) {
             return CONTENT_URI.buildUpon().appendPath(masterKeyId).appendPath(PATH_USER_IDS).build();
         }
+
         public static Uri buildUserIdsUri(Uri uri) {
             return CONTENT_URI.buildUpon().appendPath(uri.getPathSegments().get(1)).appendPath(PATH_USER_IDS).build();
         }
@@ -222,12 +239,14 @@ public class KeychainContract {
         /**
          * Use if multiple items get returned
          */
-        public static final String CONTENT_TYPE = "vnd.android.cursor.dir/vnd.sufficientlysecure.openkeychain.api_apps";
+        public static final String CONTENT_TYPE
+                = "vnd.android.cursor.dir/vnd.org.sufficientlysecure.keychain.provider.api_apps";
 
         /**
          * Use if a single item is returned
          */
-        public static final String CONTENT_ITEM_TYPE = "vnd.android.cursor.item/vnd.sufficientlysecure.openkeychain.api_app";
+        public static final String CONTENT_ITEM_TYPE
+                = "vnd.android.cursor.item/vnd.org.sufficientlysecure.keychain.provider.api_apps";
 
         public static Uri buildByPackageNameUri(String packageName) {
             return CONTENT_URI.buildUpon().appendEncodedPath(packageName).build();
@@ -241,12 +260,14 @@ public class KeychainContract {
         /**
          * Use if multiple items get returned
          */
-        public static final String CONTENT_TYPE = "vnd.android.cursor.dir/vnd.sufficientlysecure.openkeychain.api_app.accounts";
+        public static final String CONTENT_TYPE
+                = "vnd.android.cursor.dir/vnd.org.sufficientlysecure.keychain.provider.api_apps.accounts";
 
         /**
          * Use if a single item is returned
          */
-        public static final String CONTENT_ITEM_TYPE = "vnd.android.cursor.item/vnd.sufficientlysecure.openkeychain.api_app.account";
+        public static final String CONTENT_ITEM_TYPE
+                = "vnd.android.cursor.item/vnd.org.sufficientlysecure.keychain.provider.api_apps.accounts";
 
         public static Uri buildBaseUri(String packageName) {
             return CONTENT_URI.buildUpon().appendEncodedPath(packageName).appendPath(PATH_ACCOUNTS)
@@ -272,9 +293,11 @@ public class KeychainContract {
         public static Uri buildCertsUri(String masterKeyId) {
             return CONTENT_URI.buildUpon().appendPath(masterKeyId).appendPath(PATH_CERTS).build();
         }
+
         public static Uri buildCertsSpecificUri(String masterKeyId, String rank, String certifier) {
             return CONTENT_URI.buildUpon().appendPath(masterKeyId).appendPath(PATH_CERTS).appendPath(rank).appendPath(certifier).build();
         }
+
         public static Uri buildCertsUri(Uri uri) {
             return CONTENT_URI.buildUpon().appendPath(uri.getPathSegments().get(1)).appendPath(PATH_CERTS).build();
         }
