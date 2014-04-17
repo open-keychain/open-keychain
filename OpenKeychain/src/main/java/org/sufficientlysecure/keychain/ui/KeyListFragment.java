@@ -55,6 +55,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.beardedhen.androidbootstrap.BootstrapButton;
+import com.devspark.appmsg.AppMsg;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
@@ -186,7 +187,7 @@ public class KeyListFragment extends Fragment
                         }
                         case R.id.menu_key_list_multi_delete: {
                             ids = mAdapter.getCurrentSelectedMasterKeyIds();
-                            showDeleteKeyDialog(mode, ids);
+                            showDeleteKeyDialog(mode, ids, mAdapter.isAnySecretSelected());
                             break;
                         }
                         case R.id.menu_key_list_multi_export: {
@@ -263,7 +264,7 @@ public class KeyListFragment extends Fragment
     static final int INDEX_VERIFIED = 5;
     static final int INDEX_HAS_ANY_SECRET = 6;
 
-    static final String ORDER = // IN THE COURT
+    static final String ORDER =
             KeyRings.HAS_ANY_SECRET + " DESC, " + KeyRings.USER_ID + " ASC";
 
 
@@ -339,10 +340,17 @@ public class KeyListFragment extends Fragment
      * Show dialog to delete key
      *
      * @param masterKeyIds
+     * @param hasSecret must contain whether the list of masterKeyIds contains a secret key or not
      */
     @TargetApi(11)
-    // TODO: this method needs an overhaul to handle both public and secret keys gracefully!
-    public void showDeleteKeyDialog(final ActionMode mode, long[] masterKeyIds) {
+    public void showDeleteKeyDialog(final ActionMode mode, long[] masterKeyIds, boolean hasSecret) {
+        // Can only work on singular secret keys
+        if(hasSecret && masterKeyIds.length > 1) {
+            AppMsg.makeText(getActivity(), R.string.secret_cannot_multiple,
+                    AppMsg.STYLE_ALERT).show();
+            return;
+        }
+
         // Message is received after key is deleted
         Handler returnHandler = new Handler() {
             @Override
