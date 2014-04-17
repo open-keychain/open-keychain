@@ -135,10 +135,10 @@ public class UserIdEditor extends LinearLayout implements Editor, OnClickListene
                     Matcher emailMatcher = Patterns.EMAIL_ADDRESS.matcher(email);
                     if (emailMatcher.matches()) {
                         mEmail.setCompoundDrawablesWithIntrinsicBounds(0, 0,
-                                    android.R.drawable.presence_online, 0);
+                                    R.drawable.uid_mail_ok, 0);
                     } else {
                         mEmail.setCompoundDrawablesWithIntrinsicBounds(0, 0,
-                                    android.R.drawable.presence_offline, 0);
+                                    R.drawable.uid_mail_bad, 0);
                     }
                 } else {
                     // remove drawable if email is empty

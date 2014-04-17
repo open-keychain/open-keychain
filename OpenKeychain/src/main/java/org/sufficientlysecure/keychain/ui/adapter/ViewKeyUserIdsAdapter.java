@@ -124,7 +124,7 @@ public class ViewKeyUserIdsAdapter extends CursorAdapter implements AdapterView.
 
         if (cursor.getInt(mIsRevoked) > 0) {
             vRank.setText(" ");
-            vVerified.setImageResource(android.R.drawable.presence_away);
+            vVerified.setImageResource(R.drawable.key_certify_revoke);
 
             // disable and strike through text for revoked user ids
             vUserId.setEnabled(false);
@@ -138,11 +138,11 @@ public class ViewKeyUserIdsAdapter extends CursorAdapter implements AdapterView.
             int verified = cursor.getInt(mVerifiedId);
             // TODO introduce own resources for this :)
             if (verified == Certs.VERIFIED_SECRET) {
-                vVerified.setImageResource(android.R.drawable.presence_online);
+                vVerified.setImageResource(R.drawable.key_certify_ok_depth0);
             } else if (verified == Certs.VERIFIED_SELF) {
-                vVerified.setImageResource(android.R.drawable.presence_invisible);
+                vVerified.setImageResource(R.drawable.key_certify_ok_self);
             } else {
-                vVerified.setImageResource(android.R.drawable.presence_busy);
+                vVerified.setImageResource(R.drawable.key_certify_error);
             }
         }
 

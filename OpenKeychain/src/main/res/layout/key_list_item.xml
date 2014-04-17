@@ -79,7 +79,7 @@
             android:layout_height="wrap_content"
             android:id="@+id/verified"
             android:layout_gravity="center"
-            android:src="@android:drawable/presence_online"
+            android:src="@drawable/key_certify_ok_depth0"
             android:paddingLeft="25dp" />
     </FrameLayout>
 
