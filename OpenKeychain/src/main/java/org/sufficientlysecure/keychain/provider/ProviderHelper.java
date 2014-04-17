@@ -36,7 +36,6 @@ import org.spongycastle.openpgp.PGPPublicKeyRing;
 import org.spongycastle.openpgp.PGPSecretKey;
 import org.spongycastle.openpgp.PGPSecretKeyRing;
 import org.spongycastle.openpgp.PGPSignature;
-import org.spongycastle.openpgp.operator.PBESecretKeyDecryptor;
 import org.spongycastle.openpgp.operator.jcajce.JcaPGPContentVerifierBuilderProvider;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.pgp.PgpConversionHelper;
@@ -225,10 +224,18 @@ public class ProviderHelper {
     }
 
     /**
+     * Saves (or updates) a pair of public and secret KeyRings in the database
+     */
+    public void saveKeyRing(PGPPublicKeyRing pubRing)
+            throws IOException {
+        saveKeyRing(pubRing, false);
+    }
+
+    /**
      * Saves PGPPublicKeyRing with its keys and userIds in DB
      */
     @SuppressWarnings("unchecked")
-    public void saveKeyRing(PGPPublicKeyRing keyRing) throws IOException {
+    public void saveKeyRing(PGPPublicKeyRing keyRing, boolean unsynced) throws IOException {
         PGPPublicKey masterKey = keyRing.getPublicKey();
         long masterKeyId = masterKey.getKeyID();
 
@@ -251,6 +258,7 @@ public class ProviderHelper {
         ContentValues values = new ContentValues();
         values.put(KeyRingData.MASTER_KEY_ID, masterKeyId);
         values.put(KeyRingData.KEY_RING_DATA, keyRing.getEncoded());
+        values.put(KeyRingData.UNSYNCED, unsynced);
         Uri uri = KeyRingData.buildPublicKeyRingUri(Long.toString(masterKeyId));
         mContentResolver.insert(uri, values);
 
@@ -427,15 +435,33 @@ public class ProviderHelper {
     /**
      * Saves (or updates) a pair of public and secret KeyRings in the database
      */
-    public void saveKeyRing(PGPPublicKeyRing pubRing, PGPSecretKeyRing privRing) throws IOException {
+    public void saveKeyRing(PGPPublicKeyRing pubRing, PGPSecretKeyRing privRing)
+            throws IOException {
+        saveKeyRing(pubRing, privRing, false);
+    }
+
+    /**
+     * Saves (or updates) a pair of public and secret KeyRings in the database
+     */
+    public void saveKeyRing(PGPPublicKeyRing pubRing, PGPSecretKeyRing privRing, boolean unsynced)
+            throws IOException {
         long masterKeyId = pubRing.getPublicKey().getKeyID();
 
         // delete secret keyring (so it isn't unnecessarily saved by public-saveKeyRing below)
         mContentResolver.delete(KeyRingData.buildSecretKeyRingUri(Long.toString(masterKeyId)), null, null);
 
         // save public keyring
-        saveKeyRing(pubRing);
+        saveKeyRing(pubRing, unsynced);
         saveKeyRing(privRing);
+
+    }
+
+    public void updateUnsynced(long masterKeyId, boolean unsynced) {
+        ContentValues values = new ContentValues();
+        values.put(KeyRingData.UNSYNCED, unsynced);
+
+        mContentResolver.update(KeyRingData.buildPublicKeyRingUri(Long.toString(masterKeyId)),
+                values, null, null);
     }
 
     /**

@@ -197,6 +197,15 @@
         </TableLayout>
 
         <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/keyring_unsynced"
+            android:id="@+id/unsynced"
+            android:layout_marginTop="15dp"
+            android:layout_gravity="center_horizontal"
+            android:visibility="gone" />
+
+        <TextView
             style="@style/SectionHeader"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

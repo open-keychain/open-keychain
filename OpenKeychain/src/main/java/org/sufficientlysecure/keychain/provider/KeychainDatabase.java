@@ -60,6 +60,7 @@ public class KeychainDatabase extends SQLiteOpenHelper {
             "CREATE TABLE IF NOT EXISTS keyrings_public ("
                 + KeyRingsColumns.MASTER_KEY_ID + " INTEGER PRIMARY KEY,"
                 + KeyRingsColumns.KEY_RING_DATA + " BLOB"
+                + KeyRingsColumns.UNSYNCED + " BOOLEAN"
             + ")";
 
     private static final String CREATE_KEYRINGS_SECRET =
@@ -191,6 +192,10 @@ public class KeychainDatabase extends SQLiteOpenHelper {
             // TODO this is a dev hack, remove for release!
             try {
                 db.execSQL("ALTER TABLE keys ADD COLUMN has_secret BOOLEAN");
+            } catch(Exception e) {
+            }
+            try {
+                db.execSQL("ALTER TABLE keyrings_public ADD COLUMN unsynced BOOLEAN");
             } catch(Exception e) {
             }
         }

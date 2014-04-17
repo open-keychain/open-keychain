@@ -65,6 +65,7 @@ public class ViewKeyMainFragment extends Fragment implements
     private TextView mExpiry;
     private TextView mCreation;
     private TextView mFingerprint;
+    private TextView mUnsynced;
     private TextView mSecretKey;
     private BootstrapButton mActionEdit;
     private BootstrapButton mActionEncrypt;
@@ -95,6 +96,7 @@ public class ViewKeyMainFragment extends Fragment implements
         mCreation = (TextView) view.findViewById(R.id.creation);
         mExpiry = (TextView) view.findViewById(R.id.expiry);
         mFingerprint = (TextView) view.findViewById(R.id.fingerprint);
+        mUnsynced = (TextView) view.findViewById(R.id.unsynced);
         mSecretKey = (TextView) view.findViewById(R.id.secret_key);
         mUserIds = (ListView) view.findViewById(R.id.user_ids);
         mKeys = (ListView) view.findViewById(R.id.keys);
@@ -161,6 +163,7 @@ public class ViewKeyMainFragment extends Fragment implements
         KeyRings._ID, KeyRings.MASTER_KEY_ID, KeyRings.HAS_ANY_SECRET,
             KeyRings.USER_ID, KeyRings.FINGERPRINT,
             KeyRings.ALGORITHM, KeyRings.KEY_SIZE, KeyRings.CREATION, KeyRings.EXPIRY,
+            KeyRings.UNSYNCED
 
     };
     static final int INDEX_UNIFIED_MKI = 1;
@@ -171,6 +174,7 @@ public class ViewKeyMainFragment extends Fragment implements
     static final int INDEX_UNIFIED_KEY_SIZE = 6;
     static final int INDEX_UNIFIED_CREATION = 7;
     static final int INDEX_UNIFIED_EXPIRY = 8;
+    static final int INDEX_UNIFIED_UNSYNCED = 9;
 
     static final String[] KEYS_PROJECTION = new String[] {
             Keys._ID,
@@ -284,6 +288,9 @@ public class ViewKeyMainFragment extends Fragment implements
                     byte[] fingerprintBlob = data.getBlob(INDEX_UNIFIED_FINGERPRINT);
                     String fingerprint = PgpKeyHelper.convertFingerprintToHex(fingerprintBlob);
                     mFingerprint.setText(PgpKeyHelper.colorizeFingerprint(fingerprint));
+
+                    mUnsynced.setVisibility(
+                            data.getInt(INDEX_UNIFIED_UNSYNCED) != 0 ? View.VISIBLE : View.GONE);
 
                     break;
                 }

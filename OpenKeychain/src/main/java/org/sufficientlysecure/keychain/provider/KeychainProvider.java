@@ -254,6 +254,7 @@ public class KeychainProvider extends ContentProvider {
                 projectionMap.put(KeyRings.FINGERPRINT, Keys.FINGERPRINT);
                 projectionMap.put(KeyRings.USER_ID, UserIds.USER_ID);
                 projectionMap.put(KeyRings.VERIFIED, KeyRings.VERIFIED);
+                projectionMap.put(KeyRings.UNSYNCED, KeyRings.UNSYNCED);
                 projectionMap.put(KeyRings.HAS_SECRET, KeyRings.HAS_SECRET);
                 projectionMap.put(KeyRings.HAS_ANY_SECRET,
                     "(EXISTS (SELECT * FROM " + Tables.KEY_RINGS_SECRET
@@ -284,7 +285,11 @@ public class KeychainProvider extends ContentProvider {
 
                 qb.setTables(
                     Tables.KEYS
-                        + " INNER JOIN " + Tables.USER_IDS + " ON ("
+                        + " INNER JOIN " + Tables.KEY_RINGS_PUBLIC + " ON ("
+                            + Tables.KEY_RINGS_PUBLIC + "." + Keys.MASTER_KEY_ID
+                            + " = "
+                            + Tables.USER_IDS + "." + UserIds.MASTER_KEY_ID
+                        + " ) INNER JOIN " + Tables.USER_IDS + " ON ("
                                     + Tables.KEYS + "." + Keys.MASTER_KEY_ID
                                 + " = "
                                     + Tables.USER_IDS + "." + UserIds.MASTER_KEY_ID
@@ -429,6 +434,7 @@ public class KeychainProvider extends ContentProvider {
                 projectionMap.put(KeyRingData._ID, Tables.KEY_RINGS_PUBLIC + ".oid AS _id");
                 projectionMap.put(KeyRingData.MASTER_KEY_ID, KeyRingData.MASTER_KEY_ID);
                 projectionMap.put(KeyRingData.KEY_RING_DATA, KeyRingData.KEY_RING_DATA);
+                projectionMap.put(KeyRingData.UNSYNCED, KeyRingData.UNSYNCED);
                 qb.setProjectionMap(projectionMap);
 
                 qb.setTables(Tables.KEY_RINGS_PUBLIC);
@@ -703,6 +709,17 @@ public class KeychainProvider extends ContentProvider {
         try {
             final int match = mUriMatcher.match(uri);
             switch (match) {
+                case KEY_RING_PUBLIC: {
+                    if (values.size() != 1 || !values.containsKey(KeyRingData.UNSYNCED)) {
+                        throw new UnsupportedOperationException(
+                                "Only unsynced column may be updated!");
+                    }
+                    // make sure we get a long value here
+                    Long mkid = Long.parseLong(uri.getPathSegments().get(1));
+                    String actualSelection = KeyRingData.MASTER_KEY_ID + " = " + Long.toString(mkid);
+                    count = db.update(Tables.KEY_RINGS_PUBLIC, values, actualSelection, null);
+                    break;
+                }
                 case KEY_RING_KEYS: {
                     if (values.size() != 1 || !values.containsKey(Keys.HAS_SECRET)) {
                         throw new UnsupportedOperationException(

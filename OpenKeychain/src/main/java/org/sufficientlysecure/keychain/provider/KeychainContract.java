@@ -27,6 +27,7 @@ public class KeychainContract {
     interface KeyRingsColumns {
         String MASTER_KEY_ID = "master_key_id"; // not a database id
         String KEY_RING_DATA = "key_ring_data"; // PGPPublicKeyRing / PGPSecretKeyRing blob
+        String UNSYNCED = "unsynced";
     }
 
     interface KeysColumns {
@@ -103,7 +104,7 @@ public class KeychainContract {
     public static final String BASE_API_APPS = "api_apps";
     public static final String PATH_ACCOUNTS = "accounts";
 
-    public static class KeyRings implements BaseColumns, KeysColumns, UserIdsColumns {
+    public static class KeyRings implements BaseColumns, KeyRingsColumns, KeysColumns, UserIdsColumns {
         public static final String MASTER_KEY_ID = KeysColumns.MASTER_KEY_ID;
         public static final String IS_REVOKED = KeysColumns.IS_REVOKED;
         public static final String VERIFIED = CertsColumns.VERIFIED;
