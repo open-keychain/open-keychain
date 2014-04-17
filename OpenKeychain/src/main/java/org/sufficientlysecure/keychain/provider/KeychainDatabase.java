@@ -239,15 +239,6 @@ public class KeychainDatabase extends SQLiteOpenHelper {
             }
         }.getReadableDatabase();
 
-        // kill current!
-        { // TODO don't kill current.
-            Log.d(Constants.TAG, "Truncating db...");
-            SQLiteDatabase d = getWritableDatabase();
-            d.execSQL("DELETE FROM keyrings_public");
-            d.close();
-            Log.d(Constants.TAG, "Ok.");
-        }
-
         Cursor c = null;
         try {
             // we insert in two steps: first, all public keys that have secret keys
