@@ -74,7 +74,7 @@ public class PreferencesKeyServerActivity extends ActionBarActivity implements O
         mTitle = (TextView) findViewById(R.id.title);
         mSummary = (TextView) findViewById(R.id.summary);
 
-        mTitle.setText(R.string.label_key_servers);
+        mTitle.setText(R.string.label_keyservers);
 
         mEditors = (ViewGroup) findViewById(R.id.editors);
         mAdd = findViewById(R.id.add);

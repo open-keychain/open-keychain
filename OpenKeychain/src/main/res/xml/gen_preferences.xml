@@ -27,6 +27,6 @@
         <PreferenceScreen
             android:key="keyServers"
             android:persistent="false"
-            android:title="@string/label_key_servers" />
+            android:title="@string/label_keyservers" />
     </PreferenceCategory>
 </PreferenceScreen>

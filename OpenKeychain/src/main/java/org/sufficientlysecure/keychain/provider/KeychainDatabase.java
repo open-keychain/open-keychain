@@ -227,7 +227,7 @@ public class KeychainDatabase extends SQLiteOpenHelper {
             @Override
             public void onCreate(SQLiteDatabase db) {
                 // should never happen
-                assert false;
+                throw new AssertionError();
             }
             @Override
             public void onDowngrade(SQLiteDatabase db, int old, int nu) {

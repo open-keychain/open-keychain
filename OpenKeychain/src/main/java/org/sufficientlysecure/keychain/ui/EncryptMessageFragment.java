@@ -240,7 +240,7 @@ public class EncryptMessageFragment extends Fragment {
 
                         sendIntent.putExtra(Intent.EXTRA_TEXT, output);
                         startActivity(Intent.createChooser(sendIntent,
-                                getString(R.string.title_send_email)));
+                                getString(R.string.title_share_with)));
                     }
                 }
             }

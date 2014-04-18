@@ -78,7 +78,7 @@ public class DrawerActivity extends ActionBarActivity {
         }
 
         NavItem mItemIconTexts[] = new NavItem[]{
-                new NavItem("fa-user", getString(R.string.nav_contacts)),
+                new NavItem("fa-user", getString(R.string.nav_keys)),
                 new NavItem("fa-lock", getString(R.string.nav_encrypt)),
                 new NavItem("fa-unlock", getString(R.string.nav_decrypt)),
                 new NavItem("fa-android", getString(R.string.nav_apps))};

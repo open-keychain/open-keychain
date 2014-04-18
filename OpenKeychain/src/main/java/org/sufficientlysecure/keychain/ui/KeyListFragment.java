@@ -612,7 +612,7 @@ public class KeyListFragment extends Fragment
             if (mCursor.getInt(KeyListFragment.INDEX_HAS_ANY_SECRET) != 0) {
                 { // set contact count
                     int num = mCursor.getCount();
-                    String contactsTotal = getResources().getQuantityString(R.plurals.n_contacts, num, num);
+                    String contactsTotal = getResources().getQuantityString(R.plurals.n_keys, num, num);
                     holder.mCount.setText(contactsTotal);
                     holder.mCount.setVisibility(View.VISIBLE);
                 }

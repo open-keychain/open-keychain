@@ -18,12 +18,12 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceSmall"
-        android:text="contact count"
+        android:text="key count"
         android:id="@+id/contacts_num"
         android:layout_centerVertical="true"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
-        android:layout_marginRight="10px"
+        android:layout_marginRight="8dp"
         android:visibility="visible"
         android:textColor="@android:color/darker_gray" />
 
