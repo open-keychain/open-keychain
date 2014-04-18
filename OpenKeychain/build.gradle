@@ -8,8 +8,8 @@ sourceSets {
 }
 
 dependencies {
-    compile 'com.android.support:support-v4:19.0.1'
-    compile 'com.android.support:appcompat-v7:19.0.1'
+    compile 'com.android.support:support-v4:19.1.0'
+    compile 'com.android.support:appcompat-v7:19.1.0'
     compile project(':OpenKeychain-API:libraries:openpgp-api-library')
     compile project(':OpenKeychain-API:libraries:openkeychain-api-library')
     compile project(':extern:html-textview')
@@ -25,10 +25,10 @@ dependencies {
 
     // Dependencies for the `testLocal` task, make sure to list all your global dependencies here as well
     testLocalCompile 'junit:junit:4.11'
-    testLocalCompile 'org.robolectric:robolectric:2.1.+'
+    testLocalCompile 'org.robolectric:robolectric:2.2'
     testLocalCompile 'com.google.android:android:4.1.1.4'
-    testLocalCompile 'com.android.support:support-v4:19.0.1'
-    testLocalCompile 'com.android.support:appcompat-v7:19.0.1'
+    testLocalCompile 'com.android.support:support-v4:19.1.0'
+    testLocalCompile 'com.android.support:appcompat-v7:19.1.0'
     testLocalCompile project(':OpenKeychain-API:libraries:openpgp-api-library')
     testLocalCompile project(':OpenKeychain-API:libraries:openkeychain-api-library')
     testLocalCompile project(':extern:html-textview')
