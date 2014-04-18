@@ -31,3 +31,4 @@ pom.xml.*
 
 #OS Specific
 [Tt]humbs.db
+.DS_Store

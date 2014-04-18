@@ -203,7 +203,7 @@ public class ImportKeysListEntry implements Serializable, Parcelable {
      * Constructor for later querying from keyserver
      */
     public ImportKeysListEntry() {
-        // keys from keyserver are always public keys
+        // keys from keyserver are always public keys; from keybase too
         secretKey = false;
         // do not select by default
         mSelected = false;
