@@ -73,7 +73,7 @@
   <string name="menu_import_from_file">Importer depuis un fichier</string>
   <string name="menu_import_from_qr_code">Importer depuis un code QR</string>
   <string name="menu_import">Importer</string>
-  <string name="menu_import_from_nfc">Importer avec NFC</string>
+  <string name="menu_import_from_nfc">Importer avec la NFC</string>
   <string name="menu_export_key">Exporter vers un fichier</string>
   <string name="menu_delete_key">Supprimer la clef</string>
   <string name="menu_create_key">Créer une clef</string>
@@ -206,7 +206,7 @@
   <string name="specify_file_to_export_to">Veuillez spécifier vers quel fichier exporter.\nAVERTISSEMENT ! Le fichier sera écrasé s\'il existe.</string>
   <string name="specify_file_to_export_secret_keys_to">Veuillez spécifier vers quel fichier exporter.\nAVERTISSEMENT ! Vous allez exporter les clefs SECRÈTES.\nAVERTISSEMENT ! Le fichier sera écrasé s\'il existe.</string>
   <string name="key_deletion_confirmation">Voulez-vous vraiment supprimer la clef %s ?\nVous ne pourrez pas la restituer !</string>
-  <string name="key_deletion_confirmation_multi">Voulez-vous vraiment supprimer toutes les clefs choisies (incluant les clefs secrètes) ?\nCeci est irréversible !</string>
+  <string name="key_deletion_confirmation_multi">Voulez-vous vraiment supprimer toutes les clefs publiques choisies ?\nCeci est irréversible !</string>
   <string name="secret_key_deletion_confirmation">Voulez-vous vraiment supprimer la clef SECRÈTE %s ?\nVous ne pourrez pas la restituer !</string>
   <string name="ask_save_changed_key">Vous avez apporté des changements au trousseau, voulez-vous l\'enregistrer ?</string>
   <string name="ask_empty_id_ok">Vous avez ajouté un ID utilisateur vide, êtes-vous certain de vouloir continuer?</string>
@@ -286,7 +286,7 @@
   <!--errors without preceeding Error:-->
   <string name="error_only_files_are_supported">Les données binaires directes sans fichier dans le système de fichiers ne sont pas prises en charge. C\'est uniquement pris en charge par ACTION_ENCRYPT_STREAM_AND_RETURN.</string>
   <string name="error_jelly_bean_needed">Vous devez avoir Android 4.1 Jelly Bean pour utiliser la fonction NFC Beam !</string>
-  <string name="error_nfc_needed">NFC n\'est pas disponible sur votre appareil !</string>
+  <string name="error_nfc_needed">La NFC n\'est pas disponible sur votre appareil !</string>
   <string name="error_nothing_import">Rien à importer !</string>
   <string name="error_keyserver_insufficient_query">Requête serveur insuffisante</string>
   <string name="error_keyserver_query">Échec lors de l\'interrogation du serveur de clefs</string>
@@ -387,7 +387,7 @@
   <string name="import_qr_code_finished">Balayage de code QR terminé !</string>
   <string name="import_qr_code_too_short_fingerprint">L\'empreinte est trop courte (&lt; 16 caractères)</string>
   <string name="import_qr_scan_button">Numériser le code QR avec le lecteur de code-barres</string>
-  <string name="import_nfc_text">Pour recevoir des clefs par NFC, les appareils doivent être déverrouillés.</string>
+  <string name="import_nfc_text">Pour recevoir des clefs par la NFC, les appareils doivent être déverrouillés.</string>
   <string name="import_nfc_help_button">Aide</string>
   <string name="import_clipboard_button">Obtenir la clef depuis le presse-papiers</string>
   <!--Intent labels-->
@@ -491,4 +491,8 @@
   <string name="can_certify_not">ne peut pas certifier</string>
   <string name="error_key_not_found">Clef introuvable !</string>
   <string name="error_key_processing">Erreur lors du traitement de la clef !</string>
+  <string name="no_subkey">sous-clef non disponible</string>
+  <string name="key_stripped">dépouillée</string>
+  <string name="secret_cannot_multiple">Les clefs secrètes ne peuvent être supprimées qu\'individuellement !</string>
+  <string name="title_view_cert">Voir les détails du certificat</string>
 </resources>

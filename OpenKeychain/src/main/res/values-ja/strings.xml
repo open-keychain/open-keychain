@@ -203,7 +203,6 @@
   <string name="specify_file_to_export_to">どのファイルをエクスポートするか決めてください。\n注意: 既存のファイルがあると上書きされます。</string>
   <string name="specify_file_to_export_secret_keys_to">どのファイルをエクスポートするか決めてください。\n注意: 秘密鍵をエクスポートしています。\n注意: 既存のファイルがあると上書きされます。</string>
   <string name="key_deletion_confirmation">鍵\'%s\'を本当に削除してもよいですか?\nこれは元に戻せません!</string>
-  <string name="key_deletion_confirmation_multi">選択した鍵(秘密鍵を含みます)を本当に削除してもよいですか?\nこれは元に戻せません!</string>
   <string name="secret_key_deletion_confirmation">秘密鍵\'%s\'を本当に削除してもよいですか?\nこれは元に戻せません!</string>
   <string name="ask_save_changed_key">あなたは鍵輪に変更を加えました、これを保存しますか?</string>
   <string name="ask_empty_id_ok">あなたは空のユーザーIDを追加しました、このまま続けますか?</string>
@@ -292,6 +291,14 @@
   </plurals>
   <string name="error_change_something_first">あなたは鍵輪を保存する前に変更を加えなくてはなりません</string>
   <!--results shown after decryption/verification-->
+  <string name="decrypt_result_invalid_signature">不正な署名です!</string>
+  <string name="decrypt_result_signature_unknown_pub_key">不明な公開鍵</string>
+  <string name="decrypt_result_signature_uncertified">正しい署名 (未証明)</string>
+  <string name="decrypt_result_signature_certified">正しい署名 (証明ずみ)</string>
+  <string name="decrypt_result_decrypted">復号化に成功した</string>
+  <string name="decrypt_result_decrypted_unknown_pub_key">復号化に成功したが不明な公開鍵</string>
+  <string name="decrypt_result_decrypted_and_signature_uncertified">復号化に成功しそして正しい署名 (未証明)</string>
+  <string name="decrypt_result_decrypted_and_signature_certified">復号化に成功しそして正しい署名 (証明ずみ)</string>
   <!--progress dialogs, usually ending in '…'-->
   <string name="progress_done">完了。</string>
   <string name="progress_cancel">キャンセル</string>

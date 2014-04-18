@@ -204,7 +204,6 @@
   <string name="specify_file_to_export_to">Perfavore specifica su quale file esportare.\nATTENZIONE: Il file sara\' sovrascritto se esistente.</string>
   <string name="specify_file_to_export_secret_keys_to">Perfavore specifica quale file esportare.\nATTENZIONE: Stai esportanto chiavi PRIVATE.\nATTENZIONE: Il file sara\' sovrascritto se esistente.</string>
   <string name="key_deletion_confirmation">Vuoi veramente eliminare la chiave \'%s\'?\nNon potrai annullare!</string>
-  <string name="key_deletion_confirmation_multi">Vuoi veramente eliminare le chiavi selezionate (incluse quelle segrete)?\nNon potrai annullare!</string>
   <string name="secret_key_deletion_confirmation">Vuoi veramente eliminare la chiave PRIVATA \'%s\'?\nNon potrai annullare!</string>
   <string name="ask_save_changed_key">Hai apportato modifiche al tuo portachiavi, vuoi salvarlo?</string>
   <string name="ask_empty_id_ok">È stato aggiunto un ID utente vuoto, sei sicuro di voler continuare?</string>

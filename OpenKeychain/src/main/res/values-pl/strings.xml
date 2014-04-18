@@ -207,7 +207,6 @@
   <string name="specify_file_to_export_to">Wskaż, do którego pliku wyeksportować dane.\nOSTRZEŻENIE: Plik zostanie nadpisany, jeżeli istnieje.</string>
   <string name="specify_file_to_export_secret_keys_to">Wskaż, do którego pliku zapisać eksportowane dane.\nOSTRZEŻENIE: Masz zamiar zapisać klucze PRYWATNE (tajne)\nOSTRZEŻENIE: Plik zostanie nadpisany, jeżeli istnieje.</string>
   <string name="key_deletion_confirmation">Czy na pewno chcesz usunąć klucz \'%s\'?\nNie można cofnąć tej operacji!</string>
-  <string name="key_deletion_confirmation_multi">Czy na pewno chcesz usunąć wszystkie zaznaczone klucze (włączając klucze prywatne)?\nTej operacji nie można cofnąć!</string>
   <string name="secret_key_deletion_confirmation">Czy na pewno chcesz usunąć klucz prywatny \'%s\'?\nNie można cofnąć tej operacji!</string>
   <string name="ask_save_changed_key">Zostały dokonane zmiany w pęku kluczy, czy chcesz je zachować?</string>
   <string name="ask_empty_id_ok">Dodałeś pusty identyfikator użytkownika, czy na pewno chcesz kontynuować?</string>

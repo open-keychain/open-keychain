@@ -209,7 +209,7 @@
   <string name="specify_file_to_export_to">Будь ласка, виберіть файл для експорту.\nУВАГА! Якщо файл існує, то він буде переписаний.</string>
   <string name="specify_file_to_export_secret_keys_to">Будь ласка, виберіть файл для експорту.\nУВАГА: Ви експортуєте СЕКРЕТНИЙ ключ.\nУВАГА: Якщо файл існує, то він буде переписаний.</string>
   <string name="key_deletion_confirmation">Ви справді хочете вилучити ключ \'%s\'?\nВи не зможете це відмінити!</string>
-  <string name="key_deletion_confirmation_multi">Ви справді хочете вилучити усі вибрані ключі (включаючи секретні)?\nВи не зможете це відмінити!</string>
+  <string name="key_deletion_confirmation_multi">Ви справді хочете вилучити усі вибрані відкриті ключі?\nВи не зможете це відмінити!</string>
   <string name="secret_key_deletion_confirmation">Ви справді хочете вилучити секретний ключ \'%s\'?\nВи не зможете це відмінити!</string>
   <string name="ask_save_changed_key">Ви внесли зміни до в\'язки ключів, ви б хотіли. Волієте їх зберегти?</string>
   <string name="ask_empty_id_ok">Ви вже додали порожній ідентифікатор користувача. Справді хочете продовжити?</string>
@@ -506,4 +506,7 @@
   <string name="can_certify_not">не можна сертифікувати</string>
   <string name="error_key_not_found">Ключ не знайдено!</string>
   <string name="error_key_processing">Помилка опрацювання ключа!</string>
+  <string name="no_subkey">підключ недоступний</string>
+  <string name="secret_cannot_multiple">Секретні ключі можна вилучити лише окремо!</string>
+  <string name="title_view_cert">Переглянути дані сертифікату</string>
 </resources>
