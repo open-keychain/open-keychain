@@ -29,6 +29,13 @@ import org.sufficientlysecure.keychain.ui.adapter.TabsAdapter;
 public class HelpActivity extends ActionBarActivity {
     public static final String EXTRA_SELECTED_TAB = "selected_tab";
 
+    public static final int TAB_START = 0;
+    public static final int TAB_FAQ = 1;
+    public static final int TAB_WOT = 2;
+    public static final int TAB_NFC = 3;
+    public static final int TAB_CHANGELOG = 4;
+    public static final int TAB_ABOUT = 5;
+
     ViewPager mViewPager;
     TabsAdapter mTabsAdapter;
 
@@ -57,29 +64,29 @@ public class HelpActivity extends ActionBarActivity {
         Bundle startBundle = new Bundle();
         startBundle.putInt(HelpHtmlFragment.ARG_HTML_FILE, R.raw.help_start);
         mTabsAdapter.addTab(actionBar.newTab().setText(getString(R.string.help_tab_start)),
-                HelpHtmlFragment.class, startBundle, (selectedTab == 0));
+                HelpHtmlFragment.class, startBundle, (selectedTab == TAB_START));
 
         Bundle faqBundle = new Bundle();
         faqBundle.putInt(HelpHtmlFragment.ARG_HTML_FILE, R.raw.help_faq);
         mTabsAdapter.addTab(actionBar.newTab().setText(getString(R.string.help_tab_faq)),
-                HelpHtmlFragment.class, faqBundle, (selectedTab == 1));
+                HelpHtmlFragment.class, faqBundle, (selectedTab == TAB_FAQ));
 
         Bundle wotBundle = new Bundle();
         wotBundle.putInt(HelpHtmlFragment.ARG_HTML_FILE, R.raw.help_wot);
         mTabsAdapter.addTab(actionBar.newTab().setText(getString(R.string.help_tab_wot)),
-                HelpHtmlFragment.class, wotBundle, (selectedTab == 2));
+                HelpHtmlFragment.class, wotBundle, (selectedTab == TAB_WOT));
 
         Bundle nfcBundle = new Bundle();
         nfcBundle.putInt(HelpHtmlFragment.ARG_HTML_FILE, R.raw.help_nfc_beam);
         mTabsAdapter.addTab(actionBar.newTab().setText(getString(R.string.help_tab_nfc_beam)),
-                HelpHtmlFragment.class, nfcBundle, (selectedTab == 3));
+                HelpHtmlFragment.class, nfcBundle, (selectedTab == TAB_NFC));
 
         Bundle changelogBundle = new Bundle();
         changelogBundle.putInt(HelpHtmlFragment.ARG_HTML_FILE, R.raw.help_changelog);
         mTabsAdapter.addTab(actionBar.newTab().setText(getString(R.string.help_tab_changelog)),
-                HelpHtmlFragment.class, changelogBundle, (selectedTab == 4));
+                HelpHtmlFragment.class, changelogBundle, (selectedTab == TAB_CHANGELOG));
 
         mTabsAdapter.addTab(actionBar.newTab().setText(getString(R.string.help_tab_about)),
-                HelpAboutFragment.class, null, (selectedTab == 5));
+                HelpAboutFragment.class, null, (selectedTab == TAB_ABOUT));
     }
 }
