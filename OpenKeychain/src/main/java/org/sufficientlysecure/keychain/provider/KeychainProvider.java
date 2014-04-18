@@ -261,24 +261,23 @@ public class KeychainProvider extends ContentProvider {
                             + " = " + Tables.KEYS + "." + Keys.MASTER_KEY_ID
                         + ")) AS " + KeyRings.HAS_ANY_SECRET);
                 projectionMap.put(KeyRings.HAS_ENCRYPT,
-                    "(EXISTS (SELECT COUNT(*) FROM " + Tables.KEYS + " AS k"
+                    "(EXISTS (SELECT * FROM " + Tables.KEYS + " AS k"
                         +" WHERE k." + Keys.MASTER_KEY_ID
                             + " = " + Tables.KEYS + "." + Keys.MASTER_KEY_ID
                         + " AND k." + Keys.IS_REVOKED + " = 0"
-                        + " AND k." + Keys.HAS_SECRET + " = 1"
                         + " AND k." + Keys.CAN_ENCRYPT + " = 1"
                         + " AND ( k." + Keys.EXPIRY + " IS NULL OR k." + Keys.EXPIRY
-                            + " >= '" + new Date().getTime() / 1000 + "' )"
+                            + " >= " + new Date().getTime() / 1000 + " )"
                         + ")) AS " + KeyRings.HAS_ENCRYPT);
                 projectionMap.put(KeyRings.HAS_SIGN,
-                        "(EXISTS (SELECT COUNT(*) FROM " + Tables.KEYS + " AS k"
+                        "(EXISTS (SELECT * FROM " + Tables.KEYS + " AS k"
                                 +" WHERE k." + Keys.MASTER_KEY_ID
                                 + " = " + Tables.KEYS + "." + Keys.MASTER_KEY_ID
                                 + " AND k." + Keys.IS_REVOKED + " = 0"
                                 + " AND k." + Keys.HAS_SECRET + " = 1"
                                 + " AND k." + Keys.CAN_SIGN + " = 1"
                                 + " AND ( k." + Keys.EXPIRY + " IS NULL OR k." + Keys.EXPIRY
-                                + " >= '" + new Date().getTime() / 1000 + "' )"
+                                + " >= " + new Date().getTime() / 1000 + " )"
                                 + ")) AS " + KeyRings.HAS_SIGN);
                 qb.setProjectionMap(projectionMap);
 

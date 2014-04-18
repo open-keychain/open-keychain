@@ -109,7 +109,7 @@ public class KeychainContract {
         public static final String VERIFIED = CertsColumns.VERIFIED;
         public static final String HAS_ANY_SECRET = "has_any_secret";
         public static final String HAS_ENCRYPT = "has_encrypt";
-        public static final String HAS_SIGN = "has_encrypt";
+        public static final String HAS_SIGN = "has_sign";
 
         public static final Uri CONTENT_URI = BASE_CONTENT_URI_INTERNAL.buildUpon()
                 .appendPath(BASE_KEY_RINGS).build();
