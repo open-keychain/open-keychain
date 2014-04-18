@@ -1,6 +1,6 @@
 2.6
 * key certifications (thanks to Vincent Breitmoser)
-* support GnuPG partial secret keys (thanks to Vincent Breitmoser)
+* support for GnuPG partial secret keys (thanks to Vincent Breitmoser)
 * new design for signature verification
 * custom key length (thanks to Greg Witczak)
 * fix share-functionality from other apps
