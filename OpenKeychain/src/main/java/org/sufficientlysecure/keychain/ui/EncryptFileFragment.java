@@ -307,7 +307,6 @@ public class EncryptFileFragment extends Fragment {
 
         int compressionId = ((Choice) mFileCompression.getSelectedItem()).getId();
         data.putInt(KeychainIntentService.ENCRYPT_COMPRESSION_ID, compressionId);
-//        data.putBoolean(KeychainIntentService.ENCRYPT_GENERATE_SIGNATURE, mGenerateSignature);
 
         intent.putExtra(KeychainIntentService.EXTRA_DATA, data);
 

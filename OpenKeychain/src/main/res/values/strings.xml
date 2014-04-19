@@ -280,7 +280,7 @@
 
     <!-- errors without preceeding Error: -->
     <string name="error_only_files_are_supported">Direct binary data without actual file in filesystem is not supported.</string>
-    <string name="error_jelly_bean_needed">You need Android 4.1 to use Android's NFC Beam feature!</string>
+    <string name="error_jelly_bean_needed">You need Android 4.1 to use Android\'s NFC Beam feature!</string>
     <string name="error_nfc_needed">NFC is not available on your device!</string>
     <string name="error_nothing_import">Nothing to import!</string>
     <string name="error_keyserver_insufficient_query">Insufficient server query</string>
