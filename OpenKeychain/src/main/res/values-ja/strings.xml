@@ -208,11 +208,11 @@
     <item quantity="other">%d の問題ある鍵を無視しました。 おそらく次のオプションでエクスポートしています\n --export-secret-subkeys\n代りに次のオプションでエクスポートしてください。\n --export-secret-keys</item>
   </plurals>
   <string name="key_send_success">鍵を鍵サーバにアップロードしました</string>
-  <string name="key_sign_success">鍵に署名しました。</string>
+  <string name="key_certify_success">鍵に署名しました。</string>
   <string name="list_empty">このリストは空です!</string>
-  <string name="nfc_successfull">NFCビームで鍵を送信しました!</string>
+  <string name="nfc_successful">NFCビームで鍵を送信しました!</string>
   <string name="key_copied_to_clipboard">鍵はクリプボードにコピーされました!</string>
-  <string name="key_has_already_been_signed">鍵はすでに署名されています!</string>
+  <string name="key_has_already_been_certified">鍵はすでに署名されています!</string>
   <string name="select_key_to_sign">署名に使う鍵を選択して下さい!</string>
   <string name="key_too_big_for_sharing">この共有方法では鍵が大きすぎます!</string>
   <!--errors

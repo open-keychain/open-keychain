@@ -265,7 +265,7 @@ public class CertifyKeyActivity extends ActionBarActivity implements
                     startSigning();
                 }
             } else {
-                AppMsg.makeText(this, R.string.key_has_already_been_signed, AppMsg.STYLE_ALERT)
+                AppMsg.makeText(this, R.string.key_has_already_been_certified, AppMsg.STYLE_ALERT)
                         .show();
 
                 setResult(RESULT_CANCELED);
@@ -312,7 +312,7 @@ public class CertifyKeyActivity extends ActionBarActivity implements
 
                 if (message.arg1 == KeychainIntentServiceHandler.MESSAGE_OKAY) {
 
-                    AppMsg.makeText(CertifyKeyActivity.this, R.string.key_sign_success,
+                    AppMsg.makeText(CertifyKeyActivity.this, R.string.key_certify_success,
                             AppMsg.STYLE_INFO).show();
 
                     // check if we need to send the key to the server or not

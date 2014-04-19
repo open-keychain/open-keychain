@@ -213,11 +213,11 @@
     <item quantity="other">%d chiavi private non valide  ignorate. Forse hai esportato con opzione\n--export-secret-subkeys\nAssicurati di esportare con\n--export-secret-keys\ninvece.</item>
   </plurals>
   <string name="key_send_success">Chiave caricata con successo sul server</string>
-  <string name="key_sign_success">Chiave firmata correttamente</string>
+  <string name="key_certify_success">Chiave firmata correttamente</string>
   <string name="list_empty">Lista vuota!</string>
-  <string name="nfc_successfull">Chiave inviata tramite NFC Beam!</string>
+  <string name="nfc_successful">Chiave inviata tramite NFC Beam!</string>
   <string name="key_copied_to_clipboard">Chiave copiata negli appunti!</string>
-  <string name="key_has_already_been_signed">La chiave e\' gia\' firmata!</string>
+  <string name="key_has_already_been_certified">La chiave e\' gia\' firmata!</string>
   <string name="select_key_to_sign">Per favore seleziona la chiave per la firma!</string>
   <string name="key_too_big_for_sharing">Chiave troppo grande per essere condivisa in questo modo!</string>
   <!--errors

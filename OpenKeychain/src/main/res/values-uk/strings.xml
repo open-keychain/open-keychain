@@ -223,11 +223,11 @@
     <item quantity="other">%d поганих секретних ключів проігноровано. Можливо ви експортували з параметром\n --export-secret-subkeys\nЗробіть ваш експорт з \n --export-secret-keys\nнатомість.</item>
   </plurals>
   <string name="key_send_success">Успішно завантажено ключ на сервер</string>
-  <string name="key_sign_success">Успішно підписаний ключ</string>
+  <string name="key_certify_success">Успішно підписаний ключ</string>
   <string name="list_empty">Цей список - порожній!</string>
-  <string name="nfc_successfull">Успішно відправлений ключ з NFC променем!</string>
+  <string name="nfc_successful">Успішно відправлений ключ з NFC променем!</string>
   <string name="key_copied_to_clipboard">Ключ вже скопійовано у буфер обміну!</string>
-  <string name="key_has_already_been_signed">Ключ уже був підписаний раніше!</string>
+  <string name="key_has_already_been_certified">Ключ уже був підписаний раніше!</string>
   <string name="select_key_to_sign">Будь ласка, виберіть ключ, використаний для підписування!</string>
   <string name="key_too_big_for_sharing">Ключ надто великий для цього способу поширення!</string>
   <!--errors

@@ -77,7 +77,7 @@
   <string name="file_delete_successful">Başarıyla silindi.</string>
   <string name="no_file_selected">Önce bir dosya seçin.</string>
   <string name="key_not_found">Anahtar %08X bulunamadı.</string>
-  <string name="key_sign_success">Anahtar başarıyla imzalandı</string>
+  <string name="key_certify_success">Anahtar başarıyla imzalandı</string>
   <string name="list_empty">Liste boş!</string>
   <!--errors
          no punctuation, all lowercase,

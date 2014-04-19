@@ -114,9 +114,9 @@
   <string name="key_exported">1 sleutel succesvol geëxporteerd.</string>
   <string name="no_keys_exported">Geen sleutels geëxporteerd.</string>
   <string name="key_not_found">Kan de sleutel %08X niet vinden.</string>
-  <string name="key_sign_success">Sleutel succesvol ondertekend</string>
+  <string name="key_certify_success">Sleutel succesvol ondertekend</string>
   <string name="list_empty">Lijst is leeg</string>
-  <string name="nfc_successfull">Sleutel succesvol verzonden met Beam</string>
+  <string name="nfc_successful">Sleutel succesvol verzonden met Beam</string>
   <!--errors
          no punctuation, all lowercase,
          they will be put after "error_message", e.g. "Error: file not found"-->

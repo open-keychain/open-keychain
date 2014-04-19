@@ -215,11 +215,11 @@
     <item quantity="other">%d плохих секретных ключей проигнорировано. Возможно, вы экспортируете с параметром\n--export-secret-subkeys\nВместо этого используйте\n--export-secret-keys\n</item>
   </plurals>
   <string name="key_send_success">Ключ успешно загружен на сервер</string>
-  <string name="key_sign_success">Ключ успешно подписан</string>
+  <string name="key_certify_success">Ключ успешно подписан</string>
   <string name="list_empty">Список пуст!</string>
-  <string name="nfc_successfull">Ключ успешно передан через NFC!</string>
+  <string name="nfc_successful">Ключ успешно передан через NFC!</string>
   <string name="key_copied_to_clipboard">Ключ скопирован в буфер обмена!</string>
-  <string name="key_has_already_been_signed">Ключ уже был подписан ранее!</string>
+  <string name="key_has_already_been_certified">Ключ уже был подписан ранее!</string>
   <string name="select_key_to_sign">Выберите ключ, используемый для подписи!</string>
   <string name="key_too_big_for_sharing">Ключ слишком большой для этого способа передачи!</string>
   <!--errors

@@ -220,11 +220,11 @@
     <item quantity="other">zignorowano %d niepoprawnych kluczy prywatnych. Prawdopodobnie zostały wyeksportowane przy uzyciu opcji\n --export-secret-subkeys\nUpewnij się że eksportujesz je z opcją\n --export-secret-keys\nktóra jest poprawna.</item>
   </plurals>
   <string name="key_send_success">Pomyślnie wysłano klucz na serwer</string>
-  <string name="key_sign_success">Pomyślnie podpisano klucz</string>
+  <string name="key_certify_success">Pomyślnie podpisano klucz</string>
   <string name="list_empty">Lista jest pusta!</string>
-  <string name="nfc_successfull">Pomyślnie wysłano klucz przez NFC!</string>
+  <string name="nfc_successful">Pomyślnie wysłano klucz przez NFC!</string>
   <string name="key_copied_to_clipboard">Klucz został skopiowany do schowka!</string>
-  <string name="key_has_already_been_signed">Klucz został już wcześniej podpisany!</string>
+  <string name="key_has_already_been_certified">Klucz został już wcześniej podpisany!</string>
   <string name="select_key_to_sign">Wybierz klucz, który zostanie użyty do podpisania!</string>
   <string name="key_too_big_for_sharing">Klucz ma za duży rozmiar by być udostępniony w ten sposób!</string>
   <!--errors

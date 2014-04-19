@@ -402,7 +402,7 @@ public class ViewKeyActivity extends ActionBarActivity {
         public void handleMessage(Message msg) {
             switch (msg.what) {
                 case NFC_SENT:
-                    AppMsg.makeText(ViewKeyActivity.this, R.string.nfc_successfull,
+                    AppMsg.makeText(ViewKeyActivity.this, R.string.nfc_successful,
                             AppMsg.STYLE_INFO).show();
                     break;
             }

@@ -207,11 +207,11 @@
     <item quantity="other">%d schlechte private Schlüssel ignoriert. Evtl. wurden sie mit folgender Option exportiert:\n --export-secret-subkeys\nUnbedingt mit der Option \n --export-secret-keys\nexportieren.</item>
   </plurals>
   <string name="key_send_success">Schlüssel wurde erfolgreich hochgeladen.</string>
-  <string name="key_sign_success">Schlüssel erfolgreich signiert</string>
+  <string name="key_certify_success">Schlüssel erfolgreich signiert</string>
   <string name="list_empty">Diese Liste ist leer!</string>
-  <string name="nfc_successfull">Schlüssel erfolgreich mit NFC Beam gesendet!</string>
+  <string name="nfc_successful">Schlüssel erfolgreich mit NFC Beam gesendet!</string>
   <string name="key_copied_to_clipboard">Schlüssel wurde in die Zwischenablage kopiert!</string>
-  <string name="key_has_already_been_signed">Dieser Schlüssel wurde schon signiert!</string>
+  <string name="key_has_already_been_certified">Dieser Schlüssel wurde schon signiert!</string>
   <string name="select_key_to_sign">Bitte wähle einen Signaturschlüssel!</string>
   <string name="key_too_big_for_sharing">Schlüssel ist zu groß um so geteilt zu werden!</string>
   <!--errors

@@ -212,11 +212,11 @@
     <item quantity="other">%d malas claves secretas ignoradas. Quizás hayas exportado con la opción\n--export-secret-subkeys\nAsegúrate de que exportas con\n--export-secret-keys\nen su lugar.</item>
   </plurals>
   <string name="key_send_success">Clave cargada al servidor satisfactoriamente</string>
-  <string name="key_sign_success">Clave firmada satisfactoriamente</string>
+  <string name="key_certify_success">Clave firmada satisfactoriamente</string>
   <string name="list_empty">¡Esta lista está vacía!</string>
-  <string name="nfc_successfull">¡Clave enviada satisfactoriamente con NFC Beam!</string>
+  <string name="nfc_successful">¡Clave enviada satisfactoriamente con NFC Beam!</string>
   <string name="key_copied_to_clipboard">¡La clave ha sido copiada al portapapeles!</string>
-  <string name="key_has_already_been_signed">¡La clave ya ha sido firmada!</string>
+  <string name="key_has_already_been_certified">¡La clave ya ha sido firmada!</string>
   <string name="select_key_to_sign">¡Por favor, selecciona la clave que se usará para firmar!</string>
   <string name="key_too_big_for_sharing">¡La clave es demasiado grande para ser compartida de esta forma!</string>
   <!--errors
