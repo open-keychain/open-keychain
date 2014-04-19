@@ -245,11 +245,11 @@
     </plurals>
 
     <string name="key_send_success">Successfully uploaded key to server</string>
-    <string name="key_sign_success">Successfully signed key</string>
+    <string name="key_sign_success">Successfully certified key</string>
     <string name="list_empty">This list is empty!</string>
     <string name="nfc_successfull">Successfully sent key with NFC Beam!</string>
     <string name="key_copied_to_clipboard">Key has been copied to the clipboard!</string>
-    <string name="key_has_already_been_signed">Key has already been signed!</string>
+    <string name="key_has_already_been_signed">Key has already been certified!</string>
     <string name="select_key_to_sign">Please select a key to be used for signing!</string>
     <string name="key_too_big_for_sharing">Key is too big to be shared this way!</string>
 
