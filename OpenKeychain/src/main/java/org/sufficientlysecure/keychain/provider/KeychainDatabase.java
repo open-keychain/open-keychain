@@ -281,10 +281,6 @@ public class KeychainDatabase extends SQLiteOpenHelper {
                     Log.e(Constants.TAG, "Unknown blob data type!");
                 }
             }
-
-            // Move to a different file (but don't delete, just to be safe)
-            Log.d(Constants.TAG, "All done - moving apg.db to apg_old.db");
-            context.getDatabasePath("apg.db").renameTo(context.getDatabasePath("apg_old.db"));
         } catch (IOException e) {
             Log.e(Constants.TAG, "Error importing apg.db!", e);
         } finally {
@@ -296,6 +292,9 @@ public class KeychainDatabase extends SQLiteOpenHelper {
             }
         }
 
+        // Move to a different file (but don't delete, just to be safe)
+        Log.d(Constants.TAG, "All done - moving apg.db to apg_old.db");
+        context.getDatabasePath("apg.db").renameTo(context.getDatabasePath("apg_old.db"));
     }
 
     private static void copy(File in, File out) throws IOException {

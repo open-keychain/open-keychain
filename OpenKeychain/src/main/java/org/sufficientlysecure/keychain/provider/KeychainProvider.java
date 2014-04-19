@@ -609,12 +609,7 @@ public class KeychainProvider extends ContentProvider {
                     String packageName = uri.getPathSegments().get(1);
                     values.put(ApiAccounts.PACKAGE_NAME, packageName);
 
-                    Log.d(Constants.TAG, "provider packageName: " + packageName);
-
                     db.insertOrThrow(Tables.API_ACCOUNTS, null, values);
-                    // TODO: this is wrong:
-//                    rowUri = ApiAccounts.buildIdUri(Long.toString(rowId));
-
                     break;
 
                 default:
@@ -630,7 +625,7 @@ public class KeychainProvider extends ContentProvider {
             getContext().getContentResolver().notifyChange(uri, null);
 
         } catch (SQLiteConstraintException e) {
-            Log.e(Constants.TAG, "Constraint exception on insert! Entry already existing?", e);
+            Log.d(Constants.TAG, "Constraint exception on insert! Entry already existing?", e);
         }
 
         return rowUri;
@@ -732,7 +727,7 @@ public class KeychainProvider extends ContentProvider {
             getContext().getContentResolver().notifyChange(uri, null);
 
         } catch (SQLiteConstraintException e) {
-            Log.e(Constants.TAG, "Constraint exception on update! Entry already existing?", e);
+            Log.d(Constants.TAG, "Constraint exception on update! Entry already existing?", e);
         }
 
         return count;
