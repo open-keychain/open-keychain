@@ -285,7 +285,7 @@
     <string name="error_nothing_import">Nothing to import!</string>
     <string name="error_keyserver_insufficient_query">Insufficient server query</string>
     <string name="error_keyserver_query">Querying keyserver failed</string>
-    <string name="error_keyserver_too_many_responses">Too many responses</string>
+    <string name="error_keyserver_too_many_responses">Too many possible keys. Please refine your query!</string>
     <string name="error_import_file_no_content">File has no content</string>
     <string name="error_generic_report_bug">A generic error occurred, please create a new bug report for OpenKeychain.</string>
     <plurals name="error_import_non_pgp_part">
