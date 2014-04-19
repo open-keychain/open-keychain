@@ -9,7 +9,6 @@
   <string name="title_preferences">Επιλογές</string>
   <!--section-->
   <!--button-->
-  <string name="btn_sign">Υπόγραψε</string>
   <string name="btn_save">Αποθήκευση</string>
   <string name="btn_do_not_save">Ακύρωση</string>
   <string name="btn_delete">Διαγραφή</string>
@@ -28,7 +27,6 @@
   <string name="label_encryption_algorithm">Αλγόριθμος κρυπτογράφησης</string>
   <string name="label_key_size">Μέγεθος κλειδιού</string>
   <string name="label_email">Ηλεκτρονικό ταχυδρομίο</string>
-  <string name="unknown_status"></string>
   <!--choice-->
   <!--key flags-->
   <!--sentences-->

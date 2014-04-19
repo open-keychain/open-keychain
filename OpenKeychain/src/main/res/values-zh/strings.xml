@@ -1,7 +1,6 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <resources>
   <!--title-->
-  <string name="title_manage_public_keys">聯絡人</string>
   <string name="title_select_recipients">选择公钥</string>
   <string name="title_select_secret_key">选择私钥</string>
   <string name="title_encrypt">加密</string>
@@ -13,16 +12,13 @@
   <string name="title_api_registered_apps">已注册应用</string>
   <string name="title_key_server_preference">密钥服务器偏好</string>
   <string name="title_set_passphrase">设置密码短语</string>
-  <string name="title_send_email">发送邮件</string>
   <string name="title_encrypt_to_file">加密至文件</string>
   <string name="title_decrypt_to_file">解密至文件</string>
   <string name="title_import_keys">导入密钥</string>
   <string name="title_export_key">导出密钥</string>
   <string name="title_export_keys">导出密钥</string>
   <string name="title_key_not_found">无法找到密钥</string>
-  <string name="title_key_server_query">查询密钥服务器</string>
   <string name="title_send_key">上传到密钥服务器</string>
-  <string name="title_unknown_signature_key">未知签名密钥</string>
   <string name="title_help">帮助</string>
   <!--section-->
   <string name="section_user_ids">用户ID</string>
@@ -34,10 +30,7 @@
   <string name="section_key_server">密钥服务器</string>
   <string name="section_decrypt_verify">解密并验证</string>
   <!--button-->
-  <string name="btn_sign">签名</string>
-  <string name="btn_decrypt">解密</string>
   <string name="btn_decrypt_verify">解密并验证</string>
-  <string name="btn_select_encrypt_keys">选择收件人</string>
   <string name="btn_encrypt_file">加密文件</string>
   <string name="btn_save">保存</string>
   <string name="btn_do_not_save">取消</string>
@@ -46,13 +39,11 @@
   <string name="btn_clipboard">剪贴板</string>
   <!--menu-->
   <string name="menu_help">帮助</string>
-  <string name="menu_import">导入</string>
   <string name="menu_delete_key">删除密钥</string>
   <string name="menu_create_key">创建密钥</string>
   <string name="menu_create_key_expert">创建密钥(专家)</string>
   <string name="menu_search">搜索</string>
   <string name="menu_copy_to_clipboard">复制到剪贴板</string>
-  <string name="menu_sign_key">签署密钥</string>
   <string name="menu_key_edit_cancel">取消</string>
   <string name="menu_encrypt_to">加密到...</string>
   <!--label-->
@@ -71,7 +62,6 @@
   <string name="label_comment">注解</string>
   <string name="label_email">电子邮件</string>
   <string name="label_fingerprint">指纹</string>
-  <string name="unknown_status"></string>
   <string name="can_encrypt">可以加密</string>
   <string name="can_sign">可以签署</string>
   <string name="expired">过期了</string>
@@ -112,18 +102,14 @@
          they will be put after "error_message", e.g. "Error: file not found"-->
   <string name="error_file_not_found">没有找到文件</string>
   <string name="error_external_storage_not_ready">外置存储没有准备好</string>
-  <string name="error_invalid_email">无效的email \'%s\'</string>
   <string name="error_key_size_minimum512bit">密钥的大小必须至少512位</string>
   <string name="error_unknown_algorithm_choice">位置的算法选择</string>
-  <string name="error_user_id_needs_a_name">你需要指定一个名字</string>
-  <string name="error_user_id_needs_an_email_address">你需要指定一个电子邮件地址</string>
   <string name="error_key_needs_a_user_id">需要至少一个用户id</string>
   <string name="error_main_user_id_must_not_be_empty">主用户id不能是空的</string>
   <string name="error_key_needs_master_key">需要至少一个主密钥</string>
   <string name="error_no_signature_passphrase">没有提供密语</string>
   <string name="error_no_signature_key">没有提供密钥</string>
   <string name="error_invalid_data">不是有效的加密数据</string>
-  <string name="error_corrupt_data">损坏的数据</string>
   <string name="error_wrong_passphrase">错误的密语</string>
   <!--errors without preceeding Error:-->
   <!--results shown after decryption/verification-->
@@ -132,12 +118,10 @@
   <string name="progress_importing">导入中...</string>
   <string name="progress_exporting">导出中...</string>
   <string name="progress_building_key">建立密钥</string>
-  <string name="progress_preparing_master_key">正在准备主密钥</string>
   <string name="progress_verifying_signature">正在验证签名...</string>
   <string name="progress_signing">正在签名...</string>
   <string name="progress_reading_data">正在读取数据</string>
   <string name="progress_finding_key">正在查找密钥</string>
-  <string name="progress_querying">正在查询</string>
   <!--action strings-->
   <!--key bit length selections-->
   <string name="key_size_512">512</string>
@@ -176,7 +160,6 @@
   <!--Key view-->
   <!--Navigation Drawer-->
   <string name="nav_import">导入密钥</string>
-  <string name="nav_secret_keys">我的密钥</string>
   <!--hints-->
   <!--unsorted-->
 </resources>

@@ -1,8 +1,6 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <resources>
   <!--title-->
-  <string name="title_manage_public_keys">Kontakty</string>
-  <string name="title_manage_secret_keys">Tajné klíče</string>
   <string name="title_select_recipients">Zvolit veřejný klíč</string>
   <string name="title_select_secret_key">Zvolit tajný klíč</string>
   <string name="title_encrypt">Zašifrovat</string>
@@ -14,7 +12,6 @@
   <string name="title_api_registered_apps">Registrované aplikace</string>
   <string name="title_key_server_preference">Nastavení serveru s klíči</string>
   <string name="title_set_passphrase">Zadat heslo</string>
-  <string name="title_send_email">Poslat zprávu...</string>
   <string name="title_import_keys">Importovat klíče</string>
   <string name="title_export_key">Exportovat klíč</string>
   <string name="title_export_keys">Exportovat klíče</string>
@@ -24,10 +21,8 @@
   <!--section-->
   <string name="section_keys">Klíče</string>
   <!--button-->
-  <string name="btn_sign">Podepsat</string>
   <!--menu-->
   <!--label-->
-  <string name="unknown_status"></string>
   <!--choice-->
   <!--key flags-->
   <!--sentences-->

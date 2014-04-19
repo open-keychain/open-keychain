@@ -11,14 +11,12 @@
   <string name="title_preferences">Instellingen</string>
   <string name="title_api_registered_apps">Geregistreerde apps</string>
   <string name="title_set_passphrase">Wachtwoord instellen</string>
-  <string name="title_send_email">E-mail verzenden...</string>
   <string name="title_encrypt_to_file">Versleutelen naar bestand</string>
   <string name="title_decrypt_to_file">Ontsleutelen naar bestand</string>
   <string name="title_import_keys">Sleutels importeren</string>
   <string name="title_export_key">Sleutels exporteren</string>
   <string name="title_export_keys">Sleutels exporteren</string>
   <string name="title_key_not_found">Sleutel niet gevonden</string>
-  <string name="title_unknown_signature_key">Onbekende handtekeningssleutel</string>
   <string name="title_help">Help</string>
   <!--section-->
   <string name="section_user_ids">Gebruikers-id\'s</string>
@@ -27,16 +25,12 @@
   <string name="section_defaults">Standaard</string>
   <string name="section_advanced">Geavanceerd</string>
   <!--button-->
-  <string name="btn_sign">Ondertekenen</string>
-  <string name="btn_decrypt">Ontsleutelen</string>
-  <string name="btn_select_encrypt_keys">Ontvangers selecteren</string>
   <string name="btn_encrypt_file">Bestand versleutelen</string>
   <string name="btn_save">Opslaan</string>
   <string name="btn_do_not_save">Annuleren</string>
   <string name="btn_delete">Verwijderen</string>
   <string name="btn_no_date">Geen</string>
   <string name="btn_okay">OK</string>
-  <string name="btn_search">Zoeken</string>
   <string name="btn_next">Volgende</string>
   <string name="btn_back">Terug</string>
   <!--menu-->
@@ -49,7 +43,6 @@
   <string name="menu_create_key">Sleutel aanmaken</string>
   <string name="menu_create_key_expert">Sleutel aanmaken (expert)</string>
   <string name="menu_search">Zoeken</string>
-  <string name="menu_sign_key">Sleutel ondertekenen</string>
   <string name="menu_beam_preferences">Beam-instellingen</string>
   <!--label-->
   <string name="label_sign">Ondertekenen</string>
@@ -78,11 +71,9 @@
   <string name="label_email">E-mailadres</string>
   <string name="none">&lt;geen&gt;</string>
   <string name="no_key">&lt;geen sleutel&gt;</string>
-  <string name="unknown_status"></string>
   <string name="can_encrypt">versleutelbaar</string>
   <string name="can_sign">ondertekenbaar</string>
   <string name="expired">verlopen</string>
-  <string name="fingerprint">VIngerafdruk:</string>
   <string name="secret_key">Privésleutel:</string>
   <!--choice-->
   <string name="choice_none">Geen</string>
@@ -107,7 +98,6 @@
   <!--key flags-->
   <!--sentences-->
   <string name="wrong_passphrase">Wachtwoord verkeerd.</string>
-  <string name="using_clipboard_content">Gebruikmaken van klembordinhoud.</string>
   <string name="set_a_passphrase">Stel eerst een wachtwoord in.</string>
   <string name="no_filemanager_installed">Geen compatibele bestandsbeheerder geïnstalleerd.</string>
   <string name="passphrases_do_not_match">De wachtwoorden komen niet overeen.</string>
@@ -119,7 +109,6 @@
   <string name="enter_passphrase_twice">Voer het wachtwoord tweemaal in.</string>
   <string name="select_encryption_key">Selecteer ten minste één versleutelingssleutel.</string>
   <string name="select_encryption_or_signature_key">Selecter ten minste één versleutelings-/ondertekeningssleutel.</string>
-  <string name="key_deletion_confirmation">Weet u zeker dat u de sleutel \'%s\' wilt verwijderen?\nDit kan niet ongedaan worden gemaakt.</string>
   <string name="secret_key_deletion_confirmation">Weet u zeker dat u de privésleutel \'%s\' wilt verwijderen?\nDit kan niet ongedaan worden gemaakt.</string>
   <string name="no_keys_added_or_updated">Geen sleutels toegevoegd of bijgewerkt.</string>
   <string name="key_exported">1 sleutel succesvol geëxporteerd.</string>
@@ -134,22 +123,16 @@
   <string name="error_file_delete_failed">verwijderen \'%s\' mislukt</string>
   <string name="error_file_not_found">bestand niet gevonden</string>
   <string name="error_no_secret_key_found">geen geschikte privésleutel gevonden</string>
-  <string name="error_no_known_encryption_found">geen bekende versleuteling gevonden</string>
   <string name="error_external_storage_not_ready">externe opslag niet gereed</string>
-  <string name="error_invalid_email">ongeldig e-mailadres \'%s\'</string>
   <string name="error_key_size_minimum512bit">sleutelgrootte moet minstens 512-bits zijn</string>
   <string name="error_master_key_must_not_be_el_gamal">de hoofdsleutel kan geen ElGamal-sleutel zijn</string>
   <string name="error_unknown_algorithm_choice">onbekende algoritmekeuze</string>
-  <string name="error_user_id_needs_a_name">u moet een naam invoeren</string>
-  <string name="error_user_id_needs_an_email_address">u moet een e-mailadres invoeren</string>
   <string name="error_key_needs_a_user_id">ten minste één gebruiksers-id vereist</string>
   <string name="error_main_user_id_must_not_be_empty">hoofdgebruikers-id kan niet leeg zijn</string>
   <string name="error_key_needs_master_key">ten minste een hoofdsleutel is vereist</string>
   <string name="error_no_signature_passphrase">geen wachtwoord opgegeven</string>
   <string name="error_no_signature_key">geen ondertekeningssleutel opgegeven</string>
   <string name="error_invalid_data">geen geldige versleutelingsgegevens</string>
-  <string name="error_corrupt_data">gegevens beschadigd</string>
-  <string name="error_no_symmetric_encryption_packet">kan geen pakket vinden met symmetrische versleuteling</string>
   <string name="error_wrong_passphrase">wachtwoord verekerd</string>
   <string name="error_could_not_extract_private_key">kan privésleutel niet uitpakken</string>
   <!--errors without preceeding Error:-->
@@ -163,7 +146,6 @@
   <string name="progress_importing">importeren...</string>
   <string name="progress_exporting">exporteren...</string>
   <string name="progress_building_key">sleutel maken...</string>
-  <string name="progress_preparing_master_key">hoofdsleutel voorbereiden...</string>
   <string name="progress_certifying_master_key">hoofdsleutel certificeren...</string>
   <string name="progress_building_master_key">hoofdsleutelbos maken...</string>
   <string name="progress_adding_sub_keys">sub-sleutels toevoegen...</string>
@@ -182,7 +164,6 @@
   <string name="progress_decompressing_data">gegevens decomprimeren...</string>
   <string name="progress_verifying_integrity">integriteit verifiëren...</string>
   <string name="progress_deleting_securely">\'%s\' veilig verwijderen...</string>
-  <string name="progress_querying">opvragen...</string>
   <!--action strings-->
   <string name="hint_public_keys">Publieke sleutels zoeken</string>
   <string name="hint_secret_keys">Privésleutels zoeken</string>
@@ -203,7 +184,6 @@
   <string name="help_about_version">Versie:</string>
   <!--Import-->
   <string name="import_import">Geselecteerde sleutels importeren</string>
-  <string name="import_sign_and_upload">Geselecteerde sleutels importeren, ondertekenen en uploaden</string>
   <string name="import_qr_code_wrong">QR-code ongeldig. Probeer het opnieuw</string>
   <string name="import_qr_code_finished">QR-code gescand</string>
   <!--Intent labels-->

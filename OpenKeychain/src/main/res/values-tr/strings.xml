@@ -11,7 +11,6 @@
   <string name="title_export_key">Anahtarı Ver</string>
   <string name="title_export_keys">Anahtarları Ver</string>
   <string name="title_key_not_found">Anahtar Bulunamadı</string>
-  <string name="title_unknown_signature_key">Bilinmeyen İmza Anahtarı</string>
   <string name="title_key_details">Anahtar Detayları</string>
   <string name="title_help">Yardım</string>
   <!--section-->
@@ -22,13 +21,10 @@
   <string name="section_advanced">Gelişmiş</string>
   <string name="section_upload_key">Anahtar Yükle</string>
   <!--button-->
-  <string name="btn_sign">İmzala</string>
-  <string name="btn_select_encrypt_keys">Alıcıları Seç</string>
   <string name="btn_save">Kaydet</string>
   <string name="btn_do_not_save">İptal</string>
   <string name="btn_delete">Sil</string>
   <string name="btn_okay">Tamam</string>
-  <string name="btn_search">Ara</string>
   <string name="btn_next">İleri</string>
   <string name="btn_back">Geri</string>
   <!--menu-->
@@ -36,7 +32,6 @@
   <string name="menu_help">Yardım</string>
   <string name="menu_import_from_file">Dosyadan al</string>
   <string name="menu_import_from_qr_code">QR Kodundan al</string>
-  <string name="menu_import">Al</string>
   <string name="menu_import_from_nfc">NFCden al</string>
   <string name="menu_export_key">Dosyaya ver</string>
   <string name="menu_delete_key">Anahtar sil</string>
@@ -44,7 +39,6 @@
   <string name="menu_create_key_expert">Anahtar oluştur (uzman)</string>
   <string name="menu_search">Ara</string>
   <string name="menu_copy_to_clipboard">Panoya kopyala</string>
-  <string name="menu_sign_key">Anahtarı imzala</string>
   <string name="menu_key_edit_cancel">İptal</string>
   <!--label-->
   <string name="label_sign">İmzala</string>
@@ -58,7 +52,6 @@
   <string name="label_name">İsim</string>
   <string name="label_comment">Yorum</string>
   <string name="label_email">Eposta</string>
-  <string name="unknown_status"></string>
   <string name="secret_key">Özel Anahtar:</string>
   <!--choice-->
   <string name="choice_15secs">15 saniye</string>
@@ -90,9 +83,7 @@
          no punctuation, all lowercase,
          they will be put after "error_message", e.g. "Error: file not found"-->
   <string name="error_file_not_found">dosya bulunamadı</string>
-  <string name="error_invalid_email">geçersiz eposta \'%s\'</string>
   <string name="error_key_size_minimum512bit">anahtar uzunluğu en az 512bit olmalı</string>
-  <string name="error_corrupt_data">bozuk veri</string>
   <!--errors without preceeding Error:-->
   <!--results shown after decryption/verification-->
   <!--progress dialogs, usually ending in '…'-->
