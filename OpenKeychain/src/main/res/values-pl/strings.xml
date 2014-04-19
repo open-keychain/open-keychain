@@ -220,11 +220,8 @@
     <item quantity="other">zignorowano %d niepoprawnych kluczy prywatnych. Prawdopodobnie zostały wyeksportowane przy uzyciu opcji\n --export-secret-subkeys\nUpewnij się że eksportujesz je z opcją\n --export-secret-keys\nktóra jest poprawna.</item>
   </plurals>
   <string name="key_send_success">Pomyślnie wysłano klucz na serwer</string>
-  <string name="key_certify_success">Pomyślnie podpisano klucz</string>
   <string name="list_empty">Lista jest pusta!</string>
-  <string name="nfc_successful">Pomyślnie wysłano klucz przez NFC!</string>
   <string name="key_copied_to_clipboard">Klucz został skopiowany do schowka!</string>
-  <string name="key_has_already_been_certified">Klucz został już wcześniej podpisany!</string>
   <string name="select_key_to_sign">Wybierz klucz, który zostanie użyty do podpisania!</string>
   <string name="key_too_big_for_sharing">Klucz ma za duży rozmiar by być udostępniony w ten sposób!</string>
   <!--errors
@@ -250,13 +247,10 @@
   <string name="error_could_not_extract_private_key">nie można wyodrębnić klucza prywatnego</string>
   <string name="error_expiry_must_come_after_creation">data wygaśnięcia musi być późniejsza niż data stworzenia</string>
   <!--errors without preceeding Error:-->
-  <string name="error_only_files_are_supported">Dane binarne pozbawione pliku nie są obsługiwane. To jest wspierane tylko dla akcji ACTION_ENCRYPT_STREAM_AND_RETURN.</string>
-  <string name="error_jelly_bean_needed">Potrzebujesz Androida 4.1 Jelly Bean, aby korzystać z Android NFC Beam!</string>
   <string name="error_nfc_needed">NCF jest niedostępne na twoim urządzeniu</string>
   <string name="error_nothing_import">Nie ma nic do zaimportowania!</string>
   <string name="error_keyserver_insufficient_query">Niewystarczające zapytanie do serwera</string>
   <string name="error_keyserver_query">Odpytywanie serwera zakończone niepowodzeniem</string>
-  <string name="error_keyserver_too_many_responses">Za dużo odpowiedzi</string>
   <string name="error_import_file_no_content">Plik jest pusty</string>
   <string name="error_generic_report_bug">Wystąpił błąd ogólny, proszę zgłoś go autorom OpenKeychain.</string>
   <plurals name="error_import_non_pgp_part">
@@ -416,7 +410,6 @@
   <string name="section_signer_id">Podpisujący</string>
   <string name="section_cert">Szczegóły certyfikatu</string>
   <string name="label_user_id">Identyfikator użytkownika</string>
-  <string name="unknown_uid"><![CDATA[<unknown>]]></string>
   <string name="empty_certs">Nie ma certyfikatów dla tego klucza</string>
   <string name="section_uids_to_sign">Identyfikator użytkownika do podpisu</string>
   <string name="cert_default">domyślny</string>

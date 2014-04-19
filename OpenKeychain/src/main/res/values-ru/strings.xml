@@ -215,11 +215,8 @@
     <item quantity="other">%d плохих секретных ключей проигнорировано. Возможно, вы экспортируете с параметром\n--export-secret-subkeys\nВместо этого используйте\n--export-secret-keys\n</item>
   </plurals>
   <string name="key_send_success">Ключ успешно загружен на сервер</string>
-  <string name="key_certify_success">Ключ успешно подписан</string>
   <string name="list_empty">Список пуст!</string>
-  <string name="nfc_successful">Ключ успешно передан через NFC!</string>
   <string name="key_copied_to_clipboard">Ключ скопирован в буфер обмена!</string>
-  <string name="key_has_already_been_certified">Ключ уже был подписан ранее!</string>
   <string name="select_key_to_sign">Выберите ключ, используемый для подписи!</string>
   <string name="key_too_big_for_sharing">Ключ слишком большой для этого способа передачи!</string>
   <!--errors
@@ -245,13 +242,10 @@
   <string name="error_could_not_extract_private_key">не удалось извлечь личный ключ</string>
   <string name="error_expiry_must_come_after_creation">срок годности не может быть раньше даты создания</string>
   <!--errors without preceeding Error:-->
-  <string name="error_only_files_are_supported">Прямая передача данных без использования файла в памяти устройства не поддерживается. Это возможно только для ACTION_ENCRYPT_STREAM_AND_RETURN.</string>
-  <string name="error_jelly_bean_needed">Для использования NFC Beam требуется Android 4.1+ !</string>
   <string name="error_nfc_needed">Ваше устройство не поддерживает NFC!</string>
   <string name="error_nothing_import">Нет данных для импорта!</string>
   <string name="error_keyserver_insufficient_query">Ограничение запроса сервера</string>
   <string name="error_keyserver_query">Сбой запроса сервера ключей</string>
-  <string name="error_keyserver_too_many_responses">Слишком много ответов</string>
   <string name="error_import_file_no_content">Файл пуст</string>
   <string name="error_generic_report_bug">Выявлена ошибка. Пожалуйста, сообщите о ней разработчику.</string>
   <plurals name="error_import_non_pgp_part">

@@ -114,9 +114,7 @@
   <string name="key_exported">1 sleutel succesvol geëxporteerd.</string>
   <string name="no_keys_exported">Geen sleutels geëxporteerd.</string>
   <string name="key_not_found">Kan de sleutel %08X niet vinden.</string>
-  <string name="key_certify_success">Sleutel succesvol ondertekend</string>
   <string name="list_empty">Lijst is leeg</string>
-  <string name="nfc_successful">Sleutel succesvol verzonden met Beam</string>
   <!--errors
          no punctuation, all lowercase,
          they will be put after "error_message", e.g. "Error: file not found"-->
@@ -136,8 +134,6 @@
   <string name="error_wrong_passphrase">wachtwoord verekerd</string>
   <string name="error_could_not_extract_private_key">kan privésleutel niet uitpakken</string>
   <!--errors without preceeding Error:-->
-  <string name="error_only_files_are_supported">Ruwe invoer van binaire gegevens wordt niet ondersteund, alleen bij ACTION_ENCRYPT_STREAM_AND_RETURN.</string>
-  <string name="error_jelly_bean_needed">Android 4.1 Jelly Bean of hoger is vereist voor NFC Beam.</string>
   <string name="error_nfc_needed">Uw apparaat biedt geen ondersteuning voor NFC</string>
   <string name="error_nothing_import">Niets te importeren</string>
   <!--results shown after decryption/verification-->

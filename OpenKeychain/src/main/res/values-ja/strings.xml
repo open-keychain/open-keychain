@@ -13,6 +13,8 @@
   <string name="title_key_server_preference">鍵サーバ設定</string>
   <string name="title_change_passphrase">パスフレーズの変更</string>
   <string name="title_set_passphrase">パスフレーズの設定</string>
+  <string name="title_share_with">...で共有</string>
+  <string name="title_share_file">...でファイルの共有</string>
   <string name="title_encrypt_to_file">暗号化してファイルに</string>
   <string name="title_decrypt_to_file">復号化してファイルに</string>
   <string name="title_import_keys">鍵のインポート</string>
@@ -108,6 +110,7 @@
   <string name="label_message_compression">メッセージの圧縮</string>
   <string name="label_file_compression">ファイルの圧縮</string>
   <string name="label_force_v3_signature">強制的に古いOpenPGPV3形式の署名にする</string>
+  <string name="label_keyservers">鍵サーバ</string>
   <string name="label_key_id">鍵ID</string>
   <string name="label_creation">生成</string>
   <string name="label_expiry">満了</string>
@@ -131,6 +134,12 @@
   <string name="can_sign">署名可能</string>
   <string name="expired">期限切れ</string>
   <string name="revoked">破棄</string>
+  <plurals name="n_keys">
+    <item quantity="other">%d個の鍵</item>
+  </plurals>
+  <plurals name="n_keyservers">
+    <item quantity="other">%d の鍵サーバ</item>
+  </plurals>
   <string name="secret_key">秘密鍵:</string>
   <!--choice-->
   <string name="choice_none">無し</string>
@@ -177,6 +186,7 @@
   <string name="specify_file_to_encrypt_to">どのファイルを暗号化するか決めてください。\n注意: 既存のファイルがあると上書きされます。</string>
   <string name="specify_file_to_decrypt_to">どのファイルを復号化するか決めてください。\n注意: 既存のファイルがあると上書きされます。</string>
   <string name="specify_file_to_export_to">どのファイルをエクスポートするか決めてください。\n注意: 既存のファイルがあると上書きされます。</string>
+  <string name="key_deletion_confirmation_multi">選択したすべての公開鍵を削除して本当に良いのですか?\nこれは元に戻せません!</string>
   <string name="secret_key_deletion_confirmation">秘密鍵\'%s\'を本当に削除してもよいですか?\nこれは元に戻せません!</string>
   <string name="ask_save_changed_key">あなたは鍵輪に変更を加えました、これを保存しますか?</string>
   <string name="ask_empty_id_ok">あなたは空のユーザーIDを追加しました、このまま続けますか?</string>
@@ -208,11 +218,8 @@
     <item quantity="other">%d の問題ある鍵を無視しました。 おそらく次のオプションでエクスポートしています\n --export-secret-subkeys\n代りに次のオプションでエクスポートしてください。\n --export-secret-keys</item>
   </plurals>
   <string name="key_send_success">鍵を鍵サーバにアップロードしました</string>
-  <string name="key_certify_success">鍵に署名しました。</string>
   <string name="list_empty">このリストは空です!</string>
-  <string name="nfc_successful">NFCビームで鍵を送信しました!</string>
   <string name="key_copied_to_clipboard">鍵はクリプボードにコピーされました!</string>
-  <string name="key_has_already_been_certified">鍵はすでに署名されています!</string>
   <string name="select_key_to_sign">署名に使う鍵を選択して下さい!</string>
   <string name="key_too_big_for_sharing">この共有方法では鍵が大きすぎます!</string>
   <!--errors
@@ -238,13 +245,10 @@
   <string name="error_could_not_extract_private_key">秘密鍵を取り出すことができません</string>
   <string name="error_expiry_must_come_after_creation">期限日時は生成日時より後である必要があります</string>
   <!--errors without preceeding Error:-->
-  <string name="error_only_files_are_supported">ファイルシステムに存在するファイルではないバイナリデータはサポートされません。 ACTION_ENCRYPT_STREAM_AND_RETURN でのみサポートされます。</string>
-  <string name="error_jelly_bean_needed">Android NFC Beam機能を使うにはAndroid 4.1 (Jelly Bean) が必要です!</string>
   <string name="error_nfc_needed">あなたのデバイスにはNFCが存在しません!</string>
   <string name="error_nothing_import">インポートするものがありません!</string>
   <string name="error_keyserver_insufficient_query">サーバへのクエリーが不足しています</string>
   <string name="error_keyserver_query">鍵サーバへのクエリーが失敗</string>
-  <string name="error_keyserver_too_many_responses">レスポンスが多すぎます</string>
   <string name="error_import_file_no_content">ファイルに内容がありません</string>
   <string name="error_generic_report_bug">一般エラーが発生しました、この新しいバグの情報をOpenKeychainプロジェクトに送ってください</string>
   <plurals name="error_import_non_pgp_part">
@@ -381,9 +385,12 @@
   <string name="key_list_empty_button_import">鍵のインポート。</string>
   <!--Key view-->
   <string name="key_view_action_edit">この鍵の編集</string>
+  <string name="key_view_action_encrypt">この鍵で暗号化</string>
+  <string name="key_view_action_certify">この鍵で検証</string>
   <string name="key_view_tab_main">情報</string>
   <string name="key_view_tab_certs">証明</string>
   <!--Navigation Drawer-->
+  <string name="nav_keys">鍵</string>
   <string name="nav_encrypt">署名と暗号化</string>
   <string name="nav_decrypt">復号化と検証</string>
   <string name="nav_import">鍵のインポート</string>
@@ -402,7 +409,6 @@
   <string name="section_signer_id">署名者</string>
   <string name="section_cert">証明の詳細</string>
   <string name="label_user_id">ユーザーID</string>
-  <string name="unknown_uid"><![CDATA[<unknown>]]></string>
   <string name="empty_certs">この鍵に証明がない</string>
   <string name="section_uids_to_sign">署名に使うユーザーID</string>
   <string name="cert_default">デフォルト</string>
@@ -422,4 +428,8 @@
   <string name="can_certify_not">検証不能</string>
   <string name="error_key_not_found">鍵が見当りません!</string>
   <string name="error_key_processing">鍵処理のエラー!</string>
+  <string name="no_subkey">副鍵がありません</string>
+  <string name="key_stripped">スリム化</string>
+  <string name="secret_cannot_multiple">秘密鍵は個別にしか削除できません!</string>
+  <string name="title_view_cert">証明の詳細を見る</string>
 </resources>
