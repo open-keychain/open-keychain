@@ -392,15 +392,29 @@ public class PgpKeyHelper {
         return isCertificationKey(key.getPublicKey());
     }
 
-    public static String getAlgorithmInfo(PGPPublicKey key) {
-        return getAlgorithmInfo(key.getAlgorithm(), key.getBitStrength());
+    public static String getAlgorithmInfo(Context context, PGPPublicKey key) {
+        return getAlgorithmInfo(context, key.getAlgorithm(), key.getBitStrength());
     }
 
-    public static String getAlgorithmInfo(PGPSecretKey key) {
-        return getAlgorithmInfo(key.getPublicKey());
+    public static String getAlgorithmInfo(Context context, PGPSecretKey key) {
+        return getAlgorithmInfo(context, key.getPublicKey());
     }
 
-    public static String getAlgorithmInfo(int algorithm, int keySize) {
+    /**
+     * TODO: Only used in HkpKeyServer. Get rid of this one!
+     */
+    public static String getAlgorithmInfo(int algorithm) {
+        return getAlgorithmInfo(null, algorithm, 0);
+    }
+
+    public static String getAlgorithmInfo(Context context, int algorithm) {
+        return getAlgorithmInfo(context, algorithm, 0);
+    }
+
+    /**
+     * Based on <a href="http://tools.ietf.org/html/rfc2440#section-9.1">OpenPGP Message Format</a>
+     */
+    public static String getAlgorithmInfo(Context context, int algorithm, int keySize) {
         String algorithmStr;
 
         switch (algorithm) {
@@ -421,8 +435,19 @@ public class PgpKeyHelper {
                 break;
             }
 
+            case PGPPublicKey.ECDSA:
+            case PGPPublicKey.ECDH: {
+                algorithmStr = "ECC";
+                break;
+            }
+
             default: {
-                algorithmStr = "Unknown";
+                if (context != null) {
+                    algorithmStr = context.getResources().getString(R.string.unknown_algorithm);
+                } else {
+                    // TODO
+                    algorithmStr = "unknown";
+                }
                 break;
             }
         }

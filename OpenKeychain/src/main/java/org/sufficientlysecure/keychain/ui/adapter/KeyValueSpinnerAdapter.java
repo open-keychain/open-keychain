@@ -39,7 +39,8 @@ public class KeyValueSpinnerAdapter extends ArrayAdapter<String> {
                     public int compare(Map.Entry<K, V> e1, Map.Entry<K, V> e2) {
                         return e1.getValue().compareTo(e2.getValue());
                     }
-                });
+                }
+        );
         sortedEntries.addAll(map.entrySet());
         return sortedEntries;
     }

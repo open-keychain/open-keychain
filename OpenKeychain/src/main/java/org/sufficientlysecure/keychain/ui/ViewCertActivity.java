@@ -176,7 +176,7 @@ public class ViewCertActivity extends ActionBarActivity
                 mStatus.setTextColor(getResources().getColor(R.color.black));
             }
 
-            String algorithmStr = PgpKeyHelper.getAlgorithmInfo(sig.getKeyAlgorithm(), 0);
+            String algorithmStr = PgpKeyHelper.getAlgorithmInfo(this, sig.getKeyAlgorithm(), 0);
             mAlgorithm.setText(algorithmStr);
 
             mRowReason.setVisibility(View.GONE);

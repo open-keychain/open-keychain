@@ -73,7 +73,7 @@ public class ViewKeyKeysAdapter extends CursorAdapter {
                     hasAnySecret = true;
                     break;
                 }
-            } while(newCursor.moveToNext());
+            } while (newCursor.moveToNext());
         }
 
         return super.swapCursor(newCursor);
@@ -112,8 +112,11 @@ public class ViewKeyKeysAdapter extends CursorAdapter {
         ImageView revokedKeyIcon = (ImageView) view.findViewById(R.id.ic_revokedKey);
 
         String keyIdStr = PgpKeyHelper.convertKeyIdToHex(cursor.getLong(mIndexKeyId));
-        String algorithmStr = PgpKeyHelper.getAlgorithmInfo(cursor.getInt(mIndexAlgorithm),
-                cursor.getInt(mIndexKeySize));
+        String algorithmStr = PgpKeyHelper.getAlgorithmInfo(
+                context,
+                cursor.getInt(mIndexAlgorithm),
+                cursor.getInt(mIndexKeySize)
+        );
 
         keyId.setText(keyIdStr);
         // may be set with additional "stripped" later on
@@ -173,6 +176,7 @@ public class ViewKeyKeysAdapter extends CursorAdapter {
         } else {
             keyExpiry.setVisibility(View.GONE);
         }
+
         // if key is expired or revoked, strike through text
         if (!valid) {
             keyId.setText(OtherHelper.strikeOutText(keyId.getText()));

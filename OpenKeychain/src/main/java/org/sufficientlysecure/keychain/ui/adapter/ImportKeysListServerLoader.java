@@ -101,7 +101,7 @@ public class ImportKeysListServerLoader
                 String fingerprint = query.substring(2);
                 Log.d(Constants.TAG, "fingerprint: " + fingerprint);
                 // query must return only one result!
-                if (searchResult.size() > 0) {
+                if (searchResult.size() == 1) {
                     ImportKeysListEntry uniqueEntry = searchResult.get(0);
                     /*
                      * set fingerprint explicitly after query

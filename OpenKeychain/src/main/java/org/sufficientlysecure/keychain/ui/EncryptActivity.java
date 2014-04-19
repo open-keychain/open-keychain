@@ -71,7 +71,7 @@ public class EncryptActivity extends DrawerActivity implements
     private static final int PAGER_CONTENT_MESSAGE = 0;
     private static final int PAGER_CONTENT_FILE = 1;
 
-    // model useb by message and file fragment
+    // model used by message and file fragments
     private long mEncryptionKeyIds[] = null;
     private long mSigningKeyId = Constants.key.none;
     private String mPassphrase;

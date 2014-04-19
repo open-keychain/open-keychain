@@ -17,7 +17,7 @@
 
 package org.sufficientlysecure.keychain.ui;
 
-import android.annotation.SuppressLint;
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -25,6 +25,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.nfc.NdefMessage;
 import android.nfc.NfcAdapter;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Message;
 import android.os.Messenger;
@@ -211,7 +212,8 @@ public class ImportKeysActivity extends ActionBarActivity implements ActionBar.O
             } else {
                 Log.e(Constants.TAG,
                         "IMPORT_KEY_FROM_KEYSERVER action needs to contain the 'query', 'key_id', or " +
-                                "'fingerprint' extra!");
+                                "'fingerprint' extra!"
+                );
                 return;
             }
         } else if (ACTION_IMPORT_KEY_FROM_FILE.equals(action)) {
@@ -458,9 +460,13 @@ public class ImportKeysActivity extends ActionBarActivity implements ActionBar.O
     @Override
     public void onResume() {
         super.onResume();
-        // Check to see that the Activity started due to an Android Beam
-        if (NfcAdapter.ACTION_NDEF_DISCOVERED.equals(getIntent().getAction())) {
+
+        // Check to see if the Activity started due to an Android Beam
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN
+                && NfcAdapter.ACTION_NDEF_DISCOVERED.equals(getIntent().getAction())) {
             handleActionNdefDiscovered(getIntent());
+        } else {
+            Log.e(Constants.TAG, "Android Beam not supported by Android < 4.1");
         }
     }
 
@@ -476,7 +482,7 @@ public class ImportKeysActivity extends ActionBarActivity implements ActionBar.O
     /**
      * NFC: Parses the NDEF Message from the intent and prints to the TextView
      */
-    @SuppressLint("NewApi")
+    @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
     void handleActionNdefDiscovered(Intent intent) {
         Parcelable[] rawMsgs = intent.getParcelableArrayExtra(NfcAdapter.EXTRA_NDEF_MESSAGES);
         // only one message sent during the beam

@@ -88,13 +88,11 @@ public class ShareNfcDialogFragment extends DialogFragment {
                                         Settings.ACTION_NFCSHARING_SETTINGS);
                                 startActivity(intentSettings);
                             }
-                        });
+                        }
+                );
             }
         }
-
-        // no flickering when clicking textview for Android < 4
-        // aboutTextView.setTextColor(getResources().getColor(android.R.color.black));
-
+        
         return alert.create();
     }
 }

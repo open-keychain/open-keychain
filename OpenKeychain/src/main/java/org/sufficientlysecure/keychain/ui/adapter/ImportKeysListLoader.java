@@ -165,7 +165,7 @@ public class ImportKeysListLoader
     }
 
     private void addToData(PGPKeyRing keyring) {
-        ImportKeysListEntry item = new ImportKeysListEntry(keyring);
+        ImportKeysListEntry item = new ImportKeysListEntry(getContext(), keyring);
         mData.add(item);
     }
 

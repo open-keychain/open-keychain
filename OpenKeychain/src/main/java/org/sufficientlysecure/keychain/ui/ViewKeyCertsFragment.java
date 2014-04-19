@@ -50,21 +50,23 @@ public class ViewKeyCertsFragment extends Fragment
         implements LoaderManager.LoaderCallbacks<Cursor>, AdapterView.OnItemClickListener {
 
     // These are the rows that we will retrieve.
-    static final String[] PROJECTION = new String[] {
-        Certs._ID,
-        Certs.MASTER_KEY_ID,
-        Certs.VERIFIED,
-        Certs.TYPE,
-        Certs.RANK,
-        Certs.KEY_ID_CERTIFIER,
-        Certs.USER_ID,
-        Certs.SIGNER_UID
+    static final String[] PROJECTION = new String[]{
+            Certs._ID,
+            Certs.MASTER_KEY_ID,
+            Certs.VERIFIED,
+            Certs.TYPE,
+            Certs.RANK,
+            Certs.KEY_ID_CERTIFIER,
+            Certs.USER_ID,
+            Certs.SIGNER_UID
     };
 
     // sort by our user id,
     static final String SORT_ORDER =
-              Tables.CERTS + "." + Certs.RANK + " ASC, "
-            + Certs.VERIFIED + " DESC, " + Certs.TYPE + " DESC, " + Certs.SIGNER_UID + " ASC";
+            Tables.CERTS + "." + Certs.RANK + " ASC, "
+                    + Certs.VERIFIED + " DESC, "
+                    + Certs.TYPE + " DESC, "
+                    + Certs.SIGNER_UID + " ASC";
 
     public static final String ARG_DATA_URI = "data_uri";
 
@@ -106,10 +108,6 @@ public class ViewKeyCertsFragment extends Fragment
 
         mStickyList.setEmptyView(getActivity().findViewById(R.id.empty));
 
-        // TODO this view is made visible if no data is available
-        // mStickyList.setEmptyView(getActivity().findViewById(R.id.empty));
-
-
         // Create an empty adapter we will use to display the loaded data.
         mAdapter = new CertListAdapter(getActivity(), null);
         mStickyList.setAdapter(mAdapter);
@@ -138,7 +136,7 @@ public class ViewKeyCertsFragment extends Fragment
      */
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-        if(view.getTag(R.id.tag_mki) != null) {
+        if (view.getTag(R.id.tag_mki) != null) {
             long masterKeyId = (Long) view.getTag(R.id.tag_mki);
             long rank = (Long) view.getTag(R.id.tag_rank);
             long certifierId = (Long) view.getTag(R.id.tag_certifierId);
@@ -215,17 +213,22 @@ public class ViewKeyCertsFragment extends Fragment
 
             String signerKeyId = PgpKeyHelper.convertKeyIdToHex(cursor.getLong(mIndexSignerKeyId));
             String signerUserId = cursor.getString(mIndexSignerUserId);
-            switch(cursor.getInt(mIndexType)) {
+            switch (cursor.getInt(mIndexType)) {
                 case PGPSignature.DEFAULT_CERTIFICATION: // 0x10
-                    wSignStatus.setText(R.string.cert_default); break;
+                    wSignStatus.setText(R.string.cert_default);
+                    break;
                 case PGPSignature.NO_CERTIFICATION: // 0x11
-                    wSignStatus.setText(R.string.cert_none); break;
+                    wSignStatus.setText(R.string.cert_none);
+                    break;
                 case PGPSignature.CASUAL_CERTIFICATION: // 0x12
-                    wSignStatus.setText(R.string.cert_casual); break;
+                    wSignStatus.setText(R.string.cert_casual);
+                    break;
                 case PGPSignature.POSITIVE_CERTIFICATION: // 0x13
-                    wSignStatus.setText(R.string.cert_positive); break;
+                    wSignStatus.setText(R.string.cert_positive);
+                    break;
                 case PGPSignature.CERTIFICATION_REVOCATION: // 0x30
-                    wSignStatus.setText(R.string.cert_revoke); break;
+                    wSignStatus.setText(R.string.cert_revoke);
+                    break;
             }
 
             wSignerUserId.setText(signerUserId);

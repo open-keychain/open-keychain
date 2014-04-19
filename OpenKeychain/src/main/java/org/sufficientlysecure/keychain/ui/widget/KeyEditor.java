@@ -216,7 +216,7 @@ public class KeyEditor extends LinearLayout implements Editor, OnClickListener {
             mDeleteButton.setVisibility(View.INVISIBLE);
         }
 
-        mAlgorithm.setText(PgpKeyHelper.getAlgorithmInfo(key));
+        mAlgorithm.setText(PgpKeyHelper.getAlgorithmInfo(getContext(), key));
         String keyIdStr = PgpKeyHelper.convertKeyIdToHex(key.getKeyID());
         mKeyId.setText(keyIdStr);
 

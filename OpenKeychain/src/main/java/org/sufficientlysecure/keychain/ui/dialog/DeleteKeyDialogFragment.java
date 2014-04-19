@@ -68,7 +68,6 @@ public class DeleteKeyDialogFragment extends DialogFragment {
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-
         final FragmentActivity activity = getActivity();
         mMessenger = getArguments().getParcelable(ARG_MESSENGER);
 

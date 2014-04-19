@@ -17,7 +17,7 @@
 
 package org.sufficientlysecure.keychain.ui.adapter;
 
-import android.annotation.SuppressLint;
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
@@ -61,14 +61,14 @@ public class ImportKeysAdapter extends ArrayAdapter<ImportKeysListEntry> {
         mInflater = (LayoutInflater) activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
 
-    @SuppressLint("NewApi")
+    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     public void setData(List<ImportKeysListEntry> data) {
         clear();
         if (data != null) {
             this.mData = data;
 
             // add data to extended ArrayAdapter
-            if (Build.VERSION.SDK_INT >= 11) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
                 addAll(data);
             } else {
                 for (ImportKeysListEntry entry : data) {

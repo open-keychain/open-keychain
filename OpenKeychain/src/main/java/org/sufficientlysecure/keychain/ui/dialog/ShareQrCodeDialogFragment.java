@@ -92,7 +92,7 @@ public class ShareQrCodeDialogFragment extends DialogFragment {
         mText = (TextView) view.findViewById(R.id.share_qr_code_dialog_text);
 
         ProviderHelper providerHelper = new ProviderHelper(getActivity());
-        String content = null;
+        String content;
         try {
             if (mFingerprintOnly) {
                 alert.setPositiveButton(R.string.btn_okay, null);

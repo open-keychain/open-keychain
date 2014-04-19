@@ -140,6 +140,8 @@
     <string name="no_key">&lt;no key&gt;</string>
     <string name="can_encrypt">can encrypt</string>
     <string name="can_sign">can sign</string>
+    <string name="can_certify">can certify</string>
+    <string name="can_certify_not">cannot certify</string>
     <string name="expired">expired</string>
     <string name="revoked">revoked</string>
 
@@ -368,6 +370,7 @@
     <!-- Help -->
     <string name="help_tab_start">Start</string>
     <string name="help_tab_faq">FAQ</string>
+    <string name="help_tab_wot">Web of Trust</string>
     <string name="help_tab_nfc_beam">NFC Beam</string>
     <string name="help_tab_changelog">Changelog</string>
     <string name="help_tab_about">About</string>
@@ -468,6 +471,17 @@
     <string name="encrypt_content_edit_text_hint">Write message here to encrypt and/or sign…</string>
     <string name="decrypt_content_edit_text_hint">Enter ciphertext here to decrypt and/or verify…</string>
 
+    <!-- certifications -->
+    <string name="cert_default">default</string>
+    <string name="cert_none">none</string>
+    <string name="cert_casual">casual</string>
+    <string name="cert_positive">positive</string>
+    <string name="cert_revoke">revoke</string>
+    <string name="cert_verify_ok">ok</string>
+    <string name="cert_verify_failed">failed!</string>
+    <string name="cert_verify_error">error!</string>
+    <string name="cert_verify_unavailable">key unavailable</string>
+
     <!-- unsorted -->
     <string name="section_signer_id">Signer</string>
     <string name="section_cert">Certificate Details</string>
@@ -475,26 +489,15 @@
     <string name="unknown_uid">&lt;unknown&gt;</string>
     <string name="empty_certs">No certificates for this key</string>
     <string name="section_uids_to_sign">User IDs to sign</string>
-    <string name="cert_default">default</string>
-    <string name="cert_none">none</string>
-    <string name="cert_casual">casual</string>
-    <string name="cert_positive">positive</string>
-    <string name="cert_revoke">revoke</string>
-    <string name="help_tab_wot">Web of Trust</string>
-    <string name="cert_verify_ok">ok</string>
-    <string name="cert_verify_failed">failed!</string>
-    <string name="cert_verify_error">error!</string>
-    <string name="cert_verify_unavailable">key unavailable</string>
     <string name="label_revocation">Revocation Reason</string>
     <string name="label_verify_status">Verification Status</string>
     <string name="label_cert_type">Type</string>
-    <string name="can_certify">can certify</string>
-    <string name="can_certify_not">cannot certify</string>
     <string name="error_key_not_found">Key not found!</string>
     <string name="error_key_processing">Error processing key!</string>
     <string name="no_subkey">subkey unavailable</string>
     <string name="key_stripped">stripped</string>
     <string name="secret_cannot_multiple">Secret keys can only be deleted individually!</string>
     <string name="title_view_cert">View Certificate Details</string>
+    <string name="unknown_algorithm">unknown</string>
 
 </resources>
