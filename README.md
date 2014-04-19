@@ -74,16 +74,14 @@ More technical information and examples about these APIs can be found in the pro
 
 ### ZXing Barcode Scanner Android Integration
 
-Classes can be found under "libraries/zxing-android-integration/".
+Classes can be found under https://github.com/open-keychain/zxing-android-integration.
 
-1. Checkout their SVN (see http://code.google.com/p/zxing/source/checkout)
-2. Copy all classes from their android-integration folder to our library folder
+1. Copy all classes from https://github.com/zxing/zxing/tree/master/android-integration folder to our git repository.
 
-### ZXing
+### ZXing QR-Code Classes
 
-Classes can be found under "libraries/zxing/".
-ZXing classes were extracted from the ZXing library (https://github.com/zxing/zxing).
-Only classes related to QR Code generation are utilized.
+Classes can be found under https://github.com/open-keychain/zxing-qr-code.
+All QR Code related classes were extracted from the ZXing library (https://github.com/zxing/zxing).
 
 ### Bouncy Castle
 
@@ -113,7 +111,7 @@ see
 
 We try to make our builds as [reproducible/deterministic](https://blog.torproject.org/blog/deterministic-builds-part-one-cyberwar-and-global-compromise) as possible.  
 When changing build files or dependencies, respect the following requirements:
-* No precompiled libraries. All libraries should be provided as sourcecode in "libraries" folder (you never know what pre-compiled jar files really contain! The library files are currently directly commited, because git submodules/git subtree are too much of a hassle for new contributors. This could change in the future!)
+* No precompiled libraries (you never know what pre-compiled jar files really contain!). All libraries should be forked into the open-keychain Github project and then provided as git submodules in the "extern" folder.
 * No dependencies from Maven (also a soft requirement for inclusion in [F-Droid](https://f-droid.org))
 * Always use a fixed Android Gradle plugin version not a dynamic one, e.g. ``0.7.3`` instead of ``0.7.+`` (allows offline builds without lookups for new versions, also some minor Android plugin versions had serious issues, i.e. [0.7.2 and 0.8.1](http://tools.android.com/tech-docs/new-build-system))
 * Commit the corresponding [Gradle wrapper](http://www.gradle.org/docs/current/userguide/gradle_wrapper.html) to the repository (allows easy building for new contributors without the need to install the required Gradle version using a package manager)
@@ -124,8 +122,8 @@ When changing build files or dependencies, respect the following requirements:
     * OpenKeychain-API/build.gradle
     * OpenKeychain-API/example-app/build.gradle
     * OpenKeychain-API/libraries/keychain-api-library/build.gradle
-  * run ./gradlew wrapper twice to update gradle and download the new jar file
-  * commit the new jar and property files
+  * run ./gradlew wrapper twice to update gradle and download the new gradle jar file
+  * commit the new gradle jar and property files
 
 ### Translations
 
