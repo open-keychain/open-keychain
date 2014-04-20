@@ -404,8 +404,9 @@ public class ProviderHelper {
             values.put(Keys.HAS_SECRET, 1);
             // then, mark exactly the keys we have available
             for (PGPSecretKey sub : new IterableIterator<PGPSecretKey>(keyRing.getSecretKeys())) {
+                S2K s2k = sub.getS2K();
                 // Set to 1, except if the encryption type is GNU_DUMMY_S2K
-                if(sub.getS2K().getType() != S2K.GNU_DUMMY_S2K) {
+                if(s2k == null || s2k.getType() != S2K.GNU_DUMMY_S2K) {
                     mContentResolver.update(uri, values, Keys.KEY_ID + " = ?", new String[]{
                             Long.toString(sub.getKeyID())
                     });
