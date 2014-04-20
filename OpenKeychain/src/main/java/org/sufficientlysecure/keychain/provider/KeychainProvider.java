@@ -691,7 +691,7 @@ public class KeychainProvider extends ContentProvider {
     public int update(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
         Log.v(Constants.TAG, "update(uri=" + uri + ", values=" + values.toString() + ")");
 
-        final SQLiteDatabase db = mKeychainDatabase.getWritableDatabase();
+        final SQLiteDatabase db = getDb().getWritableDatabase();
 
         int count = 0;
         try {
