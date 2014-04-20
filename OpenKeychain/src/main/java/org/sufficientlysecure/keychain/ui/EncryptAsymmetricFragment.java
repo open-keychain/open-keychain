@@ -247,6 +247,7 @@ public class EncryptAsymmetricFragment extends Fragment {
 
     private void selectSecretKey() {
         Intent intent = new Intent(getActivity(), SelectSecretKeyActivity.class);
+        intent.putExtra(SelectSecretKeyActivity.EXTRA_FILTER_SIGN, true);
         startActivityForResult(intent, REQUEST_CODE_SECRET_KEYS);
     }
 
