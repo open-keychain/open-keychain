@@ -43,7 +43,7 @@ import java.io.IOException;
 
 public class KeychainDatabase extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "openkeychain.db";
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 2;
     static Boolean apgHack = false;
 
     public interface Tables {
@@ -192,8 +192,14 @@ public class KeychainDatabase extends SQLiteOpenHelper {
     }
 
     @Override
-    public void onUpgrade(SQLiteDatabase db, int old, int nu) {
-        // don't care (this is version 1)
+    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        if (oldVersion == 1) {
+            // add has_secret for all who are upgrading from a beta version
+            try {
+                db.execSQL("ALTER TABLE keys ADD COLUMN has_secret BOOLEAN");
+            } catch (Exception e) {
+            }
+        }
     }
 
     /** This method tries to import data from a provided database.
