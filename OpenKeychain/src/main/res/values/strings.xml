@@ -499,5 +499,6 @@
     <string name="secret_cannot_multiple">Secret keys can only be deleted individually!</string>
     <string name="title_view_cert">View Certificate Details</string>
     <string name="unknown_algorithm">unknown</string>
+    <string name="can_sign_not">cannot sign</string>
 
 </resources>
