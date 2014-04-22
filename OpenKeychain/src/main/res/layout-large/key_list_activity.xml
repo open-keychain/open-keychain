@@ -4,14 +4,14 @@
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-    <android.support.v4.widget.DrawerLayout
+    <android.support.v4.widget.FixedDrawerLayout
         android:id="@+id/drawer_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
         <include layout="@layout/drawer_list"/>
 
-    </android.support.v4.widget.DrawerLayout>
+    </android.support.v4.widget.FixedDrawerLayout>
 
     <include layout="@layout/key_list_content"/>
 

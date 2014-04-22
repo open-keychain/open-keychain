@@ -4,7 +4,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="horizontal" >
-    <android.support.v4.widget.DrawerLayout
+    <android.support.v4.widget.FixedDrawerLayout
             android:id="@+id/drawer_layout"
 
             android:layout_width="match_parent"
@@ -13,7 +13,7 @@
 
         <include layout="@layout/drawer_list"/>
 
-    </android.support.v4.widget.DrawerLayout>
+    </android.support.v4.widget.FixedDrawerLayout>
 
     <include layout="@layout/api_apps_list_content"/>
 

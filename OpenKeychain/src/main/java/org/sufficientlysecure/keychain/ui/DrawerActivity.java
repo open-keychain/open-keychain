@@ -26,6 +26,7 @@ import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v4.widget.FixedDrawerLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -43,7 +44,7 @@ import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 
 public class DrawerActivity extends ActionBarActivity {
-    private DrawerLayout mDrawerLayout;
+    private FixedDrawerLayout mDrawerLayout;
     private ListView mDrawerList;
     private ActionBarDrawerToggle mDrawerToggle;
 
@@ -58,7 +59,7 @@ public class DrawerActivity extends ActionBarActivity {
 
     protected void setupDrawerNavigation(Bundle savedInstanceState) {
         mDrawerTitle = getString(R.string.app_name);
-        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        mDrawerLayout = (FixedDrawerLayout) findViewById(R.id.drawer_layout);
         mDrawerList = (ListView) findViewById(R.id.left_drawer);
         ViewGroup viewGroup = (ViewGroup) findViewById(R.id.content_frame);
         int leftMarginLoaded = ((ViewGroup.MarginLayoutParams) viewGroup.getLayoutParams()).leftMargin;
