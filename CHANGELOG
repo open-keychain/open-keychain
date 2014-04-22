@@ -1,3 +1,6 @@
+2.6.1
+* some fixes for regression bugs
+
 2.6
 * key certifications (thanks to Vincent Breitmoser)
 * support for GnuPG partial secret keys (thanks to Vincent Breitmoser)
