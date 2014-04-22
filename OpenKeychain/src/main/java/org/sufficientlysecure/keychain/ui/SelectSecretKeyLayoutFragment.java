@@ -45,7 +45,7 @@ public class SelectSecretKeyLayoutFragment extends Fragment implements LoaderMan
     private TextView mKeyMasterKeyIdHex;
     private TextView mNoKeySelected;
     private BootstrapButton mSelectKeyButton;
-    private Boolean mFilterCertify;
+    private Boolean mFilterCertify, mFilterSign;
 
     private Uri mReceivedUri = null;
 
@@ -72,8 +72,12 @@ public class SelectSecretKeyLayoutFragment extends Fragment implements LoaderMan
         mCallback = callback;
     }
 
-    public void setFilterCertify(Boolean filterCertify) {
+    public void setFilterCertify(boolean filterCertify) {
         mFilterCertify = filterCertify;
+    }
+
+    public void setFilterSign(boolean filterSign) {
+        mFilterSign = filterSign;
     }
 
     public void setNoKeySelected() {
@@ -115,6 +119,7 @@ public class SelectSecretKeyLayoutFragment extends Fragment implements LoaderMan
         mSelectKeyButton = (BootstrapButton) view
                 .findViewById(R.id.select_secret_key_select_key_button);
         mFilterCertify = false;
+        mFilterSign = false;
         mSelectKeyButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -135,6 +140,7 @@ public class SelectSecretKeyLayoutFragment extends Fragment implements LoaderMan
     private void startSelectKeyActivity() {
         Intent intent = new Intent(getActivity(), SelectSecretKeyActivity.class);
         intent.putExtra(SelectSecretKeyActivity.EXTRA_FILTER_CERTIFY, mFilterCertify);
+        intent.putExtra(SelectSecretKeyActivity.EXTRA_FILTER_SIGN, mFilterSign);
         startActivityForResult(intent, REQUEST_CODE_SELECT_KEY);
     }
 
