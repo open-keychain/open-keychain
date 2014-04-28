@@ -408,16 +408,26 @@ public class OpenPgpService extends RemoteService {
 
     private Intent getKeyImpl(Intent data) {
         try {
-            long keyId = data.getLongExtra(OpenPgpApi.EXTRA_KEY_ID, 0);
+            long masterKeyId = data.getLongExtra(OpenPgpApi.EXTRA_KEY_ID, 0);
 
-            if (mProviderHelper.getPGPPublicKeyRingWithKeyId(keyId) == null) {
+            try {
+                // try to find key, throws NotFoundException if not in db!
+                mProviderHelper.getPGPPublicKeyRing(masterKeyId);
+
+                Intent result = new Intent();
+                result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_SUCCESS);
+
+                // TODO: also return PendingIntent that opens the key view activity
+
+                return result;
+            } catch (ProviderHelper.NotFoundException e) {
                 Intent result = new Intent();
 
                 // If keys are not in db we return an additional PendingIntent
                 // to retrieve the missing key
                 Intent intent = new Intent(getBaseContext(), ImportKeysActivity.class);
                 intent.setAction(ImportKeysActivity.ACTION_IMPORT_KEY_FROM_KEYSERVER_AND_RETURN);
-                intent.putExtra(ImportKeysActivity.EXTRA_KEY_ID, keyId);
+                intent.putExtra(ImportKeysActivity.EXTRA_KEY_ID, masterKeyId);
                 intent.putExtra(ImportKeysActivity.EXTRA_PENDING_INTENT_DATA, data);
 
                 PendingIntent pi = PendingIntent.getActivity(getBaseContext(), 0,
@@ -426,13 +436,6 @@ public class OpenPgpService extends RemoteService {
 
                 result.putExtra(OpenPgpApi.RESULT_INTENT, pi);
                 result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_USER_INTERACTION_REQUIRED);
-                return result;
-            } else {
-                Intent result = new Intent();
-                result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_SUCCESS);
-
-                // TODO: also return PendingIntent that opens the key view activity
-
                 return result;
             }
         } catch (Exception e) {
