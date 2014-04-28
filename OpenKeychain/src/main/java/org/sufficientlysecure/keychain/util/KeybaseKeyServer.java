@@ -111,8 +111,8 @@ public class KeybaseKeyServer extends KeyServer {
         mKeyCache.put(keybaseID, JWalk.getString(match,"them", "public_keys", "primary", "bundle"));
         String name = JWalk.getString(match, "them", "profile", "full_name");
         ArrayList<String> userIds = new ArrayList<String>();
+        name = "keybase.io/" + keybaseID + " " + name;
         userIds.add(name);
-        userIds.add("keybase.io/" + keybaseID); // TODO: Maybe should be keybaseID@keybase.io ?
         entry.setUserIds(userIds);
         entry.setPrimaryUserId(name);
         return entry;

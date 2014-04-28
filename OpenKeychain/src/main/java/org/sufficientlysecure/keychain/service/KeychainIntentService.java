@@ -56,7 +56,6 @@ import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.ui.adapter.ImportKeysListEntry;
 import org.sufficientlysecure.keychain.util.HkpKeyServer;
 import org.sufficientlysecure.keychain.util.InputData;
-import org.sufficientlysecure.keychain.util.KeyServer;
 import org.sufficientlysecure.keychain.util.KeybaseKeyServer;
 import org.sufficientlysecure.keychain.util.KeychainServiceListener;
 import org.sufficientlysecure.keychain.util.Log;
@@ -763,7 +762,6 @@ public class KeychainIntentService extends IntentService
                         // get first object in block
                         Object obj;
                         if ((obj = objectFactory.nextObject()) != null) {
-                            Log.d(Constants.TAG, "Found class: " + obj.getClass());
 
                             if (obj instanceof PGPKeyRing) {
                                 downloadedKey = (PGPKeyRing) obj;
@@ -820,7 +818,6 @@ public class KeychainIntentService extends IntentService
                         // get first object in block
                         Object obj;
                         if ((obj = objectFactory.nextObject()) != null) {
-                            Log.d(Constants.TAG, "Found class: " + obj.getClass());
 
                             if (obj instanceof PGPKeyRing) {
                                 downloadedKey = (PGPKeyRing) obj;
