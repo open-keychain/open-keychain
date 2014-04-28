@@ -34,11 +34,13 @@ import org.openintents.openpgp.OpenPgpError;
 import org.openintents.openpgp.OpenPgpSignatureResult;
 import org.openintents.openpgp.util.OpenPgpApi;
 import org.openintents.openpgp.util.OpenPgpServiceConnection;
+import org.openintents.openpgp.util.OpenPgpUtils;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.util.Arrays;
 
 public class OpenPgpProviderActivity extends Activity {
     private EditText mMessage;
@@ -49,6 +51,10 @@ public class OpenPgpProviderActivity extends Activity {
     private Button mSignAndEncrypt;
     private Button mDecryptAndVerify;
     private EditText mAccount;
+    private EditText mGetKeyEdit;
+    private EditText mGetKeyIdsEdit;
+    private Button mGetKey;
+    private Button mGetKeyIds;
 
     private OpenPgpServiceConnection mServiceConnection;
 
@@ -56,6 +62,8 @@ public class OpenPgpProviderActivity extends Activity {
     public static final int REQUEST_CODE_ENCRYPT = 9911;
     public static final int REQUEST_CODE_SIGN_AND_ENCRYPT = 9912;
     public static final int REQUEST_CODE_DECRYPT_AND_VERIFY = 9913;
+    public static final int REQUEST_CODE_GET_KEY = 9914;
+    public static final int REQUEST_CODE_GET_KEY_IDS = 9915;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -70,6 +78,10 @@ public class OpenPgpProviderActivity extends Activity {
         mSignAndEncrypt = (Button) findViewById(R.id.crypto_provider_demo_sign_and_encrypt);
         mDecryptAndVerify = (Button) findViewById(R.id.crypto_provider_demo_decrypt_and_verify);
         mAccount = (EditText) findViewById(R.id.crypto_provider_demo_account);
+        mGetKeyEdit = (EditText) findViewById(R.id.crypto_provider_demo_get_key_edit);
+        mGetKeyIdsEdit = (EditText) findViewById(R.id.crypto_provider_demo_get_key_ids_edit);
+        mGetKey = (Button) findViewById(R.id.crypto_provider_demo_get_key);
+        mGetKeyIds = (Button) findViewById(R.id.crypto_provider_demo_get_key_ids);
 
         mSign.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -93,6 +105,18 @@ public class OpenPgpProviderActivity extends Activity {
             @Override
             public void onClick(View v) {
                 decryptAndVerify(new Intent());
+            }
+        });
+        mGetKey.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getKey(new Intent());
+            }
+        });
+        mGetKeyIds.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getKeyIds(new Intent());
             }
         });
 
@@ -123,14 +147,14 @@ public class OpenPgpProviderActivity extends Activity {
         });
     }
 
-    private void handleSignature(final OpenPgpSignatureResult sigResult) {
+    private void showToast(final String message) {
         runOnUiThread(new Runnable() {
 
             @Override
             public void run() {
                 Toast.makeText(OpenPgpProviderActivity.this,
-                        sigResult.toString(),
-                        Toast.LENGTH_LONG).show();
+                        message,
+                        Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -173,27 +197,46 @@ public class OpenPgpProviderActivity extends Activity {
         public void onReturn(Intent result) {
             switch (result.getIntExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_ERROR)) {
                 case OpenPgpApi.RESULT_CODE_SUCCESS: {
-                    try {
-                        Log.d(OpenPgpApi.TAG, "result: " + os.toByteArray().length
-                                + " str=" + os.toString("UTF-8"));
+                    showToast("RESULT_CODE_SUCCESS");
 
-                        if (returnToCiphertextField) {
-                            mCiphertext.setText(os.toString("UTF-8"));
-                        } else {
-                            mMessage.setText(os.toString("UTF-8"));
+                    // encrypt/decrypt/sign/verify
+                    if (os != null) {
+                        try {
+                            Log.d(OpenPgpApi.TAG, "result: " + os.toByteArray().length
+                                    + " str=" + os.toString("UTF-8"));
+
+                            if (returnToCiphertextField) {
+                                mCiphertext.setText(os.toString("UTF-8"));
+                            } else {
+                                mMessage.setText(os.toString("UTF-8"));
+                            }
+                        } catch (UnsupportedEncodingException e) {
+                            Log.e(Constants.TAG, "UnsupportedEncodingException", e);
                         }
-                    } catch (UnsupportedEncodingException e) {
-                        Log.e(Constants.TAG, "UnsupportedEncodingException", e);
                     }
 
+                    // verify
                     if (result.hasExtra(OpenPgpApi.RESULT_SIGNATURE)) {
                         OpenPgpSignatureResult sigResult
                                 = result.getParcelableExtra(OpenPgpApi.RESULT_SIGNATURE);
-                        handleSignature(sigResult);
+                        showToast(sigResult.toString());
+                    }
+
+                    // get key ids
+                    if (result.hasExtra(OpenPgpApi.RESULT_KEY_IDS)) {
+                        long[] keyIds = result.getLongArrayExtra(OpenPgpApi.RESULT_KEY_IDS);
+                        String out = "keyIds: ";
+                        for (int i = 0; i < keyIds.length; i++) {
+                            out += OpenPgpUtils.convertKeyIdToHex(keyIds[i]) + ", ";
+                        }
+
+                        showToast(out);
                     }
                     break;
                 }
                 case OpenPgpApi.RESULT_CODE_USER_INTERACTION_REQUIRED: {
+                    showToast("RESULT_CODE_USER_INTERACTION_REQUIRED");
+
                     PendingIntent pi = result.getParcelableExtra(OpenPgpApi.RESULT_INTENT);
                     try {
                         OpenPgpProviderActivity.this.startIntentSenderForResult(pi.getIntentSender(),
@@ -204,6 +247,8 @@ public class OpenPgpProviderActivity extends Activity {
                     break;
                 }
                 case OpenPgpApi.RESULT_CODE_ERROR: {
+                    showToast("RESULT_CODE_ERROR");
+
                     OpenPgpError error = result.getParcelableExtra(OpenPgpApi.RESULT_ERROR);
                     handleError(error);
                     break;
@@ -262,6 +307,24 @@ public class OpenPgpProviderActivity extends Activity {
         api.executeApiAsync(data, is, os, new MyCallback(false, os, REQUEST_CODE_DECRYPT_AND_VERIFY));
     }
 
+    public void getKey(Intent data) {
+        data.setAction(OpenPgpApi.ACTION_GET_KEY);
+        data.putExtra(OpenPgpApi.EXTRA_ACCOUNT_NAME, mAccount.getText().toString());
+        data.putExtra(OpenPgpApi.EXTRA_KEY_ID, Long.decode(mGetKeyEdit.getText().toString()));
+
+        OpenPgpApi api = new OpenPgpApi(this, mServiceConnection.getService());
+        api.executeApiAsync(data, null, null, new MyCallback(false, null, REQUEST_CODE_GET_KEY));
+    }
+
+    public void getKeyIds(Intent data) {
+        data.setAction(OpenPgpApi.ACTION_GET_KEY_IDS);
+        data.putExtra(OpenPgpApi.EXTRA_ACCOUNT_NAME, mAccount.getText().toString());
+        data.putExtra(OpenPgpApi.EXTRA_USER_IDS, mGetKeyIdsEdit.getText().toString().split(","));
+
+        OpenPgpApi api = new OpenPgpApi(this, mServiceConnection.getService());
+        api.executeApiAsync(data, null, null, new MyCallback(false, null, REQUEST_CODE_GET_KEY_IDS));
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -290,6 +353,14 @@ public class OpenPgpProviderActivity extends Activity {
                 }
                 case REQUEST_CODE_DECRYPT_AND_VERIFY: {
                     decryptAndVerify(data);
+                    break;
+                }
+                case REQUEST_CODE_GET_KEY: {
+                    getKey(data);
+                    break;
+                }
+                case REQUEST_CODE_GET_KEY_IDS: {
+                    getKeyIds(data);
                     break;
                 }
             }

@@ -125,7 +125,7 @@ public class ViewKeyMainFragment extends Fragment implements
             return;
         }
 
-        getActivity().setProgressBarIndeterminateVisibility(Boolean.TRUE);
+        getActivity().setProgressBarIndeterminateVisibility(true);
         mContainer.setVisibility(View.GONE);
 
         mDataUri = dataUri;
@@ -314,7 +314,7 @@ public class ViewKeyMainFragment extends Fragment implements
                 mKeysAdapter.swapCursor(data);
                 break;
         }
-        getActivity().setProgressBarIndeterminateVisibility(Boolean.FALSE);
+        getActivity().setProgressBarIndeterminateVisibility(false);
         mContainer.setVisibility(View.VISIBLE);
     }
 

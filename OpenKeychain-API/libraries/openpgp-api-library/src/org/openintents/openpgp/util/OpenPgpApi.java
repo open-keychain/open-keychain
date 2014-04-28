@@ -23,8 +23,10 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.ParcelFileDescriptor;
 import android.util.Log;
+
 import org.openintents.openpgp.IOpenPgpService;
 import org.openintents.openpgp.OpenPgpError;
+
 import java.io.InputStream;
 import java.io.OutputStream;
 
@@ -34,7 +36,7 @@ public class OpenPgpApi {
 
     public static final int API_VERSION = 3;
     public static final String SERVICE_INTENT = "org.openintents.openpgp.IOpenPgpService";
-    
+
     /**
      * General extras
      * --------------
@@ -50,7 +52,7 @@ public class OpenPgpApi {
 
     /**
      * Sign only
-     *
+     * <p/>
      * optional extras:
      * boolean       EXTRA_REQUEST_ASCII_ARMOR   (request ascii armor for ouput)
      * String        EXTRA_PASSPHRASE            (key passphrase)
@@ -59,12 +61,12 @@ public class OpenPgpApi {
 
     /**
      * Encrypt
-     *
+     * <p/>
      * required extras:
      * String[]      EXTRA_USER_IDS              (=emails of recipients, if more than one key has a user_id, a PendingIntent is returned via RESULT_INTENT)
      * or
      * long[]        EXTRA_KEY_IDS
-     *
+     * <p/>
      * optional extras:
      * boolean       EXTRA_REQUEST_ASCII_ARMOR   (request ascii armor for ouput)
      * String        EXTRA_PASSPHRASE            (key passphrase)
@@ -73,12 +75,12 @@ public class OpenPgpApi {
 
     /**
      * Sign and encrypt
-     *
+     * <p/>
      * required extras:
      * String[]      EXTRA_USER_IDS              (=emails of recipients, if more than one key has a user_id, a PendingIntent is returned via RESULT_INTENT)
      * or
      * long[]        EXTRA_KEY_IDS
-     *
+     * <p/>
      * optional extras:
      * boolean       EXTRA_REQUEST_ASCII_ARMOR   (request ascii armor for ouput)
      * String        EXTRA_PASSPHRASE            (key passphrase)
@@ -88,13 +90,13 @@ public class OpenPgpApi {
     /**
      * Decrypts and verifies given input stream. This methods handles encrypted-only, signed-and-encrypted,
      * and also signed-only input.
-     *
+     * <p/>
      * If OpenPgpSignatureResult.getStatus() == OpenPgpSignatureResult.SIGNATURE_UNKNOWN_PUB_KEY
      * in addition a PendingIntent is returned via RESULT_INTENT to download missing keys.
-     *
+     * <p/>
      * optional extras:
      * boolean       EXTRA_REQUEST_ASCII_ARMOR   (request ascii armor for ouput)
-     *
+     * <p/>
      * returned extras:
      * OpenPgpSignatureResult   RESULT_SIGNATURE
      */
@@ -102,22 +104,22 @@ public class OpenPgpApi {
 
     /**
      * Get key ids based on given user ids (=emails)
-     *
+     * <p/>
      * required extras:
      * String[]      EXTRA_USER_IDS
-     *
+     * <p/>
      * returned extras:
-     * long[]        EXTRA_KEY_IDS
+     * long[]        RESULT_KEY_IDS
      */
     public static final String ACTION_GET_KEY_IDS = "org.openintents.openpgp.action.GET_KEY_IDS";
 
     /**
      * This action returns RESULT_CODE_SUCCESS if the OpenPGP Provider already has the key
      * corresponding to the given key id in its database.
-     *
+     * <p/>
      * It returns RESULT_CODE_USER_INTERACTION_REQUIRED if the Provider does not have the key.
      * The PendingIntent from RESULT_INTENT can be used to retrieve those from a keyserver.
-     *
+     * <p/>
      * required extras:
      * long        EXTRA_KEY_ID
      */
@@ -141,6 +143,7 @@ public class OpenPgpApi {
 
     // GET_KEY
     public static final String EXTRA_KEY_ID = "key_id";
+    public static final String RESULT_KEY_IDS = "key_ids";
 
     /* Service Intent returns */
     public static final String RESULT_CODE = "result_code";
@@ -212,44 +215,50 @@ public class OpenPgpApi {
         try {
             data.putExtra(EXTRA_API_VERSION, OpenPgpApi.API_VERSION);
 
-            Intent result = null;
+            Intent result;
 
-            if (ACTION_GET_KEY_IDS.equals(data.getAction())) {
-                result = mService.execute(data, null, null);
-                return result;
-            } else {
-                // pipe the input and output
-                ParcelFileDescriptor input = ParcelFileDescriptorUtil.pipeFrom(is,
+            // pipe the input and output
+            ParcelFileDescriptor input = null;
+            if (is != null) {
+                input = ParcelFileDescriptorUtil.pipeFrom(is,
                         new ParcelFileDescriptorUtil.IThreadListener() {
 
                             @Override
                             public void onThreadFinished(Thread thread) {
                                 //Log.d(OpenPgpApi.TAG, "Copy to service finished");
                             }
-                        });
-                ParcelFileDescriptor output = ParcelFileDescriptorUtil.pipeTo(os,
+                        }
+                );
+            }
+            ParcelFileDescriptor output = null;
+            if (os != null) {
+                output = ParcelFileDescriptorUtil.pipeTo(os,
                         new ParcelFileDescriptorUtil.IThreadListener() {
 
                             @Override
                             public void onThreadFinished(Thread thread) {
                                 //Log.d(OpenPgpApi.TAG, "Service finished writing!");
                             }
-                        });
-
-                // blocks until result is ready
-                result = mService.execute(data, input, output);
-                // close() is required to halt the TransferThread
-                output.close();
-
-                // set class loader to current context to allow unparcelling
-                // of OpenPgpError and OpenPgpSignatureResult
-                // http://stackoverflow.com/a/3806769
-                result.setExtrasClassLoader(mContext.getClassLoader());
-
-                return result;
+                        }
+                );
             }
+
+            // blocks until result is ready
+            result = mService.execute(data, input, output);
+            // close() is required to halt the TransferThread
+            if (output != null) {
+                output.close();
+            }
+            // TODO: close input?
+
+            // set class loader to current context to allow unparcelling
+            // of OpenPgpError and OpenPgpSignatureResult
+            // http://stackoverflow.com/a/3806769
+            result.setExtrasClassLoader(mContext.getClassLoader());
+
+            return result;
         } catch (Exception e) {
-            Log.e(OpenPgpApi.TAG, "Exception", e);
+            Log.e(OpenPgpApi.TAG, "Exception in executeApi call", e);
             Intent result = new Intent();
             result.putExtra(RESULT_CODE, RESULT_CODE_ERROR);
             result.putExtra(RESULT_ERROR,

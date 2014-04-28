@@ -117,7 +117,7 @@ public class OpenPgpService extends RemoteService {
         }
 
         Intent result = new Intent();
-        result.putExtra(OpenPgpApi.EXTRA_KEY_IDS, keyIdsArray);
+        result.putExtra(OpenPgpApi.RESULT_KEY_IDS, keyIdsArray);
         result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_SUCCESS);
         return result;
     }
@@ -223,7 +223,7 @@ public class OpenPgpService extends RemoteService {
                 Intent result = getKeyIdsFromEmails(data, userIds);
 
                 if (result.getIntExtra(OpenPgpApi.RESULT_CODE, 0) == OpenPgpApi.RESULT_CODE_SUCCESS) {
-                    keyIds = result.getLongArrayExtra(OpenPgpApi.EXTRA_KEY_IDS);
+                    keyIds = result.getLongArrayExtra(OpenPgpApi.RESULT_KEY_IDS);
                 } else {
                     // if not success -> result contains a PendingIntent for user interaction
                     return result;
@@ -232,7 +232,8 @@ public class OpenPgpService extends RemoteService {
                 Intent result = new Intent();
                 result.putExtra(OpenPgpApi.RESULT_ERROR,
                         new OpenPgpError(OpenPgpError.GENERIC_ERROR,
-                                "Missing parameter user_ids or key_ids!"));
+                                "Missing parameter user_ids or key_ids!")
+                );
                 result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_ERROR);
                 return result;
             }
@@ -334,7 +335,8 @@ public class OpenPgpService extends RemoteService {
                                         OpenPgpService.this, masterKeyId);
                             }
                         },
-                        inputData, os);
+                        inputData, os
+                );
                 builder.allowSymmetricDecryption(false) // no support for symmetric encryption
                         .allowedKeyIds(allowedKeyIds) // allow only private keys associated with
                                 // accounts of this app
@@ -408,7 +410,7 @@ public class OpenPgpService extends RemoteService {
         try {
             long keyId = data.getLongExtra(OpenPgpApi.EXTRA_KEY_ID, 0);
 
-            if (mProviderHelper.getPGPPublicKeyRing(keyId) == null) {
+            if (mProviderHelper.getPGPPublicKeyRingWithKeyId(keyId) == null) {
                 Intent result = new Intent();
 
                 // If keys are not in db we return an additional PendingIntent
@@ -443,10 +445,22 @@ public class OpenPgpService extends RemoteService {
     }
 
     private Intent getKeyIdsImpl(Intent data) {
-        // get key ids based on given user ids
-        String[] userIds = data.getStringArrayExtra(OpenPgpApi.EXTRA_USER_IDS);
-        Intent result = getKeyIdsFromEmails(data, userIds);
-        return result;
+        // if data already contains key ids extra GET_KEY_IDS has been executed again
+        // after user interaction. Then, we just need to return the array again!
+        if (data.hasExtra(OpenPgpApi.EXTRA_KEY_IDS)) {
+            long[] keyIdsArray = data.getLongArrayExtra(OpenPgpApi.EXTRA_KEY_IDS);
+
+            Intent result = new Intent();
+            result.putExtra(OpenPgpApi.RESULT_KEY_IDS, keyIdsArray);
+            result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_SUCCESS);
+            return result;
+        } else {
+            // get key ids based on given user ids
+
+            String[] userIds = data.getStringArrayExtra(OpenPgpApi.EXTRA_USER_IDS);
+            Intent result = getKeyIdsFromEmails(data, userIds);
+            return result;
+        }
     }
 
     /**

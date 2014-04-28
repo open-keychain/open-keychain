@@ -19,6 +19,10 @@ package org.openintents.openpgp;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import org.openintents.openpgp.util.OpenPgpUtils;
+
+import java.util.Locale;
+
 /**
  * Parcelable versioning has been copied from Dashclock Widget
  * https://code.google.com/p/dashclock/source/browse/api/src/main/java/com/google/android/apps/dashclock/api/ExtensionData.java
@@ -152,7 +156,7 @@ public class OpenPgpSignatureResult implements Parcelable {
         out += "\nstatus: " + status;
         out += "\nuserId: " + userId;
         out += "\nsignatureOnly: " + signatureOnly;
-        out += "\nkeyId: " + keyId;
+        out += "\nkeyId: " + OpenPgpUtils.convertKeyIdToHex(keyId);
         return out;
     }
 

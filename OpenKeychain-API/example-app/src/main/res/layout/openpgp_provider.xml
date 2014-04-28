@@ -110,14 +110,49 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Account ID:"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:id="@+id/textView" />
+            android:textAppearance="?android:attr/textAppearanceMedium" />
 
         <EditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Alice &lt;alice@example.com&gt;"
             android:id="@+id/crypto_provider_demo_account" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Get key:"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="0x718c070100012282"
+            android:id="@+id/crypto_provider_demo_get_key_edit" />
+
+        <Button
+            android:id="@+id/crypto_provider_demo_get_key"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Get key" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Get key ids:"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="dominik@dominikschuermann.de"
+            android:id="@+id/crypto_provider_demo_get_key_ids_edit" />
+
+        <Button
+            android:id="@+id/crypto_provider_demo_get_key_ids"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Get key ids" />
 
     </LinearLayout>
 </ScrollView>
