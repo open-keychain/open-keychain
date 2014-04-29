@@ -41,6 +41,16 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
+/**
+ * SQLite Datatypes (from http://www.sqlite.org/datatype3.html)
+ * - NULL. The value is a NULL value.
+ * - INTEGER. The value is a signed integer, stored in 1, 2, 3, 4, 6, or 8 bytes depending on the magnitude of the value.
+ * - REAL. The value is a floating point value, stored as an 8-byte IEEE floating point number.
+ * - TEXT. The value is a text string, stored using the database encoding (UTF-8, UTF-16BE or UTF-16LE).
+ * - BLOB. The value is a blob of data, stored exactly as it was input.
+ *
+ * Adding BOOLEAN results in an INTEGER, but we keep BOOLEAN to indicate the usage!
+ */
 public class KeychainDatabase extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "openkeychain.db";
     private static final int DATABASE_VERSION = 2;
@@ -97,7 +107,7 @@ public class KeychainDatabase extends SQLiteOpenHelper {
     private static final String CREATE_USER_IDS =
             "CREATE TABLE IF NOT EXISTS " + Tables.USER_IDS + "("
                 + UserIdsColumns.MASTER_KEY_ID + " INTEGER, "
-                + UserIdsColumns.USER_ID + " CHARMANDER, "
+                + UserIdsColumns.USER_ID + " TEXT, "
 
                 + UserIdsColumns.IS_PRIMARY + " BOOLEAN, "
                 + UserIdsColumns.IS_REVOKED + " BOOLEAN, "
@@ -140,7 +150,7 @@ public class KeychainDatabase extends SQLiteOpenHelper {
             "CREATE TABLE IF NOT EXISTS " + Tables.API_ACCOUNTS + " ("
                 + BaseColumns._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
                 + ApiAppsAccountsColumns.ACCOUNT_NAME + " TEXT NOT NULL, "
-                + ApiAppsAccountsColumns.KEY_ID + " INT64, "
+                + ApiAppsAccountsColumns.KEY_ID + " INTEGER, "
                 + ApiAppsAccountsColumns.ENCRYPTION_ALGORITHM + " INTEGER, "
                 + ApiAppsAccountsColumns.HASH_ALORITHM + " INTEGER, "
                 + ApiAppsAccountsColumns.COMPRESSION + " INTEGER, "
