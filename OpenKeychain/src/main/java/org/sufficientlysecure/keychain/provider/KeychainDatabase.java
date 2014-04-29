@@ -224,10 +224,10 @@ public class KeychainDatabase extends SQLiteOpenHelper {
         {
             // It's the Java way =(
             String[] dbs = context.databaseList();
-            for(String db : dbs) {
-                if(db.equals("apg.db")) {
+            for (String db : dbs) {
+                if (db.equals("apg.db")) {
                     hasApgDb = true;
-                } else if(db.equals("apg_old.db")) {
+                } else if (db.equals("apg_old.db")) {
                     Log.d(Constants.TAG, "Found apg_old.db");
                 }
             }
@@ -262,14 +262,14 @@ public class KeychainDatabase extends SQLiteOpenHelper {
                     + " SELECT 1 FROM key_rings d2 WHERE key_rings.master_key_id = d2.master_key_id"
                     + " AND d2.type = 1) ORDER BY type ASC", null);
             Log.d(Constants.TAG, "Importing " + c.getCount() + " secret keyrings from apg.db...");
-            for(int i = 0; i < c.getCount(); i++) {
+            for (int i = 0; i < c.getCount(); i++) {
                 c.moveToPosition(i);
                 byte[] data = c.getBlob(0);
                 PGPKeyRing ring = PgpConversionHelper.BytesToPGPKeyRing(data);
                 ProviderHelper providerHelper = new ProviderHelper(context);
-                if(ring instanceof PGPPublicKeyRing)
+                if (ring instanceof PGPPublicKeyRing)
                     providerHelper.saveKeyRing((PGPPublicKeyRing) ring);
-                else if(ring instanceof PGPSecretKeyRing)
+                else if (ring instanceof PGPSecretKeyRing)
                     providerHelper.saveKeyRing((PGPSecretKeyRing) ring);
                 else {
                     Log.e(Constants.TAG, "Unknown blob data type!");
@@ -284,14 +284,14 @@ public class KeychainDatabase extends SQLiteOpenHelper {
                     + " d2.type = 1)) DESC, type DESC", null);
             // import from old database
             Log.d(Constants.TAG, "Importing " + c.getCount() + " keyrings from apg.db...");
-            for(int i = 0; i < c.getCount(); i++) {
+            for (int i = 0; i < c.getCount(); i++) {
                 c.moveToPosition(i);
                 byte[] data = c.getBlob(0);
                 PGPKeyRing ring = PgpConversionHelper.BytesToPGPKeyRing(data);
                 ProviderHelper providerHelper = new ProviderHelper(context);
                 if (ring instanceof PGPPublicKeyRing) {
                     providerHelper.saveKeyRing((PGPPublicKeyRing) ring);
-                } else if(ring instanceof PGPSecretKeyRing) {
+                } else if (ring instanceof PGPSecretKeyRing) {
                     providerHelper.saveKeyRing((PGPSecretKeyRing) ring);
                 } else {
                     Log.e(Constants.TAG, "Unknown blob data type!");
@@ -300,10 +300,10 @@ public class KeychainDatabase extends SQLiteOpenHelper {
         } catch (IOException e) {
             Log.e(Constants.TAG, "Error importing apg.db!", e);
         } finally {
-            if(c != null) {
+            if (c != null) {
                 c.close();
             }
-            if(db != null) {
+            if (db != null) {
                 db.close();
             }
         }
@@ -317,37 +317,37 @@ public class KeychainDatabase extends SQLiteOpenHelper {
         FileInputStream ss = new FileInputStream(in);
         FileOutputStream ds = new FileOutputStream(out);
         byte[] buf = new byte[512];
-        while(ss.available() > 0) {
+        while (ss.available() > 0) {
             int count = ss.read(buf, 0, 512);
             ds.write(buf, 0, count);
         }
     }
 
     public static void debugRead(Context context) throws IOException {
-        if(!Constants.DEBUG) {
+        if (!Constants.DEBUG) {
             return;
         }
         File in = context.getDatabasePath("debug.db");
         File out = context.getDatabasePath("openkeychain.db");
-        if(!in.canRead()) {
+        if (!in.canRead()) {
             throw new IOException("Cannot read " +  in.getName());
         }
-        if(!out.canRead()) {
+        if (!out.canRead()) {
             throw new IOException("Cannot write " + out.getName());
         }
         copy(in, out);
     }
 
     public static void debugWrite(Context context) throws IOException {
-        if(!Constants.DEBUG) {
+        if (!Constants.DEBUG) {
             return;
         }
         File in = context.getDatabasePath("openkeychain.db");
         File out = context.getDatabasePath("debug.db");
-        if(!in.canRead()) {
+        if (!in.canRead()) {
             throw new IOException("Cannot read " +  in.getName());
         }
-        if(!out.canRead()) {
+        if (!out.canRead()) {
             throw new IOException("Cannot write " + out.getName());
         }
         copy(in, out);
