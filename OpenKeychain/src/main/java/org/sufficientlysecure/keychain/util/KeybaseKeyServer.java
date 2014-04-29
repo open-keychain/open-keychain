@@ -99,19 +99,24 @@ public class KeybaseKeyServer extends KeyServer {
 
         final ImportKeysListEntry entry = new ImportKeysListEntry();
 
+        // TODO: Fix; have suggested keybase provide this value to avoid search-time crypto calls
         entry.setBitStrength(4096);
         entry.setAlgorithm("RSA");
         entry.setKeyIdHex("0x" + key_fingerprint);
+        entry.setRevoked(false);
 
+        // ctime
         final long creationDate = JWalk.getLong(match, "them", "public_keys", "primary", "ctime");
         final GregorianCalendar tmpGreg = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
         tmpGreg.setTimeInMillis(creationDate * 1000);
         entry.setDate(tmpGreg.getTime());
-        entry.setRevoked(false);
+
+        // key bits
         mKeyCache.put(keybaseID, JWalk.getString(match,"them", "public_keys", "primary", "bundle"));
-        String name = JWalk.getString(match, "them", "profile", "full_name");
+
+        // String displayName = JWalk.getString(match, "them", "profile", "full_name");
         ArrayList<String> userIds = new ArrayList<String>();
-        name = "keybase.io/" + keybaseID + " " + name;
+        String name = "keybase.io/" + keybaseID + " <" + keybaseID + "@keybase.io>";
         userIds.add(name);
         entry.setUserIds(userIds);
         entry.setPrimaryUserId(name);
