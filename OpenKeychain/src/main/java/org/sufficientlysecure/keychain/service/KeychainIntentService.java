@@ -457,10 +457,10 @@ public class KeychainIntentService extends IntentService
                             }
                         },
                         inputData, outStream);
-                builder.progressable(this);
+                builder.setProgressable(this);
 
-                builder.allowSymmetricDecryption(true)
-                        .passphrase(passphrase);
+                builder.setAllowSymmetricDecryption(true)
+                        .setPassphrase(passphrase);
 
                 PgpDecryptVerifyResult decryptVerifyResult = builder.build().execute();
 

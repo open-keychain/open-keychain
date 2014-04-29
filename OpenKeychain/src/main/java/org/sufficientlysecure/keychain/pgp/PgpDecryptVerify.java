@@ -118,18 +118,18 @@ public class PgpDecryptVerify {
             this.mOutStream = outStream;
         }
 
-        public Builder progressable(Progressable progressable) {
-            this.mProgressable = progressable;
+        public Builder setProgressable(Progressable progressable) {
+            mProgressable = progressable;
             return this;
         }
 
-        public Builder allowSymmetricDecryption(boolean allowSymmetricDecryption) {
-            this.mAllowSymmetricDecryption = allowSymmetricDecryption;
+        public Builder setAllowSymmetricDecryption(boolean allowSymmetricDecryption) {
+            mAllowSymmetricDecryption = allowSymmetricDecryption;
             return this;
         }
 
-        public Builder passphrase(String passphrase) {
-            this.mPassphrase = passphrase;
+        public Builder setPassphrase(String passphrase) {
+            mPassphrase = passphrase;
             return this;
         }
 
@@ -140,7 +140,7 @@ public class PgpDecryptVerify {
          * @param allowedKeyIds
          * @return
          */
-        public Builder allowedKeyIds(Set<Long> allowedKeyIds) {
+        public Builder setAllowedKeyIds(Set<Long> allowedKeyIds) {
             this.mAllowedKeyIds = allowedKeyIds;
             return this;
         }

@@ -337,10 +337,10 @@ public class OpenPgpService extends RemoteService {
                         },
                         inputData, os
                 );
-                builder.allowSymmetricDecryption(false) // no support for symmetric encryption
-                        .allowedKeyIds(allowedKeyIds) // allow only private keys associated with
+                builder.setAllowSymmetricDecryption(false) // no support for symmetric encryption
+                        .setAllowedKeyIds(allowedKeyIds) // allow only private keys associated with
                                 // accounts of this app
-                        .passphrase(passphrase);
+                        .setPassphrase(passphrase);
 
                 PgpDecryptVerifyResult decryptVerifyResult;
                 try {
