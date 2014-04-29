@@ -52,12 +52,12 @@ import org.spongycastle.openpgp.operator.jcajce.JcePBESecretKeyDecryptorBuilder;
 import org.spongycastle.openpgp.operator.jcajce.JcePublicKeyDataDecryptorFactoryBuilder;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.pgp.Progressable;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.util.InputData;
 import org.sufficientlysecure.keychain.util.Log;
-import org.sufficientlysecure.keychain.util.ProgressDialogUpdater;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
@@ -79,7 +79,7 @@ public class PgpDecryptVerify {
     private InputData mData;
     private OutputStream mOutStream;
 
-    private ProgressDialogUpdater mProgressDialogUpdater;
+    private Progressable mProgressable;
     private boolean mAllowSymmetricDecryption;
     private String mPassphrase;
     private Set<Long> mAllowedKeyIds;
@@ -91,7 +91,7 @@ public class PgpDecryptVerify {
         this.mData = builder.mData;
         this.mOutStream = builder.mOutStream;
 
-        this.mProgressDialogUpdater = builder.mProgressDialogUpdater;
+        this.mProgressable = builder.mProgressable;
         this.mAllowSymmetricDecryption = builder.mAllowSymmetricDecryption;
         this.mPassphrase = builder.mPassphrase;
         this.mAllowedKeyIds = builder.mAllowedKeyIds;
@@ -105,7 +105,7 @@ public class PgpDecryptVerify {
         private OutputStream mOutStream;
 
         // optional
-        private ProgressDialogUpdater mProgressDialogUpdater = null;
+        private Progressable mProgressable = null;
         private boolean mAllowSymmetricDecryption = true;
         private String mPassphrase = null;
         private Set<Long> mAllowedKeyIds = null;
@@ -118,8 +118,8 @@ public class PgpDecryptVerify {
             this.mOutStream = outStream;
         }
 
-        public Builder progressDialogUpdater(ProgressDialogUpdater progressDialogUpdater) {
-            this.mProgressDialogUpdater = progressDialogUpdater;
+        public Builder progressable(Progressable progressable) {
+            this.mProgressable = progressable;
             return this;
         }
 
@@ -151,14 +151,14 @@ public class PgpDecryptVerify {
     }
 
     public void updateProgress(int message, int current, int total) {
-        if (mProgressDialogUpdater != null) {
-            mProgressDialogUpdater.setProgress(message, current, total);
+        if (mProgressable != null) {
+            mProgressable.setProgress(message, current, total);
         }
     }
 
     public void updateProgress(int current, int total) {
-        if (mProgressDialogUpdater != null) {
-            mProgressDialogUpdater.setProgress(current, total);
+        if (mProgressable != null) {
+            mProgressable.setProgress(current, total);
         }
     }
 

@@ -15,9 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.sufficientlysecure.keychain.util;
+package org.sufficientlysecure.keychain.pgp;
 
-public interface ProgressDialogUpdater {
+public interface Progressable {
     void setProgress(String message, int current, int total);
 
     void setProgress(int resourceId, int current, int total);
