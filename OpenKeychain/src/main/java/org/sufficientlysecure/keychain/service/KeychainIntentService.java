@@ -47,6 +47,7 @@ import org.sufficientlysecure.keychain.pgp.PgpImportExport;
 import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
 import org.sufficientlysecure.keychain.pgp.PgpKeyOperation;
 import org.sufficientlysecure.keychain.pgp.PgpSignEncrypt;
+import org.sufficientlysecure.keychain.pgp.Progressable;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralMsgIdException;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
@@ -57,7 +58,6 @@ import org.sufficientlysecure.keychain.util.HkpKeyServer;
 import org.sufficientlysecure.keychain.util.InputData;
 import org.sufficientlysecure.keychain.util.KeychainServiceListener;
 import org.sufficientlysecure.keychain.util.Log;
-import org.sufficientlysecure.keychain.util.ProgressDialogUpdater;
 import org.sufficientlysecure.keychain.util.ProgressScaler;
 
 import java.io.BufferedInputStream;
@@ -79,7 +79,7 @@ import java.util.List;
  * after doing them.
  */
 public class KeychainIntentService extends IntentService
-        implements ProgressDialogUpdater, KeychainServiceListener {
+        implements Progressable, KeychainServiceListener {
 
     /* extras that can be given by intent */
     public static final String EXTRA_MESSENGER = "messenger";
@@ -313,7 +313,7 @@ public class KeychainIntentService extends IntentService
                                 new ProviderHelper(this),
                                 PgpHelper.getFullVersion(this),
                                 inputData, outStream);
-                builder.progress(this);
+                builder.progressable(this);
 
                 builder.enableAsciiArmorOutput(useAsciiArmor)
                         .compressionId(compressionId)
@@ -457,7 +457,7 @@ public class KeychainIntentService extends IntentService
                             }
                         },
                         inputData, outStream);
-                builder.progressDialogUpdater(this);
+                builder.progressable(this);
 
                 builder.allowSymmetricDecryption(true)
                         .passphrase(passphrase);
@@ -925,10 +925,10 @@ public class KeychainIntentService extends IntentService
     }
 
     /**
-     * Set progressDialogUpdater of ProgressDialog by sending message to handler on UI thread
+     * Set progress of ProgressDialog by sending message to handler on UI thread
      */
     public void setProgress(String message, int progress, int max) {
-        Log.d(Constants.TAG, "Send message by setProgress with progressDialogUpdater=" + progress + ", max="
+        Log.d(Constants.TAG, "Send message by setProgress with progress=" + progress + ", max="
                 + max);
 
         Bundle data = new Bundle();

@@ -17,15 +17,18 @@
 
 package org.sufficientlysecure.keychain.util;
 
-/** This is a simple class that wraps a ProgressDialogUpdater, scaling the progress
+import org.sufficientlysecure.keychain.pgp.Progressable;
+
+/**
+ * This is a simple class that wraps a Progressable, scaling the progress
  * values into a specified range.
  */
-public class ProgressScaler implements ProgressDialogUpdater {
+public class ProgressScaler implements Progressable {
 
-    final ProgressDialogUpdater mWrapped;
+    final Progressable mWrapped;
     final int mFrom, mTo, mMax;
 
-    public ProgressScaler(ProgressDialogUpdater wrapped, int from, int to, int max) {
+    public ProgressScaler(Progressable wrapped, int from, int to, int max) {
         this.mWrapped = wrapped;
         this.mFrom = from;
         this.mTo = to;
@@ -33,7 +36,7 @@ public class ProgressScaler implements ProgressDialogUpdater {
     }
 
     /**
-     * Set progressDialogUpdater of ProgressDialog by sending message to handler on UI thread
+     * Set progress of ProgressDialog by sending message to handler on UI thread
      */
     public void setProgress(String message, int progress, int max) {
         mWrapped.setProgress(message, mFrom + progress * (mTo - mFrom) / max, mMax);

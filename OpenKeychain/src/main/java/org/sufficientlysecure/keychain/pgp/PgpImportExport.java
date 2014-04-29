@@ -32,6 +32,7 @@ import org.spongycastle.openpgp.PGPSecretKeyRing;
 import org.spongycastle.openpgp.operator.jcajce.JcaKeyFingerprintCalculator;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.pgp.Progressable;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
@@ -41,7 +42,6 @@ import org.sufficientlysecure.keychain.util.IterableIterator;
 import org.sufficientlysecure.keychain.util.KeyServer.AddKeyException;
 import org.sufficientlysecure.keychain.util.KeychainServiceListener;
 import org.sufficientlysecure.keychain.util.Log;
-import org.sufficientlysecure.keychain.util.ProgressDialogUpdater;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -52,7 +52,7 @@ import java.util.List;
 public class PgpImportExport {
 
     private Context mContext;
-    private ProgressDialogUpdater mProgress;
+    private Progressable mProgressable;
 
     private KeychainServiceListener mKeychainServiceListener;
 
@@ -63,37 +63,37 @@ public class PgpImportExport {
     public static final int RETURN_BAD = -2;
     public static final int RETURN_UPDATED = 1;
 
-    public PgpImportExport(Context context, ProgressDialogUpdater progress) {
+    public PgpImportExport(Context context, Progressable progressable) {
         super();
         this.mContext = context;
-        this.mProgress = progress;
+        this.mProgressable = progressable;
         this.mProviderHelper = new ProviderHelper(context);
     }
 
     public PgpImportExport(Context context,
-                           ProgressDialogUpdater progress, KeychainServiceListener keychainListener) {
+                           Progressable progressable, KeychainServiceListener keychainListener) {
         super();
         this.mContext = context;
-        this.mProgress = progress;
+        this.mProgressable = progressable;
         this.mProviderHelper = new ProviderHelper(context);
         this.mKeychainServiceListener = keychainListener;
     }
 
     public void updateProgress(int message, int current, int total) {
-        if (mProgress != null) {
-            mProgress.setProgress(message, current, total);
+        if (mProgressable != null) {
+            mProgressable.setProgress(message, current, total);
         }
     }
 
     public void updateProgress(String message, int current, int total) {
-        if (mProgress != null) {
-            mProgress.setProgress(message, current, total);
+        if (mProgressable != null) {
+            mProgressable.setProgress(message, current, total);
         }
     }
 
     public void updateProgress(int current, int total) {
-        if (mProgress != null) {
-            mProgress.setProgress(current, total);
+        if (mProgressable != null) {
+            mProgressable.setProgress(current, total);
         }
     }
 

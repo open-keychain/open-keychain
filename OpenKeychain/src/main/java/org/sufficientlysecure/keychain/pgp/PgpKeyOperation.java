@@ -48,11 +48,11 @@ import org.spongycastle.openpgp.operator.jcajce.JcePBESecretKeyDecryptorBuilder;
 import org.spongycastle.openpgp.operator.jcajce.JcePBESecretKeyEncryptorBuilder;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.pgp.Progressable;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralMsgIdException;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
 import org.sufficientlysecure.keychain.util.IterableIterator;
 import org.sufficientlysecure.keychain.util.Primes;
-import org.sufficientlysecure.keychain.util.ProgressDialogUpdater;
 
 import java.io.IOException;
 import java.math.BigInteger;
@@ -75,11 +75,11 @@ import java.util.TimeZone;
  * <p/>
  * Note that no android specific stuff should be done here, ie no imports from com.android.
  * <p/>
- * All operations support progress reporting to a ProgressDialogUpdater passed on initialization.
+ * All operations support progress reporting to a Progressable passed on initialization.
  * This indicator may be null.
  */
 public class PgpKeyOperation {
-    private ProgressDialogUpdater mProgress;
+    private Progressable mProgress;
 
     private static final int[] PREFERRED_SYMMETRIC_ALGORITHMS = new int[]{
             SymmetricKeyAlgorithmTags.AES_256, SymmetricKeyAlgorithmTags.AES_192,
@@ -91,7 +91,7 @@ public class PgpKeyOperation {
             CompressionAlgorithmTags.ZLIB, CompressionAlgorithmTags.BZIP2,
             CompressionAlgorithmTags.ZIP};
 
-    public PgpKeyOperation(ProgressDialogUpdater progress) {
+    public PgpKeyOperation(Progressable progress) {
         super();
         this.mProgress = progress;
     }

@@ -42,11 +42,11 @@ import org.spongycastle.openpgp.operator.jcajce.JcePGPDataEncryptorBuilder;
 import org.spongycastle.openpgp.operator.jcajce.JcePublicKeyKeyEncryptionMethodGenerator;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.pgp.Progressable;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.util.InputData;
 import org.sufficientlysecure.keychain.util.Log;
-import org.sufficientlysecure.keychain.util.ProgressDialogUpdater;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -69,7 +69,7 @@ public class PgpSignEncrypt {
     private InputData mData;
     private OutputStream mOutStream;
 
-    private ProgressDialogUpdater mProgress;
+    private Progressable mProgressable;
     private boolean mEnableAsciiArmorOutput;
     private int mCompressionId;
     private long[] mEncryptionMasterKeyIds;
@@ -99,7 +99,7 @@ public class PgpSignEncrypt {
         this.mData = builder.mData;
         this.mOutStream = builder.mOutStream;
 
-        this.mProgress = builder.mProgress;
+        this.mProgressable = builder.mProgressable;
         this.mEnableAsciiArmorOutput = builder.mEnableAsciiArmorOutput;
         this.mCompressionId = builder.mCompressionId;
         this.mEncryptionMasterKeyIds = builder.mEncryptionMasterKeyIds;
@@ -121,7 +121,7 @@ public class PgpSignEncrypt {
         private OutputStream mOutStream;
 
         // optional
-        private ProgressDialogUpdater mProgress = null;
+        private Progressable mProgressable = null;
         private boolean mEnableAsciiArmorOutput = false;
         private int mCompressionId = Constants.choice.compression.none;
         private long[] mEncryptionMasterKeyIds = null;
@@ -141,8 +141,8 @@ public class PgpSignEncrypt {
             this.mOutStream = outStream;
         }
 
-        public Builder progress(ProgressDialogUpdater progress) {
-            this.mProgress = progress;
+        public Builder progressable(Progressable progressable) {
+            this.mProgressable = progressable;
             return this;
         }
 
@@ -219,14 +219,14 @@ public class PgpSignEncrypt {
     }
 
     public void updateProgress(int message, int current, int total) {
-        if (mProgress != null) {
-            mProgress.setProgress(message, current, total);
+        if (mProgressable != null) {
+            mProgressable.setProgress(message, current, total);
         }
     }
 
     public void updateProgress(int current, int total) {
-        if (mProgress != null) {
-            mProgress.setProgress(current, total);
+        if (mProgressable != null) {
+            mProgressable.setProgress(current, total);
         }
     }
 
