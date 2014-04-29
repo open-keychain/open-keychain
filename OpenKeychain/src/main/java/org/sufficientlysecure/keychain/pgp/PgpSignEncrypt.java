@@ -141,53 +141,53 @@ public class PgpSignEncrypt {
             this.mOutStream = outStream;
         }
 
-        public Builder progressable(Progressable progressable) {
-            this.mProgressable = progressable;
+       public Builder setProgressable(Progressable progressable) {
+            mProgressable = progressable;
             return this;
         }
 
-        public Builder enableAsciiArmorOutput(boolean enableAsciiArmorOutput) {
-            this.mEnableAsciiArmorOutput = enableAsciiArmorOutput;
+        public Builder setEnableAsciiArmorOutput(boolean enableAsciiArmorOutput) {
+            mEnableAsciiArmorOutput = enableAsciiArmorOutput;
             return this;
         }
 
-        public Builder compressionId(int compressionId) {
-            this.mCompressionId = compressionId;
+        public Builder setCompressionId(int compressionId) {
+            mCompressionId = compressionId;
             return this;
         }
 
-        public Builder encryptionMasterKeyIds(long[] encryptionMasterKeyIds) {
+        public Builder setEncryptionMasterKeyIds(long[] encryptionMasterKeyIds) {
             this.mEncryptionMasterKeyIds = encryptionMasterKeyIds;
             return this;
         }
 
-        public Builder symmetricPassphrase(String symmetricPassphrase) {
+        public Builder setSymmetricPassphrase(String symmetricPassphrase) {
             this.mSymmetricPassphrase = symmetricPassphrase;
             return this;
         }
 
-        public Builder symmetricEncryptionAlgorithm(int symmetricEncryptionAlgorithm) {
-            this.mSymmetricEncryptionAlgorithm = symmetricEncryptionAlgorithm;
+        public Builder setSymmetricEncryptionAlgorithm(int symmetricEncryptionAlgorithm) {
+            mSymmetricEncryptionAlgorithm = symmetricEncryptionAlgorithm;
             return this;
         }
 
-        public Builder signatureMasterKeyId(long signatureMasterKeyId) {
+        public Builder setSignatureMasterKeyId(long signatureMasterKeyId) {
             this.mSignatureMasterKeyId = signatureMasterKeyId;
             return this;
         }
 
-        public Builder signatureHashAlgorithm(int signatureHashAlgorithm) {
-            this.mSignatureHashAlgorithm = signatureHashAlgorithm;
+        public Builder setSignatureHashAlgorithm(int signatureHashAlgorithm) {
+            mSignatureHashAlgorithm = signatureHashAlgorithm;
             return this;
         }
 
-        public Builder signatureForceV3(boolean signatureForceV3) {
-            this.mSignatureForceV3 = signatureForceV3;
+        public Builder setSignatureForceV3(boolean signatureForceV3) {
+            mSignatureForceV3 = signatureForceV3;
             return this;
         }
 
-        public Builder signaturePassphrase(String signaturePassphrase) {
-            this.mSignaturePassphrase = signaturePassphrase;
+        public Builder setSignaturePassphrase(String signaturePassphrase) {
+            mSignaturePassphrase = signaturePassphrase;
             return this;
         }
 
@@ -197,7 +197,7 @@ public class PgpSignEncrypt {
          * @param encryptToSigner
          * @return
          */
-        public Builder encryptToSigner(boolean encryptToSigner) {
+        public Builder setEncryptToSigner(boolean encryptToSigner) {
             this.mEncryptToSigner = encryptToSigner;
             return this;
         }
@@ -208,7 +208,7 @@ public class PgpSignEncrypt {
          * @param cleartextInput
          * @return
          */
-        public Builder cleartextInput(boolean cleartextInput) {
+        public Builder setCleartextInput(boolean cleartextInput) {
             this.mCleartextInput = cleartextInput;
             return this;
         }

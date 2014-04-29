@@ -313,24 +313,24 @@ public class KeychainIntentService extends IntentService
                                 new ProviderHelper(this),
                                 PgpHelper.getFullVersion(this),
                                 inputData, outStream);
-                builder.progressable(this);
+                builder.setProgressable(this);
 
-                builder.enableAsciiArmorOutput(useAsciiArmor)
-                        .compressionId(compressionId)
-                        .symmetricEncryptionAlgorithm(
+                builder.setEnableAsciiArmorOutput(useAsciiArmor)
+                        .setCompressionId(compressionId)
+                        .setSymmetricEncryptionAlgorithm(
                                 Preferences.getPreferences(this).getDefaultEncryptionAlgorithm())
-                        .signatureForceV3(Preferences.getPreferences(this).getForceV3Signatures())
-                        .encryptionMasterKeyIds(encryptionKeyIds)
-                        .symmetricPassphrase(symmetricPassphrase)
-                        .signatureMasterKeyId(signatureKeyId)
-                        .signatureHashAlgorithm(
+                        .setSignatureForceV3(Preferences.getPreferences(this).getForceV3Signatures())
+                        .setEncryptionMasterKeyIds(encryptionKeyIds)
+                        .setSymmetricPassphrase(symmetricPassphrase)
+                        .setSignatureMasterKeyId(signatureKeyId)
+                        .setSignatureHashAlgorithm(
                                 Preferences.getPreferences(this).getDefaultHashAlgorithm())
-                        .signaturePassphrase(
+                        .setSignaturePassphrase(
                                 PassphraseCacheService.getCachedPassphrase(this, signatureKeyId));
 
                 // this assumes that the bytes are cleartext (valid for current implementation!)
                 if (target == TARGET_BYTES) {
-                    builder.cleartextInput(true);
+                    builder.setCleartextInput(true);
                 }
 
                 builder.build().execute();
@@ -457,10 +457,10 @@ public class KeychainIntentService extends IntentService
                             }
                         },
                         inputData, outStream);
-                builder.progressable(this);
+                builder.setProgressable(this);
 
-                builder.allowSymmetricDecryption(true)
-                        .passphrase(passphrase);
+                builder.setAllowSymmetricDecryption(true)
+                        .setPassphrase(passphrase);
 
                 PgpDecryptVerifyResult decryptVerifyResult = builder.build().execute();
 

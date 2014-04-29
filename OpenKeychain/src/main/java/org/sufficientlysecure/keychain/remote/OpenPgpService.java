@@ -170,14 +170,14 @@ public class OpenPgpService extends RemoteService {
                         new ProviderHelper(getContext()),
                         PgpHelper.getFullVersion(getContext()),
                         inputData, os);
-                builder.enableAsciiArmorOutput(asciiArmor)
-                        .signatureHashAlgorithm(accSettings.getHashAlgorithm())
-                        .signatureForceV3(false)
-                        .signatureMasterKeyId(accSettings.getKeyId())
-                        .signaturePassphrase(passphrase);
+                builder.setEnableAsciiArmorOutput(asciiArmor)
+                        .setSignatureHashAlgorithm(accSettings.getHashAlgorithm())
+                        .setSignatureForceV3(false)
+                        .setSignatureMasterKeyId(accSettings.getKeyId())
+                        .setSignaturePassphrase(passphrase);
 
                 // TODO: currently always assume cleartext input, no sign-only of binary currently!
-                builder.cleartextInput(true);
+                builder.setCleartextInput(true);
 
                 try {
                     builder.build().execute();
@@ -254,10 +254,10 @@ public class OpenPgpService extends RemoteService {
                         new ProviderHelper(getContext()),
                         PgpHelper.getFullVersion(getContext()),
                         inputData, os);
-                builder.enableAsciiArmorOutput(asciiArmor)
-                        .compressionId(accSettings.getCompression())
-                        .symmetricEncryptionAlgorithm(accSettings.getEncryptionAlgorithm())
-                        .encryptionMasterKeyIds(keyIds);
+                builder.setEnableAsciiArmorOutput(asciiArmor)
+                        .setCompressionId(accSettings.getCompression())
+                        .setSymmetricEncryptionAlgorithm(accSettings.getEncryptionAlgorithm())
+                        .setEncryptionMasterKeyIds(keyIds);
 
                 if (sign) {
                     String passphrase;
@@ -274,13 +274,13 @@ public class OpenPgpService extends RemoteService {
                     }
 
                     // sign and encrypt
-                    builder.signatureHashAlgorithm(accSettings.getHashAlgorithm())
-                            .signatureForceV3(false)
-                            .signatureMasterKeyId(accSettings.getKeyId())
-                            .signaturePassphrase(passphrase);
+                    builder.setSignatureHashAlgorithm(accSettings.getHashAlgorithm())
+                            .setSignatureForceV3(false)
+                            .setSignatureMasterKeyId(accSettings.getKeyId())
+                            .setSignaturePassphrase(passphrase);
                 } else {
                     // encrypt only
-                    builder.signatureMasterKeyId(Constants.key.none);
+                    builder.setSignatureMasterKeyId(Constants.key.none);
                 }
 
                 try {
@@ -337,10 +337,10 @@ public class OpenPgpService extends RemoteService {
                         },
                         inputData, os
                 );
-                builder.allowSymmetricDecryption(false) // no support for symmetric encryption
-                        .allowedKeyIds(allowedKeyIds) // allow only private keys associated with
+                builder.setAllowSymmetricDecryption(false) // no support for symmetric encryption
+                        .setAllowedKeyIds(allowedKeyIds) // allow only private keys associated with
                                 // accounts of this app
-                        .passphrase(passphrase);
+                        .setPassphrase(passphrase);
 
                 PgpDecryptVerifyResult decryptVerifyResult;
                 try {
