@@ -40,11 +40,11 @@ import org.spongycastle.openpgp.operator.jcajce.JcePBEKeyEncryptionMethodGenerat
 import org.spongycastle.openpgp.operator.jcajce.JcePBESecretKeyDecryptorBuilder;
 import org.spongycastle.openpgp.operator.jcajce.JcePGPDataEncryptorBuilder;
 import org.spongycastle.openpgp.operator.jcajce.JcePublicKeyKeyEncryptionMethodGenerator;
+
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.pgp.PgpKeyProvider;
 import org.sufficientlysecure.keychain.pgp.Progressable;
-import org.sufficientlysecure.keychain.provider.KeychainContract;
-import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.util.InputData;
 import org.sufficientlysecure.keychain.util.Log;
 
@@ -64,7 +64,7 @@ import java.util.Date;
  * This class uses a Builder pattern!
  */
 public class PgpSignEncrypt {
-    private ProviderHelper mProviderHelper;
+    private PgpKeyProvider mKeyProvider;
     private String mVersionHeader;
     private InputData mData;
     private OutputStream mOutStream;
@@ -94,7 +94,7 @@ public class PgpSignEncrypt {
 
     private PgpSignEncrypt(Builder builder) {
         // private Constructor can only be called from Builder
-        this.mProviderHelper = builder.mProviderHelper;
+        this.mKeyProvider = builder.mKeyProvider;
         this.mVersionHeader = builder.mVersionHeader;
         this.mData = builder.mData;
         this.mOutStream = builder.mOutStream;
@@ -115,7 +115,7 @@ public class PgpSignEncrypt {
 
     public static class Builder {
         // mandatory parameter
-        private ProviderHelper mProviderHelper;
+        private PgpKeyProvider mKeyProvider;
         private String mVersionHeader;
         private InputData mData;
         private OutputStream mOutStream;
@@ -134,8 +134,8 @@ public class PgpSignEncrypt {
         private boolean mEncryptToSigner = false;
         private boolean mCleartextInput = false;
 
-        public Builder(ProviderHelper providerHelper, String versionHeader, InputData data, OutputStream outStream) {
-            this.mProviderHelper = providerHelper;
+        public Builder(PgpKeyProvider keyProvider, String versionHeader, InputData data, OutputStream outStream) {
+            this.mKeyProvider = keyProvider;
             this.mVersionHeader = versionHeader;
             this.mData = data;
             this.mOutStream = outStream;
@@ -285,12 +285,11 @@ public class PgpSignEncrypt {
         String signingUserId = null;
         if (enableSignature) {
             try {
-                signingKeyRing = mProviderHelper.getPGPSecretKeyRing(mSignatureMasterKeyId);
-                signingUserId = (String) mProviderHelper.getUnifiedData(mSignatureMasterKeyId,
-                        KeychainContract.KeyRings.USER_ID, ProviderHelper.FIELD_TYPE_STRING);
-            } catch (ProviderHelper.NotFoundException e) {
+                signingKeyRing = mKeyProvider.getSecretKeyRingByMasterKeyId(mSignatureMasterKeyId);
+            } catch (PgpKeyProvider.NotFoundException e) {
                 throw new NoSigningKeyException();
             }
+            signingUserId = PgpKeyHelper.getMainUserId(signingKeyRing);
             signingKey = PgpKeyHelper.getFirstSigningSubkey(signingKeyRing);
             if (signingKey == null) {
                 throw new NoSigningKeyException();
@@ -332,16 +331,18 @@ public class PgpSignEncrypt {
             } else {
                 // Asymmetric encryption
                 for (long id : mEncryptionMasterKeyIds) {
+                    PGPPublicKeyRing keyRing = null;
                     try {
-                        PGPPublicKeyRing keyRing = mProviderHelper.getPGPPublicKeyRing(id);
-                        PGPPublicKey key = PgpKeyHelper.getFirstEncryptSubkey(keyRing);
-                        if (key != null) {
-                            JcePublicKeyKeyEncryptionMethodGenerator pubKeyEncryptionGenerator =
-                                    new JcePublicKeyKeyEncryptionMethodGenerator(key);
-                            cPk.addMethod(pubKeyEncryptionGenerator);
-                        }
-                    } catch (ProviderHelper.NotFoundException e) {
-                        Log.e(Constants.TAG, "key not found!", e);
+                        keyRing = mKeyProvider.getPublicKeyRingByMasterKeyId(id);
+                    } catch (PgpKeyProvider.NotFoundException e) {
+                        Log.e(Constants.TAG, "key not found! id: " + PgpKeyHelper.convertKeyIdToHex(id));
+                        continue;
+                    }
+                    PGPPublicKey key = PgpKeyHelper.getFirstEncryptSubkey(keyRing);
+                    if (key != null) {
+                        JcePublicKeyKeyEncryptionMethodGenerator pubKeyEncryptionGenerator =
+                                new JcePublicKeyKeyEncryptionMethodGenerator(key);
+                        cPk.addMethod(pubKeyEncryptionGenerator);
                     }
                 }
             }
