@@ -1,0 +1,54 @@
+# Design Notes on Open-Keychain
+
+This document contains notes on the software design of open keychain. 
+
+
+## Database design
+
+The database has two distinct types of tables:
+- The key\_ring\_{public,secret} tables, which hold binary blobs of all known
+  public and private keys, respectively, and nothing else.
+- All other tables, which cache information about key rings in a consistent
+  manner. This information includes various pieces of metadata about each key's
+  subkeys, user ids, and certificates.
+
+### Constraints
+
+All tables in the database have FOREIGN KEY constraints related to the
+key\_ring\_public table. This is also true for the key\_ring\_secret table,
+which means that secret keys cannot exist in the database without their public
+key counterparts. This has implications in particular on the order of insertion
+for private key rings and their public key ring counterparts into the database,
+even more so when editing a key ring is edited.
+
+### Cache usage considerations
+
+It is of note that extraction of metadata from key rings is in some cases a
+surprisingly expensive operation. As a prime example (heh), properly extracting
+a key's associated primary user id requires examination and possibly
+verification of all self-certificates, which in turn requires examination of
+all certificates.
+
+To ensure consistency, each type of metadata must be extracted one way in
+exactly one routine. For this reason, it is often desirable to make use of
+cached data even when the underlying pgp key ring objects are contextually
+available.
+
+
+## Further work / WIP
+
+### Separation of concerns
+
+Roughly speaking, the crypto code should be strictly separated from the android
+code. At the time of this writing (30.04.14), most of these thoughts are yet to
+be put into practice.
+
+There are three aspects to OK which should be kept largely separate:
+- Firstly, there is Code dealing with pgp and crypto. This code exclusively makes
+  use of the BouncyCastle library. It lives in the .pgp package.
+- Secondly, there is code dealing with user interface and system integration,
+  which makes exclusive use of Android classes.
+- Between these, there is glue code that is responsible for mapping pgp objects
+  to the database, and calling methods provided by the crypto code from the ui
+  code.
+
