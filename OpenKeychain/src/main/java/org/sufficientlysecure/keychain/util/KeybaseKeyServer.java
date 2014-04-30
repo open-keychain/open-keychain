@@ -112,12 +112,15 @@ public class KeybaseKeyServer extends KeyServer {
         entry.setDate(tmpGreg.getTime());
 
         // key bits
+        // we have to fetch the user object to construct the search-result list, so we might as
+        //  well (weakly) remember the key, in case they try to import it
         mKeyCache.put(keybaseID, JWalk.getString(match,"them", "public_keys", "primary", "bundle"));
 
         // String displayName = JWalk.getString(match, "them", "profile", "full_name");
         ArrayList<String> userIds = new ArrayList<String>();
         String name = "keybase.io/" + keybaseID + " <" + keybaseID + "@keybase.io>";
         userIds.add(name);
+        userIds.add(keybaseID);
         entry.setUserIds(userIds);
         entry.setPrimaryUserId(name);
         return entry;
@@ -157,12 +160,10 @@ public class KeybaseKeyServer extends KeyServer {
 
     @Override
     public String get(String id) throws QueryException {
-        // id is like "keybase/username"
-        String keybaseID = id.substring(id.indexOf('/') + 1);
-        String key = mKeyCache.get(keybaseID);
+        String key = mKeyCache.get(id);
         if (key == null) {
             try {
-                JSONObject user = getUser(keybaseID);
+                JSONObject user = getUser(id);
                 key = JWalk.getString(user, "them", "public_keys", "primary", "bundle");
             } catch (Exception e) {
                 throw new QueryException(e.getMessage());
