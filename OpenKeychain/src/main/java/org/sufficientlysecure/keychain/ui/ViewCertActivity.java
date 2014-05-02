@@ -124,7 +124,7 @@ public class ViewCertActivity extends ActionBarActivity
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         if (data.moveToFirst()) {
-            String signeeKey = "0x" + PgpKeyHelper.convertKeyIdToHex(data.getLong(INDEX_MASTER_KEY_ID));
+            String signeeKey = PgpKeyHelper.convertKeyIdToHex(data.getLong(INDEX_MASTER_KEY_ID));
             mSigneeKey.setText(signeeKey);
 
             String signeeUid = data.getString(INDEX_USER_ID);
@@ -134,7 +134,7 @@ public class ViewCertActivity extends ActionBarActivity
             mCreation.setText(DateFormat.getDateFormat(getApplicationContext()).format(creationDate));
 
             mSignerKeyId = data.getLong(INDEX_KEY_ID_CERTIFIER);
-            String signerKey = "0x" + PgpKeyHelper.convertKeyIdToHex(mSignerKeyId);
+            String signerKey = PgpKeyHelper.convertKeyIdToHex(mSignerKeyId);
             mSignerKey.setText(signerKey);
 
             String signerUid = data.getString(INDEX_SIGNER_UID);
