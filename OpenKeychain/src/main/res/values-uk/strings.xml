@@ -131,6 +131,8 @@
   <string name="no_key">&lt;без ключа&gt;</string>
   <string name="can_encrypt">можна зашифрувати</string>
   <string name="can_sign">можна підписати</string>
+  <string name="can_certify">можна сертифікувати</string>
+  <string name="can_certify_not">не можна сертифікувати</string>
   <string name="expired">закінчився</string>
   <string name="revoked">скасовано</string>
   <string name="secret_key">Секретний ключ:</string>
@@ -330,6 +332,7 @@
   <!--Help-->
   <string name="help_tab_start">Початок</string>
   <string name="help_tab_faq">ЧАП</string>
+  <string name="help_tab_wot">Мережа довіри</string>
   <string name="help_tab_nfc_beam">NFC промінь</string>
   <string name="help_tab_changelog">Журнал змін</string>
   <string name="help_tab_about">Про</string>
@@ -417,27 +420,25 @@
   <!--hints-->
   <string name="encrypt_content_edit_text_hint">Напишіть повідомлення для шифрування та/або підпису…</string>
   <string name="decrypt_content_edit_text_hint">Уведіть зашифрований текст тут для його розшифрування та/або перевірки…</string>
+  <!--certifications-->
+  <string name="cert_default">типово</string>
+  <string name="cert_none">жоден</string>
+  <string name="cert_casual">випадковий</string>
+  <string name="cert_positive">додатний</string>
+  <string name="cert_revoke">відхилити</string>
+  <string name="cert_verify_ok">Гаразд</string>
+  <string name="cert_verify_failed">Невдача!</string>
+  <string name="cert_verify_error">Помилка!</string>
+  <string name="cert_verify_unavailable">Недоступний ключ</string>
   <!--unsorted-->
   <string name="section_signer_id">Підписувач</string>
   <string name="section_cert">Дані сертифікату</string>
   <string name="label_user_id">ІД користувача</string>
   <string name="empty_certs">Немає сертифікатів для цього ключа</string>
   <string name="section_uids_to_sign">ІД користувача для реєстрації</string>
-  <string name="cert_default">типово</string>
-  <string name="cert_none">жоден</string>
-  <string name="cert_casual">випадковий</string>
-  <string name="cert_positive">додатний</string>
-  <string name="cert_revoke">відхилити</string>
-  <string name="help_tab_wot">Мережа довіри</string>
-  <string name="cert_verify_ok">Гаразд</string>
-  <string name="cert_verify_failed">Невдача!</string>
-  <string name="cert_verify_error">Помилка!</string>
-  <string name="cert_verify_unavailable">Недоступний ключ</string>
   <string name="label_revocation">Причина відхилення</string>
   <string name="label_verify_status">Стан перевірки</string>
   <string name="label_cert_type">Тип</string>
-  <string name="can_certify">можна сертифікувати</string>
-  <string name="can_certify_not">не можна сертифікувати</string>
   <string name="error_key_not_found">Ключ не знайдено!</string>
   <string name="error_key_processing">Помилка опрацювання ключа!</string>
   <string name="no_subkey">підключ недоступний</string>

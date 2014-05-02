@@ -13,6 +13,8 @@
   <string name="title_key_server_preference">Prioridad del servidor de claves</string>
   <string name="title_change_passphrase">Cambiar frase de contraseña</string>
   <string name="title_set_passphrase">Establecer frase de contraseña</string>
+  <string name="title_share_with">Compartir con...</string>
+  <string name="title_share_file">Compartir fichero con...</string>
   <string name="title_encrypt_to_file">Cifrar hacia archivo</string>
   <string name="title_decrypt_to_file">Descifrar hacia archivo</string>
   <string name="title_import_keys">Importar claves</string>
@@ -108,6 +110,7 @@
   <string name="label_message_compression">Compresión de mensaje</string>
   <string name="label_file_compression">Compresión de archivo</string>
   <string name="label_force_v3_signature">Forzar firmas OpenPGPv3 antiguas</string>
+  <string name="label_keyservers">Servidores de claves</string>
   <string name="label_key_id">ID de clave</string>
   <string name="label_creation">Creación</string>
   <string name="label_expiry">Caducidad</string>
@@ -130,8 +133,18 @@
   <string name="no_key">&lt;sin clave&gt;</string>
   <string name="can_encrypt">se puede cifrar</string>
   <string name="can_sign">se puede firmar</string>
+  <string name="can_certify">puede certificarse</string>
+  <string name="can_certify_not">no puede certificarse</string>
   <string name="expired">caducado</string>
   <string name="revoked">revocado</string>
+  <plurals name="n_keys">
+    <item quantity="one">1 clave</item>
+    <item quantity="other">%d claves</item>
+  </plurals>
+  <plurals name="n_keyservers">
+    <item quantity="one">%d servidor de claves</item>
+    <item quantity="other">%d servidores de claves</item>
+  </plurals>
   <string name="secret_key">Clave secreta:</string>
   <!--choice-->
   <string name="choice_none">Ninguna</string>
@@ -170,15 +183,19 @@
   <string name="file_delete_confirmation">¿Estás seguro de que quieres borrar\n%s?</string>
   <string name="file_delete_successful">Borrado satisfactoriamente.</string>
   <string name="no_file_selected">Selecciona un archivo antes.</string>
+  <string name="encrypt_sign_successful">Firmado y/o cifrado con éxito.</string>
+  <string name="encrypt_sign_clipboard_successful">Firmado y/o cifrado del portapapeles con éxito.</string>
   <string name="enter_passphrase_twice">Introduce la frase de contraseña dos veces.</string>
   <string name="select_encryption_key">Selecciona al menos una clave de cifrado.</string>
   <string name="select_encryption_or_signature_key">Selecciona al menos una clave de cifrado o de firma.</string>
   <string name="specify_file_to_encrypt_to">Por favor, especifica hacia qué archivo quieres cifrar.\nADVERTENCIA: El archivo se sobreescribirá si ya existiese.</string>
   <string name="specify_file_to_decrypt_to">Por favor, especifica hacia qué archivo quieres descifrar.\nADVERTENCIA: El archivo se sobreescribirá si ya existiese.</string>
   <string name="specify_file_to_export_to">Por favor, especifica hacia qué archivo quieres exportar.\nADVERTENCIA: El archivo se sobreescribirá si ya existiese.</string>
+  <string name="key_deletion_confirmation_multi">¿De veras quiere borrar todas las claves públicas seleccionadas?\n¡No puede deshacer esto!</string>
   <string name="secret_key_deletion_confirmation">¿Quieres realmente borrar la clave SECRETA \'%s\'?\n¡No podrás deshacerlo!</string>
   <string name="ask_save_changed_key">Has hecho cambios en el almacén de claves, ¿quieres guardarlos?</string>
   <string name="ask_empty_id_ok">Has añadido una ID de usuario vacía, ¿Estás seguro que quieres continuar?</string>
+  <string name="public_key_deletetion_confirmation">¿De veras quiere borrar la clave pública \'%s\'?\n¡No puede deshacer esto!</string>
   <string name="also_export_secret_keys">¿Exportar también las claves secretas?</string>
   <plurals name="keys_added_and_updated_1">
     <item quantity="one">%d clave añadida satisfactoriamente</item>
@@ -212,8 +229,11 @@
     <item quantity="other">%d malas claves secretas ignoradas. Quizás hayas exportado con la opción\n--export-secret-subkeys\nAsegúrate de que exportas con\n--export-secret-keys\nen su lugar.</item>
   </plurals>
   <string name="key_send_success">Clave cargada al servidor satisfactoriamente</string>
+  <string name="key_certify_success">Clave certificada con éxito</string>
   <string name="list_empty">¡Esta lista está vacía!</string>
+  <string name="nfc_successful">¡Clave enviada con éxito vía NFC Beam (haz NFC)!</string>
   <string name="key_copied_to_clipboard">¡La clave ha sido copiada al portapapeles!</string>
+  <string name="key_has_already_been_certified">¡La clave ya ha sido certificada!</string>
   <string name="select_key_to_sign">¡Por favor, selecciona la clave que se usará para firmar!</string>
   <string name="key_too_big_for_sharing">¡La clave es demasiado grande para ser compartida de esta forma!</string>
   <!--errors
@@ -239,10 +259,13 @@
   <string name="error_could_not_extract_private_key">no se puede extraer la clave privada</string>
   <string name="error_expiry_must_come_after_creation">la fecha de caducidad debe ser posterior a la fecha de creación</string>
   <!--errors without preceeding Error:-->
+  <string name="error_only_files_are_supported">Los datos binarios directos sin un fichero existente en el sistema de ficheros no están soportados.</string>
+  <string name="error_jelly_bean_needed">¡Necesita Android 4.1 para usar la característica NFC Beam (haz NFC) de Android!</string>
   <string name="error_nfc_needed">¡NFC no está disponible en tu dispositivo!</string>
   <string name="error_nothing_import">¡Nada que importar!</string>
   <string name="error_keyserver_insufficient_query">Consulta al servidor insuficiente</string>
   <string name="error_keyserver_query">La consulta al servidor de claves ha fallado</string>
+  <string name="error_keyserver_too_many_responses">Demasiadas claves posibles. Por favor ¡refine su consulta!</string>
   <string name="error_import_file_no_content">El archivo está vacio</string>
   <string name="error_generic_report_bug">Ha ocurrido un error genérico, por favor, informa de este bug a OpenKeychain</string>
   <plurals name="error_import_non_pgp_part">
@@ -251,6 +274,14 @@
   </plurals>
   <string name="error_change_something_first">Debes hacer cambios en el almacén de claves antes de que puedas guardarlo</string>
   <!--results shown after decryption/verification-->
+  <string name="decrypt_result_invalid_signature">¡Firma no válida!</string>
+  <string name="decrypt_result_signature_unknown_pub_key">Clave pública desconocida</string>
+  <string name="decrypt_result_signature_uncertified">Firma válida (no certificada)</string>
+  <string name="decrypt_result_signature_certified">Firma válida (certificada)</string>
+  <string name="decrypt_result_decrypted">Descifrado con éxito</string>
+  <string name="decrypt_result_decrypted_unknown_pub_key">Descifrado con éxito pero clave pública desconocida</string>
+  <string name="decrypt_result_decrypted_and_signature_uncertified">Descifrado con éxito y firma válida (no certificada)</string>
+  <string name="decrypt_result_decrypted_and_signature_certified">Descifrado con éxito y firma válida (certificada)</string>
   <!--progress dialogs, usually ending in '…'-->
   <string name="progress_done">Hecho.</string>
   <string name="progress_cancel">Cancelar</string>
@@ -308,6 +339,7 @@
   <!--Help-->
   <string name="help_tab_start">Comenzar</string>
   <string name="help_tab_faq">FAQ</string>
+  <string name="help_tab_wot">Web of Trust</string>
   <string name="help_tab_nfc_beam">NFC Beam</string>
   <string name="help_tab_changelog">Registro de cambios</string>
   <string name="help_tab_about">A cerca de</string>
@@ -376,9 +408,12 @@
   <string name="key_list_empty_button_import">importar claves</string>
   <!--Key view-->
   <string name="key_view_action_edit">Editar esta clave</string>
+  <string name="key_view_action_encrypt">Cifrar con esta clave</string>
+  <string name="key_view_action_certify">Certificar esta clave</string>
   <string name="key_view_tab_main">Información</string>
   <string name="key_view_tab_certs">Certificaciones</string>
   <!--Navigation Drawer-->
+  <string name="nav_keys">Claves</string>
   <string name="nav_encrypt">Firmar y cifrar</string>
   <string name="nav_decrypt">Descifrar y verificar</string>
   <string name="nav_import">Importar claves</string>
@@ -393,15 +428,32 @@
   <!--hints-->
   <string name="encrypt_content_edit_text_hint">Escribe aquí el mensaje que quieras cifrar y/o firmar...</string>
   <string name="decrypt_content_edit_text_hint">Introduce aquí el texto cifrado para descifrarlo y/o verificarlo...</string>
-  <!--unsorted-->
-  <string name="section_signer_id">Firmante</string>
-  <string name="section_cert">Detalles del certificado</string>
-  <string name="label_user_id">Identificador del usuario</string>
-  <string name="empty_certs">No hay certificados para esta clave</string>
-  <string name="section_uids_to_sign">IDs de usuario para firmar</string>
+  <!--certifications-->
   <string name="cert_default">predeterminado</string>
   <string name="cert_none">ninguno</string>
   <string name="cert_casual">casual</string>
   <string name="cert_positive">positivo</string>
   <string name="cert_revoke">revocar</string>
+  <string name="cert_verify_ok">correcto</string>
+  <string name="cert_verify_failed">¡falló!</string>
+  <string name="cert_verify_error">¡error!</string>
+  <string name="cert_verify_unavailable">clave no disponible</string>
+  <!--unsorted-->
+  <string name="section_signer_id">Firmante</string>
+  <string name="section_cert">Detalles del certificado</string>
+  <string name="label_user_id">Identificador del usuario</string>
+  <string name="unknown_uid">&lt;desconocido&gt;</string>
+  <string name="empty_certs">No hay certificados para esta clave</string>
+  <string name="section_uids_to_sign">IDs de usuario para firmar</string>
+  <string name="label_revocation">Razón de la revocación</string>
+  <string name="label_verify_status">Estado de la verificación</string>
+  <string name="label_cert_type">Tipo</string>
+  <string name="error_key_not_found">¡Clave no encontrada!</string>
+  <string name="error_key_processing">¡Error procesando clave!</string>
+  <string name="no_subkey">subclave no disponible</string>
+  <string name="key_stripped">desnudo, sin clave</string>
+  <string name="secret_cannot_multiple">¡Las claves privadas (secretas) sólo pueden borrarse individualmente!</string>
+  <string name="title_view_cert">Ver detalles del certificado</string>
+  <string name="unknown_algorithm">desconocido</string>
+  <string name="can_sign_not">no puede firmarse</string>
 </resources>

@@ -13,6 +13,7 @@
   <string name="title_key_server_preference">Schlüsselserver</string>
   <string name="title_change_passphrase">Passphrase ändern</string>
   <string name="title_set_passphrase">Passwort setzen</string>
+  <string name="title_share_with">Teilen mit...</string>
   <string name="title_share_file">Datei teilen mit…</string>
   <string name="title_encrypt_to_file">In eine Datei verschlüsseln</string>
   <string name="title_decrypt_to_file">In eine Datei entschlüsseln</string>
@@ -41,6 +42,7 @@
   <!--button-->
   <string name="btn_certify">Beglaubigen</string>
   <string name="btn_decrypt_verify">Entschlüsseln und Verifizieren</string>
+  <string name="btn_decrypt_verify_clipboard">Aus der Zwischenablage</string>
   <string name="btn_encrypt_file">Datei verschlüsseln</string>
   <string name="btn_save">Speichern</string>
   <string name="btn_do_not_save">Abbrechen</string>
@@ -99,7 +101,7 @@
   <string name="label_select_public_keys">Empfänger</string>
   <string name="label_delete_after_encryption">Nach Verschlüsselung löschen</string>
   <string name="label_delete_after_decryption">Nach Entschlüsselung löschen</string>
-  <string name="label_share_after_encryption">Nach dem Verschlüsseln teilen</string>
+  <string name="label_share_after_encryption">Nach Verschlüsselung teilen</string>
   <string name="label_encryption_algorithm">Verschlüsselungsalgorithmus</string>
   <string name="label_hash_algorithm">Hash-Algorithmus</string>
   <string name="label_asymmetric">mit Öffentlichem Schlüssel</string>
@@ -108,6 +110,7 @@
   <string name="label_message_compression">Nachrichten-Komprimierung</string>
   <string name="label_file_compression">Datei-Komprimierung</string>
   <string name="label_force_v3_signature">Erzwinge alte OpenPGPv3-Signaturen</string>
+  <string name="label_keyservers">Schlüsselserver</string>
   <string name="label_key_id">Schlüssel-ID</string>
   <string name="label_creation">Erstellungsdatum</string>
   <string name="label_expiry">Ablaufdatum</string>
@@ -130,8 +133,14 @@
   <string name="no_key">&lt;kein Schlüssel&gt;</string>
   <string name="can_encrypt">kann verschlüsseln</string>
   <string name="can_sign">kann signieren</string>
+  <string name="can_certify">kann bestätigen</string>
+  <string name="can_certify_not">kann nicht bestätigen</string>
   <string name="expired">abgelaufen</string>
   <string name="revoked">zurückgezogen</string>
+  <plurals name="n_keys">
+    <item quantity="one">1 Schlüssel</item>
+    <item quantity="other">%d Schlüssel</item>
+  </plurals>
   <string name="secret_key">Privater Schlüssel:</string>
   <!--choice-->
   <string name="choice_none">Keine</string>
@@ -170,6 +179,8 @@
   <string name="file_delete_confirmation">%s\nwirklich löschen?</string>
   <string name="file_delete_successful">Erfolgreich gelöscht.</string>
   <string name="no_file_selected">Zuerst eine Datei auswählen.</string>
+  <string name="encrypt_sign_successful">Erfolgreich signiert und/oder verschlüsselt.</string>
+  <string name="encrypt_sign_clipboard_successful">Erfolgreich  in die Zwischenablage signiert und/oder verschlüsselt.</string>
   <string name="enter_passphrase_twice">Das Passwort bitte zweimal eingeben.</string>
   <string name="select_encryption_key">Mindestens einen Schlüssel zum Verschlüsseln auswählen.</string>
   <string name="select_encryption_or_signature_key">Mindestens einen Schlüssel zum Verschlüsseln oder einen zum Signieren auswählen.</string>
@@ -178,6 +189,8 @@
   <string name="specify_file_to_export_to">Bitte angeben, in welche Datei exportiert werden soll.\nWARNUNG: Datei wird überschrieben, wenn sie bereits existiert. </string>
   <string name="key_deletion_confirmation_multi">Möchtest du wirklich alle ausgewählten öffentlichen Schlüssel löschen?\nDies kann nicht rückgängig gemacht werden!</string>
   <string name="secret_key_deletion_confirmation">Soll der PRIVATE Schlüssel \'%s\' wirklich gelöscht werden?\nDies kann nicht rückgängig gemacht werden!</string>
+  <string name="ask_save_changed_key">Es wurden am Schlüsselbund Veränderungen vorgenommen. Sollen dies gespeichert werden?</string>
+  <string name="ask_empty_id_ok">Es wurde eine leere Nutzer ID hinzugefügt. Sind sie sicher das sie forfahren wollen?</string>
   <string name="public_key_deletetion_confirmation">Soll der öffentliche Schlüssel \'%s\' wirklich gelöscht werden?\nDies kann nicht rückgängig gemacht werden! </string>
   <string name="also_export_secret_keys">Private Schlüssel auch exportieren</string>
   <plurals name="keys_added_and_updated_1">
@@ -212,8 +225,10 @@
     <item quantity="other">%d schlechte private Schlüssel ignoriert. Evtl. wurden sie mit folgender Option exportiert:\n --export-secret-subkeys\nUnbedingt mit der Option \n --export-secret-keys\nexportieren.</item>
   </plurals>
   <string name="key_send_success">Schlüssel wurde erfolgreich hochgeladen.</string>
+  <string name="key_certify_success">Schlüssel erfolgreich beglaubigt</string>
   <string name="list_empty">Diese Liste ist leer!</string>
   <string name="key_copied_to_clipboard">Schlüssel wurde in die Zwischenablage kopiert!</string>
+  <string name="key_has_already_been_certified">Schlüssel wurde bereits beglaubigt</string>
   <string name="select_key_to_sign">Bitte wähle einen Signaturschlüssel!</string>
   <string name="key_too_big_for_sharing">Schlüssel ist zu groß um so geteilt zu werden!</string>
   <!--errors
@@ -252,7 +267,16 @@
     <item quantity="one">Ein Teil der geladenen Datei ist ein gültiges OpenPGP Objekt aber kein OpenPGP Schlüssel</item>
     <item quantity="other">Teile der geladenen Dateien sind gültige OpenPGP Objekte aber keine OpenPGP Schlüssel</item>
   </plurals>
+  <string name="error_change_something_first">Es müssen vorm Speichern erst Veränderungen am Schlüsselbund vorgenommen werden</string>
   <!--results shown after decryption/verification-->
+  <string name="decrypt_result_invalid_signature">Ungültige Signatur!</string>
+  <string name="decrypt_result_signature_unknown_pub_key">Unbekannter öffentlicher Schlüssel</string>
+  <string name="decrypt_result_signature_uncertified">Gültige Signatur (nicht beglaubigt)</string>
+  <string name="decrypt_result_signature_certified">Gültige Signatur (beglaubigt)</string>
+  <string name="decrypt_result_decrypted">Erfolgreich entschlüsselt</string>
+  <string name="decrypt_result_decrypted_unknown_pub_key">Erfolgreich entschlüsselt, aber unbekannter öffentlicher Schlüssel</string>
+  <string name="decrypt_result_decrypted_and_signature_uncertified">Erfolgreich entschlüsselt und gültige Signatur (nicht beglaubigt)</string>
+  <string name="decrypt_result_decrypted_and_signature_certified">Erfolgreich entschlüsselt und gültige Signatur (beglaubigt)</string>
   <!--progress dialogs, usually ending in '…'-->
   <string name="progress_done">Fertig.</string>
   <string name="progress_cancel">Abbrechen</string>
@@ -293,15 +317,24 @@
   <string name="action_share_key_with">Teile Schlüssel über…</string>
   <!--key bit length selections-->
   <string name="key_size_512">512</string>
+  <string name="key_size_768">768</string>
   <string name="key_size_1024">1024</string>
+  <string name="key_size_1536">1536</string>
   <string name="key_size_2048">2048</string>
+  <string name="key_size_3072">3072</string>
   <string name="key_size_4096">4096</string>
+  <string name="key_size_8192">8192</string>
+  <string name="key_size_custom">Individuelle Schlüsselgröße</string>
+  <string name="key_size_custom_info">Geben Sie benutzerdefinierte Schlüssellänge an (in Bit):</string>
+  <string name="key_size_custom_info_rsa">Die RSA-Schlüssellänge muss größer als 1024 sein und höchstens 8192 sein. Auch muss sie ein Mehrfaches von 8 sein.</string>
+  <string name="key_size_custom_info_dsa">Die DSA-Schlüssellänge muss mindestens 512 und höchstens 1024 sein. Auch muss sie ein Mehrfaches von 64 sein.</string>
   <!--compression-->
   <string name="compression_fast">schnell</string>
   <string name="compression_very_slow">sehr langsam</string>
   <!--Help-->
   <string name="help_tab_start">Start</string>
   <string name="help_tab_faq">FAQ</string>
+  <string name="help_tab_wot">Web of Trust</string>
   <string name="help_tab_nfc_beam">NFC-Beam</string>
   <string name="help_tab_changelog">Changelog</string>
   <string name="help_tab_about">Über</string>
@@ -334,12 +367,15 @@
   <string name="api_settings_hide_advanced">Erweiterte Einstellungen ausblenden</string>
   <string name="api_settings_no_key">Kein Schlüssel ausgewählt</string>
   <string name="api_settings_select_key">Schlüssel auswählen</string>
+  <string name="api_settings_create_key">Einen neuen Schlüssel für diesen Account erzeugen</string>
   <string name="api_settings_save">Speichern</string>
   <string name="api_settings_cancel">Abbrechen</string>
   <string name="api_settings_revoke">Zugriff widerufen</string>
+  <string name="api_settings_delete_account">Account löschen</string>
   <string name="api_settings_package_name">Paketname</string>
   <string name="api_settings_package_signature">SHA-256 der Paketsignatur</string>
   <string name="api_settings_accounts">Konten</string>
+  <string name="api_settings_accounts_empty">Keine Accounts mit dieser App verknüpft.</string>
   <string name="api_register_text">Folgende Anwendung beantragt Zugriff auf OpenKeychains API.\nZugriff erlauben?\n\nVORSICHT: Sollten Sie nicht wissen, warum diese Anfrage erscheint, sollten Sie den Zugriff nicht erlauben! Sie können Zugriffe später über das Menü \'Registrierte Anwendungen\' widerrufen.</string>
   <string name="api_register_allow">Zugriff erlauben</string>
   <string name="api_register_disallow">Zugriff verbieten</string>
@@ -371,6 +407,7 @@
   <string name="key_view_tab_main">Info</string>
   <string name="key_view_tab_certs">Beglaubigungen</string>
   <!--Navigation Drawer-->
+  <string name="nav_keys">Schlüssel</string>
   <string name="nav_encrypt">Signieren und Verschlüsseln</string>
   <string name="nav_decrypt">Entschlüsseln und Verifizieren</string>
   <string name="nav_import">Schlüssel Importieren</string>
@@ -383,6 +420,30 @@
   <string name="secret_key_yes">verfügbar</string>
   <string name="secret_key_no">nicht verfügbar</string>
   <!--hints-->
+  <string name="encrypt_content_edit_text_hint">Hier die Nachricht schreiben welche verschlüsselt und/oder signiert werden soll...</string>
+  <string name="decrypt_content_edit_text_hint">Hier den verslüsselten Text eingeben um ihn zu entschlüsseln und/oder zu überprüfen</string>
+  <!--certifications-->
+  <string name="cert_default">Grundeinstellung</string>
+  <string name="cert_none">kein</string>
+  <string name="cert_positive">positiv</string>
+  <string name="cert_revoke">Wiederrufen</string>
+  <string name="cert_verify_ok">OK</string>
+  <string name="cert_verify_failed">fehlgeschlagen!</string>
+  <string name="cert_verify_error">Fehler!</string>
+  <string name="cert_verify_unavailable">Schlüssel nicht verfügbar</string>
   <!--unsorted-->
+  <string name="section_signer_id">Unterzeichner</string>
+  <string name="section_cert">Zertifikatdetails</string>
+  <string name="label_user_id">Nutzer ID</string>
+  <string name="unknown_uid">&lt;unbekannt&gt;</string>
+  <string name="empty_certs">Kein Zertifikat für diesen Schlüssel</string>
   <string name="section_uids_to_sign">Benutzer-IDs, die beglaubigt werden sollen</string>
+  <string name="label_revocation">Widerrufsgrund</string>
+  <string name="label_verify_status">Verificationsstatus</string>
+  <string name="label_cert_type">Typ</string>
+  <string name="error_key_not_found">Schlüssel nicht gefunden!</string>
+  <string name="error_key_processing">Fehler bei der Verarbeitung des Schlüssels!</string>
+  <string name="no_subkey">Unterschlüssel nicht verfügbar</string>
+  <string name="secret_cannot_multiple">Geheime Schlüssel können nur einzeln gelöscht werden!</string>
+  <string name="title_view_cert">Zertifikatdetails anzeigen</string>
 </resources>

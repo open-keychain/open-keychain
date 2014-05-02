@@ -107,7 +107,8 @@
   <string name="label_passphrase_cache_ttl">Помнить пароль</string>
   <string name="label_message_compression">Сжатие сообщения</string>
   <string name="label_file_compression">Сжатие файла</string>
-  <string name="label_force_v3_signature">Использовать старые OpenPGPV3 подписи</string>
+  <string name="label_force_v3_signature">Использовать OpenPGPv3 подписи (устар.)</string>
+  <string name="label_keyservers">Серверы ключей</string>
   <string name="label_key_id">ID ключа</string>
   <string name="label_creation">Создан</string>
   <string name="label_expiry">Годен до...</string>
@@ -133,6 +134,16 @@
   <string name="can_sign">подпись</string>
   <string name="expired">просрочен</string>
   <string name="revoked">отозван</string>
+  <plurals name="n_keys">
+    <item quantity="one">1 ключ</item>
+    <item quantity="few">%d ключей</item>
+    <item quantity="other">%d ключей</item>
+  </plurals>
+  <plurals name="n_keyservers">
+    <item quantity="one">%d сервер ключей</item>
+    <item quantity="few">%d серверов ключей</item>
+    <item quantity="other">%d серверов ключей</item>
+  </plurals>
   <string name="secret_key">Секретный ключ:</string>
   <!--choice-->
   <string name="choice_none">Нет</string>
@@ -176,7 +187,10 @@
   <string name="specify_file_to_encrypt_to">Пожалуйста, выберите файл для шифрования.\nВНИМАНИЕ! Если файл существует, он будет перезаписан.</string>
   <string name="specify_file_to_decrypt_to">Пожалуйста, выберите файл для расшифровки.\nВНИМАНИЕ! Если файл существует, он будет перезаписан.</string>
   <string name="specify_file_to_export_to">Пожалуйста, выберите файл для экспорта.\nВНИМАНИЕ! Если файл существует, он будет перезаписан.</string>
+  <string name="key_deletion_confirmation_multi">Вы уверены, что хотите удалить выбранные ключи?\nЭто действие нельзя отменить!</string>
   <string name="secret_key_deletion_confirmation">Вы уверены, что ходите удалить СЕКРЕТНЫЙ ключ \'%s\'?\nЭто действие нельзя отменить!</string>
+  <string name="ask_empty_id_ok">Вы добавили пустой ID пользователя. Вы уверены, что хотите продолжить?</string>
+  <string name="public_key_deletetion_confirmation">Вы правда хотите удалить публичный ключ \'%s\'?\nЭто действие нельзя отменить!</string>
   <string name="also_export_secret_keys">Экспортировать секретные ключи?</string>
   <plurals name="keys_added_and_updated_1">
     <item quantity="one">Успешно добавлено %d ключ</item>
@@ -202,6 +216,7 @@
   <string name="key_exported">Успешный экспорт 1 ключа.</string>
   <string name="keys_exported">Экспортировано %d ключей.</string>
   <string name="no_keys_exported">Ключи не были экспортированы.</string>
+  <string name="key_creation_el_gamal_info">Прим.: только вторичные ключи поддерживают ElGamal.</string>
   <string name="key_creation_weak_rsa_info">Внимание: создание ключей RSA длиной 1024 бита и менее признано небезопасным. Данная возможность отключена.</string>
   <string name="key_not_found">Не удается найти ключ %08X.</string>
   <plurals name="keys_found">
@@ -216,7 +231,9 @@
   </plurals>
   <string name="key_send_success">Ключ успешно загружен на сервер</string>
   <string name="list_empty">Список пуст!</string>
+  <string name="nfc_successful">Ключ успешно передан через NFC!</string>
   <string name="key_copied_to_clipboard">Ключ скопирован в буфер обмена!</string>
+  <string name="key_has_already_been_certified">Ключ уже был сертифицирован ранее!</string>
   <string name="select_key_to_sign">Выберите ключ, используемый для подписи!</string>
   <string name="key_too_big_for_sharing">Ключ слишком большой для этого способа передачи!</string>
   <!--errors
@@ -242,10 +259,13 @@
   <string name="error_could_not_extract_private_key">не удалось извлечь личный ключ</string>
   <string name="error_expiry_must_come_after_creation">срок годности не может быть раньше даты создания</string>
   <!--errors without preceeding Error:-->
+  <string name="error_only_files_are_supported">Прямая передача данных без использования файла в памяти устройства не поддерживается.</string>
+  <string name="error_jelly_bean_needed">Для использования NFC Beam требуется Android 4.1+ !</string>
   <string name="error_nfc_needed">Ваше устройство не поддерживает NFC!</string>
   <string name="error_nothing_import">Нет данных для импорта!</string>
   <string name="error_keyserver_insufficient_query">Ограничение запроса сервера</string>
   <string name="error_keyserver_query">Сбой запроса сервера ключей</string>
+  <string name="error_keyserver_too_many_responses">Слишком много возможных ключей. Уточните свой запрос!</string>
   <string name="error_import_file_no_content">Файл пуст</string>
   <string name="error_generic_report_bug">Выявлена ошибка. Пожалуйста, сообщите о ней разработчику.</string>
   <plurals name="error_import_non_pgp_part">
@@ -254,6 +274,11 @@
     <item quantity="other">части загруженного файла содержат данные OpenPGP, но это не ключ</item>
   </plurals>
   <!--results shown after decryption/verification-->
+  <string name="decrypt_result_invalid_signature">Неверная подпись!</string>
+  <string name="decrypt_result_signature_unknown_pub_key">Неизвестный ключ</string>
+  <string name="decrypt_result_signature_uncertified">Верная подпись (не сертифицирована)</string>
+  <string name="decrypt_result_signature_certified">Верная подпись (сертифицирована)</string>
+  <string name="decrypt_result_decrypted">Успешно расшифровано</string>
   <!--progress dialogs, usually ending in '…'-->
   <string name="progress_done">Готово.</string>
   <string name="progress_cancel">Отмена</string>
@@ -296,15 +321,24 @@
   <string name="action_share_key_with">Отправить...</string>
   <!--key bit length selections-->
   <string name="key_size_512">512</string>
+  <string name="key_size_768">768</string>
   <string name="key_size_1024">1024</string>
+  <string name="key_size_1536">1536</string>
   <string name="key_size_2048">2048</string>
+  <string name="key_size_3072">3072</string>
   <string name="key_size_4096">4096</string>
+  <string name="key_size_8192">8192</string>
+  <string name="key_size_custom">Произвольная длина ключа</string>
+  <string name="key_size_custom_info">Введите длину ключа (бит):</string>
+  <string name="key_size_custom_info_rsa">Длина RSA ключа должна быть в пределах между 1024 и 8192 бит и должна быть кратна 8.</string>
+  <string name="key_size_custom_info_dsa">Длина DSA ключа должна быть в пределах между 512 и 1024 бит и должна быть кратна 64.</string>
   <!--compression-->
   <string name="compression_fast">быстро</string>
   <string name="compression_very_slow">очень медленно</string>
   <!--Help-->
   <string name="help_tab_start">Начать</string>
   <string name="help_tab_faq">ЧаВо</string>
+  <string name="help_tab_wot">Сеть доверия (WoT)</string>
   <string name="help_tab_nfc_beam">NFC Beam</string>
   <string name="help_tab_changelog">Изменения</string>
   <string name="help_tab_about">О программе</string>
@@ -375,9 +409,12 @@
   <string name="key_list_empty_button_import">Импортировать ключи</string>
   <!--Key view-->
   <string name="key_view_action_edit">Изменить ключ</string>
+  <string name="key_view_action_encrypt">Зашифровать этим ключом</string>
+  <string name="key_view_action_certify">Сертифицировать этот ключ</string>
   <string name="key_view_tab_main">Информация</string>
   <string name="key_view_tab_certs">Сертификация</string>
   <!--Navigation Drawer-->
+  <string name="nav_keys">Ключи</string>
   <string name="nav_encrypt">Подписать и зашифровать</string>
   <string name="nav_decrypt">Расшифровать и проверить</string>
   <string name="nav_import">Импорт ключей</string>
@@ -392,13 +429,28 @@
   <!--hints-->
   <string name="encrypt_content_edit_text_hint">Напишите сообщение здесь, что бы зашифровать и/или подписать...</string>
   <string name="decrypt_content_edit_text_hint">Введите сюда шифр для расшифровки и/или проверки...</string>
+  <!--certifications-->
+  <string name="cert_default">по умолчанию</string>
+  <string name="cert_none">нет</string>
+  <string name="cert_revoke">отозвать</string>
+  <string name="cert_verify_ok">ok</string>
+  <string name="cert_verify_failed">сбой!</string>
+  <string name="cert_verify_error">ошибка!</string>
+  <string name="cert_verify_unavailable">ключ не доступен</string>
   <!--unsorted-->
   <string name="section_signer_id">Подписант</string>
   <string name="section_cert">Детали сертификации</string>
   <string name="label_user_id">ID пользователя</string>
+  <string name="unknown_uid">&lt;неизв.&gt;</string>
   <string name="empty_certs">Этот ключ не сертифицирован</string>
   <string name="section_uids_to_sign">Подписываемые ID пользователя</string>
-  <string name="cert_default">по умолчанию</string>
-  <string name="cert_none">нет</string>
-  <string name="cert_revoke">отозвать</string>
+  <string name="label_revocation">Причина отзыва</string>
+  <string name="label_verify_status">Статус верификации</string>
+  <string name="label_cert_type">Тип</string>
+  <string name="error_key_not_found">Ключ не найден!</string>
+  <string name="error_key_processing">Ошибка обработки ключа!</string>
+  <string name="no_subkey">вторичный ключ не доступен</string>
+  <string name="secret_cannot_multiple">Секретные ключи можно удалять только по одному!</string>
+  <string name="title_view_cert">Просмотреть детали сертификации</string>
+  <string name="unknown_algorithm">неизв.</string>
 </resources>
