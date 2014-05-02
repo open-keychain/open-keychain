@@ -125,6 +125,11 @@ When changing build files or dependencies, respect the following requirements:
   * run ./gradlew wrapper twice to update gradle and download the new gradle jar file
   * commit the new gradle jar and property files
 
+### Slow Gradle?
+
+* https://www.timroes.de/2013/09/12/speed-up-gradle/
+* Disable Lint checking if it is enabled in build.gradle
+
 ### Translations
 
 Translations are hosted on Transifex, which is configured by ".tx/config".
