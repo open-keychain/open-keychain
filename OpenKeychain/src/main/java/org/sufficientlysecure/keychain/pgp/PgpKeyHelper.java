@@ -112,20 +112,6 @@ public class PgpKeyHelper {
 
     @SuppressWarnings("unchecked")
     @Deprecated
-    private static Vector<PGPPublicKey> getEncryptKeys(PGPPublicKeyRing keyRing) {
-        Vector<PGPPublicKey> encryptKeys = new Vector<PGPPublicKey>();
-
-        for (PGPPublicKey key : new IterableIterator<PGPPublicKey>(keyRing.getPublicKeys())) {
-            if (isEncryptionKey(key)) {
-                encryptKeys.add(key);
-            }
-        }
-
-        return encryptKeys;
-    }
-
-    @SuppressWarnings("unchecked")
-    @Deprecated
     private static Vector<PGPSecretKey> getSigningKeys(PGPSecretKeyRing keyRing) {
         Vector<PGPSecretKey> signingKeys = new Vector<PGPSecretKey>();
 
@@ -136,39 +122,6 @@ public class PgpKeyHelper {
         }
 
         return signingKeys;
-    }
-
-    @SuppressWarnings("unchecked")
-    @Deprecated
-    private static Vector<PGPSecretKey> getCertificationKeys(PGPSecretKeyRing keyRing) {
-        Vector<PGPSecretKey> signingKeys = new Vector<PGPSecretKey>();
-
-        for (PGPSecretKey key : new IterableIterator<PGPSecretKey>(keyRing.getSecretKeys())) {
-            if (isCertificationKey(key)) {
-                signingKeys.add(key);
-            }
-        }
-
-        return signingKeys;
-    }
-
-    @Deprecated
-    private static Vector<PGPSecretKey> getUsableCertificationKeys(PGPSecretKeyRing keyRing) {
-        Vector<PGPSecretKey> usableKeys = new Vector<PGPSecretKey>();
-        Vector<PGPSecretKey> signingKeys = getCertificationKeys(keyRing);
-        PGPSecretKey masterKey = null;
-        for (int i = 0; i < signingKeys.size(); ++i) {
-            PGPSecretKey key = signingKeys.get(i);
-            if (key.isMasterKey()) {
-                masterKey = key;
-            } else {
-                usableKeys.add(key);
-            }
-        }
-        if (masterKey != null) {
-            usableKeys.add(masterKey);
-        }
-        return usableKeys;
     }
 
     @Deprecated
@@ -188,14 +141,6 @@ public class PgpKeyHelper {
             usableKeys.add(masterKey);
         }
         return usableKeys;
-    }
-
-    public static PGPSecretKey getFirstCertificationSubkey(PGPSecretKeyRing keyRing) {
-        Vector<PGPSecretKey> signingKeys = getUsableCertificationKeys(keyRing);
-        if (signingKeys.size() == 0) {
-            return null;
-        }
-        return signingKeys.get(0);
     }
 
     public static PGPSecretKey getFirstSigningSubkey(PGPSecretKeyRing keyRing) {

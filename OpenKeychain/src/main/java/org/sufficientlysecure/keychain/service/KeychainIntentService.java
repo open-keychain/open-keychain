@@ -836,7 +836,7 @@ public class KeychainIntentService extends IntentService
                     Log.e(Constants.TAG, "key not found!", e);
                     // TODO: throw exception here!
                 }
-                PGPSecretKey certificationKey = PgpKeyHelper.getFirstCertificationSubkey(secretKeyRing);
+                PGPSecretKey certificationKey = secretKeyRing.getSecretKey();
                 publicKey = keyOperation.certifyKey(certificationKey, publicKey,
                         userIds, signaturePassphrase);
                 publicRing = PGPPublicKeyRing.insertPublicKey(publicRing, publicKey);
