@@ -366,6 +366,7 @@ public class PgpDecryptVerify {
         Object dataChunk = plainFact.nextObject();
         OpenPgpSignatureResultBuilder signatureResultBuilder = new OpenPgpSignatureResultBuilder();
         int signatureIndex = -1;
+        CachedPublicKeyRing signingRing = null;
         CachedPublicKey signingKey = null;
 
         if (dataChunk instanceof PGPCompressedData) {
@@ -390,7 +391,7 @@ public class PgpDecryptVerify {
             for (int i = 0; i < sigList.size(); ++i) {
                 try {
                     long sigKeyId = sigList.get(i).getKeyID();
-                    CachedPublicKeyRing signingRing = mProviderHelper.getCachedPublicKeyRing(
+                    signingRing = mProviderHelper.getCachedPublicKeyRing(
                             KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(
                                     Long.toString(sigKeyId)
                             )
@@ -409,9 +410,9 @@ public class PgpDecryptVerify {
 
                 signatureResultBuilder.signatureAvailable(true);
                 signatureResultBuilder.knownKey(true);
-                signatureResultBuilder.keyId(signingKey.getKeyRing().getMasterKeyId());
-                signatureResultBuilder.userId(signingKey.getKeyRing().getPrimaryUserId());
-                signatureResultBuilder.signatureKeyCertified(signingKey.getKeyRing().getVerified() > 0);
+                signatureResultBuilder.keyId(signingRing.getMasterKeyId());
+                signatureResultBuilder.userId(signingRing.getPrimaryUserId());
+                signatureResultBuilder.signatureKeyCertified(signingRing.getVerified() > 0);
 
                 signingKey.initSignature(signature);
             } else {
@@ -488,7 +489,7 @@ public class PgpDecryptVerify {
 
                 // Verify signature and check binding signatures
                 boolean validSignature = signature.verify(messageSignature);
-                boolean validKeyBinding = signingKey.getKeyRing().verifySubkeyBinding(signingKey);
+                boolean validKeyBinding = signingRing.verifySubkeyBinding(signingKey);
 
                 signatureResultBuilder.validSignature(validSignature);
                 signatureResultBuilder.validKeyBinding(validKeyBinding);
@@ -564,6 +565,7 @@ public class PgpDecryptVerify {
             throw new InvalidDataException();
         }
 
+        CachedPublicKeyRing signingRing = null;
         CachedPublicKey signingKey = null;
         int signatureIndex = -1;
 
@@ -572,7 +574,7 @@ public class PgpDecryptVerify {
         for (int i = 0; i < sigList.size(); ++i) {
             try {
                 long sigKeyId = sigList.get(i).getKeyID();
-                CachedPublicKeyRing signingRing = mProviderHelper.getCachedPublicKeyRing(
+                signingRing = mProviderHelper.getCachedPublicKeyRing(
                         KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(
                                 Long.toString(sigKeyId)
                         )
@@ -593,9 +595,9 @@ public class PgpDecryptVerify {
 
             signatureResultBuilder.signatureAvailable(true);
             signatureResultBuilder.knownKey(true);
-            signatureResultBuilder.keyId(signingKey.getKeyRing().getMasterKeyId());
-            signatureResultBuilder.userId(signingKey.getKeyRing().getPrimaryUserId());
-            signatureResultBuilder.signatureKeyCertified(signingKey.getKeyRing().getVerified() > 0);
+            signatureResultBuilder.keyId(signingRing.getMasterKeyId());
+            signatureResultBuilder.userId(signingRing.getPrimaryUserId());
+            signatureResultBuilder.signatureKeyCertified(signingRing.getVerified() > 0);
 
             signingKey.initSignature(signature);
         } else {
@@ -629,7 +631,7 @@ public class PgpDecryptVerify {
 
             // Verify signature and check binding signatures
             boolean validSignature = signature.verify();
-            boolean validKeyBinding = signingKey.getKeyRing().verifySubkeyBinding(signingKey);
+            boolean validKeyBinding = signingRing.verifySubkeyBinding(signingKey);
 
             signatureResultBuilder.validSignature(validSignature);
             signatureResultBuilder.validKeyBinding(validKeyBinding);

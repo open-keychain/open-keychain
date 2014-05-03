@@ -54,8 +54,4 @@ public abstract class CachedKeyRing {
         return mVerified;
     }
 
-    public void initSignature(PGPSignature sig) {
-
-    }
-
 }
