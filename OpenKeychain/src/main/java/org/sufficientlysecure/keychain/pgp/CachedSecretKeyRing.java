@@ -1,12 +1,18 @@
 package org.sufficientlysecure.keychain.pgp;
 
 import org.spongycastle.bcpg.sig.KeyFlags;
+import org.spongycastle.openpgp.PGPException;
+import org.spongycastle.openpgp.PGPPrivateKey;
 import org.spongycastle.openpgp.PGPPublicKey;
 import org.spongycastle.openpgp.PGPSecretKey;
 import org.spongycastle.openpgp.PGPSecretKeyRing;
 import org.spongycastle.openpgp.PGPSignature;
 import org.spongycastle.openpgp.PGPSignatureSubpacketVector;
+import org.spongycastle.openpgp.operator.PBESecretKeyDecryptor;
+import org.spongycastle.openpgp.operator.jcajce.JcePBESecretKeyDecryptorBuilder;
 import org.sufficientlysecure.keychain.util.IterableIterator;
+
+import java.util.Iterator;
 
 public class CachedSecretKeyRing extends CachedKeyRing {
 
@@ -29,6 +35,35 @@ public class CachedSecretKeyRing extends CachedKeyRing {
 
     public CachedSecretKey getSubKey(long id) {
         return new CachedSecretKey(this, mRing.getSecretKey(id));
+    }
+
+    public IterableIterator<CachedSecretKey> iterator() {
+        return new IterableIterator<CachedSecretKey>(mRing.getSecretKeys());
+    }
+
+    public boolean hasPassphrase() {
+        PGPSecretKey secretKey = null;
+        boolean foundValidKey = false;
+        for (Iterator keys = mRing.getSecretKeys(); keys.hasNext(); ) {
+            secretKey = (PGPSecretKey) keys.next();
+            if (!secretKey.isPrivateKeyEmpty()) {
+                foundValidKey = true;
+                break;
+            }
+        }
+        if(!foundValidKey) {
+            return false;
+        }
+
+        try {
+            PBESecretKeyDecryptor keyDecryptor = new JcePBESecretKeyDecryptorBuilder()
+                    .setProvider("SC").build("".toCharArray());
+            PGPPrivateKey testKey = secretKey.extractPrivateKey(keyDecryptor);
+            return testKey == null;
+        } catch(PGPException e) {
+            // this means the crc check failed -> passphrase required
+            return true;
+        }
     }
 
     /** This returns the subkey that should be used for signing.

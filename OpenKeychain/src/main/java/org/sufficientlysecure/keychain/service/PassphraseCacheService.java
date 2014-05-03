@@ -197,6 +197,7 @@ public class PassphraseCacheService extends Service {
         return cachedPassphrase;
     }
 
+    @Deprecated
     public static boolean hasPassphrase(PGPSecretKeyRing secretKeyRing) {
         PGPSecretKey secretKey = null;
         boolean foundValidKey = false;
@@ -228,6 +229,7 @@ public class PassphraseCacheService extends Service {
      * @param secretKeyId
      * @return true if it has a passphrase
      */
+    @Deprecated
     public static boolean hasPassphrase(Context context, long secretKeyId) {
         // check if the key has no passphrase
         try {

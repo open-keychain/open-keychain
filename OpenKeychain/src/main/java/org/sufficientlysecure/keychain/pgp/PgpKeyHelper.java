@@ -143,6 +143,7 @@ public class PgpKeyHelper {
         return usableKeys;
     }
 
+    @Deprecated
     public static PGPSecretKey getFirstSigningSubkey(PGPSecretKeyRing keyRing) {
         Vector<PGPSecretKey> signingKeys = getUsableSigningKeys(keyRing);
         if (signingKeys.size() == 0) {

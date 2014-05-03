@@ -1,5 +1,6 @@
 package org.sufficientlysecure.keychain.pgp;
 
+import org.spongycastle.bcpg.sig.KeyFlags;
 import org.spongycastle.openpgp.PGPException;
 import org.spongycastle.openpgp.PGPPrivateKey;
 import org.spongycastle.openpgp.PGPPublicKey;
@@ -26,28 +27,25 @@ import java.security.NoSuchProviderException;
 import java.security.SignatureException;
 import java.util.List;
 
-public class CachedSecretKey {
+public class CachedSecretKey extends CachedPublicKey {
 
-    // this is the parent key ring
-    private final CachedSecretKeyRing mRing;
-
-    private final PGPSecretKey mKey;
+    private final PGPSecretKey mSecretKey;
     private PGPPrivateKey mPrivateKey = null;
 
     CachedSecretKey(CachedSecretKeyRing ring, PGPSecretKey key) {
-        mRing = ring;
-        mKey = key;
+        super(ring, key.getPublicKey());
+        mSecretKey = key;
     }
 
     public CachedSecretKeyRing getRing() {
-        return mRing;
+        return (CachedSecretKeyRing) mRing;
     }
 
     public void unlock(String passphrase) throws PgpGeneralException {
         try {
             PBESecretKeyDecryptor keyDecryptor = new JcePBESecretKeyDecryptorBuilder().setProvider(
                     Constants.BOUNCY_CASTLE_PROVIDER_NAME).build(passphrase.toCharArray());
-            mPrivateKey = mKey.extractPrivateKey(keyDecryptor);
+            mPrivateKey = mSecretKey.extractPrivateKey(keyDecryptor);
         } catch (PGPException e) {
             throw new PgpGeneralException("error extracting key!", e);
         }
@@ -64,7 +62,7 @@ public class CachedSecretKey {
 
         // content signer based on signing key algorithm and chosen hash algorithm
         JcaPGPContentSignerBuilder contentSignerBuilder = new JcaPGPContentSignerBuilder(
-                mKey.getPublicKey().getAlgorithm(), hashAlgo)
+                mSecretKey.getPublicKey().getAlgorithm(), hashAlgo)
                 .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME);
 
         int signatureType;
@@ -96,7 +94,7 @@ public class CachedSecretKey {
 
         // content signer based on signing key algorithm and chosen hash algorithm
         JcaPGPContentSignerBuilder contentSignerBuilder = new JcaPGPContentSignerBuilder(
-                mKey.getPublicKey().getAlgorithm(), hashAlgo)
+                mSecretKey.getPublicKey().getAlgorithm(), hashAlgo)
                 .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME);
 
         int signatureType;
@@ -144,7 +142,7 @@ public class CachedSecretKey {
         {
             // TODO: SHA256 fixed?
             JcaPGPContentSignerBuilder contentSignerBuilder = new JcaPGPContentSignerBuilder(
-                    mKey.getPublicKey().getAlgorithm(), PGPUtil.SHA256)
+                    mSecretKey.getPublicKey().getAlgorithm(), PGPUtil.SHA256)
                     .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME);
 
             signatureGenerator = new PGPSignatureGenerator(contentSignerBuilder);
