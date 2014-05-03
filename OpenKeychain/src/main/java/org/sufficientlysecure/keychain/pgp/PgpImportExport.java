@@ -97,12 +97,12 @@ public class PgpImportExport {
         }
     }
 
-    public boolean uploadKeyRingToServer(HkpKeyServer server, PGPPublicKeyRing keyring) {
+    public boolean uploadKeyRingToServer(HkpKeyServer server, CachedPublicKeyRing keyring) {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         ArmoredOutputStream aos = null;
         try {
             aos = new ArmoredOutputStream(bos);
-            aos.write(keyring.getEncoded());
+            keyring.encode(aos);
             aos.close();
 
             String armoredKey = bos.toString("UTF-8");
@@ -147,8 +147,25 @@ public class PgpImportExport {
 
                 if (obj instanceof PGPKeyRing) {
                     PGPKeyRing keyring = (PGPKeyRing) obj;
-
-                    int status = storeKeyRingInCache(keyring);
+                    int status;
+                    // TODO Better try to get this one from the db first!
+                    if(keyring instanceof PGPSecretKeyRing) {
+                        PGPSecretKeyRing secretKeyRing = (PGPSecretKeyRing) keyring;
+                        // TODO: preserve certifications
+                        // (http://osdir.com/ml/encryption.bouncy-castle.devel/2007-01/msg00054.html ?)
+                        PGPPublicKeyRing newPubRing = null;
+                        for (PGPPublicKey key : new IterableIterator<PGPPublicKey>(
+                                secretKeyRing.getPublicKeys())) {
+                            if (newPubRing == null) {
+                                newPubRing = new PGPPublicKeyRing(key.getEncoded(),
+                                        new JcaKeyFingerprintCalculator());
+                            }
+                            newPubRing = PGPPublicKeyRing.insertPublicKey(newPubRing, key);
+                        }
+                        status = storeKeyRingInCache(new UncachedKeyRing(newPubRing ,secretKeyRing));
+                    } else {
+                        status = storeKeyRingInCache(new UncachedKeyRing((PGPPublicKeyRing) keyring));
+                    }
 
                     if (status == RETURN_ERROR) {
                         throw new PgpGeneralException(
@@ -259,44 +276,16 @@ public class PgpImportExport {
     }
 
     @SuppressWarnings("unchecked")
-    public int storeKeyRingInCache(PGPKeyRing keyring) {
+    public int storeKeyRingInCache(UncachedKeyRing keyring) {
         int status = RETURN_ERROR;
         try {
-            if (keyring instanceof PGPSecretKeyRing) {
-                PGPSecretKeyRing secretKeyRing = (PGPSecretKeyRing) keyring;
-                boolean save = true;
-
-                for (PGPSecretKey testSecretKey : new IterableIterator<PGPSecretKey>(
-                        secretKeyRing.getSecretKeys())) {
-                    if (!testSecretKey.isMasterKey()) {
-                        if (testSecretKey.isPrivateKeyEmpty()) {
-                            // this is bad, something is very wrong...
-                            save = false;
-                            status = RETURN_BAD;
-                        }
-                    }
-                }
-
-                if (save) {
-                    // TODO: preserve certifications
-                    // (http://osdir.com/ml/encryption.bouncy-castle.devel/2007-01/msg00054.html ?)
-                    PGPPublicKeyRing newPubRing = null;
-                    for (PGPPublicKey key : new IterableIterator<PGPPublicKey>(
-                            secretKeyRing.getPublicKeys())) {
-                        if (newPubRing == null) {
-                            newPubRing = new PGPPublicKeyRing(key.getEncoded(),
-                                    new JcaKeyFingerprintCalculator());
-                        }
-                        newPubRing = PGPPublicKeyRing.insertPublicKey(newPubRing, key);
-                    }
-                    if (newPubRing != null) {
-                        mProviderHelper.saveKeyRing(newPubRing);
-                    }
-                    mProviderHelper.saveKeyRing(secretKeyRing);
-                    status = RETURN_OK;
-                }
-            } else if (keyring instanceof PGPPublicKeyRing) {
-                PGPPublicKeyRing publicKeyRing = (PGPPublicKeyRing) keyring;
+            PGPSecretKeyRing secretKeyRing = keyring.getSecretRing();
+            PGPPublicKeyRing publicKeyRing = keyring.getPublicRing();
+            // see what type we have. we can either have a secret + public keyring, or just public
+            if (secretKeyRing != null) {
+                mProviderHelper.saveKeyRing(publicKeyRing, secretKeyRing);
+                status = RETURN_OK;
+            } else {
                 mProviderHelper.saveKeyRing(publicKeyRing);
                 status = RETURN_OK;
             }

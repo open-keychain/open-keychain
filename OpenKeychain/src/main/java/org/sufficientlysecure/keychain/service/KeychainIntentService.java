@@ -29,7 +29,6 @@ import android.os.RemoteException;
 import org.spongycastle.bcpg.sig.KeyFlags;
 import org.spongycastle.openpgp.PGPKeyRing;
 import org.spongycastle.openpgp.PGPObjectFactory;
-import org.spongycastle.openpgp.PGPPublicKey;
 import org.spongycastle.openpgp.PGPPublicKeyRing;
 import org.spongycastle.openpgp.PGPSecretKey;
 import org.spongycastle.openpgp.PGPSecretKeyRing;
@@ -39,6 +38,9 @@ import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.helper.FileHelper;
 import org.sufficientlysecure.keychain.helper.OtherHelper;
 import org.sufficientlysecure.keychain.helper.Preferences;
+import org.sufficientlysecure.keychain.pgp.CachedPublicKeyRing;
+import org.sufficientlysecure.keychain.pgp.CachedSecretKey;
+import org.sufficientlysecure.keychain.pgp.CachedSecretKeyRing;
 import org.sufficientlysecure.keychain.pgp.PgpConversionHelper;
 import org.sufficientlysecure.keychain.pgp.PgpDecryptVerify;
 import org.sufficientlysecure.keychain.pgp.PgpDecryptVerifyResult;
@@ -48,6 +50,7 @@ import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
 import org.sufficientlysecure.keychain.pgp.PgpKeyOperation;
 import org.sufficientlysecure.keychain.pgp.PgpSignEncrypt;
 import org.sufficientlysecure.keychain.pgp.Progressable;
+import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralMsgIdException;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
@@ -648,10 +651,8 @@ public class KeychainIntentService extends IntentService
             try {
                 List<ImportKeysListEntry> entries = data.getParcelableArrayList(IMPORT_KEY_LIST);
 
-                Bundle resultData = new Bundle();
-
                 PgpImportExport pgpImportExport = new PgpImportExport(this, this);
-                resultData = pgpImportExport.importKeyRings(entries);
+                Bundle resultData = pgpImportExport.importKeyRings(entries);
 
                 sendMessageToHandler(KeychainIntentServiceHandler.MESSAGE_OKAY, resultData);
             } catch (Exception e) {
@@ -724,15 +725,12 @@ public class KeychainIntentService extends IntentService
                 HkpKeyServer server = new HkpKeyServer(keyServer);
 
                 ProviderHelper providerHelper = new ProviderHelper(this);
-                PGPPublicKeyRing keyring = (PGPPublicKeyRing) providerHelper.getPGPKeyRing(dataUri);
-                if (keyring != null) {
-                    PgpImportExport pgpImportExport = new PgpImportExport(this, null);
+                CachedPublicKeyRing keyring = providerHelper.getCachedPublicKeyRing(dataUri);
+                PgpImportExport pgpImportExport = new PgpImportExport(this, null);
 
-                    boolean uploaded = pgpImportExport.uploadKeyRingToServer(server,
-                            (PGPPublicKeyRing) keyring);
-                    if (!uploaded) {
-                        throw new PgpGeneralException("Unable to export key to selected server");
-                    }
+                boolean uploaded = pgpImportExport.uploadKeyRingToServer(server, keyring);
+                if (!uploaded) {
+                    throw new PgpGeneralException("Unable to export key to selected server");
                 }
 
                 sendMessageToHandler(KeychainIntentServiceHandler.MESSAGE_OKAY);
@@ -795,7 +793,6 @@ public class KeychainIntentService extends IntentService
                     entry.setBytes(downloadedKey.getEncoded());
                 }
 
-
                 Intent importIntent = new Intent(this, KeychainIntentService.class);
                 importIntent.setAction(ACTION_IMPORT_KEYRING);
                 Bundle importData = new Bundle();
@@ -826,24 +823,15 @@ public class KeychainIntentService extends IntentService
                 }
 
                 ProviderHelper providerHelper = new ProviderHelper(this);
-                PgpKeyOperation keyOperation = new PgpKeyOperation(new ProgressScaler(this, 0, 100, 100));
-                PGPPublicKeyRing publicRing = providerHelper.getPGPPublicKeyRing(pubKeyId);
-                PGPPublicKey publicKey = publicRing.getPublicKey(pubKeyId);
-                PGPSecretKeyRing secretKeyRing = null;
-                try {
-                    secretKeyRing = providerHelper.getPGPSecretKeyRing(masterKeyId);
-                } catch (ProviderHelper.NotFoundException e) {
-                    Log.e(Constants.TAG, "key not found!", e);
-                    // TODO: throw exception here!
-                }
-                PGPSecretKey certificationKey = secretKeyRing.getSecretKey();
-                publicKey = keyOperation.certifyKey(certificationKey, publicKey,
-                        userIds, signaturePassphrase);
-                publicRing = PGPPublicKeyRing.insertPublicKey(publicRing, publicKey);
+                CachedPublicKeyRing publicRing = providerHelper.getCachedPublicKeyRing(pubKeyId);
+                CachedSecretKeyRing secretKeyRing = providerHelper.getCachedSecretKeyRing(masterKeyId);
+                CachedSecretKey certificationKey = secretKeyRing.getSubKey();
+                certificationKey.unlock(signaturePassphrase);
+                UncachedKeyRing newRing = certificationKey.certifyUserIds(publicRing, userIds);
 
                 // store the signed key in our local cache
                 PgpImportExport pgpImportExport = new PgpImportExport(this, null);
-                int retval = pgpImportExport.storeKeyRingInCache(publicRing);
+                int retval = pgpImportExport.storeKeyRingInCache(newRing);
                 if (retval != PgpImportExport.RETURN_OK && retval != PgpImportExport.RETURN_UPDATED) {
                     throw new PgpGeneralException("Failed to store signed key in local cache");
                 }

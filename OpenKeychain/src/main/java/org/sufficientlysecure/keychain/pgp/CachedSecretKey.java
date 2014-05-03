@@ -2,10 +2,14 @@ package org.sufficientlysecure.keychain.pgp;
 
 import org.spongycastle.openpgp.PGPException;
 import org.spongycastle.openpgp.PGPPrivateKey;
+import org.spongycastle.openpgp.PGPPublicKey;
+import org.spongycastle.openpgp.PGPPublicKeyRing;
 import org.spongycastle.openpgp.PGPSecretKey;
 import org.spongycastle.openpgp.PGPSignature;
 import org.spongycastle.openpgp.PGPSignatureGenerator;
 import org.spongycastle.openpgp.PGPSignatureSubpacketGenerator;
+import org.spongycastle.openpgp.PGPSignatureSubpacketVector;
+import org.spongycastle.openpgp.PGPUtil;
 import org.spongycastle.openpgp.PGPV3SignatureGenerator;
 import org.spongycastle.openpgp.operator.PBESecretKeyDecryptor;
 import org.spongycastle.openpgp.operator.PublicKeyDataDecryptorFactory;
@@ -14,6 +18,13 @@ import org.spongycastle.openpgp.operator.jcajce.JcePBESecretKeyDecryptorBuilder;
 import org.spongycastle.openpgp.operator.jcajce.JcePublicKeyDataDecryptorFactoryBuilder;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
+import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralMsgIdException;
+import org.sufficientlysecure.keychain.util.IterableIterator;
+
+import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
+import java.security.SignatureException;
+import java.util.List;
 
 public class CachedSecretKey {
 
@@ -111,6 +122,53 @@ public class CachedSecretKey {
         }
         return new JcePublicKeyDataDecryptorFactoryBuilder()
                 .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME).build(mPrivateKey);
+    }
+
+    /**
+     * Certify the given pubkeyid with the given masterkeyid.
+     *
+     * @param publicKeyRing    Keyring to add certification to.
+     * @param userIds          User IDs to certify, must not be null or empty
+     * @return A keyring with added certifications
+     */
+    public UncachedKeyRing certifyUserIds(CachedPublicKeyRing publicKeyRing, List<String> userIds)
+            throws PgpGeneralMsgIdException, NoSuchAlgorithmException, NoSuchProviderException,
+            PGPException, SignatureException {
+
+        if(mPrivateKey == null) {
+            throw new PrivateKeyNotUnlockedException();
+        }
+
+        // create a signatureGenerator from the supplied masterKeyId and passphrase
+        PGPSignatureGenerator signatureGenerator;
+        {
+            // TODO: SHA256 fixed?
+            JcaPGPContentSignerBuilder contentSignerBuilder = new JcaPGPContentSignerBuilder(
+                    mKey.getPublicKey().getAlgorithm(), PGPUtil.SHA256)
+                    .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME);
+
+            signatureGenerator = new PGPSignatureGenerator(contentSignerBuilder);
+            signatureGenerator.init(PGPSignature.DEFAULT_CERTIFICATION, mPrivateKey);
+        }
+
+        { // supply signatureGenerator with a SubpacketVector
+            PGPSignatureSubpacketGenerator spGen = new PGPSignatureSubpacketGenerator();
+            PGPSignatureSubpacketVector packetVector = spGen.generate();
+            signatureGenerator.setHashedSubpackets(packetVector);
+        }
+
+        // get the master subkey (which we certify for)
+        PGPPublicKey publicKey = publicKeyRing.getSubkey().getKey();
+
+        // fetch public key ring, add the certification and return it
+        for (String userId : new IterableIterator<String>(userIds.iterator())) {
+            PGPSignature sig = signatureGenerator.generateCertification(userId, publicKey);
+            publicKey = PGPPublicKey.addCertification(publicKey, userId, sig);
+        }
+
+        PGPPublicKeyRing ring = PGPPublicKeyRing.insertPublicKey(publicKeyRing.getRing(), publicKey);
+
+        return new UncachedKeyRing(ring);
     }
 
     static class PrivateKeyNotUnlockedException extends RuntimeException {

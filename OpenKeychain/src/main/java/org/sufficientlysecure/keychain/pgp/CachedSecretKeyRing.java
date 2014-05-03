@@ -23,7 +23,11 @@ public class CachedSecretKeyRing extends CachedKeyRing {
         mRing = (PGPSecretKeyRing) PgpConversionHelper.BytesToPGPKeyRing(blob);
     }
 
-    CachedSecretKey getSubKey(long id) {
+    public CachedSecretKey getSubKey() {
+        return new CachedSecretKey(this, mRing.getSecretKey());
+    }
+
+    public CachedSecretKey getSubKey(long id) {
         return new CachedSecretKey(this, mRing.getSecretKey(id));
     }
 

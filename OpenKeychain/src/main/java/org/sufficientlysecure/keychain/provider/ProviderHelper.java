@@ -190,6 +190,10 @@ public class ProviderHelper {
         return result;
     }
 
+    public CachedPublicKeyRing getCachedPublicKeyRing(long id) throws NotFoundException {
+        return getCachedPublicKeyRing(KeyRings.buildUnifiedKeyRingUri(Long.toString(id)));
+    }
+
     public CachedPublicKeyRing getCachedPublicKeyRing(Uri queryUri) throws NotFoundException {
         Cursor cursor = mContentResolver.query(queryUri,
                 new String[] {

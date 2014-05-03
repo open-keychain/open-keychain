@@ -36,7 +36,7 @@ public class CachedPublicKeyRing extends CachedKeyRing {
         mPubKey = pubkey;
     }
 
-    private PGPPublicKeyRing getRing() {
+    PGPPublicKeyRing getRing() {
         if(mRing == null) {
             mRing = (PGPPublicKeyRing) PgpConversionHelper.BytesToPGPKeyRing(mPubKey);
         }
@@ -45,6 +45,10 @@ public class CachedPublicKeyRing extends CachedKeyRing {
 
     public void encode(ArmoredOutputStream stream) throws IOException {
         getRing().encode(stream);
+    }
+
+    public CachedPublicKey getSubkey() {
+        return new CachedPublicKey(this, getRing().getPublicKey());
     }
 
     public CachedPublicKey getSubkey(long id) {
@@ -127,7 +131,6 @@ public class CachedPublicKeyRing extends CachedKeyRing {
         return validSubkeyBinding && validPrimaryKeyBinding;
 
     }
-
 
     static boolean isEncryptionKey(PGPPublicKey key) {
         if (!key.isEncryptionKey()) {
