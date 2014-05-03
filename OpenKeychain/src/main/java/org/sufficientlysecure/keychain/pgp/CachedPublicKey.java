@@ -31,6 +31,10 @@ public class CachedPublicKey {
         return mKey.getKeyID();
     }
 
+    public boolean isRevoked() {
+        return mKey.isRevoked();
+    }
+
     public Date getCreationTime() {
         return mKey.getCreationTime();
     }
@@ -46,6 +50,15 @@ public class CachedPublicKey {
         calendar.add(Calendar.DATE, mKey.getValidDays());
 
         return calendar.getTime();
+    }
+
+    public boolean isExpired() {
+        Date creationDate = mKey.getCreationTime();
+        Date expiryDate = mKey.getValidSeconds() > 0
+                ? new Date(creationDate.getTime() + mKey.getValidSeconds() * 1000) : null;
+
+        Date now = new Date();
+        return creationDate.after(now) || (expiryDate != null && expiryDate.before(now));
     }
 
     public boolean isMasterKey() {

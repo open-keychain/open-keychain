@@ -9,9 +9,14 @@ import org.spongycastle.openpgp.PGPSecretKeyRing;
 import org.spongycastle.openpgp.PGPSignature;
 import org.spongycastle.openpgp.PGPSignatureSubpacketVector;
 import org.spongycastle.openpgp.operator.PBESecretKeyDecryptor;
+import org.spongycastle.openpgp.operator.jcajce.JcaPGPDigestCalculatorProviderBuilder;
 import org.spongycastle.openpgp.operator.jcajce.JcePBESecretKeyDecryptorBuilder;
+import org.spongycastle.openpgp.operator.jcajce.JcePBESecretKeyEncryptorBuilder;
+import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.util.IterableIterator;
 
+import java.io.IOException;
+import java.security.NoSuchProviderException;
 import java.util.Iterator;
 
 public class CachedSecretKeyRing extends CachedKeyRing {
@@ -23,10 +28,13 @@ public class CachedSecretKeyRing extends CachedKeyRing {
                                byte[] fingerprint, String userId, int verified, boolean hasSecret,
                                byte[] blob)
     {
-        super(masterKeyId, keySize, isRevoked, canCertify, creation, expiry,
-                algorithm, fingerprint, userId, verified, hasSecret);
+        super(masterKeyId, canCertify, fingerprint, userId, verified, hasSecret);
 
         mRing = (PGPSecretKeyRing) PgpConversionHelper.BytesToPGPKeyRing(blob);
+    }
+
+    PGPSecretKeyRing getRing() {
+        return mRing;
     }
 
     public CachedSecretKey getSubKey() {
@@ -108,6 +116,29 @@ public class CachedSecretKeyRing extends CachedKeyRing {
         }
 
         return false;
+    }
+
+    public UncachedSecretKeyRing changeSecretKeyPassphrase(String oldPassphrase,
+                                                     String newPassphrase)
+            throws IOException, PGPException, NoSuchProviderException {
+
+        if (oldPassphrase == null) {
+            oldPassphrase = "";
+        }
+        if (newPassphrase == null) {
+            newPassphrase = "";
+        }
+
+        PGPSecretKeyRing newKeyRing = PGPSecretKeyRing.copyWithNewPassword(
+                mRing,
+                new JcePBESecretKeyDecryptorBuilder(new JcaPGPDigestCalculatorProviderBuilder()
+                        .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME).build()).setProvider(
+                        Constants.BOUNCY_CASTLE_PROVIDER_NAME).build(oldPassphrase.toCharArray()),
+                new JcePBESecretKeyEncryptorBuilder(mRing.getSecretKey()
+                        .getKeyEncryptionAlgorithm()).build(newPassphrase.toCharArray()));
+
+        return new UncachedSecretKeyRing(newKeyRing);
+
     }
 
 }

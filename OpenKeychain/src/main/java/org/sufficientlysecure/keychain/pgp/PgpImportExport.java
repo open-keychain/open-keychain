@@ -277,7 +277,7 @@ public class PgpImportExport {
 
     @SuppressWarnings("unchecked")
     public int storeKeyRingInCache(UncachedKeyRing keyring) {
-        int status = RETURN_ERROR;
+        int status;
         try {
             PGPSecretKeyRing secretKeyRing = keyring.getSecretRing();
             PGPPublicKeyRing publicKeyRing = keyring.getPublicRing();

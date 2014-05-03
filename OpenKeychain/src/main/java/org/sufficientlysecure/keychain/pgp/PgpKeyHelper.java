@@ -81,18 +81,6 @@ public class PgpKeyHelper {
         return getExpiryDate(key.getPublicKey());
     }
 
-    @Deprecated
-    public static boolean isExpired(PGPPublicKey key) {
-        Date creationDate = getCreationDate(key);
-        Date expiryDate = getExpiryDate(key);
-        Date now = new Date();
-        if (now.compareTo(creationDate) >= 0
-                && (expiryDate == null || now.compareTo(expiryDate) <= 0)) {
-            return false;
-        }
-        return true;
-    }
-
     @SuppressWarnings("unchecked")
     @Deprecated
     public static PGPSecretKey getKeyNum(PGPSecretKeyRing keyRing, long num) {
@@ -108,48 +96,6 @@ public class PgpKeyHelper {
         }
 
         return null;
-    }
-
-    @SuppressWarnings("unchecked")
-    @Deprecated
-    private static Vector<PGPSecretKey> getSigningKeys(PGPSecretKeyRing keyRing) {
-        Vector<PGPSecretKey> signingKeys = new Vector<PGPSecretKey>();
-
-        for (PGPSecretKey key : new IterableIterator<PGPSecretKey>(keyRing.getSecretKeys())) {
-            if (isSigningKey(key)) {
-                signingKeys.add(key);
-            }
-        }
-
-        return signingKeys;
-    }
-
-    @Deprecated
-    private static Vector<PGPSecretKey> getUsableSigningKeys(PGPSecretKeyRing keyRing) {
-        Vector<PGPSecretKey> usableKeys = new Vector<PGPSecretKey>();
-        Vector<PGPSecretKey> signingKeys = getSigningKeys(keyRing);
-        PGPSecretKey masterKey = null;
-        for (int i = 0; i < signingKeys.size(); ++i) {
-            PGPSecretKey key = signingKeys.get(i);
-            if (key.isMasterKey()) {
-                masterKey = key;
-            } else {
-                usableKeys.add(key);
-            }
-        }
-        if (masterKey != null) {
-            usableKeys.add(masterKey);
-        }
-        return usableKeys;
-    }
-
-    @Deprecated
-    public static PGPSecretKey getFirstSigningSubkey(PGPSecretKeyRing keyRing) {
-        Vector<PGPSecretKey> signingKeys = getUsableSigningKeys(keyRing);
-        if (signingKeys.size() == 0) {
-            return null;
-        }
-        return signingKeys.get(0);
     }
 
     public static int getKeyUsage(PGPSecretKey key) {

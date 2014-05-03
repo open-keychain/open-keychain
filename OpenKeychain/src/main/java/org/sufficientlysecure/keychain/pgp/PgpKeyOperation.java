@@ -35,7 +35,6 @@ import org.spongycastle.openpgp.PGPSecretKeyRing;
 import org.spongycastle.openpgp.PGPSignature;
 import org.spongycastle.openpgp.PGPSignatureGenerator;
 import org.spongycastle.openpgp.PGPSignatureSubpacketGenerator;
-import org.spongycastle.openpgp.PGPSignatureSubpacketVector;
 import org.spongycastle.openpgp.PGPUtil;
 import org.spongycastle.openpgp.operator.PBESecretKeyDecryptor;
 import org.spongycastle.openpgp.operator.PBESecretKeyEncryptor;
@@ -48,10 +47,8 @@ import org.spongycastle.openpgp.operator.jcajce.JcePBESecretKeyDecryptorBuilder;
 import org.spongycastle.openpgp.operator.jcajce.JcePBESecretKeyEncryptorBuilder;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.pgp.Progressable;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralMsgIdException;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
-import org.sufficientlysecure.keychain.util.IterableIterator;
 import org.sufficientlysecure.keychain.util.Primes;
 
 import java.io.IOException;
@@ -66,7 +63,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Iterator;
-import java.util.List;
 import java.util.TimeZone;
 
 /**
@@ -124,7 +120,7 @@ public class PgpKeyOperation {
      */
 
     // TODO: key flags?
-    public PGPSecretKey createKey(int algorithmChoice, int keySize, String passphrase,
+    public byte[] createKey(int algorithmChoice, int keySize, String passphrase,
                                   boolean isMasterKey)
             throws NoSuchAlgorithmException, PGPException, NoSuchProviderException,
             PgpGeneralMsgIdException, InvalidAlgorithmParameterException {
@@ -188,35 +184,15 @@ public class PgpKeyOperation {
                 PGPEncryptedData.CAST5, sha1Calc)
                 .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME).build(passphrase.toCharArray());
 
-        return new PGPSecretKey(keyPair.getPrivateKey(), keyPair.getPublicKey(),
-                sha1Calc, isMasterKey, keyEncryptor);
+        try {
+            return new PGPSecretKey(keyPair.getPrivateKey(), keyPair.getPublicKey(),
+                    sha1Calc, isMasterKey, keyEncryptor).getEncoded();
+        } catch(IOException e) {
+            throw new PgpGeneralMsgIdException(R.string.error_encoding);
+        }
     }
 
-    public PGPSecretKeyRing changeSecretKeyPassphrase(PGPSecretKeyRing keyRing, String oldPassphrase,
-                                                      String newPassphrase)
-            throws IOException, PGPException, NoSuchProviderException {
-
-        updateProgress(R.string.progress_building_key, 0, 100);
-        if (oldPassphrase == null) {
-            oldPassphrase = "";
-        }
-        if (newPassphrase == null) {
-            newPassphrase = "";
-        }
-
-        PGPSecretKeyRing newKeyRing = PGPSecretKeyRing.copyWithNewPassword(
-                keyRing,
-                new JcePBESecretKeyDecryptorBuilder(new JcaPGPDigestCalculatorProviderBuilder()
-                        .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME).build()).setProvider(
-                        Constants.BOUNCY_CASTLE_PROVIDER_NAME).build(oldPassphrase.toCharArray()),
-                new JcePBESecretKeyEncryptorBuilder(keyRing.getSecretKey()
-                        .getKeyEncryptionAlgorithm()).build(newPassphrase.toCharArray()));
-
-        return newKeyRing;
-
-    }
-
-    public Pair<PGPSecretKeyRing, PGPPublicKeyRing> buildNewSecretKey(
+    public UncachedKeyRing buildNewSecretKey(
             SaveKeyringParcel saveParcel)
             throws PgpGeneralMsgIdException, PGPException, SignatureException, IOException {
 
@@ -357,17 +333,19 @@ public class PgpKeyOperation {
         PGPSecretKeyRing secretKeyRing = keyGen.generateSecretKeyRing();
         PGPPublicKeyRing publicKeyRing = keyGen.generatePublicKeyRing();
 
-        return new Pair<PGPSecretKeyRing, PGPPublicKeyRing>(secretKeyRing, publicKeyRing);
+        return new UncachedKeyRing(publicKeyRing, secretKeyRing);
 
     }
 
-    public Pair<PGPSecretKeyRing, PGPPublicKeyRing> buildSecretKey(PGPSecretKeyRing mKR,
-                                                                   PGPPublicKeyRing pKR,
+    public UncachedKeyRing buildSecretKey(CachedSecretKeyRing wmKR,
+                                                                   CachedPublicKeyRing wpKR,
                                                                    SaveKeyringParcel saveParcel)
             throws PgpGeneralMsgIdException, PGPException, SignatureException, IOException {
 
+        PGPSecretKeyRing mKR = wmKR.getRing();
+        PGPPublicKeyRing pKR = wpKR.getRing();
+
         updateProgress(R.string.progress_building_key, 0, 100);
-        PGPSecretKey masterKey = saveParcel.keys.get(0);
 
         if (saveParcel.oldPassphrase == null) {
             saveParcel.oldPassphrase = "";
@@ -404,7 +382,7 @@ public class PgpKeyOperation {
             }
         }
 
-        masterKey = mKR.getSecretKey();
+        PGPSecretKey masterKey = mKR.getSecretKey();
         PGPPublicKey masterPublicKey = masterKey.getPublicKey();
 
         int usageId = saveParcel.keysUsages.get(0);
@@ -686,7 +664,7 @@ public class PgpKeyOperation {
 
         */
 
-        return new Pair<PGPSecretKeyRing, PGPPublicKeyRing>(mKR, pKR);
+        return new UncachedKeyRing(pKR, mKR);
 
     }
 

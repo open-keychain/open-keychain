@@ -43,6 +43,8 @@ import org.sufficientlysecure.keychain.pgp.CachedPublicKeyRing;
 import org.sufficientlysecure.keychain.pgp.PgpConversionHelper;
 import org.sufficientlysecure.keychain.pgp.PgpHelper;
 import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
+import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
+import org.sufficientlysecure.keychain.pgp.UncachedSecretKeyRing;
 import org.sufficientlysecure.keychain.provider.KeychainContract.ApiApps;
 import org.sufficientlysecure.keychain.provider.KeychainContract.Certs;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRingData;
@@ -488,8 +490,18 @@ public class ProviderHelper {
      * Saves a PGPSecretKeyRing in the DB. This will only work if a corresponding public keyring
      * is already in the database!
      */
+    public void saveKeyRing(UncachedSecretKeyRing wrappedRing) throws IOException {
+        // TODO split up getters
+        PGPSecretKeyRing keyRing = wrappedRing.getSecretKeyRing();
+        saveKeyRing(keyRing);
+    }
+
+    /**
+     * Saves a PGPSecretKeyRing in the DB. This will only work if a corresponding public keyring
+     * is already in the database!
+     */
     public void saveKeyRing(PGPSecretKeyRing keyRing) throws IOException {
-        long masterKeyId = keyRing.getPublicKey().getKeyID();
+        long masterKeyId = keyRing.getSecretKey().getKeyID();
 
         {
             Uri uri = Keys.buildKeysUri(Long.toString(masterKeyId));
@@ -524,6 +536,12 @@ public class ProviderHelper {
             mContentResolver.insert(uri, values);
         }
 
+    }
+
+    public void saveKeyRing(UncachedKeyRing wrappedRing) throws IOException {
+        PGPPublicKeyRing pubRing = wrappedRing.getPublicRing();
+        PGPSecretKeyRing secRing = wrappedRing.getSecretRing();
+        saveKeyRing(pubRing, secRing);
     }
 
     /**

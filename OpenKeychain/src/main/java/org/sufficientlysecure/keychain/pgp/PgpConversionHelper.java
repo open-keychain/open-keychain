@@ -165,36 +165,4 @@ public class PgpConversionHelper {
         return os.toByteArray();
     }
 
-    /**
-     * Convert from PGPSecretKey to byte[]
-     *
-     * @param key
-     * @return
-     */
-    public static byte[] PGPSecretKeyToBytes(PGPSecretKey key) {
-        try {
-            return key.getEncoded();
-        } catch (IOException e) {
-            Log.e(Constants.TAG, "Encoding failed", e);
-
-            return null;
-        }
-    }
-
-    /**
-     * Convert from PGPSecretKeyRing to byte[]
-     *
-     * @param keyRing
-     * @return
-     */
-    public static byte[] PGPSecretKeyRingToBytes(PGPSecretKeyRing keyRing) {
-        try {
-            return keyRing.getEncoded();
-        } catch (IOException e) {
-            Log.e(Constants.TAG, "Encoding failed", e);
-
-            return null;
-        }
-    }
-
 }

@@ -34,7 +34,12 @@ import org.spongycastle.openpgp.PGPSecretKey;
 import org.spongycastle.openpgp.PGPSecretKeyRing;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.pgp.CachedPublicKey;
+import org.sufficientlysecure.keychain.pgp.CachedPublicKeyRing;
+import org.sufficientlysecure.keychain.pgp.CachedSecretKey;
+import org.sufficientlysecure.keychain.pgp.CachedSecretKeyRing;
 import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
+import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.util.Log;
@@ -144,18 +149,14 @@ public class EncryptAsymmetricFragment extends Fragment {
      */
     private void preselectKeys(long preselectedSignatureKeyId, long[] preselectedEncryptionKeyIds,
                                ProviderHelper providerHelper) {
+        // TODO all of this works under the assumption that the first suitable subkey is always used!
+        // not sure if we need to distinguish between different subkeys here?
         if (preselectedSignatureKeyId != 0) {
-            // TODO: don't use bouncy castle objects!
             try {
-                PGPSecretKeyRing keyRing = providerHelper.getPGPSecretKeyRingWithKeyId(
-                        preselectedSignatureKeyId);
-
-                PGPSecretKey masterKey = keyRing.getSecretKey();
-                if (masterKey != null) {
-                    PGPSecretKey signKey = PgpKeyHelper.getFirstSigningSubkey(keyRing);
-                    if (signKey != null) {
-                        setSignatureKeyId(masterKey.getKeyID());
-                    }
+                CachedPublicKeyRing keyring =
+                        providerHelper.getCachedPublicKeyRing(preselectedSignatureKeyId);
+                if(keyring.hasSecret()) {
+                    setSignatureKeyId(keyring.getMasterKeyId());
                 }
             } catch (ProviderHelper.NotFoundException e) {
                 Log.e(Constants.TAG, "key not found!", e);
@@ -165,7 +166,6 @@ public class EncryptAsymmetricFragment extends Fragment {
         if (preselectedEncryptionKeyIds != null) {
             Vector<Long> goodIds = new Vector<Long>();
             for (int i = 0; i < preselectedEncryptionKeyIds.length; ++i) {
-                // TODO One query per selected key?! wtf
                 try {
                     long id = providerHelper.getMasterKeyId(
                             KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(

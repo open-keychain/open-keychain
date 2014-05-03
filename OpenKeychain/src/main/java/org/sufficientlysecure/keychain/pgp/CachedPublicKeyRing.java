@@ -2,7 +2,6 @@ package org.sufficientlysecure.keychain.pgp;
 
 import org.spongycastle.bcpg.ArmoredOutputStream;
 import org.spongycastle.bcpg.SignatureSubpacketTags;
-import org.spongycastle.bcpg.sig.KeyFlags;
 import org.spongycastle.openpgp.PGPException;
 import org.spongycastle.openpgp.PGPPublicKey;
 import org.spongycastle.openpgp.PGPPublicKeyRing;
@@ -17,7 +16,6 @@ import org.sufficientlysecure.keychain.util.IterableIterator;
 import java.io.IOException;
 import java.security.SignatureException;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.Iterator;
 
 public class CachedPublicKeyRing extends CachedKeyRing {
@@ -30,8 +28,7 @@ public class CachedPublicKeyRing extends CachedKeyRing {
                                 byte[] fingerprint, String userId, int verified, boolean hasSecret,
                                 byte[] pubkey)
     {
-        super(masterKeyId, keySize, isRevoked, canCertify, creation, expiry,
-                algorithm, fingerprint, userId, verified, hasSecret);
+        super(masterKeyId, canCertify, fingerprint, userId, verified, hasSecret);
 
         mPubKey = pubkey;
     }
@@ -55,24 +52,46 @@ public class CachedPublicKeyRing extends CachedKeyRing {
         return new CachedPublicKey(this, getRing().getPublicKey(id));
     }
 
-    public CachedPublicKey getFirstEncryptSubkey() throws PgpGeneralException {
-        // only return master key if no other encryption key is available
-        PGPPublicKey masterKey = null;
-        for (PGPPublicKey key : new IterableIterator<PGPPublicKey>(getRing().getPublicKeys())) {
-            if (key.isRevoked() || !isEncryptionKey(key) || isExpired(key)) {
+    public CachedPublicKey getFirstSignSubkey() throws PgpGeneralException {
+        // only return master key if no other signing key is available
+        CachedPublicKey masterKey = null;
+        for (PGPPublicKey k : new IterableIterator<PGPPublicKey>(getRing().getPublicKeys())) {
+            CachedPublicKey key = new CachedPublicKey(this, k);
+            if (key.isRevoked() || key.canSign() || key.isExpired()) {
                 continue;
             }
             if (key.isMasterKey()) {
                 masterKey = key;
             } else {
-                return new CachedPublicKey(this, key);
+                return key;
             }
         }
         if(masterKey == null) {
             // TODO proper exception
             throw new PgpGeneralException("key not found");
         }
-        return new CachedPublicKey(this, masterKey);
+        return masterKey;
+    }
+
+    public CachedPublicKey getFirstEncryptSubkey() throws PgpGeneralException {
+        // only return master key if no other encryption key is available
+        CachedPublicKey masterKey = null;
+        for (PGPPublicKey k : new IterableIterator<PGPPublicKey>(getRing().getPublicKeys())) {
+            CachedPublicKey key = new CachedPublicKey(this, k);
+            if (key.isRevoked() || key.canEncrypt() || key.isExpired()) {
+                continue;
+            }
+            if (key.isMasterKey()) {
+                masterKey = key;
+            } else {
+                return key;
+            }
+        }
+        if(masterKey == null) {
+            // TODO proper exception
+            throw new PgpGeneralException("key not found");
+        }
+        return masterKey;
     }
 
     public boolean verifySubkeyBinding(CachedPublicKey cachedSubkey) {
@@ -130,55 +149,6 @@ public class CachedPublicKeyRing extends CachedKeyRing {
         }
         return validSubkeyBinding && validPrimaryKeyBinding;
 
-    }
-
-    static boolean isEncryptionKey(PGPPublicKey key) {
-        if (!key.isEncryptionKey()) {
-            return false;
-        }
-
-        if (key.getVersion() <= 3) {
-            // this must be true now
-            return key.isEncryptionKey();
-        }
-
-        // special cases
-        if (key.getAlgorithm() == PGPPublicKey.ELGAMAL_ENCRYPT) {
-            return true;
-        }
-
-        if (key.getAlgorithm() == PGPPublicKey.RSA_ENCRYPT) {
-            return true;
-        }
-
-        for (PGPSignature sig : new IterableIterator<PGPSignature>(key.getSignatures())) {
-            if (key.isMasterKey() && sig.getKeyID() != key.getKeyID()) {
-                continue;
-            }
-            PGPSignatureSubpacketVector hashed = sig.getHashedSubPackets();
-
-            if (hashed != null
-                    && (hashed.getKeyFlags() & (KeyFlags.ENCRYPT_COMMS | KeyFlags.ENCRYPT_STORAGE)) != 0) {
-                return true;
-            }
-
-            PGPSignatureSubpacketVector unhashed = sig.getUnhashedSubPackets();
-
-            if (unhashed != null
-                    && (unhashed.getKeyFlags() & (KeyFlags.ENCRYPT_COMMS | KeyFlags.ENCRYPT_STORAGE)) != 0) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    static boolean isExpired(PGPPublicKey key) {
-        Date creationDate = key.getCreationTime();
-        Date expiryDate = key.getValidSeconds() > 0
-                ? new Date(creationDate.getTime() + key.getValidSeconds() * 1000) : null;
-
-        Date now = new Date();
-        return creationDate.after(now) || (expiryDate != null && expiryDate.before(now));
     }
 
     static boolean verifyPrimaryKeyBinding(PGPSignatureSubpacketVector pkts,
