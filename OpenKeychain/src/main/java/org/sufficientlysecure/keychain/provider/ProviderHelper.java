@@ -36,9 +36,10 @@ import org.spongycastle.openpgp.PGPPublicKeyRing;
 import org.spongycastle.openpgp.PGPSecretKey;
 import org.spongycastle.openpgp.PGPSecretKeyRing;
 import org.spongycastle.openpgp.PGPSignature;
-import org.spongycastle.openpgp.operator.PBESecretKeyDecryptor;
 import org.spongycastle.openpgp.operator.jcajce.JcaPGPContentVerifierBuilderProvider;
 import org.sufficientlysecure.keychain.Constants;
+import org.sufficientlysecure.keychain.pgp.CachedSecretKeyRing;
+import org.sufficientlysecure.keychain.pgp.CachedPublicKeyRing;
 import org.sufficientlysecure.keychain.pgp.PgpConversionHelper;
 import org.sufficientlysecure.keychain.pgp.PgpHelper;
 import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
@@ -167,6 +168,7 @@ public class ProviderHelper {
         }
     }
 
+    @Deprecated
     public Map<Long, PGPKeyRing> getPGPKeyRings(Uri queryUri) {
         Cursor cursor = mContentResolver.query(queryUri,
                 new String[]{KeyRingData.MASTER_KEY_ID, KeyRingData.KEY_RING_DATA},
@@ -188,6 +190,94 @@ public class ProviderHelper {
         return result;
     }
 
+    public CachedPublicKeyRing getCachedPublicKeyRing(Uri queryUri) throws NotFoundException {
+        Cursor cursor = mContentResolver.query(queryUri,
+                new String[] {
+                    KeyRings.MASTER_KEY_ID, KeyRings.KEY_SIZE,
+                    KeyRings.IS_REVOKED, KeyRings.CAN_CERTIFY,
+                    KeyRings.CREATION, KeyRings.EXPIRY,
+                    KeyRings.ALGORITHM, KeyRings.FINGERPRINT,
+                    KeyRings.USER_ID, KeyRings.VERIFIED,
+                    KeyRings.HAS_SECRET, KeyRings.PUBKEY_DATA
+                }, null, null, null);
+        try {
+            if (cursor != null && cursor.moveToFirst()) {
+                long masterKeyId = cursor.getLong(0);
+                int keySize = cursor.getInt(1);
+                boolean isRevoked = cursor.getInt(2) > 0;
+                boolean canCertify = cursor.getInt(3) > 0;
+                long creation = cursor.getLong(4);
+                long expiry = cursor.getLong(5);
+                int algorithm = cursor.getInt(6);
+                byte[] fingerprint = cursor.getBlob(7);
+                String userId = cursor.getString(8);
+                int verified = cursor.getInt(9);
+                boolean hasSecret = cursor.getInt(10) > 0;
+                byte[] pubkey = cursor.getBlob(11);
+                return new CachedPublicKeyRing(
+                        masterKeyId, keySize, isRevoked, canCertify,
+                        creation, expiry, algorithm, fingerprint,
+                        userId, verified, hasSecret, pubkey
+                );
+            } else {
+                throw new NotFoundException("Key not found!");
+            }
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+    }
+
+    public CachedSecretKeyRing getCachedSecretKeyRing(long id) throws NotFoundException {
+        return getCachedSecretKeyRing(KeyRings.buildUnifiedKeyRingUri(Long.toString(id)));
+    }
+
+    public CachedSecretKeyRing getCachedSecretKeyRing(Uri queryUri) throws NotFoundException {
+        Cursor cursor = mContentResolver.query(queryUri,
+                new String[] {
+                        KeyRings.MASTER_KEY_ID, KeyRings.KEY_SIZE,
+                        KeyRings.IS_REVOKED, KeyRings.CAN_CERTIFY,
+                        KeyRings.CREATION, KeyRings.EXPIRY,
+                        KeyRings.ALGORITHM, KeyRings.FINGERPRINT,
+                        KeyRings.USER_ID, KeyRings.VERIFIED,
+                        KeyRings.HAS_SECRET, KeyRings.PRIVKEY_DATA
+                }, null, null, null);
+        try {
+            if (cursor != null && cursor.moveToFirst()) {
+                // check if a privkey is actually available
+                byte[] privkey = cursor.getBlob(11);
+                if(privkey == null) {
+                    throw new NotFoundException("Key found, but no secret key available!");
+                }
+
+                long masterKeyId = cursor.getLong(0);
+                int keySize = cursor.getInt(1);
+                boolean isRevoked = cursor.getInt(2) > 0;
+                boolean canCertify = cursor.getInt(3) > 0;
+                long creation = cursor.getLong(4);
+                long expiry = cursor.getLong(5);
+                int algorithm = cursor.getInt(6);
+                byte[] fingerprint = cursor.getBlob(7);
+                String userId = cursor.getString(8);
+                int verified = cursor.getInt(9);
+                boolean hasSecret = cursor.getInt(10) > 0;
+                return new CachedSecretKeyRing(
+                        masterKeyId, keySize, isRevoked, canCertify,
+                        creation, expiry, algorithm, fingerprint,
+                        userId, verified, hasSecret, privkey
+                );
+            } else {
+                throw new NotFoundException("Key not found!");
+            }
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+    }
+
+    @Deprecated
     public PGPKeyRing getPGPKeyRing(Uri queryUri) throws NotFoundException {
         Map<Long, PGPKeyRing> result = getPGPKeyRings(queryUri);
         if (result.isEmpty()) {
@@ -197,6 +287,7 @@ public class ProviderHelper {
         }
     }
 
+    @Deprecated
     public PGPPublicKeyRing getPGPPublicKeyRingWithKeyId(long keyId)
             throws NotFoundException {
         Uri uri = KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(Long.toString(keyId));
@@ -204,6 +295,7 @@ public class ProviderHelper {
         return getPGPPublicKeyRing(masterKeyId);
     }
 
+    @Deprecated
     public PGPSecretKeyRing getPGPSecretKeyRingWithKeyId(long keyId)
             throws NotFoundException {
         Uri uri = KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(Long.toString(keyId));
@@ -214,6 +306,7 @@ public class ProviderHelper {
     /**
      * Retrieves the actual PGPPublicKeyRing object from the database blob based on the masterKeyId
      */
+    @Deprecated
     public PGPPublicKeyRing getPGPPublicKeyRing(long masterKeyId) throws NotFoundException {
         Uri queryUri = KeyRingData.buildPublicKeyRingUri(Long.toString(masterKeyId));
         return (PGPPublicKeyRing) getPGPKeyRing(queryUri);
@@ -222,6 +315,7 @@ public class ProviderHelper {
     /**
      * Retrieves the actual PGPSecretKeyRing object from the database blob based on the maserKeyId
      */
+    @Deprecated
     public PGPSecretKeyRing getPGPSecretKeyRing(long masterKeyId) throws NotFoundException {
         Uri queryUri = KeyRingData.buildSecretKeyRingUri(Long.toString(masterKeyId));
         return (PGPSecretKeyRing) getPGPKeyRing(queryUri);

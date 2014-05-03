@@ -110,6 +110,8 @@ public class KeychainContract {
         public static final String HAS_ANY_SECRET = "has_any_secret";
         public static final String HAS_ENCRYPT = "has_encrypt";
         public static final String HAS_SIGN = "has_sign";
+        public static final String PUBKEY_DATA = "pubkey_data";
+        public static final String PRIVKEY_DATA = "privkey_data";
 
         public static final Uri CONTENT_URI = BASE_CONTENT_URI_INTERNAL.buildUpon()
                 .appendPath(BASE_KEY_RINGS).build();
@@ -121,6 +123,10 @@ public class KeychainContract {
 
         public static Uri buildUnifiedKeyRingsUri() {
             return CONTENT_URI.buildUpon().appendPath(PATH_UNIFIED).build();
+        }
+
+        public static Uri buildGenericKeyRingUri(long masterKeyId) {
+            return CONTENT_URI.buildUpon().appendPath(Long.toString(masterKeyId)).build();
         }
 
         public static Uri buildGenericKeyRingUri(String masterKeyId) {

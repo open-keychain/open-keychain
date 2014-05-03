@@ -254,6 +254,12 @@ public class KeychainProvider extends ContentProvider {
                 projectionMap.put(KeyRings.FINGERPRINT, Keys.FINGERPRINT);
                 projectionMap.put(KeyRings.USER_ID, UserIds.USER_ID);
                 projectionMap.put(KeyRings.VERIFIED, KeyRings.VERIFIED);
+                projectionMap.put(KeyRings.PUBKEY_DATA,
+                        Tables.KEY_RINGS_PUBLIC + "." + KeyRingData.KEY_RING_DATA
+                                + " AS " + KeyRings.PUBKEY_DATA);
+                projectionMap.put(KeyRings.PRIVKEY_DATA,
+                        Tables.KEY_RINGS_SECRET + "." + KeyRingData.KEY_RING_DATA
+                                + " AS " + KeyRings.PRIVKEY_DATA);
                 projectionMap.put(KeyRings.HAS_SECRET, KeyRings.HAS_SECRET);
                 projectionMap.put(KeyRings.HAS_ANY_SECRET,
                     "(EXISTS (SELECT * FROM " + Tables.KEY_RINGS_SECRET
@@ -295,6 +301,22 @@ public class KeychainProvider extends ContentProvider {
                             + " AND " + Tables.CERTS + "." + Certs.VERIFIED
                                 + " = " + Certs.VERIFIED_SECRET
                         + ")"
+                        // fairly expensive join (due to blob data), only do it when requested
+                        + (Arrays.asList(projection).contains(KeyRings.PUBKEY_DATA) ?
+                            " INNER JOIN " + Tables.KEY_RINGS_PUBLIC + " ON ("
+                                    + Tables.KEYS + "." + Keys.MASTER_KEY_ID
+                                + " = "
+                                    + Tables.KEY_RINGS_PUBLIC + "." + KeyRingData.MASTER_KEY_ID
+                                + ")"
+                            : "")
+                        // fairly expensive join (due to blob data), only do it when requested
+                        + (Arrays.asList(projection).contains(KeyRings.PRIVKEY_DATA) ?
+                            " LEFT JOIN " + Tables.KEY_RINGS_SECRET + " ON ("
+                                    + Tables.KEYS + "." + Keys.MASTER_KEY_ID
+                                + " = "
+                                    + Tables.KEY_RINGS_SECRET + "." + KeyRingData.MASTER_KEY_ID
+                                + ")"
+                            : "")
                     );
                 qb.appendWhere(Tables.KEYS + "." + Keys.RANK + " = 0");
                 // in case there are multiple verifying certificates

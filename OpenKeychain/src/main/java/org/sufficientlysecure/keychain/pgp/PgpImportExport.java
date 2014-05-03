@@ -32,8 +32,8 @@ import org.spongycastle.openpgp.PGPSecretKeyRing;
 import org.spongycastle.openpgp.operator.jcajce.JcaKeyFingerprintCalculator;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.pgp.Progressable;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
+import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
 import org.sufficientlysecure.keychain.ui.adapter.ImportKeysListEntry;
@@ -208,9 +208,11 @@ public class PgpImportExport {
             updateProgress(progress * 100 / masterKeyIdsSize, 100);
 
             try {
-                PGPPublicKeyRing publicKeyRing = mProviderHelper.getPGPPublicKeyRing(pubKeyMasterId);
+                CachedPublicKeyRing ring = mProviderHelper.getCachedPublicKeyRing(
+                        KeychainContract.KeyRings.buildGenericKeyRingUri(pubKeyMasterId)
+                );
 
-                publicKeyRing.encode(arOutStream);
+                ring.encode(arOutStream);
             } catch (ProviderHelper.NotFoundException e) {
                 Log.e(Constants.TAG, "key not found!", e);
                 // TODO: inform user?
