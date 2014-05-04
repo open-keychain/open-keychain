@@ -101,8 +101,12 @@ public class PassphraseDialogFragment extends DialogFragment implements OnEditor
                                                        long secretKeyId) throws PgpGeneralException {
         // check if secret key has a passphrase
         if (!(secretKeyId == Constants.key.symmetric || secretKeyId == Constants.key.none)) {
-            if (!PassphraseCacheService.hasPassphrase(context, secretKeyId)) {
-                throw new PgpGeneralException("No passphrase! No passphrase dialog needed!");
+            try {
+                if (new ProviderHelper(context).getCachedSecretKeyRing(secretKeyId).hasPassphrase()) {
+                    throw new PgpGeneralException("No passphrase! No passphrase dialog needed!");
+                }
+            } catch(ProviderHelper.NotFoundException e) {
+                throw new PgpGeneralException("Error: Key not found!", e);
             }
         }
 

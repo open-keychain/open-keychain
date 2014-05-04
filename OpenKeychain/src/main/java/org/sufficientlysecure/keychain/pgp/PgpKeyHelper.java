@@ -81,23 +81,6 @@ public class PgpKeyHelper {
         return getExpiryDate(key.getPublicKey());
     }
 
-    @SuppressWarnings("unchecked")
-    @Deprecated
-    public static PGPSecretKey getKeyNum(PGPSecretKeyRing keyRing, long num) {
-        long cnt = 0;
-        if (keyRing == null) {
-            return null;
-        }
-        for (PGPSecretKey key : new IterableIterator<PGPSecretKey>(keyRing.getSecretKeys())) {
-            if (cnt == num) {
-                return key;
-            }
-            cnt++;
-        }
-
-        return null;
-    }
-
     public static int getKeyUsage(PGPSecretKey key) {
         return getKeyUsage(key.getPublicKey());
     }
