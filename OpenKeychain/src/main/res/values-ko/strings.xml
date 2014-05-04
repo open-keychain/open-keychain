@@ -1,0 +1,31 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<resources>
+  <!--title-->
+  <!--section-->
+  <!--button-->
+  <!--menu-->
+  <!--label-->
+  <!--choice-->
+  <!--key flags-->
+  <!--sentences-->
+  <!--errors
+         no punctuation, all lowercase,
+         they will be put after "error_message", e.g. "Error: file not found"-->
+  <!--errors without preceeding Error:-->
+  <!--results shown after decryption/verification-->
+  <!--progress dialogs, usually ending in '…'-->
+  <!--action strings-->
+  <!--key bit length selections-->
+  <!--compression-->
+  <!--Help-->
+  <!--Import-->
+  <!--Intent labels-->
+  <!--Remote API-->
+  <!--Share-->
+  <!--Key list-->
+  <!--Key view-->
+  <!--Navigation Drawer-->
+  <!--hints-->
+  <!--certifications-->
+  <!--unsorted-->
+</resources>
