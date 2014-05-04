@@ -58,11 +58,6 @@ public class PgpKeyHelper {
     }
 
     @Deprecated
-    public static Date getCreationDate(PGPSecretKey key) {
-        return key.getPublicKey().getCreationTime();
-    }
-
-    @Deprecated
     public static Date getExpiryDate(PGPPublicKey key) {
         Date creationDate = getCreationDate(key);
         if (key.getValidDays() == 0) {
@@ -74,38 +69,6 @@ public class PgpKeyHelper {
         calendar.add(Calendar.DATE, key.getValidDays());
 
         return calendar.getTime();
-    }
-
-    @Deprecated
-    public static Date getExpiryDate(PGPSecretKey key) {
-        return getExpiryDate(key.getPublicKey());
-    }
-
-    public static int getKeyUsage(PGPSecretKey key) {
-        return getKeyUsage(key.getPublicKey());
-    }
-
-    @SuppressWarnings("unchecked")
-    private static int getKeyUsage(PGPPublicKey key) {
-        int usage = 0;
-        if (key.getVersion() >= 4) {
-            for (PGPSignature sig : new IterableIterator<PGPSignature>(key.getSignatures())) {
-                if (key.isMasterKey() && sig.getKeyID() != key.getKeyID()) {
-                    continue;
-                }
-
-                PGPSignatureSubpacketVector hashed = sig.getHashedSubPackets();
-                if (hashed != null) {
-                    usage |= hashed.getKeyFlags();
-                }
-
-                PGPSignatureSubpacketVector unhashed = sig.getUnhashedSubPackets();
-                if (unhashed != null) {
-                    usage |= unhashed.getKeyFlags();
-                }
-            }
-        }
-        return usage;
     }
 
     @SuppressWarnings("unchecked")
@@ -150,10 +113,6 @@ public class PgpKeyHelper {
         return false;
     }
 
-    public static boolean isEncryptionKey(PGPSecretKey key) {
-        return isEncryptionKey(key.getPublicKey());
-    }
-
     @SuppressWarnings("unchecked")
     @Deprecated
     public static boolean isSigningKey(PGPPublicKey key) {
@@ -186,11 +145,6 @@ public class PgpKeyHelper {
         return false;
     }
 
-    @Deprecated
-    public static boolean isSigningKey(PGPSecretKey key) {
-        return isSigningKey(key.getPublicKey());
-    }
-
     @SuppressWarnings("unchecked")
     @Deprecated
     public static boolean isCertificationKey(PGPPublicKey key) {
@@ -216,51 +170,6 @@ public class PgpKeyHelper {
         }
 
         return false;
-    }
-
-    @Deprecated
-    public static boolean isAuthenticationKey(PGPSecretKey key) {
-        return isAuthenticationKey(key.getPublicKey());
-    }
-
-    @SuppressWarnings("unchecked")
-    @Deprecated
-    public static boolean isAuthenticationKey(PGPPublicKey key) {
-        if (key.getVersion() <= 3) {
-            return true;
-        }
-
-        for (PGPSignature sig : new IterableIterator<PGPSignature>(key.getSignatures())) {
-            if (key.isMasterKey() && sig.getKeyID() != key.getKeyID()) {
-                continue;
-            }
-            PGPSignatureSubpacketVector hashed = sig.getHashedSubPackets();
-
-            if (hashed != null && (hashed.getKeyFlags() & KeyFlags.AUTHENTICATION) != 0) {
-                return true;
-            }
-
-            PGPSignatureSubpacketVector unhashed = sig.getUnhashedSubPackets();
-
-            if (unhashed != null && (unhashed.getKeyFlags() & KeyFlags.AUTHENTICATION) != 0) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    @Deprecated
-    public static boolean isCertificationKey(PGPSecretKey key) {
-        return isCertificationKey(key.getPublicKey());
-    }
-
-    public static String getAlgorithmInfo(Context context, PGPPublicKey key) {
-        return getAlgorithmInfo(context, key.getAlgorithm(), key.getBitStrength());
-    }
-
-    public static String getAlgorithmInfo(Context context, PGPSecretKey key) {
-        return getAlgorithmInfo(context, key.getPublicKey());
     }
 
     /**

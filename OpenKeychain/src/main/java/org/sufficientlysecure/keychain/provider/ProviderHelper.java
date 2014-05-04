@@ -263,23 +263,6 @@ public class ProviderHelper {
         }
     }
 
-    @Deprecated
-    public PGPSecretKeyRing getPGPSecretKeyRingWithKeyId(long keyId)
-            throws NotFoundException {
-        Uri uri = KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(Long.toString(keyId));
-        long masterKeyId = getMasterKeyId(uri);
-        return getPGPSecretKeyRing(masterKeyId);
-    }
-
-    /**
-     * Retrieves the actual PGPPublicKeyRing object from the database blob based on the masterKeyId
-     */
-    @Deprecated
-    public PGPPublicKeyRing getPGPPublicKeyRing(long masterKeyId) throws NotFoundException {
-        Uri queryUri = KeyRingData.buildPublicKeyRingUri(Long.toString(masterKeyId));
-        return (PGPPublicKeyRing) getPGPKeyRing(queryUri);
-    }
-
     /**
      * Retrieves the actual PGPSecretKeyRing object from the database blob based on the maserKeyId
      */
