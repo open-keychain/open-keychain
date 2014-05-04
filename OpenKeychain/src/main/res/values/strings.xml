@@ -14,6 +14,7 @@
     <string name="title_key_server_preference">Keyserver Preference</string>
     <string name="title_change_passphrase">Change Passphrase</string>
     <string name="title_set_passphrase">Set Passphrase</string>
+    <string name="title_share_with">Share with…</string>
     <string name="title_share_fingerprint_with">Share fingerprint with…</string>
     <string name="title_share_key_with">Share key with…</string>
     <string name="title_share_file">Share file with…</string>
@@ -484,7 +485,7 @@
     <string name="cert_none">none</string>
     <string name="cert_casual">casual</string>
     <string name="cert_positive">positive</string>
-    <string name="cert_revoke">revoke</string>
+    <string name="cert_revoke">revoked</string>
     <string name="cert_verify_ok">ok</string>
     <string name="cert_verify_failed">failed!</string>
     <string name="cert_verify_error">error!</string>

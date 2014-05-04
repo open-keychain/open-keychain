@@ -13,7 +13,6 @@
   <string name="title_key_server_preference">Preferenze Server delle Chiavi</string>
   <string name="title_change_passphrase">Cambia Frase Di Accesso</string>
   <string name="title_set_passphrase">Imposta Frase di Accesso</string>
-  <string name="title_share_with">Condividi con...</string>
   <string name="title_share_file">Condividi file con...</string>
   <string name="title_encrypt_to_file">Codifica File</string>
   <string name="title_decrypt_to_file">Decodifica File</string>
@@ -26,13 +25,11 @@
   <string name="title_key_details">Dettagli Chiave</string>
   <string name="title_help">Aiuto</string>
   <!--section-->
-  <string name="section_user_ids">ID Utente</string>
   <string name="section_keys">Chiavi</string>
   <string name="section_general">Generale</string>
   <string name="section_defaults">Predefiniti</string>
   <string name="section_advanced">Avanzato</string>
   <string name="section_master_key">Chiave Principale</string>
-  <string name="section_master_user_id">ID Utente Principale</string>
   <string name="section_actions">Azioni</string>
   <string name="section_certification_key">La Tua Chiave usata per la certificazione</string>
   <string name="section_upload_key">Carica Chiave</string>
@@ -116,7 +113,6 @@
   <string name="label_expiry">Scadenza</string>
   <string name="label_usage">Utilizzo</string>
   <string name="label_key_size">Dimensione Chiave</string>
-  <string name="label_main_user_id">ID Utente Principale</string>
   <string name="label_name">Nome</string>
   <string name="label_comment">Commento</string>
   <string name="label_email">Email</string>
@@ -194,7 +190,6 @@
   <string name="key_deletion_confirmation_multi">Vuoi veramente eliminare tutte le chiavi pubbliche selezionate?\nNon potrai annullare!</string>
   <string name="secret_key_deletion_confirmation">Vuoi veramente eliminare la chiave PRIVATA \'%s\'?\nNon potrai annullare!</string>
   <string name="ask_save_changed_key">Hai apportato modifiche al tuo portachiavi, vuoi salvarlo?</string>
-  <string name="ask_empty_id_ok">È stato aggiunto un ID utente vuoto, sei sicuro di voler continuare?</string>
   <string name="public_key_deletetion_confirmation">Vuoi veramente eliminare la chiave pubblica \'%s\'?\nNon potrai annullare!</string>
   <string name="also_export_secret_keys">Esportare anche le chiavi segrete?</string>
   <plurals name="keys_added_and_updated_1">
@@ -247,8 +242,6 @@
   <string name="error_master_key_must_not_be_el_gamal">La chiave principale non puo\' essere ElGamal</string>
   <string name="error_unknown_algorithm_choice">opzione algoritmo sconosciuta</string>
   <string name="error_user_id_no_email">Nessuna email trovata</string>
-  <string name="error_key_needs_a_user_id">necessario almeno un id utente</string>
-  <string name="error_main_user_id_must_not_be_empty">id utente principale non puo\' essere vuoto</string>
   <string name="error_key_needs_master_key">necessaria almeno una chiave principale</string>
   <string name="error_no_signature_passphrase">nessuna frase di accesso inserita</string>
   <string name="error_no_signature_key">nessuna chiave di firma inserita</string>
@@ -386,8 +379,6 @@
   <string name="api_register_allow">Permetti accesso</string>
   <string name="api_register_disallow">Nega accesso</string>
   <string name="api_register_error_select_key">Per favore selezionare una chiave!</string>
-  <string name="api_select_pub_keys_missing_text">Nessuna chiave pubblica trovata per id utente:</string>
-  <string name="api_select_pub_keys_dublicates_text">Esistono piu\' di una chiave pubblica per gli id utenti:</string>
   <string name="api_select_pub_keys_text">Per favore ricontrolla la lista destinatari!</string>
   <string name="api_error_wrong_signature">Controllo della firma fallito! Hai installato questa app da una fonte diversa? Se sei sicuro che non sia un attacco, revoca la registrazione di questa app in OpenKeychain e dopo registra di nuovo l\'app.</string>
   <!--Share-->
@@ -407,10 +398,7 @@
   <string name="key_list_empty_button_create">creazione della tua chiave</string>
   <string name="key_list_empty_button_import">importazione chiavi.</string>
   <!--Key view-->
-  <string name="key_view_action_edit">Modifica chiave</string>
   <string name="key_view_action_encrypt">Codifica con questa chiave</string>
-  <string name="key_view_action_certify">Certifica questa chiave</string>
-  <string name="key_view_tab_main">Info</string>
   <string name="key_view_tab_certs">Certificazioni</string>
   <!--Navigation Drawer-->
   <string name="nav_keys">Chiavi</string>
@@ -433,7 +421,6 @@
   <string name="cert_none">nessuno</string>
   <string name="cert_casual">casuale</string>
   <string name="cert_positive">positivo</string>
-  <string name="cert_revoke">revoca</string>
   <string name="cert_verify_ok">ok</string>
   <string name="cert_verify_failed">fallito!</string>
   <string name="cert_verify_error">errore!</string>
@@ -441,10 +428,8 @@
   <!--unsorted-->
   <string name="section_signer_id">Firmatario</string>
   <string name="section_cert">Dettagli Certificato</string>
-  <string name="label_user_id">ID Utente</string>
   <string name="unknown_uid">&lt;sconosciuto&gt;</string>
   <string name="empty_certs">Nessun certificato per questa chiave</string>
-  <string name="section_uids_to_sign">ID Utente da firmare</string>
   <string name="label_revocation">Ragione della Revoca</string>
   <string name="label_verify_status">Stato Verifica</string>
   <string name="label_cert_type">Tipo</string>

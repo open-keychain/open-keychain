@@ -24,13 +24,11 @@
   <string name="title_key_details">Сведения о ключе</string>
   <string name="title_help">Помощь</string>
   <!--section-->
-  <string name="section_user_ids">ID пользователя</string>
   <string name="section_keys">Ключи</string>
   <string name="section_general">Приложение</string>
   <string name="section_defaults">Алгоритмы</string>
   <string name="section_advanced">Дополнительно</string>
   <string name="section_master_key">Основной ключ</string>
-  <string name="section_master_user_id">Владелец</string>
   <string name="section_actions">Действия</string>
   <string name="section_certification_key">Ваш ключ для сертификации</string>
   <string name="section_upload_key">Загрузить ключ</string>
@@ -114,7 +112,6 @@
   <string name="label_expiry">Годен до...</string>
   <string name="label_usage">Применение</string>
   <string name="label_key_size">Размер ключа</string>
-  <string name="label_main_user_id">Основной ID пользователя</string>
   <string name="label_name">Имя</string>
   <string name="label_comment">Комментарий</string>
   <string name="label_email">Email</string>
@@ -189,7 +186,6 @@
   <string name="specify_file_to_export_to">Пожалуйста, выберите файл для экспорта.\nВНИМАНИЕ! Если файл существует, он будет перезаписан.</string>
   <string name="key_deletion_confirmation_multi">Вы уверены, что хотите удалить выбранные ключи?\nЭто действие нельзя отменить!</string>
   <string name="secret_key_deletion_confirmation">Вы уверены, что ходите удалить СЕКРЕТНЫЙ ключ \'%s\'?\nЭто действие нельзя отменить!</string>
-  <string name="ask_empty_id_ok">Вы добавили пустой ID пользователя. Вы уверены, что хотите продолжить?</string>
   <string name="public_key_deletetion_confirmation">Вы правда хотите удалить публичный ключ \'%s\'?\nЭто действие нельзя отменить!</string>
   <string name="also_export_secret_keys">Экспортировать секретные ключи?</string>
   <plurals name="keys_added_and_updated_1">
@@ -247,8 +243,6 @@
   <string name="error_master_key_must_not_be_el_gamal">ключ ElGamal не может быть основным</string>
   <string name="error_unknown_algorithm_choice">выбран неизвестный алгоритм</string>
   <string name="error_user_id_no_email">email не найден</string>
-  <string name="error_key_needs_a_user_id">необходим хотя бы один id пользователя</string>
-  <string name="error_main_user_id_must_not_be_empty">основная запись пользователя не может быть пустой</string>
   <string name="error_key_needs_master_key">необходим основной ключ</string>
   <string name="error_no_signature_passphrase">пароль не задан</string>
   <string name="error_no_signature_key">ключ для подписи не задан</string>
@@ -386,8 +380,6 @@
   <string name="api_register_allow">Разрешить доступ</string>
   <string name="api_register_disallow">Запретить доступ</string>
   <string name="api_register_error_select_key">Пожалуйста, выберите ключ!</string>
-  <string name="api_select_pub_keys_missing_text">Для этих id не найдены публичные ключи:</string>
-  <string name="api_select_pub_keys_dublicates_text">Для этих id найдено более одного ключа:</string>
   <string name="api_select_pub_keys_text">Пожалуйста, проверьте получателей!</string>
   <string name="api_error_wrong_signature">Проверка подписи пакета не удалась! Если  вы установили программу из другого источника, отзовите для неё доступ к этой программе или обновите право доступа.</string>
   <!--Share-->
@@ -408,10 +400,7 @@
   <string name="key_list_empty_button_create">создать свой ключ</string>
   <string name="key_list_empty_button_import">Импортировать ключи</string>
   <!--Key view-->
-  <string name="key_view_action_edit">Изменить ключ</string>
   <string name="key_view_action_encrypt">Зашифровать этим ключом</string>
-  <string name="key_view_action_certify">Сертифицировать этот ключ</string>
-  <string name="key_view_tab_main">Информация</string>
   <string name="key_view_tab_certs">Сертификация</string>
   <!--Navigation Drawer-->
   <string name="nav_keys">Ключи</string>
@@ -432,7 +421,6 @@
   <!--certifications-->
   <string name="cert_default">по умолчанию</string>
   <string name="cert_none">нет</string>
-  <string name="cert_revoke">отозвать</string>
   <string name="cert_verify_ok">ok</string>
   <string name="cert_verify_failed">сбой!</string>
   <string name="cert_verify_error">ошибка!</string>
@@ -440,10 +428,8 @@
   <!--unsorted-->
   <string name="section_signer_id">Подписант</string>
   <string name="section_cert">Детали сертификации</string>
-  <string name="label_user_id">ID пользователя</string>
   <string name="unknown_uid">&lt;неизв.&gt;</string>
   <string name="empty_certs">Этот ключ не сертифицирован</string>
-  <string name="section_uids_to_sign">Подписываемые ID пользователя</string>
   <string name="label_revocation">Причина отзыва</string>
   <string name="label_verify_status">Статус верификации</string>
   <string name="label_cert_type">Тип</string>

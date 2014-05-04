@@ -13,7 +13,6 @@
   <string name="title_key_server_preference">Nastavitve strežnikov</string>
   <string name="title_change_passphrase">Spremeni geslo</string>
   <string name="title_set_passphrase">Določi geslo</string>
-  <string name="title_share_with">Deli z...</string>
   <string name="title_share_file">Deli datoteko z...</string>
   <string name="title_encrypt_to_file">Šifriraj v datoteko</string>
   <string name="title_decrypt_to_file">Dešifriraj v datoteko</string>
@@ -26,13 +25,11 @@
   <string name="title_key_details">Podrobnosti o ključu</string>
   <string name="title_help">Pomoč</string>
   <!--section-->
-  <string name="section_user_ids">Uporabniški ID-ji</string>
   <string name="section_keys">Ključi</string>
   <string name="section_general">Splošno</string>
   <string name="section_defaults">Privzeto</string>
   <string name="section_advanced">Napredno</string>
   <string name="section_master_key">Glavni ključ</string>
-  <string name="section_master_user_id">Glavni ID uporabnika</string>
   <string name="section_actions">Ravnanja</string>
   <string name="section_certification_key">Vaš ključ, uporabljan za overitev</string>
   <string name="section_upload_key">Naloži ključ</string>
@@ -116,7 +113,6 @@
   <string name="label_expiry">Pretek</string>
   <string name="label_usage">Uporaba</string>
   <string name="label_key_size">Velikost ključa</string>
-  <string name="label_main_user_id">Glavni ID uporabnika</string>
   <string name="label_name">Ime</string>
   <string name="label_comment">Komentar</string>
   <string name="label_email">E-pošta</string>
@@ -200,7 +196,6 @@
   <string name="key_deletion_confirmation_multi">Ali res želite izbrisati vse izbrane javne ključe?\nTega koraka ne boste mogli preklicati!</string>
   <string name="secret_key_deletion_confirmation">Ali res želite izbrisati ZASEBNI ključ \'%s\'?\nTega koraka ne boste mogli preklicati!</string>
   <string name="ask_save_changed_key">Vnesli ste spremembe v vaš \'keyring\'. Jih želite shraniti?</string>
-  <string name="ask_empty_id_ok">Dodali ste prezen uporabniški iD! Ste prepričani, da želite nadaljevati?</string>
   <string name="public_key_deletetion_confirmation">Ali res želite izbrisati javni ključ \'%s\'?\nTega koraka ne boste mogli preklicati!</string>
   <string name="also_export_secret_keys">Želite izvoziti tudi zasebne ključe?</string>
   <plurals name="keys_added_and_updated_1">
@@ -265,8 +260,6 @@
   <string name="error_master_key_must_not_be_el_gamal">glavni ključ ne more biti ElGamal</string>
   <string name="error_unknown_algorithm_choice">neznana izbira algoritma</string>
   <string name="error_user_id_no_email">najti ni nobene e-pošte</string>
-  <string name="error_key_needs_a_user_id">potrebujem vsaj en uporabniški ID</string>
-  <string name="error_main_user_id_must_not_be_empty">glavni uporabniški ID ne more biti prazen</string>
   <string name="error_key_needs_master_key">potrebujem vsaj glavni ključ</string>
   <string name="error_no_signature_passphrase">dano ni bilo nobeno geslo</string>
   <string name="error_no_signature_key">dan ni bil noben podpisni ključ</string>
@@ -412,8 +405,6 @@
   <string name="api_register_allow">Dovoli dostop</string>
   <string name="api_register_disallow">Zavrni dostop</string>
   <string name="api_register_error_select_key">Izberite ključ!</string>
-  <string name="api_select_pub_keys_missing_text">Za naslednje uporabniške ID-je ni bil najden noben javni ključ:</string>
-  <string name="api_select_pub_keys_dublicates_text">Za naslednje uporabniške ID-je obstaja več kot en javni ključ:</string>
   <string name="api_select_pub_keys_text">Preverite seznam prejemnikov!</string>
   <string name="api_error_wrong_signature">Preverjanje podpisa ni uspelo! Ste namestili to aplikacijo iz drugega vira? Če ste prepričani, da to ni napad, prekličite registracijo te aplikacije v OpenKeychain in jo izvedite znova.</string>
   <!--Share-->
@@ -435,10 +426,7 @@
   <string name="key_list_empty_button_create">stvaritvijo lastnega ključa</string>
   <string name="key_list_empty_button_import">uvozom obstoječih ključev.</string>
   <!--Key view-->
-  <string name="key_view_action_edit">Uredi ključ</string>
   <string name="key_view_action_encrypt">Šifriraj s tem ključem</string>
-  <string name="key_view_action_certify">Overi ta kluč</string>
-  <string name="key_view_tab_main">Info</string>
   <string name="key_view_tab_certs">Overitve</string>
   <!--Navigation Drawer-->
   <string name="nav_keys">Ključi</string>
@@ -461,7 +449,6 @@
   <string name="cert_none">brez</string>
   <string name="cert_casual">navadno</string>
   <string name="cert_positive">pozitivno</string>
-  <string name="cert_revoke">preklic</string>
   <string name="cert_verify_ok">ok</string>
   <string name="cert_verify_failed">neuspešno!</string>
   <string name="cert_verify_error">napaka!</string>
@@ -469,10 +456,8 @@
   <!--unsorted-->
   <string name="section_signer_id">Podpisnik</string>
   <string name="section_cert">Podrobnosti potrdil</string>
-  <string name="label_user_id">ID uporabnika</string>
   <string name="unknown_uid">&lt;neznan&gt;</string>
   <string name="empty_certs">Ni potrdil za ta ključ</string>
-  <string name="section_uids_to_sign">Uporabniški ID-ji za podpisovanje</string>
   <string name="label_revocation">Razlog za preklic</string>
   <string name="label_verify_status">Status preverjanja</string>
   <string name="label_cert_type">Vrsta</string>

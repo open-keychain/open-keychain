@@ -24,13 +24,11 @@
   <string name="title_key_details">Подробиці про ключ</string>
   <string name="title_help">Довідка</string>
   <!--section-->
-  <string name="section_user_ids">ІД користувача</string>
   <string name="section_keys">Ключі</string>
   <string name="section_general">Загальне</string>
   <string name="section_defaults">Типове</string>
   <string name="section_advanced">Додаткове</string>
   <string name="section_master_key">Основний ключ</string>
-  <string name="section_master_user_id">ІД основного ключа</string>
   <string name="section_actions">Дії</string>
   <string name="section_certification_key">Ваш ключ використаний для сертифікації</string>
   <string name="section_upload_key">Завантажити ключ</string>
@@ -113,7 +111,6 @@
   <string name="label_expiry">Закінчення</string>
   <string name="label_usage">Використання</string>
   <string name="label_key_size">Розмір ключа</string>
-  <string name="label_main_user_id">ІД основного користувача</string>
   <string name="label_name">Назва</string>
   <string name="label_comment">Коментар</string>
   <string name="label_email">Ел. пошта</string>
@@ -184,7 +181,6 @@
   <string name="key_deletion_confirmation_multi">Ви справді хочете вилучити усі вибрані відкриті ключі?\nВи не зможете це відмінити!</string>
   <string name="secret_key_deletion_confirmation">Ви справді хочете вилучити секретний ключ \'%s\'?\nВи не зможете це відмінити!</string>
   <string name="ask_save_changed_key">Ви внесли зміни до в\'язки ключів, ви б хотіли. Волієте їх зберегти?</string>
-  <string name="ask_empty_id_ok">Ви вже додали порожній ідентифікатор користувача. Справді хочете продовжити?</string>
   <string name="public_key_deletetion_confirmation">Ви справді хочете вилучити відкритий ключ \'%s\'?\nВи не зможете це відмінити!</string>
   <string name="also_export_secret_keys">Також експортувати секретні ключі?</string>
   <plurals name="keys_added_and_updated_1">
@@ -240,8 +236,6 @@
   <string name="error_master_key_must_not_be_el_gamal">основний ключ не може бути ключем ElGamal</string>
   <string name="error_unknown_algorithm_choice">вибір невідомого алгоритму</string>
   <string name="error_user_id_no_email">жодного листа не знайдено</string>
-  <string name="error_key_needs_a_user_id">потрібний хоча б один ІД користувача</string>
-  <string name="error_main_user_id_must_not_be_empty">ІД основного користувача не має бути порожнім</string>
   <string name="error_key_needs_master_key">потрібний хоча б один основний ключ</string>
   <string name="error_no_signature_passphrase">не подано парольної фрази</string>
   <string name="error_no_signature_key">не подано ключ підпису</string>
@@ -380,8 +374,6 @@
   <string name="api_register_allow">Дозволити доступ</string>
   <string name="api_register_disallow">Не дозволити доступ</string>
   <string name="api_register_error_select_key">Будь ласка, виберіть ключ!</string>
-  <string name="api_select_pub_keys_missing_text">Не знайдено публічних ключів для цих ІД  користувачів:</string>
-  <string name="api_select_pub_keys_dublicates_text">Більше ніж один публічний ключ існує для цих ІД користувачів:</string>
   <string name="api_select_pub_keys_text">Будь ласка, перевірте список одержувачів!</string>
   <string name="api_error_wrong_signature">Перевірка підпису пакету не вдалася! Може ви встановили програму з іншого джерела? Якщо ви впевнені, що це не атака, то відкличте реєстрацію програми у OpenKeychain та знову зареєструйте її.</string>
   <!--Share-->
@@ -402,8 +394,6 @@
   <string name="key_list_empty_button_create">створюється ваш власний ключ</string>
   <string name="key_list_empty_button_import">імпортуюся ключі.</string>
   <!--Key view-->
-  <string name="key_view_action_edit">Редагувати цей ключ</string>
-  <string name="key_view_tab_main">Інформація</string>
   <string name="key_view_tab_certs">Сертифікати</string>
   <!--Navigation Drawer-->
   <string name="nav_encrypt">Підписати і зашифрувати</string>
@@ -425,7 +415,6 @@
   <string name="cert_none">жоден</string>
   <string name="cert_casual">випадковий</string>
   <string name="cert_positive">додатний</string>
-  <string name="cert_revoke">відхилити</string>
   <string name="cert_verify_ok">Гаразд</string>
   <string name="cert_verify_failed">Невдача!</string>
   <string name="cert_verify_error">Помилка!</string>
@@ -433,9 +422,7 @@
   <!--unsorted-->
   <string name="section_signer_id">Підписувач</string>
   <string name="section_cert">Дані сертифікату</string>
-  <string name="label_user_id">ІД користувача</string>
   <string name="empty_certs">Немає сертифікатів для цього ключа</string>
-  <string name="section_uids_to_sign">ІД користувача для реєстрації</string>
   <string name="label_revocation">Причина відхилення</string>
   <string name="label_verify_status">Стан перевірки</string>
   <string name="label_cert_type">Тип</string>

@@ -21,7 +21,6 @@
   <string name="title_send_key">上传到密钥服务器</string>
   <string name="title_help">帮助</string>
   <!--section-->
-  <string name="section_user_ids">用户ID</string>
   <string name="section_keys">密钥</string>
   <string name="section_general">常规</string>
   <string name="section_defaults">缺省</string>
@@ -104,8 +103,6 @@
   <string name="error_external_storage_not_ready">外置存储没有准备好</string>
   <string name="error_key_size_minimum512bit">密钥的大小必须至少512位</string>
   <string name="error_unknown_algorithm_choice">位置的算法选择</string>
-  <string name="error_key_needs_a_user_id">需要至少一个用户id</string>
-  <string name="error_main_user_id_must_not_be_empty">主用户id不能是空的</string>
   <string name="error_key_needs_master_key">需要至少一个主密钥</string>
   <string name="error_no_signature_passphrase">没有提供密语</string>
   <string name="error_no_signature_key">没有提供密钥</string>

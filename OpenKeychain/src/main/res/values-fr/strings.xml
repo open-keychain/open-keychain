@@ -13,7 +13,6 @@
   <string name="title_key_server_preference">Préférences du serveur de clefs</string>
   <string name="title_change_passphrase">Modifier la phrase de passe</string>
   <string name="title_set_passphrase">Définir la phrase de passe</string>
-  <string name="title_share_with">Partager avec...</string>
   <string name="title_share_file">Partager le fichier avec...</string>
   <string name="title_encrypt_to_file">Chiffrer vers un fichier</string>
   <string name="title_decrypt_to_file">Déchiffrer vers un fichier</string>
@@ -26,13 +25,11 @@
   <string name="title_key_details">Détails sur la clef</string>
   <string name="title_help">Aide</string>
   <!--section-->
-  <string name="section_user_ids">IDs utilisateurs</string>
   <string name="section_keys">Clefs</string>
   <string name="section_general">Général</string>
   <string name="section_defaults">Valeurs par défaut</string>
   <string name="section_advanced">Avancé</string>
   <string name="section_master_key">Clef maîtresse</string>
-  <string name="section_master_user_id">ID utilisateur maître</string>
   <string name="section_actions">Actions</string>
   <string name="section_certification_key">Votre clef utilisée pour la certification</string>
   <string name="section_upload_key">Téléverser la clef</string>
@@ -116,7 +113,6 @@
   <string name="label_expiry">Expiration</string>
   <string name="label_usage">Utilisation</string>
   <string name="label_key_size">Taille de la clef</string>
-  <string name="label_main_user_id">ID utilisateur principal</string>
   <string name="label_name">Nom</string>
   <string name="label_comment">Commentaire</string>
   <string name="label_email">Courriel</string>
@@ -194,7 +190,6 @@
   <string name="key_deletion_confirmation_multi">Voulez-vous vraiment supprimer toutes les clefs publiques choisies ?\nCeci est irréversible !</string>
   <string name="secret_key_deletion_confirmation">Voulez-vous vraiment supprimer la clef SECRÈTE %s ?\nVous ne pourrez pas la restituer !</string>
   <string name="ask_save_changed_key">Vous avez apporté des changements au trousseau, voulez-vous l\'enregistrer ?</string>
-  <string name="ask_empty_id_ok">Vous avez ajouté un ID utilisateur vide, êtes-vous certain de vouloir continuer?</string>
   <string name="public_key_deletetion_confirmation">Voulez-vous vraiment supprimer la clef publique %s ?\nCeci est irréversible !</string>
   <string name="also_export_secret_keys">Exporter aussi les clefs secrètes?</string>
   <plurals name="keys_added_and_updated_1">
@@ -247,8 +242,6 @@
   <string name="error_master_key_must_not_be_el_gamal">la clef maîtresse ne peut être une clef ElGama</string>
   <string name="error_unknown_algorithm_choice">choix d\'algorhitme inconnu</string>
   <string name="error_user_id_no_email">aucun courriel trouvé</string>
-  <string name="error_key_needs_a_user_id">vous avez besoin d\'au moins un ID utilisateur</string>
-  <string name="error_main_user_id_must_not_be_empty">l\'ID utilisateur principal ne doit pas être vide</string>
   <string name="error_key_needs_master_key">au moins une clef maîtresse est nécessaire</string>
   <string name="error_no_signature_passphrase">aucune phrase de passe n\'a été donnée</string>
   <string name="error_no_signature_key">aucune clef de signature n\'a été donnée</string>
@@ -386,8 +379,6 @@
   <string name="api_register_allow">Permettre l\'accès</string>
   <string name="api_register_disallow">Enlever l\'accès</string>
   <string name="api_register_error_select_key">Veuillez choisir une clef !</string>
-  <string name="api_select_pub_keys_missing_text">Aucune clef publique n\'a été trouvée pour ces IDs utilisateur :</string>
-  <string name="api_select_pub_keys_dublicates_text">Plus d\'une clef publique existe pour ces IDs utilisateur</string>
   <string name="api_select_pub_keys_text">Veuillez revoir la liste des destinataires !</string>
   <string name="api_error_wrong_signature">La vérification de la signature a échoué ! Avez-vous installé cette appli à partir d\'une source différente ? Si vous êtes sûr que ce n\'est pas une attaque, révoquez l\'enregistrement de cette appli dans OpenKeychain et enregistrez-la à nouveau.</string>
   <!--Share-->
@@ -407,10 +398,7 @@
   <string name="key_list_empty_button_create">créer votre propre clef</string>
   <string name="key_list_empty_button_import">Importer des clefs.</string>
   <!--Key view-->
-  <string name="key_view_action_edit">Modifier cette clef</string>
   <string name="key_view_action_encrypt">Chiffrer avec cette clef</string>
-  <string name="key_view_action_certify">Certifier cette clef</string>
-  <string name="key_view_tab_main">Infos</string>
   <string name="key_view_tab_certs">Certifications</string>
   <!--Navigation Drawer-->
   <string name="nav_keys">Clefs</string>
@@ -433,7 +421,6 @@
   <string name="cert_none">aucun</string>
   <string name="cert_casual">rapide</string>
   <string name="cert_positive">positif</string>
-  <string name="cert_revoke">révoquer</string>
   <string name="cert_verify_ok">ok</string>
   <string name="cert_verify_failed">échec!</string>
   <string name="cert_verify_error">erreur!</string>
@@ -441,10 +428,8 @@
   <!--unsorted-->
   <string name="section_signer_id">Signataire</string>
   <string name="section_cert">Détails du certificat</string>
-  <string name="label_user_id">ID utilisateur</string>
   <string name="unknown_uid">&lt;inconnu&gt;</string>
   <string name="empty_certs">Aucun certificat pour cette clef</string>
-  <string name="section_uids_to_sign">ID utilisateur pour signer</string>
   <string name="label_revocation">Raison de la révocation</string>
   <string name="label_verify_status">État de vérification</string>
   <string name="label_cert_type">Type</string>

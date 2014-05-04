@@ -13,7 +13,6 @@
   <string name="title_key_server_preference">Właściwości serwera kluczy</string>
   <string name="title_change_passphrase">Zmień hasło</string>
   <string name="title_set_passphrase">Ustaw hasło</string>
-  <string name="title_share_with">Udostępnij...</string>
   <string name="title_share_file">Udostępnij plik...</string>
   <string name="title_encrypt_to_file">Zaszyfruj do pliku</string>
   <string name="title_decrypt_to_file">Odszyfruj do pliku</string>
@@ -26,13 +25,11 @@
   <string name="title_key_details">Szczegóły klucza</string>
   <string name="title_help">Pomoc</string>
   <!--section-->
-  <string name="section_user_ids">Identyfikator użytkownika</string>
   <string name="section_keys">Klucze</string>
   <string name="section_general">Ogólne</string>
   <string name="section_defaults">Domyślne</string>
   <string name="section_advanced">Zaawansowane</string>
   <string name="section_master_key">Klucz główny</string>
-  <string name="section_master_user_id">Główny identyfikator użytkownika</string>
   <string name="section_actions">Działania</string>
   <string name="section_certification_key">Twój klucz użyty do certyfikacji</string>
   <string name="section_upload_key">Wyślij klucz</string>
@@ -116,7 +113,6 @@
   <string name="label_expiry">Wygaśnięcia</string>
   <string name="label_usage">Wykorzystanie</string>
   <string name="label_key_size">Rozmiar klucza</string>
-  <string name="label_main_user_id">Identyfikator głównego użytkownika</string>
   <string name="label_name">Imię</string>
   <string name="label_comment">Komentarz</string>
   <string name="label_email">Adres email</string>
@@ -197,7 +193,6 @@
   <string name="key_deletion_confirmation_multi">Czy na pewno chcesz usunąć wszystkie zaznaczone klucze publiczne?\nTej operacji nie można cofnąć!</string>
   <string name="secret_key_deletion_confirmation">Czy na pewno chcesz usunąć klucz prywatny \'%s\'?\nNie można cofnąć tej operacji!</string>
   <string name="ask_save_changed_key">Zostały dokonane zmiany w pęku kluczy, czy chcesz je zachować?</string>
-  <string name="ask_empty_id_ok">Dodałeś pusty identyfikator użytkownika, czy na pewno chcesz kontynuować?</string>
   <string name="public_key_deletetion_confirmation">Czy na pewno chcesz usunąć klucz publiczny \'%s\'?\nNie można cofnąć tej operacji!</string>
   <string name="also_export_secret_keys">Czy wyeksportować również klucze prywatne?</string>
   <plurals name="keys_added_and_updated_1">
@@ -256,8 +251,6 @@
   <string name="error_master_key_must_not_be_el_gamal">klucz EnGamal nie może być kluczem głównym</string>
   <string name="error_unknown_algorithm_choice">wybrano nieznany algorytm</string>
   <string name="error_user_id_no_email">nie znaleziono adresu email</string>
-  <string name="error_key_needs_a_user_id">potrzeba co najmniej jednego identyfikatora użytkownika</string>
-  <string name="error_main_user_id_must_not_be_empty">główny identyfikator użytkownika nie może być pusty</string>
   <string name="error_key_needs_master_key">potrzeba co najmniej klucza głównego</string>
   <string name="error_no_signature_passphrase">nie podano hasła</string>
   <string name="error_no_signature_key">nie podano klucza podpisu</string>
@@ -399,8 +392,6 @@
   <string name="api_register_allow">Zezwól na dostęp</string>
   <string name="api_register_disallow">Odmów dostępu</string>
   <string name="api_register_error_select_key">Wybierz klucz!</string>
-  <string name="api_select_pub_keys_missing_text">Nie znaleziono kluczy publiczych dla tych identyfikatorów użytkownika:</string>
-  <string name="api_select_pub_keys_dublicates_text">Więcej niż jeden klucz publiczny istnieje dla tych identyfikatorów użytkownika:</string>
   <string name="api_select_pub_keys_text">Proszę przejrzeć listę adresatów!</string>
   <string name="api_error_wrong_signature">Sprawdzanie podpisu zakończone niepowodzeniem! Czy zainstalowałeś tę aplikację z innego źródła? Jeżeli jesteś pewien, że nie jest to atak, odwołaj rejestrację teg aplikacji w OpenKeychain, a następnie zarejestruj ją ponownie.</string>
   <!--Share-->
@@ -421,10 +412,7 @@
   <string name="key_list_empty_button_create">tworzenie własnego klucza</string>
   <string name="key_list_empty_button_import">importowanie kluczy.</string>
   <!--Key view-->
-  <string name="key_view_action_edit">Edytuj ten klucz</string>
   <string name="key_view_action_encrypt">Zaszyfruj korzystając z tego klucza</string>
-  <string name="key_view_action_certify">Certyfikuj ten klucz</string>
-  <string name="key_view_tab_main">Informacje</string>
   <string name="key_view_tab_certs">Certyfikaty</string>
   <!--Navigation Drawer-->
   <string name="nav_keys">Klucze</string>
@@ -447,7 +435,6 @@
   <string name="cert_none">żaden</string>
   <string name="cert_casual">typowy</string>
   <string name="cert_positive">pozytywny</string>
-  <string name="cert_revoke">odwołaj</string>
   <string name="cert_verify_ok">ok</string>
   <string name="cert_verify_failed">niepowodzenie!</string>
   <string name="cert_verify_error">błąd!</string>
@@ -455,10 +442,8 @@
   <!--unsorted-->
   <string name="section_signer_id">Podpisujący</string>
   <string name="section_cert">Szczegóły certyfikatu</string>
-  <string name="label_user_id">Identyfikator użytkownika</string>
   <string name="unknown_uid">&lt;nieznany&gt;</string>
   <string name="empty_certs">Nie ma certyfikatów dla tego klucza</string>
-  <string name="section_uids_to_sign">Identyfikator użytkownika do podpisu</string>
   <string name="label_revocation">Powód odwołania</string>
   <string name="label_verify_status">Stan weryfikacji</string>
   <string name="label_cert_type">Typ</string>

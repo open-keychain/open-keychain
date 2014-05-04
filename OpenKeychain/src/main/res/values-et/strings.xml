@@ -19,7 +19,6 @@
   <string name="title_send_key">Lae võtmeserverisse</string>
   <string name="title_help">Abi</string>
   <!--section-->
-  <string name="section_user_ids">Kasutaja ID-d</string>
   <string name="section_keys">Võtmed</string>
   <string name="section_general">Üldine</string>
   <string name="section_defaults">Vaikeseaded</string>
