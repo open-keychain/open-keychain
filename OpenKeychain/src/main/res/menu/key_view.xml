@@ -3,53 +3,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/menu_key_view_share"
-        android:icon="@drawable/ic_action_share"
-        app:showAsAction="always"
-        android:title="@string/menu_share">
-        <menu>
-            <item
-                android:id="@+id/menu_key_view_share_fingerprint_title"
-                app:showAsAction="never"
-                android:title="@string/menu_share_title_fingerprint">
-                <menu>
-                    <item
-                        android:id="@+id/menu_key_view_share_default_fingerprint"
-                        app:showAsAction="never"
-                        android:title="@string/menu_share_default_fingerprint" />
-                    <item
-                        android:id="@+id/menu_key_view_share_qr_code_fingerprint"
-                        app:showAsAction="never"
-                        android:title="@string/menu_share_qr_code_fingerprint" />
-                </menu>
-            </item>
-            <item
-                android:id="@+id/menu_key_view_share_title"
-                app:showAsAction="never"
-                android:title="@string/menu_share_title">
-                <menu>
-                    <item
-                        android:id="@+id/menu_key_view_share_default"
-                        app:showAsAction="never"
-                        android:title="@string/menu_share_default" />
-                    <item
-                        android:id="@+id/menu_key_view_share_qr_code"
-                        app:showAsAction="never"
-                        android:title="@string/menu_share_qr_code" />
-                    <item
-                        android:id="@+id/menu_key_view_share_nfc"
-                        app:showAsAction="never"
-                        android:title="@string/menu_share_nfc" />
-                    <item
-                        android:id="@+id/menu_key_view_share_clipboard"
-                        app:showAsAction="never"
-                        android:title="@string/menu_copy_to_clipboard" />
-                </menu>
-            </item>
-        </menu>
-    </item>
-
-    <item
         android:id="@+id/menu_key_keyserver"
         android:icon="@drawable/ic_action_cloud"
         app:showAsAction="always"
@@ -69,13 +22,13 @@
     <item
         android:id="@+id/menu_key_view_export_file"
         android:icon="@drawable/ic_action_import_export"
-        app:showAsAction="ifRoom"
+        app:showAsAction="never"
         android:title="@string/menu_export_key" />
 
     <item
         android:id="@+id/menu_key_view_delete"
         android:icon="@drawable/ic_action_discard"
-        app:showAsAction="ifRoom"
+        app:showAsAction="never"
         android:title="@string/menu_delete_key" />
 
 </menu>

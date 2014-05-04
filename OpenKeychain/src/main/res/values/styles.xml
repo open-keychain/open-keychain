@@ -2,7 +2,6 @@
 <resources>
     <!-- Used in Android < 4 -->
 
-
     <style name="KeychainTheme" parent="@style/Theme.AppCompat.Light">
         <item name="android:alertDialogStyle">@style/CustomDialogTheme</item>
     </style>
@@ -30,5 +29,8 @@
         <item name="android:textSize">14sp</item>
     </style>
 
+    <style name="SelectableItem">
+        <item name="android:background">@drawable/selector_transparent_button</item>
+    </style>
 
 </resources>

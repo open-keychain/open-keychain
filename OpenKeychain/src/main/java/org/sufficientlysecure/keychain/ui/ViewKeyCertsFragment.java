@@ -75,6 +75,9 @@ public class ViewKeyCertsFragment extends Fragment
 
     private Uri mDataUri;
 
+    // starting with 4 for this fragment
+    private static final int LOADER_ID = 4;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.view_key_certs_fragment, container, false);
@@ -112,7 +115,7 @@ public class ViewKeyCertsFragment extends Fragment
         mAdapter = new CertListAdapter(getActivity(), null);
         mStickyList.setAdapter(mAdapter);
 
-        getLoaderManager().initLoader(0, null, this);
+        getLoaderManager().initLoader(LOADER_ID, null, this);
     }
 
     @Override
@@ -208,11 +211,18 @@ public class ViewKeyCertsFragment extends Fragment
 
             // set name and stuff, common to both key types
             TextView wSignerKeyId = (TextView) view.findViewById(R.id.signerKeyId);
-            TextView wSignerUserId = (TextView) view.findViewById(R.id.signerUserId);
+            TextView wSignerName = (TextView) view.findViewById(R.id.signerName);
             TextView wSignStatus = (TextView) view.findViewById(R.id.signStatus);
 
             String signerKeyId = PgpKeyHelper.convertKeyIdToHex(cursor.getLong(mIndexSignerKeyId));
-            String signerUserId = cursor.getString(mIndexSignerUserId);
+            String[] userId = PgpKeyHelper.splitUserId(cursor.getString(mIndexSignerUserId));
+            if (userId[0] != null) {
+                wSignerName.setText(userId[0]);
+            } else {
+                wSignerName.setText(R.string.user_id_no_name);
+            }
+            wSignerKeyId.setText(signerKeyId);
+
             switch (cursor.getInt(mIndexType)) {
                 case PGPSignature.DEFAULT_CERTIFICATION: // 0x10
                     wSignStatus.setText(R.string.cert_default);
@@ -231,8 +241,6 @@ public class ViewKeyCertsFragment extends Fragment
                     break;
             }
 
-            wSignerUserId.setText(signerUserId);
-            wSignerKeyId.setText(signerKeyId);
 
             view.setTag(R.id.tag_mki, cursor.getLong(mIndexMasterKeyId));
             view.setTag(R.id.tag_rank, cursor.getLong(mIndexRank));

@@ -147,7 +147,7 @@ public class CertifyKeyActivity extends ActionBarActivity implements
         }
         Log.e(Constants.TAG, "uri: " + mDataUri);
 
-        mUserIds = (ListView) findViewById(R.id.user_ids);
+        mUserIds = (ListView) findViewById(R.id.view_key_user_ids);
 
         mUserIdsAdapter = new ViewKeyUserIdsAdapter(this, null, 0, true);
         mUserIds.setAdapter(mUserIdsAdapter);
@@ -203,7 +203,7 @@ public class CertifyKeyActivity extends ActionBarActivity implements
 
                     byte[] fingerprintBlob = data.getBlob(INDEX_FINGERPRINT);
                     String fingerprint = PgpKeyHelper.convertFingerprintToHex(fingerprintBlob);
-                    ((TextView) findViewById(R.id.fingerprint))
+                    ((TextView) findViewById(R.id.view_key_fingerprint))
                             .setText(PgpKeyHelper.colorizeFingerprint(fingerprint));
                 }
                 break;

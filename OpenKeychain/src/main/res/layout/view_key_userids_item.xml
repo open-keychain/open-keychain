@@ -2,6 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:minHeight="?android:attr/listPreferredItemHeight"
     android:orientation="horizontal"
     android:paddingRight="3dip"
     android:singleLine="true">
@@ -13,22 +14,41 @@
         android:clickable="false"
         android:focusable="false" />
 
-    <TextView
-        android:id="@+id/rank"
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceSmall"
-        android:text="0"
-        android:paddingLeft="10dp"
-        android:paddingRight="10dp"
+        android:layout_marginLeft="8dp"
         android:layout_gravity="center_vertical"
-        android:width="30sp" />
+        android:orientation="vertical">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/certified"
+            android:src="@drawable/key_certify_ok_self" />
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            android:id="@+id/primary_user_id_icon"
+            android:src="@drawable/ic_action_important_small" />
+    </LinearLayout>
 
     <LinearLayout
         android:orientation="vertical"
+        android:layout_gravity="center_vertical"
         android:layout_width="0dip"
+        android:layout_marginLeft="8dp"
         android:layout_height="wrap_content"
         android:layout_weight="1">
+
+        <TextView
+            android:id="@+id/address"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="alice@example.com"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
 
         <TextView
             android:id="@+id/userId"
@@ -38,20 +58,13 @@
             android:textAppearance="?android:attr/textAppearanceSmall" />
 
         <TextView
-            android:id="@+id/address"
+            android:id="@+id/comment"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="alice@example.com"
+            android:textColor="@color/tertiary_text_light"
+            android:text="comment"
             android:textAppearance="?android:attr/textAppearanceSmall" />
 
     </LinearLayout>
-
-    <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:id="@+id/certified"
-        android:src="@drawable/key_certify_ok_self"
-        android:layout_marginLeft="5dp"
-        android:layout_marginRight="5dp" />
 
 </LinearLayout>

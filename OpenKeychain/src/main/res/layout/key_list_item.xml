@@ -52,7 +52,7 @@
         android:layout_height="match_parent">
 
         <Button
-            android:background="@drawable/selector_transparent_button"
+            style="@style/SelectableItem"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:id="@+id/edit"

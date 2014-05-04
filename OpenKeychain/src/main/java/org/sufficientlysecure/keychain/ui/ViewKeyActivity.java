@@ -21,6 +21,7 @@ package org.sufficientlysecure.keychain.ui;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Intent;
+import android.database.Cursor;
 import android.net.Uri;
 import android.nfc.NdefMessage;
 import android.nfc.NdefRecord;
@@ -31,6 +32,9 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
@@ -42,20 +46,19 @@ import com.devspark.appmsg.AppMsg;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.compatibility.ClipboardReflection;
 import org.sufficientlysecure.keychain.helper.ExportHelper;
 import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
-import org.sufficientlysecure.keychain.ui.adapter.TabsAdapter;
-import org.sufficientlysecure.keychain.ui.dialog.ShareNfcDialogFragment;
-import org.sufficientlysecure.keychain.ui.dialog.ShareQrCodeDialogFragment;
+import org.sufficientlysecure.keychain.ui.adapter.PagerTabStripAdapter;
 import org.sufficientlysecure.keychain.util.Log;
+import org.sufficientlysecure.keychain.util.SlidingTabLayout;
 
 import java.io.IOException;
 import java.util.HashMap;
 
-public class ViewKeyActivity extends ActionBarActivity {
+public class ViewKeyActivity extends ActionBarActivity implements
+        LoaderManager.LoaderCallbacks<Cursor> {
 
     ExportHelper mExportHelper;
     ProviderHelper mProviderHelper;
@@ -63,9 +66,15 @@ public class ViewKeyActivity extends ActionBarActivity {
     protected Uri mDataUri;
 
     public static final String EXTRA_SELECTED_TAB = "selectedTab";
+    public static final int TAB_MAIN = 0;
+    public static final int TAB_SHARE = 1;
+    public static final int TAB_KEYS = 2;
+    public static final int TAB_CERTS = 3;
 
-    ViewPager mViewPager;
-    TabsAdapter mTabsAdapter;
+    // view
+    private ViewPager mViewPager;
+    private SlidingTabLayout mSlidingTabLayout;
+    private PagerTabStripAdapter mTabsAdapter;
 
     public static final int REQUEST_CODE_LOOKUP_KEY = 0x00007006;
 
@@ -75,6 +84,9 @@ public class ViewKeyActivity extends ActionBarActivity {
     private NfcAdapter.OnNdefPushCompleteCallback mNdefCompleteCallback;
     private byte[] mNfcKeyringBytes;
     private static final int NFC_SENT = 1;
+
+    private static final int LOADER_ID_UNIFIED = 0;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,33 +101,67 @@ public class ViewKeyActivity extends ActionBarActivity {
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setIcon(android.R.color.transparent);
         actionBar.setHomeButtonEnabled(true);
-        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
 
         setContentView(R.layout.view_key_activity);
 
-        mViewPager = (ViewPager) findViewById(R.id.pager);
+        mViewPager = (ViewPager) findViewById(R.id.view_key_pager);
+        mSlidingTabLayout = (SlidingTabLayout) findViewById(R.id.view_key_sliding_tab_layout);
 
-        mTabsAdapter = new TabsAdapter(this, mViewPager);
+        mTabsAdapter = new PagerTabStripAdapter(this);
+        mViewPager.setAdapter(mTabsAdapter);
 
-        int selectedTab = 0;
+        int switchToTab = TAB_MAIN;
         Intent intent = getIntent();
         if (intent.getExtras() != null && intent.getExtras().containsKey(EXTRA_SELECTED_TAB)) {
-            selectedTab = intent.getExtras().getInt(EXTRA_SELECTED_TAB);
+            switchToTab = intent.getExtras().getInt(EXTRA_SELECTED_TAB);
         }
 
-        mDataUri = getIntent().getData();
+        Uri dataUri = getIntent().getData();
+        if (dataUri == null) {
+            Log.e(Constants.TAG, "Data missing. Should be Uri of key!");
+            finish();
+            return;
+        }
 
-        initNfc(mDataUri);
+        loadData(dataUri);
+
+        initNfc(dataUri);
 
         Bundle mainBundle = new Bundle();
-        mainBundle.putParcelable(ViewKeyMainFragment.ARG_DATA_URI, mDataUri);
-        mTabsAdapter.addTab(actionBar.newTab().setText(getString(R.string.key_view_tab_main)),
-                ViewKeyMainFragment.class, mainBundle, (selectedTab == 0));
+        mainBundle.putParcelable(ViewKeyMainFragment.ARG_DATA_URI, dataUri);
+        mTabsAdapter.addTab(ViewKeyMainFragment.class,
+                mainBundle, getString(R.string.key_view_tab_main));
+
+        Bundle shareBundle = new Bundle();
+        shareBundle.putParcelable(ViewKeyMainFragment.ARG_DATA_URI, dataUri);
+        mTabsAdapter.addTab(ViewKeyShareFragment.class,
+                mainBundle, getString(R.string.key_view_tab_share));
+
+        Bundle keyDetailsBundle = new Bundle();
+        keyDetailsBundle.putParcelable(ViewKeyKeysFragment.ARG_DATA_URI, dataUri);
+        mTabsAdapter.addTab(ViewKeyKeysFragment.class,
+                keyDetailsBundle, getString(R.string.key_view_tab_keys_details));
 
         Bundle certBundle = new Bundle();
-        certBundle.putParcelable(ViewKeyCertsFragment.ARG_DATA_URI, mDataUri);
-        mTabsAdapter.addTab(actionBar.newTab().setText(getString(R.string.key_view_tab_certs)),
-                ViewKeyCertsFragment.class, certBundle, (selectedTab == 1));
+        certBundle.putParcelable(ViewKeyCertsFragment.ARG_DATA_URI, dataUri);
+        mTabsAdapter.addTab(ViewKeyCertsFragment.class,
+                certBundle, getString(R.string.key_view_tab_certs));
+
+        // NOTE: must be after adding the tabs!
+        mSlidingTabLayout.setViewPager(mViewPager);
+
+        // switch to tab selected by extra
+        mViewPager.setCurrentItem(switchToTab);
+    }
+
+    private void loadData(Uri dataUri) {
+        mDataUri = dataUri;
+
+        Log.i(Constants.TAG, "mDataUri: " + mDataUri.toString());
+
+        // Prepare the loaders. Either re-connect with an existing ones,
+        // or start new ones.
+        getSupportLoaderManager().initLoader(LOADER_ID_UNIFIED, null, this);
     }
 
     @Override
@@ -142,24 +188,6 @@ public class ViewKeyActivity extends ActionBarActivity {
                     return true;
                 case R.id.menu_key_view_export_file:
                     exportToFile(mDataUri, mExportHelper, mProviderHelper);
-                    return true;
-                case R.id.menu_key_view_share_default_fingerprint:
-                    shareKey(mDataUri, true, mProviderHelper);
-                    return true;
-                case R.id.menu_key_view_share_default:
-                    shareKey(mDataUri, false, mProviderHelper);
-                    return true;
-                case R.id.menu_key_view_share_qr_code_fingerprint:
-                    shareKeyQrCode(mDataUri, true);
-                    return true;
-                case R.id.menu_key_view_share_qr_code:
-                    shareKeyQrCode(mDataUri, false);
-                    return true;
-                case R.id.menu_key_view_share_nfc:
-                    shareNfc();
-                    return true;
-                case R.id.menu_key_view_share_clipboard:
-                    copyToClipboard(mDataUri, mProviderHelper);
                     return true;
                 case R.id.menu_key_view_delete: {
                     deleteKey(mDataUri, mExportHelper);
@@ -207,84 +235,6 @@ public class ViewKeyActivity extends ActionBarActivity {
         queryIntent.putExtra(ImportKeysActivity.EXTRA_FINGERPRINT, fingerprint);
 
         startActivityForResult(queryIntent, REQUEST_CODE_LOOKUP_KEY);
-    }
-
-    private void shareKey(Uri dataUri, boolean fingerprintOnly, ProviderHelper providerHelper)
-            throws ProviderHelper.NotFoundException {
-        String content = null;
-        if (fingerprintOnly) {
-            byte[] data = (byte[]) providerHelper.getGenericData(
-                    KeychainContract.KeyRings.buildUnifiedKeyRingUri(dataUri),
-                    KeychainContract.Keys.FINGERPRINT, ProviderHelper.FIELD_TYPE_BLOB);
-            if (data != null) {
-                String fingerprint = PgpKeyHelper.convertFingerprintToHex(data);
-                content = Constants.FINGERPRINT_SCHEME + ":" + fingerprint;
-            } else {
-                AppMsg.makeText(this, "Bad key selected!",
-                        AppMsg.STYLE_ALERT).show();
-                return;
-            }
-        } else {
-            // get public keyring as ascii armored string
-            try {
-                Uri uri = KeychainContract.KeyRingData.buildPublicKeyRingUri(dataUri);
-                content = providerHelper.getKeyRingAsArmoredString(uri);
-
-                // Android will fail with android.os.TransactionTooLargeException if key is too big
-                // see http://www.lonestarprod.com/?p=34
-                if (content.length() >= 86389) {
-                    AppMsg.makeText(this, R.string.key_too_big_for_sharing,
-                            AppMsg.STYLE_ALERT).show();
-                    return;
-                }
-            } catch (IOException e) {
-                Log.e(Constants.TAG, "error processing key!", e);
-                AppMsg.makeText(this, R.string.error_invalid_data, AppMsg.STYLE_ALERT).show();
-            } catch (ProviderHelper.NotFoundException e) {
-                Log.e(Constants.TAG, "key not found!", e);
-                AppMsg.makeText(this, R.string.error_key_not_found, AppMsg.STYLE_ALERT).show();
-            }
-        }
-
-        if (content != null) {
-            // let user choose application
-            Intent sendIntent = new Intent(Intent.ACTION_SEND);
-            sendIntent.putExtra(Intent.EXTRA_TEXT, content);
-            sendIntent.setType("text/plain");
-            startActivity(Intent.createChooser(sendIntent,
-                    getResources().getText(R.string.action_share_key_with)));
-        } else {
-            Log.e(Constants.TAG, "content is null!");
-        }
-    }
-
-    private void shareKeyQrCode(Uri dataUri, boolean fingerprintOnly) {
-        ShareQrCodeDialogFragment dialog = ShareQrCodeDialogFragment.newInstance(dataUri,
-                fingerprintOnly);
-        dialog.show(getSupportFragmentManager(), "shareQrCodeDialog");
-    }
-
-    private void copyToClipboard(Uri dataUri, ProviderHelper providerHelper) {
-        // get public keyring as ascii armored string
-        try {
-            Uri uri = KeychainContract.KeyRingData.buildPublicKeyRingUri(dataUri);
-            String keyringArmored = providerHelper.getKeyRingAsArmoredString(uri);
-
-            ClipboardReflection.copyToClipboard(this, keyringArmored);
-            AppMsg.makeText(this, R.string.key_copied_to_clipboard, AppMsg.STYLE_INFO)
-                    .show();
-        } catch (IOException e) {
-            Log.e(Constants.TAG, "error processing key!", e);
-            AppMsg.makeText(this, R.string.error_key_processing, AppMsg.STYLE_ALERT).show();
-        } catch (ProviderHelper.NotFoundException e) {
-            Log.e(Constants.TAG, "key not found!", e);
-            AppMsg.makeText(this, R.string.error_key_not_found, AppMsg.STYLE_ALERT).show();
-        }
-    }
-
-    private void shareNfc() {
-        ShareNfcDialogFragment dialog = ShareNfcDialogFragment.newInstance();
-        dialog.show(getSupportFragmentManager(), "shareNfcDialog");
     }
 
     private void deleteKey(Uri dataUri, ExportHelper exportHelper) {
@@ -409,4 +359,63 @@ public class ViewKeyActivity extends ActionBarActivity {
         }
     };
 
+    static final String[] UNIFIED_PROJECTION = new String[]{
+            KeychainContract.KeyRings._ID,
+            KeychainContract.KeyRings.MASTER_KEY_ID,
+            KeychainContract.KeyRings.USER_ID,
+
+    };
+    static final int INDEX_UNIFIED_MASTER_KEY_ID = 1;
+    static final int INDEX_UNIFIED_USER_ID = 2;
+
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        switch (id) {
+            case LOADER_ID_UNIFIED: {
+                Uri baseUri = KeychainContract.KeyRings.buildUnifiedKeyRingUri(mDataUri);
+                return new CursorLoader(this, baseUri, UNIFIED_PROJECTION, null, null, null);
+            }
+
+            default:
+                return null;
+        }
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+        /* TODO better error handling? May cause problems when a key is deleted,
+         * because the notification triggers faster than the activity closes.
+         */
+        // Avoid NullPointerExceptions...
+        if (data.getCount() == 0) {
+            return;
+        }
+        // Swap the new cursor in. (The framework will take care of closing the
+        // old cursor once we return.)
+        switch (loader.getId()) {
+            case LOADER_ID_UNIFIED: {
+                if (data.moveToFirst()) {
+                    // get name, email, and comment from USER_ID
+                    String[] mainUserId = PgpKeyHelper.splitUserId(data.getString(INDEX_UNIFIED_USER_ID));
+                    if (mainUserId[0] != null) {
+                        setTitle(mainUserId[0]);
+                    } else {
+                        setTitle(R.string.user_id_no_name);
+                    }
+
+                    // get key id from MASTER_KEY_ID
+                    long masterKeyId = data.getLong(INDEX_UNIFIED_MASTER_KEY_ID);
+                    String keyIdStr = PgpKeyHelper.convertKeyIdToHex(masterKeyId);
+                    getSupportActionBar().setSubtitle(keyIdStr);
+
+                    break;
+                }
+            }
+        }
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+
+    }
 }

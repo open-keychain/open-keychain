@@ -12,22 +12,22 @@
     android:focusable="false">
 
     <TextView
-        android:id="@+id/signerKeyId"
+        android:id="@+id/signerName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="signer key id"
+        android:text="signer name"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:layout_alignParentTop="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true" />
 
     <TextView
-        android:id="@+id/signerUserId"
+        android:id="@+id/signerKeyId"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="&lt;user@example.com>"
         android:textAppearance="?android:attr/textAppearanceSmall"
-        android:layout_below="@+id/signerKeyId"
+        android:layout_below="@+id/signerName"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true" />
 
@@ -38,7 +38,7 @@
         android:textAppearance="?android:attr/textAppearanceSmall"
         android:text="status"
         android:visibility="visible"
-        android:layout_above="@+id/signerUserId"
+        android:layout_above="@+id/signerKeyId"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
         android:layout_marginRight="10dp" />

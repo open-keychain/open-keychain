@@ -106,7 +106,7 @@
             android:typeface="monospace" />
 
         <TextView
-            android:id="@+id/fingerprint"
+            android:id="@+id/view_key_fingerprint"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="0000 0000 0000 0000 0000\n0000 0000 0000 0000 0000"

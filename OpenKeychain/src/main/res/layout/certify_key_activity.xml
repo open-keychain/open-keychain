@@ -93,7 +93,7 @@
                     android:text="@string/label_fingerprint" />
 
                 <TextView
-                    android:id="@+id/fingerprint"
+                    android:id="@+id/view_key_fingerprint"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:typeface="monospace" />
@@ -111,7 +111,7 @@
             android:text="@string/section_uids_to_sign" />
 
         <org.sufficientlysecure.keychain.ui.widget.FixedListView
-            android:id="@+id/user_ids"
+            android:id="@+id/view_key_user_ids"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:descendantFocusability="blocksDescendants" />

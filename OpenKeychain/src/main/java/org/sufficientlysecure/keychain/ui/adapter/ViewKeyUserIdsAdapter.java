@@ -27,6 +27,7 @@ import android.widget.AdapterView;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import org.sufficientlysecure.keychain.R;
@@ -106,40 +107,55 @@ public class ViewKeyUserIdsAdapter extends CursorAdapter implements AdapterView.
 
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
-        TextView vRank = (TextView) view.findViewById(R.id.rank);
-        TextView vUserId = (TextView) view.findViewById(R.id.userId);
+        TextView vName = (TextView) view.findViewById(R.id.userId);
         TextView vAddress = (TextView) view.findViewById(R.id.address);
+        TextView vComment = (TextView) view.findViewById(R.id.comment);
         ImageView vVerified = (ImageView) view.findViewById(R.id.certified);
-
-        if (cursor.getInt(mIsPrimary) > 0) {
-            vRank.setText("+");
-        } else {
-            vRank.setText(Integer.toString(cursor.getInt(mIndexRank)));
-        }
+        ImageView vPrimaryUserIdIcon = (ImageView) view.findViewById(R.id.primary_user_id_icon);
 
         String[] userId = PgpKeyHelper.splitUserId(cursor.getString(mIndexUserId));
         if (userId[0] != null) {
-            vUserId.setText(userId[0]);
+            vName.setText(userId[0]);
         } else {
-            vUserId.setText(R.string.user_id_no_name);
+            vName.setText(R.string.user_id_no_name);
         }
-        vAddress.setText(userId[1]);
+        if (userId[1] != null) {
+            vAddress.setText(userId[1]);
+            vAddress.setVisibility(View.VISIBLE);
+        } else {
+            vAddress.setVisibility(View.GONE);
+        }
+        if (userId[2] != null) {
+            vComment.setText(userId[2]);
+            vComment.setVisibility(View.VISIBLE);
+        } else {
+            vComment.setVisibility(View.GONE);
+        }
+
+        // show small star icon for primary user ids
+        if (cursor.getInt(mIsPrimary) > 0) {
+            vPrimaryUserIdIcon.setVisibility(View.VISIBLE);
+        } else {
+            vPrimaryUserIdIcon.setVisibility(View.GONE);
+        }
 
         if (cursor.getInt(mIsRevoked) > 0) {
-            vRank.setText(" ");
+            // no star icon for revoked user ids!
+            vPrimaryUserIdIcon.setVisibility(View.GONE);
+
+            // set revocation icon
             vVerified.setImageResource(R.drawable.key_certify_revoke);
 
             // disable and strike through text for revoked user ids
-            vUserId.setEnabled(false);
+            vName.setEnabled(false);
             vAddress.setEnabled(false);
-            vUserId.setText(OtherHelper.strikeOutText(vUserId.getText()));
+            vName.setText(OtherHelper.strikeOutText(vName.getText()));
             vAddress.setText(OtherHelper.strikeOutText(vAddress.getText()));
         } else {
-            vUserId.setEnabled(true);
+            vName.setEnabled(true);
             vAddress.setEnabled(true);
 
             int verified = cursor.getInt(mVerifiedId);
-            // TODO introduce own resources for this :)
             switch (verified) {
                 case Certs.VERIFIED_SECRET:
                     vVerified.setImageResource(R.drawable.key_certify_ok_depth0);

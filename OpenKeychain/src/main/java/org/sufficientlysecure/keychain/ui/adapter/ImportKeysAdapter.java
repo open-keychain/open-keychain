@@ -28,7 +28,6 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.LinearLayout;
-import android.widget.LinearLayout.LayoutParams;
 import android.widget.TextView;
 
 import org.sufficientlysecure.keychain.R;
@@ -106,7 +105,7 @@ public class ImportKeysAdapter extends ArrayAdapter<ImportKeysListEntry> {
             holder.mainUserId = (TextView) convertView.findViewById(R.id.mainUserId);
             holder.mainUserIdRest = (TextView) convertView.findViewById(R.id.mainUserIdRest);
             holder.keyId = (TextView) convertView.findViewById(R.id.keyId);
-            holder.fingerprint = (TextView) convertView.findViewById(R.id.fingerprint);
+            holder.fingerprint = (TextView) convertView.findViewById(R.id.view_key_fingerprint);
             holder.algorithm = (TextView) convertView.findViewById(R.id.algorithm);
             holder.status = (TextView) convertView.findViewById(R.id.status);
             holder.userIdsList = (LinearLayout) convertView.findViewById(R.id.user_ids_list);
