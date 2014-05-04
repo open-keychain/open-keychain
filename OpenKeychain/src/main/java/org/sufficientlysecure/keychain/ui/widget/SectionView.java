@@ -36,9 +36,9 @@ import android.widget.TextView;
 import com.beardedhen.androidbootstrap.BootstrapButton;
 
 import org.spongycastle.openpgp.PGPKeyFlags;
-import org.spongycastle.openpgp.PGPSecretKey;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.PgpConversionHelper;
+import org.sufficientlysecure.keychain.pgp.UncachedSecretKey;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
 import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
 import org.sufficientlysecure.keychain.service.PassphraseCacheService;
@@ -63,7 +63,7 @@ public class SectionView extends LinearLayout implements OnClickListener, Editor
     private int mNewKeySize;
     private boolean mOldItemDeleted = false;
     private ArrayList<String> mDeletedIDs = new ArrayList<String>();
-    private ArrayList<PGPSecretKey> mDeletedKeys = new ArrayList<PGPSecretKey>();
+    private ArrayList<UncachedSecretKey> mDeletedKeys = new ArrayList<UncachedSecretKey>();
     private boolean mCanBeEdited = true;
 
     private ActionBarActivity mActivity;
@@ -227,7 +227,7 @@ public class SectionView extends LinearLayout implements OnClickListener, Editor
         return mDeletedIDs;
     }
 
-    public ArrayList<PGPSecretKey> getDeletedKeys() {
+    public ArrayList<UncachedSecretKey> getDeletedKeys() {
         return mDeletedKeys;
     }
 
@@ -325,7 +325,7 @@ public class SectionView extends LinearLayout implements OnClickListener, Editor
         this.updateEditorsVisible();
     }
 
-    public void setKeys(Vector<PGPSecretKey> list, Vector<Integer> usages, boolean newKeys) {
+    public void setKeys(Vector<UncachedSecretKey> list, Vector<Integer> usages, boolean newKeys) {
         if (mType != TYPE_KEY) {
             return;
         }
@@ -358,9 +358,9 @@ public class SectionView extends LinearLayout implements OnClickListener, Editor
 
         String passphrase;
         if (mEditors.getChildCount() > 0) {
-            PGPSecretKey masterKey = ((KeyEditor) mEditors.getChildAt(0)).getValue();
+            UncachedSecretKey masterKey = ((KeyEditor) mEditors.getChildAt(0)).getValue();
             passphrase = PassphraseCacheService
-                    .getCachedPassphrase(mActivity, masterKey.getKeyID());
+                    .getCachedPassphrase(mActivity, masterKey.getKeyId());
             isMasterKey = false;
         } else {
             passphrase = "";
@@ -395,7 +395,7 @@ public class SectionView extends LinearLayout implements OnClickListener, Editor
                 if (message.arg1 == KeychainIntentServiceHandler.MESSAGE_OKAY) {
                     // get new key from data bundle returned from service
                     Bundle data = message.getData();
-                    PGPSecretKey newKey = (PGPSecretKey) PgpConversionHelper
+                    UncachedSecretKey newKey = PgpConversionHelper
                             .BytesToPGPSecretKey(data
                                     .getByteArray(KeychainIntentService.RESULT_NEW_KEY));
                     addGeneratedKeyToView(newKey);
@@ -413,7 +413,7 @@ public class SectionView extends LinearLayout implements OnClickListener, Editor
         mActivity.startService(intent);
     }
 
-    private void addGeneratedKeyToView(PGPSecretKey newKey) {
+    private void addGeneratedKeyToView(UncachedSecretKey newKey) {
         // add view with new key
         KeyEditor view = (KeyEditor) mInflater.inflate(R.layout.edit_key_key_item,
                 mEditors, false);

@@ -26,11 +26,9 @@ import org.spongycastle.openpgp.PGPSignatureList;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.util.Log;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
-
 
 public class PgpConversionHelper {
 
@@ -60,10 +58,10 @@ public class PgpConversionHelper {
      * @param keysBytes
      * @return
      */
-    public static ArrayList<PGPSecretKey> BytesToPGPSecretKeyList(byte[] keysBytes) {
+    public static ArrayList<UncachedSecretKey> BytesToPGPSecretKeyList(byte[] keysBytes) {
         PGPObjectFactory factory = new PGPObjectFactory(keysBytes);
         Object obj = null;
-        ArrayList<PGPSecretKey> keys = new ArrayList<PGPSecretKey>();
+        ArrayList<UncachedSecretKey> keys = new ArrayList<UncachedSecretKey>();
         try {
             while ((obj = factory.nextObject()) != null) {
                 PGPSecretKey secKey = null;
@@ -72,7 +70,7 @@ public class PgpConversionHelper {
                     if (secKey == null) {
                         Log.e(Constants.TAG, "No keys given!");
                     }
-                    keys.add(secKey);
+                    keys.add(new UncachedSecretKey(secKey));
                 } else if (obj instanceof PGPSecretKeyRing) { //master keys are sent as keyrings
                     PGPSecretKeyRing keyRing = null;
                     keyRing = (PGPSecretKeyRing) obj;
@@ -82,7 +80,7 @@ public class PgpConversionHelper {
                     @SuppressWarnings("unchecked")
                     Iterator<PGPSecretKey> itr = keyRing.getSecretKeys();
                     while (itr.hasNext()) {
-                        keys.add(itr.next());
+                        keys.add(new UncachedSecretKey(itr.next()));
                     }
                 }
             }
@@ -100,7 +98,7 @@ public class PgpConversionHelper {
      * @param keyBytes
      * @return
      */
-    public static PGPSecretKey BytesToPGPSecretKey(byte[] keyBytes) {
+    public static UncachedSecretKey BytesToPGPSecretKey(byte[] keyBytes) {
         PGPObjectFactory factory = new PGPObjectFactory(keyBytes);
         Object obj = null;
         try {
@@ -121,7 +119,7 @@ public class PgpConversionHelper {
             secKey = keyRing.getSecretKey();
         }
 
-        return secKey;
+        return new UncachedSecretKey(secKey);
     }
 
     /**
@@ -144,25 +142,6 @@ public class PgpConversionHelper {
         }
 
         return signatures.get(0);
-    }
-
-    /**
-     * Convert from ArrayList<PGPSecretKey> to byte[]
-     *
-     * @param keys
-     * @return
-     */
-    public static byte[] PGPSecretKeyArrayListToBytes(ArrayList<PGPSecretKey> keys) {
-        ByteArrayOutputStream os = new ByteArrayOutputStream();
-        for (PGPSecretKey key : keys) {
-            try {
-                key.encode(os);
-            } catch (IOException e) {
-                Log.e(Constants.TAG, "Error while converting ArrayList<PGPSecretKey> to byte[]!", e);
-            }
-        }
-
-        return os.toByteArray();
     }
 
 }

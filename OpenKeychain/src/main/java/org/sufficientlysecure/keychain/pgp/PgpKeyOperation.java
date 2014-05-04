@@ -200,7 +200,7 @@ public class PgpKeyOperation {
         boolean canSign;
         String mainUserId = saveParcel.userIds.get(0);
 
-        PGPSecretKey masterKey = saveParcel.keys.get(0);
+        PGPSecretKey masterKey = saveParcel.keys.get(0).getSecretKeyExternal();
 
         // this removes all userIds and certifications previously attached to the masterPublicKey
         PGPPublicKey masterPublicKey = masterKey.getPublicKey();
@@ -275,7 +275,7 @@ public class PgpKeyOperation {
         for (int i = 1; i < saveParcel.keys.size(); ++i) {
             updateProgress(40 + 40 * (i - 1) / (saveParcel.keys.size() - 1), 100);
 
-            PGPSecretKey subKey = saveParcel.keys.get(i);
+            PGPSecretKey subKey = saveParcel.keys.get(i).getSecretKeyExternal();
             PGPPublicKey subPublicKey = subKey.getPublicKey();
 
             PBESecretKeyDecryptor keyDecryptor2 = new JcePBESecretKeyDecryptorBuilder()
@@ -377,8 +377,8 @@ public class PgpKeyOperation {
         */
 
         if (saveParcel.deletedKeys != null) {
-            for (PGPSecretKey dKey : saveParcel.deletedKeys) {
-                mKR = PGPSecretKeyRing.removeSecretKey(mKR, dKey);
+            for (UncachedSecretKey dKey : saveParcel.deletedKeys) {
+                mKR = PGPSecretKeyRing.removeSecretKey(mKR, dKey.getSecretKeyExternal());
             }
         }
 
@@ -542,7 +542,7 @@ public class PgpKeyOperation {
         for (int i = 1; i < saveParcel.keys.size(); ++i) {
             updateProgress(40 + 50 * i / saveParcel.keys.size(), 100);
             if (saveParcel.moddedKeys[i]) {
-                PGPSecretKey subKey = saveParcel.keys.get(i);
+                PGPSecretKey subKey = saveParcel.keys.get(i).getSecretKeyExternal();
                 PGPPublicKey subPublicKey = subKey.getPublicKey();
 
                 PBESecretKeyDecryptor keyDecryptor2;

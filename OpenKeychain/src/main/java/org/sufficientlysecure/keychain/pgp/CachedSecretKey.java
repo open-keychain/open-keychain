@@ -40,6 +40,14 @@ public class CachedSecretKey extends CachedPublicKey {
         return (CachedSecretKeyRing) mRing;
     }
 
+    /** Returns the wrapped PGPSecretKeyRing.
+     * This function is for compatibility only, should not be used anymore and will be removed
+     */
+    @Deprecated
+    public PGPSecretKey getKeyExternal() {
+        return mSecretKey;
+    }
+
     public boolean unlock(String passphrase) throws PgpGeneralException {
         try {
             PBESecretKeyDecryptor keyDecryptor = new JcePBESecretKeyDecryptorBuilder().setProvider(

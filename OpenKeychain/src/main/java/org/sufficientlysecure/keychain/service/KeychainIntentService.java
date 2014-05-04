@@ -504,7 +504,7 @@ public class KeychainIntentService extends IntentService
                     newPassphrase = oldPassphrase;
                 }
 
-                long masterKeyId = saveParcel.keys.get(0).getKeyID();
+                long masterKeyId = saveParcel.keys.get(0).getKeyId();
 
                 /* Operation */
                 ProviderHelper providerHelper = new ProviderHelper(this);

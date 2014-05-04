@@ -20,9 +20,14 @@ package org.sufficientlysecure.keychain.service;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import org.spongycastle.openpgp.PGPSecretKey;
+import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.pgp.PgpConversionHelper;
+import org.sufficientlysecure.keychain.pgp.UncachedSecretKey;
+import org.sufficientlysecure.keychain.util.IterableIterator;
+import org.sufficientlysecure.keychain.util.Log;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 
@@ -34,13 +39,13 @@ public class SaveKeyringParcel implements Parcelable {
     public boolean[] newIDs;
     public boolean primaryIDChanged;
     public boolean[] moddedKeys;
-    public ArrayList<PGPSecretKey> deletedKeys;
+    public ArrayList<UncachedSecretKey> deletedKeys;
     public ArrayList<Calendar> keysExpiryDates;
     public ArrayList<Integer> keysUsages;
     public String newPassphrase;
     public String oldPassphrase;
     public boolean[] newKeys;
-    public ArrayList<PGPSecretKey> keys;
+    public ArrayList<UncachedSecretKey> keys;
     public String originalPrimaryID;
 
     public SaveKeyringParcel() {}
@@ -75,17 +80,13 @@ public class SaveKeyringParcel implements Parcelable {
         destination.writeBooleanArray(newIDs);
         destination.writeByte((byte) (primaryIDChanged ? 1 : 0));
         destination.writeBooleanArray(moddedKeys);
-        byte[] tmp = null;
-        if (deletedKeys.size() != 0) {
-            tmp = PgpConversionHelper.PGPSecretKeyArrayListToBytes(deletedKeys);
-        }
-        destination.writeByteArray(tmp);
+        destination.writeByteArray(encodeArrayList(deletedKeys));
         destination.writeSerializable(keysExpiryDates);
         destination.writeList(keysUsages);
         destination.writeString(newPassphrase);
         destination.writeString(oldPassphrase);
         destination.writeBooleanArray(newKeys);
-        destination.writeByteArray(PgpConversionHelper.PGPSecretKeyArrayListToBytes(keys));
+        destination.writeByteArray(encodeArrayList(keys));
         destination.writeString(originalPrimaryID);
     }
 
@@ -98,6 +99,22 @@ public class SaveKeyringParcel implements Parcelable {
             return new SaveKeyringParcel[size];
         }
     };
+
+    private static byte[] encodeArrayList(ArrayList<UncachedSecretKey> list) {
+        if(list.isEmpty()) {
+            return null;
+        }
+
+        ByteArrayOutputStream os = new ByteArrayOutputStream();
+        for(UncachedSecretKey key : new IterableIterator<UncachedSecretKey>(list.iterator())) {
+            try {
+                key.encodeSecretKey(os);
+            } catch (IOException e) {
+                Log.e(Constants.TAG, "Error while converting ArrayList<UncachedSecretKey> to byte[]!", e);
+            }
+        }
+        return os.toByteArray();
+    }
 
     @Override
     public int describeContents() {
