@@ -11,6 +11,7 @@ import org.spongycastle.openpgp.operator.jcajce.JcePublicKeyKeyEncryptionMethodG
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.util.IterableIterator;
 
+import java.security.SignatureException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -155,6 +156,18 @@ public class CachedPublicKey {
                 new JcaPGPContentVerifierBuilderProvider()
                         .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME);
         sig.init(contentVerifierBuilderProvider, mKey);
+    }
+
+    /** Verify a signature for this pubkey, after it has been initialized by the signer using
+     * initSignature(). This method should probably move into a wrapped PGPSignature class
+     * at some point.
+     */
+    public boolean verifySignature(PGPSignature sig, String uid) throws PGPException {
+        try {
+            return sig.verifyCertification(uid, mKey);
+        } catch (SignatureException e) {
+            throw new PGPException("Error!", e);
+        }
     }
 
     public byte[] getFingerprint() {

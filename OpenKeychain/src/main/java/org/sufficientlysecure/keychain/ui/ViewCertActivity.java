@@ -37,20 +37,17 @@ import org.spongycastle.bcpg.SignatureSubpacket;
 import org.spongycastle.bcpg.SignatureSubpacketTags;
 import org.spongycastle.bcpg.sig.RevocationReason;
 import org.spongycastle.openpgp.PGPException;
-import org.spongycastle.openpgp.PGPKeyRing;
 import org.spongycastle.openpgp.PGPSignature;
-import org.spongycastle.openpgp.operator.jcajce.JcaPGPContentVerifierBuilderProvider;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.pgp.CachedPublicKeyRing;
 import org.sufficientlysecure.keychain.pgp.PgpConversionHelper;
 import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
-import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainContract.Certs;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.util.Log;
 
-import java.security.SignatureException;
 import java.util.Date;
 
 public class ViewCertActivity extends ActionBarActivity
@@ -147,26 +144,17 @@ public class ViewCertActivity extends ActionBarActivity
             PGPSignature sig = PgpConversionHelper.BytesToPGPSignature(data.getBlob(INDEX_DATA));
             try {
                 ProviderHelper providerHelper = new ProviderHelper(this);
-                PGPKeyRing signeeRing = providerHelper.getPGPKeyRing(
-                        KeychainContract.KeyRingData.buildPublicKeyRingUri(
-                                Long.toString(data.getLong(INDEX_MASTER_KEY_ID))));
-                PGPKeyRing signerRing = providerHelper.getPGPKeyRing(
-                        KeychainContract.KeyRingData.buildPublicKeyRingUri(
-                                Long.toString(sig.getKeyID())));
-
+                CachedPublicKeyRing signeeRing = providerHelper.getCachedPublicKeyRing(data.getLong(INDEX_MASTER_KEY_ID));
+                CachedPublicKeyRing signerRing = providerHelper.getCachedPublicKeyRing(sig.getKeyID());
                 try {
-                    sig.init(new JcaPGPContentVerifierBuilderProvider().setProvider(
-                            Constants.BOUNCY_CASTLE_PROVIDER_NAME), signerRing.getPublicKey());
-                    if (sig.verifyCertification(signeeUid, signeeRing.getPublicKey())) {
+                    signerRing.getSubkey().initSignature(sig);
+                    if (signeeRing.getSubkey().verifySignature(sig, signeeUid)) {
                         mStatus.setText(R.string.cert_verify_ok);
                         mStatus.setTextColor(getResources().getColor(R.color.bbutton_success));
                     } else {
                         mStatus.setText(R.string.cert_verify_failed);
                         mStatus.setTextColor(getResources().getColor(R.color.alert));
                     }
-                } catch (SignatureException e) {
-                    mStatus.setText(R.string.cert_verify_error);
-                    mStatus.setTextColor(getResources().getColor(R.color.alert));
                 } catch (PGPException e) {
                     mStatus.setText(R.string.cert_verify_error);
                     mStatus.setTextColor(getResources().getColor(R.color.alert));
