@@ -72,7 +72,7 @@ public class CachedPublicKeyRing extends CachedKeyRing {
         boolean validPrimaryKeyBinding = false;
 
         PGPPublicKey masterKey = getRing().getPublicKey();
-        PGPPublicKey subKey = cachedSubkey.getKey();
+        PGPPublicKey subKey = cachedSubkey.getPublicKey();
 
         // Is this the master key? Match automatically, then.
         if(Arrays.equals(masterKey.getFingerprint(), subKey.getFingerprint())) {

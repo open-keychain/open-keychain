@@ -1,6 +1,5 @@
 package org.sufficientlysecure.keychain.pgp;
 
-import org.spongycastle.bcpg.sig.KeyFlags;
 import org.spongycastle.openpgp.PGPException;
 import org.spongycastle.openpgp.PGPPrivateKey;
 import org.spongycastle.openpgp.PGPPublicKey;
@@ -157,7 +156,7 @@ public class CachedSecretKey extends CachedPublicKey {
         }
 
         // get the master subkey (which we certify for)
-        PGPPublicKey publicKey = publicKeyRing.getSubkey().getKey();
+        PGPPublicKey publicKey = publicKeyRing.getSubkey().getPublicKey();
 
         // fetch public key ring, add the certification and return it
         for (String userId : new IterableIterator<String>(userIds.iterator())) {
@@ -173,6 +172,10 @@ public class CachedSecretKey extends CachedPublicKey {
     static class PrivateKeyNotUnlockedException extends RuntimeException {
         // this exception is a programming error which happens when an operation which requires
         // the private key is called without a previous call to unlock()
+    }
+
+    public UncachedSecretKey getUncached() {
+        return new UncachedSecretKey(mSecretKey);
     }
 
 }
