@@ -30,16 +30,10 @@ import android.widget.TextView;
 
 import com.beardedhen.androidbootstrap.BootstrapButton;
 
-import org.spongycastle.openpgp.PGPSecretKey;
-import org.spongycastle.openpgp.PGPSecretKeyRing;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.pgp.CachedPublicKey;
 import org.sufficientlysecure.keychain.pgp.CachedPublicKeyRing;
-import org.sufficientlysecure.keychain.pgp.CachedSecretKey;
-import org.sufficientlysecure.keychain.pgp.CachedSecretKeyRing;
 import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
-import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.util.Log;
@@ -155,7 +149,7 @@ public class EncryptAsymmetricFragment extends Fragment {
             try {
                 CachedPublicKeyRing keyring =
                         providerHelper.getCachedPublicKeyRing(preselectedSignatureKeyId);
-                if(keyring.hasSecret()) {
+                if(keyring.hasAnySecret()) {
                     setSignatureKeyId(keyring.getMasterKeyId());
                 }
             } catch (ProviderHelper.NotFoundException e) {

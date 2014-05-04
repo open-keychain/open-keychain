@@ -270,14 +270,15 @@ public class PgpSignEncrypt {
         /* Get keys for signature generation for later usage */
         CachedSecretKey signingKey = null;
         if (enableSignature) {
-            CachedSecretKeyRing signingKeyRing = null;
+            CachedSecretKeyRing signingKeyRing;
             try {
                 signingKeyRing = mProviderHelper.getCachedSecretKeyRing(mSignatureMasterKeyId);
             } catch (ProviderHelper.NotFoundException e) {
                 throw new NoSigningKeyException();
             }
-            signingKey = signingKeyRing.getSigningSubKey();
-            if (signingKey == null) {
+            try {
+                signingKey = signingKeyRing.getSigningSubKey();
+            } catch(PgpGeneralException e) {
                 throw new NoSigningKeyException();
             }
 
@@ -319,7 +320,7 @@ public class PgpSignEncrypt {
                     try {
                         CachedPublicKeyRing keyRing = mProviderHelper.getCachedPublicKeyRing(
                                 KeyRings.buildUnifiedKeyRingUri(Long.toString(id)));
-                        CachedPublicKey key = keyRing.getFirstEncryptSubkey();
+                        CachedPublicKey key = keyRing.getEncryptionSubKey();
                         cPk.addMethod(key.getPubKeyEncryptionGenerator());
                     } catch (PgpGeneralException e) {
                         Log.e(Constants.TAG, "key not found!", e);

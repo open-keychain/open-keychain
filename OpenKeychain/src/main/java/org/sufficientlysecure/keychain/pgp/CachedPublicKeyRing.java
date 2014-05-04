@@ -23,14 +23,14 @@ public class CachedPublicKeyRing extends CachedKeyRing {
     private PGPPublicKeyRing mRing;
     private final byte[] mPubKey;
 
-    public CachedPublicKeyRing(long masterKeyId, int keySize, boolean isRevoked,
-                                boolean canCertify, long creation, long expiry, int algorithm,
-                                byte[] fingerprint, String userId, int verified, boolean hasSecret,
-                                byte[] pubkey)
+    public CachedPublicKeyRing(long masterKeyId, String userId, boolean hasAnySecret,
+                               boolean isRevoked, boolean canCertify, long hasEncryptId, long hasSignId,
+                               int verified, byte[] blob)
     {
-        super(masterKeyId, canCertify, fingerprint, userId, verified, hasSecret);
+        super(masterKeyId, userId, hasAnySecret, isRevoked, canCertify,
+                hasEncryptId, hasSignId, verified);
 
-        mPubKey = pubkey;
+        mPubKey = blob;
     }
 
     PGPPublicKeyRing getRing() {
@@ -52,46 +52,18 @@ public class CachedPublicKeyRing extends CachedKeyRing {
         return new CachedPublicKey(this, getRing().getPublicKey(id));
     }
 
-    public CachedPublicKey getFirstSignSubkey() throws PgpGeneralException {
-        // only return master key if no other signing key is available
-        CachedPublicKey masterKey = null;
-        for (PGPPublicKey k : new IterableIterator<PGPPublicKey>(getRing().getPublicKeys())) {
-            CachedPublicKey key = new CachedPublicKey(this, k);
-            if (key.isRevoked() || key.canSign() || key.isExpired()) {
-                continue;
+    /** Getter that returns the subkey that should be used for signing. */
+    CachedPublicKey getEncryptionSubKey() throws PgpGeneralException {
+        PGPPublicKey key = getRing().getPublicKey(getEncryptId());
+        if(key != null) {
+            CachedPublicKey cKey = new CachedPublicKey(this, key);
+            if(!cKey.canEncrypt()) {
+                throw new PgpGeneralException("key error");
             }
-            if (key.isMasterKey()) {
-                masterKey = key;
-            } else {
-                return key;
-            }
+            return cKey;
         }
-        if(masterKey == null) {
-            // TODO proper exception
-            throw new PgpGeneralException("key not found");
-        }
-        return masterKey;
-    }
-
-    public CachedPublicKey getFirstEncryptSubkey() throws PgpGeneralException {
-        // only return master key if no other encryption key is available
-        CachedPublicKey masterKey = null;
-        for (PGPPublicKey k : new IterableIterator<PGPPublicKey>(getRing().getPublicKeys())) {
-            CachedPublicKey key = new CachedPublicKey(this, k);
-            if (key.isRevoked() || key.canEncrypt() || key.isExpired()) {
-                continue;
-            }
-            if (key.isMasterKey()) {
-                masterKey = key;
-            } else {
-                return key;
-            }
-        }
-        if(masterKey == null) {
-            // TODO proper exception
-            throw new PgpGeneralException("key not found");
-        }
-        return masterKey;
+        // TODO handle with proper exception
+        throw new PgpGeneralException("no encryption key available");
     }
 
     public boolean verifySubkeyBinding(CachedPublicKey cachedSubkey) {
@@ -187,6 +159,26 @@ public class CachedPublicKeyRing extends CachedKeyRing {
         }
 
         return validPrimaryKeyBinding;
+    }
+
+    public IterableIterator<CachedPublicKey> iterator() {
+        final Iterator<PGPPublicKey> it = getRing().getPublicKeys();
+        return new IterableIterator<CachedPublicKey>(new Iterator<CachedPublicKey>() {
+            @Override
+            public boolean hasNext() {
+                return it.hasNext();
+            }
+
+            @Override
+            public CachedPublicKey next() {
+                return new CachedPublicKey(CachedPublicKeyRing.this, it.next());
+            }
+
+            @Override
+            public void remove() {
+                it.remove();
+            }
+        });
     }
 
 }

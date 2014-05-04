@@ -38,6 +38,7 @@ import org.spongycastle.openpgp.PGPSecretKeyRing;
 import org.spongycastle.openpgp.PGPSignature;
 import org.spongycastle.openpgp.operator.jcajce.JcaPGPContentVerifierBuilderProvider;
 import org.sufficientlysecure.keychain.Constants;
+import org.sufficientlysecure.keychain.pgp.CachedKeyRing;
 import org.sufficientlysecure.keychain.pgp.CachedSecretKeyRing;
 import org.sufficientlysecure.keychain.pgp.CachedPublicKeyRing;
 import org.sufficientlysecure.keychain.pgp.PgpConversionHelper;
@@ -193,86 +194,55 @@ public class ProviderHelper {
     }
 
     public CachedPublicKeyRing getCachedPublicKeyRing(long id) throws NotFoundException {
-        return getCachedPublicKeyRing(KeyRings.buildUnifiedKeyRingUri(Long.toString(id)));
+        return (CachedPublicKeyRing) getCachedKeyRing(
+                KeyRings.buildUnifiedKeyRingUri(Long.toString(id)), false);
     }
 
     public CachedPublicKeyRing getCachedPublicKeyRing(Uri queryUri) throws NotFoundException {
-        Cursor cursor = mContentResolver.query(queryUri,
-                new String[] {
-                    KeyRings.MASTER_KEY_ID, KeyRings.KEY_SIZE,
-                    KeyRings.IS_REVOKED, KeyRings.CAN_CERTIFY,
-                    KeyRings.CREATION, KeyRings.EXPIRY,
-                    KeyRings.ALGORITHM, KeyRings.FINGERPRINT,
-                    KeyRings.USER_ID, KeyRings.VERIFIED,
-                    KeyRings.HAS_SECRET, KeyRings.PUBKEY_DATA
-                }, null, null, null);
-        try {
-            if (cursor != null && cursor.moveToFirst()) {
-                long masterKeyId = cursor.getLong(0);
-                int keySize = cursor.getInt(1);
-                boolean isRevoked = cursor.getInt(2) > 0;
-                boolean canCertify = cursor.getInt(3) > 0;
-                long creation = cursor.getLong(4);
-                long expiry = cursor.getLong(5);
-                int algorithm = cursor.getInt(6);
-                byte[] fingerprint = cursor.getBlob(7);
-                String userId = cursor.getString(8);
-                int verified = cursor.getInt(9);
-                boolean hasSecret = cursor.getInt(10) > 0;
-                byte[] pubkey = cursor.getBlob(11);
-                return new CachedPublicKeyRing(
-                        masterKeyId, keySize, isRevoked, canCertify,
-                        creation, expiry, algorithm, fingerprint,
-                        userId, verified, hasSecret, pubkey
-                );
-            } else {
-                throw new NotFoundException("Key not found!");
-            }
-        } finally {
-            if (cursor != null) {
-                cursor.close();
-            }
-        }
+        return (CachedPublicKeyRing) getCachedKeyRing(queryUri, false);
     }
 
     public CachedSecretKeyRing getCachedSecretKeyRing(long id) throws NotFoundException {
-        return getCachedSecretKeyRing(KeyRings.buildUnifiedKeyRingUri(Long.toString(id)));
+        return (CachedSecretKeyRing) getCachedKeyRing(
+                KeyRings.buildUnifiedKeyRingUri(Long.toString(id)), true);
     }
 
     public CachedSecretKeyRing getCachedSecretKeyRing(Uri queryUri) throws NotFoundException {
+        return (CachedSecretKeyRing) getCachedKeyRing(queryUri, true);
+    }
+
+
+    private CachedKeyRing getCachedKeyRing(Uri queryUri, boolean secret) throws NotFoundException {
         Cursor cursor = mContentResolver.query(queryUri,
                 new String[] {
-                        KeyRings.MASTER_KEY_ID, KeyRings.KEY_SIZE,
-                        KeyRings.IS_REVOKED, KeyRings.CAN_CERTIFY,
-                        KeyRings.CREATION, KeyRings.EXPIRY,
-                        KeyRings.ALGORITHM, KeyRings.FINGERPRINT,
-                        KeyRings.USER_ID, KeyRings.VERIFIED,
-                        KeyRings.HAS_SECRET, KeyRings.PRIVKEY_DATA
+                    // we pick from cache:
+                    // basic data, primary uid in particular because it's expensive
+                    KeyRings.MASTER_KEY_ID, KeyRings.USER_ID, KeyRings.HAS_ANY_SECRET,
+                    // complex knowledge about subkeys
+                    KeyRings.IS_REVOKED, KeyRings.CAN_CERTIFY, KeyRings.HAS_ENCRYPT, KeyRings.HAS_SIGN,
+                    // stuff only the db knows and of course, ring data
+                    KeyRings.VERIFIED, secret ? KeyRings.PRIVKEY_DATA : KeyRings.PUBKEY_DATA
                 }, null, null, null);
         try {
             if (cursor != null && cursor.moveToFirst()) {
-                // check if a privkey is actually available
-                byte[] privkey = cursor.getBlob(11);
-                if(privkey == null) {
-                    throw new NotFoundException("Key found, but no secret key available!");
-                }
-
                 long masterKeyId = cursor.getLong(0);
-                int keySize = cursor.getInt(1);
-                boolean isRevoked = cursor.getInt(2) > 0;
-                boolean canCertify = cursor.getInt(3) > 0;
-                long creation = cursor.getLong(4);
-                long expiry = cursor.getLong(5);
-                int algorithm = cursor.getInt(6);
-                byte[] fingerprint = cursor.getBlob(7);
-                String userId = cursor.getString(8);
-                int verified = cursor.getInt(9);
-                boolean hasSecret = cursor.getInt(10) > 0;
-                return new CachedSecretKeyRing(
-                        masterKeyId, keySize, isRevoked, canCertify,
-                        creation, expiry, algorithm, fingerprint,
-                        userId, verified, hasSecret, privkey
-                );
+                String userId = cursor.getString(1);
+                boolean hasAnySecret = cursor.getInt(2) > 0;
+                boolean isRevoked = cursor.getInt(3) > 0;
+                boolean canCertify = cursor.getInt(4) > 0;
+                long hasEncryptId = cursor.getLong(5);
+                long hasSignId = cursor.getLong(6);
+                int verified = cursor.getInt(7);
+                byte[] blob = cursor.getBlob(8);
+                return secret
+                        ? new CachedSecretKeyRing(
+                              masterKeyId, userId, hasAnySecret,
+                              isRevoked, canCertify, hasEncryptId, hasSignId,
+                              verified, blob)
+                        : new CachedPublicKeyRing(
+                              masterKeyId, userId, hasAnySecret,
+                              isRevoked, canCertify, hasEncryptId, hasSignId,
+                              verified, blob);
             } else {
                 throw new NotFoundException("Key not found!");
             }
