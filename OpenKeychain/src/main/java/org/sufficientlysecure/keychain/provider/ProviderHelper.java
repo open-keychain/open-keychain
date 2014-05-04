@@ -294,14 +294,6 @@ public class ProviderHelper {
     }
 
     @Deprecated
-    public PGPPublicKeyRing getPGPPublicKeyRingWithKeyId(long keyId)
-            throws NotFoundException {
-        Uri uri = KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(Long.toString(keyId));
-        long masterKeyId = getMasterKeyId(uri);
-        return getPGPPublicKeyRing(masterKeyId);
-    }
-
-    @Deprecated
     public PGPSecretKeyRing getPGPSecretKeyRingWithKeyId(long keyId)
             throws NotFoundException {
         Uri uri = KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(Long.toString(keyId));

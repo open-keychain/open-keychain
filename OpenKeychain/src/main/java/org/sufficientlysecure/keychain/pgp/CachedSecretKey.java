@@ -41,17 +41,18 @@ public class CachedSecretKey extends CachedPublicKey {
         return (CachedSecretKeyRing) mRing;
     }
 
-    public void unlock(String passphrase) throws PgpGeneralException {
+    public boolean unlock(String passphrase) throws PgpGeneralException {
         try {
             PBESecretKeyDecryptor keyDecryptor = new JcePBESecretKeyDecryptorBuilder().setProvider(
                     Constants.BOUNCY_CASTLE_PROVIDER_NAME).build(passphrase.toCharArray());
             mPrivateKey = mSecretKey.extractPrivateKey(keyDecryptor);
         } catch (PGPException e) {
-            throw new PgpGeneralException("error extracting key!", e);
+            return false;
         }
         if(mPrivateKey == null) {
-            throw new PgpGeneralException("error extracting key (bad passphrase?)");
+            throw new PgpGeneralException("error extracting key");
         }
+        return true;
     }
 
     public PGPSignatureGenerator getSignatureGenerator(int hashAlgo, boolean cleartext)

@@ -41,17 +41,12 @@ import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 import android.widget.Toast;
 
-import org.spongycastle.openpgp.PGPException;
-import org.spongycastle.openpgp.PGPPrivateKey;
-import org.spongycastle.openpgp.PGPSecretKey;
-import org.spongycastle.openpgp.operator.PBESecretKeyDecryptor;
-import org.spongycastle.openpgp.operator.jcajce.JcePBESecretKeyDecryptorBuilder;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.compatibility.DialogFragmentWorkaround;
-import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
+import org.sufficientlysecure.keychain.pgp.CachedSecretKey;
+import org.sufficientlysecure.keychain.pgp.CachedSecretKeyRing;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
-import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.PassphraseCacheService;
 import org.sufficientlysecure.keychain.util.Log;
@@ -139,18 +134,17 @@ public class PassphraseDialogFragment extends DialogFragment implements OnEditor
 
         alert.setTitle(R.string.title_authentication);
 
-        final PGPSecretKey secretKey;
+        final CachedSecretKeyRing secretRing;
         final String userId;
 
         if (secretKeyId == Constants.key.symmetric || secretKeyId == Constants.key.none) {
-            secretKey = null;
+            secretRing = null;
             alert.setMessage(R.string.passphrase_for_symmetric_encryption);
         } else {
             try {
                 ProviderHelper helper = new ProviderHelper(activity);
-                secretKey = helper.getPGPSecretKeyRing(secretKeyId).getSecretKey();
-                userId = (String) helper.getUnifiedData(secretKeyId,
-                        KeychainContract.KeyRings.USER_ID, ProviderHelper.FIELD_TYPE_STRING);
+                secretRing = helper.getCachedSecretKeyRing(secretKeyId);
+                userId = secretRing.getPrimaryUserId();
             } catch (ProviderHelper.NotFoundException e) {
                 alert.setTitle(R.string.title_key_not_found);
                 alert.setMessage(getString(R.string.key_not_found, secretKeyId));
@@ -179,76 +173,59 @@ public class PassphraseDialogFragment extends DialogFragment implements OnEditor
             @Override
             public void onClick(DialogInterface dialog, int id) {
                 dismiss();
-                long curKeyIndex = 1;
-                boolean keyOK = true;
+
                 String passphrase = mPassphraseEditText.getText().toString();
-                long keyId;
-                PGPSecretKey clickSecretKey = secretKey;
 
-                if (clickSecretKey != null) {
-                    while (keyOK) {
-                        if (clickSecretKey != null) { // check again for loop
-                            try {
-                                PBESecretKeyDecryptor keyDecryptor = new JcePBESecretKeyDecryptorBuilder()
-                                        .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME).build(
-                                                passphrase.toCharArray());
-                                PGPPrivateKey testKey = clickSecretKey
-                                        .extractPrivateKey(keyDecryptor);
-                                if (testKey == null) {
-                                    if (!clickSecretKey.isMasterKey()) {
-                                        Toast.makeText(activity,
-                                                R.string.error_could_not_extract_private_key,
-                                                Toast.LENGTH_SHORT).show();
-
-                                        sendMessageToHandler(MESSAGE_CANCEL);
-                                        return;
-                                    } else {
-                                        try {
-                                            clickSecretKey = PgpKeyHelper.getKeyNum(new ProviderHelper(activity)
-                                                            .getPGPSecretKeyRingWithKeyId(secretKeyId),
-                                                    curKeyIndex
-                                            );
-                                        } catch (ProviderHelper.NotFoundException e) {
-                                            Log.e(Constants.TAG, "key not found!", e);
-                                        }
-                                        curKeyIndex++; // does post-increment work like C?
-                                        continue;
-                                    }
-                                } else {
-                                    keyOK = false;
-                                }
-                            } catch (PGPException e) {
-                                Toast.makeText(activity, R.string.wrong_passphrase,
-                                        Toast.LENGTH_SHORT).show();
-
-                                sendMessageToHandler(MESSAGE_CANCEL);
-                                return;
-                            }
-                        } else {
-                            Toast.makeText(activity, R.string.error_could_not_extract_private_key,
-                                    Toast.LENGTH_SHORT).show();
-
-                            sendMessageToHandler(MESSAGE_CANCEL);
-                            return; // ran out of keys to try
-                        }
-                    }
-                    keyId = secretKey.getKeyID();
-                } else {
-                    keyId = Constants.key.symmetric;
+                // Early breakout if we are dealing with a symmetric key
+                if (secretRing == null) {
+                    PassphraseCacheService.addCachedPassphrase(activity, Constants.key.symmetric, passphrase);
+                    // also return passphrase back to activity
+                    Bundle data = new Bundle();
+                    data.putString(MESSAGE_DATA_PASSPHRASE, passphrase);
+                    sendMessageToHandler(MESSAGE_OKAY, data);
+                    return;
                 }
+
+                CachedSecretKey unlockedSecretKey = null;
+
+                for(CachedSecretKey clickSecretKey : secretRing.iterator()) {
+                    try {
+                        boolean unlocked = clickSecretKey.unlock(passphrase);
+                        if (unlocked) {
+                            unlockedSecretKey = clickSecretKey;
+                            break;
+                        }
+                    } catch (PgpGeneralException e) {
+                        Toast.makeText(activity, R.string.error_could_not_extract_private_key,
+                                Toast.LENGTH_SHORT).show();
+
+                        sendMessageToHandler(MESSAGE_CANCEL);
+                        return; // ran out of keys to try
+                    }
+                }
+
+                // Means we got an exception every time
+                if (unlockedSecretKey == null) {
+                    Toast.makeText(activity, R.string.wrong_passphrase,
+                            Toast.LENGTH_SHORT).show();
+
+                    sendMessageToHandler(MESSAGE_CANCEL);
+                    return;
+                }
+
+                long masterKeyId = secretRing.getMasterKeyId();
 
                 // cache the new passphrase
                 Log.d(Constants.TAG, "Everything okay! Caching entered passphrase");
-                PassphraseCacheService.addCachedPassphrase(activity, keyId, passphrase);
-                if (!keyOK && clickSecretKey.getKeyID() != keyId) {
-                    PassphraseCacheService.addCachedPassphrase(activity, clickSecretKey.getKeyID(),
-                            passphrase);
+                PassphraseCacheService.addCachedPassphrase(activity, masterKeyId, passphrase);
+                if (unlockedSecretKey.getKeyId() != masterKeyId) {
+                    PassphraseCacheService.addCachedPassphrase(
+                            activity, unlockedSecretKey.getKeyId(), passphrase);
                 }
 
                 // also return passphrase back to activity
                 Bundle data = new Bundle();
                 data.putString(MESSAGE_DATA_PASSPHRASE, passphrase);
-
                 sendMessageToHandler(MESSAGE_OKAY, data);
             }
         });

@@ -344,9 +344,11 @@ public class PgpDecryptVerify {
             currentProgress += 5;
             updateProgress(R.string.progress_extracting_key, currentProgress, 100);
             try {
-                secretEncryptionKey.unlock(mPassphrase);
-            } catch (PgpGeneralException e) {
-                throw new WrongPassphraseException();
+                if (!secretEncryptionKey.unlock(mPassphrase)) {
+                    throw new WrongPassphraseException();
+                }
+            } catch(PgpGeneralException e) {
+                throw new KeyExtractionException();
             }
             currentProgress += 5;
             updateProgress(R.string.progress_preparing_streams, currentProgress, 100);

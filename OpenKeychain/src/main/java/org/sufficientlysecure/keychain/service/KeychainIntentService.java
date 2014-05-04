@@ -801,7 +801,9 @@ public class KeychainIntentService extends IntentService
                 CachedPublicKeyRing publicRing = providerHelper.getCachedPublicKeyRing(pubKeyId);
                 CachedSecretKeyRing secretKeyRing = providerHelper.getCachedSecretKeyRing(masterKeyId);
                 CachedSecretKey certificationKey = secretKeyRing.getSubKey();
-                certificationKey.unlock(signaturePassphrase);
+                if(!certificationKey.unlock(signaturePassphrase)) {
+                    throw new PgpGeneralException("Error extracting key (bad passphrase?)");
+                }
                 UncachedKeyRing newRing = certificationKey.certifyUserIds(publicRing, userIds);
 
                 // store the signed key in our local cache

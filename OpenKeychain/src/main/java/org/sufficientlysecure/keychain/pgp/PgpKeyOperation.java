@@ -338,8 +338,8 @@ public class PgpKeyOperation {
     }
 
     public UncachedKeyRing buildSecretKey(CachedSecretKeyRing wmKR,
-                                                                   CachedPublicKeyRing wpKR,
-                                                                   SaveKeyringParcel saveParcel)
+                                          CachedPublicKeyRing wpKR,
+                                          SaveKeyringParcel saveParcel)
             throws PgpGeneralMsgIdException, PGPException, SignatureException, IOException {
 
         PGPSecretKeyRing mKR = wmKR.getRing();
