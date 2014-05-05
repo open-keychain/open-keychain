@@ -24,9 +24,6 @@ import org.json.JSONObject;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.ui.adapter.ImportKeysListEntry;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
@@ -38,21 +35,6 @@ import java.util.WeakHashMap;
 public class KeybaseKeyServer extends KeyServer {
 
     private WeakHashMap<String, String> mKeyCache = new WeakHashMap<String, String>();
-
-    private static String readAll(InputStream in, String encoding) throws IOException {
-        ByteArrayOutputStream raw = new ByteArrayOutputStream();
-
-        byte buffer[] = new byte[1 << 16];
-        int n = 0;
-        while ((n = in.read(buffer)) != -1) {
-            raw.write(buffer, 0, n);
-        }
-
-        if (encoding == null) {
-            encoding = "utf8";
-        }
-        return raw.toString(encoding);
-    }
 
     @Override
     public ArrayList<ImportKeysListEntry> search(String query) throws QueryException, TooManyResponses,

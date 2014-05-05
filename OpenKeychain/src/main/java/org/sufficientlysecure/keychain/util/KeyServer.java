@@ -20,6 +20,9 @@ package org.sufficientlysecure.keychain.util;
 
 import org.sufficientlysecure.keychain.ui.adapter.ImportKeysListEntry;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 
 public abstract class KeyServer {
@@ -49,4 +52,19 @@ public abstract class KeyServer {
     abstract String get(String keyIdHex) throws QueryException;
 
     abstract void add(String armoredKey) throws AddKeyException;
+
+    public static String readAll(InputStream in, String encoding) throws IOException {
+        ByteArrayOutputStream raw = new ByteArrayOutputStream();
+
+        byte buffer[] = new byte[1 << 16];
+        int n = 0;
+        while ((n = in.read(buffer)) != -1) {
+            raw.write(buffer, 0, n);
+        }
+
+        if (encoding == null) {
+            encoding = "utf8";
+        }
+        return raw.toString(encoding);
+    }
 }

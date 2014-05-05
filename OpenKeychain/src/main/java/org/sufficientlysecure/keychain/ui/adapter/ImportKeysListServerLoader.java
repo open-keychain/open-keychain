@@ -116,13 +116,10 @@ public class ImportKeysListServerLoader
             }
             mEntryListWrapper = new AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>>(mEntryList, null);
         } catch (KeyServer.InsufficientQuery e) {
-            Log.e(Constants.TAG, "InsufficientQuery", e);
             mEntryListWrapper = new AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>>(mEntryList, e);
         } catch (KeyServer.QueryException e) {
-            Log.e(Constants.TAG, "QueryException", e);
             mEntryListWrapper = new AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>>(mEntryList, e);
         } catch (KeyServer.TooManyResponses e) {
-            Log.e(Constants.TAG, "TooManyResponses", e);
             mEntryListWrapper = new AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>>(mEntryList, e);
         }
     }
