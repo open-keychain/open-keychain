@@ -13,7 +13,30 @@
         android:orientation="vertical"
         android:paddingLeft="16dp"
         android:paddingRight="16dp"
-        android:id="@+id/container">
+        android:id="@+id/container"
+        android:visibility="visible">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="This key is expired!"
+            android:id="@+id/view_key_expired"
+            android:minHeight="?android:attr/listPreferredItemHeight"
+            android:textColor="@color/alert"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:gravity="center_vertical|center_horizontal"
+            android:visibility="gone" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="This key has been revoked!"
+            android:id="@+id/view_key_revoked"
+            android:minHeight="?android:attr/listPreferredItemHeight"
+            android:textColor="@color/alert"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:gravity="center_vertical|center_horizontal"
+            android:visibility="gone" />
 
         <TextView
             style="@style/SectionHeader"
@@ -37,28 +60,20 @@
             android:layout_height="1dip"
             android:background="?android:attr/listDivider" />
 
-        <LinearLayout
+        <TextView
             android:id="@+id/view_key_action_certify"
+            android:paddingLeft="8dp"
+            android:paddingRight="8dp"
+            android:textAppearance="?android:attr/textAppearanceMedium"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
+            android:text="@string/key_view_action_certify"
             android:minHeight="?android:attr/listPreferredItemHeight"
+            android:drawableRight="@drawable/ic_action_good"
+            android:drawablePadding="8dp"
+            android:gravity="center_vertical"
             android:clickable="true"
-            style="@style/SelectableItem"
-            android:orientation="horizontal">
-
-            <TextView
-                android:paddingLeft="8dp"
-                android:paddingRight="8dp"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:layout_width="0dip"
-                android:layout_height="match_parent"
-                android:text="@string/key_view_action_certify"
-                android:layout_weight="1"
-                android:drawableRight="@drawable/ic_action_good"
-                android:drawablePadding="8dp"
-                android:gravity="center_vertical" />
-
-        </LinearLayout>
+            style="@style/SelectableItem" />
 
         <TextView
             style="@style/SectionHeader"

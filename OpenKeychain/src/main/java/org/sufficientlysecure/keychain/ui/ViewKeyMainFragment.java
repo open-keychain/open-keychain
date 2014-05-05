@@ -25,6 +25,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.text.format.DateFormat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -40,12 +41,16 @@ import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.ui.adapter.ViewKeyUserIdsAdapter;
 import org.sufficientlysecure.keychain.util.Log;
 
+import java.util.Date;
+
 public class ViewKeyMainFragment extends Fragment implements
         LoaderManager.LoaderCallbacks<Cursor> {
 
     public static final String ARG_DATA_URI = "uri";
 
     private LinearLayout mContainer;
+    private View mStatusRevoked;
+    private View mStatusExpired;
     private View mActionEdit;
     private View mActionEditDivider;
     private View mActionEncrypt;
@@ -56,7 +61,6 @@ public class ViewKeyMainFragment extends Fragment implements
 
     private static final int LOADER_ID_UNIFIED = 0;
     private static final int LOADER_ID_USER_IDS = 1;
-    private static final int LOADER_ID_KEYS = 2;
 
     private ViewKeyUserIdsAdapter mUserIdsAdapter;
 
@@ -68,6 +72,8 @@ public class ViewKeyMainFragment extends Fragment implements
 
         mContainer = (LinearLayout) view.findViewById(R.id.container);
         mUserIds = (ListView) view.findViewById(R.id.view_key_user_ids);
+        mStatusRevoked = view.findViewById(R.id.view_key_revoked);
+        mStatusExpired = view.findViewById(R.id.view_key_expired);
         mActionEdit = view.findViewById(R.id.view_key_action_edit);
         mActionEditDivider = view.findViewById(R.id.view_key_action_edit_divider);
         mActionEncrypt = view.findViewById(R.id.view_key_action_encrypt);
@@ -123,23 +129,25 @@ public class ViewKeyMainFragment extends Fragment implements
         // or start new ones.
         getLoaderManager().initLoader(LOADER_ID_UNIFIED, null, this);
         getLoaderManager().initLoader(LOADER_ID_USER_IDS, null, this);
-        getLoaderManager().initLoader(LOADER_ID_KEYS, null, this);
     }
 
     static final String[] UNIFIED_PROJECTION = new String[]{
-            KeyRings._ID, KeyRings.MASTER_KEY_ID, KeyRings.HAS_ANY_SECRET,
+            KeyRings._ID, KeyRings.MASTER_KEY_ID, KeyRings.HAS_ANY_SECRET, KeyRings.IS_REVOKED,
             KeyRings.USER_ID, KeyRings.FINGERPRINT,
             KeyRings.ALGORITHM, KeyRings.KEY_SIZE, KeyRings.CREATION, KeyRings.EXPIRY,
+            KeyRings.HAS_ENCRYPT
 
     };
     static final int INDEX_UNIFIED_MASTER_KEY_ID = 1;
     static final int INDEX_UNIFIED_HAS_ANY_SECRET = 2;
-    static final int INDEX_UNIFIED_USER_ID = 3;
-    static final int INDEX_UNIFIED_FINGERPRINT = 4;
-    static final int INDEX_UNIFIED_ALGORITHM = 5;
-    static final int INDEX_UNIFIED_KEY_SIZE = 6;
-    static final int INDEX_UNIFIED_CREATION = 7;
-    static final int INDEX_UNIFIED_EXPIRY = 8;
+    static final int INDEX_UNIFIED_IS_REVOKED = 3;
+    static final int INDEX_UNIFIED_USER_ID = 4;
+    static final int INDEX_UNIFIED_FINGERPRINT = 5;
+    static final int INDEX_UNIFIED_ALGORITHM = 6;
+    static final int INDEX_UNIFIED_KEY_SIZE = 7;
+    static final int INDEX_UNIFIED_CREATION = 8;
+    static final int INDEX_UNIFIED_EXPIRY = 9;
+    static final int INDEX_UNIFIED_HAS_ENCRYPT = 10;
 
     static final String[] KEYS_PROJECTION = new String[]{
             Keys._ID,
@@ -158,10 +166,6 @@ public class ViewKeyMainFragment extends Fragment implements
             case LOADER_ID_USER_IDS: {
                 Uri baseUri = UserIds.buildUserIdsUri(mDataUri);
                 return new CursorLoader(getActivity(), baseUri, ViewKeyUserIdsAdapter.USER_IDS_PROJECTION, null, null, null);
-            }
-            case LOADER_ID_KEYS: {
-                Uri baseUri = Keys.buildKeysUri(mDataUri);
-                return new CursorLoader(getActivity(), baseUri, KEYS_PROJECTION, null, null, null);
             }
 
             default:
@@ -200,6 +204,29 @@ public class ViewKeyMainFragment extends Fragment implements
                         mActionEditDivider.setVisibility(View.GONE);
                     }
 
+                    // It's easier to reset to defaults beforehand, saves some nasty else clauses
+                    mStatusRevoked.setVisibility(View.GONE);
+                    mStatusExpired.setVisibility(View.GONE);
+                    mActionCertify.setEnabled(true);
+                    mActionEdit.setEnabled(true);
+                    mActionEncrypt.setEnabled(true);
+
+                    // If this key is revoked, it cannot be used for anything!
+                    if (data.getInt(INDEX_UNIFIED_IS_REVOKED) != 0) {
+                        mStatusRevoked.setVisibility(View.VISIBLE);
+                        mActionCertify.setEnabled(false);
+                        mActionEdit.setEnabled(false);
+                        mActionEncrypt.setEnabled(false);
+                    } else {
+                        Date expiryDate = new Date(data.getLong(INDEX_UNIFIED_EXPIRY) * 1000);
+                        if (!data.isNull(INDEX_UNIFIED_EXPIRY) && expiryDate.before(new Date())) {
+                            mStatusExpired.setVisibility(View.VISIBLE);
+                            mActionCertify.setEnabled(false);
+                            mActionEncrypt.setEnabled(false);
+                            // mActionEdit is still fine
+                        }
+                    }
+
                     break;
                 }
             }
@@ -208,24 +235,6 @@ public class ViewKeyMainFragment extends Fragment implements
                 mUserIdsAdapter.swapCursor(data);
                 break;
 
-            case LOADER_ID_KEYS:
-                // hide encrypt button if no encryption key is available
-                // TODO: do with subquery!
-                boolean canEncrypt = false;
-                data.moveToFirst();
-                do {
-                    if (data.getInt(KEYS_INDEX_CAN_ENCRYPT) == 1) {
-                        canEncrypt = true;
-                        break;
-                    }
-                } while (data.moveToNext());
-                if (canEncrypt) {
-                    mActionEncrypt.setVisibility(View.VISIBLE);
-                } else {
-                    mActionEncrypt.setVisibility(View.GONE);
-                }
-
-                break;
         }
         getActivity().setProgressBarIndeterminateVisibility(false);
         mContainer.setVisibility(View.VISIBLE);
