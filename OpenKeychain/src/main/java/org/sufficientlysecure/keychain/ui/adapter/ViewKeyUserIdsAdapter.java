@@ -111,7 +111,6 @@ public class ViewKeyUserIdsAdapter extends CursorAdapter implements AdapterView.
         TextView vAddress = (TextView) view.findViewById(R.id.address);
         TextView vComment = (TextView) view.findViewById(R.id.comment);
         ImageView vVerified = (ImageView) view.findViewById(R.id.certified);
-        ImageView vPrimaryUserIdIcon = (ImageView) view.findViewById(R.id.primary_user_id_icon);
 
         String[] userId = PgpKeyHelper.splitUserId(cursor.getString(mIndexUserId));
         if (userId[0] != null) {
@@ -133,17 +132,11 @@ public class ViewKeyUserIdsAdapter extends CursorAdapter implements AdapterView.
         }
 
         // show small star icon for primary user ids
-        if (cursor.getInt(mIsPrimary) > 0) {
-            vPrimaryUserIdIcon.setVisibility(View.VISIBLE);
-        } else {
-            vPrimaryUserIdIcon.setVisibility(View.GONE);
-        }
+        boolean isPrimary = cursor.getInt(mIsPrimary) != 0;
 
         if (cursor.getInt(mIsRevoked) > 0) {
-            // no star icon for revoked user ids!
-            vPrimaryUserIdIcon.setVisibility(View.GONE);
 
-            // set revocation icon
+            // set revocation icon (can this even be primary?)
             vVerified.setImageResource(R.drawable.key_certify_revoke);
 
             // disable and strike through text for revoked user ids
@@ -158,10 +151,14 @@ public class ViewKeyUserIdsAdapter extends CursorAdapter implements AdapterView.
             int verified = cursor.getInt(mVerifiedId);
             switch (verified) {
                 case Certs.VERIFIED_SECRET:
-                    vVerified.setImageResource(R.drawable.key_certify_ok_depth0);
+                    vVerified.setImageResource(isPrimary
+                            ? R.drawable.key_certify_primary_ok_depth0
+                            : R.drawable.key_certify_ok_depth0);
                     break;
                 case Certs.VERIFIED_SELF:
-                    vVerified.setImageResource(R.drawable.key_certify_ok_self);
+                    vVerified.setImageResource(isPrimary
+                            ? R.drawable.key_certify_primary_ok_self
+                            : R.drawable.key_certify_ok_self);
                     break;
                 default:
                     vVerified.setImageResource(R.drawable.key_certify_error);

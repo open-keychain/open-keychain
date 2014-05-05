@@ -27,12 +27,6 @@
             android:id="@+id/certified"
             android:src="@drawable/key_certify_ok_self" />
 
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:visibility="gone"
-            android:id="@+id/primary_user_id_icon"
-            android:src="@drawable/ic_action_important_small" />
     </LinearLayout>
 
     <LinearLayout
