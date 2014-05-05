@@ -79,6 +79,7 @@
     <string name="menu_create_key_expert">Create key (expert)</string>
     <string name="menu_search">Search</string>
     <string name="menu_import_from_key_server">Keyserver</string>
+    <string name="menu_import_from_keybase">Import from Keybase.io</string>
     <string name="menu_key_server">Keyserver…</string>
     <string name="menu_update_key">Update from keyserver</string>
     <string name="menu_export_key_to_server">Upload to key server</string>
@@ -353,6 +354,7 @@
     <string name="hint_public_keys">Search Public Keys</string>
     <string name="hint_secret_keys">Search Secret Keys</string>
     <string name="action_share_key_with">Share Key with…</string>
+    <string name="hint_keybase_search">Search Keybase.io</string>
 
     <!-- key bit length selections -->
     <string name="key_size_512">512</string>
@@ -398,6 +400,7 @@
     <string name="import_nfc_text">To receive keys via NFC, the device needs to be unlocked.</string>
     <string name="import_nfc_help_button">Help</string>
     <string name="import_clipboard_button">Get key from clipboard</string>
+    <string name="import_keybase_button">Get key from Keybase.io</string>
 
     <!-- Intent labels -->
     <string name="intent_decrypt_file">Decrypt File with OpenKeychain</string>

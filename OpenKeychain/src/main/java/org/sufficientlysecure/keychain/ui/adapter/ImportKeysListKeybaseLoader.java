@@ -21,27 +21,25 @@ import android.content.Context;
 import android.support.v4.content.AsyncTaskLoader;
 
 import org.sufficientlysecure.keychain.Constants;
-import org.sufficientlysecure.keychain.util.HkpKeyServer;
 import org.sufficientlysecure.keychain.util.KeyServer;
+import org.sufficientlysecure.keychain.util.KeybaseKeyServer;
 import org.sufficientlysecure.keychain.util.Log;
 
 import java.util.ArrayList;
 
-public class ImportKeysListServerLoader
+public class ImportKeysListKeybaseLoader
         extends AsyncTaskLoader<AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>>> {
     Context mContext;
 
-    String mServerQuery;
-    String mKeyServer;
+    String mKeybaseQuery;
 
     private ArrayList<ImportKeysListEntry> mEntryList = new ArrayList<ImportKeysListEntry>();
     private AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>> mEntryListWrapper;
 
-    public ImportKeysListServerLoader(Context context, String serverQuery, String keyServer) {
+    public ImportKeysListKeybaseLoader(Context context, String keybaseQuery) {
         super(context);
         mContext = context;
-        mServerQuery = serverQuery;
-        mKeyServer = keyServer;
+        mKeybaseQuery = keybaseQuery;
     }
 
     @Override
@@ -49,17 +47,12 @@ public class ImportKeysListServerLoader
 
         mEntryListWrapper = new AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>>(mEntryList, null);
 
-        if (mServerQuery == null) {
-            Log.e(Constants.TAG, "mServerQuery is null!");
+        if (mKeybaseQuery == null) {
+            Log.e(Constants.TAG, "mKeybaseQery is null!");
             return mEntryListWrapper;
         }
 
-        if (mServerQuery.startsWith("0x") && mServerQuery.length() == 42) {
-            Log.d(Constants.TAG, "This search is based on a unique fingerprint. Enforce a fingerprint check!");
-            queryServer(mServerQuery, mKeyServer, true);
-        } else {
-            queryServer(mServerQuery, mKeyServer, false);
-        }
+        queryServer(mKeybaseQuery);
 
         return mEntryListWrapper;
     }
@@ -88,32 +81,17 @@ public class ImportKeysListServerLoader
     }
 
     /**
-     * Query keyserver
+     * Query keybase
      */
-    private void queryServer(String query, String keyServer, boolean enforceFingerprint) {
-        HkpKeyServer server = new HkpKeyServer(keyServer);
+    private void queryServer(String query) {
+
+        KeybaseKeyServer server = new KeybaseKeyServer();
         try {
             ArrayList<ImportKeysListEntry> searchResult = server.search(query);
 
             mEntryList.clear();
-            // add result to data
-            if (enforceFingerprint) {
-                String fingerprint = query.substring(2);
-                Log.d(Constants.TAG, "fingerprint: " + fingerprint);
-                // query must return only one result!
-                if (searchResult.size() == 1) {
-                    ImportKeysListEntry uniqueEntry = searchResult.get(0);
-                    /*
-                     * set fingerprint explicitly after query
-                     * to enforce a check when the key is imported by KeychainIntentService
-                     */
-                    uniqueEntry.setFingerPrintHex(fingerprint);
-                    uniqueEntry.setSelected(true);
-                    mEntryList.add(uniqueEntry);
-                }
-            } else {
-                mEntryList.addAll(searchResult);
-            }
+
+            mEntryList.addAll(searchResult);
             mEntryListWrapper = new AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>>(mEntryList, null);
         } catch (KeyServer.InsufficientQuery e) {
             mEntryListWrapper = new AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>>(mEntryList, e);
@@ -122,6 +100,7 @@ public class ImportKeysListServerLoader
         } catch (KeyServer.TooManyResponses e) {
             mEntryListWrapper = new AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>>(mEntryList, e);
         }
+
     }
 
 }
