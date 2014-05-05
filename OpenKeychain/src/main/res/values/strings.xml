@@ -31,7 +31,7 @@
 
     <!-- section -->
     <string name="section_user_ids">Identities</string>
-    <string name="section_keys">Keys</string>
+    <string name="section_keys">Subkeys</string>
     <string name="section_general">General</string>
     <string name="section_defaults">Defaults</string>
     <string name="section_advanced">Advanced</string>
