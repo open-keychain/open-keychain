@@ -67,7 +67,7 @@ public class EncryptFileFragment extends Fragment {
     private CheckBox mDeleteAfter = null;
     private CheckBox mShareAfter = null;
     private BootstrapButton mBrowse = null;
-    private BootstrapButton mEncryptFile;
+    private View mEncryptFile;
 
     private FileDialogFragment mFileDialog;
 
@@ -92,7 +92,7 @@ public class EncryptFileFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.encrypt_file_fragment, container, false);
 
-        mEncryptFile = (BootstrapButton) view.findViewById(R.id.action_encrypt_file);
+        mEncryptFile = view.findViewById(R.id.action_encrypt_file);
         mEncryptFile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

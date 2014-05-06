@@ -68,15 +68,18 @@
                 android:layout_alignParentLeft="true"
                 android:layout_alignParentStart="true" />
 
-            <com.beardedhen.androidbootstrap.BootstrapButton
+            <TextView
                 android:id="@+id/action_encrypt_file"
+                android:paddingLeft="8dp"
+                android:paddingRight="8dp"
+                android:textAppearance="?android:attr/textAppearanceMedium"
                 android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:layout_marginTop="4dp"
-                android:layout_marginBottom="4dp"
+                android:layout_height="wrap_content"
+                android:minHeight="?android:attr/listPreferredItemHeight"
                 android:text="@string/btn_encrypt_file"
-                bootstrapbutton:bb_icon_left="fa-lock"
-                bootstrapbutton:bb_type="info"
+                android:drawableRight="@drawable/ic_action_save"
+                android:drawablePadding="8dp"
+                android:gravity="center_vertical"
                 android:layout_alignParentBottom="true"
                 android:layout_alignParentLeft="true"
                 android:layout_alignParentStart="true" />
