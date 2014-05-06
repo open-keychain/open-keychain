@@ -3,15 +3,12 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content" >
 
-    <org.sufficientlysecure.keychain.ui.widget.UnderlineTextView
+    <TextView
+        style="@style/SectionHeader"
         android:id="@+id/stickylist_header_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="start|left"
-        android:padding="8dp"
-        android:textColor="@color/emphasis"
-        android:textSize="17sp"
-        android:textStyle="bold"
         android:text="header text" />
 
     <TextView
