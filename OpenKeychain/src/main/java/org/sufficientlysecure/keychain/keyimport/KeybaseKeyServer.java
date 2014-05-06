@@ -15,13 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.sufficientlysecure.keychain.util;
+package org.sufficientlysecure.keychain.keyimport;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.sufficientlysecure.keychain.Constants;
-import org.sufficientlysecure.keychain.ui.adapter.ImportKeysListEntry;
+import org.sufficientlysecure.keychain.util.JWalk;
+import org.sufficientlysecure.keychain.util.Log;
 
 import java.net.HttpURLConnection;
 import java.net.URL;

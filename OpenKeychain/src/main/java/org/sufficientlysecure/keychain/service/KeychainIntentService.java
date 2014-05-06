@@ -53,11 +53,10 @@ import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralMsgIdException;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.KeychainDatabase;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
-import org.sufficientlysecure.keychain.ui.adapter.ImportKeysListEntry;
-import org.sufficientlysecure.keychain.util.HkpKeyServer;
+import org.sufficientlysecure.keychain.keyimport.ImportKeysListEntry;
+import org.sufficientlysecure.keychain.keyimport.HkpKeyServer;
 import org.sufficientlysecure.keychain.util.InputData;
-import org.sufficientlysecure.keychain.util.KeybaseKeyServer;
-import org.sufficientlysecure.keychain.util.KeychainServiceListener;
+import org.sufficientlysecure.keychain.keyimport.KeybaseKeyServer;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.ProgressScaler;
 
@@ -80,7 +79,7 @@ import java.util.List;
  * after doing them.
  */
 public class KeychainIntentService extends IntentService
-        implements Progressable, KeychainServiceListener {
+        implements Progressable, PgpImportExport.KeychainServiceListener {
 
     /* extras that can be given by intent */
     public static final String EXTRA_MESSENGER = "messenger";

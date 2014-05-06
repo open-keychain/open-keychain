@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package org.sufficientlysecure.keychain.util;
+package org.sufficientlysecure.keychain.keyimport;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -32,7 +32,7 @@ import org.apache.http.util.EntityUtils;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.pgp.PgpHelper;
 import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
-import org.sufficientlysecure.keychain.ui.adapter.ImportKeysListEntry;
+import org.sufficientlysecure.keychain.util.Log;
 
 import java.io.IOException;
 import java.io.InputStream;

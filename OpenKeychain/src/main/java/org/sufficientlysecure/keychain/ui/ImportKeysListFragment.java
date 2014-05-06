@@ -33,12 +33,12 @@ import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.helper.Preferences;
 import org.sufficientlysecure.keychain.ui.adapter.AsyncTaskResultWrapper;
 import org.sufficientlysecure.keychain.ui.adapter.ImportKeysAdapter;
-import org.sufficientlysecure.keychain.ui.adapter.ImportKeysListEntry;
+import org.sufficientlysecure.keychain.keyimport.ImportKeysListEntry;
 import org.sufficientlysecure.keychain.ui.adapter.ImportKeysListKeybaseLoader;
 import org.sufficientlysecure.keychain.ui.adapter.ImportKeysListLoader;
 import org.sufficientlysecure.keychain.ui.adapter.ImportKeysListServerLoader;
 import org.sufficientlysecure.keychain.util.InputData;
-import org.sufficientlysecure.keychain.util.KeyServer;
+import org.sufficientlysecure.keychain.keyimport.KeyServer;
 import org.sufficientlysecure.keychain.util.Log;
 
 import java.io.ByteArrayInputStream;

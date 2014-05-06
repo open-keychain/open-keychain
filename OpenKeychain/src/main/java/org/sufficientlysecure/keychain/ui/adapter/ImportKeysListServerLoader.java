@@ -21,8 +21,9 @@ import android.content.Context;
 import android.support.v4.content.AsyncTaskLoader;
 
 import org.sufficientlysecure.keychain.Constants;
-import org.sufficientlysecure.keychain.util.HkpKeyServer;
-import org.sufficientlysecure.keychain.util.KeyServer;
+import org.sufficientlysecure.keychain.keyimport.HkpKeyServer;
+import org.sufficientlysecure.keychain.keyimport.ImportKeysListEntry;
+import org.sufficientlysecure.keychain.keyimport.KeyServer;
 import org.sufficientlysecure.keychain.util.Log;
 
 import java.util.ArrayList;

@@ -16,9 +16,7 @@
  * limitations under the License.
  */
 
-package org.sufficientlysecure.keychain.util;
-
-import org.sufficientlysecure.keychain.ui.adapter.ImportKeysListEntry;
+package org.sufficientlysecure.keychain.keyimport;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
