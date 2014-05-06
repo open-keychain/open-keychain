@@ -18,6 +18,9 @@
 package org.sufficientlysecure.keychain;
 
 import android.app.Application;
+import android.content.Context;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
 import android.os.Environment;
 
 import org.spongycastle.jce.provider.BouncyCastleProvider;
@@ -70,5 +73,22 @@ public class KeychainApplication extends Application {
                 // that the directory doesn't exist at this point
             }
         }
+
+        brandGlowEffect(getApplicationContext(),
+                getApplicationContext().getResources().getColor(R.color.emphasis));
+    }
+
+    static void brandGlowEffect(Context context, int brandColor) {
+        // terrible hack to brand the edge overscroll glow effect
+        // https://gist.github.com/menny/7878762#file-brandgloweffect_full-java
+
+        //glow
+        int glowDrawableId = context.getResources().getIdentifier("overscroll_glow", "drawable", "android");
+        Drawable androidGlow = context.getResources().getDrawable(glowDrawableId);
+        androidGlow.setColorFilter(brandColor, PorterDuff.Mode.SRC_IN);
+        //edge
+        int edgeDrawableId = context.getResources().getIdentifier("overscroll_edge", "drawable", "android");
+        Drawable androidEdge = context.getResources().getDrawable(edgeDrawableId);
+        androidEdge.setColorFilter(brandColor, PorterDuff.Mode.SRC_IN);
     }
 }
