@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <color name="emphasis">#31b6e7</color>
+    <color name="emphasis">#aa66cc</color>
+    <color name="emphasis_dark">#9933cc</color>
     <color name="bg_gray">#cecbce</color>
     <color name="tertiary_text_light">#808080</color>
 
@@ -11,5 +12,5 @@
     <color name="result_red">#ffff4444</color>
     <color name="result_orange">#ffffbb33</color>
     <color name="result_green">#ff99cc00</color>
-    <color name="result_blue">#ff33b5e5</color>
+    <color name="result_purple">#aa66cc</color>
 </resources>

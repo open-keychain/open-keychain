@@ -192,7 +192,7 @@ public class DecryptFragment extends Fragment {
             mLookupKey.setVisibility(View.GONE);
 
             // successful decryption-only
-            mResultLayout.setBackgroundColor(getResources().getColor(R.color.result_blue));
+            mResultLayout.setBackgroundColor(getResources().getColor(R.color.result_purple));
             mResultText.setText(R.string.decrypt_result_decrypted);
         }
     }

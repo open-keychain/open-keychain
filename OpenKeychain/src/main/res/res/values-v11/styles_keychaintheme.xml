@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!-- Generated with http://android-holo-colors.com -->
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
+
+  <style name="ButtonKeychainTheme" parent="android:Widget.Holo.Light.Button">
+	  <item name="android:background">@drawable/keychaintheme_btn_default_holo_light</item>
+  </style>
+
+  <style name="ImageButtonKeychainTheme" parent="android:Widget.Holo.Light.ImageButton">
+	  <item name="android:background">@drawable/keychaintheme_btn_default_holo_light</item>
+  </style>
+
+  <style name="SpinnerKeychainTheme" parent="android:Widget.Holo.Light.Spinner">
+      <item name="android:background">@drawable/keychaintheme_spinner_background_holo_light</item>
+      <item name="android:dropDownSelector">@drawable/keychaintheme_list_selector_holo_light</item>
+  </style>
+
+  <style name="ProgressBarKeychainTheme" parent="android:Widget.Holo.Light.ProgressBar.Horizontal">
+      <item name="android:progressDrawable">@drawable/keychaintheme_progress_horizontal_holo_light</item>
+      <item name="android:indeterminateDrawable">@drawable/keychaintheme_progress_indeterminate_horizontal_holo_light</item>
+  </style>
+
+</resources>

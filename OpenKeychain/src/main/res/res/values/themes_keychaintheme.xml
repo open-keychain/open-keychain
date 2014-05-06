@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!-- Generated with http://android-holo-colors.com -->
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
+
+  <style name="KeychainTheme" parent="@style/_KeychainTheme"/>
+
+  <style name="_KeychainTheme" parent="Theme.AppCompat.Light">
+
+    <item name="android:editTextStyle">@style/EditTextKeychainTheme</item>
+
+    <item name="android:checkboxStyle">@style/CheckBoxKeychainTheme</item>
+
+    <item name="android:buttonStyle">@style/ButtonKeychainTheme</item>
+
+    <item name="android:imageButtonStyle">@style/ImageButtonKeychainTheme</item>
+
+    <item name="android:spinnerStyle">@style/SpinnerKeychainTheme</item>
+
+    <item name="android:spinnerDropDownItemStyle">@style/SpinnerDropDownItemKeychainTheme</item>
+
+    <item name="android:progressBarStyleHorizontal">@style/ProgressBarKeychainTheme</item>
+
+    <item name="android:listViewStyle">@style/ListViewKeychainTheme</item>
+
+    <item name="android:listViewWhiteStyle">@style/ListViewKeychainTheme.White</item>
+
+    <item name="android:spinnerItemStyle">@style/SpinnerItemKeychainTheme</item>
+
+  </style>
+
+</resources>
