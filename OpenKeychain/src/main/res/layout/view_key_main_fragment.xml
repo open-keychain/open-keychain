@@ -43,7 +43,7 @@
             android:layout_width="wrap_content"
             android:layout_height="0dp"
             android:layout_marginBottom="4dp"
-            android:layout_marginTop="14dp"
+            android:layout_marginTop="8dp"
             android:text="@string/section_user_ids"
             android:layout_weight="1" />
 
@@ -109,6 +109,7 @@
             android:id="@+id/view_key_action_encrypt"
             android:paddingLeft="8dp"
             android:paddingRight="8dp"
+            android:layout_marginBottom="8dp"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

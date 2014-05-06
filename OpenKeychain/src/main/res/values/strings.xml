@@ -48,9 +48,9 @@
 
     <!-- button -->
     <string name="btn_certify">Certify</string>
-    <string name="btn_decrypt_verify">Decrypt and Verify</string>
+    <string name="btn_decrypt_verify">Verify and save decrypted file</string>
     <string name="btn_decrypt_verify_clipboard">From Clipboard</string>
-    <string name="btn_encrypt_file">Encrypt File</string>
+    <string name="btn_encrypt_file">Save encrypt file</string>
     <string name="btn_save">Save</string>
     <string name="btn_do_not_save">Cancel</string>
     <string name="btn_delete">Delete</string>

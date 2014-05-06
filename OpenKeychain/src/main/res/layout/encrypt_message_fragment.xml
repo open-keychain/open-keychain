@@ -21,19 +21,25 @@
             android:hint="@string/encrypt_content_edit_text_hint"
             android:layout_weight="1" />
 
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dip"
+            android:background="?android:attr/listDivider" />
+
         <LinearLayout
             android:id="@+id/action_encrypt_share"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:clickable="true"
             style="@style/SelectableItem"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:layout_marginBottom="8dp">
 
             <TextView
                 android:paddingLeft="8dp"
                 android:paddingRight="8dp"
                 android:textAppearance="?android:attr/textAppearanceMedium"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:minHeight="?android:attr/listPreferredItemHeight"
                 android:text="@string/btn_share_encrypted_signed"
