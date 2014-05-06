@@ -25,7 +25,7 @@
     <string name="title_export_keys">Export Keys</string>
     <string name="title_key_not_found">Key Not Found</string>
     <string name="title_send_key">Upload to Keyserver</string>
-    <string name="title_certify_key">Certify Key</string>
+    <string name="title_certify_key">Certify Identities</string>
     <string name="title_key_details">Key Details</string>
     <string name="title_help">Help</string>
 
@@ -66,7 +66,7 @@
     <string name="btn_lookup_key">Lookup key</string>
     <string name="btn_encryption_advanced_settings_show">Show advanced settings</string>
     <string name="btn_encryption_advanced_settings_hide">Hide advanced settings</string>
-    <string name="btn_share_encrypted_signed">Share encrypted/signed...</string>
+    <string name="btn_share_encrypted_signed">Share encrypted/signed…</string>
 
     <!-- menu -->
     <string name="menu_preferences">Settings</string>
@@ -253,13 +253,13 @@
     </plurals>
 
     <string name="key_send_success">Successfully uploaded key to server</string>
-    <string name="key_certify_success">Successfully certified key</string>
+    <string name="key_certify_success">Successfully certified identities</string>
     <string name="list_empty">This list is empty!</string>
     <string name="nfc_successful">Successfully sent key with NFC Beam!</string>
     <string name="key_copied_to_clipboard">Key has been copied to the clipboard!</string>
     <string name="fingerprint_copied_to_clipboard">Fingerprint has been copied to the clipboard!</string>
     <string name="key_has_already_been_certified">Key has already been certified!</string>
-    <string name="select_key_to_sign">Please select a key to be used for signing!</string>
+    <string name="select_key_to_certify">Please select a key to be used for certification!</string>
     <string name="key_too_big_for_sharing">Key is too big to be shared this way!</string>
 
     <!--
@@ -464,7 +464,7 @@
     <string name="key_view_tab_main">Main Info</string>
     <string name="key_view_tab_share">Share</string>
     <string name="key_view_tab_keys_details">Key Details</string>
-    <string name="key_view_tab_certs">Certifications</string>
+    <string name="key_view_tab_certs">Certificates</string>
 
     <!-- Navigation Drawer -->
     <string name="nav_keys">Keys</string>
@@ -484,7 +484,7 @@
     <string name="encrypt_content_edit_text_hint">Write message here to encrypt and/or sign…</string>
     <string name="decrypt_content_edit_text_hint">Enter ciphertext here to decrypt and/or verify…</string>
 
-    <!-- certifications -->
+    <!-- certs -->
     <string name="cert_default">default</string>
     <string name="cert_none">none</string>
     <string name="cert_casual">casual</string>
@@ -496,12 +496,12 @@
     <string name="cert_verify_unavailable">key unavailable</string>
 
     <!-- unsorted -->
-    <string name="section_signer_id">Signer</string>
+    <string name="section_certifier_id">Certifier</string>
     <string name="section_cert">Certificate Details</string>
     <string name="label_user_id">Identity</string>
     <string name="unknown_uid">&lt;unknown&gt;</string>
     <string name="empty_certs">No certificates for this key</string>
-    <string name="section_uids_to_sign">Identities to sign</string>
+    <string name="section_uids_to_certify">Identities to certify</string>
     <string name="label_revocation">Revocation Reason</string>
     <string name="label_verify_status">Verification Status</string>
     <string name="label_cert_type">Type</string>

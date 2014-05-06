@@ -181,6 +181,6 @@
   <string name="cert_verify_error">hata!</string>
   <string name="cert_verify_unavailable">anahtar mevcut değil</string>
   <!--unsorted-->
-  <string name="section_signer_id">İmzalayan</string>
+  <string name="section_certifier_id">İmzalayan</string>
   <string name="can_sign_not">imzalanamadı</string>
 </resources>

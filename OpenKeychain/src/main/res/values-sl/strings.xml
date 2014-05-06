@@ -247,7 +247,7 @@
   <string name="nfc_successful">Ključ uspešno poslan preko NFC Beam!</string>
   <string name="key_copied_to_clipboard">Ključ je bil prekopiran v odložišče!</string>
   <string name="key_has_already_been_certified">Ključ je že bil overjen!</string>
-  <string name="select_key_to_sign">Izberite ključ, ki ga boste uporabljali za podpisovanje</string>
+  <string name="select_key_to_certify">Izberite ključ, ki ga boste uporabljali za podpisovanje</string>
   <string name="key_too_big_for_sharing">Ključ je prevelik za delitev na ta način!</string>
   <!--errors
          no punctuation, all lowercase,
@@ -454,7 +454,7 @@
   <string name="cert_verify_error">napaka!</string>
   <string name="cert_verify_unavailable">ključ ni na voljo</string>
   <!--unsorted-->
-  <string name="section_signer_id">Podpisnik</string>
+  <string name="section_certifier_id">Podpisnik</string>
   <string name="section_cert">Podrobnosti potrdil</string>
   <string name="unknown_uid">&lt;neznan&gt;</string>
   <string name="empty_certs">Ni potrdil za ta ključ</string>

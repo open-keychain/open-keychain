@@ -229,7 +229,7 @@
   <string name="nfc_successful">Chiave correttamente inviata tramite NFC Beam!</string>
   <string name="key_copied_to_clipboard">Chiave copiata negli appunti!</string>
   <string name="key_has_already_been_certified">La chiave è già certificata!</string>
-  <string name="select_key_to_sign">Per favore seleziona la chiave per la firma!</string>
+  <string name="select_key_to_certify">Per favore seleziona la chiave per la firma!</string>
   <string name="key_too_big_for_sharing">Chiave troppo grande per essere condivisa in questo modo!</string>
   <!--errors
          no punctuation, all lowercase,
@@ -426,7 +426,7 @@
   <string name="cert_verify_error">errore!</string>
   <string name="cert_verify_unavailable">chiave non disponibile</string>
   <!--unsorted-->
-  <string name="section_signer_id">Firmatario</string>
+  <string name="section_certifier_id">Firmatario</string>
   <string name="section_cert">Dettagli Certificato</string>
   <string name="unknown_uid">&lt;sconosciuto&gt;</string>
   <string name="empty_certs">Nessun certificato per questa chiave</string>

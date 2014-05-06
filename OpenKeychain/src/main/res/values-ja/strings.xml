@@ -220,7 +220,7 @@
   <string name="nfc_successful">NFCビームで鍵を送信しました!</string>
   <string name="key_copied_to_clipboard">鍵はクリプボードにコピーされました!</string>
   <string name="key_has_already_been_certified">鍵はすでに検証されています!</string>
-  <string name="select_key_to_sign">署名に使う鍵を選択して下さい!</string>
+  <string name="select_key_to_certify">署名に使う鍵を選択して下さい!</string>
   <string name="key_too_big_for_sharing">この共有方法では鍵が大きすぎます!</string>
   <!--errors
          no punctuation, all lowercase,
@@ -412,7 +412,7 @@
   <string name="cert_verify_error">エラー!</string>
   <string name="cert_verify_unavailable">鍵がありません</string>
   <!--unsorted-->
-  <string name="section_signer_id">署名者</string>
+  <string name="section_certifier_id">署名者</string>
   <string name="section_cert">証明の詳細</string>
   <string name="unknown_uid">&lt;不明&gt;</string>
   <string name="empty_certs">この鍵に証明がない</string>

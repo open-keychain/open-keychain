@@ -238,7 +238,7 @@
   <string name="nfc_successful">Pomyślnie wysłano klucz przez NFC Beam!</string>
   <string name="key_copied_to_clipboard">Klucz został skopiowany do schowka!</string>
   <string name="key_has_already_been_certified">Klucz został już wcześniej certyfikowany!</string>
-  <string name="select_key_to_sign">Wybierz klucz, który zostanie użyty do podpisania!</string>
+  <string name="select_key_to_certify">Wybierz klucz, który zostanie użyty do podpisania!</string>
   <string name="key_too_big_for_sharing">Klucz ma za duży rozmiar by być udostępniony w ten sposób!</string>
   <!--errors
          no punctuation, all lowercase,
@@ -440,7 +440,7 @@
   <string name="cert_verify_error">błąd!</string>
   <string name="cert_verify_unavailable">klucz niedostępny</string>
   <!--unsorted-->
-  <string name="section_signer_id">Podpisujący</string>
+  <string name="section_certifier_id">Podpisujący</string>
   <string name="section_cert">Szczegóły certyfikatu</string>
   <string name="unknown_uid">&lt;nieznany&gt;</string>
   <string name="empty_certs">Nie ma certyfikatów dla tego klucza</string>

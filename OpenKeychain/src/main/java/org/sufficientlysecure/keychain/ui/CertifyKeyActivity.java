@@ -131,7 +131,7 @@ public class CertifyKeyActivity extends ActionBarActivity implements
             public void onClick(View v) {
                 if (mPubKeyId != 0) {
                     if (mMasterKeyId == 0) {
-                        mSelectKeyFragment.setError(getString(R.string.select_key_to_sign));
+                        mSelectKeyFragment.setError(getString(R.string.select_key_to_certify));
                     } else {
                         initiateSigning();
                     }

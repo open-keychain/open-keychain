@@ -159,7 +159,7 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="4dp"
             android:layout_marginTop="14dp"
-            android:text="@string/section_signer_id" />
+            android:text="@string/section_certifier_id" />
 
         <TableLayout
             android:layout_width="wrap_content"
