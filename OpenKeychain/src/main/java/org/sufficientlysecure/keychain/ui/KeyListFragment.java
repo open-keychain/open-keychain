@@ -50,6 +50,7 @@ import android.widget.AbsListView.MultiChoiceModeListener;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -475,7 +476,7 @@ public class KeyListFragment extends Fragment
             TextView mMainUserIdRest;
             View mStatusDivider;
             FrameLayout mStatusLayout;
-            Button mButton;
+            ImageButton mButton;
             TextView mRevoked;
             ImageView mVerified;
         }
@@ -488,7 +489,7 @@ public class KeyListFragment extends Fragment
             holder.mMainUserIdRest = (TextView) view.findViewById(R.id.mainUserIdRest);
             holder.mStatusDivider = (View) view.findViewById(R.id.status_divider);
             holder.mStatusLayout = (FrameLayout) view.findViewById(R.id.status_layout);
-            holder.mButton = (Button) view.findViewById(R.id.edit);
+            holder.mButton = (ImageButton) view.findViewById(R.id.edit);
             holder.mRevoked = (TextView) view.findViewById(R.id.revoked);
             holder.mVerified = (ImageView) view.findViewById(R.id.verified);
             view.setTag(holder);
