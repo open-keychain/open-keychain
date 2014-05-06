@@ -9,7 +9,7 @@
     android:paddingRight="16dp"
     android:paddingTop="4dp"
     android:paddingBottom="4dp"
-    android:background="@color/result_blue">
+    android:background="@color/result_purple">
 
     <View
         android:layout_width="match_parent"
