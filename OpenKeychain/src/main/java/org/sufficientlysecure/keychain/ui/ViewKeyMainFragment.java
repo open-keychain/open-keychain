@@ -204,26 +204,28 @@ public class ViewKeyMainFragment extends Fragment implements
                         mActionEditDivider.setVisibility(View.GONE);
                     }
 
-                    // It's easier to reset to defaults beforehand, saves some nasty else clauses
-                    mStatusRevoked.setVisibility(View.GONE);
-                    mStatusExpired.setVisibility(View.GONE);
-                    mActionCertify.setEnabled(true);
-                    mActionEdit.setEnabled(true);
-                    mActionEncrypt.setEnabled(true);
-
                     // If this key is revoked, it cannot be used for anything!
                     if (data.getInt(INDEX_UNIFIED_IS_REVOKED) != 0) {
                         mStatusRevoked.setVisibility(View.VISIBLE);
-                        mActionCertify.setEnabled(false);
+                        mStatusExpired.setVisibility(View.GONE);
+
                         mActionEdit.setEnabled(false);
+                        mActionCertify.setEnabled(false);
                         mActionEncrypt.setEnabled(false);
                     } else {
+                        mActionEdit.setEnabled(true);
+
                         Date expiryDate = new Date(data.getLong(INDEX_UNIFIED_EXPIRY) * 1000);
                         if (!data.isNull(INDEX_UNIFIED_EXPIRY) && expiryDate.before(new Date())) {
+                            mStatusRevoked.setVisibility(View.GONE);
                             mStatusExpired.setVisibility(View.VISIBLE);
                             mActionCertify.setEnabled(false);
                             mActionEncrypt.setEnabled(false);
-                            // mActionEdit is still fine
+                        } else {
+                            mStatusRevoked.setVisibility(View.GONE);
+                            mStatusExpired.setVisibility(View.GONE);
+                            mActionCertify.setEnabled(true);
+                            mActionEncrypt.setEnabled(true);
                         }
                     }
 
