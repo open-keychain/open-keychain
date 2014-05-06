@@ -11,20 +11,36 @@
     android:paddingBottom="4dp"
     android:background="@color/result_blue">
 
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dip"
+        android:background="?android:attr/listDivider"
+        android:layout_marginTop="4dp" />
+
     <TextView
         android:id="@+id/result_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:text="result text"
-        android:textColor="@color/white" />
+        android:textColor="@color/white"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dip"
+        android:background="?android:attr/listDivider" />
 
     <RelativeLayout
         android:id="@+id/result_signature"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:clickable="true"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:layout_marginBottom="8dp"
+        android:layout_marginTop="8dp">
 
         <RelativeLayout
             android:layout_width="wrap_content"
@@ -67,17 +83,17 @@
             android:layout_toRightOf="@+id/result_signature_image"
             android:textColor="@color/white" />
 
-    </RelativeLayout>
+        <com.beardedhen.androidbootstrap.BootstrapButton
+            android:id="@+id/lookup_key"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/btn_lookup_key"
+            bootstrapbutton:bb_icon_left="fa-download"
+            bootstrapbutton:bb_type="info"
+            bootstrapbutton:bb_size="small"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true" />
 
-    <com.beardedhen.androidbootstrap.BootstrapButton
-        android:id="@+id/lookup_key"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
-        android:layout_marginBottom="4dp"
-        android:text="@string/btn_lookup_key"
-        bootstrapbutton:bb_icon_left="fa-download"
-        bootstrapbutton:bb_type="info"
-        bootstrapbutton:bb_size="small" />
+    </RelativeLayout>
 
 </LinearLayout>

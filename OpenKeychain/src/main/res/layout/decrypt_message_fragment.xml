@@ -37,43 +37,46 @@
                 android:scrollHorizontally="true"
                 android:layout_weight="1" />
 
-            <TextView
-                style="@style/SectionHeader"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/section_decrypt_verify"
-                android:id="@+id/decrypt_message_section" />
-
             <LinearLayout
-                android:id="@+id/decrypt_buttons"
+                android:id="@+id/action_decrypt"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:clickable="true"
+                style="@style/SelectableItem"
                 android:orientation="horizontal">
 
-                <com.beardedhen.androidbootstrap.BootstrapButton
-                    android:id="@+id/action_decrypt"
-                    android:layout_width="match_parent"
-                    android:layout_height="50dp"
-                    android:layout_marginRight="4dp"
-                    android:layout_marginTop="4dp"
-                    android:layout_marginBottom="4dp"
-                    android:layout_weight="1"
+                <TextView
+                    android:paddingLeft="8dp"
+                    android:paddingRight="8dp"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:minHeight="?android:attr/listPreferredItemHeight"
                     android:text="@string/btn_decrypt_verify"
-                    bootstrapbutton:bb_icon_left="fa-unlock"
-                    bootstrapbutton:bb_type="info" />
+                    android:gravity="center_vertical"
+                    android:layout_weight="1" />
 
-                <com.beardedhen.androidbootstrap.BootstrapButton
+                <View
+                    android:layout_width="1dip"
+                    android:layout_height="match_parent"
+                    android:gravity="right"
+                    android:layout_marginBottom="8dp"
+                    android:layout_marginTop="8dp"
+                    android:background="?android:attr/listDivider" />
+
+                <ImageButton
                     android:id="@+id/action_decrypt_from_clipboard"
-                    android:layout_width="match_parent"
-                    android:layout_height="50dp"
-                    android:layout_marginLeft="4dp"
-                    android:layout_marginTop="4dp"
-                    android:layout_marginBottom="4dp"
-                    android:layout_weight="1"
-                    android:text="@string/btn_decrypt_verify_clipboard"
-                    bootstrapbutton:bb_icon_left="fa-clipboard"
-                    bootstrapbutton:bb_type="info" />
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:padding="8dp"
+                    android:src="@drawable/ic_action_copy"
+                    android:layout_gravity="center_vertical"
+                    style="@style/SelectableItem" />
+
             </LinearLayout>
+
         </LinearLayout>
+
     </LinearLayout>
+
 </ScrollView>
