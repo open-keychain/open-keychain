@@ -34,7 +34,6 @@
   <string name="section_master_key">Clave maestra</string>
   <string name="section_master_user_id">Identidad primaria</string>
   <string name="section_actions">Acciones</string>
-  <string name="section_share_key">Compartir clave</string>
   <string name="section_certification_key">Tu clave usada para las certificaciones</string>
   <string name="section_upload_key">Cargar clave</string>
   <string name="section_key_server">Servidor de claves</string>

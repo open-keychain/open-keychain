@@ -34,7 +34,6 @@
   <string name="section_master_key">主鍵</string>
   <string name="section_master_user_id">メインのユーザID</string>
   <string name="section_actions">アクション</string>
-  <string name="section_share_key">鍵の共有</string>
   <string name="section_certification_key">あなたの鍵を証明に利用します</string>
   <string name="section_upload_key">鍵のアップロード</string>
   <string name="section_key_server">鍵サーバ</string>

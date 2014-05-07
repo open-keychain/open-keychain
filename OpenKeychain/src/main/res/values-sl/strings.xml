@@ -34,7 +34,6 @@
   <string name="section_master_key">Glavni ključ</string>
   <string name="section_master_user_id">Glavna identiteta</string>
   <string name="section_actions">Ravnanja</string>
-  <string name="section_share_key">Deli ključ</string>
   <string name="section_certification_key">Vaš ključ, uporabljan za overitev</string>
   <string name="section_upload_key">Naloži ključ</string>
   <string name="section_key_server">Strežnik</string>

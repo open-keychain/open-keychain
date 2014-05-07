@@ -34,7 +34,6 @@
   <string name="section_master_key">Chiave Principale</string>
   <string name="section_master_user_id">Identità Primaria</string>
   <string name="section_actions">Azioni</string>
-  <string name="section_share_key">Condividi chiave...</string>
   <string name="section_certification_key">La Tua Chiave usata per la certificazione</string>
   <string name="section_upload_key">Carica Chiave</string>
   <string name="section_key_server">Server delle Chiavi</string>

@@ -15,7 +15,7 @@
   <string name="title_set_passphrase">Passwort setzen</string>
   <string name="title_share_with">Teilen über...</string>
   <string name="title_share_fingerprint_with">Teile Fingerabdruck über…</string>
-  <string name="title_share_key">Gesamter Schlüssel</string>
+  <string name="title_share_key">Teile Schlüssel über...</string>
   <string name="title_share_file">Datei teilen mit…</string>
   <string name="title_encrypt_to_file">In eine Datei verschlüsseln</string>
   <string name="title_decrypt_to_file">In eine Datei entschlüsseln</string>
@@ -36,13 +36,14 @@
   <string name="section_master_key">Hauptschlüssel</string>
   <string name="section_master_user_id">Hauptidentität</string>
   <string name="section_actions">Aktionen</string>
-  <string name="section_share_key">Schlüssel teilen</string>
+  <string name="section_share_key">Gesamter Schlüssel</string>
   <string name="section_certification_key">Mit diesem Schlüssel beglaubigen</string>
   <string name="section_upload_key">Schlüssel hochladen</string>
   <string name="section_key_server">Schlüsselserver</string>
   <string name="section_encrypt_and_or_sign">Verschlüsseln und/oder Signieren</string>
   <string name="section_decrypt_verify">Entschlüsseln und Verifizieren</string>
   <string name="section_fingerprint">Fingerabdruck</string>
+  <string name="section_key_to_certify">Zu beglaubigende Schlüssel</string>
   <!--button-->
   <string name="btn_certify">Beglaubigen</string>
   <string name="btn_decrypt_verify">Entschlüsselte Datei verifizieren und speichern</string>

@@ -34,7 +34,6 @@
   <string name="section_master_key">Clef maîtresse</string>
   <string name="section_master_user_id">Identité principale</string>
   <string name="section_actions">Actions</string>
-  <string name="section_share_key">Partager la clef</string>
   <string name="section_certification_key">Votre clef utilisée pour la certification</string>
   <string name="section_upload_key">Téléverser la clef</string>
   <string name="section_key_server">Serveur de clefs</string>
