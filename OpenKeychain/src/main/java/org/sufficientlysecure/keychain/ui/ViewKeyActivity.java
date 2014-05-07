@@ -40,6 +40,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.Window;
 
 import com.devspark.appmsg.AppMsg;
@@ -55,6 +56,7 @@ import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.SlidingTabLayout;
 
 import java.io.IOException;
+import java.util.Date;
 import java.util.HashMap;
 
 public class ViewKeyActivity extends ActionBarActivity implements
@@ -75,6 +77,9 @@ public class ViewKeyActivity extends ActionBarActivity implements
     private ViewPager mViewPager;
     private SlidingTabLayout mSlidingTabLayout;
     private PagerTabStripAdapter mTabsAdapter;
+    private View mStatusDivider;
+    private View mStatusRevoked;
+    private View mStatusExpired;
 
     public static final int REQUEST_CODE_LOOKUP_KEY = 0x00007006;
 
@@ -103,6 +108,10 @@ public class ViewKeyActivity extends ActionBarActivity implements
         actionBar.setHomeButtonEnabled(true);
 
         setContentView(R.layout.view_key_activity);
+
+        mStatusDivider = findViewById(R.id.status_divider);
+        mStatusRevoked = findViewById(R.id.view_key_revoked);
+        mStatusExpired = findViewById(R.id.view_key_expired);
 
         mViewPager = (ViewPager) findViewById(R.id.view_key_pager);
         mSlidingTabLayout = (SlidingTabLayout) findViewById(R.id.view_key_sliding_tab_layout);
@@ -363,10 +372,14 @@ public class ViewKeyActivity extends ActionBarActivity implements
             KeychainContract.KeyRings._ID,
             KeychainContract.KeyRings.MASTER_KEY_ID,
             KeychainContract.KeyRings.USER_ID,
+            KeychainContract.KeyRings.IS_REVOKED,
+            KeychainContract.KeyRings.EXPIRY,
 
     };
     static final int INDEX_UNIFIED_MASTER_KEY_ID = 1;
     static final int INDEX_UNIFIED_USER_ID = 2;
+    static final int INDEX_UNIFIED_IS_REVOKED = 3;
+    static final int INDEX_UNIFIED_EXPIRY = 4;
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
@@ -407,6 +420,24 @@ public class ViewKeyActivity extends ActionBarActivity implements
                     long masterKeyId = data.getLong(INDEX_UNIFIED_MASTER_KEY_ID);
                     String keyIdStr = PgpKeyHelper.convertKeyIdToHex(masterKeyId);
                     getSupportActionBar().setSubtitle(keyIdStr);
+
+                    // If this key is revoked, it cannot be used for anything!
+                    if (data.getInt(INDEX_UNIFIED_IS_REVOKED) != 0) {
+                        mStatusDivider.setVisibility(View.VISIBLE);
+                        mStatusRevoked.setVisibility(View.VISIBLE);
+                        mStatusExpired.setVisibility(View.GONE);
+                    } else {
+                        mStatusRevoked.setVisibility(View.GONE);
+
+                        Date expiryDate = new Date(data.getLong(INDEX_UNIFIED_EXPIRY) * 1000);
+                        if (!data.isNull(INDEX_UNIFIED_EXPIRY) && expiryDate.before(new Date())) {
+                            mStatusDivider.setVisibility(View.VISIBLE);
+                            mStatusExpired.setVisibility(View.VISIBLE);
+                        } else {
+                            mStatusDivider.setVisibility(View.GONE);
+                            mStatusExpired.setVisibility(View.GONE);
+                        }
+                    }
 
                     break;
                 }

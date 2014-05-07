@@ -32,6 +32,8 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 
+import com.devspark.appmsg.AppMsg;
+
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
@@ -49,8 +51,6 @@ public class ViewKeyMainFragment extends Fragment implements
     public static final String ARG_DATA_URI = "uri";
 
     private LinearLayout mContainer;
-    private View mStatusRevoked;
-    private View mStatusExpired;
     private View mActionEdit;
     private View mActionEditDivider;
     private View mActionEncrypt;
@@ -62,6 +62,9 @@ public class ViewKeyMainFragment extends Fragment implements
     private static final int LOADER_ID_UNIFIED = 0;
     private static final int LOADER_ID_USER_IDS = 1;
 
+    // conservative attitude
+    private boolean mHasEncrypt = true;
+
     private ViewKeyUserIdsAdapter mUserIdsAdapter;
 
     private Uri mDataUri;
@@ -72,8 +75,6 @@ public class ViewKeyMainFragment extends Fragment implements
 
         mContainer = (LinearLayout) view.findViewById(R.id.container);
         mUserIds = (ListView) view.findViewById(R.id.view_key_user_ids);
-        mStatusRevoked = view.findViewById(R.id.view_key_revoked);
-        mStatusExpired = view.findViewById(R.id.view_key_expired);
         mActionEdit = view.findViewById(R.id.view_key_action_edit);
         mActionEditDivider = view.findViewById(R.id.view_key_action_edit_divider);
         mActionEncrypt = view.findViewById(R.id.view_key_action_encrypt);
@@ -132,30 +133,14 @@ public class ViewKeyMainFragment extends Fragment implements
     }
 
     static final String[] UNIFIED_PROJECTION = new String[]{
-            KeyRings._ID, KeyRings.MASTER_KEY_ID, KeyRings.HAS_ANY_SECRET, KeyRings.IS_REVOKED,
-            KeyRings.USER_ID, KeyRings.FINGERPRINT,
-            KeyRings.ALGORITHM, KeyRings.KEY_SIZE, KeyRings.CREATION, KeyRings.EXPIRY,
-            KeyRings.HAS_ENCRYPT
-
+            KeyRings._ID, KeyRings.MASTER_KEY_ID,
+            KeyRings.HAS_ANY_SECRET, KeyRings.IS_REVOKED, KeyRings.EXPIRY, KeyRings.HAS_ENCRYPT
     };
     static final int INDEX_UNIFIED_MASTER_KEY_ID = 1;
     static final int INDEX_UNIFIED_HAS_ANY_SECRET = 2;
     static final int INDEX_UNIFIED_IS_REVOKED = 3;
-    static final int INDEX_UNIFIED_USER_ID = 4;
-    static final int INDEX_UNIFIED_FINGERPRINT = 5;
-    static final int INDEX_UNIFIED_ALGORITHM = 6;
-    static final int INDEX_UNIFIED_KEY_SIZE = 7;
-    static final int INDEX_UNIFIED_CREATION = 8;
-    static final int INDEX_UNIFIED_EXPIRY = 9;
-    static final int INDEX_UNIFIED_HAS_ENCRYPT = 10;
-
-    static final String[] KEYS_PROJECTION = new String[]{
-            Keys._ID,
-            Keys.KEY_ID, Keys.RANK, Keys.ALGORITHM, Keys.KEY_SIZE, Keys.HAS_SECRET,
-            Keys.CAN_CERTIFY, Keys.CAN_ENCRYPT, Keys.CAN_SIGN, Keys.IS_REVOKED,
-            Keys.CREATION, Keys.EXPIRY, Keys.FINGERPRINT
-    };
-    static final int KEYS_INDEX_CAN_ENCRYPT = 7;
+    static final int INDEX_UNIFIED_EXPIRY = 4;
+    static final int INDEX_UNIFIED_HAS_ENCRYPT = 5;
 
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         switch (id) {
@@ -165,7 +150,8 @@ public class ViewKeyMainFragment extends Fragment implements
             }
             case LOADER_ID_USER_IDS: {
                 Uri baseUri = UserIds.buildUserIdsUri(mDataUri);
-                return new CursorLoader(getActivity(), baseUri, ViewKeyUserIdsAdapter.USER_IDS_PROJECTION, null, null, null);
+                return new CursorLoader(getActivity(), baseUri,
+                        ViewKeyUserIdsAdapter.USER_IDS_PROJECTION, null, null, null);
             }
 
             default:
@@ -206,9 +192,6 @@ public class ViewKeyMainFragment extends Fragment implements
 
                     // If this key is revoked, it cannot be used for anything!
                     if (data.getInt(INDEX_UNIFIED_IS_REVOKED) != 0) {
-                        mStatusRevoked.setVisibility(View.VISIBLE);
-                        mStatusExpired.setVisibility(View.GONE);
-
                         mActionEdit.setEnabled(false);
                         mActionCertify.setEnabled(false);
                         mActionEncrypt.setEnabled(false);
@@ -217,17 +200,15 @@ public class ViewKeyMainFragment extends Fragment implements
 
                         Date expiryDate = new Date(data.getLong(INDEX_UNIFIED_EXPIRY) * 1000);
                         if (!data.isNull(INDEX_UNIFIED_EXPIRY) && expiryDate.before(new Date())) {
-                            mStatusRevoked.setVisibility(View.GONE);
-                            mStatusExpired.setVisibility(View.VISIBLE);
                             mActionCertify.setEnabled(false);
                             mActionEncrypt.setEnabled(false);
                         } else {
-                            mStatusRevoked.setVisibility(View.GONE);
-                            mStatusExpired.setVisibility(View.GONE);
                             mActionCertify.setEnabled(true);
                             mActionEncrypt.setEnabled(true);
                         }
                     }
+
+                    mHasEncrypt = data.getInt(INDEX_UNIFIED_HAS_ENCRYPT) != 0;
 
                     break;
                 }
@@ -255,6 +236,11 @@ public class ViewKeyMainFragment extends Fragment implements
     }
 
     private void encrypt(Uri dataUri) {
+        // If there is no encryption key, don't bother.
+        if (!mHasEncrypt) {
+            AppMsg.makeText(getActivity(), R.string.error_no_encrypt_subkey, AppMsg.STYLE_ALERT).show();
+            return;
+        }
         try {
             long keyId = new ProviderHelper(getActivity()).extractOrGetMasterKeyId(dataUri);
             long[] encryptionKeyIds = new long[]{keyId};

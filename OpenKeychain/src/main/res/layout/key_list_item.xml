@@ -48,7 +48,7 @@
 
     <FrameLayout
         android:id="@+id/status_layout"
-        android:layout_width="80dp"
+        android:layout_width="wrap_content"
         android:layout_height="match_parent">
 
         <ImageButton
@@ -61,19 +61,20 @@
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:textColor="@color/black"
             android:src="@drawable/ic_action_edit"
-            android:text="@string/edit" />
+            android:text="@string/edit"
+            android:padding="12dp" />
 
         <TextView
             android:id="@+id/revoked"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:paddingLeft="8dp"
             android:singleLine="true"
             android:ellipsize="end"
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:text="@string/revoked"
             android:textColor="#e00"
-            android:layout_gravity="center" />
+            android:layout_gravity="center"
+            android:padding="12dp" />
 
         <ImageView
             android:layout_width="wrap_content"
@@ -81,7 +82,7 @@
             android:id="@+id/verified"
             android:layout_gravity="center"
             android:src="@drawable/key_certify_ok_depth0"
-            android:paddingLeft="25dp" />
+            android:padding="16dp" />
     </FrameLayout>
 
 </LinearLayout>
