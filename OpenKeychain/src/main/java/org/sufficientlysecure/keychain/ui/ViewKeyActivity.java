@@ -67,7 +67,7 @@ public class ViewKeyActivity extends ActionBarActivity implements
 
     protected Uri mDataUri;
 
-    public static final String EXTRA_SELECTED_TAB = "selectedTab";
+    public static final String EXTRA_SELECTED_TAB = "selected_tab";
     public static final int TAB_MAIN = 0;
     public static final int TAB_SHARE = 1;
     public static final int TAB_KEYS = 2;
