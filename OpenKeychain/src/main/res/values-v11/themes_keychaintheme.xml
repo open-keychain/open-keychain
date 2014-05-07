@@ -25,6 +25,8 @@
 
     <item name="android:fastScrollThumbDrawable">@drawable/apptheme_fastscroll_thumb_holo</item>
 
+    <item name="android:selectableItemBackground">@drawable/keychaintheme_list_selector_holo_light</item>
+
   </style>
 
 </resources>
