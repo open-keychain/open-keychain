@@ -140,7 +140,7 @@ public class ViewKeyActivity extends ActionBarActivity implements
         Bundle keyDetailsBundle = new Bundle();
         keyDetailsBundle.putParcelable(ViewKeyKeysFragment.ARG_DATA_URI, dataUri);
         mTabsAdapter.addTab(ViewKeyKeysFragment.class,
-                keyDetailsBundle, getString(R.string.key_view_tab_keys_details));
+                keyDetailsBundle, getString(R.string.key_view_tab_keys));
 
         Bundle certBundle = new Bundle();
         certBundle.putParcelable(ViewKeyCertsFragment.ARG_DATA_URI, dataUri);

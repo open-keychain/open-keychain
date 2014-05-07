@@ -14,7 +14,7 @@
   <string name="title_change_passphrase">Passphrase ändern</string>
   <string name="title_set_passphrase">Passwort setzen</string>
   <string name="title_share_fingerprint_with">Teile Fingerabdruck über…</string>
-  <string name="title_share_key_with">Teile Schlüssel über...</string>
+  <string name="title_share_key">Teile Schlüssel über...</string>
   <string name="title_share_file">Datei teilen mit…</string>
   <string name="title_encrypt_to_file">In eine Datei verschlüsseln</string>
   <string name="title_decrypt_to_file">In eine Datei entschlüsseln</string>
@@ -417,7 +417,7 @@
   <string name="key_view_action_share_nfc">über NFC (Geräte Rückseite an Rückseite halten)</string>
   <string name="key_view_tab_main">Informationen</string>
   <string name="key_view_tab_share">Teilen</string>
-  <string name="key_view_tab_keys_details">Schlüsseldetails</string>
+  <string name="key_view_tab_keys">Schlüsseldetails</string>
   <string name="key_view_tab_certs">Beglaubigungen</string>
   <!--Navigation Drawer-->
   <string name="nav_keys">Schlüssel</string>

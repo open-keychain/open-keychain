@@ -16,7 +16,7 @@
     <string name="title_set_passphrase">Set Passphrase</string>
     <string name="title_share_with">Share with…</string>
     <string name="title_share_fingerprint_with">Share fingerprint with…</string>
-    <string name="title_share_key_with">Share key with…</string>
+    <string name="title_share_key">Whole key</string>
     <string name="title_share_file">Share file with…</string>
     <string name="title_encrypt_to_file">Encrypt To File</string>
     <string name="title_decrypt_to_file">Decrypt To File</string>
@@ -459,11 +459,11 @@
     <string name="key_view_action_edit">Edit key</string>
     <string name="key_view_action_encrypt">Encrypt with this key</string>
     <string name="key_view_action_certify">Certify identities</string>
-    <string name="key_view_action_share_with">with…</string>
-    <string name="key_view_action_share_nfc">over NFC by holding the devices back to back</string>
+    <string name="key_view_action_share_with">Share with…</string>
+    <string name="key_view_action_share_nfc">Share over NFC by holding the devices back to back</string>
     <string name="key_view_tab_main">Main Info</string>
     <string name="key_view_tab_share">Share</string>
-    <string name="key_view_tab_keys_details">Key Details</string>
+    <string name="key_view_tab_keys">Subkeys</string>
     <string name="key_view_tab_certs">Certificates</string>
 
     <!-- Navigation Drawer -->

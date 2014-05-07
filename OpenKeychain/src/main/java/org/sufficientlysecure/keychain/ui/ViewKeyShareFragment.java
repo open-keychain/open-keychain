@@ -187,7 +187,7 @@ public class ViewKeyShareFragment extends Fragment implements
                 if (fingerprintOnly) {
                     title = getResources().getString(R.string.title_share_fingerprint_with);
                 } else {
-                    title = getResources().getString(R.string.title_share_key_with);
+                    title = getResources().getString(R.string.title_share_key);
                 }
                 startActivity(Intent.createChooser(sendIntent, title));
             }
