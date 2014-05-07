@@ -17,28 +17,6 @@
         android:visibility="visible">
 
         <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="This key is expired!"
-            android:id="@+id/view_key_expired"
-            android:minHeight="?android:attr/listPreferredItemHeight"
-            android:textColor="@color/alert"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:gravity="center_vertical|center_horizontal"
-            android:visibility="gone" />
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="This key has been revoked!"
-            android:id="@+id/view_key_revoked"
-            android:minHeight="?android:attr/listPreferredItemHeight"
-            android:textColor="@color/alert"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:gravity="center_vertical|center_horizontal"
-            android:visibility="gone" />
-
-        <TextView
             style="@style/SectionHeader"
             android:layout_width="wrap_content"
             android:layout_height="0dp"

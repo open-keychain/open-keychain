@@ -4,6 +4,35 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="This key is expired!"
+        android:id="@+id/view_key_expired"
+        android:textColor="@color/alert"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:gravity="center_vertical|center_horizontal"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        android:visibility="gone" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="This key has been revoked!"
+        android:id="@+id/view_key_revoked"
+        android:textColor="@color/alert"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:gravity="center_vertical|center_horizontal"
+        android:visibility="gone"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dip"
+        android:background="?android:attr/listDivider" />
+
     <org.sufficientlysecure.keychain.util.SlidingTabLayout
         android:id="@+id/view_key_sliding_tab_layout"
         android:layout_width="match_parent"
