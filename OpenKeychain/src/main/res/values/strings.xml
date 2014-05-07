@@ -69,6 +69,7 @@
     <string name="btn_encryption_advanced_settings_show">Show advanced settings</string>
     <string name="btn_encryption_advanced_settings_hide">Hide advanced settings</string>
     <string name="btn_share_encrypted_signed">Share encrypted/signed message…</string>
+    <string name="btn_view_cert_key">View certification key</string>
 
     <!-- menu -->
     <string name="menu_preferences">Settings</string>
