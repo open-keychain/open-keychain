@@ -31,7 +31,9 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="1dip"
-        android:background="?android:attr/listDivider" />
+        android:background="?android:attr/listDivider"
+        android:visibility="gone"
+        android:id="@+id/status_divider" />
 
     <org.sufficientlysecure.keychain.util.SlidingTabLayout
         android:id="@+id/view_key_sliding_tab_layout"
