@@ -56,7 +56,7 @@ public class SelectSecretKeyFragment extends ListFragment implements
 
         Bundle args = new Bundle();
         args.putBoolean(ARG_FILTER_CERTIFY, filterCertify);
-        args.putBoolean(ARG_FILTER_CERTIFY, filterSign);
+        args.putBoolean(ARG_FILTER_SIGN, filterSign);
         frag.setArguments(args);
 
         return frag;
@@ -124,7 +124,8 @@ public class SelectSecretKeyFragment extends ListFragment implements
                 KeyRings.CAN_CERTIFY,
                 // has sign may be any subkey
                 KeyRings.HAS_SIGN,
-                KeyRings.HAS_ANY_SECRET
+                KeyRings.HAS_ANY_SECRET,
+                KeyRings.HAS_SECRET
         };
 
         String where = KeyRings.HAS_ANY_SECRET + " = 1";
@@ -158,7 +159,7 @@ public class SelectSecretKeyFragment extends ListFragment implements
 
     private class SelectSecretKeyCursorAdapter extends SelectKeyCursorAdapter {
 
-        private int mIndexHasSign, mIndexCanCertify;
+        private int mIndexHasSign, mIndexCanCertify, mIndexHasSecret;
 
         public SelectSecretKeyCursorAdapter(Context context, Cursor c, int flags, ListView listView) {
             super(context, c, flags, listView);
@@ -170,6 +171,7 @@ public class SelectSecretKeyFragment extends ListFragment implements
             if (cursor != null) {
                 mIndexCanCertify = cursor.getColumnIndexOrThrow(KeyRings.CAN_CERTIFY);
                 mIndexHasSign = cursor.getColumnIndexOrThrow(KeyRings.HAS_SIGN);
+                mIndexHasSecret = cursor.getColumnIndexOrThrow(KeyRings.HAS_SECRET);
             }
         }
 
@@ -187,7 +189,8 @@ public class SelectSecretKeyFragment extends ListFragment implements
                 // Check if key is viable for our purposes (certify or sign)
                 if(mFilterCertify) {
                     // Only enable if can certify
-                    if (cursor.getInt(mIndexCanCertify) == 0) {
+                    if (cursor.getInt(mIndexCanCertify) == 0
+                            || cursor.getInt(mIndexHasSecret) == 0) {
                         h.status.setText(R.string.can_certify_not);
                     } else {
                         h.status.setText(R.string.can_certify);
