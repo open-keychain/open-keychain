@@ -27,7 +27,6 @@ import android.widget.Toast;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.helper.ActionBarHelper;
 import org.sufficientlysecure.keychain.helper.FileHelper;
 import org.sufficientlysecure.keychain.pgp.PgpHelper;
 import org.sufficientlysecure.keychain.ui.adapter.PagerTabStripAdapter;
@@ -67,9 +66,6 @@ public class DecryptActivity extends DrawerActivity {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.decrypt_activity);
-
-        // set actionbar without home button if called from another app
-        ActionBarHelper.setBackButton(this);
 
         initView();
 

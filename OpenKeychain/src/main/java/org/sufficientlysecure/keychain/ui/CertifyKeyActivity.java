@@ -26,10 +26,12 @@ import android.os.Handler;
 import android.os.Message;
 import android.os.Messenger;
 import android.support.v4.app.LoaderManager;
+import android.support.v4.app.NavUtils;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ArrayAdapter;
@@ -88,11 +90,6 @@ public class CertifyKeyActivity extends ActionBarActivity implements
 
         setContentView(R.layout.certify_key_activity);
 
-        final ActionBar actionBar = getSupportActionBar();
-        actionBar.setDisplayShowTitleEnabled(true);
-        actionBar.setDisplayHomeAsUpEnabled(false);
-        actionBar.setHomeButtonEnabled(false);
-
         mSelectKeyFragment = (SelectSecretKeyLayoutFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.sign_key_select_key_fragment);
         mSelectKeyFragment.setCallback(this);
@@ -101,7 +98,8 @@ public class CertifyKeyActivity extends ActionBarActivity implements
         mSelectKeyserverSpinner = (Spinner) findViewById(R.id.sign_key_keyserver);
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
                 android.R.layout.simple_spinner_item, Preferences.getPreferences(this)
-                .getKeyServers());
+                .getKeyServers()
+        );
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         mSelectKeyserverSpinner.setAdapter(adapter);
 
@@ -258,7 +256,8 @@ public class CertifyKeyActivity extends ActionBarActivity implements
                                         startSigning();
                                     }
                                 }
-                            });
+                            }
+                    );
                     // bail out; need to wait until the user has entered the passphrase before trying again
                     return;
                 } else {
@@ -391,5 +390,18 @@ public class CertifyKeyActivity extends ActionBarActivity implements
     @Override
     public void onKeySelected(long secretKeyId) {
         mMasterKeyId = secretKeyId;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home: {
+                Intent viewIntent = NavUtils.getParentActivityIntent(this);
+                viewIntent.setData(KeyRings.buildGenericKeyRingUri(mDataUri));
+                NavUtils.navigateUpTo(this, viewIntent);
+                return true;
+            }
+        }
+        return super.onOptionsItemSelected(item);
     }
 }

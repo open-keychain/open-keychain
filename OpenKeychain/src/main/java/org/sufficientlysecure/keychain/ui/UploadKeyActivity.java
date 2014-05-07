@@ -23,7 +23,9 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Message;
 import android.os.Messenger;
+import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBarActivity;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ArrayAdapter;
@@ -128,5 +130,18 @@ public class UploadKeyActivity extends ActionBarActivity {
 
         // start service with intent
         startService(intent);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home: {
+                Intent viewIntent = NavUtils.getParentActivityIntent(this);
+                viewIntent.setData(KeychainContract.KeyRings.buildGenericKeyRingUri(mDataUri));
+                NavUtils.navigateUpTo(this, viewIntent);
+                return true;
+            }
+        }
+        return super.onOptionsItemSelected(item);
     }
 }

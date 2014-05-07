@@ -43,7 +43,6 @@ import com.devspark.appmsg.AppMsg;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.helper.ActionBarHelper;
 import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
 import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
@@ -125,7 +124,6 @@ public class ImportKeysActivity extends ActionBarActivity implements ActionBar.O
         if (ACTION_IMPORT_KEY_FROM_KEYSERVER_AND_RETURN.equals(getIntent().getAction())) {
             setTitle(R.string.nav_import);
         } else {
-            ActionBarHelper.setBackButton(this);
             getSupportActionBar().setDisplayShowTitleEnabled(false);
 
             // set drop down navigation
