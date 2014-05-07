@@ -16,7 +16,7 @@
     <string name="title_set_passphrase">Set Passphrase</string>
     <string name="title_share_with">Share with…</string>
     <string name="title_share_fingerprint_with">Share fingerprint with…</string>
-    <string name="title_share_key">Whole key</string>
+    <string name="title_share_key">Share key with…</string>
     <string name="title_share_file">Share file with…</string>
     <string name="title_encrypt_to_file">Encrypt To File</string>
     <string name="title_decrypt_to_file">Decrypt To File</string>
@@ -38,13 +38,14 @@
     <string name="section_master_key">Master Key</string>
     <string name="section_master_user_id">Primary Identity</string>
     <string name="section_actions">Actions</string>
-    <string name="section_share_key">Share key</string>
+    <string name="section_share_key">Whole key</string>
     <string name="section_certification_key">Your Key used for certification</string>
     <string name="section_upload_key">Upload Key</string>
     <string name="section_key_server">Keyserver</string>
     <string name="section_encrypt_and_or_sign">Encrypt and/or Sign</string>
     <string name="section_decrypt_verify">Decrypt and Verify</string>
     <string name="section_fingerprint">Fingerprint</string>
+    <string name="section_key_to_certify">Key to be certified</string>
 
     <!-- button -->
     <string name="btn_certify">Certify</string>
