@@ -424,6 +424,7 @@
     <string name="api_settings_save">Save</string>
     <string name="api_settings_cancel">Cancel</string>
     <string name="api_settings_revoke">Revoke access</string>
+    <string name="api_settings_start">Start application</string>
     <string name="api_settings_delete_account">Delete account</string>
     <string name="api_settings_package_name">Package Name</string>
     <string name="api_settings_package_signature">SHA-256 of Package Signature</string>
