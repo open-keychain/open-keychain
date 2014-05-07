@@ -381,6 +381,9 @@ public class KeyListFragment extends Fragment
         // Execute this when searching
         mSearchView.setOnQueryTextListener(this);
 
+        View searchPlate = mSearchView.findViewById(android.support.v7.appcompat.R.id.search_plate);
+        searchPlate.setBackgroundResource(R.drawable.keychaintheme_searchview_holo_light);
+
         // Erase search result without focus
         MenuItemCompat.setOnActionExpandListener(searchItem, new MenuItemCompat.OnActionExpandListener() {
             @Override
