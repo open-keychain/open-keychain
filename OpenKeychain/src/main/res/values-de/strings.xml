@@ -43,12 +43,13 @@
   <string name="section_encrypt_and_or_sign">Verschlüsseln und/oder Signieren</string>
   <string name="section_decrypt_verify">Entschlüsseln und Verifizieren</string>
   <string name="section_fingerprint">Fingerabdruck</string>
-  <string name="section_key_to_certify">Zu beglaubigende Schlüssel</string>
+  <string name="section_key_to_certify">Zu beglaubigender Schlüssel</string>
   <!--button-->
   <string name="btn_certify">Beglaubigen</string>
-  <string name="btn_decrypt_verify_file">Entschlüsselte Datei verifizieren und speichern</string>
+  <string name="btn_decrypt_verify_file">Datei entschlüsseln, verifizieren und speichern</string>
+  <string name="btn_decrypt_verify_message">Entschlüsseln und verifizieren</string>
   <string name="btn_decrypt_verify_clipboard">Aus der Zwischenablage</string>
-  <string name="btn_encrypt_file">Verschlüsselte Datei speichern</string>
+  <string name="btn_encrypt_file">Datei verschlüsseln und speichern</string>
   <string name="btn_save">Speichern</string>
   <string name="btn_do_not_save">Abbrechen</string>
   <string name="btn_delete">Löschen</string>
@@ -437,8 +438,8 @@
   <string name="secret_key_yes">verfügbar</string>
   <string name="secret_key_no">nicht verfügbar</string>
   <!--hints-->
-  <string name="encrypt_content_edit_text_hint">Hier die Nachricht schreiben welche verschlüsselt und/oder signiert werden soll...</string>
-  <string name="decrypt_content_edit_text_hint">Hier den verslüsselten Text eingeben um ihn zu entschlüsseln und/oder zu überprüfen</string>
+  <string name="encrypt_content_edit_text_hint">Hier den Text schreiben welche verschlüsselt und/oder signiert werden soll...</string>
+  <string name="decrypt_content_edit_text_hint">Hier den verschlüsselten Text eingeben um ihn zu entschlüsseln und/oder zu überprüfen</string>
   <!--certs-->
   <string name="cert_default">Grundeinstellung</string>
   <string name="cert_none">kein</string>
