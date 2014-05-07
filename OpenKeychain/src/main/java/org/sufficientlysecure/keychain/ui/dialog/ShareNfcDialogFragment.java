@@ -78,7 +78,7 @@ public class ShareNfcDialogFragment extends DialogFragment {
                         + getString(R.string.error_nfc_needed));
             } else {
                 // nfc works...
-                textView.setHtmlFromRawResource(getActivity(), R.raw.nfc_beam_share);
+                textView.setHtmlFromRawResource(getActivity(), R.raw.nfc_beam_share, true);
 
                 alert.setNegativeButton(R.string.menu_beam_preferences,
                         new DialogInterface.OnClickListener() {

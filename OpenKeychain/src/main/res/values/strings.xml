@@ -413,7 +413,7 @@
     <string name="intent_send_decrypt">Decrypt with OpenKeychain</string>
 
     <!-- Remote API -->
-    <string name="api_no_apps">No registered applications!\n\nThird-party applications can request access to OpenKeychain. After granting access, they will be listed here.</string>
+    <string name="api_no_apps">No registered applications!\n\nA list of supported third-party applications can be found in \'Help\'!</string>
     <string name="api_settings_show_info">Show advanced information</string>
     <string name="api_settings_hide_info">Hide advanced information</string>
     <string name="api_settings_show_advanced">Show advanced settings</string>
