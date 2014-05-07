@@ -15,7 +15,6 @@
   <string name="title_key_details">Anahtar Detayları</string>
   <string name="title_help">Yardım</string>
   <!--section-->
-  <string name="section_keys">Anahtarlar</string>
   <string name="section_general">Genel</string>
   <string name="section_defaults">Varsayılanlar</string>
   <string name="section_advanced">Gelişmiş</string>
@@ -174,13 +173,12 @@
   <string name="secret_key_yes">mevcut</string>
   <string name="secret_key_no">mevcut değil</string>
   <!--hints-->
-  <!--certifications-->
+  <!--certs-->
   <string name="cert_default">varsayılan</string>
   <string name="cert_verify_ok">tamam</string>
   <string name="cert_verify_failed">başarısız!</string>
   <string name="cert_verify_error">hata!</string>
   <string name="cert_verify_unavailable">anahtar mevcut değil</string>
   <!--unsorted-->
-  <string name="section_certifier_id">İmzalayan</string>
   <string name="can_sign_not">imzalanamadı</string>
 </resources>

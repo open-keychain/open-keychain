@@ -13,6 +13,8 @@
   <string name="title_key_server_preference">Nastavitve strežnikov</string>
   <string name="title_change_passphrase">Spremeni geslo</string>
   <string name="title_set_passphrase">Določi geslo</string>
+  <string name="title_share_with">Deli z...</string>
+  <string name="title_share_fingerprint_with">Deli prstni odtis z...</string>
   <string name="title_share_file">Deli datoteko z...</string>
   <string name="title_encrypt_to_file">Šifriraj v datoteko</string>
   <string name="title_decrypt_to_file">Dešifriraj v datoteko</string>
@@ -21,26 +23,27 @@
   <string name="title_export_keys">Izvozi ključe</string>
   <string name="title_key_not_found">Ključ ni bil najden</string>
   <string name="title_send_key">Naloži na strežnik</string>
-  <string name="title_certify_key">Overi ključ</string>
   <string name="title_key_details">Podrobnosti o ključu</string>
   <string name="title_help">Pomoč</string>
   <!--section-->
-  <string name="section_keys">Ključi</string>
+  <string name="section_user_ids">Identitete</string>
+  <string name="section_keys">Podključi</string>
   <string name="section_general">Splošno</string>
   <string name="section_defaults">Privzeto</string>
   <string name="section_advanced">Napredno</string>
   <string name="section_master_key">Glavni ključ</string>
+  <string name="section_master_user_id">Glavna identiteta</string>
   <string name="section_actions">Ravnanja</string>
+  <string name="section_share_key">Deli ključ</string>
   <string name="section_certification_key">Vaš ključ, uporabljan za overitev</string>
   <string name="section_upload_key">Naloži ključ</string>
   <string name="section_key_server">Strežnik</string>
   <string name="section_encrypt_and_or_sign">Šifriraj in/ali podpiši</string>
   <string name="section_decrypt_verify">Dešifriraj in preveri</string>
+  <string name="section_fingerprint">Prstnim odtisom</string>
   <!--button-->
   <string name="btn_certify">Overi</string>
-  <string name="btn_decrypt_verify">Dešifriraj in preveri</string>
   <string name="btn_decrypt_verify_clipboard">Iz odložišča</string>
-  <string name="btn_encrypt_file">Šifriraj datoteko</string>
   <string name="btn_save">Shrani</string>
   <string name="btn_do_not_save">Prekliči</string>
   <string name="btn_delete">Izbriši</string>
@@ -68,6 +71,7 @@
   <string name="menu_create_key_expert">Ustvari ključ (napredno)</string>
   <string name="menu_search">Išči</string>
   <string name="menu_import_from_key_server">Strežnik</string>
+  <string name="menu_import_from_keybase">Uvozi iz Keybase.io</string>
   <string name="menu_key_server">Strežnik...</string>
   <string name="menu_update_key">Posodobi s strežnika</string>
   <string name="menu_export_key_to_server">Naloži na strežnik</string>
@@ -113,6 +117,7 @@
   <string name="label_expiry">Pretek</string>
   <string name="label_usage">Uporaba</string>
   <string name="label_key_size">Velikost ključa</string>
+  <string name="label_main_user_id">Glavna identiteta</string>
   <string name="label_name">Ime</string>
   <string name="label_comment">Komentar</string>
   <string name="label_email">E-pošta</string>
@@ -196,6 +201,7 @@
   <string name="key_deletion_confirmation_multi">Ali res želite izbrisati vse izbrane javne ključe?\nTega koraka ne boste mogli preklicati!</string>
   <string name="secret_key_deletion_confirmation">Ali res želite izbrisati ZASEBNI ključ \'%s\'?\nTega koraka ne boste mogli preklicati!</string>
   <string name="ask_save_changed_key">Vnesli ste spremembe v vaš \'keyring\'. Jih želite shraniti?</string>
+  <string name="ask_empty_id_ok">Dodali ste prazno identiteto, ali res želite nadaljevati?</string>
   <string name="public_key_deletetion_confirmation">Ali res želite izbrisati javni ključ \'%s\'?\nTega koraka ne boste mogli preklicati!</string>
   <string name="also_export_secret_keys">Želite izvoziti tudi zasebne ključe?</string>
   <plurals name="keys_added_and_updated_1">
@@ -242,12 +248,11 @@
     <item quantity="other">Neupoštevanih %d slabih zasebnih ključev. Morda so bili izvoženi na način\n --export-secret-subkeys\nPoskrbite, da bodo izvoženi z\n --export-secret-keys</item>
   </plurals>
   <string name="key_send_success">Ključ je bil uspešno naložen na strežnik.</string>
-  <string name="key_certify_success">Uspešno overjen ključ</string>
   <string name="list_empty">Lista je prazna!</string>
   <string name="nfc_successful">Ključ uspešno poslan preko NFC Beam!</string>
   <string name="key_copied_to_clipboard">Ključ je bil prekopiran v odložišče!</string>
+  <string name="fingerprint_copied_to_clipboard">Prstni odtis je bil prekopiran v odložišče!</string>
   <string name="key_has_already_been_certified">Ključ je že bil overjen!</string>
-  <string name="select_key_to_certify">Izberite ključ, ki ga boste uporabljali za podpisovanje</string>
   <string name="key_too_big_for_sharing">Ključ je prevelik za delitev na ta način!</string>
   <!--errors
          no punctuation, all lowercase,
@@ -260,6 +265,8 @@
   <string name="error_master_key_must_not_be_el_gamal">glavni ključ ne more biti ElGamal</string>
   <string name="error_unknown_algorithm_choice">neznana izbira algoritma</string>
   <string name="error_user_id_no_email">najti ni nobene e-pošte</string>
+  <string name="error_key_needs_a_user_id">potrebujete vsaj eno identiteto</string>
+  <string name="error_main_user_id_must_not_be_empty">glavna identiteta ne more biti prazna</string>
   <string name="error_key_needs_master_key">potrebujem vsaj glavni ključ</string>
   <string name="error_no_signature_passphrase">dano ni bilo nobeno geslo</string>
   <string name="error_no_signature_key">dan ni bil noben podpisni ključ</string>
@@ -337,6 +344,7 @@
   <string name="hint_public_keys">Iskanje javnih ključev</string>
   <string name="hint_secret_keys">Iskanje zasebnih ključev</string>
   <string name="action_share_key_with">Deli ključ z...</string>
+  <string name="hint_keybase_search">Išči v Keybase.io</string>
   <!--key bit length selections-->
   <string name="key_size_512">512</string>
   <string name="key_size_768">768</string>
@@ -378,6 +386,7 @@
   <string name="import_nfc_text">Za prejem ključev preko NFC mora biti naprava odklenjena.</string>
   <string name="import_nfc_help_button">Pomoč</string>
   <string name="import_clipboard_button">Pridobi ključ iz odložišča</string>
+  <string name="import_keybase_button">Pridobi ključ iz Keybase.io</string>
   <!--Intent labels-->
   <string name="intent_decrypt_file">Dešifriraj datoteko z OpenKeychain</string>
   <string name="intent_import_key">Uvozi ključ z OpenKeychain</string>
@@ -405,6 +414,8 @@
   <string name="api_register_allow">Dovoli dostop</string>
   <string name="api_register_disallow">Zavrni dostop</string>
   <string name="api_register_error_select_key">Izberite ključ!</string>
+  <string name="api_select_pub_keys_missing_text">Za te identitete ni bil najden noben javni ključ:</string>
+  <string name="api_select_pub_keys_dublicates_text">Za te identitete obstaja več ključev:</string>
   <string name="api_select_pub_keys_text">Preverite seznam prejemnikov!</string>
   <string name="api_error_wrong_signature">Preverjanje podpisa ni uspelo! Ste namestili to aplikacijo iz drugega vira? Če ste prepričani, da to ni napad, prekličite registracijo te aplikacije v OpenKeychain in jo izvedite znova.</string>
   <!--Share-->
@@ -426,8 +437,11 @@
   <string name="key_list_empty_button_create">stvaritvijo lastnega ključa</string>
   <string name="key_list_empty_button_import">uvozom obstoječih ključev.</string>
   <!--Key view-->
+  <string name="key_view_action_edit">Uredi ključ</string>
   <string name="key_view_action_encrypt">Šifriraj s tem ključem</string>
-  <string name="key_view_tab_certs">Overitve</string>
+  <string name="key_view_action_certify">Overi identitete</string>
+  <string name="key_view_tab_main">Glavne informacije</string>
+  <string name="key_view_tab_share">Deli</string>
   <!--Navigation Drawer-->
   <string name="nav_keys">Ključi</string>
   <string name="nav_encrypt">Podpiši in šifriraj</string>
@@ -444,18 +458,19 @@
   <!--hints-->
   <string name="encrypt_content_edit_text_hint">Tu zapišite sporočilo, ki ga želite šifrirati in/ali podpisati...</string>
   <string name="decrypt_content_edit_text_hint">Tu vnesite tajnopis za dešifriranje in/ali overbo...</string>
-  <!--certifications-->
+  <!--certs-->
   <string name="cert_default">privzeto</string>
   <string name="cert_none">brez</string>
   <string name="cert_casual">navadno</string>
   <string name="cert_positive">pozitivno</string>
+  <string name="cert_revoke">preklicano</string>
   <string name="cert_verify_ok">ok</string>
   <string name="cert_verify_failed">neuspešno!</string>
   <string name="cert_verify_error">napaka!</string>
   <string name="cert_verify_unavailable">ključ ni na voljo</string>
   <!--unsorted-->
-  <string name="section_certifier_id">Podpisnik</string>
   <string name="section_cert">Podrobnosti potrdil</string>
+  <string name="label_user_id">Identiteta</string>
   <string name="unknown_uid">&lt;neznan&gt;</string>
   <string name="empty_certs">Ni potrdil za ta ključ</string>
   <string name="label_revocation">Razlog za preklic</string>

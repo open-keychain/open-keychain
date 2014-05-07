@@ -20,11 +20,9 @@
   <string name="title_export_keys">Экспорт ключей</string>
   <string name="title_key_not_found">Ключ не найден</string>
   <string name="title_send_key">Загрузить на сервер ключей</string>
-  <string name="title_certify_key">Сертифицировать ключ</string>
   <string name="title_key_details">Сведения о ключе</string>
   <string name="title_help">Помощь</string>
   <!--section-->
-  <string name="section_keys">Ключи</string>
   <string name="section_general">Приложение</string>
   <string name="section_defaults">Алгоритмы</string>
   <string name="section_advanced">Дополнительно</string>
@@ -37,9 +35,7 @@
   <string name="section_decrypt_verify">Расшифровать и проверить</string>
   <!--button-->
   <string name="btn_certify">Сертифицировать</string>
-  <string name="btn_decrypt_verify">Расшифровать и проверить</string>
   <string name="btn_decrypt_verify_clipboard">Из буфера обмена</string>
-  <string name="btn_encrypt_file">Зашифровать файл</string>
   <string name="btn_save">Сохранить</string>
   <string name="btn_do_not_save">Отмена</string>
   <string name="btn_delete">Удалить</string>
@@ -230,7 +226,6 @@
   <string name="nfc_successful">Ключ успешно передан через NFC!</string>
   <string name="key_copied_to_clipboard">Ключ скопирован в буфер обмена!</string>
   <string name="key_has_already_been_certified">Ключ уже был сертифицирован ранее!</string>
-  <string name="select_key_to_certify">Выберите ключ, используемый для подписи!</string>
   <string name="key_too_big_for_sharing">Ключ слишком большой для этого способа передачи!</string>
   <!--errors
          no punctuation, all lowercase,
@@ -401,7 +396,6 @@
   <string name="key_list_empty_button_import">Импортировать ключи</string>
   <!--Key view-->
   <string name="key_view_action_encrypt">Зашифровать этим ключом</string>
-  <string name="key_view_tab_certs">Сертификация</string>
   <!--Navigation Drawer-->
   <string name="nav_keys">Ключи</string>
   <string name="nav_encrypt">Подписать и зашифровать</string>
@@ -418,7 +412,7 @@
   <!--hints-->
   <string name="encrypt_content_edit_text_hint">Напишите сообщение здесь, что бы зашифровать и/или подписать...</string>
   <string name="decrypt_content_edit_text_hint">Введите сюда шифр для расшифровки и/или проверки...</string>
-  <!--certifications-->
+  <!--certs-->
   <string name="cert_default">по умолчанию</string>
   <string name="cert_none">нет</string>
   <string name="cert_verify_ok">ok</string>
@@ -426,7 +420,6 @@
   <string name="cert_verify_error">ошибка!</string>
   <string name="cert_verify_unavailable">ключ не доступен</string>
   <!--unsorted-->
-  <string name="section_certifier_id">Подписант</string>
   <string name="section_cert">Детали сертификации</string>
   <string name="unknown_uid">&lt;неизв.&gt;</string>
   <string name="empty_certs">Этот ключ не сертифицирован</string>

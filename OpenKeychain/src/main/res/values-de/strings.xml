@@ -13,8 +13,9 @@
   <string name="title_key_server_preference">Schlüsselserver</string>
   <string name="title_change_passphrase">Passphrase ändern</string>
   <string name="title_set_passphrase">Passwort setzen</string>
+  <string name="title_share_with">Teilen über...</string>
   <string name="title_share_fingerprint_with">Teile Fingerabdruck über…</string>
-  <string name="title_share_key">Teile Schlüssel über...</string>
+  <string name="title_share_key">Gesamter Schlüssel</string>
   <string name="title_share_file">Datei teilen mit…</string>
   <string name="title_encrypt_to_file">In eine Datei verschlüsseln</string>
   <string name="title_decrypt_to_file">In eine Datei entschlüsseln</string>
@@ -23,12 +24,12 @@
   <string name="title_export_keys">Schlüssel exportieren</string>
   <string name="title_key_not_found">Schlüssel nicht gefunden</string>
   <string name="title_send_key">Auf Schlüsselserver hochladen</string>
-  <string name="title_certify_key">Schlüssel beglaubigen</string>
+  <string name="title_certify_key">Identitäten beglaubigen</string>
   <string name="title_key_details">Schlüsseldetails</string>
   <string name="title_help">Hilfe</string>
   <!--section-->
   <string name="section_user_ids">Identitäten</string>
-  <string name="section_keys">Schlüssel</string>
+  <string name="section_keys">Unterschlüssel</string>
   <string name="section_general">Allgemein</string>
   <string name="section_defaults">Standardwerte</string>
   <string name="section_advanced">Fortgeschrittene Einstellungen</string>
@@ -44,9 +45,9 @@
   <string name="section_fingerprint">Fingerabdruck</string>
   <!--button-->
   <string name="btn_certify">Beglaubigen</string>
-  <string name="btn_decrypt_verify">Entschlüsseln und Verifizieren</string>
+  <string name="btn_decrypt_verify">Entschlüsselte Datei verifizieren und speichern</string>
   <string name="btn_decrypt_verify_clipboard">Aus der Zwischenablage</string>
-  <string name="btn_encrypt_file">Datei verschlüsseln</string>
+  <string name="btn_encrypt_file">Verschlüsselte Datei speichern</string>
   <string name="btn_save">Speichern</string>
   <string name="btn_do_not_save">Abbrechen</string>
   <string name="btn_delete">Löschen</string>
@@ -62,6 +63,7 @@
   <string name="btn_lookup_key">Schlüssel nachschlagen</string>
   <string name="btn_encryption_advanced_settings_show">Erweiterte Einstellungen anzeigen</string>
   <string name="btn_encryption_advanced_settings_hide">Erweiterte Einstellungen verbergen</string>
+  <string name="btn_share_encrypted_signed">Verschlüsselt/signierten Text teilen…</string>
   <!--menu-->
   <string name="menu_preferences">Einstellungen</string>
   <string name="menu_help">Hilfe</string>
@@ -74,6 +76,7 @@
   <string name="menu_create_key_expert">Schlüssel erstellen (Experte)</string>
   <string name="menu_search">Suchen</string>
   <string name="menu_import_from_key_server">Schlüsselserver</string>
+  <string name="menu_import_from_keybase">Keybase.io</string>
   <string name="menu_key_server">Schlüsselserver…</string>
   <string name="menu_update_key">Von einem Schlüsselserver aktualisieren</string>
   <string name="menu_export_key_to_server">Auf Schlüsselserver hochladen</string>
@@ -232,13 +235,13 @@
     <item quantity="other">%d schlechte private Schlüssel ignoriert. Evtl. wurden sie mit folgender Option exportiert:\n --export-secret-subkeys\nUnbedingt mit der Option \n --export-secret-keys\nexportieren.</item>
   </plurals>
   <string name="key_send_success">Schlüssel wurde erfolgreich hochgeladen.</string>
-  <string name="key_certify_success">Schlüssel erfolgreich beglaubigt</string>
+  <string name="key_certify_success">Identitäten erfolgreich beglaubigt</string>
   <string name="list_empty">Diese Liste ist leer!</string>
   <string name="nfc_successful">Schlüssel erfolgreich mit NFC-Beam gesendet!</string>
   <string name="key_copied_to_clipboard">Schlüssel wurde in die Zwischenablage kopiert!</string>
   <string name="fingerprint_copied_to_clipboard">Fingerabdruck wurde in die Zwischenablage kopiert!</string>
   <string name="key_has_already_been_certified">Schlüssel wurde bereits beglaubigt</string>
-  <string name="select_key_to_certify">Bitte wähle einen Signaturschlüssel!</string>
+  <string name="select_key_to_certify">Bitte wähle einen Schlüssel um zu Beglaubigen!</string>
   <string name="key_too_big_for_sharing">Schlüssel ist zu groß um so geteilt zu werden!</string>
   <!--errors
          no punctuation, all lowercase,
@@ -413,11 +416,11 @@
   <string name="key_view_action_edit">Schlüssel bearbeiten</string>
   <string name="key_view_action_encrypt">Mit diesem Schlüssel verschlüsseln</string>
   <string name="key_view_action_certify">Identitäten beglaubigen</string>
-  <string name="key_view_action_share_with">über…</string>
-  <string name="key_view_action_share_nfc">über NFC (Geräte Rückseite an Rückseite halten)</string>
+  <string name="key_view_action_share_with">Teilen über...</string>
+  <string name="key_view_action_share_nfc">Teilen über NFC (Geräte Rückseite an Rückseite halten)</string>
   <string name="key_view_tab_main">Informationen</string>
   <string name="key_view_tab_share">Teilen</string>
-  <string name="key_view_tab_keys">Schlüsseldetails</string>
+  <string name="key_view_tab_keys">Unterschlüssel</string>
   <string name="key_view_tab_certs">Beglaubigungen</string>
   <!--Navigation Drawer-->
   <string name="nav_keys">Schlüssel</string>
@@ -435,22 +438,23 @@
   <!--hints-->
   <string name="encrypt_content_edit_text_hint">Hier die Nachricht schreiben welche verschlüsselt und/oder signiert werden soll...</string>
   <string name="decrypt_content_edit_text_hint">Hier den verslüsselten Text eingeben um ihn zu entschlüsseln und/oder zu überprüfen</string>
-  <!--certifications-->
+  <!--certs-->
   <string name="cert_default">Grundeinstellung</string>
   <string name="cert_none">kein</string>
   <string name="cert_casual">einfach überprüft</string>
   <string name="cert_positive">positiv</string>
+  <string name="cert_revoke">widerrufen</string>
   <string name="cert_verify_ok">OK</string>
   <string name="cert_verify_failed">fehlgeschlagen!</string>
   <string name="cert_verify_error">Fehler!</string>
   <string name="cert_verify_unavailable">Schlüssel nicht verfügbar</string>
   <!--unsorted-->
-  <string name="section_certifier_id">Unterzeichner</string>
+  <string name="section_certifier_id">Beglaubiger</string>
   <string name="section_cert">Zertifikatdetails</string>
   <string name="label_user_id">Identität</string>
   <string name="unknown_uid">&lt;unbekannt&gt;</string>
   <string name="empty_certs">Keine Beglaubigungen für diesen Schlüssel</string>
-  <string name="section_uids_to_certify">Zu signierende Identitäten</string>
+  <string name="section_uids_to_certify">Zu beglaubigende Identitäten</string>
   <string name="label_revocation">Widerrufsgrund</string>
   <string name="label_verify_status">Verificationsstatus</string>
   <string name="label_cert_type">Typ</string>
@@ -461,4 +465,5 @@
   <string name="title_view_cert">Zertifikatdetails anzeigen</string>
   <string name="unknown_algorithm">unbekannt</string>
   <string name="can_sign_not">Kann nicht unterschreiben</string>
+  <string name="error_no_encrypt_subkey">Kein Unterschlüssel zum Verschlüsseln verfügbar!</string>
 </resources>

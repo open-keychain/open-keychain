@@ -13,6 +13,8 @@
   <string name="title_key_server_preference">Préférences du serveur de clefs</string>
   <string name="title_change_passphrase">Modifier la phrase de passe</string>
   <string name="title_set_passphrase">Définir la phrase de passe</string>
+  <string name="title_share_with">Partager avec...</string>
+  <string name="title_share_fingerprint_with">Partager l\'empreinte avec...</string>
   <string name="title_share_file">Partager le fichier avec...</string>
   <string name="title_encrypt_to_file">Chiffrer vers un fichier</string>
   <string name="title_decrypt_to_file">Déchiffrer vers un fichier</string>
@@ -21,26 +23,27 @@
   <string name="title_export_keys">Exporter les clefs</string>
   <string name="title_key_not_found">Clef introuvable</string>
   <string name="title_send_key">Téléverser vers le serveur de clefs</string>
-  <string name="title_certify_key">Certifier la clef</string>
   <string name="title_key_details">Détails sur la clef</string>
   <string name="title_help">Aide</string>
   <!--section-->
-  <string name="section_keys">Clefs</string>
+  <string name="section_user_ids">identités</string>
+  <string name="section_keys">Sous-clefs</string>
   <string name="section_general">Général</string>
   <string name="section_defaults">Valeurs par défaut</string>
   <string name="section_advanced">Avancé</string>
   <string name="section_master_key">Clef maîtresse</string>
+  <string name="section_master_user_id">Identité principale</string>
   <string name="section_actions">Actions</string>
+  <string name="section_share_key">Partager la clef</string>
   <string name="section_certification_key">Votre clef utilisée pour la certification</string>
   <string name="section_upload_key">Téléverser la clef</string>
   <string name="section_key_server">Serveur de clefs</string>
   <string name="section_encrypt_and_or_sign">Chiffrer et/ou signer</string>
   <string name="section_decrypt_verify">Déchiffrer et vérifier</string>
+  <string name="section_fingerprint">Empreinte</string>
   <!--button-->
   <string name="btn_certify">Certifier</string>
-  <string name="btn_decrypt_verify">Déchiffrer et vérifier</string>
   <string name="btn_decrypt_verify_clipboard">À partir du presse-papiers</string>
-  <string name="btn_encrypt_file">Chiffrer le fichier</string>
   <string name="btn_save">Enregistrer</string>
   <string name="btn_do_not_save">Annuler</string>
   <string name="btn_delete">Supprimer</string>
@@ -68,6 +71,7 @@
   <string name="menu_create_key_expert">Créer une clef (expert)</string>
   <string name="menu_search">Rechercher</string>
   <string name="menu_import_from_key_server">Serveur de clefs</string>
+  <string name="menu_import_from_keybase">Importer depuis Keybase.io</string>
   <string name="menu_key_server">Serveur de clefs...</string>
   <string name="menu_update_key">Mettre à jour depuis le serveur de clefs</string>
   <string name="menu_export_key_to_server">Téléverser vers le serveur de clefs</string>
@@ -113,6 +117,7 @@
   <string name="label_expiry">Expiration</string>
   <string name="label_usage">Utilisation</string>
   <string name="label_key_size">Taille de la clef</string>
+  <string name="label_main_user_id">Identité principale</string>
   <string name="label_name">Nom</string>
   <string name="label_comment">Commentaire</string>
   <string name="label_email">Courriel</string>
@@ -190,8 +195,9 @@
   <string name="key_deletion_confirmation_multi">Voulez-vous vraiment supprimer toutes les clefs publiques choisies ?\nCeci est irréversible !</string>
   <string name="secret_key_deletion_confirmation">Voulez-vous vraiment supprimer la clef SECRÈTE %s ?\nVous ne pourrez pas la restituer !</string>
   <string name="ask_save_changed_key">Vous avez apporté des changements au trousseau, voulez-vous l\'enregistrer ?</string>
+  <string name="ask_empty_id_ok">Vous avez ajouté une identité vide, êtes-vous certain de vouloir continuer ?</string>
   <string name="public_key_deletetion_confirmation">Voulez-vous vraiment supprimer la clef publique %s ?\nCeci est irréversible !</string>
-  <string name="also_export_secret_keys">Exporter aussi les clefs secrètes?</string>
+  <string name="also_export_secret_keys">Exporter aussi les clefs secrètes ?</string>
   <plurals name="keys_added_and_updated_1">
     <item quantity="one">%d clef ajoutée avec succès</item>
     <item quantity="other">%d clefs ajoutées avec succès</item>
@@ -224,12 +230,11 @@
     <item quantity="other">%d mauvaises clefs ignorées. Vous avez peut-être exporté avec l\'option\n --export-secret-subkeys\nAssurez-vous d\'exporter plutôt avec\n --export-secret-keys.</item>
   </plurals>
   <string name="key_send_success">Clef téléversée vers le serveur avec succès</string>
-  <string name="key_certify_success">Clef certifiée avec succès</string>
   <string name="list_empty">Cette liste est vide !</string>
   <string name="nfc_successful">Clef envoyée par Beam NFC avec succès |</string>
   <string name="key_copied_to_clipboard">La clef a été copié vers le presse-papiers !</string>
+  <string name="fingerprint_copied_to_clipboard">L\'empreinte a été copié vers le presse-papiers !</string>
   <string name="key_has_already_been_certified">La clef a déjà été certifiée !</string>
-  <string name="select_key_to_certify">Veuillez choisir une clef a utiliser pour la signature !</string>
   <string name="key_too_big_for_sharing">La clef est trop grosse pour être partagée ainsi !</string>
   <!--errors
          no punctuation, all lowercase,
@@ -242,6 +247,8 @@
   <string name="error_master_key_must_not_be_el_gamal">la clef maîtresse ne peut être une clef ElGama</string>
   <string name="error_unknown_algorithm_choice">choix d\'algorhitme inconnu</string>
   <string name="error_user_id_no_email">aucun courriel trouvé</string>
+  <string name="error_key_needs_a_user_id">au moins une identité est nécessaire</string>
+  <string name="error_main_user_id_must_not_be_empty">l\'identité principale ne doit pas être vide</string>
   <string name="error_key_needs_master_key">au moins une clef maîtresse est nécessaire</string>
   <string name="error_no_signature_passphrase">aucune phrase de passe n\'a été donnée</string>
   <string name="error_no_signature_key">aucune clef de signature n\'a été donnée</string>
@@ -313,6 +320,7 @@
   <string name="hint_public_keys">Rechercher des clefs publiques</string>
   <string name="hint_secret_keys">Rechercher des clefs secrètes</string>
   <string name="action_share_key_with">Partager la clef avec...</string>
+  <string name="hint_keybase_search">Rechercher dans Keybase.io</string>
   <!--key bit length selections-->
   <string name="key_size_512">512</string>
   <string name="key_size_768">768</string>
@@ -352,6 +360,7 @@
   <string name="import_nfc_text">Pour recevoir des clefs par la NFC, les appareils doivent être déverrouillés.</string>
   <string name="import_nfc_help_button">Aide</string>
   <string name="import_clipboard_button">Obtenir la clef depuis le presse-papiers</string>
+  <string name="import_keybase_button">Obtenir la clef depuis Keybase.io</string>
   <!--Intent labels-->
   <string name="intent_decrypt_file">Déchiffrer le fichier avec OpenKeychain</string>
   <string name="intent_import_key">Importer la clef avec OpenKeychain</string>
@@ -379,6 +388,8 @@
   <string name="api_register_allow">Permettre l\'accès</string>
   <string name="api_register_disallow">Enlever l\'accès</string>
   <string name="api_register_error_select_key">Veuillez choisir une clef !</string>
+  <string name="api_select_pub_keys_missing_text">Aucune clef publique n\'a été trouvée pour ces identités :</string>
+  <string name="api_select_pub_keys_dublicates_text">Plus d\'une clef publique existe pour ces identités :</string>
   <string name="api_select_pub_keys_text">Veuillez revoir la liste des destinataires !</string>
   <string name="api_error_wrong_signature">La vérification de la signature a échoué ! Avez-vous installé cette appli à partir d\'une source différente ? Si vous êtes sûr que ce n\'est pas une attaque, révoquez l\'enregistrement de cette appli dans OpenKeychain et enregistrez-la à nouveau.</string>
   <!--Share-->
@@ -398,8 +409,11 @@
   <string name="key_list_empty_button_create">créer votre propre clef</string>
   <string name="key_list_empty_button_import">Importer des clefs.</string>
   <!--Key view-->
+  <string name="key_view_action_edit">Modifier la clef</string>
   <string name="key_view_action_encrypt">Chiffrer avec cette clef</string>
-  <string name="key_view_tab_certs">Certifications</string>
+  <string name="key_view_action_certify">Certifier les identités</string>
+  <string name="key_view_tab_main">Infos principales</string>
+  <string name="key_view_tab_share">Partager</string>
   <!--Navigation Drawer-->
   <string name="nav_keys">Clefs</string>
   <string name="nav_encrypt">Signer et chiffrer</string>
@@ -416,18 +430,19 @@
   <!--hints-->
   <string name="encrypt_content_edit_text_hint">Écrire ici le message à chiffrer et/ou signer...</string>
   <string name="decrypt_content_edit_text_hint">Saisir le cryptogramme à déchiffrer et/ou à vérifier ici...</string>
-  <!--certifications-->
+  <!--certs-->
   <string name="cert_default">valeur par défaut</string>
   <string name="cert_none">aucun</string>
   <string name="cert_casual">rapide</string>
   <string name="cert_positive">positif</string>
+  <string name="cert_revoke">révoqué</string>
   <string name="cert_verify_ok">ok</string>
   <string name="cert_verify_failed">échec!</string>
   <string name="cert_verify_error">erreur!</string>
   <string name="cert_verify_unavailable">clef non disponible</string>
   <!--unsorted-->
-  <string name="section_certifier_id">Signataire</string>
   <string name="section_cert">Détails du certificat</string>
+  <string name="label_user_id">identité</string>
   <string name="unknown_uid">&lt;inconnu&gt;</string>
   <string name="empty_certs">Aucun certificat pour cette clef</string>
   <string name="label_revocation">Raison de la révocation</string>

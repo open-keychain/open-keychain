@@ -19,7 +19,6 @@
   <string name="title_send_key">Nahrát na server s klíči</string>
   <string name="title_help">Nápověda</string>
   <!--section-->
-  <string name="section_keys">Klíče</string>
   <!--button-->
   <!--menu-->
   <!--label-->
@@ -44,6 +43,6 @@
   <!--Key view-->
   <!--Navigation Drawer-->
   <!--hints-->
-  <!--certifications-->
+  <!--certs-->
   <!--unsorted-->
 </resources>

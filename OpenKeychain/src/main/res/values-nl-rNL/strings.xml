@@ -19,12 +19,10 @@
   <string name="title_key_not_found">Sleutel niet gevonden</string>
   <string name="title_help">Help</string>
   <!--section-->
-  <string name="section_keys">Sleutels</string>
   <string name="section_general">Algemeen</string>
   <string name="section_defaults">Standaard</string>
   <string name="section_advanced">Geavanceerd</string>
   <!--button-->
-  <string name="btn_encrypt_file">Bestand versleutelen</string>
   <string name="btn_save">Opslaan</string>
   <string name="btn_do_not_save">Annuleren</string>
   <string name="btn_delete">Verwijderen</string>
@@ -195,6 +193,6 @@
   <!--Key view-->
   <!--Navigation Drawer-->
   <!--hints-->
-  <!--certifications-->
+  <!--certs-->
   <!--unsorted-->
 </resources>
