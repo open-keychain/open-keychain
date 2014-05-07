@@ -32,6 +32,8 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 
+import com.devspark.appmsg.AppMsg;
+
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
@@ -59,6 +61,9 @@ public class ViewKeyMainFragment extends Fragment implements
 
     private static final int LOADER_ID_UNIFIED = 0;
     private static final int LOADER_ID_USER_IDS = 1;
+
+    // conservative attitude
+    private boolean mHasEncrypt = true;
 
     private ViewKeyUserIdsAdapter mUserIdsAdapter;
 
@@ -203,6 +208,8 @@ public class ViewKeyMainFragment extends Fragment implements
                         }
                     }
 
+                    mHasEncrypt = data.getInt(INDEX_UNIFIED_HAS_ENCRYPT) != 0;
+
                     break;
                 }
             }
@@ -229,6 +236,11 @@ public class ViewKeyMainFragment extends Fragment implements
     }
 
     private void encrypt(Uri dataUri) {
+        // If there is no encryption key, don't bother.
+        if (!mHasEncrypt) {
+            AppMsg.makeText(getActivity(), R.string.error_no_encrypt_subkey, AppMsg.STYLE_ALERT).show();
+            return;
+        }
         try {
             long keyId = new ProviderHelper(getActivity()).extractOrGetMasterKeyId(dataUri);
             long[] encryptionKeyIds = new long[]{keyId};
