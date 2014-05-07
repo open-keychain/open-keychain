@@ -109,6 +109,7 @@ public class ViewKeyActivity extends ActionBarActivity implements
 
         setContentView(R.layout.view_key_activity);
 
+        mStatusDivider = findViewById(R.id.status_divider);
         mStatusRevoked = findViewById(R.id.view_key_revoked);
         mStatusExpired = findViewById(R.id.view_key_expired);
 
