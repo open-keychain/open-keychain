@@ -201,8 +201,7 @@ public class ViewKeyShareFragment extends Fragment implements
     }
 
     private void showQrCodeDialog() {
-        ShareQrCodeDialogFragment dialog = ShareQrCodeDialogFragment.newInstance(mDataUri,
-                true);
+        ShareQrCodeDialogFragment dialog = ShareQrCodeDialogFragment.newInstance(mDataUri);
         dialog.show(ViewKeyShareFragment.this.getActivity().getSupportFragmentManager(), "shareQrCodeDialog");
     }
 
