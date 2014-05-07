@@ -49,9 +49,10 @@
 
     <!-- button -->
     <string name="btn_certify">Certify</string>
-    <string name="btn_decrypt_verify">Verify and save decrypted file</string>
+    <string name="btn_decrypt_verify_file">Decrypt, verify, and save file</string>
+    <string name="btn_decrypt_verify_message">Decrypt and verify message</string>
     <string name="btn_decrypt_verify_clipboard">From Clipboard</string>
-    <string name="btn_encrypt_file">Save encrypt file</string>
+    <string name="btn_encrypt_file">Encrypt and save file</string>
     <string name="btn_save">Save</string>
     <string name="btn_do_not_save">Cancel</string>
     <string name="btn_delete">Delete</string>
@@ -67,7 +68,7 @@
     <string name="btn_lookup_key">Lookup key</string>
     <string name="btn_encryption_advanced_settings_show">Show advanced settings</string>
     <string name="btn_encryption_advanced_settings_hide">Hide advanced settings</string>
-    <string name="btn_share_encrypted_signed">Share encrypted/signed…</string>
+    <string name="btn_share_encrypted_signed">Share encrypted/signed message…</string>
 
     <!-- menu -->
     <string name="menu_preferences">Settings</string>

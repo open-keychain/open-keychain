@@ -58,7 +58,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:minHeight="?android:attr/listPreferredItemHeight"
-                    android:text="@string/btn_decrypt_verify"
+                    android:text="@string/btn_decrypt_verify_message"
                     android:gravity="center_vertical"
                     android:layout_weight="1" />
 
@@ -75,7 +75,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:padding="8dp"
-                    android:src="@drawable/ic_action_copy"
+                    android:src="@drawable/ic_action_paste"
                     android:layout_gravity="center_vertical"
                     style="@style/SelectableItem" />
 

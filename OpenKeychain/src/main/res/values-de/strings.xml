@@ -46,7 +46,7 @@
   <string name="section_key_to_certify">Zu beglaubigende Schlüssel</string>
   <!--button-->
   <string name="btn_certify">Beglaubigen</string>
-  <string name="btn_decrypt_verify">Entschlüsselte Datei verifizieren und speichern</string>
+  <string name="btn_decrypt_verify_file">Entschlüsselte Datei verifizieren und speichern</string>
   <string name="btn_decrypt_verify_clipboard">Aus der Zwischenablage</string>
   <string name="btn_encrypt_file">Verschlüsselte Datei speichern</string>
   <string name="btn_save">Speichern</string>

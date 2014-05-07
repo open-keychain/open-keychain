@@ -72,7 +72,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:minHeight="?android:attr/listPreferredItemHeight"
-                    android:text="@string/btn_decrypt_verify"
+                    android:text="@string/btn_decrypt_verify_file"
                     android:clickable="true"
                     style="@style/SelectableItem"
                     android:drawableRight="@drawable/ic_action_save"
