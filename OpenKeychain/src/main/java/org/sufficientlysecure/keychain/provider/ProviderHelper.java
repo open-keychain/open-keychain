@@ -26,6 +26,7 @@ import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.net.Uri;
 import android.os.RemoteException;
+import android.support.v4.util.LongSparseArray;
 
 import org.spongycastle.bcpg.ArmoredOutputStream;
 import org.spongycastle.bcpg.S2K;
@@ -167,33 +168,35 @@ public class ProviderHelper {
         }
     }
 
-    public Map<Long, PGPKeyRing> getPGPKeyRings(Uri queryUri) {
+    public LongSparseArray<PGPKeyRing> getPGPKeyRings(Uri queryUri) {
         Cursor cursor = mContentResolver.query(queryUri,
                 new String[]{KeyRingData.MASTER_KEY_ID, KeyRingData.KEY_RING_DATA},
                 null, null, null);
 
-        Map<Long, PGPKeyRing> result = new HashMap<Long, PGPKeyRing>(cursor.getCount());
-        if (cursor != null && cursor.moveToFirst()) do {
-            long masterKeyId = cursor.getLong(0);
-            byte[] data = cursor.getBlob(1);
-            if (data != null) {
-                result.put(masterKeyId, PgpConversionHelper.BytesToPGPKeyRing(data));
+        LongSparseArray<PGPKeyRing> result = new LongSparseArray<PGPKeyRing>(cursor.getCount());
+        try {
+            if (cursor != null && cursor.moveToFirst()) do {
+                long masterKeyId = cursor.getLong(0);
+                byte[] data = cursor.getBlob(1);
+                if (data != null) {
+                    result.put(masterKeyId, PgpConversionHelper.BytesToPGPKeyRing(data));
+                }
+            } while (cursor.moveToNext());
+        } finally {
+            if (cursor != null) {
+                cursor.close();
             }
-        } while (cursor.moveToNext());
-
-        if (cursor != null) {
-            cursor.close();
         }
 
         return result;
     }
 
     public PGPKeyRing getPGPKeyRing(Uri queryUri) throws NotFoundException {
-        Map<Long, PGPKeyRing> result = getPGPKeyRings(queryUri);
-        if (result.isEmpty()) {
+        LongSparseArray<PGPKeyRing> result = getPGPKeyRings(queryUri);
+        if (result.size() == 0) {
             throw new NotFoundException("PGPKeyRing object not found!");
         } else {
-            return result.values().iterator().next();
+            return result.valueAt(0);
         }
     }
 
@@ -267,7 +270,7 @@ public class ProviderHelper {
         }
 
         // get a list of owned secret keys, for verification filtering
-        Map<Long, PGPKeyRing> allKeyRings = getPGPKeyRings(KeyRingData.buildSecretKeyRingUri());
+        LongSparseArray<PGPKeyRing> allKeyRings = getPGPKeyRings(KeyRingData.buildSecretKeyRingUri());
         // special case: available secret keys verify themselves!
         if (secretRing != null)
             allKeyRings.put(secretRing.getSecretKey().getKeyID(), secretRing);
@@ -305,7 +308,7 @@ public class ProviderHelper {
                         }
                     }
                     // verify signatures from known private keys
-                    if (allKeyRings.containsKey(certId)) {
+                    if (allKeyRings.indexOfKey(certId) >= 0) {
                         // mark them as verified
                         cert.init(new JcaPGPContentVerifierBuilderProvider().setProvider(
                                 Constants.BOUNCY_CASTLE_PROVIDER_NAME),
