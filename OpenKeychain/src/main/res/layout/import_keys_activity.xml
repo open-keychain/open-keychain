@@ -25,15 +25,26 @@
         android:paddingLeft="16dp"
         android:paddingRight="16dp">
 
-        <com.beardedhen.androidbootstrap.BootstrapButton
-            android:id="@+id/import_import"
+        <View
             android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:layout_marginTop="4dp"
-            android:layout_marginBottom="4dp"
+            android:layout_height="1dip"
+            android:background="?android:attr/listDivider" />
+
+        <TextView
+            android:id="@+id/import_import"
+            android:paddingLeft="8dp"
+            android:paddingRight="8dp"
+            android:layout_marginBottom="8dp"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             android:text="@string/import_import"
-            bootstrapbutton:bb_icon_left="fa-download"
-            bootstrapbutton:bb_type="info" />
+            android:minHeight="?android:attr/listPreferredItemHeight"
+            android:drawableRight="@drawable/ic_action_download"
+            android:drawablePadding="8dp"
+            android:gravity="center_vertical"
+            android:clickable="true"
+            style="@style/SelectableItem" />
 
     </LinearLayout>
 

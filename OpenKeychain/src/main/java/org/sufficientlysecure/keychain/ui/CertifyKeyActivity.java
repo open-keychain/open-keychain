@@ -29,7 +29,6 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.app.NavUtils;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.view.MenuItem;
 import android.view.View;
@@ -42,7 +41,6 @@ import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-import com.beardedhen.androidbootstrap.BootstrapButton;
 import com.devspark.appmsg.AppMsg;
 
 import org.spongycastle.openpgp.PGPPublicKeyRing;
@@ -68,7 +66,7 @@ import java.util.ArrayList;
  */
 public class CertifyKeyActivity extends ActionBarActivity implements
         SelectSecretKeyLayoutFragment.SelectSecretKeyCallback, LoaderManager.LoaderCallbacks<Cursor> {
-    private BootstrapButton mSignButton;
+    private View mSignButton;
     private CheckBox mUploadKeyCheckbox;
     private Spinner mSelectKeyserverSpinner;
 
@@ -95,7 +93,7 @@ public class CertifyKeyActivity extends ActionBarActivity implements
         mSelectKeyFragment.setCallback(this);
         mSelectKeyFragment.setFilterCertify(true);
 
-        mSelectKeyserverSpinner = (Spinner) findViewById(R.id.sign_key_keyserver);
+        mSelectKeyserverSpinner = (Spinner) findViewById(R.id.upload_key_keyserver);
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
                 android.R.layout.simple_spinner_item, Preferences.getPreferences(this)
                 .getKeyServers()
@@ -122,7 +120,7 @@ public class CertifyKeyActivity extends ActionBarActivity implements
             }
         });
 
-        mSignButton = (BootstrapButton) findViewById(R.id.sign_key_sign_button);
+        mSignButton = findViewById(R.id.sign_key_sign_button);
         mSignButton.setOnClickListener(new OnClickListener() {
 
             @Override
@@ -350,7 +348,7 @@ public class CertifyKeyActivity extends ActionBarActivity implements
         // fill values for this action
         Bundle data = new Bundle();
 
-        Spinner keyServer = (Spinner) findViewById(R.id.sign_key_keyserver);
+        Spinner keyServer = (Spinner) findViewById(R.id.upload_key_keyserver);
         String server = (String) keyServer.getSelectedItem();
         data.putString(KeychainIntentService.UPLOAD_KEY_SERVER, server);
 
