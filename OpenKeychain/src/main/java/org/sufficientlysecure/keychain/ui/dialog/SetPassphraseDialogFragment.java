@@ -81,7 +81,7 @@ public class SetPassphraseDialogFragment extends DialogFragment implements OnEdi
         int title = getArguments().getInt(ARG_TITLE);
         mMessenger = getArguments().getParcelable(ARG_MESSENGER);
 
-        AlertDialog.Builder alert = new AlertDialog.Builder(activity);
+        CustomAlertDialogBuilder alert = new CustomAlertDialogBuilder(activity);
 
         alert.setTitle(title);
         alert.setMessage(R.string.enter_passphrase_twice);
@@ -135,7 +135,7 @@ public class SetPassphraseDialogFragment extends DialogFragment implements OnEdi
             }
         });
 
-        return alert.create();
+        return alert.show();
     }
 
     @Override
