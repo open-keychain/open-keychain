@@ -23,7 +23,6 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
@@ -46,7 +45,7 @@ import se.emilsjolander.stickylistheaders.StickyListHeadersAdapter;
 import se.emilsjolander.stickylistheaders.StickyListHeadersListView;
 
 
-public class ViewKeyCertsFragment extends Fragment
+public class ViewKeyCertsFragment extends LoaderFragment
         implements LoaderManager.LoaderCallbacks<Cursor>, AdapterView.OnItemClickListener {
 
     // These are the rows that we will retrieve.
@@ -79,17 +78,18 @@ public class ViewKeyCertsFragment extends Fragment
     private static final int LOADER_ID = 4;
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.view_key_certs_fragment, container, false);
+    public View onCreateView(LayoutInflater inflater, ViewGroup superContainer, Bundle savedInstanceState) {
+        View root = super.onCreateView(inflater, superContainer, savedInstanceState);
+        View view = inflater.inflate(R.layout.view_key_certs_fragment, getContainer());
 
-        return view;
+        mStickyList = (StickyListHeadersListView) view.findViewById(R.id.list);
+
+        return root;
     }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-
-        mStickyList = (StickyListHeadersListView) getActivity().findViewById(R.id.list);
 
         if (!getArguments().containsKey(ARG_DATA_URI)) {
             Log.e(Constants.TAG, "Data missing. Should be Uri of key!");
@@ -120,6 +120,7 @@ public class ViewKeyCertsFragment extends Fragment
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        setContentShown(false);
         // Now create and return a CursorLoader that will take care of
         // creating a Cursor for the data being displayed.
         return new CursorLoader(getActivity(), mDataUri, PROJECTION, null, null, SORT_ORDER);
@@ -132,6 +133,8 @@ public class ViewKeyCertsFragment extends Fragment
         mAdapter.swapCursor(data);
 
         mStickyList.setAdapter(mAdapter);
+
+        setContentShown(true);
     }
 
     /**

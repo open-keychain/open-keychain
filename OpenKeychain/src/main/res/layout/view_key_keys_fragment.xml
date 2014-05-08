@@ -11,8 +11,7 @@
         android:descendantFocusability="beforeDescendants"
         android:orientation="vertical"
         android:paddingLeft="16dp"
-        android:paddingRight="16dp"
-        android:id="@+id/container">
+        android:paddingRight="16dp">
 
         <TextView
             style="@style/SectionHeader"

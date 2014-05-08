@@ -53,12 +53,11 @@ import org.sufficientlysecure.keychain.util.QrCodeUtils;
 import java.io.IOException;
 
 
-public class ViewKeyShareFragment extends Fragment implements
+public class ViewKeyShareFragment extends LoaderFragment implements
         LoaderManager.LoaderCallbacks<Cursor> {
 
     public static final String ARG_DATA_URI = "uri";
 
-    private LinearLayout mContainer;
     private TextView mFingerprint;
     private ImageView mFingerprintQrCode;
     private View mFingerprintShareButton;
@@ -77,12 +76,12 @@ public class ViewKeyShareFragment extends Fragment implements
     private Uri mDataUri;
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.view_key_share_fragment, container, false);
+    public View onCreateView(LayoutInflater inflater, ViewGroup superContainer, Bundle savedInstanceState) {
+        View root = super.onCreateView(inflater, superContainer, savedInstanceState);
+        View view = inflater.inflate(R.layout.view_key_share_fragment, getContainer());
 
         mProviderHelper = new ProviderHelper(ViewKeyShareFragment.this.getActivity());
 
-        mContainer = (LinearLayout) view.findViewById(R.id.container);
         mFingerprint = (TextView) view.findViewById(R.id.view_key_fingerprint);
         mFingerprintQrCode = (ImageView) view.findViewById(R.id.view_key_fingerprint_qr_code_image);
         mFingerprintShareButton = view.findViewById(R.id.view_key_action_fingerprint_share);
@@ -142,7 +141,7 @@ public class ViewKeyShareFragment extends Fragment implements
             }
         });
 
-        return view;
+        return root;
     }
 
     private void share(Uri dataUri, ProviderHelper providerHelper, boolean fingerprintOnly,
@@ -232,9 +231,6 @@ public class ViewKeyShareFragment extends Fragment implements
     }
 
     private void loadData(Uri dataUri) {
-        getActivity().setProgressBarIndeterminateVisibility(true);
-        mContainer.setVisibility(View.GONE);
-
         mDataUri = dataUri;
 
         Log.i(Constants.TAG, "mDataUri: " + mDataUri.toString());
@@ -260,6 +256,7 @@ public class ViewKeyShareFragment extends Fragment implements
     static final int INDEX_UNIFIED_EXPIRY = 8;
 
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        setContentShown(false);
         switch (id) {
             case LOADER_ID_UNIFIED: {
                 Uri baseUri = KeyRings.buildUnifiedKeyRingUri(mDataUri);
@@ -299,8 +296,7 @@ public class ViewKeyShareFragment extends Fragment implements
             }
 
         }
-        getActivity().setProgressBarIndeterminateVisibility(false);
-        mContainer.setVisibility(View.VISIBLE);
+        setContentShown(true);
     }
 
     /**

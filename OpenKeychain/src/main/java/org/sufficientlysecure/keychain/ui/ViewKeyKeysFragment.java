@@ -44,12 +44,11 @@ import org.sufficientlysecure.keychain.util.Log;
 import java.util.Date;
 
 
-public class ViewKeyKeysFragment extends Fragment implements
+public class ViewKeyKeysFragment extends LoaderFragment implements
         LoaderManager.LoaderCallbacks<Cursor> {
 
     public static final String ARG_DATA_URI = "uri";
 
-    private LinearLayout mContainer;
     private ListView mKeys;
 
     private ViewKeyKeysAdapter mKeysAdapter;
@@ -57,13 +56,13 @@ public class ViewKeyKeysFragment extends Fragment implements
     private Uri mDataUri;
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.view_key_keys_fragment, container, false);
+    public View onCreateView(LayoutInflater inflater, ViewGroup superContainer, Bundle savedInstanceState) {
+        View root = super.onCreateView(inflater, superContainer, savedInstanceState);
+        View view = inflater.inflate(R.layout.view_key_keys_fragment, getContainer());
 
-        mContainer = (LinearLayout) view.findViewById(R.id.container);
         mKeys = (ListView) view.findViewById(R.id.keys);
 
-        return view;
+        return root;
     }
 
     @Override
@@ -81,9 +80,6 @@ public class ViewKeyKeysFragment extends Fragment implements
     }
 
     private void loadData(Uri dataUri) {
-        getActivity().setProgressBarIndeterminateVisibility(true);
-        mContainer.setVisibility(View.GONE);
-
         mDataUri = dataUri;
 
         Log.i(Constants.TAG, "mDataUri: " + mDataUri.toString());
@@ -104,6 +100,7 @@ public class ViewKeyKeysFragment extends Fragment implements
     };
 
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        setContentShown(false);
         Uri baseUri = Keys.buildKeysUri(mDataUri);
         return new CursorLoader(getActivity(), baseUri, KEYS_PROJECTION, null, null, null);
     }
@@ -117,8 +114,7 @@ public class ViewKeyKeysFragment extends Fragment implements
         // old cursor once we return.)
         mKeysAdapter.swapCursor(data);
 
-        getActivity().setProgressBarIndeterminateVisibility(false);
-        mContainer.setVisibility(View.VISIBLE);
+        setContentShown(true);
     }
 
     /**
