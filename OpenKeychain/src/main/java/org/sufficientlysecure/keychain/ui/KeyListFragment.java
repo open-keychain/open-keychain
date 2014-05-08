@@ -29,7 +29,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.os.Messenger;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
@@ -45,10 +44,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.view.animation.AnimationUtils;
 import android.widget.AbsListView.MultiChoiceModeListener;
 import android.widget.AdapterView;
-import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -78,17 +75,12 @@ import se.emilsjolander.stickylistheaders.StickyListHeadersListView;
  * Public key list with sticky list headers. It does _not_ extend ListFragment because it uses
  * StickyListHeaders library which does not extend upon ListView.
  */
-public class KeyListFragment extends Fragment
+public class KeyListFragment extends LoaderFragment
         implements SearchView.OnQueryTextListener, AdapterView.OnItemClickListener,
         LoaderManager.LoaderCallbacks<Cursor> {
 
     private KeyListAdapter mAdapter;
     private StickyListHeadersListView mStickyList;
-
-    // rebuild functionality of ListFragment, http://stackoverflow.com/a/12504097
-    boolean mListShown;
-    View mProgressContainer;
-    View mListContainer;
 
     private String mCurQuery;
     private SearchView mSearchView;
@@ -101,14 +93,15 @@ public class KeyListFragment extends Fragment
      * Load custom layout with StickyListView from library
      */
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View root = inflater.inflate(R.layout.key_list_fragment, container, false);
+    public View onCreateView(LayoutInflater inflater, ViewGroup superContainer, Bundle savedInstanceState) {
+        View root = super.onCreateView(inflater, superContainer, savedInstanceState);
+        View view = inflater.inflate(R.layout.key_list_fragment, getContainer());
 
-        mStickyList = (StickyListHeadersListView) root.findViewById(R.id.key_list_list);
+        mStickyList = (StickyListHeadersListView) view.findViewById(R.id.key_list_list);
         mStickyList.setOnItemClickListener(this);
 
         // empty view
-        mButtonEmptyCreate = (BootstrapButton) root.findViewById(R.id.key_list_empty_button_create);
+        mButtonEmptyCreate = (BootstrapButton) view.findViewById(R.id.key_list_empty_button_create);
         mButtonEmptyCreate.setOnClickListener(new OnClickListener() {
 
             @Override
@@ -120,7 +113,7 @@ public class KeyListFragment extends Fragment
                 startActivityForResult(intent, 0);
             }
         });
-        mButtonEmptyImport = (BootstrapButton) root.findViewById(R.id.key_list_empty_button_import);
+        mButtonEmptyImport = (BootstrapButton) view.findViewById(R.id.key_list_empty_button_import);
         mButtonEmptyImport.setOnClickListener(new OnClickListener() {
 
             @Override
@@ -130,11 +123,6 @@ public class KeyListFragment extends Fragment
                 startActivityForResult(intent, 0);
             }
         });
-
-        // rebuild functionality of ListFragment, http://stackoverflow.com/a/12504097
-        mListContainer = root.findViewById(R.id.key_list_list_container);
-        mProgressContainer = root.findViewById(R.id.key_list_progress_container);
-        mListShown = true;
 
         return root;
     }
@@ -234,9 +222,8 @@ public class KeyListFragment extends Fragment
         // We have a menu item to show in action bar.
         setHasOptionsMenu(true);
 
-        // NOTE: Not supported by StickyListHeader, but reimplemented here
         // Start out with a progress indicator.
-        setListShown(false);
+        setContentShown(false);
 
         // Create an empty adapter we will use to display the loaded data.
         mAdapter = new KeyListAdapter(getActivity(), null, 0);
@@ -298,12 +285,11 @@ public class KeyListFragment extends Fragment
         // this view is made visible if no data is available
         mStickyList.setEmptyView(getActivity().findViewById(R.id.key_list_empty));
 
-        // NOTE: Not supported by StickyListHeader, but reimplemented here
         // The list should now be shown.
         if (isResumed()) {
-            setListShown(true);
+            setContentShown(true);
         } else {
-            setListShownNoAnimation(true);
+            setContentShownNoAnimation(true);
         }
     }
 
@@ -416,43 +402,6 @@ public class KeyListFragment extends Fragment
         mCurQuery = !TextUtils.isEmpty(s) ? s : null;
         getLoaderManager().restartLoader(0, null, this);
         return true;
-    }
-
-    // rebuild functionality of ListFragment, http://stackoverflow.com/a/12504097
-    public void setListShown(boolean shown, boolean animate) {
-        if (mListShown == shown) {
-            return;
-        }
-        mListShown = shown;
-        if (shown) {
-            if (animate) {
-                mProgressContainer.startAnimation(AnimationUtils.loadAnimation(
-                        getActivity(), android.R.anim.fade_out));
-                mListContainer.startAnimation(AnimationUtils.loadAnimation(
-                        getActivity(), android.R.anim.fade_in));
-            }
-            mProgressContainer.setVisibility(View.GONE);
-            mListContainer.setVisibility(View.VISIBLE);
-        } else {
-            if (animate) {
-                mProgressContainer.startAnimation(AnimationUtils.loadAnimation(
-                        getActivity(), android.R.anim.fade_in));
-                mListContainer.startAnimation(AnimationUtils.loadAnimation(
-                        getActivity(), android.R.anim.fade_out));
-            }
-            mProgressContainer.setVisibility(View.VISIBLE);
-            mListContainer.setVisibility(View.INVISIBLE);
-        }
-    }
-
-    // rebuild functionality of ListFragment, http://stackoverflow.com/a/12504097
-    public void setListShown(boolean shown) {
-        setListShown(shown, true);
-    }
-
-    // rebuild functionality of ListFragment, http://stackoverflow.com/a/12504097
-    public void setListShownNoAnimation(boolean shown) {
-        setListShown(shown, false);
     }
 
     /**
