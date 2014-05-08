@@ -365,7 +365,6 @@
   <string name="intent_send_encrypt">Zaszyfruj korzystając z OpenKeychain</string>
   <string name="intent_send_decrypt">Deszyfruj korzystając z OpenKeychain</string>
   <!--Remote API-->
-  <string name="api_no_apps">Brak zarejestrowanych aplikacji!\n\nZewnętrzne aplikacje mogą żądać dostępu do OpenKeychain. Po przyznaniu dostępu, będa wyświetlone tutaj.</string>
   <string name="api_settings_show_info">Pokaż zaawansowane informacje</string>
   <string name="api_settings_hide_info">Ukryj zaawansowane informacje</string>
   <string name="api_settings_show_advanced">Pokaż zaawanowane ustawienia</string>

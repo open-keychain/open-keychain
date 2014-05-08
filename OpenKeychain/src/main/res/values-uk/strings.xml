@@ -348,7 +348,6 @@
   <string name="intent_send_encrypt">Зашифрувати з OpenKeychain</string>
   <string name="intent_send_decrypt">Розшифрувати з OpenKeychain</string>
   <!--Remote API-->
-  <string name="api_no_apps">Нема зареєстрованих програм!\n\nСтороні програми можуть вимагати доступ до OpenPGP Keychain. Після надання доступу вони будуть наведені тут.</string>
   <string name="api_settings_show_info">Показати додаткову інформацію</string>
   <string name="api_settings_hide_info">Приховати додаткову інформацію</string>
   <string name="api_settings_show_advanced">Показати додаткові налаштування</string>

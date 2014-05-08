@@ -66,6 +66,7 @@
   <string name="btn_encryption_advanced_settings_show">Erweiterte Einstellungen anzeigen</string>
   <string name="btn_encryption_advanced_settings_hide">Erweiterte Einstellungen verbergen</string>
   <string name="btn_share_encrypted_signed">Verschlüsselt/signierten Text teilen…</string>
+  <string name="btn_view_cert_key">Beglaubigungsschlüssel anzeigen</string>
   <!--menu-->
   <string name="menu_preferences">Einstellungen</string>
   <string name="menu_help">Hilfe</string>
@@ -374,7 +375,6 @@
   <string name="intent_send_encrypt">Mit OpenKeychain verschlüsseln</string>
   <string name="intent_send_decrypt">Mit OpenKeychain entschlüsseln</string>
   <!--Remote API-->
-  <string name="api_no_apps">Keine registrierten Anwendungen vorhanden!\n\nAnwendungen können Zugriff auf OpenKeychain anfordern. Nachdem Zugriff erlaubt wurde, werden diese hier aufgelistet.</string>
   <string name="api_settings_show_info">Erweiterte Informationen anzeigen</string>
   <string name="api_settings_hide_info">Erweiterte Informationen ausblenden</string>
   <string name="api_settings_show_advanced">Erweiterte Einstellungen anzeigen</string>
@@ -390,6 +390,7 @@
   <string name="api_settings_package_signature">SHA-256 der Paketsignatur</string>
   <string name="api_settings_accounts">Konten</string>
   <string name="api_settings_accounts_empty">Keine Accounts mit dieser App verknüpft.</string>
+  <string name="api_create_account_text">Die Anwendung erfordert die Erstellung eines neuen Accounts. Bitte wähle einen existierenden Schlüssel oder erstelle einen neuen.\nAnwendungen sind auf die Nutzung der Schlüssel beschränkt, die du hier auswählst!</string>
   <string name="api_register_text">Folgende Anwendung beantragt Zugriff auf OpenKeychains API.\nZugriff erlauben?\n\nVORSICHT: Sollten Sie nicht wissen, warum diese Anfrage erscheint, sollten Sie den Zugriff nicht erlauben! Sie können Zugriffe später über das Menü \'Registrierte Anwendungen\' widerrufen.</string>
   <string name="api_register_allow">Zugriff erlauben</string>
   <string name="api_register_disallow">Zugriff verbieten</string>
@@ -439,9 +440,9 @@
   <string name="secret_key_no">nicht verfügbar</string>
   <!--hints-->
   <string name="encrypt_content_edit_text_hint">Hier den Text schreiben welche verschlüsselt und/oder signiert werden soll...</string>
-  <string name="decrypt_content_edit_text_hint">Hier den verschlüsselten Text eingeben um ihn zu entschlüsseln und/oder zu überprüfen</string>
+  <string name="decrypt_content_edit_text_hint">Hier den verschlüsselten Text eingeben um ihn zu entschlüsseln und/oder zu verifzieren…</string>
   <!--certs-->
-  <string name="cert_default">Grundeinstellung</string>
+  <string name="cert_default">normal</string>
   <string name="cert_none">kein</string>
   <string name="cert_casual">einfach überprüft</string>
   <string name="cert_positive">positiv</string>
@@ -458,11 +459,12 @@
   <string name="empty_certs">Keine Beglaubigungen für diesen Schlüssel</string>
   <string name="section_uids_to_certify">Zu beglaubigende Identitäten</string>
   <string name="label_revocation">Widerrufsgrund</string>
-  <string name="label_verify_status">Verificationsstatus</string>
+  <string name="label_verify_status">Verifikationsstatus</string>
   <string name="label_cert_type">Typ</string>
   <string name="error_key_not_found">Schlüssel nicht gefunden!</string>
   <string name="error_key_processing">Fehler bei der Verarbeitung des Schlüssels!</string>
   <string name="no_subkey">Unterschlüssel nicht verfügbar</string>
+  <string name="key_stripped">nicht verfügbar</string>
   <string name="secret_cannot_multiple">Geheime Schlüssel können nur einzeln gelöscht werden!</string>
   <string name="title_view_cert">Zertifikatdetails anzeigen</string>
   <string name="unknown_algorithm">unbekannt</string>

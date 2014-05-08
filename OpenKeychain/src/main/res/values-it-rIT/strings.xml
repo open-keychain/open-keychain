@@ -15,6 +15,7 @@
   <string name="title_set_passphrase">Imposta Frase di Accesso</string>
   <string name="title_share_with">Condividi con...</string>
   <string name="title_share_fingerprint_with">Condivi impronta con...</string>
+  <string name="title_share_key">Condividi chiave con...</string>
   <string name="title_share_file">Condividi file con...</string>
   <string name="title_encrypt_to_file">Codifica File</string>
   <string name="title_decrypt_to_file">Decodifica File</string>
@@ -23,6 +24,7 @@
   <string name="title_export_keys">Esporta Chiavi</string>
   <string name="title_key_not_found">Chiave Non Trovata</string>
   <string name="title_send_key">Carica sul Server delle Chiavi</string>
+  <string name="title_certify_key">Certifica identità</string>
   <string name="title_key_details">Dettagli Chiave</string>
   <string name="title_help">Aiuto</string>
   <!--section-->
@@ -34,15 +36,20 @@
   <string name="section_master_key">Chiave Principale</string>
   <string name="section_master_user_id">Identità Primaria</string>
   <string name="section_actions">Azioni</string>
+  <string name="section_share_key">Intera chiave</string>
   <string name="section_certification_key">La Tua Chiave usata per la certificazione</string>
   <string name="section_upload_key">Carica Chiave</string>
   <string name="section_key_server">Server delle Chiavi</string>
   <string name="section_encrypt_and_or_sign">Codifica e/o Firma</string>
   <string name="section_decrypt_verify">Decodifica e Verifica</string>
   <string name="section_fingerprint">Impronta</string>
+  <string name="section_key_to_certify">Chiave da certificare</string>
   <!--button-->
   <string name="btn_certify">Certifica</string>
+  <string name="btn_decrypt_verify_file">Decodifica, verifica e salva su file</string>
+  <string name="btn_decrypt_verify_message">Decodifica e verifica messaggio</string>
   <string name="btn_decrypt_verify_clipboard">Dagli Appunti</string>
+  <string name="btn_encrypt_file">Codifica e salva file</string>
   <string name="btn_save">Salva</string>
   <string name="btn_do_not_save">Annulla</string>
   <string name="btn_delete">Elimina</string>
@@ -58,6 +65,8 @@
   <string name="btn_lookup_key">Chiave di ricerca</string>
   <string name="btn_encryption_advanced_settings_show">Mostra impostazioni avanzate</string>
   <string name="btn_encryption_advanced_settings_hide">Nascondi impostazioni avanzate</string>
+  <string name="btn_share_encrypted_signed">Condividi messaggio codificato/firmato...</string>
+  <string name="btn_view_cert_key">Mostra chiave di certificazione</string>
   <!--menu-->
   <string name="menu_preferences">Impostazioni</string>
   <string name="menu_help">Aiuto</string>
@@ -229,11 +238,13 @@
     <item quantity="other">%d chiavi private non valide  ignorate. Forse hai esportato con opzione\n--export-secret-subkeys\nAssicurati di esportare con\n--export-secret-keys\ninvece.</item>
   </plurals>
   <string name="key_send_success">Chiave caricata con successo sul server</string>
+  <string name="key_certify_success">Identità certificata correttamente</string>
   <string name="list_empty">Lista vuota!</string>
   <string name="nfc_successful">Chiave correttamente inviata tramite NFC Beam!</string>
   <string name="key_copied_to_clipboard">Chiave copiata negli appunti!</string>
   <string name="fingerprint_copied_to_clipboard">Impronta copiata negli appunti!</string>
   <string name="key_has_already_been_certified">La chiave è già certificata!</string>
+  <string name="select_key_to_certify">Per favore seleziona una chiave per la certificazione!</string>
   <string name="key_too_big_for_sharing">Chiave troppo grande per essere condivisa in questo modo!</string>
   <!--errors
          no punctuation, all lowercase,
@@ -366,7 +377,6 @@
   <string name="intent_send_encrypt">Codifica con OpenKeychain</string>
   <string name="intent_send_decrypt">Decodifica con OpenKeychain</string>
   <!--Remote API-->
-  <string name="api_no_apps">Nessuna app registrata!\n\nApp di terze parti possono richiedere l\'accesso a OpenKeychain. Dopo aver concesso l\'accesso, le app saranno elencate qui.</string>
   <string name="api_settings_show_info">Mostra informazioni dettagliate</string>
   <string name="api_settings_hide_info">Nascondi informazioni dettagliate</string>
   <string name="api_settings_show_advanced">Mostra impostazioni avanzate</string>
@@ -411,8 +421,12 @@
   <string name="key_view_action_edit">Modifica chiave</string>
   <string name="key_view_action_encrypt">Codifica con questa chiave</string>
   <string name="key_view_action_certify">Certifica identità</string>
+  <string name="key_view_action_share_with">Condividi con...</string>
+  <string name="key_view_action_share_nfc">Condividi con NFC tenendo i dispositivi a stretto contatto</string>
   <string name="key_view_tab_main">Info Principale</string>
   <string name="key_view_tab_share">Condividi</string>
+  <string name="key_view_tab_keys">Sottochiavi</string>
+  <string name="key_view_tab_certs">Certificati</string>
   <!--Navigation Drawer-->
   <string name="nav_keys">Chiavi</string>
   <string name="nav_encrypt">Firma e Codifica</string>
@@ -440,10 +454,12 @@
   <string name="cert_verify_error">errore!</string>
   <string name="cert_verify_unavailable">chiave non disponibile</string>
   <!--unsorted-->
+  <string name="section_certifier_id">Certificatore</string>
   <string name="section_cert">Dettagli Certificato</string>
   <string name="label_user_id">Identit</string>
   <string name="unknown_uid">&lt;sconosciuto&gt;</string>
   <string name="empty_certs">Nessun certificato per questa chiave</string>
+  <string name="section_uids_to_certify">Identità da certificare</string>
   <string name="label_revocation">Ragione della Revoca</string>
   <string name="label_verify_status">Stato Verifica</string>
   <string name="label_cert_type">Tipo</string>
@@ -455,4 +471,5 @@
   <string name="title_view_cert">Visualizza Dettagli Certificati</string>
   <string name="unknown_algorithm">sconosciuto</string>
   <string name="can_sign_not">non può firmare</string>
+  <string name="error_no_encrypt_subkey">Nessuna sottochiave di codifica disponibile!</string>
 </resources>

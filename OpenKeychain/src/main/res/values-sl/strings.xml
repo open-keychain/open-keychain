@@ -15,6 +15,7 @@
   <string name="title_set_passphrase">Določi geslo</string>
   <string name="title_share_with">Deli z...</string>
   <string name="title_share_fingerprint_with">Deli prstni odtis z...</string>
+  <string name="title_share_key">Deli ključ z...</string>
   <string name="title_share_file">Deli datoteko z...</string>
   <string name="title_encrypt_to_file">Šifriraj v datoteko</string>
   <string name="title_decrypt_to_file">Dešifriraj v datoteko</string>
@@ -23,6 +24,7 @@
   <string name="title_export_keys">Izvozi ključe</string>
   <string name="title_key_not_found">Ključ ni bil najden</string>
   <string name="title_send_key">Naloži na strežnik</string>
+  <string name="title_certify_key">Overi identiteto</string>
   <string name="title_key_details">Podrobnosti o ključu</string>
   <string name="title_help">Pomoč</string>
   <!--section-->
@@ -34,15 +36,20 @@
   <string name="section_master_key">Glavni ključ</string>
   <string name="section_master_user_id">Glavna identiteta</string>
   <string name="section_actions">Ravnanja</string>
+  <string name="section_share_key">Cel ključ</string>
   <string name="section_certification_key">Vaš ključ, uporabljan za overitev</string>
   <string name="section_upload_key">Naloži ključ</string>
   <string name="section_key_server">Strežnik</string>
   <string name="section_encrypt_and_or_sign">Šifriraj in/ali podpiši</string>
   <string name="section_decrypt_verify">Dešifriraj in preveri</string>
   <string name="section_fingerprint">Prstnim odtisom</string>
+  <string name="section_key_to_certify">Ključi za overjanje</string>
   <!--button-->
   <string name="btn_certify">Overi</string>
+  <string name="btn_decrypt_verify_file">Dešifriraj, preveri in shrani</string>
+  <string name="btn_decrypt_verify_message">Dešifriraj in preveri sporočilo</string>
   <string name="btn_decrypt_verify_clipboard">Iz odložišča</string>
+  <string name="btn_encrypt_file">Šifriraj in shrani datoteko</string>
   <string name="btn_save">Shrani</string>
   <string name="btn_do_not_save">Prekliči</string>
   <string name="btn_delete">Izbriši</string>
@@ -58,6 +65,8 @@
   <string name="btn_lookup_key">Išči ključ</string>
   <string name="btn_encryption_advanced_settings_show">Prikaži napredne nstavitve</string>
   <string name="btn_encryption_advanced_settings_hide">Skrij napredne nastavitve</string>
+  <string name="btn_share_encrypted_signed">Deli šifrirano/podpisano sporočilo...</string>
+  <string name="btn_view_cert_key">Poglej ključ za overjanje</string>
   <!--menu-->
   <string name="menu_preferences">Nastavitve</string>
   <string name="menu_help">Pomoč</string>
@@ -247,11 +256,13 @@
     <item quantity="other">Neupoštevanih %d slabih zasebnih ključev. Morda so bili izvoženi na način\n --export-secret-subkeys\nPoskrbite, da bodo izvoženi z\n --export-secret-keys</item>
   </plurals>
   <string name="key_send_success">Ključ je bil uspešno naložen na strežnik.</string>
+  <string name="key_certify_success">Uspešno overjene identitete</string>
   <string name="list_empty">Lista je prazna!</string>
   <string name="nfc_successful">Ključ uspešno poslan preko NFC Beam!</string>
   <string name="key_copied_to_clipboard">Ključ je bil prekopiran v odložišče!</string>
   <string name="fingerprint_copied_to_clipboard">Prstni odtis je bil prekopiran v odložišče!</string>
   <string name="key_has_already_been_certified">Ključ je že bil overjen!</string>
+  <string name="select_key_to_certify">Izberite ključ, ki ga boste uporabljali za overjanje!</string>
   <string name="key_too_big_for_sharing">Ključ je prevelik za delitev na ta način!</string>
   <!--errors
          no punctuation, all lowercase,
@@ -392,7 +403,6 @@
   <string name="intent_send_encrypt">Šifriraj z OpenKeychain</string>
   <string name="intent_send_decrypt">Dešifriraj z OpenKeychain</string>
   <!--Remote API-->
-  <string name="api_no_apps">Ni nobene prijavljene aplikacije!\n\nDruge aplikacije lahko zahtevajo dostop do aplikacije OpenKeychain. Po potrditvi dostopa bodo navedene tukaj.</string>
   <string name="api_settings_show_info">Pokaži dodatne informacije</string>
   <string name="api_settings_hide_info">Skrij dodatne informacije</string>
   <string name="api_settings_show_advanced">Pokaži napredne nastavitve</string>
@@ -439,8 +449,12 @@
   <string name="key_view_action_edit">Uredi ključ</string>
   <string name="key_view_action_encrypt">Šifriraj s tem ključem</string>
   <string name="key_view_action_certify">Overi identitete</string>
+  <string name="key_view_action_share_with">Deli z...</string>
+  <string name="key_view_action_share_nfc">Deli preko NFC z držanjem hrbtov dveh telefonov skupaj</string>
   <string name="key_view_tab_main">Glavne informacije</string>
   <string name="key_view_tab_share">Deli</string>
+  <string name="key_view_tab_keys">Podključi</string>
+  <string name="key_view_tab_certs">Certifikati</string>
   <!--Navigation Drawer-->
   <string name="nav_keys">Ključi</string>
   <string name="nav_encrypt">Podpiši in šifriraj</string>
@@ -468,10 +482,12 @@
   <string name="cert_verify_error">napaka!</string>
   <string name="cert_verify_unavailable">ključ ni na voljo</string>
   <!--unsorted-->
+  <string name="section_certifier_id">Overovitelj</string>
   <string name="section_cert">Podrobnosti potrdil</string>
   <string name="label_user_id">Identiteta</string>
   <string name="unknown_uid">&lt;neznan&gt;</string>
   <string name="empty_certs">Ni potrdil za ta ključ</string>
+  <string name="section_uids_to_certify">Identitete za overitev</string>
   <string name="label_revocation">Razlog za preklic</string>
   <string name="label_verify_status">Status preverjanja</string>
   <string name="label_cert_type">Vrsta</string>
@@ -483,4 +499,5 @@
   <string name="title_view_cert">Preglej podrobosti certifikata</string>
   <string name="unknown_algorithm">neznan</string>
   <string name="can_sign_not">ne more podpisati</string>
+  <string name="error_no_encrypt_subkey">Ni nobenega podključa za šifriranje!</string>
 </resources>

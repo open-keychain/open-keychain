@@ -15,6 +15,7 @@
   <string name="title_set_passphrase">パスフレーズの設定</string>
   <string name="title_share_with">...で共有</string>
   <string name="title_share_fingerprint_with">...で指紋の共有</string>
+  <string name="title_share_key">...で鍵の共有</string>
   <string name="title_share_file">...でファイルの共有</string>
   <string name="title_encrypt_to_file">暗号化してファイルに</string>
   <string name="title_decrypt_to_file">復号化してファイルに</string>
@@ -23,6 +24,7 @@
   <string name="title_export_keys">複数鍵のエクスポート</string>
   <string name="title_key_not_found">鍵が見当りません</string>
   <string name="title_send_key">鍵サーバへアップロード</string>
+  <string name="title_certify_key">ユーザID検証</string>
   <string name="title_key_details">鍵の概要</string>
   <string name="title_help">ヘルプ</string>
   <!--section-->
@@ -34,15 +36,20 @@
   <string name="section_master_key">主鍵</string>
   <string name="section_master_user_id">メインのユーザID</string>
   <string name="section_actions">アクション</string>
+  <string name="section_share_key">すべての鍵</string>
   <string name="section_certification_key">あなたの鍵を証明に利用します</string>
   <string name="section_upload_key">鍵のアップロード</string>
   <string name="section_key_server">鍵サーバ</string>
   <string name="section_encrypt_and_or_sign">暗号化/署名</string>
   <string name="section_decrypt_verify">復号化と検証</string>
   <string name="section_fingerprint">指紋</string>
+  <string name="section_key_to_certify">鍵は検証されています。</string>
   <!--button-->
   <string name="btn_certify">証明</string>
+  <string name="btn_decrypt_verify_file">復号化と検証、そしてファイルの保存</string>
+  <string name="btn_decrypt_verify_message">メッセージの復号化と検証</string>
   <string name="btn_decrypt_verify_clipboard">クリップボードから</string>
+  <string name="btn_encrypt_file">暗号化してファイルを保存</string>
   <string name="btn_save">保存</string>
   <string name="btn_do_not_save">キャンセル</string>
   <string name="btn_delete">削除</string>
@@ -58,6 +65,8 @@
   <string name="btn_lookup_key">鍵検出</string>
   <string name="btn_encryption_advanced_settings_show">拡張設定を表示</string>
   <string name="btn_encryption_advanced_settings_hide">拡張設定を隠す</string>
+  <string name="btn_share_encrypted_signed">暗号化/署名メッセージの共有...</string>
+  <string name="btn_view_cert_key">検証した鍵を見る</string>
   <!--menu-->
   <string name="menu_preferences">設定</string>
   <string name="menu_help">ヘルプ</string>
@@ -191,7 +200,7 @@
   <string name="key_deletion_confirmation_multi">選択したすべての公開鍵を削除して本当に良いのですか?\nこれは元に戻せません!</string>
   <string name="secret_key_deletion_confirmation">秘密鍵\'%s\'を本当に削除してもよいですか?\nこれは元に戻せません!</string>
   <string name="ask_save_changed_key">あなたは鍵輪に変更を加えました、これを保存しますか?</string>
-  <string name="ask_empty_id_ok">あなたは空のユーザーIDを追加しました、このまま続けますか?</string>
+  <string name="ask_empty_id_ok">あなたは空のユーザIDを追加しました、このまま続けますか?</string>
   <string name="public_key_deletetion_confirmation">公開鍵\'%s\'を本当に削除してもよいですか?\nこれは元に戻せません!</string>
   <string name="also_export_secret_keys">秘密鍵もエクスポートしますか?</string>
   <plurals name="keys_added_and_updated_1">
@@ -220,11 +229,13 @@
     <item quantity="other">%d の問題ある鍵を無視しました。 おそらく次のオプションでエクスポートしています\n --export-secret-subkeys\n代りに次のオプションでエクスポートしてください。\n --export-secret-keys</item>
   </plurals>
   <string name="key_send_success">鍵を鍵サーバにアップロードしました</string>
+  <string name="key_certify_success">ユーザIDの検証に成功</string>
   <string name="list_empty">このリストは空です!</string>
   <string name="nfc_successful">NFCビームで鍵を送信しました!</string>
   <string name="key_copied_to_clipboard">鍵はクリプボードにコピーされました!</string>
   <string name="fingerprint_copied_to_clipboard">指紋はクリプボードにコピーされました!</string>
   <string name="key_has_already_been_certified">鍵はすでに検証されています!</string>
+  <string name="select_key_to_certify">検証に使う鍵を選択して下さい!</string>
   <string name="key_too_big_for_sharing">この共有方法では鍵が大きすぎます!</string>
   <!--errors
          no punctuation, all lowercase,
@@ -353,7 +364,6 @@
   <string name="intent_send_encrypt">OpenKeychainで暗号化</string>
   <string name="intent_send_decrypt">OpenKeychainで復号化</string>
   <!--Remote API-->
-  <string name="api_no_apps">登録されていないアプリケーション!\n\nサードパーティアプリケーションはOpenKeychainにアクセスを要求できます。アクセスを与えた後、それらはここにリストされます。</string>
   <string name="api_settings_show_info">詳細情報を表示</string>
   <string name="api_settings_hide_info">詳細情報を非表示</string>
   <string name="api_settings_show_advanced">拡張設定を表示</string>
@@ -397,8 +407,12 @@
   <string name="key_view_action_edit">鍵の編集</string>
   <string name="key_view_action_encrypt">この鍵で暗号化</string>
   <string name="key_view_action_certify">ユーザID検証</string>
+  <string name="key_view_action_share_with">...で共有</string>
+  <string name="key_view_action_share_nfc">デバイスの後ろ同士を固定してNFC経由で共有</string>
   <string name="key_view_tab_main">情報</string>
   <string name="key_view_tab_share">共有</string>
+  <string name="key_view_tab_keys">副鍵</string>
+  <string name="key_view_tab_certs">証明</string>
   <!--Navigation Drawer-->
   <string name="nav_keys">鍵</string>
   <string name="nav_encrypt">署名と暗号化</string>
@@ -426,10 +440,12 @@
   <string name="cert_verify_error">エラー!</string>
   <string name="cert_verify_unavailable">鍵がありません</string>
   <!--unsorted-->
+  <string name="section_certifier_id">検証者</string>
   <string name="section_cert">証明の詳細</string>
   <string name="label_user_id">ユーザID</string>
   <string name="unknown_uid">&lt;不明&gt;</string>
   <string name="empty_certs">この鍵に証明がない</string>
+  <string name="section_uids_to_certify">ユーザIDを検証</string>
   <string name="label_revocation">破棄の理由</string>
   <string name="label_verify_status">検証ステータス</string>
   <string name="label_cert_type">種別</string>
@@ -441,4 +457,5 @@
   <string name="title_view_cert">証明の詳細を見る</string>
   <string name="unknown_algorithm">不明</string>
   <string name="can_sign_not">署名不可</string>
+  <string name="error_no_encrypt_subkey">暗号化の副鍵がありません!</string>
 </resources>

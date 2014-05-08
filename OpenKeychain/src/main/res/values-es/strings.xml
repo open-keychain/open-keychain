@@ -15,6 +15,7 @@
   <string name="title_set_passphrase">Establecer frase de contraseña</string>
   <string name="title_share_with">Compartir con...</string>
   <string name="title_share_fingerprint_with">Compartir huella de validación de clave con...</string>
+  <string name="title_share_key">Compartir clave con...</string>
   <string name="title_share_file">Compartir fichero con...</string>
   <string name="title_encrypt_to_file">Cifrar hacia archivo</string>
   <string name="title_decrypt_to_file">Descifrar hacia archivo</string>
@@ -23,6 +24,7 @@
   <string name="title_export_keys">Exportar claves</string>
   <string name="title_key_not_found">Clave no encontrada</string>
   <string name="title_send_key">Cargar al servidor de claves</string>
+  <string name="title_certify_key">Certificar identidades</string>
   <string name="title_key_details">Detalles de la clave</string>
   <string name="title_help">Ayuda</string>
   <!--section-->
@@ -34,15 +36,20 @@
   <string name="section_master_key">Clave maestra</string>
   <string name="section_master_user_id">Identidad primaria</string>
   <string name="section_actions">Acciones</string>
+  <string name="section_share_key">Clave completa</string>
   <string name="section_certification_key">Tu clave usada para las certificaciones</string>
   <string name="section_upload_key">Cargar clave</string>
   <string name="section_key_server">Servidor de claves</string>
   <string name="section_encrypt_and_or_sign">Cifrar y/o firmar</string>
   <string name="section_decrypt_verify">Descifrar y verificar</string>
   <string name="section_fingerprint">Huella de validación de clave</string>
+  <string name="section_key_to_certify">Clave a ser certificada</string>
   <!--button-->
   <string name="btn_certify">Certificar</string>
+  <string name="btn_decrypt_verify_file">Descifrar, verificar, y guardar fichero</string>
+  <string name="btn_decrypt_verify_message">Descifrar y verificar mensaje</string>
   <string name="btn_decrypt_verify_clipboard">Desde el portapapeles</string>
+  <string name="btn_encrypt_file">Cifrar y guardar fichero</string>
   <string name="btn_save">Guardar</string>
   <string name="btn_do_not_save">Cancelar</string>
   <string name="btn_delete">Eliminar</string>
@@ -58,6 +65,8 @@
   <string name="btn_lookup_key">Buscar clave</string>
   <string name="btn_encryption_advanced_settings_show">Mostrar ajustes avanzados</string>
   <string name="btn_encryption_advanced_settings_hide">Ocultar ajustes avanzados</string>
+  <string name="btn_share_encrypted_signed">Compartir mensaje cifrado/firmado...</string>
+  <string name="btn_view_cert_key">Ver clave de verificación</string>
   <!--menu-->
   <string name="menu_preferences">Ajustes</string>
   <string name="menu_help">Ayuda</string>
@@ -229,11 +238,13 @@
     <item quantity="other">%d malas claves secretas ignoradas. Quizás hayas exportado con la opción\n--export-secret-subkeys\nAsegúrate de que exportas con\n--export-secret-keys\nen su lugar.</item>
   </plurals>
   <string name="key_send_success">Clave cargada al servidor satisfactoriamente</string>
+  <string name="key_certify_success">Identidades certificadas con éxito</string>
   <string name="list_empty">¡Esta lista está vacía!</string>
   <string name="nfc_successful">¡Clave enviada con éxito vía NFC Beam (haz NFC)!</string>
   <string name="key_copied_to_clipboard">¡La clave ha sido copiada al portapapeles!</string>
   <string name="fingerprint_copied_to_clipboard">¡La huella de validación de clave se ha copiado al portapapeles!</string>
   <string name="key_has_already_been_certified">¡La clave ya ha sido certificada!</string>
+  <string name="select_key_to_certify">Por favor ¡seleccione una clave para ser usada en certificación!</string>
   <string name="key_too_big_for_sharing">¡La clave es demasiado grande para ser compartida de esta forma!</string>
   <!--errors
          no punctuation, all lowercase,
@@ -366,7 +377,6 @@
   <string name="intent_send_encrypt">Cifrar con OpenKeychain</string>
   <string name="intent_send_decrypt">Descifrar con OpenKeychain</string>
   <!--Remote API-->
-  <string name="api_no_apps">¡No hay aplicaciones registradas!\n\nLas aplicaciones de terceros pueden pedir permiso de acceso a OpenKeychain. Después de obtener acceso, serán enumeradas aquí.</string>
   <string name="api_settings_show_info">Mostrar información avanzada</string>
   <string name="api_settings_hide_info">Ocultar información avanzada</string>
   <string name="api_settings_show_advanced">Mostrar la configuración avanzada</string>
@@ -411,8 +421,12 @@
   <string name="key_view_action_edit">Editar clave</string>
   <string name="key_view_action_encrypt">Cifrar con esta clave</string>
   <string name="key_view_action_certify">Certificar identidades</string>
+  <string name="key_view_action_share_with">Compartir con...</string>
+  <string name="key_view_action_share_nfc">Compartir sobre NFC juntando los dispositivos por el reverso</string>
   <string name="key_view_tab_main">Información principal</string>
   <string name="key_view_tab_share">Compartir</string>
+  <string name="key_view_tab_keys">Subclaves</string>
+  <string name="key_view_tab_certs">Certificados</string>
   <!--Navigation Drawer-->
   <string name="nav_keys">Claves</string>
   <string name="nav_encrypt">Firmar y cifrar</string>
@@ -440,10 +454,12 @@
   <string name="cert_verify_error">¡error!</string>
   <string name="cert_verify_unavailable">clave no disponible</string>
   <!--unsorted-->
+  <string name="section_certifier_id">Certificador</string>
   <string name="section_cert">Detalles del certificado</string>
   <string name="label_user_id">Identidad</string>
   <string name="unknown_uid">&lt;desconocido&gt;</string>
   <string name="empty_certs">No hay certificados para esta clave</string>
+  <string name="section_uids_to_certify">Identidades a certificar</string>
   <string name="label_revocation">Razón de la revocación</string>
   <string name="label_verify_status">Estado de la verificación</string>
   <string name="label_cert_type">Tipo</string>
@@ -455,4 +471,5 @@
   <string name="title_view_cert">Ver detalles del certificado</string>
   <string name="unknown_algorithm">desconocido</string>
   <string name="can_sign_not">no puede firmarse</string>
+  <string name="error_no_encrypt_subkey">¡No hay subclave de cifrado disponible!</string>
 </resources>
