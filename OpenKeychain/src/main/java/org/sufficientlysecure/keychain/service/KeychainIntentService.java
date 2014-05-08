@@ -324,6 +324,7 @@ public class KeychainIntentService extends IntentService
                         .setEncryptionMasterKeyIds(encryptionKeyIds)
                         .setSymmetricPassphrase(symmetricPassphrase)
                         .setSignatureMasterKeyId(signatureKeyId)
+                        .setEncryptToSigner(true)
                         .setSignatureHashAlgorithm(
                                 Preferences.getPreferences(this).getDefaultHashAlgorithm())
                         .setSignaturePassphrase(
