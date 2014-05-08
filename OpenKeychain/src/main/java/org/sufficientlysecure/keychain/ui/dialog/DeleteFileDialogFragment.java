@@ -17,7 +17,6 @@
 
 package org.sufficientlysecure.keychain.ui.dialog;
 
-import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
@@ -59,7 +58,7 @@ public class DeleteFileDialogFragment extends DialogFragment {
 
         final String deleteFile = getArguments().getString(ARG_DELETE_FILE);
 
-        AlertDialog.Builder alert = new AlertDialog.Builder(activity);
+        CustomAlertDialogBuilder alert = new CustomAlertDialogBuilder(activity);
 
 
         alert.setIcon(R.drawable.ic_dialog_alert_holo_light);
@@ -120,6 +119,6 @@ public class DeleteFileDialogFragment extends DialogFragment {
         });
         alert.setCancelable(true);
 
-        return alert.create();
+        return alert.show();
     }
 }

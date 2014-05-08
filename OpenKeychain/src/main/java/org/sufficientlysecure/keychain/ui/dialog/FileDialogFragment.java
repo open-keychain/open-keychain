@@ -97,7 +97,7 @@ public class FileDialogFragment extends DialogFragment {
 
         LayoutInflater inflater = (LayoutInflater) activity
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        AlertDialog.Builder alert = new AlertDialog.Builder(activity);
+        CustomAlertDialogBuilder alert = new CustomAlertDialogBuilder(activity);
         alert.setTitle(title);
 
         View view = inflater.inflate(R.layout.file_dialog, null);
@@ -157,7 +157,7 @@ public class FileDialogFragment extends DialogFragment {
                 dismiss();
             }
         });
-        return alert.create();
+        return alert.show();
     }
 
     /**

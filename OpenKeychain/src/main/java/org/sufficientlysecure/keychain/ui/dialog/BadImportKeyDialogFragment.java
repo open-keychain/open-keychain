@@ -17,7 +17,6 @@
 
 package org.sufficientlysecure.keychain.ui.dialog;
 
-import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
@@ -50,7 +49,7 @@ public class BadImportKeyDialogFragment extends DialogFragment {
         final FragmentActivity activity = getActivity();
         final int badImport = getArguments().getInt(ARG_BAD_IMPORT);
 
-        AlertDialog.Builder alert = new AlertDialog.Builder(activity);
+        CustomAlertDialogBuilder alert = new CustomAlertDialogBuilder(activity);
         alert.setIcon(R.drawable.ic_dialog_alert_holo_light);
         alert.setTitle(R.string.warning);
         alert.setMessage(activity.getResources()
@@ -63,6 +62,6 @@ public class BadImportKeyDialogFragment extends DialogFragment {
                 });
         alert.setCancelable(true);
 
-        return alert.create();
+        return alert.show();
     }
 }
