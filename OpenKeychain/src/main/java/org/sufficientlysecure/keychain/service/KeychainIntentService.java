@@ -690,8 +690,7 @@ public class KeychainIntentService extends IntentService
                         new String[]{KeyRings.MASTER_KEY_ID, KeyRings.HAS_ANY_SECRET},
                         selection, null, null);
                 try {
-                    cursor.moveToFirst();
-                    do {
+                    if (cursor != null && cursor.moveToFirst()) do {
                         // export public either way
                         publicMasterKeyIds.add(cursor.getLong(0));
                         // add secret if available (and requested)
@@ -699,7 +698,9 @@ public class KeychainIntentService extends IntentService
                             secretMasterKeyIds.add(cursor.getLong(0));
                     } while (cursor.moveToNext());
                 } finally {
-                    cursor.close();
+                    if (cursor != null) {
+                        cursor.close();
+                    }
                 }
 
                 PgpImportExport pgpImportExport = new PgpImportExport(this, this, this);

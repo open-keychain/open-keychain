@@ -70,19 +70,25 @@ public class OpenPgpService extends RemoteService {
 
         for (String email : encryptionUserIds) {
             Uri uri = KeyRings.buildUnifiedKeyRingsFindByEmailUri(email);
-            Cursor cur = getContentResolver().query(uri, null, null, null, null);
-            if (cur.moveToFirst()) {
-                long id = cur.getLong(cur.getColumnIndex(KeyRings.MASTER_KEY_ID));
-                keyIds.add(id);
-            } else {
-                missingUserIdsCheck = true;
-                missingUserIds.add(email);
-                Log.d(Constants.TAG, "user id missing");
-            }
-            if (cur.moveToNext()) {
-                duplicateUserIdsCheck = true;
-                duplicateUserIds.add(email);
-                Log.d(Constants.TAG, "more than one user id with the same email");
+            Cursor cursor = getContentResolver().query(uri, null, null, null, null);
+            try {
+                if (cursor != null && cursor.moveToFirst()) {
+                    long id = cursor.getLong(cursor.getColumnIndex(KeyRings.MASTER_KEY_ID));
+                    keyIds.add(id);
+                } else {
+                    missingUserIdsCheck = true;
+                    missingUserIds.add(email);
+                    Log.d(Constants.TAG, "user id missing");
+                }
+                if (cursor != null && cursor.moveToNext()) {
+                    duplicateUserIdsCheck = true;
+                    duplicateUserIds.add(email);
+                    Log.d(Constants.TAG, "more than one user id with the same email");
+                }
+            } finally {
+                if (cursor != null) {
+                    cursor.close();
+                }
             }
         }
 

@@ -541,20 +541,21 @@ public class KeychainProvider extends ContentProvider {
         }
 
         SQLiteDatabase db = getDb().getReadableDatabase();
-        Cursor c = qb.query(db, projection, selection, selectionArgs, groupBy, having, orderBy);
-
-        // Tell the cursor what uri to watch, so it knows when its source data changes
-        c.setNotificationUri(getContext().getContentResolver(), uri);
+        Cursor cursor = qb.query(db, projection, selection, selectionArgs, groupBy, having, orderBy);
+        if (cursor != null) {
+            // Tell the cursor what uri to watch, so it knows when its source data changes
+            cursor.setNotificationUri(getContext().getContentResolver(), uri);
+        }
 
         if (Constants.DEBUG) {
             Log.d(Constants.TAG,
                     "Query: "
                             + qb.buildQuery(projection, selection, selectionArgs, null, null,
                             orderBy, null));
-            Log.d(Constants.TAG, "Cursor: " + DatabaseUtils.dumpCursorToString(c));
+            Log.d(Constants.TAG, "Cursor: " + DatabaseUtils.dumpCursorToString(cursor));
         }
 
-        return c;
+        return cursor;
     }
 
     /**

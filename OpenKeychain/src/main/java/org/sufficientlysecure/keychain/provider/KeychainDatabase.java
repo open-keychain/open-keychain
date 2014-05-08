@@ -255,53 +255,60 @@ public class KeychainDatabase extends SQLiteOpenHelper {
             }
         }.getReadableDatabase();
 
-        Cursor c = null;
+        Cursor cursor = null;
         try {
             // we insert in two steps: first, all public keys that have secret keys
-            c = db.rawQuery("SELECT key_ring_data FROM key_rings WHERE type = 1 OR EXISTS ("
+            cursor = db.rawQuery("SELECT key_ring_data FROM key_rings WHERE type = 1 OR EXISTS ("
                     + " SELECT 1 FROM key_rings d2 WHERE key_rings.master_key_id = d2.master_key_id"
                     + " AND d2.type = 1) ORDER BY type ASC", null);
-            Log.d(Constants.TAG, "Importing " + c.getCount() + " secret keyrings from apg.db...");
-            for (int i = 0; i < c.getCount(); i++) {
-                c.moveToPosition(i);
-                byte[] data = c.getBlob(0);
-                PGPKeyRing ring = PgpConversionHelper.BytesToPGPKeyRing(data);
-                ProviderHelper providerHelper = new ProviderHelper(context);
-                if (ring instanceof PGPPublicKeyRing)
-                    providerHelper.saveKeyRing((PGPPublicKeyRing) ring);
-                else if (ring instanceof PGPSecretKeyRing)
-                    providerHelper.saveKeyRing((PGPSecretKeyRing) ring);
-                else {
-                    Log.e(Constants.TAG, "Unknown blob data type!");
+            Log.d(Constants.TAG, "Importing " + cursor.getCount() + " secret keyrings from apg.db...");
+            if (cursor != null) {
+                for (int i = 0; i < cursor.getCount(); i++) {
+                    cursor.moveToPosition(i);
+                    byte[] data = cursor.getBlob(0);
+                    PGPKeyRing ring = PgpConversionHelper.BytesToPGPKeyRing(data);
+                    ProviderHelper providerHelper = new ProviderHelper(context);
+                    if (ring instanceof PGPPublicKeyRing)
+                        providerHelper.saveKeyRing((PGPPublicKeyRing) ring);
+                    else if (ring instanceof PGPSecretKeyRing)
+                        providerHelper.saveKeyRing((PGPSecretKeyRing) ring);
+                    else {
+                        Log.e(Constants.TAG, "Unknown blob data type!");
+                    }
                 }
+            }
+            if (cursor != null) {
+                cursor.close();
             }
 
             // afterwards, insert all keys, starting with public keys that have secret keys, then
             // secret keys, then all others. this order is necessary to ensure all certifications
             // are recognized properly.
-            c = db.rawQuery("SELECT key_ring_data FROM key_rings ORDER BY (type = 0 AND EXISTS ("
+            cursor = db.rawQuery("SELECT key_ring_data FROM key_rings ORDER BY (type = 0 AND EXISTS ("
                     + " SELECT 1 FROM key_rings d2 WHERE key_rings.master_key_id = d2.master_key_id AND"
                     + " d2.type = 1)) DESC, type DESC", null);
             // import from old database
-            Log.d(Constants.TAG, "Importing " + c.getCount() + " keyrings from apg.db...");
-            for (int i = 0; i < c.getCount(); i++) {
-                c.moveToPosition(i);
-                byte[] data = c.getBlob(0);
-                PGPKeyRing ring = PgpConversionHelper.BytesToPGPKeyRing(data);
-                ProviderHelper providerHelper = new ProviderHelper(context);
-                if (ring instanceof PGPPublicKeyRing) {
-                    providerHelper.saveKeyRing((PGPPublicKeyRing) ring);
-                } else if (ring instanceof PGPSecretKeyRing) {
-                    providerHelper.saveKeyRing((PGPSecretKeyRing) ring);
-                } else {
-                    Log.e(Constants.TAG, "Unknown blob data type!");
+            Log.d(Constants.TAG, "Importing " + cursor.getCount() + " keyrings from apg.db...");
+            if (cursor != null) {
+                for (int i = 0; i < cursor.getCount(); i++) {
+                    cursor.moveToPosition(i);
+                    byte[] data = cursor.getBlob(0);
+                    PGPKeyRing ring = PgpConversionHelper.BytesToPGPKeyRing(data);
+                    ProviderHelper providerHelper = new ProviderHelper(context);
+                    if (ring instanceof PGPPublicKeyRing) {
+                        providerHelper.saveKeyRing((PGPPublicKeyRing) ring);
+                    } else if (ring instanceof PGPSecretKeyRing) {
+                        providerHelper.saveKeyRing((PGPSecretKeyRing) ring);
+                    } else {
+                        Log.e(Constants.TAG, "Unknown blob data type!");
+                    }
                 }
             }
         } catch (IOException e) {
             Log.e(Constants.TAG, "Error importing apg.db!", e);
         } finally {
-            if (c != null) {
-                c.close();
+            if (cursor != null) {
+                cursor.close();
             }
             if (db != null) {
                 db.close();
