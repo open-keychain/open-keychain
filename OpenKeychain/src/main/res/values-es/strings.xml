@@ -377,6 +377,7 @@
   <string name="intent_send_encrypt">Cifrar con OpenKeychain</string>
   <string name="intent_send_decrypt">Descifrar con OpenKeychain</string>
   <!--Remote API-->
+  <string name="api_no_apps">¡No hay aplicaciones registradas!\n\n¡Una lista de aplicaciones soportadas de terceros puede encontrarse en \'Ayuda\'!</string>
   <string name="api_settings_show_info">Mostrar información avanzada</string>
   <string name="api_settings_hide_info">Ocultar información avanzada</string>
   <string name="api_settings_show_advanced">Mostrar la configuración avanzada</string>
@@ -387,6 +388,7 @@
   <string name="api_settings_save">Guardar</string>
   <string name="api_settings_cancel">Cancelar</string>
   <string name="api_settings_revoke">Revocar acceso</string>
+  <string name="api_settings_start">Iniciar aplicación</string>
   <string name="api_settings_delete_account">Borrar cuenta</string>
   <string name="api_settings_package_name">Nombre de paquete</string>
   <string name="api_settings_package_signature">SHA-256 de firma de paquete</string>

@@ -364,6 +364,7 @@
   <string name="intent_send_encrypt">OpenKeychainで暗号化</string>
   <string name="intent_send_decrypt">OpenKeychainで復号化</string>
   <!--Remote API-->
+  <string name="api_no_apps">未登録のアプリケーションです!\n\n\"ヘルプ\"のサードパーティ製アプリケーションのサポートリストにあるかを見てください!</string>
   <string name="api_settings_show_info">詳細情報を表示</string>
   <string name="api_settings_hide_info">詳細情報を非表示</string>
   <string name="api_settings_show_advanced">拡張設定を表示</string>
@@ -374,6 +375,7 @@
   <string name="api_settings_save">保存</string>
   <string name="api_settings_cancel">キャンセル</string>
   <string name="api_settings_revoke">破棄されたアクセス</string>
+  <string name="api_settings_start">アプリケーションを開始</string>
   <string name="api_settings_delete_account">アカウントを削除</string>
   <string name="api_settings_package_name">パッケージ名</string>
   <string name="api_settings_package_signature">パッケージの署名 SHA-256</string>

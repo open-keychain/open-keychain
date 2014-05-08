@@ -370,10 +370,10 @@
   <string name="import_nfc_help_button">Hilfe</string>
   <string name="import_clipboard_button">Schlüssel aus der Zwischenablage einfügen</string>
   <!--Intent labels-->
-  <string name="intent_decrypt_file">Datei mit OpenKeychain entschlüsseln</string>
-  <string name="intent_import_key">Schlüssel mit OpenKeychain importieren</string>
-  <string name="intent_send_encrypt">Mit OpenKeychain verschlüsseln</string>
-  <string name="intent_send_decrypt">Mit OpenKeychain entschlüsseln</string>
+  <string name="intent_decrypt_file">Datei entschlüsseln mit OpenKeychain</string>
+  <string name="intent_import_key">Schlüssel importieren mit OpenKeychain</string>
+  <string name="intent_send_encrypt">Verschlüsseln mit OpenKeychain </string>
+  <string name="intent_send_decrypt">Entschlüsseln mit OpenKeychain </string>
   <!--Remote API-->
   <string name="api_settings_show_info">Erweiterte Informationen anzeigen</string>
   <string name="api_settings_hide_info">Erweiterte Informationen ausblenden</string>
