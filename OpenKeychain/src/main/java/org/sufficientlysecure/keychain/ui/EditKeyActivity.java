@@ -57,8 +57,8 @@ import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
 import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
+import org.sufficientlysecure.keychain.service.OldSaveKeyringParcel;
 import org.sufficientlysecure.keychain.service.PassphraseCacheService;
-import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
 import org.sufficientlysecure.keychain.ui.dialog.CustomAlertDialogBuilder;
 import org.sufficientlysecure.keychain.ui.dialog.PassphraseDialogFragment;
 import org.sufficientlysecure.keychain.ui.dialog.SetPassphraseDialogFragment;
@@ -553,7 +553,7 @@ public class EditKeyActivity extends ActionBarActivity implements EditorListener
 
             intent.setAction(KeychainIntentService.ACTION_SAVE_KEYRING);
 
-            SaveKeyringParcel saveParams = new SaveKeyringParcel();
+            OldSaveKeyringParcel saveParams = new OldSaveKeyringParcel();
             saveParams.userIds = getUserIds(mUserIdsView);
             saveParams.originalIDs = mUserIdsView.getOriginalIDs();
             saveParams.deletedIDs = mUserIdsView.getDeletedIDs();

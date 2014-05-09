@@ -497,7 +497,7 @@ public class KeychainIntentService extends IntentService
         } else if (ACTION_SAVE_KEYRING.equals(action)) {
             try {
                 /* Input */
-                SaveKeyringParcel saveParcel = data.getParcelable(SAVE_KEYRING_PARCEL);
+                OldSaveKeyringParcel saveParcel = data.getParcelable(SAVE_KEYRING_PARCEL);
                 String oldPassphrase = saveParcel.oldPassphrase;
                 String newPassphrase = saveParcel.newPassphrase;
                 boolean canSign = true;

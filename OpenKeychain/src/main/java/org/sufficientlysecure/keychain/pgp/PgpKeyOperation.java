@@ -48,7 +48,7 @@ import org.spongycastle.openpgp.operator.jcajce.JcePBESecretKeyEncryptorBuilder;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralMsgIdException;
-import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
+import org.sufficientlysecure.keychain.service.OldSaveKeyringParcel;
 import org.sufficientlysecure.keychain.util.Primes;
 
 import java.io.IOException;
@@ -193,7 +193,7 @@ public class PgpKeyOperation {
     }
 
     public UncachedKeyRing buildNewSecretKey(
-            SaveKeyringParcel saveParcel)
+        OldSaveKeyringParcel saveParcel)
             throws PgpGeneralMsgIdException, PGPException, SignatureException, IOException {
 
         int usageId = saveParcel.keysUsages.get(0);
@@ -338,7 +338,7 @@ public class PgpKeyOperation {
 
     public Pair<UncachedKeyRing, UncachedKeyRing> buildSecretKey(WrappedSecretKeyRing wmKR,
                                                                  WrappedPublicKeyRing wpKR,
-                                                                 SaveKeyringParcel saveParcel)
+                                                                 OldSaveKeyringParcel saveParcel)
             throws PgpGeneralMsgIdException, PGPException, SignatureException, IOException {
 
         PGPSecretKeyRing mKR = wmKR.getRing();

@@ -31,7 +31,12 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 
-public class SaveKeyringParcel implements Parcelable {
+/** Class for parcelling data between ui and services.
+ * This class is outdated and scheduled for removal, pending a rewrite of the
+ * EditKeyActivity and save keyring routines.
+ */
+@Deprecated
+public class OldSaveKeyringParcel implements Parcelable {
 
     public ArrayList<String> userIds;
     public ArrayList<String> originalIDs;
@@ -48,9 +53,9 @@ public class SaveKeyringParcel implements Parcelable {
     public ArrayList<UncachedSecretKey> keys;
     public String originalPrimaryID;
 
-    public SaveKeyringParcel() {}
+    public OldSaveKeyringParcel() {}
 
-    private SaveKeyringParcel(Parcel source) {
+    private OldSaveKeyringParcel(Parcel source) {
         userIds = (ArrayList<String>) source.readSerializable();
         originalIDs = (ArrayList<String>) source.readSerializable();
         deletedIDs = (ArrayList<String>) source.readSerializable();
@@ -90,13 +95,13 @@ public class SaveKeyringParcel implements Parcelable {
         destination.writeString(originalPrimaryID);
     }
 
-    public static final Creator<SaveKeyringParcel> CREATOR = new Creator<SaveKeyringParcel>() {
-        public SaveKeyringParcel createFromParcel(final Parcel source) {
-            return new SaveKeyringParcel(source);
+    public static final Creator<OldSaveKeyringParcel> CREATOR = new Creator<OldSaveKeyringParcel>() {
+        public OldSaveKeyringParcel createFromParcel(final Parcel source) {
+            return new OldSaveKeyringParcel(source);
         }
 
-        public SaveKeyringParcel[] newArray(final int size) {
-            return new SaveKeyringParcel[size];
+        public OldSaveKeyringParcel[] newArray(final int size) {
+            return new OldSaveKeyringParcel[size];
         }
     };
 
