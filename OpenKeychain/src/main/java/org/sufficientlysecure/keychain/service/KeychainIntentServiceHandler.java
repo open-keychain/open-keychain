@@ -24,7 +24,8 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
-import android.widget.Toast;
+
+import com.devspark.appmsg.AppMsg;
 
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.ui.dialog.ProgressDialogFragment;
@@ -99,9 +100,9 @@ public class KeychainIntentServiceHandler extends Handler {
 
                 // show error from service
                 if (data.containsKey(DATA_ERROR)) {
-                    Toast.makeText(mActivity,
+                    AppMsg.makeText(mActivity,
                             mActivity.getString(R.string.error_message, data.getString(DATA_ERROR)),
-                            Toast.LENGTH_SHORT).show();
+                            AppMsg.STYLE_ALERT).show();
                 }
 
                 break;
