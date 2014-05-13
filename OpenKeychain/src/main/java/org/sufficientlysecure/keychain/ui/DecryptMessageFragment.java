@@ -108,11 +108,11 @@ public class DecryptMessageFragment extends DecryptFragment {
                 mCiphertext = matcher.group(1);
                 decryptStart(null);
             } else {
-                AppMsg.makeText(getActivity(), R.string.error_invalid_data, AppMsg.STYLE_INFO)
+                AppMsg.makeText(getActivity(), R.string.error_invalid_data, AppMsg.STYLE_ALERT)
                         .show();
             }
         } else {
-            AppMsg.makeText(getActivity(), R.string.error_invalid_data, AppMsg.STYLE_INFO)
+            AppMsg.makeText(getActivity(), R.string.error_invalid_data, AppMsg.STYLE_ALERT)
                     .show();
         }
     }
