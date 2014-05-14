@@ -115,6 +115,23 @@ public class KeybaseKeyServer extends KeyServer {
         ArrayList<String> userIds = new ArrayList<String>();
         String name = fullName + " <keybase.io/" + keybaseId + ">";
         userIds.add(name);
+        try {
+            userIds.add("github.com/" + JWalk.getString(match, "components", "github", "val"));
+        } catch (JSONException e) {
+            // ignore
+        }
+        try {
+            userIds.add("twitter.com/" + JWalk.getString(match, "components", "twitter", "val"));
+        } catch (JSONException e) {
+            // ignore
+        }
+        try {
+            JSONArray array = JWalk.getArray(match, "components", "websites");
+            JSONObject website = array.getJSONObject(0);
+            userIds.add(JWalk.getString(website, "val"));
+        } catch (JSONException e) {
+            // ignore
+        }
         entry.setUserIds(userIds);
         entry.setPrimaryUserId(name);
         return entry;
