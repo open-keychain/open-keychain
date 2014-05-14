@@ -55,7 +55,7 @@ public class SelectPublicKeyFragment extends ListFragmentWorkaround implements T
     private SelectKeyCursorAdapter mAdapter;
     private EditText mSearchView;
     private long mSelectedMasterKeyIds[];
-    private String mCurQuery;
+    private String mQuery;
 
     // copied from ListFragment
     static final int INTERNAL_EMPTY_ID = 0x00ff0001;
@@ -281,8 +281,8 @@ public class SelectPublicKeyFragment extends ListFragmentWorkaround implements T
         }
         String where = null;
         String whereArgs[] = null;
-        if (mCurQuery != null) {
-            String[] words = mCurQuery.trim().split("\\s+");
+        if (mQuery != null) {
+            String[] words = mQuery.trim().split("\\s+");
             whereArgs = new String[words.length];
             for (int i = 0; i < words.length; ++i) {
                 if (where == null) {
@@ -304,7 +304,7 @@ public class SelectPublicKeyFragment extends ListFragmentWorkaround implements T
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         // Swap the new cursor in. (The framework will take care of closing the
         // old cursor once we return.)
-        mAdapter.setSearchQuery(mCurQuery);
+        mAdapter.setSearchQuery(mQuery);
         mAdapter.swapCursor(data);
 
         // The list should now be shown.
@@ -338,7 +338,7 @@ public class SelectPublicKeyFragment extends ListFragmentWorkaround implements T
 
     @Override
     public void afterTextChanged(Editable editable) {
-        mCurQuery = !TextUtils.isEmpty(editable.toString()) ? editable.toString() : null;
+        mQuery = !TextUtils.isEmpty(editable.toString()) ? editable.toString() : null;
         getLoaderManager().restartLoader(0, null, this);
     }
 
