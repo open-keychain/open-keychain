@@ -88,12 +88,14 @@ public class KeybaseKeyServer extends KeyServer {
 
     private ImportKeysListEntry makeEntry(JSONObject match) throws QueryException, JSONException {
 
-        String key_fingerprint = JWalk.getString(match, "components", "key_fingerprint", "val");
-        key_fingerprint = key_fingerprint.replace(" ", "").toUpperCase();
-        match = getUser(keybaseID);
-
         final ImportKeysListEntry entry = new ImportKeysListEntry();
         String keybaseId = JWalk.getString(match, "components", "username", "val");
+        String fullName = JWalk.getString(match, "components", "full_name", "val");
+        String fingerprint = JWalk.getString(match, "components", "key_fingerprint", "val");
+        fingerprint = fingerprint.replace(" ", "").toUpperCase();
+
+        // in anticipation of a full fingerprint, only use the last 16 chars as 64-bit key id
+        entry.setKeyIdHex("0x" + fingerprint.substring(Math.max(0, fingerprint.length() - 16)));
         // store extra info, so we can query for the keybase id directly
         entry.setExtraData(keybaseId);
 
@@ -101,20 +103,17 @@ public class KeybaseKeyServer extends KeyServer {
         //entry.setBitStrength(4096);
         //entry.setAlgorithm("RSA");
 
-        // ctime
-        final long creationDate = JWalk.getLong(match, "them", "public_keys", "primary", "ctime");
-        final GregorianCalendar tmpGreg = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
-        tmpGreg.setTimeInMillis(creationDate * 1000);
-        entry.setDate(tmpGreg.getTime());
+        entry.setFingerprintHex(fingerprint);
 
-        // key bits
-        // we have to fetch the user object to construct the search-result list, so we might as
-        //  well (weakly) remember the key, in case they try to import it
-        mKeyCache.put(keybaseID, JWalk.getString(match,"them", "public_keys", "primary", "bundle"));
+        // key data
+        // currently there's no need to query the user right away, and it should be avoided, so the
+        // user doesn't experience lag and doesn't download many keys unnecessarily, but should we
+        // require to do it at soe point:
+        // (weakly) remember the key, in case the user tries to import it
+        //mKeyCache.put(keybaseId, JWalk.getString(match, "them", "public_keys", "primary", "bundle"));
 
-        // String displayName = JWalk.getString(match, "them", "profile", "full_name");
         ArrayList<String> userIds = new ArrayList<String>();
-        String name = "keybase.io/" + keybaseID + " <" + keybaseID + "@keybase.io>";
+        String name = fullName + " <keybase.io/" + keybaseId + ">";
         userIds.add(name);
         entry.setUserIds(userIds);
         entry.setPrimaryUserId(name);
