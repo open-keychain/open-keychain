@@ -153,7 +153,12 @@ public class ImportKeysAdapter extends ArrayAdapter<ImportKeysListEntry> {
             holder.fingerprint.setVisibility(View.GONE);
         }
 
-        holder.algorithm.setText("" + entry.bitStrength + "/" + entry.algorithm);
+        if (entry.bitStrength != 0 && entry.algorithm != null) {
+            holder.algorithm.setText("" + entry.bitStrength + "/" + entry.algorithm);
+            holder.algorithm.setVisibility(View.VISIBLE);
+        } else {
+            holder.algorithm.setVisibility(View.INVISIBLE);
+        }
 
         if (entry.revoked) {
             holder.status.setVisibility(View.VISIBLE);

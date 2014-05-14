@@ -98,10 +98,8 @@ public class KeybaseKeyServer extends KeyServer {
         entry.setExtraData(keybaseId);
 
         // TODO: Fix; have suggested keybase provide this value to avoid search-time crypto calls
-        entry.setBitStrength(4096);
-        entry.setAlgorithm("RSA");
-        entry.setKeyIdHex("0x" + key_fingerprint);
-        entry.setRevoked(false);
+        //entry.setBitStrength(4096);
+        //entry.setAlgorithm("RSA");
 
         // ctime
         final long creationDate = JWalk.getLong(match, "them", "public_keys", "primary", "ctime");
