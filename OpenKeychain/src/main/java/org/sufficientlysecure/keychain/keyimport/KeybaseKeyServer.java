@@ -55,10 +55,19 @@ public class KeybaseKeyServer extends KeyServer {
 
                 // only list them if they have a key
                 if (JWalk.optObject(match, "components", "key_fingerprint") != null) {
-                    results.add(makeEntry(match));
+                    String keybaseId = JWalk.getString(match, "components", "username", "val");
+                    String fingerprint = JWalk.getString(match, "components", "key_fingerprint", "val");
+                    fingerprint = fingerprint.replace(" ", "").toUpperCase();
+
+                    if (keybaseId.equals(query) || fingerprint.startsWith(query.toUpperCase())) {
+                        results.add(makeEntry(match));
+                    } else {
+                        results.add(makeEntry(match));
+                    }
                 }
             }
         } catch (Exception e) {
+            Log.e(Constants.TAG, "keybase result parsing error", e);
             throw new QueryException("Unexpected structure in keybase search result: " + e.getMessage());
         }
 
