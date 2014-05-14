@@ -282,8 +282,17 @@ public class SelectPublicKeyFragment extends ListFragmentWorkaround implements T
         String where = null;
         String whereArgs[] = null;
         if (mCurQuery != null) {
-            where = KeyRings.USER_ID + " LIKE ?";
-            whereArgs = new String[]{"%" + mCurQuery + "%"};
+            String[] words = mCurQuery.trim().split("\\s+");
+            whereArgs = new String[words.length];
+            for (int i = 0; i < words.length; ++i) {
+                if (where == null) {
+                    where = "";
+                } else {
+                    where += " AND ";
+                }
+                where += KeyRings.USER_ID + " LIKE ?";
+                whereArgs[i] = "%" + words[i] + "%";
+            }
         }
 
         // Now create and return a CursorLoader that will take care of
