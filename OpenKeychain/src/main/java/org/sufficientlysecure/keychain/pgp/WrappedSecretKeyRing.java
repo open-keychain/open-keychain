@@ -120,4 +120,8 @@ public class WrappedSecretKeyRing extends WrappedKeyRing {
         });
     }
 
+    public UncachedSecretKeyRing getUncached() {
+        return new UncachedSecretKeyRing(mRing);
+    }
+
 }

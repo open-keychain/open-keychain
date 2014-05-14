@@ -34,12 +34,6 @@ import android.os.Messenger;
 import android.os.RemoteException;
 import android.support.v4.util.LongSparseArray;
 
-import org.spongycastle.openpgp.PGPException;
-import org.spongycastle.openpgp.PGPPrivateKey;
-import org.spongycastle.openpgp.PGPSecretKey;
-import org.spongycastle.openpgp.PGPSecretKeyRing;
-import org.spongycastle.openpgp.operator.PBESecretKeyDecryptor;
-import org.spongycastle.openpgp.operator.jcajce.JcePBESecretKeyDecryptorBuilder;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.helper.Preferences;
 import org.sufficientlysecure.keychain.pgp.WrappedSecretKeyRing;
@@ -48,7 +42,6 @@ import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.util.Log;
 
 import java.util.Date;
-import java.util.Iterator;
 
 /**
  * This service runs in its own process, but is available to all other processes as the main
@@ -191,7 +184,8 @@ public class PassphraseCacheService extends Service {
             // get cached passphrase
             String cachedPassphrase = mPassphraseCache.get(keyId);
             if (cachedPassphrase == null) {
-                // this is an error
+                Log.d(TAG, "Passphrase not (yet) cached, returning null");
+                // not really an error, just means the passphrase is not cached but not empty either
                 return null;
             }
 
@@ -204,44 +198,6 @@ public class PassphraseCacheService extends Service {
             Log.e(TAG, "Passphrase for unknown key was requested!");
             return null;
         }
-    }
-
-    @Deprecated
-    public static boolean hasPassphrase(PGPSecretKeyRing secretKeyRing) {
-        PGPSecretKey secretKey = null;
-        boolean foundValidKey = false;
-        for (Iterator keys = secretKeyRing.getSecretKeys(); keys.hasNext(); ) {
-            secretKey = (PGPSecretKey) keys.next();
-            if (!secretKey.isPrivateKeyEmpty()) {
-                foundValidKey = true;
-                break;
-            }
-        }
-        if(!foundValidKey) {
-            return false;
-        }
-
-        try {
-            PBESecretKeyDecryptor keyDecryptor = new JcePBESecretKeyDecryptorBuilder()
-                    .setProvider("SC").build("".toCharArray());
-            PGPPrivateKey testKey = secretKey.extractPrivateKey(keyDecryptor);
-            return testKey == null;
-        } catch(PGPException e) {
-            // this means the crc check failed -> passphrase required
-            return true;
-        }
-    }
-
-    /**
-     * Checks if key has a passphrase.
-     *
-     * @param secretKeyId
-     * @return true if it has a passphrase
-     */
-    @Deprecated
-    public static boolean hasPassphrase(Context context, long secretKeyId)
-            throws ProviderHelper.NotFoundException {
-        return new ProviderHelper(context).getWrappedSecretKeyRing(secretKeyId).hasPassphrase();
     }
 
     /**

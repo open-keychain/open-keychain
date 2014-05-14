@@ -5,6 +5,9 @@ import org.spongycastle.openpgp.PGPPublicKey;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.util.IterableIterator;
 
+import java.io.IOException;
+import java.io.OutputStream;
+
 public abstract class WrappedKeyRing extends KeyRing {
 
     private final boolean mHasAnySecret;
@@ -74,6 +77,10 @@ public abstract class WrappedKeyRing extends KeyRing {
         } catch (PgpGeneralException e) {
             return false;
         }
+    }
+
+    public void encode(OutputStream stream) throws IOException {
+        getRing().encode(stream);
     }
 
     abstract PGPKeyRing getRing();

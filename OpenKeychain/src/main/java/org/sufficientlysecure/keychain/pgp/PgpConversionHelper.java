@@ -21,8 +21,6 @@ import org.spongycastle.openpgp.PGPKeyRing;
 import org.spongycastle.openpgp.PGPObjectFactory;
 import org.spongycastle.openpgp.PGPSecretKey;
 import org.spongycastle.openpgp.PGPSecretKeyRing;
-import org.spongycastle.openpgp.PGPSignature;
-import org.spongycastle.openpgp.PGPSignatureList;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.util.Log;
 
@@ -120,28 +118,6 @@ public class PgpConversionHelper {
         }
 
         return new UncachedSecretKey(secKey);
-    }
-
-    /**
-     * Convert from byte[] to PGPSignature
-     *
-     * @param sigBytes
-     * @return
-     */
-    public static PGPSignature BytesToPGPSignature(byte[] sigBytes) {
-        PGPObjectFactory factory = new PGPObjectFactory(sigBytes);
-        PGPSignatureList signatures = null;
-        try {
-            if ((signatures = (PGPSignatureList) factory.nextObject()) == null || signatures.isEmpty()) {
-                Log.e(Constants.TAG, "No signatures given!");
-                return null;
-            }
-        } catch (IOException e) {
-            Log.e(Constants.TAG, "Error while converting to PGPSignature!", e);
-            return null;
-        }
-
-        return signatures.get(0);
     }
 
 }

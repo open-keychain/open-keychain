@@ -26,16 +26,13 @@ import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
 
-import org.spongycastle.bcpg.sig.KeyFlags;
-import org.spongycastle.openpgp.PGPKeyRing;
-import org.spongycastle.openpgp.PGPObjectFactory;
-import org.spongycastle.openpgp.PGPUtil;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.helper.FileHelper;
 import org.sufficientlysecure.keychain.helper.OtherHelper;
 import org.sufficientlysecure.keychain.helper.Preferences;
 import org.sufficientlysecure.keychain.keyimport.HkpKeyserver;
+import org.sufficientlysecure.keychain.pgp.UncachedSecretKey;
 import org.sufficientlysecure.keychain.pgp.WrappedPublicKeyRing;
 import org.sufficientlysecure.keychain.pgp.WrappedSecretKey;
 import org.sufficientlysecure.keychain.pgp.WrappedSecretKeyRing;
@@ -594,21 +591,21 @@ public class KeychainIntentService extends IntentService
                 buf = keyOperations.createKey(Constants.choice.algorithm.rsa,
                         4096, passphrase, true);
                 os.write(buf);
-                keyUsageList.add(KeyFlags.CERTIFY_OTHER);
+                keyUsageList.add(UncachedSecretKey.CERTIFY_OTHER);
                 keysCreated++;
                 setProgress(keysCreated, keysTotal);
 
                 buf = keyOperations.createKey(Constants.choice.algorithm.rsa,
                         4096, passphrase, false);
                 os.write(buf);
-                keyUsageList.add(KeyFlags.ENCRYPT_COMMS | KeyFlags.ENCRYPT_STORAGE);
+                keyUsageList.add(UncachedSecretKey.ENCRYPT_COMMS | UncachedSecretKey.ENCRYPT_STORAGE);
                 keysCreated++;
                 setProgress(keysCreated, keysTotal);
 
                 buf = keyOperations.createKey(Constants.choice.algorithm.rsa,
                         4096, passphrase, false);
                 os.write(buf);
-                keyUsageList.add(KeyFlags.SIGN_DATA);
+                keyUsageList.add(UncachedSecretKey.SIGN_DATA);
                 keysCreated++;
                 setProgress(keysCreated, keysTotal);
 
@@ -749,23 +746,15 @@ public class KeychainIntentService extends IntentService
                     byte[] downloadedKeyBytes = server.get(keybaseId).getBytes();
 
                     // create PGPKeyRing object based on downloaded armored key
-                    PGPKeyRing downloadedKey = null;
+                    UncachedKeyRing downloadedKey = null;
                     BufferedInputStream bufferedInput =
                             new BufferedInputStream(new ByteArrayInputStream(downloadedKeyBytes));
                     if (bufferedInput.available() > 0) {
-                        InputStream in = PGPUtil.getDecoderStream(bufferedInput);
-                        PGPObjectFactory objectFactory = new PGPObjectFactory(in);
-
-                        // get first object in block
-                        Object obj;
-                        if ((obj = objectFactory.nextObject()) != null) {
-
-                            if (obj instanceof PGPKeyRing) {
-                                downloadedKey = (PGPKeyRing) obj;
-                            } else {
-                                throw new PgpGeneralException("Object not recognized as PGPKeyRing!");
-                            }
+                        List<UncachedKeyRing> rings = UncachedKeyRing.fromStream(bufferedInput);
+                        if(rings.isEmpty()) {
+                            throw new PgpGeneralException("No keys in result!");
                         }
+                        downloadedKey = rings.get(0);
                     }
 
                     // save key bytes in entry object for doing the

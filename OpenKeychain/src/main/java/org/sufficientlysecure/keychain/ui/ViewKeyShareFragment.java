@@ -41,6 +41,7 @@ import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.compatibility.ClipboardReflection;
 import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
+import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.KeychainContract.Keys;
@@ -190,6 +191,9 @@ public class ViewKeyShareFragment extends LoaderFragment implements
                 }
                 startActivity(Intent.createChooser(sendIntent, title));
             }
+        } catch (PgpGeneralException e) {
+            Log.e(Constants.TAG, "error processing key!", e);
+            AppMsg.makeText(getActivity(), R.string.error_key_processing, AppMsg.STYLE_ALERT).show();
         } catch (IOException e) {
             Log.e(Constants.TAG, "error processing key!", e);
             AppMsg.makeText(getActivity(), R.string.error_key_processing, AppMsg.STYLE_ALERT).show();

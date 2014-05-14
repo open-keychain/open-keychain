@@ -257,7 +257,8 @@ public class PgpImportExport {
             updateProgress(progress * 100 / masterKeyIdsSize, 100);
 
             try {
-                PGPSecretKeyRing secretKeyRing = mProviderHelper.getPGPSecretKeyRing(secretKeyMasterId);
+                WrappedSecretKeyRing secretKeyRing =
+                        mProviderHelper.getWrappedSecretKeyRing(secretKeyMasterId);
                 secretKeyRing.encode(arOutStream);
             } catch (ProviderHelper.NotFoundException e) {
                 Log.e(Constants.TAG, "key not found!", e);
@@ -287,18 +288,13 @@ public class PgpImportExport {
     public int storeKeyRingInCache(UncachedKeyRing ring, UncachedKeyRing secretRing) {
         int status;
         try {
-            // TODO make sure these are correctly typed!
-            PGPPublicKeyRing publicKeyRing = (PGPPublicKeyRing) ring.getRing();
-            PGPSecretKeyRing secretKeyRing = null;
-            if(secretRing != null) {
-                secretKeyRing = (PGPSecretKeyRing) secretRing.getRing();
-            }
+            UncachedSecretKeyRing secretKeyRing = null;
             // see what type we have. we can either have a secret + public keyring, or just public
             if (secretKeyRing != null) {
                 mProviderHelper.saveKeyRing(ring, secretRing);
                 status = RETURN_OK;
             } else {
-                mProviderHelper.saveKeyRing(publicKeyRing);
+                mProviderHelper.saveKeyRing(ring);
                 status = RETURN_OK;
             }
         } catch (IOException e) {

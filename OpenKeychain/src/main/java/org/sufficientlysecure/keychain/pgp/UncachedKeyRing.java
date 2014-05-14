@@ -1,8 +1,9 @@
 package org.sufficientlysecure.keychain.pgp;
 
+import org.spongycastle.bcpg.ArmoredOutputStream;
 import org.spongycastle.openpgp.PGPKeyRing;
 import org.spongycastle.openpgp.PGPObjectFactory;
-import org.spongycastle.openpgp.PGPPublicKeyRing;
+import org.spongycastle.openpgp.PGPPublicKey;
 import org.spongycastle.openpgp.PGPSecretKeyRing;
 import org.spongycastle.openpgp.PGPUtil;
 import org.sufficientlysecure.keychain.Constants;
@@ -13,6 +14,8 @@ import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
@@ -26,6 +29,10 @@ public class UncachedKeyRing {
         mIsSecret = ring instanceof PGPSecretKeyRing;
     }
 
+    public long getMasterKeyId() {
+        return mRing.getPublicKey().getKeyID();
+    }
+
     /* TODO don't use this */
     @Deprecated
     public PGPKeyRing getRing() {
@@ -34,6 +41,21 @@ public class UncachedKeyRing {
 
     public UncachedPublicKey getPublicKey() {
         return new UncachedPublicKey(mRing.getPublicKey());
+    }
+
+    public Iterator<UncachedPublicKey> getPublicKeys() {
+        final Iterator<PGPPublicKey> it = mRing.getPublicKeys();
+        return new Iterator<UncachedPublicKey>() {
+            public void remove() {
+                it.remove();
+            }
+            public UncachedPublicKey next() {
+                return new UncachedPublicKey(it.next());
+            }
+            public boolean hasNext() {
+                return it.hasNext();
+            }
+        };
     }
 
     public boolean isSecret() {
@@ -50,6 +72,15 @@ public class UncachedKeyRing {
 
     public static UncachedKeyRing decodePubkeyFromData(byte[] data)
             throws PgpGeneralException, IOException {
+        UncachedKeyRing ring = decodeFromData(data);
+        if(ring.isSecret()) {
+            throw new PgpGeneralException("Object not recognized as PGPPublicKeyRing!");
+        }
+        return ring;
+    }
+
+    public static UncachedKeyRing decodeFromData(byte[] data)
+            throws PgpGeneralException, IOException {
         BufferedInputStream bufferedInput =
                 new BufferedInputStream(new ByteArrayInputStream(data));
         if (bufferedInput.available() > 0) {
@@ -58,13 +89,14 @@ public class UncachedKeyRing {
 
             // get first object in block
             Object obj;
-            if ((obj = objectFactory.nextObject()) != null && obj instanceof PGPPublicKeyRing) {
-                return new UncachedKeyRing((PGPPublicKeyRing) obj);
+            if ((obj = objectFactory.nextObject()) != null && obj instanceof PGPKeyRing) {
+                // the constructor will take care of the public/secret part
+                return new UncachedKeyRing((PGPKeyRing) obj);
             } else {
-                throw new PgpGeneralException("Object not recognized as PGPPublicKeyRing!");
+                throw new PgpGeneralException("Object not recognized as PGPKeyRing!");
             }
         } else {
-            throw new PgpGeneralException("Object not recognized as PGPPublicKeyRing!");
+            throw new PgpGeneralException("Object not recognized as PGPKeyRing!");
         }
     }
 
@@ -87,6 +119,13 @@ public class UncachedKeyRing {
             }
         }
         return result;
+    }
+
+    public void encodeArmored(OutputStream out, String version) throws IOException {
+        ArmoredOutputStream aos = new ArmoredOutputStream(out);
+        aos.setHeader("Version", version);
+        aos.write(mRing.getEncoded());
+        aos.close();
     }
 
 }

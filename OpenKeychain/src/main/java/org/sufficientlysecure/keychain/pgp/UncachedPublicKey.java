@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.Iterator;
 import java.util.List;
 
 public class UncachedPublicKey {
@@ -173,8 +174,24 @@ public class UncachedPublicKey {
         return mPublicKey.getFingerprint();
     }
 
-    // Note that this method has package visibility - no access outside the pgp package!
-    PGPPublicKey getPublicKey() {
+    // TODO This method should have package visibility - no access outside the pgp package!
+    // (It's still used in ProviderHelper at this point)
+    public PGPPublicKey getPublicKey() {
         return mPublicKey;
+    }
+
+    public Iterator<WrappedSignature> getSignaturesForId(String userId) {
+        final Iterator<PGPSignature> it = mPublicKey.getSignaturesForID(userId);
+        return new Iterator<WrappedSignature>() {
+            public void remove() {
+                it.remove();
+            }
+            public WrappedSignature next() {
+                return new WrappedSignature(it.next());
+            }
+            public boolean hasNext() {
+                return it.hasNext();
+            }
+        };
     }
 }

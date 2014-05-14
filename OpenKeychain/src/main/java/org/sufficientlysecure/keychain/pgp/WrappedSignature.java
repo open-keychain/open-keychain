@@ -5,6 +5,7 @@ import org.spongycastle.bcpg.SignatureSubpacketTags;
 import org.spongycastle.bcpg.sig.RevocationReason;
 import org.spongycastle.openpgp.PGPException;
 import org.spongycastle.openpgp.PGPObjectFactory;
+import org.spongycastle.openpgp.PGPPublicKey;
 import org.spongycastle.openpgp.PGPSignature;
 import org.spongycastle.openpgp.PGPSignatureList;
 import org.spongycastle.openpgp.operator.jcajce.JcaPGPContentVerifierBuilderProvider;
@@ -14,6 +15,7 @@ import org.sufficientlysecure.keychain.util.Log;
 
 import java.io.IOException;
 import java.security.SignatureException;
+import java.util.Date;
 
 public class WrappedSignature {
 
@@ -33,16 +35,57 @@ public class WrappedSignature {
         return mSig.getKeyID();
     }
 
+    public int getSignatureType() {
+        return mSig.getSignatureType();
+    }
+
     public int getKeyAlgorithm() {
         return mSig.getKeyAlgorithm();
     }
 
+    public Date getCreationTime() {
+        return mSig.getCreationTime();
+    }
+
+    public byte[] getEncoded() throws IOException {
+        return mSig.getEncoded();
+    }
+
+    public boolean isRevocation() {
+        return mSig.getHashedSubPackets().hasSubpacket(SignatureSubpacketTags.REVOCATION_REASON);
+    }
+
+    public boolean isPrimaryUserId() {
+        return mSig.getHashedSubPackets().isPrimaryUserID();
+    }
+
+    public String getRevocationReason() throws PgpGeneralException {
+        if(!isRevocation()) {
+            throw new PgpGeneralException("Not a revocation signature.");
+        }
+        SignatureSubpacket p = mSig.getHashedSubPackets().getSubpacket(
+                SignatureSubpacketTags.REVOCATION_REASON);
+        // For some reason, this is missing in SignatureSubpacketInputStream:146
+        if (!(p instanceof RevocationReason)) {
+            p = new RevocationReason(false, p.getData());
+        }
+        return ((RevocationReason) p).getRevocationDescription();
+    }
+
     public void init(WrappedPublicKey key) throws PgpGeneralException {
+        init(key.getPublicKey());
+    }
+
+    public void init(UncachedPublicKey key) throws PgpGeneralException {
+        init(key.getPublicKey());
+    }
+
+    protected void init(PGPPublicKey key) throws PgpGeneralException {
         try {
             JcaPGPContentVerifierBuilderProvider contentVerifierBuilderProvider =
                     new JcaPGPContentVerifierBuilderProvider()
                             .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME);
-            mSig.init(contentVerifierBuilderProvider, key.getPublicKey());
+            mSig.init(contentVerifierBuilderProvider, key);
         } catch(PGPException e) {
             throw new PgpGeneralException(e);
         }
@@ -74,35 +117,21 @@ public class WrappedSignature {
         }
     }
 
-    public boolean isRevocation() {
-        return mSig.getHashedSubPackets().hasSubpacket(SignatureSubpacketTags.REVOCATION_REASON);
-    }
-
-    public String getRevocationReason() throws PgpGeneralException {
-        if(!isRevocation()) {
-            throw new PgpGeneralException("Not a revocation signature.");
-        }
-        SignatureSubpacket p = mSig.getHashedSubPackets().getSubpacket(
-                SignatureSubpacketTags.REVOCATION_REASON);
-        // For some reason, this is missing in SignatureSubpacketInputStream:146
-        if (!(p instanceof RevocationReason)) {
-            p = new RevocationReason(false, p.getData());
-        }
-        return ((RevocationReason) p).getRevocationDescription();
-    }
-
-    /** Verify a signature for this pubkey, after it has been initialized by the signer using
-     * initSignature(). This method should probably move into a wrapped PGPSignature class
-     * at some point.
-     */
-    public boolean verifySignature(WrappedPublicKey key, String uid) throws PgpGeneralException {
+    protected boolean verifySignature(PGPPublicKey key, String uid) throws PgpGeneralException {
         try {
-            return mSig.verifyCertification(uid, key.getPublicKey());
+            return mSig.verifyCertification(uid, key);
         } catch (SignatureException e) {
             throw new PgpGeneralException("Error!", e);
         } catch (PGPException e) {
             throw new PgpGeneralException("Error!", e);
         }
+    }
+
+    public boolean verifySignature(UncachedPublicKey key, String uid) throws PgpGeneralException {
+        return verifySignature(key.getPublicKey(), uid);
+    }
+    public boolean verifySignature(WrappedPublicKey key, String uid) throws PgpGeneralException {
+        return verifySignature(key.getPublicKey(), uid);
     }
 
     public static WrappedSignature fromBytes(byte[] data) {
