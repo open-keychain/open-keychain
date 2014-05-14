@@ -146,9 +146,9 @@ public class ImportKeysAdapter extends ArrayAdapter<ImportKeysListEntry> {
 
         holder.keyId.setText(entry.keyIdHex);
 
-        if (entry.fingerPrintHex != null) {
+        if (entry.fingerprintHex != null) {
             holder.fingerprint.setVisibility(View.VISIBLE);
-            holder.fingerprint.setText(PgpKeyHelper.colorizeFingerprint(entry.fingerPrintHex));
+            holder.fingerprint.setText(PgpKeyHelper.colorizeFingerprint(entry.fingerprintHex));
         } else {
             holder.fingerprint.setVisibility(View.GONE);
         }

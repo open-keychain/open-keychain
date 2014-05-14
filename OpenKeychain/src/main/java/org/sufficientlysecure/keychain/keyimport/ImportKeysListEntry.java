@@ -45,7 +45,7 @@ public class ImportKeysListEntry implements Serializable, Parcelable {
     public String keyIdHex;
     public boolean revoked;
     public Date date; // TODO: not displayed
-    public String fingerPrintHex;
+    public String fingerprintHex;
     public int bitStrength;
     public String algorithm;
     public boolean secretKey;
@@ -67,7 +67,7 @@ public class ImportKeysListEntry implements Serializable, Parcelable {
         dest.writeLong(keyId);
         dest.writeByte((byte) (revoked ? 1 : 0));
         dest.writeSerializable(date);
-        dest.writeString(fingerPrintHex);
+        dest.writeString(fingerprintHex);
         dest.writeString(keyIdHex);
         dest.writeInt(bitStrength);
         dest.writeString(algorithm);
@@ -87,7 +87,7 @@ public class ImportKeysListEntry implements Serializable, Parcelable {
             vr.keyId = source.readLong();
             vr.revoked = source.readByte() == 1;
             vr.date = (Date) source.readSerializable();
-            vr.fingerPrintHex = source.readString();
+            vr.fingerprintHex = source.readString();
             vr.keyIdHex = source.readString();
             vr.bitStrength = source.readInt();
             vr.algorithm = source.readString();
@@ -153,12 +153,12 @@ public class ImportKeysListEntry implements Serializable, Parcelable {
         this.date = date;
     }
 
-    public String getFingerPrintHex() {
-        return fingerPrintHex;
+    public String getFingerprintHex() {
+        return fingerprintHex;
     }
 
-    public void setFingerPrintHex(String fingerPrintHex) {
-        this.fingerPrintHex = fingerPrintHex;
+    public void setFingerprintHex(String fingerprintHex) {
+        this.fingerprintHex = fingerprintHex;
     }
 
     public int getBitStrength() {
@@ -271,7 +271,7 @@ public class ImportKeysListEntry implements Serializable, Parcelable {
         this.keyIdHex = PgpKeyHelper.convertKeyIdToHex(keyId);
 
         this.revoked = key.isRevoked();
-        this.fingerPrintHex = PgpKeyHelper.convertFingerprintToHex(key.getFingerprint());
+        this.fingerprintHex = PgpKeyHelper.convertFingerprintToHex(key.getFingerprint());
         this.bitStrength = key.getBitStrength();
         final int algorithm = key.getAlgorithm();
         this.algorithm = PgpKeyHelper.getAlgorithmInfo(context, algorithm);
