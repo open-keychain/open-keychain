@@ -41,6 +41,11 @@ public class KeybaseKeyServer extends KeyServer {
             InsufficientQuery {
         ArrayList<ImportKeysListEntry> results = new ArrayList<ImportKeysListEntry>();
 
+        if (query.startsWith("0x")) {
+            // cut off "0x" if a user is searching for a key id
+            query = query.substring(2);
+        }
+
         JSONObject fromQuery = getFromKeybase("_/api/1.0/user/autocomplete.json?q=", query);
         try {
 
