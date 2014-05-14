@@ -50,6 +50,7 @@ public class ImportKeysListEntry implements Serializable, Parcelable {
     public String algorithm;
     public boolean secretKey;
     public String mPrimaryUserId;
+    private String mExtraData;
 
     private boolean mSelected;
 
@@ -74,6 +75,7 @@ public class ImportKeysListEntry implements Serializable, Parcelable {
         dest.writeByte((byte) (mSelected ? 1 : 0));
         dest.writeInt(mBytes.length);
         dest.writeByteArray(mBytes);
+        dest.writeString(mExtraData);
     }
 
     public static final Creator<ImportKeysListEntry> CREATOR = new Creator<ImportKeysListEntry>() {
@@ -93,6 +95,7 @@ public class ImportKeysListEntry implements Serializable, Parcelable {
             vr.mSelected = source.readByte() == 1;
             vr.mBytes = new byte[source.readInt()];
             source.readByteArray(vr.mBytes);
+            vr.mExtraData = source.readString();
 
             return vr;
         }
@@ -196,6 +199,14 @@ public class ImportKeysListEntry implements Serializable, Parcelable {
 
     public void setPrimaryUserId(String uid) {
         mPrimaryUserId = uid;
+    }
+
+    public String getExtraData() {
+        return mExtraData;
+    }
+
+    public void setExtraData(String extraData) {
+        mExtraData = extraData;
     }
 
     /**

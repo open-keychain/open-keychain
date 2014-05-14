@@ -74,13 +74,13 @@ public class KeybaseKeyServer extends KeyServer {
         return results;
     }
 
-    private JSONObject getUser(String keybaseID) throws QueryException {
+    private JSONObject getUser(String keybaseId) throws QueryException {
         try {
-            return getFromKeybase("_/api/1.0/user/lookup.json?username=", keybaseID);
+            return getFromKeybase("_/api/1.0/user/lookup.json?username=", keybaseId);
         } catch (Exception e) {
             String detail = "";
-            if (keybaseID != null) {
-                detail = ". Query was for user '" + keybaseID + "'";
+            if (keybaseId != null) {
+                detail = ". Query was for user '" + keybaseId + "'";
             }
             throw new QueryException(e.getMessage() + detail);
         }
@@ -88,12 +88,14 @@ public class KeybaseKeyServer extends KeyServer {
 
     private ImportKeysListEntry makeEntry(JSONObject match) throws QueryException, JSONException {
 
-        String keybaseID = JWalk.getString(match, "components", "username", "val");
         String key_fingerprint = JWalk.getString(match, "components", "key_fingerprint", "val");
         key_fingerprint = key_fingerprint.replace(" ", "").toUpperCase();
         match = getUser(keybaseID);
 
         final ImportKeysListEntry entry = new ImportKeysListEntry();
+        String keybaseId = JWalk.getString(match, "components", "username", "val");
+        // store extra info, so we can query for the keybase id directly
+        entry.setExtraData(keybaseId);
 
         // TODO: Fix; have suggested keybase provide this value to avoid search-time crypto calls
         entry.setBitStrength(4096);
@@ -116,7 +118,6 @@ public class KeybaseKeyServer extends KeyServer {
         ArrayList<String> userIds = new ArrayList<String>();
         String name = "keybase.io/" + keybaseID + " <" + keybaseID + "@keybase.io>";
         userIds.add(name);
-        userIds.add(keybaseID);
         entry.setUserIds(userIds);
         entry.setPrimaryUserId(name);
         return entry;

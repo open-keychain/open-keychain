@@ -749,8 +749,8 @@ public class KeychainIntentService extends IntentService
                 KeybaseKeyServer server = new KeybaseKeyServer();
                 for (ImportKeysListEntry entry : entries) {
                     // the keybase handle is in userId(1)
-                    String keybaseID = entry.getUserIds().get(1);
-                    byte[] downloadedKeyBytes = server.get(keybaseID).getBytes();
+                    String keybaseId = entry.getExtraData();
+                    byte[] downloadedKeyBytes = server.get(keybaseId).getBytes();
 
                     // create PGPKeyRing object based on downloaded armored key
                     PGPKeyRing downloadedKey = null;
