@@ -32,6 +32,9 @@ import org.sufficientlysecure.keychain.Constants;
 
 import java.util.Hashtable;
 
+/**
+ * Copied from Bitcoin Wallet
+ */
 public class QrCodeUtils {
     public static final QRCodeWriter QR_CODE_WRITER = new QRCodeWriter();
 

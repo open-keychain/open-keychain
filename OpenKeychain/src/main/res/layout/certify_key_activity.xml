@@ -35,12 +35,13 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="4dp"
             android:layout_marginTop="14dp"
-            android:text="KEY TO SIGN" />
+            android:text="@string/section_key_to_certify" />
 
         <TableLayout
             android:layout_width="wrap_content"
             android:layout_height="0dp"
             android:layout_weight="1"
+            android:layout_marginLeft="8dp"
             android:shrinkColumns="1">
 
             <TableRow
@@ -93,7 +94,7 @@
                     android:text="@string/label_fingerprint" />
 
                 <TextView
-                    android:id="@+id/fingerprint"
+                    android:id="@+id/view_key_fingerprint"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:typeface="monospace" />
@@ -108,10 +109,10 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="4dp"
             android:layout_marginTop="14dp"
-            android:text="@string/section_uids_to_sign" />
+            android:text="@string/section_uids_to_certify" />
 
         <org.sufficientlysecure.keychain.ui.widget.FixedListView
-            android:id="@+id/user_ids"
+            android:id="@+id/view_key_user_ids"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:descendantFocusability="blocksDescendants" />
@@ -134,22 +135,37 @@
             android:text="@string/label_send_key" />
 
         <Spinner
-            android:id="@+id/sign_key_keyserver"
+            android:id="@+id/upload_key_keyserver"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="4dp"
             android:layout_marginTop="4dp"
             android:enabled="false" />
 
-        <com.beardedhen.androidbootstrap.BootstrapButton
-            android:id="@+id/sign_key_sign_button"
-            android:layout_width="match_parent"
-            android:layout_height="60dp"
-            android:layout_marginBottom="4dp"
+        <TextView
+            style="@style/SectionHeader"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
             android:layout_marginTop="14dp"
-            android:text="@string/btn_certify"
-            bootstrapbutton:bb_icon_left="fa-pencil"
-            bootstrapbutton:bb_type="info" />
+            android:text="@string/section_actions"
+            android:layout_weight="1" />
+
+        <TextView
+            android:id="@+id/sign_key_sign_button"
+            android:paddingLeft="8dp"
+            android:paddingRight="8dp"
+            android:layout_marginBottom="8dp"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="@string/key_view_action_certify"
+            android:minHeight="?android:attr/listPreferredItemHeight"
+            android:drawableRight="@drawable/ic_action_good"
+            android:drawablePadding="8dp"
+            android:gravity="center_vertical"
+            android:clickable="true"
+            style="@style/SelectableItem" />
+
     </LinearLayout>
 
 </ScrollView>

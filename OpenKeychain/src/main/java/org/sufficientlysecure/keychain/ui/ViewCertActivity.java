@@ -28,7 +28,6 @@ import android.support.v4.content.Loader;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.text.format.DateFormat;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
@@ -73,11 +72,12 @@ public class ViewCertActivity extends ActionBarActivity
 
     private Uri mDataUri;
 
-    private long mSignerKeyId;
+    private long mCertifierKeyId;
 
-    private TextView mSigneeKey, mSigneeUid, mAlgorithm, mType, mRReason, mCreation;
-    private TextView mSignerKey, mSignerUid, mStatus;
+    private TextView mSigneeKey, mSigneeUid, mAlgorithm, mType, mReason, mCreation;
+    private TextView mCertifierKey, mCertifierUid, mStatus;
     private View mRowReason;
+    private View mViewCertifierButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -93,13 +93,15 @@ public class ViewCertActivity extends ActionBarActivity
         mSigneeUid = (TextView) findViewById(R.id.signee_uid);
         mAlgorithm = (TextView) findViewById(R.id.algorithm);
         mType = (TextView) findViewById(R.id.signature_type);
-        mRReason = (TextView) findViewById(R.id.reason);
+        mReason = (TextView) findViewById(R.id.reason);
         mCreation = (TextView) findViewById(R.id.creation);
 
-        mSignerKey = (TextView) findViewById(R.id.signer_key_id);
-        mSignerUid = (TextView) findViewById(R.id.signer_uid);
+        mCertifierKey = (TextView) findViewById(R.id.signer_key_id);
+        mCertifierUid = (TextView) findViewById(R.id.signer_uid);
 
         mRowReason = findViewById(R.id.row_reason);
+
+        mViewCertifierButton = findViewById(R.id.view_cert_view_cert_key);
 
         mDataUri = getIntent().getData();
         if (mDataUri == null) {
@@ -121,7 +123,7 @@ public class ViewCertActivity extends ActionBarActivity
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         if (data.moveToFirst()) {
-            String signeeKey = "0x" + PgpKeyHelper.convertKeyIdToHex(data.getLong(INDEX_MASTER_KEY_ID));
+            String signeeKey = PgpKeyHelper.convertKeyIdToHex(data.getLong(INDEX_MASTER_KEY_ID));
             mSigneeKey.setText(signeeKey);
 
             String signeeUid = data.getString(INDEX_USER_ID);
@@ -130,22 +132,24 @@ public class ViewCertActivity extends ActionBarActivity
             Date creationDate = new Date(data.getLong(INDEX_CREATION) * 1000);
             mCreation.setText(DateFormat.getDateFormat(getApplicationContext()).format(creationDate));
 
-            mSignerKeyId = data.getLong(INDEX_KEY_ID_CERTIFIER);
-            String signerKey = "0x" + PgpKeyHelper.convertKeyIdToHex(mSignerKeyId);
-            mSignerKey.setText(signerKey);
+            mCertifierKeyId = data.getLong(INDEX_KEY_ID_CERTIFIER);
+            String certifierKey = PgpKeyHelper.convertKeyIdToHex(mCertifierKeyId);
+            mCertifierKey.setText(certifierKey);
 
-            String signerUid = data.getString(INDEX_SIGNER_UID);
-            if (signerUid != null) {
-                mSignerUid.setText(signerUid);
+            String certifierUid = data.getString(INDEX_SIGNER_UID);
+            if (certifierUid != null) {
+                mCertifierUid.setText(certifierUid);
             } else {
-                mSignerUid.setText(R.string.unknown_uid);
+                mCertifierUid.setText(R.string.unknown_uid);
             }
 
             PGPSignature sig = PgpConversionHelper.BytesToPGPSignature(data.getBlob(INDEX_DATA));
             try {
                 ProviderHelper providerHelper = new ProviderHelper(this);
+
                 CachedPublicKeyRing signeeRing = providerHelper.getCachedPublicKeyRing(data.getLong(INDEX_MASTER_KEY_ID));
                 CachedPublicKeyRing signerRing = providerHelper.getCachedPublicKeyRing(sig.getKeyID());
+
                 try {
                     signerRing.getSubkey().initSignature(sig);
                     if (signeeRing.getSubkey().verifySignature(sig, signeeUid)) {
@@ -191,25 +195,39 @@ public class ViewCertActivity extends ActionBarActivity
                             p = new RevocationReason(false, p.getData());
                         }
                         String reason = ((RevocationReason) p).getRevocationDescription();
-                        mRReason.setText(reason);
+                        mReason.setText(reason);
                         mRowReason.setVisibility(View.VISIBLE);
                     }
                     break;
                 }
             }
         }
+
+        // can't do this before the data is initialized
+        mViewCertifierButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent viewIntent = new Intent(ViewCertActivity.this, ViewKeyActivity.class);
+
+                try {
+                    ProviderHelper providerHelper = new ProviderHelper(ViewCertActivity.this);
+                    long signerMasterKeyId = providerHelper.getMasterKeyId(
+                            KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(Long.toString(mCertifierKeyId))
+                    );
+                    viewIntent.setData(KeyRings.buildGenericKeyRingUri(
+                                    Long.toString(signerMasterKeyId))
+                    );
+                    startActivity(viewIntent);
+                } catch (ProviderHelper.NotFoundException e) {
+                    // TODO notify user of this, maybe offer download?
+                    Log.e(Constants.TAG, "key not found!", e);
+                }
+            }
+        });
     }
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
-    }
-
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        super.onCreateOptionsMenu(menu);
-        getMenuInflater().inflate(R.menu.view_cert, menu);
-        return true;
     }
 
     @Override
@@ -221,25 +239,6 @@ public class ViewCertActivity extends ActionBarActivity
                 NavUtils.navigateUpTo(this, viewIntent);
                 return true;
             }
-            case R.id.menu_view_cert_view_signer:
-                // can't do this before the data is initialized
-                Intent viewIntent = new Intent(this, ViewKeyActivity.class);
-
-                try {
-                    ProviderHelper providerHelper = new ProviderHelper(this);
-                    long signerMasterKeyId = providerHelper.getMasterKeyId(
-                            KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(Long.toString(mSignerKeyId))
-                    );
-                    viewIntent.setData(KeyRings.buildGenericKeyRingUri(
-                            Long.toString(signerMasterKeyId))
-                    );
-                    startActivity(viewIntent);
-                } catch (ProviderHelper.NotFoundException e) {
-                    // TODO notify user of this, maybe offer download?
-                    Log.e(Constants.TAG, "key not found!", e);
-                }
-
-                return true;
         }
         return super.onOptionsItemSelected(item);
     }

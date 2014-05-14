@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <!-- Borderless Buttons for API < 11, see http://stackoverflow.com/a/14663170 -->
-<selector xmlns:android="http://schemas.android.com/apk/res/android" android:exitFadeDuration="@android:integer/config_shortAnimTime">
-    <item android:state_pressed="true" android:drawable="@color/emphasis" />
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_pressed="true" android:drawable="@color/bg_gray" />
     <item android:drawable="@android:color/transparent" />
 </selector>

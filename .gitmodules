@@ -19,3 +19,9 @@
 [submodule "extern/html-textview"]
 	path = extern/html-textview
 	url = https://github.com/open-keychain/html-textview.git
+[submodule "extern/openpgp-api-lib"]
+	path = extern/openpgp-api-lib
+	url = https://github.com/open-keychain/openpgp-api-lib.git
+[submodule "extern/openkeychain-api-lib"]
+	path = extern/openkeychain-api-lib
+	url = https://github.com/open-keychain/openkeychain-api-lib.git

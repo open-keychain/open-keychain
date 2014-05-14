@@ -15,6 +15,8 @@
     <string name="title_change_passphrase">Change Passphrase</string>
     <string name="title_set_passphrase">Set Passphrase</string>
     <string name="title_share_with">Share with…</string>
+    <string name="title_share_fingerprint_with">Share fingerprint with…</string>
+    <string name="title_share_key">Share key with…</string>
     <string name="title_share_file">Share file with…</string>
     <string name="title_encrypt_to_file">Encrypt To File</string>
     <string name="title_decrypt_to_file">Decrypt To File</string>
@@ -23,30 +25,34 @@
     <string name="title_export_keys">Export Keys</string>
     <string name="title_key_not_found">Key Not Found</string>
     <string name="title_send_key">Upload to Keyserver</string>
-    <string name="title_certify_key">Certify Key</string>
+    <string name="title_certify_key">Certify Identities</string>
     <string name="title_key_details">Key Details</string>
     <string name="title_help">Help</string>
 
     <!-- section -->
-    <string name="section_user_ids">User IDs</string>
-    <string name="section_keys">Keys</string>
+    <string name="section_user_ids">Identities</string>
+    <string name="section_keys">Subkeys</string>
     <string name="section_general">General</string>
     <string name="section_defaults">Defaults</string>
     <string name="section_advanced">Advanced</string>
     <string name="section_master_key">Master Key</string>
-    <string name="section_master_user_id">Master User ID</string>
+    <string name="section_master_user_id">Primary Identity</string>
     <string name="section_actions">Actions</string>
+    <string name="section_share_key">Whole key</string>
     <string name="section_certification_key">Your Key used for certification</string>
     <string name="section_upload_key">Upload Key</string>
     <string name="section_key_server">Keyserver</string>
     <string name="section_encrypt_and_or_sign">Encrypt and/or Sign</string>
     <string name="section_decrypt_verify">Decrypt and Verify</string>
+    <string name="section_fingerprint">Fingerprint</string>
+    <string name="section_key_to_certify">Key to be certified</string>
 
     <!-- button -->
     <string name="btn_certify">Certify</string>
-    <string name="btn_decrypt_verify">Decrypt and Verify</string>
+    <string name="btn_decrypt_verify_file">Decrypt, verify, and save file</string>
+    <string name="btn_decrypt_verify_message">Decrypt and verify message</string>
     <string name="btn_decrypt_verify_clipboard">From Clipboard</string>
-    <string name="btn_encrypt_file">Encrypt File</string>
+    <string name="btn_encrypt_file">Encrypt and save file</string>
     <string name="btn_save">Save</string>
     <string name="btn_do_not_save">Cancel</string>
     <string name="btn_delete">Delete</string>
@@ -62,6 +68,8 @@
     <string name="btn_lookup_key">Lookup key</string>
     <string name="btn_encryption_advanced_settings_show">Show advanced settings</string>
     <string name="btn_encryption_advanced_settings_hide">Hide advanced settings</string>
+    <string name="btn_share_encrypted_signed">Share encrypted/signed message…</string>
+    <string name="btn_view_cert_key">View certification key</string>
 
     <!-- menu -->
     <string name="menu_preferences">Settings</string>
@@ -75,6 +83,7 @@
     <string name="menu_create_key_expert">Create key (expert)</string>
     <string name="menu_search">Search</string>
     <string name="menu_import_from_key_server">Keyserver</string>
+    <string name="menu_import_from_keybase">Import from Keybase.io</string>
     <string name="menu_key_server">Keyserver…</string>
     <string name="menu_update_key">Update from keyserver</string>
     <string name="menu_export_key_to_server">Upload to key server</string>
@@ -121,7 +130,7 @@
     <string name="label_expiry">Expiry</string>
     <string name="label_usage">Usage</string>
     <string name="label_key_size">Key Size</string>
-    <string name="label_main_user_id">Main User ID</string>
+    <string name="label_main_user_id">Primary identity</string>
     <string name="label_name">Name</string>
     <string name="label_comment">Comment</string>
     <string name="label_email">Email</string>
@@ -207,7 +216,7 @@
     <string name="key_deletion_confirmation_multi">Do you really want to delete all selected public keys?\nYou can\'t undo this!</string>
     <string name="secret_key_deletion_confirmation">Do you really want to delete the SECRET key \'%s\'?\nYou can\'t undo this!</string>
     <string name="ask_save_changed_key">You have made changes to the keyring, would you like to save it?</string>
-    <string name="ask_empty_id_ok">You have added an empty user ID, are you sure you want to continue?</string>
+    <string name="ask_empty_id_ok">You have added an empty identity, are you sure you want to continue?</string>
     <string name="public_key_deletetion_confirmation">Do you really want to delete the public key \'%s\'?\nYou can\'t undo this!</string>
     <string name="also_export_secret_keys">Also export secret keys?</string>
 
@@ -247,12 +256,13 @@
     </plurals>
 
     <string name="key_send_success">Successfully uploaded key to server</string>
-    <string name="key_certify_success">Successfully certified key</string>
+    <string name="key_certify_success">Successfully certified identities</string>
     <string name="list_empty">This list is empty!</string>
     <string name="nfc_successful">Successfully sent key with NFC Beam!</string>
     <string name="key_copied_to_clipboard">Key has been copied to the clipboard!</string>
+    <string name="fingerprint_copied_to_clipboard">Fingerprint has been copied to the clipboard!</string>
     <string name="key_has_already_been_certified">Key has already been certified!</string>
-    <string name="select_key_to_sign">Please select a key to be used for signing!</string>
+    <string name="select_key_to_certify">Please select a key to be used for certification!</string>
     <string name="key_too_big_for_sharing">Key is too big to be shared this way!</string>
 
     <!--
@@ -268,8 +278,8 @@
     <string name="error_master_key_must_not_be_el_gamal">the master key cannot be an ElGamal key</string>
     <string name="error_unknown_algorithm_choice">unknown algorithm choice</string>
     <string name="error_user_id_no_email">no email found</string>
-    <string name="error_key_needs_a_user_id">need at least one user id</string>
-    <string name="error_main_user_id_must_not_be_empty">main user id must not be empty</string>
+    <string name="error_key_needs_a_user_id">need at least one identity</string>
+    <string name="error_main_user_id_must_not_be_empty">primary identity must not be empty</string>
     <string name="error_key_needs_master_key">need at least a master key</string>
     <string name="error_no_signature_passphrase">no passphrase given</string>
     <string name="error_no_signature_key">no signature key given</string>
@@ -348,6 +358,7 @@
     <string name="hint_public_keys">Search Public Keys</string>
     <string name="hint_secret_keys">Search Secret Keys</string>
     <string name="action_share_key_with">Share Key with…</string>
+    <string name="hint_keybase_search">Search Keybase.io</string>
 
     <!-- key bit length selections -->
     <string name="key_size_512">512</string>
@@ -393,6 +404,7 @@
     <string name="import_nfc_text">To receive keys via NFC, the device needs to be unlocked.</string>
     <string name="import_nfc_help_button">Help</string>
     <string name="import_clipboard_button">Get key from clipboard</string>
+    <string name="import_keybase_button">Get key from Keybase.io</string>
 
     <!-- Intent labels -->
     <string name="intent_decrypt_file">Decrypt File with OpenKeychain</string>
@@ -401,7 +413,7 @@
     <string name="intent_send_decrypt">Decrypt with OpenKeychain</string>
 
     <!-- Remote API -->
-    <string name="api_no_apps">No registered applications!\n\nThird-party applications can request access to OpenKeychain. After granting access, they will be listed here.</string>
+    <string name="api_no_apps">No registered applications!\n\nA list of supported third-party applications can be found in \'Help\'!</string>
     <string name="api_settings_show_info">Show advanced information</string>
     <string name="api_settings_hide_info">Hide advanced information</string>
     <string name="api_settings_show_advanced">Show advanced settings</string>
@@ -412,6 +424,7 @@
     <string name="api_settings_save">Save</string>
     <string name="api_settings_cancel">Cancel</string>
     <string name="api_settings_revoke">Revoke access</string>
+    <string name="api_settings_start">Start application</string>
     <string name="api_settings_delete_account">Delete account</string>
     <string name="api_settings_package_name">Package Name</string>
     <string name="api_settings_package_signature">SHA-256 of Package Signature</string>
@@ -422,8 +435,8 @@
     <string name="api_register_allow">Allow access</string>
     <string name="api_register_disallow">Disallow access</string>
     <string name="api_register_error_select_key">Please select a key!</string>
-    <string name="api_select_pub_keys_missing_text">No public keys were found for these user ids:</string>
-    <string name="api_select_pub_keys_dublicates_text">More than one public key exist for these user ids:</string>
+    <string name="api_select_pub_keys_missing_text">No public keys were found for these identities:</string>
+    <string name="api_select_pub_keys_dublicates_text">More than one public key exist for these identities:</string>
     <string name="api_select_pub_keys_text">Please review the list of recipients!</string>
     <string name="api_error_wrong_signature">Signature check failed! Have you installed this app from a different source? If you are sure that this is not an attack, revoke this app\'s registration in OpenKeychain and then register the app again.</string>
 
@@ -447,11 +460,15 @@
     <string name="key_list_empty_button_import">importing keys.</string>
 
     <!-- Key view -->
-    <string name="key_view_action_edit">Edit this key</string>
+    <string name="key_view_action_edit">Edit key</string>
     <string name="key_view_action_encrypt">Encrypt with this key</string>
-    <string name="key_view_action_certify">Certify this key</string>
-    <string name="key_view_tab_main">Info</string>
-    <string name="key_view_tab_certs">Certifications</string>
+    <string name="key_view_action_certify">Certify identities</string>
+    <string name="key_view_action_share_with">Share with…</string>
+    <string name="key_view_action_share_nfc">Share over NFC by holding the devices back to back</string>
+    <string name="key_view_tab_main">Main Info</string>
+    <string name="key_view_tab_share">Share</string>
+    <string name="key_view_tab_keys">Subkeys</string>
+    <string name="key_view_tab_certs">Certificates</string>
 
     <!-- Navigation Drawer -->
     <string name="nav_keys">Keys</string>
@@ -471,24 +488,24 @@
     <string name="encrypt_content_edit_text_hint">Write message here to encrypt and/or sign…</string>
     <string name="decrypt_content_edit_text_hint">Enter ciphertext here to decrypt and/or verify…</string>
 
-    <!-- certifications -->
+    <!-- certs -->
     <string name="cert_default">default</string>
     <string name="cert_none">none</string>
     <string name="cert_casual">casual</string>
     <string name="cert_positive">positive</string>
-    <string name="cert_revoke">revoke</string>
+    <string name="cert_revoke">revoked</string>
     <string name="cert_verify_ok">ok</string>
     <string name="cert_verify_failed">failed!</string>
     <string name="cert_verify_error">error!</string>
     <string name="cert_verify_unavailable">key unavailable</string>
 
     <!-- unsorted -->
-    <string name="section_signer_id">Signer</string>
+    <string name="section_certifier_id">Certifier</string>
     <string name="section_cert">Certificate Details</string>
-    <string name="label_user_id">User ID</string>
+    <string name="label_user_id">Identity</string>
     <string name="unknown_uid">&lt;unknown&gt;</string>
     <string name="empty_certs">No certificates for this key</string>
-    <string name="section_uids_to_sign">User IDs to sign</string>
+    <string name="section_uids_to_certify">Identities to certify</string>
     <string name="label_revocation">Revocation Reason</string>
     <string name="label_verify_status">Verification Status</string>
     <string name="label_cert_type">Type</string>
@@ -501,5 +518,6 @@
     <string name="unknown_algorithm">unknown</string>
     <string name="can_sign_not">cannot sign</string>
     <string name="error_encoding">Encoding error</string>
+    <string name="error_no_encrypt_subkey">No encryption subkey available!</string>
 
 </resources>

@@ -83,7 +83,7 @@ public class CreateKeyDialogFragment extends DialogFragment {
         final int childCount = getArguments().getInt(ARG_EDITOR_CHILD_COUNT);
         mInflater = context.getLayoutInflater();
 
-        AlertDialog.Builder dialog = new AlertDialog.Builder(context);
+        CustomAlertDialogBuilder dialog = new CustomAlertDialogBuilder(context);
 
         View view = mInflater.inflate(R.layout.create_key_dialog, null);
         dialog.setView(view);
@@ -146,7 +146,7 @@ public class CreateKeyDialogFragment extends DialogFragment {
                     }
                 });
 
-        final AlertDialog alertDialog = dialog.create();
+        final AlertDialog alertDialog = dialog.show();
 
         mCustomKeyEditText.addTextChangedListener(new TextWatcher() {
             @Override

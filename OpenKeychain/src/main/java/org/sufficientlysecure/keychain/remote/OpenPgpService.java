@@ -42,6 +42,7 @@ import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.remote.ui.RemoteServiceActivity;
 import org.sufficientlysecure.keychain.service.PassphraseCacheService;
 import org.sufficientlysecure.keychain.ui.ImportKeysActivity;
+import org.sufficientlysecure.keychain.ui.ViewKeyActivity;
 import org.sufficientlysecure.keychain.util.InputData;
 import org.sufficientlysecure.keychain.util.Log;
 
@@ -69,19 +70,25 @@ public class OpenPgpService extends RemoteService {
 
         for (String email : encryptionUserIds) {
             Uri uri = KeyRings.buildUnifiedKeyRingsFindByEmailUri(email);
-            Cursor cur = getContentResolver().query(uri, null, null, null, null);
-            if (cur.moveToFirst()) {
-                long id = cur.getLong(cur.getColumnIndex(KeyRings.MASTER_KEY_ID));
-                keyIds.add(id);
-            } else {
-                missingUserIdsCheck = true;
-                missingUserIds.add(email);
-                Log.d(Constants.TAG, "user id missing");
-            }
-            if (cur.moveToNext()) {
-                duplicateUserIdsCheck = true;
-                duplicateUserIds.add(email);
-                Log.d(Constants.TAG, "more than one user id with the same email");
+            Cursor cursor = getContentResolver().query(uri, null, null, null, null);
+            try {
+                if (cursor != null && cursor.moveToFirst()) {
+                    long id = cursor.getLong(cursor.getColumnIndex(KeyRings.MASTER_KEY_ID));
+                    keyIds.add(id);
+                } else {
+                    missingUserIdsCheck = true;
+                    missingUserIds.add(email);
+                    Log.d(Constants.TAG, "user id missing");
+                }
+                if (cursor != null && cursor.moveToNext()) {
+                    duplicateUserIdsCheck = true;
+                    duplicateUserIds.add(email);
+                    Log.d(Constants.TAG, "more than one user id with the same email");
+                }
+            } finally {
+                if (cursor != null) {
+                    cursor.close();
+                }
             }
         }
 
@@ -417,7 +424,15 @@ public class OpenPgpService extends RemoteService {
                 Intent result = new Intent();
                 result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_SUCCESS);
 
-                // TODO: also return PendingIntent that opens the key view activity
+                // also return PendingIntent that opens the key view activity
+                Intent intent = new Intent(getBaseContext(), ViewKeyActivity.class);
+                intent.setData(KeyRings.buildGenericKeyRingUri(Long.toString(masterKeyId)));
+
+                PendingIntent pi = PendingIntent.getActivity(getBaseContext(), 0,
+                        intent,
+                        PendingIntent.FLAG_CANCEL_CURRENT);
+
+                result.putExtra(OpenPgpApi.RESULT_INTENT, pi);
 
                 return result;
             } catch (ProviderHelper.NotFoundException e) {

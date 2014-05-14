@@ -13,7 +13,9 @@
   <string name="title_key_server_preference">Schlüsselserver</string>
   <string name="title_change_passphrase">Passphrase ändern</string>
   <string name="title_set_passphrase">Passwort setzen</string>
-  <string name="title_share_with">Teilen mit...</string>
+  <string name="title_share_with">Teilen über...</string>
+  <string name="title_share_fingerprint_with">Teile Fingerabdruck über…</string>
+  <string name="title_share_key">Teile Schlüssel über...</string>
   <string name="title_share_file">Datei teilen mit…</string>
   <string name="title_encrypt_to_file">In eine Datei verschlüsseln</string>
   <string name="title_decrypt_to_file">In eine Datei entschlüsseln</string>
@@ -22,28 +24,32 @@
   <string name="title_export_keys">Schlüssel exportieren</string>
   <string name="title_key_not_found">Schlüssel nicht gefunden</string>
   <string name="title_send_key">Auf Schlüsselserver hochladen</string>
-  <string name="title_certify_key">Schlüssel beglaubigen</string>
+  <string name="title_certify_key">Identitäten beglaubigen</string>
   <string name="title_key_details">Schlüsseldetails</string>
   <string name="title_help">Hilfe</string>
   <!--section-->
-  <string name="section_user_ids">Benutzer-IDs</string>
-  <string name="section_keys">Schlüssel</string>
+  <string name="section_user_ids">Identitäten</string>
+  <string name="section_keys">Unterschlüssel</string>
   <string name="section_general">Allgemein</string>
   <string name="section_defaults">Standardwerte</string>
   <string name="section_advanced">Fortgeschrittene Einstellungen</string>
   <string name="section_master_key">Hauptschlüssel</string>
-  <string name="section_master_user_id">Hauptbenutzer-ID</string>
+  <string name="section_master_user_id">Hauptidentität</string>
   <string name="section_actions">Aktionen</string>
+  <string name="section_share_key">Gesamter Schlüssel</string>
   <string name="section_certification_key">Mit diesem Schlüssel beglaubigen</string>
   <string name="section_upload_key">Schlüssel hochladen</string>
   <string name="section_key_server">Schlüsselserver</string>
   <string name="section_encrypt_and_or_sign">Verschlüsseln und/oder Signieren</string>
   <string name="section_decrypt_verify">Entschlüsseln und Verifizieren</string>
+  <string name="section_fingerprint">Fingerabdruck</string>
+  <string name="section_key_to_certify">Zu beglaubigender Schlüssel</string>
   <!--button-->
   <string name="btn_certify">Beglaubigen</string>
-  <string name="btn_decrypt_verify">Entschlüsseln und Verifizieren</string>
+  <string name="btn_decrypt_verify_file">Datei entschlüsseln, verifizieren und speichern</string>
+  <string name="btn_decrypt_verify_message">Entschlüsseln und verifizieren</string>
   <string name="btn_decrypt_verify_clipboard">Aus der Zwischenablage</string>
-  <string name="btn_encrypt_file">Datei verschlüsseln</string>
+  <string name="btn_encrypt_file">Datei verschlüsseln und speichern</string>
   <string name="btn_save">Speichern</string>
   <string name="btn_do_not_save">Abbrechen</string>
   <string name="btn_delete">Löschen</string>
@@ -59,6 +65,8 @@
   <string name="btn_lookup_key">Schlüssel nachschlagen</string>
   <string name="btn_encryption_advanced_settings_show">Erweiterte Einstellungen anzeigen</string>
   <string name="btn_encryption_advanced_settings_hide">Erweiterte Einstellungen verbergen</string>
+  <string name="btn_share_encrypted_signed">Verschlüsselt/signierten Text teilen…</string>
+  <string name="btn_view_cert_key">Beglaubigungsschlüssel anzeigen</string>
   <!--menu-->
   <string name="menu_preferences">Einstellungen</string>
   <string name="menu_help">Hilfe</string>
@@ -71,6 +79,7 @@
   <string name="menu_create_key_expert">Schlüssel erstellen (Experte)</string>
   <string name="menu_search">Suchen</string>
   <string name="menu_import_from_key_server">Schlüsselserver</string>
+  <string name="menu_import_from_keybase">Keybase.io</string>
   <string name="menu_key_server">Schlüsselserver…</string>
   <string name="menu_update_key">Von einem Schlüsselserver aktualisieren</string>
   <string name="menu_export_key_to_server">Auf Schlüsselserver hochladen</string>
@@ -116,7 +125,7 @@
   <string name="label_expiry">Ablaufdatum</string>
   <string name="label_usage">Verwendungszweck</string>
   <string name="label_key_size">Schlüssellänge</string>
-  <string name="label_main_user_id">Hauptbenutzer-ID</string>
+  <string name="label_main_user_id">Hauptidentität</string>
   <string name="label_name">Name</string>
   <string name="label_comment">Kommentar</string>
   <string name="label_email">E-Mail</string>
@@ -136,10 +145,14 @@
   <string name="can_certify">kann bestätigen</string>
   <string name="can_certify_not">kann nicht bestätigen</string>
   <string name="expired">abgelaufen</string>
-  <string name="revoked">zurückgezogen</string>
+  <string name="revoked">widerrufen</string>
   <plurals name="n_keys">
     <item quantity="one">1 Schlüssel</item>
     <item quantity="other">%d Schlüssel</item>
+  </plurals>
+  <plurals name="n_keyservers">
+    <item quantity="one">%d Schlüsselserver</item>
+    <item quantity="other">%d Schlüsselserver</item>
   </plurals>
   <string name="secret_key">Privater Schlüssel:</string>
   <!--choice-->
@@ -190,7 +203,7 @@
   <string name="key_deletion_confirmation_multi">Möchtest du wirklich alle ausgewählten öffentlichen Schlüssel löschen?\nDies kann nicht rückgängig gemacht werden!</string>
   <string name="secret_key_deletion_confirmation">Soll der PRIVATE Schlüssel \'%s\' wirklich gelöscht werden?\nDies kann nicht rückgängig gemacht werden!</string>
   <string name="ask_save_changed_key">Es wurden am Schlüsselbund Veränderungen vorgenommen. Sollen dies gespeichert werden?</string>
-  <string name="ask_empty_id_ok">Es wurde eine leere Nutzer ID hinzugefügt. Sind sie sicher das sie forfahren wollen?</string>
+  <string name="ask_empty_id_ok">Es wurde eine leere Identität hinzugefügt. Wirklich fortfahren?</string>
   <string name="public_key_deletetion_confirmation">Soll der öffentliche Schlüssel \'%s\' wirklich gelöscht werden?\nDies kann nicht rückgängig gemacht werden! </string>
   <string name="also_export_secret_keys">Private Schlüssel auch exportieren</string>
   <plurals name="keys_added_and_updated_1">
@@ -225,11 +238,13 @@
     <item quantity="other">%d schlechte private Schlüssel ignoriert. Evtl. wurden sie mit folgender Option exportiert:\n --export-secret-subkeys\nUnbedingt mit der Option \n --export-secret-keys\nexportieren.</item>
   </plurals>
   <string name="key_send_success">Schlüssel wurde erfolgreich hochgeladen.</string>
-  <string name="key_certify_success">Schlüssel erfolgreich beglaubigt</string>
+  <string name="key_certify_success">Identitäten erfolgreich beglaubigt</string>
   <string name="list_empty">Diese Liste ist leer!</string>
+  <string name="nfc_successful">Schlüssel erfolgreich mit NFC-Beam gesendet!</string>
   <string name="key_copied_to_clipboard">Schlüssel wurde in die Zwischenablage kopiert!</string>
+  <string name="fingerprint_copied_to_clipboard">Fingerabdruck wurde in die Zwischenablage kopiert!</string>
   <string name="key_has_already_been_certified">Schlüssel wurde bereits beglaubigt</string>
-  <string name="select_key_to_sign">Bitte wähle einen Signaturschlüssel!</string>
+  <string name="select_key_to_certify">Bitte wähle einen Schlüssel um zu Beglaubigen!</string>
   <string name="key_too_big_for_sharing">Schlüssel ist zu groß um so geteilt zu werden!</string>
   <!--errors
          no punctuation, all lowercase,
@@ -242,8 +257,8 @@
   <string name="error_master_key_must_not_be_el_gamal">Der Hauptschlüssel kann kein ElGamal Schlüssel sein</string>
   <string name="error_unknown_algorithm_choice">Unbekannte Auswahl für Algorithmus</string>
   <string name="error_user_id_no_email">keine E-Mail gefunden</string>
-  <string name="error_key_needs_a_user_id">Mindestens eine Benutzer-ID wird benötigt</string>
-  <string name="error_main_user_id_must_not_be_empty">Hauptbenutzer-ID darf nicht leer sein</string>
+  <string name="error_key_needs_a_user_id">Mindestens eine Identität wird benötigt</string>
+  <string name="error_main_user_id_must_not_be_empty">Hauptidentität darf nicht leer sein</string>
   <string name="error_key_needs_master_key">Mindestens ein Hauptschlüssel wird benötigt</string>
   <string name="error_no_signature_passphrase">kein Passwort angegeben</string>
   <string name="error_no_signature_key">kein Signaturschlüssel angegeben</string>
@@ -324,8 +339,8 @@
   <string name="key_size_3072">3072</string>
   <string name="key_size_4096">4096</string>
   <string name="key_size_8192">8192</string>
-  <string name="key_size_custom">Individuelle Schlüsselgröße</string>
-  <string name="key_size_custom_info">Geben Sie benutzerdefinierte Schlüssellänge an (in Bit):</string>
+  <string name="key_size_custom">Benutzerdefinierte Schlüssellänge</string>
+  <string name="key_size_custom_info">Benutzerdefinierte Schlüssellänge (in Bit):</string>
   <string name="key_size_custom_info_rsa">Die RSA-Schlüssellänge muss größer als 1024 sein und höchstens 8192 sein. Auch muss sie ein Mehrfaches von 8 sein.</string>
   <string name="key_size_custom_info_dsa">Die DSA-Schlüssellänge muss mindestens 512 und höchstens 1024 sein. Auch muss sie ein Mehrfaches von 64 sein.</string>
   <!--compression-->
@@ -355,12 +370,11 @@
   <string name="import_nfc_help_button">Hilfe</string>
   <string name="import_clipboard_button">Schlüssel aus der Zwischenablage einfügen</string>
   <!--Intent labels-->
-  <string name="intent_decrypt_file">Datei mit OpenKeychain entschlüsseln</string>
-  <string name="intent_import_key">Schlüssel mit OpenKeychain importieren</string>
-  <string name="intent_send_encrypt">Mit OpenKeychain verschlüsseln</string>
-  <string name="intent_send_decrypt">Mit OpenKeychain entschlüsseln</string>
+  <string name="intent_decrypt_file">Datei entschlüsseln mit OpenKeychain</string>
+  <string name="intent_import_key">Schlüssel importieren mit OpenKeychain</string>
+  <string name="intent_send_encrypt">Verschlüsseln mit OpenKeychain </string>
+  <string name="intent_send_decrypt">Entschlüsseln mit OpenKeychain </string>
   <!--Remote API-->
-  <string name="api_no_apps">Keine registrierten Anwendungen vorhanden!\n\nAnwendungen können Zugriff auf OpenKeychain anfordern. Nachdem Zugriff erlaubt wurde, werden diese hier aufgelistet.</string>
   <string name="api_settings_show_info">Erweiterte Informationen anzeigen</string>
   <string name="api_settings_hide_info">Erweiterte Informationen ausblenden</string>
   <string name="api_settings_show_advanced">Erweiterte Einstellungen anzeigen</string>
@@ -376,12 +390,13 @@
   <string name="api_settings_package_signature">SHA-256 der Paketsignatur</string>
   <string name="api_settings_accounts">Konten</string>
   <string name="api_settings_accounts_empty">Keine Accounts mit dieser App verknüpft.</string>
+  <string name="api_create_account_text">Die Anwendung erfordert die Erstellung eines neuen Accounts. Bitte wähle einen existierenden Schlüssel oder erstelle einen neuen.\nAnwendungen sind auf die Nutzung der Schlüssel beschränkt, die du hier auswählst!</string>
   <string name="api_register_text">Folgende Anwendung beantragt Zugriff auf OpenKeychains API.\nZugriff erlauben?\n\nVORSICHT: Sollten Sie nicht wissen, warum diese Anfrage erscheint, sollten Sie den Zugriff nicht erlauben! Sie können Zugriffe später über das Menü \'Registrierte Anwendungen\' widerrufen.</string>
   <string name="api_register_allow">Zugriff erlauben</string>
   <string name="api_register_disallow">Zugriff verbieten</string>
   <string name="api_register_error_select_key">Bitte einen Schlüssel auswählen!</string>
-  <string name="api_select_pub_keys_missing_text">Für diese Benutzer-IDs wurden keine öffentlichen Schlüssel gefunden:</string>
-  <string name="api_select_pub_keys_dublicates_text">Für diese Benutzer-IDs existieren mehrere öffentliche Schlüssel:</string>
+  <string name="api_select_pub_keys_missing_text">Für diese Identität wurden keine öffentlichen Schlüssel gefunden:</string>
+  <string name="api_select_pub_keys_dublicates_text">Für diese Identität existieren mehrere öffentliche Schlüssel:</string>
   <string name="api_select_pub_keys_text">Bitte die Liste der Empfänger überprüfen!</string>
   <string name="api_error_wrong_signature">Signaturüberprüfung fehlgeschlagen! Haben Sie diese Anwendung aus einer anderen Quelle installiert? Wenn Sie eine Attacke ausschliessen können, sollten Sie die Registrierung der App in OpenKeychain widerrufen und die Anwendung erneut registrieren.</string>
   <!--Share-->
@@ -401,10 +416,14 @@
   <string name="key_list_empty_button_create">deinen eigenen Schlüssel erstellst</string>
   <string name="key_list_empty_button_import">existierende Schlüssel importierst.</string>
   <!--Key view-->
-  <string name="key_view_action_edit">Diesen Schlüssel bearbeiten</string>
+  <string name="key_view_action_edit">Schlüssel bearbeiten</string>
   <string name="key_view_action_encrypt">Mit diesem Schlüssel verschlüsseln</string>
-  <string name="key_view_action_certify">Diesen Schlüssel beglaubigen</string>
-  <string name="key_view_tab_main">Info</string>
+  <string name="key_view_action_certify">Identitäten beglaubigen</string>
+  <string name="key_view_action_share_with">Teilen über...</string>
+  <string name="key_view_action_share_nfc">Teilen über NFC (Geräte Rückseite an Rückseite halten)</string>
+  <string name="key_view_tab_main">Informationen</string>
+  <string name="key_view_tab_share">Teilen</string>
+  <string name="key_view_tab_keys">Unterschlüssel</string>
   <string name="key_view_tab_certs">Beglaubigungen</string>
   <!--Navigation Drawer-->
   <string name="nav_keys">Schlüssel</string>
@@ -420,30 +439,35 @@
   <string name="secret_key_yes">verfügbar</string>
   <string name="secret_key_no">nicht verfügbar</string>
   <!--hints-->
-  <string name="encrypt_content_edit_text_hint">Hier die Nachricht schreiben welche verschlüsselt und/oder signiert werden soll...</string>
-  <string name="decrypt_content_edit_text_hint">Hier den verslüsselten Text eingeben um ihn zu entschlüsseln und/oder zu überprüfen</string>
-  <!--certifications-->
-  <string name="cert_default">Grundeinstellung</string>
+  <string name="encrypt_content_edit_text_hint">Hier den Text schreiben welche verschlüsselt und/oder signiert werden soll...</string>
+  <string name="decrypt_content_edit_text_hint">Hier den verschlüsselten Text eingeben um ihn zu entschlüsseln und/oder zu verifzieren…</string>
+  <!--certs-->
+  <string name="cert_default">normal</string>
   <string name="cert_none">kein</string>
+  <string name="cert_casual">einfach überprüft</string>
   <string name="cert_positive">positiv</string>
-  <string name="cert_revoke">Wiederrufen</string>
+  <string name="cert_revoke">widerrufen</string>
   <string name="cert_verify_ok">OK</string>
   <string name="cert_verify_failed">fehlgeschlagen!</string>
   <string name="cert_verify_error">Fehler!</string>
   <string name="cert_verify_unavailable">Schlüssel nicht verfügbar</string>
   <!--unsorted-->
-  <string name="section_signer_id">Unterzeichner</string>
+  <string name="section_certifier_id">Beglaubiger</string>
   <string name="section_cert">Zertifikatdetails</string>
-  <string name="label_user_id">Nutzer ID</string>
+  <string name="label_user_id">Identität</string>
   <string name="unknown_uid">&lt;unbekannt&gt;</string>
-  <string name="empty_certs">Kein Zertifikat für diesen Schlüssel</string>
-  <string name="section_uids_to_sign">Benutzer-IDs, die beglaubigt werden sollen</string>
+  <string name="empty_certs">Keine Beglaubigungen für diesen Schlüssel</string>
+  <string name="section_uids_to_certify">Zu beglaubigende Identitäten</string>
   <string name="label_revocation">Widerrufsgrund</string>
-  <string name="label_verify_status">Verificationsstatus</string>
+  <string name="label_verify_status">Verifikationsstatus</string>
   <string name="label_cert_type">Typ</string>
   <string name="error_key_not_found">Schlüssel nicht gefunden!</string>
   <string name="error_key_processing">Fehler bei der Verarbeitung des Schlüssels!</string>
   <string name="no_subkey">Unterschlüssel nicht verfügbar</string>
+  <string name="key_stripped">nicht verfügbar</string>
   <string name="secret_cannot_multiple">Geheime Schlüssel können nur einzeln gelöscht werden!</string>
   <string name="title_view_cert">Zertifikatdetails anzeigen</string>
+  <string name="unknown_algorithm">unbekannt</string>
+  <string name="can_sign_not">Kann nicht unterschreiben</string>
+  <string name="error_no_encrypt_subkey">Kein Unterschlüssel zum Verschlüsseln verfügbar!</string>
 </resources>

@@ -3,8 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="org.sufficientlysecure.keychain"
     android:installLocation="auto"
-    android:versionCode="26100"
-    android:versionName="2.6.1">
+    android:versionCode="27000"
+    android:versionName="2.7">
 
     <!--
         General remarks
@@ -232,7 +232,12 @@
         <activity
             android:name=".ui.UploadKeyActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
-            android:label="@string/title_send_key" />
+            android:label="@string/title_send_key"
+            android:parentActivityName=".ui.ViewKeyActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".ui.ViewKeyActivity" />
+        </activity>
         <activity
             android:name=".ui.PreferencesActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
@@ -254,7 +259,12 @@
         <activity
             android:name=".ui.CertifyKeyActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
-            android:label="@string/title_certify_key" />
+            android:label="@string/title_certify_key"
+            android:parentActivityName=".ui.ViewKeyActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".ui.ViewKeyActivity" />
+        </activity>
         <activity
             android:name=".ui.ImportKeysActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"

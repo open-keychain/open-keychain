@@ -60,6 +60,7 @@ import org.sufficientlysecure.keychain.service.KeychainIntentService;
 import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
 import org.sufficientlysecure.keychain.service.PassphraseCacheService;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
+import org.sufficientlysecure.keychain.ui.dialog.CustomAlertDialogBuilder;
 import org.sufficientlysecure.keychain.ui.dialog.PassphraseDialogFragment;
 import org.sufficientlysecure.keychain.ui.dialog.SetPassphraseDialogFragment;
 import org.sufficientlysecure.keychain.ui.widget.Editor;
@@ -502,7 +503,7 @@ public class EditKeyActivity extends ActionBarActivity implements EditorListener
             int curID = 0;
             for (String userID : userIDs) {
                 if (userID.equals("") && (!userID.equals(originalIDs.get(curID)) || newIDs.get(curID))) {
-                    AlertDialog.Builder alert = new AlertDialog.Builder(
+                    CustomAlertDialogBuilder alert = new CustomAlertDialogBuilder(
                             EditKeyActivity.this);
 
                     alert.setIcon(R.drawable.ic_dialog_alert_holo_light);
@@ -525,7 +526,7 @@ public class EditKeyActivity extends ActionBarActivity implements EditorListener
                             }
                     );
                     alert.setCancelable(false);
-                    alert.create().show();
+                    alert.show();
                     return;
                 }
                 curID++;
@@ -614,7 +615,7 @@ public class EditKeyActivity extends ActionBarActivity implements EditorListener
 
     private void cancelClicked() {
         if (needsSaving()) { //ask if we want to save
-            AlertDialog.Builder alert = new AlertDialog.Builder(
+            CustomAlertDialogBuilder alert = new CustomAlertDialogBuilder(
                     EditKeyActivity.this);
 
             alert.setIcon(R.drawable.ic_dialog_alert_holo_light);
@@ -637,7 +638,7 @@ public class EditKeyActivity extends ActionBarActivity implements EditorListener
                         }
                     });
             alert.setCancelable(false);
-            alert.create().show();
+            alert.show();
         } else {
             setResult(RESULT_CANCELED);
             finish();

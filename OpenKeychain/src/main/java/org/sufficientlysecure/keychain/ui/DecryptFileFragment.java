@@ -54,7 +54,7 @@ public class DecryptFileFragment extends DecryptFragment {
     private EditText mFilename;
     private CheckBox mDeleteAfter;
     private BootstrapButton mBrowse;
-    private BootstrapButton mDecryptButton;
+    private View mDecryptButton;
 
     private String mInputFilename = null;
     private String mOutputFilename = null;
@@ -71,7 +71,7 @@ public class DecryptFileFragment extends DecryptFragment {
         mFilename = (EditText) view.findViewById(R.id.decrypt_file_filename);
         mBrowse = (BootstrapButton) view.findViewById(R.id.decrypt_file_browse);
         mDeleteAfter = (CheckBox) view.findViewById(R.id.decrypt_file_delete_after_decryption);
-        mDecryptButton = (BootstrapButton) view.findViewById(R.id.decrypt_file_action_decrypt);
+        mDecryptButton = view.findViewById(R.id.decrypt_file_action_decrypt);
         mBrowse.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 FileHelper.openFile(DecryptFileFragment.this, mFilename.getText().toString(), "*/*",

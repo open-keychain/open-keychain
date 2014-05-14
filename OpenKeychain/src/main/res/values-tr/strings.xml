@@ -15,8 +15,6 @@
   <string name="title_key_details">Anahtar Detayları</string>
   <string name="title_help">Yardım</string>
   <!--section-->
-  <string name="section_user_ids">Kullanıcı IDleri</string>
-  <string name="section_keys">Anahtarlar</string>
   <string name="section_general">Genel</string>
   <string name="section_defaults">Varsayılanlar</string>
   <string name="section_advanced">Gelişmiş</string>
@@ -167,8 +165,6 @@
   <!--Key list-->
   <string name="key_list_empty_text3">ya da</string>
   <!--Key view-->
-  <string name="key_view_action_edit">Bu anahtarı düzenle</string>
-  <string name="key_view_tab_main">Bilgi</string>
   <!--Navigation Drawer-->
   <string name="nav_keys">Anahtarlar</string>
   <string name="edit">Düzenle</string>
@@ -177,14 +173,12 @@
   <string name="secret_key_yes">mevcut</string>
   <string name="secret_key_no">mevcut değil</string>
   <!--hints-->
-  <!--certifications-->
+  <!--certs-->
   <string name="cert_default">varsayılan</string>
   <string name="cert_verify_ok">tamam</string>
   <string name="cert_verify_failed">başarısız!</string>
   <string name="cert_verify_error">hata!</string>
   <string name="cert_verify_unavailable">anahtar mevcut değil</string>
   <!--unsorted-->
-  <string name="section_signer_id">İmzalayan</string>
-  <string name="label_user_id">Kullanıcı ID</string>
   <string name="can_sign_not">imzalanamadı</string>
 </resources>

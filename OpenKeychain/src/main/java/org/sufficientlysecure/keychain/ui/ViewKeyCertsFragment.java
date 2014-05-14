@@ -23,7 +23,6 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
@@ -46,7 +45,7 @@ import se.emilsjolander.stickylistheaders.StickyListHeadersAdapter;
 import se.emilsjolander.stickylistheaders.StickyListHeadersListView;
 
 
-public class ViewKeyCertsFragment extends Fragment
+public class ViewKeyCertsFragment extends LoaderFragment
         implements LoaderManager.LoaderCallbacks<Cursor>, AdapterView.OnItemClickListener {
 
     // These are the rows that we will retrieve.
@@ -75,18 +74,22 @@ public class ViewKeyCertsFragment extends Fragment
 
     private Uri mDataUri;
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.view_key_certs_fragment, container, false);
+    // starting with 4 for this fragment
+    private static final int LOADER_ID = 4;
 
-        return view;
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup superContainer, Bundle savedInstanceState) {
+        View root = super.onCreateView(inflater, superContainer, savedInstanceState);
+        View view = inflater.inflate(R.layout.view_key_certs_fragment, getContainer());
+
+        mStickyList = (StickyListHeadersListView) view.findViewById(R.id.list);
+
+        return root;
     }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-
-        mStickyList = (StickyListHeadersListView) getActivity().findViewById(R.id.list);
 
         if (!getArguments().containsKey(ARG_DATA_URI)) {
             Log.e(Constants.TAG, "Data missing. Should be Uri of key!");
@@ -112,11 +115,12 @@ public class ViewKeyCertsFragment extends Fragment
         mAdapter = new CertListAdapter(getActivity(), null);
         mStickyList.setAdapter(mAdapter);
 
-        getLoaderManager().initLoader(0, null, this);
+        getLoaderManager().initLoader(LOADER_ID, null, this);
     }
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        setContentShown(false);
         // Now create and return a CursorLoader that will take care of
         // creating a Cursor for the data being displayed.
         return new CursorLoader(getActivity(), mDataUri, PROJECTION, null, null, SORT_ORDER);
@@ -129,6 +133,8 @@ public class ViewKeyCertsFragment extends Fragment
         mAdapter.swapCursor(data);
 
         mStickyList.setAdapter(mAdapter);
+
+        setContentShown(true);
     }
 
     /**
@@ -208,11 +214,18 @@ public class ViewKeyCertsFragment extends Fragment
 
             // set name and stuff, common to both key types
             TextView wSignerKeyId = (TextView) view.findViewById(R.id.signerKeyId);
-            TextView wSignerUserId = (TextView) view.findViewById(R.id.signerUserId);
+            TextView wSignerName = (TextView) view.findViewById(R.id.signerName);
             TextView wSignStatus = (TextView) view.findViewById(R.id.signStatus);
 
             String signerKeyId = PgpKeyHelper.convertKeyIdToHex(cursor.getLong(mIndexSignerKeyId));
-            String signerUserId = cursor.getString(mIndexSignerUserId);
+            String[] userId = PgpKeyHelper.splitUserId(cursor.getString(mIndexSignerUserId));
+            if (userId[0] != null) {
+                wSignerName.setText(userId[0]);
+            } else {
+                wSignerName.setText(R.string.user_id_no_name);
+            }
+            wSignerKeyId.setText(signerKeyId);
+
             switch (cursor.getInt(mIndexType)) {
                 case PGPSignature.DEFAULT_CERTIFICATION: // 0x10
                     wSignStatus.setText(R.string.cert_default);
@@ -231,8 +244,6 @@ public class ViewKeyCertsFragment extends Fragment
                     break;
             }
 
-            wSignerUserId.setText(signerUserId);
-            wSignerKeyId.setText(signerKeyId);
 
             view.setTag(R.id.tag_mki, cursor.getLong(mIndexMasterKeyId));
             view.setTag(R.id.tag_rank, cursor.getLong(mIndexRank));

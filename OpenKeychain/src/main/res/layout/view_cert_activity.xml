@@ -42,8 +42,9 @@
             android:text="@string/section_cert" />
 
         <TableLayout
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="0dp"
+            android:layout_marginLeft="8dp"
             android:layout_weight="1"
             android:stretchColumns="1">
 
@@ -159,11 +160,13 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="4dp"
             android:layout_marginTop="14dp"
-            android:text="@string/section_signer_id" />
+            android:text="@string/section_certifier_id" />
 
         <TableLayout
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="0dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginBottom="4dp"
             android:layout_weight="1"
             android:stretchColumns="1">
 
@@ -190,18 +193,40 @@
                     android:id="@+id/label_algorithm"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
+                    android:layout_gravity="top"
                     android:paddingRight="10dip"
-                    android:text="@string/label_email" />
+                    android:text="@string/label_user_id" />
 
                 <TextView
                     android:id="@+id/signer_uid"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:paddingRight="5dip"/>
+                    android:paddingRight="5dip" />
             </TableRow>
 
         </TableLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dip"
+            android:background="?android:attr/listDivider" />
+
+        <TextView
+            android:id="@+id/view_cert_view_cert_key"
+            android:paddingLeft="8dp"
+            android:paddingRight="8dp"
+            android:layout_marginBottom="8dp"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="?android:attr/listPreferredItemHeight"
+            android:clickable="true"
+            style="@style/SelectableItem"
+            android:text="@string/btn_view_cert_key"
+            android:layout_weight="1"
+            android:drawableRight="@drawable/ic_action_person"
+            android:drawablePadding="8dp"
+            android:gravity="center_vertical" />
 
     </LinearLayout>
 

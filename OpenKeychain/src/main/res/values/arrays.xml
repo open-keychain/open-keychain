@@ -54,6 +54,7 @@
         <item>@string/menu_import_from_qr_code</item>
         <item>@string/import_from_clipboard</item>
         <item>@string/menu_import_from_nfc</item>
+        <item>@string/menu_import_from_keybase</item>
     </string-array>
 
 </resources>

@@ -27,7 +27,6 @@ import android.widget.Toast;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.helper.ActionBarHelper;
 import org.sufficientlysecure.keychain.helper.FileHelper;
 import org.sufficientlysecure.keychain.ui.adapter.PagerTabStripAdapter;
 import org.sufficientlysecure.keychain.util.Log;
@@ -145,26 +144,28 @@ public class EncryptActivity extends DrawerActivity implements
 
         setContentView(R.layout.encrypt_activity);
 
-        // set actionbar without home button if called from another app
-        ActionBarHelper.setBackButton(this);
-
         initView();
 
-        setupDrawerNavigation(savedInstanceState);
+        // if called with an intent action, do not init drawer navigation
+        if (ACTION_ENCRYPT.equals(getIntent().getAction())) {
+            // TODO: back button to key?
+        } else {
+            setupDrawerNavigation(savedInstanceState);
+        }
 
         // Handle intent actions
         handleActions(getIntent());
 
         mTabsAdapterMode.addTab(EncryptAsymmetricFragment.class,
-            mAsymmetricFragmentBundle, getString(R.string.label_asymmetric));
+                mAsymmetricFragmentBundle, getString(R.string.label_asymmetric));
         mTabsAdapterMode.addTab(EncryptSymmetricFragment.class,
-            mSymmetricFragmentBundle, getString(R.string.label_symmetric));
+                mSymmetricFragmentBundle, getString(R.string.label_symmetric));
         mViewPagerMode.setCurrentItem(mSwitchToMode);
 
         mTabsAdapterContent.addTab(EncryptMessageFragment.class,
-            mMessageFragmentBundle, getString(R.string.label_message));
+                mMessageFragmentBundle, getString(R.string.label_message));
         mTabsAdapterContent.addTab(EncryptFileFragment.class,
-            mFileFragmentBundle, getString(R.string.label_file));
+                mFileFragmentBundle, getString(R.string.label_file));
         mViewPagerContent.setCurrentItem(mSwitchToContent);
     }
 
@@ -217,9 +218,9 @@ public class EncryptActivity extends DrawerActivity implements
 
         // preselect keys given by intent
         mAsymmetricFragmentBundle.putLongArray(EncryptAsymmetricFragment.ARG_ENCRYPTION_KEY_IDS,
-            encryptionKeyIds);
+                encryptionKeyIds);
         mAsymmetricFragmentBundle.putLong(EncryptAsymmetricFragment.ARG_SIGNATURE_KEY_ID,
-            signatureKeyId);
+                signatureKeyId);
         mSwitchToMode = PAGER_MODE_ASYMMETRIC;
 
         /**
@@ -241,9 +242,10 @@ public class EncryptActivity extends DrawerActivity implements
             } else {
                 Log.e(Constants.TAG,
                         "Direct binary data without actual file in filesystem is not supported " +
-                        "by Intents. Please use the Remote Service API!");
-                Toast.makeText(this, R.string.error_only_files_are_supported, Toast.LENGTH_LONG)
-                        .show();
+                                "by Intents. Please use the Remote Service API!"
+                );
+                Toast.makeText(this, R.string.error_only_files_are_supported,
+                        Toast.LENGTH_LONG).show();
                 // end activity
                 finish();
             }

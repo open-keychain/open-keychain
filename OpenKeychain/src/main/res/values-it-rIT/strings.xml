@@ -14,6 +14,8 @@
   <string name="title_change_passphrase">Cambia Frase Di Accesso</string>
   <string name="title_set_passphrase">Imposta Frase di Accesso</string>
   <string name="title_share_with">Condividi con...</string>
+  <string name="title_share_fingerprint_with">Condivi impronta con...</string>
+  <string name="title_share_key">Condividi chiave con...</string>
   <string name="title_share_file">Condividi file con...</string>
   <string name="title_encrypt_to_file">Codifica File</string>
   <string name="title_decrypt_to_file">Decodifica File</string>
@@ -22,28 +24,32 @@
   <string name="title_export_keys">Esporta Chiavi</string>
   <string name="title_key_not_found">Chiave Non Trovata</string>
   <string name="title_send_key">Carica sul Server delle Chiavi</string>
-  <string name="title_certify_key">Certifica Chiave</string>
+  <string name="title_certify_key">Certifica identità</string>
   <string name="title_key_details">Dettagli Chiave</string>
   <string name="title_help">Aiuto</string>
   <!--section-->
-  <string name="section_user_ids">ID Utente</string>
-  <string name="section_keys">Chiavi</string>
+  <string name="section_user_ids">Identità</string>
+  <string name="section_keys">Sottochiavi</string>
   <string name="section_general">Generale</string>
   <string name="section_defaults">Predefiniti</string>
   <string name="section_advanced">Avanzato</string>
   <string name="section_master_key">Chiave Principale</string>
-  <string name="section_master_user_id">ID Utente Principale</string>
+  <string name="section_master_user_id">Identità Primaria</string>
   <string name="section_actions">Azioni</string>
+  <string name="section_share_key">Intera chiave</string>
   <string name="section_certification_key">La Tua Chiave usata per la certificazione</string>
   <string name="section_upload_key">Carica Chiave</string>
   <string name="section_key_server">Server delle Chiavi</string>
   <string name="section_encrypt_and_or_sign">Codifica e/o Firma</string>
   <string name="section_decrypt_verify">Decodifica e Verifica</string>
+  <string name="section_fingerprint">Impronta</string>
+  <string name="section_key_to_certify">Chiave da certificare</string>
   <!--button-->
   <string name="btn_certify">Certifica</string>
-  <string name="btn_decrypt_verify">Decodifica e Verifica</string>
+  <string name="btn_decrypt_verify_file">Decodifica, verifica e salva su file</string>
+  <string name="btn_decrypt_verify_message">Decodifica e verifica messaggio</string>
   <string name="btn_decrypt_verify_clipboard">Dagli Appunti</string>
-  <string name="btn_encrypt_file">Codifica File</string>
+  <string name="btn_encrypt_file">Codifica e salva file</string>
   <string name="btn_save">Salva</string>
   <string name="btn_do_not_save">Annulla</string>
   <string name="btn_delete">Elimina</string>
@@ -59,6 +65,8 @@
   <string name="btn_lookup_key">Chiave di ricerca</string>
   <string name="btn_encryption_advanced_settings_show">Mostra impostazioni avanzate</string>
   <string name="btn_encryption_advanced_settings_hide">Nascondi impostazioni avanzate</string>
+  <string name="btn_share_encrypted_signed">Condividi messaggio codificato/firmato...</string>
+  <string name="btn_view_cert_key">Mostra chiave di certificazione</string>
   <!--menu-->
   <string name="menu_preferences">Impostazioni</string>
   <string name="menu_help">Aiuto</string>
@@ -71,6 +79,7 @@
   <string name="menu_create_key_expert">Crea chiave (avanzato)</string>
   <string name="menu_search">Cerca</string>
   <string name="menu_import_from_key_server">Server delle Chiavi</string>
+  <string name="menu_import_from_keybase">Importa da Keybase.io</string>
   <string name="menu_key_server">Server delle Chiavi...</string>
   <string name="menu_update_key">Aggiorna dal server delle chiavi</string>
   <string name="menu_export_key_to_server">Carica chiave nel server</string>
@@ -116,7 +125,7 @@
   <string name="label_expiry">Scadenza</string>
   <string name="label_usage">Utilizzo</string>
   <string name="label_key_size">Dimensione Chiave</string>
-  <string name="label_main_user_id">ID Utente Principale</string>
+  <string name="label_main_user_id">Identità Primaria</string>
   <string name="label_name">Nome</string>
   <string name="label_comment">Commento</string>
   <string name="label_email">Email</string>
@@ -194,7 +203,7 @@
   <string name="key_deletion_confirmation_multi">Vuoi veramente eliminare tutte le chiavi pubbliche selezionate?\nNon potrai annullare!</string>
   <string name="secret_key_deletion_confirmation">Vuoi veramente eliminare la chiave PRIVATA \'%s\'?\nNon potrai annullare!</string>
   <string name="ask_save_changed_key">Hai apportato modifiche al tuo portachiavi, vuoi salvarlo?</string>
-  <string name="ask_empty_id_ok">È stato aggiunto un ID utente vuoto, sei sicuro di voler continuare?</string>
+  <string name="ask_empty_id_ok">Hai aggiunto una identità vuota, sei sicuro di voler continuare?</string>
   <string name="public_key_deletetion_confirmation">Vuoi veramente eliminare la chiave pubblica \'%s\'?\nNon potrai annullare!</string>
   <string name="also_export_secret_keys">Esportare anche le chiavi segrete?</string>
   <plurals name="keys_added_and_updated_1">
@@ -229,12 +238,13 @@
     <item quantity="other">%d chiavi private non valide  ignorate. Forse hai esportato con opzione\n--export-secret-subkeys\nAssicurati di esportare con\n--export-secret-keys\ninvece.</item>
   </plurals>
   <string name="key_send_success">Chiave caricata con successo sul server</string>
-  <string name="key_certify_success">Chiave certrificata correttamente</string>
+  <string name="key_certify_success">Identità certificata correttamente</string>
   <string name="list_empty">Lista vuota!</string>
   <string name="nfc_successful">Chiave correttamente inviata tramite NFC Beam!</string>
   <string name="key_copied_to_clipboard">Chiave copiata negli appunti!</string>
+  <string name="fingerprint_copied_to_clipboard">Impronta copiata negli appunti!</string>
   <string name="key_has_already_been_certified">La chiave è già certificata!</string>
-  <string name="select_key_to_sign">Per favore seleziona la chiave per la firma!</string>
+  <string name="select_key_to_certify">Per favore seleziona una chiave per la certificazione!</string>
   <string name="key_too_big_for_sharing">Chiave troppo grande per essere condivisa in questo modo!</string>
   <!--errors
          no punctuation, all lowercase,
@@ -247,8 +257,8 @@
   <string name="error_master_key_must_not_be_el_gamal">La chiave principale non puo\' essere ElGamal</string>
   <string name="error_unknown_algorithm_choice">opzione algoritmo sconosciuta</string>
   <string name="error_user_id_no_email">Nessuna email trovata</string>
-  <string name="error_key_needs_a_user_id">necessario almeno un id utente</string>
-  <string name="error_main_user_id_must_not_be_empty">id utente principale non puo\' essere vuoto</string>
+  <string name="error_key_needs_a_user_id">neccessaria almeno una identità</string>
+  <string name="error_main_user_id_must_not_be_empty">L\'identità primaria non può essere vuota</string>
   <string name="error_key_needs_master_key">necessaria almeno una chiave principale</string>
   <string name="error_no_signature_passphrase">nessuna frase di accesso inserita</string>
   <string name="error_no_signature_key">nessuna chiave di firma inserita</string>
@@ -320,6 +330,7 @@
   <string name="hint_public_keys">Ricerca Chiavi Pubbliche</string>
   <string name="hint_secret_keys">Cerca Chiave Privata</string>
   <string name="action_share_key_with">Condividi chiave con...</string>
+  <string name="hint_keybase_search">Cerca Keybase.io</string>
   <!--key bit length selections-->
   <string name="key_size_512">512</string>
   <string name="key_size_768">768</string>
@@ -359,13 +370,13 @@
   <string name="import_nfc_text">Per ricevere le chiavi via NFC, il dispositivo deve essere sbloccato.</string>
   <string name="import_nfc_help_button">Aiuto</string>
   <string name="import_clipboard_button">Ottieni chiave dagli appunti</string>
+  <string name="import_keybase_button">Ottieni chiave da Keybase.io</string>
   <!--Intent labels-->
   <string name="intent_decrypt_file">Decodifica File con OpenKeychain</string>
   <string name="intent_import_key">Importa Chiave con OpenKeychain</string>
   <string name="intent_send_encrypt">Codifica con OpenKeychain</string>
   <string name="intent_send_decrypt">Decodifica con OpenKeychain</string>
   <!--Remote API-->
-  <string name="api_no_apps">Nessuna app registrata!\n\nApp di terze parti possono richiedere l\'accesso a OpenKeychain. Dopo aver concesso l\'accesso, le app saranno elencate qui.</string>
   <string name="api_settings_show_info">Mostra informazioni dettagliate</string>
   <string name="api_settings_hide_info">Nascondi informazioni dettagliate</string>
   <string name="api_settings_show_advanced">Mostra impostazioni avanzate</string>
@@ -386,8 +397,8 @@
   <string name="api_register_allow">Permetti accesso</string>
   <string name="api_register_disallow">Nega accesso</string>
   <string name="api_register_error_select_key">Per favore selezionare una chiave!</string>
-  <string name="api_select_pub_keys_missing_text">Nessuna chiave pubblica trovata per id utente:</string>
-  <string name="api_select_pub_keys_dublicates_text">Esistono piu\' di una chiave pubblica per gli id utenti:</string>
+  <string name="api_select_pub_keys_missing_text">Nessuna chiave pubblica trovata per queste identità:</string>
+  <string name="api_select_pub_keys_dublicates_text">Esistono piu\' di una chiave pubblica per queste identità:</string>
   <string name="api_select_pub_keys_text">Per favore ricontrolla la lista destinatari!</string>
   <string name="api_error_wrong_signature">Controllo della firma fallito! Hai installato questa app da una fonte diversa? Se sei sicuro che non sia un attacco, revoca la registrazione di questa app in OpenKeychain e dopo registra di nuovo l\'app.</string>
   <!--Share-->
@@ -409,9 +420,13 @@
   <!--Key view-->
   <string name="key_view_action_edit">Modifica chiave</string>
   <string name="key_view_action_encrypt">Codifica con questa chiave</string>
-  <string name="key_view_action_certify">Certifica questa chiave</string>
-  <string name="key_view_tab_main">Info</string>
-  <string name="key_view_tab_certs">Certificazioni</string>
+  <string name="key_view_action_certify">Certifica identità</string>
+  <string name="key_view_action_share_with">Condividi con...</string>
+  <string name="key_view_action_share_nfc">Condividi con NFC tenendo i dispositivi a stretto contatto</string>
+  <string name="key_view_tab_main">Info Principale</string>
+  <string name="key_view_tab_share">Condividi</string>
+  <string name="key_view_tab_keys">Sottochiavi</string>
+  <string name="key_view_tab_certs">Certificati</string>
   <!--Navigation Drawer-->
   <string name="nav_keys">Chiavi</string>
   <string name="nav_encrypt">Firma e Codifica</string>
@@ -428,23 +443,23 @@
   <!--hints-->
   <string name="encrypt_content_edit_text_hint">Scrivi qui il messaggio da codificare e/o firmare...</string>
   <string name="decrypt_content_edit_text_hint">Inserisci il testo cifrato qui per la decodifica e/o verifica...</string>
-  <!--certifications-->
+  <!--certs-->
   <string name="cert_default">predefiniti</string>
   <string name="cert_none">nessuno</string>
   <string name="cert_casual">casuale</string>
   <string name="cert_positive">positivo</string>
-  <string name="cert_revoke">revoca</string>
+  <string name="cert_revoke">revocato</string>
   <string name="cert_verify_ok">ok</string>
   <string name="cert_verify_failed">fallito!</string>
   <string name="cert_verify_error">errore!</string>
   <string name="cert_verify_unavailable">chiave non disponibile</string>
   <!--unsorted-->
-  <string name="section_signer_id">Firmatario</string>
+  <string name="section_certifier_id">Certificatore</string>
   <string name="section_cert">Dettagli Certificato</string>
-  <string name="label_user_id">ID Utente</string>
+  <string name="label_user_id">Identit</string>
   <string name="unknown_uid">&lt;sconosciuto&gt;</string>
   <string name="empty_certs">Nessun certificato per questa chiave</string>
-  <string name="section_uids_to_sign">ID Utente da firmare</string>
+  <string name="section_uids_to_certify">Identità da certificare</string>
   <string name="label_revocation">Ragione della Revoca</string>
   <string name="label_verify_status">Stato Verifica</string>
   <string name="label_cert_type">Tipo</string>
@@ -456,4 +471,5 @@
   <string name="title_view_cert">Visualizza Dettagli Certificati</string>
   <string name="unknown_algorithm">sconosciuto</string>
   <string name="can_sign_not">non può firmare</string>
+  <string name="error_no_encrypt_subkey">Nessuna sottochiave di codifica disponibile!</string>
 </resources>

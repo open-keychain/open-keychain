@@ -36,11 +36,10 @@ import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
-import org.sufficientlysecure.keychain.ui.adapter.ImportKeysListEntry;
-import org.sufficientlysecure.keychain.util.HkpKeyServer;
+import org.sufficientlysecure.keychain.keyimport.ImportKeysListEntry;
+import org.sufficientlysecure.keychain.keyimport.HkpKeyServer;
 import org.sufficientlysecure.keychain.util.IterableIterator;
-import org.sufficientlysecure.keychain.util.KeyServer.AddKeyException;
-import org.sufficientlysecure.keychain.util.KeychainServiceListener;
+import org.sufficientlysecure.keychain.keyimport.KeyServer.AddKeyException;
 import org.sufficientlysecure.keychain.util.Log;
 
 import java.io.ByteArrayOutputStream;
@@ -50,6 +49,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PgpImportExport {
+
+    // TODO: is this really used?
+    public interface KeychainServiceListener {
+        boolean hasServiceStopped();
+    }
 
     private Context mContext;
     private Progressable mProgressable;

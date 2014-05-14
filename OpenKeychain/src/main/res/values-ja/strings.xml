@@ -14,6 +14,8 @@
   <string name="title_change_passphrase">パスフレーズの変更</string>
   <string name="title_set_passphrase">パスフレーズの設定</string>
   <string name="title_share_with">...で共有</string>
+  <string name="title_share_fingerprint_with">...で指紋の共有</string>
+  <string name="title_share_key">...で鍵の共有</string>
   <string name="title_share_file">...でファイルの共有</string>
   <string name="title_encrypt_to_file">暗号化してファイルに</string>
   <string name="title_decrypt_to_file">復号化してファイルに</string>
@@ -22,28 +24,32 @@
   <string name="title_export_keys">複数鍵のエクスポート</string>
   <string name="title_key_not_found">鍵が見当りません</string>
   <string name="title_send_key">鍵サーバへアップロード</string>
-  <string name="title_certify_key">証明鍵</string>
+  <string name="title_certify_key">ユーザID検証</string>
   <string name="title_key_details">鍵の概要</string>
   <string name="title_help">ヘルプ</string>
   <!--section-->
   <string name="section_user_ids">ユーザID</string>
-  <string name="section_keys">鍵</string>
+  <string name="section_keys">副鍵</string>
   <string name="section_general">一般</string>
   <string name="section_defaults">デフォルト</string>
   <string name="section_advanced">拡張</string>
   <string name="section_master_key">主鍵</string>
-  <string name="section_master_user_id">主ユーザID</string>
+  <string name="section_master_user_id">メインのユーザID</string>
   <string name="section_actions">アクション</string>
+  <string name="section_share_key">すべての鍵</string>
   <string name="section_certification_key">あなたの鍵を証明に利用します</string>
   <string name="section_upload_key">鍵のアップロード</string>
   <string name="section_key_server">鍵サーバ</string>
   <string name="section_encrypt_and_or_sign">暗号化/署名</string>
   <string name="section_decrypt_verify">復号化と検証</string>
+  <string name="section_fingerprint">指紋</string>
+  <string name="section_key_to_certify">鍵は検証されています。</string>
   <!--button-->
   <string name="btn_certify">証明</string>
-  <string name="btn_decrypt_verify">復号化と検証</string>
+  <string name="btn_decrypt_verify_file">復号化と検証、そしてファイルの保存</string>
+  <string name="btn_decrypt_verify_message">メッセージの復号化と検証</string>
   <string name="btn_decrypt_verify_clipboard">クリップボードから</string>
-  <string name="btn_encrypt_file">ファイル暗号化</string>
+  <string name="btn_encrypt_file">暗号化してファイルを保存</string>
   <string name="btn_save">保存</string>
   <string name="btn_do_not_save">キャンセル</string>
   <string name="btn_delete">削除</string>
@@ -59,6 +65,8 @@
   <string name="btn_lookup_key">鍵検出</string>
   <string name="btn_encryption_advanced_settings_show">拡張設定を表示</string>
   <string name="btn_encryption_advanced_settings_hide">拡張設定を隠す</string>
+  <string name="btn_share_encrypted_signed">暗号化/署名メッセージの共有...</string>
+  <string name="btn_view_cert_key">検証した鍵を見る</string>
   <!--menu-->
   <string name="menu_preferences">設定</string>
   <string name="menu_help">ヘルプ</string>
@@ -71,6 +79,7 @@
   <string name="menu_create_key_expert">鍵の生成(上級)</string>
   <string name="menu_search">検索</string>
   <string name="menu_import_from_key_server">鍵サーバ</string>
+  <string name="menu_import_from_keybase">Keybase.ioからのインポート</string>
   <string name="menu_key_server">鍵サーバ...</string>
   <string name="menu_update_key">鍵サーバからの更新</string>
   <string name="menu_export_key_to_server">鍵サーバへのアップロード</string>
@@ -116,7 +125,7 @@
   <string name="label_expiry">満了</string>
   <string name="label_usage">使い方</string>
   <string name="label_key_size">鍵サイズ</string>
-  <string name="label_main_user_id">主ユーザID</string>
+  <string name="label_main_user_id">メインのユーザID</string>
   <string name="label_name">名前</string>
   <string name="label_comment">コメント</string>
   <string name="label_email">Eメールアドレス</string>
@@ -168,7 +177,7 @@
   <string name="flag_certify">証明</string>
   <string name="flag_sign">署名</string>
   <string name="flag_encrypt">暗号化</string>
-  <string name="flag_authenticate">証明</string>
+  <string name="flag_authenticate">認証</string>
   <!--sentences-->
   <string name="wrong_passphrase">良くないパスフレーズ</string>
   <string name="set_a_passphrase">最初にパスフレーズを設定してください。</string>
@@ -191,7 +200,7 @@
   <string name="key_deletion_confirmation_multi">選択したすべての公開鍵を削除して本当に良いのですか?\nこれは元に戻せません!</string>
   <string name="secret_key_deletion_confirmation">秘密鍵\'%s\'を本当に削除してもよいですか?\nこれは元に戻せません!</string>
   <string name="ask_save_changed_key">あなたは鍵輪に変更を加えました、これを保存しますか?</string>
-  <string name="ask_empty_id_ok">あなたは空のユーザーIDを追加しました、このまま続けますか?</string>
+  <string name="ask_empty_id_ok">あなたは空のユーザIDを追加しました、このまま続けますか?</string>
   <string name="public_key_deletetion_confirmation">公開鍵\'%s\'を本当に削除してもよいですか?\nこれは元に戻せません!</string>
   <string name="also_export_secret_keys">秘密鍵もエクスポートしますか?</string>
   <plurals name="keys_added_and_updated_1">
@@ -220,12 +229,13 @@
     <item quantity="other">%d の問題ある鍵を無視しました。 おそらく次のオプションでエクスポートしています\n --export-secret-subkeys\n代りに次のオプションでエクスポートしてください。\n --export-secret-keys</item>
   </plurals>
   <string name="key_send_success">鍵を鍵サーバにアップロードしました</string>
-  <string name="key_certify_success">鍵を検証しました</string>
+  <string name="key_certify_success">ユーザIDの検証に成功</string>
   <string name="list_empty">このリストは空です!</string>
   <string name="nfc_successful">NFCビームで鍵を送信しました!</string>
   <string name="key_copied_to_clipboard">鍵はクリプボードにコピーされました!</string>
+  <string name="fingerprint_copied_to_clipboard">指紋はクリプボードにコピーされました!</string>
   <string name="key_has_already_been_certified">鍵はすでに検証されています!</string>
-  <string name="select_key_to_sign">署名に使う鍵を選択して下さい!</string>
+  <string name="select_key_to_certify">検証に使う鍵を選択して下さい!</string>
   <string name="key_too_big_for_sharing">この共有方法では鍵が大きすぎます!</string>
   <!--errors
          no punctuation, all lowercase,
@@ -239,7 +249,7 @@
   <string name="error_unknown_algorithm_choice">未知のアルゴリズムを選択しています</string>
   <string name="error_user_id_no_email">メールが見付かりません</string>
   <string name="error_key_needs_a_user_id">最低でも1つのユーザIDが必要です</string>
-  <string name="error_main_user_id_must_not_be_empty">主ユーザIDは空にすることはできません</string>
+  <string name="error_main_user_id_must_not_be_empty">メインのユーザIDは空にすることはできません</string>
   <string name="error_key_needs_master_key">主鍵が最低でも1つ必要です</string>
   <string name="error_no_signature_passphrase">パスフレーズが与えられていません</string>
   <string name="error_no_signature_key">署名鍵を与えられていません</string>
@@ -308,6 +318,7 @@
   <string name="hint_public_keys">公開鍵の検索</string>
   <string name="hint_secret_keys">秘密鍵の検索</string>
   <string name="action_share_key_with">...で鍵の共有</string>
+  <string name="hint_keybase_search">Keybase.ioでの検索</string>
   <!--key bit length selections-->
   <string name="key_size_512">512</string>
   <string name="key_size_768">768</string>
@@ -346,13 +357,14 @@
   <string name="import_nfc_text">NFCで鍵を受信しました、デバイスのロックを解除する必要があります。</string>
   <string name="import_nfc_help_button">ヘルプ</string>
   <string name="import_clipboard_button">クリップボードから鍵を取得</string>
+  <string name="import_keybase_button">Keybase.ioから鍵を取得</string>
   <!--Intent labels-->
   <string name="intent_decrypt_file">OpenKeychainでファイルを復号化</string>
   <string name="intent_import_key">OpenKeychainに鍵をインポート</string>
   <string name="intent_send_encrypt">OpenKeychainで暗号化</string>
   <string name="intent_send_decrypt">OpenKeychainで復号化</string>
   <!--Remote API-->
-  <string name="api_no_apps">登録されていないアプリケーション!\n\nサードパーティアプリケーションはOpenKeychainにアクセスを要求できます。アクセスを与えた後、それらはここにリストされます。</string>
+  <string name="api_no_apps">未登録のアプリケーションです!\n\n\"ヘルプ\"のサードパーティ製アプリケーションのサポートリストにあるかを見てください!</string>
   <string name="api_settings_show_info">詳細情報を表示</string>
   <string name="api_settings_hide_info">詳細情報を非表示</string>
   <string name="api_settings_show_advanced">拡張設定を表示</string>
@@ -363,6 +375,7 @@
   <string name="api_settings_save">保存</string>
   <string name="api_settings_cancel">キャンセル</string>
   <string name="api_settings_revoke">破棄されたアクセス</string>
+  <string name="api_settings_start">アプリケーションを開始</string>
   <string name="api_settings_delete_account">アカウントを削除</string>
   <string name="api_settings_package_name">パッケージ名</string>
   <string name="api_settings_package_signature">パッケージの署名 SHA-256</string>
@@ -393,10 +406,14 @@
   <string name="key_list_empty_button_create">あなた所有の鍵を作る</string>
   <string name="key_list_empty_button_import">鍵のインポート。</string>
   <!--Key view-->
-  <string name="key_view_action_edit">この鍵の編集</string>
+  <string name="key_view_action_edit">鍵の編集</string>
   <string name="key_view_action_encrypt">この鍵で暗号化</string>
-  <string name="key_view_action_certify">この鍵で検証</string>
+  <string name="key_view_action_certify">ユーザID検証</string>
+  <string name="key_view_action_share_with">...で共有</string>
+  <string name="key_view_action_share_nfc">デバイスの後ろ同士を固定してNFC経由で共有</string>
   <string name="key_view_tab_main">情報</string>
+  <string name="key_view_tab_share">共有</string>
+  <string name="key_view_tab_keys">副鍵</string>
   <string name="key_view_tab_certs">証明</string>
   <!--Navigation Drawer-->
   <string name="nav_keys">鍵</string>
@@ -414,7 +431,7 @@
   <!--hints-->
   <string name="encrypt_content_edit_text_hint">ここに書いたメッセージを暗号化/署名..</string>
   <string name="decrypt_content_edit_text_hint">ここに入力された暗号化テキストを復号化/検証...</string>
-  <!--certifications-->
+  <!--certs-->
   <string name="cert_default">デフォルト</string>
   <string name="cert_none">無し</string>
   <string name="cert_casual">因果</string>
@@ -425,12 +442,12 @@
   <string name="cert_verify_error">エラー!</string>
   <string name="cert_verify_unavailable">鍵がありません</string>
   <!--unsorted-->
-  <string name="section_signer_id">署名者</string>
+  <string name="section_certifier_id">検証者</string>
   <string name="section_cert">証明の詳細</string>
-  <string name="label_user_id">ユーザーID</string>
+  <string name="label_user_id">ユーザID</string>
   <string name="unknown_uid">&lt;不明&gt;</string>
   <string name="empty_certs">この鍵に証明がない</string>
-  <string name="section_uids_to_sign">署名に使うユーザーID</string>
+  <string name="section_uids_to_certify">ユーザIDを検証</string>
   <string name="label_revocation">破棄の理由</string>
   <string name="label_verify_status">検証ステータス</string>
   <string name="label_cert_type">種別</string>
@@ -442,4 +459,5 @@
   <string name="title_view_cert">証明の詳細を見る</string>
   <string name="unknown_algorithm">不明</string>
   <string name="can_sign_not">署名不可</string>
+  <string name="error_no_encrypt_subkey">暗号化の副鍵がありません!</string>
 </resources>

@@ -20,17 +20,13 @@
   <string name="title_export_keys">Экспорт ключей</string>
   <string name="title_key_not_found">Ключ не найден</string>
   <string name="title_send_key">Загрузить на сервер ключей</string>
-  <string name="title_certify_key">Сертифицировать ключ</string>
   <string name="title_key_details">Сведения о ключе</string>
   <string name="title_help">Помощь</string>
   <!--section-->
-  <string name="section_user_ids">ID пользователя</string>
-  <string name="section_keys">Ключи</string>
   <string name="section_general">Приложение</string>
   <string name="section_defaults">Алгоритмы</string>
   <string name="section_advanced">Дополнительно</string>
   <string name="section_master_key">Основной ключ</string>
-  <string name="section_master_user_id">Владелец</string>
   <string name="section_actions">Действия</string>
   <string name="section_certification_key">Ваш ключ для сертификации</string>
   <string name="section_upload_key">Загрузить ключ</string>
@@ -39,9 +35,7 @@
   <string name="section_decrypt_verify">Расшифровать и проверить</string>
   <!--button-->
   <string name="btn_certify">Сертифицировать</string>
-  <string name="btn_decrypt_verify">Расшифровать и проверить</string>
   <string name="btn_decrypt_verify_clipboard">Из буфера обмена</string>
-  <string name="btn_encrypt_file">Зашифровать файл</string>
   <string name="btn_save">Сохранить</string>
   <string name="btn_do_not_save">Отмена</string>
   <string name="btn_delete">Удалить</string>
@@ -114,7 +108,6 @@
   <string name="label_expiry">Годен до...</string>
   <string name="label_usage">Применение</string>
   <string name="label_key_size">Размер ключа</string>
-  <string name="label_main_user_id">Основной ID пользователя</string>
   <string name="label_name">Имя</string>
   <string name="label_comment">Комментарий</string>
   <string name="label_email">Email</string>
@@ -189,7 +182,6 @@
   <string name="specify_file_to_export_to">Пожалуйста, выберите файл для экспорта.\nВНИМАНИЕ! Если файл существует, он будет перезаписан.</string>
   <string name="key_deletion_confirmation_multi">Вы уверены, что хотите удалить выбранные ключи?\nЭто действие нельзя отменить!</string>
   <string name="secret_key_deletion_confirmation">Вы уверены, что ходите удалить СЕКРЕТНЫЙ ключ \'%s\'?\nЭто действие нельзя отменить!</string>
-  <string name="ask_empty_id_ok">Вы добавили пустой ID пользователя. Вы уверены, что хотите продолжить?</string>
   <string name="public_key_deletetion_confirmation">Вы правда хотите удалить публичный ключ \'%s\'?\nЭто действие нельзя отменить!</string>
   <string name="also_export_secret_keys">Экспортировать секретные ключи?</string>
   <plurals name="keys_added_and_updated_1">
@@ -234,7 +226,6 @@
   <string name="nfc_successful">Ключ успешно передан через NFC!</string>
   <string name="key_copied_to_clipboard">Ключ скопирован в буфер обмена!</string>
   <string name="key_has_already_been_certified">Ключ уже был сертифицирован ранее!</string>
-  <string name="select_key_to_sign">Выберите ключ, используемый для подписи!</string>
   <string name="key_too_big_for_sharing">Ключ слишком большой для этого способа передачи!</string>
   <!--errors
          no punctuation, all lowercase,
@@ -247,8 +238,6 @@
   <string name="error_master_key_must_not_be_el_gamal">ключ ElGamal не может быть основным</string>
   <string name="error_unknown_algorithm_choice">выбран неизвестный алгоритм</string>
   <string name="error_user_id_no_email">email не найден</string>
-  <string name="error_key_needs_a_user_id">необходим хотя бы один id пользователя</string>
-  <string name="error_main_user_id_must_not_be_empty">основная запись пользователя не может быть пустой</string>
   <string name="error_key_needs_master_key">необходим основной ключ</string>
   <string name="error_no_signature_passphrase">пароль не задан</string>
   <string name="error_no_signature_key">ключ для подписи не задан</string>
@@ -365,7 +354,6 @@
   <string name="intent_send_encrypt">OpenKeychain: Зашифровать</string>
   <string name="intent_send_decrypt">OpenKeychain: Расшифровать</string>
   <!--Remote API-->
-  <string name="api_no_apps">Нет связанных программ!\n\nСторонние программы могут запросить доступ к OpenKeychain, после чего они будут отражаться здесь.</string>
   <string name="api_settings_show_info">Показать подробную информацию</string>
   <string name="api_settings_hide_info">Скрыть  подробную информацию</string>
   <string name="api_settings_show_advanced">Показать расширенные настройки</string>
@@ -386,8 +374,6 @@
   <string name="api_register_allow">Разрешить доступ</string>
   <string name="api_register_disallow">Запретить доступ</string>
   <string name="api_register_error_select_key">Пожалуйста, выберите ключ!</string>
-  <string name="api_select_pub_keys_missing_text">Для этих id не найдены публичные ключи:</string>
-  <string name="api_select_pub_keys_dublicates_text">Для этих id найдено более одного ключа:</string>
   <string name="api_select_pub_keys_text">Пожалуйста, проверьте получателей!</string>
   <string name="api_error_wrong_signature">Проверка подписи пакета не удалась! Если  вы установили программу из другого источника, отзовите для неё доступ к этой программе или обновите право доступа.</string>
   <!--Share-->
@@ -408,11 +394,7 @@
   <string name="key_list_empty_button_create">создать свой ключ</string>
   <string name="key_list_empty_button_import">Импортировать ключи</string>
   <!--Key view-->
-  <string name="key_view_action_edit">Изменить ключ</string>
   <string name="key_view_action_encrypt">Зашифровать этим ключом</string>
-  <string name="key_view_action_certify">Сертифицировать этот ключ</string>
-  <string name="key_view_tab_main">Информация</string>
-  <string name="key_view_tab_certs">Сертификация</string>
   <!--Navigation Drawer-->
   <string name="nav_keys">Ключи</string>
   <string name="nav_encrypt">Подписать и зашифровать</string>
@@ -429,21 +411,17 @@
   <!--hints-->
   <string name="encrypt_content_edit_text_hint">Напишите сообщение здесь, что бы зашифровать и/или подписать...</string>
   <string name="decrypt_content_edit_text_hint">Введите сюда шифр для расшифровки и/или проверки...</string>
-  <!--certifications-->
+  <!--certs-->
   <string name="cert_default">по умолчанию</string>
   <string name="cert_none">нет</string>
-  <string name="cert_revoke">отозвать</string>
   <string name="cert_verify_ok">ok</string>
   <string name="cert_verify_failed">сбой!</string>
   <string name="cert_verify_error">ошибка!</string>
   <string name="cert_verify_unavailable">ключ не доступен</string>
   <!--unsorted-->
-  <string name="section_signer_id">Подписант</string>
   <string name="section_cert">Детали сертификации</string>
-  <string name="label_user_id">ID пользователя</string>
   <string name="unknown_uid">&lt;неизв.&gt;</string>
   <string name="empty_certs">Этот ключ не сертифицирован</string>
-  <string name="section_uids_to_sign">Подписываемые ID пользователя</string>
   <string name="label_revocation">Причина отзыва</string>
   <string name="label_verify_status">Статус верификации</string>
   <string name="label_cert_type">Тип</string>

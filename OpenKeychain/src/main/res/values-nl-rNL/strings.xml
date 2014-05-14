@@ -19,13 +19,10 @@
   <string name="title_key_not_found">Sleutel niet gevonden</string>
   <string name="title_help">Help</string>
   <!--section-->
-  <string name="section_user_ids">Gebruikers-id\'s</string>
-  <string name="section_keys">Sleutels</string>
   <string name="section_general">Algemeen</string>
   <string name="section_defaults">Standaard</string>
   <string name="section_advanced">Geavanceerd</string>
   <!--button-->
-  <string name="btn_encrypt_file">Bestand versleutelen</string>
   <string name="btn_save">Opslaan</string>
   <string name="btn_do_not_save">Annuleren</string>
   <string name="btn_delete">Verwijderen</string>
@@ -65,7 +62,6 @@
   <string name="label_expiry">Verlopen</string>
   <string name="label_usage">Gebruik</string>
   <string name="label_key_size">Sleutelgrootte</string>
-  <string name="label_main_user_id">Hoofdgebruikers-id</string>
   <string name="label_name">Naam</string>
   <string name="label_comment">Opmerking</string>
   <string name="label_email">E-mailadres</string>
@@ -125,8 +121,6 @@
   <string name="error_key_size_minimum512bit">sleutelgrootte moet minstens 512-bits zijn</string>
   <string name="error_master_key_must_not_be_el_gamal">de hoofdsleutel kan geen ElGamal-sleutel zijn</string>
   <string name="error_unknown_algorithm_choice">onbekende algoritmekeuze</string>
-  <string name="error_key_needs_a_user_id">ten minste één gebruiksers-id vereist</string>
-  <string name="error_main_user_id_must_not_be_empty">hoofdgebruikers-id kan niet leeg zijn</string>
   <string name="error_key_needs_master_key">ten minste een hoofdsleutel is vereist</string>
   <string name="error_no_signature_passphrase">geen wachtwoord opgegeven</string>
   <string name="error_no_signature_key">geen ondertekeningssleutel opgegeven</string>
@@ -192,8 +186,6 @@
   <string name="api_register_allow">Toegang toestaan</string>
   <string name="api_register_disallow">Toegang weigeren</string>
   <string name="api_register_error_select_key">Selecteert u a.u.b. een sleutel</string>
-  <string name="api_select_pub_keys_missing_text">Geen publieke sleutels gevonden voor deze gebruiker-id\'s:</string>
-  <string name="api_select_pub_keys_dublicates_text">Meer dan een publieke sleutel gevonden voor deze gebruikers-id\'s:</string>
   <string name="api_select_pub_keys_text">Bekijkt u a.u.b. de ontvangers</string>
   <!--Share-->
   <string name="share_qr_code_dialog_start">U gaat door alle QR-codes met \'Volgende\', en scant ze een voor een.</string>
@@ -201,6 +193,6 @@
   <!--Key view-->
   <!--Navigation Drawer-->
   <!--hints-->
-  <!--certifications-->
+  <!--certs-->
   <!--unsorted-->
 </resources>

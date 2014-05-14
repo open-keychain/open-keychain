@@ -17,7 +17,7 @@
 
 package org.sufficientlysecure.keychain.ui.adapter;
 
-import android.content.Context;
+import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -26,8 +26,8 @@ import android.support.v7.app.ActionBarActivity;
 import java.util.ArrayList;
 
 public class PagerTabStripAdapter extends FragmentPagerAdapter {
-    private final Context mContext;
-    private final ArrayList<TabInfo> mTabs = new ArrayList<TabInfo>();
+    protected final Activity mActivity;
+    protected final ArrayList<TabInfo> mTabs = new ArrayList<TabInfo>();
 
     static final class TabInfo {
         public final Class<?> clss;
@@ -43,7 +43,7 @@ public class PagerTabStripAdapter extends FragmentPagerAdapter {
 
     public PagerTabStripAdapter(ActionBarActivity activity) {
         super(activity.getSupportFragmentManager());
-        mContext = activity;
+        mActivity = activity;
     }
 
     public void addTab(Class<?> clss, Bundle args, String title) {
@@ -60,7 +60,7 @@ public class PagerTabStripAdapter extends FragmentPagerAdapter {
     @Override
     public Fragment getItem(int position) {
         TabInfo info = mTabs.get(position);
-        return Fragment.instantiate(mContext, info.clss.getName(), info.args);
+        return Fragment.instantiate(mActivity, info.clss.getName(), info.args);
     }
 
     @Override

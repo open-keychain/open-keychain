@@ -26,10 +26,11 @@ import android.os.Handler;
 import android.os.Message;
 import android.os.Messenger;
 import android.support.v4.app.LoaderManager;
+import android.support.v4.app.NavUtils;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ArrayAdapter;
@@ -40,7 +41,6 @@ import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-import com.beardedhen.androidbootstrap.BootstrapButton;
 import com.devspark.appmsg.AppMsg;
 
 import org.sufficientlysecure.keychain.Constants;
@@ -64,7 +64,7 @@ import java.util.ArrayList;
  */
 public class CertifyKeyActivity extends ActionBarActivity implements
         SelectSecretKeyLayoutFragment.SelectSecretKeyCallback, LoaderManager.LoaderCallbacks<Cursor> {
-    private BootstrapButton mSignButton;
+    private View mSignButton;
     private CheckBox mUploadKeyCheckbox;
     private Spinner mSelectKeyserverSpinner;
 
@@ -86,20 +86,16 @@ public class CertifyKeyActivity extends ActionBarActivity implements
 
         setContentView(R.layout.certify_key_activity);
 
-        final ActionBar actionBar = getSupportActionBar();
-        actionBar.setDisplayShowTitleEnabled(true);
-        actionBar.setDisplayHomeAsUpEnabled(false);
-        actionBar.setHomeButtonEnabled(false);
-
         mSelectKeyFragment = (SelectSecretKeyLayoutFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.sign_key_select_key_fragment);
         mSelectKeyFragment.setCallback(this);
         mSelectKeyFragment.setFilterCertify(true);
 
-        mSelectKeyserverSpinner = (Spinner) findViewById(R.id.sign_key_keyserver);
+        mSelectKeyserverSpinner = (Spinner) findViewById(R.id.upload_key_keyserver);
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
                 android.R.layout.simple_spinner_item, Preferences.getPreferences(this)
-                .getKeyServers());
+                .getKeyServers()
+        );
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         mSelectKeyserverSpinner.setAdapter(adapter);
 
@@ -122,14 +118,14 @@ public class CertifyKeyActivity extends ActionBarActivity implements
             }
         });
 
-        mSignButton = (BootstrapButton) findViewById(R.id.sign_key_sign_button);
+        mSignButton = findViewById(R.id.sign_key_sign_button);
         mSignButton.setOnClickListener(new OnClickListener() {
 
             @Override
             public void onClick(View v) {
                 if (mPubKeyId != 0) {
                     if (mMasterKeyId == 0) {
-                        mSelectKeyFragment.setError(getString(R.string.select_key_to_sign));
+                        mSelectKeyFragment.setError(getString(R.string.select_key_to_certify));
                     } else {
                         initiateSigning();
                     }
@@ -145,7 +141,7 @@ public class CertifyKeyActivity extends ActionBarActivity implements
         }
         Log.e(Constants.TAG, "uri: " + mDataUri);
 
-        mUserIds = (ListView) findViewById(R.id.user_ids);
+        mUserIds = (ListView) findViewById(R.id.view_key_user_ids);
 
         mUserIdsAdapter = new ViewKeyUserIdsAdapter(this, null, 0, true);
         mUserIds.setAdapter(mUserIdsAdapter);
@@ -201,7 +197,7 @@ public class CertifyKeyActivity extends ActionBarActivity implements
 
                     byte[] fingerprintBlob = data.getBlob(INDEX_FINGERPRINT);
                     String fingerprint = PgpKeyHelper.convertFingerprintToHex(fingerprintBlob);
-                    ((TextView) findViewById(R.id.fingerprint))
+                    ((TextView) findViewById(R.id.view_key_fingerprint))
                             .setText(PgpKeyHelper.colorizeFingerprint(fingerprint));
                 }
                 break;
@@ -318,7 +314,7 @@ public class CertifyKeyActivity extends ActionBarActivity implements
         // fill values for this action
         Bundle data = new Bundle();
 
-        Spinner keyServer = (Spinner) findViewById(R.id.sign_key_keyserver);
+        Spinner keyServer = (Spinner) findViewById(R.id.upload_key_keyserver);
         String server = (String) keyServer.getSelectedItem();
         data.putString(KeychainIntentService.UPLOAD_KEY_SERVER, server);
 
@@ -358,5 +354,18 @@ public class CertifyKeyActivity extends ActionBarActivity implements
     @Override
     public void onKeySelected(long secretKeyId) {
         mMasterKeyId = secretKeyId;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home: {
+                Intent viewIntent = NavUtils.getParentActivityIntent(this);
+                viewIntent.setData(KeyRings.buildGenericKeyRingUri(mDataUri));
+                NavUtils.navigateUpTo(this, viewIntent);
+                return true;
+            }
+        }
+        return super.onOptionsItemSelected(item);
     }
 }

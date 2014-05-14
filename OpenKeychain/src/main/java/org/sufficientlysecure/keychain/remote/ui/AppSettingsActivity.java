@@ -40,6 +40,9 @@ public class AppSettingsActivity extends ActionBarActivity {
     private AppSettingsFragment mSettingsFragment;
     private AccountsListFragment mAccountsListFragment;
 
+    // model
+    AppSettings mAppSettings;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -80,22 +83,39 @@ public class AppSettingsActivity extends ActionBarActivity {
             case R.id.menu_api_settings_revoke:
                 revokeAccess();
                 return true;
+            case R.id.menu_api_settings_start:
+                startApp();
+                return true;
         }
         return super.onOptionsItemSelected(item);
     }
 
+    private void startApp() {
+        Intent i;
+        PackageManager manager = getPackageManager();
+        try {
+            i = manager.getLaunchIntentForPackage(mAppSettings.getPackageName());
+            if (i == null)
+                throw new PackageManager.NameNotFoundException();
+            i.addCategory(Intent.CATEGORY_LAUNCHER);
+            startActivity(i);
+        } catch (PackageManager.NameNotFoundException e) {
+            Log.e(Constants.TAG, "startApp", e);
+        }
+    }
+
     private void loadData(Bundle savedInstanceState, Uri appUri) {
-        AppSettings settings = new ProviderHelper(this).getApiAppSettings(appUri);
-        mSettingsFragment.setAppSettings(settings);
+        mAppSettings = new ProviderHelper(this).getApiAppSettings(appUri);
+        mSettingsFragment.setAppSettings(mAppSettings);
 
         String appName;
         PackageManager pm = getPackageManager();
         try {
-            ApplicationInfo ai = pm.getApplicationInfo(settings.getPackageName(), 0);
+            ApplicationInfo ai = pm.getApplicationInfo(mAppSettings.getPackageName(), 0);
             appName = (String) pm.getApplicationLabel(ai);
         } catch (PackageManager.NameNotFoundException e) {
             // fallback
-            appName = settings.getPackageName();
+            appName = mAppSettings.getPackageName();
         }
         setTitle(appName);
 
