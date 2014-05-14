@@ -108,7 +108,7 @@ public class ImportKeysListServerLoader
                      * set fingerprint explicitly after query
                      * to enforce a check when the key is imported by KeychainIntentService
                      */
-                    uniqueEntry.setFingerPrintHex(fingerprint);
+                    uniqueEntry.setFingerprintHex(fingerprint);
                     uniqueEntry.setSelected(true);
                     mEntryList.add(uniqueEntry);
                 }

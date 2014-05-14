@@ -146,14 +146,19 @@ public class ImportKeysAdapter extends ArrayAdapter<ImportKeysListEntry> {
 
         holder.keyId.setText(entry.keyIdHex);
 
-        if (entry.fingerPrintHex != null) {
+        if (entry.fingerprintHex != null) {
             holder.fingerprint.setVisibility(View.VISIBLE);
-            holder.fingerprint.setText(PgpKeyHelper.colorizeFingerprint(entry.fingerPrintHex));
+            holder.fingerprint.setText(PgpKeyHelper.colorizeFingerprint(entry.fingerprintHex));
         } else {
             holder.fingerprint.setVisibility(View.GONE);
         }
 
-        holder.algorithm.setText("" + entry.bitStrength + "/" + entry.algorithm);
+        if (entry.bitStrength != 0 && entry.algorithm != null) {
+            holder.algorithm.setText("" + entry.bitStrength + "/" + entry.algorithm);
+            holder.algorithm.setVisibility(View.VISIBLE);
+        } else {
+            holder.algorithm.setVisibility(View.INVISIBLE);
+        }
 
         if (entry.revoked) {
             holder.status.setVisibility(View.VISIBLE);

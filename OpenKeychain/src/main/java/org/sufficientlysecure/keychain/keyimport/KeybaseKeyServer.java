@@ -41,6 +41,11 @@ public class KeybaseKeyServer extends KeyServer {
             InsufficientQuery {
         ArrayList<ImportKeysListEntry> results = new ArrayList<ImportKeysListEntry>();
 
+        if (query.startsWith("0x")) {
+            // cut off "0x" if a user is searching for a key id
+            query = query.substring(2);
+        }
+
         JSONObject fromQuery = getFromKeybase("_/api/1.0/user/autocomplete.json?q=", query);
         try {
 
@@ -50,23 +55,32 @@ public class KeybaseKeyServer extends KeyServer {
 
                 // only list them if they have a key
                 if (JWalk.optObject(match, "components", "key_fingerprint") != null) {
-                    results.add(makeEntry(match));
+                    String keybaseId = JWalk.getString(match, "components", "username", "val");
+                    String fingerprint = JWalk.getString(match, "components", "key_fingerprint", "val");
+                    fingerprint = fingerprint.replace(" ", "").toUpperCase();
+
+                    if (keybaseId.equals(query) || fingerprint.startsWith(query.toUpperCase())) {
+                        results.add(makeEntry(match));
+                    } else {
+                        results.add(makeEntry(match));
+                    }
                 }
             }
         } catch (Exception e) {
+            Log.e(Constants.TAG, "keybase result parsing error", e);
             throw new QueryException("Unexpected structure in keybase search result: " + e.getMessage());
         }
 
         return results;
     }
 
-    private JSONObject getUser(String keybaseID) throws QueryException {
+    private JSONObject getUser(String keybaseId) throws QueryException {
         try {
-            return getFromKeybase("_/api/1.0/user/lookup.json?username=", keybaseID);
+            return getFromKeybase("_/api/1.0/user/lookup.json?username=", keybaseId);
         } catch (Exception e) {
             String detail = "";
-            if (keybaseID != null) {
-                detail = ". Query was for user '" + keybaseID + "'";
+            if (keybaseId != null) {
+                detail = ". Query was for user '" + keybaseId + "'";
             }
             throw new QueryException(e.getMessage() + detail);
         }
@@ -74,35 +88,50 @@ public class KeybaseKeyServer extends KeyServer {
 
     private ImportKeysListEntry makeEntry(JSONObject match) throws QueryException, JSONException {
 
-        String keybaseID = JWalk.getString(match, "components", "username", "val");
-        String key_fingerprint = JWalk.getString(match, "components", "key_fingerprint", "val");
-        key_fingerprint = key_fingerprint.replace(" ", "").toUpperCase();
-        match = getUser(keybaseID);
-
         final ImportKeysListEntry entry = new ImportKeysListEntry();
+        String keybaseId = JWalk.getString(match, "components", "username", "val");
+        String fullName = JWalk.getString(match, "components", "full_name", "val");
+        String fingerprint = JWalk.getString(match, "components", "key_fingerprint", "val");
+        fingerprint = fingerprint.replace(" ", "").toUpperCase();
+
+        // in anticipation of a full fingerprint, only use the last 16 chars as 64-bit key id
+        entry.setKeyIdHex("0x" + fingerprint.substring(Math.max(0, fingerprint.length() - 16)));
+        // store extra info, so we can query for the keybase id directly
+        entry.setExtraData(keybaseId);
 
         // TODO: Fix; have suggested keybase provide this value to avoid search-time crypto calls
-        entry.setBitStrength(4096);
-        entry.setAlgorithm("RSA");
-        entry.setKeyIdHex("0x" + key_fingerprint);
-        entry.setRevoked(false);
+        //entry.setBitStrength(4096);
+        //entry.setAlgorithm("RSA");
 
-        // ctime
-        final long creationDate = JWalk.getLong(match, "them", "public_keys", "primary", "ctime");
-        final GregorianCalendar tmpGreg = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
-        tmpGreg.setTimeInMillis(creationDate * 1000);
-        entry.setDate(tmpGreg.getTime());
+        entry.setFingerprintHex(fingerprint);
 
-        // key bits
-        // we have to fetch the user object to construct the search-result list, so we might as
-        //  well (weakly) remember the key, in case they try to import it
-        mKeyCache.put(keybaseID, JWalk.getString(match,"them", "public_keys", "primary", "bundle"));
+        // key data
+        // currently there's no need to query the user right away, and it should be avoided, so the
+        // user doesn't experience lag and doesn't download many keys unnecessarily, but should we
+        // require to do it at soe point:
+        // (weakly) remember the key, in case the user tries to import it
+        //mKeyCache.put(keybaseId, JWalk.getString(match, "them", "public_keys", "primary", "bundle"));
 
-        // String displayName = JWalk.getString(match, "them", "profile", "full_name");
         ArrayList<String> userIds = new ArrayList<String>();
-        String name = "keybase.io/" + keybaseID + " <" + keybaseID + "@keybase.io>";
+        String name = fullName + " <keybase.io/" + keybaseId + ">";
         userIds.add(name);
-        userIds.add(keybaseID);
+        try {
+            userIds.add("github.com/" + JWalk.getString(match, "components", "github", "val"));
+        } catch (JSONException e) {
+            // ignore
+        }
+        try {
+            userIds.add("twitter.com/" + JWalk.getString(match, "components", "twitter", "val"));
+        } catch (JSONException e) {
+            // ignore
+        }
+        try {
+            JSONArray array = JWalk.getArray(match, "components", "websites");
+            JSONObject website = array.getJSONObject(0);
+            userIds.add(JWalk.getString(website, "val"));
+        } catch (JSONException e) {
+            // ignore
+        }
         entry.setUserIds(userIds);
         entry.setPrimaryUserId(name);
         return entry;
