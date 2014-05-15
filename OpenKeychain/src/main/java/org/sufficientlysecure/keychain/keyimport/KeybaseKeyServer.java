@@ -21,6 +21,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.sufficientlysecure.keychain.Constants;
+import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
 import org.sufficientlysecure.keychain.util.JWalk;
 import org.sufficientlysecure.keychain.util.Log;
 
@@ -100,6 +101,10 @@ public class KeybaseKeyServer extends KeyServer {
         entry.setExtraData(keybaseId);
 
         // TODO: Fix; have suggested keybase provide this value to avoid search-time crypto calls
+        final int algorithmId = JWalk.getInt(match, "components", "key_fingerprint", "algo");
+        entry.setAlgorithm(PgpKeyHelper.getAlgorithmInfo(algorithmId));
+        final int bitStrength = JWalk.getInt(match, "components", "key_fingerprint", "nbits");
+        entry.setBitStrength(bitStrength);
         //entry.setBitStrength(4096);
         //entry.setAlgorithm("RSA");
 
