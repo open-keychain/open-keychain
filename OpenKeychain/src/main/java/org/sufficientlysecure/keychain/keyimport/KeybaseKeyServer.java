@@ -21,6 +21,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.sufficientlysecure.keychain.Constants;
+import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
 import org.sufficientlysecure.keychain.util.JWalk;
 import org.sufficientlysecure.keychain.util.Log;
 
@@ -33,8 +34,6 @@ import java.util.TimeZone;
 import java.util.WeakHashMap;
 
 public class KeybaseKeyServer extends KeyServer {
-
-    private WeakHashMap<String, String> mKeyCache = new WeakHashMap<String, String>();
 
     @Override
     public ArrayList<ImportKeysListEntry> search(String query) throws QueryException, TooManyResponses,
@@ -92,25 +91,18 @@ public class KeybaseKeyServer extends KeyServer {
         String keybaseId = JWalk.getString(match, "components", "username", "val");
         String fullName = JWalk.getString(match, "components", "full_name", "val");
         String fingerprint = JWalk.getString(match, "components", "key_fingerprint", "val");
-        fingerprint = fingerprint.replace(" ", "").toUpperCase();
+        fingerprint = fingerprint.replace(" ", "").toUpperCase(); // not strictly necessary but doesn't hurt
+        entry.setFingerprintHex(fingerprint);
 
         // in anticipation of a full fingerprint, only use the last 16 chars as 64-bit key id
         entry.setKeyIdHex("0x" + fingerprint.substring(Math.max(0, fingerprint.length() - 16)));
         // store extra info, so we can query for the keybase id directly
         entry.setExtraData(keybaseId);
 
-        // TODO: Fix; have suggested keybase provide this value to avoid search-time crypto calls
-        //entry.setBitStrength(4096);
-        //entry.setAlgorithm("RSA");
-
-        entry.setFingerprintHex(fingerprint);
-
-        // key data
-        // currently there's no need to query the user right away, and it should be avoided, so the
-        // user doesn't experience lag and doesn't download many keys unnecessarily, but should we
-        // require to do it at soe point:
-        // (weakly) remember the key, in case the user tries to import it
-        //mKeyCache.put(keybaseId, JWalk.getString(match, "them", "public_keys", "primary", "bundle"));
+        final int algorithmId = JWalk.getInt(match, "components", "key_fingerprint", "algo");
+        entry.setAlgorithm(PgpKeyHelper.getAlgorithmInfo(algorithmId));
+        final int bitStrength = JWalk.getInt(match, "components", "key_fingerprint", "nbits");
+        entry.setBitStrength(bitStrength);
 
         ArrayList<String> userIds = new ArrayList<String>();
         String name = fullName + " <keybase.io/" + keybaseId + ">";
@@ -171,16 +163,12 @@ public class KeybaseKeyServer extends KeyServer {
 
     @Override
     public String get(String id) throws QueryException {
-        String key = mKeyCache.get(id);
-        if (key == null) {
-            try {
-                JSONObject user = getUser(id);
-                key = JWalk.getString(user, "them", "public_keys", "primary", "bundle");
-            } catch (Exception e) {
-                throw new QueryException(e.getMessage());
-            }
+        try {
+            JSONObject user = getUser(id);
+            return JWalk.getString(user, "them", "public_keys", "primary", "bundle");
+        } catch (Exception e) {
+            throw new QueryException(e.getMessage());
         }
-        return key;
     }
 
     @Override
