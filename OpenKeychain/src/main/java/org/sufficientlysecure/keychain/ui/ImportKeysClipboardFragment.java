@@ -71,7 +71,7 @@ public class ImportKeysClipboardFragment extends Fragment {
                         return;
                     }
                 }
-                mImportActivity.loadCallback(sendText.getBytes(), null, null, null);
+                mImportActivity.loadCallback(sendText.getBytes(), null, null, null, null);
             }
         });
 

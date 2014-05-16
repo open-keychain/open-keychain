@@ -33,7 +33,7 @@
             android:padding="4dp"
             android:text="@string/btn_set_passphrase"
             bootstrapbutton:bb_icon_left="fa-pencil"
-            bootstrapbutton:bb_type="info" />
+            bootstrapbutton:bb_type="default" />
 
         <LinearLayout
             android:id="@+id/edit_key_container"

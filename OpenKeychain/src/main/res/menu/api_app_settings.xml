@@ -3,6 +3,12 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
+        android:id="@+id/menu_api_settings_start"
+        android:title="@string/api_settings_start"
+        android:icon="@drawable/ic_action_play"
+        app:showAsAction="always" />
+
+    <item
         android:id="@+id/menu_api_settings_revoke"
         android:title="@string/api_settings_revoke"
         app:showAsAction="never" />

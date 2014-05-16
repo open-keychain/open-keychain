@@ -38,16 +38,14 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ArrayAdapter;
 
-import com.beardedhen.androidbootstrap.BootstrapButton;
 import com.devspark.appmsg.AppMsg;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.helper.ActionBarHelper;
 import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
 import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
-import org.sufficientlysecure.keychain.ui.adapter.ImportKeysListEntry;
+import org.sufficientlysecure.keychain.keyimport.ImportKeysListEntry;
 import org.sufficientlysecure.keychain.ui.dialog.BadImportKeyDialogFragment;
 import org.sufficientlysecure.keychain.util.Log;
 
@@ -62,6 +60,8 @@ public class ImportKeysActivity extends ActionBarActivity implements ActionBar.O
             + "IMPORT_KEY_FROM_KEYSERVER";
     public static final String ACTION_IMPORT_KEY_FROM_KEYSERVER_AND_RETURN = Constants.INTENT_PREFIX
             + "IMPORT_KEY_FROM_KEY_SERVER_AND_RETURN";
+    public static final String ACTION_IMPORT_KEY_FROM_KEYBASE = Constants.INTENT_PREFIX
+            + "IMPORT_KEY_FROM_KEYBASE";
 
     // Actions for internal use only:
     public static final String ACTION_IMPORT_KEY_FROM_FILE = Constants.INTENT_PREFIX
@@ -85,20 +85,22 @@ public class ImportKeysActivity extends ActionBarActivity implements ActionBar.O
     private ImportKeysListFragment mListFragment;
     private String[] mNavigationStrings;
     private Fragment mCurrentFragment;
-    private BootstrapButton mImportButton;
+    private View mImportButton;
 
     private static final Class[] NAVIGATION_CLASSES = new Class[]{
             ImportKeysServerFragment.class,
             ImportKeysFileFragment.class,
             ImportKeysQrCodeFragment.class,
             ImportKeysClipboardFragment.class,
-            ImportKeysNFCFragment.class
+            ImportKeysNFCFragment.class,
+            ImportKeysKeybaseFragment.class
     };
     private static final int NAV_SERVER = 0;
     private static final int NAV_FILE = 1;
     private static final int NAV_QR_CODE = 2;
     private static final int NAV_CLIPBOARD = 3;
     private static final int NAV_NFC = 4;
+    private static final int NAV_KEYBASE = 5;
 
     private int mCurrentNavPosition = -1;
 
@@ -108,7 +110,7 @@ public class ImportKeysActivity extends ActionBarActivity implements ActionBar.O
 
         setContentView(R.layout.import_keys_activity);
 
-        mImportButton = (BootstrapButton) findViewById(R.id.import_import);
+        mImportButton = findViewById(R.id.import_import);
         mImportButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -121,7 +123,6 @@ public class ImportKeysActivity extends ActionBarActivity implements ActionBar.O
         if (ACTION_IMPORT_KEY_FROM_KEYSERVER_AND_RETURN.equals(getIntent().getAction())) {
             setTitle(R.string.nav_import);
         } else {
-            ActionBarHelper.setBackButton(this);
             getSupportActionBar().setDisplayShowTitleEnabled(false);
 
             // set drop down navigation
@@ -238,6 +239,12 @@ public class ImportKeysActivity extends ActionBarActivity implements ActionBar.O
 
             // no immediate actions!
             startListFragment(savedInstanceState, null, null, null);
+        } else if (ACTION_IMPORT_KEY_FROM_KEYBASE.equals(action)) {
+            // NOTE: this only displays the appropriate fragment, no actions are taken
+            loadNavFragment(NAV_KEYBASE, null);
+
+            // no immediate actions!
+            startListFragment(savedInstanceState, null, null, null);
         } else {
             startListFragment(savedInstanceState, null, null, null);
         }
@@ -340,8 +347,8 @@ public class ImportKeysActivity extends ActionBarActivity implements ActionBar.O
         startListFragment(savedInstanceState, null, null, query);
     }
 
-    public void loadCallback(byte[] importData, Uri dataUri, String serverQuery, String keyServer) {
-        mListFragment.loadNew(importData, dataUri, serverQuery, keyServer);
+    public void loadCallback(byte[] importData, Uri dataUri, String serverQuery, String keyServer, String keybaseQuery) {
+        mListFragment.loadNew(importData, dataUri, serverQuery, keyServer, keybaseQuery);
     }
 
     /**
@@ -449,6 +456,31 @@ public class ImportKeysActivity extends ActionBarActivity implements ActionBar.O
 
             // start service with intent
             startService(intent);
+        } else if (mListFragment.getKeybaseQuery() != null) {
+            // Send all information needed to service to query keys in other thread
+            Intent intent = new Intent(this, KeychainIntentService.class);
+
+            intent.setAction(KeychainIntentService.ACTION_IMPORT_KEYBASE_KEYS);
+
+            // fill values for this action
+            Bundle data = new Bundle();
+
+            // get selected key entries
+            ArrayList<ImportKeysListEntry> selectedEntries = mListFragment.getSelectedData();
+            data.putParcelableArrayList(KeychainIntentService.DOWNLOAD_KEY_LIST, selectedEntries);
+
+            intent.putExtra(KeychainIntentService.EXTRA_DATA, data);
+
+            // Create a new Messenger for the communication back
+            Messenger messenger = new Messenger(saveHandler);
+            intent.putExtra(KeychainIntentService.EXTRA_MESSENGER, messenger);
+
+            // show progress dialog
+            saveHandler.showProgressDialog(this);
+
+            // start service with intent
+            startService(intent);
+
         } else {
             AppMsg.makeText(this, R.string.error_nothing_import, AppMsg.STYLE_ALERT).show();
         }

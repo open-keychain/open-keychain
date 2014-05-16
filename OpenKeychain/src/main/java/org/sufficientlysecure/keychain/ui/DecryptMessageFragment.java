@@ -47,8 +47,8 @@ public class DecryptMessageFragment extends DecryptFragment {
 
     // view
     private EditText mMessage;
-    private BootstrapButton mDecryptButton;
-    private BootstrapButton mDecryptFromCLipboardButton;
+    private View mDecryptButton;
+    private View mDecryptFromCLipboardButton;
 
     // model
     private String mCiphertext;
@@ -61,8 +61,8 @@ public class DecryptMessageFragment extends DecryptFragment {
         View view = inflater.inflate(R.layout.decrypt_message_fragment, container, false);
 
         mMessage = (EditText) view.findViewById(R.id.message);
-        mDecryptButton = (BootstrapButton) view.findViewById(R.id.action_decrypt);
-        mDecryptFromCLipboardButton = (BootstrapButton) view.findViewById(R.id.action_decrypt_from_clipboard);
+        mDecryptButton = view.findViewById(R.id.action_decrypt);
+        mDecryptFromCLipboardButton = view.findViewById(R.id.action_decrypt_from_clipboard);
         mDecryptButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -108,11 +108,11 @@ public class DecryptMessageFragment extends DecryptFragment {
                 mCiphertext = matcher.group(1);
                 decryptStart(null);
             } else {
-                AppMsg.makeText(getActivity(), R.string.error_invalid_data, AppMsg.STYLE_INFO)
+                AppMsg.makeText(getActivity(), R.string.error_invalid_data, AppMsg.STYLE_ALERT)
                         .show();
             }
         } else {
-            AppMsg.makeText(getActivity(), R.string.error_invalid_data, AppMsg.STYLE_INFO)
+            AppMsg.makeText(getActivity(), R.string.error_invalid_data, AppMsg.STYLE_ALERT)
                     .show();
         }
     }

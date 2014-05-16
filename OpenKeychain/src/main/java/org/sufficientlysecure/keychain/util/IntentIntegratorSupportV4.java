@@ -22,6 +22,8 @@ import android.support.v4.app.Fragment;
 import com.google.zxing.integration.android.IntentIntegrator;
 
 /**
+ * Copied from older Barcode Scanner Integration library
+ *
  * IntentIntegrator for the V4 Android compatibility package.
  *
  * @author Lachezar Dobrev

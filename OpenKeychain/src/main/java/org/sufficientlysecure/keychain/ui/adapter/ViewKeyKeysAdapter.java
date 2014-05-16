@@ -121,35 +121,17 @@ public class ViewKeyKeysAdapter extends CursorAdapter {
         keyId.setText(keyIdStr);
         // may be set with additional "stripped" later on
         if (hasAnySecret && cursor.getInt(mIndexHasSecret) == 0) {
-            keyDetails.setText("(" + algorithmStr + ", " +
-                    context.getString(R.string.key_stripped) + ")");
+            keyDetails.setText(algorithmStr + ", " +
+                    context.getString(R.string.key_stripped));
         } else {
-            keyDetails.setText("(" + algorithmStr + ")");
+            keyDetails.setText(algorithmStr);
         }
 
-        if (cursor.getInt(mIndexRank) == 0) {
-            masterKeyIcon.setVisibility(View.INVISIBLE);
-        } else {
-            masterKeyIcon.setVisibility(View.VISIBLE);
-        }
-
-        if (cursor.getInt(mIndexCanCertify) != 1) {
-            certifyIcon.setVisibility(View.GONE);
-        } else {
-            certifyIcon.setVisibility(View.VISIBLE);
-        }
-
-        if (cursor.getInt(mIndexCanEncrypt) != 1) {
-            encryptIcon.setVisibility(View.GONE);
-        } else {
-            encryptIcon.setVisibility(View.VISIBLE);
-        }
-
-        if (cursor.getInt(mIndexCanSign) != 1) {
-            signIcon.setVisibility(View.GONE);
-        } else {
-            signIcon.setVisibility(View.VISIBLE);
-        }
+        // Set icons according to properties
+        masterKeyIcon.setVisibility(cursor.getInt(mIndexRank) == 0 ? View.VISIBLE : View.INVISIBLE);
+        certifyIcon.setVisibility(cursor.getInt(mIndexCanCertify) != 0 ? View.VISIBLE : View.GONE);
+        encryptIcon.setVisibility(cursor.getInt(mIndexCanEncrypt) != 0 ? View.VISIBLE : View.GONE);
+        signIcon.setVisibility(cursor.getInt(mIndexCanSign) != 0 ? View.VISIBLE : View.GONE);
 
         boolean valid = true;
         if (cursor.getInt(mIndexRevokedKey) > 0) {
@@ -168,13 +150,13 @@ public class ViewKeyKeysAdapter extends CursorAdapter {
             Date expiryDate = new Date(cursor.getLong(mIndexExpiry) * 1000);
 
             valid = valid && expiryDate.after(new Date());
-            keyExpiry.setText("(" +
+            keyExpiry.setText(
                     context.getString(R.string.label_expiry) + ": " +
-                    DateFormat.getDateFormat(context).format(expiryDate) + ")");
-
-            keyExpiry.setVisibility(View.VISIBLE);
+                    DateFormat.getDateFormat(context).format(expiryDate));
         } else {
-            keyExpiry.setVisibility(View.GONE);
+            keyExpiry.setText(
+                    context.getString(R.string.label_expiry) + ": " +
+                    context.getString(R.string.none));
         }
 
         // if key is expired or revoked, strike through text

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!-- Generated with http://android-holo-colors.com -->
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
+
+  <style name="KeychainTheme" parent="@style/_KeychainTheme"/>
+
+  <style name="_KeychainTheme" parent="Theme.AppCompat.Light">
+
+    <item name="android:editTextBackground">@drawable/keychaintheme_edit_text_holo_light</item>
+
+    <item name="android:listChoiceIndicatorMultiple">@drawable/keychaintheme_btn_check_holo_light</item>
+
+    <item name="android:buttonStyle">@style/ButtonKeychainTheme</item>
+
+    <item name="android:imageButtonStyle">@style/ImageButtonKeychainTheme</item>
+
+    <item name="android:dropDownSpinnerStyle">@style/SpinnerKeychainTheme</item>
+
+    <item name="android:progressBarStyleHorizontal">@style/ProgressBarKeychainTheme</item>
+
+    <item name="android:listChoiceBackgroundIndicator">@drawable/keychaintheme_list_selector_holo_light</item>
+
+    <item name="android:activatedBackgroundIndicator">@drawable/keychaintheme_activated_background_holo_light</item>
+
+    <item name="android:fastScrollThumbDrawable">@drawable/apptheme_fastscroll_thumb_holo</item>
+
+    <item name="android:selectableItemBackground">@drawable/keychaintheme_list_selector_holo_light</item>
+
+  </style>
+
+</resources>

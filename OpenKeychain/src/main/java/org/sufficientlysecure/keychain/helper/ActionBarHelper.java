@@ -33,25 +33,6 @@ import org.sufficientlysecure.keychain.util.Log;
 public class ActionBarHelper {
 
     /**
-     * Set actionbar without home button if called from another app
-     *
-     * @param activity
-     */
-    public static void setBackButton(ActionBarActivity activity) {
-        final ActionBar actionBar = activity.getSupportActionBar();
-        Log.d(Constants.TAG, "calling package (only set when using startActivityForResult)="
-                + activity.getCallingPackage());
-        if (activity.getCallingPackage() != null
-                && activity.getCallingPackage().equals(Constants.PACKAGE_NAME)) {
-            actionBar.setDisplayHomeAsUpEnabled(true);
-            actionBar.setHomeButtonEnabled(true);
-        } else {
-            actionBar.setDisplayHomeAsUpEnabled(false);
-            actionBar.setHomeButtonEnabled(false);
-        }
-    }
-
-    /**
      * Sets custom view on ActionBar for Done/Cancel activities
      *
      * @param actionBar

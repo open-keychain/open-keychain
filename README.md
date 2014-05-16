@@ -230,4 +230,5 @@ Some parts and some libraries are Apache License v2, MIT X11 License (see below)
 * Menu icons  
   http://developer.android.com/design/downloads/index.html#action-bar-icon-pack
 
-
+* Purple color scheme  
+  http://android-holo-colors.com/

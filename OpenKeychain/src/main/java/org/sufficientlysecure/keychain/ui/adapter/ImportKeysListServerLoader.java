@@ -21,8 +21,9 @@ import android.content.Context;
 import android.support.v4.content.AsyncTaskLoader;
 
 import org.sufficientlysecure.keychain.Constants;
-import org.sufficientlysecure.keychain.util.HkpKeyServer;
-import org.sufficientlysecure.keychain.util.KeyServer;
+import org.sufficientlysecure.keychain.keyimport.HkpKeyServer;
+import org.sufficientlysecure.keychain.keyimport.ImportKeysListEntry;
+import org.sufficientlysecure.keychain.keyimport.KeyServer;
 import org.sufficientlysecure.keychain.util.Log;
 
 import java.util.ArrayList;
@@ -107,7 +108,7 @@ public class ImportKeysListServerLoader
                      * set fingerprint explicitly after query
                      * to enforce a check when the key is imported by KeychainIntentService
                      */
-                    uniqueEntry.setFingerPrintHex(fingerprint);
+                    uniqueEntry.setFingerprintHex(fingerprint);
                     uniqueEntry.setSelected(true);
                     mEntryList.add(uniqueEntry);
                 }
@@ -116,13 +117,10 @@ public class ImportKeysListServerLoader
             }
             mEntryListWrapper = new AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>>(mEntryList, null);
         } catch (KeyServer.InsufficientQuery e) {
-            Log.e(Constants.TAG, "InsufficientQuery", e);
             mEntryListWrapper = new AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>>(mEntryList, e);
         } catch (KeyServer.QueryException e) {
-            Log.e(Constants.TAG, "QueryException", e);
             mEntryListWrapper = new AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>>(mEntryList, e);
         } catch (KeyServer.TooManyResponses e) {
-            Log.e(Constants.TAG, "TooManyResponses", e);
             mEntryListWrapper = new AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>>(mEntryList, e);
         }
     }

@@ -65,27 +65,29 @@
                 android:layout_height="match_parent">
 
                 <TextView
-                    style="@style/SectionHeader"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
-                    android:text="@string/section_decrypt_verify"
-                    android:layout_above="@+id/decrypt_file_action_decrypt"
-                    android:layout_alignParentLeft="true"
-                    android:layout_alignParentStart="true" />
-
-                <com.beardedhen.androidbootstrap.BootstrapButton
                     android:id="@+id/decrypt_file_action_decrypt"
+                    android:paddingLeft="8dp"
+                    android:paddingRight="8dp"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
                     android:layout_width="match_parent"
-                    android:layout_height="50dp"
-                    android:layout_marginTop="4dp"
-                    android:layout_marginBottom="4dp"
-                    android:text="@string/btn_decrypt_verify"
-                    bootstrapbutton:bb_icon_left="fa-unlock"
-                    bootstrapbutton:bb_type="info"
+                    android:layout_height="wrap_content"
+                    android:minHeight="?android:attr/listPreferredItemHeight"
+                    android:text="@string/btn_decrypt_verify_file"
+                    android:clickable="true"
+                    style="@style/SelectableItem"
+                    android:drawableRight="@drawable/ic_action_save"
+                    android:drawablePadding="8dp"
+                    android:gravity="center_vertical"
                     android:layout_alignParentBottom="true"
                     android:layout_alignParentLeft="true"
-                    android:layout_alignParentStart="true" />
+                    android:layout_alignParentStart="true"
+                    android:layout_marginBottom="8dp" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dip"
+                    android:background="?android:attr/listDivider"
+                    android:layout_above="@+id/decrypt_file_action_decrypt" />
 
             </RelativeLayout>
         </LinearLayout>

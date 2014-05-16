@@ -250,7 +250,7 @@ public class RemoteServiceActivity extends ActionBarActivity {
 
             // set text on view
             HtmlTextView textView = (HtmlTextView) findViewById(R.id.api_select_pub_keys_text);
-            textView.setHtmlFromString(text);
+            textView.setHtmlFromString(text, true);
 
             /* Load select pub keys fragment */
             // Check that the activity is using the layout version with
@@ -292,7 +292,7 @@ public class RemoteServiceActivity extends ActionBarActivity {
 
             // set text on view
             HtmlTextView textView = (HtmlTextView) findViewById(R.id.api_app_error_message_text);
-            textView.setHtmlFromString(text);
+            textView.setHtmlFromString(text, true);
         } else {
             Log.e(Constants.TAG, "Action does not exist!");
             setResult(RESULT_CANCELED);

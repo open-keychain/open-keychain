@@ -226,9 +226,6 @@ public class EncryptAsymmetricFragment extends Fragment {
     private void selectPublicKeys() {
         Intent intent = new Intent(getActivity(), SelectPublicKeyActivity.class);
         Vector<Long> keyIds = new Vector<Long>();
-        if (mSecretKeyId != 0) {
-            keyIds.add(mSecretKeyId);
-        }
         if (mEncryptionKeyIds != null && mEncryptionKeyIds.length > 0) {
             for (int i = 0; i < mEncryptionKeyIds.length; ++i) {
                 keyIds.add(mEncryptionKeyIds[i]);

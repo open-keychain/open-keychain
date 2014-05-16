@@ -1,3 +1,0 @@
-include ':example-app'
-include ':libraries:openpgp-api-library'
-include ':libraries:openkeychain-api-library'

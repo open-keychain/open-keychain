@@ -18,7 +18,6 @@
 package org.sufficientlysecure.keychain.ui.dialog;
 
 import android.annotation.TargetApi;
-import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -51,7 +50,7 @@ public class ShareNfcDialogFragment extends DialogFragment {
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         final FragmentActivity activity = getActivity();
 
-        AlertDialog.Builder alert = new AlertDialog.Builder(activity);
+        CustomAlertDialogBuilder alert = new CustomAlertDialogBuilder(activity);
 
         alert.setTitle(R.string.share_nfc_dialog);
         alert.setCancelable(true);
@@ -78,7 +77,7 @@ public class ShareNfcDialogFragment extends DialogFragment {
                         + getString(R.string.error_nfc_needed));
             } else {
                 // nfc works...
-                textView.setHtmlFromRawResource(getActivity(), R.raw.nfc_beam_share);
+                textView.setHtmlFromRawResource(getActivity(), R.raw.nfc_beam_share, true);
 
                 alert.setNegativeButton(R.string.menu_beam_preferences,
                         new DialogInterface.OnClickListener() {
@@ -93,6 +92,6 @@ public class ShareNfcDialogFragment extends DialogFragment {
             }
         }
         
-        return alert.create();
+        return alert.show();
     }
 }

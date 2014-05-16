@@ -192,8 +192,6 @@ public class PgpSignEncrypt {
         }
 
         /**
-         * TODO: test this option!
-         *
          * @param encryptToSigner
          * @return
          */

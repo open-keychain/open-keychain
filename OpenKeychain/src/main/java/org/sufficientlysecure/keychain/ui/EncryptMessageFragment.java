@@ -28,9 +28,8 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
+import android.widget.TextView;
 
-import com.beardedhen.androidbootstrap.BootstrapButton;
 import com.devspark.appmsg.AppMsg;
 
 import org.sufficientlysecure.keychain.Constants;
@@ -46,9 +45,9 @@ import org.sufficientlysecure.keychain.util.Log;
 public class EncryptMessageFragment extends Fragment {
     public static final String ARG_TEXT = "text";
 
-    private EditText mMessage = null;
-    private BootstrapButton mEncryptShare;
-    private BootstrapButton mEncryptClipboard;
+    private TextView mMessage = null;
+    private View mEncryptShare;
+    private View mEncryptClipboard;
 
     private EncryptActivityInterface mEncryptInterface;
 
@@ -70,9 +69,9 @@ public class EncryptMessageFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.encrypt_message_fragment, container, false);
 
-        mMessage = (EditText) view.findViewById(R.id.message);
-        mEncryptClipboard = (BootstrapButton) view.findViewById(R.id.action_encrypt_clipboard);
-        mEncryptShare = (BootstrapButton) view.findViewById(R.id.action_encrypt_share);
+        mMessage = (TextView) view.findViewById(R.id.message);
+        mEncryptClipboard = view.findViewById(R.id.action_encrypt_clipboard);
+        mEncryptShare = view.findViewById(R.id.action_encrypt_share);
         mEncryptClipboard.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
