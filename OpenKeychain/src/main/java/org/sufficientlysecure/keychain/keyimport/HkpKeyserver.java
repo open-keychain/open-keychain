@@ -237,6 +237,7 @@ public class HkpKeyserver extends Keyserver {
         final Matcher matcher = PUB_KEY_LINE.matcher(data);
         while (matcher.find()) {
             final ImportKeysListEntry entry = new ImportKeysListEntry();
+            entry.setQuery(query);
 
             entry.setBitStrength(Integer.parseInt(matcher.group(3)));
 

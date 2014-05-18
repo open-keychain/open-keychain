@@ -31,6 +31,7 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 
 public class KeybaseKeyserver extends Keyserver {
+    private String mQuery;
 
     @Override
     public ArrayList<ImportKeysListEntry> search(String query) throws QueryException, TooManyResponses,
@@ -83,15 +84,15 @@ public class KeybaseKeyserver extends Keyserver {
     }
 
     private ImportKeysListEntry makeEntry(JSONObject match) throws QueryException, JSONException {
-
         final ImportKeysListEntry entry = new ImportKeysListEntry();
+        entry.setQuery(mQuery);
+
         String keybaseId = JWalk.getString(match, "components", "username", "val");
         String fullName = JWalk.getString(match, "components", "full_name", "val");
         String fingerprint = JWalk.getString(match, "components", "key_fingerprint", "val");
         fingerprint = fingerprint.replace(" ", "").toUpperCase(); // not strictly necessary but doesn't hurt
         entry.setFingerprintHex(fingerprint);
 
-        // in anticipation of a full fingerprint, only use the last 16 chars as 64-bit key id
         entry.setKeyIdHex("0x" + fingerprint.substring(Math.max(0, fingerprint.length() - 16)));
         // store extra info, so we can query for the keybase id directly
         entry.setExtraData(keybaseId);
