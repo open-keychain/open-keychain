@@ -3,49 +3,36 @@
     xmlns:bootstrapbutton="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="horizontal" >
+    android:paddingTop="8dp"
+    android:paddingLeft="16dp"
+    android:paddingRight="16dp"
+    android:orientation="horizontal">
 
-    <LinearLayout
-        android:layout_width="match_parent"
+
+    <EditText
+        android:id="@+id/import_keybase_query"
+        android:layout_width="0dip"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:layout_weight="1"
+        android:gravity="top|left"
+        android:hint="@string/hint_keybase_search"
+        android:imeOptions="actionSearch"
+        android:inputType="textNoSuggestions"
+        android:singleLine="true"
+        android:lines="1"
+        android:maxLines="1"
+        android:minLines="1"
+        android:layout_gravity="center_vertical" />
 
-        <EditText
-            android:id="@+id/import_keybase_query"
-            android:layout_width="0dip"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="top|left"
-            android:hint="@string/hint_keybase_search"
-            android:imeOptions="actionSearch"
-            android:inputType="textNoSuggestions"
-            android:singleLine="true"
-            android:lines="1"
-            android:maxLines="1"
-            android:minLines="1"
-            android:layout_gravity="center_vertical" />
-
-        <com.beardedhen.androidbootstrap.BootstrapButton
-            android:id="@+id/import_keybase_search"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:layout_marginLeft="10dp"
-            bootstrapbutton:bb_icon_left="fa-search"
-            bootstrapbutton:bb_roundedCorners="true"
-            bootstrapbutton:bb_size="default"
-            bootstrapbutton:bb_type="default" />
-    </LinearLayout>
-
-    <!--
     <com.beardedhen.androidbootstrap.BootstrapButton
-        android:id="@+id/import_keybase_button"
-        android:layout_width="match_parent"
-        android:layout_height="70dp"
-        android:layout_margin="10dp"
-        android:text="@string/import_keybase_button"
+        android:id="@+id/import_keybase_search"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:layout_marginLeft="8dp"
+        bootstrapbutton:bb_icon_left="fa-search"
+        bootstrapbutton:bb_roundedCorners="true"
         bootstrapbutton:bb_size="default"
         bootstrapbutton:bb_type="default" />
-        -->
 
 </LinearLayout>

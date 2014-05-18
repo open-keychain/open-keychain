@@ -25,8 +25,7 @@
         android:id="@+id/selected"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:layout_marginLeft="4dp"
-        android:layout_marginRight="4dp"
+        android:paddingRight="8dp"
         android:clickable="false"
         android:focusable="false"
         android:focusableInTouchMode="false" />
@@ -46,8 +45,7 @@
                 android:layout_width="0dip"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:orientation="vertical"
-                android:paddingRight="4dip">
+                android:orientation="vertical">
 
                 <TextView
                     android:id="@+id/mainUserId"
