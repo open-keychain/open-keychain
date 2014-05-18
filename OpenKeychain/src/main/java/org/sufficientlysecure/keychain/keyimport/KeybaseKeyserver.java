@@ -29,11 +29,8 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.ArrayList;
-import java.util.GregorianCalendar;
-import java.util.TimeZone;
-import java.util.WeakHashMap;
 
-public class KeybaseKeyServer extends KeyServer {
+public class KeybaseKeyserver extends Keyserver {
 
     @Override
     public ArrayList<ImportKeysListEntry> search(String query) throws QueryException, TooManyResponses,

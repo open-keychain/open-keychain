@@ -52,7 +52,7 @@ import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class HkpKeyServer extends KeyServer {
+public class HkpKeyserver extends Keyserver {
     private static class HttpError extends Exception {
         private static final long serialVersionUID = 1718783705229428893L;
         private int mCode;
@@ -148,7 +148,7 @@ public class HkpKeyServer extends KeyServer {
      *                    connect using {@link #PORT_DEFAULT}. However, port may be specified after colon
      *                    ("<code>hostname:port</code>", eg. "<code>p80.pool.sks-keyservers.net:80</code>").
      */
-    public HkpKeyServer(String hostAndPort) {
+    public HkpKeyserver(String hostAndPort) {
         String host = hostAndPort;
         short port = PORT_DEFAULT;
         final int colonPosition = hostAndPort.lastIndexOf(':');
@@ -161,7 +161,7 @@ public class HkpKeyServer extends KeyServer {
         mPort = port;
     }
 
-    public HkpKeyServer(String host, short port) {
+    public HkpKeyserver(String host, short port) {
         mHost = host;
         mPort = port;
     }

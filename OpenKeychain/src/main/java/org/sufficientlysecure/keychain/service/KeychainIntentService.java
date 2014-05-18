@@ -39,6 +39,7 @@ import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.helper.FileHelper;
 import org.sufficientlysecure.keychain.helper.OtherHelper;
 import org.sufficientlysecure.keychain.helper.Preferences;
+import org.sufficientlysecure.keychain.keyimport.HkpKeyserver;
 import org.sufficientlysecure.keychain.pgp.PgpConversionHelper;
 import org.sufficientlysecure.keychain.pgp.PgpDecryptVerify;
 import org.sufficientlysecure.keychain.pgp.PgpDecryptVerifyResult;
@@ -54,9 +55,8 @@ import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.KeychainDatabase;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.keyimport.ImportKeysListEntry;
-import org.sufficientlysecure.keychain.keyimport.HkpKeyServer;
 import org.sufficientlysecure.keychain.util.InputData;
-import org.sufficientlysecure.keychain.keyimport.KeybaseKeyServer;
+import org.sufficientlysecure.keychain.keyimport.KeybaseKeyserver;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.ProgressScaler;
 
@@ -724,7 +724,7 @@ public class KeychainIntentService extends IntentService
                 // and dataUri!
 
                 /* Operation */
-                HkpKeyServer server = new HkpKeyServer(keyServer);
+                HkpKeyserver server = new HkpKeyserver(keyServer);
 
                 ProviderHelper providerHelper = new ProviderHelper(this);
                 PGPPublicKeyRing keyring = (PGPPublicKeyRing) providerHelper.getPGPKeyRing(dataUri);
@@ -746,7 +746,7 @@ public class KeychainIntentService extends IntentService
             ArrayList<ImportKeysListEntry> entries = data.getParcelableArrayList(DOWNLOAD_KEY_LIST);
 
             try {
-                KeybaseKeyServer server = new KeybaseKeyServer();
+                KeybaseKeyserver server = new KeybaseKeyserver();
                 for (ImportKeysListEntry entry : entries) {
                     // the keybase handle is in userId(1)
                     String keybaseId = entry.getExtraData();
@@ -797,7 +797,7 @@ public class KeychainIntentService extends IntentService
                 String keyServer = data.getString(DOWNLOAD_KEY_SERVER);
 
                 // this downloads the keys and places them into the ImportKeysListEntry entries
-                HkpKeyServer server = new HkpKeyServer(keyServer);
+                HkpKeyserver server = new HkpKeyserver(keyServer);
 
                 for (ImportKeysListEntry entry : entries) {
                     // if available use complete fingerprint for get request

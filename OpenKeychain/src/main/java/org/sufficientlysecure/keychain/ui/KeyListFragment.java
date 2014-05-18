@@ -130,7 +130,7 @@ public class KeyListFragment extends LoaderFragment
     /**
      * Define Adapter and Loader on create of Activity
      */
-    @SuppressLint("NewApi")
+    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
@@ -141,8 +141,7 @@ public class KeyListFragment extends LoaderFragment
         mStickyList.setFastScrollEnabled(true);
 
         /*
-         * ActionBarSherlock does not support MultiChoiceModeListener. Thus multi-selection is only
-         * available for Android >= 3.0
+         * Multi-selection is only available for Android >= 3.0
          */
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
             mStickyList.setFastScrollAlwaysVisible(true);
@@ -312,7 +311,7 @@ public class KeyListFragment extends LoaderFragment
         startActivity(viewIntent);
     }
 
-    @TargetApi(11)
+    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     protected void encrypt(ActionMode mode, long[] masterKeyIds) {
         Intent intent = new Intent(getActivity(), EncryptActivity.class);
         intent.setAction(EncryptActivity.ACTION_ENCRYPT);
@@ -329,7 +328,7 @@ public class KeyListFragment extends LoaderFragment
      * @param masterKeyIds
      * @param hasSecret must contain whether the list of masterKeyIds contains a secret key or not
      */
-    @TargetApi(11)
+    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     public void showDeleteKeyDialog(final ActionMode mode, long[] masterKeyIds, boolean hasSecret) {
         // Can only work on singular secret keys
         if(hasSecret && masterKeyIds.length > 1) {
