@@ -51,6 +51,7 @@ public class ImportKeysListEntry implements Serializable, Parcelable {
     public boolean secretKey;
     public String mPrimaryUserId;
     private String mExtraData;
+    private String mQuery;
 
     private boolean mSelected;
 
@@ -207,6 +208,14 @@ public class ImportKeysListEntry implements Serializable, Parcelable {
 
     public void setExtraData(String extraData) {
         mExtraData = extraData;
+    }
+
+    public String getQuery() {
+        return mQuery;
+    }
+
+    public void setQuery(String query) {
+        mQuery = query;
     }
 
     /**
