@@ -261,7 +261,7 @@ public class KeychainProvider extends ContentProvider {
                 projectionMap.put(KeyRings.PRIVKEY_DATA,
                         Tables.KEY_RINGS_SECRET + "." + KeyRingData.KEY_RING_DATA
                                 + " AS " + KeyRings.PRIVKEY_DATA);
-                projectionMap.put(KeyRings.HAS_SECRET, KeyRings.HAS_SECRET);
+                projectionMap.put(KeyRings.HAS_SECRET, Tables.KEYS + "." + KeyRings.HAS_SECRET);
                 projectionMap.put(KeyRings.HAS_ANY_SECRET,
                     "(EXISTS (SELECT * FROM " + Tables.KEY_RINGS_SECRET
                         + " WHERE " + Tables.KEY_RINGS_SECRET + "." + KeyRingData.MASTER_KEY_ID

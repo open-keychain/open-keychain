@@ -27,7 +27,6 @@ import org.spongycastle.openpgp.PGPException;
 import org.spongycastle.openpgp.PGPKeyRing;
 import org.spongycastle.openpgp.PGPPublicKey;
 import org.spongycastle.openpgp.PGPPublicKeyRing;
-import org.spongycastle.openpgp.PGPSecretKey;
 import org.spongycastle.openpgp.PGPSecretKeyRing;
 import org.spongycastle.openpgp.operator.jcajce.JcaKeyFingerprintCalculator;
 import org.sufficientlysecure.keychain.Constants;
@@ -101,7 +100,7 @@ public class PgpImportExport {
         }
     }
 
-    public boolean uploadKeyRingToServer(HkpKeyServer server, CachedPublicKeyRing keyring) {
+    public boolean uploadKeyRingToServer(HkpKeyServer server, WrappedPublicKeyRing keyring) {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         ArmoredOutputStream aos = null;
         try {
@@ -229,7 +228,7 @@ public class PgpImportExport {
             updateProgress(progress * 100 / masterKeyIdsSize, 100);
 
             try {
-                CachedPublicKeyRing ring = mProviderHelper.getCachedPublicKeyRing(
+                WrappedPublicKeyRing ring = mProviderHelper.getWrappedPublicKeyRing(
                         KeychainContract.KeyRings.buildGenericKeyRingUri(pubKeyMasterId)
                 );
 

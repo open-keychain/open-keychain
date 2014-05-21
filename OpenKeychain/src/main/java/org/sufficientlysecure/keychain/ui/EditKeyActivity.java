@@ -19,7 +19,6 @@
 package org.sufficientlysecure.keychain.ui;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -48,8 +47,8 @@ import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.helper.ActionBarHelper;
 import org.sufficientlysecure.keychain.helper.ExportHelper;
-import org.sufficientlysecure.keychain.pgp.CachedSecretKey;
-import org.sufficientlysecure.keychain.pgp.CachedSecretKeyRing;
+import org.sufficientlysecure.keychain.pgp.WrappedSecretKey;
+import org.sufficientlysecure.keychain.pgp.WrappedSecretKeyRing;
 import org.sufficientlysecure.keychain.pgp.PgpConversionHelper;
 import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
 import org.sufficientlysecure.keychain.pgp.UncachedSecretKey;
@@ -287,10 +286,10 @@ public class EditKeyActivity extends ActionBarActivity implements EditorListener
 
             try {
                 Uri secretUri = KeyRings.buildUnifiedKeyRingUri(mDataUri);
-                CachedSecretKeyRing keyRing = new ProviderHelper(this).getCachedSecretKeyRing(secretUri);
+                WrappedSecretKeyRing keyRing = new ProviderHelper(this).getWrappedSecretKeyRing(secretUri);
 
                 mMasterCanSign = keyRing.getSubKey().canCertify();
-                for (CachedSecretKey key : keyRing.iterator()) {
+                for (WrappedSecretKey key : keyRing.iterator()) {
                     // Turn into uncached instance
                     mKeys.add(key.getUncached());
                     mKeysUsages.add(key.getKeyUsage()); // get usage when view is created

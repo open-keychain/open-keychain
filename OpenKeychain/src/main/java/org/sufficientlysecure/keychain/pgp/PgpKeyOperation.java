@@ -337,8 +337,8 @@ public class PgpKeyOperation {
 
     }
 
-    public UncachedKeyRing buildSecretKey(CachedSecretKeyRing wmKR,
-                                          CachedPublicKeyRing wpKR,
+    public UncachedKeyRing buildSecretKey(WrappedSecretKeyRing wmKR,
+                                          WrappedPublicKeyRing wpKR,
                                           SaveKeyringParcel saveParcel)
             throws PgpGeneralMsgIdException, PGPException, SignatureException, IOException {
 

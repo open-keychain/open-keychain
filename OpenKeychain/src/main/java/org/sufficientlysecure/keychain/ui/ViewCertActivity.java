@@ -39,7 +39,7 @@ import org.spongycastle.openpgp.PGPException;
 import org.spongycastle.openpgp.PGPSignature;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.pgp.CachedPublicKeyRing;
+import org.sufficientlysecure.keychain.pgp.WrappedPublicKeyRing;
 import org.sufficientlysecure.keychain.pgp.PgpConversionHelper;
 import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
 import org.sufficientlysecure.keychain.provider.KeychainContract.Certs;
@@ -147,8 +147,8 @@ public class ViewCertActivity extends ActionBarActivity
             try {
                 ProviderHelper providerHelper = new ProviderHelper(this);
 
-                CachedPublicKeyRing signeeRing = providerHelper.getCachedPublicKeyRing(data.getLong(INDEX_MASTER_KEY_ID));
-                CachedPublicKeyRing signerRing = providerHelper.getCachedPublicKeyRing(sig.getKeyID());
+                WrappedPublicKeyRing signeeRing = providerHelper.getWrappedPublicKeyRing(data.getLong(INDEX_MASTER_KEY_ID));
+                WrappedPublicKeyRing signerRing = providerHelper.getWrappedPublicKeyRing(sig.getKeyID());
 
                 try {
                     signerRing.getSubkey().initSignature(sig);

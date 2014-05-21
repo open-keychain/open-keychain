@@ -32,7 +32,7 @@ import com.beardedhen.androidbootstrap.BootstrapButton;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.pgp.CachedPublicKeyRing;
+import org.sufficientlysecure.keychain.pgp.WrappedPublicKeyRing;
 import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
@@ -147,8 +147,8 @@ public class EncryptAsymmetricFragment extends Fragment {
         // not sure if we need to distinguish between different subkeys here?
         if (preselectedSignatureKeyId != 0) {
             try {
-                CachedPublicKeyRing keyring =
-                        providerHelper.getCachedPublicKeyRing(preselectedSignatureKeyId);
+                WrappedPublicKeyRing keyring =
+                        providerHelper.getWrappedPublicKeyRing(preselectedSignatureKeyId);
                 if(keyring.hasAnySecret()) {
                     setSignatureKeyId(keyring.getMasterKeyId());
                 }

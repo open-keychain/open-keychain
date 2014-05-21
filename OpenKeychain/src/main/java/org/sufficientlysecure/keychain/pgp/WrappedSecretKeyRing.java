@@ -16,18 +16,13 @@ import java.io.IOException;
 import java.security.NoSuchProviderException;
 import java.util.Iterator;
 
-public class CachedSecretKeyRing extends CachedKeyRing {
+public class WrappedSecretKeyRing extends WrappedKeyRing {
 
     private PGPSecretKeyRing mRing;
 
-    public CachedSecretKeyRing(long masterKeyId, String userId, boolean hasAnySecret,
-                               boolean isRevoked, boolean canCertify, long hasEncryptId, long hasSignId,
-                               int verified, byte[] blob)
+    public WrappedSecretKeyRing(byte[] blob, boolean isRevoked, int verified)
     {
-        super(masterKeyId, userId, hasAnySecret,
-                isRevoked, canCertify, hasEncryptId, hasSignId,
-                verified);
-
+        super(isRevoked, verified);
         mRing = (PGPSecretKeyRing) PgpConversionHelper.BytesToPGPKeyRing(blob);
     }
 
@@ -35,19 +30,19 @@ public class CachedSecretKeyRing extends CachedKeyRing {
         return mRing;
     }
 
-    public CachedSecretKey getSubKey() {
-        return new CachedSecretKey(this, mRing.getSecretKey());
+    public WrappedSecretKey getSubKey() {
+        return new WrappedSecretKey(this, mRing.getSecretKey());
     }
 
-    public CachedSecretKey getSubKey(long id) {
-        return new CachedSecretKey(this, mRing.getSecretKey(id));
+    public WrappedSecretKey getSubKey(long id) {
+        return new WrappedSecretKey(this, mRing.getSecretKey(id));
     }
 
     /** Getter that returns the subkey that should be used for signing. */
-    CachedSecretKey getSigningSubKey() throws PgpGeneralException {
+    WrappedSecretKey getSigningSubKey() throws PgpGeneralException {
         PGPSecretKey key = mRing.getSecretKey(getSignId());
         if(key != null) {
-            CachedSecretKey cKey = new CachedSecretKey(this, key);
+            WrappedSecretKey cKey = new WrappedSecretKey(this, key);
             if(!cKey.canSign()) {
                 throw new PgpGeneralException("key error");
             }
@@ -105,17 +100,17 @@ public class CachedSecretKeyRing extends CachedKeyRing {
 
     }
 
-    public IterableIterator<CachedSecretKey> iterator() {
+    public IterableIterator<WrappedSecretKey> iterator() {
         final Iterator<PGPSecretKey> it = mRing.getSecretKeys();
-        return new IterableIterator<CachedSecretKey>(new Iterator<CachedSecretKey>() {
+        return new IterableIterator<WrappedSecretKey>(new Iterator<WrappedSecretKey>() {
             @Override
             public boolean hasNext() {
                 return it.hasNext();
             }
 
             @Override
-            public CachedSecretKey next() {
-                return new CachedSecretKey(CachedSecretKeyRing.this, it.next());
+            public WrappedSecretKey next() {
+                return new WrappedSecretKey(WrappedSecretKeyRing.this, it.next());
             }
 
             @Override

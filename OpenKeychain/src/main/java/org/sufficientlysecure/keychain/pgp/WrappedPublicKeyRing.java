@@ -18,18 +18,13 @@ import java.security.SignatureException;
 import java.util.Arrays;
 import java.util.Iterator;
 
-public class CachedPublicKeyRing extends CachedKeyRing {
+public class WrappedPublicKeyRing extends WrappedKeyRing {
 
     private PGPPublicKeyRing mRing;
     private final byte[] mPubKey;
 
-    public CachedPublicKeyRing(long masterKeyId, String userId, boolean hasAnySecret,
-                               boolean isRevoked, boolean canCertify, long hasEncryptId, long hasSignId,
-                               int verified, byte[] blob)
-    {
-        super(masterKeyId, userId, hasAnySecret, isRevoked, canCertify,
-                hasEncryptId, hasSignId, verified);
-
+    public WrappedPublicKeyRing(byte[] blob, boolean hasAnySecret, int verified) {
+        super(hasAnySecret, verified);
         mPubKey = blob;
     }
 
@@ -44,19 +39,19 @@ public class CachedPublicKeyRing extends CachedKeyRing {
         getRing().encode(stream);
     }
 
-    public CachedPublicKey getSubkey() {
-        return new CachedPublicKey(this, getRing().getPublicKey());
+    public WrappedPublicKey getSubkey() {
+        return new WrappedPublicKey(this, getRing().getPublicKey());
     }
 
-    public CachedPublicKey getSubkey(long id) {
-        return new CachedPublicKey(this, getRing().getPublicKey(id));
+    public WrappedPublicKey getSubkey(long id) {
+        return new WrappedPublicKey(this, getRing().getPublicKey(id));
     }
 
     /** Getter that returns the subkey that should be used for signing. */
-    CachedPublicKey getEncryptionSubKey() throws PgpGeneralException {
+    WrappedPublicKey getEncryptionSubKey() throws PgpGeneralException {
         PGPPublicKey key = getRing().getPublicKey(getEncryptId());
         if(key != null) {
-            CachedPublicKey cKey = new CachedPublicKey(this, key);
+            WrappedPublicKey cKey = new WrappedPublicKey(this, key);
             if(!cKey.canEncrypt()) {
                 throw new PgpGeneralException("key error");
             }
@@ -66,7 +61,7 @@ public class CachedPublicKeyRing extends CachedKeyRing {
         throw new PgpGeneralException("no encryption key available");
     }
 
-    public boolean verifySubkeyBinding(CachedPublicKey cachedSubkey) {
+    public boolean verifySubkeyBinding(WrappedPublicKey cachedSubkey) {
         boolean validSubkeyBinding = false;
         boolean validTempSubkeyBinding = false;
         boolean validPrimaryKeyBinding = false;
@@ -161,17 +156,17 @@ public class CachedPublicKeyRing extends CachedKeyRing {
         return validPrimaryKeyBinding;
     }
 
-    public IterableIterator<CachedPublicKey> iterator() {
+    public IterableIterator<WrappedPublicKey> iterator() {
         final Iterator<PGPPublicKey> it = getRing().getPublicKeys();
-        return new IterableIterator<CachedPublicKey>(new Iterator<CachedPublicKey>() {
+        return new IterableIterator<WrappedPublicKey>(new Iterator<WrappedPublicKey>() {
             @Override
             public boolean hasNext() {
                 return it.hasNext();
             }
 
             @Override
-            public CachedPublicKey next() {
-                return new CachedPublicKey(CachedPublicKeyRing.this, it.next());
+            public WrappedPublicKey next() {
+                return new WrappedPublicKey(WrappedPublicKeyRing.this, it.next());
             }
 
             @Override

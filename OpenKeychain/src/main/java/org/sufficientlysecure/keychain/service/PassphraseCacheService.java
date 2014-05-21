@@ -42,7 +42,7 @@ import org.spongycastle.openpgp.operator.PBESecretKeyDecryptor;
 import org.spongycastle.openpgp.operator.jcajce.JcePBESecretKeyDecryptorBuilder;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.helper.Preferences;
-import org.sufficientlysecure.keychain.pgp.CachedSecretKeyRing;
+import org.sufficientlysecure.keychain.pgp.WrappedSecretKeyRing;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.util.Log;
@@ -178,7 +178,7 @@ public class PassphraseCacheService extends Service {
         // try to get master key id which is used as an identifier for cached passphrases
         try {
             Log.d(TAG, "getCachedPassphraseImpl() for masterKeyId " + keyId);
-            CachedSecretKeyRing key = new ProviderHelper(this).getCachedSecretKeyRing(
+            WrappedSecretKeyRing key = new ProviderHelper(this).getWrappedSecretKeyRing(
                     KeychainContract.KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(Long.toString(keyId)));
             // no passphrase needed? just add empty string and return it, then
             if (!key.hasPassphrase()) {
@@ -241,7 +241,7 @@ public class PassphraseCacheService extends Service {
     @Deprecated
     public static boolean hasPassphrase(Context context, long secretKeyId)
             throws ProviderHelper.NotFoundException {
-        return new ProviderHelper(context).getCachedSecretKeyRing(secretKeyId).hasPassphrase();
+        return new ProviderHelper(context).getWrappedSecretKeyRing(secretKeyId).hasPassphrase();
     }
 
     /**

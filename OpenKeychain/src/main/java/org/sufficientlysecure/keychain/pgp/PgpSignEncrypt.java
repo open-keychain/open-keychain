@@ -266,11 +266,11 @@ public class PgpSignEncrypt {
         }
 
         /* Get keys for signature generation for later usage */
-        CachedSecretKey signingKey = null;
+        WrappedSecretKey signingKey = null;
         if (enableSignature) {
-            CachedSecretKeyRing signingKeyRing;
+            WrappedSecretKeyRing signingKeyRing;
             try {
-                signingKeyRing = mProviderHelper.getCachedSecretKeyRing(mSignatureMasterKeyId);
+                signingKeyRing = mProviderHelper.getWrappedSecretKeyRing(mSignatureMasterKeyId);
             } catch (ProviderHelper.NotFoundException e) {
                 throw new NoSigningKeyException();
             }
@@ -316,9 +316,9 @@ public class PgpSignEncrypt {
                 // Asymmetric encryption
                 for (long id : mEncryptionMasterKeyIds) {
                     try {
-                        CachedPublicKeyRing keyRing = mProviderHelper.getCachedPublicKeyRing(
+                        WrappedPublicKeyRing keyRing = mProviderHelper.getWrappedPublicKeyRing(
                                 KeyRings.buildUnifiedKeyRingUri(Long.toString(id)));
-                        CachedPublicKey key = keyRing.getEncryptionSubKey();
+                        WrappedPublicKey key = keyRing.getEncryptionSubKey();
                         cPk.addMethod(key.getPubKeyEncryptionGenerator());
                     } catch (PgpGeneralException e) {
                         Log.e(Constants.TAG, "key not found!", e);

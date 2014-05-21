@@ -11,12 +11,12 @@ import org.sufficientlysecure.keychain.util.IterableIterator;
 
 import java.security.SignatureException;
 
-public class CachedPublicKey extends UncachedPublicKey {
+public class WrappedPublicKey extends UncachedPublicKey {
 
     // this is the parent key ring
-    final CachedKeyRing mRing;
+    final KeyRing mRing;
 
-    CachedPublicKey(CachedKeyRing ring, PGPPublicKey key) {
+    WrappedPublicKey(KeyRing ring, PGPPublicKey key) {
         super(key);
         mRing = ring;
     }
@@ -25,7 +25,7 @@ public class CachedPublicKey extends UncachedPublicKey {
         return new IterableIterator<String>(mPublicKey.getUserIDs());
     }
 
-    public CachedKeyRing getKeyRing() {
+    public KeyRing getKeyRing() {
         return mRing;
     }
 

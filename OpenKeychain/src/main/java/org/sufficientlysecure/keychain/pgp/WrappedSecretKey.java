@@ -26,18 +26,18 @@ import java.security.NoSuchProviderException;
 import java.security.SignatureException;
 import java.util.List;
 
-public class CachedSecretKey extends CachedPublicKey {
+public class WrappedSecretKey extends WrappedPublicKey {
 
     private final PGPSecretKey mSecretKey;
     private PGPPrivateKey mPrivateKey = null;
 
-    CachedSecretKey(CachedSecretKeyRing ring, PGPSecretKey key) {
+    WrappedSecretKey(WrappedSecretKeyRing ring, PGPSecretKey key) {
         super(ring, key.getPublicKey());
         mSecretKey = key;
     }
 
-    public CachedSecretKeyRing getRing() {
-        return (CachedSecretKeyRing) mRing;
+    public WrappedSecretKeyRing getRing() {
+        return (WrappedSecretKeyRing) mRing;
     }
 
     /** Returns the wrapped PGPSecretKeyRing.
@@ -137,7 +137,7 @@ public class CachedSecretKey extends CachedPublicKey {
      * @param userIds          User IDs to certify, must not be null or empty
      * @return A keyring with added certifications
      */
-    public UncachedKeyRing certifyUserIds(CachedPublicKeyRing publicKeyRing, List<String> userIds)
+    public UncachedKeyRing certifyUserIds(WrappedPublicKeyRing publicKeyRing, List<String> userIds)
             throws PgpGeneralMsgIdException, NoSuchAlgorithmException, NoSuchProviderException,
             PGPException, SignatureException {
 

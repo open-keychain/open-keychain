@@ -27,14 +27,17 @@ import android.os.Messenger;
 import android.os.RemoteException;
 
 import org.spongycastle.bcpg.sig.KeyFlags;
+import org.spongycastle.openpgp.PGPKeyRing;
+import org.spongycastle.openpgp.PGPObjectFactory;
+import org.spongycastle.openpgp.PGPUtil;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.helper.FileHelper;
 import org.sufficientlysecure.keychain.helper.OtherHelper;
 import org.sufficientlysecure.keychain.helper.Preferences;
-import org.sufficientlysecure.keychain.pgp.CachedPublicKeyRing;
-import org.sufficientlysecure.keychain.pgp.CachedSecretKey;
-import org.sufficientlysecure.keychain.pgp.CachedSecretKeyRing;
+import org.sufficientlysecure.keychain.pgp.WrappedPublicKeyRing;
+import org.sufficientlysecure.keychain.pgp.WrappedSecretKey;
+import org.sufficientlysecure.keychain.pgp.WrappedSecretKeyRing;
 import org.sufficientlysecure.keychain.pgp.PgpDecryptVerify;
 import org.sufficientlysecure.keychain.pgp.PgpDecryptVerifyResult;
 import org.sufficientlysecure.keychain.pgp.PgpHelper;
@@ -57,6 +60,7 @@ import org.sufficientlysecure.keychain.keyimport.KeybaseKeyServer;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.ProgressScaler;
 
+import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -512,7 +516,7 @@ public class KeychainIntentService extends IntentService
                 ProviderHelper providerHelper = new ProviderHelper(this);
                 if (!canSign) {
                     setProgress(R.string.progress_building_key, 0, 100);
-                    CachedSecretKeyRing keyRing = providerHelper.getCachedSecretKeyRing(masterKeyId);
+                    WrappedSecretKeyRing keyRing = providerHelper.getWrappedSecretKeyRing(masterKeyId);
                     UncachedSecretKeyRing newKeyRing =
                             keyRing.changeSecretKeyPassphrase(oldPassphrase, newPassphrase);
                     setProgress(R.string.progress_saving_key_ring, 50, 100);
@@ -522,8 +526,8 @@ public class KeychainIntentService extends IntentService
                     PgpKeyOperation keyOperations = new PgpKeyOperation(new ProgressScaler(this, 0, 90, 100));
                     UncachedKeyRing pair;
                     try {
-                        CachedSecretKeyRing privkey = providerHelper.getCachedSecretKeyRing(masterKeyId);
-                        CachedPublicKeyRing pubkey = providerHelper.getCachedPublicKeyRing(masterKeyId);
+                        WrappedSecretKeyRing privkey = providerHelper.getWrappedSecretKeyRing(masterKeyId);
+                        WrappedPublicKeyRing pubkey = providerHelper.getWrappedPublicKeyRing(masterKeyId);
 
                         pair = keyOperations.buildSecretKey(privkey, pubkey, saveParcel); // edit existing
                     } catch (ProviderHelper.NotFoundException e) {
@@ -720,7 +724,7 @@ public class KeychainIntentService extends IntentService
                 HkpKeyServer server = new HkpKeyServer(keyServer);
 
                 ProviderHelper providerHelper = new ProviderHelper(this);
-                CachedPublicKeyRing keyring = providerHelper.getCachedPublicKeyRing(dataUri);
+                WrappedPublicKeyRing keyring = providerHelper.getWrappedPublicKeyRing(dataUri);
                 PgpImportExport pgpImportExport = new PgpImportExport(this, null);
 
                 boolean uploaded = pgpImportExport.uploadKeyRingToServer(server, keyring);
@@ -850,9 +854,9 @@ public class KeychainIntentService extends IntentService
                 }
 
                 ProviderHelper providerHelper = new ProviderHelper(this);
-                CachedPublicKeyRing publicRing = providerHelper.getCachedPublicKeyRing(pubKeyId);
-                CachedSecretKeyRing secretKeyRing = providerHelper.getCachedSecretKeyRing(masterKeyId);
-                CachedSecretKey certificationKey = secretKeyRing.getSubKey();
+                WrappedPublicKeyRing publicRing = providerHelper.getWrappedPublicKeyRing(pubKeyId);
+                WrappedSecretKeyRing secretKeyRing = providerHelper.getWrappedSecretKeyRing(masterKeyId);
+                WrappedSecretKey certificationKey = secretKeyRing.getSubKey();
                 if(!certificationKey.unlock(signaturePassphrase)) {
                     throw new PgpGeneralException("Error extracting key (bad passphrase?)");
                 }

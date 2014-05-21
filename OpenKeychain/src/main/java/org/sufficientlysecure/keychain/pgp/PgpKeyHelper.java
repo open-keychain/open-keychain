@@ -72,7 +72,6 @@ public class PgpKeyHelper {
     }
 
     @SuppressWarnings("unchecked")
-    @Deprecated
     public static boolean isEncryptionKey(PGPPublicKey key) {
         if (!key.isEncryptionKey()) {
             return false;
@@ -114,7 +113,6 @@ public class PgpKeyHelper {
     }
 
     @SuppressWarnings("unchecked")
-    @Deprecated
     public static boolean isSigningKey(PGPPublicKey key) {
         if (key.getVersion() <= 3) {
             return true;
@@ -146,7 +144,6 @@ public class PgpKeyHelper {
     }
 
     @SuppressWarnings("unchecked")
-    @Deprecated
     public static boolean isCertificationKey(PGPPublicKey key) {
         if (key.getVersion() <= 3) {
             return true;

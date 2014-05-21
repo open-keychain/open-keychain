@@ -233,7 +233,7 @@ public class PgpDecryptVerify {
 
         PGPPublicKeyEncryptedData encryptedDataAsymmetric = null;
         PGPPBEEncryptedData encryptedDataSymmetric = null;
-        CachedSecretKey secretEncryptionKey = null;
+        WrappedSecretKey secretEncryptionKey = null;
         Iterator<?> it = enc.getEncryptedDataObjects();
         boolean asymmetricPacketFound = false;
         boolean symmetricPacketFound = false;
@@ -245,10 +245,10 @@ public class PgpDecryptVerify {
 
                 PGPPublicKeyEncryptedData encData = (PGPPublicKeyEncryptedData) obj;
 
-                CachedSecretKeyRing secretKeyRing;
+                WrappedSecretKeyRing secretKeyRing;
                 try {
                     // get actual keyring object based on master key id
-                    secretKeyRing = mProviderHelper.getCachedSecretKeyRing(
+                    secretKeyRing = mProviderHelper.getWrappedSecretKeyRing(
                             KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(
                                     Long.toString(encData.getKeyID()))
                     );
@@ -368,8 +368,8 @@ public class PgpDecryptVerify {
         Object dataChunk = plainFact.nextObject();
         OpenPgpSignatureResultBuilder signatureResultBuilder = new OpenPgpSignatureResultBuilder();
         int signatureIndex = -1;
-        CachedPublicKeyRing signingRing = null;
-        CachedPublicKey signingKey = null;
+        WrappedPublicKeyRing signingRing = null;
+        WrappedPublicKey signingKey = null;
 
         if (dataChunk instanceof PGPCompressedData) {
             updateProgress(R.string.progress_decompressing_data, currentProgress, 100);
@@ -393,7 +393,7 @@ public class PgpDecryptVerify {
             for (int i = 0; i < sigList.size(); ++i) {
                 try {
                     long sigKeyId = sigList.get(i).getKeyID();
-                    signingRing = mProviderHelper.getCachedPublicKeyRing(
+                    signingRing = mProviderHelper.getWrappedPublicKeyRing(
                             KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(
                                     Long.toString(sigKeyId)
                             )
@@ -413,7 +413,11 @@ public class PgpDecryptVerify {
                 signatureResultBuilder.signatureAvailable(true);
                 signatureResultBuilder.knownKey(true);
                 signatureResultBuilder.keyId(signingRing.getMasterKeyId());
-                signatureResultBuilder.userId(signingRing.getPrimaryUserId());
+                try {
+                    signatureResultBuilder.userId(signingRing.getPrimaryUserId());
+                } catch(PgpGeneralException e) {
+                    Log.d(Constants.TAG, "No primary user id in key " + signingRing.getMasterKeyId());
+                }
                 signatureResultBuilder.signatureKeyCertified(signingRing.getVerified() > 0);
 
                 signingKey.initSignature(signature);
@@ -567,8 +571,8 @@ public class PgpDecryptVerify {
             throw new InvalidDataException();
         }
 
-        CachedPublicKeyRing signingRing = null;
-        CachedPublicKey signingKey = null;
+        WrappedPublicKeyRing signingRing = null;
+        WrappedPublicKey signingKey = null;
         int signatureIndex = -1;
 
         // go through all signatures
@@ -576,7 +580,7 @@ public class PgpDecryptVerify {
         for (int i = 0; i < sigList.size(); ++i) {
             try {
                 long sigKeyId = sigList.get(i).getKeyID();
-                signingRing = mProviderHelper.getCachedPublicKeyRing(
+                signingRing = mProviderHelper.getWrappedPublicKeyRing(
                         KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(
                                 Long.toString(sigKeyId)
                         )
@@ -598,7 +602,11 @@ public class PgpDecryptVerify {
             signatureResultBuilder.signatureAvailable(true);
             signatureResultBuilder.knownKey(true);
             signatureResultBuilder.keyId(signingRing.getMasterKeyId());
-            signatureResultBuilder.userId(signingRing.getPrimaryUserId());
+            try {
+                signatureResultBuilder.userId(signingRing.getPrimaryUserId());
+            } catch(PgpGeneralException e) {
+                Log.d(Constants.TAG, "No primary user id in key " + signingRing.getMasterKeyId());
+            }
             signatureResultBuilder.signatureKeyCertified(signingRing.getVerified() > 0);
 
             signingKey.initSignature(signature);

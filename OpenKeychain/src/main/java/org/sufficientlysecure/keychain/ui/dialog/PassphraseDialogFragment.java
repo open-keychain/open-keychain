@@ -44,8 +44,8 @@ import android.widget.Toast;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.compatibility.DialogFragmentWorkaround;
-import org.sufficientlysecure.keychain.pgp.CachedSecretKey;
-import org.sufficientlysecure.keychain.pgp.CachedSecretKeyRing;
+import org.sufficientlysecure.keychain.pgp.WrappedSecretKey;
+import org.sufficientlysecure.keychain.pgp.WrappedSecretKeyRing;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.PassphraseCacheService;
@@ -102,7 +102,7 @@ public class PassphraseDialogFragment extends DialogFragment implements OnEditor
         // check if secret key has a passphrase
         if (!(secretKeyId == Constants.key.symmetric || secretKeyId == Constants.key.none)) {
             try {
-                if (new ProviderHelper(context).getCachedSecretKeyRing(secretKeyId).hasPassphrase()) {
+                if (new ProviderHelper(context).getWrappedSecretKeyRing(secretKeyId).hasPassphrase()) {
                     throw new PgpGeneralException("No passphrase! No passphrase dialog needed!");
                 }
             } catch(ProviderHelper.NotFoundException e) {
@@ -138,17 +138,24 @@ public class PassphraseDialogFragment extends DialogFragment implements OnEditor
 
         alert.setTitle(R.string.title_authentication);
 
-        final CachedSecretKeyRing secretRing;
-        final String userId;
+        final WrappedSecretKeyRing secretRing;
+        String userId;
 
         if (secretKeyId == Constants.key.symmetric || secretKeyId == Constants.key.none) {
-            secretRing = null;
             alert.setMessage(R.string.passphrase_for_symmetric_encryption);
+            secretRing = null;
         } else {
             try {
                 ProviderHelper helper = new ProviderHelper(activity);
-                secretRing = helper.getCachedSecretKeyRing(secretKeyId);
-                userId = secretRing.getPrimaryUserId();
+                secretRing = helper.getWrappedSecretKeyRing(secretKeyId);
+                // yes the inner try/catch block is necessary, otherwise the final variable
+                // above can't be statically verified to have been set in all cases because
+                // the catch clause doesn't return.
+                try {
+                    userId = secretRing.getPrimaryUserId();
+                } catch (PgpGeneralException e) {
+                    userId = null;
+                }
             } catch (ProviderHelper.NotFoundException e) {
                 alert.setTitle(R.string.title_key_not_found);
                 alert.setMessage(getString(R.string.key_not_found, secretKeyId));
@@ -190,9 +197,9 @@ public class PassphraseDialogFragment extends DialogFragment implements OnEditor
                     return;
                 }
 
-                CachedSecretKey unlockedSecretKey = null;
+                WrappedSecretKey unlockedSecretKey = null;
 
-                for(CachedSecretKey clickSecretKey : secretRing.iterator()) {
+                for(WrappedSecretKey clickSecretKey : secretRing.iterator()) {
                     try {
                         boolean unlocked = clickSecretKey.unlock(passphrase);
                         if (unlocked) {
