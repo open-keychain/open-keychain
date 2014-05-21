@@ -21,9 +21,9 @@ import android.content.Context;
 import android.support.v4.content.AsyncTaskLoader;
 
 import org.sufficientlysecure.keychain.Constants;
-import org.sufficientlysecure.keychain.keyimport.HkpKeyServer;
+import org.sufficientlysecure.keychain.keyimport.HkpKeyserver;
 import org.sufficientlysecure.keychain.keyimport.ImportKeysListEntry;
-import org.sufficientlysecure.keychain.keyimport.KeyServer;
+import org.sufficientlysecure.keychain.keyimport.Keyserver;
 import org.sufficientlysecure.keychain.util.Log;
 
 import java.util.ArrayList;
@@ -92,7 +92,7 @@ public class ImportKeysListServerLoader
      * Query keyserver
      */
     private void queryServer(String query, String keyServer, boolean enforceFingerprint) {
-        HkpKeyServer server = new HkpKeyServer(keyServer);
+        HkpKeyserver server = new HkpKeyserver(keyServer);
         try {
             ArrayList<ImportKeysListEntry> searchResult = server.search(query);
 
@@ -108,7 +108,7 @@ public class ImportKeysListServerLoader
                      * set fingerprint explicitly after query
                      * to enforce a check when the key is imported by KeychainIntentService
                      */
-                    uniqueEntry.setFingerPrintHex(fingerprint);
+                    uniqueEntry.setFingerprintHex(fingerprint);
                     uniqueEntry.setSelected(true);
                     mEntryList.add(uniqueEntry);
                 }
@@ -116,11 +116,11 @@ public class ImportKeysListServerLoader
                 mEntryList.addAll(searchResult);
             }
             mEntryListWrapper = new AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>>(mEntryList, null);
-        } catch (KeyServer.InsufficientQuery e) {
+        } catch (Keyserver.InsufficientQuery e) {
             mEntryListWrapper = new AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>>(mEntryList, e);
-        } catch (KeyServer.QueryException e) {
+        } catch (Keyserver.QueryException e) {
             mEntryListWrapper = new AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>>(mEntryList, e);
-        } catch (KeyServer.TooManyResponses e) {
+        } catch (Keyserver.TooManyResponses e) {
             mEntryListWrapper = new AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>>(mEntryList, e);
         }
     }

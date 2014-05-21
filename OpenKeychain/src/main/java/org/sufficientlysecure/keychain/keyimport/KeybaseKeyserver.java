@@ -21,6 +21,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.sufficientlysecure.keychain.Constants;
+import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
 import org.sufficientlysecure.keychain.util.JWalk;
 import org.sufficientlysecure.keychain.util.Log;
 
@@ -28,18 +29,19 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.ArrayList;
-import java.util.GregorianCalendar;
-import java.util.TimeZone;
-import java.util.WeakHashMap;
 
-public class KeybaseKeyServer extends KeyServer {
-
-    private WeakHashMap<String, String> mKeyCache = new WeakHashMap<String, String>();
+public class KeybaseKeyserver extends Keyserver {
+    private String mQuery;
 
     @Override
     public ArrayList<ImportKeysListEntry> search(String query) throws QueryException, TooManyResponses,
             InsufficientQuery {
         ArrayList<ImportKeysListEntry> results = new ArrayList<ImportKeysListEntry>();
+
+        if (query.startsWith("0x")) {
+            // cut off "0x" if a user is searching for a key id
+            query = query.substring(2);
+        }
 
         JSONObject fromQuery = getFromKeybase("_/api/1.0/user/autocomplete.json?q=", query);
         try {
@@ -50,59 +52,76 @@ public class KeybaseKeyServer extends KeyServer {
 
                 // only list them if they have a key
                 if (JWalk.optObject(match, "components", "key_fingerprint") != null) {
-                    results.add(makeEntry(match));
+                    String keybaseId = JWalk.getString(match, "components", "username", "val");
+                    String fingerprint = JWalk.getString(match, "components", "key_fingerprint", "val");
+                    fingerprint = fingerprint.replace(" ", "").toUpperCase();
+
+                    if (keybaseId.equals(query) || fingerprint.startsWith(query.toUpperCase())) {
+                        results.add(makeEntry(match));
+                    } else {
+                        results.add(makeEntry(match));
+                    }
                 }
             }
         } catch (Exception e) {
+            Log.e(Constants.TAG, "keybase result parsing error", e);
             throw new QueryException("Unexpected structure in keybase search result: " + e.getMessage());
         }
 
         return results;
     }
 
-    private JSONObject getUser(String keybaseID) throws QueryException {
+    private JSONObject getUser(String keybaseId) throws QueryException {
         try {
-            return getFromKeybase("_/api/1.0/user/lookup.json?username=", keybaseID);
+            return getFromKeybase("_/api/1.0/user/lookup.json?username=", keybaseId);
         } catch (Exception e) {
             String detail = "";
-            if (keybaseID != null) {
-                detail = ". Query was for user '" + keybaseID + "'";
+            if (keybaseId != null) {
+                detail = ". Query was for user '" + keybaseId + "'";
             }
             throw new QueryException(e.getMessage() + detail);
         }
     }
 
     private ImportKeysListEntry makeEntry(JSONObject match) throws QueryException, JSONException {
-
-        String keybaseID = JWalk.getString(match, "components", "username", "val");
-        String key_fingerprint = JWalk.getString(match, "components", "key_fingerprint", "val");
-        key_fingerprint = key_fingerprint.replace(" ", "").toUpperCase();
-        match = getUser(keybaseID);
-
         final ImportKeysListEntry entry = new ImportKeysListEntry();
+        entry.setQuery(mQuery);
 
-        // TODO: Fix; have suggested keybase provide this value to avoid search-time crypto calls
-        entry.setBitStrength(4096);
-        entry.setAlgorithm("RSA");
-        entry.setKeyIdHex("0x" + key_fingerprint);
-        entry.setRevoked(false);
+        String keybaseId = JWalk.getString(match, "components", "username", "val");
+        String fullName = JWalk.getString(match, "components", "full_name", "val");
+        String fingerprint = JWalk.getString(match, "components", "key_fingerprint", "val");
+        fingerprint = fingerprint.replace(" ", "").toUpperCase(); // not strictly necessary but doesn't hurt
+        entry.setFingerprintHex(fingerprint);
 
-        // ctime
-        final long creationDate = JWalk.getLong(match, "them", "public_keys", "primary", "ctime");
-        final GregorianCalendar tmpGreg = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
-        tmpGreg.setTimeInMillis(creationDate * 1000);
-        entry.setDate(tmpGreg.getTime());
+        entry.setKeyIdHex("0x" + fingerprint.substring(Math.max(0, fingerprint.length() - 16)));
+        // store extra info, so we can query for the keybase id directly
+        entry.setExtraData(keybaseId);
 
-        // key bits
-        // we have to fetch the user object to construct the search-result list, so we might as
-        //  well (weakly) remember the key, in case they try to import it
-        mKeyCache.put(keybaseID, JWalk.getString(match,"them", "public_keys", "primary", "bundle"));
+        final int algorithmId = JWalk.getInt(match, "components", "key_fingerprint", "algo");
+        entry.setAlgorithm(PgpKeyHelper.getAlgorithmInfo(algorithmId));
+        final int bitStrength = JWalk.getInt(match, "components", "key_fingerprint", "nbits");
+        entry.setBitStrength(bitStrength);
 
-        // String displayName = JWalk.getString(match, "them", "profile", "full_name");
         ArrayList<String> userIds = new ArrayList<String>();
-        String name = "keybase.io/" + keybaseID + " <" + keybaseID + "@keybase.io>";
+        String name = fullName + " <keybase.io/" + keybaseId + ">";
         userIds.add(name);
-        userIds.add(keybaseID);
+        try {
+            userIds.add("github.com/" + JWalk.getString(match, "components", "github", "val"));
+        } catch (JSONException e) {
+            // ignore
+        }
+        try {
+            userIds.add("twitter.com/" + JWalk.getString(match, "components", "twitter", "val"));
+        } catch (JSONException e) {
+            // ignore
+        }
+        try {
+            JSONArray array = JWalk.getArray(match, "components", "websites");
+            JSONObject website = array.getJSONObject(0);
+            userIds.add(JWalk.getString(website, "val"));
+        } catch (JSONException e) {
+            // ignore
+        }
         entry.setUserIds(userIds);
         entry.setPrimaryUserId(name);
         return entry;
@@ -142,16 +161,12 @@ public class KeybaseKeyServer extends KeyServer {
 
     @Override
     public String get(String id) throws QueryException {
-        String key = mKeyCache.get(id);
-        if (key == null) {
-            try {
-                JSONObject user = getUser(id);
-                key = JWalk.getString(user, "them", "public_keys", "primary", "bundle");
-            } catch (Exception e) {
-                throw new QueryException(e.getMessage());
-            }
+        try {
+            JSONObject user = getUser(id);
+            return JWalk.getString(user, "them", "public_keys", "primary", "bundle");
+        } catch (Exception e) {
+            throw new QueryException(e.getMessage());
         }
-        return key;
     }
 
     @Override

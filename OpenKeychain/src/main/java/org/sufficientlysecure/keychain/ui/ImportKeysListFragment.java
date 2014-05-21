@@ -38,7 +38,7 @@ import org.sufficientlysecure.keychain.ui.adapter.ImportKeysListKeybaseLoader;
 import org.sufficientlysecure.keychain.ui.adapter.ImportKeysListLoader;
 import org.sufficientlysecure.keychain.ui.adapter.ImportKeysListServerLoader;
 import org.sufficientlysecure.keychain.util.InputData;
-import org.sufficientlysecure.keychain.keyimport.KeyServer;
+import org.sufficientlysecure.keychain.keyimport.Keyserver;
 import org.sufficientlysecure.keychain.util.Log;
 
 import java.io.ByteArrayInputStream;
@@ -280,13 +280,13 @@ public class ImportKeysListFragment extends ListFragment implements
                                     mAdapter.getCount(), mAdapter.getCount()),
                             AppMsg.STYLE_INFO
                     ).show();
-                } else if (error instanceof KeyServer.InsufficientQuery) {
+                } else if (error instanceof Keyserver.InsufficientQuery) {
                     AppMsg.makeText(getActivity(), R.string.error_keyserver_insufficient_query,
                             AppMsg.STYLE_ALERT).show();
-                } else if (error instanceof KeyServer.QueryException) {
+                } else if (error instanceof Keyserver.QueryException) {
                     AppMsg.makeText(getActivity(), R.string.error_keyserver_query,
                             AppMsg.STYLE_ALERT).show();
-                } else if (error instanceof KeyServer.TooManyResponses) {
+                } else if (error instanceof Keyserver.TooManyResponses) {
                     AppMsg.makeText(getActivity(), R.string.error_keyserver_too_many_responses,
                             AppMsg.STYLE_ALERT).show();
                 }
@@ -300,7 +300,7 @@ public class ImportKeysListFragment extends ListFragment implements
                                     mAdapter.getCount(), mAdapter.getCount()),
                             AppMsg.STYLE_INFO
                     ).show();
-                }  else if (error instanceof KeyServer.QueryException) {
+                }  else if (error instanceof Keyserver.QueryException) {
                     AppMsg.makeText(getActivity(), R.string.error_keyserver_query,
                             AppMsg.STYLE_ALERT).show();
                 }

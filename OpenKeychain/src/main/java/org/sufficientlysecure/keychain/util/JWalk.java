@@ -23,29 +23,77 @@ import org.json.JSONObject;
 
 /**
  * Minimal hierarchy selector
+ *
+ * This is for picking out an item in a large multilevel JSON object, for example look at
+ * the Keybase.io User object, documentation at https://keybase.io/__/api-docs/1.0#user-objects
+ * an example available via
+ *   curl https://keybase.io/_/api/1.0/user/lookup.json?username=timbray
+ *
+ * If you want to retrieve the ascii-armored key, you'd say
+ * String key = JWalk.getString(match,"them", "public_keys", "primary", "bundle");
  */
 public class JWalk {
 
+    /**
+     * Returns an int member value from the JSON sub-object addressed by the path
+     *
+     * @param json The object
+     * @param path list of string object member selectors
+     * @return the int addressed by the path, assuming such a thing exists
+     * @throws JSONException if any step in the path doesn’t work
+     */
     public static int getInt(JSONObject json, String... path) throws JSONException {
         json = walk(json, path);
         return json.getInt(path[path.length - 1]);
     }
 
+    /**
+     * Returns a long member value from the JSON sub-object addressed by the path
+     *
+     * @param json The object
+     * @param path list of string object member selectors
+     * @return the int addressed by the path, assuming such a thing exists
+     * @throws JSONException if any step in the path doesn’t work
+     */
     public static long getLong(JSONObject json, String... path) throws JSONException {
         json = walk(json, path);
         return json.getLong(path[path.length - 1]);
     }
 
+    /**
+     * Returns a String member value from the JSON sub-object addressed by the path
+     *
+     * @param json The object
+     * @param path list of string object member selectors
+     * @return the int addressed by the path, assuming such a thing exists
+     * @throws JSONException if any step in the path doesn’t work
+     */
     public static String getString(JSONObject json, String... path) throws JSONException {
         json = walk(json, path);
         return json.getString(path[path.length - 1]);
     }
 
+    /**
+     * Returns a JSONArray member value from the JSON sub-object addressed by the path
+     *
+     * @param json The object
+     * @param path list of string object member selectors
+     * @return the int addressed by the path, assuming such a thing exists
+     * @throws JSONException if any step in the path doesn’t work
+     */
     public static JSONArray getArray(JSONObject json, String... path) throws JSONException {
         json = walk(json, path);
         return json.getJSONArray(path[path.length - 1]);
     }
 
+    /**
+     * Returns a JSONObject member value from the JSON sub-object addressed by the path, or null
+     *
+     * @param json The object
+     * @param path list of string object member selectors
+     * @return the int addressed by the path, assuming such a thing exists
+     * @throws JSONException if any step in the path, except for the last, doesn’t work
+     */
     public static JSONObject optObject(JSONObject json, String... path) throws JSONException {
         json = walk(json, path);
         return json.optJSONObject(path[path.length - 1]);

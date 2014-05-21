@@ -23,7 +23,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 
-public abstract class KeyServer {
+public abstract class Keyserver {
     public static class QueryException extends Exception {
         private static final long serialVersionUID = 2703768928624654512L;
 

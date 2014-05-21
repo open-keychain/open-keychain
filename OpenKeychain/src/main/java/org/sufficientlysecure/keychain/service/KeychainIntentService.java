@@ -35,6 +35,7 @@ import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.helper.FileHelper;
 import org.sufficientlysecure.keychain.helper.OtherHelper;
 import org.sufficientlysecure.keychain.helper.Preferences;
+import org.sufficientlysecure.keychain.keyimport.HkpKeyserver;
 import org.sufficientlysecure.keychain.pgp.WrappedPublicKeyRing;
 import org.sufficientlysecure.keychain.pgp.WrappedSecretKey;
 import org.sufficientlysecure.keychain.pgp.WrappedSecretKeyRing;
@@ -54,9 +55,8 @@ import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.KeychainDatabase;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.keyimport.ImportKeysListEntry;
-import org.sufficientlysecure.keychain.keyimport.HkpKeyServer;
 import org.sufficientlysecure.keychain.util.InputData;
-import org.sufficientlysecure.keychain.keyimport.KeybaseKeyServer;
+import org.sufficientlysecure.keychain.keyimport.KeybaseKeyserver;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.ProgressScaler;
 
@@ -721,7 +721,7 @@ public class KeychainIntentService extends IntentService
                 // and dataUri!
 
                 /* Operation */
-                HkpKeyServer server = new HkpKeyServer(keyServer);
+                HkpKeyserver server = new HkpKeyserver(keyServer);
 
                 ProviderHelper providerHelper = new ProviderHelper(this);
                 WrappedPublicKeyRing keyring = providerHelper.getWrappedPublicKeyRing(dataUri);
@@ -740,11 +740,11 @@ public class KeychainIntentService extends IntentService
             ArrayList<ImportKeysListEntry> entries = data.getParcelableArrayList(DOWNLOAD_KEY_LIST);
 
             try {
-                KeybaseKeyServer server = new KeybaseKeyServer();
+                KeybaseKeyserver server = new KeybaseKeyserver();
                 for (ImportKeysListEntry entry : entries) {
                     // the keybase handle is in userId(1)
-                    String keybaseID = entry.getUserIds().get(1);
-                    byte[] downloadedKeyBytes = server.get(keybaseID).getBytes();
+                    String keybaseId = entry.getExtraData();
+                    byte[] downloadedKeyBytes = server.get(keybaseId).getBytes();
 
                     // create PGPKeyRing object based on downloaded armored key
                     PGPKeyRing downloadedKey = null;
@@ -791,13 +791,13 @@ public class KeychainIntentService extends IntentService
                 String keyServer = data.getString(DOWNLOAD_KEY_SERVER);
 
                 // this downloads the keys and places them into the ImportKeysListEntry entries
-                HkpKeyServer server = new HkpKeyServer(keyServer);
+                HkpKeyserver server = new HkpKeyserver(keyServer);
 
                 for (ImportKeysListEntry entry : entries) {
                     // if available use complete fingerprint for get request
                     byte[] downloadedKeyBytes;
-                    if (entry.getFingerPrintHex() != null) {
-                        downloadedKeyBytes = server.get("0x" + entry.getFingerPrintHex()).getBytes();
+                    if (entry.getFingerprintHex() != null) {
+                        downloadedKeyBytes = server.get("0x" + entry.getFingerprintHex()).getBytes();
                     } else {
                         downloadedKeyBytes = server.get(entry.getKeyIdHex()).getBytes();
                     }
@@ -807,10 +807,10 @@ public class KeychainIntentService extends IntentService
                             UncachedKeyRing.decodePubkeyFromData(downloadedKeyBytes);
 
                     // verify downloaded key by comparing fingerprints
-                    if (entry.getFingerPrintHex() != null) {
+                    if (entry.getFingerprintHex() != null) {
                         String downloadedKeyFp = PgpKeyHelper.convertFingerprintToHex(
                                 downloadedKey.getFingerprint());
-                        if (downloadedKeyFp.equals(entry.getFingerPrintHex())) {
+                        if (downloadedKeyFp.equals(entry.getFingerprintHex())) {
                             Log.d(Constants.TAG, "fingerprint of downloaded key is the same as " +
                                     "the requested fingerprint!");
                         } else {

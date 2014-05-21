@@ -33,6 +33,7 @@ import android.widget.TextView;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.keyimport.ImportKeysListEntry;
 import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
+import org.sufficientlysecure.keychain.util.Highlighter;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -99,6 +100,7 @@ public class ImportKeysAdapter extends ArrayAdapter<ImportKeysListEntry> {
 
     public View getView(int position, View convertView, ViewGroup parent) {
         ImportKeysListEntry entry = mData.get(position);
+        Highlighter highlighter = new Highlighter(mActivity, entry.getQuery());
         ViewHolder holder;
         if (convertView == null) {
             holder = new ViewHolder();
@@ -128,7 +130,7 @@ public class ImportKeysAdapter extends ArrayAdapter<ImportKeysListEntry> {
                         + " " + userIdSplit[0]);
                 holder.mainUserId.setTextColor(Color.RED);
             } else {
-                holder.mainUserId.setText(userIdSplit[0]);
+                holder.mainUserId.setText(highlighter.highlight(userIdSplit[0]));
                 holder.mainUserId.setTextColor(Color.BLACK);
             }
         } else {
@@ -139,21 +141,26 @@ public class ImportKeysAdapter extends ArrayAdapter<ImportKeysListEntry> {
         // email
         if (userIdSplit[1] != null) {
             holder.mainUserIdRest.setVisibility(View.VISIBLE);
-            holder.mainUserIdRest.setText(userIdSplit[1]);
+            holder.mainUserIdRest.setText(highlighter.highlight(userIdSplit[1]));
         } else {
             holder.mainUserIdRest.setVisibility(View.GONE);
         }
 
         holder.keyId.setText(entry.keyIdHex);
 
-        if (entry.fingerPrintHex != null) {
+        if (entry.fingerprintHex != null) {
             holder.fingerprint.setVisibility(View.VISIBLE);
-            holder.fingerprint.setText(PgpKeyHelper.colorizeFingerprint(entry.fingerPrintHex));
+            holder.fingerprint.setText(PgpKeyHelper.colorizeFingerprint(entry.fingerprintHex));
         } else {
             holder.fingerprint.setVisibility(View.GONE);
         }
 
-        holder.algorithm.setText("" + entry.bitStrength + "/" + entry.algorithm);
+        if (entry.bitStrength != 0 && entry.algorithm != null) {
+            holder.algorithm.setText("" + entry.bitStrength + "/" + entry.algorithm);
+            holder.algorithm.setVisibility(View.VISIBLE);
+        } else {
+            holder.algorithm.setVisibility(View.INVISIBLE);
+        }
 
         if (entry.revoked) {
             holder.status.setVisibility(View.VISIBLE);
@@ -177,7 +184,7 @@ public class ImportKeysAdapter extends ArrayAdapter<ImportKeysListEntry> {
                 String uid = it.next();
                 TextView uidView = (TextView) mInflater.inflate(
                         R.layout.import_keys_list_entry_user_id, null);
-                uidView.setText(uid);
+                uidView.setText(highlighter.highlight(uid));
                 holder.userIdsList.addView(uidView);
             }
         }
