@@ -163,12 +163,12 @@ public class EncryptAsymmetricFragment extends Fragment {
             Vector<Long> goodIds = new Vector<Long>();
             for (int i = 0; i < preselectedEncryptionKeyIds.length; ++i) {
                 try {
-                    long id = providerHelper.getMasterKeyId(
+                    long id = providerHelper.getCachedPublicKeyRing(
                             KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(
                                     preselectedEncryptionKeyIds[i])
-                    );
+                    ).getMasterKeyId();
                     goodIds.add(id);
-                } catch (ProviderHelper.NotFoundException e) {
+                } catch (PgpGeneralException e) {
                     Log.e(Constants.TAG, "key not found!", e);
                 }
             }

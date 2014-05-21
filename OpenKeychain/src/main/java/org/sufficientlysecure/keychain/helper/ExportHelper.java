@@ -31,6 +31,7 @@ import android.widget.Toast;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.compatibility.DialogFragmentWorkaround;
+import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
 import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
@@ -51,14 +52,15 @@ public class ExportHelper {
 
     public void deleteKey(Uri dataUri, Handler deleteHandler) {
         try {
-            long masterKeyId = new ProviderHelper(mActivity).extractOrGetMasterKeyId(dataUri);
+            long masterKeyId = new ProviderHelper(mActivity).getCachedPublicKeyRing(dataUri)
+                .extractOrGetMasterKeyId();
 
             // Create a new Messenger for the communication back
             Messenger messenger = new Messenger(deleteHandler);
             DeleteKeyDialogFragment deleteKeyDialog = DeleteKeyDialogFragment.newInstance(messenger,
                     new long[]{ masterKeyId });
             deleteKeyDialog.show(mActivity.getSupportFragmentManager(), "deleteKeyDialog");
-        } catch (ProviderHelper.NotFoundException e) {
+        } catch (PgpGeneralException e) {
             Log.e(Constants.TAG, "key not found!", e);
         }
     }
