@@ -179,7 +179,7 @@ public class PassphraseCacheService extends Service {
         try {
             Log.d(TAG, "getCachedPassphraseImpl() for masterKeyId " + keyId);
             WrappedSecretKeyRing key = new ProviderHelper(this).getWrappedSecretKeyRing(
-                    KeychainContract.KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(Long.toString(keyId)));
+                    KeychainContract.KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(keyId));
             // no passphrase needed? just add empty string and return it, then
             if (!key.hasPassphrase()) {
                 Log.d(Constants.TAG, "Key has no passphrase! Caches and returns empty passphrase!");

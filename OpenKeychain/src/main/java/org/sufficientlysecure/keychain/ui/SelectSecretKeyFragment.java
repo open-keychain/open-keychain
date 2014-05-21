@@ -84,7 +84,7 @@ public class SelectSecretKeyFragment extends ListFragment implements
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
                 long masterKeyId = mAdapter.getMasterKeyId(position);
-                Uri result = KeyRings.buildGenericKeyRingUri(String.valueOf(masterKeyId));
+                Uri result = KeyRings.buildGenericKeyRingUri(masterKeyId);
 
                 // return data to activity, which results in finishing it
                 mActivity.afterListSelection(result);

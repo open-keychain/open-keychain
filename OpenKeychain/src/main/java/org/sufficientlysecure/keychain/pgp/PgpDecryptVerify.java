@@ -249,8 +249,7 @@ public class PgpDecryptVerify {
                 try {
                     // get actual keyring object based on master key id
                     secretKeyRing = mProviderHelper.getWrappedSecretKeyRing(
-                            KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(
-                                    Long.toString(encData.getKeyID()))
+                            KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(encData.getKeyID())
                     );
                 } catch (ProviderHelper.NotFoundException e) {
                     // continue with the next packet in the while loop
@@ -394,9 +393,7 @@ public class PgpDecryptVerify {
                 try {
                     long sigKeyId = sigList.get(i).getKeyID();
                     signingRing = mProviderHelper.getWrappedPublicKeyRing(
-                            KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(
-                                    Long.toString(sigKeyId)
-                            )
+                            KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(sigKeyId)
                     );
                     signingKey = signingRing.getSubkey(sigKeyId);
                     signatureIndex = i;
@@ -581,9 +578,7 @@ public class PgpDecryptVerify {
             try {
                 long sigKeyId = sigList.get(i).getKeyID();
                 signingRing = mProviderHelper.getWrappedPublicKeyRing(
-                        KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(
-                                Long.toString(sigKeyId)
-                        )
+                        KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(sigKeyId)
                 );
                 signingKey = signingRing.getSubkey(sigKeyId);
                 signatureIndex = i;

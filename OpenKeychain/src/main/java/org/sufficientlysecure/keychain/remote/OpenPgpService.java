@@ -426,7 +426,7 @@ public class OpenPgpService extends RemoteService {
 
                 // also return PendingIntent that opens the key view activity
                 Intent intent = new Intent(getBaseContext(), ViewKeyActivity.class);
-                intent.setData(KeyRings.buildGenericKeyRingUri(Long.toString(masterKeyId)));
+                intent.setData(KeyRings.buildGenericKeyRingUri(masterKeyId));
 
                 PendingIntent pi = PendingIntent.getActivity(getBaseContext(), 0,
                         intent,

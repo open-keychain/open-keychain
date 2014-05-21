@@ -587,8 +587,7 @@ public class EditKeyActivity extends ActionBarActivity implements EditorListener
                         Intent data = new Intent();
 
                         // return uri pointing to new created key
-                        Uri uri = KeyRings.buildGenericKeyRingUri(
-                                String.valueOf(getMasterKeyId()));
+                        Uri uri = KeyRings.buildGenericKeyRingUri(getMasterKeyId());
                         data.setData(uri);
 
                         setResult(RESULT_OK, data);

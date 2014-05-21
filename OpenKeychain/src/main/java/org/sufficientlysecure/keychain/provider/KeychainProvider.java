@@ -644,7 +644,7 @@ public class KeychainProvider extends ContentProvider {
             }
 
             if(keyId != null) {
-                uri = KeyRings.buildGenericKeyRingUri(keyId.toString());
+                uri = KeyRings.buildGenericKeyRingUri(keyId);
                 rowUri = uri;
             }
 

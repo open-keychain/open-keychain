@@ -32,8 +32,9 @@ import com.beardedhen.androidbootstrap.BootstrapButton;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.pgp.WrappedPublicKeyRing;
 import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
+import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
+import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.util.Log;
@@ -147,12 +148,13 @@ public class EncryptAsymmetricFragment extends Fragment {
         // not sure if we need to distinguish between different subkeys here?
         if (preselectedSignatureKeyId != 0) {
             try {
-                WrappedPublicKeyRing keyring =
-                        providerHelper.getWrappedPublicKeyRing(preselectedSignatureKeyId);
+                CachedPublicKeyRing keyring =
+                        providerHelper.getCachedPublicKeyRing(
+                                KeyRings.buildUnifiedKeyRingUri(preselectedSignatureKeyId));
                 if(keyring.hasAnySecret()) {
                     setSignatureKeyId(keyring.getMasterKeyId());
                 }
-            } catch (ProviderHelper.NotFoundException e) {
+            } catch (PgpGeneralException e) {
                 Log.e(Constants.TAG, "key not found!", e);
             }
         }
@@ -163,7 +165,7 @@ public class EncryptAsymmetricFragment extends Fragment {
                 try {
                     long id = providerHelper.getMasterKeyId(
                             KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(
-                                    Long.toString(preselectedEncryptionKeyIds[i]))
+                                    preselectedEncryptionKeyIds[i])
                     );
                     goodIds.add(id);
                 } catch (ProviderHelper.NotFoundException e) {

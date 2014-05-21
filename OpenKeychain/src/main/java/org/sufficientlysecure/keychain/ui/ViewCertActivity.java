@@ -212,11 +212,9 @@ public class ViewCertActivity extends ActionBarActivity
                 try {
                     ProviderHelper providerHelper = new ProviderHelper(ViewCertActivity.this);
                     long signerMasterKeyId = providerHelper.getMasterKeyId(
-                            KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(Long.toString(mCertifierKeyId))
+                            KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(mCertifierKeyId)
                     );
-                    viewIntent.setData(KeyRings.buildGenericKeyRingUri(
-                                    Long.toString(signerMasterKeyId))
-                    );
+                    viewIntent.setData(KeyRings.buildGenericKeyRingUri(signerMasterKeyId));
                     startActivity(viewIntent);
                 } catch (ProviderHelper.NotFoundException e) {
                     // TODO notify user of this, maybe offer download?

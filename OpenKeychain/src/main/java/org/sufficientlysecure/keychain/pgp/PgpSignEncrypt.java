@@ -317,7 +317,7 @@ public class PgpSignEncrypt {
                 for (long id : mEncryptionMasterKeyIds) {
                     try {
                         WrappedPublicKeyRing keyRing = mProviderHelper.getWrappedPublicKeyRing(
-                                KeyRings.buildUnifiedKeyRingUri(Long.toString(id)));
+                                KeyRings.buildUnifiedKeyRingUri(id));
                         WrappedPublicKey key = keyRing.getEncryptionSubKey();
                         cPk.addMethod(key.getPubKeyEncryptionGenerator());
                     } catch (PgpGeneralException e) {

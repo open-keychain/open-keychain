@@ -144,7 +144,7 @@ public class ProviderHelper {
 
     public HashMap<String, Object> getUnifiedData(long masterKeyId, String[] proj, int[] types)
             throws NotFoundException {
-        return getGenericData(KeyRings.buildUnifiedKeyRingUri(Long.toString(masterKeyId)), proj, types);
+        return getGenericData(KeyRings.buildUnifiedKeyRingUri(masterKeyId), proj, types);
     }
 
     /**
@@ -202,8 +202,7 @@ public class ProviderHelper {
     }
 
     public WrappedPublicKeyRing getWrappedPublicKeyRing(long id) throws NotFoundException {
-        return (WrappedPublicKeyRing) getWrappedKeyRing(
-                KeyRings.buildUnifiedKeyRingUri(Long.toString(id)), false);
+        return (WrappedPublicKeyRing) getWrappedKeyRing(KeyRings.buildUnifiedKeyRingUri(id), false);
     }
 
     public WrappedPublicKeyRing getWrappedPublicKeyRing(Uri queryUri) throws NotFoundException {
@@ -211,8 +210,7 @@ public class ProviderHelper {
     }
 
     public WrappedSecretKeyRing getWrappedSecretKeyRing(long id) throws NotFoundException {
-        return (WrappedSecretKeyRing) getWrappedKeyRing(
-                KeyRings.buildUnifiedKeyRingUri(Long.toString(id)), true);
+        return (WrappedSecretKeyRing) getWrappedKeyRing(KeyRings.buildUnifiedKeyRingUri(id), true);
     }
 
     public WrappedSecretKeyRing getWrappedSecretKeyRing(Uri queryUri) throws NotFoundException {
