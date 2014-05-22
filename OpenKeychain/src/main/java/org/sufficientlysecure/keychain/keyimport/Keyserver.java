@@ -32,20 +32,23 @@ public abstract class Keyserver {
         }
     }
 
-    public static class TooManyResponses extends Exception {
+    public static class QueryNeedsRepairException extends Exception {
+        private static final long serialVersionUID = 2693768928624654512L;
+    }
+
+    public static class TooManyResponsesException extends QueryNeedsRepairException {
         private static final long serialVersionUID = 2703768928624654513L;
     }
 
-    public static class InsufficientQuery extends Exception {
-        private static final long serialVersionUID = 2703768928624654514L;
+    public static class QueryTooShortException extends QueryNeedsRepairException {
     }
 
     public static class AddKeyException extends Exception {
         private static final long serialVersionUID = -507574859137295530L;
     }
 
-    abstract List<ImportKeysListEntry> search(String query) throws QueryException, TooManyResponses,
-            InsufficientQuery;
+    abstract List<ImportKeysListEntry> search(String query) throws QueryException,
+            QueryNeedsRepairException;
 
     abstract String get(String keyIdHex) throws QueryException;
 

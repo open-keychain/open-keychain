@@ -34,8 +34,8 @@ public class KeybaseKeyserver extends Keyserver {
     private String mQuery;
 
     @Override
-    public ArrayList<ImportKeysListEntry> search(String query) throws QueryException, TooManyResponses,
-            InsufficientQuery {
+    public ArrayList<ImportKeysListEntry> search(String query) throws QueryException,
+            QueryNeedsRepairException {
         ArrayList<ImportKeysListEntry> results = new ArrayList<ImportKeysListEntry>();
 
         if (query.startsWith("0x")) {
@@ -84,6 +84,7 @@ public class KeybaseKeyserver extends Keyserver {
     }
 
     private ImportKeysListEntry makeEntry(JSONObject match) throws QueryException, JSONException {
+
         final ImportKeysListEntry entry = new ImportKeysListEntry();
         entry.setQuery(mQuery);
 

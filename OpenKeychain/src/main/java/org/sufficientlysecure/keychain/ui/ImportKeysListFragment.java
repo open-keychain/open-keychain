@@ -273,37 +273,27 @@ public class ImportKeysListFragment extends ListFragment implements
                 break;
 
             case LOADER_ID_SERVER_QUERY:
+            case LOADER_ID_KEYBASE:
 
+                // TODO: possibly fine-tune message building for these two cases
                 if (error == null) {
                     AppMsg.makeText(
                             getActivity(), getResources().getQuantityString(R.plurals.keys_found,
                                     mAdapter.getCount(), mAdapter.getCount()),
                             AppMsg.STYLE_INFO
                     ).show();
-                } else if (error instanceof Keyserver.InsufficientQuery) {
+                } else if (error instanceof Keyserver.QueryTooShortException) {
                     AppMsg.makeText(getActivity(), R.string.error_keyserver_insufficient_query,
                             AppMsg.STYLE_ALERT).show();
                 } else if (error instanceof Keyserver.QueryException) {
-                    AppMsg.makeText(getActivity(), R.string.error_keyserver_query,
-                            AppMsg.STYLE_ALERT).show();
-                } else if (error instanceof Keyserver.TooManyResponses) {
+                    String alert = getActivity().getString(R.string.error_searching_keys);
+                    alert = alert + " (" + error.getLocalizedMessage() + ")";
+                    AppMsg.makeText(getActivity(), alert, AppMsg.STYLE_ALERT).show();
+                } else if (error instanceof Keyserver.TooManyResponsesException) {
                     AppMsg.makeText(getActivity(), R.string.error_keyserver_too_many_responses,
                             AppMsg.STYLE_ALERT).show();
                 }
                 break;
-
-            case LOADER_ID_KEYBASE:
-
-                if (error == null) {
-                    AppMsg.makeText(
-                            getActivity(), getResources().getQuantityString(R.plurals.keys_found,
-                                    mAdapter.getCount(), mAdapter.getCount()),
-                            AppMsg.STYLE_INFO
-                    ).show();
-                }  else if (error instanceof Keyserver.QueryException) {
-                    AppMsg.makeText(getActivity(), R.string.error_keyserver_query,
-                            AppMsg.STYLE_ALERT).show();
-                }
 
             default:
                 break;

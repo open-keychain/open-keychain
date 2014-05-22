@@ -200,12 +200,12 @@ public class HkpKeyserver extends Keyserver {
     }
 
     @Override
-    public ArrayList<ImportKeysListEntry> search(String query) throws QueryException, TooManyResponses,
-            InsufficientQuery {
+    public ArrayList<ImportKeysListEntry> search(String query) throws QueryException,
+            QueryNeedsRepairException {
         ArrayList<ImportKeysListEntry> results = new ArrayList<ImportKeysListEntry>();
 
         if (query.length() < 3) {
-            throw new InsufficientQuery();
+            throw new QueryTooShortException();
         }
 
         String encodedQuery;
@@ -226,9 +226,9 @@ public class HkpKeyserver extends Keyserver {
                 if (e.getData().toLowerCase(Locale.US).contains("no keys found")) {
                     return results;
                 } else if (e.getData().toLowerCase(Locale.US).contains("too many")) {
-                    throw new TooManyResponses();
+                    throw new TooManyResponsesException();
                 } else if (e.getData().toLowerCase(Locale.US).contains("insufficient")) {
-                    throw new InsufficientQuery();
+                    throw new QueryTooShortException();
                 }
             }
             throw new QueryException("querying server(s) for '" + mHost + "' failed");
