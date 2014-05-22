@@ -35,7 +35,6 @@ import android.widget.TextView;
 
 import com.beardedhen.androidbootstrap.BootstrapButton;
 
-import org.spongycastle.openpgp.PGPKeyFlags;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.PgpConversionHelper;
 import org.sufficientlysecure.keychain.pgp.UncachedSecretKey;
@@ -420,7 +419,7 @@ public class SectionView extends LinearLayout implements OnClickListener, Editor
         view.setEditorListener(SectionView.this);
         int usage = 0;
         if (mEditors.getChildCount() == 0) {
-            usage = PGPKeyFlags.CAN_CERTIFY;
+            usage = UncachedSecretKey.CERTIFY_OTHER;
         }
         view.setValue(newKey, newKey.isMasterKey(), usage, true);
         mEditors.addView(view);

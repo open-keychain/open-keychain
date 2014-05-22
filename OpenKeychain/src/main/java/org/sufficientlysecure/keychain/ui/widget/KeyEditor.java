@@ -38,7 +38,6 @@ import android.widget.TextView;
 
 import com.beardedhen.androidbootstrap.BootstrapButton;
 
-import org.spongycastle.bcpg.sig.KeyFlags;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
 import org.sufficientlysecure.keychain.pgp.UncachedSecretKey;
@@ -244,11 +243,15 @@ public class KeyEditor extends LinearLayout implements Editor, OnClickListener {
         mIsNewKey = isNewKey;
         if (isNewKey) {
             mUsage = usage;
-            mChkCertify.setChecked((usage & KeyFlags.CERTIFY_OTHER) == KeyFlags.CERTIFY_OTHER);
-            mChkSign.setChecked((usage & KeyFlags.SIGN_DATA) == KeyFlags.SIGN_DATA);
-            mChkEncrypt.setChecked(((usage & KeyFlags.ENCRYPT_COMMS) == KeyFlags.ENCRYPT_COMMS) ||
-                    ((usage & KeyFlags.ENCRYPT_STORAGE) == KeyFlags.ENCRYPT_STORAGE));
-            mChkAuthenticate.setChecked((usage & KeyFlags.AUTHENTICATION) == KeyFlags.AUTHENTICATION);
+            mChkCertify.setChecked(
+                    (usage & UncachedSecretKey.CERTIFY_OTHER) == UncachedSecretKey.CERTIFY_OTHER);
+            mChkSign.setChecked(
+                    (usage & UncachedSecretKey.SIGN_DATA) == UncachedSecretKey.SIGN_DATA);
+            mChkEncrypt.setChecked(
+                    ((usage & UncachedSecretKey.ENCRYPT_COMMS) == UncachedSecretKey.ENCRYPT_COMMS) ||
+                    ((usage & UncachedSecretKey.ENCRYPT_STORAGE) == UncachedSecretKey.ENCRYPT_STORAGE));
+            mChkAuthenticate.setChecked(
+                    (usage & UncachedSecretKey.AUTHENTICATION) == UncachedSecretKey.AUTHENTICATION);
         } else {
             mUsage = key.getKeyUsage();
             mOriginalUsage = mUsage;
@@ -319,16 +322,16 @@ public class KeyEditor extends LinearLayout implements Editor, OnClickListener {
     }
 
     public int getUsage() {
-        mUsage = (mUsage & ~KeyFlags.CERTIFY_OTHER) |
-                (mChkCertify.isChecked() ? KeyFlags.CERTIFY_OTHER : 0);
-        mUsage = (mUsage & ~KeyFlags.SIGN_DATA) |
-                (mChkSign.isChecked() ? KeyFlags.SIGN_DATA : 0);
-        mUsage = (mUsage & ~KeyFlags.ENCRYPT_COMMS) |
-                (mChkEncrypt.isChecked() ? KeyFlags.ENCRYPT_COMMS : 0);
-        mUsage = (mUsage & ~KeyFlags.ENCRYPT_STORAGE) |
-                (mChkEncrypt.isChecked() ? KeyFlags.ENCRYPT_STORAGE : 0);
-        mUsage = (mUsage & ~KeyFlags.AUTHENTICATION) |
-                (mChkAuthenticate.isChecked() ? KeyFlags.AUTHENTICATION : 0);
+        mUsage = (mUsage & ~UncachedSecretKey.CERTIFY_OTHER) |
+                (mChkCertify.isChecked() ? UncachedSecretKey.CERTIFY_OTHER : 0);
+        mUsage = (mUsage & ~UncachedSecretKey.SIGN_DATA) |
+                (mChkSign.isChecked() ? UncachedSecretKey.SIGN_DATA : 0);
+        mUsage = (mUsage & ~UncachedSecretKey.ENCRYPT_COMMS) |
+                (mChkEncrypt.isChecked() ? UncachedSecretKey.ENCRYPT_COMMS : 0);
+        mUsage = (mUsage & ~UncachedSecretKey.ENCRYPT_STORAGE) |
+                (mChkEncrypt.isChecked() ? UncachedSecretKey.ENCRYPT_STORAGE : 0);
+        mUsage = (mUsage & ~UncachedSecretKey.AUTHENTICATION) |
+                (mChkAuthenticate.isChecked() ? UncachedSecretKey.AUTHENTICATION : 0);
 
         return mUsage;
     }
