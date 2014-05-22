@@ -94,14 +94,10 @@ public class ImportKeysListKeybaseLoader
 
             mEntryList.addAll(searchResult);
             mEntryListWrapper = new AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>>(mEntryList, null);
-        } catch (KeyServer.InsufficientQuery e) {
+        } catch (KeyServer.QueryFailedException e) {
             mEntryListWrapper = new AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>>(mEntryList, e);
-        } catch (KeyServer.QueryException e) {
-            mEntryListWrapper = new AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>>(mEntryList, e);
-        } catch (KeyServer.TooManyResponses e) {
+        } catch (KeyServer.QueryNeedsRepairException e) {
             mEntryListWrapper = new AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>>(mEntryList, e);
         }
-
     }
-
 }
