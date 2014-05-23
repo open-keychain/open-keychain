@@ -292,6 +292,8 @@ public class ImportKeysListFragment extends ListFragment implements
                 } else if (error instanceof Keyserver.TooManyResponsesException) {
                     AppMsg.makeText(getActivity(), R.string.error_keyserver_too_many_responses,
                             AppMsg.STYLE_ALERT).show();
+                } else if (error instanceof Keyserver.QueryException) {
+                    Log.d(Constants.TAG, "Key server query failed: " + error.getLocalizedMessage());
                 }
                 break;
 
