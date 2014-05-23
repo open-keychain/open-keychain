@@ -331,15 +331,14 @@ public class PgpKeyOperation {
         }
 
         PGPSecretKeyRing secretKeyRing = keyGen.generateSecretKeyRing();
-        PGPPublicKeyRing publicKeyRing = keyGen.generatePublicKeyRing();
 
-        return new UncachedKeyRing(publicKeyRing, secretKeyRing);
+        return new UncachedKeyRing(secretKeyRing);
 
     }
 
-    public UncachedKeyRing buildSecretKey(WrappedSecretKeyRing wmKR,
-                                          WrappedPublicKeyRing wpKR,
-                                          SaveKeyringParcel saveParcel)
+    public Pair<UncachedKeyRing, UncachedKeyRing> buildSecretKey(WrappedSecretKeyRing wmKR,
+                                                                 WrappedPublicKeyRing wpKR,
+                                                                 SaveKeyringParcel saveParcel)
             throws PgpGeneralMsgIdException, PGPException, SignatureException, IOException {
 
         PGPSecretKeyRing mKR = wmKR.getRing();
@@ -664,7 +663,8 @@ public class PgpKeyOperation {
 
         */
 
-        return new UncachedKeyRing(pKR, mKR);
+        return new Pair<UncachedKeyRing,UncachedKeyRing>(new UncachedKeyRing(pKR),
+                                                         new UncachedKeyRing(mKR));
 
     }
 

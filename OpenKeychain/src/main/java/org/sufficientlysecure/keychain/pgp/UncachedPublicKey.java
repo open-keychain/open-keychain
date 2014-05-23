@@ -1,14 +1,19 @@
 package org.sufficientlysecure.keychain.pgp;
 
+import org.spongycastle.bcpg.SignatureSubpacketTags;
 import org.spongycastle.bcpg.sig.KeyFlags;
 import org.spongycastle.openpgp.PGPPublicKey;
 import org.spongycastle.openpgp.PGPSignature;
 import org.spongycastle.openpgp.PGPSignatureSubpacketVector;
+import org.spongycastle.openpgp.operator.jcajce.JcaPGPContentVerifierBuilderProvider;
+import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.util.IterableIterator;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.List;
 
 public class UncachedPublicKey {
     protected final PGPPublicKey mPublicKey;
@@ -22,7 +27,8 @@ public class UncachedPublicKey {
         return mPublicKey.getKeyID();
     }
 
-    public boolean isRevoked() {
+    /** The revocation signature is NOT checked here, so this may be false! */
+    public boolean maybeRevoked() {
         return mPublicKey.isRevoked();
     }
 
@@ -58,6 +64,34 @@ public class UncachedPublicKey {
 
     public int getAlgorithm() {
         return mPublicKey.getAlgorithm();
+    }
+
+    public int getBitStrength() {
+        return mPublicKey.getBitStrength();
+    }
+
+    public String getPrimaryUserId() {
+        List<String> userIds = new ArrayList<String>();
+        for (String userId : new IterableIterator<String>(mPublicKey.getUserIDs())) {
+            userIds.add(userId);
+            for (PGPSignature sig : new IterableIterator<PGPSignature>(mPublicKey.getSignaturesForID(userId))) {
+                if (sig.getHashedSubPackets() != null
+                        && sig.getHashedSubPackets().hasSubpacket(SignatureSubpacketTags.PRIMARY_USER_ID)) {
+                    try {
+                        // make sure it's actually valid
+                        sig.init(new JcaPGPContentVerifierBuilderProvider().setProvider(
+                                Constants.BOUNCY_CASTLE_PROVIDER_NAME), mPublicKey);
+                        if (sig.verifyCertification(userId, mPublicKey)) {
+                            return userId;
+                        }
+                    } catch (Exception e) {
+                        // nothing bad happens, the key is just not considered the primary key id
+                    }
+                }
+
+            }
+        }
+        return null;
     }
 
     public boolean isElGamalEncrypt() {

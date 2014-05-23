@@ -33,30 +33,4 @@ public class WrappedPublicKey extends UncachedPublicKey {
         return  new JcePublicKeyKeyEncryptionMethodGenerator(mPublicKey);
     }
 
-    public void initSignature(PGPSignature sig) throws PGPException {
-        JcaPGPContentVerifierBuilderProvider contentVerifierBuilderProvider =
-                new JcaPGPContentVerifierBuilderProvider()
-                        .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME);
-        sig.init(contentVerifierBuilderProvider, mPublicKey);
-    }
-
-    public void initSignature(PGPOnePassSignature sig) throws PGPException {
-        JcaPGPContentVerifierBuilderProvider contentVerifierBuilderProvider =
-                new JcaPGPContentVerifierBuilderProvider()
-                        .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME);
-        sig.init(contentVerifierBuilderProvider, mPublicKey);
-    }
-
-    /** Verify a signature for this pubkey, after it has been initialized by the signer using
-     * initSignature(). This method should probably move into a wrapped PGPSignature class
-     * at some point.
-     */
-    public boolean verifySignature(PGPSignature sig, String uid) throws PGPException {
-        try {
-            return sig.verifyCertification(uid, mPublicKey);
-        } catch (SignatureException e) {
-            throw new PGPException("Error!", e);
-        }
-    }
-
 }

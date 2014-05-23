@@ -21,15 +21,10 @@ import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import org.spongycastle.bcpg.SignatureSubpacketTags;
-import org.spongycastle.openpgp.PGPKeyRing;
-import org.spongycastle.openpgp.PGPPublicKey;
-import org.spongycastle.openpgp.PGPSecretKeyRing;
-import org.spongycastle.openpgp.PGPSignature;
-import org.spongycastle.openpgp.operator.jcajce.JcaPGPContentVerifierBuilderProvider;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
-import org.sufficientlysecure.keychain.util.IterableIterator;
+import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
+import org.sufficientlysecure.keychain.pgp.UncachedPublicKey;
 import org.sufficientlysecure.keychain.util.Log;
 
 import java.io.IOException;
@@ -233,10 +228,12 @@ public class ImportKeysListEntry implements Serializable, Parcelable {
      * Constructor based on key object, used for import from NFC, QR Codes, files
      */
     @SuppressWarnings("unchecked")
-    public ImportKeysListEntry(Context context, PGPKeyRing pgpKeyRing) {
+    public ImportKeysListEntry(Context context, UncachedKeyRing ring) {
+        // TODO less bouncy castle objects!
+
         // save actual key object into entry, used to import it later
         try {
-            this.mBytes = pgpKeyRing.getEncoded();
+            this.mBytes = ring.getEncoded();
         } catch (IOException e) {
             Log.e(Constants.TAG, "IOException on pgpKeyRing.getEncoded()", e);
         }
@@ -244,42 +241,20 @@ public class ImportKeysListEntry implements Serializable, Parcelable {
         // selected is default
         this.mSelected = true;
 
-        if (pgpKeyRing instanceof PGPSecretKeyRing) {
-            secretKey = true;
-        } else {
-            secretKey = false;
-        }
-        PGPPublicKey key = pgpKeyRing.getPublicKey();
+        secretKey = ring.isSecret();
+        UncachedPublicKey key = ring.getPublicKey();
 
-        userIds = new ArrayList<String>();
-        for (String userId : new IterableIterator<String>(key.getUserIDs())) {
-            userIds.add(userId);
-            for (PGPSignature sig : new IterableIterator<PGPSignature>(key.getSignaturesForID(userId))) {
-                if (sig.getHashedSubPackets() != null
-                        && sig.getHashedSubPackets().hasSubpacket(SignatureSubpacketTags.PRIMARY_USER_ID)) {
-                    try {
-                        // make sure it's actually valid
-                        sig.init(new JcaPGPContentVerifierBuilderProvider().setProvider(
-                                Constants.BOUNCY_CASTLE_PROVIDER_NAME), key);
-                        if (sig.verifyCertification(userId, key)) {
-                            mPrimaryUserId = userId;
-                        }
-                    } catch (Exception e) {
-                        // nothing bad happens, the key is just not considered the primary key id
-                    }
-                }
+        mPrimaryUserId = key.getPrimaryUserId();
 
-            }
-        }
         // if there was no user id flagged as primary, use the first one
         if (mPrimaryUserId == null) {
             mPrimaryUserId = userIds.get(0);
         }
 
-        this.keyId = key.getKeyID();
+        this.keyId = key.getKeyId();
         this.keyIdHex = PgpKeyHelper.convertKeyIdToHex(keyId);
 
-        this.revoked = key.isRevoked();
+        this.revoked = key.maybeRevoked();
         this.fingerprintHex = PgpKeyHelper.convertFingerprintToHex(key.getFingerprint());
         this.bitStrength = key.getBitStrength();
         final int algorithm = key.getAlgorithm();

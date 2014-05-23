@@ -165,7 +165,8 @@ public class PgpImportExport {
                             }
                             newPubRing = PGPPublicKeyRing.insertPublicKey(newPubRing, key);
                         }
-                        status = storeKeyRingInCache(new UncachedKeyRing(newPubRing ,secretKeyRing));
+                        status = storeKeyRingInCache(new UncachedKeyRing(newPubRing),
+                                                     new UncachedKeyRing(secretKeyRing));
                     } else {
                         status = storeKeyRingInCache(new UncachedKeyRing((PGPPublicKeyRing) keyring));
                     }
@@ -278,15 +279,23 @@ public class PgpImportExport {
         return returnData;
     }
 
+    public int storeKeyRingInCache(UncachedKeyRing ring) {
+        return storeKeyRingInCache(ring, null);
+    }
+
     @SuppressWarnings("unchecked")
-    public int storeKeyRingInCache(UncachedKeyRing keyring) {
+    public int storeKeyRingInCache(UncachedKeyRing ring, UncachedKeyRing secretRing) {
         int status;
         try {
-            PGPSecretKeyRing secretKeyRing = keyring.getSecretRing();
-            PGPPublicKeyRing publicKeyRing = keyring.getPublicRing();
+            // TODO make sure these are correctly typed!
+            PGPPublicKeyRing publicKeyRing = (PGPPublicKeyRing) ring.getRing();
+            PGPSecretKeyRing secretKeyRing = null;
+            if(secretRing != null) {
+                secretKeyRing = (PGPSecretKeyRing) secretRing.getRing();
+            }
             // see what type we have. we can either have a secret + public keyring, or just public
             if (secretKeyRing != null) {
-                mProviderHelper.saveKeyRing(publicKeyRing, secretKeyRing);
+                mProviderHelper.saveKeyRing(ring, secretRing);
                 status = RETURN_OK;
             } else {
                 mProviderHelper.saveKeyRing(publicKeyRing);

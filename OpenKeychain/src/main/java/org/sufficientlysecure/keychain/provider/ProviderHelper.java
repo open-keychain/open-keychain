@@ -449,24 +449,23 @@ public class ProviderHelper {
 
     }
 
-    public void saveKeyRing(UncachedKeyRing wrappedRing) throws IOException {
-        PGPPublicKeyRing pubRing = wrappedRing.getPublicRing();
-        PGPSecretKeyRing secRing = wrappedRing.getSecretRing();
-        saveKeyRing(pubRing, secRing);
+    public void saveKeyRing(UncachedKeyRing ring) throws IOException {
+        PGPPublicKeyRing pubRing = (PGPPublicKeyRing) ring.getRing();
+        saveKeyRing(pubRing);
     }
 
     /**
      * Saves (or updates) a pair of public and secret KeyRings in the database
      */
-    public void saveKeyRing(PGPPublicKeyRing pubRing, PGPSecretKeyRing privRing) throws IOException {
-        long masterKeyId = pubRing.getPublicKey().getKeyID();
+    public void saveKeyRing(UncachedKeyRing pubRing, UncachedKeyRing secRing) throws IOException {
+        long masterKeyId = pubRing.getPublicKey().getKeyId();
 
         // delete secret keyring (so it isn't unnecessarily saved by public-saveKeyRing below)
         mContentResolver.delete(KeyRingData.buildSecretKeyRingUri(Long.toString(masterKeyId)), null, null);
 
         // save public keyring
-        saveKeyRing(pubRing);
-        saveKeyRing(privRing);
+        saveKeyRing((PGPPublicKeyRing) pubRing.getRing());
+        saveKeyRing((PGPSecretKeyRing) secRing.getRing());
     }
 
     /**
