@@ -166,12 +166,12 @@ public class HkpKeyserver extends Keyserver {
         mPort = port;
     }
 
-    private String query(String request) throws QueryException, HttpError {
+    private String query(String request) throws QueryFailedException, HttpError {
         InetAddress ips[];
         try {
             ips = InetAddress.getAllByName(mHost);
         } catch (UnknownHostException e) {
-            throw new QueryException(e.toString());
+            throw new QueryFailedException(e.toString());
         }
         for (int i = 0; i < ips.length; ++i) {
             try {
@@ -196,11 +196,11 @@ public class HkpKeyserver extends Keyserver {
             }
         }
 
-        throw new QueryException("querying server(s) for '" + mHost + "' failed");
+        throw new QueryFailedException("querying server(s) for '" + mHost + "' failed");
     }
 
     @Override
-    public ArrayList<ImportKeysListEntry> search(String query) throws QueryException,
+    public ArrayList<ImportKeysListEntry> search(String query) throws QueryFailedException,
             QueryNeedsRepairException {
         ArrayList<ImportKeysListEntry> results = new ArrayList<ImportKeysListEntry>();
 
@@ -231,7 +231,7 @@ public class HkpKeyserver extends Keyserver {
                     throw new QueryTooShortException();
                 }
             }
-            throw new QueryException("querying server(s) for '" + mHost + "' failed");
+            throw new QueryFailedException("querying server(s) for '" + mHost + "' failed");
         }
 
         final Matcher matcher = PUB_KEY_LINE.matcher(data);
@@ -287,7 +287,7 @@ public class HkpKeyserver extends Keyserver {
     }
 
     @Override
-    public String get(String keyIdHex) throws QueryException {
+    public String get(String keyIdHex) throws QueryFailedException {
         HttpClient client = new DefaultHttpClient();
         try {
             String query = "http://" + mHost + ":" + mPort +
@@ -296,7 +296,7 @@ public class HkpKeyserver extends Keyserver {
             HttpGet get = new HttpGet(query);
             HttpResponse response = client.execute(get);
             if (response.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
-                throw new QueryException("not found");
+                throw new QueryFailedException("not found");
             }
 
             HttpEntity entity = response.getEntity();

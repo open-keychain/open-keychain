@@ -116,7 +116,7 @@ public class ImportKeysListServerLoader
                 mEntryList.addAll(searchResult);
             }
             mEntryListWrapper = new AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>>(mEntryList, null);
-        } catch (Keyserver.QueryException e) {
+        } catch (Keyserver.QueryFailedException e) {
             mEntryListWrapper = new AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>>(mEntryList, e);
         } catch (Keyserver.QueryNeedsRepairException e) {
             mEntryListWrapper = new AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>>(mEntryList, e);
