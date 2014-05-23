@@ -35,6 +35,7 @@ import org.spongycastle.openpgp.PGPUtil;
 import org.spongycastle.openpgp.operator.PBEDataDecryptorFactory;
 import org.spongycastle.openpgp.operator.PGPDigestCalculatorProvider;
 import org.spongycastle.openpgp.operator.PublicKeyDataDecryptorFactory;
+import org.spongycastle.openpgp.operator.jcajce.JcaPGPContentVerifierBuilderProvider;
 import org.spongycastle.openpgp.operator.jcajce.JcaPGPDigestCalculatorProviderBuilder;
 import org.spongycastle.openpgp.operator.jcajce.JcePBEDataDecryptorFactoryBuilder;
 import org.sufficientlysecure.keychain.Constants;
@@ -417,7 +418,10 @@ public class PgpDecryptVerify {
                 }
                 signatureResultBuilder.signatureKeyCertified(signingRing.getVerified() > 0);
 
-                signingKey.initSignature(signature);
+                JcaPGPContentVerifierBuilderProvider contentVerifierBuilderProvider =
+                        new JcaPGPContentVerifierBuilderProvider()
+                                .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME);
+                signature.init(contentVerifierBuilderProvider, signingKey.getPublicKey());
             } else {
                 // no key in our database -> return "unknown pub key" status including the first key id
                 if (!sigList.isEmpty()) {
@@ -604,7 +608,10 @@ public class PgpDecryptVerify {
             }
             signatureResultBuilder.signatureKeyCertified(signingRing.getVerified() > 0);
 
-            signingKey.initSignature(signature);
+            JcaPGPContentVerifierBuilderProvider contentVerifierBuilderProvider =
+                    new JcaPGPContentVerifierBuilderProvider()
+                            .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME);
+            signature.init(contentVerifierBuilderProvider, signingKey.getPublicKey());
         } else {
             // no key in our database -> return "unknown pub key" status including the first key id
             if (!sigList.isEmpty()) {
