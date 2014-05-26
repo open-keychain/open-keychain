@@ -19,7 +19,10 @@ package org.sufficientlysecure.keychain.helper;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
+import android.content.ContentResolver;
 import android.content.Context;
+import android.database.Cursor;
+import android.provider.ContactsContract;
 import android.util.Patterns;
 
 import java.util.ArrayList;
@@ -38,5 +41,23 @@ public class ContactHelper {
             }
         }
         return new ArrayList<String>(emailSet);
+    }
+
+    public static List<String> getContactMails(Context context) {
+        ContentResolver resolver = context.getContentResolver();
+        Cursor mailCursor = resolver.query(ContactsContract.CommonDataKinds.Email.CONTENT_URI,
+                new String[]{ContactsContract.CommonDataKinds.Email.DATA},
+                null, null, null);
+        if (mailCursor == null) return null;
+
+        Set<String> mails = new HashSet<String>();
+        while (mailCursor.moveToNext()) {
+            String email = mailCursor.getString(0);
+            if (email != null) {
+                mails.add(email);
+            }
+        }
+        mailCursor.close();
+        return new ArrayList<String>(mails);
     }
 }
