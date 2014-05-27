@@ -87,6 +87,7 @@ public class KeybaseKeyserver extends Keyserver {
 
         final ImportKeysListEntry entry = new ImportKeysListEntry();
         entry.setQuery(mQuery);
+        entry.setOrigin("keybase.io");
 
         String keybaseId = JWalk.getString(match, "components", "username", "val");
         String fullName = JWalk.getString(match, "components", "full_name", "val");

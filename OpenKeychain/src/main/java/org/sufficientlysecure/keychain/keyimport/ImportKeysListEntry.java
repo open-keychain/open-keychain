@@ -52,6 +52,7 @@ public class ImportKeysListEntry implements Serializable, Parcelable {
     public String mPrimaryUserId;
     private String mExtraData;
     private String mQuery;
+    private String mOrigin;
 
     private boolean mSelected;
 
@@ -77,6 +78,7 @@ public class ImportKeysListEntry implements Serializable, Parcelable {
         dest.writeInt(mBytes.length);
         dest.writeByteArray(mBytes);
         dest.writeString(mExtraData);
+        dest.writeString(mOrigin);
     }
 
     public static final Creator<ImportKeysListEntry> CREATOR = new Creator<ImportKeysListEntry>() {
@@ -97,6 +99,7 @@ public class ImportKeysListEntry implements Serializable, Parcelable {
             vr.mBytes = new byte[source.readInt()];
             source.readByteArray(vr.mBytes);
             vr.mExtraData = source.readString();
+            vr.mOrigin = source.readString();
 
             return vr;
         }
@@ -216,6 +219,14 @@ public class ImportKeysListEntry implements Serializable, Parcelable {
 
     public void setQuery(String query) {
         mQuery = query;
+    }
+
+    public String getOrigin() {
+        return mOrigin;
+    }
+
+    public void setOrigin(String origin) {
+        mOrigin = origin;
     }
 
     /**
