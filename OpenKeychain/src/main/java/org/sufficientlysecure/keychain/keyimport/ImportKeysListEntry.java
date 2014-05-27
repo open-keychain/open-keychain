@@ -229,8 +229,6 @@ public class ImportKeysListEntry implements Serializable, Parcelable {
      */
     @SuppressWarnings("unchecked")
     public ImportKeysListEntry(Context context, UncachedKeyRing ring) {
-        // TODO less bouncy castle objects!
-
         // save actual key object into entry, used to import it later
         try {
             this.mBytes = ring.getEncoded();
@@ -245,6 +243,7 @@ public class ImportKeysListEntry implements Serializable, Parcelable {
         UncachedPublicKey key = ring.getPublicKey();
 
         mPrimaryUserId = key.getPrimaryUserId();
+        userIds = key.getUnorderedUserIds();
 
         // if there was no user id flagged as primary, use the first one
         if (mPrimaryUserId == null) {

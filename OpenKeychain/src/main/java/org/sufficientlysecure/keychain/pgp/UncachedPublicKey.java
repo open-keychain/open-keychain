@@ -71,9 +71,7 @@ public class UncachedPublicKey {
     }
 
     public String getPrimaryUserId() {
-        List<String> userIds = new ArrayList<String>();
         for (String userId : new IterableIterator<String>(mPublicKey.getUserIDs())) {
-            userIds.add(userId);
             for (PGPSignature sig : new IterableIterator<PGPSignature>(mPublicKey.getSignaturesForID(userId))) {
                 if (sig.getHashedSubPackets() != null
                         && sig.getHashedSubPackets().hasSubpacket(SignatureSubpacketTags.PRIMARY_USER_ID)) {
@@ -92,6 +90,14 @@ public class UncachedPublicKey {
             }
         }
         return null;
+    }
+
+    public ArrayList<String> getUnorderedUserIds() {
+        ArrayList<String> userIds = new ArrayList<String>();
+        for (String userId : new IterableIterator<String>(mPublicKey.getUserIDs())) {
+            userIds.add(userId);
+        }
+        return userIds;
     }
 
     public boolean isElGamalEncrypt() {
