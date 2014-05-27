@@ -33,6 +33,10 @@ import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.pgp.PgpHelper;
 import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
 import org.sufficientlysecure.keychain.util.Log;
+import org.xbill.DNS.Lookup;
+import org.xbill.DNS.Record;
+import org.xbill.DNS.SRVRecord;
+import org.xbill.DNS.Type;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -45,6 +49,8 @@ import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Locale;
@@ -335,5 +341,37 @@ public class HkpKeyserver extends Keyserver {
         } finally {
             client.getConnectionManager().shutdown();
         }
+    }
+
+    @Override
+    public String toString() {
+        return mHost + ":" + mPort;
+    }
+
+    /**
+     * Tries to find a server responsible for a given domain
+     *
+     * @return A responsible Keyserver or null if not found.
+     */
+    public static HkpKeyserver resolve(String domain) {
+        try {
+            Record[] records = new Lookup("_hkp._tcp." + domain, Type.SRV).run();
+            if (records.length > 0) {
+                Arrays.sort(records, new Comparator<Record>() {
+                    @Override
+                    public int compare(Record lhs, Record rhs) {
+                        if (!(lhs instanceof SRVRecord)) return 1;
+                        if (!(rhs instanceof SRVRecord)) return -1;
+                        return ((SRVRecord) lhs).getPriority() - ((SRVRecord) rhs).getPriority();
+                    }
+                });
+                Record record = records[0]; // This is our best choice
+                if (record instanceof SRVRecord) {
+                    return new HkpKeyserver(((SRVRecord) record).getTarget().toString(), (short) ((SRVRecord) record).getPort());
+                }
+            }
+        } catch (Exception ignored) {
+        }
+        return null;
     }
 }

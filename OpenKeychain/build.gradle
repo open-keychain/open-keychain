@@ -10,6 +10,7 @@ sourceSets {
 dependencies {
     compile 'com.android.support:support-v4:19.1.0'
     compile 'com.android.support:appcompat-v7:19.1.0'
+    compile 'dnsjava:dnsjava:2.1.1'
     compile project(':extern:openpgp-api-lib')
     compile project(':extern:openkeychain-api-lib')
     compile project(':extern:html-textview')
