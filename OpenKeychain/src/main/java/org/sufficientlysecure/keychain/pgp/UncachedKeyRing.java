@@ -1,13 +1,16 @@
 package org.sufficientlysecure.keychain.pgp;
 
 import org.spongycastle.bcpg.ArmoredOutputStream;
+import org.spongycastle.bcpg.S2K;
 import org.spongycastle.openpgp.PGPKeyRing;
 import org.spongycastle.openpgp.PGPObjectFactory;
 import org.spongycastle.openpgp.PGPPublicKey;
+import org.spongycastle.openpgp.PGPSecretKey;
 import org.spongycastle.openpgp.PGPSecretKeyRing;
 import org.spongycastle.openpgp.PGPUtil;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
+import org.sufficientlysecure.keychain.util.IterableIterator;
 import org.sufficientlysecure.keychain.util.Log;
 
 import java.io.BufferedInputStream;
@@ -15,6 +18,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
@@ -70,7 +74,7 @@ public class UncachedKeyRing {
         return mRing.getPublicKey().getFingerprint();
     }
 
-    public static UncachedKeyRing decodePubkeyFromData(byte[] data)
+    public static UncachedKeyRing decodePublicFromData(byte[] data)
             throws PgpGeneralException, IOException {
         UncachedKeyRing ring = decodeFromData(data);
         if(ring.isSecret()) {
@@ -90,7 +94,6 @@ public class UncachedKeyRing {
             // get first object in block
             Object obj;
             if ((obj = objectFactory.nextObject()) != null && obj instanceof PGPKeyRing) {
-                // the constructor will take care of the public/secret part
                 return new UncachedKeyRing((PGPKeyRing) obj);
             } else {
                 throw new PgpGeneralException("Object not recognized as PGPKeyRing!");
@@ -126,6 +129,25 @@ public class UncachedKeyRing {
         aos.setHeader("Version", version);
         aos.write(mRing.getEncoded());
         aos.close();
+    }
+
+    public ArrayList<Long> getAvailableSubkeys() {
+        if(!isSecret()) {
+            throw new RuntimeException("Tried to find available subkeys from non-secret keys. " +
+                    "This is a programming error and should never happen!");
+        }
+
+        ArrayList<Long> result = new ArrayList<Long>();
+        // then, mark exactly the keys we have available
+        for (PGPSecretKey sub : new IterableIterator<PGPSecretKey>(
+                ((PGPSecretKeyRing) mRing).getSecretKeys())) {
+            S2K s2k = sub.getS2K();
+            // Set to 1, except if the encryption type is GNU_DUMMY_S2K
+            if(s2k == null || s2k.getType() != S2K.GNU_DUMMY_S2K) {
+                result.add(sub.getKeyID());
+            }
+        }
+        return result;
     }
 
 }

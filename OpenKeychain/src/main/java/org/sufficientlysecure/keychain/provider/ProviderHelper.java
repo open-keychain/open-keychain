@@ -35,7 +35,6 @@ import org.sufficientlysecure.keychain.pgp.WrappedPublicKeyRing;
 import org.sufficientlysecure.keychain.pgp.PgpHelper;
 import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
-import org.sufficientlysecure.keychain.pgp.UncachedSecretKeyRing;
 import org.sufficientlysecure.keychain.pgp.WrappedSignature;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.provider.KeychainContract.ApiApps;
@@ -151,7 +150,7 @@ public class ProviderHelper {
                 if (data != null) {
                     try {
                         result.put(masterKeyId,
-                                UncachedKeyRing.decodePubkeyFromData(data).getPublicKey());
+                                UncachedKeyRing.decodePublicFromData(data).getPublicKey());
                     } catch(PgpGeneralException e) {
                         Log.e(Constants.TAG, "Error parsing keyring, skipping.");
                     } catch(IOException e) {
@@ -221,12 +220,12 @@ public class ProviderHelper {
      * Saves PGPPublicKeyRing with its keys and userIds in DB
      */
     @SuppressWarnings("unchecked")
-    public void saveKeyRing(UncachedKeyRing keyRing) throws IOException {
+    public void savePublicKeyRing(UncachedKeyRing keyRing) throws IOException {
         UncachedPublicKey masterKey = keyRing.getPublicKey();
         long masterKeyId = masterKey.getKeyId();
 
         // IF there is a secret key, preserve it!
-        UncachedSecretKeyRing secretRing = null;
+        UncachedKeyRing secretRing = null;
         try {
             secretRing = getWrappedSecretKeyRing(masterKeyId).getUncached();
         } catch (NotFoundException e) {
@@ -343,7 +342,7 @@ public class ProviderHelper {
 
         // Save the saved keyring (if any)
         if (secretRing != null) {
-            saveKeyRing(secretRing);
+            saveSecretKeyRing(secretRing);
         }
 
     }
@@ -373,7 +372,7 @@ public class ProviderHelper {
      * Saves a PGPSecretKeyRing in the DB. This will only work if a corresponding public keyring
      * is already in the database!
      */
-    public void saveKeyRing(UncachedSecretKeyRing keyRing) throws IOException {
+    public void saveSecretKeyRing(UncachedKeyRing keyRing) throws IOException {
         long masterKeyId = keyRing.getMasterKeyId();
 
         {
@@ -413,12 +412,12 @@ public class ProviderHelper {
     public void saveKeyRing(UncachedKeyRing pubRing, UncachedKeyRing secRing) throws IOException {
         long masterKeyId = pubRing.getPublicKey().getKeyId();
 
-        // delete secret keyring (so it isn't unnecessarily saved by public-saveKeyRing below)
+        // delete secret keyring (so it isn't unnecessarily saved by public-savePublicKeyRing below)
         mContentResolver.delete(KeyRingData.buildSecretKeyRingUri(Long.toString(masterKeyId)), null, null);
 
         // save public keyring
-        saveKeyRing(pubRing);
-        saveKeyRing(secRing);
+        savePublicKeyRing(pubRing);
+        savePublicKeyRing(secRing);
     }
 
     /**

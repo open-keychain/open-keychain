@@ -45,7 +45,6 @@ import org.sufficientlysecure.keychain.pgp.PgpKeyOperation;
 import org.sufficientlysecure.keychain.pgp.PgpSignEncrypt;
 import org.sufficientlysecure.keychain.pgp.Progressable;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
-import org.sufficientlysecure.keychain.pgp.UncachedSecretKeyRing;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralMsgIdException;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
@@ -514,10 +513,10 @@ public class KeychainIntentService extends IntentService
                 if (!canSign) {
                     setProgress(R.string.progress_building_key, 0, 100);
                     WrappedSecretKeyRing keyRing = providerHelper.getWrappedSecretKeyRing(masterKeyId);
-                    UncachedSecretKeyRing newKeyRing =
+                    UncachedKeyRing newKeyRing =
                             keyRing.changeSecretKeyPassphrase(oldPassphrase, newPassphrase);
                     setProgress(R.string.progress_saving_key_ring, 50, 100);
-                    providerHelper.saveKeyRing(newKeyRing);
+                    providerHelper.saveSecretKeyRing(newKeyRing);
                     setProgress(R.string.progress_done, 100, 100);
                 } else {
                     PgpKeyOperation keyOperations = new PgpKeyOperation(new ProgressScaler(this, 0, 90, 100));
@@ -533,7 +532,7 @@ public class KeychainIntentService extends IntentService
                         UncachedKeyRing ring = keyOperations.buildNewSecretKey(saveParcel); //new Keyring
                         // save the pair
                         setProgress(R.string.progress_saving_key_ring, 90, 100);
-                        providerHelper.saveKeyRing(ring);
+                        providerHelper.savePublicKeyRing(ring);
                     }
 
                     setProgress(R.string.progress_done, 100, 100);
@@ -795,7 +794,7 @@ public class KeychainIntentService extends IntentService
 
                     // create PGPKeyRing object based on downloaded armored key
                     UncachedKeyRing downloadedKey =
-                            UncachedKeyRing.decodePubkeyFromData(downloadedKeyBytes);
+                            UncachedKeyRing.decodePublicFromData(downloadedKeyBytes);
 
                     // verify downloaded key by comparing fingerprints
                     if (entry.getFingerprintHex() != null) {

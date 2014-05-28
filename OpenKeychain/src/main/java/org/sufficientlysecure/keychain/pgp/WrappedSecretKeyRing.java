@@ -1,7 +1,10 @@
 package org.sufficientlysecure.keychain.pgp;
 
 import org.spongycastle.openpgp.PGPException;
+import org.spongycastle.openpgp.PGPKeyRing;
+import org.spongycastle.openpgp.PGPObjectFactory;
 import org.spongycastle.openpgp.PGPPrivateKey;
+import org.spongycastle.openpgp.PGPPublicKeyRing;
 import org.spongycastle.openpgp.PGPSecretKey;
 import org.spongycastle.openpgp.PGPSecretKeyRing;
 import org.spongycastle.openpgp.operator.PBESecretKeyDecryptor;
@@ -11,6 +14,7 @@ import org.spongycastle.openpgp.operator.jcajce.JcePBESecretKeyEncryptorBuilder;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.util.IterableIterator;
+import org.sufficientlysecure.keychain.util.Log;
 
 import java.io.IOException;
 import java.security.NoSuchProviderException;
@@ -23,7 +27,17 @@ public class WrappedSecretKeyRing extends WrappedKeyRing {
     public WrappedSecretKeyRing(byte[] blob, boolean isRevoked, int verified)
     {
         super(isRevoked, verified);
-        mRing = (PGPSecretKeyRing) PgpConversionHelper.BytesToPGPKeyRing(blob);
+        PGPObjectFactory factory = new PGPObjectFactory(blob);
+        PGPKeyRing keyRing = null;
+        try {
+            if ((keyRing = (PGPKeyRing) factory.nextObject()) == null) {
+                Log.e(Constants.TAG, "No keys given!");
+            }
+        } catch (IOException e) {
+            Log.e(Constants.TAG, "Error while converting to PGPKeyRing!", e);
+        }
+
+        mRing = (PGPSecretKeyRing) keyRing;
     }
 
     PGPSecretKeyRing getRing() {
@@ -77,7 +91,7 @@ public class WrappedSecretKeyRing extends WrappedKeyRing {
         }
     }
 
-    public UncachedSecretKeyRing changeSecretKeyPassphrase(String oldPassphrase,
+    public UncachedKeyRing changeSecretKeyPassphrase(String oldPassphrase,
                                                      String newPassphrase)
             throws IOException, PGPException, NoSuchProviderException {
 
@@ -96,7 +110,7 @@ public class WrappedSecretKeyRing extends WrappedKeyRing {
                 new JcePBESecretKeyEncryptorBuilder(mRing.getSecretKey()
                         .getKeyEncryptionAlgorithm()).build(newPassphrase.toCharArray()));
 
-        return new UncachedSecretKeyRing(newKeyRing);
+        return new UncachedKeyRing(newKeyRing);
 
     }
 
@@ -120,8 +134,8 @@ public class WrappedSecretKeyRing extends WrappedKeyRing {
         });
     }
 
-    public UncachedSecretKeyRing getUncached() {
-        return new UncachedSecretKeyRing(mRing);
+    public UncachedKeyRing getUncached() {
+        return new UncachedKeyRing(mRing);
     }
 
 }

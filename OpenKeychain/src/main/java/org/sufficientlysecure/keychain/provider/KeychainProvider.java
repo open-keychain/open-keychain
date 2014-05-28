@@ -621,7 +621,7 @@ public class KeychainProvider extends ContentProvider {
 
                 case KEY_RING_CERTS:
                     // we replace here, keeping only the latest signature
-                    // TODO this would be better handled in saveKeyRing directly!
+                    // TODO this would be better handled in savePublicKeyRing directly!
                     db.replaceOrThrow(Tables.CERTS, null, values);
                     keyId = values.getAsLong(Certs.MASTER_KEY_ID);
                     break;

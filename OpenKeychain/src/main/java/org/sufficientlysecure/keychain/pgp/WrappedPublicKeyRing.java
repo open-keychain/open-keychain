@@ -3,6 +3,8 @@ package org.sufficientlysecure.keychain.pgp;
 import org.spongycastle.bcpg.ArmoredOutputStream;
 import org.spongycastle.bcpg.SignatureSubpacketTags;
 import org.spongycastle.openpgp.PGPException;
+import org.spongycastle.openpgp.PGPKeyRing;
+import org.spongycastle.openpgp.PGPObjectFactory;
 import org.spongycastle.openpgp.PGPPublicKey;
 import org.spongycastle.openpgp.PGPPublicKeyRing;
 import org.spongycastle.openpgp.PGPSignature;
@@ -12,6 +14,7 @@ import org.spongycastle.openpgp.operator.jcajce.JcaPGPContentVerifierBuilderProv
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.util.IterableIterator;
+import org.sufficientlysecure.keychain.util.Log;
 
 import java.io.IOException;
 import java.security.SignatureException;
@@ -30,7 +33,17 @@ public class WrappedPublicKeyRing extends WrappedKeyRing {
 
     PGPPublicKeyRing getRing() {
         if(mRing == null) {
-            mRing = (PGPPublicKeyRing) PgpConversionHelper.BytesToPGPKeyRing(mPubKey);
+            PGPObjectFactory factory = new PGPObjectFactory(mPubKey);
+            PGPKeyRing keyRing = null;
+            try {
+                if ((keyRing = (PGPKeyRing) factory.nextObject()) == null) {
+                    Log.e(Constants.TAG, "No keys given!");
+                }
+            } catch (IOException e) {
+                Log.e(Constants.TAG, "Error while converting to PGPKeyRing!", e);
+            }
+
+            mRing = (PGPPublicKeyRing) keyRing;
         }
         return mRing;
     }

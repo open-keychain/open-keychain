@@ -168,7 +168,7 @@ public class PgpImportExport {
                         status = storeKeyRingInCache(new UncachedKeyRing(newPubRing),
                                                      new UncachedKeyRing(secretKeyRing));
                     } else {
-                        status = storeKeyRingInCache(new UncachedKeyRing((PGPPublicKeyRing) keyring));
+                        status = storeKeyRingInCache(new UncachedKeyRing(keyring));
                     }
 
                     if (status == RETURN_ERROR) {
@@ -288,13 +288,13 @@ public class PgpImportExport {
     public int storeKeyRingInCache(UncachedKeyRing ring, UncachedKeyRing secretRing) {
         int status;
         try {
-            UncachedSecretKeyRing secretKeyRing = null;
+            UncachedKeyRing secretKeyRing = null;
             // see what type we have. we can either have a secret + public keyring, or just public
             if (secretKeyRing != null) {
                 mProviderHelper.saveKeyRing(ring, secretRing);
                 status = RETURN_OK;
             } else {
-                mProviderHelper.saveKeyRing(ring);
+                mProviderHelper.savePublicKeyRing(ring);
                 status = RETURN_OK;
             }
         } catch (IOException e) {
