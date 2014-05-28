@@ -201,15 +201,26 @@ public class HkpKeyserver extends Keyserver {
     }
 
     private String query(String request) throws QueryFailedException, HttpError {
-        InetAddress ips[];
-        try {
-            ips = InetAddress.getAllByName(mHost);
-        } catch (UnknownHostException e) {
-            throw new QueryFailedException(e.toString());
-        }
-        for (int i = 0; i < ips.length; ++i) {
+        List<String> urls = new ArrayList<String>();
+        if (mSecure) {
+            urls.add(getUrlPrefix() + mHost + ":" + mPort + request);
+        } else {
+            InetAddress ips[];
             try {
-                String url = getUrlPrefix() + ips[i].getHostAddress() + ":" + mPort + request;
+                ips = InetAddress.getAllByName(mHost);
+            } catch (UnknownHostException e) {
+                throw new QueryFailedException(e.toString());
+            }
+            for (InetAddress ip : ips) {
+                // Note: This is actually not HTTP 1.1 compliant, as we hide the real "Host" value,
+                //       but Android's HTTPUrlConnection does not support any other way to set
+                //       Socket's remote IP address...
+                urls.add(getUrlPrefix() + ip.getHostAddress() + ":" + mPort + request);
+            }
+        }
+
+        for (String url : urls) {
+            try {
                 Log.d(Constants.TAG, "hkp keyserver query: " + url);
                 URL realUrl = new URL(url);
                 HttpURLConnection conn = (HttpURLConnection) realUrl.openConnection();
@@ -272,7 +283,7 @@ public class HkpKeyserver extends Keyserver {
         while (matcher.find()) {
             final ImportKeysListEntry entry = new ImportKeysListEntry();
             entry.setQuery(query);
-            entry.setOrigin("hkp:" + mHost + ":" + mPort);
+            entry.setOrigin(getUrlPrefix() + mHost + ":" + mPort);
 
             entry.setBitStrength(Integer.parseInt(matcher.group(3)));
 
