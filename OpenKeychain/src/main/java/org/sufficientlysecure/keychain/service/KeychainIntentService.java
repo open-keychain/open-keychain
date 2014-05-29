@@ -796,10 +796,11 @@ public class KeychainIntentService extends IntentService
                 ArrayList<ImportKeysListEntry> entries = data.getParcelableArrayList(DOWNLOAD_KEY_LIST);
                 String keyServer = data.getString(DOWNLOAD_KEY_SERVER);
 
-                // this downloads the keys and places them into the ImportKeysListEntry entries
-                HkpKeyserver server = new HkpKeyserver(keyServer);
-
                 for (ImportKeysListEntry entry : entries) {
+
+                    // this downloads the keys and places them into the ImportKeysListEntry entries
+                    HkpKeyserver server = new HkpKeyserver(entry.getOrigin() != null ? entry.getOrigin() : keyServer);
+
                     // if available use complete fingerprint for get request
                     byte[] downloadedKeyBytes;
                     if (entry.getFingerprintHex() != null) {
