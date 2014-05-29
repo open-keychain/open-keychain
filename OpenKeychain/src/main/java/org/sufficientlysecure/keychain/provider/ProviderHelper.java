@@ -43,6 +43,7 @@ import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.pgp.PgpConversionHelper;
 import org.sufficientlysecure.keychain.pgp.PgpHelper;
 import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
+import org.sufficientlysecure.keychain.pgp.PgpKeyProvider;
 import org.sufficientlysecure.keychain.provider.KeychainContract.ApiApps;
 import org.sufficientlysecure.keychain.provider.KeychainContract.Certs;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRingData;
@@ -66,7 +67,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class ProviderHelper {
+public class ProviderHelper implements PgpKeyProvider {
     private Context mContext;
     private ContentResolver mContentResolver;
 
@@ -759,5 +760,53 @@ public class ProviderHelper {
                 cursor.close();
             }
         }
+    }
+
+    public PGPPublicKeyRing getPublicKeyRingByMasterKeyId(long masterKeyId)
+        throws PgpKeyProvider.NotFoundException {
+        try {
+            return getPGPPublicKeyRing(masterKeyId);
+        } catch (NotFoundException e) {
+            throw new PgpKeyProvider.NotFoundException();
+        }
+    }
+
+    public PGPSecretKeyRing getSecretKeyRingByMasterKeyId(long masterKeyId)
+        throws PgpKeyProvider.NotFoundException {
+        try {
+            return getPGPSecretKeyRing(masterKeyId);
+        } catch (NotFoundException e) {
+            throw new PgpKeyProvider.NotFoundException();
+        }
+    }
+
+    public PGPPublicKeyRing getPublicKeyRingByKeyId(long keyId)
+        throws PgpKeyProvider.NotFoundException {
+        try {
+            return getPGPPublicKeyRingWithKeyId(keyId);
+        } catch (NotFoundException e) {
+            throw new PgpKeyProvider.NotFoundException();
+        }
+    }
+
+    public PGPSecretKeyRing getSecretKeyRingByKeyId(long keyId)
+        throws PgpKeyProvider.NotFoundException {
+        try {
+            return getPGPSecretKeyRingWithKeyId(keyId);
+        } catch (NotFoundException e) {
+            throw new PgpKeyProvider.NotFoundException();
+        }
+    }
+
+    public PGPPublicKey getPublicKeyByKeyId(long keyId)
+        throws PgpKeyProvider.NotFoundException {
+        PGPPublicKeyRing keyRing = getPublicKeyRingByKeyId(keyId);
+        return keyRing.getPublicKey(keyId);
+    }
+
+    public PGPSecretKey getSecretKeyByKeyId(long keyId)
+        throws PgpKeyProvider.NotFoundException {
+        PGPSecretKeyRing keyRing = getSecretKeyRingByKeyId(keyId);
+        return keyRing.getSecretKey(keyId);
     }
 }

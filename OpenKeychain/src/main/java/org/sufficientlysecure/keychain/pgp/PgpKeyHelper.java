@@ -388,6 +388,38 @@ public class PgpKeyHelper {
         return false;
     }
 
+    public static PGPPublicKey getMasterKey(PGPPublicKeyRing keyRing) {
+        for (PGPPublicKey key : new IterableIterator<PGPPublicKey>(keyRing.getPublicKeys())) {
+            if (key.isMasterKey()) {
+                return key;
+            }
+        }
+        return null;
+    }
+
+    public static PGPPublicKey getMasterKey(PGPSecretKeyRing keyRing) {
+        for (PGPPublicKey key : new IterableIterator<PGPPublicKey>(keyRing.getPublicKeys())) {
+            if (key.isMasterKey()) {
+                return key;
+            }
+        }
+        return null;
+    }
+
+    public static String getMainUserId(PGPPublicKeyRing keyRing) {
+        for (String userId : new IterableIterator<String>(getMasterKey(keyRing).getUserIDs())) {
+            return userId;
+        }
+        return null;
+    }
+
+    public static String getMainUserId(PGPSecretKeyRing keyRing) {
+        for (String userId : new IterableIterator<String>(getMasterKey(keyRing).getUserIDs())) {
+            return userId;
+        }
+        return null;
+    }
+
     public static boolean isCertificationKey(PGPSecretKey key) {
         return isCertificationKey(key.getPublicKey());
     }
