@@ -81,6 +81,7 @@ public class HkpKeyserver extends Keyserver {
 
     private String mHost;
     private short mPort;
+    private boolean mSecure;
 
     /**
      * pub:%keyid%:%algo%:%keylen%:%creationdate%:%expirationdate%:%flags%
@@ -147,6 +148,7 @@ public class HkpKeyserver extends Keyserver {
                     Pattern.CASE_INSENSITIVE);
 
     private static final short PORT_DEFAULT = 11371;
+    private static final short PORT_DEFAULT_HKPS = 443;
 
     /**
      * @param hostAndPort may be just
@@ -157,31 +159,68 @@ public class HkpKeyserver extends Keyserver {
     public HkpKeyserver(String hostAndPort) {
         String host = hostAndPort;
         short port = PORT_DEFAULT;
-        final int colonPosition = hostAndPort.lastIndexOf(':');
-        if (colonPosition > 0) {
-            host = hostAndPort.substring(0, colonPosition);
-            final String portStr = hostAndPort.substring(colonPosition + 1);
-            port = Short.decode(portStr);
+        boolean secure = false;
+        String[] parts = hostAndPort.split(":");
+        if (parts.length > 1) {
+            if (!parts[0].contains(".")) { // This is not a domain or ip, so it must be a protocol name
+                if (parts[0].equalsIgnoreCase("hkps") || parts[0].equalsIgnoreCase("https")) {
+                    secure = true;
+                    port = PORT_DEFAULT_HKPS;
+                } else if (!parts[0].equalsIgnoreCase("hkp") && !parts[0].equalsIgnoreCase("http")) {
+                    throw new IllegalArgumentException("Protocol " + parts[0] + " is unknown");
+                }
+                host = parts[1];
+                if (host.startsWith("//")) { // People tend to type https:// and hkps://, so we'll support that as well
+                    host = host.substring(2);
+                }
+                if (parts.length > 2) {
+                    port = Short.decode(parts[2]);
+                }
+            } else {
+                host = parts[0];
+                port = Short.decode(parts[1]);
+            }
         }
         mHost = host;
         mPort = port;
+        mSecure = secure;
     }
 
     public HkpKeyserver(String host, short port) {
+        this(host, port, false);
+    }
+
+    public HkpKeyserver(String host, short port, boolean secure) {
         mHost = host;
         mPort = port;
+        mSecure = secure;
+    }
+
+    private String getUrlPrefix() {
+        return mSecure ? "https://" : "http://";
     }
 
     private String query(String request) throws QueryFailedException, HttpError {
-        InetAddress ips[];
-        try {
-            ips = InetAddress.getAllByName(mHost);
-        } catch (UnknownHostException e) {
-            throw new QueryFailedException(e.toString());
-        }
-        for (int i = 0; i < ips.length; ++i) {
+        List<String> urls = new ArrayList<String>();
+        if (mSecure) {
+            urls.add(getUrlPrefix() + mHost + ":" + mPort + request);
+        } else {
+            InetAddress ips[];
             try {
-                String url = "http://" + ips[i].getHostAddress() + ":" + mPort + request;
+                ips = InetAddress.getAllByName(mHost);
+            } catch (UnknownHostException e) {
+                throw new QueryFailedException(e.toString());
+            }
+            for (InetAddress ip : ips) {
+                // Note: This is actually not HTTP 1.1 compliant, as we hide the real "Host" value,
+                //       but Android's HTTPUrlConnection does not support any other way to set
+                //       Socket's remote IP address...
+                urls.add(getUrlPrefix() + ip.getHostAddress() + ":" + mPort + request);
+            }
+        }
+
+        for (String url : urls) {
+            try {
                 Log.d(Constants.TAG, "hkp keyserver query: " + url);
                 URL realUrl = new URL(url);
                 HttpURLConnection conn = (HttpURLConnection) realUrl.openConnection();
@@ -244,7 +283,7 @@ public class HkpKeyserver extends Keyserver {
         while (matcher.find()) {
             final ImportKeysListEntry entry = new ImportKeysListEntry();
             entry.setQuery(query);
-            entry.setOrigin("hkp:"+mHost+":"+mPort);
+            entry.setOrigin(getUrlPrefix() + mHost + ":" + mPort);
 
             entry.setBitStrength(Integer.parseInt(matcher.group(3)));
 
@@ -297,7 +336,7 @@ public class HkpKeyserver extends Keyserver {
     public String get(String keyIdHex) throws QueryFailedException {
         HttpClient client = new DefaultHttpClient();
         try {
-            String query = "http://" + mHost + ":" + mPort +
+            String query = getUrlPrefix() + mHost + ":" + mPort +
                     "/pks/lookup?op=get&options=mr&search=" + keyIdHex;
             Log.d(Constants.TAG, "hkp keyserver get: " + query);
             HttpGet get = new HttpGet(query);
@@ -326,7 +365,7 @@ public class HkpKeyserver extends Keyserver {
     public void add(String armoredKey) throws AddKeyException {
         HttpClient client = new DefaultHttpClient();
         try {
-            String query = "http://" + mHost + ":" + mPort + "/pks/add";
+            String query = getUrlPrefix() + mHost + ":" + mPort + "/pks/add";
             HttpPost post = new HttpPost(query);
             Log.d(Constants.TAG, "hkp keyserver add: " + query);
             List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
