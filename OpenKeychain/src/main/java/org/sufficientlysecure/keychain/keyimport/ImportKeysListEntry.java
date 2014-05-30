@@ -21,13 +21,10 @@ import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
 import org.sufficientlysecure.keychain.pgp.UncachedPublicKey;
-import org.sufficientlysecure.keychain.util.Log;
 
-import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
@@ -50,8 +47,6 @@ public class ImportKeysListEntry implements Serializable, Parcelable {
 
     private boolean mSelected;
 
-    private byte[] mBytes = new byte[]{};
-
     public int describeContents() {
         return 0;
     }
@@ -69,8 +64,6 @@ public class ImportKeysListEntry implements Serializable, Parcelable {
         dest.writeString(algorithm);
         dest.writeByte((byte) (secretKey ? 1 : 0));
         dest.writeByte((byte) (mSelected ? 1 : 0));
-        dest.writeInt(mBytes.length);
-        dest.writeByteArray(mBytes);
         dest.writeString(mExtraData);
     }
 
@@ -89,8 +82,6 @@ public class ImportKeysListEntry implements Serializable, Parcelable {
             vr.algorithm = source.readString();
             vr.secretKey = source.readByte() == 1;
             vr.mSelected = source.readByte() == 1;
-            vr.mBytes = new byte[source.readInt()];
-            source.readByteArray(vr.mBytes);
             vr.mExtraData = source.readString();
 
             return vr;
@@ -103,14 +94,6 @@ public class ImportKeysListEntry implements Serializable, Parcelable {
 
     public String getKeyIdHex() {
         return keyIdHex;
-    }
-
-    public byte[] getBytes() {
-        return mBytes;
-    }
-
-    public void setBytes(byte[] bytes) {
-        this.mBytes = bytes;
     }
 
     public boolean isSelected() {
@@ -229,13 +212,6 @@ public class ImportKeysListEntry implements Serializable, Parcelable {
      */
     @SuppressWarnings("unchecked")
     public ImportKeysListEntry(Context context, UncachedKeyRing ring) {
-        // save actual key object into entry, used to import it later
-        try {
-            this.mBytes = ring.getEncoded();
-        } catch (IOException e) {
-            Log.e(Constants.TAG, "IOException on pgpKeyRing.getEncoded()", e);
-        }
-
         // selected is default
         this.mSelected = true;
 

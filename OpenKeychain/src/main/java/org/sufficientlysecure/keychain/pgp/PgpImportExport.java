@@ -24,20 +24,14 @@ import android.os.Environment;
 
 import org.spongycastle.bcpg.ArmoredOutputStream;
 import org.spongycastle.openpgp.PGPException;
-import org.spongycastle.openpgp.PGPKeyRing;
-import org.spongycastle.openpgp.PGPPublicKey;
-import org.spongycastle.openpgp.PGPPublicKeyRing;
-import org.spongycastle.openpgp.PGPSecretKeyRing;
-import org.spongycastle.openpgp.operator.jcajce.JcaKeyFingerprintCalculator;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
-import org.sufficientlysecure.keychain.keyimport.ImportKeysListEntry;
 import org.sufficientlysecure.keychain.keyimport.HkpKeyserver;
-import org.sufficientlysecure.keychain.util.IterableIterator;
 import org.sufficientlysecure.keychain.keyimport.Keyserver.AddKeyException;
 import org.sufficientlysecure.keychain.util.Log;
 
@@ -62,7 +56,6 @@ public class PgpImportExport {
     private ProviderHelper mProviderHelper;
 
     public static final int RETURN_OK = 0;
-    public static final int RETURN_ERROR = -1;
     public static final int RETURN_BAD = -2;
     public static final int RETURN_UPDATED = 1;
 
@@ -133,7 +126,7 @@ public class PgpImportExport {
     /**
      * Imports keys from given data. If keyIds is given only those are imported
      */
-    public Bundle importKeyRings(List<ImportKeysListEntry> entries)
+    public Bundle importKeyRings(List<ParcelableKeyRing> entries)
             throws PgpGeneralException, PGPException, IOException {
         Bundle returnData = new Bundle();
 
@@ -144,55 +137,26 @@ public class PgpImportExport {
         int badKeys = 0;
 
         int position = 0;
-        try {
-            for (ImportKeysListEntry entry : entries) {
-                Object obj = PgpConversionHelper.BytesToPGPKeyRing(entry.getBytes());
+        for (ParcelableKeyRing entry : entries) {
+            try {
+                UncachedKeyRing key = entry.getUncachedKeyRing();
 
-                if (obj instanceof PGPKeyRing) {
-                    PGPKeyRing keyring = (PGPKeyRing) obj;
-                    int status;
-                    // TODO Better try to get this one from the db first!
-                    if(keyring instanceof PGPSecretKeyRing) {
-                        PGPSecretKeyRing secretKeyRing = (PGPSecretKeyRing) keyring;
-                        // TODO: preserve certifications
-                        // (http://osdir.com/ml/encryption.bouncy-castle.devel/2007-01/msg00054.html ?)
-                        PGPPublicKeyRing newPubRing = null;
-                        for (PGPPublicKey key : new IterableIterator<PGPPublicKey>(
-                                secretKeyRing.getPublicKeys())) {
-                            if (newPubRing == null) {
-                                newPubRing = new PGPPublicKeyRing(key.getEncoded(),
-                                        new JcaKeyFingerprintCalculator());
-                            }
-                            newPubRing = PGPPublicKeyRing.insertPublicKey(newPubRing, key);
-                        }
-                        status = storeKeyRingInCache(new UncachedKeyRing(newPubRing),
-                                                     new UncachedKeyRing(secretKeyRing));
-                    } else {
-                        status = storeKeyRingInCache(new UncachedKeyRing(keyring));
-                    }
+                mProviderHelper.savePublicKeyRing(key);
+                /*switch(status) {
+                    case RETURN_UPDATED: oldKeys++; break;
+                    case RETURN_OK: newKeys++; break;
+                    case RETURN_BAD: badKeys++; break;
+                }*/
+                // TODO proper import feedback
+                newKeys += 1;
 
-                    if (status == RETURN_ERROR) {
-                        throw new PgpGeneralException(
-                                mContext.getString(R.string.error_saving_keys));
-                    }
-
-                    // update the counts to display to the user at the end
-                    if (status == RETURN_UPDATED) {
-                        ++oldKeys;
-                    } else if (status == RETURN_OK) {
-                        ++newKeys;
-                    } else if (status == RETURN_BAD) {
-                        ++badKeys;
-                    }
-                } else {
-                    Log.e(Constants.TAG, "Object not recognized as PGPKeyRing!");
-                }
-
-                position++;
-                updateProgress(position / entries.size() * 100, 100);
+            } catch (PgpGeneralException e) {
+                Log.e(Constants.TAG, "Encountered bad key on import!", e);
+                ++badKeys;
             }
-        } catch (Exception e) {
-            Log.e(Constants.TAG, "Exception on parsing key file!", e);
+            // update progress
+            position++;
+            updateProgress(position / entries.size() * 100, 100);
         }
 
         returnData.putInt(KeychainIntentService.RESULT_IMPORT_ADDED, newKeys);
@@ -278,30 +242,6 @@ public class PgpImportExport {
         updateProgress(R.string.progress_done, 100, 100);
 
         return returnData;
-    }
-
-    public int storeKeyRingInCache(UncachedKeyRing ring) {
-        return storeKeyRingInCache(ring, null);
-    }
-
-    @SuppressWarnings("unchecked")
-    public int storeKeyRingInCache(UncachedKeyRing ring, UncachedKeyRing secretRing) {
-        int status;
-        try {
-            UncachedKeyRing secretKeyRing = null;
-            // see what type we have. we can either have a secret + public keyring, or just public
-            if (secretKeyRing != null) {
-                mProviderHelper.saveKeyRing(ring, secretRing);
-                status = RETURN_OK;
-            } else {
-                mProviderHelper.savePublicKeyRing(ring);
-                status = RETURN_OK;
-            }
-        } catch (IOException e) {
-            status = RETURN_ERROR;
-        }
-
-        return status;
     }
 
 }

@@ -32,6 +32,7 @@ import org.sufficientlysecure.keychain.helper.FileHelper;
 import org.sufficientlysecure.keychain.helper.OtherHelper;
 import org.sufficientlysecure.keychain.helper.Preferences;
 import org.sufficientlysecure.keychain.keyimport.HkpKeyserver;
+import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
 import org.sufficientlysecure.keychain.pgp.UncachedSecretKey;
 import org.sufficientlysecure.keychain.pgp.WrappedPublicKeyRing;
 import org.sufficientlysecure.keychain.pgp.WrappedSecretKey;
@@ -40,7 +41,6 @@ import org.sufficientlysecure.keychain.pgp.PgpDecryptVerify;
 import org.sufficientlysecure.keychain.pgp.PgpDecryptVerifyResult;
 import org.sufficientlysecure.keychain.pgp.PgpHelper;
 import org.sufficientlysecure.keychain.pgp.PgpImportExport;
-import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
 import org.sufficientlysecure.keychain.pgp.PgpKeyOperation;
 import org.sufficientlysecure.keychain.pgp.PgpSignEncrypt;
 import org.sufficientlysecure.keychain.pgp.Progressable;
@@ -56,7 +56,6 @@ import org.sufficientlysecure.keychain.keyimport.KeybaseKeyserver;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.ProgressScaler;
 
-import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -645,7 +644,7 @@ public class KeychainIntentService extends IntentService
             }
         } else if (ACTION_IMPORT_KEYRING.equals(action)) {
             try {
-                List<ImportKeysListEntry> entries = data.getParcelableArrayList(IMPORT_KEY_LIST);
+                List<ParcelableKeyRing> entries = data.getParcelableArrayList(IMPORT_KEY_LIST);
 
                 PgpImportExport pgpImportExport = new PgpImportExport(this, this);
                 Bundle resultData = pgpImportExport.importKeyRings(entries);
@@ -739,32 +738,21 @@ public class KeychainIntentService extends IntentService
 
             try {
                 KeybaseKeyserver server = new KeybaseKeyserver();
+                ArrayList<ParcelableKeyRing> keyRings = new ArrayList<ParcelableKeyRing>(entries.size());
                 for (ImportKeysListEntry entry : entries) {
                     // the keybase handle is in userId(1)
                     String keybaseId = entry.getExtraData();
                     byte[] downloadedKeyBytes = server.get(keybaseId).getBytes();
 
-                    // create PGPKeyRing object based on downloaded armored key
-                    UncachedKeyRing downloadedKey = null;
-                    BufferedInputStream bufferedInput =
-                            new BufferedInputStream(new ByteArrayInputStream(downloadedKeyBytes));
-                    if (bufferedInput.available() > 0) {
-                        List<UncachedKeyRing> rings = UncachedKeyRing.fromStream(bufferedInput);
-                        if(rings.isEmpty()) {
-                            throw new PgpGeneralException("No keys in result!");
-                        }
-                        downloadedKey = rings.get(0);
-                    }
-
                     // save key bytes in entry object for doing the
                     // actual import afterwards
-                    entry.setBytes(downloadedKey.getEncoded());
+                    keyRings.add(new ParcelableKeyRing(downloadedKeyBytes));
                 }
 
                 Intent importIntent = new Intent(this, KeychainIntentService.class);
                 importIntent.setAction(ACTION_IMPORT_KEYRING);
                 Bundle importData = new Bundle();
-                importData.putParcelableArrayList(IMPORT_KEY_LIST, entries);
+                importData.putParcelableArrayList(IMPORT_KEY_LIST, keyRings);
                 importIntent.putExtra(EXTRA_DATA, importData);
                 importIntent.putExtra(EXTRA_MESSENGER, mMessenger);
 
@@ -778,11 +766,12 @@ public class KeychainIntentService extends IntentService
         } else if (ACTION_DOWNLOAD_AND_IMPORT_KEYS.equals(action)) {
             try {
                 ArrayList<ImportKeysListEntry> entries = data.getParcelableArrayList(DOWNLOAD_KEY_LIST);
-                String keyServer = data.getString(DOWNLOAD_KEY_SERVER);
 
                 // this downloads the keys and places them into the ImportKeysListEntry entries
+                String keyServer = data.getString(DOWNLOAD_KEY_SERVER);
                 HkpKeyserver server = new HkpKeyserver(keyServer);
 
+                ArrayList<ParcelableKeyRing> keyRings = new ArrayList<ParcelableKeyRing>(entries.size());
                 for (ImportKeysListEntry entry : entries) {
                     // if available use complete fingerprint for get request
                     byte[] downloadedKeyBytes;
@@ -792,32 +781,15 @@ public class KeychainIntentService extends IntentService
                         downloadedKeyBytes = server.get(entry.getKeyIdHex()).getBytes();
                     }
 
-                    // create PGPKeyRing object based on downloaded armored key
-                    UncachedKeyRing downloadedKey =
-                            UncachedKeyRing.decodePublicFromData(downloadedKeyBytes);
-
-                    // verify downloaded key by comparing fingerprints
-                    if (entry.getFingerprintHex() != null) {
-                        String downloadedKeyFp = PgpKeyHelper.convertFingerprintToHex(
-                                downloadedKey.getFingerprint());
-                        if (downloadedKeyFp.equals(entry.getFingerprintHex())) {
-                            Log.d(Constants.TAG, "fingerprint of downloaded key is the same as " +
-                                    "the requested fingerprint!");
-                        } else {
-                            throw new PgpGeneralException("fingerprint of downloaded key is " +
-                                    "NOT the same as the requested fingerprint!");
-                        }
-                    }
-
                     // save key bytes in entry object for doing the
                     // actual import afterwards
-                    entry.setBytes(downloadedKeyBytes);
+                    keyRings.add(new ParcelableKeyRing(downloadedKeyBytes, entry.getFingerprintHex()));
                 }
 
                 Intent importIntent = new Intent(this, KeychainIntentService.class);
                 importIntent.setAction(ACTION_IMPORT_KEYRING);
                 Bundle importData = new Bundle();
-                importData.putParcelableArrayList(IMPORT_KEY_LIST, entries);
+                importData.putParcelableArrayList(IMPORT_KEY_LIST, keyRings);
                 importIntent.putExtra(EXTRA_DATA, importData);
                 importIntent.putExtra(EXTRA_MESSENGER, mMessenger);
 
@@ -853,13 +825,9 @@ public class KeychainIntentService extends IntentService
                 UncachedKeyRing newRing = certificationKey.certifyUserIds(publicRing, userIds);
 
                 // store the signed key in our local cache
-                PgpImportExport pgpImportExport = new PgpImportExport(this, null);
-                int retval = pgpImportExport.storeKeyRingInCache(newRing);
-                if (retval != PgpImportExport.RETURN_OK && retval != PgpImportExport.RETURN_UPDATED) {
-                    throw new PgpGeneralException("Failed to store signed key in local cache");
-                }
-
+                providerHelper.savePublicKeyRing(newRing);
                 sendMessageToHandler(KeychainIntentServiceHandler.MESSAGE_OKAY);
+
             } catch (Exception e) {
                 sendErrorToHandler(e);
             }

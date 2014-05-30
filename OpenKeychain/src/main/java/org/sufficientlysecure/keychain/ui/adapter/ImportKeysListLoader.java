@@ -19,9 +19,11 @@ package org.sufficientlysecure.keychain.ui.adapter;
 
 import android.content.Context;
 import android.support.v4.content.AsyncTaskLoader;
+import android.support.v4.util.LongSparseArray;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.keyimport.ImportKeysListEntry;
+import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
 import org.sufficientlysecure.keychain.util.InputData;
 import org.sufficientlysecure.keychain.util.Log;
@@ -54,6 +56,7 @@ public class ImportKeysListLoader
     final InputData mInputData;
 
     ArrayList<ImportKeysListEntry> mData = new ArrayList<ImportKeysListEntry>();
+    LongSparseArray<ParcelableKeyRing> mParcelableRings = new LongSparseArray<ParcelableKeyRing>();
     AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>> mEntryListWrapper;
 
     public ImportKeysListLoader(Context context, InputData inputData) {
@@ -105,6 +108,10 @@ public class ImportKeysListLoader
         super.deliverResult(data);
     }
 
+    public LongSparseArray<ParcelableKeyRing> getParcelableRings() {
+        return mParcelableRings;
+    }
+
     /**
      * Reads all PGPKeyRing objects from input
      *
@@ -129,7 +136,9 @@ public class ImportKeysListLoader
                 // todo deal with non-keyring objects?
                 List<UncachedKeyRing> rings = UncachedKeyRing.fromStream(bufferedInput);
                 for(UncachedKeyRing key : rings) {
-                    addToData(key);
+                    ImportKeysListEntry item = new ImportKeysListEntry(getContext(), key);
+                    mData.add(item);
+                    mParcelableRings.put(key.getMasterKeyId(), new ParcelableKeyRing(key.getEncoded()));
                     isEmpty = false;
                 }
             }
@@ -143,11 +152,6 @@ public class ImportKeysListLoader
             mEntryListWrapper = new AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>>
                     (mData, new FileHasNoContent());
         }
-    }
-
-    private void addToData(UncachedKeyRing keyring) {
-        ImportKeysListEntry item = new ImportKeysListEntry(getContext(), keyring);
-        mData.add(item);
     }
 
 }

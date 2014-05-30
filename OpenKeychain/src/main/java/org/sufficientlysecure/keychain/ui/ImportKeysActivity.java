@@ -42,6 +42,7 @@ import com.devspark.appmsg.AppMsg;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
 import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
 import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
@@ -415,8 +416,8 @@ public class ImportKeysActivity extends ActionBarActivity implements ActionBar.O
             // fill values for this action
             Bundle data = new Bundle();
 
-            // get selected key entries
-            ArrayList<ImportKeysListEntry> selectedEntries = mListFragment.getSelectedData();
+            // get DATA from selected key entries
+            ArrayList<ParcelableKeyRing> selectedEntries = mListFragment.getSelectedData();
             data.putParcelableArrayList(KeychainIntentService.IMPORT_KEY_LIST, selectedEntries);
 
             intent.putExtra(KeychainIntentService.EXTRA_DATA, data);
@@ -442,7 +443,7 @@ public class ImportKeysActivity extends ActionBarActivity implements ActionBar.O
             data.putString(KeychainIntentService.DOWNLOAD_KEY_SERVER, mListFragment.getKeyServer());
 
             // get selected key entries
-            ArrayList<ImportKeysListEntry> selectedEntries = mListFragment.getSelectedData();
+            ArrayList<ImportKeysListEntry> selectedEntries = mListFragment.getSelectedEntries();
             data.putParcelableArrayList(KeychainIntentService.DOWNLOAD_KEY_LIST, selectedEntries);
 
             intent.putExtra(KeychainIntentService.EXTRA_DATA, data);
@@ -466,7 +467,7 @@ public class ImportKeysActivity extends ActionBarActivity implements ActionBar.O
             Bundle data = new Bundle();
 
             // get selected key entries
-            ArrayList<ImportKeysListEntry> selectedEntries = mListFragment.getSelectedData();
+            ArrayList<ImportKeysListEntry> selectedEntries = mListFragment.getSelectedEntries();
             data.putParcelableArrayList(KeychainIntentService.DOWNLOAD_KEY_LIST, selectedEntries);
 
             intent.putExtra(KeychainIntentService.EXTRA_DATA, data);
