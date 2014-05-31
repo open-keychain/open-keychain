@@ -291,9 +291,6 @@
   <string name="error_jelly_bean_needed">Za uporabo storitve NFC Beam potrebujete najmanj Android 4.1!</string>
   <string name="error_nfc_needed">NFC ni na voljo na vaši napravi!</string>
   <string name="error_nothing_import">Ni česa uvoziti!</string>
-  <string name="error_keyserver_insufficient_query">Pomanjkljiva poizvedba na strežniku</string>
-  <string name="error_keyserver_query">Poizvedba na strežniku ni bila uspešna</string>
-  <string name="error_keyserver_too_many_responses">Preveč možnih ključev. Redefinirajte svoje iskanje!</string>
   <string name="error_import_file_no_content">Datoteka nima vsebine</string>
   <string name="error_generic_report_bug">Pripetila se je splošna napaka, prosimo ustvarite poročilo o \'hrošču\'.</string>
   <plurals name="error_import_non_pgp_part">
@@ -403,6 +400,7 @@
   <string name="intent_send_encrypt">Šifriraj z OpenKeychain</string>
   <string name="intent_send_decrypt">Dešifriraj z OpenKeychain</string>
   <!--Remote API-->
+  <string name="api_no_apps">Ni nobene prijavljene aplikacije!\n\nSeznam podprtih aplikacij drugih avtorjev lahko najdete v Pomoči!</string>
   <string name="api_settings_show_info">Pokaži dodatne informacije</string>
   <string name="api_settings_hide_info">Skrij dodatne informacije</string>
   <string name="api_settings_show_advanced">Pokaži napredne nastavitve</string>
@@ -413,6 +411,7 @@
   <string name="api_settings_save">Shrani</string>
   <string name="api_settings_cancel">Prekliči</string>
   <string name="api_settings_revoke">Prekliči dostop</string>
+  <string name="api_settings_start">Zaženi aplikacijo</string>
   <string name="api_settings_delete_account">Izbriši račun</string>
   <string name="api_settings_package_name">Ime paketa</string>
   <string name="api_settings_package_signature">SHA-256 podpisa paketa</string>
