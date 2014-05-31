@@ -520,18 +520,19 @@ public class KeychainIntentService extends IntentService
                 } else {
                     PgpKeyOperation keyOperations = new PgpKeyOperation(new ProgressScaler(this, 0, 90, 100));
                     try {
-                        WrappedSecretKeyRing privkey = providerHelper.getWrappedSecretKeyRing(masterKeyId);
+                        WrappedSecretKeyRing seckey = providerHelper.getWrappedSecretKeyRing(masterKeyId);
                         WrappedPublicKeyRing pubkey = providerHelper.getWrappedPublicKeyRing(masterKeyId);
 
                         PgpKeyOperation.Pair<UncachedKeyRing,UncachedKeyRing> pair =
-                                keyOperations.buildSecretKey(privkey, pubkey, saveParcel); // edit existing
+                                keyOperations.buildSecretKey(seckey, pubkey, saveParcel); // edit existing
                         setProgress(R.string.progress_saving_key_ring, 90, 100);
                         providerHelper.saveKeyRing(pair.first, pair.second);
                     } catch (ProviderHelper.NotFoundException e) {
-                        UncachedKeyRing ring = keyOperations.buildNewSecretKey(saveParcel); //new Keyring
+                        PgpKeyOperation.Pair<UncachedKeyRing,UncachedKeyRing> pair =
+                                keyOperations.buildNewSecretKey(saveParcel); //new Keyring
                         // save the pair
                         setProgress(R.string.progress_saving_key_ring, 90, 100);
-                        providerHelper.savePublicKeyRing(ring);
+                        providerHelper.saveKeyRing(pair.first, pair.second);
                     }
 
                     setProgress(R.string.progress_done, 100, 100);

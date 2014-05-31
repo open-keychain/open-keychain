@@ -187,7 +187,6 @@ public class ProviderHelper {
         return (WrappedSecretKeyRing) getWrappedKeyRing(queryUri, true);
     }
 
-
     private KeyRing getWrappedKeyRing(Uri queryUri, boolean secret) throws NotFoundException {
         Cursor cursor = mContentResolver.query(queryUri,
                 new String[]{
@@ -203,6 +202,9 @@ public class ProviderHelper {
                 boolean hasAnySecret = cursor.getInt(0) > 0;
                 int verified = cursor.getInt(1);
                 byte[] blob = cursor.getBlob(2);
+                if(secret &! hasAnySecret) {
+                    throw new NotFoundException("Secret key not available!");
+                }
                 return secret
                         ? new WrappedSecretKeyRing(blob, hasAnySecret, verified)
                         : new WrappedPublicKeyRing(blob, hasAnySecret, verified);
@@ -221,6 +223,11 @@ public class ProviderHelper {
      */
     @SuppressWarnings("unchecked")
     public void savePublicKeyRing(UncachedKeyRing keyRing) throws IOException {
+        if (keyRing.isSecret()) {
+            throw new RuntimeException("Tried to save secret keyring as public! " +
+                    "This is a bug, please file a bug report.");
+        }
+
         UncachedPublicKey masterKey = keyRing.getPublicKey();
         long masterKeyId = masterKey.getKeyId();
 
@@ -373,6 +380,11 @@ public class ProviderHelper {
      * is already in the database!
      */
     public void saveSecretKeyRing(UncachedKeyRing keyRing) throws IOException {
+        if (!keyRing.isSecret()) {
+            throw new RuntimeException("Tried to save publkc keyring as secret! " +
+                    "This is a bug, please file a bug report.");
+        }
+
         long masterKeyId = keyRing.getMasterKeyId();
 
         {
@@ -417,7 +429,7 @@ public class ProviderHelper {
 
         // save public keyring
         savePublicKeyRing(pubRing);
-        savePublicKeyRing(secRing);
+        saveSecretKeyRing(secRing);
     }
 
     /**

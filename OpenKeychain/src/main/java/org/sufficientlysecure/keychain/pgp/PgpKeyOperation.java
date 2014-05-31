@@ -197,7 +197,7 @@ public class PgpKeyOperation {
         }
     }
 
-    public UncachedKeyRing buildNewSecretKey(
+    public Pair<UncachedKeyRing,UncachedKeyRing> buildNewSecretKey(
         OldSaveKeyringParcel saveParcel)
             throws PgpGeneralMsgIdException, PGPException, SignatureException, IOException {
 
@@ -336,8 +336,9 @@ public class PgpKeyOperation {
         }
 
         PGPSecretKeyRing secretKeyRing = keyGen.generateSecretKeyRing();
+        PGPPublicKeyRing publicKeyRing = keyGen.generatePublicKeyRing();
 
-        return new UncachedKeyRing(secretKeyRing);
+        return new Pair(new UncachedKeyRing(secretKeyRing), new UncachedKeyRing(publicKeyRing));
 
     }
 
