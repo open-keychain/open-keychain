@@ -23,6 +23,23 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
+/** Wrapper around PGPKeyRing class, to be constructed from bytes.
+ *
+ * This class and its relatives UncachedPublicKey and UncachedSecretKey are
+ * used to move around pgp key rings in non crypto related (UI, mostly) code.
+ * It should be used for simple inspection only until it saved in the database,
+ * all actual crypto operations should work with WrappedKeyRings exclusively.
+ *
+ * This class is also special in that it can hold either the PGPPublicKeyRing
+ * or PGPSecretKeyRing derivate of the PGPKeyRing class, since these are
+ * treated equally for most purposes in UI code. It is up to the programmer to
+ * take care of the differences.
+ *
+ * @see org.sufficientlysecure.keychain.pgp.WrappedKeyRing
+ * @see org.sufficientlysecure.keychain.pgp.UncachedPublicKey
+ * @see org.sufficientlysecure.keychain.pgp.UncachedSecretKey
+ *
+ */
 public class UncachedKeyRing {
 
     final PGPKeyRing mRing;
@@ -62,6 +79,7 @@ public class UncachedKeyRing {
         };
     }
 
+    /** Returns the dynamic (though final) property if this is a secret keyring or not. */
     public boolean isSecret() {
         return mIsSecret;
     }

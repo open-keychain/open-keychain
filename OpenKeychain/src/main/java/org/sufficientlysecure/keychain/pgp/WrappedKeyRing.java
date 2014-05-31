@@ -8,6 +8,15 @@ import org.sufficientlysecure.keychain.util.IterableIterator;
 import java.io.IOException;
 import java.io.OutputStream;
 
+/** A generic wrapped PGPKeyRing object.
+ *
+ * This class provides implementations for all basic getters which both
+ * PublicKeyRing and SecretKeyRing have in common. To make the wrapped keyring
+ * class typesafe in implementing subclasses, the field is stored in the
+ * implementing class, providing properly typed access through the getRing
+ * getter method.
+ *
+ */
 public abstract class WrappedKeyRing extends KeyRing {
 
     private final boolean mHasAnySecret;

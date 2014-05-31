@@ -26,6 +26,17 @@ import java.security.NoSuchProviderException;
 import java.security.SignatureException;
 import java.util.List;
 
+/** Wrapper for a PGPSecretKey.
+ *
+ * This object can only be obtained from a WrappedSecretKeyRing, and stores a
+ * back reference to its parent.
+ *
+ * This class represents known secret keys which are stored in the database.
+ * All "crypto operations using a known secret key" should be implemented in
+ * this class, to ensure on type level that these operations are performed on
+ * properly imported secret keys only.
+ *
+ */
 public class WrappedSecretKey extends WrappedPublicKey {
 
     private final PGPSecretKey mSecretKey;

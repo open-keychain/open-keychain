@@ -1,6 +1,7 @@
 # Design Notes on Open-Keychain
 
-This document contains notes on the software design of open keychain. 
+This document contains notes on the software design of open keychain. Points
+with a * are yet to be implemented.
 
 
 ## Database design

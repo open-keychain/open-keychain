@@ -17,6 +17,14 @@ import java.io.IOException;
 import java.security.SignatureException;
 import java.util.Date;
 
+/** OpenKeychain wrapper around PGPSignature objects.
+ *
+ * This is a mostly simple wrapper around a single bouncycastle PGPSignature
+ * object. It exposes high level getters for all relevant information, methods
+ * for verification of various signatures (uid binding, subkey binding, generic
+ * bytes), and a static method for construction from bytes.
+ *
+ */
 public class WrappedSignature {
 
     public static final int DEFAULT_CERTIFICATION = PGPSignature.DEFAULT_CERTIFICATION;

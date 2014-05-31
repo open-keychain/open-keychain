@@ -1,16 +1,19 @@
 package org.sufficientlysecure.keychain.pgp;
 
-import org.spongycastle.openpgp.PGPException;
-import org.spongycastle.openpgp.PGPOnePassSignature;
 import org.spongycastle.openpgp.PGPPublicKey;
-import org.spongycastle.openpgp.PGPSignature;
-import org.spongycastle.openpgp.operator.jcajce.JcaPGPContentVerifierBuilderProvider;
 import org.spongycastle.openpgp.operator.jcajce.JcePublicKeyKeyEncryptionMethodGenerator;
-import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.util.IterableIterator;
 
-import java.security.SignatureException;
-
+/** Wrapper for a PGPPublicKey.
+ *
+ * The methods implemented in this class are a thin layer over
+ * UncachedPublicKey. The difference between the two classes is that objects of
+ * this class can only be obtained from a WrappedKeyRing, and that it stores a
+ * back reference to its parent as well. A method which works with
+ * WrappedPublicKey is therefore guaranteed to work on a KeyRing which is
+ * stored in the database.
+ *
+ */
 public class WrappedPublicKey extends UncachedPublicKey {
 
     // this is the parent key ring
