@@ -1005,7 +1005,7 @@ public class PgpKeyOperation {
 
 
     /**
-     * Reveoke the give key
+     * Revoke the given key
      *
      * @param certificationKey      key to revoke
      * @param passphrase       Passphrase of the secret key
