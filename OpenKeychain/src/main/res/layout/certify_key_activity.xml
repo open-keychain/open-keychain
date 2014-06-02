@@ -166,6 +166,22 @@
             android:clickable="true"
             style="@style/SelectableItem" />
 
+        <TextView
+            style="@style/SelectableItem"
+            android:id="@+id/sign_revoke_key_button"
+            android:paddingLeft="8dp"
+            android:paddingRight="8dp"
+            android:layout_marginBottom="8dp"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="@string/key_view_action_revoke"
+            android:minHeight="?android:attr/listPreferredItemHeight"
+            android:drawableRight="@drawable/ic_action_good"
+            android:drawablePadding="8dp"
+            android:gravity="center_vertical"
+            android:clickable="true" />
+
     </LinearLayout>
 
 </ScrollView>

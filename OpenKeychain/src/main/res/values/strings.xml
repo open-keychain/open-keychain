@@ -519,5 +519,6 @@
     <string name="can_sign_not">cannot sign</string>
     <string name="error_encoding">Encoding error</string>
     <string name="error_no_encrypt_subkey">No encryption subkey available!</string>
+    <string name="key_view_action_revoke">Revoke key</string>
 
 </resources>
