@@ -273,9 +273,6 @@
   <string name="error_jelly_bean_needed">Devi avere Android 4.1 per usare Android NFC Beam!</string>
   <string name="error_nfc_needed">NFC non disponibile nel tuo dispositivo!</string>
   <string name="error_nothing_import">Niente da importare!</string>
-  <string name="error_keyserver_insufficient_query">Query di server insufficiente</string>
-  <string name="error_keyserver_query">Interrogazione del server delle chiavi fallita</string>
-  <string name="error_keyserver_too_many_responses">Troppe chiavi corrispondenti. Riformula meglio la ricerca!</string>
   <string name="error_import_file_no_content">Il File non ha contenuti</string>
   <string name="error_generic_report_bug">Si è verificato un errore generico, si prega di creare una nuova segnalazione di errore per OpenKeychain.</string>
   <plurals name="error_import_non_pgp_part">
@@ -377,6 +374,7 @@
   <string name="intent_send_encrypt">Codifica con OpenKeychain</string>
   <string name="intent_send_decrypt">Decodifica con OpenKeychain</string>
   <!--Remote API-->
+  <string name="api_no_apps">Nessuna applicazione registrata!\n\nUna lista di applicazioni di terze parti supportate è disponibile in \'Aiuto\'!</string>
   <string name="api_settings_show_info">Mostra informazioni dettagliate</string>
   <string name="api_settings_hide_info">Nascondi informazioni dettagliate</string>
   <string name="api_settings_show_advanced">Mostra impostazioni avanzate</string>
@@ -387,6 +385,7 @@
   <string name="api_settings_save">Salva</string>
   <string name="api_settings_cancel">Annulla</string>
   <string name="api_settings_revoke">Revoca accesso</string>
+  <string name="api_settings_start">Avvia applicazione</string>
   <string name="api_settings_delete_account">Cancella account</string>
   <string name="api_settings_package_name">Nome Pacchetto</string>
   <string name="api_settings_package_signature">SHA-256 della Firma del Pacchetto</string>

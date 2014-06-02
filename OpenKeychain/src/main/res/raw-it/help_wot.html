@@ -1,0 +1,17 @@
+<html>
+<head></head>
+<body>
+<h2>Rete di Fiducia</h2>
+<p>La Rete di Fiducia descrive la parte del PGP che si occupa di creazione e gestione delle certificazioni. Essa fornisce meccanismi per aiutare l'utente a tenere traccia di chi appartiene una chiave pubblica, e condividere queste informazioni con gli altri; Per garantire la privacy della comunicazione crittografata, è essenziale sapere che la chiave pubblica per crittografare appartiene alla persona che si pensa.</p>
+
+<h2>Supporto in OpenKeychain</h2>
+<p>Esiste solo un supporto di base per le Reti di Fiducia in OpenKeychain. Questo è un grosso lavoro in corso e soggetto a modifiche nei prossimi rilasci.</p>
+
+<h2>Modello di Fiducia</h2>
+<p>La valutazione di fiducia si basa sul semplice presupposto che tutte le chiavi che hanno chiavi segrete disponibili sono attendibili. Le chiavi pubbliche che contengono almeno un id utente certificato da una chiave di fiducia saranno contrassegnati con un punto verde negli elenchi principali. Non è (ancora) possibile specificare livelli di attendibilità per i certificati di altre chiavi pubbliche conosciute.</p>
+
+<h2>Chiavi di certificazione</h2>
+<p>Il supporto per la certificazione chiave è disponibile, e gli id utenti possono essere certificati singolarmente. Non è ancora possibile specificare il livello di fiducia o creare certificati locali e altro di tipo speciale.</p>
+
+</body>
+</html>

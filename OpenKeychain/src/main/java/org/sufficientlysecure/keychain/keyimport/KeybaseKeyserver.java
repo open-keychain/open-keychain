@@ -34,8 +34,8 @@ public class KeybaseKeyserver extends Keyserver {
     private String mQuery;
 
     @Override
-    public ArrayList<ImportKeysListEntry> search(String query) throws QueryException, TooManyResponses,
-            InsufficientQuery {
+    public ArrayList<ImportKeysListEntry> search(String query) throws QueryFailedException,
+            QueryNeedsRepairException {
         ArrayList<ImportKeysListEntry> results = new ArrayList<ImportKeysListEntry>();
 
         if (query.startsWith("0x")) {
@@ -65,13 +65,13 @@ public class KeybaseKeyserver extends Keyserver {
             }
         } catch (Exception e) {
             Log.e(Constants.TAG, "keybase result parsing error", e);
-            throw new QueryException("Unexpected structure in keybase search result: " + e.getMessage());
+            throw new QueryFailedException("Unexpected structure in keybase search result: " + e.getMessage());
         }
 
         return results;
     }
 
-    private JSONObject getUser(String keybaseId) throws QueryException {
+    private JSONObject getUser(String keybaseId) throws QueryFailedException {
         try {
             return getFromKeybase("_/api/1.0/user/lookup.json?username=", keybaseId);
         } catch (Exception e) {
@@ -79,11 +79,12 @@ public class KeybaseKeyserver extends Keyserver {
             if (keybaseId != null) {
                 detail = ". Query was for user '" + keybaseId + "'";
             }
-            throw new QueryException(e.getMessage() + detail);
+            throw new QueryFailedException(e.getMessage() + detail);
         }
     }
 
-    private ImportKeysListEntry makeEntry(JSONObject match) throws QueryException, JSONException {
+    private ImportKeysListEntry makeEntry(JSONObject match) throws QueryFailedException, JSONException {
+
         final ImportKeysListEntry entry = new ImportKeysListEntry();
         entry.setQuery(mQuery);
 
@@ -127,7 +128,7 @@ public class KeybaseKeyserver extends Keyserver {
         return entry;
     }
 
-    private JSONObject getFromKeybase(String path, String query) throws QueryException {
+    private JSONObject getFromKeybase(String path, String query) throws QueryFailedException {
         try {
             String url = "https://keybase.io/" + path + URLEncoder.encode(query, "utf8");
             Log.d(Constants.TAG, "keybase query: " + url);
@@ -143,29 +144,29 @@ public class KeybaseKeyserver extends Keyserver {
                 try {
                     JSONObject json = new JSONObject(text);
                     if (JWalk.getInt(json, "status", "code") != 0) {
-                        throw new QueryException("Keybase autocomplete search failed");
+                        throw new QueryFailedException("Keybase autocomplete search failed");
                     }
                     return json;
                 } catch (JSONException e) {
-                    throw new QueryException("Keybase.io query returned broken JSON");
+                    throw new QueryFailedException("Keybase.io query returned broken JSON");
                 }
             } else {
                 String message = readAll(conn.getErrorStream(), conn.getContentEncoding());
-                throw new QueryException("Keybase.io query error (status=" + response +
+                throw new QueryFailedException("Keybase.io query error (status=" + response +
                         "): " + message);
             }
         } catch (Exception e) {
-            throw new QueryException("Keybase.io query error");
+            throw new QueryFailedException("Keybase.io query error");
         }
     }
 
     @Override
-    public String get(String id) throws QueryException {
+    public String get(String id) throws QueryFailedException {
         try {
             JSONObject user = getUser(id);
             return JWalk.getString(user, "them", "public_keys", "primary", "bundle");
         } catch (Exception e) {
-            throw new QueryException(e.getMessage());
+            throw new QueryFailedException(e.getMessage());
         }
     }
 

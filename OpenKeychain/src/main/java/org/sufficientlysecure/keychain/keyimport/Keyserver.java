@@ -24,19 +24,23 @@ import java.io.InputStream;
 import java.util.List;
 
 public abstract class Keyserver {
-    public static class QueryException extends Exception {
+    public static class QueryFailedException extends Exception {
         private static final long serialVersionUID = 2703768928624654512L;
 
-        public QueryException(String message) {
+        public QueryFailedException(String message) {
             super(message);
         }
     }
 
-    public static class TooManyResponses extends Exception {
+    public static class QueryNeedsRepairException extends Exception {
+        private static final long serialVersionUID = 2693768928624654512L;
+    }
+
+    public static class TooManyResponsesException extends QueryNeedsRepairException {
         private static final long serialVersionUID = 2703768928624654513L;
     }
 
-    public static class InsufficientQuery extends Exception {
+    public static class QueryTooShortException extends QueryNeedsRepairException {
         private static final long serialVersionUID = 2703768928624654514L;
     }
 
@@ -44,10 +48,10 @@ public abstract class Keyserver {
         private static final long serialVersionUID = -507574859137295530L;
     }
 
-    abstract List<ImportKeysListEntry> search(String query) throws QueryException, TooManyResponses,
-            InsufficientQuery;
+    abstract List<ImportKeysListEntry> search(String query) throws QueryFailedException,
+            QueryNeedsRepairException;
 
-    abstract String get(String keyIdHex) throws QueryException;
+    abstract String get(String keyIdHex) throws QueryFailedException;
 
     abstract void add(String armoredKey) throws AddKeyException;
 
