@@ -33,6 +33,7 @@ import org.spongycastle.openpgp.PGPPublicKey;
 import org.spongycastle.openpgp.PGPPublicKeyRing;
 import org.spongycastle.openpgp.PGPSecretKey;
 import org.spongycastle.openpgp.PGPSecretKeyRing;
+import org.spongycastle.openpgp.PGPSignature;
 import org.spongycastle.openpgp.PGPUtil;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
@@ -57,6 +58,7 @@ import org.sufficientlysecure.keychain.keyimport.ImportKeysListEntry;
 import org.sufficientlysecure.keychain.keyimport.HkpKeyServer;
 import org.sufficientlysecure.keychain.util.InputData;
 import org.sufficientlysecure.keychain.keyimport.KeybaseKeyServer;
+import org.sufficientlysecure.keychain.util.IterableIterator;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.ProgressScaler;
 
@@ -106,6 +108,7 @@ public class KeychainIntentService extends IntentService
     public static final String ACTION_IMPORT_KEYBASE_KEYS = Constants.INTENT_PREFIX + "DOWNLOAD_KEYBASE";
 
     public static final String ACTION_CERTIFY_KEYRING = Constants.INTENT_PREFIX + "SIGN_KEYRING";
+    public static final String ACTION_REVOKE_KEYRING = Constants.INTENT_PREFIX + "REVOKE_KEYRING";
 
     /* keys for data bundle */
 
@@ -890,6 +893,51 @@ public class KeychainIntentService extends IntentService
                 PGPSecretKey certificationKey = PgpKeyHelper.getFirstCertificationSubkey(secretKeyRing);
                 publicKey = keyOperation.certifyKey(certificationKey, publicKey,
                         userIds, signaturePassphrase);
+                publicRing = PGPPublicKeyRing.insertPublicKey(publicRing, publicKey);
+
+                // store the signed key in our local cache
+                PgpImportExport pgpImportExport = new PgpImportExport(this, null);
+                int retval = pgpImportExport.storeKeyRingInCache(publicRing);
+                if (retval != PgpImportExport.RETURN_OK && retval != PgpImportExport.RETURN_UPDATED) {
+                    throw new PgpGeneralException("Failed to store signed key in local cache");
+                }
+
+                sendMessageToHandler(KeychainIntentServiceHandler.MESSAGE_OKAY);
+            } catch (Exception e) {
+                sendErrorToHandler(e);
+            }
+        } else if (ACTION_REVOKE_KEYRING.equals(action)) {
+            try {
+
+                /* Input */
+                long masterKeyId = data.getLong(CERTIFY_KEY_MASTER_KEY_ID);
+                long pubKeyId = data.getLong(CERTIFY_KEY_PUB_KEY_ID);
+                ArrayList<String> userIds = data.getStringArrayList(CERTIFY_KEY_UIDS);
+
+                /* Operation */
+                String signaturePassphrase = PassphraseCacheService.getCachedPassphrase(this,
+                        masterKeyId);
+                if (signaturePassphrase == null) {
+                    throw new PgpGeneralException("Unable to obtain passphrase");
+                }
+
+                ProviderHelper providerHelper = new ProviderHelper(this);
+                PgpKeyOperation keyOperation = new PgpKeyOperation(new ProgressScaler(this, 0, 100, 100));
+                PGPPublicKeyRing publicRing = providerHelper.getPGPPublicKeyRing(pubKeyId);
+                PGPPublicKey publicKey = publicRing.getPublicKey(pubKeyId);
+                PGPSecretKeyRing secretKeyRing = null;
+                try {
+                    secretKeyRing = providerHelper.getPGPSecretKeyRing(masterKeyId);
+                } catch (ProviderHelper.NotFoundException e) {
+                    Log.e(Constants.TAG, "key not found!", e);
+                    // TODO: throw exception here!
+                }
+                PGPSecretKey certificationKey = PgpKeyHelper.getFirstCertificationSubkey(secretKeyRing);
+                PGPSignature signature = keyOperation.revokeKey(certificationKey, (byte) 0, "User Action",
+                        signaturePassphrase);
+
+
+                publicKey = PGPPublicKey.addCertification(publicKey, signature);
                 publicRing = PGPPublicKeyRing.insertPublicKey(publicRing, publicKey);
 
                 // store the signed key in our local cache
