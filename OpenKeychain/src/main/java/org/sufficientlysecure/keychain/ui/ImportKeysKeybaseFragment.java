@@ -18,8 +18,8 @@
 package org.sufficientlysecure.keychain.ui;
 
 import android.content.Context;
-import android.support.v4.app.Fragment;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -31,9 +31,7 @@ import android.widget.TextView;
 
 import com.beardedhen.androidbootstrap.BootstrapButton;
 
-import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.util.Log;
 
 /**
  * Import public keys from the Keybase.io directory.  First cut: just raw search.
