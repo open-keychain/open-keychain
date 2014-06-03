@@ -52,14 +52,12 @@ public class PgpKeyHelper {
 
     private static final Pattern USER_ID_PATTERN = Pattern.compile("^(.*?)(?: \\((.*)\\))?(?: <(.*)>)?$");
 
+    @Deprecated
     public static Date getCreationDate(PGPPublicKey key) {
         return key.getCreationTime();
     }
 
-    public static Date getCreationDate(PGPSecretKey key) {
-        return key.getPublicKey().getCreationTime();
-    }
-
+    @Deprecated
     public static Date getExpiryDate(PGPPublicKey key) {
         Date creationDate = getCreationDate(key);
         if (key.getValidDays() == 0) {
@@ -71,185 +69,6 @@ public class PgpKeyHelper {
         calendar.add(Calendar.DATE, key.getValidDays());
 
         return calendar.getTime();
-    }
-
-    public static Date getExpiryDate(PGPSecretKey key) {
-        return getExpiryDate(key.getPublicKey());
-    }
-
-    public static boolean isExpired(PGPPublicKey key) {
-        Date creationDate = getCreationDate(key);
-        Date expiryDate = getExpiryDate(key);
-        Date now = new Date();
-        if (now.compareTo(creationDate) >= 0
-                && (expiryDate == null || now.compareTo(expiryDate) <= 0)) {
-            return false;
-        }
-        return true;
-    }
-
-    @SuppressWarnings("unchecked")
-    public static PGPSecretKey getKeyNum(PGPSecretKeyRing keyRing, long num) {
-        long cnt = 0;
-        if (keyRing == null) {
-            return null;
-        }
-        for (PGPSecretKey key : new IterableIterator<PGPSecretKey>(keyRing.getSecretKeys())) {
-            if (cnt == num) {
-                return key;
-            }
-            cnt++;
-        }
-
-        return null;
-    }
-
-    @SuppressWarnings("unchecked")
-    private static Vector<PGPPublicKey> getEncryptKeys(PGPPublicKeyRing keyRing) {
-        Vector<PGPPublicKey> encryptKeys = new Vector<PGPPublicKey>();
-
-        for (PGPPublicKey key : new IterableIterator<PGPPublicKey>(keyRing.getPublicKeys())) {
-            if (isEncryptionKey(key)) {
-                encryptKeys.add(key);
-            }
-        }
-
-        return encryptKeys;
-    }
-
-    @SuppressWarnings("unchecked")
-    private static Vector<PGPSecretKey> getSigningKeys(PGPSecretKeyRing keyRing) {
-        Vector<PGPSecretKey> signingKeys = new Vector<PGPSecretKey>();
-
-        for (PGPSecretKey key : new IterableIterator<PGPSecretKey>(keyRing.getSecretKeys())) {
-            if (isSigningKey(key)) {
-                signingKeys.add(key);
-            }
-        }
-
-        return signingKeys;
-    }
-
-    @SuppressWarnings("unchecked")
-    private static Vector<PGPSecretKey> getCertificationKeys(PGPSecretKeyRing keyRing) {
-        Vector<PGPSecretKey> signingKeys = new Vector<PGPSecretKey>();
-
-        for (PGPSecretKey key : new IterableIterator<PGPSecretKey>(keyRing.getSecretKeys())) {
-            if (isCertificationKey(key)) {
-                signingKeys.add(key);
-            }
-        }
-
-        return signingKeys;
-    }
-
-    private static Vector<PGPPublicKey> getUsableEncryptKeys(PGPPublicKeyRing keyRing) {
-        Vector<PGPPublicKey> usableKeys = new Vector<PGPPublicKey>();
-        Vector<PGPPublicKey> encryptKeys = getEncryptKeys(keyRing);
-        PGPPublicKey masterKey = null;
-        for (int i = 0; i < encryptKeys.size(); ++i) {
-            PGPPublicKey key = encryptKeys.get(i);
-            if (!isExpired(key) && !key.isRevoked()) {
-                if (key.isMasterKey()) {
-                    masterKey = key;
-                } else {
-                    usableKeys.add(key);
-                }
-            }
-        }
-        if (masterKey != null) {
-            usableKeys.add(masterKey);
-        }
-        return usableKeys;
-    }
-
-    private static Vector<PGPSecretKey> getUsableCertificationKeys(PGPSecretKeyRing keyRing) {
-        Vector<PGPSecretKey> usableKeys = new Vector<PGPSecretKey>();
-        Vector<PGPSecretKey> signingKeys = getCertificationKeys(keyRing);
-        PGPSecretKey masterKey = null;
-        for (int i = 0; i < signingKeys.size(); ++i) {
-            PGPSecretKey key = signingKeys.get(i);
-            if (key.isMasterKey()) {
-                masterKey = key;
-            } else {
-                usableKeys.add(key);
-            }
-        }
-        if (masterKey != null) {
-            usableKeys.add(masterKey);
-        }
-        return usableKeys;
-    }
-
-    private static Vector<PGPSecretKey> getUsableSigningKeys(PGPSecretKeyRing keyRing) {
-        Vector<PGPSecretKey> usableKeys = new Vector<PGPSecretKey>();
-        Vector<PGPSecretKey> signingKeys = getSigningKeys(keyRing);
-        PGPSecretKey masterKey = null;
-        for (int i = 0; i < signingKeys.size(); ++i) {
-            PGPSecretKey key = signingKeys.get(i);
-            if (key.isMasterKey()) {
-                masterKey = key;
-            } else {
-                usableKeys.add(key);
-            }
-        }
-        if (masterKey != null) {
-            usableKeys.add(masterKey);
-        }
-        return usableKeys;
-    }
-
-
-    public static PGPPublicKey getFirstEncryptSubkey(PGPPublicKeyRing keyRing) {
-        Vector<PGPPublicKey> encryptKeys = getUsableEncryptKeys(keyRing);
-        if (encryptKeys.size() == 0) {
-            Log.e(Constants.TAG, "encryptKeys is null!");
-            return null;
-        }
-        return encryptKeys.get(0);
-    }
-
-    public static PGPSecretKey getFirstCertificationSubkey(PGPSecretKeyRing keyRing) {
-        Vector<PGPSecretKey> signingKeys = getUsableCertificationKeys(keyRing);
-        if (signingKeys.size() == 0) {
-            return null;
-        }
-        return signingKeys.get(0);
-    }
-
-    public static PGPSecretKey getFirstSigningSubkey(PGPSecretKeyRing keyRing) {
-        Vector<PGPSecretKey> signingKeys = getUsableSigningKeys(keyRing);
-        if (signingKeys.size() == 0) {
-            return null;
-        }
-        return signingKeys.get(0);
-    }
-
-    public static int getKeyUsage(PGPSecretKey key) {
-        return getKeyUsage(key.getPublicKey());
-    }
-
-    @SuppressWarnings("unchecked")
-    private static int getKeyUsage(PGPPublicKey key) {
-        int usage = 0;
-        if (key.getVersion() >= 4) {
-            for (PGPSignature sig : new IterableIterator<PGPSignature>(key.getSignatures())) {
-                if (key.isMasterKey() && sig.getKeyID() != key.getKeyID()) {
-                    continue;
-                }
-
-                PGPSignatureSubpacketVector hashed = sig.getHashedSubPackets();
-                if (hashed != null) {
-                    usage |= hashed.getKeyFlags();
-                }
-
-                PGPSignatureSubpacketVector unhashed = sig.getUnhashedSubPackets();
-                if (unhashed != null) {
-                    usage |= unhashed.getKeyFlags();
-                }
-            }
-        }
-        return usage;
     }
 
     @SuppressWarnings("unchecked")
@@ -293,10 +112,6 @@ public class PgpKeyHelper {
         return false;
     }
 
-    public static boolean isEncryptionKey(PGPSecretKey key) {
-        return isEncryptionKey(key.getPublicKey());
-    }
-
     @SuppressWarnings("unchecked")
     public static boolean isSigningKey(PGPPublicKey key) {
         if (key.getVersion() <= 3) {
@@ -328,10 +143,6 @@ public class PgpKeyHelper {
         return false;
     }
 
-    public static boolean isSigningKey(PGPSecretKey key) {
-        return isSigningKey(key.getPublicKey());
-    }
-
     @SuppressWarnings("unchecked")
     public static boolean isCertificationKey(PGPPublicKey key) {
         if (key.getVersion() <= 3) {
@@ -356,48 +167,6 @@ public class PgpKeyHelper {
         }
 
         return false;
-    }
-
-    public static boolean isAuthenticationKey(PGPSecretKey key) {
-        return isAuthenticationKey(key.getPublicKey());
-    }
-
-    @SuppressWarnings("unchecked")
-    public static boolean isAuthenticationKey(PGPPublicKey key) {
-        if (key.getVersion() <= 3) {
-            return true;
-        }
-
-        for (PGPSignature sig : new IterableIterator<PGPSignature>(key.getSignatures())) {
-            if (key.isMasterKey() && sig.getKeyID() != key.getKeyID()) {
-                continue;
-            }
-            PGPSignatureSubpacketVector hashed = sig.getHashedSubPackets();
-
-            if (hashed != null && (hashed.getKeyFlags() & KeyFlags.AUTHENTICATION) != 0) {
-                return true;
-            }
-
-            PGPSignatureSubpacketVector unhashed = sig.getUnhashedSubPackets();
-
-            if (unhashed != null && (unhashed.getKeyFlags() & KeyFlags.AUTHENTICATION) != 0) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    public static boolean isCertificationKey(PGPSecretKey key) {
-        return isCertificationKey(key.getPublicKey());
-    }
-
-    public static String getAlgorithmInfo(Context context, PGPPublicKey key) {
-        return getAlgorithmInfo(context, key.getAlgorithm(), key.getBitStrength());
-    }
-
-    public static String getAlgorithmInfo(Context context, PGPSecretKey key) {
-        return getAlgorithmInfo(context, key.getPublicKey());
     }
 
     /**

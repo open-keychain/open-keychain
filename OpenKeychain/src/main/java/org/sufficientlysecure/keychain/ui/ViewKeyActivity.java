@@ -326,10 +326,10 @@ public class ViewKeyActivity extends ActionBarActivity implements
                                 try {
                                     Uri blobUri =
                                             KeychainContract.KeyRingData.buildPublicKeyRingUri(dataUri);
-                                    mNfcKeyringBytes = mProviderHelper.getPGPKeyRing(
-                                            blobUri).getEncoded();
-                                } catch (IOException e) {
-                                    Log.e(Constants.TAG, "Error parsing keyring", e);
+                                    mNfcKeyringBytes = (byte[]) mProviderHelper.getGenericData(
+                                            blobUri,
+                                            KeychainContract.KeyRingData.KEY_RING_DATA,
+                                            ProviderHelper.FIELD_TYPE_BLOB);
                                 } catch (ProviderHelper.NotFoundException e) {
                                     Log.e(Constants.TAG, "key not found!", e);
                                 }

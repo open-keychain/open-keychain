@@ -19,19 +19,19 @@ package org.sufficientlysecure.keychain.ui.adapter;
 
 import android.content.Context;
 import android.support.v4.content.AsyncTaskLoader;
+import android.support.v4.util.LongSparseArray;
 
-import org.spongycastle.openpgp.PGPKeyRing;
-import org.spongycastle.openpgp.PGPObjectFactory;
-import org.spongycastle.openpgp.PGPUtil;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.keyimport.ImportKeysListEntry;
+import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
+import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
 import org.sufficientlysecure.keychain.util.InputData;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.PositionAwareInputStream;
 
 import java.io.BufferedInputStream;
-import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.List;
 
 public class ImportKeysListLoader
         extends AsyncTaskLoader<AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>>> {
@@ -56,6 +56,7 @@ public class ImportKeysListLoader
     final InputData mInputData;
 
     ArrayList<ImportKeysListEntry> mData = new ArrayList<ImportKeysListEntry>();
+    LongSparseArray<ParcelableKeyRing> mParcelableRings = new LongSparseArray<ParcelableKeyRing>();
     AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>> mEntryListWrapper;
 
     public ImportKeysListLoader(Context context, InputData inputData) {
@@ -107,6 +108,10 @@ public class ImportKeysListLoader
         super.deliverResult(data);
     }
 
+    public LongSparseArray<ParcelableKeyRing> getParcelableRings() {
+        return mParcelableRings;
+    }
+
     /**
      * Reads all PGPKeyRing objects from input
      *
@@ -116,7 +121,6 @@ public class ImportKeysListLoader
     private void generateListOfKeyrings(InputData inputData) {
 
         boolean isEmpty = true;
-        int nonPgpCounter = 0;
 
         PositionAwareInputStream progressIn = new PositionAwareInputStream(
                 inputData.getInputStream());
@@ -129,28 +133,18 @@ public class ImportKeysListLoader
 
             // read all available blocks... (asc files can contain many blocks with BEGIN END)
             while (bufferedInput.available() > 0) {
-                isEmpty = false;
-                InputStream in = PGPUtil.getDecoderStream(bufferedInput);
-                PGPObjectFactory objectFactory = new PGPObjectFactory(in);
-
-                // go through all objects in this block
-                Object obj;
-                while ((obj = objectFactory.nextObject()) != null) {
-                    Log.d(Constants.TAG, "Found class: " + obj.getClass());
-
-                    if (obj instanceof PGPKeyRing) {
-                        PGPKeyRing newKeyring = (PGPKeyRing) obj;
-                        addToData(newKeyring);
-                    } else {
-                        Log.e(Constants.TAG, "Object not recognized as PGPKeyRing!");
-                        nonPgpCounter++;
-                    }
+                // todo deal with non-keyring objects?
+                List<UncachedKeyRing> rings = UncachedKeyRing.fromStream(bufferedInput);
+                for(UncachedKeyRing key : rings) {
+                    ImportKeysListEntry item = new ImportKeysListEntry(getContext(), key);
+                    mData.add(item);
+                    mParcelableRings.put(key.getMasterKeyId(), new ParcelableKeyRing(key.getEncoded()));
+                    isEmpty = false;
                 }
             }
         } catch (Exception e) {
             Log.e(Constants.TAG, "Exception on parsing key file!", e);
             mEntryListWrapper = new AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>>(mData, e);
-            nonPgpCounter = 0;
         }
 
         if (isEmpty) {
@@ -158,16 +152,6 @@ public class ImportKeysListLoader
             mEntryListWrapper = new AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>>
                     (mData, new FileHasNoContent());
         }
-
-        if (nonPgpCounter > 0) {
-            mEntryListWrapper = new AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>>
-                    (mData, new NonPgpPart(nonPgpCounter));
-        }
-    }
-
-    private void addToData(PGPKeyRing keyring) {
-        ImportKeysListEntry item = new ImportKeysListEntry(getContext(), keyring);
-        mData.add(item);
     }
 
 }

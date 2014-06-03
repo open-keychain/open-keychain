@@ -43,7 +43,6 @@ import android.widget.TextView;
 
 import com.devspark.appmsg.AppMsg;
 
-import org.spongycastle.openpgp.PGPPublicKeyRing;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.helper.Preferences;
@@ -51,7 +50,6 @@ import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UserIds;
-import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
 import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
 import org.sufficientlysecure.keychain.service.PassphraseCacheService;
@@ -222,54 +220,22 @@ public class CertifyKeyActivity extends ActionBarActivity implements
      * handles the UI bits of the signing process on the UI thread
      */
     private void initiateSigning() {
-        try {
-            PGPPublicKeyRing pubring = new ProviderHelper(this).getPGPPublicKeyRing(mPubKeyId);
-
-            // if we have already signed this key, dont bother doing it again
-            boolean alreadySigned = false;
-
-            /* todo: reconsider this at a later point when certs are in the db
-            @SuppressWarnings("unchecked")
-            Iterator<PGPSignature> itr = pubring.getPublicKey(mPubKeyId).getSignatures();
-            while (itr.hasNext()) {
-                PGPSignature sig = itr.next();
-                if (sig.getKeyID() == mMasterKeyId) {
-                    alreadySigned = true;
-                    break;
-                }
-            }
-            */
-
-            if (!alreadySigned) {
-                /*
-                 * get the user's passphrase for this key (if required)
-                 */
-                String passphrase = PassphraseCacheService.getCachedPassphrase(this, mMasterKeyId);
-                if (passphrase == null) {
-                    PassphraseDialogFragment.show(this, mMasterKeyId,
-                            new Handler() {
-                                @Override
-                                public void handleMessage(Message message) {
-                                    if (message.what == PassphraseDialogFragment.MESSAGE_OKAY) {
-                                        startSigning();
-                                    }
-                                }
+        // get the user's passphrase for this key (if required)
+        String passphrase = PassphraseCacheService.getCachedPassphrase(this, mMasterKeyId);
+        if (passphrase == null) {
+            PassphraseDialogFragment.show(this, mMasterKeyId,
+                    new Handler() {
+                        @Override
+                        public void handleMessage(Message message) {
+                            if (message.what == PassphraseDialogFragment.MESSAGE_OKAY) {
+                                startSigning();
                             }
-                    );
-                    // bail out; need to wait until the user has entered the passphrase before trying again
-                    return;
-                } else {
-                    startSigning();
-                }
-            } else {
-                AppMsg.makeText(this, R.string.key_has_already_been_certified, AppMsg.STYLE_ALERT)
-                        .show();
-
-                setResult(RESULT_CANCELED);
-                finish();
-            }
-        } catch (ProviderHelper.NotFoundException e) {
-            Log.e(Constants.TAG, "key not found!", e);
+                        }
+                    });
+            // bail out; need to wait until the user has entered the passphrase before trying again
+            return;
+        } else {
+            startSigning();
         }
     }
 

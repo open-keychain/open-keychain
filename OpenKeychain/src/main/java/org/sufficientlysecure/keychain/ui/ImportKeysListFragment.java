@@ -23,6 +23,7 @@ import android.os.Bundle;
 import android.support.v4.app.ListFragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
+import android.support.v4.util.LongSparseArray;
 import android.view.View;
 import android.widget.ListView;
 
@@ -31,6 +32,7 @@ import com.devspark.appmsg.AppMsg;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.helper.Preferences;
+import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
 import org.sufficientlysecure.keychain.ui.adapter.AsyncTaskResultWrapper;
 import org.sufficientlysecure.keychain.ui.adapter.ImportKeysAdapter;
 import org.sufficientlysecure.keychain.keyimport.ImportKeysListEntry;
@@ -67,6 +69,8 @@ public class ImportKeysListFragment extends ListFragment implements
     private static final int LOADER_ID_SERVER_QUERY = 1;
     private static final int LOADER_ID_KEYBASE = 2;
 
+    private LongSparseArray<ParcelableKeyRing> mCachedKeyData;
+
     public byte[] getKeyBytes() {
         return mKeyBytes;
     }
@@ -91,8 +95,16 @@ public class ImportKeysListFragment extends ListFragment implements
         return mAdapter.getData();
     }
 
-    public ArrayList<ImportKeysListEntry> getSelectedData() {
-        return mAdapter.getSelectedData();
+    public ArrayList<ParcelableKeyRing> getSelectedData() {
+        ArrayList<ParcelableKeyRing> result = new ArrayList<ParcelableKeyRing>();
+        for(ImportKeysListEntry entry : getSelectedEntries()) {
+            result.add(mCachedKeyData.get(entry.getKeyId()));
+        }
+        return result;
+    }
+
+    public ArrayList<ImportKeysListEntry> getSelectedEntries() {
+        return mAdapter.getSelectedEntries();
     }
 
     /**
@@ -120,8 +132,7 @@ public class ImportKeysListFragment extends ListFragment implements
 
         mActivity = getActivity();
 
-        // Give some text to display if there is no data. In a real
-        // application this would come from a resource.
+        // Give some text to display if there is no data.
         setEmptyText(mActivity.getString(R.string.error_nothing_import));
 
         // Create an empty adapter we will use to display the loaded data.
@@ -252,11 +263,15 @@ public class ImportKeysListFragment extends ListFragment implements
 
         Exception error = data.getError();
 
+        // free old cached key data
+        mCachedKeyData = null;
+
         switch (loader.getId()) {
             case LOADER_ID_BYTES:
 
                 if (error == null) {
                     // No error
+                    mCachedKeyData = ((ImportKeysListLoader) loader).getParcelableRings();
                 } else if (error instanceof ImportKeysListLoader.FileHasNoContent) {
                     AppMsg.makeText(getActivity(), R.string.error_import_file_no_content,
                             AppMsg.STYLE_ALERT).show();

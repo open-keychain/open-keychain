@@ -317,7 +317,7 @@ public class KeyListFragment extends LoaderFragment
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
         Intent viewIntent = new Intent(getActivity(), ViewKeyActivity.class);
         viewIntent.setData(
-                KeyRings.buildGenericKeyRingUri(Long.toString(mAdapter.getMasterKeyId(position))));
+                KeyRings.buildGenericKeyRingUri(mAdapter.getMasterKeyId(position)));
         startActivity(viewIntent);
     }
 

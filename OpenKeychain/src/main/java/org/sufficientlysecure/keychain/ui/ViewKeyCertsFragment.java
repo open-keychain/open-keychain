@@ -33,10 +33,10 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.TextView;
 
-import org.spongycastle.openpgp.PGPSignature;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
+import org.sufficientlysecure.keychain.pgp.WrappedSignature;
 import org.sufficientlysecure.keychain.provider.KeychainContract.Certs;
 import org.sufficientlysecure.keychain.provider.KeychainDatabase.Tables;
 import org.sufficientlysecure.keychain.util.Log;
@@ -227,19 +227,19 @@ public class ViewKeyCertsFragment extends LoaderFragment
             wSignerKeyId.setText(signerKeyId);
 
             switch (cursor.getInt(mIndexType)) {
-                case PGPSignature.DEFAULT_CERTIFICATION: // 0x10
+                case WrappedSignature.DEFAULT_CERTIFICATION: // 0x10
                     wSignStatus.setText(R.string.cert_default);
                     break;
-                case PGPSignature.NO_CERTIFICATION: // 0x11
+                case WrappedSignature.NO_CERTIFICATION: // 0x11
                     wSignStatus.setText(R.string.cert_none);
                     break;
-                case PGPSignature.CASUAL_CERTIFICATION: // 0x12
+                case WrappedSignature.CASUAL_CERTIFICATION: // 0x12
                     wSignStatus.setText(R.string.cert_casual);
                     break;
-                case PGPSignature.POSITIVE_CERTIFICATION: // 0x13
+                case WrappedSignature.POSITIVE_CERTIFICATION: // 0x13
                     wSignStatus.setText(R.string.cert_positive);
                     break;
-                case PGPSignature.CERTIFICATION_REVOCATION: // 0x30
+                case WrappedSignature.CERTIFICATION_REVOCATION: // 0x30
                     wSignStatus.setText(R.string.cert_revoke);
                     break;
             }

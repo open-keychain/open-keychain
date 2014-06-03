@@ -32,24 +32,17 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
-import org.spongycastle.bcpg.SignatureSubpacket;
-import org.spongycastle.bcpg.SignatureSubpacketTags;
-import org.spongycastle.bcpg.sig.RevocationReason;
-import org.spongycastle.openpgp.PGPException;
-import org.spongycastle.openpgp.PGPKeyRing;
-import org.spongycastle.openpgp.PGPSignature;
-import org.spongycastle.openpgp.operator.jcajce.JcaPGPContentVerifierBuilderProvider;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.pgp.PgpConversionHelper;
+import org.sufficientlysecure.keychain.pgp.WrappedPublicKeyRing;
 import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
-import org.sufficientlysecure.keychain.provider.KeychainContract;
+import org.sufficientlysecure.keychain.pgp.WrappedSignature;
+import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.provider.KeychainContract.Certs;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.util.Log;
 
-import java.security.SignatureException;
 import java.util.Date;
 
 public class ViewCertActivity extends ActionBarActivity
@@ -146,32 +139,25 @@ public class ViewCertActivity extends ActionBarActivity
                 mCertifierUid.setText(R.string.unknown_uid);
             }
 
-            PGPSignature sig = PgpConversionHelper.BytesToPGPSignature(data.getBlob(INDEX_DATA));
+            WrappedSignature sig = WrappedSignature.fromBytes(data.getBlob(INDEX_DATA));
             try {
                 ProviderHelper providerHelper = new ProviderHelper(this);
-                PGPKeyRing signeeRing = providerHelper.getPGPKeyRing(
-                        KeychainContract.KeyRingData.buildPublicKeyRingUri(
-                                Long.toString(data.getLong(INDEX_MASTER_KEY_ID)))
-                );
-                PGPKeyRing signerRing = providerHelper.getPGPKeyRing(
-                        KeychainContract.KeyRingData.buildPublicKeyRingUri(
-                                Long.toString(sig.getKeyID()))
-                );
+
+                WrappedPublicKeyRing signeeRing =
+                        providerHelper.getWrappedPublicKeyRing(data.getLong(INDEX_MASTER_KEY_ID));
+                WrappedPublicKeyRing signerRing =
+                        providerHelper.getWrappedPublicKeyRing(sig.getKeyId());
 
                 try {
-                    sig.init(new JcaPGPContentVerifierBuilderProvider().setProvider(
-                            Constants.BOUNCY_CASTLE_PROVIDER_NAME), signerRing.getPublicKey());
-                    if (sig.verifyCertification(signeeUid, signeeRing.getPublicKey())) {
+                    sig.init(signerRing.getSubkey());
+                    if (sig.verifySignature(signeeRing.getSubkey(), signeeUid)) {
                         mStatus.setText(R.string.cert_verify_ok);
                         mStatus.setTextColor(getResources().getColor(R.color.bbutton_success));
                     } else {
                         mStatus.setText(R.string.cert_verify_failed);
                         mStatus.setTextColor(getResources().getColor(R.color.alert));
                     }
-                } catch (SignatureException e) {
-                    mStatus.setText(R.string.cert_verify_error);
-                    mStatus.setTextColor(getResources().getColor(R.color.alert));
-                } catch (PGPException e) {
+                } catch (PgpGeneralException e) {
                     mStatus.setText(R.string.cert_verify_error);
                     mStatus.setTextColor(getResources().getColor(R.color.alert));
                 }
@@ -185,29 +171,26 @@ public class ViewCertActivity extends ActionBarActivity
 
             mRowReason.setVisibility(View.GONE);
             switch (data.getInt(INDEX_TYPE)) {
-                case PGPSignature.DEFAULT_CERTIFICATION:
+                case WrappedSignature.DEFAULT_CERTIFICATION:
                     mType.setText(R.string.cert_default);
                     break;
-                case PGPSignature.NO_CERTIFICATION:
+                case WrappedSignature.NO_CERTIFICATION:
                     mType.setText(R.string.cert_none);
                     break;
-                case PGPSignature.CASUAL_CERTIFICATION:
+                case WrappedSignature.CASUAL_CERTIFICATION:
                     mType.setText(R.string.cert_casual);
                     break;
-                case PGPSignature.POSITIVE_CERTIFICATION:
+                case WrappedSignature.POSITIVE_CERTIFICATION:
                     mType.setText(R.string.cert_positive);
                     break;
-                case PGPSignature.CERTIFICATION_REVOCATION: {
+                case WrappedSignature.CERTIFICATION_REVOCATION: {
                     mType.setText(R.string.cert_revoke);
-                    if (sig.getHashedSubPackets().hasSubpacket(SignatureSubpacketTags.REVOCATION_REASON)) {
-                        SignatureSubpacket p = sig.getHashedSubPackets().getSubpacket(
-                                SignatureSubpacketTags.REVOCATION_REASON);
-                        // For some reason, this is missing in SignatureSubpacketInputStream:146
-                        if (!(p instanceof RevocationReason)) {
-                            p = new RevocationReason(false, p.getData());
+                    if (sig.isRevocation()) {
+                        try {
+                            mReason.setText(sig.getRevocationReason());
+                        } catch(PgpGeneralException e) {
+                            mReason.setText(R.string.none);
                         }
-                        String reason = ((RevocationReason) p).getRevocationDescription();
-                        mReason.setText(reason);
                         mRowReason.setVisibility(View.VISIBLE);
                     }
                     break;
@@ -223,14 +206,11 @@ public class ViewCertActivity extends ActionBarActivity
 
                 try {
                     ProviderHelper providerHelper = new ProviderHelper(ViewCertActivity.this);
-                    long signerMasterKeyId = providerHelper.getMasterKeyId(
-                            KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(Long.toString(mCertifierKeyId))
-                    );
-                    viewIntent.setData(KeyRings.buildGenericKeyRingUri(
-                                    Long.toString(signerMasterKeyId))
-                    );
+                    long signerMasterKeyId = providerHelper.getCachedPublicKeyRing(
+                            KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(mCertifierKeyId)).getMasterKeyId();
+                    viewIntent.setData(KeyRings.buildGenericKeyRingUri(signerMasterKeyId));
                     startActivity(viewIntent);
-                } catch (ProviderHelper.NotFoundException e) {
+                } catch (PgpGeneralException e) {
                     // TODO notify user of this, maybe offer download?
                     Log.e(Constants.TAG, "key not found!", e);
                 }

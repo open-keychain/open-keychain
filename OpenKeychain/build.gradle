@@ -1,9 +1,11 @@
 apply plugin: 'android'
+apply plugin: 'android-test'
 
 sourceSets {
-    testLocal {
+    androidTest {
         java.srcDir file('src/test/java')
-        resources.srcDir file('src/test/resources')
+        // configure the set of classes for JUnit tests
+        // include '**/*Test.class'
     }
 }
 
@@ -23,24 +25,25 @@ dependencies {
     compile project(':extern:spongycastle:prov')
     compile project(':extern:AppMsg:library')
 
-    // Dependencies for the `testLocal` task, make sure to list all your global dependencies here as well
-    testLocalCompile 'junit:junit:4.11'
-    testLocalCompile 'org.robolectric:robolectric:2.2'
-    testLocalCompile 'com.google.android:android:4.1.1.4'
-    testLocalCompile 'com.android.support:support-v4:19.1.0'
-    testLocalCompile 'com.android.support:appcompat-v7:19.1.0'
-    testLocalCompile project(':extern:openpgp-api-lib')
-    testLocalCompile project(':extern:openkeychain-api-lib')
-    testLocalCompile project(':extern:html-textview')
-    testLocalCompile project(':extern:StickyListHeaders:library')
-    testLocalCompile project(':extern:AndroidBootstrap:AndroidBootstrap')
-    testLocalCompile project(':extern:zxing-qr-code')
-    testLocalCompile project(':extern:zxing-android-integration')
-    testLocalCompile project(':extern:spongycastle:core')
-    testLocalCompile project(':extern:spongycastle:pg')
-    testLocalCompile project(':extern:spongycastle:pkix')
-    testLocalCompile project(':extern:spongycastle:prov')
-    testLocalCompile project(':extern:AppMsg:library')
+    // Dependencies for the `instrumentTest` task, make sure to list all your global dependencies here as well
+    androidTestCompile 'junit:junit:4.10'
+    androidTestCompile 'org.robolectric:robolectric:2.1.+'
+    androidTestCompile 'com.squareup:fest-android:1.0.+'
+    androidTestCompile 'com.google.android:android:4.1.1.4'
+    androidTestCompile 'com.android.support:support-v4:19.1.0'
+    androidTestCompile 'com.android.support:appcompat-v7:19.1.0'
+    androidTestCompile project(':extern:openpgp-api-lib')
+    androidTestCompile project(':extern:openkeychain-api-lib')
+    androidTestCompile project(':extern:html-textview')
+    androidTestCompile project(':extern:StickyListHeaders:library')
+    androidTestCompile project(':extern:AndroidBootstrap:AndroidBootstrap')
+    androidTestCompile project(':extern:zxing-qr-code')
+    androidTestCompile project(':extern:zxing-android-integration')
+    androidTestCompile project(':extern:spongycastle:core')
+    androidTestCompile project(':extern:spongycastle:pg')
+    androidTestCompile project(':extern:spongycastle:pkix')
+    androidTestCompile project(':extern:spongycastle:prov')
+    androidTestCompile project(':extern:AppMsg:library')
 }
 
 android {
@@ -92,20 +95,6 @@ android {
     }
 }
 
-task localTest(type: Test, dependsOn: assemble) {
-    testClassesDir = sourceSets.testLocal.output.classesDir
-
-    android.sourceSets.main.java.srcDirs.each { dir ->
-        def buildDir = dir.getAbsolutePath().split("\\" + File.separator)
-        buildDir =  (buildDir[0..(buildDir.length - 4)] + ['build', 'classes', 'debug']).join("\\" + File.separator)
-
-        sourceSets.testLocal.compileClasspath += files(buildDir)
-        sourceSets.testLocal.runtimeClasspath += files(buildDir)
-    }
-
-    classpath = sourceSets.testLocal.runtimeClasspath
-}
-
 // NOTE: This disables Lint!
 tasks.whenTaskAdded { task ->
     if (task.name.equals("lint")) {
@@ -113,5 +102,3 @@ tasks.whenTaskAdded { task ->
     }
 }
 
-// NOTE: tests disabled!
-//check.dependsOn localTest

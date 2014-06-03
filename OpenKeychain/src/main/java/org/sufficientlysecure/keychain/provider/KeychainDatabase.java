@@ -23,11 +23,9 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.provider.BaseColumns;
 
-import org.spongycastle.openpgp.PGPKeyRing;
-import org.spongycastle.openpgp.PGPPublicKeyRing;
-import org.spongycastle.openpgp.PGPSecretKeyRing;
 import org.sufficientlysecure.keychain.Constants;
-import org.sufficientlysecure.keychain.pgp.PgpConversionHelper;
+import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
+import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.provider.KeychainContract.ApiAppsAccountsColumns;
 import org.sufficientlysecure.keychain.provider.KeychainContract.ApiAppsColumns;
 import org.sufficientlysecure.keychain.provider.KeychainContract.CertsColumns;
@@ -256,6 +254,8 @@ public class KeychainDatabase extends SQLiteOpenHelper {
         }.getReadableDatabase();
 
         Cursor cursor = null;
+        ProviderHelper providerHelper = new ProviderHelper(context);
+
         try {
             // we insert in two steps: first, all public keys that have secret keys
             cursor = db.rawQuery("SELECT key_ring_data FROM key_rings WHERE type = 1 OR EXISTS ("
@@ -266,14 +266,11 @@ public class KeychainDatabase extends SQLiteOpenHelper {
                 for (int i = 0; i < cursor.getCount(); i++) {
                     cursor.moveToPosition(i);
                     byte[] data = cursor.getBlob(0);
-                    PGPKeyRing ring = PgpConversionHelper.BytesToPGPKeyRing(data);
-                    ProviderHelper providerHelper = new ProviderHelper(context);
-                    if (ring instanceof PGPPublicKeyRing)
-                        providerHelper.saveKeyRing((PGPPublicKeyRing) ring);
-                    else if (ring instanceof PGPSecretKeyRing)
-                        providerHelper.saveKeyRing((PGPSecretKeyRing) ring);
-                    else {
-                        Log.e(Constants.TAG, "Unknown blob data type!");
+                    try {
+                        UncachedKeyRing ring = UncachedKeyRing.decodeFromData(data);
+                        providerHelper.savePublicKeyRing(ring);
+                    } catch(PgpGeneralException e) {
+                        Log.e(Constants.TAG, "Error decoding keyring blob!");
                     }
                 }
             }
@@ -293,14 +290,11 @@ public class KeychainDatabase extends SQLiteOpenHelper {
                 for (int i = 0; i < cursor.getCount(); i++) {
                     cursor.moveToPosition(i);
                     byte[] data = cursor.getBlob(0);
-                    PGPKeyRing ring = PgpConversionHelper.BytesToPGPKeyRing(data);
-                    ProviderHelper providerHelper = new ProviderHelper(context);
-                    if (ring instanceof PGPPublicKeyRing) {
-                        providerHelper.saveKeyRing((PGPPublicKeyRing) ring);
-                    } else if (ring instanceof PGPSecretKeyRing) {
-                        providerHelper.saveKeyRing((PGPSecretKeyRing) ring);
-                    } else {
-                        Log.e(Constants.TAG, "Unknown blob data type!");
+                    try {
+                        UncachedKeyRing ring = UncachedKeyRing.decodeFromData(data);
+                        providerHelper.savePublicKeyRing(ring);
+                    } catch(PgpGeneralException e) {
+                        Log.e(Constants.TAG, "Error decoding keyring blob!");
                     }
                 }
             }

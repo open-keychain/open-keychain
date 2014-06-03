@@ -38,22 +38,18 @@ import android.widget.TextView;
 
 import com.beardedhen.androidbootstrap.BootstrapButton;
 
-import org.spongycastle.bcpg.sig.KeyFlags;
-import org.spongycastle.openpgp.PGPPublicKey;
-import org.spongycastle.openpgp.PGPSecretKey;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
-import org.sufficientlysecure.keychain.util.Choice;
+import org.sufficientlysecure.keychain.pgp.UncachedSecretKey;
 
 import java.text.DateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.TimeZone;
-import java.util.Vector;
 
 public class KeyEditor extends LinearLayout implements Editor, OnClickListener {
-    private PGPSecretKey mKey;
+    private UncachedSecretKey mKey;
 
     private EditorListener mEditorListener = null;
 
@@ -208,7 +204,7 @@ public class KeyEditor extends LinearLayout implements Editor, OnClickListener {
         }
     }
 
-    public void setValue(PGPSecretKey key, boolean isMasterKey, int usage, boolean isNewKey) {
+    public void setValue(UncachedSecretKey key, boolean isMasterKey, int usage, boolean isNewKey) {
         mKey = key;
 
         mIsMasterKey = isMasterKey;
@@ -216,13 +212,12 @@ public class KeyEditor extends LinearLayout implements Editor, OnClickListener {
             mDeleteButton.setVisibility(View.INVISIBLE);
         }
 
-        mAlgorithm.setText(PgpKeyHelper.getAlgorithmInfo(getContext(), key));
-        String keyIdStr = PgpKeyHelper.convertKeyIdToHex(key.getKeyID());
+        mAlgorithm.setText(PgpKeyHelper.getAlgorithmInfo(getContext(), key.getAlgorithm()));
+        String keyIdStr = PgpKeyHelper.convertKeyIdToHex(key.getKeyId());
         mKeyId.setText(keyIdStr);
 
-        Vector<Choice> choices = new Vector<Choice>();
-        boolean isElGamalKey = (key.getPublicKey().getAlgorithm() == PGPPublicKey.ELGAMAL_ENCRYPT);
-        boolean isDSAKey = (key.getPublicKey().getAlgorithm() == PGPPublicKey.DSA);
+        boolean isElGamalKey = (key.isElGamalEncrypt());
+        boolean isDSAKey = (key.isDSA());
         if (isElGamalKey) {
             mChkSign.setVisibility(View.INVISIBLE);
             TableLayout table = (TableLayout) findViewById(R.id.table_keylayout);
@@ -248,38 +243,45 @@ public class KeyEditor extends LinearLayout implements Editor, OnClickListener {
         mIsNewKey = isNewKey;
         if (isNewKey) {
             mUsage = usage;
-            mChkCertify.setChecked((usage & KeyFlags.CERTIFY_OTHER) == KeyFlags.CERTIFY_OTHER);
-            mChkSign.setChecked((usage & KeyFlags.SIGN_DATA) == KeyFlags.SIGN_DATA);
-            mChkEncrypt.setChecked(((usage & KeyFlags.ENCRYPT_COMMS) == KeyFlags.ENCRYPT_COMMS) ||
-                    ((usage & KeyFlags.ENCRYPT_STORAGE) == KeyFlags.ENCRYPT_STORAGE));
-            mChkAuthenticate.setChecked((usage & KeyFlags.AUTHENTICATION) == KeyFlags.AUTHENTICATION);
+            mChkCertify.setChecked(
+                    (usage & UncachedSecretKey.CERTIFY_OTHER) == UncachedSecretKey.CERTIFY_OTHER);
+            mChkSign.setChecked(
+                    (usage & UncachedSecretKey.SIGN_DATA) == UncachedSecretKey.SIGN_DATA);
+            mChkEncrypt.setChecked(
+                    ((usage & UncachedSecretKey.ENCRYPT_COMMS) == UncachedSecretKey.ENCRYPT_COMMS) ||
+                    ((usage & UncachedSecretKey.ENCRYPT_STORAGE) == UncachedSecretKey.ENCRYPT_STORAGE));
+            mChkAuthenticate.setChecked(
+                    (usage & UncachedSecretKey.AUTHENTICATION) == UncachedSecretKey.AUTHENTICATION);
         } else {
-            mUsage = PgpKeyHelper.getKeyUsage(key);
+            mUsage = key.getKeyUsage();
             mOriginalUsage = mUsage;
             if (key.isMasterKey()) {
-                mChkCertify.setChecked(PgpKeyHelper.isCertificationKey(key));
+                mChkCertify.setChecked(key.canCertify());
             }
-            mChkSign.setChecked(PgpKeyHelper.isSigningKey(key));
-            mChkEncrypt.setChecked(PgpKeyHelper.isEncryptionKey(key));
-            mChkAuthenticate.setChecked(PgpKeyHelper.isAuthenticationKey(key));
+            mChkSign.setChecked(key.canSign());
+            mChkEncrypt.setChecked(key.canEncrypt());
+            mChkAuthenticate.setChecked(key.canAuthenticate());
         }
 
-        Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
-        cal.setTime(PgpKeyHelper.getCreationDate(key));
-        setCreatedDate(cal);
-        cal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
-        Date expiryDate = PgpKeyHelper.getExpiryDate(key);
+        {
+            Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+            cal.setTime(key.getCreationTime());
+            setCreatedDate(cal);
+        }
+
+        Date expiryDate = key.getExpiryTime();
         if (expiryDate == null) {
             setExpiryDate(null);
         } else {
-            cal.setTime(PgpKeyHelper.getExpiryDate(key));
+            Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+            cal.setTime(expiryDate);
             setExpiryDate(cal);
             mOriginalExpiryDate = cal;
         }
 
     }
 
-    public PGPSecretKey getValue() {
+    public UncachedSecretKey getValue() {
         return mKey;
     }
 
@@ -320,16 +322,16 @@ public class KeyEditor extends LinearLayout implements Editor, OnClickListener {
     }
 
     public int getUsage() {
-        mUsage = (mUsage & ~KeyFlags.CERTIFY_OTHER) |
-                (mChkCertify.isChecked() ? KeyFlags.CERTIFY_OTHER : 0);
-        mUsage = (mUsage & ~KeyFlags.SIGN_DATA) |
-                (mChkSign.isChecked() ? KeyFlags.SIGN_DATA : 0);
-        mUsage = (mUsage & ~KeyFlags.ENCRYPT_COMMS) |
-                (mChkEncrypt.isChecked() ? KeyFlags.ENCRYPT_COMMS : 0);
-        mUsage = (mUsage & ~KeyFlags.ENCRYPT_STORAGE) |
-                (mChkEncrypt.isChecked() ? KeyFlags.ENCRYPT_STORAGE : 0);
-        mUsage = (mUsage & ~KeyFlags.AUTHENTICATION) |
-                (mChkAuthenticate.isChecked() ? KeyFlags.AUTHENTICATION : 0);
+        mUsage = (mUsage & ~UncachedSecretKey.CERTIFY_OTHER) |
+                (mChkCertify.isChecked() ? UncachedSecretKey.CERTIFY_OTHER : 0);
+        mUsage = (mUsage & ~UncachedSecretKey.SIGN_DATA) |
+                (mChkSign.isChecked() ? UncachedSecretKey.SIGN_DATA : 0);
+        mUsage = (mUsage & ~UncachedSecretKey.ENCRYPT_COMMS) |
+                (mChkEncrypt.isChecked() ? UncachedSecretKey.ENCRYPT_COMMS : 0);
+        mUsage = (mUsage & ~UncachedSecretKey.ENCRYPT_STORAGE) |
+                (mChkEncrypt.isChecked() ? UncachedSecretKey.ENCRYPT_STORAGE : 0);
+        mUsage = (mUsage & ~UncachedSecretKey.AUTHENTICATION) |
+                (mChkAuthenticate.isChecked() ? UncachedSecretKey.AUTHENTICATION : 0);
 
         return mUsage;
     }

@@ -25,25 +25,14 @@ import org.spongycastle.openpgp.PGPEncryptedDataGenerator;
 import org.spongycastle.openpgp.PGPException;
 import org.spongycastle.openpgp.PGPLiteralData;
 import org.spongycastle.openpgp.PGPLiteralDataGenerator;
-import org.spongycastle.openpgp.PGPPrivateKey;
-import org.spongycastle.openpgp.PGPPublicKey;
-import org.spongycastle.openpgp.PGPPublicKeyRing;
-import org.spongycastle.openpgp.PGPSecretKey;
-import org.spongycastle.openpgp.PGPSecretKeyRing;
-import org.spongycastle.openpgp.PGPSignature;
 import org.spongycastle.openpgp.PGPSignatureGenerator;
-import org.spongycastle.openpgp.PGPSignatureSubpacketGenerator;
 import org.spongycastle.openpgp.PGPV3SignatureGenerator;
-import org.spongycastle.openpgp.operator.PBESecretKeyDecryptor;
-import org.spongycastle.openpgp.operator.jcajce.JcaPGPContentSignerBuilder;
 import org.spongycastle.openpgp.operator.jcajce.JcePBEKeyEncryptionMethodGenerator;
-import org.spongycastle.openpgp.operator.jcajce.JcePBESecretKeyDecryptorBuilder;
 import org.spongycastle.openpgp.operator.jcajce.JcePGPDataEncryptorBuilder;
-import org.spongycastle.openpgp.operator.jcajce.JcePublicKeyKeyEncryptionMethodGenerator;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.pgp.Progressable;
-import org.sufficientlysecure.keychain.provider.KeychainContract;
+import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
+import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.util.InputData;
 import org.sufficientlysecure.keychain.util.Log;
@@ -277,20 +266,17 @@ public class PgpSignEncrypt {
         }
 
         /* Get keys for signature generation for later usage */
-        PGPSecretKey signingKey = null;
-        PGPSecretKeyRing signingKeyRing = null;
-        PGPPrivateKey signaturePrivateKey = null;
-        String signingUserId = null;
+        WrappedSecretKey signingKey = null;
         if (enableSignature) {
+            WrappedSecretKeyRing signingKeyRing;
             try {
-                signingKeyRing = mProviderHelper.getPGPSecretKeyRing(mSignatureMasterKeyId);
-                signingUserId = (String) mProviderHelper.getUnifiedData(mSignatureMasterKeyId,
-                        KeychainContract.KeyRings.USER_ID, ProviderHelper.FIELD_TYPE_STRING);
+                signingKeyRing = mProviderHelper.getWrappedSecretKeyRing(mSignatureMasterKeyId);
             } catch (ProviderHelper.NotFoundException e) {
                 throw new NoSigningKeyException();
             }
-            signingKey = PgpKeyHelper.getFirstSigningSubkey(signingKeyRing);
-            if (signingKey == null) {
+            try {
+                signingKey = signingKeyRing.getSigningSubKey();
+            } catch(PgpGeneralException e) {
                 throw new NoSigningKeyException();
             }
 
@@ -300,10 +286,9 @@ public class PgpSignEncrypt {
 
             updateProgress(R.string.progress_extracting_signature_key, 0, 100);
 
-            PBESecretKeyDecryptor keyDecryptor = new JcePBESecretKeyDecryptorBuilder().setProvider(
-                    Constants.BOUNCY_CASTLE_PROVIDER_NAME).build(mSignaturePassphrase.toCharArray());
-            signaturePrivateKey = signingKey.extractPrivateKey(keyDecryptor);
-            if (signaturePrivateKey == null) {
+            try {
+                signingKey.unlock(mSignaturePassphrase);
+            } catch (PgpGeneralException e) {
                 throw new KeyExtractionException();
             }
         }
@@ -331,13 +316,12 @@ public class PgpSignEncrypt {
                 // Asymmetric encryption
                 for (long id : mEncryptionMasterKeyIds) {
                     try {
-                        PGPPublicKeyRing keyRing = mProviderHelper.getPGPPublicKeyRing(id);
-                        PGPPublicKey key = PgpKeyHelper.getFirstEncryptSubkey(keyRing);
-                        if (key != null) {
-                            JcePublicKeyKeyEncryptionMethodGenerator pubKeyEncryptionGenerator =
-                                    new JcePublicKeyKeyEncryptionMethodGenerator(key);
-                            cPk.addMethod(pubKeyEncryptionGenerator);
-                        }
+                        WrappedPublicKeyRing keyRing = mProviderHelper.getWrappedPublicKeyRing(
+                                KeyRings.buildUnifiedKeyRingUri(id));
+                        WrappedPublicKey key = keyRing.getEncryptionSubKey();
+                        cPk.addMethod(key.getPubKeyEncryptionGenerator());
+                    } catch (PgpGeneralException e) {
+                        Log.e(Constants.TAG, "key not found!", e);
                     } catch (ProviderHelper.NotFoundException e) {
                         Log.e(Constants.TAG, "key not found!", e);
                     }
@@ -351,29 +335,18 @@ public class PgpSignEncrypt {
         if (enableSignature) {
             updateProgress(R.string.progress_preparing_signature, 10, 100);
 
-            // content signer based on signing key algorithm and chosen hash algorithm
-            JcaPGPContentSignerBuilder contentSignerBuilder = new JcaPGPContentSignerBuilder(
-                    signingKey.getPublicKey().getAlgorithm(), mSignatureHashAlgorithm)
-                    .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME);
-
-            int signatureType;
-            if (mCleartextInput && mEnableAsciiArmorOutput && !enableEncryption) {
-                // for sign-only ascii text
-                signatureType = PGPSignature.CANONICAL_TEXT_DOCUMENT;
-            } else {
-                signatureType = PGPSignature.BINARY_DOCUMENT;
-            }
-
-            if (mSignatureForceV3) {
-                signatureV3Generator = new PGPV3SignatureGenerator(contentSignerBuilder);
-                signatureV3Generator.init(signatureType, signaturePrivateKey);
-            } else {
-                signatureGenerator = new PGPSignatureGenerator(contentSignerBuilder);
-                signatureGenerator.init(signatureType, signaturePrivateKey);
-
-                PGPSignatureSubpacketGenerator spGen = new PGPSignatureSubpacketGenerator();
-                spGen.setSignerUserID(false, signingUserId);
-                signatureGenerator.setHashedSubpackets(spGen.generate());
+            try {
+                boolean cleartext = mCleartextInput && mEnableAsciiArmorOutput && !enableEncryption;
+                if (mSignatureForceV3) {
+                    signatureV3Generator = signingKey.getV3SignatureGenerator(
+                            mSignatureHashAlgorithm,cleartext);
+                } else {
+                    signatureGenerator = signingKey.getSignatureGenerator(
+                            mSignatureHashAlgorithm, cleartext);
+                }
+            } catch (PgpGeneralException e) {
+                // TODO throw correct type of exception (which shouldn't be PGPException)
+                throw new KeyExtractionException();
             }
         }
 
