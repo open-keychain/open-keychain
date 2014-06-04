@@ -10,7 +10,7 @@ sourceSets {
 }
 
 dependencies {
-    // NOTE: Always use version codes not dynamic ones, e.g. 0.7.3 instead of 0.7.+, see README for more information
+    // NOTE: Always use fixed version codes not dynamic ones, e.g. 0.7.3 instead of 0.7.+, see README for more information
 
     compile 'com.android.support:support-v4:19.1.0'
     compile 'com.android.support:appcompat-v7:19.1.0'
