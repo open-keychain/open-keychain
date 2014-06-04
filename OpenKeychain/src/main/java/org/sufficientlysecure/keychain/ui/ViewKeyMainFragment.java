@@ -169,18 +169,10 @@ public class ViewKeyMainFragment extends LoaderFragment implements
             case LOADER_ID_UNIFIED: {
                 if (data.moveToFirst()) {
                     if (data.getInt(INDEX_UNIFIED_HAS_ANY_SECRET) != 0) {
-                        // certify button
-                        mActionCertify.setVisibility(View.GONE);
-                        mActionCertifyDivider.setVisibility(View.GONE);
-
                         // edit button
                         mActionEdit.setVisibility(View.VISIBLE);
                         mActionEditDivider.setVisibility(View.VISIBLE);
                     } else {
-                        // certify button
-                        mActionCertify.setVisibility(View.VISIBLE);
-                        mActionCertifyDivider.setVisibility(View.VISIBLE);
-
                         // edit button
                         mActionEdit.setVisibility(View.GONE);
                         mActionEditDivider.setVisibility(View.GONE);
