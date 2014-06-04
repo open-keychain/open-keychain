@@ -34,6 +34,7 @@ import com.beardedhen.androidbootstrap.BootstrapButton;
 
 import org.openintents.openpgp.OpenPgpSignatureResult;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.pgp.PgpDecryptVerifyResult;
 import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
 import org.sufficientlysecure.keychain.ui.dialog.PassphraseDialogFragment;
@@ -111,7 +112,7 @@ public class DecryptFragment extends Fragment {
             mSignatureKeyId = signatureResult.getKeyId();
 
             String userId = signatureResult.getUserId();
-            String[] userIdSplit = PgpKeyHelper.splitUserId(userId);
+            String[] userIdSplit = KeyRing.splitUserId(userId);
             if (userIdSplit[0] != null) {
                 mUserId.setText(userIdSplit[0]);
             } else {

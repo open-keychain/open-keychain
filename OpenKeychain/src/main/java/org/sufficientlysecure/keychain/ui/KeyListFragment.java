@@ -17,7 +17,6 @@
 
 package org.sufficientlysecure.keychain.ui;
 
-import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
@@ -33,8 +32,8 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.view.MenuItemCompat;
-import android.support.v7.app.ActionBarActivity;
 import android.support.v4.widget.CursorAdapter;
+import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.SearchView;
 import android.text.TextUtils;
 import android.view.ActionMode;
@@ -59,7 +58,7 @@ import com.devspark.appmsg.AppMsg;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.helper.ExportHelper;
-import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
+import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRingData;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.ui.dialog.DeleteKeyDialogFragment;
@@ -475,7 +474,7 @@ public class KeyListFragment extends LoaderFragment
 
             { // set name and stuff, common to both key types
                 String userId = cursor.getString(INDEX_USER_ID);
-                String[] userIdSplit = PgpKeyHelper.splitUserId(userId);
+                String[] userIdSplit = KeyRing.splitUserId(userId);
                 if (userIdSplit[0] != null) {
                     h.mMainUserId.setText(highlighter.highlight(userIdSplit[0]));
                 } else {

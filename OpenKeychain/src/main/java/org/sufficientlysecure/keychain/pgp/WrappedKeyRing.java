@@ -1,7 +1,6 @@
 package org.sufficientlysecure.keychain.pgp;
 
 import org.spongycastle.openpgp.PGPKeyRing;
-import org.spongycastle.openpgp.PGPPublicKey;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.util.IterableIterator;
 
@@ -53,9 +52,9 @@ public abstract class WrappedKeyRing extends KeyRing {
     }
 
     public long getEncryptId() throws PgpGeneralException {
-        for(PGPPublicKey key : new IterableIterator<PGPPublicKey>(getRing().getPublicKeys())) {
-            if(PgpKeyHelper.isEncryptionKey(key)) {
-                return key.getKeyID();
+        for(WrappedPublicKey key : publicKeyIterator()) {
+            if(key.canEncrypt()) {
+                return key.getKeyId();
             }
         }
         throw new PgpGeneralException("No valid encryption key found!");
@@ -71,9 +70,9 @@ public abstract class WrappedKeyRing extends KeyRing {
     }
 
     public long getSignId() throws PgpGeneralException {
-        for(PGPPublicKey key : new IterableIterator<PGPPublicKey>(getRing().getPublicKeys())) {
-            if(PgpKeyHelper.isSigningKey(key)) {
-                return key.getKeyID();
+        for(WrappedPublicKey key : publicKeyIterator()) {
+            if(key.canSign()) {
+                return key.getKeyId();
             }
         }
         throw new PgpGeneralException("No valid signing key found!");
@@ -93,5 +92,7 @@ public abstract class WrappedKeyRing extends KeyRing {
     }
 
     abstract PGPKeyRing getRing();
+
+    abstract public IterableIterator<WrappedPublicKey> publicKeyIterator();
 
 }

@@ -199,7 +199,7 @@ public class PassphraseDialogFragment extends DialogFragment implements OnEditor
 
                 WrappedSecretKey unlockedSecretKey = null;
 
-                for(WrappedSecretKey clickSecretKey : secretRing.iterator()) {
+                for(WrappedSecretKey clickSecretKey : secretRing.secretKeyIterator()) {
                     try {
                         boolean unlocked = clickSecretKey.unlock(passphrase);
                         if (unlocked) {

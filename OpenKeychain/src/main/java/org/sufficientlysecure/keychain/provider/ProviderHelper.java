@@ -29,12 +29,12 @@ import android.support.v4.util.LongSparseArray;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
-import org.sufficientlysecure.keychain.pgp.UncachedPublicKey;
-import org.sufficientlysecure.keychain.pgp.WrappedSecretKeyRing;
-import org.sufficientlysecure.keychain.pgp.WrappedPublicKeyRing;
 import org.sufficientlysecure.keychain.pgp.PgpHelper;
 import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
+import org.sufficientlysecure.keychain.pgp.UncachedPublicKey;
+import org.sufficientlysecure.keychain.pgp.WrappedPublicKeyRing;
+import org.sufficientlysecure.keychain.pgp.WrappedSecretKeyRing;
 import org.sufficientlysecure.keychain.pgp.WrappedSignature;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.provider.KeychainContract.ApiApps;

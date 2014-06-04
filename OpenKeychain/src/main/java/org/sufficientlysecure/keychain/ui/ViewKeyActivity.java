@@ -48,6 +48,7 @@ import com.devspark.appmsg.AppMsg;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.helper.ExportHelper;
+import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
@@ -55,7 +56,6 @@ import org.sufficientlysecure.keychain.ui.adapter.PagerTabStripAdapter;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.SlidingTabLayout;
 
-import java.io.IOException;
 import java.util.Date;
 import java.util.HashMap;
 
@@ -409,7 +409,7 @@ public class ViewKeyActivity extends ActionBarActivity implements
             case LOADER_ID_UNIFIED: {
                 if (data.moveToFirst()) {
                     // get name, email, and comment from USER_ID
-                    String[] mainUserId = PgpKeyHelper.splitUserId(data.getString(INDEX_UNIFIED_USER_ID));
+                    String[] mainUserId = KeyRing.splitUserId(data.getString(INDEX_UNIFIED_USER_ID));
                     if (mainUserId[0] != null) {
                         setTitle(mainUserId[0]);
                     } else {

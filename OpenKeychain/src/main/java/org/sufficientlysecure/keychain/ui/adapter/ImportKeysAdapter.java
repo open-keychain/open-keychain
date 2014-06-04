@@ -32,7 +32,7 @@ import android.widget.TextView;
 
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.keyimport.ImportKeysListEntry;
-import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
+import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
 import org.sufficientlysecure.keychain.util.Highlighter;
 
@@ -121,7 +121,7 @@ public class ImportKeysAdapter extends ArrayAdapter<ImportKeysListEntry> {
 
         // main user id
         String userId = entry.userIds.get(0);
-        String[] userIdSplit = PgpKeyHelper.splitUserId(userId);
+        String[] userIdSplit = KeyRing.splitUserId(userId);
 
         // name
         if (userIdSplit[0] != null) {

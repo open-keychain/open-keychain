@@ -32,15 +32,15 @@ import com.devspark.appmsg.AppMsg;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.helper.Preferences;
+import org.sufficientlysecure.keychain.keyimport.ImportKeysListEntry;
+import org.sufficientlysecure.keychain.keyimport.Keyserver;
 import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
 import org.sufficientlysecure.keychain.ui.adapter.AsyncTaskResultWrapper;
 import org.sufficientlysecure.keychain.ui.adapter.ImportKeysAdapter;
-import org.sufficientlysecure.keychain.keyimport.ImportKeysListEntry;
 import org.sufficientlysecure.keychain.ui.adapter.ImportKeysListKeybaseLoader;
 import org.sufficientlysecure.keychain.ui.adapter.ImportKeysListLoader;
 import org.sufficientlysecure.keychain.ui.adapter.ImportKeysListServerLoader;
 import org.sufficientlysecure.keychain.util.InputData;
-import org.sufficientlysecure.keychain.keyimport.Keyserver;
 import org.sufficientlysecure.keychain.util.Log;
 
 import java.io.ByteArrayInputStream;

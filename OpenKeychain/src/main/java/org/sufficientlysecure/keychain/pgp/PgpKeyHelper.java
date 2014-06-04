@@ -24,150 +24,18 @@ import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.style.ForegroundColorSpan;
 
-import org.spongycastle.bcpg.sig.KeyFlags;
 import org.spongycastle.openpgp.PGPPublicKey;
-import org.spongycastle.openpgp.PGPPublicKeyRing;
-import org.spongycastle.openpgp.PGPSecretKey;
-import org.spongycastle.openpgp.PGPSecretKeyRing;
-import org.spongycastle.openpgp.PGPSignature;
-import org.spongycastle.openpgp.PGPSignatureSubpacketVector;
 import org.spongycastle.util.encoders.Hex;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.util.IterableIterator;
 import org.sufficientlysecure.keychain.util.Log;
 
 import java.security.DigestException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.Locale;
-import java.util.Vector;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class PgpKeyHelper {
-
-    private static final Pattern USER_ID_PATTERN = Pattern.compile("^(.*?)(?: \\((.*)\\))?(?: <(.*)>)?$");
-
-    @Deprecated
-    public static Date getCreationDate(PGPPublicKey key) {
-        return key.getCreationTime();
-    }
-
-    @Deprecated
-    public static Date getExpiryDate(PGPPublicKey key) {
-        Date creationDate = getCreationDate(key);
-        if (key.getValidDays() == 0) {
-            // no expiry
-            return null;
-        }
-        Calendar calendar = GregorianCalendar.getInstance();
-        calendar.setTime(creationDate);
-        calendar.add(Calendar.DATE, key.getValidDays());
-
-        return calendar.getTime();
-    }
-
-    @SuppressWarnings("unchecked")
-    public static boolean isEncryptionKey(PGPPublicKey key) {
-        if (!key.isEncryptionKey()) {
-            return false;
-        }
-
-        if (key.getVersion() <= 3) {
-            // this must be true now
-            return key.isEncryptionKey();
-        }
-
-        // special cases
-        if (key.getAlgorithm() == PGPPublicKey.ELGAMAL_ENCRYPT) {
-            return true;
-        }
-
-        if (key.getAlgorithm() == PGPPublicKey.RSA_ENCRYPT) {
-            return true;
-        }
-
-        for (PGPSignature sig : new IterableIterator<PGPSignature>(key.getSignatures())) {
-            if (key.isMasterKey() && sig.getKeyID() != key.getKeyID()) {
-                continue;
-            }
-            PGPSignatureSubpacketVector hashed = sig.getHashedSubPackets();
-
-            if (hashed != null
-                    && (hashed.getKeyFlags() & (KeyFlags.ENCRYPT_COMMS | KeyFlags.ENCRYPT_STORAGE)) != 0) {
-                return true;
-            }
-
-            PGPSignatureSubpacketVector unhashed = sig.getUnhashedSubPackets();
-
-            if (unhashed != null
-                    && (unhashed.getKeyFlags() & (KeyFlags.ENCRYPT_COMMS | KeyFlags.ENCRYPT_STORAGE)) != 0) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    @SuppressWarnings("unchecked")
-    public static boolean isSigningKey(PGPPublicKey key) {
-        if (key.getVersion() <= 3) {
-            return true;
-        }
-
-        // special case
-        if (key.getAlgorithm() == PGPPublicKey.RSA_SIGN) {
-            return true;
-        }
-
-        for (PGPSignature sig : new IterableIterator<PGPSignature>(key.getSignatures())) {
-            if (key.isMasterKey() && sig.getKeyID() != key.getKeyID()) {
-                continue;
-            }
-            PGPSignatureSubpacketVector hashed = sig.getHashedSubPackets();
-
-            if (hashed != null && (hashed.getKeyFlags() & KeyFlags.SIGN_DATA) != 0) {
-                return true;
-            }
-
-            PGPSignatureSubpacketVector unhashed = sig.getUnhashedSubPackets();
-
-            if (unhashed != null && (unhashed.getKeyFlags() & KeyFlags.SIGN_DATA) != 0) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    @SuppressWarnings("unchecked")
-    public static boolean isCertificationKey(PGPPublicKey key) {
-        if (key.getVersion() <= 3) {
-            return true;
-        }
-
-        for (PGPSignature sig : new IterableIterator<PGPSignature>(key.getSignatures())) {
-            if (key.isMasterKey() && sig.getKeyID() != key.getKeyID()) {
-                continue;
-            }
-            PGPSignatureSubpacketVector hashed = sig.getHashedSubPackets();
-
-            if (hashed != null && (hashed.getKeyFlags() & KeyFlags.CERTIFY_OTHER) != 0) {
-                return true;
-            }
-
-            PGPSignatureSubpacketVector unhashed = sig.getUnhashedSubPackets();
-
-            if (unhashed != null && (unhashed.getKeyFlags() & KeyFlags.CERTIFY_OTHER) != 0) {
-                return true;
-            }
-        }
-
-        return false;
-    }
 
     /**
      * TODO: Only used in HkpKeyServer. Get rid of this one!
@@ -355,39 +223,6 @@ public class PgpKeyHelper {
         int[] result = {((int) digest[0] + 256) % 256,
                 ((int) digest[1] + 256) % 256,
                 ((int) digest[2] + 256) % 256};
-        return result;
-    }
-
-    /**
-     * Splits userId string into naming part, email part, and comment part
-     *
-     * @param userId
-     * @return array with naming (0), email (1), comment (2)
-     */
-    public static String[] splitUserId(String userId) {
-        String[] result = new String[]{null, null, null};
-
-        if (userId == null || userId.equals("")) {
-            return result;
-        }
-
-        /*
-         * User ID matching:
-         * http://fiddle.re/t4p6f
-         *
-         * test cases:
-         * "Max Mustermann (this is a comment) <max@example.com>"
-         * "Max Mustermann <max@example.com>"
-         * "Max Mustermann (this is a comment)"
-         * "Max Mustermann [this is nothing]"
-         */
-        Matcher matcher = USER_ID_PATTERN.matcher(userId);
-        if (matcher.matches()) {
-            result[0] = matcher.group(1);
-            result[1] = matcher.group(3);
-            result[2] = matcher.group(2);
-        }
-
         return result;
     }
 
