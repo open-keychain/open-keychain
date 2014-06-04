@@ -32,6 +32,7 @@ import android.widget.TextView;
 
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.keyimport.ImportKeysListEntry;
+import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
 import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
 import org.sufficientlysecure.keychain.util.Highlighter;
 
@@ -83,7 +84,7 @@ public class ImportKeysAdapter extends ArrayAdapter<ImportKeysListEntry> {
         return mData;
     }
 
-    public ArrayList<ImportKeysListEntry> getSelectedData() {
+    public ArrayList<ImportKeysListEntry> getSelectedEntries() {
         ArrayList<ImportKeysListEntry> selectedData = new ArrayList<ImportKeysListEntry>();
         for (ImportKeysListEntry entry : mData) {
             if (entry.isSelected()) {

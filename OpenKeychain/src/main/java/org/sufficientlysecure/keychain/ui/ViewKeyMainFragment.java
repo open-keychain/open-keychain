@@ -32,7 +32,9 @@ import android.widget.ListView;
 import com.devspark.appmsg.AppMsg;
 
 import org.sufficientlysecure.keychain.Constants;
-import org.sufficientlysecure.keychain.R;import org.sufficientlysecure.keychain.provider.KeychainContract;
+import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
+import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UserIds;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
@@ -235,14 +237,16 @@ public class ViewKeyMainFragment extends LoaderFragment implements
             return;
         }
         try {
-            long keyId = new ProviderHelper(getActivity()).extractOrGetMasterKeyId(dataUri);
+            long keyId = new ProviderHelper(getActivity())
+                    .getCachedPublicKeyRing(dataUri)
+                    .extractOrGetMasterKeyId();
             long[] encryptionKeyIds = new long[]{keyId};
             Intent intent = new Intent(getActivity(), EncryptActivity.class);
             intent.setAction(EncryptActivity.ACTION_ENCRYPT);
             intent.putExtra(EncryptActivity.EXTRA_ENCRYPTION_KEY_IDS, encryptionKeyIds);
             // used instead of startActivity set actionbar based on callingPackage
             startActivityForResult(intent, 0);
-        } catch (ProviderHelper.NotFoundException e) {
+        } catch (PgpGeneralException e) {
             Log.e(Constants.TAG, "key not found!", e);
         }
     }

@@ -43,6 +43,7 @@ import org.sufficientlysecure.keychain.util.Log;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 
 public class KeychainProvider extends ContentProvider {
 
@@ -242,44 +243,38 @@ public class KeychainProvider extends ContentProvider {
                 HashMap<String, String> projectionMap = new HashMap<String, String>();
                 projectionMap.put(KeyRings._ID, Tables.KEYS + ".oid AS _id");
                 projectionMap.put(KeyRings.MASTER_KEY_ID, Tables.KEYS + "." + Keys.MASTER_KEY_ID);
-                projectionMap.put(KeyRings.KEY_ID, Keys.KEY_ID);
-                projectionMap.put(KeyRings.KEY_SIZE, Keys.KEY_SIZE);
+                projectionMap.put(KeyRings.KEY_ID, Tables.KEYS + "." + Keys.KEY_ID);
+                projectionMap.put(KeyRings.KEY_SIZE, Tables.KEYS + "." + Keys.KEY_SIZE);
                 projectionMap.put(KeyRings.IS_REVOKED, Tables.KEYS + "." + Keys.IS_REVOKED);
-                projectionMap.put(KeyRings.CAN_CERTIFY, Keys.CAN_CERTIFY);
-                projectionMap.put(KeyRings.CAN_ENCRYPT, Keys.CAN_ENCRYPT);
-                projectionMap.put(KeyRings.CAN_SIGN, Keys.CAN_SIGN);
+                projectionMap.put(KeyRings.CAN_CERTIFY, Tables.KEYS + "." + Keys.CAN_CERTIFY);
+                projectionMap.put(KeyRings.CAN_ENCRYPT, Tables.KEYS + "." + Keys.CAN_ENCRYPT);
+                projectionMap.put(KeyRings.CAN_SIGN, Tables.KEYS + "." + Keys.CAN_SIGN);
                 projectionMap.put(KeyRings.CREATION, Tables.KEYS + "." + Keys.CREATION);
-                projectionMap.put(KeyRings.EXPIRY, Keys.EXPIRY);
-                projectionMap.put(KeyRings.ALGORITHM, Keys.ALGORITHM);
-                projectionMap.put(KeyRings.FINGERPRINT, Keys.FINGERPRINT);
+                projectionMap.put(KeyRings.EXPIRY, Tables.KEYS + "." + Keys.EXPIRY);
+                projectionMap.put(KeyRings.ALGORITHM, Tables.KEYS + "." + Keys.ALGORITHM);
+                projectionMap.put(KeyRings.FINGERPRINT, Tables.KEYS + "." + Keys.FINGERPRINT);
                 projectionMap.put(KeyRings.USER_ID, UserIds.USER_ID);
                 projectionMap.put(KeyRings.VERIFIED, KeyRings.VERIFIED);
-                projectionMap.put(KeyRings.HAS_SECRET, KeyRings.HAS_SECRET);
+                projectionMap.put(KeyRings.PUBKEY_DATA,
+                        Tables.KEY_RINGS_PUBLIC + "." + KeyRingData.KEY_RING_DATA
+                                + " AS " + KeyRings.PUBKEY_DATA);
+                projectionMap.put(KeyRings.PRIVKEY_DATA,
+                        Tables.KEY_RINGS_SECRET + "." + KeyRingData.KEY_RING_DATA
+                                + " AS " + KeyRings.PRIVKEY_DATA);
+                projectionMap.put(KeyRings.HAS_SECRET, Tables.KEYS + "." + KeyRings.HAS_SECRET);
                 projectionMap.put(KeyRings.HAS_ANY_SECRET,
                     "(EXISTS (SELECT * FROM " + Tables.KEY_RINGS_SECRET
                         + " WHERE " + Tables.KEY_RINGS_SECRET + "." + KeyRingData.MASTER_KEY_ID
                             + " = " + Tables.KEYS + "." + Keys.MASTER_KEY_ID
                         + ")) AS " + KeyRings.HAS_ANY_SECRET);
                 projectionMap.put(KeyRings.HAS_ENCRYPT,
-                    "(EXISTS (SELECT * FROM " + Tables.KEYS + " AS k"
-                        +" WHERE k." + Keys.MASTER_KEY_ID
-                            + " = " + Tables.KEYS + "." + Keys.MASTER_KEY_ID
-                        + " AND k." + Keys.IS_REVOKED + " = 0"
-                        + " AND k." + Keys.CAN_ENCRYPT + " = 1"
-                        + " AND ( k." + Keys.EXPIRY + " IS NULL OR k." + Keys.EXPIRY
-                            + " >= " + new Date().getTime() / 1000 + " )"
-                        + ")) AS " + KeyRings.HAS_ENCRYPT);
+                        "kE." + Keys.KEY_ID + " AS " + KeyRings.HAS_ENCRYPT);
                 projectionMap.put(KeyRings.HAS_SIGN,
-                        "(EXISTS (SELECT * FROM " + Tables.KEYS + " AS k"
-                                +" WHERE k." + Keys.MASTER_KEY_ID
-                                + " = " + Tables.KEYS + "." + Keys.MASTER_KEY_ID
-                                + " AND k." + Keys.IS_REVOKED + " = 0"
-                                + " AND k." + Keys.HAS_SECRET + " = 1"
-                                + " AND k." + Keys.CAN_SIGN + " = 1"
-                                + " AND ( k." + Keys.EXPIRY + " IS NULL OR k." + Keys.EXPIRY
-                                + " >= " + new Date().getTime() / 1000 + " )"
-                                + ")) AS " + KeyRings.HAS_SIGN);
+                        "kS." + Keys.KEY_ID + " AS " + KeyRings.HAS_SIGN);
                 qb.setProjectionMap(projectionMap);
+
+                // Need this as list so we can search in it
+                List<String> plist = Arrays.asList(projection);
 
                 qb.setTables(
                     Tables.KEYS
@@ -295,6 +290,37 @@ public class KeychainProvider extends ContentProvider {
                             + " AND " + Tables.CERTS + "." + Certs.VERIFIED
                                 + " = " + Certs.VERIFIED_SECRET
                         + ")"
+                        // fairly expensive joins following, only do when requested
+                        + (plist.contains(KeyRings.PUBKEY_DATA) ?
+                            " INNER JOIN " + Tables.KEY_RINGS_PUBLIC + " ON ("
+                                    + Tables.KEYS + "." + Keys.MASTER_KEY_ID
+                                + " = "
+                                    + Tables.KEY_RINGS_PUBLIC + "." + KeyRingData.MASTER_KEY_ID
+                                + ")" : "")
+                        + (plist.contains(KeyRings.PRIVKEY_DATA) ?
+                            " LEFT JOIN " + Tables.KEY_RINGS_SECRET + " ON ("
+                                    + Tables.KEYS + "." + Keys.MASTER_KEY_ID
+                                + " = "
+                                    + Tables.KEY_RINGS_SECRET + "." + KeyRingData.MASTER_KEY_ID
+                                + ")" : "")
+                        + (plist.contains(KeyRings.HAS_ENCRYPT) ?
+                            " LEFT JOIN " + Tables.KEYS + " AS kE ON ("
+                                +"kE." + Keys.MASTER_KEY_ID
+                                    + " = " + Tables.KEYS + "." + Keys.MASTER_KEY_ID
+                                + " AND kE." + Keys.IS_REVOKED + " = 0"
+                                + " AND kE." + Keys.CAN_ENCRYPT + " = 1"
+                                + " AND ( kE." + Keys.EXPIRY + " IS NULL OR kE." + Keys.EXPIRY
+                                    + " >= " + new Date().getTime() / 1000 + " )"
+                            + ")" : "")
+                        + (plist.contains(KeyRings.HAS_SIGN) ?
+                            " LEFT JOIN " + Tables.KEYS + " AS kS ON ("
+                                +"kS." + Keys.MASTER_KEY_ID
+                                    + " = " + Tables.KEYS + "." + Keys.MASTER_KEY_ID
+                                + " AND kS." + Keys.IS_REVOKED + " = 0"
+                                + " AND kS." + Keys.CAN_SIGN + " = 1"
+                                + " AND ( kS." + Keys.EXPIRY + " IS NULL OR kS." + Keys.EXPIRY
+                                    + " >= " + new Date().getTime() / 1000 + " )"
+                            + ")" : "")
                     );
                 qb.appendWhere(Tables.KEYS + "." + Keys.RANK + " = 0");
                 // in case there are multiple verifying certificates
@@ -595,7 +621,7 @@ public class KeychainProvider extends ContentProvider {
 
                 case KEY_RING_CERTS:
                     // we replace here, keeping only the latest signature
-                    // TODO this would be better handled in saveKeyRing directly!
+                    // TODO this would be better handled in savePublicKeyRing directly!
                     db.replaceOrThrow(Tables.CERTS, null, values);
                     keyId = values.getAsLong(Certs.MASTER_KEY_ID);
                     break;
@@ -618,7 +644,7 @@ public class KeychainProvider extends ContentProvider {
             }
 
             if(keyId != null) {
-                uri = KeyRings.buildGenericKeyRingUri(keyId.toString());
+                uri = KeyRings.buildGenericKeyRingUri(keyId);
                 rowUri = uri;
             }
 

@@ -110,6 +110,8 @@ public class KeychainContract {
         public static final String HAS_ANY_SECRET = "has_any_secret";
         public static final String HAS_ENCRYPT = "has_encrypt";
         public static final String HAS_SIGN = "has_sign";
+        public static final String PUBKEY_DATA = "pubkey_data";
+        public static final String PRIVKEY_DATA = "privkey_data";
 
         public static final Uri CONTENT_URI = BASE_CONTENT_URI_INTERNAL.buildUpon()
                 .appendPath(BASE_KEY_RINGS).build();
@@ -123,6 +125,10 @@ public class KeychainContract {
             return CONTENT_URI.buildUpon().appendPath(PATH_UNIFIED).build();
         }
 
+        public static Uri buildGenericKeyRingUri(long masterKeyId) {
+            return CONTENT_URI.buildUpon().appendPath(Long.toString(masterKeyId)).build();
+        }
+
         public static Uri buildGenericKeyRingUri(String masterKeyId) {
             return CONTENT_URI.buildUpon().appendPath(masterKeyId).build();
         }
@@ -131,20 +137,24 @@ public class KeychainContract {
             return CONTENT_URI.buildUpon().appendPath(uri.getPathSegments().get(1)).build();
         }
 
-        public static Uri buildUnifiedKeyRingUri(String masterKeyId) {
-            return CONTENT_URI.buildUpon().appendPath(masterKeyId).appendPath(PATH_UNIFIED).build();
+        public static Uri buildUnifiedKeyRingUri(long masterKeyId) {
+            return CONTENT_URI.buildUpon().appendPath(Long.toString(masterKeyId))
+                    .appendPath(PATH_UNIFIED).build();
         }
 
         public static Uri buildUnifiedKeyRingUri(Uri uri) {
-            return CONTENT_URI.buildUpon().appendPath(uri.getPathSegments().get(1)).appendPath(PATH_UNIFIED).build();
+            return CONTENT_URI.buildUpon().appendPath(uri.getPathSegments().get(1))
+                    .appendPath(PATH_UNIFIED).build();
         }
 
         public static Uri buildUnifiedKeyRingsFindByEmailUri(String email) {
-            return CONTENT_URI.buildUpon().appendPath(PATH_FIND).appendPath(PATH_BY_EMAIL).appendPath(email).build();
+            return CONTENT_URI.buildUpon().appendPath(PATH_FIND)
+                    .appendPath(PATH_BY_EMAIL).appendPath(email).build();
         }
 
-        public static Uri buildUnifiedKeyRingsFindBySubkeyUri(String subkey) {
-            return CONTENT_URI.buildUpon().appendPath(PATH_FIND).appendPath(PATH_BY_SUBKEY).appendPath(subkey).build();
+        public static Uri buildUnifiedKeyRingsFindBySubkeyUri(long subkey) {
+            return CONTENT_URI.buildUpon().appendPath(PATH_FIND)
+                    .appendPath(PATH_BY_SUBKEY).appendPath(Long.toString(subkey)).build();
         }
 
     }

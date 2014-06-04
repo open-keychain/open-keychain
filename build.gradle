@@ -4,7 +4,9 @@ buildscript {
     }
 
     dependencies {
+        // NOTE: Always use fixed version codes not dynamic ones, e.g. 0.7.3 instead of 0.7.+, see README for more information
         classpath 'com.android.tools.build:gradle:0.10.0'
+        classpath 'org.robolectric.gradle:gradle-android-test-plugin:0.10.0'
     }
 }
 

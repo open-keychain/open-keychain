@@ -132,7 +132,7 @@ public class SelectSecretKeyLayoutFragment extends Fragment implements LoaderMan
 
     //For AppSettingsFragment
     public void selectKey(long masterKeyId) {
-        Uri buildUri = KeychainContract.KeyRings.buildGenericKeyRingUri(String.valueOf(masterKeyId));
+        Uri buildUri = KeychainContract.KeyRings.buildGenericKeyRingUri(masterKeyId);
         mReceivedUri = buildUri;
         getActivity().getSupportLoaderManager().restartLoader(LOADER_ID, null, this);
     }

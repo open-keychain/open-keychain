@@ -1,92 +1,101 @@
-/*
- * Copyright (C) 2014 Ash Hughes <ashes-iontach@hotmail.com>
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
-
 package org.sufficientlysecure.keychain.service;
 
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import org.spongycastle.openpgp.PGPSecretKey;
-import org.sufficientlysecure.keychain.pgp.PgpConversionHelper;
+import java.io.Serializable;
+import java.util.HashMap;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-
+/** This class is a a transferable representation for a collection of changes
+ * to be done on a keyring.
+ *
+ * This class should include all types of operations supported in the backend.
+ *
+ * All changes are done in a differential manner. Besides the two key
+ * identification attributes, all attributes may be null, which indicates no
+ * change to the keyring. This is also the reason why boxed values are used
+ * instead of primitives in the subclasses.
+ *
+ * Application of operations in the backend should be fail-fast, which means an
+ * error in any included operation (for example revocation of a non-existent
+ * subkey) will cause the operation as a whole to fail.
+ */
 public class SaveKeyringParcel implements Parcelable {
 
-    public ArrayList<String> userIds;
-    public ArrayList<String> originalIDs;
-    public ArrayList<String> deletedIDs;
-    public boolean[] newIDs;
-    public boolean primaryIDChanged;
-    public boolean[] moddedKeys;
-    public ArrayList<PGPSecretKey> deletedKeys;
-    public ArrayList<Calendar> keysExpiryDates;
-    public ArrayList<Integer> keysUsages;
+    // the master key id to be edited
+    private final long mMasterKeyId;
+    // the key fingerprint, for safety
+    private final byte[] mFingerprint;
+
     public String newPassphrase;
-    public String oldPassphrase;
-    public boolean[] newKeys;
-    public ArrayList<PGPSecretKey> keys;
-    public String originalPrimaryID;
 
-    public SaveKeyringParcel() {}
+    public String[] addUserIds;
+    public SubkeyAdd[] addSubKeys;
 
-    private SaveKeyringParcel(Parcel source) {
-        userIds = (ArrayList<String>) source.readSerializable();
-        originalIDs = (ArrayList<String>) source.readSerializable();
-        deletedIDs = (ArrayList<String>) source.readSerializable();
-        newIDs = source.createBooleanArray();
-        primaryIDChanged = source.readByte() != 0;
-        moddedKeys = source.createBooleanArray();
-        byte[] tmp = source.createByteArray();
-        if (tmp == null) {
-            deletedKeys = null;
-        } else {
-            deletedKeys = PgpConversionHelper.BytesToPGPSecretKeyList(tmp);
+    public HashMap<Long, SubkeyChange> changeSubKeys;
+    public String changePrimaryUserId;
+
+    public String[] revokeUserIds;
+    public long[] revokeSubKeys;
+
+    public SaveKeyringParcel(long masterKeyId, byte[] fingerprint) {
+        mMasterKeyId = masterKeyId;
+        mFingerprint = fingerprint;
+    }
+
+    // performance gain for using Parcelable here would probably be negligible,
+    // use Serializable instead.
+    public static class SubkeyAdd implements Serializable {
+        public final int mAlgorithm;
+        public final int mKeysize;
+        public final int mFlags;
+        public final Long mExpiry;
+        public SubkeyAdd(int algorithm, int keysize, int flags, Long expiry) {
+            mAlgorithm = algorithm;
+            mKeysize = keysize;
+            mFlags = flags;
+            mExpiry = expiry;
         }
-        keysExpiryDates = (ArrayList<Calendar>) source.readSerializable();
-        keysUsages = source.readArrayList(Integer.class.getClassLoader());
-        newPassphrase = source.readString();
-        oldPassphrase = source.readString();
-        newKeys = source.createBooleanArray();
-        keys = PgpConversionHelper.BytesToPGPSecretKeyList(source.createByteArray());
-        originalPrimaryID = source.readString();
+    }
+
+    public static class SubkeyChange implements Serializable {
+        public final long mKeyId;
+        public final Integer mFlags;
+        public final Long mExpiry;
+        public SubkeyChange(long keyId, Integer flags, Long expiry) {
+            mKeyId = keyId;
+            mFlags = flags;
+            mExpiry = expiry;
+        }
+    }
+
+    public SaveKeyringParcel(Parcel source) {
+        mMasterKeyId = source.readLong();
+        mFingerprint = source.createByteArray();
+
+        addUserIds = source.createStringArray();
+        addSubKeys = (SubkeyAdd[]) source.readSerializable();
+
+        changeSubKeys = (HashMap<Long,SubkeyChange>) source.readSerializable();
+        changePrimaryUserId = source.readString();
+
+        revokeUserIds = source.createStringArray();
+        revokeSubKeys = source.createLongArray();
     }
 
     @Override
     public void writeToParcel(Parcel destination, int flags) {
-        destination.writeSerializable(userIds); //might not be the best method to store.
-        destination.writeSerializable(originalIDs);
-        destination.writeSerializable(deletedIDs);
-        destination.writeBooleanArray(newIDs);
-        destination.writeByte((byte) (primaryIDChanged ? 1 : 0));
-        destination.writeBooleanArray(moddedKeys);
-        byte[] tmp = null;
-        if (deletedKeys.size() != 0) {
-            tmp = PgpConversionHelper.PGPSecretKeyArrayListToBytes(deletedKeys);
-        }
-        destination.writeByteArray(tmp);
-        destination.writeSerializable(keysExpiryDates);
-        destination.writeList(keysUsages);
-        destination.writeString(newPassphrase);
-        destination.writeString(oldPassphrase);
-        destination.writeBooleanArray(newKeys);
-        destination.writeByteArray(PgpConversionHelper.PGPSecretKeyArrayListToBytes(keys));
-        destination.writeString(originalPrimaryID);
+        destination.writeLong(mMasterKeyId);
+        destination.writeByteArray(mFingerprint);
+
+        destination.writeStringArray(addUserIds);
+        destination.writeSerializable(addSubKeys);
+
+        destination.writeSerializable(changeSubKeys);
+        destination.writeString(changePrimaryUserId);
+
+        destination.writeStringArray(revokeUserIds);
+        destination.writeLongArray(revokeSubKeys);
     }
 
     public static final Creator<SaveKeyringParcel> CREATOR = new Creator<SaveKeyringParcel>() {
@@ -103,4 +112,5 @@ public class SaveKeyringParcel implements Parcelable {
     public int describeContents() {
         return 0;
     }
+
 }

@@ -273,9 +273,9 @@
   <string name="error_jelly_bean_needed">¡Necesita Android 4.1 para usar la característica NFC Beam (haz NFC) de Android!</string>
   <string name="error_nfc_needed">¡NFC no está disponible en tu dispositivo!</string>
   <string name="error_nothing_import">¡Nada que importar!</string>
-  <string name="error_keyserver_insufficient_query">Consulta al servidor insuficiente</string>
-  <string name="error_keyserver_query">La consulta al servidor de claves ha fallado</string>
-  <string name="error_keyserver_too_many_responses">Demasiadas claves posibles. Por favor ¡refine su consulta!</string>
+  <string name="error_keyserver_insufficient_query">Petición de búsqueda de clave demasiado corta</string>
+  <string name="error_searching_keys">Error irrecuperable buscando claves en el servidor</string>
+  <string name="error_keyserver_too_many_responses">La petición de búsqueda de clave devolvió demasiados candidatos; por favor refine su petición</string>
   <string name="error_import_file_no_content">El archivo está vacio</string>
   <string name="error_generic_report_bug">Ha ocurrido un error genérico, por favor, informa de este bug a OpenKeychain</string>
   <plurals name="error_import_non_pgp_part">

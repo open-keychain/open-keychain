@@ -18,10 +18,7 @@
 
 package org.sufficientlysecure.keychain.pgp;
 
-import android.net.Uri;
-
 import org.spongycastle.bcpg.ArmoredInputStream;
-import org.spongycastle.bcpg.SignatureSubpacketTags;
 import org.spongycastle.openpgp.PGPCompressedData;
 import org.spongycastle.openpgp.PGPEncryptedData;
 import org.spongycastle.openpgp.PGPEncryptedDataList;
@@ -31,29 +28,19 @@ import org.spongycastle.openpgp.PGPObjectFactory;
 import org.spongycastle.openpgp.PGPOnePassSignature;
 import org.spongycastle.openpgp.PGPOnePassSignatureList;
 import org.spongycastle.openpgp.PGPPBEEncryptedData;
-import org.spongycastle.openpgp.PGPPrivateKey;
-import org.spongycastle.openpgp.PGPPublicKey;
 import org.spongycastle.openpgp.PGPPublicKeyEncryptedData;
-import org.spongycastle.openpgp.PGPPublicKeyRing;
-import org.spongycastle.openpgp.PGPSecretKey;
-import org.spongycastle.openpgp.PGPSecretKeyRing;
 import org.spongycastle.openpgp.PGPSignature;
 import org.spongycastle.openpgp.PGPSignatureList;
-import org.spongycastle.openpgp.PGPSignatureSubpacketVector;
 import org.spongycastle.openpgp.PGPUtil;
 import org.spongycastle.openpgp.operator.PBEDataDecryptorFactory;
-import org.spongycastle.openpgp.operator.PBESecretKeyDecryptor;
 import org.spongycastle.openpgp.operator.PGPDigestCalculatorProvider;
 import org.spongycastle.openpgp.operator.PublicKeyDataDecryptorFactory;
 import org.spongycastle.openpgp.operator.jcajce.JcaPGPContentVerifierBuilderProvider;
 import org.spongycastle.openpgp.operator.jcajce.JcaPGPDigestCalculatorProviderBuilder;
 import org.spongycastle.openpgp.operator.jcajce.JcePBEDataDecryptorFactoryBuilder;
-import org.spongycastle.openpgp.operator.jcajce.JcePBESecretKeyDecryptorBuilder;
-import org.spongycastle.openpgp.operator.jcajce.JcePublicKeyDataDecryptorFactoryBuilder;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.pgp.Progressable;
-import org.sufficientlysecure.keychain.provider.KeychainContract;
+import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.util.InputData;
@@ -67,7 +54,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.security.SignatureException;
 import java.util.Iterator;
-import java.util.Map;
 import java.util.Set;
 
 /**
@@ -248,7 +234,7 @@ public class PgpDecryptVerify {
 
         PGPPublicKeyEncryptedData encryptedDataAsymmetric = null;
         PGPPBEEncryptedData encryptedDataSymmetric = null;
-        PGPSecretKey secretEncryptionKey = null;
+        WrappedSecretKey secretEncryptionKey = null;
         Iterator<?> it = enc.getEncryptedDataObjects();
         boolean asymmetricPacketFound = false;
         boolean symmetricPacketFound = false;
@@ -260,15 +246,12 @@ public class PgpDecryptVerify {
 
                 PGPPublicKeyEncryptedData encData = (PGPPublicKeyEncryptedData) obj;
 
-                long masterKeyId;
-                PGPSecretKeyRing secretKeyRing;
+                WrappedSecretKeyRing secretKeyRing;
                 try {
-                    // get master key id for this encryption key id
-                    masterKeyId = mProviderHelper.getMasterKeyId(
-                            KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(Long.toString(encData.getKeyID()))
-                    );
                     // get actual keyring object based on master key id
-                    secretKeyRing = mProviderHelper.getPGPSecretKeyRing(masterKeyId);
+                    secretKeyRing = mProviderHelper.getWrappedSecretKeyRing(
+                            KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(encData.getKeyID())
+                    );
                 } catch (ProviderHelper.NotFoundException e) {
                     // continue with the next packet in the while loop
                     continue;
@@ -278,13 +261,14 @@ public class PgpDecryptVerify {
                     continue;
                 }
                 // get subkey which has been used for this encryption packet
-                secretEncryptionKey = secretKeyRing.getSecretKey(encData.getKeyID());
+                secretEncryptionKey = secretKeyRing.getSubKey(encData.getKeyID());
                 if (secretEncryptionKey == null) {
                     // continue with the next packet in the while loop
                     continue;
                 }
 
                 /* secret key exists in database! */
+                long masterKeyId = secretEncryptionKey.getRing().getMasterKeyId();
 
                 // allow only specific keys for decryption?
                 if (mAllowedKeyIds != null) {
@@ -359,23 +343,17 @@ public class PgpDecryptVerify {
         } else if (asymmetricPacketFound) {
             currentProgress += 5;
             updateProgress(R.string.progress_extracting_key, currentProgress, 100);
-            PGPPrivateKey privateKey;
             try {
-                PBESecretKeyDecryptor keyDecryptor = new JcePBESecretKeyDecryptorBuilder()
-                        .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME).build(
-                                mPassphrase.toCharArray());
-                privateKey = secretEncryptionKey.extractPrivateKey(keyDecryptor);
-            } catch (PGPException e) {
-                throw new WrongPassphraseException();
-            }
-            if (privateKey == null) {
+                if (!secretEncryptionKey.unlock(mPassphrase)) {
+                    throw new WrongPassphraseException();
+                }
+            } catch(PgpGeneralException e) {
                 throw new KeyExtractionException();
             }
             currentProgress += 5;
             updateProgress(R.string.progress_preparing_streams, currentProgress, 100);
 
-            PublicKeyDataDecryptorFactory decryptorFactory = new JcePublicKeyDataDecryptorFactoryBuilder()
-                    .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME).build(privateKey);
+            PublicKeyDataDecryptorFactory decryptorFactory = secretEncryptionKey.getDecryptorFactory();
 
             clear = encryptedDataAsymmetric.getDataStream(decryptorFactory);
 
@@ -388,10 +366,10 @@ public class PgpDecryptVerify {
 
         PGPObjectFactory plainFact = new PGPObjectFactory(clear);
         Object dataChunk = plainFact.nextObject();
-        PGPOnePassSignature signature = null;
         OpenPgpSignatureResultBuilder signatureResultBuilder = new OpenPgpSignatureResultBuilder();
-        PGPPublicKey signatureKey = null;
         int signatureIndex = -1;
+        WrappedPublicKeyRing signingRing = null;
+        WrappedPublicKey signingKey = null;
 
         if (dataChunk instanceof PGPCompressedData) {
             updateProgress(R.string.progress_decompressing_data, currentProgress, 100);
@@ -403,6 +381,8 @@ public class PgpDecryptVerify {
             currentProgress += 10;
         }
 
+        PGPOnePassSignature signature = null;
+
         if (dataChunk instanceof PGPOnePassSignatureList) {
             updateProgress(R.string.progress_processing_signature, currentProgress, 100);
 
@@ -410,19 +390,13 @@ public class PgpDecryptVerify {
 
             // go through all signatures
             // and find out for which signature we have a key in our database
-            Long masterKeyId = null;
-            String primaryUserId = null;
             for (int i = 0; i < sigList.size(); ++i) {
                 try {
-                    Uri uri = KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(
-                            Long.toString(sigList.get(i).getKeyID()));
-                    Map<String, Object> data = mProviderHelper.getGenericData(uri,
-                            new String[] { KeyRings.MASTER_KEY_ID, KeyRings.USER_ID },
-                            new int[] { ProviderHelper.FIELD_TYPE_INTEGER,
-                                        ProviderHelper.FIELD_TYPE_STRING }
+                    long sigKeyId = sigList.get(i).getKeyID();
+                    signingRing = mProviderHelper.getWrappedPublicKeyRing(
+                            KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(sigKeyId)
                     );
-                    masterKeyId = (Long) data.get(KeyRings.MASTER_KEY_ID);
-                    primaryUserId = (String) data.get(KeyRings.USER_ID);
+                    signingKey = signingRing.getSubkey(sigKeyId);
                     signatureIndex = i;
                 } catch (ProviderHelper.NotFoundException e) {
                     Log.d(Constants.TAG, "key not found!");
@@ -430,43 +404,24 @@ public class PgpDecryptVerify {
                 }
             }
 
-            if (masterKeyId != null) {
+            if (signingKey != null) {
                 // key found in our database!
                 signature = sigList.get(signatureIndex);
 
-                PGPPublicKeyRing publicKeyRing = null;
-                try {
-                    publicKeyRing = mProviderHelper
-                            .getPGPPublicKeyRing(masterKeyId);
-                } catch (ProviderHelper.NotFoundException e) {
-                    // can't happen
-                }
-
-                // get the subkey which has been used to generate this signature
-                signatureKey = publicKeyRing.getPublicKey(signature.getKeyID());
-
                 signatureResultBuilder.signatureAvailable(true);
                 signatureResultBuilder.knownKey(true);
-                signatureResultBuilder.userId(primaryUserId);
-                signatureResultBuilder.keyId(masterKeyId);
+                signatureResultBuilder.keyId(signingRing.getMasterKeyId());
+                try {
+                    signatureResultBuilder.userId(signingRing.getPrimaryUserId());
+                } catch(PgpGeneralException e) {
+                    Log.d(Constants.TAG, "No primary user id in key " + signingRing.getMasterKeyId());
+                }
+                signatureResultBuilder.signatureKeyCertified(signingRing.getVerified() > 0);
 
                 JcaPGPContentVerifierBuilderProvider contentVerifierBuilderProvider =
                         new JcaPGPContentVerifierBuilderProvider()
                                 .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME);
-                signature.init(contentVerifierBuilderProvider, signatureKey);
-
-                // get certification status of this key
-                boolean isSignatureKeyCertified;
-                try {
-                    Object data = mProviderHelper.getGenericData(
-                            KeychainContract.KeyRings.buildUnifiedKeyRingUri(Long.toString(masterKeyId)),
-                            KeyRings.VERIFIED,
-                            ProviderHelper.FIELD_TYPE_INTEGER);
-                    isSignatureKeyCertified = ((Long) data > 0);
-                } catch (ProviderHelper.NotFoundException e) {
-                    isSignatureKeyCertified = false;
-                }
-                signatureResultBuilder.signatureKeyCertified(isSignatureKeyCertified);
+                signature.init(contentVerifierBuilderProvider, signingKey.getPublicKey());
             } else {
                 // no key in our database -> return "unknown pub key" status including the first key id
                 if (!sigList.isEmpty()) {
@@ -541,7 +496,7 @@ public class PgpDecryptVerify {
 
                 // Verify signature and check binding signatures
                 boolean validSignature = signature.verify(messageSignature);
-                boolean validKeyBinding = verifyKeyBinding(messageSignature, signatureKey);
+                boolean validKeyBinding = signingRing.verifySubkeyBinding(signingKey);
 
                 signatureResultBuilder.validSignature(validSignature);
                 signatureResultBuilder.validKeyBinding(validKeyBinding);
@@ -617,22 +572,19 @@ public class PgpDecryptVerify {
             throw new InvalidDataException();
         }
 
+        WrappedPublicKeyRing signingRing = null;
+        WrappedPublicKey signingKey = null;
+        int signatureIndex = -1;
+
         // go through all signatures
         // and find out for which signature we have a key in our database
-        Long masterKeyId = null;
-        String primaryUserId = null;
-        int signatureIndex = 0;
         for (int i = 0; i < sigList.size(); ++i) {
             try {
-                Uri uri = KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(
-                        Long.toString(sigList.get(i).getKeyID()));
-                Map<String, Object> data = mProviderHelper.getGenericData(uri,
-                        new String[] { KeyRings.MASTER_KEY_ID, KeyRings.USER_ID },
-                        new int[] { ProviderHelper.FIELD_TYPE_INTEGER,
-                                ProviderHelper.FIELD_TYPE_STRING }
+                long sigKeyId = sigList.get(i).getKeyID();
+                signingRing = mProviderHelper.getWrappedPublicKeyRing(
+                        KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(sigKeyId)
                 );
-                masterKeyId = (Long) data.get(KeyRings.MASTER_KEY_ID);
-                primaryUserId = (String) data.get(KeyRings.USER_ID);
+                signingKey = signingRing.getSubkey(sigKeyId);
                 signatureIndex = i;
             } catch (ProviderHelper.NotFoundException e) {
                 Log.d(Constants.TAG, "key not found!");
@@ -641,44 +593,25 @@ public class PgpDecryptVerify {
         }
 
         PGPSignature signature = null;
-        PGPPublicKey signatureKey = null;
-        if (masterKeyId != null) {
+
+        if (signingKey != null) {
             // key found in our database!
             signature = sigList.get(signatureIndex);
 
-            PGPPublicKeyRing publicKeyRing = null;
-            try {
-                publicKeyRing = mProviderHelper
-                        .getPGPPublicKeyRing(masterKeyId);
-            } catch (ProviderHelper.NotFoundException e) {
-                // can't happen
-            }
-
-            // get the subkey which has been used to generate this signature
-            signatureKey = publicKeyRing.getPublicKey(signature.getKeyID());
-
             signatureResultBuilder.signatureAvailable(true);
             signatureResultBuilder.knownKey(true);
-            signatureResultBuilder.userId(primaryUserId);
-            signatureResultBuilder.keyId(masterKeyId);
+            signatureResultBuilder.keyId(signingRing.getMasterKeyId());
+            try {
+                signatureResultBuilder.userId(signingRing.getPrimaryUserId());
+            } catch(PgpGeneralException e) {
+                Log.d(Constants.TAG, "No primary user id in key " + signingRing.getMasterKeyId());
+            }
+            signatureResultBuilder.signatureKeyCertified(signingRing.getVerified() > 0);
 
             JcaPGPContentVerifierBuilderProvider contentVerifierBuilderProvider =
                     new JcaPGPContentVerifierBuilderProvider()
                             .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME);
-            signature.init(contentVerifierBuilderProvider, signatureKey);
-
-            // get certification status of this key
-            boolean isSignatureKeyCertified;
-            try {
-                Object data = mProviderHelper.getGenericData(
-                        KeychainContract.KeyRings.buildUnifiedKeyRingUri(Long.toString(masterKeyId)),
-                        KeyRings.VERIFIED,
-                        ProviderHelper.FIELD_TYPE_INTEGER);
-                isSignatureKeyCertified = ((Long) data > 0);
-            } catch (ProviderHelper.NotFoundException e) {
-                isSignatureKeyCertified = false;
-            }
-            signatureResultBuilder.signatureKeyCertified(isSignatureKeyCertified);
+            signature.init(contentVerifierBuilderProvider, signingKey.getPublicKey());
         } else {
             // no key in our database -> return "unknown pub key" status including the first key id
             if (!sigList.isEmpty()) {
@@ -710,7 +643,7 @@ public class PgpDecryptVerify {
 
             // Verify signature and check binding signatures
             boolean validSignature = signature.verify();
-            boolean validKeyBinding = verifyKeyBinding(signature, signatureKey);
+            boolean validKeyBinding = signingRing.verifySubkeyBinding(signingKey);
 
             signatureResultBuilder.validSignature(validSignature);
             signatureResultBuilder.validKeyBinding(validKeyBinding);
@@ -720,113 +653,6 @@ public class PgpDecryptVerify {
 
         updateProgress(R.string.progress_done, 100, 100);
         return result;
-    }
-
-    private boolean verifyKeyBinding(PGPSignature signature, PGPPublicKey signatureKey) {
-        long signatureKeyId = signature.getKeyID();
-        boolean validKeyBinding = false;
-
-        PGPPublicKey mKey = null;
-        try {
-            PGPPublicKeyRing signKeyRing = mProviderHelper.getPGPPublicKeyRingWithKeyId(
-                    signatureKeyId);
-            mKey = signKeyRing.getPublicKey();
-        } catch (ProviderHelper.NotFoundException e) {
-            Log.d(Constants.TAG, "key not found");
-        }
-
-        if (signature.getKeyID() != mKey.getKeyID()) {
-            validKeyBinding = verifyKeyBinding(mKey, signatureKey);
-        } else { //if the key used to make the signature was the master key, no need to check binding sigs
-            validKeyBinding = true;
-        }
-        return validKeyBinding;
-    }
-
-    private boolean verifyKeyBinding(PGPPublicKey masterPublicKey, PGPPublicKey signingPublicKey) {
-        boolean validSubkeyBinding = false;
-        boolean validTempSubkeyBinding = false;
-        boolean validPrimaryKeyBinding = false;
-
-        JcaPGPContentVerifierBuilderProvider contentVerifierBuilderProvider =
-                new JcaPGPContentVerifierBuilderProvider()
-                        .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME);
-
-        Iterator<PGPSignature> itr = signingPublicKey.getSignatures();
-
-        while (itr.hasNext()) { //what does gpg do if the subkey binding is wrong?
-            //gpg has an invalid subkey binding error on key import I think, but doesn't shout
-            //about keys without subkey signing. Can't get it to import a slightly broken one
-            //either, so we will err on bad subkey binding here.
-            PGPSignature sig = itr.next();
-            if (sig.getKeyID() == masterPublicKey.getKeyID() &&
-                    sig.getSignatureType() == PGPSignature.SUBKEY_BINDING) {
-                //check and if ok, check primary key binding.
-                try {
-                    sig.init(contentVerifierBuilderProvider, masterPublicKey);
-                    validTempSubkeyBinding = sig.verifyCertification(masterPublicKey, signingPublicKey);
-                } catch (PGPException e) {
-                    continue;
-                } catch (SignatureException e) {
-                    continue;
-                }
-
-                if (validTempSubkeyBinding) {
-                    validSubkeyBinding = true;
-                }
-                if (validTempSubkeyBinding) {
-                    validPrimaryKeyBinding = verifyPrimaryKeyBinding(sig.getUnhashedSubPackets(),
-                            masterPublicKey, signingPublicKey);
-                    if (validPrimaryKeyBinding) {
-                        break;
-                    }
-                    validPrimaryKeyBinding = verifyPrimaryKeyBinding(sig.getHashedSubPackets(),
-                            masterPublicKey, signingPublicKey);
-                    if (validPrimaryKeyBinding) {
-                        break;
-                    }
-                }
-            }
-        }
-        return (validSubkeyBinding & validPrimaryKeyBinding);
-    }
-
-    private boolean verifyPrimaryKeyBinding(PGPSignatureSubpacketVector pkts,
-                                            PGPPublicKey masterPublicKey,
-                                            PGPPublicKey signingPublicKey) {
-        boolean validPrimaryKeyBinding = false;
-        JcaPGPContentVerifierBuilderProvider contentVerifierBuilderProvider =
-                new JcaPGPContentVerifierBuilderProvider()
-                        .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME);
-        PGPSignatureList eSigList;
-
-        if (pkts.hasSubpacket(SignatureSubpacketTags.EMBEDDED_SIGNATURE)) {
-            try {
-                eSigList = pkts.getEmbeddedSignatures();
-            } catch (IOException e) {
-                return false;
-            } catch (PGPException e) {
-                return false;
-            }
-            for (int j = 0; j < eSigList.size(); ++j) {
-                PGPSignature emSig = eSigList.get(j);
-                if (emSig.getSignatureType() == PGPSignature.PRIMARYKEY_BINDING) {
-                    try {
-                        emSig.init(contentVerifierBuilderProvider, signingPublicKey);
-                        validPrimaryKeyBinding = emSig.verifyCertification(masterPublicKey, signingPublicKey);
-                        if (validPrimaryKeyBinding) {
-                            break;
-                        }
-                    } catch (PGPException e) {
-                        continue;
-                    } catch (SignatureException e) {
-                        continue;
-                    }
-                }
-            }
-        }
-
-        return validPrimaryKeyBinding;
     }
 
     /**

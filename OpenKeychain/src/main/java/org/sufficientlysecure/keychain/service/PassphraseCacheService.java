@@ -34,20 +34,14 @@ import android.os.Messenger;
 import android.os.RemoteException;
 import android.support.v4.util.LongSparseArray;
 
-import org.spongycastle.openpgp.PGPException;
-import org.spongycastle.openpgp.PGPPrivateKey;
-import org.spongycastle.openpgp.PGPSecretKey;
-import org.spongycastle.openpgp.PGPSecretKeyRing;
-import org.spongycastle.openpgp.operator.PBESecretKeyDecryptor;
-import org.spongycastle.openpgp.operator.jcajce.JcePBESecretKeyDecryptorBuilder;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.helper.Preferences;
+import org.sufficientlysecure.keychain.pgp.WrappedSecretKeyRing;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.util.Log;
 
 import java.util.Date;
-import java.util.Iterator;
 
 /**
  * This service runs in its own process, but is available to all other processes as the main
@@ -163,81 +157,47 @@ public class PassphraseCacheService extends Service {
      * @return
      */
     private String getCachedPassphraseImpl(long keyId) {
-        Log.d(TAG, "getCachedPassphraseImpl() get masterKeyId for " + keyId);
+        // passphrase for symmetric encryption?
+        if (keyId == Constants.key.symmetric) {
+            Log.d(TAG, "getCachedPassphraseImpl() for symmetric encryption");
+            String cachedPassphrase = mPassphraseCache.get(Constants.key.symmetric);
+            if (cachedPassphrase == null) {
+                return null;
+            }
+            addCachedPassphrase(this, Constants.key.symmetric, cachedPassphrase);
+            return cachedPassphrase;
+        }
 
         // try to get master key id which is used as an identifier for cached passphrases
-        long masterKeyId = keyId;
-        if (masterKeyId != Constants.key.symmetric) {
-            try {
-                masterKeyId = new ProviderHelper(this).getMasterKeyId(
-                        KeychainContract.KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(Long.toString(keyId)));
-            } catch (ProviderHelper.NotFoundException e) {
-                return null;
-            }
-        }
-        Log.d(TAG, "getCachedPassphraseImpl() for masterKeyId " + masterKeyId);
-
-        // get cached passphrase
-        String cachedPassphrase = mPassphraseCache.get(masterKeyId);
-        if (cachedPassphrase == null) {
-            // if key has no passphrase -> cache and return empty passphrase
-            if (!hasPassphrase(this, masterKeyId)) {
+        try {
+            Log.d(TAG, "getCachedPassphraseImpl() for masterKeyId " + keyId);
+            WrappedSecretKeyRing key = new ProviderHelper(this).getWrappedSecretKeyRing(
+                    KeychainContract.KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(keyId));
+            // no passphrase needed? just add empty string and return it, then
+            if (!key.hasPassphrase()) {
                 Log.d(Constants.TAG, "Key has no passphrase! Caches and returns empty passphrase!");
 
-                addCachedPassphrase(this, masterKeyId, "");
+                addCachedPassphrase(this, keyId, "");
                 return "";
-            } else {
+            }
+
+            // get cached passphrase
+            String cachedPassphrase = mPassphraseCache.get(keyId);
+            if (cachedPassphrase == null) {
+                Log.d(TAG, "Passphrase not (yet) cached, returning null");
+                // not really an error, just means the passphrase is not cached but not empty either
                 return null;
             }
-        }
-        // set it again to reset the cache life cycle
-        Log.d(TAG, "Cache passphrase again when getting it!");
-        addCachedPassphrase(this, masterKeyId, cachedPassphrase);
 
-        return cachedPassphrase;
-    }
+            // set it again to reset the cache life cycle
+            Log.d(TAG, "Cache passphrase again when getting it!");
+            addCachedPassphrase(this, keyId, cachedPassphrase);
+            return cachedPassphrase;
 
-    public static boolean hasPassphrase(PGPSecretKeyRing secretKeyRing) {
-        PGPSecretKey secretKey = null;
-        boolean foundValidKey = false;
-        for (Iterator keys = secretKeyRing.getSecretKeys(); keys.hasNext(); ) {
-            secretKey = (PGPSecretKey) keys.next();
-            if (!secretKey.isPrivateKeyEmpty()) {
-                foundValidKey = true;
-                break;
-            }
-        }
-        if(!foundValidKey) {
-            return false;
-        }
-
-        try {
-            PBESecretKeyDecryptor keyDecryptor = new JcePBESecretKeyDecryptorBuilder()
-                    .setProvider("SC").build("".toCharArray());
-            PGPPrivateKey testKey = secretKey.extractPrivateKey(keyDecryptor);
-            return testKey == null;
-        } catch(PGPException e) {
-            // this means the crc check failed -> passphrase required
-            return true;
-        }
-    }
-
-    /**
-     * Checks if key has a passphrase.
-     *
-     * @param secretKeyId
-     * @return true if it has a passphrase
-     */
-    public static boolean hasPassphrase(Context context, long secretKeyId) {
-        // check if the key has no passphrase
-        try {
-            PGPSecretKeyRing secRing = new ProviderHelper(context).getPGPSecretKeyRing(secretKeyId);
-            return hasPassphrase(secRing);
         } catch (ProviderHelper.NotFoundException e) {
-            Log.e(Constants.TAG, "key not found!", e);
+            Log.e(TAG, "Passphrase for unknown key was requested!");
+            return null;
         }
-
-        return true;
     }
 
     /**

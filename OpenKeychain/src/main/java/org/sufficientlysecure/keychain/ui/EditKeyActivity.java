@@ -19,7 +19,6 @@
 package org.sufficientlysecure.keychain.ui;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -44,21 +43,22 @@ import android.widget.Toast;
 import com.beardedhen.androidbootstrap.BootstrapButton;
 import com.devspark.appmsg.AppMsg;
 
-import org.spongycastle.openpgp.PGPSecretKey;
-import org.spongycastle.openpgp.PGPSecretKeyRing;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.helper.ActionBarHelper;
 import org.sufficientlysecure.keychain.helper.ExportHelper;
+import org.sufficientlysecure.keychain.pgp.WrappedSecretKey;
+import org.sufficientlysecure.keychain.pgp.WrappedSecretKeyRing;
 import org.sufficientlysecure.keychain.pgp.PgpConversionHelper;
 import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
+import org.sufficientlysecure.keychain.pgp.UncachedSecretKey;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
-import org.sufficientlysecure.keychain.provider.KeychainContract;
+import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
 import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
+import org.sufficientlysecure.keychain.service.OldSaveKeyringParcel;
 import org.sufficientlysecure.keychain.service.PassphraseCacheService;
-import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
 import org.sufficientlysecure.keychain.ui.dialog.CustomAlertDialogBuilder;
 import org.sufficientlysecure.keychain.ui.dialog.PassphraseDialogFragment;
 import org.sufficientlysecure.keychain.ui.dialog.SetPassphraseDialogFragment;
@@ -67,7 +67,6 @@ import org.sufficientlysecure.keychain.ui.widget.Editor.EditorListener;
 import org.sufficientlysecure.keychain.ui.widget.KeyEditor;
 import org.sufficientlysecure.keychain.ui.widget.SectionView;
 import org.sufficientlysecure.keychain.ui.widget.UserIdEditor;
-import org.sufficientlysecure.keychain.util.IterableIterator;
 import org.sufficientlysecure.keychain.util.Log;
 
 import java.util.ArrayList;
@@ -89,8 +88,6 @@ public class EditKeyActivity extends ActionBarActivity implements EditorListener
     // EDIT
     private Uri mDataUri;
 
-    private PGPSecretKeyRing mKeyRing = null;
-
     private SectionView mUserIdsView;
     private SectionView mKeysView;
 
@@ -106,7 +103,7 @@ public class EditKeyActivity extends ActionBarActivity implements EditorListener
     private CheckBox mNoPassphrase;
 
     Vector<String> mUserIds;
-    Vector<PGPSecretKey> mKeys;
+    Vector<UncachedSecretKey> mKeys;
     Vector<Integer> mKeysUsages;
     boolean mMasterCanSign = true;
 
@@ -159,7 +156,7 @@ public class EditKeyActivity extends ActionBarActivity implements EditorListener
         );
 
         mUserIds = new Vector<String>();
-        mKeys = new Vector<PGPSecretKey>();
+        mKeys = new Vector<UncachedSecretKey>();
         mKeysUsages = new Vector<Integer>();
 
         // Catch Intents opened from other apps
@@ -240,7 +237,7 @@ public class EditKeyActivity extends ActionBarActivity implements EditorListener
                                 // get new key from data bundle returned from service
                                 Bundle data = message.getData();
 
-                                ArrayList<PGPSecretKey> newKeys =
+                                ArrayList<UncachedSecretKey> newKeys =
                                         PgpConversionHelper.BytesToPGPSecretKeyList(data
                                                 .getByteArray(KeychainIntentService.RESULT_NEW_KEY));
 
@@ -288,18 +285,18 @@ public class EditKeyActivity extends ActionBarActivity implements EditorListener
             Log.d(Constants.TAG, "uri: " + mDataUri);
 
             try {
-                Uri secretUri = KeychainContract.KeyRingData.buildSecretKeyRingUri(mDataUri);
-                mKeyRing = (PGPSecretKeyRing) new ProviderHelper(this).getPGPKeyRing(secretUri);
+                Uri secretUri = KeyRings.buildUnifiedKeyRingUri(mDataUri);
+                WrappedSecretKeyRing keyRing = new ProviderHelper(this).getWrappedSecretKeyRing(secretUri);
 
-                PGPSecretKey masterKey = mKeyRing.getSecretKey();
-                mMasterCanSign = PgpKeyHelper.isCertificationKey(mKeyRing.getSecretKey());
-                for (PGPSecretKey key : new IterableIterator<PGPSecretKey>(mKeyRing.getSecretKeys())) {
-                    mKeys.add(key);
-                    mKeysUsages.add(-1); // get usage when view is created
+                mMasterCanSign = keyRing.getSubKey().canCertify();
+                for (WrappedSecretKey key : keyRing.iterator()) {
+                    // Turn into uncached instance
+                    mKeys.add(key.getUncached());
+                    mKeysUsages.add(key.getKeyUsage()); // get usage when view is created
                 }
 
                 boolean isSet = false;
-                for (String userId : new IterableIterator<String>(masterKey.getUserIDs())) {
+                for (String userId : keyRing.getSubKey().getUserIds()) {
                     Log.d(Constants.TAG, "Added userId " + userId);
                     if (!isSet) {
                         isSet = true;
@@ -314,7 +311,7 @@ public class EditKeyActivity extends ActionBarActivity implements EditorListener
                 buildLayout(false);
 
                 mCurrentPassphrase = "";
-                mIsPassphraseSet = PassphraseCacheService.hasPassphrase(mKeyRing);
+                mIsPassphraseSet = keyRing.hasPassphrase();
                 if (!mIsPassphraseSet) {
                     // check "no passphrase" checkbox and remove button
                     mNoPassphrase.setChecked(true);
@@ -432,7 +429,7 @@ public class EditKeyActivity extends ActionBarActivity implements EditorListener
         if (mKeysView.getEditors().getChildCount() == 0) {
             return 0;
         }
-        return ((KeyEditor) mKeysView.getEditors().getChildAt(0)).getValue().getKeyID();
+        return ((KeyEditor) mKeysView.getEditors().getChildAt(0)).getValue().getKeyId();
     }
 
     public boolean isPassphraseSet() {
@@ -556,7 +553,7 @@ public class EditKeyActivity extends ActionBarActivity implements EditorListener
 
             intent.setAction(KeychainIntentService.ACTION_SAVE_KEYRING);
 
-            SaveKeyringParcel saveParams = new SaveKeyringParcel();
+            OldSaveKeyringParcel saveParams = new OldSaveKeyringParcel();
             saveParams.userIds = getUserIds(mUserIdsView);
             saveParams.originalIDs = mUserIdsView.getOriginalIDs();
             saveParams.deletedIDs = mUserIdsView.getDeletedIDs();
@@ -571,7 +568,6 @@ public class EditKeyActivity extends ActionBarActivity implements EditorListener
             saveParams.newKeys = toPrimitiveArray(mKeysView.getNewKeysArray());
             saveParams.keys = getKeys(mKeysView);
             saveParams.originalPrimaryID = mUserIdsView.getOriginalPrimaryID();
-
 
             // fill values for this action
             Bundle data = new Bundle();
@@ -591,8 +587,7 @@ public class EditKeyActivity extends ActionBarActivity implements EditorListener
                         Intent data = new Intent();
 
                         // return uri pointing to new created key
-                        Uri uri = KeychainContract.KeyRings.buildGenericKeyRingUri(
-                                String.valueOf(getMasterKeyId()));
+                        Uri uri = KeyRings.buildGenericKeyRingUri(getMasterKeyId());
                         data.setData(uri);
 
                         setResult(RESULT_OK, data);
@@ -690,8 +685,8 @@ public class EditKeyActivity extends ActionBarActivity implements EditorListener
      * @param keysView
      * @return
      */
-    private ArrayList<PGPSecretKey> getKeys(SectionView keysView) throws PgpGeneralException {
-        ArrayList<PGPSecretKey> keys = new ArrayList<PGPSecretKey>();
+    private ArrayList<UncachedSecretKey> getKeys(SectionView keysView) throws PgpGeneralException {
+        ArrayList<UncachedSecretKey> keys = new ArrayList<UncachedSecretKey>();
 
         ViewGroup keyEditors = keysView.getEditors();
 
