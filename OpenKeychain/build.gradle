@@ -10,6 +10,8 @@ sourceSets {
 }
 
 dependencies {
+    // NOTE: Always use version codes not dynamic ones, e.g. 0.7.3 instead of 0.7.+, see README for more information
+
     compile 'com.android.support:support-v4:19.1.0'
     compile 'com.android.support:appcompat-v7:19.1.0'
     compile project(':extern:openpgp-api-lib')
@@ -27,8 +29,8 @@ dependencies {
 
     // Dependencies for the `instrumentTest` task, make sure to list all your global dependencies here as well
     androidTestCompile 'junit:junit:4.10'
-    androidTestCompile 'org.robolectric:robolectric:2.1.+'
-    androidTestCompile 'com.squareup:fest-android:1.0.+'
+    androidTestCompile 'org.robolectric:robolectric:2.3'
+    androidTestCompile 'com.squareup:fest-android:1.0.8'
     androidTestCompile 'com.google.android:android:4.1.1.4'
     androidTestCompile 'com.android.support:support-v4:19.1.0'
     androidTestCompile 'com.android.support:appcompat-v7:19.1.0'
