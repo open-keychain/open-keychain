@@ -44,6 +44,7 @@ public class ImportKeysListEntry implements Serializable, Parcelable {
     public long keyId;
     public String keyIdHex;
     public boolean revoked;
+    public boolean expired;
     public Date date; // TODO: not displayed
     public String fingerprintHex;
     public int bitStrength;
@@ -68,6 +69,7 @@ public class ImportKeysListEntry implements Serializable, Parcelable {
         dest.writeStringList(userIds);
         dest.writeLong(keyId);
         dest.writeByte((byte) (revoked ? 1 : 0));
+        dest.writeByte((byte) (expired ? 1 : 0));
         dest.writeSerializable(date);
         dest.writeString(fingerprintHex);
         dest.writeString(keyIdHex);
@@ -89,6 +91,7 @@ public class ImportKeysListEntry implements Serializable, Parcelable {
             source.readStringList(vr.userIds);
             vr.keyId = source.readLong();
             vr.revoked = source.readByte() == 1;
+            vr.expired = source.readByte() == 1;
             vr.date = (Date) source.readSerializable();
             vr.fingerprintHex = source.readString();
             vr.keyIdHex = source.readString();
@@ -127,6 +130,14 @@ public class ImportKeysListEntry implements Serializable, Parcelable {
 
     public void setSelected(boolean selected) {
         this.mSelected = selected;
+    }
+
+    public boolean isExpired() {
+        return expired;
+    }
+
+    public void setExpired(boolean expired) {
+        this.expired = expired;
     }
 
     public long getKeyId() {

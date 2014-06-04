@@ -308,6 +308,7 @@ public class HkpKeyserver extends Keyserver {
             entry.setDate(tmpGreg.getTime());
 
             entry.setRevoked(matcher.group(6).contains("r"));
+            entry.setExpired(matcher.group(6).contains("e"));
 
             ArrayList<String> userIds = new ArrayList<String>();
             final String uidLines = matcher.group(7);
