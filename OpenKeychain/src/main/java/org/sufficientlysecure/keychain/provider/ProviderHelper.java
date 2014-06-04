@@ -150,11 +150,11 @@ public class ProviderHelper {
                 if (data != null) {
                     try {
                         result.put(masterKeyId,
-                                UncachedKeyRing.decodePublicFromData(data).getPublicKey());
+                                UncachedKeyRing.decodeFromData(data).getPublicKey());
                     } catch(PgpGeneralException e) {
-                        Log.e(Constants.TAG, "Error parsing keyring, skipping.");
+                        Log.e(Constants.TAG, "Error parsing keyring, skipping " + masterKeyId, e);
                     } catch(IOException e) {
-                        Log.e(Constants.TAG, "IO error, skipping keyring");
+                        Log.e(Constants.TAG, "IO error, skipping keyring" + masterKeyId, e);
                     }
                 }
             } while (cursor.moveToNext());
