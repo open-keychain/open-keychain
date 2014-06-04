@@ -17,6 +17,8 @@
 
 package org.sufficientlysecure.keychain;
 
+import android.accounts.Account;
+import android.accounts.AccountManager;
 import android.app.Application;
 import android.content.Context;
 import android.graphics.PorterDuff;
@@ -76,6 +78,17 @@ public class KeychainApplication extends Application {
 
         brandGlowEffect(getApplicationContext(),
                 getApplicationContext().getResources().getColor(R.color.emphasis));
+
+        setupAccountAsNeeded();
+    }
+
+    private void setupAccountAsNeeded() {
+        AccountManager manager = AccountManager.get(this);
+        Account[] accounts = manager.getAccountsByType(getPackageName());
+        if (accounts == null || accounts.length == 0) {
+            Account dummy = new Account(getString(R.string.app_name), getPackageName());
+            manager.addAccountExplicitly(dummy, null, null);
+        }
     }
 
     static void brandGlowEffect(Context context, int brandColor) {
