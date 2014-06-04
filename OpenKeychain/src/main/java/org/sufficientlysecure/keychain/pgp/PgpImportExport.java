@@ -139,7 +139,18 @@ public class PgpImportExport {
         int position = 0;
         for (ParcelableKeyRing entry : entries) {
             try {
-                UncachedKeyRing key = entry.getUncachedKeyRing();
+                UncachedKeyRing key = UncachedKeyRing.decodeFromData(entry.getBytes());
+
+                String expectedFp = entry.getExpectedFingerprint();
+                if(expectedFp != null) {
+                    if(!PgpKeyHelper.convertFingerprintToHex(key.getFingerprint()).equals(expectedFp)) {
+                        Log.e(Constants.TAG, "Actual key fingerprint is not the same as expected!");
+                        badKeys += 1;
+                        continue;
+                    } else {
+                        Log.d(Constants.TAG, "Actual key fingerprint matches expected one.");
+                    }
+                }
 
                 mProviderHelper.savePublicKeyRing(key);
                 /*switch(status) {

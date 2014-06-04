@@ -3,11 +3,6 @@ package org.sufficientlysecure.keychain.keyimport;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
-import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
-
-import java.io.IOException;
-
 /** This is a trivial wrapper around UncachedKeyRing which implements Parcelable. It exists
  * for the sole purpose of keeping spongycastle and android imports in separate packages.
  */
@@ -40,12 +35,15 @@ public class ParcelableKeyRing implements Parcelable {
         }
     };
 
-
     public int describeContents() {
         return 0;
     }
 
-    public UncachedKeyRing getUncachedKeyRing() throws PgpGeneralException, IOException {
-        return UncachedKeyRing.decodeFromData(mBytes);
+    public byte[] getBytes() {
+        return mBytes;
+    }
+
+    public String getExpectedFingerprint() {
+        return mExpectedFingerprint;
     }
 }
