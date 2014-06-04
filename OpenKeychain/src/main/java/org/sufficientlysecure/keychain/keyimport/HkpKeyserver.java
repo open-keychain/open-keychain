@@ -116,7 +116,7 @@ public class HkpKeyserver extends Keyserver {
      */
     public static final Pattern PUB_KEY_LINE = Pattern
             .compile("pub:([0-9a-fA-F]+):([0-9]+):([0-9]+):([0-9]+):([0-9]*):([rde]*)[ \n\r]*" // pub line
-                    + "(uid:(.*):([0-9]+):([0-9]*):([rde]*))+", // one or more uid lines
+                    + "((uid:([^:]*):([0-9]+):([0-9]*):([rde]*)[ \n\r]*)+)", // one or more uid lines
                     Pattern.CASE_INSENSITIVE);
 
     /**
@@ -144,7 +144,7 @@ public class HkpKeyserver extends Keyserver {
      * </ul>
      */
     public static final Pattern UID_LINE = Pattern
-            .compile("uid:(.*):([0-9]+):([0-9]*):([rde]*)",
+            .compile("uid:([^:]*):([0-9]+):([0-9]*):([rde]*)",
                     Pattern.CASE_INSENSITIVE);
 
     private static final short PORT_DEFAULT = 11371;
