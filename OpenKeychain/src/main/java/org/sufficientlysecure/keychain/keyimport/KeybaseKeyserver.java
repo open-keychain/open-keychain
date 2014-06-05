@@ -146,7 +146,8 @@ public class KeybaseKeyserver extends Keyserver {
                 try {
                     JSONObject json = new JSONObject(text);
                     if (JWalk.getInt(json, "status", "code") != 0) {
-                        throw new QueryFailedException("Keybase autocomplete search failed");
+                        throw new QueryFailedException("Keybase.io query failed: " + path + "?" +
+                                query);
                     }
                     return json;
                 } catch (JSONException e) {

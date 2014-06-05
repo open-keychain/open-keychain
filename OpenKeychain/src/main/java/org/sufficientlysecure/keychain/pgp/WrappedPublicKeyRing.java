@@ -169,7 +169,7 @@ public class WrappedPublicKeyRing extends WrappedKeyRing {
         return validPrimaryKeyBinding;
     }
 
-    public IterableIterator<WrappedPublicKey> iterator() {
+    public IterableIterator<WrappedPublicKey> publicKeyIterator() {
         final Iterator<PGPPublicKey> it = getRing().getPublicKeys();
         return new IterableIterator<WrappedPublicKey>(new Iterator<WrappedPublicKey>() {
             @Override

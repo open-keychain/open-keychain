@@ -27,12 +27,11 @@ import android.widget.AdapterView;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.helper.OtherHelper;
-import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
+import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.provider.KeychainContract.Certs;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UserIds;
 
@@ -112,7 +111,7 @@ public class ViewKeyUserIdsAdapter extends CursorAdapter implements AdapterView.
         TextView vComment = (TextView) view.findViewById(R.id.comment);
         ImageView vVerified = (ImageView) view.findViewById(R.id.certified);
 
-        String[] userId = PgpKeyHelper.splitUserId(cursor.getString(mIndexUserId));
+        String[] userId = KeyRing.splitUserId(cursor.getString(mIndexUserId));
         if (userId[0] != null) {
             vName.setText(userId[0]);
         } else {

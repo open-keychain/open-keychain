@@ -28,6 +28,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.util.Highlighter;
@@ -112,7 +113,7 @@ abstract public class SelectKeyCursorAdapter extends CursorAdapter {
         ViewHolderItem h = (ViewHolderItem) view.getTag();
 
         String userId = cursor.getString(mIndexUserId);
-        String[] userIdSplit = PgpKeyHelper.splitUserId(userId);
+        String[] userIdSplit = KeyRing.splitUserId(userId);
 
         if (userIdSplit[0] != null) {
             h.mainUserId.setText(highlighter.highlight(userIdSplit[0]));

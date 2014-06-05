@@ -32,7 +32,6 @@ import com.beardedhen.androidbootstrap.BootstrapButton;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
@@ -199,10 +198,9 @@ public class EncryptAsymmetricFragment extends Fragment {
             // See if we can get a user_id from a unified query
             String[] userId;
             try {
-                String userIdResult = (String) mProviderHelper.getUnifiedData(
-                        mSecretKeyId, KeyRings.USER_ID, ProviderHelper.FIELD_TYPE_STRING);
-                userId = PgpKeyHelper.splitUserId(userIdResult);
-            } catch (ProviderHelper.NotFoundException e) {
+                userId = mProviderHelper.getCachedPublicKeyRing(
+                        KeyRings.buildUnifiedKeyRingUri(mSecretKeyId)).getSplitPrimaryUserId();
+            } catch (PgpGeneralException e) {
                 userId = null;
             }
             if (userId != null && userId[0] != null) {

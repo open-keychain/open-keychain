@@ -47,11 +47,11 @@ import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.helper.ActionBarHelper;
 import org.sufficientlysecure.keychain.helper.ExportHelper;
+import org.sufficientlysecure.keychain.pgp.KeyRing;
+import org.sufficientlysecure.keychain.pgp.PgpConversionHelper;
+import org.sufficientlysecure.keychain.pgp.UncachedSecretKey;
 import org.sufficientlysecure.keychain.pgp.WrappedSecretKey;
 import org.sufficientlysecure.keychain.pgp.WrappedSecretKeyRing;
-import org.sufficientlysecure.keychain.pgp.PgpConversionHelper;
-import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
-import org.sufficientlysecure.keychain.pgp.UncachedSecretKey;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
@@ -289,7 +289,7 @@ public class EditKeyActivity extends ActionBarActivity implements EditorListener
                 WrappedSecretKeyRing keyRing = new ProviderHelper(this).getWrappedSecretKeyRing(secretUri);
 
                 mMasterCanSign = keyRing.getSubKey().canCertify();
-                for (WrappedSecretKey key : keyRing.iterator()) {
+                for (WrappedSecretKey key : keyRing.secretKeyIterator()) {
                     // Turn into uncached instance
                     mKeys.add(key.getUncached());
                     mKeysUsages.add(key.getKeyUsage()); // get usage when view is created
@@ -300,7 +300,7 @@ public class EditKeyActivity extends ActionBarActivity implements EditorListener
                     Log.d(Constants.TAG, "Added userId " + userId);
                     if (!isSet) {
                         isSet = true;
-                        String[] parts = PgpKeyHelper.splitUserId(userId);
+                        String[] parts = KeyRing.splitUserId(userId);
                         if (parts[0] != null) {
                             setTitle(parts[0]);
                         }

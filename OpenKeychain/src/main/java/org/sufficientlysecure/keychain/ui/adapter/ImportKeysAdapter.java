@@ -32,8 +32,7 @@ import android.widget.TextView;
 
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.keyimport.ImportKeysListEntry;
-import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
-import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
+import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.util.Highlighter;
 
 import java.util.ArrayList;
@@ -120,13 +119,13 @@ public class ImportKeysAdapter extends ArrayAdapter<ImportKeysListEntry> {
         }
 
         // main user id
-        String userId = entry.userIds.get(0);
-        String[] userIdSplit = PgpKeyHelper.splitUserId(userId);
+        String userId = entry.getUserIds().get(0);
+        String[] userIdSplit = KeyRing.splitUserId(userId);
 
         // name
         if (userIdSplit[0] != null) {
             // show red user id if it is a secret key
-            if (entry.secretKey) {
+            if (entry.isSecretKey()) {
                 holder.mainUserId.setText(mActivity.getString(R.string.secret_key)
                         + " " + userIdSplit[0]);
                 holder.mainUserId.setTextColor(Color.RED);
@@ -147,30 +146,26 @@ public class ImportKeysAdapter extends ArrayAdapter<ImportKeysListEntry> {
             holder.mainUserIdRest.setVisibility(View.GONE);
         }
 
-        holder.keyId.setText(entry.keyIdHex);
+        holder.keyId.setText(entry.getKeyIdHex());
 
-        if (entry.fingerprintHex != null) {
-            holder.fingerprint.setVisibility(View.VISIBLE);
-            holder.fingerprint.setText(PgpKeyHelper.colorizeFingerprint(entry.fingerprintHex));
-        } else {
-            holder.fingerprint.setVisibility(View.GONE);
-        }
+        // don't show full fingerprint on key import
+        holder.fingerprint.setVisibility(View.GONE);
 
-        if (entry.bitStrength != 0 && entry.algorithm != null) {
-            holder.algorithm.setText("" + entry.bitStrength + "/" + entry.algorithm);
+        if (entry.getBitStrength() != 0 && entry.getAlgorithm() != null) {
+            holder.algorithm.setText("" + entry.getBitStrength() + "/" + entry.getAlgorithm());
             holder.algorithm.setVisibility(View.VISIBLE);
         } else {
             holder.algorithm.setVisibility(View.INVISIBLE);
         }
 
-        if (entry.revoked) {
+        if (entry.isRevoked()) {
             holder.status.setVisibility(View.VISIBLE);
             holder.status.setText(R.string.revoked);
         } else {
             holder.status.setVisibility(View.GONE);
         }
 
-        if (entry.userIds.size() == 1) {
+        if (entry.getUserIds().size() == 1) {
             holder.userIdsList.setVisibility(View.GONE);
         } else {
             holder.userIdsList.setVisibility(View.VISIBLE);
@@ -178,7 +173,7 @@ public class ImportKeysAdapter extends ArrayAdapter<ImportKeysListEntry> {
             // clear view from holder
             holder.userIdsList.removeAllViews();
 
-            Iterator<String> it = entry.userIds.iterator();
+            Iterator<String> it = entry.getUserIds().iterator();
             // skip primary user id
             it.next();
             while (it.hasNext()) {

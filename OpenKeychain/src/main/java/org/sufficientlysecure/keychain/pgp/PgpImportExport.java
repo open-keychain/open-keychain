@@ -26,13 +26,13 @@ import org.spongycastle.bcpg.ArmoredOutputStream;
 import org.spongycastle.openpgp.PGPException;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.keyimport.HkpKeyserver;
+import org.sufficientlysecure.keychain.keyimport.Keyserver.AddKeyException;
 import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
-import org.sufficientlysecure.keychain.keyimport.HkpKeyserver;
-import org.sufficientlysecure.keychain.keyimport.Keyserver.AddKeyException;
 import org.sufficientlysecure.keychain.util.Log;
 
 import java.io.ByteArrayOutputStream;
@@ -139,7 +139,18 @@ public class PgpImportExport {
         int position = 0;
         for (ParcelableKeyRing entry : entries) {
             try {
-                UncachedKeyRing key = entry.getUncachedKeyRing();
+                UncachedKeyRing key = UncachedKeyRing.decodeFromData(entry.getBytes());
+
+                String expectedFp = entry.getExpectedFingerprint();
+                if(expectedFp != null) {
+                    if(!PgpKeyHelper.convertFingerprintToHex(key.getFingerprint()).equals(expectedFp)) {
+                        Log.e(Constants.TAG, "Actual key fingerprint is not the same as expected!");
+                        badKeys += 1;
+                        continue;
+                    } else {
+                        Log.d(Constants.TAG, "Actual key fingerprint matches expected one.");
+                    }
+                }
 
                 mProviderHelper.savePublicKeyRing(key);
                 /*switch(status) {

@@ -4,7 +4,7 @@ import org.spongycastle.openpgp.PGPException;
 import org.spongycastle.openpgp.PGPKeyRing;
 import org.spongycastle.openpgp.PGPObjectFactory;
 import org.spongycastle.openpgp.PGPPrivateKey;
-import org.spongycastle.openpgp.PGPPublicKeyRing;
+import org.spongycastle.openpgp.PGPPublicKey;
 import org.spongycastle.openpgp.PGPSecretKey;
 import org.spongycastle.openpgp.PGPSecretKeyRing;
 import org.spongycastle.openpgp.operator.PBESecretKeyDecryptor;
@@ -114,7 +114,7 @@ public class WrappedSecretKeyRing extends WrappedKeyRing {
 
     }
 
-    public IterableIterator<WrappedSecretKey> iterator() {
+    public IterableIterator<WrappedSecretKey> secretKeyIterator() {
         final Iterator<PGPSecretKey> it = mRing.getSecretKeys();
         return new IterableIterator<WrappedSecretKey>(new Iterator<WrappedSecretKey>() {
             @Override
@@ -125,6 +125,26 @@ public class WrappedSecretKeyRing extends WrappedKeyRing {
             @Override
             public WrappedSecretKey next() {
                 return new WrappedSecretKey(WrappedSecretKeyRing.this, it.next());
+            }
+
+            @Override
+            public void remove() {
+                it.remove();
+            }
+        });
+    }
+
+    public IterableIterator<WrappedPublicKey> publicKeyIterator() {
+        final Iterator<PGPPublicKey> it = getRing().getPublicKeys();
+        return new IterableIterator<WrappedPublicKey>(new Iterator<WrappedPublicKey>() {
+            @Override
+            public boolean hasNext() {
+                return it.hasNext();
+            }
+
+            @Override
+            public WrappedPublicKey next() {
+                return new WrappedPublicKey(WrappedSecretKeyRing.this, it.next());
             }
 
             @Override

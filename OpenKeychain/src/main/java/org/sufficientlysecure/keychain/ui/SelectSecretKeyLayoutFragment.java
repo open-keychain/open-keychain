@@ -35,6 +35,7 @@ import android.widget.TextView;
 import com.beardedhen.androidbootstrap.BootstrapButton;
 
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 
@@ -158,7 +159,7 @@ public class SelectSecretKeyLayoutFragment extends Fragment implements LoaderMan
             String userID = data.getString(INDEX_USER_ID);
             long masterKeyID = data.getLong(INDEX_MASTER_KEY_ID);
 
-            String splitUserID[] = PgpKeyHelper.splitUserId(userID);
+            String splitUserID[] = KeyRing.splitUserId(userID);
 
             if (splitUserID[0] != null) {
                 userName = splitUserID[0];

@@ -36,7 +36,7 @@ import com.beardedhen.androidbootstrap.BootstrapButton;
 
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.helper.ContactHelper;
-import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
+import org.sufficientlysecure.keychain.pgp.KeyRing;
 
 import java.util.regex.Matcher;
 
@@ -164,7 +164,7 @@ public class UserIdEditor extends LinearLayout implements Editor, OnClickListene
         mIsNewId = isNewId;
         mOriginalID = userId;
 
-        String[] result = PgpKeyHelper.splitUserId(userId);
+        String[] result = KeyRing.splitUserId(userId);
         if (result[0] != null) {
             mName.setText(result[0]);
             mOriginalName = result[0];
