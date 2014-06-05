@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ContactsSource xmlns:android="http://schemas.android.com/apk/res/android">
     <ContactsDataKind android:mimeType="vnd.android.cursor.item/vnd.org.sufficientlysecure.keychain.key"
-                      android:icon="@drawable/key_small"
-                      android:summaryColumn="data1"
-                      android:detailColumn="data2"/>
+                      android:detailColumn="data1"/>
 </ContactsSource>

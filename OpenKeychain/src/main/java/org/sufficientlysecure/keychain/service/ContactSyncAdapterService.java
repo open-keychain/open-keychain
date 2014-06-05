@@ -24,6 +24,8 @@ import android.content.ContentProviderClient;
 import android.content.Intent;
 import android.content.SyncResult;
 import android.os.*;
+import org.sufficientlysecure.keychain.KeychainApplication;
+import org.sufficientlysecure.keychain.helper.ContactHelper;
 import org.sufficientlysecure.keychain.helper.EmailKeyHelper;
 import org.sufficientlysecure.keychain.util.Log;
 
@@ -60,6 +62,8 @@ public class ContactSyncAdapterService extends Service {
                             }
                         }
                     })));
+            KeychainApplication.setupAccountAsNeeded(ContactSyncAdapterService.this);
+            ContactHelper.writeKeysToContacts(ContactSyncAdapterService.this);
         }
     }
 
