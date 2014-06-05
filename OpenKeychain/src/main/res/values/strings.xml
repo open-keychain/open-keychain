@@ -257,6 +257,7 @@
 
     <string name="key_send_success">Successfully uploaded key to server</string>
     <string name="key_certify_success">Successfully certified identities</string>
+    <string name="key_revokation_success">Successfully revoked identities</string>
     <string name="list_empty">This list is empty!</string>
     <string name="nfc_successful">Successfully sent key with NFC Beam!</string>
     <string name="key_copied_to_clipboard">Key has been copied to the clipboard!</string>
@@ -494,7 +495,7 @@
     <string name="cert_casual">casual</string>
     <string name="cert_positive">positive</string>
     <string name="cert_revoke">revoked</string>
-    <string name="cert_verify_ok">ok</string>
+    <string name="cert_verify_ok">OK</string>
     <string name="cert_verify_failed">failed!</string>
     <string name="cert_verify_error">error!</string>
     <string name="cert_verify_unavailable">key unavailable</string>

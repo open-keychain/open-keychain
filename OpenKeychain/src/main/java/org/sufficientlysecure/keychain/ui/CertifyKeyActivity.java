@@ -409,7 +409,7 @@ public class CertifyKeyActivity extends ActionBarActivity implements
 
                 if (message.arg1 == KeychainIntentServiceHandler.MESSAGE_OKAY) {
 
-                    AppMsg.makeText(CertifyKeyActivity.this, R.string.key_certify_success,
+                    AppMsg.makeText(CertifyKeyActivity.this, R.string.key_revokation_success,
                             AppMsg.STYLE_INFO).show();
 
                     // check if we need to send the key to the server or not

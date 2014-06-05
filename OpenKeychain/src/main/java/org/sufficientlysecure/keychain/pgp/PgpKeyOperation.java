@@ -1020,39 +1020,36 @@ public class PgpKeyOperation {
 
         PGPSignatureGenerator signatureGenerator;
 
-
-        {
-
-            if (certificationKey == null) {
-                throw new PgpGeneralMsgIdException(R.string.error_no_signature_key);
-            }
-
-            PBESecretKeyDecryptor keyDecryptor = new JcePBESecretKeyDecryptorBuilder().setProvider(
-                    Constants.BOUNCY_CASTLE_PROVIDER_NAME).build(passphrase.toCharArray());
-            PGPPrivateKey signaturePrivateKey = certificationKey.extractPrivateKey(keyDecryptor);
-            if (signaturePrivateKey == null) {
-                throw new PgpGeneralMsgIdException(R.string.error_could_not_extract_private_key);
-            }
-
-            JcaPGPContentSignerBuilder contentSignerBuilder = new JcaPGPContentSignerBuilder(
-                certificationKey.getPublicKey().getAlgorithm(), PGPUtil.SHA256)
-                .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME);
-
-            signatureGenerator = new PGPSignatureGenerator(contentSignerBuilder);
-            signatureGenerator.init(PGPSignature.KEY_REVOCATION, signaturePrivateKey);
+        if (certificationKey == null) {
+            throw new PgpGeneralMsgIdException(R.string.error_no_signature_key);
         }
 
-        { // supply signatureGenerator with a SubpacketVector
-            PGPSignatureSubpacketGenerator hashed = new PGPSignatureSubpacketGenerator();
-            hashed.setSignatureCreationTime(false, new Date());
-            hashed.setRevocationReason(false, reason, description);
-
-            PGPSignatureSubpacketGenerator unhashed = new PGPSignatureSubpacketGenerator();
-            unhashed.setIssuerKeyID(false, certificationKey.getPublicKey().getKeyID());
-
-            signatureGenerator.setHashedSubpackets(hashed.generate());
-            signatureGenerator.setUnhashedSubpackets(unhashed.generate());
+        PBESecretKeyDecryptor keyDecryptor = new JcePBESecretKeyDecryptorBuilder().setProvider(
+                Constants.BOUNCY_CASTLE_PROVIDER_NAME).build(passphrase.toCharArray());
+        PGPPrivateKey signaturePrivateKey = certificationKey.extractPrivateKey(keyDecryptor);
+        if (signaturePrivateKey == null) {
+            throw new PgpGeneralMsgIdException(R.string.error_could_not_extract_private_key);
         }
+
+        JcaPGPContentSignerBuilder contentSignerBuilder = new JcaPGPContentSignerBuilder(
+            certificationKey.getPublicKey().getAlgorithm(), PGPUtil.SHA256)
+            .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME);
+
+        signatureGenerator = new PGPSignatureGenerator(contentSignerBuilder);
+        signatureGenerator.init(PGPSignature.KEY_REVOCATION, signaturePrivateKey);
+
+
+        // supply signatureGenerator with a SubpacketVector
+        PGPSignatureSubpacketGenerator hashed = new PGPSignatureSubpacketGenerator();
+        hashed.setSignatureCreationTime(false, new Date());
+        hashed.setRevocationReason(false, reason, description);
+
+        PGPSignatureSubpacketGenerator unhashed = new PGPSignatureSubpacketGenerator();
+        unhashed.setIssuerKeyID(false, certificationKey.getPublicKey().getKeyID());
+
+        signatureGenerator.setHashedSubpackets(hashed.generate());
+        signatureGenerator.setUnhashedSubpackets(unhashed.generate());
+
 
         return signatureGenerator.generateCertification(certificationKey.getPublicKey());
 

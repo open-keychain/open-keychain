@@ -17,6 +17,7 @@ import org.spongycastle.openpgp.operator.jcajce.JcaPGPContentSignerBuilder;
 import org.spongycastle.openpgp.operator.jcajce.JcePBESecretKeyDecryptorBuilder;
 import org.spongycastle.openpgp.operator.jcajce.JcePublicKeyDataDecryptorFactoryBuilder;
 import org.sufficientlysecure.keychain.Constants;
+import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralMsgIdException;
 import org.sufficientlysecure.keychain.util.IterableIterator;
@@ -24,6 +25,7 @@ import org.sufficientlysecure.keychain.util.IterableIterator;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.security.SignatureException;
+import java.util.Date;
 import java.util.List;
 
 /** Wrapper for a PGPSecretKey.
@@ -187,6 +189,56 @@ public class WrappedSecretKey extends WrappedPublicKey {
 
         return new UncachedKeyRing(ring);
     }
+
+
+    /**
+     * Revoke the given key
+     *
+     * @param publicKeyRing    Keyrin to revoke from
+     * @param reason           revokation reason
+     * @param description      Revokation description
+     * @return A keyring with added revokation
+     */
+    public UncachedKeyRing revoke(WrappedPublicKeyRing publicKeyRing, byte reason, String description)
+            throws PgpGeneralMsgIdException, NoSuchAlgorithmException, NoSuchProviderException,
+            PGPException, SignatureException {
+
+        PGPSignatureGenerator signatureGenerator;
+
+        if(mPrivateKey == null) {
+            throw new PrivateKeyNotUnlockedException();
+        }
+
+
+        JcaPGPContentSignerBuilder contentSignerBuilder = new JcaPGPContentSignerBuilder(
+                mSecretKey.getPublicKey().getAlgorithm(), PGPUtil.SHA256)
+                .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME);
+
+        signatureGenerator = new PGPSignatureGenerator(contentSignerBuilder);
+        signatureGenerator.init(PGPSignature.KEY_REVOCATION, mPrivateKey);
+
+
+        // supply signatureGenerator with a SubpacketVector
+        PGPSignatureSubpacketGenerator hashed = new PGPSignatureSubpacketGenerator();
+        hashed.setSignatureCreationTime(false, new Date());
+        hashed.setRevocationReason(false, reason, description);
+
+        PGPSignatureSubpacketGenerator unhashed = new PGPSignatureSubpacketGenerator();
+        unhashed.setIssuerKeyID(false, mSecretKey.getPublicKey().getKeyID());
+
+        signatureGenerator.setHashedSubpackets(hashed.generate());
+        signatureGenerator.setUnhashedSubpackets(unhashed.generate());
+
+
+        PGPSignature sig = signatureGenerator.generateCertification(mSecretKey.getPublicKey());
+        PGPPublicKeyRing ring = PGPPublicKeyRing.insertPublicKey(publicKeyRing.getRing(),
+                mSecretKey.getPublicKey());
+
+
+        return new UncachedKeyRing(ring);
+    }
+
+
 
     static class PrivateKeyNotUnlockedException extends RuntimeException {
         // this exception is a programming error which happens when an operation which requires
