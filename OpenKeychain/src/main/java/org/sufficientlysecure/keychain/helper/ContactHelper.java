@@ -27,6 +27,7 @@ import android.provider.ContactsContract;
 import android.util.Patterns;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.util.Log;
@@ -93,7 +94,7 @@ public class ContactHelper {
                 null, null, null);
         if (cursor != null) {
             while (cursor.moveToNext()) {
-                String[] userId = PgpKeyHelper.splitUserId(cursor.getString(0));
+                String[] userId = KeyRing.splitUserId(cursor.getString(0));
                 String fingerprint = PgpKeyHelper.convertFingerprintToHex(cursor.getBlob(1));
                 String keyIdShort = PgpKeyHelper.convertKeyIdToHexShort(cursor.getLong(2));
                 long masterKeyId = cursor.getLong(3);
