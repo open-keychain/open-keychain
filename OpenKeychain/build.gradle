@@ -14,7 +14,6 @@ dependencies {
 
     compile 'com.android.support:support-v4:19.1.0'
     compile 'com.android.support:appcompat-v7:19.1.0'
-    compile 'dnsjava:dnsjava:2.1.1'
     compile project(':extern:openpgp-api-lib')
     compile project(':extern:openkeychain-api-lib')
     compile project(':extern:html-textview')
@@ -27,6 +26,7 @@ dependencies {
     compile project(':extern:spongycastle:pkix')
     compile project(':extern:spongycastle:prov')
     compile project(':extern:AppMsg:library')
+    compile project(':extern:dnsjava')
 
     // Dependencies for the `instrumentTest` task, make sure to list all your global dependencies here as well
     androidTestCompile 'junit:junit:4.10'
