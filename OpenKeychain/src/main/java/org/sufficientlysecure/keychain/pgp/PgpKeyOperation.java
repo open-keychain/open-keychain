@@ -125,7 +125,7 @@ public class PgpKeyOperation {
      */
 
     // TODO: key flags?
-    public byte[] createKey(int algorithmChoice, int keySize, String passphrase,
+    public PGPSecretKey createKey(int algorithmChoice, int keySize, String passphrase,
                                   boolean isMasterKey)
             throws NoSuchAlgorithmException, PGPException, NoSuchProviderException,
             PgpGeneralMsgIdException, InvalidAlgorithmParameterException {

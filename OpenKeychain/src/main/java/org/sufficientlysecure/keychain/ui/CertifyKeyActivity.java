@@ -435,6 +435,123 @@ public class CertifyKeyActivity extends ActionBarActivity implements
         startService(intent);
     }
 
+
+    /**
+     * handles the UI bits of the signing process on the UI thread
+     */
+    private void initiateRevokation() {
+
+        try {
+
+            // if we have already revoked this key, dont bother doing it
+            boolean alreadyRevoked  = false;
+            /* todo: reconsider this at a later point when certs are in the db
+            @SuppressWarnings("unchecked")
+            Iterator<PGPSignature> itr = pubring.getPublicKey(mPubKeyId).getSignatures();
+            while (itr.hasNext()) {
+                PGPSignature sig = itr.next();
+                if (sig.getKeyID() == mMasterKeyId) {
+                    alreadySigned = true;
+                    break;
+                }
+            }
+            */
+
+            if (!alreadyRevoked) {
+                /*
+                 * get the user's passphrase for this key (if required)
+                 */
+                String passphrase = PassphraseCacheService.getCachedPassphrase(this, mMasterKeyId);
+                if (passphrase == null) {
+                    PassphraseDialogFragment.show(this, mMasterKeyId,
+                            new Handler() {
+                                @Override
+                                public void handleMessage(Message message) {
+                                    if (message.what == PassphraseDialogFragment.MESSAGE_OKAY) {
+                                        startRevokation();
+                                    }
+                                }
+                            }
+                    );
+                    // bail out; need to wait until the user has entered the passphrase before trying again
+                    return;
+                } else {
+                    startRevokation();
+                }
+            } else {
+                AppMsg.makeText(this, R.string.key_has_already_been_certified, AppMsg.STYLE_ALERT)
+                        .show();
+
+                setResult(RESULT_CANCELED);
+                finish();
+            }
+        } catch (java.lang.Exception e) {
+            Log.e(Constants.TAG, "key not found!", e);
+        }
+    }
+
+    /**
+     * kicks off the actual signing process on a background thread
+     */
+    private void startRevokation() {
+
+        // Bail out if there is not at least one user id selected
+        ArrayList<String> userIds = mUserIdsAdapter.getSelectedUserIds();
+        if (userIds.isEmpty()) {
+            AppMsg.makeText(CertifyKeyActivity.this, "No User IDs to sign selected!",
+                    AppMsg.STYLE_ALERT).show();
+            return;
+        }
+
+        // Send all information needed to service to sign key in other thread
+        Intent intent = new Intent(this, KeychainIntentService.class);
+
+        intent.setAction(KeychainIntentService.ACTION_REVOKE_KEYRING);
+
+        // fill values for this action
+        Bundle data = new Bundle();
+
+        data.putLong(KeychainIntentService.CERTIFY_KEY_MASTER_KEY_ID, mMasterKeyId);
+        data.putLong(KeychainIntentService.CERTIFY_KEY_PUB_KEY_ID, mPubKeyId);
+        data.putStringArrayList(KeychainIntentService.CERTIFY_KEY_UIDS, userIds);
+
+        intent.putExtra(KeychainIntentService.EXTRA_DATA, data);
+
+        // Message is received after signing is done in KeychainIntentService
+        KeychainIntentServiceHandler saveHandler = new KeychainIntentServiceHandler(this,
+                getString(R.string.progress_signing), ProgressDialog.STYLE_SPINNER) {
+            public void handleMessage(Message message) {
+                // handle messages by standard KeychainIntentServiceHandler first
+                super.handleMessage(message);
+
+                if (message.arg1 == KeychainIntentServiceHandler.MESSAGE_OKAY) {
+
+                    AppMsg.makeText(CertifyKeyActivity.this, R.string.key_certify_success,
+                            AppMsg.STYLE_INFO).show();
+
+                    // check if we need to send the key to the server or not
+                    if (mUploadKeyCheckbox.isChecked()) {
+                        // upload the newly signed key to the keyserver
+                        uploadKey();
+                    } else {
+                        setResult(RESULT_OK);
+                        finish();
+                    }
+                }
+            }
+        };
+
+        // Create a new Messenger for the communication back
+        Messenger messenger = new Messenger(saveHandler);
+        intent.putExtra(KeychainIntentService.EXTRA_MESSENGER, messenger);
+
+        // show progress dialog
+        saveHandler.showProgressDialog(this);
+
+        // start service with intent
+        startService(intent);
+    }
+
     private void uploadKey() {
         // Send all information needed to service to upload key in other thread
         Intent intent = new Intent(this, KeychainIntentService.class);
