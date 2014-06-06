@@ -88,9 +88,43 @@ public class OperationResultParcel implements Parcelable {
     }
 
     public static enum LogType {
-        // TODO add actual log entry types here
-        MSG_IMPORT_OK (R.string.copy),
-        MSG_IMPORT_FAILED (R.string.cancel);
+        MSG_IP_APPLY_BATCH (R.string.msg_ip_apply_batch),
+        MSG_IP_BAD_TYPE_SECRET (R.string.msg_ip_bad_type_secret),
+        MSG_IP_DELETE_OLD_FAIL (R.string.msg_ip_delete_old_fail),
+        MSG_IP_DELETE_OLD_OK (R.string.msg_ip_delete_old_ok),
+        MSG_IP_ENCODE_FAIL (R.string.msg_ip_encode_fail),
+        MSG_IP_FAIL_IO_EXC (R.string.msg_ip_fail_io_exc),
+        MSG_IP_FAIL_OP_EX (R.string.msg_ip_fail_op_ex),
+        MSG_IP_FAIL_REMOTE_EX (R.string.msg_ip_fail_remote_ex),
+        MSG_IP_IMPORTING (R.string.msg_ip_importing),
+        MSG_IP_INSERT_KEYRING (R.string.msg_ip_insert_keyring),
+        MSG_IP_INSERT_SUBKEY (R.string.msg_ip_insert_subkey),
+        MSG_IP_INSERT_SUBKEYS (R.string.msg_ip_insert_subkeys),
+        MSG_IP_PRESERVING_SECRET (R.string.msg_ip_preserving_secret),
+        MSG_IP_REINSERT_SECRET (R.string.msg_ip_reinsert_secret),
+        MSG_IP_SUCCESS (R.string.msg_ip_success),
+        MSG_IP_TRUST_RETRIEVE (R.string.msg_ip_trust_retrieve),
+        MSG_IP_TRUST_USING (R.string.msg_ip_trust_using),
+        MSG_IP_TRUST_USING_SEC (R.string.msg_ip_trust_using_sec),
+        MSG_IP_UID_CERT_BAD (R.string.msg_ip_uid_cert_bad),
+        MSG_IP_UID_CERT_ERROR (R.string.msg_ip_uid_cert_error),
+        MSG_IP_UID_CERT_GOOD (R.string.msg_ip_uid_cert_good),
+        MSG_IP_UID_CERTS_UNKNOWN (R.string.msg_ip_uid_certs_unknown),
+        MSG_IP_UID_CLASSIFYING (R.string.msg_ip_uid_classifying),
+        MSG_IP_UID_INSERT (R.string.msg_ip_uid_insert),
+        MSG_IP_UID_PROCESSING (R.string.msg_ip_uid_processing),
+        MSG_IP_UID_SELF_BAD (R.string.msg_ip_uid_self_bad),
+        MSG_IP_UID_SELF_GOOD (R.string.msg_ip_uid_self_good),
+        MSG_IP_UID_SELF_IGNORING_OLD (R.string.msg_ip_uid_self_ignoring_old),
+        MSG_IP_UID_SELF_NEWER (R.string.msg_ip_uid_self_newer),
+        MSG_IS_BAD_TYPE_PUBLIC (R.string.msg_is_bad_type_public),
+        MSG_IS_IMPORTING (R.string.msg_is_importing),
+        MSG_IS_IMPORTING_SUBKEYS (R.string.msg_is_importing_subkeys),
+        MSG_IS_IO_EXCPTION (R.string.msg_is_io_excption),
+        MSG_IS_SUBKEY_NONEXISTENT (R.string.msg_is_subkey_nonexistent),
+        MSG_IS_SUBKEY_OK (R.string.msg_is_subkey_ok),
+        MSG_IS_SUCCESS (R.string.msg_is_success),
+        ;
 
         private int mMsgId;
         LogType(int msgId) {
