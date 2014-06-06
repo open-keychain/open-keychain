@@ -92,6 +92,8 @@ public class ViewKeyActivity extends ActionBarActivity implements
 
     private static final int LOADER_ID_UNIFIED = 0;
 
+    private boolean mShowAdvancedTabs;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -116,9 +118,6 @@ public class ViewKeyActivity extends ActionBarActivity implements
         mViewPager = (ViewPager) findViewById(R.id.view_key_pager);
         mSlidingTabLayout = (SlidingTabLayout) findViewById(R.id.view_key_sliding_tab_layout);
 
-        mTabsAdapter = new PagerTabStripAdapter(this);
-        mViewPager.setAdapter(mTabsAdapter);
-
         int switchToTab = TAB_MAIN;
         Intent intent = getIntent();
         if (intent.getExtras() != null && intent.getExtras().containsKey(EXTRA_SELECTED_TAB)) {
@@ -136,6 +135,18 @@ public class ViewKeyActivity extends ActionBarActivity implements
 
         initNfc(dataUri);
 
+        mShowAdvancedTabs = false;
+
+        initTabs(dataUri);
+
+        // switch to tab selected by extra
+        mViewPager.setCurrentItem(switchToTab);
+    }
+
+    private void initTabs(Uri dataUri) {
+        mTabsAdapter = new PagerTabStripAdapter(this);
+        mViewPager.setAdapter(mTabsAdapter);
+
         Bundle mainBundle = new Bundle();
         mainBundle.putParcelable(ViewKeyMainFragment.ARG_DATA_URI, dataUri);
         mTabsAdapter.addTab(ViewKeyMainFragment.class,
@@ -146,6 +157,11 @@ public class ViewKeyActivity extends ActionBarActivity implements
         mTabsAdapter.addTab(ViewKeyShareFragment.class,
                 mainBundle, getString(R.string.key_view_tab_share));
 
+        // update layout after operations
+        mSlidingTabLayout.setViewPager(mViewPager);
+    }
+
+    private void addAdvancedTabs(Uri dataUri) {
         Bundle keyDetailsBundle = new Bundle();
         keyDetailsBundle.putParcelable(ViewKeyKeysFragment.ARG_DATA_URI, dataUri);
         mTabsAdapter.addTab(ViewKeyKeysFragment.class,
@@ -156,11 +172,46 @@ public class ViewKeyActivity extends ActionBarActivity implements
         mTabsAdapter.addTab(ViewKeyCertsFragment.class,
                 certBundle, getString(R.string.key_view_tab_certs));
 
-        // NOTE: must be after adding the tabs!
+        // update layout after operations
         mSlidingTabLayout.setViewPager(mViewPager);
+    }
 
-        // switch to tab selected by extra
-        mViewPager.setCurrentItem(switchToTab);
+    private void removeAdvancedTabs() {
+        // before removing, switch to the first tab if necessary
+        if (mViewPager.getCurrentItem() >= TAB_KEYS) {
+            // remove _after_ switching to the main tab
+            mViewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+                @Override
+                public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+                }
+
+                @Override
+                public void onPageSelected(int position) {
+                }
+
+                @Override
+                public void onPageScrollStateChanged(int state) {
+                    if (ViewPager.SCROLL_STATE_SETTLING == state) {
+                        mTabsAdapter.removeTab(TAB_CERTS);
+                        mTabsAdapter.removeTab(TAB_KEYS);
+
+                        // update layout after operations
+                        mSlidingTabLayout.setViewPager(mViewPager);
+
+                        // remove this listener again
+//                        mViewPager.setOnPageChangeListener(null);
+                    }
+                }
+            });
+
+            mViewPager.setCurrentItem(TAB_MAIN);
+        } else {
+            mTabsAdapter.removeTab(TAB_CERTS);
+            mTabsAdapter.removeTab(TAB_KEYS);
+        }
+
+        // update layout after operations
+        mSlidingTabLayout.setViewPager(mViewPager);
     }
 
     private void loadData(Uri dataUri) {
@@ -177,6 +228,9 @@ public class ViewKeyActivity extends ActionBarActivity implements
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
         getMenuInflater().inflate(R.menu.key_view, menu);
+
+        MenuItem showAdvancedInfoItem = menu.findItem(R.id.menu_key_view_advanced);
+        showAdvancedInfoItem.setChecked(mShowAdvancedTabs);
         return true;
     }
 
@@ -184,23 +238,36 @@ public class ViewKeyActivity extends ActionBarActivity implements
     public boolean onOptionsItemSelected(MenuItem item) {
         try {
             switch (item.getItemId()) {
-                case android.R.id.home:
+                case android.R.id.home: {
                     Intent homeIntent = new Intent(this, KeyListActivity.class);
                     homeIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     startActivity(homeIntent);
                     return true;
-                case R.id.menu_key_view_update:
+                }
+                case R.id.menu_key_view_update: {
                     updateFromKeyserver(mDataUri, mProviderHelper);
                     return true;
-                case R.id.menu_key_view_export_keyserver:
+                }
+                case R.id.menu_key_view_export_keyserver: {
                     uploadToKeyserver(mDataUri);
                     return true;
-                case R.id.menu_key_view_export_file:
+                }
+                case R.id.menu_key_view_export_file: {
                     exportToFile(mDataUri, mExportHelper, mProviderHelper);
                     return true;
+                }
                 case R.id.menu_key_view_delete: {
                     deleteKey(mDataUri, mExportHelper);
                     return true;
+                }
+                case R.id.menu_key_view_advanced: {
+                    mShowAdvancedTabs = !mShowAdvancedTabs;
+                    item.setChecked(mShowAdvancedTabs);
+                    if (mShowAdvancedTabs) {
+                        addAdvancedTabs(mDataUri);
+                    } else {
+                        removeAdvancedTabs();
+                    }
                 }
             }
         } catch (ProviderHelper.NotFoundException e) {

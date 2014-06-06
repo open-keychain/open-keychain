@@ -102,6 +102,7 @@
     <string name="menu_select_all">Select all</string>
     <string name="menu_add_keys">Add keys</string>
     <string name="menu_export_all_keys">Export all keys</string>
+    <string name="menu_advanced">Show advanced info</string>
 
     <!-- label -->
     <string name="label_sign">Sign</string>
