@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.sufficientlysecure.keychain.util;
+package org.sufficientlysecure.keychain.ui.widget;
 
 import android.R;
 import android.content.Context;

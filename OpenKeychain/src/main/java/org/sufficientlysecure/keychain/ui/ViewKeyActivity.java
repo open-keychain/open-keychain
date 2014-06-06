@@ -54,7 +54,7 @@ import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.ui.adapter.PagerTabStripAdapter;
 import org.sufficientlysecure.keychain.util.Log;
-import org.sufficientlysecure.keychain.util.SlidingTabLayout;
+import org.sufficientlysecure.keychain.ui.widget.SlidingTabLayout;
 
 import java.util.Date;
 import java.util.HashMap;
