@@ -36,6 +36,7 @@ public class ImportKeysListEntry implements Serializable, Parcelable {
     private long mKeyId;
     private String mKeyIdHex;
     private boolean mRevoked;
+    private boolean mExpired;
     private Date mDate; // TODO: not displayed
     private String mFingerprintHex;
     private int mBitStrength;
@@ -44,6 +45,7 @@ public class ImportKeysListEntry implements Serializable, Parcelable {
     private String mPrimaryUserId;
     private String mExtraData;
     private String mQuery;
+    private String mOrigin;
 
     private boolean mSelected;
 
@@ -57,6 +59,7 @@ public class ImportKeysListEntry implements Serializable, Parcelable {
         dest.writeStringList(mUserIds);
         dest.writeLong(mKeyId);
         dest.writeByte((byte) (mRevoked ? 1 : 0));
+        dest.writeByte((byte) (mExpired ? 1 : 0));
         dest.writeSerializable(mDate);
         dest.writeString(mFingerprintHex);
         dest.writeString(mKeyIdHex);
@@ -65,6 +68,7 @@ public class ImportKeysListEntry implements Serializable, Parcelable {
         dest.writeByte((byte) (mSecretKey ? 1 : 0));
         dest.writeByte((byte) (mSelected ? 1 : 0));
         dest.writeString(mExtraData);
+        dest.writeString(mOrigin);
     }
 
     public static final Creator<ImportKeysListEntry> CREATOR = new Creator<ImportKeysListEntry>() {
@@ -75,6 +79,7 @@ public class ImportKeysListEntry implements Serializable, Parcelable {
             source.readStringList(vr.mUserIds);
             vr.mKeyId = source.readLong();
             vr.mRevoked = source.readByte() == 1;
+            vr.mExpired = source.readByte() == 1;
             vr.mDate = (Date) source.readSerializable();
             vr.mFingerprintHex = source.readString();
             vr.mKeyIdHex = source.readString();
@@ -83,6 +88,7 @@ public class ImportKeysListEntry implements Serializable, Parcelable {
             vr.mSecretKey = source.readByte() == 1;
             vr.mSelected = source.readByte() == 1;
             vr.mExtraData = source.readString();
+            vr.mOrigin = source.readString();
 
             return vr;
         }
@@ -102,6 +108,14 @@ public class ImportKeysListEntry implements Serializable, Parcelable {
 
     public void setSelected(boolean selected) {
         this.mSelected = selected;
+    }
+
+    public boolean isExpired() {
+        return mExpired;
+    }
+
+    public void setExpired(boolean expired) {
+        this.mExpired = expired;
     }
 
     public long getKeyId() {
@@ -194,6 +208,14 @@ public class ImportKeysListEntry implements Serializable, Parcelable {
 
     public void setQuery(String query) {
         mQuery = query;
+    }
+
+    public String getOrigin() {
+        return mOrigin;
+    }
+
+    public void setOrigin(String origin) {
+        mOrigin = origin;
     }
 
     /**

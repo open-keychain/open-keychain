@@ -20,6 +20,7 @@ package org.sufficientlysecure.keychain.ui;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
@@ -32,6 +33,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.provider.ContactsContract;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
@@ -47,6 +49,7 @@ import com.devspark.appmsg.AppMsg;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.helper.ContactHelper;
 import org.sufficientlysecure.keychain.helper.ExportHelper;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
@@ -124,7 +127,7 @@ public class ViewKeyActivity extends ActionBarActivity implements
             switchToTab = intent.getExtras().getInt(EXTRA_SELECTED_TAB);
         }
 
-        Uri dataUri = getIntent().getData();
+        Uri dataUri = getDataUri();
         if (dataUri == null) {
             Log.e(Constants.TAG, "Data missing. Should be Uri of key!");
             finish();
@@ -212,6 +215,14 @@ public class ViewKeyActivity extends ActionBarActivity implements
 
         // update layout after operations
         mSlidingTabLayout.setViewPager(mViewPager);
+    }
+
+    private Uri getDataUri() {
+        Uri dataUri = getIntent().getData();
+        if (dataUri != null && dataUri.getHost().equals(ContactsContract.AUTHORITY)) {
+            dataUri = ContactHelper.dataUriFromContactUri(this, dataUri);
+        }
+        return dataUri;
     }
 
     private void loadData(Uri dataUri) {

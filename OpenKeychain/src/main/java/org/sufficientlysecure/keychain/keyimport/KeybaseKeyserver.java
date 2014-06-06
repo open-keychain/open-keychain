@@ -31,6 +31,7 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 
 public class KeybaseKeyserver extends Keyserver {
+    public static final String ORIGIN = "keybase:keybase.io";
     private String mQuery;
 
     @Override
@@ -87,6 +88,7 @@ public class KeybaseKeyserver extends Keyserver {
 
         final ImportKeysListEntry entry = new ImportKeysListEntry();
         entry.setQuery(mQuery);
+        entry.setOrigin(ORIGIN);
 
         String keybaseId = JWalk.getString(match, "components", "username", "val");
         String fullName = JWalk.getString(match, "components", "full_name", "val");

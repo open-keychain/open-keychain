@@ -26,6 +26,7 @@ dependencies {
     compile project(':extern:spongycastle:pkix')
     compile project(':extern:spongycastle:prov')
     compile project(':extern:AppMsg:library')
+    compile project(':extern:dnsjava')
 
     // Dependencies for the `instrumentTest` task, make sure to list all your global dependencies here as well
     androidTestCompile 'junit:junit:4.10'

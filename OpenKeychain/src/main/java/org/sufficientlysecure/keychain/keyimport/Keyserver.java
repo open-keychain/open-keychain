@@ -48,12 +48,12 @@ public abstract class Keyserver {
         private static final long serialVersionUID = -507574859137295530L;
     }
 
-    abstract List<ImportKeysListEntry> search(String query) throws QueryFailedException,
+    public abstract List<ImportKeysListEntry> search(String query) throws QueryFailedException,
             QueryNeedsRepairException;
 
-    abstract String get(String keyIdHex) throws QueryFailedException;
+    public abstract String get(String keyIdHex) throws QueryFailedException;
 
-    abstract void add(String armoredKey) throws AddKeyException;
+    public abstract void add(String armoredKey) throws AddKeyException;
 
     public static String readAll(InputStream in, String encoding) throws IOException {
         ByteArrayOutputStream raw = new ByteArrayOutputStream();
