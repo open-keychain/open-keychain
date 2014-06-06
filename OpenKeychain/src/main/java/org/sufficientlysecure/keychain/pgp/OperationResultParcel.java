@@ -123,6 +123,7 @@ public class OperationResultParcel implements Parcelable {
         MSG_IS_IO_EXCPTION (R.string.msg_is_io_excption),
         MSG_IS_SUBKEY_NONEXISTENT (R.string.msg_is_subkey_nonexistent),
         MSG_IS_SUBKEY_OK (R.string.msg_is_subkey_ok),
+        MSG_IS_SUBKEY_STRIPPED (R.string.msg_is_subkey_stripped),
         MSG_IS_SUCCESS (R.string.msg_is_success),
         ;
 

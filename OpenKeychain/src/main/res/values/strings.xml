@@ -535,7 +535,7 @@
     <string name="msg_ip_insert_subkeys">Inserting subkeys</string>
     <string name="msg_ip_preserving_secret">Preserving available secret key</string>
     <string name="msg_ip_reinsert_secret">Re-inserting secret key</string>
-    <string name="msg_ip_success">Successfully inserted secret keyring</string>
+    <string name="msg_ip_success">Successfully inserted public keyring</string>
     <string name="msg_ip_trust_retrieve">Retrieving trusted keys</string>
     <string name="msg_ip_trust_using">Using %s trusted keys</string>
     <string name="msg_ip_trust_using_sec">Secret key available, self certificates are trusted</string>
@@ -556,6 +556,7 @@
     <string name="msg_is_io_excption">Error encoding keyring</string>
     <string name="msg_is_subkey_nonexistent">Subkey %s unavailable in public key</string>
     <string name="msg_is_subkey_ok">Marked %s as available</string>
+    <string name="msg_is_subkey_stripped">Marked %s as stripped</string>
     <string name="msg_is_success">Successfully inserted secret keyring</string>
 
 </resources>

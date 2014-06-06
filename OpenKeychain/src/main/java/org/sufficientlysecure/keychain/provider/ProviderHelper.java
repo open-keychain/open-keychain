@@ -68,7 +68,7 @@ public class ProviderHelper {
     private int mIndent;
 
     public ProviderHelper(Context context) {
-        this(context, null, 0);
+        this(context, new ArrayList<OperationResultParcel.LogEntryParcel>(), 0);
     }
 
     public ProviderHelper(Context context, ArrayList<OperationResultParcel.LogEntryParcel> log,
@@ -96,10 +96,14 @@ public class ProviderHelper {
     }
 
     public void log(LogLevel level, LogType type) {
-        mLog.add(new OperationResultParcel.LogEntryParcel(level, type, null, mIndent));
+        if(mLog != null) {
+            mLog.add(new OperationResultParcel.LogEntryParcel(level, type, null, mIndent));
+        }
     }
     public void log(LogLevel level, LogType type, String[] parameters) {
-        mLog.add(new OperationResultParcel.LogEntryParcel(level, type, parameters, mIndent));
+        if(mLog != null) {
+            mLog.add(new OperationResultParcel.LogEntryParcel(level, type, parameters, mIndent));
+        }
     }
 
     // If we ever switch to api level 11, we can ditch this whole mess!
@@ -258,6 +262,7 @@ public class ProviderHelper {
         long masterKeyId = masterKey.getKeyId();
         log(LogLevel.INFO, LogType.MSG_IP_IMPORTING,
                 new String[]{Long.toString(masterKeyId)});
+        mIndent += 1;
 
         // IF there is a secret key, preserve it!
         UncachedKeyRing secretRing;
@@ -301,7 +306,7 @@ public class ProviderHelper {
             int rank = 0;
             for (UncachedPublicKey key : new IterableIterator<UncachedPublicKey>(keyRing.getPublicKeys())) {
                 log(LogLevel.DEBUG, LogType.MSG_IP_INSERT_SUBKEY, new String[] {
-                    PgpKeyHelper.convertKeyIdToHex(masterKeyId)
+                    PgpKeyHelper.convertKeyIdToHex(key.getKeyId())
                 });
                 operations.add(buildPublicKeyOperations(masterKeyId, key, rank));
                 ++rank;
@@ -433,10 +438,19 @@ public class ProviderHelper {
             mContentResolver.applyBatch(KeychainContract.CONTENT_AUTHORITY, operations);
         } catch (IOException e) {
             log(LogLevel.ERROR, LogType.MSG_IP_FAIL_IO_EXC);
+            Log.e(Constants.TAG, "IOException during import", e);
+            mIndent -= 1;
+            return new OperationResultParcel(1, mLog);
         } catch (RemoteException e) {
             log(LogLevel.ERROR, LogType.MSG_IP_FAIL_REMOTE_EX);
+            Log.e(Constants.TAG, "RemoteException during import", e);
+            mIndent -= 1;
+            return new OperationResultParcel(1, mLog);
         } catch (OperationApplicationException e) {
             log(LogLevel.ERROR, LogType.MSG_IP_FAIL_OP_EX);
+            Log.e(Constants.TAG, "OperationApplicationException during import", e);
+            mIndent -= 1;
+            return new OperationResultParcel(1, mLog);
         }
 
         // Save the saved keyring (if any)
@@ -448,6 +462,7 @@ public class ProviderHelper {
         }
 
         log(LogLevel.INFO, LogType.MSG_IP_SUCCESS);
+        mIndent -= 1;
         return new OperationResultParcel(0, mLog);
 
     }
@@ -513,17 +528,25 @@ public class ProviderHelper {
             // then, mark exactly the keys we have available
             log(LogLevel.INFO, LogType.MSG_IS_IMPORTING_SUBKEYS);
             mIndent += 1;
-            for (Long sub : new IterableIterator<Long>(keyRing.getAvailableSubkeys().iterator())) {
-                int upd = mContentResolver.update(uri, values, Keys.KEY_ID + " = ?", new String[] {
-                    Long.toString(sub)
-                });
-                if(upd == 0) {
-                    log(LogLevel.DEBUG, LogType.MSG_IS_SUBKEY_OK, new String[] {
-                            PgpKeyHelper.convertKeyIdToHex(sub)
-                    });
+            Set<Long> available = keyRing.getAvailableSubkeys();
+            for (UncachedPublicKey sub :
+                    new IterableIterator<UncachedPublicKey>(keyRing.getPublicKeys())) {
+                long id = sub.getKeyId();
+                if(available.contains(id)) {
+                    int upd = mContentResolver.update(uri, values, Keys.KEY_ID + " = ?",
+                            new String[] { Long.toString(id) });
+                    if (upd == 1) {
+                        log(LogLevel.DEBUG, LogType.MSG_IS_SUBKEY_OK, new String[]{
+                                PgpKeyHelper.convertKeyIdToHex(id)
+                        });
+                    } else {
+                        log(LogLevel.WARN, LogType.MSG_IS_SUBKEY_NONEXISTENT, new String[]{
+                                PgpKeyHelper.convertKeyIdToHex(id)
+                        });
+                    }
                 } else {
-                    log(LogLevel.WARN, LogType.MSG_IS_SUBKEY_NONEXISTENT, new String[] {
-                        PgpKeyHelper.convertKeyIdToHex(sub)
+                    log(LogLevel.INFO, LogType.MSG_IS_SUBKEY_STRIPPED, new String[]{
+                            PgpKeyHelper.convertKeyIdToHex(id)
                     });
                 }
             }
