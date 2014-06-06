@@ -29,6 +29,9 @@ import android.support.v4.util.LongSparseArray;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
+import org.sufficientlysecure.keychain.pgp.OperationResultParcel;
+import org.sufficientlysecure.keychain.pgp.OperationResultParcel.LogType;
+import org.sufficientlysecure.keychain.pgp.OperationResultParcel.LogLevel;
 import org.sufficientlysecure.keychain.pgp.PgpHelper;
 import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
@@ -59,12 +62,21 @@ import java.util.List;
 import java.util.Set;
 
 public class ProviderHelper {
-    private Context mContext;
-    private ContentResolver mContentResolver;
+    private final Context mContext;
+    private final ContentResolver mContentResolver;
+    private final ArrayList<OperationResultParcel.LogEntryParcel> mLog;
+    private int mIndent;
 
     public ProviderHelper(Context context) {
-        this.mContext = context;
-        this.mContentResolver = context.getContentResolver();
+        this(context, null, 0);
+    }
+
+    public ProviderHelper(Context context, ArrayList<OperationResultParcel.LogEntryParcel> log,
+                          int indent) {
+        mContext = context;
+        mContentResolver = context.getContentResolver();
+        mLog = log;
+        mIndent = indent;
     }
 
     public static class NotFoundException extends Exception {
@@ -74,6 +86,13 @@ public class ProviderHelper {
         public NotFoundException(String name) {
             super(name);
         }
+    }
+
+    public void log(LogLevel level, LogType type) {
+        mLog.add(new OperationResultParcel.LogEntryParcel(level, type, null, mIndent));
+    }
+    public void log(LogLevel level, LogType type, String[] parameters) {
+        mLog.add(new OperationResultParcel.LogEntryParcel(level, type, parameters, mIndent));
     }
 
     // If we ever switch to api level 11, we can ditch this whole mess!

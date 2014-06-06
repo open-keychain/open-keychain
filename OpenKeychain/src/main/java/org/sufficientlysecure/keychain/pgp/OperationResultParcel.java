@@ -1,8 +1,9 @@
 package org.sufficientlysecure.keychain.pgp;
 
-import android.R;
 import android.os.Parcel;
 import android.os.Parcelable;
+
+import org.sufficientlysecure.keychain.R;
 
 import java.util.ArrayList;
 
@@ -39,20 +40,26 @@ public class OperationResultParcel implements Parcelable {
 
     /** One entry in the log. */
     public static class LogEntryParcel implements Parcelable {
-        final LogType mType;
         final LogLevel mLevel;
+        final LogType mType;
         final String[] mParameters;
+        final int mIndent;
 
-        public LogEntryParcel(LogType type, LogLevel level, String[] parameters) {
-            mType = type;
+        public LogEntryParcel(LogLevel level, LogType type, String[] parameters, int indent) {
             mLevel = level;
+            mType = type;
             mParameters = parameters;
+            mIndent = indent;
+        }
+        public LogEntryParcel(LogLevel level, LogType type, String[] parameters) {
+            this(level, type, parameters, 0);
         }
 
         public LogEntryParcel(Parcel source) {
-            mType = LogType.values()[source.readInt()];
             mLevel = LogLevel.values()[source.readInt()];
+            mType = LogType.values()[source.readInt()];
             mParameters = source.createStringArray();
+            mIndent = source.readInt();
         }
 
         @Override
@@ -62,9 +69,10 @@ public class OperationResultParcel implements Parcelable {
 
         @Override
         public void writeToParcel(Parcel dest, int flags) {
-            dest.writeInt(mType.ordinal());
             dest.writeInt(mLevel.ordinal());
+            dest.writeInt(mType.ordinal());
             dest.writeStringArray(mParameters);
+            dest.writeInt(mIndent);
         }
 
         public static final Creator<LogEntryParcel> CREATOR = new Creator<LogEntryParcel>() {
