@@ -29,6 +29,7 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
 import android.widget.Toast;
+import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.util.Log;
 
@@ -73,7 +74,7 @@ public class DummyAccountService extends Service {
 
         @Override
         public Bundle editProperties(AccountAuthenticatorResponse response, String accountType) {
-            Log.d("DummyAccountService", "editProperties");
+            Log.d(Constants.TAG, "DummyAccountService.editProperties");
             return null;
         }
 
@@ -82,41 +83,41 @@ public class DummyAccountService extends Service {
                                  String[] requiredFeatures, Bundle options) throws NetworkErrorException {
             response.onResult(new Bundle());
             toaster.toast(R.string.info_no_manual_account_creation);
-            Log.d("DummyAccountService", "addAccount");
+            Log.d(Constants.TAG, "DummyAccountService.addAccount");
             return null;
         }
 
         @Override
         public Bundle confirmCredentials(AccountAuthenticatorResponse response, Account account, Bundle options)
                 throws NetworkErrorException {
-            Log.d("DummyAccountService", "confirmCredentials");
+            Log.d(Constants.TAG, "DummyAccountService.confirmCredentials");
             return null;
         }
 
         @Override
         public Bundle getAuthToken(AccountAuthenticatorResponse response, Account account, String authTokenType,
                                    Bundle options) throws NetworkErrorException {
-            Log.d("DummyAccountService", "getAuthToken");
+            Log.d(Constants.TAG, "DummyAccountService.getAuthToken");
             return null;
         }
 
         @Override
         public String getAuthTokenLabel(String authTokenType) {
-            Log.d("DummyAccountService", "getAuthTokenLabel");
+            Log.d(Constants.TAG, "DummyAccountService.getAuthTokenLabel");
             return null;
         }
 
         @Override
         public Bundle updateCredentials(AccountAuthenticatorResponse response, Account account, String authTokenType,
                                         Bundle options) throws NetworkErrorException {
-            Log.d("DummyAccountService", "updateCredentials");
+            Log.d(Constants.TAG, "DummyAccountService.updateCredentials");
             return null;
         }
 
         @Override
         public Bundle hasFeatures(AccountAuthenticatorResponse response, Account account, String[] features)
                 throws NetworkErrorException {
-            Log.d("DummyAccountService", "hasFeatures");
+            Log.d(Constants.TAG, "DummyAccountService.hasFeatures");
             return null;
         }
     }
