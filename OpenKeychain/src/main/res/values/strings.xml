@@ -519,8 +519,7 @@
     <string name="can_sign_not">cannot sign</string>
     <string name="error_encoding">Encoding error</string>
     <string name="error_no_encrypt_subkey">No encryption subkey available!</string>
-    <string name="info_no_manual_account_creation">Do not create OpenKeychain-Accounts manually.
-        For more information, see Help.</string>
+    <string name="info_no_manual_account_creation">Do not create OpenKeychain-Accounts manually.\nFor more information, see Help.</string>
     <string name="contact_show_key">Show key (%s)</string>
 
 </resources>

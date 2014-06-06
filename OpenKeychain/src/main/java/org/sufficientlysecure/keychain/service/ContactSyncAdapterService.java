@@ -24,6 +24,7 @@ import android.content.ContentProviderClient;
 import android.content.Intent;
 import android.content.SyncResult;
 import android.os.*;
+import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.KeychainApplication;
 import org.sufficientlysecure.keychain.helper.ContactHelper;
 import org.sufficientlysecure.keychain.helper.EmailKeyHelper;
@@ -51,13 +52,13 @@ public class ContactSyncAdapterService extends Service {
                                 case KeychainIntentServiceHandler.MESSAGE_UPDATE_PROGRESS:
                                     if (data.containsKey(KeychainIntentServiceHandler.DATA_PROGRESS) &&
                                             data.containsKey(KeychainIntentServiceHandler.DATA_PROGRESS_MAX)) {
-                                        Log.d("Keychain/ContactSync/DownloadKeys", "Progress: " +
+                                        Log.d(Constants.TAG, "Progress: " +
                                                 data.getInt(KeychainIntentServiceHandler.DATA_PROGRESS) + "/" +
                                                 data.getInt(KeychainIntentServiceHandler.DATA_PROGRESS_MAX));
                                         return false;
                                     }
                                 default:
-                                    Log.d("Keychain/ContactSync/DownloadKeys", "Syncing... " + msg.toString());
+                                    Log.d(Constants.TAG, "Syncing... " + msg.toString());
                                     return false;
                             }
                         }
