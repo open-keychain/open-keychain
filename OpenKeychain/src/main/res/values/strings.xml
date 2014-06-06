@@ -520,4 +520,42 @@
     <string name="error_encoding">Encoding error</string>
     <string name="error_no_encrypt_subkey">No encryption subkey available!</string>
 
+    <!-- Import log entries -->
+    <string name="msg_ip_apply_batch">Applying insert batch operation.</string>
+    <string name="msg_ip_bad_type_secret">Tried to import secret keyring as public. This is a bug, please file a report!</string>
+    <string name="msg_ip_delete_old_fail">No old key deleted (creating a new one?)</string>
+    <string name="msg_ip_delete_old_ok">Deleted old key from database</string>
+    <string name="msg_ip_encode_fail">Operation failed due to encoding error</string>
+    <string name="msg_ip_fail_io_exc">Operation failed due to i/o error</string>
+    <string name="msg_ip_fail_op_ex">Operation failed due to database error</string>
+    <string name="msg_ip_fail_remote_ex">Operation failed due to internal error</string>
+    <string name="msg_ip_importing">Importing public keyring</string>
+    <string name="msg_ip_insert_keyring">Inserting keyring data</string>
+    <string name="msg_ip_insert_subkey">Inserting subkey %s</string>
+    <string name="msg_ip_insert_subkeys">Inserting subkeys</string>
+    <string name="msg_ip_preserving_secret">Preserving available secret key</string>
+    <string name="msg_ip_reinsert_secret">Re-inserting secret key</string>
+    <string name="msg_ip_success">Successfully inserted secret keyring</string>
+    <string name="msg_ip_trust_retrieve">Retrieving trusted keys</string>
+    <string name="msg_ip_trust_using">Using %s trusted keys</string>
+    <string name="msg_ip_trust_using_sec">Secret key available, self certificates are trusted</string>
+    <string name="msg_ip_uid_cert_bad">Encountered bad certificate!</string>
+    <string name="msg_ip_uid_cert_error">Error processing certificate!</string>
+    <string name="msg_ip_uid_cert_good">Found good certificate from %s</string>
+    <string name="msg_ip_uid_certs_unknown">Ignored %s certificates from unknown pubkeys</string>
+    <string name="msg_ip_uid_classifying">Classifying user ids</string>
+    <string name="msg_ip_uid_insert">Inserting user ids</string>
+    <string name="msg_ip_uid_processing">Processing user id %s</string>
+    <string name="msg_ip_uid_self_bad">Bad self certificate encountered!</string>
+    <string name="msg_ip_uid_self_good">Found good self certificate</string>
+    <string name="msg_ip_uid_self_ignoring_old">Ignoring older self certificate</string>
+    <string name="msg_ip_uid_self_newer">Using more recent good self certificate</string>
+    <string name="msg_is_bad_type_public">Tried to import public keyring as secret. This is a bug, please file a report!</string>
+    <string name="msg_is_importing">Importing secret key %s</string>
+    <string name="msg_is_importing_subkeys">Processing secret subkeys</string>
+    <string name="msg_is_io_excption">Error encoding keyring</string>
+    <string name="msg_is_subkey_nonexistent">Subkey %s unavailable in public key</string>
+    <string name="msg_is_subkey_ok">Marked %s as available</string>
+    <string name="msg_is_success">Successfully inserted secret keyring</string>
+
 </resources>
