@@ -126,9 +126,12 @@ public class OperationResultParcel implements Parcelable {
         MSG_IS_SUCCESS (R.string.msg_is_success),
         ;
 
-        private int mMsgId;
+        private final int mMsgId;
         LogType(int msgId) {
             mMsgId = msgId;
+        }
+        public int getMsgId() {
+            return mMsgId;
         }
     }
 

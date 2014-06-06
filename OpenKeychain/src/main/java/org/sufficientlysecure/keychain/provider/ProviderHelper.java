@@ -79,6 +79,13 @@ public class ProviderHelper {
         mIndent = indent;
     }
 
+    public void resetLog() {
+        if(mLog != null) {
+            mLog.clear();
+            mIndent = 0;
+        }
+    }
+
     public static class NotFoundException extends Exception {
         public NotFoundException() {
         }

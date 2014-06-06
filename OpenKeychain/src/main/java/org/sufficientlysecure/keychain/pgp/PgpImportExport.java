@@ -152,13 +152,14 @@ public class PgpImportExport {
                     }
                 }
 
-                mProviderHelper.savePublicKeyRing(key);
-                /*switch(status) {
-                    case RETURN_UPDATED: oldKeys++; break;
-                    case RETURN_OK: newKeys++; break;
-                    case RETURN_BAD: badKeys++; break;
-                }*/
-                // TODO proper import feedback
+                mProviderHelper.resetLog();
+                OperationResultParcel result = mProviderHelper.savePublicKeyRing(key);
+                for(OperationResultParcel.LogEntryParcel loge : result.mLog) {
+                    Log.d(Constants.TAG,
+                            loge.mIndent
+                            + new String(new char[loge.mIndent]).replace("\0", " ")
+                            + mContext.getString(loge.mType.getMsgId(), (Object[]) loge.mParameters));
+                }
                 newKeys += 1;
 
             } catch (PgpGeneralException e) {
