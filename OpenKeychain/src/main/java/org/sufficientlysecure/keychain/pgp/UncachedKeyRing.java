@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
@@ -149,13 +150,13 @@ public class UncachedKeyRing {
         aos.close();
     }
 
-    public ArrayList<Long> getAvailableSubkeys() {
+    public HashSet<Long> getAvailableSubkeys() {
         if(!isSecret()) {
             throw new RuntimeException("Tried to find available subkeys from non-secret keys. " +
                     "This is a programming error and should never happen!");
         }
 
-        ArrayList<Long> result = new ArrayList<Long>();
+        HashSet<Long> result = new HashSet<Long>();
         // then, mark exactly the keys we have available
         for (PGPSecretKey sub : new IterableIterator<PGPSecretKey>(
                 ((PGPSecretKeyRing) mRing).getSecretKeys())) {
