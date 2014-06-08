@@ -177,7 +177,7 @@ public class EncryptMessageFragment extends Fragment {
         // fill values for this action
         Bundle data = new Bundle();
 
-        data.putInt(KeychainIntentService.TARGET, KeychainIntentService.TARGET_BYTES);
+        data.putInt(KeychainIntentService.TARGET, KeychainIntentService.IO_BYTES);
 
         String message = mMessage.getText().toString();
 

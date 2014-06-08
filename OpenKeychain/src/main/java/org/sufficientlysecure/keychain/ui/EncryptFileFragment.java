@@ -280,7 +280,7 @@ public class EncryptFileFragment extends Fragment {
         // fill values for this action
         Bundle data = new Bundle();
 
-        data.putInt(KeychainIntentService.TARGET, KeychainIntentService.TARGET_URI);
+        data.putInt(KeychainIntentService.TARGET, KeychainIntentService.IO_FILE);
 
         if (mEncryptInterface.isModeSymmetric()) {
             Log.d(Constants.TAG, "Symmetric encryption enabled!");

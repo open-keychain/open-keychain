@@ -170,7 +170,7 @@ public class DecryptFileFragment extends DecryptFragment {
         intent.setAction(KeychainIntentService.ACTION_DECRYPT_VERIFY);
 
         // data
-        data.putInt(KeychainIntentService.TARGET, KeychainIntentService.TARGET_URI);
+        data.putInt(KeychainIntentService.TARGET, KeychainIntentService.IO_FILE);
 
         Log.d(Constants.TAG, "mInputFilename=" + mInputFilename + ", mOutputFilename="
                 + mOutputFilename);
