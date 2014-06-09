@@ -33,6 +33,9 @@ import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
+import org.sufficientlysecure.keychain.service.OperationResultParcel;
+import org.sufficientlysecure.keychain.service.OperationResultParcel.OperationLog;
+import org.sufficientlysecure.keychain.service.OperationResults.ImportResult;
 import org.sufficientlysecure.keychain.util.Log;
 
 import java.io.ByteArrayOutputStream;
@@ -123,12 +126,9 @@ public class PgpImportExport {
         }
     }
 
-    /**
-     * Imports keys from given data. If keyIds is given only those are imported
-     */
-    public Bundle importKeyRings(List<ParcelableKeyRing> entries)
+    /** Imports keys from given data. If keyIds is given only those are imported */
+    public ImportResult importKeyRings(List<ParcelableKeyRing> entries)
             throws PgpGeneralException, PGPException, IOException {
-        Bundle returnData = new Bundle();
 
         updateProgress(R.string.progress_importing, 0, 100);
 
@@ -152,14 +152,8 @@ public class PgpImportExport {
                     }
                 }
 
-                mProviderHelper.resetLog();
                 OperationResultParcel result = mProviderHelper.savePublicKeyRing(key);
-                for(OperationResultParcel.LogEntryParcel loge : result.mLog) {
-                    Log.d(Constants.TAG,
-                            loge.mIndent
-                            + new String(new char[loge.mIndent]).replace("\0", " ")
-                            + mContext.getString(loge.mType.getMsgId(), (Object[]) loge.mParameters));
-                }
+
                 newKeys += 1;
 
             } catch (PgpGeneralException e) {
@@ -171,11 +165,30 @@ public class PgpImportExport {
             updateProgress(position / entries.size() * 100, 100);
         }
 
-        returnData.putInt(KeychainIntentService.RESULT_IMPORT_ADDED, newKeys);
-        returnData.putInt(KeychainIntentService.RESULT_IMPORT_UPDATED, oldKeys);
-        returnData.putInt(KeychainIntentService.RESULT_IMPORT_BAD, badKeys);
+        OperationLog log = mProviderHelper.getLog();
+        int resultType;
+        // Any key imported - overall success
+        if (newKeys > 0 || oldKeys > 0) {
+            if (badKeys > 0) {
+                resultType = ImportResult.RESULT_PARTIAL_WITH_ERRORS;
+            } else if (log.containsWarnings()) {
+                resultType = ImportResult.RESULT_OK_WITH_WARNINGS;
+            } else if (newKeys > 0 && oldKeys > 0) {
+                resultType = ImportResult.RESULT_OK_BOTHKEYS;
+            } else if (newKeys > 0) {
+                resultType = ImportResult.RESULT_OK_NEWKEYS;
+            } else {
+                resultType = ImportResult.RESULT_OK_UPDATED;
+            }
+        // No keys imported, overall failure
+        } else if (badKeys > 0) {
+            resultType = ImportResult.RESULT_FAIL_ERROR;
+        } else {
+            resultType = ImportResult.RESULT_FAIL_NOTHING;
+        }
 
-        return returnData;
+        return new ImportResult(resultType, log, newKeys, oldKeys, badKeys);
+
     }
 
     public Bundle exportKeyRings(ArrayList<Long> publicKeyRingMasterIds,

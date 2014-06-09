@@ -174,13 +174,10 @@ public class KeychainIntentService extends IntentService
     public static final String RESULT_DECRYPTED_BYTES = "decrypted_data";
     public static final String RESULT_DECRYPT_VERIFY_RESULT = "signature";
 
-    // import
-    public static final String RESULT_IMPORT_ADDED = "added";
-    public static final String RESULT_IMPORT_UPDATED = "updated";
-    public static final String RESULT_IMPORT_BAD = "bad";
-
     // export
     public static final String RESULT_EXPORT = "exported";
+
+    public static final String RESULT = "result";
 
     Messenger mMessenger;
 
@@ -648,7 +645,10 @@ public class KeychainIntentService extends IntentService
                 List<ParcelableKeyRing> entries = data.getParcelableArrayList(IMPORT_KEY_LIST);
 
                 PgpImportExport pgpImportExport = new PgpImportExport(this, this);
-                Bundle resultData = pgpImportExport.importKeyRings(entries);
+                OperationResults.ImportResult result = pgpImportExport.importKeyRings(entries);
+
+                Bundle resultData = new Bundle();
+                resultData.putParcelable(RESULT, result);
 
                 sendMessageToHandler(KeychainIntentServiceHandler.MESSAGE_OKAY, resultData);
             } catch (Exception e) {

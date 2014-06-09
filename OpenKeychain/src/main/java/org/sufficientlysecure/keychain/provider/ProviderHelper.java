@@ -29,9 +29,10 @@ import android.support.v4.util.LongSparseArray;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
-import org.sufficientlysecure.keychain.pgp.OperationResultParcel;
-import org.sufficientlysecure.keychain.pgp.OperationResultParcel.LogType;
-import org.sufficientlysecure.keychain.pgp.OperationResultParcel.LogLevel;
+import org.sufficientlysecure.keychain.service.OperationResultParcel;
+import org.sufficientlysecure.keychain.service.OperationResultParcel.LogType;
+import org.sufficientlysecure.keychain.service.OperationResultParcel.LogLevel;
+import org.sufficientlysecure.keychain.service.OperationResultParcel.OperationLog;
 import org.sufficientlysecure.keychain.pgp.PgpHelper;
 import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
@@ -48,6 +49,7 @@ import org.sufficientlysecure.keychain.provider.KeychainContract.Keys;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UserIds;
 import org.sufficientlysecure.keychain.remote.AccountSettings;
 import org.sufficientlysecure.keychain.remote.AppSettings;
+import org.sufficientlysecure.keychain.service.OperationResults;
 import org.sufficientlysecure.keychain.util.IterableIterator;
 import org.sufficientlysecure.keychain.util.Log;
 
@@ -61,18 +63,27 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+/** This class contains high level methods for database access. Despite its
+ * name, it is not only a helper but actually the main interface for all
+ * synchronous database operations.
+ *
+ * Operations in this class write logs (TODO). These can be obtained from the
+ * OperationResultParcel return values directly, but are also accumulated over
+ * the lifetime of the executing ProviderHelper object unless the resetLog()
+ * method is called to start a new one specifically.
+ *
+ */
 public class ProviderHelper {
     private final Context mContext;
     private final ContentResolver mContentResolver;
-    private final ArrayList<OperationResultParcel.LogEntryParcel> mLog;
+    private OperationLog mLog;
     private int mIndent;
 
     public ProviderHelper(Context context) {
-        this(context, new ArrayList<OperationResultParcel.LogEntryParcel>(), 0);
+        this(context, new OperationLog(), 0);
     }
 
-    public ProviderHelper(Context context, ArrayList<OperationResultParcel.LogEntryParcel> log,
-                          int indent) {
+    public ProviderHelper(Context context, OperationLog log, int indent) {
         mContext = context;
         mContentResolver = context.getContentResolver();
         mLog = log;
@@ -81,9 +92,14 @@ public class ProviderHelper {
 
     public void resetLog() {
         if(mLog != null) {
-            mLog.clear();
+            // Start a new log (leaving the old one intact)
+            mLog = new OperationLog();
             mIndent = 0;
         }
+    }
+
+    public OperationLog getLog() {
+        return mLog;
     }
 
     public static class NotFoundException extends Exception {
@@ -97,12 +113,12 @@ public class ProviderHelper {
 
     public void log(LogLevel level, LogType type) {
         if(mLog != null) {
-            mLog.add(new OperationResultParcel.LogEntryParcel(level, type, null, mIndent));
+            mLog.add(level, type, null, mIndent);
         }
     }
     public void log(LogLevel level, LogType type, String[] parameters) {
         if(mLog != null) {
-            mLog.add(new OperationResultParcel.LogEntryParcel(level, type, parameters, mIndent));
+            mLog.add(level, type, parameters, mIndent);
         }
     }
 
@@ -258,6 +274,9 @@ public class ProviderHelper {
             return new OperationResultParcel(1, mLog);
         }
 
+        // Canonicalize this key, to assert a number of assumptions made about the key.
+        keyRing = keyRing.canonicalize(mLog);
+
         UncachedPublicKey masterKey = keyRing.getPublicKey();
         long masterKeyId = masterKey.getKeyId();
         log(LogLevel.INFO, LogType.MSG_IP_IMPORTING,
@@ -282,34 +301,80 @@ public class ProviderHelper {
             log(LogLevel.DEBUG, LogType.MSG_IP_DELETE_OLD_FAIL);
         }
 
-        // insert new version of this keyRing
-        ContentValues values = new ContentValues();
-        values.put(KeyRingData.MASTER_KEY_ID, masterKeyId);
         try {
-            values.put(KeyRingData.KEY_RING_DATA, keyRing.getEncoded());
-        } catch (IOException e) {
-            log(LogLevel.ERROR, LogType.MSG_IP_ENCODE_FAIL);
-            return new OperationResultParcel(1, mLog);
-        }
 
-        // save all keys and userIds included in keyRing object in database
-        ArrayList<ContentProviderOperation> operations = new ArrayList<ContentProviderOperation>();
-
-        try {
+            // save all keys and userIds included in keyRing object in database
+            ArrayList<ContentProviderOperation> operations = new ArrayList<ContentProviderOperation>();
 
             log(LogLevel.INFO, LogType.MSG_IP_INSERT_KEYRING);
-            Uri uri = KeyRingData.buildPublicKeyRingUri(Long.toString(masterKeyId));
-            operations.add(ContentProviderOperation.newInsert(uri).withValues(values).build());
+            { // insert keyring
+                // insert new version of this keyRing
+                ContentValues values = new ContentValues();
+                values.put(KeyRingData.MASTER_KEY_ID, masterKeyId);
+                try {
+                    values.put(KeyRingData.KEY_RING_DATA, keyRing.getEncoded());
+                } catch (IOException e) {
+                    log(LogLevel.ERROR, LogType.MSG_IP_ENCODE_FAIL);
+                    return new OperationResultParcel(1, mLog);
+                }
+
+                Uri uri = KeyRingData.buildPublicKeyRingUri(Long.toString(masterKeyId));
+                operations.add(ContentProviderOperation.newInsert(uri).withValues(values).build());
+            }
 
             log(LogLevel.INFO, LogType.MSG_IP_INSERT_SUBKEYS);
             mIndent += 1;
-            int rank = 0;
-            for (UncachedPublicKey key : new IterableIterator<UncachedPublicKey>(keyRing.getPublicKeys())) {
-                log(LogLevel.DEBUG, LogType.MSG_IP_INSERT_SUBKEY, new String[] {
-                    PgpKeyHelper.convertKeyIdToHex(key.getKeyId())
-                });
-                operations.add(buildPublicKeyOperations(masterKeyId, key, rank));
-                ++rank;
+            { // insert subkeys
+                Uri uri = Keys.buildKeysUri(Long.toString(masterKeyId));
+                int rank = 0;
+                for (UncachedPublicKey key : new IterableIterator<UncachedPublicKey>(keyRing.getPublicKeys())) {
+                    log(LogLevel.DEBUG, LogType.MSG_IP_SUBKEY, new String[]{
+                            PgpKeyHelper.convertKeyIdToHex(key.getKeyId())
+                    });
+                    mIndent += 1;
+
+                    ContentValues values = new ContentValues();
+                    values.put(Keys.MASTER_KEY_ID, masterKeyId);
+                    values.put(Keys.RANK, rank);
+
+                    values.put(Keys.KEY_ID, key.getKeyId());
+                    values.put(Keys.KEY_SIZE, key.getBitStrength());
+                    values.put(Keys.ALGORITHM, key.getAlgorithm());
+                    values.put(Keys.FINGERPRINT, key.getFingerprint());
+
+                    boolean c = key.canCertify(), s = key.canSign(), e = key.canEncrypt();
+                    values.put(Keys.CAN_CERTIFY, c);
+                    values.put(Keys.CAN_SIGN, s);
+                    values.put(Keys.CAN_ENCRYPT, e);
+                    values.put(Keys.IS_REVOKED, key.isRevoked());
+                    log(LogLevel.DEBUG, LogType.MSG_IP_SUBKEY_FLAGS, new String[] { "X" });
+
+                    Date creation = key.getCreationTime();
+                    values.put(Keys.CREATION, creation.getTime() / 1000);
+                    if (creation.after(new Date())) {
+                        log(LogLevel.ERROR, LogType.MSG_IP_SUBKEY_FUTURE, new String[] {
+                                creation.toString()
+                        });
+                        return new OperationResultParcel(1, mLog);
+                    }
+                    Date expiryDate = key.getExpiryTime();
+                    if (expiryDate != null) {
+                        values.put(Keys.EXPIRY, expiryDate.getTime() / 1000);
+                        if (key.isExpired()) {
+                            log(LogLevel.INFO, LogType.MSG_IP_SUBKEY_EXPIRED, new String[] {
+                                    expiryDate.toString()
+                            });
+                        } else {
+                            log(LogLevel.DEBUG, LogType.MSG_IP_SUBKEY_EXPIRES, new String[] {
+                                    expiryDate.toString()
+                            });
+                        }
+                    }
+
+                    operations.add(ContentProviderOperation.newInsert(uri).withValues(values).build());
+                    ++rank;
+                    mIndent -= 1;
+                }
             }
             mIndent -= 1;
 
@@ -374,7 +439,12 @@ public class ProviderHelper {
                             // save certificate as primary self-cert
                             item.selfCert = cert;
                             item.isPrimary = cert.isPrimaryUserId();
-                            item.isRevoked = cert.isRevocation();
+                            if (cert.isRevocation()) {
+                                item.isRevoked = true;
+                                log(LogLevel.INFO, LogType.MSG_IP_UID_REVOKED);
+                            } else {
+                                item.isRevoked = false;
+                            }
 
                         }
 
@@ -500,7 +570,7 @@ public class ProviderHelper {
 
         long masterKeyId = keyRing.getMasterKeyId();
         log(LogLevel.INFO, LogType.MSG_IS_IMPORTING,
-                new String[]{ Long.toString(masterKeyId) });
+                new String[]{Long.toString(masterKeyId)});
 
         // save secret keyring
         try {
@@ -573,37 +643,6 @@ public class ProviderHelper {
         // save public keyring
         savePublicKeyRing(pubRing);
         saveSecretKeyRing(secRing);
-    }
-
-    /**
-     * Build ContentProviderOperation to add PGPPublicKey to database corresponding to a keyRing
-     */
-    private ContentProviderOperation
-    buildPublicKeyOperations(long masterKeyId, UncachedPublicKey key, int rank) throws IOException {
-
-        ContentValues values = new ContentValues();
-        values.put(Keys.MASTER_KEY_ID, masterKeyId);
-        values.put(Keys.RANK, rank);
-
-        values.put(Keys.KEY_ID, key.getKeyId());
-        values.put(Keys.KEY_SIZE, key.getBitStrength());
-        values.put(Keys.ALGORITHM, key.getAlgorithm());
-        values.put(Keys.FINGERPRINT, key.getFingerprint());
-
-        values.put(Keys.CAN_CERTIFY, key.canCertify());
-        values.put(Keys.CAN_SIGN, key.canSign());
-        values.put(Keys.CAN_ENCRYPT, key.canEncrypt());
-        values.put(Keys.IS_REVOKED, key.maybeRevoked());
-
-        values.put(Keys.CREATION, key.getCreationTime().getTime() / 1000);
-        Date expiryDate = key.getExpiryTime();
-        if (expiryDate != null) {
-            values.put(Keys.EXPIRY, expiryDate.getTime() / 1000);
-        }
-
-        Uri uri = Keys.buildKeysUri(Long.toString(masterKeyId));
-
-        return ContentProviderOperation.newInsert(uri).withValues(values).build();
     }
 
     /**

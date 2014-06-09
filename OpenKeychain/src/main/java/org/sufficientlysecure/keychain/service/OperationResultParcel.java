@@ -1,9 +1,10 @@
-package org.sufficientlysecure.keychain.pgp;
+package org.sufficientlysecure.keychain.service;
 
 import android.os.Parcel;
 import android.os.Parcelable;
 
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.util.IterableIterator;
 
 import java.util.ArrayList;
 
@@ -17,33 +18,45 @@ import java.util.ArrayList;
  *
  */
 public class OperationResultParcel implements Parcelable {
-    /** Holds the overall result. A value of 0 is considered a success, all
-     * other values may represent failure or varying degrees of success. */
+    /** Holds the overall result, the number specifying varying degrees of success.
+     * Values smaller than 100 are considered an overall success. */
     final int mResult;
 
-    /// A list of log entries tied to the operation result.
-    final ArrayList<LogEntryParcel> mLog;
+    public static final int RESULT_OK = 0;
+    public static final int RESULT_ERROR = 100;
 
-    public OperationResultParcel(int result, ArrayList<LogEntryParcel> log) {
+    /// A list of log entries tied to the operation result.
+    final OperationLog mLog;
+
+    public OperationResultParcel(int result, OperationLog log) {
         mResult = result;
         mLog = log;
     }
 
     public OperationResultParcel(Parcel source) {
         mResult = source.readInt();
-        mLog = source.createTypedArrayList(LogEntryParcel.CREATOR);
+        mLog = new OperationLog();
+        mLog.addAll(source.createTypedArrayList(LogEntryParcel.CREATOR));
+    }
+
+    public int getResult() {
+        return mResult;
     }
 
     public boolean isSuccessful() {
-        return mResult == 0;
+        return mResult < 100;
+    }
+
+    public OperationLog getLog() {
+        return mLog;
     }
 
     /** One entry in the log. */
     public static class LogEntryParcel implements Parcelable {
-        final LogLevel mLevel;
-        final LogType mType;
-        final String[] mParameters;
-        final int mIndent;
+        public final LogLevel mLevel;
+        public final LogType mType;
+        public final String[] mParameters;
+        public final int mIndent;
 
         public LogEntryParcel(LogLevel level, LogType type, String[] parameters, int indent) {
             mLevel = level;
@@ -98,10 +111,14 @@ public class OperationResultParcel implements Parcelable {
         MSG_IP_FAIL_REMOTE_EX (R.string.msg_ip_fail_remote_ex),
         MSG_IP_IMPORTING (R.string.msg_ip_importing),
         MSG_IP_INSERT_KEYRING (R.string.msg_ip_insert_keyring),
-        MSG_IP_INSERT_SUBKEY (R.string.msg_ip_insert_subkey),
         MSG_IP_INSERT_SUBKEYS (R.string.msg_ip_insert_subkeys),
         MSG_IP_PRESERVING_SECRET (R.string.msg_ip_preserving_secret),
         MSG_IP_REINSERT_SECRET (R.string.msg_ip_reinsert_secret),
+        MSG_IP_SUBKEY (R.string.msg_ip_subkey),
+        MSG_IP_SUBKEY_EXPIRED (R.string.msg_ip_subkey_expired),
+        MSG_IP_SUBKEY_EXPIRES (R.string.msg_ip_subkey_expires),
+        MSG_IP_SUBKEY_FLAGS (R.string.msg_ip_subkey_flags),
+        MSG_IP_SUBKEY_FUTURE (R.string.msg_ip_subkey_future),
         MSG_IP_SUCCESS (R.string.msg_ip_success),
         MSG_IP_TRUST_RETRIEVE (R.string.msg_ip_trust_retrieve),
         MSG_IP_TRUST_USING (R.string.msg_ip_trust_using),
@@ -113,6 +130,7 @@ public class OperationResultParcel implements Parcelable {
         MSG_IP_UID_CLASSIFYING (R.string.msg_ip_uid_classifying),
         MSG_IP_UID_INSERT (R.string.msg_ip_uid_insert),
         MSG_IP_UID_PROCESSING (R.string.msg_ip_uid_processing),
+        MSG_IP_UID_REVOKED (R.string.msg_ip_uid_revoked),
         MSG_IP_UID_SELF_BAD (R.string.msg_ip_uid_self_bad),
         MSG_IP_UID_SELF_GOOD (R.string.msg_ip_uid_self_good),
         MSG_IP_UID_SELF_IGNORING_OLD (R.string.msg_ip_uid_self_ignoring_old),
@@ -138,6 +156,7 @@ public class OperationResultParcel implements Parcelable {
 
     /** Enumeration of possible log levels. */
     public static enum LogLevel {
+        OK,
         DEBUG,
         INFO,
         WARN,
@@ -165,5 +184,24 @@ public class OperationResultParcel implements Parcelable {
             return new OperationResultParcel[size];
         }
     };
+
+    public static class OperationLog extends ArrayList<LogEntryParcel> {
+
+        /// Simple convenience method
+        public void add(LogLevel level, LogType type, String[] parameters, int indent) {
+            add(new OperationResultParcel.LogEntryParcel(level, type, parameters, indent));
+        }
+
+        public boolean containsWarnings() {
+            int warn = LogLevel.WARN.ordinal();
+            for(LogEntryParcel entry : new IterableIterator<LogEntryParcel>(iterator())) {
+                if (entry.mLevel.ordinal() >= warn) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+    }
 
 }

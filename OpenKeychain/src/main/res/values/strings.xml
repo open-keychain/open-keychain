@@ -529,13 +529,17 @@
     <string name="msg_ip_fail_io_exc">Operation failed due to i/o error</string>
     <string name="msg_ip_fail_op_ex">Operation failed due to database error</string>
     <string name="msg_ip_fail_remote_ex">Operation failed due to internal error</string>
-    <string name="msg_ip_importing">Importing public keyring</string>
+    <string name="msg_ip_importing">Importing public keyring %s</string>
     <string name="msg_ip_insert_keyring">Inserting keyring data</string>
-    <string name="msg_ip_insert_subkey">Inserting subkey %s</string>
     <string name="msg_ip_insert_subkeys">Inserting subkeys</string>
     <string name="msg_ip_preserving_secret">Preserving available secret key</string>
-    <string name="msg_ip_reinsert_secret">Re-inserting secret key</string>
+    <string name="msg_ip_subkey">Processing subkey %s</string>
+    <string name="msg_ip_subkey_expired">Subkey expired on %s</string>
+    <string name="msg_ip_subkey_expires">Subkey expires on %s</string>
+    <string name="msg_ip_subkey_flags">Subkey flags: %s</string>
+    <string name="msg_ip_subkey_future">Subkey creation date lies in the future! (%s)</string>
     <string name="msg_ip_success">Successfully inserted public keyring</string>
+    <string name="msg_ip_reinsert_secret">Re-inserting secret key</string>
     <string name="msg_ip_trust_retrieve">Retrieving trusted keys</string>
     <string name="msg_ip_trust_using">Using %s trusted keys</string>
     <string name="msg_ip_trust_using_sec">Secret key available, self certificates are trusted</string>
@@ -546,6 +550,7 @@
     <string name="msg_ip_uid_classifying">Classifying user ids</string>
     <string name="msg_ip_uid_insert">Inserting user ids</string>
     <string name="msg_ip_uid_processing">Processing user id %s</string>
+    <string name="msg_ip_uid_revoked">Found uid revocation certificate</string>
     <string name="msg_ip_uid_self_bad">Bad self certificate encountered!</string>
     <string name="msg_ip_uid_self_good">Found good self certificate</string>
     <string name="msg_ip_uid_self_ignoring_old">Ignoring older self certificate</string>
@@ -558,5 +563,6 @@
     <string name="msg_is_subkey_ok">Marked %s as available</string>
     <string name="msg_is_subkey_stripped">Marked %s as stripped</string>
     <string name="msg_is_success">Successfully inserted secret keyring</string>
+    <string name="title_log_display">Log</string>
 
 </resources>
