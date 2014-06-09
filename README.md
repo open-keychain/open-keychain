@@ -42,8 +42,8 @@ Select everything for the newest SDK Platform (API-Level 19)
 
 ### Build API Demo with Gradle
 
-1. Follow 1-3 from above
-2. Change to API Demo directory ``cd OpenKeychain-API``
+1. Follow 1-4 from above
+2. The example code is available at https://github.com/open-keychain/api-example
 3. Execute ``./gradlew build``
 
 ### Development with Android Studio
