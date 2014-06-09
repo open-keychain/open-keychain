@@ -33,7 +33,7 @@ Development mailinglist at http://groups.google.com/d/forum/openpgp-keychain-dev
 1. Get all external submodules with ``git submodule update --init --recursive``
 2. Have Android SDK "tools", "platform-tools", and "build-tools" directories in your PATH (http://developer.android.com/sdk/index.html)
 3. Open the Android SDK Manager (shell command: ``android``).  
-Expand the Tools directory and select "Android SDK Build-tools (Version 19.0.3)".  
+Expand the Tools directory and select "Android SDK Build-tools (Version 19.1)".  
 Expand the Extras directory and install "Android Support Repository"  
 Select everything for the newest SDK Platform (API-Level 19)
 4. Export ANDROID_HOME pointing to your Android SDK
