@@ -229,7 +229,7 @@ public class ImportKeysListEntry implements Serializable, Parcelable {
         this.keyId = key.getKeyId();
         this.keyIdHex = PgpKeyHelper.convertKeyIdToHex(keyId);
 
-        this.revoked = key.maybeRevoked();
+        this.revoked = key.isRevoked();
         this.fingerprintHex = PgpKeyHelper.convertFingerprintToHex(key.getFingerprint());
         this.bitStrength = key.getBitStrength();
         final int algorithm = key.getAlgorithm();

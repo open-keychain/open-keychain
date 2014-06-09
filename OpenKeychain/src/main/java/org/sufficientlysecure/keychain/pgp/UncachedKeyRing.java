@@ -7,9 +7,14 @@ import org.spongycastle.openpgp.PGPObjectFactory;
 import org.spongycastle.openpgp.PGPPublicKey;
 import org.spongycastle.openpgp.PGPSecretKey;
 import org.spongycastle.openpgp.PGPSecretKeyRing;
+import org.spongycastle.openpgp.PGPSignature;
 import org.spongycastle.openpgp.PGPUtil;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
+import org.sufficientlysecure.keychain.service.OperationResultParcel;
+import org.sufficientlysecure.keychain.service.OperationResultParcel.OperationLog;
+import org.sufficientlysecure.keychain.service.OperationResultParcel.LogLevel;
+import org.sufficientlysecure.keychain.service.OperationResultParcel.LogType;
 import org.sufficientlysecure.keychain.util.IterableIterator;
 import org.sufficientlysecure.keychain.util.Log;
 
@@ -168,5 +173,55 @@ public class UncachedKeyRing {
         }
         return result;
     }
+
+    /** "Canonicalizes" a key, removing inconsistencies in the process. This operation can be
+     * applied to public keyrings only.
+     *
+     * More specifically:
+     *  - Remove all non-verifying self-certificates
+     *  - Remove all expired self-certificates
+     *  - Remove all certificates flagged as "local"
+     *  - Remove all certificates which are superseded by a newer one on the same target
+     *
+     * After this cleaning, a number of checks are done:
+     *  - See if each subkey retains a valid self certificate
+     *  - See if each user id retains a valid self certificate
+     *
+     * This operation writes an OperationLog which can be used as part of a OperationResultParcel.
+     *
+     * If any of these checks fail, the operation as a whole fails and the keyring is declared
+     * unusable. (TODO: allow forcing of import?)
+     *
+     * TODO implement
+     *
+     * @return A canonicalized key
+     *
+     */
+    public UncachedKeyRing canonicalize(OperationLog log) {
+        if(isSecret()) {
+            throw new RuntimeException("Tried to canonicalize non-secret keyring. " +
+                    "This is a programming error and should never happen!");
+        }
+
+        // dummy
+        log.add(LogLevel.INFO, LogType.MSG_IP_BAD_TYPE_SECRET, null, 0);
+
+        /*
+        // Remove all non-verifying self certificates
+        for (PGPPublicKey key : new IterableIterator<PGPPublicKey>(mRing.getPublicKeys())) {
+
+            for (PGPSignature sig : new IterableIterator<PGPSignature>(
+                    key.getSignaturesOfType(isMasterKey() ? PGPSignature.KEY_REVOCATION
+                            : PGPSignature.SUBKEY_REVOCATION))) {
+                return true;
+            }
+
+        }*/
+
+        return this;
+
+
+    }
+
 
 }

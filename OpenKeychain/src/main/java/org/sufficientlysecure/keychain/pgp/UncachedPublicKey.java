@@ -2,6 +2,7 @@ package org.sufficientlysecure.keychain.pgp;
 
 import org.spongycastle.bcpg.SignatureSubpacketTags;
 import org.spongycastle.bcpg.sig.KeyFlags;
+import org.spongycastle.openpgp.PGPException;
 import org.spongycastle.openpgp.PGPPublicKey;
 import org.spongycastle.openpgp.PGPSignature;
 import org.spongycastle.openpgp.PGPSignatureSubpacketVector;
@@ -9,6 +10,7 @@ import org.spongycastle.openpgp.operator.jcajce.JcaPGPContentVerifierBuilderProv
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.util.IterableIterator;
 
+import java.security.SignatureException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -28,8 +30,13 @@ public class UncachedPublicKey {
     }
 
     /** The revocation signature is NOT checked here, so this may be false! */
-    public boolean maybeRevoked() {
-        return mPublicKey.isRevoked();
+    public boolean isRevoked() {
+        for (PGPSignature sig : new IterableIterator<PGPSignature>(
+                mPublicKey.getSignaturesOfType(isMasterKey() ? PGPSignature.KEY_REVOCATION
+                                                             : PGPSignature.SUBKEY_REVOCATION))) {
+            return true;
+        }
+        return false;
     }
 
     public Date getCreationTime() {
@@ -193,4 +200,5 @@ public class UncachedPublicKey {
             }
         };
     }
+
 }
