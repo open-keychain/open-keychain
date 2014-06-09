@@ -438,10 +438,10 @@ public class ImportKeysActivity extends ActionBarActivity implements ActionBar.O
                         new SuperToast.OnClickListener() {
                             @Override
                             public void onClick(View view, Parcelable token) {
-                                // Intent intent = new Intent(
-                                        // ImportKeysActivity.this, LogDisplayActivity.class);
-                                // intent.putExtra(LogDisplayFragment.EXTRA_RESULT, result);
-                                // startActivity(intent);
+                                Intent intent = new Intent(
+                                        ImportKeysActivity.this, LogDisplayActivity.class);
+                                intent.putExtra(LogDisplayFragment.EXTRA_RESULT, result);
+                                startActivity(intent);
                             }
                     }));
                     toast.show();
