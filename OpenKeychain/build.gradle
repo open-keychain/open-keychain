@@ -1,12 +1,12 @@
 apply plugin: 'android'
-apply plugin: 'android-test'
+//apply plugin: 'android-test'
 
 sourceSets {
-    androidTest {
-        java.srcDir file('src/test/java')
+    //androidTest {
+        //java.srcDir file('src/test/java')
         // configure the set of classes for JUnit tests
         // include '**/*Test.class'
-    }
+    //}
 }
 
 dependencies {
