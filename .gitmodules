@@ -25,3 +25,6 @@
 [submodule "extern/openkeychain-api-lib"]
 	path = extern/openkeychain-api-lib
 	url = https://github.com/open-keychain/openkeychain-api-lib.git
+[submodule "extern/SuperToasts"]
+	path = extern/SuperToasts
+	url = https://github.com/open-keychain/SuperToasts.git
