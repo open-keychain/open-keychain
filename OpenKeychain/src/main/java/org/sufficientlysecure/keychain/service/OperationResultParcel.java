@@ -173,12 +173,12 @@ public class OperationResultParcel implements Parcelable {
 
     /** Enumeration of possible log levels. */
     public static enum LogLevel {
-        START, // should occur once at the start of each independent operation
-        OK, // should occur once at the end of a successful operation
-        ERROR, // should occur once at the end of a failed operation
         DEBUG,
         INFO,
         WARN,
+        ERROR, // should occur once at the end of a failed operation
+        START, // should occur once at the start of each independent operation
+        OK, // should occur once at the end of a successful operation
     }
 
     @Override

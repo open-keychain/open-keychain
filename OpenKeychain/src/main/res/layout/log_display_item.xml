@@ -4,11 +4,19 @@
     android:orientation="horizontal" android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:id="@+id/log_img"
+        android:minWidth="10dp"
+        android:background="@color/bg_gray" />
+
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Log Entry Text"
         android:id="@+id/log_text"
         android:layout_marginTop="4dp"
-        android:layout_marginBottom="4dp" />
+        android:layout_marginBottom="4dp"
+        android:layout_marginLeft="8dp" />
 </LinearLayout>

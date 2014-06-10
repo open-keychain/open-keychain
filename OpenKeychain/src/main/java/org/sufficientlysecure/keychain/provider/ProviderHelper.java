@@ -553,8 +553,8 @@ public class ProviderHelper {
             mIndent -= 1;
         }
 
-        log(LogLevel.OK, LogType.MSG_IP_SUCCESS);
         mIndent -= 1;
+        log(LogLevel.OK, LogType.MSG_IP_SUCCESS);
         return new SaveKeyringResult(result, mLog);
 
     }
