@@ -432,8 +432,9 @@ public class ImportKeysActivity extends ActionBarActivity implements ActionBar.O
                     toast.setText(str);
                     toast.setDuration(duration);
                     toast.setIndeterminate(duration == 0);
-                    toast.setButtonText("View log");
                     toast.setSwipeToDismiss(true);
+                    toast.setButtonIcon(R.drawable.ic_action_view_as_list,
+                            getResources().getString(R.string.view_log));
                     toast.setOnClickWrapper(new OnClickWrapper("supercardtoast",
                         new SuperToast.OnClickListener() {
                             @Override

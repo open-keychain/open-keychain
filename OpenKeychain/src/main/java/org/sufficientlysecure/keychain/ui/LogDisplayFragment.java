@@ -54,7 +54,7 @@ public class LogDisplayFragment extends ListFragment {
             super(context, R.layout.log_display_item, log);
             mInflater = LayoutInflater.from(getContext());
             dipFactor = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
-                    (float) 6, getResources().getDisplayMetrics());
+                    (float) 10, getResources().getDisplayMetrics());
 
         }
 

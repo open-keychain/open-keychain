@@ -204,7 +204,8 @@ public class UncachedKeyRing {
         }
 
         // dummy
-        log.add(LogLevel.INFO, LogType.MSG_IP_BAD_TYPE_SECRET, null, 0);
+        log.add(LogLevel.START, LogType.MSG_KC,
+                new String[] { PgpKeyHelper.convertKeyIdToHex(getMasterKeyId()) }, 0);
 
         /*
         // Remove all non-verifying self certificates
@@ -217,6 +218,8 @@ public class UncachedKeyRing {
             }
 
         }*/
+
+        log.add(LogLevel.OK, LogType.MSG_KC_SUCCESS, null, 0);
 
         return this;
 

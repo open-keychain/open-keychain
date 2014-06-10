@@ -28,6 +28,7 @@
     <string name="title_certify_key">Certify Identities</string>
     <string name="title_key_details">Key Details</string>
     <string name="title_help">Help</string>
+    <string name="title_log_display">Log</string>
 
     <!-- section -->
     <string name="section_user_ids">Identities</string>
@@ -499,28 +500,7 @@
     <string name="cert_verify_error">error!</string>
     <string name="cert_verify_unavailable">key unavailable</string>
 
-    <!-- unsorted -->
-    <string name="section_certifier_id">Certifier</string>
-    <string name="section_cert">Certificate Details</string>
-    <string name="label_user_id">Identity</string>
-    <string name="unknown_uid">&lt;unknown&gt;</string>
-    <string name="empty_certs">No certificates for this key</string>
-    <string name="section_uids_to_certify">Identities to certify</string>
-    <string name="label_revocation">Revocation Reason</string>
-    <string name="label_verify_status">Verification Status</string>
-    <string name="label_cert_type">Type</string>
-    <string name="error_key_not_found">Key not found!</string>
-    <string name="error_key_processing">Error processing key!</string>
-    <string name="no_subkey">subkey unavailable</string>
-    <string name="key_stripped">stripped</string>
-    <string name="secret_cannot_multiple">Secret keys can only be deleted individually!</string>
-    <string name="title_view_cert">View Certificate Details</string>
-    <string name="unknown_algorithm">unknown</string>
-    <string name="can_sign_not">cannot sign</string>
-    <string name="error_encoding">Encoding error</string>
-    <string name="error_no_encrypt_subkey">No encryption subkey available!</string>
-
-    <!-- Import log entries -->
+    <!-- Import Public log entries -->
     <string name="msg_ip_apply_batch">Applying insert batch operation.</string>
     <string name="msg_ip_bad_type_secret">Tried to import secret keyring as public. This is a bug, please file a report!</string>
     <string name="msg_ip_delete_old_fail">No old key deleted (creating a new one?)</string>
@@ -556,6 +536,8 @@
     <string name="msg_ip_uid_self_ignoring_old">Ignoring older self certificate</string>
     <string name="msg_ip_uid_self_newer">Using more recent good self certificate</string>
     <string name="msg_is_bad_type_public">Tried to import public keyring as secret. This is a bug, please file a report!</string>
+
+    <!-- Import Secret log entries -->
     <string name="msg_is_importing">Importing secret key %s</string>
     <string name="msg_is_importing_subkeys">Processing secret subkeys</string>
     <string name="msg_is_io_excption">Error encoding keyring</string>
@@ -563,6 +545,27 @@
     <string name="msg_is_subkey_ok">Marked %s as available</string>
     <string name="msg_is_subkey_stripped">Marked %s as stripped</string>
     <string name="msg_is_success">Successfully inserted secret keyring</string>
-    <string name="title_log_display">Log</string>
+
+    <!-- unsorted -->
+    <string name="section_certifier_id">Certifier</string>
+    <string name="section_cert">Certificate Details</string>
+    <string name="label_user_id">Identity</string>
+    <string name="unknown_uid">&lt;unknown&gt;</string>
+    <string name="empty_certs">No certificates for this key</string>
+    <string name="section_uids_to_certify">Identities to certify</string>
+    <string name="label_revocation">Revocation Reason</string>
+    <string name="label_verify_status">Verification Status</string>
+    <string name="label_cert_type">Type</string>
+    <string name="error_key_not_found">Key not found!</string>
+    <string name="error_key_processing">Error processing key!</string>
+    <string name="no_subkey">subkey unavailable</string>
+    <string name="key_stripped">stripped</string>
+    <string name="secret_cannot_multiple">Secret keys can only be deleted individually!</string>
+    <string name="title_view_cert">View Certificate Details</string>
+    <string name="unknown_algorithm">unknown</string>
+    <string name="can_sign_not">cannot sign</string>
+    <string name="error_encoding">Encoding error</string>
+    <string name="error_no_encrypt_subkey">No encryption subkey available!</string>
+    <string name="view_log">View Log</string>
 
 </resources>
