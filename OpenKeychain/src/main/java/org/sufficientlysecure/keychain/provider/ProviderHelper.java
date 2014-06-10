@@ -49,7 +49,6 @@ import org.sufficientlysecure.keychain.provider.KeychainContract.Keys;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UserIds;
 import org.sufficientlysecure.keychain.remote.AccountSettings;
 import org.sufficientlysecure.keychain.remote.AppSettings;
-import org.sufficientlysecure.keychain.service.OperationResults;
 import org.sufficientlysecure.keychain.util.IterableIterator;
 import org.sufficientlysecure.keychain.util.Log;
 
@@ -252,7 +251,7 @@ public class ProviderHelper {
                     throw new NotFoundException("Secret key not available!");
                 }
                 return secret
-                        ? new WrappedSecretKeyRing(blob, hasAnySecret, verified)
+                        ? new WrappedSecretKeyRing(blob, true, verified)
                         : new WrappedPublicKeyRing(blob, hasAnySecret, verified);
             } else {
                 throw new NotFoundException("Key not found!");
@@ -274,14 +273,15 @@ public class ProviderHelper {
             return new OperationResultParcel(1, mLog);
         }
 
-        // Canonicalize this key, to assert a number of assumptions made about the key.
+        long masterKeyId = keyRing.getMasterKeyId();
+        log(LogLevel.START, LogType.MSG_IP,
+                new String[]{ PgpKeyHelper.convertKeyIdToHex(masterKeyId) });
+        mIndent += 1;
+
+        // Canonicalize this key, to assert a number of assumptions made about it.
         keyRing = keyRing.canonicalize(mLog);
 
         UncachedPublicKey masterKey = keyRing.getPublicKey();
-        long masterKeyId = masterKey.getKeyId();
-        log(LogLevel.INFO, LogType.MSG_IP_IMPORTING,
-                new String[]{Long.toString(masterKeyId)});
-        mIndent += 1;
 
         // IF there is a secret key, preserve it!
         UncachedKeyRing secretRing;
@@ -342,12 +342,28 @@ public class ProviderHelper {
                     values.put(Keys.ALGORITHM, key.getAlgorithm());
                     values.put(Keys.FINGERPRINT, key.getFingerprint());
 
-                    boolean c = key.canCertify(), s = key.canSign(), e = key.canEncrypt();
+                    boolean c = key.canCertify(), e = key.canEncrypt(), s = key.canSign();
                     values.put(Keys.CAN_CERTIFY, c);
-                    values.put(Keys.CAN_SIGN, s);
                     values.put(Keys.CAN_ENCRYPT, e);
+                    values.put(Keys.CAN_SIGN, s);
                     values.put(Keys.IS_REVOKED, key.isRevoked());
-                    log(LogLevel.DEBUG, LogType.MSG_IP_SUBKEY_FLAGS, new String[] { "X" });
+                    if (c) {
+                        if (e) {
+                            log(LogLevel.DEBUG,s ? LogType.MSG_IP_SUBKEY_FLAGS_CES
+                                                 : LogType.MSG_IP_SUBKEY_FLAGS_CEX, null);
+                        } else {
+                            log(LogLevel.DEBUG, s ? LogType.MSG_IP_SUBKEY_FLAGS_CXS
+                                                  : LogType.MSG_IP_SUBKEY_FLAGS_CXX, null);
+                        }
+                    } else {
+                        if (e) {
+                            log(LogLevel.DEBUG, s ? LogType.MSG_IP_SUBKEY_FLAGS_XES
+                                                  : LogType.MSG_IP_SUBKEY_FLAGS_XEX, null);
+                        } else {
+                            log(LogLevel.DEBUG, s ? LogType.MSG_IP_SUBKEY_FLAGS_XXS
+                                                  : LogType.MSG_IP_SUBKEY_FLAGS_XXX, null);
+                        }
+                    }
 
                     Date creation = key.getCreationTime();
                     values.put(Keys.CREATION, creation.getTime() / 1000);
@@ -531,7 +547,7 @@ public class ProviderHelper {
             mIndent -= 1;
         }
 
-        log(LogLevel.INFO, LogType.MSG_IP_SUCCESS);
+        log(LogLevel.OK, LogType.MSG_IP_SUCCESS);
         mIndent -= 1;
         return new OperationResultParcel(0, mLog);
 
@@ -569,8 +585,8 @@ public class ProviderHelper {
         }
 
         long masterKeyId = keyRing.getMasterKeyId();
-        log(LogLevel.INFO, LogType.MSG_IS_IMPORTING,
-                new String[]{Long.toString(masterKeyId)});
+        log(LogLevel.START, LogType.MSG_IS,
+                new String[]{PgpKeyHelper.convertKeyIdToHex(masterKeyId)});
 
         // save secret keyring
         try {
@@ -626,7 +642,7 @@ public class ProviderHelper {
             // with has_secret = 0
         }
 
-        log(LogLevel.INFO, LogType.MSG_IS_SUCCESS);
+        log(LogLevel.OK, LogType.MSG_IS_SUCCESS);
         return new OperationResultParcel(0, mLog);
 
     }

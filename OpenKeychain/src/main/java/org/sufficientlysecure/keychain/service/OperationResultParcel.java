@@ -101,6 +101,9 @@ public class OperationResultParcel implements Parcelable {
     }
 
     public static enum LogType {
+
+        // import public
+        MSG_IP(R.string.msg_ip),
         MSG_IP_APPLY_BATCH (R.string.msg_ip_apply_batch),
         MSG_IP_BAD_TYPE_SECRET (R.string.msg_ip_bad_type_secret),
         MSG_IP_DELETE_OLD_FAIL (R.string.msg_ip_delete_old_fail),
@@ -109,7 +112,6 @@ public class OperationResultParcel implements Parcelable {
         MSG_IP_FAIL_IO_EXC (R.string.msg_ip_fail_io_exc),
         MSG_IP_FAIL_OP_EX (R.string.msg_ip_fail_op_ex),
         MSG_IP_FAIL_REMOTE_EX (R.string.msg_ip_fail_remote_ex),
-        MSG_IP_IMPORTING (R.string.msg_ip_importing),
         MSG_IP_INSERT_KEYRING (R.string.msg_ip_insert_keyring),
         MSG_IP_INSERT_SUBKEYS (R.string.msg_ip_insert_subkeys),
         MSG_IP_PRESERVING_SECRET (R.string.msg_ip_preserving_secret),
@@ -118,6 +120,14 @@ public class OperationResultParcel implements Parcelable {
         MSG_IP_SUBKEY_EXPIRED (R.string.msg_ip_subkey_expired),
         MSG_IP_SUBKEY_EXPIRES (R.string.msg_ip_subkey_expires),
         MSG_IP_SUBKEY_FLAGS (R.string.msg_ip_subkey_flags),
+        MSG_IP_SUBKEY_FLAGS_CES (R.string.msg_ip_subkey_flags_ces),
+        MSG_IP_SUBKEY_FLAGS_CEX (R.string.msg_ip_subkey_flags_cex),
+        MSG_IP_SUBKEY_FLAGS_CXS (R.string.msg_ip_subkey_flags_cxs),
+        MSG_IP_SUBKEY_FLAGS_XES (R.string.msg_ip_subkey_flags_xes),
+        MSG_IP_SUBKEY_FLAGS_CXX (R.string.msg_ip_subkey_flags_cxx),
+        MSG_IP_SUBKEY_FLAGS_XEX (R.string.msg_ip_subkey_flags_xex),
+        MSG_IP_SUBKEY_FLAGS_XXS (R.string.msg_ip_subkey_flags_xxs),
+        MSG_IP_SUBKEY_FLAGS_XXX (R.string.msg_ip_subkey_flags_xxx),
         MSG_IP_SUBKEY_FUTURE (R.string.msg_ip_subkey_future),
         MSG_IP_SUCCESS (R.string.msg_ip_success),
         MSG_IP_TRUST_RETRIEVE (R.string.msg_ip_trust_retrieve),
@@ -135,14 +145,20 @@ public class OperationResultParcel implements Parcelable {
         MSG_IP_UID_SELF_GOOD (R.string.msg_ip_uid_self_good),
         MSG_IP_UID_SELF_IGNORING_OLD (R.string.msg_ip_uid_self_ignoring_old),
         MSG_IP_UID_SELF_NEWER (R.string.msg_ip_uid_self_newer),
+
+        // import secret
+        MSG_IS(R.string.msg_is),
         MSG_IS_BAD_TYPE_PUBLIC (R.string.msg_is_bad_type_public),
-        MSG_IS_IMPORTING (R.string.msg_is_importing),
         MSG_IS_IMPORTING_SUBKEYS (R.string.msg_is_importing_subkeys),
         MSG_IS_IO_EXCPTION (R.string.msg_is_io_excption),
         MSG_IS_SUBKEY_NONEXISTENT (R.string.msg_is_subkey_nonexistent),
         MSG_IS_SUBKEY_OK (R.string.msg_is_subkey_ok),
         MSG_IS_SUBKEY_STRIPPED (R.string.msg_is_subkey_stripped),
         MSG_IS_SUCCESS (R.string.msg_is_success),
+
+        // keyring canonicalization
+        MSG_KC(R.string.msg_kc),
+        MSG_KC_SUCCESS(R.string.msg_kc_success),
         ;
 
         private final int mMsgId;
@@ -156,12 +172,12 @@ public class OperationResultParcel implements Parcelable {
 
     /** Enumeration of possible log levels. */
     public static enum LogLevel {
-        OK,
+        START, // should occur once at the start of each independent operation
+        OK, // should occur once at the end of a successful operation
+        ERROR, // should occur once at the end of a failed operation
         DEBUG,
         INFO,
         WARN,
-        /** If any ERROR log entry is included in the result, the overall operation should have failed. */
-        ERROR,
     }
 
     @Override

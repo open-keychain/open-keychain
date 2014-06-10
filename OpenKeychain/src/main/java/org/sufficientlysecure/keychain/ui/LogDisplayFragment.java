@@ -73,6 +73,7 @@ public class LogDisplayFragment extends ListFragment {
             text.setPadding(entry.mIndent*dipFactor, 0, 0, 0);
             text.setText(getResources().getString(entry.mType.getMsgId(), (Object[]) entry.mParameters));
             switch (entry.mLevel) {
+                case OK: text.setTextColor(Color.GREEN); break;
                 case DEBUG: text.setTextColor(Color.GRAY); break;
                 case INFO: text.setTextColor(Color.BLACK); break;
                 case WARN: text.setTextColor(Color.YELLOW); break;

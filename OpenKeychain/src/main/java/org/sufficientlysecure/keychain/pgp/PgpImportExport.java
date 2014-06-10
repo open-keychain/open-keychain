@@ -171,8 +171,6 @@ public class PgpImportExport {
         if (newKeys > 0 || oldKeys > 0) {
             if (badKeys > 0) {
                 resultType = ImportResult.RESULT_PARTIAL_WITH_ERRORS;
-            } else if (log.containsWarnings()) {
-                resultType = ImportResult.RESULT_OK_WITH_WARNINGS;
             } else if (newKeys > 0 && oldKeys > 0) {
                 resultType = ImportResult.RESULT_OK_BOTHKEYS;
             } else if (newKeys > 0) {

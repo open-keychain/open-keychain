@@ -378,37 +378,37 @@ public class ImportKeysActivity extends ActionBarActivity implements ActionBar.O
                     final ImportResult result =
                             returnData.<ImportResult>getParcelable(KeychainIntentService.RESULT);
 
-                    // , make pessimistic assumptions
-                    String str = Integer.toString(result.getResult());
-                    int duration = 0, color = Style.RED;
+                    String str = "";
+                    boolean hasWarnings = result.getLog().containsWarnings();
+                    int duration = 0, color = hasWarnings ? Style.ORANGE : Style.GREEN;
+                    String withWarnings = hasWarnings
+                            ? getResources().getString(R.string.with_warnings) : "";
 
                     switch(result.getResult()) {
                         case ImportResult.RESULT_OK_NEWKEYS:
-                            color = Style.GREEN;
-                            duration = SuperToast.Duration.LONG;
+                            if (!hasWarnings) {
+                                duration = SuperToast.Duration.LONG;
+                            }
                             str = getResources().getQuantityString(
-                                    R.plurals.keys_added, result.mNewKeys, result.mNewKeys);
+                                    R.plurals.keys_added, result.mNewKeys, result.mNewKeys, withWarnings);
                             break;
 
                         case ImportResult.RESULT_OK_UPDATED:
-                            color = Style.GREEN;
-                            duration = SuperToast.Duration.LONG;
+                            if (!hasWarnings) {
+                                duration = SuperToast.Duration.LONG;
+                            }
                             str = getResources().getQuantityString(
-                                    R.plurals.keys_updated, result.mNewKeys, result.mNewKeys);
+                                    R.plurals.keys_updated, result.mNewKeys, result.mNewKeys, withWarnings);
                             break;
 
                         case ImportResult.RESULT_OK_BOTHKEYS:
-                            color = Style.GREEN;
-                            duration = SuperToast.Duration.LONG;
+                            if (!hasWarnings) {
+                                duration = SuperToast.Duration.LONG;
+                            }
                             str = getResources().getQuantityString(
                                     R.plurals.keys_added_and_updated_1, result.mNewKeys, result.mNewKeys);
                             str += getResources().getQuantityString(
-                                    R.plurals.keys_added_and_updated_2, result.mUpdatedKeys, result.mUpdatedKeys);
-                            break;
-
-                        case ImportResult.RESULT_OK_WITH_WARNINGS:
-                            str = "ok with warnings";
-                            color = Style.ORANGE;
+                                    R.plurals.keys_added_and_updated_2, result.mUpdatedKeys, result.mUpdatedKeys, withWarnings);
                             break;
 
                         case ImportResult.RESULT_PARTIAL_WITH_ERRORS:
@@ -435,6 +435,8 @@ public class ImportKeysActivity extends ActionBarActivity implements ActionBar.O
                     toast.setSwipeToDismiss(true);
                     toast.setButtonIcon(R.drawable.ic_action_view_as_list,
                             getResources().getString(R.string.view_log));
+                    toast.setButtonTextColor(R.color.emphasis_dark);
+                    toast.setTextColor(R.color.emphasis_dark);
                     toast.setOnClickWrapper(new OnClickWrapper("supercardtoast",
                         new SuperToast.OnClickListener() {
                             @Override

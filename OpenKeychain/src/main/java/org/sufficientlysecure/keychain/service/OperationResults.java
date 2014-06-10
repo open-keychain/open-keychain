@@ -14,8 +14,6 @@ public abstract class OperationResults {
         public static final int RESULT_OK_BOTHKEYS = 2;
         // Operation ok, no new keys but upated ones (no warnings)
         public static final int RESULT_OK_UPDATED = 3;
-        // Operation ok, but with warnings
-        public static final int RESULT_OK_WITH_WARNINGS = 4;
 
         // Operation partially ok, but at least one key failed!
         public static final int RESULT_PARTIAL_WITH_ERRORS = 50;

@@ -222,23 +222,24 @@
     <string name="also_export_secret_keys">Also export secret keys?</string>
 
     <plurals name="keys_added_and_updated_1">
-        <item quantity="one">Successfully added %d key</item>
-        <item quantity="other">Successfully added %d keys</item>
+        <item quantity="one">Successfully added %1$d key</item>
+        <item quantity="other">Successfully added %1$d keys</item>
     </plurals>
     <plurals name="keys_added_and_updated_2">
-        <item quantity="one"> and updated %d key.</item>
-        <item quantity="other"> and updated %d keys.</item>
+        <item quantity="one"> and updated %1$d key%2$s.</item>
+        <item quantity="other"> and updated %1$d keys%2$s.</item>
     </plurals>
     <plurals name="keys_added">
-        <item quantity="one">Successfully added %d key.</item>
-        <item quantity="other">Successfully added %d keys.</item>
+        <item quantity="one">Successfully added %1$d key%2$s.</item>
+        <item quantity="other">Successfully added %1$d keys%2$s.</item>
     </plurals>
     <plurals name="keys_updated">
-        <item quantity="one">Successfully updated %d key.</item>
-        <item quantity="other">Successfully updated %d keys.</item>
+        <item quantity="one">Successfully updated %1$d key%2$s.</item>
+        <item quantity="other">Successfully updated %1$d keys%2$s.</item>
     </plurals>
 
     <string name="no_keys_added_or_updated">No keys added or updated.</string>
+    <string name="with_warnings">, with warnings</string>
     <string name="key_exported">Successfully exported 1 key.</string>
     <string name="keys_exported">Successfully exported %d keys.</string>
     <string name="no_keys_exported">No keys exported.</string>
@@ -509,7 +510,7 @@
     <string name="msg_ip_fail_io_exc">Operation failed due to i/o error</string>
     <string name="msg_ip_fail_op_ex">Operation failed due to database error</string>
     <string name="msg_ip_fail_remote_ex">Operation failed due to internal error</string>
-    <string name="msg_ip_importing">Importing public keyring %s</string>
+    <string name="msg_ip">Importing public keyring %s</string>
     <string name="msg_ip_insert_keyring">Inserting keyring data</string>
     <string name="msg_ip_insert_subkeys">Inserting subkeys</string>
     <string name="msg_ip_preserving_secret">Preserving available secret key</string>
@@ -517,6 +518,14 @@
     <string name="msg_ip_subkey_expired">Subkey expired on %s</string>
     <string name="msg_ip_subkey_expires">Subkey expires on %s</string>
     <string name="msg_ip_subkey_flags">Subkey flags: %s</string>
+    <string name="msg_ip_subkey_flags_ces">Subkey flags: certify, encrypt, sign</string>
+    <string name="msg_ip_subkey_flags_cex">Subkey flags: certify, encrypt</string>
+    <string name="msg_ip_subkey_flags_cxs">Subkey flags: certify, sign</string>
+    <string name="msg_ip_subkey_flags_xes">Subkey flags: encrypt, sign</string>
+    <string name="msg_ip_subkey_flags_cxx">Subkey flags: certify</string>
+    <string name="msg_ip_subkey_flags_xex">Subkey flags: encrypt</string>
+    <string name="msg_ip_subkey_flags_xxs">Subkey flags: sign</string>
+    <string name="msg_ip_subkey_flags_xxx">Subkey flags: none</string>
     <string name="msg_ip_subkey_future">Subkey creation date lies in the future! (%s)</string>
     <string name="msg_ip_success">Successfully inserted public keyring</string>
     <string name="msg_ip_reinsert_secret">Re-inserting secret key</string>
@@ -538,13 +547,17 @@
     <string name="msg_is_bad_type_public">Tried to import public keyring as secret. This is a bug, please file a report!</string>
 
     <!-- Import Secret log entries -->
-    <string name="msg_is_importing">Importing secret key %s</string>
+    <string name="msg_is">Importing secret key %s</string>
     <string name="msg_is_importing_subkeys">Processing secret subkeys</string>
     <string name="msg_is_io_excption">Error encoding keyring</string>
     <string name="msg_is_subkey_nonexistent">Subkey %s unavailable in public key</string>
     <string name="msg_is_subkey_ok">Marked %s as available</string>
     <string name="msg_is_subkey_stripped">Marked %s as stripped</string>
     <string name="msg_is_success">Successfully inserted secret keyring</string>
+
+    <!-- Keyring Canonicalization log entries -->
+    <string name="msg_kc">Canonicalizing keyring %s</string>
+    <string name="msg_kc_success">Successfully canonicalized keyring</string>
 
     <!-- unsorted -->
     <string name="section_certifier_id">Certifier</string>
