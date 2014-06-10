@@ -378,55 +378,54 @@ public class ImportKeysActivity extends ActionBarActivity implements ActionBar.O
                     final ImportResult result =
                             returnData.<ImportResult>getParcelable(KeychainIntentService.RESULT);
 
-                    String str = "";
-                    boolean hasWarnings = result.getLog().containsWarnings();
-                    int duration = 0, color = hasWarnings ? Style.ORANGE : Style.GREEN;
-                    String withWarnings = hasWarnings
-                            ? getResources().getString(R.string.with_warnings) : "";
+                    int resultType = result.getResult();
 
-                    switch(result.getResult()) {
-                        case ImportResult.RESULT_OK_NEWKEYS:
-                            if (!hasWarnings) {
-                                duration = SuperToast.Duration.LONG;
-                            }
-                            str = getResources().getQuantityString(
-                                    R.plurals.keys_added, result.mNewKeys, result.mNewKeys, withWarnings);
-                            break;
+                    String str;
+                    int duration, color;
 
-                        case ImportResult.RESULT_OK_UPDATED:
-                            if (!hasWarnings) {
-                                duration = SuperToast.Duration.LONG;
-                            }
-                            str = getResources().getQuantityString(
-                                    R.plurals.keys_updated, result.mNewKeys, result.mNewKeys, withWarnings);
-                            break;
+                    // Not an overall failure
+                    if ((resultType & ImportResult.RESULT_ERROR) == 0) {
+                        String withWarnings;
 
-                        case ImportResult.RESULT_OK_BOTHKEYS:
-                            if (!hasWarnings) {
-                                duration = SuperToast.Duration.LONG;
-                            }
-                            str = getResources().getQuantityString(
-                                    R.plurals.keys_added_and_updated_1, result.mNewKeys, result.mNewKeys);
-                            str += getResources().getQuantityString(
-                                    R.plurals.keys_added_and_updated_2, result.mUpdatedKeys, result.mUpdatedKeys, withWarnings);
-                            break;
-
-                        case ImportResult.RESULT_PARTIAL_WITH_ERRORS:
-                            str = "partial with errors";
+                        // Any warnings?
+                        if ((resultType & ImportResult.RESULT_WITH_WARNINGS) > 0) {
+                            duration = 0;
                             color = Style.ORANGE;
-                            break;
+                            withWarnings = getResources().getString(R.string.import_with_warnings);
+                        } else {
+                            duration = SuperToast.Duration.LONG;
+                            color = Style.GREEN;
+                            withWarnings = "";
+                        }
 
-                        case ImportResult.RESULT_FAIL_ERROR:
-                            str = "fail error";
+                        // New and updated keys
+                        if (result.isOkBoth()) {
+                            str = getResources().getQuantityString(
+                                    R.plurals.import_keys_added_and_updated_1, result.mNewKeys, result.mNewKeys);
+                            str += getResources().getQuantityString(
+                                    R.plurals.import_keys_added_and_updated_2, result.mUpdatedKeys, result.mUpdatedKeys, withWarnings);
+                        } else if (result.isOkNew()) {
+                            str = getResources().getQuantityString(
+                                    R.plurals.import_keys_added, result.mNewKeys, result.mNewKeys, withWarnings);
+                        } else if (result.isOkUpdated()) {
+                            str = getResources().getQuantityString(
+                                    R.plurals.import_keys_updated, result.mUpdatedKeys, result.mUpdatedKeys, withWarnings);
+                        } else {
+                            duration = 0;
                             color = Style.RED;
-                            break;
+                            str = "internal error";
+                        }
 
-                        case ImportResult.RESULT_FAIL_NOTHING:
-                            str = getString(R.string.no_keys_added_or_updated);
-                            color = Style.RED;
-                            break;
-
+                    } else {
+                        duration = 0;
+                        color = Style.RED;
+                        if (result.isFailNothing()) {
+                            str = getString(R.string.import_error_nothing);
+                        } else {
+                            str = getString(R.string.import_error);
+                        }
                     }
+
                     SuperCardToast toast = new SuperCardToast(ImportKeysActivity.this,
                             SuperToast.Type.BUTTON, Style.getStyle(color, SuperToast.Animations.POPUP));
                     toast.setText(str);
@@ -434,9 +433,9 @@ public class ImportKeysActivity extends ActionBarActivity implements ActionBar.O
                     toast.setIndeterminate(duration == 0);
                     toast.setSwipeToDismiss(true);
                     toast.setButtonIcon(R.drawable.ic_action_view_as_list,
-                            getResources().getString(R.string.view_log));
-                    toast.setButtonTextColor(R.color.emphasis_dark);
-                    toast.setTextColor(R.color.emphasis_dark);
+                            getResources().getString(R.string.import_view_log));
+                    toast.setButtonTextColor(getResources().getColor(R.color.black));
+                    toast.setTextColor(getResources().getColor(R.color.black));
                     toast.setOnClickWrapper(new OnClickWrapper("supercardtoast",
                         new SuperToast.OnClickListener() {
                             @Override

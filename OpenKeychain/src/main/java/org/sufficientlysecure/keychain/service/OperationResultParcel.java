@@ -18,12 +18,13 @@ import java.util.ArrayList;
  *
  */
 public class OperationResultParcel implements Parcelable {
-    /** Holds the overall result, the number specifying varying degrees of success.
-     * Values smaller than 100 are considered an overall success. */
+    /** Holds the overall result, the number specifying varying degrees of success. The first bit
+     * is 0 on overall success, 1 on overall failure. All other bits may be used for more specific
+     * conditions. */
     final int mResult;
 
     public static final int RESULT_OK = 0;
-    public static final int RESULT_ERROR = 100;
+    public static final int RESULT_ERROR = 1;
 
     /// A list of log entries tied to the operation result.
     final OperationLog mLog;
@@ -44,7 +45,7 @@ public class OperationResultParcel implements Parcelable {
     }
 
     public boolean isSuccessful() {
-        return mResult < 100;
+        return (mResult & 1) == 1;
     }
 
     public OperationLog getLog() {

@@ -33,9 +33,9 @@ import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
-import org.sufficientlysecure.keychain.service.OperationResultParcel;
 import org.sufficientlysecure.keychain.service.OperationResultParcel.OperationLog;
 import org.sufficientlysecure.keychain.service.OperationResults.ImportResult;
+import org.sufficientlysecure.keychain.service.OperationResults.SaveKeyringResult;
 import org.sufficientlysecure.keychain.util.Log;
 
 import java.io.ByteArrayOutputStream;
@@ -152,9 +152,12 @@ public class PgpImportExport {
                     }
                 }
 
-                OperationResultParcel result = mProviderHelper.savePublicKeyRing(key);
-
-                newKeys += 1;
+                SaveKeyringResult result = mProviderHelper.savePublicKeyRing(key);
+                if (result.updated()) {
+                    newKeys += 1;
+                } else {
+                    oldKeys += 1;
+                }
 
             } catch (PgpGeneralException e) {
                 Log.e(Constants.TAG, "Encountered bad key on import!", e);
@@ -166,23 +169,26 @@ public class PgpImportExport {
         }
 
         OperationLog log = mProviderHelper.getLog();
-        int resultType;
-        // Any key imported - overall success
-        if (newKeys > 0 || oldKeys > 0) {
-            if (badKeys > 0) {
-                resultType = ImportResult.RESULT_PARTIAL_WITH_ERRORS;
-            } else if (newKeys > 0 && oldKeys > 0) {
-                resultType = ImportResult.RESULT_OK_BOTHKEYS;
-            } else if (newKeys > 0) {
-                resultType = ImportResult.RESULT_OK_NEWKEYS;
-            } else {
-                resultType = ImportResult.RESULT_OK_UPDATED;
-            }
-        // No keys imported, overall failure
-        } else if (badKeys > 0) {
-            resultType = ImportResult.RESULT_FAIL_ERROR;
-        } else {
+        int resultType = 0;
+        // special return case: no new keys at all
+        if (badKeys == 0 && newKeys == 0 && oldKeys == 0) {
             resultType = ImportResult.RESULT_FAIL_NOTHING;
+        } else {
+            if (newKeys > 0) {
+                resultType |= ImportResult.RESULT_OK_NEWKEYS;
+            }
+            if (oldKeys > 0) {
+                resultType |= ImportResult.RESULT_OK_UPDATED;
+            }
+            if (badKeys > 0) {
+                resultType |= ImportResult.RESULT_WITH_ERRORS;
+                if (newKeys == 0 && oldKeys == 0) {
+                    resultType |= ImportResult.RESULT_ERROR;
+                }
+            }
+            if (log.containsWarnings()) {
+                resultType |= ImportResult.RESULT_WITH_WARNINGS;
+            }
         }
 
         return new ImportResult(resultType, log, newKeys, oldKeys, badKeys);

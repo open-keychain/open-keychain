@@ -221,25 +221,6 @@
     <string name="public_key_deletetion_confirmation">Do you really want to delete the public key \'%s\'?\nYou can\'t undo this!</string>
     <string name="also_export_secret_keys">Also export secret keys?</string>
 
-    <plurals name="keys_added_and_updated_1">
-        <item quantity="one">Successfully added %1$d key</item>
-        <item quantity="other">Successfully added %1$d keys</item>
-    </plurals>
-    <plurals name="keys_added_and_updated_2">
-        <item quantity="one"> and updated %1$d key%2$s.</item>
-        <item quantity="other"> and updated %1$d keys%2$s.</item>
-    </plurals>
-    <plurals name="keys_added">
-        <item quantity="one">Successfully added %1$d key%2$s.</item>
-        <item quantity="other">Successfully added %1$d keys%2$s.</item>
-    </plurals>
-    <plurals name="keys_updated">
-        <item quantity="one">Successfully updated %1$d key%2$s.</item>
-        <item quantity="other">Successfully updated %1$d keys%2$s.</item>
-    </plurals>
-
-    <string name="no_keys_added_or_updated">No keys added or updated.</string>
-    <string name="with_warnings">, with warnings</string>
     <string name="key_exported">Successfully exported 1 key.</string>
     <string name="keys_exported">Successfully exported %d keys.</string>
     <string name="no_keys_exported">No keys exported.</string>
@@ -407,6 +388,28 @@
     <string name="import_nfc_help_button">Help</string>
     <string name="import_clipboard_button">Get key from clipboard</string>
     <string name="import_keybase_button">Get key from Keybase.io</string>
+
+    <!-- Import result toast -->
+    <plurals name="import_keys_added_and_updated_1">
+        <item quantity="one">Successfully added %1$d key</item>
+        <item quantity="other">Successfully added %1$d keys</item>
+    </plurals>
+    <plurals name="import_keys_added_and_updated_2">
+        <item quantity="one"> and updated %1$d key%2$s.</item>
+        <item quantity="other"> and updated %1$d keys%2$s.</item>
+    </plurals>
+    <plurals name="import_keys_added">
+        <item quantity="one">Successfully added %1$d key%2$s.</item>
+        <item quantity="other">Successfully added %1$d keys%2$s.</item>
+    </plurals>
+    <plurals name="import_keys_updated">
+        <item quantity="one">Successfully updated %1$d key%2$s.</item>
+        <item quantity="other">Successfully updated %1$d keys%2$s.</item>
+    </plurals>
+    <string name="import_view_log">View Log</string>
+    <string name="import_error_nothing">Nothing to import.</string>
+    <string name="import_error">Error importing keys!</string>
+    <string name="import_with_warnings">, with warnings</string>
 
     <!-- Intent labels -->
     <string name="intent_decrypt_file">Decrypt File with OpenKeychain</string>
@@ -579,6 +582,5 @@
     <string name="can_sign_not">cannot sign</string>
     <string name="error_encoding">Encoding error</string>
     <string name="error_no_encrypt_subkey">No encryption subkey available!</string>
-    <string name="view_log">View Log</string>
 
 </resources>

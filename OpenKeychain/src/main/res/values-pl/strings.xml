@@ -191,27 +191,27 @@
   <string name="ask_save_changed_key">Zostały dokonane zmiany w pęku kluczy, czy chcesz je zachować?</string>
   <string name="public_key_deletetion_confirmation">Czy na pewno chcesz usunąć klucz publiczny \'%s\'?\nNie można cofnąć tej operacji!</string>
   <string name="also_export_secret_keys">Czy wyeksportować również klucze prywatne?</string>
-  <plurals name="keys_added_and_updated_1">
+  <plurals name="import_keys_added_and_updated_1">
     <item quantity="one">Pomyślnie dodano %d klucz</item>
     <item quantity="few">Pomyślnie dodano %d kluczy</item>
     <item quantity="other">Pomyślnie dodano %d kluczy</item>
   </plurals>
-  <plurals name="keys_added_and_updated_2">
+  <plurals name="import_keys_added_and_updated_2">
     <item quantity="one">i zaktualizowano %d klucz.</item>
     <item quantity="few">i zaktualizowano %d kluczy.</item>
     <item quantity="other">i zaktualizowano %d kluczy.</item>
   </plurals>
-  <plurals name="keys_added">
+  <plurals name="import_keys_added">
     <item quantity="one">Pomyślnie dodano %d klucz.</item>
     <item quantity="few">Pomyślnie dodano %d kluczy.</item>
     <item quantity="other">Pomyślnie dodano %d kluczy.</item>
   </plurals>
-  <plurals name="keys_updated">
+  <plurals name="import_keys_updated">
     <item quantity="one">Pomyślnie zaktualizowano %d klucz.</item>
     <item quantity="few">Pomyślnie zaktualizowano %d kluczy.</item>
     <item quantity="other">Pomyślnie zaktualizowano %d kluczy.</item>
   </plurals>
-  <string name="no_keys_added_or_updated">Nie dodano ani zaktualizowano żadnych kluczy.</string>
+  <string name="import_error_nothing">Nie dodano ani zaktualizowano żadnych kluczy.</string>
   <string name="key_exported">Pomyślnie wyeksportowano 1 klucz.</string>
   <string name="keys_exported">Pomyślnie wyeksportowano %d kluczy.</string>
   <string name="no_keys_exported">Nie wyeksportowano żadnych kluczy.</string>

@@ -49,6 +49,7 @@ import org.sufficientlysecure.keychain.provider.KeychainContract.Keys;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UserIds;
 import org.sufficientlysecure.keychain.remote.AccountSettings;
 import org.sufficientlysecure.keychain.remote.AppSettings;
+import org.sufficientlysecure.keychain.service.OperationResults.SaveKeyringResult;
 import org.sufficientlysecure.keychain.util.IterableIterator;
 import org.sufficientlysecure.keychain.util.Log;
 
@@ -267,11 +268,14 @@ public class ProviderHelper {
      * Saves PGPPublicKeyRing with its keys and userIds in DB
      */
     @SuppressWarnings("unchecked")
-    public OperationResultParcel savePublicKeyRing(UncachedKeyRing keyRing) {
+    public SaveKeyringResult savePublicKeyRing(UncachedKeyRing keyRing) {
         if (keyRing.isSecret()) {
             log(LogLevel.ERROR, LogType.MSG_IP_BAD_TYPE_SECRET);
-            return new OperationResultParcel(1, mLog);
+            return new SaveKeyringResult(SaveKeyringResult.RESULT_ERROR, mLog);
         }
+
+        // start with ok result
+        int result = SaveKeyringResult.SAVED_PUBLIC;
 
         long masterKeyId = keyRing.getMasterKeyId();
         log(LogLevel.START, LogType.MSG_IP,
@@ -296,6 +300,7 @@ public class ProviderHelper {
         try {
             mContentResolver.delete(KeyRingData.buildPublicKeyRingUri(Long.toString(masterKeyId)), null, null);
             log(LogLevel.DEBUG, LogType.MSG_IP_DELETE_OLD_OK);
+            result |= SaveKeyringResult.UPDATED;
         } catch (UnsupportedOperationException e) {
             Log.e(Constants.TAG, "Key could not be deleted! Maybe we are creating a new one!", e);
             log(LogLevel.DEBUG, LogType.MSG_IP_DELETE_OLD_FAIL);
@@ -315,7 +320,7 @@ public class ProviderHelper {
                     values.put(KeyRingData.KEY_RING_DATA, keyRing.getEncoded());
                 } catch (IOException e) {
                     log(LogLevel.ERROR, LogType.MSG_IP_ENCODE_FAIL);
-                    return new OperationResultParcel(1, mLog);
+                    return new SaveKeyringResult(SaveKeyringResult.RESULT_ERROR, mLog);
                 }
 
                 Uri uri = KeyRingData.buildPublicKeyRingUri(Long.toString(masterKeyId));
@@ -371,7 +376,7 @@ public class ProviderHelper {
                         log(LogLevel.ERROR, LogType.MSG_IP_SUBKEY_FUTURE, new String[] {
                                 creation.toString()
                         });
-                        return new OperationResultParcel(1, mLog);
+                        return new SaveKeyringResult(SaveKeyringResult.RESULT_ERROR, mLog);
                     }
                     Date expiryDate = key.getExpiryTime();
                     if (expiryDate != null) {
@@ -436,7 +441,7 @@ public class ProviderHelper {
                             if (!cert.verifySignature(masterKey, userId)) {
                                 // Bad self certification? That's kinda bad...
                                 log(LogLevel.ERROR, LogType.MSG_IP_UID_SELF_BAD);
-                                return new OperationResultParcel(1, mLog);
+                                return new SaveKeyringResult(SaveKeyringResult.RESULT_ERROR, mLog);
                             }
 
                             // if we already have a cert..
@@ -526,17 +531,17 @@ public class ProviderHelper {
             log(LogLevel.ERROR, LogType.MSG_IP_FAIL_IO_EXC);
             Log.e(Constants.TAG, "IOException during import", e);
             mIndent -= 1;
-            return new OperationResultParcel(1, mLog);
+            return new SaveKeyringResult(SaveKeyringResult.RESULT_ERROR, mLog);
         } catch (RemoteException e) {
             log(LogLevel.ERROR, LogType.MSG_IP_FAIL_REMOTE_EX);
             Log.e(Constants.TAG, "RemoteException during import", e);
             mIndent -= 1;
-            return new OperationResultParcel(1, mLog);
+            return new SaveKeyringResult(SaveKeyringResult.RESULT_ERROR, mLog);
         } catch (OperationApplicationException e) {
             log(LogLevel.ERROR, LogType.MSG_IP_FAIL_OP_EX);
             Log.e(Constants.TAG, "OperationApplicationException during import", e);
             mIndent -= 1;
-            return new OperationResultParcel(1, mLog);
+            return new SaveKeyringResult(SaveKeyringResult.RESULT_ERROR, mLog);
         }
 
         // Save the saved keyring (if any)
@@ -544,12 +549,13 @@ public class ProviderHelper {
             log(LogLevel.DEBUG, LogType.MSG_IP_REINSERT_SECRET);
             mIndent += 1;
             saveSecretKeyRing(secretRing);
+            result |= SaveKeyringResult.SAVED_SECRET;
             mIndent -= 1;
         }
 
         log(LogLevel.OK, LogType.MSG_IP_SUCCESS);
         mIndent -= 1;
-        return new OperationResultParcel(0, mLog);
+        return new SaveKeyringResult(result, mLog);
 
     }
 

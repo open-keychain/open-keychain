@@ -8,20 +8,31 @@ public abstract class OperationResults {
 
         public final int mNewKeys, mUpdatedKeys, mBadKeys;
 
-        // Operation ok, at least one new key (no warnings)
-        public static final int RESULT_OK_NEWKEYS = 1;
-        // Operation ok, at least one new and one updated key (no warnings)
-        public static final int RESULT_OK_BOTHKEYS = 2;
-        // Operation ok, no new keys but upated ones (no warnings)
-        public static final int RESULT_OK_UPDATED = 3;
+        // At least one new key
+        public static final int RESULT_OK_NEWKEYS = 2;
+        // At least one updated key
+        public static final int RESULT_OK_UPDATED = 4;
+        // At least one key failed (might still be an overall success)
+        public static final int RESULT_WITH_ERRORS = 8;
+        // There are warnings in the log
+        public static final int RESULT_WITH_WARNINGS = 16;
 
-        // Operation partially ok, but at least one key failed!
-        public static final int RESULT_PARTIAL_WITH_ERRORS = 50;
+        // No keys to import...
+        public static final int RESULT_FAIL_NOTHING = 32 +1;
 
-        // Operation failed, errors thrown and no new keys imported
-        public static final int RESULT_FAIL_ERROR = 100;
-        // Operation failed, no keys to import...
-        public static final int RESULT_FAIL_NOTHING = 101;
+        public boolean isOkBoth() {
+            return (mResult & (RESULT_OK_NEWKEYS | RESULT_OK_UPDATED))
+                    == (RESULT_OK_NEWKEYS | RESULT_OK_UPDATED);
+        }
+        public boolean isOkNew() {
+            return (mResult & RESULT_OK_NEWKEYS) > 0;
+        }
+        public boolean isOkUpdated() {
+            return (mResult & RESULT_OK_UPDATED) > 0;
+        }
+        public boolean isFailNothing() {
+            return (mResult & RESULT_FAIL_NOTHING) > 0;
+        }
 
         public ImportResult(Parcel source) {
             super(source);
@@ -55,6 +66,26 @@ public abstract class OperationResults {
                 return new ImportResult[size];
             }
         };
+
+    }
+
+    public static class SaveKeyringResult extends OperationResultParcel {
+
+        public SaveKeyringResult(int result, OperationLog log) {
+            super(result, log);
+        }
+
+        // Some old key was updated
+        public static final int UPDATED = 2;
+
+        // Public key was saved
+        public static final int SAVED_PUBLIC = 8;
+        // Secret key was saved (not exclusive with public!)
+        public static final int SAVED_SECRET = 16;
+
+        public boolean updated() {
+            return (mResult & UPDATED) == UPDATED;
+        }
 
     }
 

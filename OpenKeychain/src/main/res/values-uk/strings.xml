@@ -209,27 +209,27 @@
   <string name="ask_empty_id_ok">Ви вже додали порожню сутність. Ви справді хочете продовжити?</string>
   <string name="public_key_deletetion_confirmation">Ви справді хочете вилучити відкритий ключ \'%s\'?\nВи не зможете це відмінити!</string>
   <string name="also_export_secret_keys">Також експортувати секретні ключі?</string>
-  <plurals name="keys_added_and_updated_1">
+  <plurals name="import_keys_added_and_updated_1">
     <item quantity="one">Успішно додано %d ключ</item>
     <item quantity="few">Успішно додано %d ключі</item>
     <item quantity="other">Успішно додано %d ключів</item>
   </plurals>
-  <plurals name="keys_added_and_updated_2">
+  <plurals name="import_keys_added_and_updated_2">
     <item quantity="one">і оновлено %d ключ.</item>
     <item quantity="few">і оновлено %d ключі.</item>
     <item quantity="other">і оновлено %d ключів.</item>
   </plurals>
-  <plurals name="keys_added">
+  <plurals name="import_keys_added">
     <item quantity="one">Успішно додано %d ключ.</item>
     <item quantity="few">Успішно додано %d ключі.</item>
     <item quantity="other">Успішно додано %d ключів.</item>
   </plurals>
-  <plurals name="keys_updated">
+  <plurals name="import_keys_updated">
     <item quantity="one">Успішно оновлено %d ключ.</item>
     <item quantity="few">Успішно оновлено %d ключі.</item>
     <item quantity="other">Успішно оновлено %d ключів.</item>
   </plurals>
-  <string name="no_keys_added_or_updated">Жодного ключа не додано та не оновлено.</string>
+  <string name="import_error_nothing">Жодного ключа не додано та не оновлено.</string>
   <string name="key_exported">Успішно експортовано 1 ключ.</string>
   <string name="keys_exported">Успішно експортовано %d ключів.</string>
   <string name="no_keys_exported">Жодного ключа не експортовано.</string>

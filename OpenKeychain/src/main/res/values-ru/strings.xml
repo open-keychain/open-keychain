@@ -206,27 +206,27 @@
   <string name="ask_empty_id_ok">Вы добавили пустой идентификатор. Вы уверены, что хотите продолжить?</string>
   <string name="public_key_deletetion_confirmation">Вы правда хотите удалить публичный ключ \'%s\'?\nЭто действие нельзя отменить!</string>
   <string name="also_export_secret_keys">Экспортировать секретные ключи?</string>
-  <plurals name="keys_added_and_updated_1">
+  <plurals name="import_keys_added_and_updated_1">
     <item quantity="one">Успешно добавлено %d ключ</item>
     <item quantity="few">Успешно добавлено %d ключей</item>
     <item quantity="other">Успешно добавлено %d ключей</item>
   </plurals>
-  <plurals name="keys_added_and_updated_2">
+  <plurals name="import_keys_added_and_updated_2">
     <item quantity="one">и обновлен %d ключ.</item>
     <item quantity="few">и обновлено %d ключей.</item>
     <item quantity="other">и обновлено %d ключей.</item>
   </plurals>
-  <plurals name="keys_added">
+  <plurals name="import_keys_added">
     <item quantity="one">Добавлен %d ключ</item>
     <item quantity="few">Добавлено %d ключей</item>
     <item quantity="other">Добавлено %d ключей</item>
   </plurals>
-  <plurals name="keys_updated">
+  <plurals name="import_keys_updated">
     <item quantity="one">Обновлен %d ключ.</item>
     <item quantity="few">Обновлено %d ключей.</item>
     <item quantity="other">Обновлено %d ключей.</item>
   </plurals>
-  <string name="no_keys_added_or_updated">Нет обновленных или добавленных ключей</string>
+  <string name="import_error_nothing">Нет обновленных или добавленных ключей</string>
   <string name="key_exported">Успешный экспорт 1 ключа.</string>
   <string name="keys_exported">Экспортировано %d ключей.</string>
   <string name="no_keys_exported">Ключи не были экспортированы.</string>
