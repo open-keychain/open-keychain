@@ -788,7 +788,7 @@ public class KeychainIntentService extends IntentService
 
                 // InputStream
                 InputStream in = getContentResolver().openInputStream(providerUri);
-                return new InputData(in, PgpHelper.getLengthOfStream(in));
+                return new InputData(in, 0);
 
             default:
                 throw new PgpGeneralException("No target choosen!");

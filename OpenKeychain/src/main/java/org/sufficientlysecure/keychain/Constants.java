@@ -17,6 +17,7 @@
 
 package org.sufficientlysecure.keychain;
 
+import android.os.Build;
 import android.os.Environment;
 
 import org.spongycastle.bcpg.CompressionAlgorithmTags;
@@ -47,6 +48,8 @@ public final class Constants {
     public static final String INTENT_PREFIX = PACKAGE_NAME + ".action.";
 
     public static final String CUSTOM_CONTACT_DATA_MIME_TYPE = "vnd.android.cursor.item/vnd.org.sufficientlysecure.keychain.key";
+
+    public static boolean KITKAT = Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT;
 
     public static final class Path {
         public static final String APP_DIR = Environment.getExternalStorageDirectory()
