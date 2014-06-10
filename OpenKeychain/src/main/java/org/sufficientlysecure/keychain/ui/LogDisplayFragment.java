@@ -5,8 +5,6 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
-import android.support.v4.view.GestureDetectorCompat;
-import android.support.v4.view.MotionEventCompat;
 import android.util.TypedValue;
 import android.view.GestureDetector;
 import android.view.GestureDetector.SimpleOnGestureListener;
@@ -16,7 +14,6 @@ import android.view.View;
 import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -135,29 +132,40 @@ public class LogDisplayFragment extends ListFragment implements OnTouchListener 
             notifyDataSetChanged();
         }
 
+        private class ItemHolder {
+            final TextView mText;
+            final ImageView mImg;
+            public ItemHolder(TextView text, ImageView image) {
+                mText = text;
+                mImg = image;
+            }
+        }
+
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
             LogEntryParcel entry = getItem(position);
-            TextView text;
+            ItemHolder ih;
             if (convertView == null) {
                 convertView = mInflater.inflate(R.layout.log_display_item, parent, false);
-                text = (TextView) convertView.findViewById(R.id.log_text);
-                convertView.setTag(text);
+                ih = new ItemHolder(
+                        (TextView) convertView.findViewById(R.id.log_text),
+                        (ImageView) convertView.findViewById(R.id.log_img)
+                );
+                convertView.setTag(ih);
             } else {
-                text = (TextView) convertView.getTag();
+                ih = (ItemHolder) convertView.getTag();
             }
-            ImageView img = (ImageView) convertView.findViewById(R.id.log_img);
 
-            text.setText(getResources().getString(entry.mType.getMsgId(), (Object[]) entry.mParameters));
-            text.setTextColor(entry.mLevel == LogLevel.DEBUG ? Color.GRAY : Color.BLACK);
+            ih.mText.setText(getResources().getString(entry.mType.getMsgId(), (Object[]) entry.mParameters));
+            ih.mText.setTextColor(entry.mLevel == LogLevel.DEBUG ? Color.GRAY : Color.BLACK);
             convertView.setPadding((entry.mIndent) * dipFactor, 0, 0, 0);
             switch (entry.mLevel) {
-                case DEBUG: img.setBackgroundColor(Color.GRAY); break;
-                case INFO: img.setBackgroundColor(Color.BLACK); break;
-                case WARN: img.setBackgroundColor(Color.YELLOW); break;
-                case ERROR: img.setBackgroundColor(Color.RED); break;
-                case START: img.setBackgroundColor(Color.GREEN); break;
-                case OK: img.setBackgroundColor(Color.GREEN); break;
+                case DEBUG: ih.mImg.setBackgroundColor(Color.GRAY); break;
+                case INFO: ih.mImg.setBackgroundColor(Color.BLACK); break;
+                case WARN: ih.mImg.setBackgroundColor(Color.YELLOW); break;
+                case ERROR: ih.mImg.setBackgroundColor(Color.RED); break;
+                case START: ih.mImg.setBackgroundColor(Color.GREEN); break;
+                case OK: ih.mImg.setBackgroundColor(Color.GREEN); break;
             }
 
             return convertView;
