@@ -350,8 +350,13 @@ public class EncryptFileFragment extends Fragment {
 
                     if (mDeleteAfter.isChecked()) {
                         // Create and show dialog to delete original file
-                        DeleteFileDialogFragment deleteFileDialog = DeleteFileDialogFragment
-                                .newInstance(mInputFilename);
+                        DeleteFileDialogFragment deleteFileDialog;
+                        if (mInputUri != null) {
+                            deleteFileDialog = DeleteFileDialogFragment.newInstance(mInputUri);
+                        } else {
+                            deleteFileDialog = DeleteFileDialogFragment
+                                    .newInstance(mInputFilename);
+                        }
                         deleteFileDialog.show(getActivity().getSupportFragmentManager(), "deleteDialog");
                     }
 
@@ -359,7 +364,11 @@ public class EncryptFileFragment extends Fragment {
                         // Share encrypted file
                         Intent sendFileIntent = new Intent(Intent.ACTION_SEND);
                         sendFileIntent.setType("*/*");
-                        sendFileIntent.putExtra(Intent.EXTRA_STREAM, Uri.parse(mOutputFilename));
+                        if (mOutputUri != null) {
+                            sendFileIntent.putExtra(Intent.EXTRA_STREAM, mOutputUri);
+                        } else {
+                            sendFileIntent.putExtra(Intent.EXTRA_STREAM, Uri.parse(mOutputFilename));
+                        }
                         startActivity(Intent.createChooser(sendFileIntent,
                                 getString(R.string.title_share_file)));
                     }

@@ -236,8 +236,13 @@ public class DecryptFileFragment extends DecryptFragment {
 
                         if (mDeleteAfter.isChecked()) {
                             // Create and show dialog to delete original file
-                            DeleteFileDialogFragment deleteFileDialog = DeleteFileDialogFragment
-                                    .newInstance(mInputFilename);
+                            DeleteFileDialogFragment deleteFileDialog;
+                            if (mInputUri != null) {
+                                deleteFileDialog = DeleteFileDialogFragment.newInstance(mInputUri);
+                            } else {
+                                deleteFileDialog = DeleteFileDialogFragment
+                                        .newInstance(mInputFilename);
+                            }
                             deleteFileDialog.show(getActivity().getSupportFragmentManager(), "deleteDialog");
                         }
                     }
