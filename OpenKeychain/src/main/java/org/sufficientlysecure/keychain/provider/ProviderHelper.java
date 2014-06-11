@@ -297,12 +297,12 @@ public class ProviderHelper {
         }
 
         // delete old version of this keyRing, which also deletes all keys and userIds on cascade
-        try {
-            mContentResolver.delete(KeyRingData.buildPublicKeyRingUri(Long.toString(masterKeyId)), null, null);
+        int deleted = mContentResolver.delete(
+                KeyRingData.buildPublicKeyRingUri(Long.toString(masterKeyId)), null, null);
+        if (deleted > 0) {
             log(LogLevel.DEBUG, LogType.MSG_IP_DELETE_OLD_OK);
             result |= SaveKeyringResult.UPDATED;
-        } catch (UnsupportedOperationException e) {
-            Log.e(Constants.TAG, "Key could not be deleted! Maybe we are creating a new one!", e);
+        } else {
             log(LogLevel.DEBUG, LogType.MSG_IP_DELETE_OLD_FAIL);
         }
 
@@ -577,14 +577,16 @@ public class ProviderHelper {
      * is already in the database!
      */
     public OperationResultParcel saveSecretKeyRing(UncachedKeyRing keyRing) {
-        if (!keyRing.isSecret()) {
-            log(LogLevel.ERROR, LogType.MSG_IS_BAD_TYPE_PUBLIC);
-            return new OperationResultParcel(1, mLog);
-        }
 
         long masterKeyId = keyRing.getMasterKeyId();
         log(LogLevel.START, LogType.MSG_IS,
                 new String[]{PgpKeyHelper.convertKeyIdToHex(masterKeyId)});
+        mIndent += 1;
+
+        if (!keyRing.isSecret()) {
+            log(LogLevel.ERROR, LogType.MSG_IS_BAD_TYPE_PUBLIC);
+            return new OperationResultParcel(1, mLog);
+        }
 
         // save secret keyring
         try {

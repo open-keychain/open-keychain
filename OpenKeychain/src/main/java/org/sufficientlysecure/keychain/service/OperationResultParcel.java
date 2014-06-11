@@ -44,8 +44,8 @@ public class OperationResultParcel implements Parcelable {
         return mResult;
     }
 
-    public boolean isSuccessful() {
-        return (mResult & 1) == 1;
+    public boolean success() {
+        return (mResult & 1) == 0;
     }
 
     public OperationLog getLog() {

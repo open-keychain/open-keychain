@@ -58,10 +58,6 @@ public class PgpImportExport {
 
     private ProviderHelper mProviderHelper;
 
-    public static final int RETURN_OK = 0;
-    public static final int RETURN_BAD = -2;
-    public static final int RETURN_UPDATED = 1;
-
     public PgpImportExport(Context context, Progressable progressable) {
         super();
         this.mContext = context;
@@ -118,10 +114,9 @@ public class PgpImportExport {
                 if (aos != null) {
                     aos.close();
                 }
-                if (bos != null) {
-                    bos.close();
-                }
+                bos.close();
             } catch (IOException e) {
+                // this is just a finally thing, no matter if it doesn't work out.
             }
         }
     }
@@ -153,10 +148,12 @@ public class PgpImportExport {
                 }
 
                 SaveKeyringResult result = mProviderHelper.savePublicKeyRing(key);
-                if (result.updated()) {
-                    newKeys += 1;
-                } else {
+                if (!result.success()) {
+                    badKeys += 1;
+                } else if (result.updated()) {
                     oldKeys += 1;
+                } else {
+                    newKeys += 1;
                 }
 
             } catch (PgpGeneralException e) {

@@ -404,12 +404,12 @@ public class ImportKeysActivity extends ActionBarActivity implements ActionBar.O
                                     R.plurals.import_keys_added_and_updated_1, result.mNewKeys, result.mNewKeys);
                             str += getResources().getQuantityString(
                                     R.plurals.import_keys_added_and_updated_2, result.mUpdatedKeys, result.mUpdatedKeys, withWarnings);
-                        } else if (result.isOkNew()) {
-                            str = getResources().getQuantityString(
-                                    R.plurals.import_keys_added, result.mNewKeys, result.mNewKeys, withWarnings);
                         } else if (result.isOkUpdated()) {
                             str = getResources().getQuantityString(
                                     R.plurals.import_keys_updated, result.mUpdatedKeys, result.mUpdatedKeys, withWarnings);
+                        } else if (result.isOkNew()) {
+                            str = getResources().getQuantityString(
+                                    R.plurals.import_keys_added, result.mNewKeys, result.mNewKeys, withWarnings);
                         } else {
                             duration = 0;
                             color = Style.RED;

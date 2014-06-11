@@ -25,13 +25,13 @@ public abstract class OperationResults {
                     == (RESULT_OK_NEWKEYS | RESULT_OK_UPDATED);
         }
         public boolean isOkNew() {
-            return (mResult & RESULT_OK_NEWKEYS) > 0;
+            return (mResult & RESULT_OK_NEWKEYS) == RESULT_OK_NEWKEYS;
         }
         public boolean isOkUpdated() {
-            return (mResult & RESULT_OK_UPDATED) > 0;
+            return (mResult & RESULT_OK_UPDATED) == RESULT_OK_UPDATED;
         }
         public boolean isFailNothing() {
-            return (mResult & RESULT_FAIL_NOTHING) > 0;
+            return (mResult & RESULT_FAIL_NOTHING) == RESULT_FAIL_NOTHING;
         }
 
         public ImportResult(Parcel source) {
