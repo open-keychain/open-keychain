@@ -534,7 +534,6 @@
     <string name="msg_ip_reinsert_secret">Re-inserting secret key</string>
     <string name="msg_ip_trust_retrieve">Retrieving trusted keys</string>
     <string name="msg_ip_trust_using">Using %s trusted keys</string>
-    <string name="msg_ip_trust_using_sec">Secret key available, self certificates are trusted</string>
     <string name="msg_ip_uid_cert_bad">Encountered bad certificate!</string>
     <string name="msg_ip_uid_cert_error">Error processing certificate!</string>
     <string name="msg_ip_uid_cert_good">Found good certificate from %s</string>

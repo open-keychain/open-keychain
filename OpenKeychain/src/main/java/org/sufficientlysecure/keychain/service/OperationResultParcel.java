@@ -133,7 +133,6 @@ public class OperationResultParcel implements Parcelable {
         MSG_IP_SUCCESS (R.string.msg_ip_success),
         MSG_IP_TRUST_RETRIEVE (R.string.msg_ip_trust_retrieve),
         MSG_IP_TRUST_USING (R.string.msg_ip_trust_using),
-        MSG_IP_TRUST_USING_SEC (R.string.msg_ip_trust_using_sec),
         MSG_IP_UID_CERT_BAD (R.string.msg_ip_uid_cert_bad),
         MSG_IP_UID_CERT_ERROR (R.string.msg_ip_uid_cert_error),
         MSG_IP_UID_CERT_GOOD (R.string.msg_ip_uid_cert_good),
@@ -210,9 +209,8 @@ public class OperationResultParcel implements Parcelable {
         }
 
         public boolean containsWarnings() {
-            int warn = LogLevel.WARN.ordinal();
             for(LogEntryParcel entry : new IterableIterator<LogEntryParcel>(iterator())) {
-                if (entry.mLevel.ordinal() >= warn) {
+                if (entry.mLevel == LogLevel.WARN || entry.mLevel == LogLevel.ERROR) {
                     return true;
                 }
             }

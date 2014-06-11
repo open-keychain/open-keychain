@@ -399,21 +399,12 @@ public class ProviderHelper {
             }
             mIndent -= 1;
 
-            log(LogLevel.DEBUG, LogType.MSG_IP_TRUST_RETRIEVE);
             // get a list of owned secret keys, for verification filtering
             LongSparseArray<UncachedPublicKey> trustedKeys =
                     getUncachedMasterKeys(KeyRingData.buildSecretKeyRingUri());
-            // special case: available secret keys verify themselves!
-            if (secretRing != null) {
-                trustedKeys.put(secretRing.getMasterKeyId(), secretRing.getPublicKey());
-                log(LogLevel.INFO, LogType.MSG_IP_TRUST_USING_SEC, new String[]{
-                        Integer.toString(trustedKeys.size())
-                });
-            } else {
-                log(LogLevel.INFO, LogType.MSG_IP_TRUST_USING, new String[] {
-                    Integer.toString(trustedKeys.size())
-                });
-            }
+            log(LogLevel.INFO, LogType.MSG_IP_TRUST_USING, new String[] {
+                Integer.toString(trustedKeys.size())
+            });
 
             // classify and order user ids. primary are moved to the front, revoked to the back,
             // otherwise the order in the keyfile is preserved.
@@ -513,7 +504,8 @@ public class ProviderHelper {
                 // no self cert is bad, but allowed by the rfc...
                 if (item.selfCert != null) {
                     operations.add(buildCertOperations(
-                            masterKeyId, userIdRank, item.selfCert, Certs.VERIFIED_SELF));
+                            masterKeyId, userIdRank, item.selfCert,
+                            secretRing != null ? Certs.VERIFIED_SECRET : Certs.VERIFIED_SELF));
                 }
                 // don't bother with trusted certs if the uid is revoked, anyways
                 if (item.isRevoked) {
