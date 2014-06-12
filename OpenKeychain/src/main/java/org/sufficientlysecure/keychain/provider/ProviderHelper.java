@@ -29,7 +29,7 @@ import android.support.v4.util.LongSparseArray;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
-import org.sufficientlysecure.keychain.service.OperationResultParcel;
+import org.sufficientlysecure.keychain.pgp.WrappedPublicKey;
 import org.sufficientlysecure.keychain.service.OperationResultParcel.LogType;
 import org.sufficientlysecure.keychain.service.OperationResultParcel.LogLevel;
 import org.sufficientlysecure.keychain.service.OperationResultParcel.OperationLog;
@@ -172,36 +172,31 @@ public class ProviderHelper {
         }
     }
 
-    public Object getUnifiedData(long masterKeyId, String column, int type)
-            throws NotFoundException {
-        return getUnifiedData(masterKeyId, new String[]{column}, new int[]{type}).get(column);
-    }
-
     public HashMap<String, Object> getUnifiedData(long masterKeyId, String[] proj, int[] types)
             throws NotFoundException {
         return getGenericData(KeyRings.buildUnifiedKeyRingUri(masterKeyId), proj, types);
     }
 
-    private LongSparseArray<UncachedPublicKey> getUncachedMasterKeys(Uri queryUri) {
-        Cursor cursor = mContentResolver.query(queryUri,
-                new String[]{KeyRingData.MASTER_KEY_ID, KeyRingData.KEY_RING_DATA},
-                null, null, null);
+    private LongSparseArray<WrappedPublicKey> getAllWrappedMasterKeys() {
+        Cursor cursor = mContentResolver.query(KeyRings.buildUnifiedKeyRingsUri(), new String[] {
+                KeyRings.MASTER_KEY_ID,
+                // we pick from cache only information that is not easily available from keyrings
+                KeyRings.HAS_ANY_SECRET, KeyRings.VERIFIED,
+                // and of course, ring data
+                KeyRings.PUBKEY_DATA
+            }, KeyRings.HAS_ANY_SECRET + " = 1", null, null);
 
-        LongSparseArray<UncachedPublicKey> result =
-                new LongSparseArray<UncachedPublicKey>(cursor.getCount());
+        LongSparseArray<WrappedPublicKey> result =
+                new LongSparseArray<WrappedPublicKey>(cursor.getCount());
         try {
             if (cursor != null && cursor.moveToFirst()) do {
                 long masterKeyId = cursor.getLong(0);
-                byte[] data = cursor.getBlob(1);
-                if (data != null) {
-                    try {
-                        result.put(masterKeyId,
-                                UncachedKeyRing.decodeFromData(data).getPublicKey());
-                    } catch(PgpGeneralException e) {
-                        Log.e(Constants.TAG, "Error parsing keyring, skipping " + masterKeyId, e);
-                    } catch(IOException e) {
-                        Log.e(Constants.TAG, "IO error, skipping keyring" + masterKeyId, e);
-                    }
+                boolean hasAnySecret = cursor.getInt(1) > 0;
+                int verified = cursor.getInt(2);
+                byte[] blob = cursor.getBlob(3);
+                if (blob != null) {
+                    result.put(masterKeyId,
+                            new WrappedPublicKeyRing(blob, hasAnySecret, verified).getSubkey());
                 }
             } while (cursor.moveToNext());
         } finally {
@@ -394,8 +389,7 @@ public class ProviderHelper {
             mIndent -= 1;
 
             // get a list of owned secret keys, for verification filtering
-            LongSparseArray<UncachedPublicKey> trustedKeys =
-                    getUncachedMasterKeys(KeyRingData.buildSecretKeyRingUri());
+            LongSparseArray<WrappedPublicKey> trustedKeys = getAllWrappedMasterKeys();
             log(LogLevel.INFO, LogType.MSG_IP_TRUST_USING, new String[]{
                     Integer.toString(trustedKeys.size())
             });
@@ -456,7 +450,7 @@ public class ProviderHelper {
 
                         // verify signatures from known private keys
                         if (trustedKeys.indexOfKey(certId) >= 0) {
-                            UncachedPublicKey trustedKey = trustedKeys.get(certId);
+                            WrappedPublicKey trustedKey = trustedKeys.get(certId);
                             cert.init(trustedKey);
                             if (cert.verifySignature(masterKey, userId)) {
                                 item.trustedCerts.add(cert);

@@ -538,7 +538,7 @@
     <string name="msg_ip_trust_using">Using %s trusted keys</string>
     <string name="msg_ip_uid_cert_bad">Encountered bad certificate!</string>
     <string name="msg_ip_uid_cert_error">Error processing certificate!</string>
-    <string name="msg_ip_uid_cert_good">Found good certificate from %2$s (%2$s)</string>
+    <string name="msg_ip_uid_cert_good">Found good certificate from %1$s (%2$s)</string>
     <string name="msg_ip_uid_certs_unknown">Ignored %s certificates from unknown pubkeys</string>
     <string name="msg_ip_uid_classifying">Classifying user ids</string>
     <string name="msg_ip_uid_insert">Inserting user ids</string>
