@@ -516,6 +516,8 @@
     <string name="msg_ip">Importing public keyring %s</string>
     <string name="msg_ip_insert_keyring">Inserting keyring data</string>
     <string name="msg_ip_insert_subkeys">Inserting subkeys</string>
+    <string name="msg_ip_prepare">Preparing database operations</string>
+    <string name="msg_ip_prepare_success">OK</string>
     <string name="msg_ip_preserving_secret">Preserving available secret key</string>
     <string name="msg_ip_subkey">Processing subkey %s</string>
     <string name="msg_ip_subkey_expired">Subkey expired on %s</string>
@@ -536,7 +538,7 @@
     <string name="msg_ip_trust_using">Using %s trusted keys</string>
     <string name="msg_ip_uid_cert_bad">Encountered bad certificate!</string>
     <string name="msg_ip_uid_cert_error">Error processing certificate!</string>
-    <string name="msg_ip_uid_cert_good">Found good certificate from %s</string>
+    <string name="msg_ip_uid_cert_good">Found good certificate from %2$s (%2$s)</string>
     <string name="msg_ip_uid_certs_unknown">Ignored %s certificates from unknown pubkeys</string>
     <string name="msg_ip_uid_classifying">Classifying user ids</string>
     <string name="msg_ip_uid_insert">Inserting user ids</string>

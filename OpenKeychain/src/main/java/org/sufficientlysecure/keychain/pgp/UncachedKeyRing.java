@@ -416,9 +416,6 @@ public class UncachedKeyRing {
                         cert.init(masterKey);
                         if (!cert.verifySignature(masterKey, key)) {
                             log.add(LogLevel.WARN, LogType.MSG_KC_SUB_BAD, null, indent);
-                            log.add(LogLevel.WARN, LogType.MSG_KC_SUB, new String[] {
-                                cert.getCreationTime().toString()
-                            }, indent);
                             continue;
                         }
                     } catch (PgpGeneralException e) {

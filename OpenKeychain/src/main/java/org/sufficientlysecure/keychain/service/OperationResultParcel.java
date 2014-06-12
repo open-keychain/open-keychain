@@ -115,6 +115,8 @@ public class OperationResultParcel implements Parcelable {
         MSG_IP_FAIL_REMOTE_EX (R.string.msg_ip_fail_remote_ex),
         MSG_IP_INSERT_KEYRING (R.string.msg_ip_insert_keyring),
         MSG_IP_INSERT_SUBKEYS (R.string.msg_ip_insert_subkeys),
+        MSG_IP_PREPARE (R.string.msg_ip_prepare),
+        MSG_IP_PREPARE_SUCCESS(R.string.msg_ip_prepare_success),
         MSG_IP_PRESERVING_SECRET (R.string.msg_ip_preserving_secret),
         MSG_IP_REINSERT_SECRET (R.string.msg_ip_reinsert_secret),
         MSG_IP_SUBKEY (R.string.msg_ip_subkey),

@@ -127,9 +127,7 @@ public class PgpImportExport {
 
         updateProgress(R.string.progress_importing, 0, 100);
 
-        int newKeys = 0;
-        int oldKeys = 0;
-        int badKeys = 0;
+        int newKeys = 0, oldKeys = 0, badKeys = 0;
 
         int position = 0;
         for (ParcelableKeyRing entry : entries) {
@@ -147,7 +145,12 @@ public class PgpImportExport {
                     }
                 }
 
-                SaveKeyringResult result = mProviderHelper.savePublicKeyRing(key);
+                SaveKeyringResult result;
+                if (key.isSecret()) {
+                    result = mProviderHelper.saveSecretKeyRing(key);
+                } else {
+                    result = mProviderHelper.savePublicKeyRing(key);
+                }
                 if (!result.success()) {
                     badKeys += 1;
                 } else if (result.updated()) {
