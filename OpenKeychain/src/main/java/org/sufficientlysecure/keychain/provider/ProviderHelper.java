@@ -177,7 +177,7 @@ public class ProviderHelper {
         return getGenericData(KeyRings.buildUnifiedKeyRingUri(masterKeyId), proj, types);
     }
 
-    private LongSparseArray<WrappedPublicKey> getAllWrappedMasterKeys() {
+    private LongSparseArray<WrappedPublicKey> getTrustedMasterKeys() {
         Cursor cursor = mContentResolver.query(KeyRings.buildUnifiedKeyRingsUri(), new String[] {
                 KeyRings.MASTER_KEY_ID,
                 // we pick from cache only information that is not easily available from keyrings
@@ -361,12 +361,6 @@ public class ProviderHelper {
 
                     Date creation = key.getCreationTime();
                     values.put(Keys.CREATION, creation.getTime() / 1000);
-                    if (creation.after(new Date())) {
-                        log(LogLevel.ERROR, LogType.MSG_IP_SUBKEY_FUTURE, new String[]{
-                                creation.toString()
-                        });
-                        return new SaveKeyringResult(SaveKeyringResult.RESULT_ERROR, mLog);
-                    }
                     Date expiryDate = key.getExpiryTime();
                     if (expiryDate != null) {
                         values.put(Keys.EXPIRY, expiryDate.getTime() / 1000);
@@ -389,7 +383,7 @@ public class ProviderHelper {
             mIndent -= 1;
 
             // get a list of owned secret keys, for verification filtering
-            LongSparseArray<WrappedPublicKey> trustedKeys = getAllWrappedMasterKeys();
+            LongSparseArray<WrappedPublicKey> trustedKeys = getTrustedMasterKeys();
 
             // classify and order user ids. primary are moved to the front, revoked to the back,
             // otherwise the order in the keyfile is preserved.
@@ -415,34 +409,16 @@ public class ProviderHelper {
                     try {
                         // self signature
                         if (certId == masterKeyId) {
-                            cert.init(masterKey);
-                            if (!cert.verifySignature(masterKey, userId)) {
-                                // Bad self certification? That's kinda bad...
-                                log(LogLevel.ERROR, LogType.MSG_IP_UID_SELF_BAD);
-                                return new SaveKeyringResult(SaveKeyringResult.RESULT_ERROR, mLog);
-                            }
 
-                            // if we already have a cert..
-                            if (item.selfCert != null) {
-                                // ..is this perchance a more recent one?
-                                if (item.selfCert.getCreationTime().before(cert.getCreationTime())) {
-                                    log(LogLevel.DEBUG, LogType.MSG_IP_UID_SELF_NEWER);
-                                } else {
-                                    log(LogLevel.DEBUG, LogType.MSG_IP_UID_SELF_IGNORING_OLD);
-                                    continue;
-                                }
-                            } else {
+                            // NOTE self-certificates are already verified during canonicalization,
+                            // AND we know there is at most one cert plus at most one revocation
+                            if (!cert.isRevocation()) {
+                                item.selfCert = cert;
+                                item.isPrimary = cert.isPrimaryUserId();
                                 log(LogLevel.DEBUG, LogType.MSG_IP_UID_SELF_GOOD);
-                            }
-
-                            // save certificate as primary self-cert
-                            item.selfCert = cert;
-                            item.isPrimary = cert.isPrimaryUserId();
-                            if (cert.isRevocation()) {
+                            } else {
                                 item.isRevoked = true;
                                 log(LogLevel.DEBUG, LogType.MSG_IP_UID_REVOKED);
-                            } else {
-                                item.isRevoked = false;
                             }
 
                         }
@@ -489,10 +465,8 @@ public class ProviderHelper {
             for (int userIdRank = 0; userIdRank < uids.size(); userIdRank++) {
                 UserIdItem item = uids.get(userIdRank);
                 operations.add(buildUserIdOperations(masterKeyId, item, userIdRank));
-                // no self cert is bad, but allowed by the rfc...
                 if (item.selfCert != null) {
-                    operations.add(buildCertOperations(
-                            masterKeyId, userIdRank, item.selfCert,
+                    operations.add(buildCertOperations(masterKeyId, userIdRank, item.selfCert,
                             secretRing != null ? Certs.VERIFIED_SECRET : Certs.VERIFIED_SELF));
                 }
                 // don't bother with trusted certs if the uid is revoked, anyways

@@ -131,7 +131,6 @@ public class OperationResultParcel implements Parcelable {
         MSG_IP_SUBKEY_FLAGS_XEX (R.string.msg_ip_subkey_flags_xex),
         MSG_IP_SUBKEY_FLAGS_XXS (R.string.msg_ip_subkey_flags_xxs),
         MSG_IP_SUBKEY_FLAGS_XXX (R.string.msg_ip_subkey_flags_xxx),
-        MSG_IP_SUBKEY_FUTURE (R.string.msg_ip_subkey_future),
         MSG_IP_SUCCESS (R.string.msg_ip_success),
         MSG_IP_UID_CERT_BAD (R.string.msg_ip_uid_cert_bad),
         MSG_IP_UID_CERT_ERROR (R.string.msg_ip_uid_cert_error),
@@ -141,10 +140,7 @@ public class OperationResultParcel implements Parcelable {
         MSG_IP_UID_REORDER(R.string.msg_ip_uid_reorder),
         MSG_IP_UID_PROCESSING (R.string.msg_ip_uid_processing),
         MSG_IP_UID_REVOKED (R.string.msg_ip_uid_revoked),
-        MSG_IP_UID_SELF_BAD (R.string.msg_ip_uid_self_bad),
         MSG_IP_UID_SELF_GOOD (R.string.msg_ip_uid_self_good),
-        MSG_IP_UID_SELF_IGNORING_OLD (R.string.msg_ip_uid_self_ignoring_old),
-        MSG_IP_UID_SELF_NEWER (R.string.msg_ip_uid_self_newer),
 
         // import secret
         MSG_IS(R.string.msg_is),
