@@ -157,8 +157,27 @@ public class OperationResultParcel implements Parcelable {
         MSG_IS_SUCCESS (R.string.msg_is_success),
 
         // keyring canonicalization
-        MSG_KC(R.string.msg_kc),
-        MSG_KC_SUCCESS(R.string.msg_kc_success),
+        MSG_KC (R.string.msg_kc),
+        MSG_KC_CERT_BAD_ERR (R.string.msg_kc_cert_bad_err),
+        MSG_KC_CERT_BAD_KEYID (R.string.msg_kc_cert_bad_keyid),
+        MSG_KC_CERT_BAD (R.string.msg_kc_cert_bad),
+        MSG_KC_CERT_BAD_TYPE (R.string.msg_kc_cert_bad_type),
+        MSG_KC_MASTER (R.string.msg_kc_master),
+        MSG_KC_MASTER_SUCCESS (R.string.msg_kc_master_success),
+        MSG_KC_REVOKE_BAD_ERR (R.string.msg_kc_revoke_bad_err),
+        MSG_KC_REVOKE_BAD (R.string.msg_kc_revoke_bad),
+        MSG_KC_REVOKE_DUP (R.string.msg_kc_revoke_dup),
+        MSG_KC_SUBKEY_NO_CERT (R.string.msg_kc_subkey_no_cert),
+        MSG_KC_SUBKEY (R.string.msg_kc_subkey),
+        MSG_KC_SUBKEY_SUCCESS (R.string.msg_kc_subkey_success),
+        MSG_KC_SUCCESS_REMOVED (R.string.msg_kc_success_removed),
+        MSG_KC_SUCCESS (R.string.msg_kc_success),
+        MSG_KC_UID_BAD_ERR (R.string.msg_kc_uid_bad_err),
+        MSG_KC_UID_BAD (R.string.msg_kc_uid_bad),
+        MSG_KC_UID_DUP (R.string.msg_kc_uid_dup),
+        MSG_KC_UID_REVOKE_DUP (R.string.msg_kc_uid_revoke_dup),
+        MSG_KC_UID_REVOKE_OLD (R.string.msg_kc_uid_revoke_old),
+        MSG_KC_UID_UNKNOWN_CERT (R.string.msg_kc_uid_unknown_cert),
         ;
 
         private final int mMsgId;

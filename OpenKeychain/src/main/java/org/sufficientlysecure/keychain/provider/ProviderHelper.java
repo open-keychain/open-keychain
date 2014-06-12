@@ -283,7 +283,7 @@ public class ProviderHelper {
         mIndent += 1;
 
         // Canonicalize this key, to assert a number of assumptions made about it.
-        keyRing = keyRing.canonicalize(mLog);
+        keyRing = keyRing.canonicalize(mLog, mIndent);
 
         UncachedPublicKey masterKey = keyRing.getPublicKey();
 

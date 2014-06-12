@@ -559,7 +559,26 @@
 
     <!-- Keyring Canonicalization log entries -->
     <string name="msg_kc">Canonicalizing keyring %s</string>
-    <string name="msg_kc_success">Successfully canonicalized keyring</string>
+    <string name="msg_kc_cert_bad">Certificate verification failed!</string>
+    <string name="msg_kc_cert_bad_err">Certificate verification failed with an error!</string>
+    <string name="msg_kc_cert_bad_keyid">Certificate issuer id mismatch</string>
+    <string name="msg_kc_cert_bad_type">Unknown certificate type: %s</string>
+    <string name="msg_kc_master">Processing master key</string>
+    <string name="msg_kc_master_success">OK</string>
+    <string name="msg_kc_revoke_bad_err">Removing bad keyring revocation key</string>
+    <string name="msg_kc_revoke_bad">Removing bad keyring revocation key</string>
+    <string name="msg_kc_revoke_dup">Removing redundant keyring revocation key</string>
+    <string name="msg_kc_subkey_no_cert">No valid certificate found for %s, removing from ring!</string>
+    <string name="msg_kc_subkey">Processing subkey %s</string>
+    <string name="msg_kc_subkey_success">OK</string>
+    <string name="msg_kc_success">Keyring canonicalization successful</string>
+    <string name="msg_kc_success_removed">Keyring canonicalization successful, removed %s certificates</string>
+    <string name="msg_kc_uid_bad_err">Removing bad self certificate for user id %s</string>
+    <string name="msg_kc_uid_bad">Removing bad self certificate for user id "%s"</string>
+    <string name="msg_kc_uid_dup">Removing outdated self certificate for user id "%s"</string>
+    <string name="msg_kc_uid_revoke_dup">Removing redundant revocation certificate for user id "%s"</string>
+    <string name="msg_kc_uid_revoke_old">Removing outdated revocation certificate for user id "%s"</string>
+    <string name="msg_kc_uid_unknown_cert">Removing unknown certificate of type 0x%1$s from user id "%2$s"</string>
 
     <!-- unsorted -->
     <string name="section_certifier_id">Certifier</string>

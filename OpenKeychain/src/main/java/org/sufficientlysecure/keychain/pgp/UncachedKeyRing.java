@@ -5,16 +5,17 @@ import org.spongycastle.bcpg.S2K;
 import org.spongycastle.openpgp.PGPKeyRing;
 import org.spongycastle.openpgp.PGPObjectFactory;
 import org.spongycastle.openpgp.PGPPublicKey;
+import org.spongycastle.openpgp.PGPPublicKeyRing;
 import org.spongycastle.openpgp.PGPSecretKey;
 import org.spongycastle.openpgp.PGPSecretKeyRing;
 import org.spongycastle.openpgp.PGPSignature;
 import org.spongycastle.openpgp.PGPUtil;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
-import org.sufficientlysecure.keychain.service.OperationResultParcel;
 import org.sufficientlysecure.keychain.service.OperationResultParcel.OperationLog;
 import org.sufficientlysecure.keychain.service.OperationResultParcel.LogLevel;
 import org.sufficientlysecure.keychain.service.OperationResultParcel.LogType;
+import org.sufficientlysecure.keychain.service.OperationResults.SaveKeyringResult;
 import org.sufficientlysecure.keychain.util.IterableIterator;
 import org.sufficientlysecure.keychain.util.Log;
 
@@ -179,51 +180,300 @@ public class UncachedKeyRing {
      *
      * More specifically:
      *  - Remove all non-verifying self-certificates
-     *  - Remove all expired self-certificates
      *  - Remove all certificates flagged as "local"
      *  - Remove all certificates which are superseded by a newer one on the same target
      *
-     * After this cleaning, a number of checks are done:
+     * After this cleaning, a number of checks are done: TODO implement
      *  - See if each subkey retains a valid self certificate
      *  - See if each user id retains a valid self certificate
      *
      * This operation writes an OperationLog which can be used as part of a OperationResultParcel.
      *
-     * If any of these checks fail, the operation as a whole fails and the keyring is declared
-     * unusable. (TODO: allow forcing of import?)
-     *
-     * TODO implement
-     *
      * @return A canonicalized key
      *
      */
-    public UncachedKeyRing canonicalize(OperationLog log) {
-        if(isSecret()) {
+    public UncachedKeyRing canonicalize(OperationLog log, int indent) {
+        if (isSecret()) {
             throw new RuntimeException("Tried to canonicalize non-secret keyring. " +
                     "This is a programming error and should never happen!");
         }
 
-        // dummy
         log.add(LogLevel.START, LogType.MSG_KC,
-                new String[] { PgpKeyHelper.convertKeyIdToHex(getMasterKeyId()) }, 0);
+                new String[]{PgpKeyHelper.convertKeyIdToHex(getMasterKeyId())}, indent);
+        indent += 1;
 
-        /*
-        // Remove all non-verifying self certificates
-        for (PGPPublicKey key : new IterableIterator<PGPPublicKey>(mRing.getPublicKeys())) {
+        int removedCerts = 0;
 
-            for (PGPSignature sig : new IterableIterator<PGPSignature>(
-                    key.getSignaturesOfType(isMasterKey() ? PGPSignature.KEY_REVOCATION
-                            : PGPSignature.SUBKEY_REVOCATION))) {
-                return true;
+        PGPPublicKeyRing ring = (PGPPublicKeyRing) mRing;
+        PGPPublicKey masterKey = mRing.getPublicKey();
+        final long masterKeyId = masterKey.getKeyID();
+
+        {
+            log.add(LogLevel.DEBUG, LogType.MSG_KC_MASTER,
+                    new String[]{PgpKeyHelper.convertKeyIdToHex(masterKey.getKeyID())}, indent);
+            indent += 1;
+
+            PGPPublicKey modified = masterKey;
+            PGPSignature revocation = null;
+            for (PGPSignature zert : new IterableIterator<PGPSignature>(masterKey.getSignatures())) {
+                int type = zert.getSignatureType();
+                // Disregard certifications on user ids, we will deal with those later
+                if (type == PGPSignature.NO_CERTIFICATION
+                        || type == PGPSignature.DEFAULT_CERTIFICATION
+                        || type == PGPSignature.CASUAL_CERTIFICATION
+                        || type == PGPSignature.POSITIVE_CERTIFICATION
+                        || type == PGPSignature.CERTIFICATION_REVOCATION) {
+                    continue;
+                }
+                WrappedSignature cert = new WrappedSignature(zert);
+
+                if (type != PGPSignature.KEY_REVOCATION) {
+                    // Unknown type, just remove
+                    log.add(LogLevel.WARN, LogType.MSG_KC_CERT_BAD_TYPE, new String[]{
+                            "0x" + Integer.toString(type, 16)
+                    }, indent);
+                    modified = PGPPublicKey.removeCertification(modified, zert);
+                    removedCerts += 1;
+                    continue;
+                }
+
+                try {
+                    cert.init(masterKey);
+                    if (!cert.verifySignature(masterKey)) {
+                        log.add(LogLevel.WARN, LogType.MSG_KC_REVOKE_BAD, null, indent);
+                        modified = PGPPublicKey.removeCertification(modified, zert);
+                        removedCerts += 1;
+                        continue;
+                    }
+                } catch (PgpGeneralException e) {
+                    log.add(LogLevel.WARN, LogType.MSG_KC_REVOKE_BAD_ERR, null, indent);
+                    modified = PGPPublicKey.removeCertification(modified, zert);
+                    removedCerts += 1;
+                    continue;
+                }
+
+                // first revocation? fine then.
+                if (revocation == null) {
+                    revocation = zert;
+                    // more revocations? at least one is superfluous, then.
+                } else if (revocation.getCreationTime().before(zert.getCreationTime())) {
+                    modified = PGPPublicKey.removeCertification(modified, revocation);
+                    removedCerts += 1;
+                    log.add(LogLevel.INFO, LogType.MSG_KC_REVOKE_DUP, null, indent);
+                    revocation = zert;
+                } else {
+                    modified = PGPPublicKey.removeCertification(modified, zert);
+                    removedCerts += 1;
+                    log.add(LogLevel.INFO, LogType.MSG_KC_REVOKE_DUP, null, indent);
+                }
             }
 
-        }*/
+            for (String userId : new IterableIterator<String>(masterKey.getUserIDs())) {
+                PGPSignature selfCert = null;
+                revocation = null;
 
-        log.add(LogLevel.OK, LogType.MSG_KC_SUCCESS, null, 0);
+                // look through signatures for this specific key
+                for (PGPSignature zert : new IterableIterator<PGPSignature>(
+                        masterKey.getSignaturesForID(userId))) {
+                    WrappedSignature cert = new WrappedSignature(zert);
+                    long certId = cert.getKeyId();
 
-        return this;
+                    // If this is a foreign signature, never mind
+                    if (certId != masterKeyId) {
+                        continue;
+                    }
 
+                    // Otherwise, first make sure it checks out
+                    try {
+                        cert.init(masterKey);
+                        if (!cert.verifySignature(masterKey, userId)) {
+                            log.add(LogLevel.WARN, LogType.MSG_KC_UID_BAD,
+                                    new String[] { userId }, indent);
+                            modified = PGPPublicKey.removeCertification(modified, userId, zert);
+                            removedCerts += 1;
+                            continue;
+                        }
+                    } catch (PgpGeneralException e) {
+                        log.add(LogLevel.WARN, LogType.MSG_KC_UID_BAD_ERR,
+                                new String[] { userId }, indent);
+                        modified = PGPPublicKey.removeCertification(modified, userId, zert);
+                        removedCerts += 1;
+                        continue;
+                    }
 
+                    switch (zert.getSignatureType()) {
+                        case PGPSignature.DEFAULT_CERTIFICATION:
+                        case PGPSignature.NO_CERTIFICATION:
+                        case PGPSignature.CASUAL_CERTIFICATION:
+                        case PGPSignature.POSITIVE_CERTIFICATION:
+                            if (selfCert == null) {
+                                selfCert = zert;
+                            } else if (selfCert.getCreationTime().before(cert.getCreationTime())) {
+                                modified = PGPPublicKey.removeCertification(modified, userId, selfCert);
+                                removedCerts += 1;
+                                log.add(LogLevel.INFO, LogType.MSG_KC_UID_DUP,
+                                        new String[] { userId }, indent);
+                                selfCert = zert;
+                            } else {
+                                modified = PGPPublicKey.removeCertification(modified, userId, zert);
+                                removedCerts += 1;
+                                log.add(LogLevel.INFO, LogType.MSG_KC_UID_DUP,
+                                        new String[] { userId }, indent);
+                            }
+                            // If there is a revocation certificate, and it's older than this, drop it
+                            if (revocation != null
+                                    && revocation.getCreationTime().before(selfCert.getCreationTime())) {
+                                modified = PGPPublicKey.removeCertification(modified, userId, revocation);
+                                revocation = null;
+                                removedCerts += 1;
+                                log.add(LogLevel.INFO, LogType.MSG_KC_UID_REVOKE_OLD,
+                                        new String[] { userId }, indent);
+                            }
+                            break;
+
+                        case PGPSignature.CERTIFICATION_REVOCATION:
+                            // If this is older than the (latest) self cert, drop it
+                            if (selfCert != null && selfCert.getCreationTime().after(zert.getCreationTime())) {
+                                modified = PGPPublicKey.removeCertification(modified, userId, zert);
+                                removedCerts += 1;
+                                log.add(LogLevel.INFO, LogType.MSG_KC_UID_REVOKE_OLD,
+                                        new String[] { userId }, indent);
+                                continue;
+                            }
+                            // first revocation? remember it.
+                            if (revocation == null) {
+                                revocation = zert;
+                                // more revocations? at least one is superfluous, then.
+                            } else if (revocation.getCreationTime().before(cert.getCreationTime())) {
+                                modified = PGPPublicKey.removeCertification(modified, userId, revocation);
+                                removedCerts += 1;
+                                log.add(LogLevel.INFO, LogType.MSG_KC_UID_REVOKE_DUP,
+                                        new String[] { userId }, indent);
+                                revocation = zert;
+                            } else {
+                                modified = PGPPublicKey.removeCertification(modified, userId, zert);
+                                removedCerts += 1;
+                                log.add(LogLevel.INFO, LogType.MSG_KC_UID_REVOKE_DUP,
+                                        new String[] { userId }, indent);
+                            }
+                            break;
+
+                        default:
+                            log.add(LogLevel.WARN, LogType.MSG_KC_UID_UNKNOWN_CERT,
+                                    new String[] {
+                                            "0x" + Integer.toString(zert.getSignatureType(), 16),
+                                            userId
+                                    }, indent);
+                            modified = PGPPublicKey.removeCertification(modified, userId, zert);
+                            removedCerts += 1;
+                    }
+
+                }
+            }
+
+            // Replace modified key in the keyring
+            ring = PGPPublicKeyRing.insertPublicKey(ring, modified);
+
+            log.add(LogLevel.DEBUG, LogType.MSG_KC_MASTER_SUCCESS, null, indent);
+            indent -= 1;
+
+        }
+
+        // Process all keys
+        // NOTE we rely here on the special property that this iterator is independent from the keyring!
+        for (PGPPublicKey key : new IterableIterator<PGPPublicKey>(ring.getPublicKeys())) {
+            // Only care about the master key here!
+            if (key.isMasterKey()) {
+                continue;
+            }
+            log.add(LogLevel.DEBUG, LogType.MSG_KC_SUBKEY,
+                    new String[]{PgpKeyHelper.convertKeyIdToHex(key.getKeyID())}, indent);
+            indent += 1;
+            // A subkey needs exactly one subkey binding certificate, and optionally one revocation
+            // certificate.
+            PGPPublicKey modified = key;
+            PGPSignature cert = null, revocation = null;
+            for (PGPSignature zig : new IterableIterator<PGPSignature>(key.getSignatures())) {
+                // remove from keyring (for now)
+                modified = PGPPublicKey.removeCertification(modified, zig);
+                WrappedSignature sig = new WrappedSignature(zig);
+                int type = sig.getSignatureType();
+
+                // filter out bad key types...
+                if (sig.getKeyId() != masterKey.getKeyID()) {
+                    log.add(LogLevel.WARN, LogType.MSG_KC_CERT_BAD_KEYID, null, indent);
+                    continue;
+                }
+                if (type != PGPSignature.SUBKEY_BINDING && type != PGPSignature.SUBKEY_REVOCATION) {
+                    log.add(LogLevel.WARN, LogType.MSG_KC_CERT_BAD_TYPE, new String[]{
+                            "0x" + Integer.toString(type, 16)
+                    }, indent);
+                    continue;
+                }
+
+                // make sure the certificate checks out
+                try {
+                    sig.init(masterKey);
+                    if (!sig.verifySignature(masterKey, key)) {
+                        log.add(LogLevel.WARN, LogType.MSG_KC_CERT_BAD, null, indent);
+                        continue;
+                    }
+                } catch (PgpGeneralException e) {
+                    log.add(LogLevel.WARN, LogType.MSG_KC_CERT_BAD_ERR, null, indent);
+                    continue;
+                }
+
+                if (type == PGPSignature.SUBKEY_BINDING) {
+                    // TODO verify primary key binding signature for signing keys!
+                    // if we already have a cert, and this one is not newer: skip it
+                    if (cert != null && cert.getCreationTime().before(sig.getCreationTime())) {
+                        continue;
+                    }
+                    cert = zig;
+                    // if this is newer than a possibly existing revocation, drop that one
+                    if (revocation != null && cert.getCreationTime().after(revocation.getCreationTime())) {
+                        revocation = null;
+                    }
+                    // it must be a revocation, then (we made sure above)
+                } else {
+                    // if there is no binding (yet), or the revocation is newer than the binding: keep it
+                    if (cert == null || cert.getCreationTime().before(sig.getCreationTime())) {
+                        revocation = zig;
+                    }
+                }
+            }
+
+            // it is not properly bound? error!
+            if (cert == null) {
+                ring = PGPPublicKeyRing.removePublicKey(ring, modified);
+
+                log.add(LogLevel.ERROR, LogType.MSG_KC_SUBKEY_NO_CERT,
+                        new String[]{PgpKeyHelper.convertKeyIdToHex(key.getKeyID())}, indent);
+                indent -= 1;
+                continue;
+            }
+
+            // re-add certification
+            modified = PGPPublicKey.addCertification(modified, cert);
+            // add revocation, if any
+            if (revocation != null) {
+                modified = PGPPublicKey.addCertification(modified, revocation);
+            }
+            // replace pubkey in keyring
+            ring = PGPPublicKeyRing.insertPublicKey(ring, modified);
+
+            log.add(LogLevel.DEBUG, LogType.MSG_KC_SUBKEY_SUCCESS, null, indent);
+            indent -= 1;
+        }
+
+        if (removedCerts > 0) {
+            log.add(LogLevel.OK, LogType.MSG_KC_SUCCESS_REMOVED,
+                    new String[] { Integer.toString(removedCerts) }, indent);
+        } else {
+            log.add(LogLevel.OK, LogType.MSG_KC_SUCCESS, null, indent);
+        }
+
+        return new UncachedKeyRing(ring);
     }
 
 
