@@ -103,6 +103,7 @@
     <string name="menu_select_all">Select all</string>
     <string name="menu_add_keys">Add keys</string>
     <string name="menu_export_all_keys">Export all keys</string>
+    <string name="menu_advanced">Show advanced info</string>
 
     <!-- label -->
     <string name="label_sign">Sign</string>
@@ -609,5 +610,7 @@
     <string name="can_sign_not">cannot sign</string>
     <string name="error_encoding">Encoding error</string>
     <string name="error_no_encrypt_subkey">No encryption subkey available!</string>
+    <string name="info_no_manual_account_creation">Do not create OpenKeychain-Accounts manually.\nFor more information, see Help.</string>
+    <string name="contact_show_key">Show key (%s)</string>
 
 </resources>

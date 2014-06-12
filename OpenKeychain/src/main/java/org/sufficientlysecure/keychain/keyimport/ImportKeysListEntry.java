@@ -32,18 +32,20 @@ import java.util.Date;
 public class ImportKeysListEntry implements Serializable, Parcelable {
     private static final long serialVersionUID = -7797972103284992662L;
 
-    public ArrayList<String> userIds;
-    public long keyId;
-    public String keyIdHex;
-    public boolean revoked;
-    public Date date; // TODO: not displayed
-    public String fingerprintHex;
-    public int bitStrength;
-    public String algorithm;
-    public boolean secretKey;
-    public String mPrimaryUserId;
+    private ArrayList<String> mUserIds;
+    private long mKeyId;
+    private String mKeyIdHex;
+    private boolean mRevoked;
+    private boolean mExpired;
+    private Date mDate; // TODO: not displayed
+    private String mFingerprintHex;
+    private int mBitStrength;
+    private String mAlgorithm;
+    private boolean mSecretKey;
+    private String mPrimaryUserId;
     private String mExtraData;
     private String mQuery;
+    private String mOrigin;
 
     private boolean mSelected;
 
@@ -54,35 +56,39 @@ public class ImportKeysListEntry implements Serializable, Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(mPrimaryUserId);
-        dest.writeStringList(userIds);
-        dest.writeLong(keyId);
-        dest.writeByte((byte) (revoked ? 1 : 0));
-        dest.writeSerializable(date);
-        dest.writeString(fingerprintHex);
-        dest.writeString(keyIdHex);
-        dest.writeInt(bitStrength);
-        dest.writeString(algorithm);
-        dest.writeByte((byte) (secretKey ? 1 : 0));
+        dest.writeStringList(mUserIds);
+        dest.writeLong(mKeyId);
+        dest.writeByte((byte) (mRevoked ? 1 : 0));
+        dest.writeByte((byte) (mExpired ? 1 : 0));
+        dest.writeSerializable(mDate);
+        dest.writeString(mFingerprintHex);
+        dest.writeString(mKeyIdHex);
+        dest.writeInt(mBitStrength);
+        dest.writeString(mAlgorithm);
+        dest.writeByte((byte) (mSecretKey ? 1 : 0));
         dest.writeByte((byte) (mSelected ? 1 : 0));
         dest.writeString(mExtraData);
+        dest.writeString(mOrigin);
     }
 
     public static final Creator<ImportKeysListEntry> CREATOR = new Creator<ImportKeysListEntry>() {
         public ImportKeysListEntry createFromParcel(final Parcel source) {
             ImportKeysListEntry vr = new ImportKeysListEntry();
             vr.mPrimaryUserId = source.readString();
-            vr.userIds = new ArrayList<String>();
-            source.readStringList(vr.userIds);
-            vr.keyId = source.readLong();
-            vr.revoked = source.readByte() == 1;
-            vr.date = (Date) source.readSerializable();
-            vr.fingerprintHex = source.readString();
-            vr.keyIdHex = source.readString();
-            vr.bitStrength = source.readInt();
-            vr.algorithm = source.readString();
-            vr.secretKey = source.readByte() == 1;
+            vr.mUserIds = new ArrayList<String>();
+            source.readStringList(vr.mUserIds);
+            vr.mKeyId = source.readLong();
+            vr.mRevoked = source.readByte() == 1;
+            vr.mExpired = source.readByte() == 1;
+            vr.mDate = (Date) source.readSerializable();
+            vr.mFingerprintHex = source.readString();
+            vr.mKeyIdHex = source.readString();
+            vr.mBitStrength = source.readInt();
+            vr.mAlgorithm = source.readString();
+            vr.mSecretKey = source.readByte() == 1;
             vr.mSelected = source.readByte() == 1;
             vr.mExtraData = source.readString();
+            vr.mOrigin = source.readString();
 
             return vr;
         }
@@ -93,7 +99,7 @@ public class ImportKeysListEntry implements Serializable, Parcelable {
     };
 
     public String getKeyIdHex() {
-        return keyIdHex;
+        return mKeyIdHex;
     }
 
     public boolean isSelected() {
@@ -104,72 +110,80 @@ public class ImportKeysListEntry implements Serializable, Parcelable {
         this.mSelected = selected;
     }
 
+    public boolean isExpired() {
+        return mExpired;
+    }
+
+    public void setExpired(boolean expired) {
+        this.mExpired = expired;
+    }
+
     public long getKeyId() {
-        return keyId;
+        return mKeyId;
     }
 
     public void setKeyId(long keyId) {
-        this.keyId = keyId;
+        this.mKeyId = keyId;
     }
 
     public void setKeyIdHex(String keyIdHex) {
-        this.keyIdHex = keyIdHex;
+        this.mKeyIdHex = keyIdHex;
     }
 
     public boolean isRevoked() {
-        return revoked;
+        return mRevoked;
     }
 
     public void setRevoked(boolean revoked) {
-        this.revoked = revoked;
+        this.mRevoked = revoked;
     }
 
     public Date getDate() {
-        return date;
+        return mDate;
     }
 
     public void setDate(Date date) {
-        this.date = date;
+        this.mDate = date;
     }
 
     public String getFingerprintHex() {
-        return fingerprintHex;
+        return mFingerprintHex;
     }
 
     public void setFingerprintHex(String fingerprintHex) {
-        this.fingerprintHex = fingerprintHex;
+        this.mFingerprintHex = fingerprintHex;
     }
 
     public int getBitStrength() {
-        return bitStrength;
+        return mBitStrength;
     }
 
     public void setBitStrength(int bitStrength) {
-        this.bitStrength = bitStrength;
+        this.mBitStrength = bitStrength;
     }
 
     public String getAlgorithm() {
-        return algorithm;
+        return mAlgorithm;
     }
 
     public void setAlgorithm(String algorithm) {
-        this.algorithm = algorithm;
+        this.mAlgorithm = algorithm;
     }
 
     public boolean isSecretKey() {
-        return secretKey;
+        return mSecretKey;
     }
 
     public void setSecretKey(boolean secretKey) {
-        this.secretKey = secretKey;
+        this.mSecretKey = secretKey;
     }
 
     public ArrayList<String> getUserIds() {
-        return userIds;
+        return mUserIds;
     }
 
     public void setUserIds(ArrayList<String> userIds) {
-        this.userIds = userIds;
+        this.mUserIds = userIds;
     }
 
     public String getPrimaryUserId() {
@@ -196,15 +210,23 @@ public class ImportKeysListEntry implements Serializable, Parcelable {
         mQuery = query;
     }
 
+    public String getOrigin() {
+        return mOrigin;
+    }
+
+    public void setOrigin(String origin) {
+        mOrigin = origin;
+    }
+
     /**
      * Constructor for later querying from keyserver
      */
     public ImportKeysListEntry() {
         // keys from keyserver are always public keys; from keybase too
-        secretKey = false;
+        mSecretKey = false;
         // do not select by default
         mSelected = false;
-        userIds = new ArrayList<String>();
+        mUserIds = new ArrayList<String>();
     }
 
     /**
@@ -215,24 +237,24 @@ public class ImportKeysListEntry implements Serializable, Parcelable {
         // selected is default
         this.mSelected = true;
 
-        secretKey = ring.isSecret();
+        mSecretKey = ring.isSecret();
         UncachedPublicKey key = ring.getPublicKey();
 
         mPrimaryUserId = key.getPrimaryUserId();
-        userIds = key.getUnorderedUserIds();
+        mUserIds = key.getUnorderedUserIds();
 
         // if there was no user id flagged as primary, use the first one
         if (mPrimaryUserId == null) {
-            mPrimaryUserId = userIds.get(0);
+            mPrimaryUserId = mUserIds.get(0);
         }
 
-        this.keyId = key.getKeyId();
-        this.keyIdHex = PgpKeyHelper.convertKeyIdToHex(keyId);
+        this.mKeyId = key.getKeyId();
+        this.mKeyIdHex = PgpKeyHelper.convertKeyIdToHex(mKeyId);
 
-        this.revoked = key.isRevoked();
-        this.fingerprintHex = PgpKeyHelper.convertFingerprintToHex(key.getFingerprint());
-        this.bitStrength = key.getBitStrength();
+        this.mRevoked = key.isRevoked();
+        this.mFingerprintHex = PgpKeyHelper.convertFingerprintToHex(key.getFingerprint());
+        this.mBitStrength = key.getBitStrength();
         final int algorithm = key.getAlgorithm();
-        this.algorithm = PgpKeyHelper.getAlgorithmInfo(context, algorithm);
+        this.mAlgorithm = PgpKeyHelper.getAlgorithmInfo(context, algorithm);
     }
 }

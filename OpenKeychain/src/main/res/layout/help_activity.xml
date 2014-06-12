@@ -4,7 +4,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical" >
 
-    <org.sufficientlysecure.keychain.util.SlidingTabLayout
+    <org.sufficientlysecure.keychain.ui.widget.SlidingTabLayout
         android:id="@+id/sliding_tab_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />

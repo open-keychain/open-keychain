@@ -32,6 +32,7 @@ import org.sufficientlysecure.keychain.helper.FileHelper;
 import org.sufficientlysecure.keychain.helper.OtherHelper;
 import org.sufficientlysecure.keychain.helper.Preferences;
 import org.sufficientlysecure.keychain.keyimport.HkpKeyserver;
+import org.sufficientlysecure.keychain.keyimport.Keyserver;
 import org.sufficientlysecure.keychain.keyimport.ImportKeysListEntry;
 import org.sufficientlysecure.keychain.keyimport.KeybaseKeyserver;
 import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
@@ -734,49 +735,30 @@ public class KeychainIntentService extends IntentService
             } catch (Exception e) {
                 sendErrorToHandler(e);
             }
-        } else if (ACTION_IMPORT_KEYBASE_KEYS.equals(action)) {
-            ArrayList<ImportKeysListEntry> entries = data.getParcelableArrayList(DOWNLOAD_KEY_LIST);
-
-            try {
-                KeybaseKeyserver server = new KeybaseKeyserver();
-                ArrayList<ParcelableKeyRing> keyRings = new ArrayList<ParcelableKeyRing>(entries.size());
-                for (ImportKeysListEntry entry : entries) {
-                    // the keybase handle is in userId(1)
-                    String keybaseId = entry.getExtraData();
-                    byte[] downloadedKeyBytes = server.get(keybaseId).getBytes();
-
-                    // save key bytes in entry object for doing the
-                    // actual import afterwards
-                    keyRings.add(new ParcelableKeyRing(downloadedKeyBytes));
-                }
-
-                Intent importIntent = new Intent(this, KeychainIntentService.class);
-                importIntent.setAction(ACTION_IMPORT_KEYRING);
-                Bundle importData = new Bundle();
-                importData.putParcelableArrayList(IMPORT_KEY_LIST, keyRings);
-                importIntent.putExtra(EXTRA_DATA, importData);
-                importIntent.putExtra(EXTRA_MESSENGER, mMessenger);
-
-                // now import it with this service
-                onHandleIntent(importIntent);
-
-                // result is handled in ACTION_IMPORT_KEYRING
-            } catch (Exception e) {
-                sendErrorToHandler(e);
-            }
-        } else if (ACTION_DOWNLOAD_AND_IMPORT_KEYS.equals(action)) {
+        } else if (ACTION_DOWNLOAD_AND_IMPORT_KEYS.equals(action) || ACTION_IMPORT_KEYBASE_KEYS.equals(action)) {
             try {
                 ArrayList<ImportKeysListEntry> entries = data.getParcelableArrayList(DOWNLOAD_KEY_LIST);
 
                 // this downloads the keys and places them into the ImportKeysListEntry entries
                 String keyServer = data.getString(DOWNLOAD_KEY_SERVER);
-                HkpKeyserver server = new HkpKeyserver(keyServer);
 
                 ArrayList<ParcelableKeyRing> keyRings = new ArrayList<ParcelableKeyRing>(entries.size());
                 for (ImportKeysListEntry entry : entries) {
+
+                    Keyserver server;
+                    if (entry.getOrigin() == null) {
+                        server = new HkpKeyserver(keyServer);
+                    } else if (KeybaseKeyserver.ORIGIN.equals(entry.getOrigin())) {
+                        server = new KeybaseKeyserver();
+                    } else {
+                        server = new HkpKeyserver(entry.getOrigin());
+                    }
+
                     // if available use complete fingerprint for get request
                     byte[] downloadedKeyBytes;
-                    if (entry.getFingerprintHex() != null) {
+                    if (KeybaseKeyserver.ORIGIN.equals(entry.getOrigin())) {
+                        downloadedKeyBytes = server.get(entry.getExtraData()).getBytes();
+                    } else if (entry.getFingerprintHex() != null) {
                         downloadedKeyBytes = server.get("0x" + entry.getFingerprintHex()).getBytes();
                     } else {
                         downloadedKeyBytes = server.get(entry.getKeyIdHex()).getBytes();
