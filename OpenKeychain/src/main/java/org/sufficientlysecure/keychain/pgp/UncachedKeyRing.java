@@ -3,6 +3,8 @@ package org.sufficientlysecure.keychain.pgp;
 import org.spongycastle.bcpg.ArmoredOutputStream;
 import org.spongycastle.bcpg.S2K;
 import org.spongycastle.bcpg.SignatureSubpacketTags;
+import org.spongycastle.bcpg.sig.KeyFlags;
+import org.spongycastle.openpgp.PGPKeyFlags;
 import org.spongycastle.openpgp.PGPKeyRing;
 import org.spongycastle.openpgp.PGPObjectFactory;
 import org.spongycastle.openpgp.PGPPublicKey;
@@ -10,6 +12,7 @@ import org.spongycastle.openpgp.PGPPublicKeyRing;
 import org.spongycastle.openpgp.PGPSecretKey;
 import org.spongycastle.openpgp.PGPSecretKeyRing;
 import org.spongycastle.openpgp.PGPSignature;
+import org.spongycastle.openpgp.PGPSignatureList;
 import org.spongycastle.openpgp.PGPUtil;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
@@ -298,7 +301,6 @@ public class UncachedKeyRing {
                     WrappedSignature cert = new WrappedSignature(zert);
                     long certId = cert.getKeyId();
 
-
                     int type = zert.getSignatureType();
                     if (type != PGPSignature.DEFAULT_CERTIFICATION
                             && type != PGPSignature.NO_CERTIFICATION
@@ -435,9 +437,12 @@ public class UncachedKeyRing {
             // certificate.
             PGPPublicKey modified = key;
             PGPSignature selfCert = null, revocation = null;
-            for (PGPSignature zig : new IterableIterator<PGPSignature>(key.getSignatures())) {
+            uids: for (PGPSignature zig : new IterableIterator<PGPSignature>(key.getSignatures())) {
                 // remove from keyring (for now)
                 modified = PGPPublicKey.removeCertification(modified, zig);
+                // add this too, easier than adding it for every single "continue" case
+                removedCerts += 1;
+
                 WrappedSignature cert = new WrappedSignature(zig);
                 int type = cert.getSignatureType();
 
@@ -467,7 +472,6 @@ public class UncachedKeyRing {
                 }
 
                 if (type == PGPSignature.SUBKEY_BINDING) {
-                    // TODO verify primary key binding signature for signing keys!
 
                     // make sure the certificate checks out
                     try {
@@ -481,10 +485,42 @@ public class UncachedKeyRing {
                         continue;
                     }
 
+                    if (zig.getHashedSubPackets().hasSubpacket(SignatureSubpacketTags.KEY_FLAGS)) {
+                        int flags = ((KeyFlags) zig.getHashedSubPackets()
+                                .getSubpacket(SignatureSubpacketTags.KEY_FLAGS)).getFlags();
+                        // If this subkey is allowed to sign data,
+                        if ((flags & PGPKeyFlags.CAN_SIGN) == PGPKeyFlags.CAN_SIGN) {
+                            try {
+                                PGPSignatureList list = zig.getUnhashedSubPackets().getEmbeddedSignatures();
+                                boolean ok = false;
+                                for (int i = 0; i < list.size(); i++) {
+                                    WrappedSignature subsig = new WrappedSignature(list.get(i));
+                                    if (subsig.getSignatureType() == PGPSignature.PRIMARYKEY_BINDING) {
+                                        subsig.init(key);
+                                        if (subsig.verifySignature(masterKey, key)) {
+                                            ok = true;
+                                        } else {
+                                            log.add(LogLevel.WARN, LogType.MSG_KC_SUB_PRIMARY_BAD, null, indent);
+                                            continue uids;
+                                        }
+                                    }
+                                }
+                                if (!ok) {
+                                    log.add(LogLevel.WARN, LogType.MSG_KC_SUB_PRIMARY_NONE, null, indent);
+                                    continue;
+                                }
+                            } catch (Exception e) {
+                                log.add(LogLevel.WARN, LogType.MSG_KC_SUB_PRIMARY_BAD_ERR, null, indent);
+                                continue;
+                            }
+                        }
+                    }
+
                     // if we already have a cert, and this one is not newer: skip it
                     if (selfCert != null && selfCert.getCreationTime().before(cert.getCreationTime())) {
                         continue;
                     }
+
                     selfCert = zig;
                     // if this is newer than a possibly existing revocation, drop that one
                     if (revocation != null && selfCert.getCreationTime().after(revocation.getCreationTime())) {
@@ -525,9 +561,11 @@ public class UncachedKeyRing {
 
             // re-add certification
             modified = PGPPublicKey.addCertification(modified, selfCert);
+            removedCerts -= 1;
             // add revocation, if any
             if (revocation != null) {
                 modified = PGPPublicKey.addCertification(modified, revocation);
+                removedCerts -= 1;
             }
             // replace pubkey in keyring
             ring = PGPPublicKeyRing.insertPublicKey(ring, modified);

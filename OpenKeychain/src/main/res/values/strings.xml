@@ -514,8 +514,8 @@
     <string name="msg_ip_fail_op_ex">Operation failed due to database error</string>
     <string name="msg_ip_fail_remote_ex">Operation failed due to internal error</string>
     <string name="msg_ip">Importing public keyring %s</string>
-    <string name="msg_ip_insert_keyring">Inserting keyring data</string>
-    <string name="msg_ip_insert_subkeys">Inserting subkeys</string>
+    <string name="msg_ip_insert_keyring">Encoding keyring data</string>
+    <string name="msg_ip_insert_subkeys">Evaluating subkeys</string>
     <string name="msg_ip_prepare">Preparing database operations</string>
     <string name="msg_ip_prepare_success">OK</string>
     <string name="msg_ip_preserving_secret">Preserving available secret key</string>
@@ -570,6 +570,9 @@
     <string name="msg_kc_sub_bad_keyid">Subkey binding issuer id mismatch</string>
     <string name="msg_kc_sub_bad_time">Removing subkey binding certificate with future timestamp</string>
     <string name="msg_kc_sub_bad_type">Unknown subkey certificate type: %s</string>
+    <string name="msg_kc_sub_primary_bad">Removing subkey binding certificate due to invalid primary binding certificate</string>
+    <string name="msg_kc_sub_primary_bad_err">Removing subkey binding certificate due to bad primary binding certificate</string>
+    <string name="msg_kc_sub_primary_none">Removing subkey binding certificate due to missing primary binding certificate</string>
     <string name="msg_kc_sub_no_cert">No valid certificate found for %s, removing from ring</string>
     <string name="msg_kc_sub_revoke_bad_err">Removing bad subkey revocation key</string>
     <string name="msg_kc_sub_revoke_bad">Removing bad subkey revocation key</string>
