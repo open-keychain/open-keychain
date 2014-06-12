@@ -25,7 +25,7 @@ import android.support.v7.app.ActionBarActivity;
 
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.ui.adapter.PagerTabStripAdapter;
-import org.sufficientlysecure.keychain.util.SlidingTabLayout;
+import org.sufficientlysecure.keychain.ui.widget.SlidingTabLayout;
 
 public class HelpActivity extends ActionBarActivity {
     public static final String EXTRA_SELECTED_TAB = "selected_tab";

@@ -252,7 +252,7 @@ public class KeyListFragment extends LoaderFragment
     static final int INDEX_HAS_ANY_SECRET = 6;
 
     static final String ORDER =
-            KeyRings.HAS_ANY_SECRET + " DESC, " + KeyRings.USER_ID + " ASC";
+            KeyRings.HAS_ANY_SECRET + " DESC, UPPER(" + KeyRings.USER_ID + ") ASC";
 
 
     @Override
@@ -592,7 +592,7 @@ public class KeyListFragment extends LoaderFragment
             String userId = mCursor.getString(KeyListFragment.INDEX_USER_ID);
             String headerText = convertView.getResources().getString(R.string.user_id_no_name);
             if (userId != null && userId.length() > 0) {
-                headerText = "" + userId.subSequence(0, 1).charAt(0);
+                headerText = "" + userId.charAt(0);
             }
             holder.mText.setText(headerText);
             holder.mCount.setVisibility(View.GONE);
@@ -621,7 +621,7 @@ public class KeyListFragment extends LoaderFragment
             // otherwise, return the first character of the name as ID
             String userId = mCursor.getString(KeyListFragment.INDEX_USER_ID);
             if (userId != null && userId.length() > 0) {
-                return userId.charAt(0);
+                return Character.toUpperCase(userId.charAt(0));
             } else {
                 return Long.MAX_VALUE;
             }

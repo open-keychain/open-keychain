@@ -1,38 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/content_frame"
-    android:layout_marginLeft="@dimen/drawer_content_padding"
-    android:layout_width="match_parent"
-    android:layout_height="fill_parent"
-    android:orientation="vertical">
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
-    <LinearLayout
-        android:id="@+id/card_container"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical" />
-
-    <FrameLayout
-        android:id="@+id/import_navigation_fragment"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical" />
-
-    <FrameLayout
-        android:id="@+id/import_keys_list_container"
+    <fragment
+        android:id="@+id/list"
+        android:name="org.sufficientlysecure.keychain.ui.LogDisplayFragment"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:orientation="vertical"
-        android:paddingTop="8dp"
-        android:paddingLeft="16dp"
-        android:paddingRight="16dp"
-        android:layout_weight="0.9" />
+        android:layout_weight="0.9"
+        android:layout_marginRight="8dp"
+        android:layout_marginLeft="8dp" />
 
     <LinearLayout
         android:id="@+id/import_footer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
+        android:paddingTop="8dp"
         android:paddingLeft="16dp"
         android:paddingRight="16dp">
 
@@ -49,13 +35,12 @@
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:text="@string/import_import"
+            android:text="Close"
             android:minHeight="?android:attr/listPreferredItemHeight"
-            android:drawableRight="@drawable/ic_action_download"
-            android:drawablePadding="8dp"
             android:gravity="center_vertical"
             android:clickable="true"
             style="@style/SelectableItem" />
 
     </LinearLayout>
+
 </LinearLayout>

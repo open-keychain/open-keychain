@@ -206,23 +206,23 @@
   <string name="ask_empty_id_ok">Ha añadido una identidad vacía, ¿está seguro de que quiere continuar?</string>
   <string name="public_key_deletetion_confirmation">¿De veras quiere borrar la clave pública \'%s\'?\n¡No puede deshacer esto!</string>
   <string name="also_export_secret_keys">¿Exportar también las claves secretas?</string>
-  <plurals name="keys_added_and_updated_1">
+  <plurals name="import_keys_added_and_updated_1">
     <item quantity="one">%d clave añadida satisfactoriamente</item>
     <item quantity="other">%d claves añadidas satisfactoriamente</item>
   </plurals>
-  <plurals name="keys_added_and_updated_2">
+  <plurals name="import_keys_added_and_updated_2">
     <item quantity="one">y actualizada %d clave.</item>
     <item quantity="other">y actualizadas %d claves.</item>
   </plurals>
-  <plurals name="keys_added">
+  <plurals name="import_keys_added">
     <item quantity="one">%d clave añadida satisfactoriamente.</item>
     <item quantity="other">%d claves añadidas satisfactoriamente.</item>
   </plurals>
-  <plurals name="keys_updated">
+  <plurals name="import_keys_updated">
     <item quantity="one">%d clave actualizada satisfactoriamente.</item>
     <item quantity="other">%d claves actualizadas satisfactoriamente.</item>
   </plurals>
-  <string name="no_keys_added_or_updated">No se han añadido o actualizado claves.</string>
+  <string name="import_error_nothing">No se han añadido o actualizado claves.</string>
   <string name="key_exported">Se ha exportado 1 clave satisfactoriamente.</string>
   <string name="keys_exported">%d claves exportadas satisfactoriamente.</string>
   <string name="no_keys_exported">No se han exportado claves.</string>

@@ -35,7 +35,7 @@
         android:visibility="gone"
         android:id="@+id/status_divider" />
 
-    <org.sufficientlysecure.keychain.util.SlidingTabLayout
+    <org.sufficientlysecure.keychain.ui.widget.SlidingTabLayout
         android:id="@+id/view_key_sliding_tab_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />

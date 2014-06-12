@@ -20,8 +20,13 @@ package org.sufficientlysecure.keychain.ui.adapter;
 import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBarActivity;
+import android.view.ViewGroup;
+
+import org.sufficientlysecure.keychain.Constants;
 
 import java.util.ArrayList;
 
@@ -49,6 +54,11 @@ public class PagerTabStripAdapter extends FragmentPagerAdapter {
     public void addTab(Class<?> clss, Bundle args, String title) {
         TabInfo info = new TabInfo(clss, args, title);
         mTabs.add(info);
+        notifyDataSetChanged();
+    }
+
+    public void removeTab(int index) {
+        mTabs.remove(index);
         notifyDataSetChanged();
     }
 

@@ -38,7 +38,10 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ArrayAdapter;
 
-import com.devspark.appmsg.AppMsg;
+import com.github.johnpersano.supertoasts.SuperCardToast;
+import com.github.johnpersano.supertoasts.SuperToast;
+import com.github.johnpersano.supertoasts.util.OnClickWrapper;
+import com.github.johnpersano.supertoasts.util.Style;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
@@ -47,7 +50,7 @@ import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
 import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
 import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
-import org.sufficientlysecure.keychain.ui.dialog.BadImportKeyDialogFragment;
+import org.sufficientlysecure.keychain.service.OperationResults.ImportResult;
 import org.sufficientlysecure.keychain.util.Log;
 
 import java.util.ArrayList;
@@ -135,6 +138,7 @@ public class ImportKeysActivity extends ActionBarActivity implements ActionBar.O
         }
 
         handleActions(savedInstanceState, getIntent());
+
     }
 
     protected void handleActions(Bundle savedInstanceState, Intent intent) {
@@ -331,8 +335,11 @@ public class ImportKeysActivity extends ActionBarActivity implements ActionBar.O
 
     public void loadFromFingerprint(Bundle savedInstanceState, String fingerprint) {
         if (fingerprint == null || fingerprint.length() < 40) {
-            AppMsg.makeText(this, R.string.import_qr_code_too_short_fingerprint,
-                    AppMsg.STYLE_ALERT).show();
+            SuperCardToast toast = SuperCardToast.create(this,
+                    getString(R.string.import_qr_code_too_short_fingerprint),
+                    SuperToast.Duration.LONG);
+            toast.setBackground(SuperToast.Background.RED);
+            toast.show();
             return;
         }
 
@@ -368,39 +375,93 @@ public class ImportKeysActivity extends ActionBarActivity implements ActionBar.O
                 if (message.arg1 == KeychainIntentServiceHandler.MESSAGE_OKAY) {
                     // get returned data bundle
                     Bundle returnData = message.getData();
+                    final ImportResult result =
+                            returnData.<ImportResult>getParcelable(KeychainIntentService.RESULT);
 
-                    int added = returnData.getInt(KeychainIntentService.RESULT_IMPORT_ADDED);
-                    int updated = returnData
-                            .getInt(KeychainIntentService.RESULT_IMPORT_UPDATED);
-                    int bad = returnData.getInt(KeychainIntentService.RESULT_IMPORT_BAD);
-                    String toastMessage;
-                    if (added > 0 && updated > 0) {
-                        String addedStr = getResources().getQuantityString(
-                                R.plurals.keys_added_and_updated_1, added, added);
-                        String updatedStr = getResources().getQuantityString(
-                                R.plurals.keys_added_and_updated_2, updated, updated);
-                        toastMessage = addedStr + updatedStr;
-                    } else if (added > 0) {
-                        toastMessage = getResources().getQuantityString(R.plurals.keys_added,
-                                added, added);
-                    } else if (updated > 0) {
-                        toastMessage = getResources().getQuantityString(R.plurals.keys_updated,
-                                updated, updated);
+                    int resultType = result.getResult();
+
+                    String str;
+                    int duration, color;
+
+                    // Not an overall failure
+                    if ((resultType & ImportResult.RESULT_ERROR) == 0) {
+                        String withWarnings;
+
+                        // Any warnings?
+                        if ((resultType & ImportResult.RESULT_WITH_WARNINGS) > 0) {
+                            duration = 0;
+                            color = Style.ORANGE;
+                            withWarnings = getResources().getString(R.string.import_with_warnings);
+                        } else {
+                            duration = SuperToast.Duration.LONG;
+                            color = Style.GREEN;
+                            withWarnings = "";
+                        }
+
+                        // New and updated keys
+                        if (result.isOkBoth()) {
+                            str = getResources().getQuantityString(
+                                    R.plurals.import_keys_added_and_updated_1, result.mNewKeys, result.mNewKeys);
+                            str += getResources().getQuantityString(
+                                    R.plurals.import_keys_added_and_updated_2, result.mUpdatedKeys, result.mUpdatedKeys, withWarnings);
+                        } else if (result.isOkUpdated()) {
+                            str = getResources().getQuantityString(
+                                    R.plurals.import_keys_updated, result.mUpdatedKeys, result.mUpdatedKeys, withWarnings);
+                        } else if (result.isOkNew()) {
+                            str = getResources().getQuantityString(
+                                    R.plurals.import_keys_added, result.mNewKeys, result.mNewKeys, withWarnings);
+                        } else {
+                            duration = 0;
+                            color = Style.RED;
+                            str = "internal error";
+                        }
+
                     } else {
-                        toastMessage = getString(R.string.no_keys_added_or_updated);
+                        duration = 0;
+                        color = Style.RED;
+                        if (result.isFailNothing()) {
+                            str = getString(R.string.import_error_nothing);
+                        } else {
+                            str = getString(R.string.import_error);
+                        }
                     }
-                    AppMsg.makeText(ImportKeysActivity.this, toastMessage, AppMsg.STYLE_INFO)
-                            .show();
+
+                    SuperCardToast toast = new SuperCardToast(ImportKeysActivity.this,
+                            SuperToast.Type.BUTTON, Style.getStyle(color, SuperToast.Animations.POPUP));
+                    toast.setText(str);
+                    toast.setDuration(duration);
+                    toast.setIndeterminate(duration == 0);
+                    toast.setSwipeToDismiss(true);
+                    toast.setButtonIcon(R.drawable.ic_action_view_as_list,
+                            getResources().getString(R.string.import_view_log));
+                    toast.setButtonTextColor(getResources().getColor(R.color.black));
+                    toast.setTextColor(getResources().getColor(R.color.black));
+                    toast.setOnClickWrapper(new OnClickWrapper("supercardtoast",
+                        new SuperToast.OnClickListener() {
+                            @Override
+                            public void onClick(View view, Parcelable token) {
+                                Intent intent = new Intent(
+                                        ImportKeysActivity.this, LogDisplayActivity.class);
+                                intent.putExtra(LogDisplayFragment.EXTRA_RESULT, result);
+                                startActivity(intent);
+                            }
+                    }));
+                    toast.show();
+
+                    /*
                     if (bad > 0) {
                         BadImportKeyDialogFragment badImportKeyDialogFragment =
                                 BadImportKeyDialogFragment.newInstance(bad);
                         badImportKeyDialogFragment.show(getSupportFragmentManager(), "badKeyDialog");
                     }
+                    */
 
+                    /*
                     if (ACTION_IMPORT_KEY_FROM_KEYSERVER_AND_RETURN.equals(getIntent().getAction())) {
                         ImportKeysActivity.this.setResult(Activity.RESULT_OK, mPendingIntentData);
                         finish();
                     }
+                    */
                 }
             }
         };
@@ -483,7 +544,11 @@ public class ImportKeysActivity extends ActionBarActivity implements ActionBar.O
             startService(intent);
 
         } else {
-            AppMsg.makeText(this, R.string.error_nothing_import, AppMsg.STYLE_ALERT).show();
+            SuperCardToast toast = SuperCardToast.create(this,
+                    getString(R.string.error_nothing_import),
+                    SuperToast.Duration.LONG);
+            toast.setBackground(SuperToast.Background.RED);
+            toast.show();
         }
     }
 

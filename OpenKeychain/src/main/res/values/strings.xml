@@ -28,6 +28,7 @@
     <string name="title_certify_key">Certify Identities</string>
     <string name="title_key_details">Key Details</string>
     <string name="title_help">Help</string>
+    <string name="title_log_display">Log</string>
 
     <!-- section -->
     <string name="section_user_ids">Identities</string>
@@ -102,6 +103,7 @@
     <string name="menu_select_all">Select all</string>
     <string name="menu_add_keys">Add keys</string>
     <string name="menu_export_all_keys">Export all keys</string>
+    <string name="menu_advanced">Show advanced info</string>
 
     <!-- label -->
     <string name="label_sign">Sign</string>
@@ -220,24 +222,6 @@
     <string name="public_key_deletetion_confirmation">Do you really want to delete the public key \'%s\'?\nYou can\'t undo this!</string>
     <string name="also_export_secret_keys">Also export secret keys?</string>
 
-    <plurals name="keys_added_and_updated_1">
-        <item quantity="one">Successfully added %d key</item>
-        <item quantity="other">Successfully added %d keys</item>
-    </plurals>
-    <plurals name="keys_added_and_updated_2">
-        <item quantity="one"> and updated %d key.</item>
-        <item quantity="other"> and updated %d keys.</item>
-    </plurals>
-    <plurals name="keys_added">
-        <item quantity="one">Successfully added %d key.</item>
-        <item quantity="other">Successfully added %d keys.</item>
-    </plurals>
-    <plurals name="keys_updated">
-        <item quantity="one">Successfully updated %d key.</item>
-        <item quantity="other">Successfully updated %d keys.</item>
-    </plurals>
-
-    <string name="no_keys_added_or_updated">No keys added or updated.</string>
     <string name="key_exported">Successfully exported 1 key.</string>
     <string name="keys_exported">Successfully exported %d keys.</string>
     <string name="no_keys_exported">No keys exported.</string>
@@ -406,6 +390,28 @@
     <string name="import_clipboard_button">Get key from clipboard</string>
     <string name="import_keybase_button">Get key from Keybase.io</string>
 
+    <!-- Import result toast -->
+    <plurals name="import_keys_added_and_updated_1">
+        <item quantity="one">Successfully added %1$d key</item>
+        <item quantity="other">Successfully added %1$d keys</item>
+    </plurals>
+    <plurals name="import_keys_added_and_updated_2">
+        <item quantity="one"> and updated %1$d key%2$s.</item>
+        <item quantity="other"> and updated %1$d keys%2$s.</item>
+    </plurals>
+    <plurals name="import_keys_added">
+        <item quantity="one">Successfully added %1$d key%2$s.</item>
+        <item quantity="other">Successfully added %1$d keys%2$s.</item>
+    </plurals>
+    <plurals name="import_keys_updated">
+        <item quantity="one">Successfully updated %1$d key%2$s.</item>
+        <item quantity="other">Successfully updated %1$d keys%2$s.</item>
+    </plurals>
+    <string name="import_view_log">View Log</string>
+    <string name="import_error_nothing">Nothing to import.</string>
+    <string name="import_error">Error importing keys!</string>
+    <string name="import_with_warnings">, with warnings</string>
+
     <!-- Intent labels -->
     <string name="intent_decrypt_file">Decrypt File with OpenKeychain</string>
     <string name="intent_import_key">Import Key with OpenKeychain</string>
@@ -499,6 +505,91 @@
     <string name="cert_verify_error">error!</string>
     <string name="cert_verify_unavailable">key unavailable</string>
 
+    <!-- Import Public log entries -->
+    <string name="msg_ip_apply_batch">Applying insert batch operation.</string>
+    <string name="msg_ip_bad_type_secret">Tried to import secret keyring as public. This is a bug, please file a report!</string>
+    <string name="msg_ip_delete_old_fail">No old key deleted (creating a new one?)</string>
+    <string name="msg_ip_delete_old_ok">Deleted old key from database</string>
+    <string name="msg_ip_encode_fail">Operation failed due to encoding error</string>
+    <string name="msg_ip_fail_io_exc">Operation failed due to i/o error</string>
+    <string name="msg_ip_fail_op_ex">Operation failed due to database error</string>
+    <string name="msg_ip_fail_remote_ex">Operation failed due to internal error</string>
+    <string name="msg_ip">Importing public keyring %s</string>
+    <string name="msg_ip_insert_keyring">Encoding keyring data</string>
+    <string name="msg_ip_insert_subkeys">Evaluating subkeys</string>
+    <string name="msg_ip_prepare">Preparing database operations</string>
+    <string name="msg_ip_prepare_success">OK</string>
+    <string name="msg_ip_preserving_secret">Preserving available secret key</string>
+    <string name="msg_ip_subkey">Processing subkey %s</string>
+    <string name="msg_ip_subkey_expired">Subkey expired on %s</string>
+    <string name="msg_ip_subkey_expires">Subkey expires on %s</string>
+    <string name="msg_ip_subkey_flags">Subkey flags: %s</string>
+    <string name="msg_ip_subkey_flags_ces">Subkey flags: certify, encrypt, sign</string>
+    <string name="msg_ip_subkey_flags_cex">Subkey flags: certify, encrypt</string>
+    <string name="msg_ip_subkey_flags_cxs">Subkey flags: certify, sign</string>
+    <string name="msg_ip_subkey_flags_xes">Subkey flags: encrypt, sign</string>
+    <string name="msg_ip_subkey_flags_cxx">Subkey flags: certify</string>
+    <string name="msg_ip_subkey_flags_xex">Subkey flags: encrypt</string>
+    <string name="msg_ip_subkey_flags_xxs">Subkey flags: sign</string>
+    <string name="msg_ip_subkey_flags_xxx">Subkey flags: none</string>
+    <string name="msg_ip_success">Successfully imported public keyring</string>
+    <string name="msg_ip_reinsert_secret">Re-inserting secret key</string>
+    <string name="msg_ip_uid_cert_bad">Encountered bad certificate!</string>
+    <string name="msg_ip_uid_cert_error">Error processing certificate!</string>
+    <string name="msg_ip_uid_cert_good">Found good certificate from %1$s (%2$s)</string>
+    <string name="msg_ip_uid_certs_unknown">Ignoring %s certificates from unknown pubkeys</string>
+    <string name="msg_ip_uid_classifying">Classifying user ids, using %s trusted signatures</string>
+    <string name="msg_ip_uid_reorder">Re-ordering user ids</string>
+    <string name="msg_ip_uid_processing">Processing user id %s</string>
+    <string name="msg_ip_uid_revoked">Found uid revocation certificate</string>
+    <string name="msg_ip_uid_self_good">Found good self certificate</string>
+    <string name="msg_is_bad_type_public">Tried to import public keyring as secret. This is a bug, please file a report!</string>
+
+    <!-- Import Secret log entries -->
+    <string name="msg_is">Importing secret key %s</string>
+    <string name="msg_is_importing_subkeys">Processing secret subkeys</string>
+    <string name="msg_is_io_excption">Error encoding keyring</string>
+    <string name="msg_is_subkey_nonexistent">Subkey %s unavailable in public key</string>
+    <string name="msg_is_subkey_ok">Marked %s as available</string>
+    <string name="msg_is_subkey_stripped">Marked %s as stripped</string>
+    <string name="msg_is_success">Successfully imported secret keyring</string>
+
+    <!-- Keyring Canonicalization log entries -->
+    <string name="msg_kc">Canonicalizing keyring %s</string>
+    <string name="msg_kc_master">Processing master key</string>
+    <string name="msg_kc_master_success">OK</string>
+    <string name="msg_kc_revoke_bad_err">Removing bad keyring revocation certificate</string>
+    <string name="msg_kc_revoke_bad_local">Removing keyring revocation certificate with "local" flag</string>
+    <string name="msg_kc_revoke_bad_time">Removing keyring revocation certificate with future timestamp</string>
+    <string name="msg_kc_revoke_bad_type">Removing master key certificate of unknown type (%s)</string>
+    <string name="msg_kc_revoke_bad">Removing bad keyring revocation certificate</string>
+    <string name="msg_kc_revoke_dup">Removing redundant keyring revocation certificate</string>
+    <string name="msg_kc_sub">Processing subkey %s</string>
+    <string name="msg_kc_sub_bad">Removing invalid subkey binding certificate</string>
+    <string name="msg_kc_sub_bad_err">Removing bad subkey binding certificate</string>
+    <string name="msg_kc_sub_bad_local">Removing subkey binding certificate with "local" flag</string>
+    <string name="msg_kc_sub_bad_keyid">Subkey binding issuer id mismatch</string>
+    <string name="msg_kc_sub_bad_time">Removing subkey binding certificate with future timestamp</string>
+    <string name="msg_kc_sub_bad_type">Unknown subkey certificate type: %s</string>
+    <string name="msg_kc_sub_primary_bad">Removing subkey binding certificate due to invalid primary binding certificate</string>
+    <string name="msg_kc_sub_primary_bad_err">Removing subkey binding certificate due to bad primary binding certificate</string>
+    <string name="msg_kc_sub_primary_none">Removing subkey binding certificate due to missing primary binding certificate</string>
+    <string name="msg_kc_sub_no_cert">No valid certificate found for %s, removing from ring</string>
+    <string name="msg_kc_sub_revoke_bad_err">Removing bad subkey revocation key</string>
+    <string name="msg_kc_sub_revoke_bad">Removing bad subkey revocation key</string>
+    <string name="msg_kc_sub_revoke_dup">Removing redundant keyring revocation key</string>
+    <string name="msg_kc_sub_success">Subkey binding OK</string>
+    <string name="msg_kc_success">Keyring canonicalization successful</string>
+    <string name="msg_kc_success_removed">Keyring canonicalization successful, removed %s certificates</string>
+    <string name="msg_kc_uid_bad_err">Removing bad self certificate for user id %s</string>
+    <string name="msg_kc_uid_bad_local">Removing user id certificate with "local" flag</string>
+    <string name="msg_kc_uid_bad_time">Removing user id with future timestamp</string>
+    <string name="msg_kc_uid_bad_type">Removing user id certificate of unknown type (%s)</string>
+    <string name="msg_kc_uid_bad">Removing bad self certificate for user id "%s"</string>
+    <string name="msg_kc_uid_dup">Removing outdated self certificate for user id "%s"</string>
+    <string name="msg_kc_uid_revoke_dup">Removing redundant revocation certificate for user id "%s"</string>
+    <string name="msg_kc_uid_revoke_old">Removing outdated revocation certificate for user id "%s"</string>
+
     <!-- unsorted -->
     <string name="section_certifier_id">Certifier</string>
     <string name="section_cert">Certificate Details</string>
@@ -519,5 +610,7 @@
     <string name="can_sign_not">cannot sign</string>
     <string name="error_encoding">Encoding error</string>
     <string name="error_no_encrypt_subkey">No encryption subkey available!</string>
+    <string name="info_no_manual_account_creation">Do not create OpenKeychain-Accounts manually.\nFor more information, see Help.</string>
+    <string name="contact_show_key">Show key (%s)</string>
 
 </resources>

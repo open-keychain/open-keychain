@@ -35,7 +35,7 @@ public class WrappedSignature {
 
     final PGPSignature mSig;
 
-    protected WrappedSignature(PGPSignature sig) {
+    WrappedSignature(PGPSignature sig) {
         mSig = sig;
     }
 
@@ -88,7 +88,7 @@ public class WrappedSignature {
         init(key.getPublicKey());
     }
 
-    protected void init(PGPPublicKey key) throws PgpGeneralException {
+    void init(PGPPublicKey key) throws PgpGeneralException {
         try {
             JcaPGPContentVerifierBuilderProvider contentVerifierBuilderProvider =
                     new JcaPGPContentVerifierBuilderProvider()
@@ -125,7 +125,27 @@ public class WrappedSignature {
         }
     }
 
-    protected boolean verifySignature(PGPPublicKey key, String uid) throws PgpGeneralException {
+    boolean verifySignature(PGPPublicKey key) throws PgpGeneralException {
+        try {
+            return mSig.verifyCertification(key);
+        } catch (SignatureException e) {
+            throw new PgpGeneralException("Sign!", e);
+        } catch (PGPException e) {
+            throw new PgpGeneralException("Error!", e);
+        }
+    }
+
+    boolean verifySignature(PGPPublicKey masterKey, PGPPublicKey subKey) throws PgpGeneralException {
+        try {
+            return mSig.verifyCertification(masterKey, subKey);
+        } catch (SignatureException e) {
+            throw new PgpGeneralException("Sign!", e);
+        } catch (PGPException e) {
+            throw new PgpGeneralException("Error!", e);
+        }
+    }
+
+    boolean verifySignature(PGPPublicKey key, String uid) throws PgpGeneralException {
         try {
             return mSig.verifyCertification(uid, key);
         } catch (SignatureException e) {
@@ -158,4 +178,11 @@ public class WrappedSignature {
         return new WrappedSignature(signatures.get(0));
     }
 
+    public boolean isLocal() {
+        if (!mSig.getHashedSubPackets().hasSubpacket(SignatureSubpacketTags.EXPORTABLE)) {
+            return false;
+        }
+        SignatureSubpacket p = mSig.getHashedSubPackets().getSubpacket(SignatureSubpacketTags.EXPORTABLE);
+        return p.getData()[0] == 0;
+    }
 }

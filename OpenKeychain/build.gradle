@@ -1,12 +1,12 @@
 apply plugin: 'android'
-apply plugin: 'android-test'
+//apply plugin: 'android-test'
 
 sourceSets {
-    androidTest {
-        java.srcDir file('src/test/java')
+    //androidTest {
+        //java.srcDir file('src/test/java')
         // configure the set of classes for JUnit tests
         // include '**/*Test.class'
-    }
+    //}
 }
 
 dependencies {
@@ -26,6 +26,8 @@ dependencies {
     compile project(':extern:spongycastle:pkix')
     compile project(':extern:spongycastle:prov')
     compile project(':extern:AppMsg:library')
+    compile project(':extern:SuperToasts:supertoasts')
+    compile project(':extern:dnsjava')
 
     // Dependencies for the `instrumentTest` task, make sure to list all your global dependencies here as well
     androidTestCompile 'junit:junit:4.10'
@@ -46,11 +48,13 @@ dependencies {
     androidTestCompile project(':extern:spongycastle:pkix')
     androidTestCompile project(':extern:spongycastle:prov')
     androidTestCompile project(':extern:AppMsg:library')
+    androidTestCompile project(':extern:SuperToasts:supertoasts')
+
 }
 
 android {
     compileSdkVersion 19
-    buildToolsVersion "19.0.3"
+    buildToolsVersion "19.1"
 
     defaultConfig {
         minSdkVersion 9
