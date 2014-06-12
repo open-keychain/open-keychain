@@ -15,7 +15,6 @@ import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.service.OperationResultParcel.OperationLog;
 import org.sufficientlysecure.keychain.service.OperationResultParcel.LogLevel;
 import org.sufficientlysecure.keychain.service.OperationResultParcel.LogType;
-import org.sufficientlysecure.keychain.service.OperationResults.SaveKeyringResult;
 import org.sufficientlysecure.keychain.util.IterableIterator;
 import org.sufficientlysecure.keychain.util.Log;
 
@@ -24,7 +23,6 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -229,7 +227,7 @@ public class UncachedKeyRing {
 
                 if (type != PGPSignature.KEY_REVOCATION) {
                     // Unknown type, just remove
-                    log.add(LogLevel.WARN, LogType.MSG_KC_CERT_BAD_TYPE, new String[]{
+                    log.add(LogLevel.WARN, LogType.MSG_KC_SUB_BAD_TYPE, new String[]{
                             "0x" + Integer.toString(type, 16)
                     }, indent);
                     modified = PGPPublicKey.removeCertification(modified, zert);
@@ -380,81 +378,98 @@ public class UncachedKeyRing {
         }
 
         // Process all keys
-        // NOTE we rely here on the special property that this iterator is independent from the keyring!
         for (PGPPublicKey key : new IterableIterator<PGPPublicKey>(ring.getPublicKeys())) {
-            // Only care about the master key here!
+            // Don't care about the master key here, that one gets special treatment above
             if (key.isMasterKey()) {
                 continue;
             }
-            log.add(LogLevel.DEBUG, LogType.MSG_KC_SUBKEY,
+            log.add(LogLevel.DEBUG, LogType.MSG_KC_SUB,
                     new String[]{PgpKeyHelper.convertKeyIdToHex(key.getKeyID())}, indent);
             indent += 1;
             // A subkey needs exactly one subkey binding certificate, and optionally one revocation
             // certificate.
             PGPPublicKey modified = key;
-            PGPSignature cert = null, revocation = null;
+            PGPSignature selfCert = null, revocation = null;
             for (PGPSignature zig : new IterableIterator<PGPSignature>(key.getSignatures())) {
                 // remove from keyring (for now)
                 modified = PGPPublicKey.removeCertification(modified, zig);
-                WrappedSignature sig = new WrappedSignature(zig);
-                int type = sig.getSignatureType();
+                WrappedSignature cert = new WrappedSignature(zig);
+                int type = cert.getSignatureType();
 
                 // filter out bad key types...
-                if (sig.getKeyId() != masterKey.getKeyID()) {
-                    log.add(LogLevel.WARN, LogType.MSG_KC_CERT_BAD_KEYID, null, indent);
+                if (cert.getKeyId() != masterKey.getKeyID()) {
+                    log.add(LogLevel.WARN, LogType.MSG_KC_SUB_BAD_KEYID, null, indent);
                     continue;
                 }
                 if (type != PGPSignature.SUBKEY_BINDING && type != PGPSignature.SUBKEY_REVOCATION) {
-                    log.add(LogLevel.WARN, LogType.MSG_KC_CERT_BAD_TYPE, new String[]{
+                    log.add(LogLevel.WARN, LogType.MSG_KC_SUB_BAD_TYPE, new String[]{
                             "0x" + Integer.toString(type, 16)
                     }, indent);
                     continue;
                 }
 
-                // make sure the certificate checks out
-                try {
-                    sig.init(masterKey);
-                    if (!sig.verifySignature(masterKey, key)) {
-                        log.add(LogLevel.WARN, LogType.MSG_KC_CERT_BAD, null, indent);
-                        continue;
-                    }
-                } catch (PgpGeneralException e) {
-                    log.add(LogLevel.WARN, LogType.MSG_KC_CERT_BAD_ERR, null, indent);
-                    continue;
-                }
-
                 if (type == PGPSignature.SUBKEY_BINDING) {
                     // TODO verify primary key binding signature for signing keys!
-                    // if we already have a cert, and this one is not newer: skip it
-                    if (cert != null && cert.getCreationTime().before(sig.getCreationTime())) {
+
+                    // make sure the certificate checks out
+                    try {
+                        cert.init(masterKey);
+                        if (!cert.verifySignature(masterKey, key)) {
+                            log.add(LogLevel.WARN, LogType.MSG_KC_SUB_BAD, null, indent);
+                            log.add(LogLevel.WARN, LogType.MSG_KC_SUB, new String[] {
+                                cert.getCreationTime().toString()
+                            }, indent);
+                            continue;
+                        }
+                    } catch (PgpGeneralException e) {
+                        log.add(LogLevel.WARN, LogType.MSG_KC_SUB_BAD_ERR, null, indent);
                         continue;
                     }
-                    cert = zig;
+
+                    // if we already have a cert, and this one is not newer: skip it
+                    if (selfCert != null && selfCert.getCreationTime().before(cert.getCreationTime())) {
+                        continue;
+                    }
+                    selfCert = zig;
                     // if this is newer than a possibly existing revocation, drop that one
-                    if (revocation != null && cert.getCreationTime().after(revocation.getCreationTime())) {
+                    if (revocation != null && selfCert.getCreationTime().after(revocation.getCreationTime())) {
                         revocation = null;
                     }
-                    // it must be a revocation, then (we made sure above)
+
+                // it must be a revocation, then (we made sure above)
                 } else {
+
+                    // make sure the certificate checks out
+                    try {
+                        cert.init(masterKey);
+                        if (!cert.verifySignature(key)) {
+                            log.add(LogLevel.WARN, LogType.MSG_KC_SUB_REVOKE_BAD, null, indent);
+                            continue;
+                        }
+                    } catch (PgpGeneralException e) {
+                        log.add(LogLevel.WARN, LogType.MSG_KC_SUB_REVOKE_BAD_ERR, null, indent);
+                        continue;
+                    }
+
                     // if there is no binding (yet), or the revocation is newer than the binding: keep it
-                    if (cert == null || cert.getCreationTime().before(sig.getCreationTime())) {
+                    if (selfCert == null || selfCert.getCreationTime().before(cert.getCreationTime())) {
                         revocation = zig;
                     }
                 }
             }
 
             // it is not properly bound? error!
-            if (cert == null) {
+            if (selfCert == null) {
                 ring = PGPPublicKeyRing.removePublicKey(ring, modified);
 
-                log.add(LogLevel.ERROR, LogType.MSG_KC_SUBKEY_NO_CERT,
+                log.add(LogLevel.ERROR, LogType.MSG_KC_SUB_NO_CERT,
                         new String[]{PgpKeyHelper.convertKeyIdToHex(key.getKeyID())}, indent);
                 indent -= 1;
                 continue;
             }
 
             // re-add certification
-            modified = PGPPublicKey.addCertification(modified, cert);
+            modified = PGPPublicKey.addCertification(modified, selfCert);
             // add revocation, if any
             if (revocation != null) {
                 modified = PGPPublicKey.addCertification(modified, revocation);
@@ -462,7 +477,7 @@ public class UncachedKeyRing {
             // replace pubkey in keyring
             ring = PGPPublicKeyRing.insertPublicKey(ring, modified);
 
-            log.add(LogLevel.DEBUG, LogType.MSG_KC_SUBKEY_SUCCESS, null, indent);
+            log.add(LogLevel.DEBUG, LogType.MSG_KC_SUB_SUCCESS, null, indent);
             indent -= 1;
         }
 
