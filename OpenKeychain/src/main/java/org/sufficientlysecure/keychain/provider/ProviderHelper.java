@@ -390,13 +390,12 @@ public class ProviderHelper {
 
             // get a list of owned secret keys, for verification filtering
             LongSparseArray<WrappedPublicKey> trustedKeys = getAllWrappedMasterKeys();
-            log(LogLevel.INFO, LogType.MSG_IP_TRUST_USING, new String[]{
-                    Integer.toString(trustedKeys.size())
-            });
 
             // classify and order user ids. primary are moved to the front, revoked to the back,
             // otherwise the order in the keyfile is preserved.
-            log(LogLevel.DEBUG, LogType.MSG_IP_UID_CLASSIFYING);
+            log(LogLevel.INFO, LogType.MSG_IP_UID_CLASSIFYING, new String[]{
+                    Integer.toString(trustedKeys.size())
+            });
             mIndent += 1;
             List<UserIdItem> uids = new ArrayList<UserIdItem>();
             for (String userId : new IterableIterator<String>(
@@ -471,18 +470,18 @@ public class ProviderHelper {
                         });
                     }
                 }
-                mIndent -= 1;
 
                 if (unknownCerts > 0) {
                     log(LogLevel.DEBUG, LogType.MSG_IP_UID_CERTS_UNKNOWN, new String[]{
                             Integer.toString(unknownCerts)
                     });
                 }
+                mIndent -= 1;
 
             }
             mIndent -= 1;
 
-            log(LogLevel.INFO, LogType.MSG_IP_UID_INSERT);
+            log(LogLevel.DEBUG, LogType.MSG_IP_UID_REORDER);
             // primary before regular before revoked (see UserIdItem.compareTo)
             // this is a stable sort, so the order of keys is otherwise preserved.
             Collections.sort(uids);
