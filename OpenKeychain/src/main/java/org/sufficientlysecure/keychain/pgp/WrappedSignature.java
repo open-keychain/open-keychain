@@ -178,4 +178,11 @@ public class WrappedSignature {
         return new WrappedSignature(signatures.get(0));
     }
 
+    public boolean isLocal() {
+        if (!mSig.getHashedSubPackets().hasSubpacket(SignatureSubpacketTags.EXPORTABLE)) {
+            return false;
+        }
+        SignatureSubpacket p = mSig.getHashedSubPackets().getSubpacket(SignatureSubpacketTags.EXPORTABLE);
+        return p.getData()[0] == 0;
+    }
 }

@@ -561,15 +561,20 @@
     <string name="msg_kc">Canonicalizing keyring %s</string>
     <string name="msg_kc_master">Processing master key</string>
     <string name="msg_kc_master_success">OK</string>
-    <string name="msg_kc_revoke_bad_err">Removing bad keyring revocation key</string>
-    <string name="msg_kc_revoke_bad">Removing bad keyring revocation key</string>
-    <string name="msg_kc_revoke_dup">Removing redundant keyring revocation key</string>
+    <string name="msg_kc_revoke_bad_err">Removing bad keyring revocation certificate</string>
+    <string name="msg_kc_revoke_bad_local">Removing keyring revocation certificate with "local" flag</string>
+    <string name="msg_kc_revoke_bad_time">Removing keyring revocation certificate with future timestamp</string>
+    <string name="msg_kc_revoke_bad_type">Removing master key certificate of unknown type (%s)</string>
+    <string name="msg_kc_revoke_bad">Removing bad keyring revocation certificate</string>
+    <string name="msg_kc_revoke_dup">Removing redundant keyring revocation certificate</string>
     <string name="msg_kc_sub">Processing subkey %s</string>
     <string name="msg_kc_sub_bad">Removing invalid subkey binding certificate</string>
-    <string name="msg_kc_sub_bad_err">Removing bad subkey binding certificate!</string>
+    <string name="msg_kc_sub_bad_err">Removing bad subkey binding certificate</string>
+    <string name="msg_kc_sub_bad_local">Removing subkey binding certificate with "local" flag</string>
     <string name="msg_kc_sub_bad_keyid">Subkey binding issuer id mismatch</string>
+    <string name="msg_kc_sub_bad_time">Removing subkey binding certificate with future timestamp</string>
     <string name="msg_kc_sub_bad_type">Unknown subkey certificate type: %s</string>
-    <string name="msg_kc_sub_no_cert">No valid certificate found for %s, removing from ring!</string>
+    <string name="msg_kc_sub_no_cert">No valid certificate found for %s, removing from ring</string>
     <string name="msg_kc_sub_revoke_bad_err">Removing bad subkey revocation key</string>
     <string name="msg_kc_sub_revoke_bad">Removing bad subkey revocation key</string>
     <string name="msg_kc_sub_revoke_dup">Removing redundant keyring revocation key</string>
@@ -577,11 +582,13 @@
     <string name="msg_kc_success">Keyring canonicalization successful</string>
     <string name="msg_kc_success_removed">Keyring canonicalization successful, removed %s certificates</string>
     <string name="msg_kc_uid_bad_err">Removing bad self certificate for user id %s</string>
+    <string name="msg_kc_uid_bad_local">Removing user id certificate with "local" flag</string>
+    <string name="msg_kc_uid_bad_time">Removing user id with future timestamp</string>
+    <string name="msg_kc_uid_bad_type">Removing user id certificate of unknown type (%s)</string>
     <string name="msg_kc_uid_bad">Removing bad self certificate for user id "%s"</string>
     <string name="msg_kc_uid_dup">Removing outdated self certificate for user id "%s"</string>
     <string name="msg_kc_uid_revoke_dup">Removing redundant revocation certificate for user id "%s"</string>
     <string name="msg_kc_uid_revoke_old">Removing outdated revocation certificate for user id "%s"</string>
-    <string name="msg_kc_uid_unknown_cert">Removing unknown certificate of type 0x%1$s from user id "%2$s"</string>
 
     <!-- unsorted -->
     <string name="section_certifier_id">Certifier</string>
