@@ -6,6 +6,8 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
+    <include layout="@layout/notification_area"/>
+
     <android.support.v4.view.ViewPager
         android:id="@+id/decrypt_pager"
         android:layout_width="match_parent"
