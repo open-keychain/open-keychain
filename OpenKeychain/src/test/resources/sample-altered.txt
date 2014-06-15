@@ -1,0 +1,26 @@
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
+
+This is a simple text document, which is used to illustrate
+the concept of signing simple text files.  There are no
+control characters or special formatting commands in this
+text, just simple printable ASCII characters.
+MALICIOUS TEXT
+To make this a slightly less uninteresting document, there
+follows a short shopping list.
+
+    eggs, 1 doz
+    milk, 1 gal
+    bacon, 1 lb
+    olive oil
+    bread, 1 loaf
+
+That's all there is to this document.
+
+-----BEGIN PGP SIGNATURE-----
+Version: PGPfreeware 5.5.5 for non-commercial use <http://www.nai.com>
+
+iQA/AwUBN78ib3S9RCOKzj55EQKqDACg1NV2/iyPKrDlOVJvJwz6ArcQ0UQAnjNC
+CDxKAFyaaGa835l1vpbFkAJk
+=3r/N
+-----END PGP SIGNATURE-----

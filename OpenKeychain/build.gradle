@@ -1,13 +1,5 @@
 apply plugin: 'android'
-//apply plugin: 'android-test'
-
-sourceSets {
-    //androidTest {
-        //java.srcDir file('src/test/java')
-        // configure the set of classes for JUnit tests
-        // include '**/*Test.class'
-    //}
-}
+apply plugin: 'robolectric'
 
 dependencies {
     // NOTE: Always use fixed version codes not dynamic ones, e.g. 0.7.3 instead of 0.7.+, see README for more information
@@ -29,26 +21,27 @@ dependencies {
     compile project(':extern:SuperToasts:supertoasts')
     compile project(':extern:dnsjava')
 
-    // Dependencies for the `instrumentTest` task, make sure to list all your global dependencies here as well
-    androidTestCompile 'junit:junit:4.11'
-    androidTestCompile 'org.robolectric:robolectric:2.3'
-    androidTestCompile 'com.squareup:fest-android:1.0.8'
-    androidTestCompile 'com.google.android:android:4.1.1.4'
-    androidTestCompile 'com.android.support:support-v4:19.1.0'
-    androidTestCompile 'com.android.support:appcompat-v7:19.1.0'
-    androidTestCompile project(':extern:openpgp-api-lib')
-    androidTestCompile project(':extern:openkeychain-api-lib')
-    androidTestCompile project(':extern:html-textview')
-    androidTestCompile project(':extern:StickyListHeaders:library')
-    androidTestCompile project(':extern:AndroidBootstrap:AndroidBootstrap')
-    androidTestCompile project(':extern:zxing-qr-code')
-    androidTestCompile project(':extern:zxing-android-integration')
-    androidTestCompile project(':extern:spongycastle:core')
-    androidTestCompile project(':extern:spongycastle:pg')
-    androidTestCompile project(':extern:spongycastle:pkix')
-    androidTestCompile project(':extern:spongycastle:prov')
-    androidTestCompile project(':extern:AppMsg:library')
-    androidTestCompile project(':extern:SuperToasts:supertoasts')
+
+    // Unit tests are run with Robolectric
+    testCompile 'junit:junit:4.11'
+    testCompile 'org.robolectric:robolectric:2.3'
+    testCompile 'com.squareup:fest-android:1.0.8'
+    testCompile 'com.google.android:android:4.1.1.4'
+    testCompile 'com.android.support:support-v4:19.1.0'
+    testCompile 'com.android.support:appcompat-v7:19.1.0'
+    testCompile project(':extern:openpgp-api-lib')
+    testCompile project(':extern:openkeychain-api-lib')
+    testCompile project(':extern:html-textview')
+    testCompile project(':extern:StickyListHeaders:library')
+    testCompile project(':extern:AndroidBootstrap:AndroidBootstrap')
+    testCompile project(':extern:zxing-qr-code')
+    testCompile project(':extern:zxing-android-integration')
+    testCompile project(':extern:spongycastle:core')
+    testCompile project(':extern:spongycastle:pg')
+    testCompile project(':extern:spongycastle:pkix')
+    testCompile project(':extern:spongycastle:prov')
+    testCompile project(':extern:AppMsg:library')
+    testCompile project(':extern:SuperToasts:supertoasts')
 
 }
 
@@ -57,7 +50,7 @@ android {
     buildToolsVersion "19.1"
 
     defaultConfig {
-        minSdkVersion 9
+        minSdkVersion 15
         targetSdkVersion 19
     }
 
