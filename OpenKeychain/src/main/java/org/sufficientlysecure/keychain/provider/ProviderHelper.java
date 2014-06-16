@@ -302,7 +302,6 @@ public class ProviderHelper {
 
             log(LogLevel.INFO, LogType.MSG_IP_INSERT_KEYRING);
             { // insert keyring
-                // insert new version of this keyRing
                 ContentValues values = new ContentValues();
                 values.put(KeyRingData.MASTER_KEY_ID, masterKeyId);
                 try {
@@ -322,8 +321,9 @@ public class ProviderHelper {
                 Uri uri = Keys.buildKeysUri(Long.toString(masterKeyId));
                 int rank = 0;
                 for (UncachedPublicKey key : new IterableIterator<UncachedPublicKey>(keyRing.getPublicKeys())) {
-                    log(LogLevel.DEBUG, LogType.MSG_IP_SUBKEY, new String[]{
-                            PgpKeyHelper.convertKeyIdToHex(key.getKeyId())
+                    long keyId = key.getKeyId();
+                    log(LogLevel.DEBUG, keyId == masterKeyId ? LogType.MSG_IP_MASTER : LogType.MSG_IP_SUBKEY, new String[]{
+                            PgpKeyHelper.convertKeyIdToHex(keyId)
                     });
                     mIndent += 1;
 
@@ -341,21 +341,41 @@ public class ProviderHelper {
                     values.put(Keys.CAN_ENCRYPT, e);
                     values.put(Keys.CAN_SIGN, s);
                     values.put(Keys.IS_REVOKED, key.isRevoked());
-                    if (c) {
-                        if (e) {
-                            log(LogLevel.DEBUG, s ? LogType.MSG_IP_SUBKEY_FLAGS_CES
-                                    : LogType.MSG_IP_SUBKEY_FLAGS_CEX, null);
+                    if (masterKeyId == keyId) {
+                        if (c) {
+                            if (e) {
+                                log(LogLevel.DEBUG, s ? LogType.MSG_IP_MASTER_FLAGS_CES
+                                        : LogType.MSG_IP_MASTER_FLAGS_CEX, null);
+                            } else {
+                                log(LogLevel.DEBUG, s ? LogType.MSG_IP_MASTER_FLAGS_CXS
+                                        : LogType.MSG_IP_MASTER_FLAGS_CXX, null);
+                            }
                         } else {
-                            log(LogLevel.DEBUG, s ? LogType.MSG_IP_SUBKEY_FLAGS_CXS
-                                    : LogType.MSG_IP_SUBKEY_FLAGS_CXX, null);
+                            if (e) {
+                                log(LogLevel.DEBUG, s ? LogType.MSG_IP_MASTER_FLAGS_XES
+                                        : LogType.MSG_IP_MASTER_FLAGS_XEX, null);
+                            } else {
+                                log(LogLevel.DEBUG, s ? LogType.MSG_IP_MASTER_FLAGS_XXS
+                                        : LogType.MSG_IP_MASTER_FLAGS_XXX, null);
+                            }
                         }
                     } else {
-                        if (e) {
-                            log(LogLevel.DEBUG, s ? LogType.MSG_IP_SUBKEY_FLAGS_XES
-                                    : LogType.MSG_IP_SUBKEY_FLAGS_XEX, null);
+                        if (c) {
+                            if (e) {
+                                log(LogLevel.DEBUG, s ? LogType.MSG_IP_SUBKEY_FLAGS_CES
+                                        : LogType.MSG_IP_SUBKEY_FLAGS_CEX, null);
+                            } else {
+                                log(LogLevel.DEBUG, s ? LogType.MSG_IP_SUBKEY_FLAGS_CXS
+                                        : LogType.MSG_IP_SUBKEY_FLAGS_CXX, null);
+                            }
                         } else {
-                            log(LogLevel.DEBUG, s ? LogType.MSG_IP_SUBKEY_FLAGS_XXS
-                                    : LogType.MSG_IP_SUBKEY_FLAGS_XXX, null);
+                            if (e) {
+                                log(LogLevel.DEBUG, s ? LogType.MSG_IP_SUBKEY_FLAGS_XES
+                                        : LogType.MSG_IP_SUBKEY_FLAGS_XEX, null);
+                            } else {
+                                log(LogLevel.DEBUG, s ? LogType.MSG_IP_SUBKEY_FLAGS_XXS
+                                        : LogType.MSG_IP_SUBKEY_FLAGS_XXX, null);
+                            }
                         }
                     }
 
@@ -365,13 +385,13 @@ public class ProviderHelper {
                     if (expiryDate != null) {
                         values.put(Keys.EXPIRY, expiryDate.getTime() / 1000);
                         if (key.isExpired()) {
-                            log(LogLevel.DEBUG, LogType.MSG_IP_SUBKEY_EXPIRED, new String[]{
-                                    expiryDate.toString()
-                            });
+                            log(LogLevel.DEBUG, keyId == masterKeyId ?
+                                    LogType.MSG_IP_MASTER_EXPIRED : LogType.MSG_IP_SUBKEY_EXPIRED,
+                                    new String[]{ expiryDate.toString() });
                         } else {
-                            log(LogLevel.DEBUG, LogType.MSG_IP_SUBKEY_EXPIRES, new String[]{
-                                    expiryDate.toString()
-                            });
+                            log(LogLevel.DEBUG, keyId == masterKeyId ?
+                                    LogType.MSG_IP_MASTER_EXPIRES : LogType.MSG_IP_SUBKEY_EXPIRES,
+                                    new String[] { expiryDate.toString() });
                         }
                     }
 
@@ -415,10 +435,9 @@ public class ProviderHelper {
                             if (!cert.isRevocation()) {
                                 item.selfCert = cert;
                                 item.isPrimary = cert.isPrimaryUserId();
-                                log(LogLevel.DEBUG, LogType.MSG_IP_UID_SELF_GOOD);
                             } else {
                                 item.isRevoked = true;
-                                log(LogLevel.DEBUG, LogType.MSG_IP_UID_REVOKED);
+                                log(LogLevel.INFO, LogType.MSG_IP_UID_REVOKED);
                             }
 
                         }
@@ -479,7 +498,6 @@ public class ProviderHelper {
                 }
             }
 
-            log(LogLevel.DEBUG, LogType.MSG_IP_PREPARE_SUCCESS);
             mIndent -= 1;
 
         } catch (IOException e) {

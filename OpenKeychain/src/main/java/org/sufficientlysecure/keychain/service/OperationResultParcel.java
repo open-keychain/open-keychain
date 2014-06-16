@@ -16,6 +16,7 @@ import java.util.ArrayList;
  * list (ie, enum) of all possible log types, which should in all cases be tied
  * to string resource ids.
  *
+ *
  */
 public class OperationResultParcel implements Parcelable {
     /** Holds the overall result, the number specifying varying degrees of success. The first bit
@@ -101,6 +102,23 @@ public class OperationResultParcel implements Parcelable {
 
     }
 
+    /** This is an enum of all possible log events.
+     *
+     * Element names should generally be prefixed with MSG_XX_ where XX is an
+     * identifier based on the related activity.
+     *
+     * Log messages should occur for each distinguishable action group.  For
+     * each such group, one message is displayed followed by warnings or
+     * errors, and optionally subactions. The granularity should generally be
+     * optimistic: No "success" messages are printed except for the outermost
+     * operations - the success of an action group is indicated by the
+     * beginning message of the next action group.
+     *
+     * Log messages should be in present tense, There should be no trailing
+     * punctuation, except for error messages which may end in an exclamation
+     * mark.
+     *
+     */
     public static enum LogType {
 
         // import public
@@ -114,15 +132,24 @@ public class OperationResultParcel implements Parcelable {
         MSG_IP_FAIL_OP_EX (R.string.msg_ip_fail_op_ex),
         MSG_IP_FAIL_REMOTE_EX (R.string.msg_ip_fail_remote_ex),
         MSG_IP_INSERT_KEYRING (R.string.msg_ip_insert_keyring),
-        MSG_IP_INSERT_SUBKEYS (R.string.msg_ip_insert_subkeys),
+        MSG_IP_INSERT_SUBKEYS (R.string.msg_ip_insert_keys),
         MSG_IP_PREPARE (R.string.msg_ip_prepare),
-        MSG_IP_PREPARE_SUCCESS(R.string.msg_ip_prepare_success),
         MSG_IP_PRESERVING_SECRET (R.string.msg_ip_preserving_secret),
         MSG_IP_REINSERT_SECRET (R.string.msg_ip_reinsert_secret),
+        MSG_IP_MASTER (R.string.msg_ip_master),
+        MSG_IP_MASTER_EXPIRED (R.string.msg_ip_master_expired),
+        MSG_IP_MASTER_EXPIRES (R.string.msg_ip_master_expires),
+        MSG_IP_MASTER_FLAGS_CES (R.string.msg_ip_master_flags_ces),
+        MSG_IP_MASTER_FLAGS_CEX (R.string.msg_ip_master_flags_cex),
+        MSG_IP_MASTER_FLAGS_CXS (R.string.msg_ip_master_flags_cxs),
+        MSG_IP_MASTER_FLAGS_XES (R.string.msg_ip_master_flags_xes),
+        MSG_IP_MASTER_FLAGS_CXX (R.string.msg_ip_master_flags_cxx),
+        MSG_IP_MASTER_FLAGS_XEX (R.string.msg_ip_master_flags_xex),
+        MSG_IP_MASTER_FLAGS_XXS (R.string.msg_ip_master_flags_xxs),
+        MSG_IP_MASTER_FLAGS_XXX (R.string.msg_ip_master_flags_xxx),
         MSG_IP_SUBKEY (R.string.msg_ip_subkey),
         MSG_IP_SUBKEY_EXPIRED (R.string.msg_ip_subkey_expired),
         MSG_IP_SUBKEY_EXPIRES (R.string.msg_ip_subkey_expires),
-        MSG_IP_SUBKEY_FLAGS (R.string.msg_ip_subkey_flags),
         MSG_IP_SUBKEY_FLAGS_CES (R.string.msg_ip_subkey_flags_ces),
         MSG_IP_SUBKEY_FLAGS_CEX (R.string.msg_ip_subkey_flags_cex),
         MSG_IP_SUBKEY_FLAGS_CXS (R.string.msg_ip_subkey_flags_cxs),
@@ -140,7 +167,6 @@ public class OperationResultParcel implements Parcelable {
         MSG_IP_UID_REORDER(R.string.msg_ip_uid_reorder),
         MSG_IP_UID_PROCESSING (R.string.msg_ip_uid_processing),
         MSG_IP_UID_REVOKED (R.string.msg_ip_uid_revoked),
-        MSG_IP_UID_SELF_GOOD (R.string.msg_ip_uid_self_good),
 
         // import secret
         MSG_IS(R.string.msg_is),
@@ -155,7 +181,6 @@ public class OperationResultParcel implements Parcelable {
         // keyring canonicalization
         MSG_KC (R.string.msg_kc),
         MSG_KC_MASTER (R.string.msg_kc_master),
-        MSG_KC_MASTER_SUCCESS (R.string.msg_kc_master_success),
         MSG_KC_REVOKE_BAD_ERR (R.string.msg_kc_revoke_bad_err),
         MSG_KC_REVOKE_BAD_LOCAL (R.string.msg_kc_revoke_bad_local),
         MSG_KC_REVOKE_BAD_TIME (R.string.msg_kc_revoke_bad_time),
@@ -176,8 +201,9 @@ public class OperationResultParcel implements Parcelable {
         MSG_KC_SUB_REVOKE_BAD_ERR (R.string.msg_kc_sub_revoke_bad_err),
         MSG_KC_SUB_REVOKE_BAD (R.string.msg_kc_sub_revoke_bad),
         MSG_KC_SUB_REVOKE_DUP (R.string.msg_kc_sub_revoke_dup),
-        MSG_KC_SUB_SUCCESS (R.string.msg_kc_sub_success),
-        MSG_KC_SUCCESS_REMOVED (R.string.msg_kc_success_removed),
+        MSG_KC_SUCCESS_BAD (R.string.msg_kc_success_bad),
+        MSG_KC_SUCCESS_BAD_AND_RED (R.string.msg_kc_success_bad_and_red),
+        MSG_KC_SUCCESS_REDUNDANT (R.string.msg_kc_success_redundant),
         MSG_KC_SUCCESS (R.string.msg_kc_success),
         MSG_KC_UID_BAD_ERR (R.string.msg_kc_uid_bad_err),
         MSG_KC_UID_BAD_LOCAL (R.string.msg_kc_uid_bad_local),
