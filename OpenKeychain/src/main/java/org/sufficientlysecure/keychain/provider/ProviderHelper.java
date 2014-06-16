@@ -298,6 +298,9 @@ public class ProviderHelper {
 
         // Canonicalize this key, to assert a number of assumptions made about it.
         keyRing = keyRing.canonicalize(mLog, mIndent);
+        if (keyRing == null) {
+            return new SaveKeyringResult(SaveKeyringResult.RESULT_ERROR, mLog);
+        }
 
         UncachedPublicKey masterKey = keyRing.getPublicKey();
 

@@ -564,6 +564,7 @@
 
     <!-- Keyring Canonicalization log entries -->
     <string name="msg_kc">Canonicalizing keyring %s</string>
+    <string name="msg_kc_fatal_no_uid">Keyring canonicalization failed: Keyring has no valid user ids</string>
     <string name="msg_kc_master">Processing master key</string>
     <string name="msg_kc_revoke_bad_err">Removing bad keyring revocation certificate</string>
     <string name="msg_kc_revoke_bad_local">Removing keyring revocation certificate with "local" flag</string>
@@ -597,6 +598,7 @@
     <string name="msg_kc_uid_dup">Removing outdated self certificate for user id "%s"</string>
     <string name="msg_kc_uid_revoke_dup">Removing redundant revocation certificate for user id "%s"</string>
     <string name="msg_kc_uid_revoke_old">Removing outdated revocation certificate for user id "%s"</string>
+    <string name="msg_kc_uid_no_cert">No valid self-certificate found for user id %s, removing from ring</string>
 
     <!-- unsorted -->
     <string name="section_certifier_id">Certifier</string>

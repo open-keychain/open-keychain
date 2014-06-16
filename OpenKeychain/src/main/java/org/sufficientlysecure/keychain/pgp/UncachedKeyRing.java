@@ -191,10 +191,8 @@ public class UncachedKeyRing {
      *   - key revocation signatures on the master key
      *   - subkey binding signatures for subkeys
      *   - certifications and certification revocations for user ids
-     *
-     * After this cleaning, a number of checks are done: TODO implement
-     *  - See if each subkey retains a valid self certificate
-     *  - See if each user id retains a valid self certificate
+     *  - If a subkey retains no valid subkey binding certificate, remove it
+     *  - If a user id retains no valid self certificate, remove it
      *
      * This operation writes an OperationLog which can be used as part of a OperationResultParcel.
      *
@@ -419,6 +417,19 @@ public class UncachedKeyRing {
                     }
 
                 }
+
+                // If no valid certificate (if only a revocation) remains, drop it
+                if (selfCert == null && revocation == null) {
+                    modified = PGPPublicKey.removeCertification(modified, userId);
+                    log.add(LogLevel.ERROR, LogType.MSG_KC_UID_REVOKE_DUP,
+                            new String[] { userId }, indent);
+                }
+            }
+
+            // If NO user ids remain, error out!
+            if (!modified.getUserIDs().hasNext()) {
+                log.add(LogLevel.ERROR, LogType.MSG_KC_FATAL_NO_UID, null, indent);
+                return null;
             }
 
             // Replace modified key in the keyring
@@ -570,7 +581,7 @@ public class UncachedKeyRing {
                 ring = PGPPublicKeyRing.removePublicKey(ring, modified);
 
                 log.add(LogLevel.ERROR, LogType.MSG_KC_SUB_NO_CERT,
-                        new String[]{PgpKeyHelper.convertKeyIdToHex(key.getKeyID())}, indent);
+                        new String[]{ PgpKeyHelper.convertKeyIdToHex(key.getKeyID()) }, indent);
                 indent -= 1;
                 continue;
             }
