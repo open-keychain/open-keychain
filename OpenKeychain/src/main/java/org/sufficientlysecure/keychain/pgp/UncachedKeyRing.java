@@ -643,6 +643,7 @@ public class UncachedKeyRing {
      *
      * TODO work with secret keys
      *
+     * @param list The list of UncachedKeyRings. Must not be empty, and all of the same masterKeyId
      * @return A consolidated UncachedKeyRing with the data of all input keyrings.
      *
      */
@@ -650,15 +651,12 @@ public class UncachedKeyRing {
                                               OperationLog log, int indent) {
 
         long masterKeyId = list.get(0).getMasterKeyId();
-        for (UncachedKeyRing ring : new IterableIterator<UncachedKeyRing>(list.iterator())) {
-            if (ring.getMasterKeyId() != masterKeyId) {
-                // log.add(LogLevel.ERROR, LogType.MSG_KO, null, indent);
-                return null;
-            }
-        }
 
-        // log.add(LogLevel.START, LogType.MSG_KO,
-                // new String[]{PgpKeyHelper.convertKeyIdToHex(masterKeyId)}, indent);
+        log.add(LogLevel.START, LogType.MSG_KO,
+                new String[]{
+                        Integer.toString(list.size()),
+                        PgpKeyHelper.convertKeyIdToHex(masterKeyId)
+                }, indent);
         indent += 1;
 
         // remember which certs we already added
@@ -666,12 +664,27 @@ public class UncachedKeyRing {
 
         try {
             PGPPublicKeyRing result = null;
+            int num = 1;
             for (UncachedKeyRing uring : new IterableIterator<UncachedKeyRing>(list.iterator())) {
+
                 PGPPublicKeyRing ring = (PGPPublicKeyRing) uring.mRing;
+                if (uring.getMasterKeyId() != masterKeyId) {
+                    log.add(LogLevel.ERROR, LogType.MSG_KO_HETEROGENEOUS, null, indent);
+                    return null;
+                }
+
+                // If this is the first ring, just take it
                 if (result == null) {
                     result = ring;
                     continue;
                 }
+
+                log.add(LogLevel.DEBUG, LogType.MSG_KO_MERGING,
+                        new String[] { Integer.toString(num++) }, indent);
+                indent += 1;
+
+                // keep track of the number of new certs we add
+                int newCerts = 0;
 
                 for (PGPPublicKey key : new IterableIterator<PGPPublicKey>(ring.getPublicKeys())) {
 
@@ -702,6 +715,7 @@ public class UncachedKeyRing {
                         }
                         certs.add(hash);
                         modified = PGPPublicKey.addCertification(modified, cert);
+                        newCerts += 1;
                     }
 
                     // If this is a subkey, stop here
@@ -718,6 +732,7 @@ public class UncachedKeyRing {
                             if (certs.contains(hash)) {
                                 continue;
                             }
+                            newCerts += 1;
                             certs.add(hash);
                             modified = PGPPublicKey.addCertification(modified, userId, cert);
                         }
@@ -726,13 +741,19 @@ public class UncachedKeyRing {
                     if (modified != resultkey) {
                         result = PGPPublicKeyRing.insertPublicKey(result, modified);
                     }
+
                 }
+
+                log.add(LogLevel.DEBUG, LogType.MSG_KO_FOUND_NEW,
+                        new String[] { Integer.toString(newCerts) }, indent);
+
 
             }
 
             return new UncachedKeyRing(result);
 
         } catch (IOException e) {
+            log.add(LogLevel.ERROR, LogType.MSG_KO_FATAL_ENCODE, null, indent);
             return null;
         }
 

@@ -284,6 +284,14 @@ public class ProviderHelper {
                 new String[]{ PgpKeyHelper.convertKeyIdToHex(masterKeyId) });
         mIndent += 1;
 
+        try {
+            WrappedPublicKeyRing ring = getWrappedPublicKeyRing(KeyRings.buildUnifiedKeyRingUri(masterKeyId));
+            // ring.get
+
+        } catch(NotFoundException e) {
+            // no biggie
+        }
+
         // Canonicalize this key, to assert a number of assumptions made about it.
         keyRing = keyRing.canonicalizePublic(mLog, mIndent);
         if (keyRing == null) {

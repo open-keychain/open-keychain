@@ -3,8 +3,10 @@ package org.sufficientlysecure.keychain.service;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.util.IterableIterator;
+import org.sufficientlysecure.keychain.util.Log;
 
 import java.util.ArrayList;
 
@@ -218,6 +220,14 @@ public class OperationResultParcel implements Parcelable {
         MSG_KC_UID_NO_CERT (R.string.msg_kc_uid_no_cert),
         MSG_KC_UID_REVOKE_DUP (R.string.msg_kc_uid_revoke_dup),
         MSG_KC_UID_REVOKE_OLD (R.string.msg_kc_uid_revoke_old),
+
+        // keyring consolidation
+        MSG_KO (R.string.msg_ko),
+        MSG_KO_FATAL_ENCODE (R.string.msg_ko_fatal_encode),
+        MSG_KO_HETEROGENEOUS (R.string.msg_ko_heterogeneous),
+        MSG_KO_MERGING (R.string.msg_ko_merging),
+        MSG_KO_NEW_SUBKEY (R.string.msg_ko_new_subkey),
+        MSG_KO_FOUND_NEW (R.string.msg_ko_found_new),
         ;
 
         private final int mMsgId;
@@ -264,6 +274,7 @@ public class OperationResultParcel implements Parcelable {
 
         /// Simple convenience method
         public void add(LogLevel level, LogType type, String[] parameters, int indent) {
+            Log.d(Constants.TAG, type.toString());
             add(new OperationResultParcel.LogEntryParcel(level, type, parameters, indent));
         }
 
