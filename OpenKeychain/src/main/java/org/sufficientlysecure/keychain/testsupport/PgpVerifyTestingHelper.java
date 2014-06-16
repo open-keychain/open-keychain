@@ -9,6 +9,7 @@ import org.sufficientlysecure.keychain.pgp.WrappedPublicKeyRing;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.util.InputData;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -36,9 +37,11 @@ public class PgpVerifyTestingHelper {
             }
         };
 
-        InputStream sampleInput = getClass().getResourceAsStream(testFileName);
-        assert null != sampleInput;
-        InputData data = new InputData(sampleInput, 705);
+        byte[] sampleInputBytes = readFully(getClass().getResourceAsStream(testFileName));
+
+        InputStream sampleInput = new ByteArrayInputStream(sampleInputBytes);
+
+        InputData data = new InputData(sampleInput, sampleInputBytes.length);
         OutputStream outStream = new ByteArrayOutputStream();
 
         PgpDecryptVerify verify = new PgpDecryptVerify.Builder(providerHelper, passphraseCache, data, outStream).build();
