@@ -285,7 +285,7 @@ public class ProviderHelper {
         mIndent += 1;
 
         // Canonicalize this key, to assert a number of assumptions made about it.
-        keyRing = keyRing.canonicalize(mLog, mIndent);
+        keyRing = keyRing.canonicalizePublic(mLog, mIndent);
         if (keyRing == null) {
             return SaveKeyringResult.RESULT_ERROR;
         }

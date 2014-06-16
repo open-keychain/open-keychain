@@ -27,6 +27,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -178,7 +179,8 @@ public class UncachedKeyRing {
         return result;
     }
 
-    /** "Canonicalizes" a key, removing inconsistencies in the process.
+    /** "Canonicalizes" a public key, removing inconsistencies in the process. This variant can be
+     * applied to public keyrings only.
      *
      * More specifically:
      *  - Remove all non-verifying self-certificates
@@ -193,13 +195,18 @@ public class UncachedKeyRing {
      *  - If a subkey retains no valid subkey binding certificate, remove it
      *  - If a user id retains no valid self certificate, remove it
      *  - If the key is a secret key, remove all certificates by foreign keys
+     *  - If no valid user id remains, log an error and return null
      *
      * This operation writes an OperationLog which can be used as part of a OperationResultParcel.
      *
-     * @return A canonicalized key
+     * @return A canonicalized key, or null on fatal error
      *
      */
-    public UncachedKeyRing canonicalize(OperationLog log, int indent) {
+    public UncachedKeyRing canonicalizePublic(OperationLog log, int indent) {
+        if (isSecret()) {
+            throw new RuntimeException("Tried to public-canonicalize non-public keyring. " +
+                    "This is a programming error and should never happen!");
+        }
 
         log.add(LogLevel.START, isSecret() ? LogType.MSG_KC_SECRET : LogType.MSG_KC_PUBLIC,
                 new String[]{PgpKeyHelper.convertKeyIdToHex(getMasterKeyId())}, indent);
@@ -625,6 +632,110 @@ public class UncachedKeyRing {
         PGPSecretKey sKey = secRing.getSecretKey(key.getKeyID());
         sKey = PGPSecretKey.replacePublicKey(sKey, key);
         return PGPSecretKeyRing.insertSecretKey(secRing, sKey);
+    }
+
+    /** This operation consolidates a list of UncachedKeyRings into a single, combined
+     * UncachedKeyRing.
+     *
+     * The combined keyring contains the subkeys and user ids of all input keyrings. Even if all
+     * input keyrings were canonicalized at some point, the resulting keyring will not necessarily
+     * have that property.
+     *
+     * TODO work with secret keys
+     *
+     * @return A consolidated UncachedKeyRing with the data of all input keyrings.
+     *
+     */
+    public static UncachedKeyRing consolidate(List<UncachedKeyRing> list,
+                                              OperationLog log, int indent) {
+
+        long masterKeyId = list.get(0).getMasterKeyId();
+        for (UncachedKeyRing ring : new IterableIterator<UncachedKeyRing>(list.iterator())) {
+            if (ring.getMasterKeyId() != masterKeyId) {
+                // log.add(LogLevel.ERROR, LogType.MSG_KO, null, indent);
+                return null;
+            }
+        }
+
+        // log.add(LogLevel.START, LogType.MSG_KO,
+                // new String[]{PgpKeyHelper.convertKeyIdToHex(masterKeyId)}, indent);
+        indent += 1;
+
+        // remember which certs we already added
+        HashSet<Integer> certs = new HashSet<Integer>();
+
+        try {
+            PGPPublicKeyRing result = null;
+            for (UncachedKeyRing uring : new IterableIterator<UncachedKeyRing>(list.iterator())) {
+                PGPPublicKeyRing ring = (PGPPublicKeyRing) uring.mRing;
+                if (result == null) {
+                    result = ring;
+                    continue;
+                }
+
+                for (PGPPublicKey key : new IterableIterator<PGPPublicKey>(ring.getPublicKeys())) {
+
+                    final PGPPublicKey resultkey = result.getPublicKey(key.getKeyID());
+                    if (resultkey == null) {
+                        log.add(LogLevel.DEBUG, LogType.MSG_KO_NEW_SUBKEY, null, indent);
+                        result = PGPPublicKeyRing.insertPublicKey(result, key);
+                        continue;
+                    }
+
+                    // The key old key, which we merge stuff into
+                    PGPPublicKey modified = resultkey;
+                    for (PGPSignature cert : new IterableIterator<PGPSignature>(key.getSignatures())) {
+                        int type = cert.getSignatureType();
+                        // Disregard certifications on user ids, we will deal with those later
+                        if (type == PGPSignature.NO_CERTIFICATION
+                                || type == PGPSignature.DEFAULT_CERTIFICATION
+                                || type == PGPSignature.CASUAL_CERTIFICATION
+                                || type == PGPSignature.POSITIVE_CERTIFICATION
+                                || type == PGPSignature.CERTIFICATION_REVOCATION) {
+                            continue;
+                        }
+
+                        int hash = Arrays.hashCode(cert.getEncoded());
+                        // Known cert, skip it
+                        if (certs.contains(hash)) {
+                            continue;
+                        }
+                        certs.add(hash);
+                        modified = PGPPublicKey.addCertification(modified, cert);
+                    }
+
+                    // If this is a subkey, stop here
+                    if (!key.isMasterKey()) {
+                        result = PGPPublicKeyRing.insertPublicKey(result, modified);
+                        continue;
+                    }
+
+                    // Copy over all user id certificates
+                    for (String userId : new IterableIterator<String>(key.getUserIDs())) {
+                        for (PGPSignature cert : new IterableIterator<PGPSignature>(key.getSignaturesForID(userId))) {
+                            int hash = Arrays.hashCode(cert.getEncoded());
+                            // Known cert, skip it
+                            if (certs.contains(hash)) {
+                                continue;
+                            }
+                            certs.add(hash);
+                            modified = PGPPublicKey.addCertification(modified, userId, cert);
+                        }
+                    }
+                    // If anything changed, save the updated (sub)key
+                    if (modified != resultkey) {
+                        result = PGPPublicKeyRing.insertPublicKey(result, modified);
+                    }
+                }
+
+            }
+
+            return new UncachedKeyRing(result);
+
+        } catch (IOException e) {
+            return null;
+        }
+
     }
 
 }
