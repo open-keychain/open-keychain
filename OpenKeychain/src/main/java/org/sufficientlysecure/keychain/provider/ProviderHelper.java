@@ -29,6 +29,7 @@ import android.support.v4.util.LongSparseArray;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
+import org.sufficientlysecure.keychain.pgp.Progressable;
 import org.sufficientlysecure.keychain.pgp.WrappedPublicKey;
 import org.sufficientlysecure.keychain.service.OperationResultParcel.LogType;
 import org.sufficientlysecure.keychain.service.OperationResultParcel.LogLevel;
@@ -259,11 +260,29 @@ public class ProviderHelper {
         }
     }
 
+    public SaveKeyringResult savePublicKeyRing(UncachedKeyRing keyRing) {
+        return savePublicKeyRing(keyRing, new Progressable() {
+            @Override
+            public void setProgress(String message, int current, int total) {
+                return;
+            }
+
+            @Override
+            public void setProgress(int resourceId, int current, int total) {
+                return;
+            }
+
+            @Override
+            public void setProgress(int current, int total) {
+                return;
+            }
+        });
+    }
     /**
      * Saves PGPPublicKeyRing with its keys and userIds in DB
      */
     @SuppressWarnings("unchecked")
-    public SaveKeyringResult savePublicKeyRing(UncachedKeyRing keyRing) {
+    public SaveKeyringResult savePublicKeyRing(UncachedKeyRing keyRing, Progressable progress) {
         if (keyRing.isSecret()) {
             log(LogLevel.ERROR, LogType.MSG_IP_BAD_TYPE_SECRET);
             return new SaveKeyringResult(SaveKeyringResult.RESULT_ERROR, mLog);
@@ -287,6 +306,7 @@ public class ProviderHelper {
         try {
             secretRing = getWrappedSecretKeyRing(masterKeyId).getUncached();
             log(LogLevel.DEBUG, LogType.MSG_IP_PRESERVING_SECRET);
+            progress.setProgress(LogType.MSG_IP_PRESERVING_SECRET.getMsgId(), 30, 100);
         } catch (NotFoundException e) {
             secretRing = null;
         }
@@ -316,6 +336,7 @@ public class ProviderHelper {
             }
 
             log(LogLevel.INFO, LogType.MSG_IP_INSERT_SUBKEYS);
+            progress.setProgress(LogType.MSG_IP_INSERT_SUBKEYS.getMsgId(), 40, 100);
             mIndent += 1;
             { // insert subkeys
                 Uri uri = Keys.buildKeysUri(Long.toString(masterKeyId));
@@ -410,6 +431,7 @@ public class ProviderHelper {
             log(LogLevel.INFO, LogType.MSG_IP_UID_CLASSIFYING, new String[]{
                     Integer.toString(trustedKeys.size())
             });
+            progress.setProgress(LogType.MSG_IP_UID_CLASSIFYING.getMsgId(), 60, 100);
             mIndent += 1;
             List<UserIdItem> uids = new ArrayList<UserIdItem>();
             for (String userId : new IterableIterator<String>(
@@ -476,6 +498,7 @@ public class ProviderHelper {
             }
             mIndent -= 1;
 
+            progress.setProgress(LogType.MSG_IP_UID_REORDER.getMsgId(), 80, 100);
             log(LogLevel.DEBUG, LogType.MSG_IP_UID_REORDER);
             // primary before regular before revoked (see UserIdItem.compareTo)
             // this is a stable sort, so the order of keys is otherwise preserved.
@@ -519,6 +542,7 @@ public class ProviderHelper {
             }
 
             log(LogLevel.DEBUG, LogType.MSG_IP_APPLY_BATCH);
+            progress.setProgress(LogType.MSG_IP_APPLY_BATCH.getMsgId(), 90, 100);
             mContentResolver.applyBatch(KeychainContract.CONTENT_AUTHORITY, operations);
 
             // Save the saved keyring (if any)
@@ -532,6 +556,7 @@ public class ProviderHelper {
 
             mIndent -= 1;
             log(LogLevel.OK, LogType.MSG_IP_SUCCESS);
+            progress.setProgress(LogType.MSG_IP_SUCCESS.getMsgId(), 100, 100);
             return new SaveKeyringResult(result, mLog);
 
         } catch (RemoteException e) {

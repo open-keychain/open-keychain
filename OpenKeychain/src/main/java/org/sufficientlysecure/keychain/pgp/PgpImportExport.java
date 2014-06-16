@@ -37,6 +37,7 @@ import org.sufficientlysecure.keychain.service.OperationResultParcel.OperationLo
 import org.sufficientlysecure.keychain.service.OperationResults.ImportResult;
 import org.sufficientlysecure.keychain.service.OperationResults.SaveKeyringResult;
 import org.sufficientlysecure.keychain.util.Log;
+import org.sufficientlysecure.keychain.util.ProgressScaler;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -130,6 +131,7 @@ public class PgpImportExport {
         int newKeys = 0, oldKeys = 0, badKeys = 0;
 
         int position = 0;
+        int progSteps = 100 / entries.size();
         for (ParcelableKeyRing entry : entries) {
             try {
                 UncachedKeyRing key = UncachedKeyRing.decodeFromData(entry.getBytes());
@@ -149,7 +151,8 @@ public class PgpImportExport {
                 if (key.isSecret()) {
                     result = mProviderHelper.saveSecretKeyRing(key);
                 } else {
-                    result = mProviderHelper.savePublicKeyRing(key);
+                    result = mProviderHelper.savePublicKeyRing(key,
+                            new ProgressScaler(mProgressable, position, (position+1)*progSteps, 100));
                 }
                 if (!result.success()) {
                     badKeys += 1;
@@ -165,7 +168,6 @@ public class PgpImportExport {
             }
             // update progress
             position++;
-            updateProgress(position / entries.size() * 100, 100);
         }
 
         OperationLog log = mProviderHelper.getLog();
