@@ -441,6 +441,7 @@ public class ProviderHelper {
                                 item.isRevoked = true;
                                 log(LogLevel.INFO, LogType.MSG_IP_UID_REVOKED);
                             }
+                            continue;
 
                         }
 
