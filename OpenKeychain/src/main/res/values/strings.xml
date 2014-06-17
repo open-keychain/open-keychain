@@ -511,14 +511,23 @@
     <string name="msg_ip_fail_remote_ex">Operation failed due to internal error</string>
     <string name="msg_ip">Importing public keyring %s</string>
     <string name="msg_ip_insert_keyring">Encoding keyring data</string>
-    <string name="msg_ip_insert_subkeys">Evaluating subkeys</string>
+    <string name="msg_ip_insert_keys">Parsing keys</string>
     <string name="msg_ip_prepare">Preparing database operations</string>
-    <string name="msg_ip_prepare_success">OK</string>
     <string name="msg_ip_preserving_secret">Preserving available secret key</string>
+    <string name="msg_ip_master">Processing master key %s</string>
+    <string name="msg_ip_master_expired">Keyring expired on %s</string>
+    <string name="msg_ip_master_expires">Keyring expires on %s</string>
+    <string name="msg_ip_master_flags_ces">Master key flags: certify, encrypt, sign</string>
+    <string name="msg_ip_master_flags_cex">Master key flags: certify, encrypt</string>
+    <string name="msg_ip_master_flags_cxs">Master key flags: certify, sign</string>
+    <string name="msg_ip_master_flags_xes">Master key flags: encrypt, sign</string>
+    <string name="msg_ip_master_flags_cxx">Master key flags: certify</string>
+    <string name="msg_ip_master_flags_xex">Master key flags: encrypt</string>
+    <string name="msg_ip_master_flags_xxs">Master key flags: sign</string>
+    <string name="msg_ip_master_flags_xxx">Master key flags: none</string>
     <string name="msg_ip_subkey">Processing subkey %s</string>
     <string name="msg_ip_subkey_expired">Subkey expired on %s</string>
     <string name="msg_ip_subkey_expires">Subkey expires on %s</string>
-    <string name="msg_ip_subkey_flags">Subkey flags: %s</string>
     <string name="msg_ip_subkey_flags_ces">Subkey flags: certify, encrypt, sign</string>
     <string name="msg_ip_subkey_flags_cex">Subkey flags: certify, encrypt</string>
     <string name="msg_ip_subkey_flags_cxs">Subkey flags: certify, sign</string>
@@ -531,17 +540,17 @@
     <string name="msg_ip_reinsert_secret">Re-inserting secret key</string>
     <string name="msg_ip_uid_cert_bad">Encountered bad certificate!</string>
     <string name="msg_ip_uid_cert_error">Error processing certificate!</string>
-    <string name="msg_ip_uid_cert_good">Found good certificate from %1$s (%2$s)</string>
+    <string name="msg_ip_uid_cert_good">User id is certified by %1$s (%2$s)</string>
     <string name="msg_ip_uid_certs_unknown">Ignoring %s certificates from unknown pubkeys</string>
     <string name="msg_ip_uid_classifying">Classifying user ids, using %s trusted signatures</string>
     <string name="msg_ip_uid_reorder">Re-ordering user ids</string>
     <string name="msg_ip_uid_processing">Processing user id %s</string>
-    <string name="msg_ip_uid_revoked">Found uid revocation certificate</string>
-    <string name="msg_ip_uid_self_good">Found good self certificate</string>
+    <string name="msg_ip_uid_revoked">User id is revoked</string>
     <string name="msg_is_bad_type_public">Tried to import public keyring as secret. This is a bug, please file a report!</string>
 
     <!-- Import Secret log entries -->
     <string name="msg_is">Importing secret key %s</string>
+    <string name="msg_is_db_exception">Database error!</string>
     <string name="msg_is_importing_subkeys">Processing secret subkeys</string>
     <string name="msg_is_io_excption">Error encoding keyring</string>
     <string name="msg_is_subkey_nonexistent">Subkey %s unavailable in public key</string>
@@ -550,9 +559,10 @@
     <string name="msg_is_success">Successfully imported secret keyring</string>
 
     <!-- Keyring Canonicalization log entries -->
-    <string name="msg_kc">Canonicalizing keyring %s</string>
+    <string name="msg_kc_public">Canonicalizing public keyring %s</string>
+    <string name="msg_kc_secret">Canonicalizing secret keyring %s</string>
+    <string name="msg_kc_fatal_no_uid">Keyring canonicalization failed: Keyring has no valid user ids</string>
     <string name="msg_kc_master">Processing master key</string>
-    <string name="msg_kc_master_success">OK</string>
     <string name="msg_kc_revoke_bad_err">Removing bad keyring revocation certificate</string>
     <string name="msg_kc_revoke_bad_local">Removing keyring revocation certificate with "local" flag</string>
     <string name="msg_kc_revoke_bad_time">Removing keyring revocation certificate with future timestamp</string>
@@ -573,17 +583,20 @@
     <string name="msg_kc_sub_revoke_bad_err">Removing bad subkey revocation key</string>
     <string name="msg_kc_sub_revoke_bad">Removing bad subkey revocation key</string>
     <string name="msg_kc_sub_revoke_dup">Removing redundant keyring revocation key</string>
-    <string name="msg_kc_sub_success">Subkey binding OK</string>
     <string name="msg_kc_success">Keyring canonicalization successful</string>
-    <string name="msg_kc_success_removed">Keyring canonicalization successful, removed %s certificates</string>
+    <string name="msg_kc_success_bad">Keyring canonicalization successful, removed %s erroneous certificates</string>
+    <string name="msg_kc_success_bad_and_red">Keyring canonicalization successful, removed %1$s erroneous and %2$s redundant certificates</string>
+    <string name="msg_kc_success_redundant">Keyring canonicalization successful, removed %s redundant certificates</string>
     <string name="msg_kc_uid_bad_err">Removing bad self certificate for user id %s</string>
     <string name="msg_kc_uid_bad_local">Removing user id certificate with "local" flag</string>
     <string name="msg_kc_uid_bad_time">Removing user id with future timestamp</string>
     <string name="msg_kc_uid_bad_type">Removing user id certificate of unknown type (%s)</string>
     <string name="msg_kc_uid_bad">Removing bad self certificate for user id "%s"</string>
     <string name="msg_kc_uid_dup">Removing outdated self certificate for user id "%s"</string>
+    <string name="msg_kc_uid_foreign">Removing foreign user id certificate by %s</string>
     <string name="msg_kc_uid_revoke_dup">Removing redundant revocation certificate for user id "%s"</string>
     <string name="msg_kc_uid_revoke_old">Removing outdated revocation certificate for user id "%s"</string>
+    <string name="msg_kc_uid_no_cert">No valid self-certificate found for user id %s, removing from ring</string>
 
     <!-- unsorted -->
     <string name="section_certifier_id">Certifier</string>

@@ -179,7 +179,8 @@ public class WrappedSignature {
     }
 
     public boolean isLocal() {
-        if (!mSig.getHashedSubPackets().hasSubpacket(SignatureSubpacketTags.EXPORTABLE)) {
+        if (!mSig.hasSubpackets()
+                || !mSig.getHashedSubPackets().hasSubpacket(SignatureSubpacketTags.EXPORTABLE)) {
             return false;
         }
         SignatureSubpacket p = mSig.getHashedSubPackets().getSubpacket(SignatureSubpacketTags.EXPORTABLE);

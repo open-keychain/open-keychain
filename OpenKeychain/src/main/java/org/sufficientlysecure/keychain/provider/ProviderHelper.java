@@ -29,6 +29,7 @@ import android.support.v4.util.LongSparseArray;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
+import org.sufficientlysecure.keychain.pgp.Progressable;
 import org.sufficientlysecure.keychain.pgp.WrappedPublicKey;
 import org.sufficientlysecure.keychain.service.OperationResultParcel.LogType;
 import org.sufficientlysecure.keychain.service.OperationResultParcel.LogLevel;
@@ -259,11 +260,29 @@ public class ProviderHelper {
         }
     }
 
+    public SaveKeyringResult savePublicKeyRing(UncachedKeyRing keyRing) {
+        return savePublicKeyRing(keyRing, new Progressable() {
+            @Override
+            public void setProgress(String message, int current, int total) {
+                return;
+            }
+
+            @Override
+            public void setProgress(int resourceId, int current, int total) {
+                return;
+            }
+
+            @Override
+            public void setProgress(int current, int total) {
+                return;
+            }
+        });
+    }
     /**
      * Saves PGPPublicKeyRing with its keys and userIds in DB
      */
     @SuppressWarnings("unchecked")
-    public SaveKeyringResult savePublicKeyRing(UncachedKeyRing keyRing) {
+    public SaveKeyringResult savePublicKeyRing(UncachedKeyRing keyRing, Progressable progress) {
         if (keyRing.isSecret()) {
             log(LogLevel.ERROR, LogType.MSG_IP_BAD_TYPE_SECRET);
             return new SaveKeyringResult(SaveKeyringResult.RESULT_ERROR, mLog);
@@ -279,6 +298,9 @@ public class ProviderHelper {
 
         // Canonicalize this key, to assert a number of assumptions made about it.
         keyRing = keyRing.canonicalize(mLog, mIndent);
+        if (keyRing == null) {
+            return new SaveKeyringResult(SaveKeyringResult.RESULT_ERROR, mLog);
+        }
 
         UncachedPublicKey masterKey = keyRing.getPublicKey();
 
@@ -287,6 +309,7 @@ public class ProviderHelper {
         try {
             secretRing = getWrappedSecretKeyRing(masterKeyId).getUncached();
             log(LogLevel.DEBUG, LogType.MSG_IP_PRESERVING_SECRET);
+            progress.setProgress(LogType.MSG_IP_PRESERVING_SECRET.getMsgId(), 30, 100);
         } catch (NotFoundException e) {
             secretRing = null;
         }
@@ -302,7 +325,6 @@ public class ProviderHelper {
 
             log(LogLevel.INFO, LogType.MSG_IP_INSERT_KEYRING);
             { // insert keyring
-                // insert new version of this keyRing
                 ContentValues values = new ContentValues();
                 values.put(KeyRingData.MASTER_KEY_ID, masterKeyId);
                 try {
@@ -317,13 +339,15 @@ public class ProviderHelper {
             }
 
             log(LogLevel.INFO, LogType.MSG_IP_INSERT_SUBKEYS);
+            progress.setProgress(LogType.MSG_IP_INSERT_SUBKEYS.getMsgId(), 40, 100);
             mIndent += 1;
             { // insert subkeys
                 Uri uri = Keys.buildKeysUri(Long.toString(masterKeyId));
                 int rank = 0;
                 for (UncachedPublicKey key : new IterableIterator<UncachedPublicKey>(keyRing.getPublicKeys())) {
-                    log(LogLevel.DEBUG, LogType.MSG_IP_SUBKEY, new String[]{
-                            PgpKeyHelper.convertKeyIdToHex(key.getKeyId())
+                    long keyId = key.getKeyId();
+                    log(LogLevel.DEBUG, keyId == masterKeyId ? LogType.MSG_IP_MASTER : LogType.MSG_IP_SUBKEY, new String[]{
+                            PgpKeyHelper.convertKeyIdToHex(keyId)
                     });
                     mIndent += 1;
 
@@ -341,21 +365,41 @@ public class ProviderHelper {
                     values.put(Keys.CAN_ENCRYPT, e);
                     values.put(Keys.CAN_SIGN, s);
                     values.put(Keys.IS_REVOKED, key.isRevoked());
-                    if (c) {
-                        if (e) {
-                            log(LogLevel.DEBUG, s ? LogType.MSG_IP_SUBKEY_FLAGS_CES
-                                    : LogType.MSG_IP_SUBKEY_FLAGS_CEX, null);
+                    if (masterKeyId == keyId) {
+                        if (c) {
+                            if (e) {
+                                log(LogLevel.DEBUG, s ? LogType.MSG_IP_MASTER_FLAGS_CES
+                                        : LogType.MSG_IP_MASTER_FLAGS_CEX, null);
+                            } else {
+                                log(LogLevel.DEBUG, s ? LogType.MSG_IP_MASTER_FLAGS_CXS
+                                        : LogType.MSG_IP_MASTER_FLAGS_CXX, null);
+                            }
                         } else {
-                            log(LogLevel.DEBUG, s ? LogType.MSG_IP_SUBKEY_FLAGS_CXS
-                                    : LogType.MSG_IP_SUBKEY_FLAGS_CXX, null);
+                            if (e) {
+                                log(LogLevel.DEBUG, s ? LogType.MSG_IP_MASTER_FLAGS_XES
+                                        : LogType.MSG_IP_MASTER_FLAGS_XEX, null);
+                            } else {
+                                log(LogLevel.DEBUG, s ? LogType.MSG_IP_MASTER_FLAGS_XXS
+                                        : LogType.MSG_IP_MASTER_FLAGS_XXX, null);
+                            }
                         }
                     } else {
-                        if (e) {
-                            log(LogLevel.DEBUG, s ? LogType.MSG_IP_SUBKEY_FLAGS_XES
-                                    : LogType.MSG_IP_SUBKEY_FLAGS_XEX, null);
+                        if (c) {
+                            if (e) {
+                                log(LogLevel.DEBUG, s ? LogType.MSG_IP_SUBKEY_FLAGS_CES
+                                        : LogType.MSG_IP_SUBKEY_FLAGS_CEX, null);
+                            } else {
+                                log(LogLevel.DEBUG, s ? LogType.MSG_IP_SUBKEY_FLAGS_CXS
+                                        : LogType.MSG_IP_SUBKEY_FLAGS_CXX, null);
+                            }
                         } else {
-                            log(LogLevel.DEBUG, s ? LogType.MSG_IP_SUBKEY_FLAGS_XXS
-                                    : LogType.MSG_IP_SUBKEY_FLAGS_XXX, null);
+                            if (e) {
+                                log(LogLevel.DEBUG, s ? LogType.MSG_IP_SUBKEY_FLAGS_XES
+                                        : LogType.MSG_IP_SUBKEY_FLAGS_XEX, null);
+                            } else {
+                                log(LogLevel.DEBUG, s ? LogType.MSG_IP_SUBKEY_FLAGS_XXS
+                                        : LogType.MSG_IP_SUBKEY_FLAGS_XXX, null);
+                            }
                         }
                     }
 
@@ -365,13 +409,13 @@ public class ProviderHelper {
                     if (expiryDate != null) {
                         values.put(Keys.EXPIRY, expiryDate.getTime() / 1000);
                         if (key.isExpired()) {
-                            log(LogLevel.DEBUG, LogType.MSG_IP_SUBKEY_EXPIRED, new String[]{
-                                    expiryDate.toString()
-                            });
+                            log(LogLevel.DEBUG, keyId == masterKeyId ?
+                                    LogType.MSG_IP_MASTER_EXPIRED : LogType.MSG_IP_SUBKEY_EXPIRED,
+                                    new String[]{ expiryDate.toString() });
                         } else {
-                            log(LogLevel.DEBUG, LogType.MSG_IP_SUBKEY_EXPIRES, new String[]{
-                                    expiryDate.toString()
-                            });
+                            log(LogLevel.DEBUG, keyId == masterKeyId ?
+                                    LogType.MSG_IP_MASTER_EXPIRES : LogType.MSG_IP_SUBKEY_EXPIRES,
+                                    new String[] { expiryDate.toString() });
                         }
                     }
 
@@ -415,10 +459,9 @@ public class ProviderHelper {
                             if (!cert.isRevocation()) {
                                 item.selfCert = cert;
                                 item.isPrimary = cert.isPrimaryUserId();
-                                log(LogLevel.DEBUG, LogType.MSG_IP_UID_SELF_GOOD);
                             } else {
                                 item.isRevoked = true;
-                                log(LogLevel.DEBUG, LogType.MSG_IP_UID_REVOKED);
+                                log(LogLevel.INFO, LogType.MSG_IP_UID_REVOKED);
                             }
 
                         }
@@ -457,6 +500,7 @@ public class ProviderHelper {
             }
             mIndent -= 1;
 
+            progress.setProgress(LogType.MSG_IP_UID_REORDER.getMsgId(), 80, 100);
             log(LogLevel.DEBUG, LogType.MSG_IP_UID_REORDER);
             // primary before regular before revoked (see UserIdItem.compareTo)
             // this is a stable sort, so the order of keys is otherwise preserved.
@@ -479,7 +523,6 @@ public class ProviderHelper {
                 }
             }
 
-            log(LogLevel.DEBUG, LogType.MSG_IP_PREPARE_SUCCESS);
             mIndent -= 1;
 
         } catch (IOException e) {
@@ -501,6 +544,7 @@ public class ProviderHelper {
             }
 
             log(LogLevel.DEBUG, LogType.MSG_IP_APPLY_BATCH);
+            progress.setProgress(LogType.MSG_IP_APPLY_BATCH.getMsgId(), 90, 100);
             mContentResolver.applyBatch(KeychainContract.CONTENT_AUTHORITY, operations);
 
             // Save the saved keyring (if any)
@@ -514,6 +558,7 @@ public class ProviderHelper {
 
             mIndent -= 1;
             log(LogLevel.OK, LogType.MSG_IP_SUCCESS);
+            progress.setProgress(LogType.MSG_IP_SUCCESS.getMsgId(), 100, 100);
             return new SaveKeyringResult(result, mLog);
 
         } catch (RemoteException e) {
@@ -564,6 +609,12 @@ public class ProviderHelper {
             return new SaveKeyringResult(SaveKeyringResult.RESULT_ERROR, mLog);
         }
 
+        // Canonicalize this key, to assert a number of assumptions made about it.
+        keyRing = keyRing.canonicalize(mLog, mIndent);
+        if (keyRing == null) {
+            return new SaveKeyringResult(SaveKeyringResult.RESULT_ERROR, mLog);
+        }
+
         long masterKeyId = keyRing.getMasterKeyId();
         log(LogLevel.START, LogType.MSG_IS,
                 new String[]{ PgpKeyHelper.convertKeyIdToHex(masterKeyId) });
@@ -579,7 +630,10 @@ public class ProviderHelper {
             values.put(KeyRingData.KEY_RING_DATA, keyRing.getEncoded());
             // insert new version of this keyRing
             Uri uri = KeyRingData.buildSecretKeyRingUri(Long.toString(masterKeyId));
-            mContentResolver.insert(uri, values);
+            if (mContentResolver.insert(uri, values) == null) {
+                log(LogLevel.ERROR, LogType.MSG_IS_DB_EXCEPTION);
+                return new SaveKeyringResult(SaveKeyringResult.RESULT_ERROR, mLog);
+            }
         } catch (IOException e) {
             Log.e(Constants.TAG, "Failed to encode key!", e);
             log(LogLevel.ERROR, LogType.MSG_IS_IO_EXCPTION);
