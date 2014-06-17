@@ -23,7 +23,7 @@ import java.util.HashMap;
 public class SaveKeyringParcel implements Parcelable {
 
     // the master key id to be edited
-    private final long mMasterKeyId;
+    public final long mMasterKeyId;
     // the key fingerprint, for safety
     private final byte[] mFingerprint;
 
