@@ -187,9 +187,9 @@ public class ProviderHelper {
                 KeyRings.PUBKEY_DATA
             }, KeyRings.HAS_ANY_SECRET + " = 1", null, null);
 
-        LongSparseArray<WrappedPublicKey> result =
-                new LongSparseArray<WrappedPublicKey>(cursor.getCount());
         try {
+            LongSparseArray<WrappedPublicKey> result = new LongSparseArray<WrappedPublicKey>();
+
             if (cursor != null && cursor.moveToFirst()) do {
                 long masterKeyId = cursor.getLong(0);
                 boolean hasAnySecret = cursor.getInt(1) > 0;
@@ -200,13 +200,15 @@ public class ProviderHelper {
                             new WrappedPublicKeyRing(blob, hasAnySecret, verified).getSubkey());
                 }
             } while (cursor.moveToNext());
+
+            return result;
+
         } finally {
             if (cursor != null) {
                 cursor.close();
             }
         }
 
-        return result;
     }
 
     public CachedPublicKeyRing getCachedPublicKeyRing(Uri queryUri) {
@@ -260,32 +262,18 @@ public class ProviderHelper {
         }
     }
 
-    public SaveKeyringResult savePublicKeyRing(UncachedKeyRing keyRing) {
-        return savePublicKeyRing(keyRing, new Progressable() {
-            @Override
-            public void setProgress(String message, int current, int total) {
-                return;
-            }
-
-            @Override
-            public void setProgress(int resourceId, int current, int total) {
-                return;
-            }
-
-            @Override
-            public void setProgress(int current, int total) {
-                return;
-            }
-        });
-    }
-    /**
-     * Saves PGPPublicKeyRing with its keys and userIds in DB
+    /** Saves an UncachedKeyRing of the public variant into the db.
+     *
+     * This method will not delete all previous data for this masterKeyId from the database prior
+     * to inserting. All public data is effectively re-inserted, secret keyrings are left deleted
+     * and need to be saved externally to be preserved past the operation.
      */
     @SuppressWarnings("unchecked")
-    public SaveKeyringResult savePublicKeyRing(UncachedKeyRing keyRing, Progressable progress) {
+    private int internalSavePublicKeyRing(UncachedKeyRing keyRing,
+                Progressable progress, boolean selfCertsAreTrusted) {
         if (keyRing.isSecret()) {
             log(LogLevel.ERROR, LogType.MSG_IP_BAD_TYPE_SECRET);
-            return new SaveKeyringResult(SaveKeyringResult.RESULT_ERROR, mLog);
+            return SaveKeyringResult.RESULT_ERROR;
         }
 
         // start with ok result
@@ -299,20 +287,10 @@ public class ProviderHelper {
         // Canonicalize this key, to assert a number of assumptions made about it.
         keyRing = keyRing.canonicalize(mLog, mIndent);
         if (keyRing == null) {
-            return new SaveKeyringResult(SaveKeyringResult.RESULT_ERROR, mLog);
+            return SaveKeyringResult.RESULT_ERROR;
         }
 
         UncachedPublicKey masterKey = keyRing.getPublicKey();
-
-        // IF there is a secret key, preserve it!
-        UncachedKeyRing secretRing;
-        try {
-            secretRing = getWrappedSecretKeyRing(masterKeyId).getUncached();
-            log(LogLevel.DEBUG, LogType.MSG_IP_PRESERVING_SECRET);
-            progress.setProgress(LogType.MSG_IP_PRESERVING_SECRET.getMsgId(), 30, 100);
-        } catch (NotFoundException e) {
-            secretRing = null;
-        }
 
         ArrayList<ContentProviderOperation> operations;
         try {
@@ -331,7 +309,7 @@ public class ProviderHelper {
                     values.put(KeyRingData.KEY_RING_DATA, keyRing.getEncoded());
                 } catch (IOException e) {
                     log(LogLevel.ERROR, LogType.MSG_IP_ENCODE_FAIL);
-                    return new SaveKeyringResult(SaveKeyringResult.RESULT_ERROR, mLog);
+                    return SaveKeyringResult.RESULT_ERROR;
                 }
 
                 Uri uri = KeyRingData.buildPublicKeyRingUri(Long.toString(masterKeyId));
@@ -500,7 +478,7 @@ public class ProviderHelper {
             }
             mIndent -= 1;
 
-            progress.setProgress(LogType.MSG_IP_UID_REORDER.getMsgId(), 80, 100);
+            progress.setProgress(LogType.MSG_IP_UID_REORDER.getMsgId(), 65, 100);
             log(LogLevel.DEBUG, LogType.MSG_IP_UID_REORDER);
             // primary before regular before revoked (see UserIdItem.compareTo)
             // this is a stable sort, so the order of keys is otherwise preserved.
@@ -511,7 +489,7 @@ public class ProviderHelper {
                 operations.add(buildUserIdOperations(masterKeyId, item, userIdRank));
                 if (item.selfCert != null) {
                     operations.add(buildCertOperations(masterKeyId, userIdRank, item.selfCert,
-                            secretRing != null ? Certs.VERIFIED_SECRET : Certs.VERIFIED_SELF));
+                            selfCertsAreTrusted ? Certs.VERIFIED_SECRET : Certs.VERIFIED_SELF));
                 }
                 // don't bother with trusted certs if the uid is revoked, anyways
                 if (item.isRevoked) {
@@ -529,7 +507,7 @@ public class ProviderHelper {
             log(LogLevel.ERROR, LogType.MSG_IP_FAIL_IO_EXC);
             Log.e(Constants.TAG, "IOException during import", e);
             mIndent -= 1;
-            return new SaveKeyringResult(SaveKeyringResult.RESULT_ERROR, mLog);
+            return SaveKeyringResult.RESULT_ERROR;
         }
 
         try {
@@ -544,33 +522,24 @@ public class ProviderHelper {
             }
 
             log(LogLevel.DEBUG, LogType.MSG_IP_APPLY_BATCH);
-            progress.setProgress(LogType.MSG_IP_APPLY_BATCH.getMsgId(), 90, 100);
+            progress.setProgress(LogType.MSG_IP_APPLY_BATCH.getMsgId(), 75, 100);
             mContentResolver.applyBatch(KeychainContract.CONTENT_AUTHORITY, operations);
 
-            // Save the saved keyring (if any)
-            if (secretRing != null) {
-                log(LogLevel.DEBUG, LogType.MSG_IP_REINSERT_SECRET);
-                mIndent += 1;
-                saveSecretKeyRing(secretRing);
-                result |= SaveKeyringResult.SAVED_SECRET;
-                mIndent -= 1;
-            }
-
-            mIndent -= 1;
             log(LogLevel.OK, LogType.MSG_IP_SUCCESS);
-            progress.setProgress(LogType.MSG_IP_SUCCESS.getMsgId(), 100, 100);
-            return new SaveKeyringResult(result, mLog);
+            mIndent -= 1;
+            progress.setProgress(LogType.MSG_IP_SUCCESS.getMsgId(), 90, 100);
+            return result;
 
         } catch (RemoteException e) {
             log(LogLevel.ERROR, LogType.MSG_IP_FAIL_REMOTE_EX);
             Log.e(Constants.TAG, "RemoteException during import", e);
             mIndent -= 1;
-            return new SaveKeyringResult(SaveKeyringResult.RESULT_ERROR, mLog);
+            return SaveKeyringResult.RESULT_ERROR;
         } catch (OperationApplicationException e) {
             log(LogLevel.ERROR, LogType.MSG_IP_FAIL_OP_EX);
             Log.e(Constants.TAG, "OperationApplicationException during import", e);
             mIndent -= 1;
-            return new SaveKeyringResult(SaveKeyringResult.RESULT_ERROR, mLog);
+            return SaveKeyringResult.RESULT_ERROR;
         }
 
     }
@@ -596,22 +565,13 @@ public class ProviderHelper {
         }
     }
 
-    /**
-     * Saves a PGPSecretKeyRing in the DB. This will only work if a corresponding public keyring
-     * is already in the database!
-     *
-     * TODO allow adding secret keys where no public key exists (ie, consolidate keys)
+    /** Saves an UncachedKeyRing of the secret variant into the db.
+     * This method will fail if no corresponding public keyring is in the database!
      */
-    public SaveKeyringResult saveSecretKeyRing(UncachedKeyRing keyRing) {
+    private SaveKeyringResult internalSaveSecretKeyRing(UncachedKeyRing keyRing) {
 
         if (!keyRing.isSecret()) {
             log(LogLevel.ERROR, LogType.MSG_IS_BAD_TYPE_PUBLIC);
-            return new SaveKeyringResult(SaveKeyringResult.RESULT_ERROR, mLog);
-        }
-
-        // Canonicalize this key, to assert a number of assumptions made about it.
-        keyRing = keyRing.canonicalize(mLog, mIndent);
-        if (keyRing == null) {
             return new SaveKeyringResult(SaveKeyringResult.RESULT_ERROR, mLog);
         }
 
@@ -619,6 +579,12 @@ public class ProviderHelper {
         log(LogLevel.START, LogType.MSG_IS,
                 new String[]{ PgpKeyHelper.convertKeyIdToHex(masterKeyId) });
         mIndent += 1;
+
+        // Canonicalize this key, to assert a number of assumptions made about it.
+        keyRing = keyRing.canonicalize(mLog, mIndent);
+        if (keyRing == null) {
+            return new SaveKeyringResult(SaveKeyringResult.RESULT_ERROR, mLog);
+        }
 
         // IF this is successful, it's a secret key
         int result = SaveKeyringResult.SAVED_SECRET;
@@ -685,18 +651,67 @@ public class ProviderHelper {
 
     }
 
+
+    public SaveKeyringResult savePublicKeyRing(UncachedKeyRing keyRing) {
+        return savePublicKeyRing(keyRing, new Progressable() {
+            @Override
+            public void setProgress(String message, int current, int total) {
+            }
+
+            @Override
+            public void setProgress(int resourceId, int current, int total) {
+            }
+
+            @Override
+            public void setProgress(int current, int total) {
+            }
+        });
+    }
+
+    public SaveKeyringResult savePublicKeyRing(UncachedKeyRing keyRing, Progressable progress) {
+
+        // IF there is a secret key, preserve it!
+        UncachedKeyRing secretRing;
+        try {
+            secretRing = getWrappedSecretKeyRing(keyRing.getMasterKeyId()).getUncached();
+            log(LogLevel.DEBUG, LogType.MSG_IP_PRESERVING_SECRET);
+            progress.setProgress(LogType.MSG_IP_PRESERVING_SECRET.getMsgId(), 10, 100);
+        } catch (NotFoundException e) {
+            secretRing = null;
+        }
+
+        int result = internalSavePublicKeyRing(keyRing, progress, secretRing != null);
+
+        // Save the saved keyring (if any)
+        if (secretRing != null) {
+            log(LogLevel.DEBUG, LogType.MSG_IP_REINSERT_SECRET);
+            progress.setProgress(LogType.MSG_IP_REINSERT_SECRET.getMsgId(), 90, 100);
+            mIndent += 1;
+            internalSaveSecretKeyRing(secretRing);
+            result |= SaveKeyringResult.SAVED_SECRET;
+            mIndent -= 1;
+        }
+
+        return new SaveKeyringResult(result, mLog);
+
+    }
+
+    public SaveKeyringResult saveSecretKeyRing(UncachedKeyRing keyRing) {
+        return internalSaveSecretKeyRing(keyRing);
+    }
+
     /**
      * Saves (or updates) a pair of public and secret KeyRings in the database
      */
-    public void saveKeyRing(UncachedKeyRing pubRing, UncachedKeyRing secRing) throws IOException {
-        long masterKeyId = pubRing.getPublicKey().getKeyId();
+    public void savePairedKeyRing(UncachedKeyRing pubRing, UncachedKeyRing secRing) throws IOException {
+        long masterKeyId = pubRing.getMasterKeyId();
 
         // delete secret keyring (so it isn't unnecessarily saved by public-savePublicKeyRing below)
         mContentResolver.delete(KeyRingData.buildSecretKeyRingUri(Long.toString(masterKeyId)), null, null);
 
         // save public keyring
-        savePublicKeyRing(pubRing);
-        saveSecretKeyRing(secRing);
+        internalSavePublicKeyRing(pubRing, null, true);
+        internalSaveSecretKeyRing(secRing);
     }
 
     /**
@@ -812,9 +827,6 @@ public class ProviderHelper {
 
     /**
      * Must be an uri pointing to an account
-     *
-     * @param uri
-     * @return
      */
     public AppSettings getApiAppSettings(Uri uri) {
         AppSettings settings = null;

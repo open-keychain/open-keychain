@@ -524,13 +524,13 @@ public class KeychainIntentService extends IntentService
                         PgpKeyOperation.Pair<UncachedKeyRing,UncachedKeyRing> pair =
                                 keyOperations.buildSecretKey(seckey, pubkey, saveParcel); // edit existing
                         setProgress(R.string.progress_saving_key_ring, 90, 100);
-                        providerHelper.saveKeyRing(pair.first, pair.second);
+                        providerHelper.savePairedKeyRing(pair.first, pair.second);
                     } catch (ProviderHelper.NotFoundException e) {
                         PgpKeyOperation.Pair<UncachedKeyRing,UncachedKeyRing> pair =
                                 keyOperations.buildNewSecretKey(saveParcel); //new Keyring
                         // save the pair
                         setProgress(R.string.progress_saving_key_ring, 90, 100);
-                        providerHelper.saveKeyRing(pair.first, pair.second);
+                        providerHelper.savePairedKeyRing(pair.first, pair.second);
                     }
 
                     setProgress(R.string.progress_done, 100, 100);
