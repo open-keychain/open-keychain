@@ -630,7 +630,10 @@ public class ProviderHelper {
             values.put(KeyRingData.KEY_RING_DATA, keyRing.getEncoded());
             // insert new version of this keyRing
             Uri uri = KeyRingData.buildSecretKeyRingUri(Long.toString(masterKeyId));
-            mContentResolver.insert(uri, values);
+            if (mContentResolver.insert(uri, values) == null) {
+                log(LogLevel.ERROR, LogType.MSG_IS_DB_EXCEPTION);
+                return new SaveKeyringResult(SaveKeyringResult.RESULT_ERROR, mLog);
+            }
         } catch (IOException e) {
             Log.e(Constants.TAG, "Failed to encode key!", e);
             log(LogLevel.ERROR, LogType.MSG_IS_IO_EXCPTION);

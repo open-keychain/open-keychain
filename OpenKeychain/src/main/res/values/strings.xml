@@ -555,6 +555,7 @@
 
     <!-- Import Secret log entries -->
     <string name="msg_is">Importing secret key %s</string>
+    <string name="msg_is_db_exception">Database error!</string>
     <string name="msg_is_importing_subkeys">Processing secret subkeys</string>
     <string name="msg_is_io_excption">Error encoding keyring</string>
     <string name="msg_is_subkey_nonexistent">Subkey %s unavailable in public key</string>

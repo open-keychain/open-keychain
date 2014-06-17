@@ -171,6 +171,7 @@ public class OperationResultParcel implements Parcelable {
         // import secret
         MSG_IS(R.string.msg_is),
         MSG_IS_BAD_TYPE_PUBLIC (R.string.msg_is_bad_type_public),
+        MSG_IS_DB_EXCEPTION (R.string.msg_is_db_exception),
         MSG_IS_IMPORTING_SUBKEYS (R.string.msg_is_importing_subkeys),
         MSG_IS_IO_EXCPTION (R.string.msg_is_io_excption),
         MSG_IS_SUBKEY_NONEXISTENT (R.string.msg_is_subkey_nonexistent),
