@@ -215,6 +215,24 @@ public class OperationResultParcel implements Parcelable {
         MSG_KC_UID_NO_CERT (R.string.msg_kc_uid_no_cert),
         MSG_KC_UID_REVOKE_DUP (R.string.msg_kc_uid_revoke_dup),
         MSG_KC_UID_REVOKE_OLD (R.string.msg_kc_uid_revoke_old),
+
+        MSG_MR (R.string.msg_mr),
+        MSG_MR_ERROR_ENCODE (R.string.msg_mr_error_encode),
+        MSG_MR_ERROR_PGP (R.string.msg_mr_error_pgp),
+        MSG_MR_ERROR_SIG (R.string.msg_mr_error_sig),
+        MSG_MR_PASSPHRASE (R.string.msg_mr_passphrase),
+        MSG_MR_SUBKEY_CHANGE (R.string.msg_mr_subkey_change),
+        MSG_MR_SUBKEY_MISSING (R.string.msg_mr_subkey_missing),
+        MSG_MR_SUBKEY_NEW_ID (R.string.msg_mr_subkey_new_id),
+        MSG_MR_SUBKEY_NEW (R.string.msg_mr_subkey_new),
+        MSG_MR_SUBKEY_PAST_EXPIRY (R.string.msg_mr_subkey_past_expiry),
+        MSG_MR_SUBKEY_REVOKE (R.string.msg_mr_subkey_revoke),
+        MSG_MR_SUCCESS (R.string.msg_mr_success),
+        MSG_MR_UID_ADD (R.string.msg_mr_uid_add),
+        MSG_MR_UID_PRIMARY (R.string.msg_mr_uid_primary),
+        MSG_MR_UID_REVOKE (R.string.msg_mr_uid_revoke),
+        MSG_MR_UNLOCK_ERROR (R.string.msg_mr_unlock_error),
+        MSG_MR_UNLOCK (R.string.msg_mr_unlock),
         ;
 
         private final int mMsgId;
@@ -262,6 +280,10 @@ public class OperationResultParcel implements Parcelable {
         /// Simple convenience method
         public void add(LogLevel level, LogType type, String[] parameters, int indent) {
             add(new OperationResultParcel.LogEntryParcel(level, type, parameters, indent));
+        }
+
+        public void add(LogLevel level, LogType type, int indent) {
+            add(new OperationResultParcel.LogEntryParcel(level, type, null, indent));
         }
 
         public boolean containsWarnings() {

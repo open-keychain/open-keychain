@@ -52,6 +52,7 @@ import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralMsgIdException;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.KeychainDatabase;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
+import org.sufficientlysecure.keychain.service.OperationResultParcel.OperationLog;
 import org.sufficientlysecure.keychain.util.InputData;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.ProgressScaler;
@@ -486,7 +487,9 @@ public class KeychainIntentService extends IntentService
                     String passphrase = data.getString(SAVE_KEYRING_PASSPHRASE);
                     WrappedSecretKeyRing secRing = providerHelper.getWrappedSecretKeyRing(masterKeyId);
 
-                    UncachedKeyRing ring = keyOperations.modifySecretKeyRing(secRing, saveParcel, passphrase);
+                    OperationLog log = new OperationLog();
+                    UncachedKeyRing ring = keyOperations.modifySecretKeyRing(secRing, saveParcel,
+                            passphrase, log, 0);
                     setProgress(R.string.progress_saving_key_ring, 90, 100);
                     providerHelper.saveSecretKeyRing(ring);
                 } catch (ProviderHelper.NotFoundException e) {
