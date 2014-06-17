@@ -434,7 +434,6 @@ public class ProviderHelper {
             log(LogLevel.INFO, LogType.MSG_IP_UID_CLASSIFYING, new String[]{
                     Integer.toString(trustedKeys.size())
             });
-            progress.setProgress(LogType.MSG_IP_UID_CLASSIFYING.getMsgId(), 60, 100);
             mIndent += 1;
             List<UserIdItem> uids = new ArrayList<UserIdItem>();
             for (String userId : new IterableIterator<String>(

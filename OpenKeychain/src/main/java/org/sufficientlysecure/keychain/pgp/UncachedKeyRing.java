@@ -367,13 +367,13 @@ public class UncachedKeyRing {
                             } else if (selfCert.getCreationTime().before(cert.getCreationTime())) {
                                 modified = PGPPublicKey.removeCertification(modified, userId, selfCert);
                                 redundantCerts += 1;
-                                log.add(LogLevel.INFO, LogType.MSG_KC_UID_DUP,
+                                log.add(LogLevel.DEBUG, LogType.MSG_KC_UID_DUP,
                                         new String[] { userId }, indent);
                                 selfCert = zert;
                             } else {
                                 modified = PGPPublicKey.removeCertification(modified, userId, zert);
                                 redundantCerts += 1;
-                                log.add(LogLevel.INFO, LogType.MSG_KC_UID_DUP,
+                                log.add(LogLevel.DEBUG, LogType.MSG_KC_UID_DUP,
                                         new String[] { userId }, indent);
                             }
                             // If there is a revocation certificate, and it's older than this, drop it
@@ -382,7 +382,7 @@ public class UncachedKeyRing {
                                 modified = PGPPublicKey.removeCertification(modified, userId, revocation);
                                 revocation = null;
                                 redundantCerts += 1;
-                                log.add(LogLevel.INFO, LogType.MSG_KC_UID_REVOKE_OLD,
+                                log.add(LogLevel.DEBUG, LogType.MSG_KC_UID_REVOKE_OLD,
                                         new String[] { userId }, indent);
                             }
                             break;
@@ -392,7 +392,7 @@ public class UncachedKeyRing {
                             if (selfCert != null && selfCert.getCreationTime().after(zert.getCreationTime())) {
                                 modified = PGPPublicKey.removeCertification(modified, userId, zert);
                                 redundantCerts += 1;
-                                log.add(LogLevel.INFO, LogType.MSG_KC_UID_REVOKE_OLD,
+                                log.add(LogLevel.DEBUG, LogType.MSG_KC_UID_REVOKE_OLD,
                                         new String[] { userId }, indent);
                                 continue;
                             }
@@ -403,13 +403,13 @@ public class UncachedKeyRing {
                             } else if (revocation.getCreationTime().before(cert.getCreationTime())) {
                                 modified = PGPPublicKey.removeCertification(modified, userId, revocation);
                                 redundantCerts += 1;
-                                log.add(LogLevel.INFO, LogType.MSG_KC_UID_REVOKE_DUP,
+                                log.add(LogLevel.DEBUG, LogType.MSG_KC_UID_REVOKE_DUP,
                                         new String[] { userId }, indent);
                                 revocation = zert;
                             } else {
                                 modified = PGPPublicKey.removeCertification(modified, userId, zert);
                                 redundantCerts += 1;
-                                log.add(LogLevel.INFO, LogType.MSG_KC_UID_REVOKE_DUP,
+                                log.add(LogLevel.DEBUG, LogType.MSG_KC_UID_REVOKE_DUP,
                                         new String[] { userId }, indent);
                             }
                             break;
