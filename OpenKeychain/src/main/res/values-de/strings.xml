@@ -324,10 +324,8 @@
   <string name="progress_verifying_integrity">Integrität wird überprüft…</string>
   <string name="progress_deleting_securely">\'%s\' wird sicher gelöscht…</string>
   <!--action strings-->
-  <string name="hint_public_keys">Öffentliche Schlüssel suchen</string>
   <string name="hint_secret_keys">Private Schlüssel suchen</string>
   <string name="action_share_key_with">Teile Schlüssel über…</string>
-  <string name="hint_keybase_search">Durchsuche Keybase.io</string>
   <!--key bit length selections-->
   <string name="key_size_512">512</string>
   <string name="key_size_768">768</string>

@@ -32,10 +32,14 @@ import android.os.Messenger;
 import android.os.Parcelable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
+import android.util.DisplayMetrics;
+import android.util.TypedValue;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 
 import com.github.johnpersano.supertoasts.SuperCardToast;
@@ -45,18 +49,22 @@ import com.github.johnpersano.supertoasts.util.Style;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.helper.OtherHelper;
 import org.sufficientlysecure.keychain.keyimport.ImportKeysListEntry;
+import org.sufficientlysecure.keychain.keyimport.KeybaseKeyserver;
 import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
 import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
 import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
 import org.sufficientlysecure.keychain.service.OperationResults.ImportResult;
+import org.sufficientlysecure.keychain.ui.adapter.PagerTabStripAdapter;
+import org.sufficientlysecure.keychain.ui.widget.SlidingTabLayout;
 import org.sufficientlysecure.keychain.util.Log;
 
 import java.util.ArrayList;
 import java.util.Locale;
 
-public class ImportKeysActivity extends ActionBarActivity implements ActionBar.OnNavigationListener {
+public class ImportKeysActivity extends ActionBarActivity {
     public static final String ACTION_IMPORT_KEY = Constants.INTENT_PREFIX + "IMPORT_KEY";
     public static final String ACTION_IMPORT_KEY_FROM_QR_CODE = Constants.INTENT_PREFIX
             + "IMPORT_KEY_FROM_QR_CODE";
@@ -90,29 +98,27 @@ public class ImportKeysActivity extends ActionBarActivity implements ActionBar.O
     private String[] mNavigationStrings;
     private Fragment mCurrentFragment;
     private View mImportButton;
+    private ViewPager mViewPager;
+    private SlidingTabLayout mSlidingTabLayout;
+    private PagerTabStripAdapter mTabsAdapter;
 
-    private static final Class[] NAVIGATION_CLASSES = new Class[]{
-            ImportKeysServerFragment.class,
-            ImportKeysFileFragment.class,
-            ImportKeysQrCodeFragment.class,
-            ImportKeysClipboardFragment.class,
-            ImportKeysNFCFragment.class,
-            ImportKeysKeybaseFragment.class
-    };
+    public static final int VIEW_PAGER_HEIGHT = 64; // dp
+
     private static final int NAV_SERVER = 0;
-    private static final int NAV_FILE = 1;
-    private static final int NAV_QR_CODE = 2;
-    private static final int NAV_CLIPBOARD = 3;
-    private static final int NAV_NFC = 4;
-    private static final int NAV_KEYBASE = 5;
+    private static final int NAV_QR_CODE = 1;
+    private static final int NAV_FILE = 2;
+    private static final int NAV_KEYBASE = 3;
 
-    private int mCurrentNavPosition = -1;
+    private int mSwitchToTab = NAV_SERVER;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.import_keys_activity);
+
+        mViewPager = (ViewPager) findViewById(R.id.import_pager);
+        mSlidingTabLayout = (SlidingTabLayout) findViewById(R.id.import_sliding_tab_layout);
 
         mImportButton = findViewById(R.id.import_import);
         mImportButton.setOnClickListener(new OnClickListener() {
@@ -127,18 +133,55 @@ public class ImportKeysActivity extends ActionBarActivity implements ActionBar.O
         if (ACTION_IMPORT_KEY_FROM_KEYSERVER_AND_RETURN.equals(getIntent().getAction())) {
             setTitle(R.string.nav_import);
         } else {
-            getSupportActionBar().setDisplayShowTitleEnabled(false);
-
-            // set drop down navigation
-            Context context = getSupportActionBar().getThemedContext();
-            ArrayAdapter<CharSequence> navigationAdapter = ArrayAdapter.createFromResource(context,
-                    R.array.import_action_list, android.R.layout.simple_spinner_dropdown_item);
-            getSupportActionBar().setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
-            getSupportActionBar().setListNavigationCallbacks(navigationAdapter, this);
+            initTabs();
         }
 
         handleActions(savedInstanceState, getIntent());
+    }
 
+    private void initTabs() {
+        mTabsAdapter = new PagerTabStripAdapter(this);
+        mViewPager.setAdapter(mTabsAdapter);
+        mSlidingTabLayout.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+                // resize view pager back to 64 if keyserver settings have been collapsed
+                if (getViewPagerHeight() > VIEW_PAGER_HEIGHT) {
+                    resizeViewPager(VIEW_PAGER_HEIGHT);
+                }
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+            }
+        });
+
+        Bundle serverBundle = new Bundle();
+//        serverBundle.putParcelable(ViewKeyMainFragment.ARG_DATA_URI, dataUri);
+        mTabsAdapter.addTab(ImportKeysServerFragment.class,
+                serverBundle, getString(R.string.import_tab_keyserver));
+
+        Bundle qrCodeBundle = new Bundle();
+//        importBundle.putParcelable(ViewKeyMainFragment.ARG_DATA_URI, dataUri);
+        mTabsAdapter.addTab(ImportKeysQrCodeFragment.class,
+                qrCodeBundle, getString(R.string.import_tab_qr_code));
+
+        Bundle fileBundle = new Bundle();
+//        importBundle.putParcelable(ViewKeyMainFragment.ARG_DATA_URI, dataUri);
+        mTabsAdapter.addTab(ImportKeysFileFragment.class,
+                fileBundle, getString(R.string.import_tab_direct));
+
+        Bundle keybaseBundle = new Bundle();
+//        keybaseBundle.putParcelable(ViewKeyMainFragment.ARG_DATA_URI, dataUri);
+        mTabsAdapter.addTab(ImportKeysKeybaseFragment.class,
+                keybaseBundle, getString(R.string.import_tab_keybase));
+
+        // update layout after operations
+        mSlidingTabLayout.setViewPager(mViewPager);
     }
 
     protected void handleActions(Bundle savedInstanceState, Intent intent) {
@@ -164,7 +207,7 @@ public class ImportKeysActivity extends ActionBarActivity implements ActionBar.O
             /* Keychain's own Actions */
 
             // display file fragment
-            loadNavFragment(NAV_FILE, null);
+            mViewPager.setCurrentItem(NAV_FILE);
 
             if (dataUri != null) {
                 // action: directly load data
@@ -199,7 +242,9 @@ public class ImportKeysActivity extends ActionBarActivity implements ActionBar.O
                     // display keyserver fragment with query
                     Bundle args = new Bundle();
                     args.putString(ImportKeysServerFragment.ARG_QUERY, query);
-                    loadNavFragment(NAV_SERVER, args);
+//                    loadNavFragment(NAV_SERVER, args);
+                    //TODO: load afterwards!
+                    mSwitchToTab = NAV_SERVER;
 
                     // action: search immediately
                     startListFragment(savedInstanceState, null, null, query);
@@ -223,9 +268,8 @@ public class ImportKeysActivity extends ActionBarActivity implements ActionBar.O
                 return;
             }
         } else if (ACTION_IMPORT_KEY_FROM_FILE.equals(action)) {
-
             // NOTE: this only displays the appropriate fragment, no actions are taken
-            loadNavFragment(NAV_FILE, null);
+            mSwitchToTab = NAV_FILE;
 
             // no immediate actions!
             startListFragment(savedInstanceState, null, null, null);
@@ -233,26 +277,28 @@ public class ImportKeysActivity extends ActionBarActivity implements ActionBar.O
             // also exposed in AndroidManifest
 
             // NOTE: this only displays the appropriate fragment, no actions are taken
-            loadNavFragment(NAV_QR_CODE, null);
+            mSwitchToTab = NAV_QR_CODE;
 
             // no immediate actions!
             startListFragment(savedInstanceState, null, null, null);
         } else if (ACTION_IMPORT_KEY_FROM_NFC.equals(action)) {
 
             // NOTE: this only displays the appropriate fragment, no actions are taken
-            loadNavFragment(NAV_NFC, null);
+            mSwitchToTab = NAV_QR_CODE;
 
             // no immediate actions!
             startListFragment(savedInstanceState, null, null, null);
         } else if (ACTION_IMPORT_KEY_FROM_KEYBASE.equals(action)) {
             // NOTE: this only displays the appropriate fragment, no actions are taken
-            loadNavFragment(NAV_KEYBASE, null);
+            mSwitchToTab = NAV_KEYBASE;
 
             // no immediate actions!
             startListFragment(savedInstanceState, null, null, null);
         } else {
             startListFragment(savedInstanceState, null, null, null);
         }
+
+        mViewPager.setCurrentItem(mSwitchToTab);
     }
 
     private void startListFragment(Bundle savedInstanceState, byte[] bytes, Uri dataUri, String serverQuery) {
@@ -275,54 +321,16 @@ public class ImportKeysActivity extends ActionBarActivity implements ActionBar.O
         getSupportFragmentManager().executePendingTransactions();
     }
 
-    /**
-     * "Basically, when using a list navigation, onNavigationItemSelected() is automatically
-     * called when your activity is created/re-created, whether you like it or not. To prevent
-     * your Fragment's onCreateView() from being called twice, this initial automatic call to
-     * onNavigationItemSelected() should check whether the Fragment is already in existence
-     * inside your Activity."
-     * <p/>
-     * from http://stackoverflow.com/a/14295474
-     * <p/>
-     * In our case, if we start ImportKeysActivity with parameters to directly search using a fingerprint,
-     * the fragment would be loaded twice resulting in the query being empty after the second load.
-     * <p/>
-     * Our solution:
-     * To prevent that a fragment will be loaded again even if it was already loaded loadNavFragment
-     * checks against mCurrentNavPosition.
-     *
-     * @param itemPosition
-     * @param itemId
-     * @return
-     */
-    @Override
-    public boolean onNavigationItemSelected(int itemPosition, long itemId) {
-        Log.d(Constants.TAG, "onNavigationItemSelected");
-
-        loadNavFragment(itemPosition, null);
-
-        return true;
+    public void resizeViewPager(int dp) {
+        ViewGroup.LayoutParams params = mViewPager.getLayoutParams();
+        params.height = OtherHelper.dpToPx(this, dp);
+        // update layout after operations
+        mSlidingTabLayout.setViewPager(mViewPager);
     }
 
-    private void loadNavFragment(int itemPosition, Bundle args) {
-        if (mCurrentNavPosition != itemPosition) {
-            if (ActionBar.NAVIGATION_MODE_LIST == getSupportActionBar().getNavigationMode()) {
-                getSupportActionBar().setSelectedNavigationItem(itemPosition);
-            }
-            loadFragment(NAVIGATION_CLASSES[itemPosition], args, mNavigationStrings[itemPosition]);
-            mCurrentNavPosition = itemPosition;
-        }
-    }
-
-    private void loadFragment(Class<?> clss, Bundle args, String tag) {
-        mCurrentFragment = Fragment.instantiate(this, clss.getName(), args);
-
-        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        // Replace whatever is in the fragment container with this fragment
-        // and give the fragment a tag name equal to the string at the position selected
-        ft.replace(R.id.import_navigation_fragment, mCurrentFragment, tag);
-        // Apply changes
-        ft.commit();
+    public int getViewPagerHeight() {
+        ViewGroup.LayoutParams params = mViewPager.getLayoutParams();
+        return OtherHelper.pxToDp(this, params.height);
     }
 
     public void loadFromFingerprintUri(Bundle savedInstanceState, Uri dataUri) {
@@ -349,7 +357,9 @@ public class ImportKeysActivity extends ActionBarActivity implements ActionBar.O
         Bundle args = new Bundle();
         args.putString(ImportKeysServerFragment.ARG_QUERY, query);
         args.putBoolean(ImportKeysServerFragment.ARG_DISABLE_QUERY_EDIT, true);
-        loadNavFragment(NAV_SERVER, args);
+//        loadNavFragment(NAV_SERVER, args);
+
+        //TODO
 
         // action: search directly
         startListFragment(savedInstanceState, null, null, query);
@@ -437,15 +447,16 @@ public class ImportKeysActivity extends ActionBarActivity implements ActionBar.O
                     toast.setButtonTextColor(getResources().getColor(R.color.black));
                     toast.setTextColor(getResources().getColor(R.color.black));
                     toast.setOnClickWrapper(new OnClickWrapper("supercardtoast",
-                        new SuperToast.OnClickListener() {
-                            @Override
-                            public void onClick(View view, Parcelable token) {
-                                Intent intent = new Intent(
-                                        ImportKeysActivity.this, LogDisplayActivity.class);
-                                intent.putExtra(LogDisplayFragment.EXTRA_RESULT, result);
-                                startActivity(intent);
+                            new SuperToast.OnClickListener() {
+                                @Override
+                                public void onClick(View view, Parcelable token) {
+                                    Intent intent = new Intent(
+                                            ImportKeysActivity.this, LogDisplayActivity.class);
+                                    intent.putExtra(LogDisplayFragment.EXTRA_RESULT, result);
+                                    startActivity(intent);
+                                }
                             }
-                    }));
+                    ));
                     toast.show();
 
                     /*
@@ -560,9 +571,12 @@ public class ImportKeysActivity extends ActionBarActivity implements ActionBar.O
         super.onResume();
 
         // Check to see if the Activity started due to an Android Beam
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN
-                && NfcAdapter.ACTION_NDEF_DISCOVERED.equals(getIntent().getAction())) {
-            handleActionNdefDiscovered(getIntent());
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+            if (NfcAdapter.ACTION_NDEF_DISCOVERED.equals(getIntent().getAction())) {
+                handleActionNdefDiscovered(getIntent());
+            } else {
+                Log.d(Constants.TAG, "NFC: No NDEF discovered!");
+            }
         } else {
             Log.e(Constants.TAG, "Android Beam not supported by Android < 4.1");
         }

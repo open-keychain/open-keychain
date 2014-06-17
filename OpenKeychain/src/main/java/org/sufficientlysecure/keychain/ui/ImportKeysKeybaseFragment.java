@@ -17,6 +17,7 @@
 
 package org.sufficientlysecure.keychain.ui;
 
+import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -29,8 +30,6 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import com.beardedhen.androidbootstrap.BootstrapButton;
-
 import org.sufficientlysecure.keychain.R;
 
 /**
@@ -40,7 +39,7 @@ import org.sufficientlysecure.keychain.R;
 public class ImportKeysKeybaseFragment extends Fragment {
 
     private ImportKeysActivity mImportActivity;
-    private BootstrapButton mSearchButton;
+    private View mSearchButton;
     private EditText mQueryEditText;
 
     public static final String ARG_QUERY = "query";
@@ -66,7 +65,7 @@ public class ImportKeysKeybaseFragment extends Fragment {
 
         mQueryEditText = (EditText) view.findViewById(R.id.import_keybase_query);
 
-        mSearchButton = (BootstrapButton) view.findViewById(R.id.import_keybase_search);
+        mSearchButton = view.findViewById(R.id.import_keybase_search);
         mSearchButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -101,8 +100,6 @@ public class ImportKeysKeybaseFragment extends Fragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        mImportActivity = (ImportKeysActivity) getActivity();
-
         // set displayed values
         if (getArguments() != null) {
             if (getArguments().containsKey(ARG_QUERY)) {
@@ -110,6 +107,13 @@ public class ImportKeysKeybaseFragment extends Fragment {
                 mQueryEditText.setText(query, TextView.BufferType.EDITABLE);
             }
         }
+    }
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+
+        mImportActivity = (ImportKeysActivity) activity;
     }
 
     private void search(String query) {

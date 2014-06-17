@@ -158,7 +158,7 @@ public class ViewKeyActivity extends ActionBarActivity implements
         Bundle shareBundle = new Bundle();
         shareBundle.putParcelable(ViewKeyMainFragment.ARG_DATA_URI, dataUri);
         mTabsAdapter.addTab(ViewKeyShareFragment.class,
-                mainBundle, getString(R.string.key_view_tab_share));
+                shareBundle, getString(R.string.key_view_tab_share));
 
         // update layout after operations
         mSlidingTabLayout.setViewPager(mViewPager);

@@ -75,16 +75,11 @@
     <!-- menu -->
     <string name="menu_preferences">Settings</string>
     <string name="menu_help">Help</string>
-    <string name="menu_import_from_file">Import from file</string>
-    <string name="menu_import_from_qr_code">Import from QR Code</string>
-    <string name="menu_import_from_nfc">Import from NFC</string>
     <string name="menu_export_key">Export to file</string>
     <string name="menu_delete_key">Delete key</string>
     <string name="menu_create_key">Create key</string>
     <string name="menu_create_key_expert">Create key (expert)</string>
     <string name="menu_search">Search</string>
-    <string name="menu_import_from_key_server">Keyserver</string>
-    <string name="menu_import_from_keybase">Import from Keybase.io</string>
     <string name="menu_key_server">Keyserver…</string>
     <string name="menu_update_key">Update from keyserver</string>
     <string name="menu_export_key_to_server">Upload to key server</string>
@@ -229,11 +224,6 @@
     <string name="key_creation_weak_rsa_info">Note: generating RSA key with length 1024-bit and less is considered unsafe and it\'s disabled for generating new keys.</string>
     <string name="key_not_found">Couldn\'t find key %08X.</string>
 
-    <plurals name="keys_found">
-        <item quantity="one">Found %d key.</item>
-        <item quantity="other">Found %d keys.</item>
-    </plurals>
-
     <plurals name="bad_keys_encountered">
         <item quantity="one">%d bad secret key ignored. Perhaps you exported with the option\n --export-secret-subkeys\nMake sure you export with\n --export-secret-keys\ninstead.</item>
         <item quantity="other">%d bad secret keys ignored. Perhaps you exported with the option\n --export-secret-subkeys\nMake sure you export with\n --export-secret-keys\ninstead.</item>
@@ -278,11 +268,11 @@
     <string name="error_only_files_are_supported">Direct binary data without actual file in filesystem is not supported.</string>
     <string name="error_jelly_bean_needed">You need Android 4.1 to use Android\'s NFC Beam feature!</string>
     <string name="error_nfc_needed">NFC is not available on your device!</string>
-    <string name="error_nothing_import">Nothing to import!</string>
+    <string name="error_nothing_import">No keys found!</string>
     <string name="error_keyserver_insufficient_query">Key search query too short</string>
     <string name="error_searching_keys">Unrecoverable error searching for keys at server</string>
     <string name="error_keyserver_too_many_responses">Key search query returned too many candidates; Please refine query</string>
-    <string name="error_import_file_no_content">File has no content</string>
+    <string name="error_import_file_no_content">File/Clipboard is empty</string>
     <string name="error_generic_report_bug">A generic error occurred, please create a new bug report for OpenKeychain.</string>
     <plurals name="error_import_non_pgp_part">
         <item quantity="one">part of the loaded file is a valid OpenPGP object but not a OpenPGP key</item>
@@ -339,10 +329,10 @@
     <string name="progress_deleting_securely">deleting \'%s\' securely…</string>
 
     <!-- action strings -->
-    <string name="hint_public_keys">Search Public Keys</string>
+    <string name="hint_public_keys">Name/Email/Key ID…</string>
     <string name="hint_secret_keys">Search Secret Keys</string>
     <string name="action_share_key_with">Share Key with…</string>
-    <string name="hint_keybase_search">Search Keybase.io</string>
+    <string name="hint_keybase_search">Name/Keybase.io username…</string>
 
     <!-- key bit length selections -->
     <string name="key_size_512">512</string>
@@ -372,6 +362,10 @@
     <string name="help_about_version">Version:</string>
 
     <!-- Import -->
+    <string name="import_tab_keyserver">Keyserver</string>
+    <string name="import_tab_direct">File/Clipboard</string>
+    <string name="import_tab_qr_code">QR Code/NFC</string>
+    <string name="import_tab_keybase">Keybase.io</string>
     <string name="import_import">Import selected keys</string>
     <string name="import_from_clipboard">Import from clipboard</string>
 
@@ -387,6 +381,7 @@
     <string name="import_qr_scan_button">Scan QR Code with \'Barcode Scanner\'</string>
     <string name="import_nfc_text">To receive keys via NFC, the device needs to be unlocked.</string>
     <string name="import_nfc_help_button">Help</string>
+    <string name="import_qr_code_button">Scan QR Code…</string>
     <string name="import_clipboard_button">Get key from clipboard</string>
     <string name="import_keybase_button">Get key from Keybase.io</string>
 

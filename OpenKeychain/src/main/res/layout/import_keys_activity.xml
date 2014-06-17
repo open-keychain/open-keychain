@@ -3,7 +3,7 @@
     android:id="@+id/content_frame"
     android:layout_marginLeft="@dimen/drawer_content_padding"
     android:layout_width="match_parent"
-    android:layout_height="fill_parent"
+    android:layout_height="match_parent"
     android:orientation="vertical">
 
     <LinearLayout
@@ -12,21 +12,38 @@
         android:layout_height="wrap_content"
         android:orientation="vertical" />
 
-    <FrameLayout
-        android:id="@+id/import_navigation_fragment"
+    <org.sufficientlysecure.keychain.ui.widget.SlidingTabLayout
+        android:id="@+id/import_sliding_tab_layout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical" />
+        android:layout_height="wrap_content" />
+
+    <android.support.v4.view.ViewPager
+        android:id="@+id/import_pager"
+        android:layout_width="match_parent"
+        android:layout_height="64dp"
+        android:background="@android:color/white" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dip"
+        android:background="?android:attr/listDivider" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="16dp" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dip"
+        android:background="?android:attr/listDivider" />
 
     <FrameLayout
         android:id="@+id/import_keys_list_container"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:orientation="vertical"
-        android:paddingTop="8dp"
-        android:paddingLeft="16dp"
-        android:paddingRight="16dp"
-        android:layout_weight="0.9" />
+        android:layout_weight="1"
+        android:background="@android:color/white" />
 
     <LinearLayout
         android:id="@+id/import_footer"
@@ -34,7 +51,8 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:paddingLeft="16dp"
-        android:paddingRight="16dp">
+        android:paddingRight="16dp"
+        android:background="@android:color/white">
 
         <View
             android:layout_width="match_parent"

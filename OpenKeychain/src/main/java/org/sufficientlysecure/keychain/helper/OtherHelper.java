@@ -17,6 +17,7 @@
 
 package org.sufficientlysecure.keychain.helper;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
@@ -65,6 +66,14 @@ public class OtherHelper {
         SpannableStringBuilder sb = new SpannableStringBuilder(text);
         sb.setSpan(new StrikethroughSpan(), 0, text.length(), Spanned.SPAN_INCLUSIVE_INCLUSIVE);
         return sb;
+    }
+
+    public static int dpToPx(Context context, int dp) {
+        return (int) ((dp * context.getResources().getDisplayMetrics().density) + 0.5);
+    }
+
+    public static int pxToDp(Context context, int px) {
+        return (int) ((px / context.getResources().getDisplayMetrics().density) + 0.5);
     }
 
 }

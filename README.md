@@ -227,8 +227,11 @@ Some parts and some libraries are Apache License v2, MIT X11 License (see below)
 * icon.svg  
   modified version of kgpg_key2_kopete.svgz
   
-* Menu icons  
+* Actionbar icons  
   http://developer.android.com/design/downloads/index.html#action-bar-icon-pack
+  
+* QR Code Actionbar icon  
+  https://github.com/openintents/openintents/blob/master/extensions/qrcode_ext/icons/ic_menu_qr_code/ic_menu_qr_code_holo_light/ic_menu_qr_code.svg
 
 * Purple color scheme  
   http://android-holo-colors.com/

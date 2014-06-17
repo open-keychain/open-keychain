@@ -1,20 +1,13 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:bootstrapbutton="http://schemas.android.com/apk/res-auto"
+    xmlns:custom="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:paddingTop="8dp"
-    android:paddingLeft="16dp"
-    android:paddingRight="16dp"
+    android:layout_height="wrap_content"
     android:orientation="vertical">
-
-    <Spinner
-        android:id="@+id/import_server_spinner"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:paddingLeft="8dp"
+        android:layout_height="?android:attr/listPreferredItemHeight"
         android:orientation="horizontal">
 
         <EditText
@@ -30,18 +23,63 @@
             android:lines="1"
             android:maxLines="1"
             android:minLines="1"
+            android:layout_marginRight="8dp"
             android:layout_gravity="center_vertical" />
 
-        <com.beardedhen.androidbootstrap.BootstrapButton
+        <View
+            android:layout_width="1dip"
+            android:layout_height="match_parent"
+            android:gravity="right"
+            android:layout_marginBottom="8dp"
+            android:layout_marginTop="8dp"
+            android:background="?android:attr/listDivider" />
+
+        <ImageButton
             android:id="@+id/import_server_search"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
+            android:padding="16dp"
+            android:src="@drawable/ic_action_search"
             android:layout_gravity="center_vertical"
+            style="@style/SelectableItem" />
+
+        <View
+            android:layout_width="1dip"
+            android:layout_height="match_parent"
+            android:gravity="right"
+            android:layout_marginBottom="8dp"
+            android:layout_marginTop="8dp"
+            android:background="?android:attr/listDivider" />
+
+        <ImageButton
+            android:id="@+id/import_server_config_button"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:padding="8dp"
+            android:src="@drawable/ic_action_settings"
+            android:layout_gravity="center_vertical"
+            style="@style/SelectableItem" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/import_server_config"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dip"
+            android:background="?android:attr/listDivider" />
+
+        <Spinner
+            android:id="@+id/import_server_spinner"
             android:layout_marginLeft="8dp"
-            bootstrapbutton:bb_icon_left="fa-search"
-            bootstrapbutton:bb_roundedCorners="true"
-            bootstrapbutton:bb_size="default"
-            bootstrapbutton:bb_type="default" />
+            android:layout_marginRight="8dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
     </LinearLayout>
 
 </LinearLayout>
