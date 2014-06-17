@@ -179,7 +179,8 @@ public class OperationResultParcel implements Parcelable {
         MSG_IS_SUCCESS (R.string.msg_is_success),
 
         // keyring canonicalization
-        MSG_KC (R.string.msg_kc),
+        MSG_KC_PUBLIC (R.string.msg_kc_public),
+        MSG_KC_SECRET (R.string.msg_kc_secret),
         MSG_KC_FATAL_NO_UID (R.string.msg_kc_fatal_no_uid),
         MSG_KC_MASTER (R.string.msg_kc_master),
         MSG_KC_REVOKE_BAD_ERR (R.string.msg_kc_revoke_bad_err),
@@ -212,6 +213,7 @@ public class OperationResultParcel implements Parcelable {
         MSG_KC_UID_BAD_TYPE (R.string.msg_kc_uid_bad_type),
         MSG_KC_UID_BAD (R.string.msg_kc_uid_bad),
         MSG_KC_UID_DUP (R.string.msg_kc_uid_dup),
+        MSG_KC_UID_FOREIGN (R.string.msg_kc_uid_foreign),
         MSG_KC_UID_NO_CERT (R.string.msg_kc_uid_no_cert),
         MSG_KC_UID_REVOKE_DUP (R.string.msg_kc_uid_revoke_dup),
         MSG_KC_UID_REVOKE_OLD (R.string.msg_kc_uid_revoke_old),

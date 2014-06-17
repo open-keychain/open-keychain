@@ -609,6 +609,12 @@ public class ProviderHelper {
             return new SaveKeyringResult(SaveKeyringResult.RESULT_ERROR, mLog);
         }
 
+        // Canonicalize this key, to assert a number of assumptions made about it.
+        keyRing = keyRing.canonicalize(mLog, mIndent);
+        if (keyRing == null) {
+            return new SaveKeyringResult(SaveKeyringResult.RESULT_ERROR, mLog);
+        }
+
         long masterKeyId = keyRing.getMasterKeyId();
         log(LogLevel.START, LogType.MSG_IS,
                 new String[]{ PgpKeyHelper.convertKeyIdToHex(masterKeyId) });

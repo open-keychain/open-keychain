@@ -178,8 +178,7 @@ public class UncachedKeyRing {
         return result;
     }
 
-    /** "Canonicalizes" a key, removing inconsistencies in the process. This operation can be
-     * applied to public keyrings only.
+    /** "Canonicalizes" a key, removing inconsistencies in the process.
      *
      * More specifically:
      *  - Remove all non-verifying self-certificates
@@ -193,6 +192,7 @@ public class UncachedKeyRing {
      *   - certifications and certification revocations for user ids
      *  - If a subkey retains no valid subkey binding certificate, remove it
      *  - If a user id retains no valid self certificate, remove it
+     *  - If the key is a secret key, remove all certificates by foreign keys
      *
      * This operation writes an OperationLog which can be used as part of a OperationResultParcel.
      *
@@ -200,12 +200,8 @@ public class UncachedKeyRing {
      *
      */
     public UncachedKeyRing canonicalize(OperationLog log, int indent) {
-        if (isSecret()) {
-            throw new RuntimeException("Tried to canonicalize non-secret keyring. " +
-                    "This is a programming error and should never happen!");
-        }
 
-        log.add(LogLevel.START, LogType.MSG_KC,
+        log.add(LogLevel.START, isSecret() ? LogType.MSG_KC_SECRET : LogType.MSG_KC_PUBLIC,
                 new String[]{PgpKeyHelper.convertKeyIdToHex(getMasterKeyId())}, indent);
         indent += 1;
 
@@ -213,7 +209,7 @@ public class UncachedKeyRing {
 
         int redundantCerts = 0, badCerts = 0;
 
-        PGPPublicKeyRing ring = (PGPPublicKeyRing) mRing;
+        PGPKeyRing ring = mRing;
         PGPPublicKey masterKey = mRing.getPublicKey();
         final long masterKeyId = masterKey.getKeyID();
 
@@ -334,8 +330,15 @@ public class UncachedKeyRing {
                         continue;
                     }
 
-                    // If this is a foreign signature, never mind any further
+                    // If this is a foreign signature, ...
                     if (certId != masterKeyId) {
+                        // never mind any further for public keys, but remove them from secret ones
+                        if (isSecret()) {
+                            log.add(LogLevel.WARN, LogType.MSG_KC_UID_FOREIGN,
+                                    new String[] { PgpKeyHelper.convertKeyIdToHex(certId) }, indent);
+                            modified = PGPPublicKey.removeCertification(modified, userId, zert);
+                            badCerts += 1;
+                        }
                         continue;
                     }
 
@@ -433,7 +436,7 @@ public class UncachedKeyRing {
             }
 
             // Replace modified key in the keyring
-            ring = PGPPublicKeyRing.insertPublicKey(ring, modified);
+            ring = replacePublicKey(ring, modified);
             indent -= 1;
 
         }
@@ -578,7 +581,7 @@ public class UncachedKeyRing {
 
             // it is not properly bound? error!
             if (selfCert == null) {
-                ring = PGPPublicKeyRing.removePublicKey(ring, modified);
+                ring = replacePublicKey(ring, modified);
 
                 log.add(LogLevel.ERROR, LogType.MSG_KC_SUB_NO_CERT,
                         new String[]{ PgpKeyHelper.convertKeyIdToHex(key.getKeyID()) }, indent);
@@ -593,7 +596,7 @@ public class UncachedKeyRing {
                 modified = PGPPublicKey.addCertification(modified, revocation);
             }
             // replace pubkey in keyring
-            ring = PGPPublicKeyRing.insertPublicKey(ring, modified);
+            ring = replacePublicKey(ring, modified);
             indent -= 1;
         }
 
@@ -614,5 +617,14 @@ public class UncachedKeyRing {
         return new UncachedKeyRing(ring);
     }
 
+    private static PGPKeyRing replacePublicKey(PGPKeyRing ring, PGPPublicKey key) {
+        if (ring instanceof PGPPublicKeyRing) {
+            return PGPPublicKeyRing.insertPublicKey((PGPPublicKeyRing) ring, key);
+        }
+        PGPSecretKeyRing secRing = (PGPSecretKeyRing) ring;
+        PGPSecretKey sKey = secRing.getSecretKey(key.getKeyID());
+        sKey = PGPSecretKey.replacePublicKey(sKey, key);
+        return PGPSecretKeyRing.insertSecretKey(secRing, sKey);
+    }
 
 }
