@@ -171,173 +171,139 @@ public class PgpKeyOperation {
             return new PGPSecretKey(keyPair.getPrivateKey(), keyPair.getPublicKey(),
                     sha1Calc, isMasterKey, keyEncryptor);
         } catch(NoSuchProviderException e) {
-            throw new PgpGeneralMsgIdException(R.string.error_encoding, e);
+            throw new RuntimeException(e);
         } catch(NoSuchAlgorithmException e) {
-            throw new PgpGeneralMsgIdException(R.string.error_encoding, e);
+            throw new RuntimeException(e);
         } catch(InvalidAlgorithmParameterException e) {
-            throw new PgpGeneralMsgIdException(R.string.error_encoding, e);
+            throw new RuntimeException(e);
         } catch(PGPException e) {
-            throw new PgpGeneralMsgIdException(R.string.error_encoding, e);
+            throw new PgpGeneralMsgIdException(R.string.msg_mr_error_pgp, e);
         }
     }
 
-    public Pair<PGPSecretKeyRing, PGPPublicKeyRing> buildSecretKey(PGPSecretKeyRing sKR,
-                                                                   PGPPublicKeyRing pKR,
-                                                                   SaveKeyringParcel saveParcel,
-                                                                   String passphrase)
+    /** This method introduces a list of modifications specified by a SaveKeyringParcel to a
+     * PGPSecretKeyRing.
+     *
+     * Note that PGPPublicKeyRings can not be directly modified. Instead, the corresponding
+     * PGPSecretKeyRing must be modified and consequently consolidated with its public counterpart.
+     * This is a natural workflow since pgp keyrings are immutable data structures: Old semantics
+     * are changed by adding new certificates, which implicitly override older certificates.
+     *
+     */
+    public UncachedKeyRing modifySecretKeyRing(WrappedSecretKeyRing wsKR, SaveKeyringParcel saveParcel,
+                                               String passphrase)
             throws PgpGeneralMsgIdException, PGPException, SignatureException, IOException {
 
-        updateProgress(R.string.progress_building_key, 0, 100);
-
-        // sort these, so we can use binarySearch later on
-        Arrays.sort(saveParcel.revokeSubKeys);
-        Arrays.sort(saveParcel.revokeUserIds);
-
         /*
-         * What's gonna happen here:
-         *
          * 1. Unlock private key
-         *
-         * 2. Create new secret key ring
-         *
-         * 3. Copy subkeys
-         *  - Generate revocation if requested
-         *  - Copy old cert, or generate new if change requested
-         *
-         * 4. Generate and add new subkeys
-         *
-         * 5. Copy user ids
-         *  - Generate revocation if requested
-         *  - Copy old cert, or generate new if primary user id status changed
-         *
-         * 6. Add new user ids
-         *
-         * 7. Generate PublicKeyRing from SecretKeyRing
-         *
-         * 8. Return pair (PublicKeyRing,SecretKeyRing)
-         *
+         * 2a. Add certificates for new user ids
+         * 2b. Add revocations for revoked user ids
+         * 3. If primary user id changed, generate new certificates for both old and new
+         * 4a. For each subkey change, generate new subkey binding certificate
+         * 4b. For each subkey revocation, generate new subkey revocation certificate
+         * 5. Generate and add new subkeys
+         * 6. If requested, change passphrase
          */
 
-        // 1. Unlock private key
         updateProgress(R.string.progress_building_key, 0, 100);
 
+        // We work on bouncycastle object level here
+        PGPSecretKeyRing sKR = wsKR.getRing();
         PGPPublicKey masterPublicKey = sKR.getPublicKey();
+        PGPSecretKey masterSecretKey = sKR.getSecretKey();
+
+        // 1. Unlock private key
         PGPPrivateKey masterPrivateKey; {
-            PGPSecretKey masterKey = sKR.getSecretKey();
             PBESecretKeyDecryptor keyDecryptor = new JcePBESecretKeyDecryptorBuilder().setProvider(
                     Constants.BOUNCY_CASTLE_PROVIDER_NAME).build(passphrase.toCharArray());
-            masterPrivateKey = masterKey.extractPrivateKey(keyDecryptor);
+            masterPrivateKey = masterSecretKey.extractPrivateKey(keyDecryptor);
+        }
+        if (!Arrays.equals(saveParcel.mFingerprint, sKR.getPublicKey().getFingerprint())) {
+            return null;
         }
 
-        // 2. Create new secret key ring
         updateProgress(R.string.progress_certifying_master_key, 20, 100);
 
-        // Note we do NOT use PGPKeyRingGeneraor, it's just one level too high and does stuff
-        // we want to do manually. Instead, we simply use a list of secret keys.
-        ArrayList<PGPSecretKey> secretKeys = new ArrayList<PGPSecretKey>();
-        ArrayList<PGPPublicKey> publicKeys = new ArrayList<PGPPublicKey>();
+        { // work on master secret key
 
-        // 3. Copy subkeys
-        // - Generate revocation if requested
-        // - Copy old cert, or generate new if change requested
-        for (PGPSecretKey sKey : new IterableIterator<PGPSecretKey>(sKR.getSecretKeys())) {
-            PGPPublicKey pKey = sKey.getPublicKey();
-            if (Arrays.binarySearch(saveParcel.revokeSubKeys, sKey.getKeyID()) >= 0) {
-                // add revocation signature to key, if there is none yet
-                if (!pKey.getSignaturesOfType(PGPSignature.SUBKEY_REVOCATION).hasNext()) {
-                    // generate revocation signature
-                }
+            PGPPublicKey modifiedPublicKey = masterPublicKey;
+
+            // 2a. Add certificates for new user ids
+            for (String userId : saveParcel.addUserIds) {
+                PGPSignature cert = generateUserIdSignature(masterPrivateKey,
+                        masterPublicKey, userId, false);
+                modifiedPublicKey = PGPPublicKey.addCertification(masterPublicKey, userId, cert);
             }
-            if (saveParcel.changeSubKeys.containsKey(sKey.getKeyID())) {
-                // change subkey flags?
-                SaveKeyringParcel.SubkeyChange change = saveParcel.changeSubKeys.get(sKey.getKeyID());
-                // remove old subkey binding signature(s?)
-                for (PGPSignature sig : new IterableIterator<PGPSignature>(
-                        pKey.getSignaturesOfType(PGPSignature.SUBKEY_BINDING))) {
-                    pKey = PGPPublicKey.removeCertification(pKey, sig);
-                }
 
-                // generate and add new signature
-                PGPSignature sig = generateSubkeyBindingSignature(masterPublicKey, masterPrivateKey,
-                        sKey, pKey, change.mFlags, change.mExpiry, passphrase);
-                pKey = PGPPublicKey.addCertification(pKey, sig);
-            }
-            secretKeys.add(PGPSecretKey.replacePublicKey(sKey, pKey));
-            publicKeys.add(pKey);
-        }
-
-        // 4. Generate and add new subkeys
-        // TODO
-
-        // 5. Copy user ids
-        for (String userId : new IterableIterator<String>(masterPublicKey.getUserIDs())) {
-            // - Copy old cert, or generate new if primary user id status changed
-            boolean certified = false, revoked = false;
-            for (PGPSignature sig : new IterableIterator<PGPSignature>(
-                    masterPublicKey.getSignaturesForID(userId))) {
-                // We know there are only revocation and certification types in here.
-                switch(sig.getSignatureType()) {
-                    case PGPSignature.CERTIFICATION_REVOCATION:
-                        revoked = true;
-                        continue;
-
-                    case PGPSignature.DEFAULT_CERTIFICATION:
-                    case PGPSignature.NO_CERTIFICATION:
-                    case PGPSignature.CASUAL_CERTIFICATION:
-                    case PGPSignature.POSITIVE_CERTIFICATION:
-                        // Already got one? Remove this one, then.
-                        if (certified) {
-                            masterPublicKey = PGPPublicKey.removeCertification(
-                                    masterPublicKey, userId, sig);
-                            continue;
-                        }
-                        boolean primary = userId.equals(saveParcel.changePrimaryUserId);
-                        // Generate a new one under certain circumstances
-                        if (saveParcel.changePrimaryUserId != null &&
-                                sig.getHashedSubPackets().isPrimaryUserID() != primary) {
-                            PGPSignature cert = generateUserIdSignature(
-                                    masterPrivateKey, masterPublicKey, userId, primary);
-                            PGPPublicKey.addCertification(masterPublicKey, userId, cert);
-                        }
-                        certified = true;
-                }
-            }
-            // - Generate revocation if requested
-            if (!revoked && Arrays.binarySearch(saveParcel.revokeUserIds, userId) >= 0) {
+            // 2b. Add revocations for revoked user ids
+            for (String userId : saveParcel.revokeUserIds) {
                 PGPSignature cert = generateRevocationSignature(masterPrivateKey,
                         masterPublicKey, userId);
-                masterPublicKey = PGPPublicKey.addCertification(masterPublicKey, userId, cert);
+                modifiedPublicKey = PGPPublicKey.addCertification(masterPublicKey, userId, cert);
+            }
+
+            // 3. If primary user id changed, generate new certificates for both old and new
+            if (saveParcel.changePrimaryUserId != null) {
+                // todo
+            }
+
+            // Update the secret key ring
+            if (modifiedPublicKey != masterPublicKey) {
+                masterSecretKey = PGPSecretKey.replacePublicKey(masterSecretKey, modifiedPublicKey);
+                masterPublicKey = modifiedPublicKey;
+                sKR = PGPSecretKeyRing.insertSecretKey(sKR, masterSecretKey);
+            }
+
+        }
+
+
+        // 4a. For each subkey change, generate new subkey binding certificate
+        for (SaveKeyringParcel.SubkeyChange change : saveParcel.changeSubKeys) {
+            PGPSecretKey sKey = sKR.getSecretKey(change.mKeyId);
+            if (sKey == null) {
+                return null;
+            }
+            PGPPublicKey pKey = sKey.getPublicKey();
+
+            // generate and add new signature
+            PGPSignature sig = generateSubkeyBindingSignature(masterPublicKey, masterPrivateKey,
+                    sKey, pKey, change.mFlags, change.mExpiry, passphrase);
+            pKey = PGPPublicKey.addCertification(pKey, sig);
+            sKR = PGPSecretKeyRing.insertSecretKey(sKR, PGPSecretKey.replacePublicKey(sKey, pKey));
+        }
+
+        // 4b. For each subkey change, generate new subkey binding certificate
+        for (long revocation : saveParcel.revokeSubKeys) {
+            PGPSecretKey sKey = sKR.getSecretKey(revocation);
+            if (sKey == null) {
+                return null;
+            }
+            PGPPublicKey pKey = sKey.getPublicKey();
+
+            // generate and add new signature
+            PGPSignature sig = generateRevocationSignature(masterPublicKey, masterPrivateKey, pKey);
+
+            pKey = PGPPublicKey.addCertification(pKey, sig);
+            sKR = PGPSecretKeyRing.insertSecretKey(sKR, PGPSecretKey.replacePublicKey(sKey, pKey));
+        }
+
+        // 5. Generate and add new subkeys
+        for (SaveKeyringParcel.SubkeyAdd add : saveParcel.addSubKeys) {
+            try {
+                PGPSecretKey sKey = createKey(add.mAlgorithm, add.mKeysize, passphrase, false);
+                PGPPublicKey pKey = sKey.getPublicKey();
+                PGPSignature cert = generateSubkeyBindingSignature(masterPublicKey, masterPrivateKey,
+                        sKey, pKey, add.mFlags, add.mExpiry, passphrase);
+
+                pKey = PGPPublicKey.addCertification(pKey, cert);
+                sKey = PGPSecretKey.replacePublicKey(sKey, pKey);
+                sKR = PGPSecretKeyRing.insertSecretKey(sKR, PGPSecretKey.replacePublicKey(sKey, pKey));
+            } catch (PgpGeneralMsgIdException e) {
+                return null;
             }
         }
 
-        // 6. Add new user ids
-        for(String userId : saveParcel.addUserIds) {
-            PGPSignature cert = generateUserIdSignature(masterPrivateKey,
-                    masterPublicKey, userId, userId.equals(saveParcel.changePrimaryUserId));
-            masterPublicKey = PGPPublicKey.addCertification(masterPublicKey, userId, cert);
-        }
-
-        // 7. Generate PublicKeyRing from SecretKeyRing
-        updateProgress(R.string.progress_building_master_key, 30, 100);
-        PGPSecretKeyRing ring = new PGPSecretKeyRing(secretKeys);
-
-        // Copy all non-self uid certificates
-        for (String userId : new IterableIterator<String>(masterPublicKey.getUserIDs())) {
-            // - Copy old cert, or generate new if primary user id status changed
-            boolean certified = false, revoked = false;
-            for (PGPSignature sig : new IterableIterator<PGPSignature>(
-                    masterPublicKey.getSignaturesForID(userId))) {
-            }
-        }
-
-        for (PGPPublicKey newKey : publicKeys) {
-            PGPPublicKey oldKey = pKR.getPublicKey(newKey.getKeyID());
-            for (PGPSignature sig : new IterableIterator<PGPSignature>(
-                    oldKey.getSignatures())) {
-            }
-        }
-
-        // If requested, set new passphrase
+        // 6. If requested, change passphrase
         if (saveParcel.newPassphrase != null) {
             PGPDigestCalculator sha1Calc = new JcaPGPDigestCalculatorProviderBuilder().build()
                     .get(HashAlgorithmTags.SHA1);
@@ -352,9 +318,7 @@ public class PgpKeyOperation {
             sKR = PGPSecretKeyRing.copyWithNewPassword(sKR, keyDecryptor, keyEncryptorNew);
         }
 
-        // 8. Return pair (PublicKeyRing,SecretKeyRing)
-
-        return new Pair<PGPSecretKeyRing, PGPPublicKeyRing>(sKR, pKR);
+        return new UncachedKeyRing(sKR);
 
     }
 
@@ -390,10 +354,29 @@ public class PgpKeyOperation {
         return sGen.generateCertification(userId, pKey);
     }
 
+    private static PGPSignature generateRevocationSignature(
+            PGPPublicKey masterPublicKey, PGPPrivateKey masterPrivateKey, PGPPublicKey pKey)
+            throws IOException, PGPException, SignatureException {
+        PGPContentSignerBuilder signerBuilder = new JcaPGPContentSignerBuilder(
+                pKey.getAlgorithm(), PGPUtil.SHA1)
+                .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME);
+        PGPSignatureGenerator sGen = new PGPSignatureGenerator(signerBuilder);
+        PGPSignatureSubpacketGenerator subHashedPacketsGen = new PGPSignatureSubpacketGenerator();
+        subHashedPacketsGen.setSignatureCreationTime(false, new Date());
+        sGen.setHashedSubpackets(subHashedPacketsGen.generate());
+        // Generate key revocation or subkey revocation, depending on master/subkey-ness
+        if (masterPublicKey.getKeyID() == pKey.getKeyID()) {
+            sGen.init(PGPSignature.KEY_REVOCATION, masterPrivateKey);
+            return sGen.generateCertification(masterPublicKey);
+        } else {
+            sGen.init(PGPSignature.SUBKEY_REVOCATION, masterPrivateKey);
+            return sGen.generateCertification(masterPublicKey, pKey);
+        }
+    }
+
     private static PGPSignature generateSubkeyBindingSignature(
             PGPPublicKey masterPublicKey, PGPPrivateKey masterPrivateKey,
-            PGPSecretKey sKey, PGPPublicKey pKey,
-            int flags, Long expiry, String passphrase)
+            PGPSecretKey sKey, PGPPublicKey pKey, int flags, Long expiry, String passphrase)
             throws PgpGeneralMsgIdException, IOException, PGPException, SignatureException {
 
         // date for signing
@@ -510,19 +493,4 @@ public class PgpKeyOperation {
         return publicKey;
     }
 
-    /**
-     * Simple static subclass that stores two values.
-     * <p/>
-     * This is only used to return a pair of values in one function above. We specifically don't use
-     * com.android.Pair to keep this class free from android dependencies.
-     */
-    public static class Pair<K, V> {
-        public final K first;
-        public final V second;
-
-        public Pair(K first, V second) {
-            this.first = first;
-            this.second = second;
-        }
-    }
 }
