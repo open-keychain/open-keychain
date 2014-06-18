@@ -598,12 +598,14 @@
     <string name="msg_kc_uid_revoke_old">Removing outdated revocation certificate for user id "%s"</string>
     <string name="msg_kc_uid_no_cert">No valid self-certificate found for user id %s, removing from ring</string>
 
-    <string name="msg_ko">Consolidating %1$s keyrings into %2$s</string>
-    <string name="msg_ko_fatal_encode">Fatal error encoding signature</string>
-    <string name="msg_ko_heterogeneous">Tried to consolidate heterogeneous keyrings</string>
-    <string name="msg_ko_merging">Merging keyring #%s</string>
-    <string name="msg_ko_new_subkey">Adding new subkey %s</string>
-    <string name="msg_ko_found_new">Found %s new certificates in keyring</string>
+
+    <!-- Keyring merging log entries -->
+    <string name="msg_mg_public">Merging into secret keyring %s</string>
+    <string name="msg_mg_secret">Merging into public keyring %s</string>
+    <string name="msg_mg_fatal_encode">Fatal error encoding signature</string>
+    <string name="msg_mg_heterogeneous">Tried to consolidate heterogeneous keyrings</string>
+    <string name="msg_mg_new_subkey">Adding new subkey %s</string>
+    <string name="msg_mg_found_new">Found %s new certificates in keyring</string>
 
     <!-- unsorted -->
     <string name="section_certifier_id">Certifier</string>

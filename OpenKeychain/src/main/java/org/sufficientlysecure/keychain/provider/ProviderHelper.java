@@ -677,6 +677,19 @@ public class ProviderHelper {
             secretRing = getWrappedSecretKeyRing(keyRing.getMasterKeyId()).getUncached();
             log(LogLevel.DEBUG, LogType.MSG_IP_PRESERVING_SECRET);
             progress.setProgress(LogType.MSG_IP_PRESERVING_SECRET.getMsgId(), 10, 100);
+            mIndent += 1;
+
+            // Merge data from new public ring into secret one
+            secretRing = secretRing.merge(keyRing, mLog, mIndent);
+            if (secretRing == null) {
+                return new SaveKeyringResult(SaveKeyringResult.RESULT_ERROR, mLog);
+            }
+
+            // NOTE that the info from this secret keyring will implicitly be merged into the
+            // new public keyring, since that one is merged with the old public keyring.
+
+            mIndent -= 1;
+
         } catch (NotFoundException e) {
             secretRing = null;
         }

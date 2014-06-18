@@ -222,12 +222,12 @@ public class OperationResultParcel implements Parcelable {
         MSG_KC_UID_REVOKE_OLD (R.string.msg_kc_uid_revoke_old),
 
         // keyring consolidation
-        MSG_KO (R.string.msg_ko),
-        MSG_KO_FATAL_ENCODE (R.string.msg_ko_fatal_encode),
-        MSG_KO_HETEROGENEOUS (R.string.msg_ko_heterogeneous),
-        MSG_KO_MERGING (R.string.msg_ko_merging),
-        MSG_KO_NEW_SUBKEY (R.string.msg_ko_new_subkey),
-        MSG_KO_FOUND_NEW (R.string.msg_ko_found_new),
+        MSG_MG_PUBLIC (R.string.msg_mg_public),
+        MSG_MG_SECRET (R.string.msg_mg_secret),
+        MSG_MG_FATAL_ENCODE (R.string.msg_mg_fatal_encode),
+        MSG_MG_HETEROGENEOUS (R.string.msg_mg_heterogeneous),
+        MSG_MG_NEW_SUBKEY (R.string.msg_mg_new_subkey),
+        MSG_MG_FOUND_NEW (R.string.msg_mg_found_new),
         ;
 
         private final int mMsgId;
