@@ -482,7 +482,7 @@ public class KeychainIntentService extends IntentService
 
                 /* Operation */
                 ProviderHelper providerHelper = new ProviderHelper(this);
-                PgpKeyOperation keyOperations = new PgpKeyOperation(new ProgressScaler(this, 0, 90, 100));
+                PgpKeyOperation keyOperations = new PgpKeyOperation(new ProgressScaler(this, 10, 50, 100));
                 try {
                     String passphrase = data.getString(SAVE_KEYRING_PASSPHRASE);
                     WrappedSecretKeyRing secRing = providerHelper.getWrappedSecretKeyRing(masterKeyId);
@@ -490,12 +490,11 @@ public class KeychainIntentService extends IntentService
                     OperationLog log = new OperationLog();
                     UncachedKeyRing ring = keyOperations.modifySecretKeyRing(secRing, saveParcel,
                             passphrase, log, 0);
-                    setProgress(R.string.progress_saving_key_ring, 90, 100);
-                    providerHelper.saveSecretKeyRing(ring);
+                    providerHelper.saveSecretKeyRing(ring, new ProgressScaler(this, 60, 95, 100));
                 } catch (ProviderHelper.NotFoundException e) {
                     // UncachedKeyRing ring = keyOperations.(saveParcel); //new Keyring
                     // save the pair
-                    setProgress(R.string.progress_saving_key_ring, 90, 100);
+                    setProgress(R.string.progress_saving_key_ring, 95, 100);
                     // providerHelper.saveSecretKeyRing(ring);
                     sendErrorToHandler(e);
                 }
