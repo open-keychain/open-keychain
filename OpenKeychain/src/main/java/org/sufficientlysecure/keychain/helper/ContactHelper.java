@@ -45,9 +45,18 @@ public class ContactHelper {
     public static final String[] USER_IDS_PROJECTION = new String[]{
             KeychainContract.UserIds.USER_ID
     };
-    public static final String[] RAW_CONTACT_ID_PROJECTION = new String[]{ContactsContract.RawContacts._ID};
-    public static final String FIND_RAW_CONTACT_SELECTION =
+
+    public static final String NON_REVOKED_SELECTION = KeychainContract.UserIds.IS_REVOKED + "=0";
+
+    public static final String[] ID_PROJECTION = new String[]{ContactsContract.RawContacts._ID};
+    public static final String[] SOURCE_ID_PROJECTION = new String[]{ContactsContract.RawContacts.SOURCE_ID};
+
+    public static final String ACCOUNT_TYPE_AND_SOURCE_ID_SELECTION =
             ContactsContract.RawContacts.ACCOUNT_TYPE + "=? AND " + ContactsContract.RawContacts.SOURCE_ID + "=?";
+    public static final String ACCOUNT_TYPE_SELECTION = ContactsContract.RawContacts.ACCOUNT_TYPE + "=?";
+    public static final String RAW_CONTACT_AND_MIMETYPE_SELECTION =
+            ContactsContract.Data.RAW_CONTACT_ID + "=? AND " + ContactsContract.Data.MIMETYPE + "=?";
+    public static final String ID_SELECTION = ContactsContract.RawContacts._ID + "=?";
 
     public static List<String> getMailAccounts(Context context) {
         final Account[] accounts = AccountManager.get(context).getAccounts();
@@ -90,45 +99,44 @@ public class ContactHelper {
         return null;
     }
 
-    private static ContentProviderOperation.Builder referenceRawContact(ContentProviderOperation.Builder builder,
-                                                                        int rawContactId) {
-        return rawContactId == -1 ?
-                builder.withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, 0) :
-                builder.withValue(ContactsContract.Data.RAW_CONTACT_ID, rawContactId);
-    }
-
+    /**
+     * Write the current Keychain to the contact db
+     */
     public static void writeKeysToContacts(Context context) {
         ContentResolver resolver = context.getContentResolver();
+        Set<String> contactFingerprints = getRawContactFingerprints(resolver);
+
+        // Load all Keys from OK
         Cursor cursor = resolver.query(KeychainContract.KeyRings.buildUnifiedKeyRingsUri(), KEYS_TO_CONTACT_PROJECTION,
                 null, null, null);
         if (cursor != null) {
             while (cursor.moveToNext()) {
                 String[] primaryUserId = KeyRing.splitUserId(cursor.getString(0));
                 String fingerprint = PgpKeyHelper.convertFingerprintToHex(cursor.getBlob(1));
+                contactFingerprints.remove(fingerprint);
                 String keyIdShort = PgpKeyHelper.convertKeyIdToHexShort(cursor.getLong(2));
                 long masterKeyId = cursor.getLong(3);
                 boolean isExpired = !cursor.isNull(4) && new Date(cursor.getLong(4) * 1000).before(new Date());
                 boolean isRevoked = cursor.getInt(5) > 0;
-                int rawContactId = -1;
-                Cursor raw = resolver.query(ContactsContract.RawContacts.CONTENT_URI, RAW_CONTACT_ID_PROJECTION,
-                        FIND_RAW_CONTACT_SELECTION, new String[]{Constants.PACKAGE_NAME, fingerprint}, null, null);
-                if (raw != null) {
-                    if (raw.moveToNext()) {
-                        rawContactId = raw.getInt(0);
-                    }
-                    raw.close();
-                }
+                int rawContactId = findRawContactId(resolver, fingerprint);
                 ArrayList<ContentProviderOperation> ops = new ArrayList<ContentProviderOperation>();
+
+                // Do not store expired or revoked keys in contact db - and remove them if they already exist
                 if (isExpired || isRevoked) {
                     if (rawContactId != -1) {
-                        resolver.delete(ContactsContract.RawContacts.CONTENT_URI,
-                                ContactsContract.RawContacts._ID + "=?", new String[]{Integer.toString(rawContactId)});
+                        resolver.delete(ContactsContract.RawContacts.CONTENT_URI, ID_SELECTION,
+                                new String[]{Integer.toString(rawContactId)});
                     }
                 } else {
+
+                    // Create a new rawcontact with corresponding key if it does not exist yet
                     if (rawContactId == -1) {
                         insertContact(ops, context, fingerprint);
                         writeContactKey(ops, context, rawContactId, masterKeyId, keyIdShort);
                     }
+
+                    // We always update the display name (which is derived from primary user id)
+                    // and email addresses from user id
                     writeContactDisplayName(ops, rawContactId, primaryUserId[0]);
                     writeContactEmail(ops, resolver, rawContactId, masterKeyId);
                     try {
@@ -140,8 +148,52 @@ public class ContactHelper {
             }
             cursor.close();
         }
+
+        // Delete fingerprints that are no longer present in OK
+        for (String fingerprint : contactFingerprints) {
+            resolver.delete(ContactsContract.RawContacts.CONTENT_URI, ACCOUNT_TYPE_AND_SOURCE_ID_SELECTION,
+                    new String[]{Constants.PACKAGE_NAME, fingerprint});
+        }
+
     }
 
+    /**
+     * @return a set of all key fingerprints currently present in the contact db
+     */
+    private static Set<String> getRawContactFingerprints(ContentResolver resolver) {
+        HashSet<String> result = new HashSet<String>();
+        Cursor fingerprints = resolver.query(ContactsContract.RawContacts.CONTENT_URI, SOURCE_ID_PROJECTION,
+                ACCOUNT_TYPE_SELECTION, new String[]{Constants.PACKAGE_NAME}, null);
+        if (fingerprints != null) {
+            while (fingerprints.moveToNext()) {
+                result.add(fingerprints.getString(0));
+            }
+            fingerprints.close();
+        }
+        return result;
+    }
+
+    /**
+     * This will search the contact db for a raw contact with a given fingerprint
+     *
+     * @return raw contact id or -1 if not found
+     */
+    private static int findRawContactId(ContentResolver resolver, String fingerprint) {
+        int rawContactId = -1;
+        Cursor raw = resolver.query(ContactsContract.RawContacts.CONTENT_URI, ID_PROJECTION,
+                ACCOUNT_TYPE_AND_SOURCE_ID_SELECTION, new String[]{Constants.PACKAGE_NAME, fingerprint}, null, null);
+        if (raw != null) {
+            if (raw.moveToNext()) {
+                rawContactId = raw.getInt(0);
+            }
+            raw.close();
+        }
+        return rawContactId;
+    }
+
+    /**
+     * Creates a empty raw contact with a given fingerprint
+     */
     private static void insertContact(ArrayList<ContentProviderOperation> ops, Context context, String fingerprint) {
         ops.add(ContentProviderOperation.newInsert(ContactsContract.RawContacts.CONTENT_URI)
                 .withValue(ContactsContract.RawContacts.ACCOUNT_NAME, context.getString(R.string.app_name))
@@ -150,6 +202,11 @@ public class ContactHelper {
                 .build());
     }
 
+    /**
+     * Adds a key id to the given raw contact.
+     * <p/>
+     * This creates the link to OK in contact details
+     */
     private static void writeContactKey(ArrayList<ContentProviderOperation> ops, Context context, int rawContactId,
                                         long masterKeyId, String keyIdShort) {
         ops.add(referenceRawContact(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI), rawContactId)
@@ -159,12 +216,15 @@ public class ContactHelper {
                 .build());
     }
 
+    /**
+     * Write all known email addresses of a key (derived from user ids) to a given raw contact
+     */
     private static void writeContactEmail(ArrayList<ContentProviderOperation> ops, ContentResolver resolver,
                                           int rawContactId, long masterKeyId) {
         ops.add(selectByRawContactAndItemType(ContentProviderOperation.newDelete(ContactsContract.Data.CONTENT_URI),
                 rawContactId, ContactsContract.CommonDataKinds.Email.CONTENT_ITEM_TYPE).build());
         Cursor ids = resolver.query(KeychainContract.UserIds.buildUserIdsUri(Long.toString(masterKeyId)),
-                USER_IDS_PROJECTION, KeychainContract.UserIds.IS_REVOKED + "=0", null, null);
+                USER_IDS_PROJECTION, NON_REVOKED_SELECTION, null, null);
         if (ids != null) {
             while (ids.moveToNext()) {
                 String[] userId = KeyRing.splitUserId(ids.getString(0));
@@ -191,22 +251,26 @@ public class ContactHelper {
         }
     }
 
+    private static ContentProviderOperation.Builder referenceRawContact(ContentProviderOperation.Builder builder,
+                                                                        int rawContactId) {
+        return rawContactId == -1 ?
+                builder.withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, 0) :
+                builder.withValue(ContactsContract.Data.RAW_CONTACT_ID, rawContactId);
+    }
+
     private static ContentProviderOperation.Builder insertOrUpdateForRawContact(Uri uri, int rawContactId,
                                                                                 String itemType) {
         if (rawContactId == -1) {
             return referenceRawContact(ContentProviderOperation.newInsert(uri), rawContactId).withValue(
                     ContactsContract.Data.MIMETYPE, itemType);
         } else {
-            return ContentProviderOperation.newUpdate(uri).withSelection(
-                    ContactsContract.Data.RAW_CONTACT_ID + "=? AND " + ContactsContract.Data.MIMETYPE + "=?",
-                    new String[]{Integer.toString(rawContactId), itemType});
+            return selectByRawContactAndItemType(ContentProviderOperation.newUpdate(uri), rawContactId, itemType);
         }
     }
 
     private static ContentProviderOperation.Builder selectByRawContactAndItemType(
             ContentProviderOperation.Builder builder, int rawContactId, String itemType) {
-        return builder.withSelection(
-                ContactsContract.Data.RAW_CONTACT_ID + "=? AND " + ContactsContract.Data.MIMETYPE + "=?",
+        return builder.withSelection(RAW_CONTACT_AND_MIMETYPE_SELECTION,
                 new String[]{Integer.toString(rawContactId), itemType});
     }
 }
