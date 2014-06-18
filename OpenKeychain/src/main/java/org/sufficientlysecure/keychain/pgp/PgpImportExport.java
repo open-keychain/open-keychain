@@ -226,7 +226,7 @@ public class PgpImportExport {
 
             try {
                 WrappedPublicKeyRing ring = mProviderHelper.getWrappedPublicKeyRing(
-                        KeychainContract.KeyRings.buildGenericKeyRingUri(pubKeyMasterId)
+                        KeychainContract.KeyRings.buildUnifiedKeyRingUri(pubKeyMasterId)
                 );
 
                 ring.encode(arOutStream);

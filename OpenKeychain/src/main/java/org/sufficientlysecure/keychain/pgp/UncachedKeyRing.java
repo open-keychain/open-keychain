@@ -547,6 +547,7 @@ public class UncachedKeyRing {
 
                     // if we already have a cert, and this one is not newer: skip it
                     if (selfCert != null && selfCert.getCreationTime().before(cert.getCreationTime())) {
+                        log.add(LogLevel.DEBUG, LogType.MSG_KC_SUB_DUP, indent);
                         redundantCerts += 1;
                         continue;
                     }
@@ -574,8 +575,9 @@ public class UncachedKeyRing {
                         continue;
                     }
 
-                    // if there is no binding (yet), or the revocation is newer than the binding: keep it
+                    // if there is a certification that is newer than this revocation, don't bother
                     if (selfCert != null && selfCert.getCreationTime().after(cert.getCreationTime())) {
+                        log.add(LogLevel.DEBUG, LogType.MSG_KC_SUB_REVOKE_DUP, indent);
                         redundantCerts += 1;
                         continue;
                     }
