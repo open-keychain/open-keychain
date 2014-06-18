@@ -22,7 +22,7 @@
             android:layout_alignParentBottom="true"
             android:layout_alignParentTop="true"
             android:layout_marginRight="6dp"
-            android:src="@drawable/icon" />
+            android:src="@drawable/ic_launcher" />
 
         <TextView
             android:id="@+id/api_app_settings_app_name"
