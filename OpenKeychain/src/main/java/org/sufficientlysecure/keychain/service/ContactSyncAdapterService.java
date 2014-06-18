@@ -45,6 +45,7 @@ public class ContactSyncAdapterService extends Service {
         @Override
         public void onPerformSync(Account account, Bundle extras, String authority, ContentProviderClient provider,
                                   final SyncResult syncResult) {
+            importDone.set(false);
             KeychainApplication.setupAccountAsNeeded(ContactSyncAdapterService.this);
             EmailKeyHelper.importContacts(getContext(), new Messenger(new Handler(Looper.getMainLooper(),
                     new Handler.Callback() {
