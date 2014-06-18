@@ -583,7 +583,7 @@
     <string name="msg_kc_sub_revoke_bad_err">Removing bad subkey revocation key</string>
     <string name="msg_kc_sub_revoke_bad">Removing bad subkey revocation key</string>
     <string name="msg_kc_sub_revoke_dup">Removing redundant keyring revocation key</string>
-    <string name="msg_kc_success">Keyring canonicalization successful</string>
+    <string name="msg_kc_success">Keyring canonicalization successful, no changes</string>
     <string name="msg_kc_success_bad">Keyring canonicalization successful, removed %s erroneous certificates</string>
     <string name="msg_kc_success_bad_and_red">Keyring canonicalization successful, removed %1$s erroneous and %2$s redundant certificates</string>
     <string name="msg_kc_success_redundant">Keyring canonicalization successful, removed %s redundant certificates</string>
@@ -600,8 +600,8 @@
 
 
     <!-- Keyring merging log entries -->
-    <string name="msg_mg_public">Merging into secret keyring %s</string>
-    <string name="msg_mg_secret">Merging into public keyring %s</string>
+    <string name="msg_mg_public">Merging into public keyring %s</string>
+    <string name="msg_mg_secret">Merging into secret keyring %s</string>
     <string name="msg_mg_fatal_encode">Fatal error encoding signature</string>
     <string name="msg_mg_heterogeneous">Tried to consolidate heterogeneous keyrings</string>
     <string name="msg_mg_new_subkey">Adding new subkey %s</string>

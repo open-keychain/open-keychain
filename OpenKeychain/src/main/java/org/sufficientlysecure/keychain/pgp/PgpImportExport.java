@@ -149,7 +149,8 @@ public class PgpImportExport {
 
                 SaveKeyringResult result;
                 if (key.isSecret()) {
-                    result = mProviderHelper.saveSecretKeyRing(key);
+                    result = mProviderHelper.saveSecretKeyRing(key,
+                            new ProgressScaler(mProgressable, position, (position+1)*progSteps, 100));
                 } else {
                     result = mProviderHelper.savePublicKeyRing(key,
                             new ProgressScaler(mProgressable, position, (position+1)*progSteps, 100));

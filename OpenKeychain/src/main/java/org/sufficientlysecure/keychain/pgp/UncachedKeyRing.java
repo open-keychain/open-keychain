@@ -58,10 +58,18 @@ public class UncachedKeyRing {
 
     final PGPKeyRing mRing;
     final boolean mIsSecret;
+    final boolean mIsCanonicalized;
 
     UncachedKeyRing(PGPKeyRing ring) {
         mRing = ring;
         mIsSecret = ring instanceof PGPSecretKeyRing;
+        mIsCanonicalized = false;
+    }
+
+    private UncachedKeyRing(PGPKeyRing ring, boolean canonicalized) {
+        mRing = ring;
+        mIsSecret = ring instanceof PGPSecretKeyRing;
+        mIsCanonicalized = canonicalized;
     }
 
     public long getMasterKeyId() {
@@ -90,6 +98,10 @@ public class UncachedKeyRing {
     /** Returns the dynamic (though final) property if this is a secret keyring or not. */
     public boolean isSecret() {
         return mIsSecret;
+    }
+
+    public boolean isCanonicalized() {
+        return mIsCanonicalized;
     }
 
     public byte[] getEncoded() throws IOException {
@@ -606,7 +618,7 @@ public class UncachedKeyRing {
             log.add(LogLevel.OK, LogType.MSG_KC_SUCCESS, null, indent);
         }
 
-        return new UncachedKeyRing(ring);
+        return new UncachedKeyRing(ring, true);
     }
 
     /** This operation merges information from a different keyring, returning a combined
@@ -688,6 +700,11 @@ public class UncachedKeyRing {
                         continue;
                     }
 
+                    // Don't merge foreign stuff into secret keys
+                    if (cert.getKeyID() != masterKeyId && isSecret()) {
+                        continue;
+                    }
+
                     byte[] encoded = cert.getEncoded();
                     // Known cert, skip it
                     if (certs.contains(encoded)) {
@@ -709,6 +726,10 @@ public class UncachedKeyRing {
                 // Copy over all user id certificates
                 for (String userId : new IterableIterator<String>(key.getUserIDs())) {
                     for (PGPSignature cert : new IterableIterator<PGPSignature>(key.getSignaturesForID(userId))) {
+                        // Don't merge foreign stuff into secret keys
+                        if (cert.getKeyID() != masterKeyId && isSecret()) {
+                            continue;
+                        }
                         byte[] encoded = cert.getEncoded();
                         // Known cert, skip it
                         if (certs.contains(encoded)) {

@@ -513,7 +513,7 @@ public class KeychainIntentService extends IntentService
                     UncachedKeyRing newKeyRing =
                             keyRing.changeSecretKeyPassphrase(oldPassphrase, newPassphrase);
                     setProgress(R.string.progress_saving_key_ring, 50, 100);
-                    providerHelper.saveSecretKeyRing(newKeyRing);
+                    // providerHelper.saveSecretKeyRing(newKeyRing);
                     setProgress(R.string.progress_done, 100, 100);
                 } else {
                     PgpKeyOperation keyOperations = new PgpKeyOperation(new ProgressScaler(this, 0, 90, 100));
