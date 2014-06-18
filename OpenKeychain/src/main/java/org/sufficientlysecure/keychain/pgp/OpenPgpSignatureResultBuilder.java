@@ -35,7 +35,6 @@ public class OpenPgpSignatureResultBuilder {
     private boolean mSignatureAvailable = false;
     private boolean mKnownKey = false;
     private boolean mValidSignature = false;
-    private boolean mValidKeyBinding = false;
     private boolean mIsSignatureKeyCertified = false;
 
     public void signatureOnly(boolean signatureOnly) {
@@ -58,10 +57,6 @@ public class OpenPgpSignatureResultBuilder {
         this.mValidSignature = validSignature;
     }
 
-    public void validKeyBinding(boolean validKeyBinding) {
-        this.mValidKeyBinding = validKeyBinding;
-    }
-
     public void signatureKeyCertified(boolean isSignatureKeyCertified) {
         this.mIsSignatureKeyCertified = isSignatureKeyCertified;
     }
@@ -77,7 +72,7 @@ public class OpenPgpSignatureResultBuilder {
 
             // valid sig!
             if (mKnownKey) {
-                if (mValidKeyBinding && mValidSignature) {
+                if (mValidSignature) {
                     result.setKeyId(mKeyId);
                     result.setUserId(mUserId);
 
@@ -89,8 +84,7 @@ public class OpenPgpSignatureResultBuilder {
                         result.setStatus(OpenPgpSignatureResult.SIGNATURE_SUCCESS_UNCERTIFIED);
                     }
                 } else {
-                    Log.d(Constants.TAG, "Error!\nvalidKeyBinding: " + mValidKeyBinding
-                            + "\nvalidSignature: " + mValidSignature);
+                    Log.d(Constants.TAG, "Error! Invalid signature.");
                     result.setStatus(OpenPgpSignatureResult.SIGNATURE_ERROR);
                 }
             } else {

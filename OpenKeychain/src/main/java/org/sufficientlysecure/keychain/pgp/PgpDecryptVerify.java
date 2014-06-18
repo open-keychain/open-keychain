@@ -122,9 +122,6 @@ public class PgpDecryptVerify {
         /**
          * Allow these key ids alone for decryption.
          * This means only ciphertexts encrypted for one of these private key can be decrypted.
-         *
-         * @param allowedKeyIds
-         * @return
          */
         public Builder setAllowedKeyIds(Set<Long> allowedKeyIds) {
             this.mAllowedKeyIds = allowedKeyIds;
@@ -496,10 +493,7 @@ public class PgpDecryptVerify {
 
                 // Verify signature and check binding signatures
                 boolean validSignature = signature.verify(messageSignature);
-                boolean validKeyBinding = signingRing.verifySubkeyBinding(signingKey);
-
                 signatureResultBuilder.validSignature(validSignature);
-                signatureResultBuilder.validKeyBinding(validKeyBinding);
             }
         }
 
@@ -643,10 +637,8 @@ public class PgpDecryptVerify {
 
             // Verify signature and check binding signatures
             boolean validSignature = signature.verify();
-            boolean validKeyBinding = signingRing.verifySubkeyBinding(signingKey);
 
             signatureResultBuilder.validSignature(validSignature);
-            signatureResultBuilder.validKeyBinding(validKeyBinding);
         }
 
         result.setSignatureResult(signatureResultBuilder.build());
@@ -657,10 +649,6 @@ public class PgpDecryptVerify {
 
     /**
      * Mostly taken from ClearSignedFileProcessor in Bouncy Castle
-     *
-     * @param sig
-     * @param line
-     * @throws SignatureException
      */
     private static void processLine(PGPSignature sig, byte[] line)
             throws SignatureException {
