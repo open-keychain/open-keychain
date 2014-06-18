@@ -37,6 +37,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
@@ -182,6 +183,18 @@ public class ImportKeysActivity extends ActionBarActivity {
 
         // update layout after operations
         mSlidingTabLayout.setViewPager(mViewPager);
+
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        boolean result = super.onTouchEvent(event);
+
+        if (!result) {
+            mViewPager.onTouchEvent(event);
+        }
+
+        return result;
     }
 
     protected void handleActions(Bundle savedInstanceState, Intent intent) {
