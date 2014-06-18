@@ -25,8 +25,6 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ProgressBar;
-import android.widget.TextView;
 
 import com.google.zxing.integration.android.IntentResult;
 
@@ -36,18 +34,13 @@ import org.sufficientlysecure.keychain.util.IntentIntegratorSupportV4;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Notify;
 
-import java.util.ArrayList;
 import java.util.Locale;
 
 public class ImportKeysQrCodeFragment extends Fragment {
     private ImportKeysActivity mImportActivity;
+
     private View mNfcButton;
-
     private View mQrCodeButton;
-    private TextView mQrCodeText;
-    private ProgressBar mQrCodeProgress;
-
-    private String[] mQrCodeContent;
 
     /**
      * Creates new instance of this fragment
@@ -81,8 +74,6 @@ public class ImportKeysQrCodeFragment extends Fragment {
         });
 
         mQrCodeButton = view.findViewById(R.id.import_qrcode_button);
-        mQrCodeText = (TextView) view.findViewById(R.id.import_qrcode_text);
-        mQrCodeProgress = (ProgressBar) view.findViewById(R.id.import_qrcode_progress);
 
         mQrCodeButton.setOnClickListener(new View.OnClickListener() {
 
@@ -120,13 +111,6 @@ public class ImportKeysQrCodeFragment extends Fragment {
                         return;
                     }
 
-                    // look if it is the whole key
-                    String[] parts = scannedContent.split(",");
-                    if (parts.length == 3) {
-                        importParts(parts);
-                        return;
-                    }
-
                     // is this a full key encoded as qr code?
                     if (scannedContent.startsWith("-----BEGIN PGP")) {
                         mImportActivity.loadCallback(new ImportKeysListFragment.BytesLoaderState(scannedContent.getBytes(), null));
@@ -147,68 +131,8 @@ public class ImportKeysQrCodeFragment extends Fragment {
         }
     }
 
-
     public void importFingerprint(Uri dataUri) {
         mImportActivity.loadFromFingerprintUri(null, dataUri);
     }
 
-    private void importParts(String[] parts) {
-        int counter = Integer.valueOf(parts[0]);
-        int size = Integer.valueOf(parts[1]);
-        String content = parts[2];
-
-        Log.d(Constants.TAG, "" + counter);
-        Log.d(Constants.TAG, "" + size);
-        Log.d(Constants.TAG, "" + content);
-
-        // first qr code -> setup
-        if (counter == 0) {
-            mQrCodeContent = new String[size];
-            mQrCodeProgress.setMax(size);
-            mQrCodeProgress.setVisibility(View.VISIBLE);
-            mQrCodeText.setVisibility(View.VISIBLE);
-        }
-
-        if (mQrCodeContent == null || counter > mQrCodeContent.length) {
-            Notify.showNotify(getActivity(), R.string.import_qr_code_start_with_one, Notify.Style.ERROR);
-            return;
-        }
-
-        // save scanned content
-        mQrCodeContent[counter] = content;
-
-        // get missing numbers
-        ArrayList<Integer> missing = new ArrayList<Integer>();
-        for (int i = 0; i < mQrCodeContent.length; i++) {
-            if (mQrCodeContent[i] == null) {
-                missing.add(i);
-            }
-        }
-
-        // update progress and text
-        int alreadyScanned = mQrCodeContent.length - missing.size();
-        mQrCodeProgress.setProgress(alreadyScanned);
-
-        String missingString = "";
-        for (int m : missing) {
-            if (!missingString.equals("")) {
-                missingString += ", ";
-            }
-            missingString += String.valueOf(m + 1);
-        }
-
-        String missingText = getResources().getQuantityString(R.plurals.import_qr_code_missing,
-                missing.size(), missingString);
-        mQrCodeText.setText(missingText);
-
-        // finished!
-        if (missing.size() == 0) {
-            mQrCodeText.setText(R.string.import_qr_code_finished);
-            String result = "";
-            for (String in : mQrCodeContent) {
-                result += in;
-            }
-            mImportActivity.loadCallback(new ImportKeysListFragment.BytesLoaderState(result.getBytes(), null));
-        }
-    }
 }

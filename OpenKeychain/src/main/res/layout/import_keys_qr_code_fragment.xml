@@ -44,23 +44,4 @@
 
     </LinearLayout>
 
-    <TextView
-        android:id="@+id/import_qrcode_text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:paddingLeft="16dp"
-        android:paddingRight="16dp"
-        android:paddingTop="8dp"
-        android:visibility="gone" />
-
-    <ProgressBar
-        android:id="@+id/import_qrcode_progress"
-        style="?android:attr/progressBarStyleHorizontal"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingLeft="16dp"
-        android:paddingRight="16dp"
-        android:progress="0"
-        android:visibility="gone" />
-
 </LinearLayout>
