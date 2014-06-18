@@ -30,6 +30,11 @@ public class PgpGeneralMsgIdException extends Exception {
         mMessageId = messageId;
     }
 
+    public PgpGeneralMsgIdException(int messageId, Throwable cause) {
+        super("msg[" + messageId + "]", cause);
+        mMessageId = messageId;
+    }
+
     public PgpGeneralException getContextualized(Context context) {
         return new PgpGeneralException(context.getString(mMessageId), this);
     }

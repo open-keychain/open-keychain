@@ -1,21 +1,48 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:bootstrapbutton="http://schemas.android.com/apk/res-auto"
-    android:layout_width="fill_parent"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingTop="8dp"
-    android:paddingLeft="16dp"
-    android:paddingRight="16dp"
     android:orientation="vertical">
 
-    <com.beardedhen.androidbootstrap.BootstrapButton
+    <LinearLayout
         android:id="@+id/import_qrcode_button"
+        android:paddingLeft="8dp"
         android:layout_width="match_parent"
-        android:layout_height="70dp"
-        android:text="@string/import_qr_scan_button"
-        bootstrapbutton:bb_icon_left="fa-barcode"
-        bootstrapbutton:bb_size="default"
-        bootstrapbutton:bb_type="default" />
+        android:layout_height="?android:attr/listPreferredItemHeight"
+        android:clickable="true"
+        style="@style/SelectableItem"
+        android:orientation="horizontal">
+
+        <TextView
+            android:paddingLeft="8dp"
+            android:paddingRight="8dp"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:layout_width="0dip"
+            android:layout_height="match_parent"
+            android:text="@string/import_qr_code_button"
+            android:layout_weight="1"
+            android:drawableRight="@drawable/ic_action_qr_code"
+            android:drawablePadding="8dp"
+            android:gravity="center_vertical" />
+
+        <View
+            android:layout_width="1dip"
+            android:layout_height="match_parent"
+            android:gravity="right"
+            android:layout_marginBottom="8dp"
+            android:layout_marginTop="8dp"
+            android:background="?android:attr/listDivider" />
+
+        <Button
+            android:id="@+id/import_nfc_button"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:padding="8dp"
+            android:text="NFC?"
+            android:layout_gravity="center_vertical"
+            style="@style/SelectableItem" />
+
+    </LinearLayout>
 
     <TextView
         android:id="@+id/import_qrcode_text"

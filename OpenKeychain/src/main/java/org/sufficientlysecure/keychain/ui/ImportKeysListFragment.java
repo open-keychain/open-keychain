@@ -42,6 +42,7 @@ import org.sufficientlysecure.keychain.ui.adapter.ImportKeysListLoader;
 import org.sufficientlysecure.keychain.ui.adapter.ImportKeysListServerLoader;
 import org.sufficientlysecure.keychain.util.InputData;
 import org.sufficientlysecure.keychain.util.Log;
+import org.sufficientlysecure.keychain.util.Notify;
 
 import java.io.ByteArrayInputStream;
 import java.io.FileNotFoundException;
@@ -97,7 +98,7 @@ public class ImportKeysListFragment extends ListFragment implements
 
     public ArrayList<ParcelableKeyRing> getSelectedData() {
         ArrayList<ParcelableKeyRing> result = new ArrayList<ParcelableKeyRing>();
-        for(ImportKeysListEntry entry : getSelectedEntries()) {
+        for (ImportKeysListEntry entry : getSelectedEntries()) {
             result.add(mCachedKeyData.get(entry.getKeyId()));
         }
         return result;
@@ -273,17 +274,15 @@ public class ImportKeysListFragment extends ListFragment implements
                     // No error
                     mCachedKeyData = ((ImportKeysListLoader) loader).getParcelableRings();
                 } else if (error instanceof ImportKeysListLoader.FileHasNoContent) {
-                    AppMsg.makeText(getActivity(), R.string.error_import_file_no_content,
-                            AppMsg.STYLE_ALERT).show();
+                    Notify.showNotify(getActivity(), R.string.error_import_file_no_content, Notify.Style.ERROR);
                 } else if (error instanceof ImportKeysListLoader.NonPgpPart) {
-                    AppMsg.makeText(getActivity(),
+                    Notify.showNotify(getActivity(),
                             ((ImportKeysListLoader.NonPgpPart) error).getCount() + " " + getResources().
                                     getQuantityString(R.plurals.error_import_non_pgp_part,
                                             ((ImportKeysListLoader.NonPgpPart) error).getCount()),
-                            new AppMsg.Style(AppMsg.LENGTH_LONG, R.color.confirm)).show();
+                            Notify.Style.OK);
                 } else {
-                    AppMsg.makeText(getActivity(), R.string.error_generic_report_bug,
-                            new AppMsg.Style(AppMsg.LENGTH_LONG, R.color.alert)).show();
+                    Notify.showNotify(getActivity(), R.string.error_generic_report_bug, Notify.Style.ERROR);
                 }
                 break;
 
@@ -292,23 +291,17 @@ public class ImportKeysListFragment extends ListFragment implements
 
                 // TODO: possibly fine-tune message building for these two cases
                 if (error == null) {
-                    AppMsg.makeText(
-                            getActivity(), getResources().getQuantityString(R.plurals.keys_found,
-                                    mAdapter.getCount(), mAdapter.getCount()),
-                            AppMsg.STYLE_INFO
-                    ).show();
+                    // No error
                 } else if (error instanceof Keyserver.QueryTooShortException) {
-                    AppMsg.makeText(getActivity(), R.string.error_keyserver_insufficient_query,
-                            AppMsg.STYLE_ALERT).show();
+                    Notify.showNotify(getActivity(), R.string.error_keyserver_insufficient_query, Notify.Style.ERROR);
                 } else if (error instanceof Keyserver.TooManyResponsesException) {
-                    AppMsg.makeText(getActivity(), R.string.error_keyserver_too_many_responses,
-                            AppMsg.STYLE_ALERT).show();
+                    Notify.showNotify(getActivity(), R.string.error_keyserver_too_many_responses, Notify.Style.ERROR);
                 } else if (error instanceof Keyserver.QueryFailedException) {
                     Log.d(Constants.TAG,
                             "Unrecoverable keyserver query error: " + error.getLocalizedMessage());
                     String alert = getActivity().getString(R.string.error_searching_keys);
                     alert = alert + " (" + error.getLocalizedMessage() + ")";
-                    AppMsg.makeText(getActivity(), alert, AppMsg.STYLE_ALERT).show();
+                    Notify.showNotify(getActivity(), alert, Notify.Style.ERROR);
                 }
                 break;
 

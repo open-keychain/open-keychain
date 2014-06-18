@@ -1,6 +1,6 @@
 #!/bin/bash
 
-APP_DIR=../../OpenPGP-Keychain/src/main
+APP_DIR=../../OpenKeychain/src/main
 LDPI_DIR=$APP_DIR/res/drawable-ldpi
 MDPI_DIR=$APP_DIR/res/drawable-mdpi
 HDPI_DIR=$APP_DIR/res/drawable-hdpi

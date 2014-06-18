@@ -212,31 +212,31 @@
   <string name="ask_empty_id_ok">Dodali ste prazno identiteto, ali res želite nadaljevati?</string>
   <string name="public_key_deletetion_confirmation">Ali res želite izbrisati javni ključ \'%s\'?\nTega koraka ne boste mogli preklicati!</string>
   <string name="also_export_secret_keys">Želite izvoziti tudi zasebne ključe?</string>
-  <plurals name="keys_added_and_updated_1">
+  <plurals name="import_keys_added_and_updated_1">
     <item quantity="one">Uspešno dodan %d ključ</item>
     <item quantity="two">Uspešno dodana %d ključa</item>
     <item quantity="few">Uspešno dodani %d ključi</item>
     <item quantity="other">Uspešno dodanih %d ključev</item>
   </plurals>
-  <plurals name="keys_added_and_updated_2">
+  <plurals name="import_keys_added_and_updated_2">
     <item quantity="one">in posodbljen %d.</item>
     <item quantity="two">in posodobljena %d.</item>
     <item quantity="few">in posodobljeni %d.</item>
     <item quantity="other">in posodobljenih %d.</item>
   </plurals>
-  <plurals name="keys_added">
+  <plurals name="import_keys_added">
     <item quantity="one">Uspešno dodan %d ključ.</item>
     <item quantity="two">Uspešno dodana %d ključa.</item>
     <item quantity="few">Uspešno dodani %d ključi.</item>
     <item quantity="other">Uspešno dodanih %d ključev.</item>
   </plurals>
-  <plurals name="keys_updated">
+  <plurals name="import_keys_updated">
     <item quantity="one">Uspešno posodobljen %d ključ.</item>
     <item quantity="two">Uspešno posodobljena %d ključa.</item>
     <item quantity="few">Uspešno posodobljeni %d ključi.</item>
     <item quantity="other">Uspešno posodobljenih %d ključev.</item>
   </plurals>
-  <string name="no_keys_added_or_updated">Noben ključ ni bil dodan ali posodobljen.</string>
+  <string name="import_error_nothing">Noben ključ ni bil dodan ali posodobljen.</string>
   <string name="key_exported">Uspešno izvožen 1 ključ.</string>
   <string name="keys_exported">Uspešno izvoženih ključev: %d</string>
   <string name="no_keys_exported">Noben ključ ni bil izvožen.</string>

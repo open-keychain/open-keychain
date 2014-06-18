@@ -23,16 +23,16 @@ import java.util.HashMap;
 public class SaveKeyringParcel implements Parcelable {
 
     // the master key id to be edited
-    private final long mMasterKeyId;
+    public final long mMasterKeyId;
     // the key fingerprint, for safety
-    private final byte[] mFingerprint;
+    public final byte[] mFingerprint;
 
     public String newPassphrase;
 
     public String[] addUserIds;
     public SubkeyAdd[] addSubKeys;
 
-    public HashMap<Long, SubkeyChange> changeSubKeys;
+    public SubkeyChange[] changeSubKeys;
     public String changePrimaryUserId;
 
     public String[] revokeUserIds;
@@ -76,7 +76,7 @@ public class SaveKeyringParcel implements Parcelable {
         addUserIds = source.createStringArray();
         addSubKeys = (SubkeyAdd[]) source.readSerializable();
 
-        changeSubKeys = (HashMap<Long,SubkeyChange>) source.readSerializable();
+        changeSubKeys = (SubkeyChange[]) source.readSerializable();
         changePrimaryUserId = source.readString();
 
         revokeUserIds = source.createStringArray();

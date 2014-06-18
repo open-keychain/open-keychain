@@ -206,23 +206,23 @@
   <string name="ask_empty_id_ok">Es wurde eine leere Identität hinzugefügt. Wirklich fortfahren?</string>
   <string name="public_key_deletetion_confirmation">Soll der öffentliche Schlüssel \'%s\' wirklich gelöscht werden?\nDies kann nicht rückgängig gemacht werden! </string>
   <string name="also_export_secret_keys">Private Schlüssel auch exportieren</string>
-  <plurals name="keys_added_and_updated_1">
+  <plurals name="import_keys_added_and_updated_1">
     <item quantity="one">%d Schlüssel erfolgreich hinzugefügt</item>
     <item quantity="other">%d Schlüssel erfolgreich hinzugefügt</item>
   </plurals>
-  <plurals name="keys_added_and_updated_2">
+  <plurals name="import_keys_added_and_updated_2">
     <item quantity="one">und %d Schlüssel erfolgreich aktualisiert.</item>
     <item quantity="other">und %d Schlüssel erfolgreich aktualisiert.</item>
   </plurals>
-  <plurals name="keys_added">
+  <plurals name="import_keys_added">
     <item quantity="one">%d Schlüssel erfolgreich hinzugefügt.</item>
     <item quantity="other">%d Schlüssel erfolgreich hinzugefügt.</item>
   </plurals>
-  <plurals name="keys_updated">
+  <plurals name="import_keys_updated">
     <item quantity="one">%d Schlüssel erfolgreich aktualisiert.</item>
     <item quantity="other">%d Schlüssel erfolgreich aktualisiert.</item>
   </plurals>
-  <string name="no_keys_added_or_updated">Keine Schlüssel hinzugefügt oder aktualisiert.</string>
+  <string name="import_error_nothing">Keine Schlüssel hinzugefügt oder aktualisiert.</string>
   <string name="key_exported">1 Schlüssel erfolgreich exportiert.</string>
   <string name="keys_exported">%d Schlüssel erfolgreich exportiert.</string>
   <string name="no_keys_exported">Keine Schlüssel exportiert.</string>
@@ -324,10 +324,8 @@
   <string name="progress_verifying_integrity">Integrität wird überprüft…</string>
   <string name="progress_deleting_securely">\'%s\' wird sicher gelöscht…</string>
   <!--action strings-->
-  <string name="hint_public_keys">Öffentliche Schlüssel suchen</string>
   <string name="hint_secret_keys">Private Schlüssel suchen</string>
   <string name="action_share_key_with">Teile Schlüssel über…</string>
-  <string name="hint_keybase_search">Durchsuche Keybase.io</string>
   <!--key bit length selections-->
   <string name="key_size_512">512</string>
   <string name="key_size_768">768</string>

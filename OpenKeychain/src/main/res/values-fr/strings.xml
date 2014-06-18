@@ -206,23 +206,23 @@
   <string name="ask_empty_id_ok">Vous avez ajouté une identité vide, êtes-vous certain de vouloir continuer ?</string>
   <string name="public_key_deletetion_confirmation">Voulez-vous vraiment supprimer la clef publique %s ?\nCeci est irréversible !</string>
   <string name="also_export_secret_keys">Exporter aussi les clefs secrètes ?</string>
-  <plurals name="keys_added_and_updated_1">
+  <plurals name="import_keys_added_and_updated_1">
     <item quantity="one">%d clef ajoutée avec succès</item>
     <item quantity="other">%d clefs ajoutées avec succès</item>
   </plurals>
-  <plurals name="keys_added_and_updated_2">
+  <plurals name="import_keys_added_and_updated_2">
     <item quantity="one">et %d clef mise à jour.</item>
     <item quantity="other">et %d clefs mises à jour.</item>
   </plurals>
-  <plurals name="keys_added">
+  <plurals name="import_keys_added">
     <item quantity="one">%d clef ajoutée avec succès.</item>
     <item quantity="other">%d clefs ajoutées avec succès.</item>
   </plurals>
-  <plurals name="keys_updated">
+  <plurals name="import_keys_updated">
     <item quantity="one">%d clef mise à jour avec succès.</item>
     <item quantity="other">%d clefs mises à jour avec succès.</item>
   </plurals>
-  <string name="no_keys_added_or_updated">Aucune clef ajoutée ou mise à jour.</string>
+  <string name="import_error_nothing">Aucune clef ajoutée ou mise à jour.</string>
   <string name="key_exported">1 clef exportée avec succès.</string>
   <string name="keys_exported">%d clefs exportées avec succès.</string>
   <string name="no_keys_exported">Aucune clef exportée.</string>

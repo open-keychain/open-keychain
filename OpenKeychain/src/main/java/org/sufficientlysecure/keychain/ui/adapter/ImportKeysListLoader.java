@@ -133,7 +133,7 @@ public class ImportKeysListLoader
 
             // read all available blocks... (asc files can contain many blocks with BEGIN END)
             while (bufferedInput.available() > 0) {
-                // todo deal with non-keyring objects?
+                // TODO: deal with non-keyring objects?
                 List<UncachedKeyRing> rings = UncachedKeyRing.fromStream(bufferedInput);
                 for(UncachedKeyRing key : rings) {
                     ImportKeysListEntry item = new ImportKeysListEntry(getContext(), key);

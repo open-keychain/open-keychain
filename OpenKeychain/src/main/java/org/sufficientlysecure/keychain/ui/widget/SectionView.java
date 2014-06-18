@@ -346,13 +346,8 @@ public class SectionView extends LinearLayout implements OnClickListener, Editor
     }
 
     private void createKey() {
-        // Send all information needed to service to edit key in other thread
-        final Intent intent = new Intent(mActivity, KeychainIntentService.class);
-
-        intent.setAction(KeychainIntentService.ACTION_GENERATE_KEY);
 
         // fill values for this action
-        Bundle data = new Bundle();
         Boolean isMasterKey;
 
         String passphrase;
@@ -365,6 +360,7 @@ public class SectionView extends LinearLayout implements OnClickListener, Editor
             passphrase = "";
             isMasterKey = true;
         }
+        /*
         data.putBoolean(KeychainIntentService.GENERATE_KEY_MASTER_KEY, isMasterKey);
         data.putString(KeychainIntentService.GENERATE_KEY_SYMMETRIC_PASSPHRASE, passphrase);
         data.putInt(KeychainIntentService.GENERATE_KEY_ALGORITHM, mNewKeyAlgorithmChoice.getId());
@@ -410,6 +406,8 @@ public class SectionView extends LinearLayout implements OnClickListener, Editor
 
         // start service with intent
         mActivity.startService(intent);
+        */
+
     }
 
     private void addGeneratedKeyToView(UncachedSecretKey newKey) {

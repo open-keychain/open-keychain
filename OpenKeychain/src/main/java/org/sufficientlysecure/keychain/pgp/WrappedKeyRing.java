@@ -91,8 +91,18 @@ public abstract class WrappedKeyRing extends KeyRing {
         getRing().encode(stream);
     }
 
+    /** Returns an UncachedKeyRing which wraps the same data as this ring. This method should
+     * only be used */
+    public UncachedKeyRing getUncachedKeyRing() {
+        return new UncachedKeyRing(getRing());
+    }
+
     abstract PGPKeyRing getRing();
 
     abstract public IterableIterator<WrappedPublicKey> publicKeyIterator();
+
+    public UncachedKeyRing getUncached() {
+        return new UncachedKeyRing(getRing());
+    }
 
 }

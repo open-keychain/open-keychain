@@ -24,8 +24,7 @@
         <LinearLayout
             android:id="@+id/view_key_action_fingerprint_share"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:minHeight="?android:attr/listPreferredItemHeight"
+            android:layout_height="?android:attr/listPreferredItemHeight"
             android:clickable="true"
             style="@style/SelectableItem"
             android:orientation="horizontal">
@@ -63,7 +62,6 @@
 
         </LinearLayout>
 
-
         <View
             android:layout_width="match_parent"
             android:layout_height="1dip"
@@ -90,8 +88,7 @@
         <LinearLayout
             android:id="@+id/view_key_action_key_share"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:minHeight="?android:attr/listPreferredItemHeight"
+            android:layout_height="?android:attr/listPreferredItemHeight"
             android:clickable="true"
             style="@style/SelectableItem"
             android:orientation="horizontal">
@@ -135,8 +132,7 @@
         <LinearLayout
             android:id="@+id/view_key_action_nfc_help"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:minHeight="?android:attr/listPreferredItemHeight"
+            android:layout_height="?android:attr/listPreferredItemHeight"
             android:clickable="true"
             style="@style/SelectableItem"
             android:orientation="horizontal"

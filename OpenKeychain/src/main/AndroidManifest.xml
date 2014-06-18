@@ -445,6 +445,12 @@
             </intent-filter>
         </service>
 
+        <activity
+            android:name=".ui.LogDisplayActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
+            android:label="@string/title_log_display"
+            android:exported="false" />
+
         <service android:name=".service.DummyAccountService">
             <intent-filter>
                 <action android:name="android.accounts.AccountAuthenticator"/>

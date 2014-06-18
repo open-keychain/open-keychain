@@ -3,7 +3,7 @@ package org.sufficientlysecure.keychain.keyimport;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-/** This is a trivial wrapper around UncachedKeyRing which implements Parcelable. It exists
+/** This is a trivial wrapper around keyring bytes which implements Parcelable. It exists
  * for the sole purpose of keeping spongycastle and android imports in separate packages.
  */
 public class ParcelableKeyRing implements Parcelable {

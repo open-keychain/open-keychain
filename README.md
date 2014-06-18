@@ -33,7 +33,7 @@ Development mailinglist at http://groups.google.com/d/forum/openpgp-keychain-dev
 1. Get all external submodules with ``git submodule update --init --recursive``
 2. Have Android SDK "tools", "platform-tools", and "build-tools" directories in your PATH (http://developer.android.com/sdk/index.html)
 3. Open the Android SDK Manager (shell command: ``android``).  
-Expand the Tools directory and select "Android SDK Build-tools (Version 19.0.3)".  
+Expand the Tools directory and select "Android SDK Build-tools (Version 19.1)".  
 Expand the Extras directory and install "Android Support Repository"  
 Select everything for the newest SDK Platform (API-Level 19)
 4. Export ANDROID_HOME pointing to your Android SDK
@@ -42,8 +42,8 @@ Select everything for the newest SDK Platform (API-Level 19)
 
 ### Build API Demo with Gradle
 
-1. Follow 1-3 from above
-2. Change to API Demo directory ``cd OpenKeychain-API``
+1. Follow 1-4 from above
+2. The example code is available at https://github.com/open-keychain/api-example
 3. Execute ``./gradlew build``
 
 ### Development with Android Studio
@@ -227,8 +227,11 @@ Some parts and some libraries are Apache License v2, MIT X11 License (see below)
 * icon.svg  
   modified version of kgpg_key2_kopete.svgz
   
-* Menu icons  
+* Actionbar icons  
   http://developer.android.com/design/downloads/index.html#action-bar-icon-pack
+  
+* QR Code Actionbar icon  
+  https://github.com/openintents/openintents/blob/master/extensions/qrcode_ext/icons/ic_menu_qr_code/ic_menu_qr_code_holo_light/ic_menu_qr_code.svg
 
 * Purple color scheme  
   http://android-holo-colors.com/

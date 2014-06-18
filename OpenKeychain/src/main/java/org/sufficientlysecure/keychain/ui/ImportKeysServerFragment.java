@@ -17,6 +17,7 @@
 
 package org.sufficientlysecure.keychain.ui;
 
+import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -32,8 +33,6 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-import com.beardedhen.androidbootstrap.BootstrapButton;
-
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.helper.Preferences;
@@ -46,8 +45,10 @@ public class ImportKeysServerFragment extends Fragment {
 
     private ImportKeysActivity mImportActivity;
 
-    private BootstrapButton mSearchButton;
+    private View mSearchButton;
     private EditText mQueryEditText;
+    private View mConfigButton;
+    private View mConfigLayout;
     private Spinner mServerSpinner;
     private ArrayAdapter<String> mServerAdapter;
 
@@ -73,14 +74,17 @@ public class ImportKeysServerFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.import_keys_server_fragment, container, false);
 
-        mSearchButton = (BootstrapButton) view.findViewById(R.id.import_server_search);
+        mSearchButton = view.findViewById(R.id.import_server_search);
         mQueryEditText = (EditText) view.findViewById(R.id.import_server_query);
+        mConfigButton = view.findViewById(R.id.import_server_config_button);
+        mConfigLayout = view.findViewById(R.id.import_server_config);
         mServerSpinner = (Spinner) view.findViewById(R.id.import_server_spinner);
 
         // add keyservers to spinner
         mServerAdapter = new ArrayAdapter<String>(getActivity(),
                 android.R.layout.simple_spinner_item, Preferences.getPreferences(getActivity())
-                .getKeyServers());
+                .getKeyServers()
+        );
         mServerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         mServerSpinner.setAdapter(mServerAdapter);
         if (mServerAdapter.getCount() > 0) {
@@ -118,14 +122,23 @@ public class ImportKeysServerFragment extends Fragment {
             }
         });
 
+        mConfigButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mImportActivity.getViewPagerHeight() > ImportKeysActivity.VIEW_PAGER_HEIGHT) {
+                    mImportActivity.resizeViewPager(ImportKeysActivity.VIEW_PAGER_HEIGHT);
+                } else {
+                    mImportActivity.resizeViewPager(ImportKeysActivity.VIEW_PAGER_HEIGHT + 41);
+                }
+            }
+        });
+
         return view;
     }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-
-        mImportActivity = (ImportKeysActivity) getActivity();
 
         // set displayed values
         if (getArguments() != null) {
@@ -148,6 +161,13 @@ public class ImportKeysServerFragment extends Fragment {
                 mQueryEditText.setEnabled(false);
             }
         }
+    }
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+
+        mImportActivity = (ImportKeysActivity) activity;
     }
 
     private void search(String query, String keyServer) {

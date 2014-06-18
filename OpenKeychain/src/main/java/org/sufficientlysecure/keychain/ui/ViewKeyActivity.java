@@ -56,6 +56,7 @@ import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.ui.adapter.PagerTabStripAdapter;
+import org.sufficientlysecure.keychain.ui.widget.SlidingTabLayout.TabColorizer;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.ui.widget.SlidingTabLayout;
 
@@ -121,6 +122,18 @@ public class ViewKeyActivity extends ActionBarActivity implements
         mViewPager = (ViewPager) findViewById(R.id.view_key_pager);
         mSlidingTabLayout = (SlidingTabLayout) findViewById(R.id.view_key_sliding_tab_layout);
 
+        mSlidingTabLayout.setCustomTabColorizer(new TabColorizer() {
+            @Override
+            public int getIndicatorColor(int position) {
+                return position == TAB_CERTS || position == TAB_KEYS ? 0xFFFF4444 : 0xFFAA66CC;
+            }
+
+            @Override
+            public int getDividerColor(int position) {
+                return 0;
+            }
+        });
+
         int switchToTab = TAB_MAIN;
         Intent intent = getIntent();
         if (intent.getExtras() != null && intent.getExtras().containsKey(EXTRA_SELECTED_TAB)) {
@@ -158,7 +171,7 @@ public class ViewKeyActivity extends ActionBarActivity implements
         Bundle shareBundle = new Bundle();
         shareBundle.putParcelable(ViewKeyMainFragment.ARG_DATA_URI, dataUri);
         mTabsAdapter.addTab(ViewKeyShareFragment.class,
-                mainBundle, getString(R.string.key_view_tab_share));
+                shareBundle, getString(R.string.key_view_tab_share));
 
         // update layout after operations
         mSlidingTabLayout.setViewPager(mViewPager);

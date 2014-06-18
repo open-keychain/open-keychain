@@ -206,23 +206,23 @@
   <string name="ask_empty_id_ok">U heeft een lege identiteit toegevoegd, weet u zeker dat u wilt doorgaan?</string>
   <string name="public_key_deletetion_confirmation">Wilt u echt de publieke sleutel \'%s\' verwijderen?\nDit kunt u niet ongedaan maken!</string>
   <string name="also_export_secret_keys">Ook geheime sleutels exporteren?</string>
-  <plurals name="keys_added_and_updated_1">
+  <plurals name="import_keys_added_and_updated_1">
     <item quantity="one">Succesvol %d sleutel toegevoegd</item>
     <item quantity="other">Succesvol %d sleutels toegevoegd</item>
   </plurals>
-  <plurals name="keys_added_and_updated_2">
+  <plurals name="import_keys_added_and_updated_2">
     <item quantity="one">en %d sleutel bijgewerkt.</item>
     <item quantity="other">en %d sleutels bijgewerkt.</item>
   </plurals>
-  <plurals name="keys_added">
+  <plurals name="import_keys_added">
     <item quantity="one">Succesvol %d sleutel toegevoegd.</item>
     <item quantity="other">Succesvol %d sleutels toegevoegd.</item>
   </plurals>
-  <plurals name="keys_updated">
+  <plurals name="import_keys_updated">
     <item quantity="one">Succesvol %d sleutel bijgewerkt.</item>
     <item quantity="other">Succesvol %d sleutels bijgewerkt.</item>
   </plurals>
-  <string name="no_keys_added_or_updated">Geen sleutels toegevoegd of bijgewerkt.</string>
+  <string name="import_error_nothing">Geen sleutels toegevoegd of bijgewerkt.</string>
   <string name="key_exported">1 sleutel succesvol geëxporteerd.</string>
   <string name="keys_exported">Succesvol %d sleutels geëxporteerd.</string>
   <string name="no_keys_exported">Geen sleutels geëxporteerd.</string>
