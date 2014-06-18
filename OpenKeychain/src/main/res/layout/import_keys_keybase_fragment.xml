@@ -18,16 +18,7 @@
         android:lines="1"
         android:maxLines="1"
         android:minLines="1"
-        android:layout_marginRight="8dp"
         android:layout_gravity="center_vertical" />
-
-    <View
-        android:layout_width="1dip"
-        android:layout_height="match_parent"
-        android:gravity="right"
-        android:layout_marginBottom="8dp"
-        android:layout_marginTop="8dp"
-        android:background="?android:attr/listDivider" />
 
     <ImageButton
         android:id="@+id/import_keybase_search"
