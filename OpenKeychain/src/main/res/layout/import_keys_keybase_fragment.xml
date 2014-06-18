@@ -24,7 +24,7 @@
         android:id="@+id/import_keybase_search"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:padding="16dp"
+        android:padding="8dp"
         android:src="@drawable/ic_action_search"
         android:layout_gravity="center_vertical"
         style="@style/SelectableItem" />
