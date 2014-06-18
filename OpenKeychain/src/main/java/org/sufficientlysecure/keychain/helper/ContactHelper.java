@@ -79,7 +79,8 @@ public class ContactHelper {
     }
 
     public static Uri dataUriFromContactUri(Context context, Uri contactUri) {
-        Cursor contactMasterKey = context.getContentResolver().query(contactUri, new String[]{ContactsContract.Data.DATA2}, null, null, null, null);
+        Cursor contactMasterKey = context.getContentResolver().query(contactUri,
+                new String[]{ContactsContract.Data.DATA2}, null, null, null, null);
         if (contactMasterKey != null) {
             if (contactMasterKey.moveToNext()) {
                 return KeychainContract.KeyRings.buildGenericKeyRingUri(contactMasterKey.getLong(0));
@@ -89,7 +90,8 @@ public class ContactHelper {
         return null;
     }
 
-    private static ContentProviderOperation.Builder referenceRawContact(ContentProviderOperation.Builder builder, int rawContactId) {
+    private static ContentProviderOperation.Builder referenceRawContact(ContentProviderOperation.Builder builder,
+                                                                        int rawContactId) {
         return rawContactId == -1 ?
                 builder.withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, 0) :
                 builder.withValue(ContactsContract.Data.RAW_CONTACT_ID, rawContactId);
@@ -119,7 +121,8 @@ public class ContactHelper {
                 ArrayList<ContentProviderOperation> ops = new ArrayList<ContentProviderOperation>();
                 if (isExpired || isRevoked) {
                     if (rawContactId != -1) {
-                        resolver.delete(ContactsContract.RawContacts.CONTENT_URI, ContactsContract.RawContacts._ID + "=?", new String[]{Integer.toString(rawContactId)});
+                        resolver.delete(ContactsContract.RawContacts.CONTENT_URI,
+                                ContactsContract.RawContacts._ID + "=?", new String[]{Integer.toString(rawContactId)});
                     }
                 } else {
                     if (rawContactId == -1) {
@@ -147,7 +150,8 @@ public class ContactHelper {
                 .build());
     }
 
-    private static void writeContactKey(ArrayList<ContentProviderOperation> ops, Context context, int rawContactId, long masterKeyId, String keyIdShort) {
+    private static void writeContactKey(ArrayList<ContentProviderOperation> ops, Context context, int rawContactId,
+                                        long masterKeyId, String keyIdShort) {
         ops.add(referenceRawContact(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI), rawContactId)
                 .withValue(ContactsContract.Data.MIMETYPE, Constants.CUSTOM_CONTACT_DATA_MIME_TYPE)
                 .withValue(ContactsContract.Data.DATA1, context.getString(R.string.contact_show_key, keyIdShort))
@@ -155,16 +159,20 @@ public class ContactHelper {
                 .build());
     }
 
-    private static void writeContactEmail(ArrayList<ContentProviderOperation> ops, ContentResolver resolver, int rawContactId, long masterKeyId) {
+    private static void writeContactEmail(ArrayList<ContentProviderOperation> ops, ContentResolver resolver,
+                                          int rawContactId, long masterKeyId) {
         ops.add(selectByRawContactAndItemType(ContentProviderOperation.newDelete(ContactsContract.Data.CONTENT_URI),
                 rawContactId, ContactsContract.CommonDataKinds.Email.CONTENT_ITEM_TYPE).build());
-        Cursor ids = resolver.query(KeychainContract.UserIds.buildUserIdsUri(Long.toString(masterKeyId)), USER_IDS_PROJECTION, KeychainContract.UserIds.IS_REVOKED + "=0", null, null);
+        Cursor ids = resolver.query(KeychainContract.UserIds.buildUserIdsUri(Long.toString(masterKeyId)),
+                USER_IDS_PROJECTION, KeychainContract.UserIds.IS_REVOKED + "=0", null, null);
         if (ids != null) {
             while (ids.moveToNext()) {
                 String[] userId = KeyRing.splitUserId(ids.getString(0));
                 if (userId[1] != null) {
-                    ops.add(referenceRawContact(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI), rawContactId)
-                            .withValue(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.Email.CONTENT_ITEM_TYPE)
+                    ops.add(referenceRawContact(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI),
+                            rawContactId)
+                            .withValue(ContactsContract.Data.MIMETYPE,
+                                    ContactsContract.CommonDataKinds.Email.CONTENT_ITEM_TYPE)
                             .withValue(ContactsContract.CommonDataKinds.Email.DATA, userId[1])
                             .build());
                 }
@@ -173,17 +181,21 @@ public class ContactHelper {
         }
     }
 
-    private static void writeContactDisplayName(ArrayList<ContentProviderOperation> ops, int rawContactId, String displayName) {
+    private static void writeContactDisplayName(ArrayList<ContentProviderOperation> ops, int rawContactId,
+                                                String displayName) {
         if (displayName != null) {
-            ops.add(insertOrUpdateForRawContact(ContactsContract.Data.CONTENT_URI, rawContactId, ContactsContract.CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE)
+            ops.add(insertOrUpdateForRawContact(ContactsContract.Data.CONTENT_URI, rawContactId,
+                    ContactsContract.CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE)
                     .withValue(ContactsContract.CommonDataKinds.StructuredName.DISPLAY_NAME, displayName)
                     .build());
         }
     }
 
-    private static ContentProviderOperation.Builder insertOrUpdateForRawContact(Uri uri, int rawContactId, String itemType) {
+    private static ContentProviderOperation.Builder insertOrUpdateForRawContact(Uri uri, int rawContactId,
+                                                                                String itemType) {
         if (rawContactId == -1) {
-            return referenceRawContact(ContentProviderOperation.newInsert(uri), rawContactId).withValue(ContactsContract.Data.MIMETYPE, itemType);
+            return referenceRawContact(ContentProviderOperation.newInsert(uri), rawContactId).withValue(
+                    ContactsContract.Data.MIMETYPE, itemType);
         } else {
             return ContentProviderOperation.newUpdate(uri).withSelection(
                     ContactsContract.Data.RAW_CONTACT_ID + "=? AND " + ContactsContract.Data.MIMETYPE + "=?",
@@ -191,7 +203,8 @@ public class ContactHelper {
         }
     }
 
-    private static ContentProviderOperation.Builder selectByRawContactAndItemType(ContentProviderOperation.Builder builder, int rawContactId, String itemType) {
+    private static ContentProviderOperation.Builder selectByRawContactAndItemType(
+            ContentProviderOperation.Builder builder, int rawContactId, String itemType) {
         return builder.withSelection(
                 ContactsContract.Data.RAW_CONTACT_ID + "=? AND " + ContactsContract.Data.MIMETYPE + "=?",
                 new String[]{Integer.toString(rawContactId), itemType});
