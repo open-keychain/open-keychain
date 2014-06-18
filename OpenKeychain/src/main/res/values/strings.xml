@@ -600,7 +600,6 @@
     <string name="msg_kc_uid_revoke_old">Removing outdated revocation certificate for user id "%s"</string>
     <string name="msg_kc_uid_no_cert">No valid self-certificate found for user id %s, removing from ring</string>
 
-
     <!-- Keyring merging log entries -->
     <string name="msg_mg_public">Merging into public keyring %s</string>
     <string name="msg_mg_secret">Merging into secret keyring %s</string>
@@ -608,6 +607,25 @@
     <string name="msg_mg_heterogeneous">Tried to consolidate heterogeneous keyrings</string>
     <string name="msg_mg_new_subkey">Adding new subkey %s</string>
     <string name="msg_mg_found_new">Found %s new certificates in keyring</string>
+
+    <!-- modifySecretKeyRing -->
+    <string name="msg_mr">Modifying keyring %s</string>
+    <string name="msg_mf_error_encode">Encoding exception!</string>
+    <string name="msg_mf_error_pgp">PGP internal exception!</string>
+    <string name="msg_mf_error_sig">Signature exception!</string>
+    <string name="msg_mf_passphrase">Changing passphrase</string>
+    <string name="msg_mf_subkey_change">Modifying subkey %s</string>
+    <string name="msg_mf_subkey_missing">Tried to operate on missing subkey %s!</string>
+    <string name="msg_mf_subkey_new">Generating new %1$s bit %2$s subkey</string>
+    <string name="msg_mf_subkey_new_id">New subkey id: %s</string>
+    <string name="msg_mf_subkey_past_expiry">Expiry date cannot be in the past!</string>
+    <string name="msg_mf_subkey_revoke">Revoking subkey %s</string>
+    <string name="msg_mf_success">Keyring successfully modified</string>
+    <string name="msg_mf_uid_add">Adding user id %s</string>
+    <string name="msg_mf_uid_primary">Changing primary uid to %s</string>
+    <string name="msg_mf_uid_revoke">Revoking user id %s</string>
+    <string name="msg_mf_unlock_error">Error unlocking keyring!</string>
+    <string name="msg_mf_unlock">Unlocking keyring</string>
 
     <!-- unsorted -->
     <string name="section_certifier_id">Certifier</string>

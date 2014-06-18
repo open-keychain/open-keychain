@@ -223,6 +223,7 @@ public class OperationResultParcel implements Parcelable {
         MSG_KC_UID_REVOKE_DUP (R.string.msg_kc_uid_revoke_dup),
         MSG_KC_UID_REVOKE_OLD (R.string.msg_kc_uid_revoke_old),
 
+
         // keyring consolidation
         MSG_MG_PUBLIC (R.string.msg_mg_public),
         MSG_MG_SECRET (R.string.msg_mg_secret),
@@ -230,6 +231,25 @@ public class OperationResultParcel implements Parcelable {
         MSG_MG_HETEROGENEOUS (R.string.msg_mg_heterogeneous),
         MSG_MG_NEW_SUBKEY (R.string.msg_mg_new_subkey),
         MSG_MG_FOUND_NEW (R.string.msg_mg_found_new),
+
+        // secret key modify
+        MSG_MF (R.string.msg_mr),
+        MSG_MF_ERROR_ENCODE (R.string.msg_mf_error_encode),
+        MSG_MF_ERROR_PGP (R.string.msg_mf_error_pgp),
+        MSG_MF_ERROR_SIG (R.string.msg_mf_error_sig),
+        MSG_MF_PASSPHRASE (R.string.msg_mf_passphrase),
+        MSG_MF_SUBKEY_CHANGE (R.string.msg_mf_subkey_change),
+        MSG_MF_SUBKEY_MISSING (R.string.msg_mf_subkey_missing),
+        MSG_MF_SUBKEY_NEW_ID (R.string.msg_mf_subkey_new_id),
+        MSG_MF_SUBKEY_NEW (R.string.msg_mf_subkey_new),
+        MSG_MF_SUBKEY_PAST_EXPIRY (R.string.msg_mf_subkey_past_expiry),
+        MSG_MF_SUBKEY_REVOKE (R.string.msg_mf_subkey_revoke),
+        MSG_MF_SUCCESS (R.string.msg_mf_success),
+        MSG_MF_UID_ADD (R.string.msg_mf_uid_add),
+        MSG_MF_UID_PRIMARY (R.string.msg_mf_uid_primary),
+        MSG_MF_UID_REVOKE (R.string.msg_mf_uid_revoke),
+        MSG_MF_UNLOCK_ERROR (R.string.msg_mf_unlock_error),
+        MSG_MF_UNLOCK (R.string.msg_mf_unlock),
         ;
 
         private final int mMsgId;
@@ -278,6 +298,10 @@ public class OperationResultParcel implements Parcelable {
         public void add(LogLevel level, LogType type, String[] parameters, int indent) {
             Log.d(Constants.TAG, type.toString());
             add(new OperationResultParcel.LogEntryParcel(level, type, parameters, indent));
+        }
+
+        public void add(LogLevel level, LogType type, int indent) {
+            add(new OperationResultParcel.LogEntryParcel(level, type, null, indent));
         }
 
         public boolean containsWarnings() {

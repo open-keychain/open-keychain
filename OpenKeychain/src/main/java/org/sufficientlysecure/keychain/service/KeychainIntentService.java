@@ -44,7 +44,6 @@ import org.sufficientlysecure.keychain.pgp.PgpKeyOperation;
 import org.sufficientlysecure.keychain.pgp.PgpSignEncrypt;
 import org.sufficientlysecure.keychain.pgp.Progressable;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
-import org.sufficientlysecure.keychain.pgp.UncachedSecretKey;
 import org.sufficientlysecure.keychain.pgp.WrappedPublicKeyRing;
 import org.sufficientlysecure.keychain.pgp.WrappedSecretKey;
 import org.sufficientlysecure.keychain.pgp.WrappedSecretKeyRing;
@@ -53,6 +52,7 @@ import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralMsgIdException;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.KeychainDatabase;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
+import org.sufficientlysecure.keychain.service.OperationResultParcel.OperationLog;
 import org.sufficientlysecure.keychain.util.InputData;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.ProgressScaler;
@@ -87,9 +87,6 @@ public class KeychainIntentService extends IntentService
     public static final String ACTION_DECRYPT_VERIFY = Constants.INTENT_PREFIX + "DECRYPT_VERIFY";
 
     public static final String ACTION_SAVE_KEYRING = Constants.INTENT_PREFIX + "SAVE_KEYRING";
-    public static final String ACTION_GENERATE_KEY = Constants.INTENT_PREFIX + "GENERATE_KEY";
-    public static final String ACTION_GENERATE_DEFAULT_RSA_KEYS = Constants.INTENT_PREFIX
-            + "GENERATE_DEFAULT_RSA_KEYS";
 
     public static final String ACTION_DELETE_FILE_SECURELY = Constants.INTENT_PREFIX
             + "DELETE_FILE_SECURELY";
@@ -127,14 +124,7 @@ public class KeychainIntentService extends IntentService
 
     // save keyring
     public static final String SAVE_KEYRING_PARCEL = "save_parcel";
-    public static final String SAVE_KEYRING_CAN_SIGN = "can_sign";
-
-
-    // generate key
-    public static final String GENERATE_KEY_ALGORITHM = "algorithm";
-    public static final String GENERATE_KEY_KEY_SIZE = "key_size";
-    public static final String GENERATE_KEY_SYMMETRIC_PASSPHRASE = "passphrase";
-    public static final String GENERATE_KEY_MASTER_KEY = "master_key";
+    public static final String SAVE_KEYRING_PASSPHRASE = "passphrase";
 
     // delete file securely
     public static final String DELETE_FILE = "deleteFile";
@@ -164,9 +154,6 @@ public class KeychainIntentService extends IntentService
     /*
      * possible data keys as result send over messenger
      */
-    // keys
-    public static final String RESULT_NEW_KEY = "new_key";
-    public static final String RESULT_KEY_USAGES = "new_key_usages";
 
     // encrypt
     public static final String RESULT_BYTES = "encrypted_data";
@@ -490,133 +477,37 @@ public class KeychainIntentService extends IntentService
         } else if (ACTION_SAVE_KEYRING.equals(action)) {
             try {
                 /* Input */
-                OldSaveKeyringParcel saveParcel = data.getParcelable(SAVE_KEYRING_PARCEL);
-                String oldPassphrase = saveParcel.oldPassphrase;
-                String newPassphrase = saveParcel.newPassphrase;
-                boolean canSign = true;
-
-                if (data.containsKey(SAVE_KEYRING_CAN_SIGN)) {
-                    canSign = data.getBoolean(SAVE_KEYRING_CAN_SIGN);
-                }
-
-                if (newPassphrase == null) {
-                    newPassphrase = oldPassphrase;
-                }
-
-                long masterKeyId = saveParcel.keys.get(0).getKeyId();
+                SaveKeyringParcel saveParcel = data.getParcelable(SAVE_KEYRING_PARCEL);
+                long masterKeyId = saveParcel.mMasterKeyId;
 
                 /* Operation */
                 ProviderHelper providerHelper = new ProviderHelper(this);
-                if (!canSign) {
-                    setProgress(R.string.progress_building_key, 0, 100);
-                    WrappedSecretKeyRing keyRing = providerHelper.getWrappedSecretKeyRing(masterKeyId);
-                    UncachedKeyRing newKeyRing =
-                            keyRing.changeSecretKeyPassphrase(oldPassphrase, newPassphrase);
-                    setProgress(R.string.progress_saving_key_ring, 50, 100);
-                    // providerHelper.saveSecretKeyRing(newKeyRing);
-                    setProgress(R.string.progress_done, 100, 100);
-                } else {
-                    PgpKeyOperation keyOperations = new PgpKeyOperation(new ProgressScaler(this, 0, 90, 100));
-                    try {
-                        WrappedSecretKeyRing seckey = providerHelper.getWrappedSecretKeyRing(masterKeyId);
-                        WrappedPublicKeyRing pubkey = providerHelper.getWrappedPublicKeyRing(masterKeyId);
+                PgpKeyOperation keyOperations = new PgpKeyOperation(new ProgressScaler(this, 0, 90, 100));
+                try {
+                    String passphrase = data.getString(SAVE_KEYRING_PASSPHRASE);
+                    WrappedSecretKeyRing secRing = providerHelper.getWrappedSecretKeyRing(masterKeyId);
 
-                        PgpKeyOperation.Pair<UncachedKeyRing,UncachedKeyRing> pair =
-                                keyOperations.buildSecretKey(seckey, pubkey, saveParcel); // edit existing
-                        setProgress(R.string.progress_saving_key_ring, 90, 100);
-                        providerHelper.savePairedKeyRing(pair.first, pair.second);
-                    } catch (ProviderHelper.NotFoundException e) {
-                        PgpKeyOperation.Pair<UncachedKeyRing,UncachedKeyRing> pair =
-                                keyOperations.buildNewSecretKey(saveParcel); //new Keyring
-                        // save the pair
-                        setProgress(R.string.progress_saving_key_ring, 90, 100);
-                        providerHelper.savePairedKeyRing(pair.first, pair.second);
-                    }
-
-                    setProgress(R.string.progress_done, 100, 100);
+                    OperationLog log = new OperationLog();
+                    UncachedKeyRing ring = keyOperations.modifySecretKeyRing(secRing, saveParcel,
+                            passphrase, log, 0);
+                    setProgress(R.string.progress_saving_key_ring, 90, 100);
+                    providerHelper.saveSecretKeyRing(ring);
+                } catch (ProviderHelper.NotFoundException e) {
+                    // UncachedKeyRing ring = keyOperations.(saveParcel); //new Keyring
+                    // save the pair
+                    setProgress(R.string.progress_saving_key_ring, 90, 100);
+                    // providerHelper.saveSecretKeyRing(ring);
+                    sendErrorToHandler(e);
                 }
-                PassphraseCacheService.addCachedPassphrase(this, masterKeyId, newPassphrase);
+
+                setProgress(R.string.progress_done, 100, 100);
+
+                if (saveParcel.newPassphrase != null) {
+                    PassphraseCacheService.addCachedPassphrase(this, masterKeyId, saveParcel.newPassphrase);
+                }
 
                 /* Output */
                 sendMessageToHandler(KeychainIntentServiceHandler.MESSAGE_OKAY);
-            } catch (Exception e) {
-                sendErrorToHandler(e);
-            }
-        } else if (ACTION_GENERATE_KEY.equals(action)) {
-            try {
-                /* Input */
-                int algorithm = data.getInt(GENERATE_KEY_ALGORITHM);
-                String passphrase = data.getString(GENERATE_KEY_SYMMETRIC_PASSPHRASE);
-                int keysize = data.getInt(GENERATE_KEY_KEY_SIZE);
-                boolean masterKey = data.getBoolean(GENERATE_KEY_MASTER_KEY);
-
-                /* Operation */
-                PgpKeyOperation keyOperations = new PgpKeyOperation(new ProgressScaler(this, 0, 100, 100));
-                byte[] newKey = keyOperations.createKey(algorithm, keysize, passphrase, masterKey);
-
-                /* Output */
-                Bundle resultData = new Bundle();
-                resultData.putByteArray(RESULT_NEW_KEY, newKey);
-
-                OtherHelper.logDebugBundle(resultData, "resultData");
-
-                sendMessageToHandler(KeychainIntentServiceHandler.MESSAGE_OKAY, resultData);
-            } catch (Exception e) {
-                sendErrorToHandler(e);
-            }
-        } else if (ACTION_GENERATE_DEFAULT_RSA_KEYS.equals(action)) {
-            // generate one RSA 4096 key for signing and one subkey for encrypting!
-            try {
-                /* Input */
-                String passphrase = data.getString(GENERATE_KEY_SYMMETRIC_PASSPHRASE);
-                ArrayList<Integer> keyUsageList = new ArrayList<Integer>();
-
-                /* Operation */
-                int keysTotal = 3;
-                int keysCreated = 0;
-                setProgress(
-                        getApplicationContext().getResources().
-                                getQuantityString(R.plurals.progress_generating, keysTotal),
-                        keysCreated,
-                        keysTotal);
-                PgpKeyOperation keyOperations = new PgpKeyOperation(new ProgressScaler(this, 0, 100, 100));
-
-                ByteArrayOutputStream os = new ByteArrayOutputStream();
-
-                byte[] buf;
-
-                buf = keyOperations.createKey(Constants.choice.algorithm.rsa,
-                        4096, passphrase, true);
-                os.write(buf);
-                keyUsageList.add(UncachedSecretKey.CERTIFY_OTHER);
-                keysCreated++;
-                setProgress(keysCreated, keysTotal);
-
-                buf = keyOperations.createKey(Constants.choice.algorithm.rsa,
-                        4096, passphrase, false);
-                os.write(buf);
-                keyUsageList.add(UncachedSecretKey.ENCRYPT_COMMS | UncachedSecretKey.ENCRYPT_STORAGE);
-                keysCreated++;
-                setProgress(keysCreated, keysTotal);
-
-                buf = keyOperations.createKey(Constants.choice.algorithm.rsa,
-                        4096, passphrase, false);
-                os.write(buf);
-                keyUsageList.add(UncachedSecretKey.SIGN_DATA);
-                keysCreated++;
-                setProgress(keysCreated, keysTotal);
-
-                // TODO: default to one master for cert, one sub for encrypt and one sub
-                //       for sign
-
-                /* Output */
-                Bundle resultData = new Bundle();
-                resultData.putByteArray(RESULT_NEW_KEY, os.toByteArray());
-                resultData.putIntegerArrayList(RESULT_KEY_USAGES, keyUsageList);
-
-                OtherHelper.logDebugBundle(resultData, "resultData");
-
-                sendMessageToHandler(KeychainIntentServiceHandler.MESSAGE_OKAY, resultData);
             } catch (Exception e) {
                 sendErrorToHandler(e);
             }

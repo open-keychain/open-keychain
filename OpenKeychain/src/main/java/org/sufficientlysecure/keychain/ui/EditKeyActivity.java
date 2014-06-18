@@ -57,7 +57,6 @@ import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
 import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
-import org.sufficientlysecure.keychain.service.OldSaveKeyringParcel;
 import org.sufficientlysecure.keychain.service.PassphraseCacheService;
 import org.sufficientlysecure.keychain.ui.dialog.CustomAlertDialogBuilder;
 import org.sufficientlysecure.keychain.ui.dialog.PassphraseDialogFragment;
@@ -199,12 +198,9 @@ public class EditKeyActivity extends ActionBarActivity implements EditorListener
 
             // generate key
             if (extras.containsKey(EXTRA_GENERATE_DEFAULT_KEYS)) {
+                /*
                 boolean generateDefaultKeys = extras.getBoolean(EXTRA_GENERATE_DEFAULT_KEYS);
                 if (generateDefaultKeys) {
-
-                    // Send all information needed to service generate keys in other thread
-                    final Intent serviceIntent = new Intent(this, KeychainIntentService.class);
-                    serviceIntent.setAction(KeychainIntentService.ACTION_GENERATE_DEFAULT_RSA_KEYS);
 
                     // fill values for this action
                     Bundle data = new Bundle();
@@ -265,6 +261,7 @@ public class EditKeyActivity extends ActionBarActivity implements EditorListener
                     // start service with intent
                     startService(serviceIntent);
                 }
+                */
             }
         } else {
             buildLayout(false);
@@ -547,6 +544,7 @@ public class EditKeyActivity extends ActionBarActivity implements EditorListener
     }
 
     private void finallySaveClicked() {
+            /*
         try {
             // Send all information needed to service to edit key in other thread
             Intent intent = new Intent(this, KeychainIntentService.class);
@@ -609,6 +607,7 @@ public class EditKeyActivity extends ActionBarActivity implements EditorListener
             AppMsg.makeText(this, getString(R.string.error_message, e.getMessage()),
                     AppMsg.STYLE_ALERT).show();
         }
+            */
     }
 
     private void cancelClicked() {
