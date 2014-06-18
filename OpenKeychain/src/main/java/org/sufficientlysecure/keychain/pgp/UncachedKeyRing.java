@@ -51,6 +51,7 @@ import java.util.Vector;
  * @see org.sufficientlysecure.keychain.pgp.UncachedSecretKey
  *
  */
+@SuppressWarnings("unchecked")
 public class UncachedKeyRing {
 
     final PGPKeyRing mRing;
@@ -63,12 +64,6 @@ public class UncachedKeyRing {
 
     public long getMasterKeyId() {
         return mRing.getPublicKey().getKeyID();
-    }
-
-    /* TODO don't use this */
-    @Deprecated
-    public PGPKeyRing getRing() {
-        return mRing;
     }
 
     public UncachedPublicKey getPublicKey() {
@@ -101,15 +96,6 @@ public class UncachedKeyRing {
 
     public byte[] getFingerprint() {
         return mRing.getPublicKey().getFingerprint();
-    }
-
-    public static UncachedKeyRing decodePublicFromData(byte[] data)
-            throws PgpGeneralException, IOException {
-        UncachedKeyRing ring = decodeFromData(data);
-        if(ring.isSecret()) {
-            throw new PgpGeneralException("Object not recognized as PGPPublicKeyRing!");
-        }
-        return ring;
     }
 
     public static UncachedKeyRing decodeFromData(byte[] data)
@@ -202,7 +188,8 @@ public class UncachedKeyRing {
      * @return A canonicalized key, or null on fatal error
      *
      */
-    public UncachedKeyRing canonicalizePublic(OperationLog log, int indent) {
+    @SuppressWarnings("ConstantConditions")
+    public UncachedKeyRing canonicalize(OperationLog log, int indent) {
         if (isSecret()) {
             throw new RuntimeException("Tried to public-canonicalize non-public keyring. " +
                     "This is a programming error and should never happen!");
@@ -624,16 +611,6 @@ public class UncachedKeyRing {
         return new UncachedKeyRing(ring);
     }
 
-    private static PGPKeyRing replacePublicKey(PGPKeyRing ring, PGPPublicKey key) {
-        if (ring instanceof PGPPublicKeyRing) {
-            return PGPPublicKeyRing.insertPublicKey((PGPPublicKeyRing) ring, key);
-        }
-        PGPSecretKeyRing secRing = (PGPSecretKeyRing) ring;
-        PGPSecretKey sKey = secRing.getSecretKey(key.getKeyID());
-        sKey = PGPSecretKey.replacePublicKey(sKey, key);
-        return PGPSecretKeyRing.insertSecretKey(secRing, sKey);
-    }
-
     /** This operation consolidates a list of UncachedKeyRings into a single, combined
      * UncachedKeyRing.
      *
@@ -757,6 +734,23 @@ public class UncachedKeyRing {
             return null;
         }
 
+    }
+
+    /** This method replaces a public key in a keyring.
+     *
+     * This method essentially wraps PGP*KeyRing.insertPublicKey, where the keyring may be of either
+     * the secret or public subclass.
+     *
+     * @return the resulting PGPKeyRing of the same type as the input
+     */
+    private static PGPKeyRing replacePublicKey(PGPKeyRing ring, PGPPublicKey key) {
+        if (ring instanceof PGPPublicKeyRing) {
+            return PGPPublicKeyRing.insertPublicKey((PGPPublicKeyRing) ring, key);
+        }
+        PGPSecretKeyRing secRing = (PGPSecretKeyRing) ring;
+        PGPSecretKey sKey = secRing.getSecretKey(key.getKeyID());
+        sKey = PGPSecretKey.replacePublicKey(sKey, key);
+        return PGPSecretKeyRing.insertSecretKey(secRing, sKey);
     }
 
 }

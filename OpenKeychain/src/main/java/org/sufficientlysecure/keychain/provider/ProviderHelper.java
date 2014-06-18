@@ -68,7 +68,7 @@ import java.util.Set;
  * name, it is not only a helper but actually the main interface for all
  * synchronous database operations.
  *
- * Operations in this class write logs (TODO). These can be obtained from the
+ * Operations in this class write logs. These can be obtained from the
  * OperationResultParcel return values directly, but are also accumulated over
  * the lifetime of the executing ProviderHelper object unless the resetLog()
  * method is called to start a new one specifically.
@@ -284,16 +284,8 @@ public class ProviderHelper {
                 new String[]{ PgpKeyHelper.convertKeyIdToHex(masterKeyId) });
         mIndent += 1;
 
-        try {
-            WrappedPublicKeyRing ring = getWrappedPublicKeyRing(KeyRings.buildUnifiedKeyRingUri(masterKeyId));
-            // ring.get
-
-        } catch(NotFoundException e) {
-            // no biggie
-        }
-
         // Canonicalize this key, to assert a number of assumptions made about it.
-        keyRing = keyRing.canonicalizePublic(mLog, mIndent);
+        keyRing = keyRing.canonicalize(mLog, mIndent);
         if (keyRing == null) {
             return SaveKeyringResult.RESULT_ERROR;
         }
