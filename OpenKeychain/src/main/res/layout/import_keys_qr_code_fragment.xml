@@ -33,12 +33,12 @@
             android:layout_marginTop="8dp"
             android:background="?android:attr/listDivider" />
 
-        <Button
+        <ImageButton
             android:id="@+id/import_nfc_button"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:padding="8dp"
-            android:text="NFC?"
+            android:src="@drawable/ic_action_nfc"
             android:layout_gravity="center_vertical"
             style="@style/SelectableItem" />
 
