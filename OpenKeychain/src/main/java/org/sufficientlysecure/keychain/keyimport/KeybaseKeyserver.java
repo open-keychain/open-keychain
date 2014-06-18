@@ -53,15 +53,16 @@ public class KeybaseKeyserver extends Keyserver {
 
                 // only list them if they have a key
                 if (JWalk.optObject(match, "components", "key_fingerprint") != null) {
-                    String keybaseId = JWalk.getString(match, "components", "username", "val");
-                    String fingerprint = JWalk.getString(match, "components", "key_fingerprint", "val");
-                    fingerprint = fingerprint.replace(" ", "").toUpperCase();
-
-                    if (keybaseId.equals(query) || fingerprint.startsWith(query.toUpperCase())) {
-                        results.add(makeEntry(match));
-                    } else {
-                        results.add(makeEntry(match));
-                    }
+                    // TODO: needed anymore?
+//                    String keybaseId = JWalk.getString(match, "components", "username", "val");
+//                    String fingerprint = JWalk.getString(match, "components", "key_fingerprint", "val");
+//                    fingerprint = fingerprint.replace(" ", "").toUpperCase();
+//                    if (keybaseId.equals(query) || fingerprint.startsWith(query.toUpperCase())) {
+//                        results.add(makeEntry(match));
+//                    } else {
+//                        results.add(makeEntry(match));
+//                    }
+                    results.add(makeEntry(match));
                 }
             }
         } catch (Exception e) {

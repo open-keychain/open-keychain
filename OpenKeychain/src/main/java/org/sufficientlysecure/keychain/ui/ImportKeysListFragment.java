@@ -27,8 +27,6 @@ import android.support.v4.util.LongSparseArray;
 import android.view.View;
 import android.widget.ListView;
 
-import com.devspark.appmsg.AppMsg;
-
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.helper.Preferences;
@@ -60,11 +58,7 @@ public class ImportKeysListFragment extends ListFragment implements
     private Activity mActivity;
     private ImportKeysAdapter mAdapter;
 
-    private byte[] mKeyBytes;
-    private Uri mDataUri;
-    private String mServerQuery;
-    private String mKeyServer;
-    private String mKeybaseQuery;
+    private LoaderState mLoaderState;
 
     private static final int LOADER_ID_BYTES = 0;
     private static final int LOADER_ID_SERVER_QUERY = 1;
@@ -72,24 +66,8 @@ public class ImportKeysListFragment extends ListFragment implements
 
     private LongSparseArray<ParcelableKeyRing> mCachedKeyData;
 
-    public byte[] getKeyBytes() {
-        return mKeyBytes;
-    }
-
-    public Uri getDataUri() {
-        return mDataUri;
-    }
-
-    public String getServerQuery() {
-        return mServerQuery;
-    }
-
-    public String getKeybaseQuery() {
-        return mKeybaseQuery;
-    }
-
-    public String getKeyServer() {
-        return mKeyServer;
+    public LoaderState getLoaderState() {
+        return mLoaderState;
     }
 
     public List<ImportKeysListEntry> getData() {
@@ -124,6 +102,37 @@ public class ImportKeysListFragment extends ListFragment implements
         return frag;
     }
 
+    static public class LoaderState {
+    }
+
+    static public class BytesLoaderState extends LoaderState {
+        byte[] keyBytes;
+        Uri dataUri;
+
+        BytesLoaderState(byte[] keyBytes, Uri dataUri) {
+            this.keyBytes = keyBytes;
+            this.dataUri = dataUri;
+        }
+    }
+
+    static public class KeyserverLoaderState extends LoaderState {
+        String serverQuery;
+        String keyserver;
+
+        KeyserverLoaderState(String serverQuery, String keyserver) {
+            this.serverQuery = serverQuery;
+            this.keyserver = keyserver;
+        }
+    }
+
+    static public class KeybaseLoaderState extends LoaderState {
+        String keybaseQuery;
+
+        KeybaseLoaderState(String keybaseQuery) {
+            this.keybaseQuery = keybaseQuery;
+        }
+    }
+
     /**
      * Define Adapter and Loader on create of Activity
      */
@@ -140,43 +149,20 @@ public class ImportKeysListFragment extends ListFragment implements
         mAdapter = new ImportKeysAdapter(mActivity);
         setListAdapter(mAdapter);
 
-        mDataUri = getArguments().getParcelable(ARG_DATA_URI);
-        mKeyBytes = getArguments().getByteArray(ARG_BYTES);
-        mServerQuery = getArguments().getString(ARG_SERVER_QUERY);
-
-        // TODO: this is used when scanning QR Code. Currently it simply uses keyserver nr 0
-        mKeyServer = Preferences.getPreferences(getActivity())
-                .getKeyServers()[0];
-
-        if (mDataUri != null || mKeyBytes != null) {
-            // Start out with a progress indicator.
-            setListShown(false);
-
-            // Prepare the loader. Either re-connect with an existing one,
-            // or start a new one.
-            // give arguments to onCreateLoader()
-            getLoaderManager().initLoader(LOADER_ID_BYTES, null, this);
+        if (getArguments().containsKey(ARG_DATA_URI) || getArguments().containsKey(ARG_BYTES)) {
+            Uri dataUri = getArguments().getParcelable(ARG_DATA_URI);
+            byte[] bytes = getArguments().getByteArray(ARG_BYTES);
+            mLoaderState = new BytesLoaderState(bytes, dataUri);
+        } else if (getArguments().containsKey(ARG_SERVER_QUERY)) {
+            String query = getArguments().getString(ARG_SERVER_QUERY);
+            // TODO: this is used when scanning QR Code or updating a key.
+            // Currently it simply uses keyserver nr 0
+            String keyserver = Preferences.getPreferences(getActivity())
+                    .getKeyServers()[0];
+            mLoaderState = new KeyserverLoaderState(query, keyserver);
         }
 
-        if (mServerQuery != null && mKeyServer != null) {
-            // Start out with a progress indicator.
-            setListShown(false);
-
-            // Prepare the loader. Either re-connect with an existing one,
-            // or start a new one.
-            // give arguments to onCreateLoader()
-            getLoaderManager().initLoader(LOADER_ID_SERVER_QUERY, null, this);
-        }
-
-        if (mKeybaseQuery != null) {
-            // Start out with a progress indicator.
-            setListShown(false);
-
-            // Prepare the loader. Either re-connect with an existing one,
-            // or start a new one.
-            // give arguments to onCreateLoader()
-            getLoaderManager().initLoader(LOADER_ID_KEYBASE, null, this);
-        }
+        restartLoaders();
     }
 
     @Override
@@ -192,31 +178,33 @@ public class ImportKeysListFragment extends ListFragment implements
         mAdapter.notifyDataSetChanged();
     }
 
-    public void loadNew(byte[] keyBytes, Uri dataUri, String serverQuery, String keyServer, String keybaseQuery) {
-        mKeyBytes = keyBytes;
-        mDataUri = dataUri;
-        mServerQuery = serverQuery;
-        mKeyServer = keyServer;
-        mKeybaseQuery = keybaseQuery;
+    public void loadNew(LoaderState loaderState) {
+        mLoaderState = loaderState;
 
-        if (mKeyBytes != null || mDataUri != null) {
+        restartLoaders();
+    }
+
+    private void restartLoaders() {
+        if (mLoaderState instanceof BytesLoaderState) {
             // Start out with a progress indicator.
             setListShown(false);
 
             getLoaderManager().restartLoader(LOADER_ID_BYTES, null, this);
-        }
-
-        if (mServerQuery != null && mKeyServer != null) {
+            getLoaderManager().destroyLoader(LOADER_ID_SERVER_QUERY);
+            getLoaderManager().destroyLoader(LOADER_ID_KEYBASE);
+        } else if (mLoaderState instanceof KeyserverLoaderState) {
             // Start out with a progress indicator.
             setListShown(false);
 
+            getLoaderManager().destroyLoader(LOADER_ID_BYTES);
             getLoaderManager().restartLoader(LOADER_ID_SERVER_QUERY, null, this);
-        }
-
-        if (mKeybaseQuery != null) {
+            getLoaderManager().destroyLoader(LOADER_ID_KEYBASE);
+        } else if (mLoaderState instanceof KeybaseLoaderState) {
             // Start out with a progress indicator.
             setListShown(false);
 
+            getLoaderManager().destroyLoader(LOADER_ID_BYTES);
+            getLoaderManager().destroyLoader(LOADER_ID_SERVER_QUERY);
             getLoaderManager().restartLoader(LOADER_ID_KEYBASE, null, this);
         }
     }
@@ -226,14 +214,17 @@ public class ImportKeysListFragment extends ListFragment implements
     onCreateLoader(int id, Bundle args) {
         switch (id) {
             case LOADER_ID_BYTES: {
-                InputData inputData = getInputData(mKeyBytes, mDataUri);
+                BytesLoaderState ls = (BytesLoaderState) mLoaderState;
+                InputData inputData = getInputData(ls.keyBytes, ls.dataUri);
                 return new ImportKeysListLoader(mActivity, inputData);
             }
             case LOADER_ID_SERVER_QUERY: {
-                return new ImportKeysListServerLoader(getActivity(), mServerQuery, mKeyServer);
+                KeyserverLoaderState ls = (KeyserverLoaderState) mLoaderState;
+                return new ImportKeysListServerLoader(getActivity(), ls.serverQuery, ls.keyserver);
             }
             case LOADER_ID_KEYBASE: {
-                return new ImportKeysListKeybaseLoader(getActivity(), mKeybaseQuery);
+                KeybaseLoaderState ls = (KeybaseLoaderState) mLoaderState;
+                return new ImportKeysListKeybaseLoader(getActivity(), ls.keybaseQuery);
             }
 
             default:
@@ -280,7 +271,8 @@ public class ImportKeysListFragment extends ListFragment implements
                             ((ImportKeysListLoader.NonPgpPart) error).getCount() + " " + getResources().
                                     getQuantityString(R.plurals.error_import_non_pgp_part,
                                             ((ImportKeysListLoader.NonPgpPart) error).getCount()),
-                            Notify.Style.OK);
+                            Notify.Style.OK
+                    );
                 } else {
                     Notify.showNotify(getActivity(), R.string.error_generic_report_bug, Notify.Style.ERROR);
                 }
@@ -289,7 +281,6 @@ public class ImportKeysListFragment extends ListFragment implements
             case LOADER_ID_SERVER_QUERY:
             case LOADER_ID_KEYBASE:
 
-                // TODO: possibly fine-tune message building for these two cases
                 if (error == null) {
                     // No error
                 } else if (error instanceof Keyserver.QueryTooShortException) {

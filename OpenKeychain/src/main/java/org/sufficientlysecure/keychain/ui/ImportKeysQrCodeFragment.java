@@ -129,7 +129,7 @@ public class ImportKeysQrCodeFragment extends Fragment {
 
                     // is this a full key encoded as qr code?
                     if (scannedContent.startsWith("-----BEGIN PGP")) {
-                        mImportActivity.loadCallback(scannedContent.getBytes(), null, null, null, null);
+                        mImportActivity.loadCallback(new ImportKeysListFragment.BytesLoaderState(scannedContent.getBytes(), null));
                         return;
                     }
 
@@ -208,7 +208,7 @@ public class ImportKeysQrCodeFragment extends Fragment {
             for (String in : mQrCodeContent) {
                 result += in;
             }
-            mImportActivity.loadCallback(result.getBytes(), null, null, null, null);
+            mImportActivity.loadCallback(new ImportKeysListFragment.BytesLoaderState(result.getBytes(), null));
         }
     }
 }

@@ -18,9 +18,7 @@
 package org.sufficientlysecure.keychain.ui;
 
 import android.annotation.TargetApi;
-import android.app.Activity;
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.nfc.NdefMessage;
@@ -31,17 +29,12 @@ import android.os.Message;
 import android.os.Messenger;
 import android.os.Parcelable;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
-import android.util.DisplayMetrics;
-import android.util.TypedValue;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 
 import com.github.johnpersano.supertoasts.SuperCardToast;
 import com.github.johnpersano.supertoasts.SuperToast;
@@ -52,7 +45,6 @@ import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.helper.OtherHelper;
 import org.sufficientlysecure.keychain.keyimport.ImportKeysListEntry;
-import org.sufficientlysecure.keychain.keyimport.KeybaseKeyserver;
 import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
 import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
@@ -378,8 +370,8 @@ public class ImportKeysActivity extends ActionBarActivity {
         startListFragment(savedInstanceState, null, null, query);
     }
 
-    public void loadCallback(byte[] importData, Uri dataUri, String serverQuery, String keyServer, String keybaseQuery) {
-        mListFragment.loadNew(importData, dataUri, serverQuery, keyServer, keybaseQuery);
+    public void loadCallback(ImportKeysListFragment.LoaderState loaderState) {
+        mListFragment.loadNew(loaderState);
     }
 
     /**
@@ -490,7 +482,8 @@ public class ImportKeysActivity extends ActionBarActivity {
             }
         };
 
-        if (mListFragment.getKeyBytes() != null || mListFragment.getDataUri() != null) {
+        ImportKeysListFragment.LoaderState ls = mListFragment.getLoaderState();
+        if (ls instanceof ImportKeysListFragment.BytesLoaderState) {
             Log.d(Constants.TAG, "importKeys started");
 
             // Send all information needed to service to import key in other thread
@@ -516,7 +509,9 @@ public class ImportKeysActivity extends ActionBarActivity {
 
             // start service with intent
             startService(intent);
-        } else if (mListFragment.getServerQuery() != null) {
+        } else if (ls instanceof ImportKeysListFragment.KeyserverLoaderState) {
+            ImportKeysListFragment.KeyserverLoaderState sls = (ImportKeysListFragment.KeyserverLoaderState) ls;
+
             // Send all information needed to service to query keys in other thread
             Intent intent = new Intent(this, KeychainIntentService.class);
 
@@ -525,7 +520,7 @@ public class ImportKeysActivity extends ActionBarActivity {
             // fill values for this action
             Bundle data = new Bundle();
 
-            data.putString(KeychainIntentService.DOWNLOAD_KEY_SERVER, mListFragment.getKeyServer());
+            data.putString(KeychainIntentService.DOWNLOAD_KEY_SERVER, sls.keyserver);
 
             // get selected key entries
             ArrayList<ImportKeysListEntry> selectedEntries = mListFragment.getSelectedEntries();
@@ -542,7 +537,7 @@ public class ImportKeysActivity extends ActionBarActivity {
 
             // start service with intent
             startService(intent);
-        } else if (mListFragment.getKeybaseQuery() != null) {
+        } else if (ls instanceof ImportKeysListFragment.KeybaseLoaderState) {
             // Send all information needed to service to query keys in other thread
             Intent intent = new Intent(this, KeychainIntentService.class);
 

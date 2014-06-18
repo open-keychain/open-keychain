@@ -170,8 +170,8 @@ public class ImportKeysServerFragment extends Fragment {
         mImportActivity = (ImportKeysActivity) activity;
     }
 
-    private void search(String query, String keyServer) {
-        mImportActivity.loadCallback(null, null, query, keyServer, null);
+    private void search(String query, String keyserver) {
+        mImportActivity.loadCallback(new ImportKeysListFragment.KeyserverLoaderState(query, keyserver));
     }
 
 }

@@ -117,6 +117,6 @@ public class ImportKeysKeybaseFragment extends Fragment {
     }
 
     private void search(String query) {
-        mImportActivity.loadCallback(null, null, null, null, query);
+        mImportActivity.loadCallback(new ImportKeysListFragment.KeybaseLoaderState(query));
     }
 }
