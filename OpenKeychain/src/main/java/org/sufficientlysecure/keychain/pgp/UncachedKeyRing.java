@@ -634,7 +634,7 @@ public class UncachedKeyRing {
      */
     public UncachedKeyRing merge(UncachedKeyRing other, OperationLog log, int indent) {
 
-        log.add(LogLevel.START, isSecret() ? LogType.MSG_MG_SECRET : LogType.MSG_MG_PUBLIC,
+        log.add(LogLevel.DEBUG, isSecret() ? LogType.MSG_MG_SECRET : LogType.MSG_MG_PUBLIC,
                 new String[]{ PgpKeyHelper.convertKeyIdToHex(getMasterKeyId()) }, indent);
         indent += 1;
 

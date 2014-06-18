@@ -532,7 +532,7 @@ public class ProviderHelper {
             mIndent -= 1;
             return SaveKeyringResult.RESULT_ERROR;
         } catch (OperationApplicationException e) {
-            log(LogLevel.ERROR, LogType.MSG_IP_FAIL_OP_EX);
+            log(LogLevel.ERROR, LogType.MSG_IP_FAIL_OP_EXC);
             Log.e(Constants.TAG, "OperationApplicationException during import", e);
             mIndent -= 1;
             return SaveKeyringResult.RESULT_ERROR;
@@ -603,7 +603,7 @@ public class ProviderHelper {
             }
         } catch (IOException e) {
             Log.e(Constants.TAG, "Failed to encode key!", e);
-            log(LogLevel.ERROR, LogType.MSG_IS_IO_EXCPTION);
+            log(LogLevel.ERROR, LogType.MSG_IS_FAIL_IO_EXC);
             return SaveKeyringResult.RESULT_ERROR;
         }
 
@@ -681,16 +681,22 @@ public class ProviderHelper {
             long masterKeyId = publicRing.getMasterKeyId();
             log(LogLevel.START, LogType.MSG_IP,
                     new String[]{ PgpKeyHelper.convertKeyIdToHex(masterKeyId) });
-
             mIndent += 1;
 
-            // IF there is a secret key, preserve it!
+            // If there is an old keyring, merge it
             try {
                 UncachedKeyRing oldPublicRing = getWrappedPublicKeyRing(masterKeyId).getUncached();
 
                 // Merge data from new public ring into the old one
                 publicRing = oldPublicRing.merge(publicRing, mLog, mIndent);
 
+                // If this is null, there is an error in the log so we can just return
+                if (publicRing == null) {
+                    return new SaveKeyringResult(SaveKeyringResult.RESULT_ERROR, mLog);
+                }
+
+                // Canonicalize this keyring, to assert a number of assumptions made about it.
+                publicRing = publicRing.canonicalize(mLog, mIndent);
                 if (publicRing == null) {
                     return new SaveKeyringResult(SaveKeyringResult.RESULT_ERROR, mLog);
                 }
@@ -698,37 +704,37 @@ public class ProviderHelper {
                 // Early breakout if nothing changed
                 if (Arrays.hashCode(publicRing.getEncoded())
                         == Arrays.hashCode(oldPublicRing.getEncoded())) {
-                    log(LogLevel.OK, LogType.MSG_IP,
-                            new String[]{ PgpKeyHelper.convertKeyIdToHex(masterKeyId) });
+                    log(LogLevel.OK, LogType.MSG_IP_SUCCESS_IDENTICAL, null);
                     return new SaveKeyringResult(SaveKeyringResult.RESULT_OK, mLog);
                 }
             } catch (NotFoundException e) {
-                // not an issue, just means we are dealing with a new keyring
+                // Not an issue, just means we are dealing with a new keyring.
+
+                // Canonicalize this keyring, to assert a number of assumptions made about it.
+                publicRing = publicRing.canonicalize(mLog, mIndent);
+                if (publicRing == null) {
+                    return new SaveKeyringResult(SaveKeyringResult.RESULT_ERROR, mLog);
+                }
+
             }
 
-            // Canonicalize this keyring, to assert a number of assumptions made about it.
-            publicRing = publicRing.canonicalize(mLog, mIndent);
-            if (publicRing == null) {
-                return new SaveKeyringResult(SaveKeyringResult.RESULT_ERROR, mLog);
-            }
-
-            // IF there is a secret key, preserve it!
+            // If there is a secret key, merge new data (if any) and save the key for later
             UncachedKeyRing secretRing;
             try {
                 secretRing = getWrappedSecretKeyRing(publicRing.getMasterKeyId()).getUncached();
-                log(LogLevel.DEBUG, LogType.MSG_IP_PRESERVING_SECRET);
-                progress.setProgress(LogType.MSG_IP_PRESERVING_SECRET.getMsgId(), 10, 100);
-                mIndent += 1;
 
                 // Merge data from new public ring into secret one
                 secretRing = secretRing.merge(publicRing, mLog, mIndent);
                 if (secretRing == null) {
                     return new SaveKeyringResult(SaveKeyringResult.RESULT_ERROR, mLog);
                 }
-
-                mIndent -= 1;
+                secretRing = secretRing.canonicalize(mLog, mIndent);
+                if (secretRing == null) {
+                    return new SaveKeyringResult(SaveKeyringResult.RESULT_ERROR, mLog);
+                }
 
             } catch (NotFoundException e) {
+                // No secret key available (this is what happens most of the time)
                 secretRing = null;
             }
 
@@ -736,19 +742,19 @@ public class ProviderHelper {
 
             // Save the saved keyring (if any)
             if (secretRing != null) {
-                log(LogLevel.DEBUG, LogType.MSG_IP_REINSERT_SECRET);
                 progress.setProgress(LogType.MSG_IP_REINSERT_SECRET.getMsgId(), 90, 100);
-                mIndent += 1;
-                secretRing = secretRing.canonicalize(mLog, mIndent);
-                internalSaveSecretKeyRing(secretRing);
-                result |= SaveKeyringResult.SAVED_SECRET;
-                mIndent -= 1;
+                int secretResult = internalSaveSecretKeyRing(secretRing);
+                if ((secretResult & SaveKeyringResult.RESULT_ERROR) != SaveKeyringResult.RESULT_ERROR) {
+                    result |= SaveKeyringResult.SAVED_SECRET;
+                }
             }
 
+            mIndent -= 1;
             return new SaveKeyringResult(result, mLog);
 
         } catch (IOException e) {
-            return null;
+            log(LogLevel.ERROR, LogType.MSG_IP_FAIL_IO_EXC);
+            return new SaveKeyringResult(SaveKeyringResult.RESULT_ERROR, mLog);
         }
 
     }
@@ -759,16 +765,22 @@ public class ProviderHelper {
             long masterKeyId = secretRing.getMasterKeyId();
             log(LogLevel.START, LogType.MSG_IS,
                     new String[]{ PgpKeyHelper.convertKeyIdToHex(masterKeyId) });
-
             mIndent += 1;
 
-            // If there is a secret key, merge it.
+            // If there is an old secret key, merge it.
             try {
                 UncachedKeyRing oldSecretRing = getWrappedSecretKeyRing(masterKeyId).getUncached();
 
-                // Merge data from new public ring into the old one
+                // Merge data from new secret ring into old one
                 secretRing = oldSecretRing.merge(secretRing, mLog, mIndent);
 
+                // If this is null, there is an error in the log so we can just return
+                if (secretRing == null) {
+                    return new SaveKeyringResult(SaveKeyringResult.RESULT_ERROR, mLog);
+                }
+
+                // Canonicalize this keyring, to assert a number of assumptions made about it.
+                secretRing = secretRing.canonicalize(mLog, mIndent);
                 if (secretRing == null) {
                     return new SaveKeyringResult(SaveKeyringResult.RESULT_ERROR, mLog);
                 }
@@ -776,26 +788,24 @@ public class ProviderHelper {
                 // Early breakout if nothing changed
                 if (Arrays.hashCode(secretRing.getEncoded())
                         == Arrays.hashCode(oldSecretRing.getEncoded())) {
-                    log(LogLevel.OK, LogType.MSG_IS,
+                    log(LogLevel.OK, LogType.MSG_IS_SUCCESS_IDENTICAL,
                             new String[]{ PgpKeyHelper.convertKeyIdToHex(masterKeyId) });
                     return new SaveKeyringResult(SaveKeyringResult.RESULT_OK, mLog);
                 }
             } catch (NotFoundException e) {
-                // not an issue, just means we are dealing with a new keyring
-            }
+                // Not an issue, just means we are dealing with a new keyring
 
-            // Canonicalize this keyring, to assert a number of assumptions made about it.
-            secretRing = secretRing.canonicalize(mLog, mIndent);
-            if (secretRing == null) {
-                return new SaveKeyringResult(SaveKeyringResult.RESULT_ERROR, mLog);
+                // Canonicalize this keyring, to assert a number of assumptions made about it.
+                secretRing = secretRing.canonicalize(mLog, mIndent);
+                if (secretRing == null) {
+                    return new SaveKeyringResult(SaveKeyringResult.RESULT_ERROR, mLog);
+                }
+
             }
 
             // Merge new data into public keyring as well, if there is any
             try {
                 UncachedKeyRing oldPublicRing = getWrappedPublicKeyRing(masterKeyId).getUncached();
-                log(LogLevel.DEBUG, LogType.MSG_IP_PRESERVING_SECRET);
-                progress.setProgress(LogType.MSG_IP_PRESERVING_SECRET.getMsgId(), 10, 100);
-                mIndent += 1;
 
                 // Merge data from new public ring into secret one
                 UncachedKeyRing publicRing = oldPublicRing.merge(secretRing, mLog, mIndent);
@@ -803,7 +813,7 @@ public class ProviderHelper {
                     return new SaveKeyringResult(SaveKeyringResult.RESULT_ERROR, mLog);
                 }
 
-                // Early breakout if nothing changed
+                // If anything changed, reinsert
                 if (Arrays.hashCode(publicRing.getEncoded())
                         != Arrays.hashCode(oldPublicRing.getEncoded())) {
 
@@ -816,10 +826,11 @@ public class ProviderHelper {
                     }
 
                     int result = internalSavePublicKeyRing(publicRing, progress, true);
+                    if ((result & SaveKeyringResult.RESULT_ERROR) == SaveKeyringResult.RESULT_ERROR) {
+                        return new SaveKeyringResult(SaveKeyringResult.RESULT_ERROR, mLog);
+                    }
 
                 }
-
-                mIndent -= 1;
 
             } catch (NotFoundException e) {
                 // TODO, this WILL error out later because secret rings cannot be inserted without
@@ -831,7 +842,8 @@ public class ProviderHelper {
             return new SaveKeyringResult(result, mLog);
 
         } catch (IOException e) {
-            return null;
+            log(LogLevel.ERROR, LogType.MSG_IS_FAIL_IO_EXC, null);
+            return new SaveKeyringResult(SaveKeyringResult.RESULT_ERROR, mLog);
         }
 
     }

@@ -507,13 +507,12 @@
     <string name="msg_ip_delete_old_ok">Deleted old key from database</string>
     <string name="msg_ip_encode_fail">Operation failed due to encoding error</string>
     <string name="msg_ip_fail_io_exc">Operation failed due to i/o error</string>
-    <string name="msg_ip_fail_op_ex">Operation failed due to database error</string>
+    <string name="msg_ip_fail_op_exc">Operation failed due to database error</string>
     <string name="msg_ip_fail_remote_ex">Operation failed due to internal error</string>
     <string name="msg_ip">Importing public keyring %s</string>
     <string name="msg_ip_insert_keyring">Encoding keyring data</string>
     <string name="msg_ip_insert_keys">Parsing keys</string>
     <string name="msg_ip_prepare">Preparing database operations</string>
-    <string name="msg_ip_preserving_secret">Preserving available secret key</string>
     <string name="msg_ip_master">Processing master key %s</string>
     <string name="msg_ip_master_expired">Keyring expired on %s</string>
     <string name="msg_ip_master_expires">Keyring expires on %s</string>
@@ -537,6 +536,7 @@
     <string name="msg_ip_subkey_flags_xxs">Subkey flags: sign</string>
     <string name="msg_ip_subkey_flags_xxx">Subkey flags: none</string>
     <string name="msg_ip_success">Successfully imported public keyring</string>
+    <string name="msg_ip_success_identical">Keyring contains no new data, nothing to do</string>
     <string name="msg_ip_reinsert_secret">Re-inserting secret key</string>
     <string name="msg_ip_uid_cert_bad">Encountered bad certificate!</string>
     <string name="msg_ip_uid_cert_error">Error processing certificate!</string>
@@ -552,11 +552,12 @@
     <string name="msg_is">Importing secret key %s</string>
     <string name="msg_is_db_exception">Database error!</string>
     <string name="msg_is_importing_subkeys">Processing secret subkeys</string>
-    <string name="msg_is_io_excption">Error encoding keyring</string>
+    <string name="msg_is_io_exc">Error encoding keyring</string>
     <string name="msg_is_subkey_nonexistent">Subkey %s unavailable in public key</string>
     <string name="msg_is_subkey_ok">Marked %s as available</string>
     <string name="msg_is_subkey_stripped">Marked %s as stripped</string>
     <string name="msg_is_success">Successfully imported secret keyring</string>
+    <string name="msg_is_success_identical">Keyring contains no new data, nothing to do</string>
 
     <!-- Keyring Canonicalization log entries -->
     <string name="msg_kc_public">Canonicalizing public keyring %s</string>
