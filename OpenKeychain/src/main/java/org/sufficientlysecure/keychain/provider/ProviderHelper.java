@@ -804,37 +804,37 @@ public class ProviderHelper {
             }
 
             // Merge new data into public keyring as well, if there is any
+            UncachedKeyRing publicRing;
             try {
                 UncachedKeyRing oldPublicRing = getWrappedPublicKeyRing(masterKeyId).getUncached();
 
                 // Merge data from new public ring into secret one
-                UncachedKeyRing publicRing = oldPublicRing.merge(secretRing, mLog, mIndent);
+                publicRing = oldPublicRing.merge(secretRing, mLog, mIndent);
                 if (publicRing == null) {
                     return new SaveKeyringResult(SaveKeyringResult.RESULT_ERROR, mLog);
                 }
 
-                // If anything changed, reinsert
+                // If nothing changed, never mind
                 if (Arrays.hashCode(publicRing.getEncoded())
-                        != Arrays.hashCode(oldPublicRing.getEncoded())) {
-
-                    log(LogLevel.OK, LogType.MSG_IS,
-                            new String[]{ PgpKeyHelper.convertKeyIdToHex(masterKeyId) });
-
-                    publicRing = publicRing.canonicalize(mLog, mIndent);
-                    if (publicRing == null) {
-                        return new SaveKeyringResult(SaveKeyringResult.RESULT_ERROR, mLog);
-                    }
-
-                    int result = internalSavePublicKeyRing(publicRing, progress, true);
-                    if ((result & SaveKeyringResult.RESULT_ERROR) == SaveKeyringResult.RESULT_ERROR) {
-                        return new SaveKeyringResult(SaveKeyringResult.RESULT_ERROR, mLog);
-                    }
-
+                        == Arrays.hashCode(oldPublicRing.getEncoded())) {
+                    publicRing = null;
                 }
 
             } catch (NotFoundException e) {
-                // TODO, this WILL error out later because secret rings cannot be inserted without
-                // public ones
+                log(LogLevel.DEBUG, LogType.MSG_IS_PUBRING_GENERATE, null);
+                publicRing = secretRing.extractPublicKeyRing();
+            }
+
+            if (publicRing != null) {
+                publicRing = publicRing.canonicalize(mLog, mIndent);
+                if (publicRing == null) {
+                    return new SaveKeyringResult(SaveKeyringResult.RESULT_ERROR, mLog);
+                }
+
+                int result = internalSavePublicKeyRing(publicRing, progress, true);
+                if ((result & SaveKeyringResult.RESULT_ERROR) == SaveKeyringResult.RESULT_ERROR) {
+                    return new SaveKeyringResult(SaveKeyringResult.RESULT_ERROR, mLog);
+                }
             }
 
             progress.setProgress(LogType.MSG_IP_REINSERT_SECRET.getMsgId(), 90, 100);

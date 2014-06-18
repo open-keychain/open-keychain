@@ -174,13 +174,14 @@ public class OperationResultParcel implements Parcelable {
         MSG_IS(R.string.msg_is),
         MSG_IS_BAD_TYPE_PUBLIC (R.string.msg_is_bad_type_public),
         MSG_IS_DB_EXCEPTION (R.string.msg_is_db_exception),
-        MSG_IS_IMPORTING_SUBKEYS (R.string.msg_is_importing_subkeys),
         MSG_IS_FAIL_IO_EXC (R.string.msg_is_io_exc),
+        MSG_IS_IMPORTING_SUBKEYS (R.string.msg_is_importing_subkeys),
+        MSG_IS_PUBRING_GENERATE (R.string.msg_is_pubring_generate),
         MSG_IS_SUBKEY_NONEXISTENT (R.string.msg_is_subkey_nonexistent),
         MSG_IS_SUBKEY_OK (R.string.msg_is_subkey_ok),
         MSG_IS_SUBKEY_STRIPPED (R.string.msg_is_subkey_stripped),
-        MSG_IS_SUCCESS (R.string.msg_is_success),
         MSG_IS_SUCCESS_IDENTICAL (R.string.msg_is_success_identical),
+        MSG_IS_SUCCESS (R.string.msg_is_success),
 
         // keyring canonicalization
         MSG_KC_PUBLIC (R.string.msg_kc_public),

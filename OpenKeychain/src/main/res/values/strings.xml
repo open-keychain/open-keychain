@@ -553,11 +553,12 @@
     <string name="msg_is_db_exception">Database error!</string>
     <string name="msg_is_importing_subkeys">Processing secret subkeys</string>
     <string name="msg_is_io_exc">Error encoding keyring</string>
+    <string name="msg_is_pubring_generate">Generating public keyring from secret keyring</string>
     <string name="msg_is_subkey_nonexistent">Subkey %s unavailable in public key</string>
     <string name="msg_is_subkey_ok">Marked %s as available</string>
     <string name="msg_is_subkey_stripped">Marked %s as stripped</string>
-    <string name="msg_is_success">Successfully imported secret keyring</string>
     <string name="msg_is_success_identical">Keyring contains no new data, nothing to do</string>
+    <string name="msg_is_success">Successfully imported secret keyring</string>
 
     <!-- Keyring Canonicalization log entries -->
     <string name="msg_kc_public">Canonicalizing public keyring %s</string>

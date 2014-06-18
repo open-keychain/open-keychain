@@ -27,6 +27,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashSet;
@@ -757,6 +758,21 @@ public class UncachedKeyRing {
             return null;
         }
 
+    }
+
+    public UncachedKeyRing extractPublicKeyRing() {
+        if(!isSecret()) {
+            throw new RuntimeException("Tried to extract public keyring from non-secret keyring. " +
+                    "This is a programming error and should never happen!");
+        }
+
+        ArrayList<PGPPublicKey> keys = new ArrayList();
+        Iterator<PGPPublicKey> it = mRing.getPublicKeys();
+        while (it.hasNext()) {
+            keys.add(it.next());
+        }
+
+        return new UncachedKeyRing(new PGPPublicKeyRing(keys));
     }
 
     /** This method replaces a public key in a keyring.
