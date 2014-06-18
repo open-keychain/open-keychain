@@ -30,9 +30,13 @@ import org.sufficientlysecure.keychain.helper.ContactHelper;
 import org.sufficientlysecure.keychain.helper.EmailKeyHelper;
 import org.sufficientlysecure.keychain.util.Log;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 public class ContactSyncAdapterService extends Service {
 
     private class ContactSyncAdapter extends AbstractThreadedSyncAdapter {
+
+        private final AtomicBoolean importDone = new AtomicBoolean(false);
 
         public ContactSyncAdapter() {
             super(ContactSyncAdapterService.this, true);
@@ -41,6 +45,7 @@ public class ContactSyncAdapterService extends Service {
         @Override
         public void onPerformSync(Account account, Bundle extras, String authority, ContentProviderClient provider,
                                   final SyncResult syncResult) {
+            KeychainApplication.setupAccountAsNeeded(ContactSyncAdapterService.this);
             EmailKeyHelper.importContacts(getContext(), new Messenger(new Handler(Looper.getMainLooper(),
                     new Handler.Callback() {
                         @Override
@@ -48,11 +53,16 @@ public class ContactSyncAdapterService extends Service {
                             Bundle data = msg.getData();
                             switch (msg.arg1) {
                                 case KeychainIntentServiceHandler.MESSAGE_OKAY:
+                                    Log.d(Constants.TAG, "Syncing... Done.");
+                                    synchronized (importDone) {
+                                        importDone.set(true);
+                                        importDone.notifyAll();
+                                    }
                                     return true;
                                 case KeychainIntentServiceHandler.MESSAGE_UPDATE_PROGRESS:
                                     if (data.containsKey(KeychainIntentServiceHandler.DATA_PROGRESS) &&
                                             data.containsKey(KeychainIntentServiceHandler.DATA_PROGRESS_MAX)) {
-                                        Log.d(Constants.TAG, "Progress: " +
+                                        Log.d(Constants.TAG, "Syncing... Progress: " +
                                                 data.getInt(KeychainIntentServiceHandler.DATA_PROGRESS) + "/" +
                                                 data.getInt(KeychainIntentServiceHandler.DATA_PROGRESS_MAX));
                                         return false;
@@ -63,7 +73,14 @@ public class ContactSyncAdapterService extends Service {
                             }
                         }
                     })));
-            KeychainApplication.setupAccountAsNeeded(ContactSyncAdapterService.this);
+            synchronized (importDone) {
+                try {
+                    if (!importDone.get()) importDone.wait();
+                } catch (InterruptedException e) {
+                    Log.w(Constants.TAG, e);
+                    return;
+                }
+            }
             ContactHelper.writeKeysToContacts(ContactSyncAdapterService.this);
         }
     }
