@@ -20,7 +20,7 @@ PLAY_DIR=./
 # xxxhdpi 192x192.
 # google play: 512x512
 
-NAME="icon"
+NAME="ic_launcher"
 
 inkscape -w 36 -h 36 -e "$LDPI_DIR/$NAME.png" $NAME.svg
 inkscape -w 48 -h 48 -e "$MDPI_DIR/$NAME.png" $NAME.svg
@@ -30,3 +30,17 @@ inkscape -w 144 -h 144 -e "$XXDPI_DIR/$NAME.png" $NAME.svg
 inkscape -w 192 -h 192 -e "$XXXDPI_DIR/$NAME.png" $NAME.svg
 inkscape -w 512 -h 512 -e "$PLAY_DIR/$NAME.png" $NAME.svg
 
+# Actionbar Icons
+# -----------------------
+# mdpi: 32x32
+# hdpi: 48x48
+# xhdpi: 64x64
+# xxhdpi: 96x96
+
+for NAME in "ic_action_nfc" "ic_action_qr_code"
+do
+inkscape -w 32 -h 32 -e "$MDPI_DIR/$NAME.png" $NAME.svg
+inkscape -w 48 -h 48 -e "$HDPI_DIR/$NAME.png" $NAME.svg
+inkscape -w 64 -h 64 -e "$XDPI_DIR/$NAME.png" $NAME.svg
+inkscape -w 96 -h 96 -e "$XXDPI_DIR/$NAME.png" $NAME.svg
+done

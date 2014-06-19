@@ -201,6 +201,7 @@ public class OperationResultParcel implements Parcelable {
         MSG_KC_SUB_BAD_KEYID(R.string.msg_kc_sub_bad_keyid),
         MSG_KC_SUB_BAD_TIME(R.string.msg_kc_sub_bad_time),
         MSG_KC_SUB_BAD_TYPE(R.string.msg_kc_sub_bad_type),
+        MSG_KC_SUB_DUP (R.string.msg_kc_sub_dup),
         MSG_KC_SUB_PRIMARY_BAD(R.string.msg_kc_sub_primary_bad),
         MSG_KC_SUB_PRIMARY_BAD_ERR(R.string.msg_kc_sub_primary_bad_err),
         MSG_KC_SUB_PRIMARY_NONE(R.string.msg_kc_sub_primary_none),

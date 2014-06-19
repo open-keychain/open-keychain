@@ -18,9 +18,7 @@
 package org.sufficientlysecure.keychain.ui;
 
 import android.annotation.TargetApi;
-import android.app.Activity;
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.nfc.NdefMessage;
@@ -31,16 +29,12 @@ import android.os.Message;
 import android.os.Messenger;
 import android.os.Parcelable;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
-import android.util.DisplayMetrics;
-import android.util.TypedValue;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 
 import com.github.johnpersano.supertoasts.SuperCardToast;
 import com.github.johnpersano.supertoasts.SuperToast;
@@ -51,7 +45,6 @@ import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.helper.OtherHelper;
 import org.sufficientlysecure.keychain.keyimport.ImportKeysListEntry;
-import org.sufficientlysecure.keychain.keyimport.KeybaseKeyserver;
 import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
 import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
@@ -130,58 +123,11 @@ public class ImportKeysActivity extends ActionBarActivity {
 
         mNavigationStrings = getResources().getStringArray(R.array.import_action_list);
 
-        if (ACTION_IMPORT_KEY_FROM_KEYSERVER_AND_RETURN.equals(getIntent().getAction())) {
-            setTitle(R.string.nav_import);
-        } else {
-            initTabs();
-        }
+        // TODO: add actionbar button for this action?
+//        if (ACTION_IMPORT_KEY_FROM_KEYSERVER_AND_RETURN.equals(getIntent().getAction())) {
+//        }
 
         handleActions(savedInstanceState, getIntent());
-    }
-
-    private void initTabs() {
-        mTabsAdapter = new PagerTabStripAdapter(this);
-        mViewPager.setAdapter(mTabsAdapter);
-        mSlidingTabLayout.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-            @Override
-            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-                // resize view pager back to 64 if keyserver settings have been collapsed
-                if (getViewPagerHeight() > VIEW_PAGER_HEIGHT) {
-                    resizeViewPager(VIEW_PAGER_HEIGHT);
-                }
-            }
-
-            @Override
-            public void onPageSelected(int position) {
-            }
-
-            @Override
-            public void onPageScrollStateChanged(int state) {
-            }
-        });
-
-        Bundle serverBundle = new Bundle();
-//        serverBundle.putParcelable(ViewKeyMainFragment.ARG_DATA_URI, dataUri);
-        mTabsAdapter.addTab(ImportKeysServerFragment.class,
-                serverBundle, getString(R.string.import_tab_keyserver));
-
-        Bundle qrCodeBundle = new Bundle();
-//        importBundle.putParcelable(ViewKeyMainFragment.ARG_DATA_URI, dataUri);
-        mTabsAdapter.addTab(ImportKeysQrCodeFragment.class,
-                qrCodeBundle, getString(R.string.import_tab_qr_code));
-
-        Bundle fileBundle = new Bundle();
-//        importBundle.putParcelable(ViewKeyMainFragment.ARG_DATA_URI, dataUri);
-        mTabsAdapter.addTab(ImportKeysFileFragment.class,
-                fileBundle, getString(R.string.import_tab_direct));
-
-        Bundle keybaseBundle = new Bundle();
-//        keybaseBundle.putParcelable(ViewKeyMainFragment.ARG_DATA_URI, dataUri);
-        mTabsAdapter.addTab(ImportKeysKeybaseFragment.class,
-                keybaseBundle, getString(R.string.import_tab_keybase));
-
-        // update layout after operations
-        mSlidingTabLayout.setViewPager(mViewPager);
     }
 
     protected void handleActions(Bundle savedInstanceState, Intent intent) {
@@ -200,6 +146,8 @@ public class ImportKeysActivity extends ActionBarActivity {
             action = ACTION_IMPORT_KEY;
         }
 
+        Bundle serverBundle = null;
+        boolean serverOnly = false;
         if (scheme != null && scheme.toLowerCase(Locale.ENGLISH).equals(Constants.FINGERPRINT_SCHEME)) {
             /* Scanning a fingerprint directly with Barcode Scanner */
             loadFromFingerprintUri(savedInstanceState, dataUri);
@@ -240,10 +188,8 @@ public class ImportKeysActivity extends ActionBarActivity {
 
                 if (query != null && query.length() > 0) {
                     // display keyserver fragment with query
-                    Bundle args = new Bundle();
-                    args.putString(ImportKeysServerFragment.ARG_QUERY, query);
-//                    loadNavFragment(NAV_SERVER, args);
-                    //TODO: load afterwards!
+                    serverBundle = new Bundle();
+                    serverBundle.putString(ImportKeysServerFragment.ARG_QUERY, query);
                     mSwitchToTab = NAV_SERVER;
 
                     // action: search immediately
@@ -259,7 +205,19 @@ public class ImportKeysActivity extends ActionBarActivity {
                  */
 
                 String fingerprint = intent.getStringExtra(EXTRA_FINGERPRINT);
-                loadFromFingerprint(savedInstanceState, fingerprint);
+                if (isFingerprintValid(fingerprint)) {
+                    String query = "0x" + fingerprint;
+
+                    // display keyserver fragment with query
+                    serverBundle = new Bundle();
+                    serverBundle.putString(ImportKeysServerFragment.ARG_QUERY, query);
+                    serverBundle.putBoolean(ImportKeysServerFragment.ARG_DISABLE_QUERY_EDIT, true);
+                    serverOnly = true;
+                    mSwitchToTab = NAV_SERVER;
+
+                    // action: search immediately
+                    startListFragment(savedInstanceState, null, null, query);
+                }
             } else {
                 Log.e(Constants.TAG,
                         "IMPORT_KEY_FROM_KEYSERVER action needs to contain the 'query', 'key_id', or " +
@@ -297,6 +255,44 @@ public class ImportKeysActivity extends ActionBarActivity {
         } else {
             startListFragment(savedInstanceState, null, null, null);
         }
+
+        initTabs(serverBundle, serverOnly);
+    }
+
+    private void initTabs(Bundle serverBundle, boolean serverOnly) {
+        mTabsAdapter = new PagerTabStripAdapter(this);
+        mViewPager.setAdapter(mTabsAdapter);
+        mSlidingTabLayout.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+                // resize view pager back to 64 if keyserver settings have been collapsed
+                if (getViewPagerHeight() > VIEW_PAGER_HEIGHT) {
+                    resizeViewPager(VIEW_PAGER_HEIGHT);
+                }
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+            }
+        });
+
+        mTabsAdapter.addTab(ImportKeysServerFragment.class,
+                serverBundle, getString(R.string.import_tab_keyserver));
+        if (!serverOnly) {
+            mTabsAdapter.addTab(ImportKeysQrCodeFragment.class,
+                    null, getString(R.string.import_tab_qr_code));
+            mTabsAdapter.addTab(ImportKeysFileFragment.class,
+                    null, getString(R.string.import_tab_direct));
+            mTabsAdapter.addTab(ImportKeysKeybaseFragment.class,
+                    null, getString(R.string.import_tab_keybase));
+        }
+
+        // update layout after operations
+        mSlidingTabLayout.setViewPager(mViewPager);
 
         mViewPager.setCurrentItem(mSwitchToTab);
     }
@@ -338,35 +334,52 @@ public class ImportKeysActivity extends ActionBarActivity {
 
         Log.d(Constants.TAG, "fingerprint: " + fingerprint);
 
-        loadFromFingerprint(savedInstanceState, fingerprint);
+        // TODO: reload fragment when coming from qr code!
+//        loadFromFingerprint(savedInstanceState, fingerprint);
+
+
+//        String query = "0x" + fingerprint;
+//
+//        // display keyserver fragment with query
+//        Bundle serverBundle = new Bundle();
+//        serverBundle.putString(ImportKeysServerFragment.ARG_QUERY, query);
+//        serverBundle.putBoolean(ImportKeysServerFragment.ARG_DISABLE_QUERY_EDIT, true);
+//
+//        return serverBundle;
     }
 
-    public void loadFromFingerprint(Bundle savedInstanceState, String fingerprint) {
+    private boolean isFingerprintValid(String fingerprint) {
         if (fingerprint == null || fingerprint.length() < 40) {
             SuperCardToast toast = SuperCardToast.create(this,
                     getString(R.string.import_qr_code_too_short_fingerprint),
                     SuperToast.Duration.LONG);
             toast.setBackground(SuperToast.Background.RED);
             toast.show();
-            return;
+            return false;
+        } else {
+            return true;
         }
-
-        String query = "0x" + fingerprint;
-
-        // display keyserver fragment with query
-        Bundle args = new Bundle();
-        args.putString(ImportKeysServerFragment.ARG_QUERY, query);
-        args.putBoolean(ImportKeysServerFragment.ARG_DISABLE_QUERY_EDIT, true);
-//        loadNavFragment(NAV_SERVER, args);
-
-        //TODO
-
-        // action: search directly
-        startListFragment(savedInstanceState, null, null, query);
     }
 
-    public void loadCallback(byte[] importData, Uri dataUri, String serverQuery, String keyServer, String keybaseQuery) {
-        mListFragment.loadNew(importData, dataUri, serverQuery, keyServer, keybaseQuery);
+    /**
+     * Scroll ViewPager left and right
+     *
+     * @param event
+     * @return
+     */
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        boolean result = super.onTouchEvent(event);
+
+        if (!result) {
+            mViewPager.onTouchEvent(event);
+        }
+
+        return result;
+    }
+
+    public void loadCallback(ImportKeysListFragment.LoaderState loaderState) {
+        mListFragment.loadNew(loaderState);
     }
 
     /**
@@ -477,7 +490,8 @@ public class ImportKeysActivity extends ActionBarActivity {
             }
         };
 
-        if (mListFragment.getKeyBytes() != null || mListFragment.getDataUri() != null) {
+        ImportKeysListFragment.LoaderState ls = mListFragment.getLoaderState();
+        if (ls instanceof ImportKeysListFragment.BytesLoaderState) {
             Log.d(Constants.TAG, "importKeys started");
 
             // Send all information needed to service to import key in other thread
@@ -503,7 +517,9 @@ public class ImportKeysActivity extends ActionBarActivity {
 
             // start service with intent
             startService(intent);
-        } else if (mListFragment.getServerQuery() != null) {
+        } else if (ls instanceof ImportKeysListFragment.KeyserverLoaderState) {
+            ImportKeysListFragment.KeyserverLoaderState sls = (ImportKeysListFragment.KeyserverLoaderState) ls;
+
             // Send all information needed to service to query keys in other thread
             Intent intent = new Intent(this, KeychainIntentService.class);
 
@@ -512,7 +528,7 @@ public class ImportKeysActivity extends ActionBarActivity {
             // fill values for this action
             Bundle data = new Bundle();
 
-            data.putString(KeychainIntentService.DOWNLOAD_KEY_SERVER, mListFragment.getKeyServer());
+            data.putString(KeychainIntentService.DOWNLOAD_KEY_SERVER, sls.keyserver);
 
             // get selected key entries
             ArrayList<ImportKeysListEntry> selectedEntries = mListFragment.getSelectedEntries();
@@ -529,7 +545,7 @@ public class ImportKeysActivity extends ActionBarActivity {
 
             // start service with intent
             startService(intent);
-        } else if (mListFragment.getKeybaseQuery() != null) {
+        } else if (ls instanceof ImportKeysListFragment.KeybaseLoaderState) {
             // Send all information needed to service to query keys in other thread
             Intent intent = new Intent(this, KeychainIntentService.class);
 

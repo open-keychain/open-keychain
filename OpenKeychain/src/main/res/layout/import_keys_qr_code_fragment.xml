@@ -33,34 +33,15 @@
             android:layout_marginTop="8dp"
             android:background="?android:attr/listDivider" />
 
-        <Button
+        <ImageButton
             android:id="@+id/import_nfc_button"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:padding="8dp"
-            android:text="NFC?"
+            android:src="@drawable/ic_action_nfc"
             android:layout_gravity="center_vertical"
             style="@style/SelectableItem" />
 
     </LinearLayout>
-
-    <TextView
-        android:id="@+id/import_qrcode_text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:paddingLeft="16dp"
-        android:paddingRight="16dp"
-        android:paddingTop="8dp"
-        android:visibility="gone" />
-
-    <ProgressBar
-        android:id="@+id/import_qrcode_progress"
-        style="?android:attr/progressBarStyleHorizontal"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingLeft="16dp"
-        android:paddingRight="16dp"
-        android:progress="0"
-        android:visibility="gone" />
 
 </LinearLayout>

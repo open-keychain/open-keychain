@@ -11,7 +11,7 @@
         android:layout_height="48dp"
         android:layout_marginLeft="8dp"
         android:layout_centerVertical="true"
-        android:src="@drawable/icon" />
+        android:src="@drawable/ic_launcher" />
 
     <TextView
         android:id="@+id/api_apps_adapter_item_name"

@@ -85,7 +85,7 @@ public class ImportKeysFileFragment extends Fragment {
                         return;
                     }
                 }
-                mImportActivity.loadCallback(sendText.getBytes(), null, null, null, null);
+                mImportActivity.loadCallback(new ImportKeysListFragment.BytesLoaderState(sendText.getBytes(), null));
             }
         });
 
@@ -107,7 +107,7 @@ public class ImportKeysFileFragment extends Fragment {
                 if (resultCode == Activity.RESULT_OK && data != null) {
 
                     // load data
-                    mImportActivity.loadCallback(null, data.getData(), null, null, null);
+                    mImportActivity.loadCallback(new ImportKeysListFragment.BytesLoaderState(null, data.getData()));
                 }
 
                 break;

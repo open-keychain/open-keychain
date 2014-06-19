@@ -2,5 +2,5 @@
 
 <account-authenticator xmlns:android="http://schemas.android.com/apk/res/android"
                        android:accountType="org.sufficientlysecure.keychain"
-                       android:icon="@drawable/icon"
+                       android:icon="@drawable/ic_launcher"
                        android:label="@string/app_name"/>
