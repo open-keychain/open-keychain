@@ -23,10 +23,13 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
+import android.provider.OpenableColumns;
 import android.support.v4.app.DialogFragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -50,6 +53,7 @@ public class FileDialogFragment extends DialogFragment {
 
     public static final int MESSAGE_OKAY = 1;
 
+    public static final String MESSAGE_DATA_URI = "uri";
     public static final String MESSAGE_DATA_FILENAME = "filename";
     public static final String MESSAGE_DATA_CHECKED = "checked";
 
@@ -59,6 +63,9 @@ public class FileDialogFragment extends DialogFragment {
     private BootstrapButton mBrowse;
     private CheckBox mCheckBox;
     private TextView mMessageTextView;
+
+    private String mOutputFilename;
+    private Uri mOutputUri;
 
     private static final int REQUEST_CODE = 0x00007004;
 
@@ -92,7 +99,7 @@ public class FileDialogFragment extends DialogFragment {
 
         String title = getArguments().getString(ARG_TITLE);
         String message = getArguments().getString(ARG_MESSAGE);
-        String defaultFile = getArguments().getString(ARG_DEFAULT_FILE);
+        mOutputFilename = getArguments().getString(ARG_DEFAULT_FILE);
         String checkboxText = getArguments().getString(ARG_CHECKBOX_TEXT);
 
         LayoutInflater inflater = (LayoutInflater) activity
@@ -106,15 +113,18 @@ public class FileDialogFragment extends DialogFragment {
         mMessageTextView.setText(message);
 
         mFilename = (EditText) view.findViewById(R.id.input);
-        mFilename.setText(defaultFile);
+        mFilename.setText(mOutputFilename);
         mBrowse = (BootstrapButton) view.findViewById(R.id.btn_browse);
         mBrowse.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 // only .asc or .gpg files
                 // setting it to text/plain prevents Cynaogenmod's file manager from selecting asc
                 // or gpg types!
-                FileHelper.openFile(FileDialogFragment.this, mFilename.getText().toString(), "*/*",
-                        REQUEST_CODE);
+                if (Constants.KITKAT) {
+                    FileHelper.saveDocument(FileDialogFragment.this, mOutputUri, "*/*", REQUEST_CODE);
+                } else {
+                    FileHelper.openFile(FileDialogFragment.this, mOutputFilename, "*/*", REQUEST_CODE);
+                }
             }
         });
 
@@ -136,13 +146,19 @@ public class FileDialogFragment extends DialogFragment {
             public void onClick(DialogInterface dialog, int id) {
                 dismiss();
 
-                boolean checked = false;
-                if (mCheckBox.isEnabled()) {
-                    checked = mCheckBox.isChecked();
+                String currentFilename = mFilename.getText().toString();
+                if (mOutputFilename == null || !mOutputFilename.equals(currentFilename)) {
+                    mOutputUri = null;
+                    mOutputFilename = mFilename.getText().toString();
                 }
+
+                boolean checked = mCheckBox.isEnabled() && mCheckBox.isChecked();
 
                 // return resulting data back to activity
                 Bundle data = new Bundle();
+                if (mOutputUri != null) {
+                    data.putParcelable(MESSAGE_DATA_URI, mOutputUri);
+                }
                 data.putString(MESSAGE_DATA_FILENAME, mFilename.getText().toString());
                 data.putBoolean(MESSAGE_DATA_CHECKED, checked);
 
@@ -178,14 +194,26 @@ public class FileDialogFragment extends DialogFragment {
         switch (requestCode & 0xFFFF) {
             case REQUEST_CODE: {
                 if (resultCode == Activity.RESULT_OK && data != null) {
-                    try {
-                        String path = data.getData().getPath();
-                        Log.d(Constants.TAG, "path=" + path);
+                    if (Constants.KITKAT) {
+                        mOutputUri = data.getData();
+                        Cursor cursor = getActivity().getContentResolver().query(mOutputUri, new String[]{OpenableColumns.DISPLAY_NAME}, null, null, null);
+                        if (cursor != null) {
+                            if (cursor.moveToNext()) {
+                                mOutputFilename = cursor.getString(0);
+                                mFilename.setText(mOutputFilename);
+                            }
+                            cursor.close();
+                        }
+                    } else {
+                        try {
+                            String path = data.getData().getPath();
+                            Log.d(Constants.TAG, "path=" + path);
 
-                        // set filename used in export/import dialogs
-                        setFilename(path);
-                    } catch (NullPointerException e) {
-                        Log.e(Constants.TAG, "Nullpointer while retrieving path!", e);
+                            // set filename used in export/import dialogs
+                            setFilename(path);
+                        } catch (NullPointerException e) {
+                            Log.e(Constants.TAG, "Nullpointer while retrieving path!", e);
+                        }
                     }
                 }
 

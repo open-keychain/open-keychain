@@ -17,12 +17,14 @@
 
 package org.sufficientlysecure.keychain.helper;
 
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Environment;
 import android.support.v4.app.Fragment;
 import android.widget.Toast;
@@ -80,6 +82,39 @@ public class FileHelper {
             Toast.makeText(fragment.getActivity(), R.string.no_filemanager_installed,
                     Toast.LENGTH_SHORT).show();
         }
+    }
+
+
+    /**
+     * Opens the storage browser on Android 4.4 or later for opening a file
+     * @param fragment
+     * @param last default selected file
+     * @param mimeType can be text/plain for example
+     * @param requestCode used to identify the result coming back from storage browser onActivityResult() in your
+     */
+    @TargetApi(Build.VERSION_CODES.KITKAT)
+    public static void openDocument(Fragment fragment, Uri last, String mimeType, int requestCode) {
+        Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
+        intent.setData(last);
+        intent.setType(mimeType);
+        fragment.startActivityForResult(intent, requestCode);
+    }
+
+    /**
+     * Opens the storage browser on Android 4.4 or later for saving a file
+     * @param fragment
+     * @param last default selected file
+     * @param mimeType can be text/plain for example
+     * @param requestCode used to identify the result coming back from storage browser onActivityResult() in your
+     */
+    @TargetApi(Build.VERSION_CODES.KITKAT)
+    public static void saveDocument(Fragment fragment, Uri last, String mimeType, int requestCode) {
+        Intent intent = new Intent(Intent.ACTION_CREATE_DOCUMENT);
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
+        intent.setData(last);
+        intent.setType(mimeType);
+        fragment.startActivityForResult(intent, requestCode);
     }
 
     private static Intent buildFileIntent(String filename, String mimeType) {

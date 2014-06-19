@@ -104,9 +104,11 @@ public class KeychainIntentService extends IntentService
 
     // encrypt, decrypt, import export
     public static final String TARGET = "target";
+    public static final String SOURCE = "source";
     // possible targets:
-    public static final int TARGET_BYTES = 1;
-    public static final int TARGET_URI = 2;
+    public static final int IO_BYTES = 1;
+    public static final int IO_FILE = 2; // This was misleadingly TARGET_URI before!
+    public static final int IO_URI = 3;
 
     // encrypt
     public static final String ENCRYPT_SIGNATURE_KEY_ID = "secret_key_id";
@@ -115,7 +117,9 @@ public class KeychainIntentService extends IntentService
     public static final String ENCRYPT_COMPRESSION_ID = "compression_id";
     public static final String ENCRYPT_MESSAGE_BYTES = "message_bytes";
     public static final String ENCRYPT_INPUT_FILE = "input_file";
+    public static final String ENCRYPT_INPUT_URI = "input_uri";
     public static final String ENCRYPT_OUTPUT_FILE = "output_file";
+    public static final String ENCRYPT_OUTPUT_URI = "output_uri";
     public static final String ENCRYPT_SYMMETRIC_PASSPHRASE = "passphrase";
 
     // decrypt/verify
@@ -214,7 +218,7 @@ public class KeychainIntentService extends IntentService
         if (ACTION_ENCRYPT_SIGN.equals(action)) {
             try {
                 /* Input */
-                int target = data.getInt(TARGET);
+                int source = data.get(SOURCE) != null ? data.getInt(SOURCE) : data.getInt(TARGET);
 
                 long signatureKeyId = data.getLong(ENCRYPT_SIGNATURE_KEY_ID);
                 String symmetricPassphrase = data.getString(ENCRYPT_SYMMETRIC_PASSPHRASE);
@@ -222,71 +226,8 @@ public class KeychainIntentService extends IntentService
                 boolean useAsciiArmor = data.getBoolean(ENCRYPT_USE_ASCII_ARMOR);
                 long encryptionKeyIds[] = data.getLongArray(ENCRYPT_ENCRYPTION_KEYS_IDS);
                 int compressionId = data.getInt(ENCRYPT_COMPRESSION_ID);
-                InputStream inStream;
-                long inLength;
-                InputData inputData;
-                OutputStream outStream;
-//                String streamFilename = null;
-                switch (target) {
-                    case TARGET_BYTES: /* encrypting bytes directly */
-                        byte[] bytes = data.getByteArray(ENCRYPT_MESSAGE_BYTES);
-
-                        inStream = new ByteArrayInputStream(bytes);
-                        inLength = bytes.length;
-
-                        inputData = new InputData(inStream, inLength);
-                        outStream = new ByteArrayOutputStream();
-
-                        break;
-                    case TARGET_URI: /* encrypting file */
-                        String inputFile = data.getString(ENCRYPT_INPUT_FILE);
-                        String outputFile = data.getString(ENCRYPT_OUTPUT_FILE);
-
-                        // check if storage is ready
-                        if (!FileHelper.isStorageMounted(inputFile)
-                                || !FileHelper.isStorageMounted(outputFile)) {
-                            throw new PgpGeneralException(
-                                    getString(R.string.error_external_storage_not_ready));
-                        }
-
-                        inStream = new FileInputStream(inputFile);
-                        File file = new File(inputFile);
-                        inLength = file.length();
-                        inputData = new InputData(inStream, inLength);
-
-                        outStream = new FileOutputStream(outputFile);
-
-                        break;
-
-                    // TODO: not used currently
-//                    case TARGET_STREAM: /* Encrypting stream from content uri */
-//                        Uri providerUri = (Uri) data.getParcelable(ENCRYPT_PROVIDER_URI);
-//
-//                        // InputStream
-//                        InputStream in = getContentResolver().openInputStream(providerUri);
-//                        inLength = PgpHelper.getLengthOfStream(in);
-//                        inputData = new InputData(in, inLength);
-//
-//                        // OutputStream
-//                        try {
-//                            while (true) {
-//                                streamFilename = PgpHelper.generateRandomFilename(32);
-//                                if (streamFilename == null) {
-//                                    throw new PgpGeneralException("couldn't generate random file name");
-//                                }
-//                                openFileInput(streamFilename).close();
-//                            }
-//                        } catch (FileNotFoundException e) {
-//                            // found a name that isn't used yet
-//                        }
-//                        outStream = openFileOutput(streamFilename, Context.MODE_PRIVATE);
-//
-//                        break;
-
-                    default:
-                        throw new PgpGeneralException("No target choosen!");
-
-                }
+                InputData inputData = createEncryptInputData(data);
+                OutputStream outStream = createCryptOutputStream(data);
 
                 /* Operation */
                 PgpSignEncrypt.Builder builder =
@@ -311,7 +252,7 @@ public class KeychainIntentService extends IntentService
                                 PassphraseCacheService.getCachedPassphrase(this, signatureKeyId));
 
                 // this assumes that the bytes are cleartext (valid for current implementation!)
-                if (target == TARGET_BYTES) {
+                if (source == IO_BYTES) {
                     builder.setCleartextInput(true);
                 }
 
@@ -322,24 +263,7 @@ public class KeychainIntentService extends IntentService
                 /* Output */
 
                 Bundle resultData = new Bundle();
-
-                switch (target) {
-                    case TARGET_BYTES:
-                        byte output[] = ((ByteArrayOutputStream) outStream).toByteArray();
-
-                        resultData.putByteArray(RESULT_BYTES, output);
-
-                        break;
-                    case TARGET_URI:
-                        // nothing, file was written, just send okay
-
-                        break;
-//                    case TARGET_STREAM:
-//                        String uri = DataStream.buildDataStreamUri(streamFilename).toString();
-//                        resultData.putString(RESULT_URI, uri);
-//
-//                        break;
-                }
+                finalizeEncryptOutputStream(data, resultData, outStream);
 
                 OtherHelper.logDebugBundle(resultData, "resultData");
 
@@ -350,78 +274,10 @@ public class KeychainIntentService extends IntentService
         } else if (ACTION_DECRYPT_VERIFY.equals(action)) {
             try {
                 /* Input */
-                int target = data.getInt(TARGET);
-
-                byte[] bytes = data.getByteArray(DECRYPT_CIPHERTEXT_BYTES);
                 String passphrase = data.getString(DECRYPT_PASSPHRASE);
 
-                InputStream inStream;
-                long inLength;
-                InputData inputData;
-                OutputStream outStream;
-                String streamFilename = null;
-                switch (target) {
-                    case TARGET_BYTES: /* decrypting bytes directly */
-                        inStream = new ByteArrayInputStream(bytes);
-                        inLength = bytes.length;
-
-                        inputData = new InputData(inStream, inLength);
-                        outStream = new ByteArrayOutputStream();
-
-                        break;
-
-                    case TARGET_URI: /* decrypting file */
-                        String inputFile = data.getString(ENCRYPT_INPUT_FILE);
-                        String outputFile = data.getString(ENCRYPT_OUTPUT_FILE);
-
-                        // check if storage is ready
-                        if (!FileHelper.isStorageMounted(inputFile)
-                                || !FileHelper.isStorageMounted(outputFile)) {
-                            throw new PgpGeneralException(
-                                    getString(R.string.error_external_storage_not_ready));
-                        }
-
-                        // InputStream
-                        inLength = -1;
-                        inStream = new FileInputStream(inputFile);
-                        File file = new File(inputFile);
-                        inLength = file.length();
-                        inputData = new InputData(inStream, inLength);
-
-                        // OutputStream
-                        outStream = new FileOutputStream(outputFile);
-
-                        break;
-
-                    // TODO: not used, maybe contains code useful for new decrypt method for files?
-//                    case TARGET_STREAM: /* decrypting stream from content uri */
-//                        Uri providerUri = (Uri) data.getParcelable(ENCRYPT_PROVIDER_URI);
-//
-//                        // InputStream
-//                        InputStream in = getContentResolver().openInputStream(providerUri);
-//                        inLength = PgpHelper.getLengthOfStream(in);
-//                        inputData = new InputData(in, inLength);
-//
-//                        // OutputStream
-//                        try {
-//                            while (true) {
-//                                streamFilename = PgpHelper.generateRandomFilename(32);
-//                                if (streamFilename == null) {
-//                                    throw new PgpGeneralException("couldn't generate random file name");
-//                                }
-//                                openFileInput(streamFilename).close();
-//                            }
-//                        } catch (FileNotFoundException e) {
-//                            // found a name that isn't used yet
-//                        }
-//                        outStream = openFileOutput(streamFilename, Context.MODE_PRIVATE);
-//
-//                        break;
-
-                    default:
-                        throw new PgpGeneralException("No target choosen!");
-
-                }
+                InputData inputData = createDecryptInputData(data);
+                OutputStream outStream = createCryptOutputStream(data);
 
                 /* Operation */
 
@@ -452,21 +308,7 @@ public class KeychainIntentService extends IntentService
 
                 /* Output */
 
-                switch (target) {
-                    case TARGET_BYTES:
-                        byte output[] = ((ByteArrayOutputStream) outStream).toByteArray();
-                        resultData.putByteArray(RESULT_DECRYPTED_BYTES, output);
-                        break;
-                    case TARGET_URI:
-                        // nothing, file was written, just send okay and verification bundle
-
-                        break;
-//                    case TARGET_STREAM:
-//                        String uri = DataStream.buildDataStreamUri(streamFilename).toString();
-//                        resultData.putString(RESULT_URI, uri);
-//
-//                        break;
-                }
+                finalizeDecryptOutputStream(data, resultData, outStream);
 
                 OtherHelper.logDebugBundle(resultData, "resultData");
 
@@ -804,5 +646,96 @@ public class KeychainIntentService extends IntentService
     @Override
     public boolean hasServiceStopped() {
         return mIsCanceled;
+    }
+
+    private InputData createDecryptInputData(Bundle data) throws IOException, PgpGeneralException {
+        return createCryptInputData(data, DECRYPT_CIPHERTEXT_BYTES);
+    }
+
+    private InputData createEncryptInputData(Bundle data) throws IOException, PgpGeneralException {
+        return createCryptInputData(data, ENCRYPT_MESSAGE_BYTES);
+    }
+
+    private InputData createCryptInputData(Bundle data, String bytesName) throws PgpGeneralException, IOException {
+        int source = data.get(SOURCE) != null ? data.getInt(SOURCE) : data.getInt(TARGET);
+        switch (source) {
+            case IO_BYTES: /* encrypting bytes directly */
+                byte[] bytes = data.getByteArray(bytesName);
+                return new InputData(new ByteArrayInputStream(bytes), bytes.length);
+
+            case IO_FILE: /* encrypting file */
+                String inputFile = data.getString(ENCRYPT_INPUT_FILE);
+
+                // check if storage is ready
+                if (!FileHelper.isStorageMounted(inputFile)) {
+                    throw new PgpGeneralException(getString(R.string.error_external_storage_not_ready));
+                }
+
+                return new InputData(new FileInputStream(inputFile), new File(inputFile).length());
+
+            case IO_URI: /* encrypting content uri */
+                Uri providerUri = data.getParcelable(ENCRYPT_INPUT_URI);
+
+                // InputStream
+                InputStream in = getContentResolver().openInputStream(providerUri);
+                return new InputData(in, 0);
+
+            default:
+                throw new PgpGeneralException("No target choosen!");
+        }
+    }
+
+    private OutputStream createCryptOutputStream(Bundle data) throws PgpGeneralException, FileNotFoundException {
+        int target = data.getInt(TARGET);
+        switch (target) {
+            case IO_BYTES:
+                return new ByteArrayOutputStream();
+
+            case IO_FILE:
+                String outputFile = data.getString(ENCRYPT_OUTPUT_FILE);
+
+                // check if storage is ready
+                if (!FileHelper.isStorageMounted(outputFile)) {
+                    throw new PgpGeneralException(
+                            getString(R.string.error_external_storage_not_ready));
+                }
+
+                // OutputStream
+                return new FileOutputStream(outputFile);
+
+            case IO_URI:
+                Uri providerUri = data.getParcelable(ENCRYPT_OUTPUT_URI);
+
+                return getContentResolver().openOutputStream(providerUri);
+
+            default:
+                throw new PgpGeneralException("No target choosen!");
+        }
+    }
+
+    private void finalizeEncryptOutputStream(Bundle data, Bundle resultData, OutputStream outStream) {
+        finalizeCryptOutputStream(data, resultData, outStream, RESULT_BYTES);
+    }
+
+    private void finalizeDecryptOutputStream(Bundle data, Bundle resultData, OutputStream outStream) {
+        finalizeCryptOutputStream(data, resultData, outStream, RESULT_DECRYPTED_BYTES);
+    }
+
+    private void finalizeCryptOutputStream(Bundle data, Bundle resultData, OutputStream outStream, String bytesName) {
+        int target = data.getInt(TARGET);
+        switch (target) {
+            case IO_BYTES:
+                byte output[] = ((ByteArrayOutputStream) outStream).toByteArray();
+                resultData.putByteArray(bytesName, output);
+                break;
+            case IO_FILE:
+                // nothing, file was written, just send okay and verification bundle
+
+                break;
+            case IO_URI:
+                // nothing, output was written, just send okay and verification bundle
+
+                break;
+        }
     }
 }

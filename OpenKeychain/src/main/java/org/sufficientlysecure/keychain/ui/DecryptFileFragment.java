@@ -20,10 +20,13 @@ package org.sufficientlysecure.keychain.ui;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.os.Messenger;
+import android.provider.OpenableColumns;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -58,7 +61,9 @@ public class DecryptFileFragment extends DecryptFragment {
     private View mDecryptButton;
 
     private String mInputFilename = null;
+    private Uri mInputUri = null;
     private String mOutputFilename = null;
+    private Uri mOutputUri = null;
 
     private FileDialogFragment mFileDialog;
 
@@ -75,8 +80,12 @@ public class DecryptFileFragment extends DecryptFragment {
         mDecryptButton = view.findViewById(R.id.decrypt_file_action_decrypt);
         mBrowse.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                FileHelper.openFile(DecryptFileFragment.this, mFilename.getText().toString(), "*/*",
-                        RESULT_CODE_FILE);
+                if (Constants.KITKAT) {
+                    FileHelper.openDocument(DecryptFileFragment.this, mInputUri, "*/*", RESULT_CODE_FILE);
+                } else {
+                    FileHelper.openFile(DecryptFileFragment.this, mFilename.getText().toString(), "*/*",
+                            RESULT_CODE_FILE);
+                }
             }
         });
         mDecryptButton.setOnClickListener(new View.OnClickListener() {
@@ -99,20 +108,24 @@ public class DecryptFileFragment extends DecryptFragment {
         }
     }
 
-    private void guessOutputFilename() {
-        mInputFilename = mFilename.getText().toString();
+    private String guessOutputFilename() {
         File file = new File(mInputFilename);
         String filename = file.getName();
         if (filename.endsWith(".asc") || filename.endsWith(".gpg") || filename.endsWith(".pgp")) {
             filename = filename.substring(0, filename.length() - 4);
         }
-        mOutputFilename = Constants.Path.APP_DIR + "/" + filename;
+        return Constants.Path.APP_DIR + "/" + filename;
     }
 
     private void decryptAction() {
         String currentFilename = mFilename.getText().toString();
         if (mInputFilename == null || !mInputFilename.equals(currentFilename)) {
-            guessOutputFilename();
+            mInputUri = null;
+            mInputFilename = mFilename.getText().toString();
+        }
+
+        if (mInputUri == null) {
+            mOutputFilename = guessOutputFilename();
         }
 
         if (mInputFilename.equals("")) {
@@ -121,7 +134,7 @@ public class DecryptFileFragment extends DecryptFragment {
             return;
         }
 
-        if (mInputFilename.startsWith("file")) {
+        if (mInputUri == null && mInputFilename.startsWith("file")) {
             File file = new File(mInputFilename);
             if (!file.exists() || !file.isFile()) {
                 AppMsg.makeText(
@@ -143,7 +156,11 @@ public class DecryptFileFragment extends DecryptFragment {
             public void handleMessage(Message message) {
                 if (message.what == FileDialogFragment.MESSAGE_OKAY) {
                     Bundle data = message.getData();
-                    mOutputFilename = data.getString(FileDialogFragment.MESSAGE_DATA_FILENAME);
+                    if (data.containsKey(FileDialogFragment.MESSAGE_DATA_URI)) {
+                        mOutputUri = data.getParcelable(FileDialogFragment.MESSAGE_DATA_URI);
+                    } else {
+                        mOutputFilename = data.getString(FileDialogFragment.MESSAGE_DATA_FILENAME);
+                    }
                     decryptStart(null);
                 }
             }
@@ -172,13 +189,25 @@ public class DecryptFileFragment extends DecryptFragment {
         intent.setAction(KeychainIntentService.ACTION_DECRYPT_VERIFY);
 
         // data
-        data.putInt(KeychainIntentService.TARGET, KeychainIntentService.TARGET_URI);
-
         Log.d(Constants.TAG, "mInputFilename=" + mInputFilename + ", mOutputFilename="
-                + mOutputFilename);
+                + mOutputFilename + ",mInputUri=" + mInputUri + ", mOutputUri="
+                + mOutputUri);
 
-        data.putString(KeychainIntentService.ENCRYPT_INPUT_FILE, mInputFilename);
-        data.putString(KeychainIntentService.ENCRYPT_OUTPUT_FILE, mOutputFilename);
+        if (mInputUri != null) {
+            data.putInt(KeychainIntentService.SOURCE, KeychainIntentService.IO_URI);
+            data.putParcelable(KeychainIntentService.ENCRYPT_INPUT_URI, mInputUri);
+        } else {
+            data.putInt(KeychainIntentService.SOURCE, KeychainIntentService.IO_FILE);
+            data.putString(KeychainIntentService.ENCRYPT_INPUT_FILE, mInputFilename);
+        }
+
+        if (mOutputUri != null) {
+            data.putInt(KeychainIntentService.TARGET, KeychainIntentService.IO_URI);
+            data.putParcelable(KeychainIntentService.ENCRYPT_OUTPUT_URI, mOutputUri);
+        } else {
+            data.putInt(KeychainIntentService.TARGET, KeychainIntentService.IO_FILE);
+            data.putString(KeychainIntentService.ENCRYPT_OUTPUT_FILE, mOutputFilename);
+        }
 
         data.putString(KeychainIntentService.DECRYPT_PASSPHRASE, passphrase);
 
@@ -209,8 +238,13 @@ public class DecryptFileFragment extends DecryptFragment {
 
                         if (mDeleteAfter.isChecked()) {
                             // Create and show dialog to delete original file
-                            DeleteFileDialogFragment deleteFileDialog = DeleteFileDialogFragment
-                                    .newInstance(mInputFilename);
+                            DeleteFileDialogFragment deleteFileDialog;
+                            if (mInputUri != null) {
+                                deleteFileDialog = DeleteFileDialogFragment.newInstance(mInputUri);
+                            } else {
+                                deleteFileDialog = DeleteFileDialogFragment
+                                        .newInstance(mInputFilename);
+                            }
                             deleteFileDialog.show(getActivity().getSupportFragmentManager(), "deleteDialog");
                         }
                     }
@@ -234,13 +268,25 @@ public class DecryptFileFragment extends DecryptFragment {
         switch (requestCode) {
             case RESULT_CODE_FILE: {
                 if (resultCode == Activity.RESULT_OK && data != null) {
-                    try {
-                        String path = FileHelper.getPath(getActivity(), data.getData());
-                        Log.d(Constants.TAG, "path=" + path);
+                    if (Constants.KITKAT) {
+                        mInputUri = data.getData();
+                        Cursor cursor = getActivity().getContentResolver().query(mInputUri, new String[]{OpenableColumns.DISPLAY_NAME}, null, null, null);
+                        if (cursor != null) {
+                            if (cursor.moveToNext()) {
+                                mInputFilename = cursor.getString(0);
+                                mFilename.setText(mInputFilename);
+                            }
+                            cursor.close();
+                        }
+                    } else {
+                        try {
+                            String path = FileHelper.getPath(getActivity(), data.getData());
+                            Log.d(Constants.TAG, "path=" + path);
 
-                        mFilename.setText(path);
-                    } catch (NullPointerException e) {
-                        Log.e(Constants.TAG, "Nullpointer while retrieving path!");
+                            mFilename.setText(path);
+                        } catch (NullPointerException e) {
+                            Log.e(Constants.TAG, "Nullpointer while retrieving path!");
+                        }
                     }
                 }
                 return;

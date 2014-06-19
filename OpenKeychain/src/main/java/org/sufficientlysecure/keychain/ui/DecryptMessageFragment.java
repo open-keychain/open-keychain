@@ -129,7 +129,7 @@ public class DecryptMessageFragment extends DecryptFragment {
         intent.setAction(KeychainIntentService.ACTION_DECRYPT_VERIFY);
 
         // data
-        data.putInt(KeychainIntentService.TARGET, KeychainIntentService.TARGET_BYTES);
+        data.putInt(KeychainIntentService.TARGET, KeychainIntentService.IO_BYTES);
         data.putByteArray(KeychainIntentService.DECRYPT_CIPHERTEXT_BYTES, mCiphertext.getBytes());
         data.putString(KeychainIntentService.DECRYPT_PASSPHRASE, passphrase);
 

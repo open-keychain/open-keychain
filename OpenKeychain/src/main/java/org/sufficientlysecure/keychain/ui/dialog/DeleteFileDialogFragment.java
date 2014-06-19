@@ -21,9 +21,11 @@ import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Message;
 import android.os.Messenger;
+import android.provider.DocumentsContract;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
 import android.widget.Toast;
@@ -34,6 +36,7 @@ import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
 
 public class DeleteFileDialogFragment extends DialogFragment {
     private static final String ARG_DELETE_FILE = "delete_file";
+    private static final String ARG_DELETE_URI = "delete_uri";
 
     /**
      * Creates new instance of this delete file dialog fragment
@@ -50,12 +53,27 @@ public class DeleteFileDialogFragment extends DialogFragment {
     }
 
     /**
+     * Creates new instance of this delete file dialog fragment
+     */
+    public static DeleteFileDialogFragment newInstance(Uri deleteUri) {
+        DeleteFileDialogFragment frag = new DeleteFileDialogFragment();
+        Bundle args = new Bundle();
+
+        args.putParcelable(ARG_DELETE_URI, deleteUri);
+
+        frag.setArguments(args);
+
+        return frag;
+    }
+
+    /**
      * Creates dialog
      */
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         final FragmentActivity activity = getActivity();
 
+        final Uri deleteUri = getArguments().containsKey(ARG_DELETE_URI) ? getArguments().<Uri>getParcelable(ARG_DELETE_URI) : null;
         final String deleteFile = getArguments().getString(ARG_DELETE_FILE);
 
         CustomAlertDialogBuilder alert = new CustomAlertDialogBuilder(activity);
@@ -70,6 +88,12 @@ public class DeleteFileDialogFragment extends DialogFragment {
             @Override
             public void onClick(DialogInterface dialog, int id) {
                 dismiss();
+
+                if (deleteUri != null) {
+                    // We can not securely delete Documents, so just use usual delete on them
+                    DocumentsContract.deleteDocument(getActivity().getContentResolver(), deleteUri);
+                    return;
+                }
 
                 // Send all information needed to service to edit key in other thread
                 Intent intent = new Intent(activity, KeychainIntentService.class);
