@@ -60,7 +60,7 @@ public class PgpHelper {
     }
 
     public static String getFullVersion(Context context) {
-        return "OpenPGP Keychain v" + getVersion(context);
+        return "OpenKeychain v" + getVersion(context);
     }
 
 //    public static final class content {
