@@ -156,7 +156,7 @@ public class ImportKeysListFragment extends ListFragment implements
         if (dataUri != null || bytes != null) {
             mLoaderState = new BytesLoaderState(bytes, dataUri);
         } else if (query != null) {
-            // TODO: this is used when scanning QR Code or updating a key.
+            // TODO: this is used when updating a key.
             // Currently it simply uses keyserver nr 0
             String keyserver = Preferences.getPreferences(getActivity())
                     .getKeyServers()[0];
@@ -185,27 +185,34 @@ public class ImportKeysListFragment extends ListFragment implements
         restartLoaders();
     }
 
+    public void destroyLoader() {
+        if (getLoaderManager().getLoader(LOADER_ID_BYTES) != null) {
+            getLoaderManager().destroyLoader(LOADER_ID_BYTES);
+        }
+        if (getLoaderManager().getLoader(LOADER_ID_SERVER_QUERY) != null) {
+            getLoaderManager().destroyLoader(LOADER_ID_SERVER_QUERY);
+        }
+        if (getLoaderManager().getLoader(LOADER_ID_KEYBASE) != null) {
+            getLoaderManager().destroyLoader(LOADER_ID_KEYBASE);
+        }
+        setListShown(true);
+    }
+
     private void restartLoaders() {
         if (mLoaderState instanceof BytesLoaderState) {
             // Start out with a progress indicator.
             setListShown(false);
 
             getLoaderManager().restartLoader(LOADER_ID_BYTES, null, this);
-            getLoaderManager().destroyLoader(LOADER_ID_SERVER_QUERY);
-            getLoaderManager().destroyLoader(LOADER_ID_KEYBASE);
         } else if (mLoaderState instanceof KeyserverLoaderState) {
             // Start out with a progress indicator.
             setListShown(false);
 
-            getLoaderManager().destroyLoader(LOADER_ID_BYTES);
             getLoaderManager().restartLoader(LOADER_ID_SERVER_QUERY, null, this);
-            getLoaderManager().destroyLoader(LOADER_ID_KEYBASE);
         } else if (mLoaderState instanceof KeybaseLoaderState) {
             // Start out with a progress indicator.
             setListShown(false);
 
-            getLoaderManager().destroyLoader(LOADER_ID_BYTES);
-            getLoaderManager().destroyLoader(LOADER_ID_SERVER_QUERY);
             getLoaderManager().restartLoader(LOADER_ID_KEYBASE, null, this);
         }
     }

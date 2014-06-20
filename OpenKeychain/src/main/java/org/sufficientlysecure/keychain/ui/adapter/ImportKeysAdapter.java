@@ -170,7 +170,7 @@ public class ImportKeysAdapter extends ArrayAdapter<ImportKeysListEntry> {
         } else {
             holder.userIdsList.setVisibility(View.VISIBLE);
 
-            // clear view from holder
+            // destroyLoader view from holder
             holder.userIdsList.removeAllViews();
 
             Iterator<String> it = entry.getUserIds().iterator();
