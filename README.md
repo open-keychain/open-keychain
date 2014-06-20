@@ -38,7 +38,7 @@ Expand the Extras directory and install "Android Support Repository"
 Select everything for the newest SDK Platform (API-Level 19)
 4. Export ANDROID_HOME pointing to your Android SDK
 5. Execute ``./gradlew build``
-6. You can install the app with ``adb install -r OpenKeychain/build/apk/OpenKeychain-debug-unaligned.apk``
+6. You can install the app with ``adb install -r OpenKeychain/build/outputs/apk/OpenKeychain-debug-unaligned.apk``
 
 ### Build API Demo with Gradle
 
