@@ -29,6 +29,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.Locale;
 
 public class KeybaseKeyserver extends Keyserver {
     public static final String ORIGIN = "keybase:keybase.io";
@@ -94,7 +95,7 @@ public class KeybaseKeyserver extends Keyserver {
         String keybaseId = JWalk.getString(match, "components", "username", "val");
         String fullName = JWalk.getString(match, "components", "full_name", "val");
         String fingerprint = JWalk.getString(match, "components", "key_fingerprint", "val");
-        fingerprint = fingerprint.replace(" ", "").toUpperCase(); // not strictly necessary but doesn't hurt
+        fingerprint = fingerprint.replace(" ", "").toLowerCase(Locale.US); // not strictly necessary but doesn't hurt
         entry.setFingerprintHex(fingerprint);
 
         entry.setKeyIdHex("0x" + fingerprint.substring(Math.max(0, fingerprint.length() - 16)));

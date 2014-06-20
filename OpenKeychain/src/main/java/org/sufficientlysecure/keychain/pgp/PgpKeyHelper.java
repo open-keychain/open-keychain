@@ -104,7 +104,7 @@ public class PgpKeyHelper {
      * @return
      */
     public static String convertFingerprintToHex(byte[] fingerprint) {
-        String hexString = Hex.toHexString(fingerprint);
+        String hexString = Hex.toHexString(fingerprint).toLowerCase(Locale.US);
 
         return hexString;
     }

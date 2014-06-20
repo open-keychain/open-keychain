@@ -139,6 +139,8 @@ public class PgpImportExport {
                 String expectedFp = entry.getExpectedFingerprint();
                 if(expectedFp != null) {
                     if(!PgpKeyHelper.convertFingerprintToHex(key.getFingerprint()).equals(expectedFp)) {
+                        Log.d(Constants.TAG, "fingerprint: " + PgpKeyHelper.convertFingerprintToHex(key.getFingerprint()));
+                        Log.d(Constants.TAG, "expected fingerprint: " + expectedFp);
                         Log.e(Constants.TAG, "Actual key fingerprint is not the same as expected!");
                         badKeys += 1;
                         continue;
