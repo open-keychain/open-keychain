@@ -81,7 +81,7 @@ public class ImportKeysFileFragment extends Fragment {
                 if (clipboardText != null) {
                     sendText = clipboardText.toString();
                     if (sendText.toLowerCase(Locale.ENGLISH).startsWith(Constants.FINGERPRINT_SCHEME)) {
-                        mImportActivity.loadFromFingerprintUri(null, Uri.parse(sendText));
+                        mImportActivity.loadFromFingerprintUri(Uri.parse(sendText));
                         return;
                     }
                 }

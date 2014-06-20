@@ -174,11 +174,10 @@ public class ImportKeysServerFragment extends Fragment {
         mImportActivity.loadCallback(new ImportKeysListFragment.KeyserverLoaderState(query, keyserver));
     }
 
-    public void searchCallback(String query, String keyserver) {
+    public void setQueryAndKeyserver(String query, String keyserver) {
         mQueryEditText.setText(query, TextView.BufferType.EDITABLE);
         int keyServerPos = mServerAdapter.getPosition(keyserver);
         mServerSpinner.setSelection(keyServerPos);
-        search(query, keyserver);
     }
 
 }

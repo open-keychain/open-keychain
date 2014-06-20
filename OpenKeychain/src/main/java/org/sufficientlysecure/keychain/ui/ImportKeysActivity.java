@@ -135,16 +135,21 @@ public class ImportKeysActivity extends ActionBarActivity {
 
         if (Intent.ACTION_VIEW.equals(action)) {
             // Android's Action when opening file associated to Keychain (see AndroidManifest.xml)
-            // override action to delegate it to Keychain's ACTION_IMPORT_KEY
+            // delegate action to ACTION_IMPORT_KEY
             action = ACTION_IMPORT_KEY;
+        }
+
+        if (scheme != null && scheme.toLowerCase(Locale.ENGLISH).equals(Constants.FINGERPRINT_SCHEME)) {
+            /* Scanning a fingerprint directly with Barcode Scanner */
+            // delegate action to ACTION_IMPORT_KEY_FROM_KEYSERVER
+            String fingerprint = getFingerprintFromUri(dataUri);
+            action = ACTION_IMPORT_KEY_FROM_KEYSERVER;
+            extras.putString(EXTRA_FINGERPRINT, fingerprint);
         }
 
         Bundle serverBundle = null;
         boolean serverOnly = false;
-        if (scheme != null && scheme.toLowerCase(Locale.ENGLISH).equals(Constants.FINGERPRINT_SCHEME)) {
-            /* Scanning a fingerprint directly with Barcode Scanner */
-            loadFromFingerprintUri(savedInstanceState, dataUri);
-        } else if (ACTION_IMPORT_KEY.equals(action)) {
+        if (ACTION_IMPORT_KEY.equals(action)) {
             /* Keychain's own Actions */
 
             // display file fragment
@@ -154,7 +159,7 @@ public class ImportKeysActivity extends ActionBarActivity {
                 // action: directly load data
                 startListFragment(savedInstanceState, null, dataUri, null);
             } else if (extras.containsKey(EXTRA_KEY_BYTES)) {
-                byte[] importData = intent.getByteArrayExtra(EXTRA_KEY_BYTES);
+                byte[] importData = extras.getByteArray(EXTRA_KEY_BYTES);
 
                 // action: directly load data
                 startListFragment(savedInstanceState, importData, null, null);
@@ -173,7 +178,7 @@ public class ImportKeysActivity extends ActionBarActivity {
                 if (extras.containsKey(EXTRA_QUERY)) {
                     query = extras.getString(EXTRA_QUERY);
                 } else if (extras.containsKey(EXTRA_KEY_ID)) {
-                    long keyId = intent.getLongExtra(EXTRA_KEY_ID, 0);
+                    long keyId = extras.getLong(EXTRA_KEY_ID, 0);
                     if (keyId != 0) {
                         query = PgpKeyHelper.convertKeyIdToHex(keyId);
                     }
@@ -197,7 +202,7 @@ public class ImportKeysActivity extends ActionBarActivity {
                  * if the right key has been downloaded
                  */
 
-                String fingerprint = intent.getStringExtra(EXTRA_FINGERPRINT);
+                String fingerprint = extras.getString(EXTRA_FINGERPRINT);
                 if (isFingerprintValid(fingerprint)) {
                     String query = "0x" + fingerprint;
 
@@ -325,17 +330,22 @@ public class ImportKeysActivity extends ActionBarActivity {
         return OtherHelper.pxToDp(this, params.height);
     }
 
-    public void loadFromFingerprintUri(Bundle savedInstanceState, Uri dataUri) {
+    private String getFingerprintFromUri(Uri dataUri) {
         String fingerprint = dataUri.toString().split(":")[1].toLowerCase(Locale.ENGLISH);
-
         Log.d(Constants.TAG, "fingerprint: " + fingerprint);
+        return fingerprint;
+    }
 
-        final String query = "0x" + fingerprint;
+    public void loadFromFingerprintUri(Uri dataUri) {
+        String query = "0x" + getFingerprintFromUri(dataUri);
 
+        // setCurrentItem does not work directly after onResume (from qr code scanner)
+        // see http://stackoverflow.com/q/19316729
+        // so, reset adapter completely!
+        if (mViewPager.getAdapter() != null)
+            mViewPager.setAdapter(null);
+        mViewPager.setAdapter(mTabsAdapter);
         mViewPager.setCurrentItem(TAB_KEYSERVER);
-
-        // update layout after operations
-        mSlidingTabLayout.setViewPager(mViewPager);
 
         ImportKeysServerFragment f = (ImportKeysServerFragment)
                 getActiveFragment(mViewPager, TAB_KEYSERVER);
@@ -344,7 +354,10 @@ public class ImportKeysActivity extends ActionBarActivity {
         String keyserver = Preferences.getPreferences(ImportKeysActivity.this)
                 .getKeyServers()[0];
 
-        f.searchCallback(query, keyserver);
+        // set fields of ImportKeysServerFragment
+        f.setQueryAndKeyserver(query, keyserver);
+        // search directly
+        loadCallback(new ImportKeysListFragment.KeyserverLoaderState(query, keyserver));
     }
 
     // http://stackoverflow.com/a/9293207
