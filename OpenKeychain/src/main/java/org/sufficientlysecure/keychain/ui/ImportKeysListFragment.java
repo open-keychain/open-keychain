@@ -149,12 +149,13 @@ public class ImportKeysListFragment extends ListFragment implements
         mAdapter = new ImportKeysAdapter(mActivity);
         setListAdapter(mAdapter);
 
-        if (getArguments().containsKey(ARG_DATA_URI) || getArguments().containsKey(ARG_BYTES)) {
-            Uri dataUri = getArguments().getParcelable(ARG_DATA_URI);
-            byte[] bytes = getArguments().getByteArray(ARG_BYTES);
+        Uri dataUri = getArguments().getParcelable(ARG_DATA_URI);
+        byte[] bytes = getArguments().getByteArray(ARG_BYTES);
+        String query = getArguments().getString(ARG_SERVER_QUERY);
+
+        if (dataUri != null || bytes != null) {
             mLoaderState = new BytesLoaderState(bytes, dataUri);
-        } else if (getArguments().containsKey(ARG_SERVER_QUERY)) {
-            String query = getArguments().getString(ARG_SERVER_QUERY);
+        } else if (query != null) {
             // TODO: this is used when scanning QR Code or updating a key.
             // Currently it simply uses keyserver nr 0
             String keyserver = Preferences.getPreferences(getActivity())

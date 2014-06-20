@@ -212,6 +212,7 @@ public class ImportKeysActivity extends ActionBarActivity {
                     serverBundle = new Bundle();
                     serverBundle.putString(ImportKeysServerFragment.ARG_QUERY, query);
                     serverBundle.putBoolean(ImportKeysServerFragment.ARG_DISABLE_QUERY_EDIT, true);
+                    // display server tab only
                     serverOnly = true;
                     mSwitchToTab = NAV_SERVER;
 
