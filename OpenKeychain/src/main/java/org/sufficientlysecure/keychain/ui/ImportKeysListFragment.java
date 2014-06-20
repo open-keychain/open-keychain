@@ -24,7 +24,9 @@ import android.support.v4.app.ListFragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.support.v4.util.LongSparseArray;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.View.OnTouchListener;
 import android.widget.ListView;
 
 import org.sufficientlysecure.keychain.Constants;
@@ -162,6 +164,16 @@ public class ImportKeysListFragment extends ListFragment implements
                     .getKeyServers()[0];
             mLoaderState = new KeyserverLoaderState(query, keyserver);
         }
+
+        getListView().setOnTouchListener(new OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if (!mAdapter.isEmpty()) {
+                    mActivity.onTouchEvent(event);
+                }
+                return false;
+            }
+        });
 
         restartLoaders();
     }
