@@ -28,7 +28,6 @@ import android.os.Bundle;
 import android.os.Message;
 import android.os.Messenger;
 import android.os.Parcelable;
-import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBarActivity;
 import android.view.MotionEvent;
@@ -88,8 +87,6 @@ public class ImportKeysActivity extends ActionBarActivity {
 
     // view
     private ImportKeysListFragment mListFragment;
-    private String[] mNavigationStrings;
-    private Fragment mCurrentFragment;
     private View mImportButton;
     private ViewPager mViewPager;
     private SlidingTabLayout mSlidingTabLayout;
@@ -120,8 +117,6 @@ public class ImportKeysActivity extends ActionBarActivity {
                 importKeys();
             }
         });
-
-        mNavigationStrings = getResources().getStringArray(R.array.import_action_list);
 
         // TODO: add actionbar button for this action?
 //        if (ACTION_IMPORT_KEY_FROM_KEYSERVER_AND_RETURN.equals(getIntent().getAction())) {
@@ -373,7 +368,13 @@ public class ImportKeysActivity extends ActionBarActivity {
         boolean result = super.onTouchEvent(event);
 
         if (!result) {
-            mViewPager.onTouchEvent(event);
+            try {
+                mViewPager.onTouchEvent(event);
+            } catch (IllegalArgumentException e) {
+                // workaround for Android bug?
+                // http://stackoverflow.com/q/16459196
+                Log.d(Constants.TAG, "Workaround: Catched IllegalArgumentException");
+            }
         }
 
         return result;
