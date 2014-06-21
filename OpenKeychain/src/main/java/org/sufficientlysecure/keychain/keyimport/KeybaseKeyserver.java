@@ -62,8 +62,7 @@ public class KeybaseKeyserver extends Keyserver {
         entry.setQuery(mQuery);
         entry.setOrigin(ORIGIN);
 
-        String username = null;
-        username = match.getUsername();
+        String username = match.getUsername();
         String fullName = match.getFullName();
         String fingerprint = match.getFingerprint();
         entry.setFingerprintHex(fingerprint);
@@ -93,10 +92,6 @@ public class KeybaseKeyserver extends Keyserver {
     @Override
     public String get(String id) throws QueryFailedException {
         try {
-            /*
-            JSONObject user = getUser(id);
-            return JWalk.getString(user, "them", "public_keys", "primary", "bundle");
-            */
             return User.keyForUsername(id);
         } catch (KeybaseException e) {
             throw new QueryFailedException(e.getMessage());
