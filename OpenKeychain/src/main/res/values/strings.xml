@@ -332,7 +332,7 @@
     <string name="hint_public_keys">Name/Email/Key ID…</string>
     <string name="hint_secret_keys">Search Secret Keys</string>
     <string name="action_share_key_with">Share Key with…</string>
-    <string name="hint_keybase_search">Name/Keybase.io username…</string>
+    <string name="hint_keybase_search">Search Keybase.io for…</string>
 
     <!-- key bit length selections -->
     <string name="key_size_512">512</string>
