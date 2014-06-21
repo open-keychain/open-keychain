@@ -9,7 +9,7 @@ import org.sufficientlysecure.keychain.testsupport.PgpVerifyTestingHelper;
 
 @RunWith(RobolectricTestRunner.class)
 @org.robolectric.annotation.Config(emulateSdk = 18) // Robolectric doesn't yet support 19
-public class RoboTest {
+public class PgpDecryptVerifyTest {
 
     @Test
     public void testVerifySuccess() throws Exception {
