@@ -47,6 +47,7 @@ import org.sufficientlysecure.keychain.ui.adapter.SubkeysAdapter;
 import org.sufficientlysecure.keychain.ui.adapter.UserIdsAdapter;
 import org.sufficientlysecure.keychain.ui.dialog.AddUserIdDialogFragment;
 import org.sufficientlysecure.keychain.ui.dialog.EditUserIdDialogFragment;
+import org.sufficientlysecure.keychain.ui.dialog.SetPassphraseDialogFragment;
 import org.sufficientlysecure.keychain.util.Log;
 
 public class EditKeyFragment extends LoaderFragment implements
@@ -135,69 +136,6 @@ public class EditKeyFragment extends LoaderFragment implements
         loadData(dataUri);
     }
 
-    private void editUserId(final String userId) {
-        Handler returnHandler = new Handler() {
-            @Override
-            public void handleMessage(Message message) {
-                switch (message.what) {
-                    case EditUserIdDialogFragment.MESSAGE_CHANGE_PRIMARY_USER_ID:
-                        // toggle
-                        if (mSaveKeyringParcel.changePrimaryUserId != null
-                                && mSaveKeyringParcel.changePrimaryUserId.equals(userId)) {
-                            mSaveKeyringParcel.changePrimaryUserId = null;
-                        } else {
-                            mSaveKeyringParcel.changePrimaryUserId = userId;
-                        }
-                        break;
-                    case EditUserIdDialogFragment.MESSAGE_REVOKE:
-                        // toggle
-                        if (mSaveKeyringParcel.revokeUserIds.contains(userId)) {
-                            mSaveKeyringParcel.revokeUserIds.remove(userId);
-                        } else {
-                            mSaveKeyringParcel.revokeUserIds.add(userId);
-                        }
-                        break;
-                }
-                getLoaderManager().restartLoader(LOADER_ID_USER_IDS, null, EditKeyFragment.this);
-            }
-        };
-
-        // Create a new Messenger for the communication back
-        final Messenger messenger = new Messenger(returnHandler);
-
-        DialogFragmentWorkaround.INTERFACE.runnableRunDelayed(new Runnable() {
-            public void run() {
-                EditUserIdDialogFragment dialogFragment =
-                        EditUserIdDialogFragment.newInstance(messenger);
-
-                dialogFragment.show(getActivity().getSupportFragmentManager(), "editUserIdDialog");
-            }
-        });
-    }
-
-    private void addUserId() {
-        Handler returnHandler = new Handler() {
-            @Override
-            public void handleMessage(Message message) {
-                if (message.what == AddUserIdDialogFragment.MESSAGE_OK) {
-
-                }
-//                getLoaderManager().restartLoader(LOADER_ID_USER_IDS, null, EditKeyFragment.this);
-            }
-        };
-
-        // Create a new Messenger for the communication back
-        final Messenger messenger = new Messenger(returnHandler);
-
-        DialogFragmentWorkaround.INTERFACE.runnableRunDelayed(new Runnable() {
-            public void run() {
-                AddUserIdDialogFragment dialogFragment =
-                        AddUserIdDialogFragment.newInstance(messenger);
-
-                dialogFragment.show(getActivity().getSupportFragmentManager(), "addUserIdDialog");
-            }
-        });
-    }
 
     private void loadData(Uri dataUri) {
         mDataUri = dataUri;
@@ -216,6 +154,13 @@ public class EditKeyFragment extends LoaderFragment implements
             Toast.makeText(getActivity(), R.string.error_no_secret_key_found, Toast.LENGTH_SHORT).show();
             getActivity().finish();
         }
+
+        mChangePassphrase.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                changePassphrase();
+            }
+        });
 
         mAddUserId.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -294,6 +239,105 @@ public class EditKeyFragment extends LoaderFragment implements
                 mKeysAdapter.swapCursor(null);
                 break;
         }
+    }
+
+    private void changePassphrase() {
+        // Message is received after passphrase is cached
+        Handler returnHandler = new Handler() {
+            @Override
+            public void handleMessage(Message message) {
+                if (message.what == SetPassphraseDialogFragment.MESSAGE_OKAY) {
+                    Bundle data = message.getData();
+
+                    // set new returned passphrase!
+                    String newPassphrase = data
+                            .getString(SetPassphraseDialogFragment.MESSAGE_NEW_PASSPHRASE);
+
+//                    updatePassphraseButtonText();
+//                    somethingChanged();
+                    mSaveKeyringParcel.newPassphrase = newPassphrase;
+                }
+            }
+        };
+
+        // Create a new Messenger for the communication back
+        Messenger messenger = new Messenger(returnHandler);
+
+        // set title based on isPassphraseSet()
+//        int title;
+//        if (isPassphraseSet()) {
+//            title = R.string.title_change_passphrase;
+//        } else {
+//            title = R.string.title_set_passphrase;
+//        }
+
+        SetPassphraseDialogFragment setPassphraseDialog = SetPassphraseDialogFragment.newInstance(
+                messenger, R.string.title_change_passphrase);
+
+        setPassphraseDialog.show(getActivity().getSupportFragmentManager(), "setPassphraseDialog");
+    }
+
+    private void editUserId(final String userId) {
+        Handler returnHandler = new Handler() {
+            @Override
+            public void handleMessage(Message message) {
+                switch (message.what) {
+                    case EditUserIdDialogFragment.MESSAGE_CHANGE_PRIMARY_USER_ID:
+                        // toggle
+                        if (mSaveKeyringParcel.changePrimaryUserId != null
+                                && mSaveKeyringParcel.changePrimaryUserId.equals(userId)) {
+                            mSaveKeyringParcel.changePrimaryUserId = null;
+                        } else {
+                            mSaveKeyringParcel.changePrimaryUserId = userId;
+                        }
+                        break;
+                    case EditUserIdDialogFragment.MESSAGE_REVOKE:
+                        // toggle
+                        if (mSaveKeyringParcel.revokeUserIds.contains(userId)) {
+                            mSaveKeyringParcel.revokeUserIds.remove(userId);
+                        } else {
+                            mSaveKeyringParcel.revokeUserIds.add(userId);
+                        }
+                        break;
+                }
+                getLoaderManager().getLoader(LOADER_ID_USER_IDS).forceLoad();
+            }
+        };
+
+        // Create a new Messenger for the communication back
+        final Messenger messenger = new Messenger(returnHandler);
+
+        DialogFragmentWorkaround.INTERFACE.runnableRunDelayed(new Runnable() {
+            public void run() {
+                EditUserIdDialogFragment dialogFragment =
+                        EditUserIdDialogFragment.newInstance(messenger);
+
+                dialogFragment.show(getActivity().getSupportFragmentManager(), "editUserIdDialog");
+            }
+        });
+    }
+
+    private void addUserId() {
+        Handler returnHandler = new Handler() {
+            @Override
+            public void handleMessage(Message message) {
+                if (message.what == AddUserIdDialogFragment.MESSAGE_OK) {
+
+                }
+            }
+        };
+
+        // Create a new Messenger for the communication back
+        final Messenger messenger = new Messenger(returnHandler);
+
+        DialogFragmentWorkaround.INTERFACE.runnableRunDelayed(new Runnable() {
+            public void run() {
+                AddUserIdDialogFragment dialogFragment =
+                        AddUserIdDialogFragment.newInstance(messenger);
+
+                dialogFragment.show(getActivity().getSupportFragmentManager(), "addUserIdDialog");
+            }
+        });
     }
 
     private void save() {
