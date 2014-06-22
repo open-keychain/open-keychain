@@ -20,7 +20,6 @@ package org.sufficientlysecure.keychain.ui;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
@@ -312,8 +311,7 @@ public class ViewKeyActivity extends ActionBarActivity implements
 
         exportHelper.showExportKeysDialog(
                 new long[]{(Long) data.get(KeychainContract.KeyRings.MASTER_KEY_ID)},
-                Constants.Path.APP_DIR_FILE,
-                ((Long) data.get(KeychainContract.KeyRings.HAS_SECRET) == 1)
+                Constants.Path.APP_DIR_FILE, ((Long) data.get(KeychainContract.KeyRings.HAS_SECRET) == 1)
         );
     }
 

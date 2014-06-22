@@ -20,21 +20,19 @@ package org.sufficientlysecure.keychain.ui;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
-import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.os.Messenger;
-import android.provider.OpenableColumns;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
-import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 import com.beardedhen.androidbootstrap.BootstrapButton;
 import com.devspark.appmsg.AppMsg;
@@ -47,7 +45,6 @@ import org.sufficientlysecure.keychain.service.KeychainIntentService;
 import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
 import org.sufficientlysecure.keychain.service.PassphraseCacheService;
 import org.sufficientlysecure.keychain.ui.dialog.DeleteFileDialogFragment;
-import org.sufficientlysecure.keychain.ui.dialog.FileDialogFragment;
 import org.sufficientlysecure.keychain.ui.dialog.PassphraseDialogFragment;
 import org.sufficientlysecure.keychain.util.Choice;
 import org.sufficientlysecure.keychain.util.Log;
@@ -55,28 +52,25 @@ import org.sufficientlysecure.keychain.util.Log;
 import java.io.File;
 
 public class EncryptFileFragment extends Fragment {
-    public static final String ARG_FILENAME = "filename";
+    public static final String ARG_URI = "uri";
     public static final String ARG_ASCII_ARMOR = "ascii_armor";
 
-    private static final int RESULT_CODE_FILE = 0x00007003;
+    private static final int REQUEST_CODE_INPUT = 0x00007003;
+    private static final int REQUEST_CODE_OUTPUT = 0x00007007;
 
     private EncryptActivityInterface mEncryptInterface;
 
     // view
     private CheckBox mAsciiArmor = null;
     private Spinner mFileCompression = null;
-    private EditText mFilename = null;
+    private TextView mFilename = null;
     private CheckBox mDeleteAfter = null;
     private CheckBox mShareAfter = null;
     private BootstrapButton mBrowse = null;
     private View mEncryptFile;
 
-    private FileDialogFragment mFileDialog;
-
     // model
-    private String mInputFilename = null;
     private Uri mInputUri = null;
-    private String mOutputFilename = null;
     private Uri mOutputUri = null;
 
     @Override
@@ -104,15 +98,15 @@ public class EncryptFileFragment extends Fragment {
             }
         });
 
-        mFilename = (EditText) view.findViewById(R.id.filename);
+        mFilename = (TextView) view.findViewById(R.id.filename);
         mBrowse = (BootstrapButton) view.findViewById(R.id.btn_browse);
         mBrowse.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 if (Constants.KITKAT) {
-                    FileHelper.openDocument(EncryptFileFragment.this, mInputUri, "*/*", RESULT_CODE_FILE);
+                    FileHelper.openDocument(EncryptFileFragment.this, "*/*", REQUEST_CODE_INPUT);
                 } else {
-                    FileHelper.openFile(EncryptFileFragment.this, mFilename.getText().toString(), "*/*",
-                            RESULT_CODE_FILE);
+                    FileHelper.openFile(EncryptFileFragment.this, mInputUri, "*/*",
+                            REQUEST_CODE_INPUT);
                 }
             }
         });
@@ -154,84 +148,43 @@ public class EncryptFileFragment extends Fragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        String filename = getArguments().getString(ARG_FILENAME);
-        if (filename != null) {
-            mFilename.setText(filename);
-        }
+        setInputUri(getArguments().<Uri>getParcelable(ARG_URI));
         boolean asciiArmor = getArguments().getBoolean(ARG_ASCII_ARMOR);
         if (asciiArmor) {
-            mAsciiArmor.setChecked(asciiArmor);
+            mAsciiArmor.setChecked(true);
         }
     }
 
-    /**
-     * Guess output filename based on input path
-     *
-     * @param path
-     * @return Suggestion for output filename
-     */
-    private String guessOutputFilename(String path) {
-        // output in the same directory but with additional ending
-        File file = new File(path);
-        String ending = (mAsciiArmor.isChecked() ? ".asc" : ".gpg");
-        String outputFilename = file.getParent() + File.separator + file.getName() + ending;
-
-        return outputFilename;
-    }
-
-    private void showOutputFileDialog() {
-        // Message is received after file is selected
-        Handler returnHandler = new Handler() {
-            @Override
-            public void handleMessage(Message message) {
-                if (message.what == FileDialogFragment.MESSAGE_OKAY) {
-                    Bundle data = message.getData();
-                    if (data.containsKey(FileDialogFragment.MESSAGE_DATA_URI)) {
-                        mOutputUri = data.getParcelable(FileDialogFragment.MESSAGE_DATA_URI);
-                    } else {
-                        mOutputFilename = data.getString(FileDialogFragment.MESSAGE_DATA_FILENAME);
-                    }
-                    encryptStart();
-                }
-            }
-        };
-
-        // Create a new Messenger for the communication back
-        Messenger messenger = new Messenger(returnHandler);
-
-        mFileDialog = FileDialogFragment.newInstance(messenger,
-                getString(R.string.title_encrypt_to_file),
-                getString(R.string.specify_file_to_encrypt_to), mOutputFilename, null);
-
-        mFileDialog.show(getActivity().getSupportFragmentManager(), "fileDialog");
-    }
-
-    private void encryptClicked() {
-        String currentFilename = mFilename.getText().toString();
-        if (mInputFilename == null || !mInputFilename.equals(currentFilename)) {
+    private void setInputUri(Uri inputUri) {
+        if (inputUri == null) {
             mInputUri = null;
-            mInputFilename = mFilename.getText().toString();
-        }
-
-        if (mInputUri == null) {
-            mOutputFilename = guessOutputFilename(mInputFilename);
-        }
-
-        if (mInputFilename.equals("")) {
-            AppMsg.makeText(getActivity(), R.string.no_file_selected, AppMsg.STYLE_ALERT).show();
+            mFilename.setText("");
             return;
         }
 
-        if (mInputUri == null && !mInputFilename.startsWith("content")) {
-            File file = new File(mInputFilename);
-            if (!file.exists() || !file.isFile()) {
-                AppMsg.makeText(
-                        getActivity(),
-                        getString(R.string.error_message,
-                                getString(R.string.error_file_not_found)), AppMsg.STYLE_ALERT)
-                        .show();
-                return;
-            }
+        mInputUri = inputUri;
+        mFilename.setText(FileHelper.getFilename(getActivity(), mInputUri));
+    }
+
+    private void showOutputFileDialog() {
+        if (!Constants.KITKAT) {
+            File file = new File(mInputUri.getPath());
+            File parentDir = file.exists() ? file.getParentFile() : Constants.Path.APP_DIR;
+            String targetName = FileHelper.getFilename(
+                    getActivity(), mInputUri) + (mAsciiArmor.isChecked() ? ".asc" : ".gpg");
+            File targetFile = new File(parentDir, targetName);
+            FileHelper.saveFile(this, getString(R.string.title_encrypt_to_file),
+                    getString(R.string.specify_file_to_encrypt_to), targetFile, REQUEST_CODE_OUTPUT);
+        } else {
+            FileHelper.saveDocument(this, "*/*", FileHelper.getFilename(getActivity(), mInputUri) +
+                    (mAsciiArmor.isChecked() ? ".asc" : ".gpg"), REQUEST_CODE_OUTPUT);
+        }
+    }
+
+    private void encryptClicked() {
+        if (mInputUri == null) {
+            AppMsg.makeText(getActivity(), R.string.no_file_selected, AppMsg.STYLE_ALERT).show();
+            return;
         }
 
         if (mEncryptInterface.isModeSymmetric()) {
@@ -287,6 +240,10 @@ public class EncryptFileFragment extends Fragment {
     }
 
     private void encryptStart() {
+        if (mInputUri == null || mOutputUri == null) {
+            throw new IllegalStateException("Something went terribly wrong if this happens!");
+        }
+
         // Send all information needed to service to edit key in other thread
         Intent intent = new Intent(getActivity(), KeychainIntentService.class);
 
@@ -295,25 +252,13 @@ public class EncryptFileFragment extends Fragment {
         // fill values for this action
         Bundle data = new Bundle();
 
-        Log.d(Constants.TAG, "mInputFilename=" + mInputFilename + ", mOutputFilename="
-                + mOutputFilename + ",mInputUri=" + mInputUri + ", mOutputUri="
-                + mOutputUri);
+        Log.d(Constants.TAG, "mInputUri=" + mInputUri + ", mOutputUri=" + mOutputUri);
 
-        if (mInputUri != null) {
-            data.putInt(KeychainIntentService.SOURCE, KeychainIntentService.IO_URI);
-            data.putParcelable(KeychainIntentService.ENCRYPT_INPUT_URI, mInputUri);
-        } else {
-            data.putInt(KeychainIntentService.SOURCE, KeychainIntentService.IO_FILE);
-            data.putString(KeychainIntentService.ENCRYPT_INPUT_FILE, mInputFilename);
-        }
+        data.putInt(KeychainIntentService.SOURCE, KeychainIntentService.IO_URI);
+        data.putParcelable(KeychainIntentService.ENCRYPT_INPUT_URI, mInputUri);
 
-        if (mOutputUri != null) {
-            data.putInt(KeychainIntentService.TARGET, KeychainIntentService.IO_URI);
-            data.putParcelable(KeychainIntentService.ENCRYPT_OUTPUT_URI, mOutputUri);
-        } else {
-            data.putInt(KeychainIntentService.TARGET, KeychainIntentService.IO_FILE);
-            data.putString(KeychainIntentService.ENCRYPT_OUTPUT_FILE, mOutputFilename);
-        }
+        data.putInt(KeychainIntentService.TARGET, KeychainIntentService.IO_URI);
+        data.putParcelable(KeychainIntentService.ENCRYPT_OUTPUT_URI, mOutputUri);
 
         if (mEncryptInterface.isModeSymmetric()) {
             Log.d(Constants.TAG, "Symmetric encryption enabled!");
@@ -350,25 +295,16 @@ public class EncryptFileFragment extends Fragment {
 
                     if (mDeleteAfter.isChecked()) {
                         // Create and show dialog to delete original file
-                        DeleteFileDialogFragment deleteFileDialog;
-                        if (mInputUri != null) {
-                            deleteFileDialog = DeleteFileDialogFragment.newInstance(mInputUri);
-                        } else {
-                            deleteFileDialog = DeleteFileDialogFragment
-                                    .newInstance(mInputFilename);
-                        }
+                        DeleteFileDialogFragment deleteFileDialog = DeleteFileDialogFragment.newInstance(mInputUri);
                         deleteFileDialog.show(getActivity().getSupportFragmentManager(), "deleteDialog");
+                        setInputUri(null);
                     }
 
                     if (mShareAfter.isChecked()) {
                         // Share encrypted file
                         Intent sendFileIntent = new Intent(Intent.ACTION_SEND);
                         sendFileIntent.setType("*/*");
-                        if (mOutputUri != null) {
-                            sendFileIntent.putExtra(Intent.EXTRA_STREAM, mOutputUri);
-                        } else {
-                            sendFileIntent.putExtra(Intent.EXTRA_STREAM, Uri.parse(mOutputFilename));
-                        }
+                        sendFileIntent.putExtra(Intent.EXTRA_STREAM, mOutputUri);
                         startActivity(Intent.createChooser(sendFileIntent,
                                 getString(R.string.title_share_file)));
                     }
@@ -390,28 +326,17 @@ public class EncryptFileFragment extends Fragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
-            case RESULT_CODE_FILE: {
+            case REQUEST_CODE_INPUT: {
                 if (resultCode == Activity.RESULT_OK && data != null) {
-                    if (Constants.KITKAT) {
-                        mInputUri = data.getData();
-                        Cursor cursor = getActivity().getContentResolver().query(mInputUri, new String[]{OpenableColumns.DISPLAY_NAME}, null, null, null);
-                        if (cursor != null) {
-                            if (cursor.moveToNext()) {
-                                mInputFilename = cursor.getString(0);
-                                mFilename.setText(mInputFilename);
-                            }
-                            cursor.close();
-                        }
-                    } else {
-                        try {
-                            String path = FileHelper.getPath(getActivity(), data.getData());
-                            Log.d(Constants.TAG, "path=" + path);
-
-                            mFilename.setText(path);
-                        } catch (NullPointerException e) {
-                            Log.e(Constants.TAG, "Nullpointer while retrieving path!");
-                        }
-                    }
+                    setInputUri(data.getData());
+                }
+                return;
+            }
+            case REQUEST_CODE_OUTPUT: {
+                // This happens after output file was selected, so start our operation
+                if (resultCode == Activity.RESULT_OK && data != null) {
+                    mOutputUri = data.getData();
+                    encryptStart();
                 }
                 return;
             }

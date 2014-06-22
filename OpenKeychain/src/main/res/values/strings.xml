@@ -195,6 +195,7 @@
     <string name="wrong_passphrase">Wrong passphrase.</string>
     <string name="set_a_passphrase">Set a passphrase first.</string>
     <string name="no_filemanager_installed">No compatible file manager installed.</string>
+    <string name="filemanager_no_write">The file manager does not support saving.</string>
     <string name="passphrases_do_not_match">The passphrases didn\'t match.</string>
     <string name="passphrase_must_not_be_empty">Please enter a passphrase.</string>
     <string name="passphrase_for_symmetric_encryption">Symmetric encryption.</string>

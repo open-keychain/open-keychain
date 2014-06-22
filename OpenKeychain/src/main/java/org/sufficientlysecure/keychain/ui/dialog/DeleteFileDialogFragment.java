@@ -18,39 +18,19 @@
 package org.sufficientlysecure.keychain.ui.dialog;
 
 import android.app.Dialog;
-import android.app.ProgressDialog;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Message;
-import android.os.Messenger;
 import android.provider.DocumentsContract;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
-import android.widget.Toast;
 
+import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.service.KeychainIntentService;
-import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
+import org.sufficientlysecure.keychain.helper.FileHelper;
 
 public class DeleteFileDialogFragment extends DialogFragment {
-    private static final String ARG_DELETE_FILE = "delete_file";
     private static final String ARG_DELETE_URI = "delete_uri";
-
-    /**
-     * Creates new instance of this delete file dialog fragment
-     */
-    public static DeleteFileDialogFragment newInstance(String deleteFile) {
-        DeleteFileDialogFragment frag = new DeleteFileDialogFragment();
-        Bundle args = new Bundle();
-
-        args.putString(ARG_DELETE_FILE, deleteFile);
-
-        frag.setArguments(args);
-
-        return frag;
-    }
 
     /**
      * Creates new instance of this delete file dialog fragment
@@ -74,14 +54,14 @@ public class DeleteFileDialogFragment extends DialogFragment {
         final FragmentActivity activity = getActivity();
 
         final Uri deleteUri = getArguments().containsKey(ARG_DELETE_URI) ? getArguments().<Uri>getParcelable(ARG_DELETE_URI) : null;
-        final String deleteFile = getArguments().getString(ARG_DELETE_FILE);
+        String deleteFilename = FileHelper.getFilename(getActivity(), deleteUri);
 
         CustomAlertDialogBuilder alert = new CustomAlertDialogBuilder(activity);
 
 
         alert.setIcon(R.drawable.ic_dialog_alert_holo_light);
         alert.setTitle(R.string.warning);
-        alert.setMessage(this.getString(R.string.file_delete_confirmation, deleteFile));
+        alert.setMessage(this.getString(R.string.file_delete_confirmation, deleteFilename));
 
         alert.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
 
@@ -89,12 +69,14 @@ public class DeleteFileDialogFragment extends DialogFragment {
             public void onClick(DialogInterface dialog, int id) {
                 dismiss();
 
-                if (deleteUri != null) {
+                if (Constants.KITKAT) {
                     // We can not securely delete Documents, so just use usual delete on them
-                    DocumentsContract.deleteDocument(getActivity().getContentResolver(), deleteUri);
-                    return;
+                    if (DocumentsContract.deleteDocument(getActivity().getContentResolver(), deleteUri)) return;
                 }
 
+                // TODO!!! We can't delete files from Uri without trying to find it's real path
+
+                /*
                 // Send all information needed to service to edit key in other thread
                 Intent intent = new Intent(activity, KeychainIntentService.class);
 
@@ -102,7 +84,6 @@ public class DeleteFileDialogFragment extends DialogFragment {
                 Bundle data = new Bundle();
 
                 intent.setAction(KeychainIntentService.ACTION_DELETE_FILE_SECURELY);
-                data.putString(KeychainIntentService.DELETE_FILE, deleteFile);
                 intent.putExtra(KeychainIntentService.EXTRA_DATA, data);
 
                 ProgressDialogFragment deletingDialog = ProgressDialogFragment.newInstance(
@@ -134,6 +115,7 @@ public class DeleteFileDialogFragment extends DialogFragment {
 
                 // start service with intent
                 activity.startService(intent);
+                */
             }
         });
         alert.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {

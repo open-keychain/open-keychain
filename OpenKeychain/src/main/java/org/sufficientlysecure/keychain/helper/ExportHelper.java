@@ -30,7 +30,6 @@ import android.widget.Toast;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.compatibility.DialogFragmentWorkaround;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
@@ -39,9 +38,10 @@ import org.sufficientlysecure.keychain.ui.dialog.DeleteKeyDialogFragment;
 import org.sufficientlysecure.keychain.ui.dialog.FileDialogFragment;
 import org.sufficientlysecure.keychain.util.Log;
 
+import java.io.File;
+
 public class ExportHelper {
-    protected FileDialogFragment mFileDialog;
-    protected String mExportFilename;
+    protected File mExportFile;
 
     ActionBarActivity mActivity;
 
@@ -68,47 +68,30 @@ public class ExportHelper {
     /**
      * Show dialog where to export keys
      */
-    public void showExportKeysDialog(final long[] masterKeyIds, final String exportFilename,
+    public void showExportKeysDialog(final long[] masterKeyIds, final File exportFile,
                                      final boolean showSecretCheckbox) {
-        mExportFilename = exportFilename;
+        mExportFile = exportFile;
 
-        // Message is received after file is selected
-        Handler returnHandler = new Handler() {
+        String title = null;
+        if (masterKeyIds == null) {
+            // export all keys
+            title = mActivity.getString(R.string.title_export_keys);
+        } else {
+            // export only key specified at data uri
+            title = mActivity.getString(R.string.title_export_key);
+        }
+
+        String message = mActivity.getString(R.string.specify_file_to_export_to);
+        String checkMsg = showSecretCheckbox ?
+                mActivity.getString(R.string.also_export_secret_keys) : null;
+
+        FileHelper.saveFile(new FileHelper.FileDialogCallback() {
             @Override
-            public void handleMessage(Message message) {
-                if (message.what == FileDialogFragment.MESSAGE_OKAY) {
-                    Bundle data = message.getData();
-                    mExportFilename = data.getString(FileDialogFragment.MESSAGE_DATA_FILENAME);
-
-                    exportKeys(masterKeyIds, data.getBoolean(FileDialogFragment.MESSAGE_DATA_CHECKED));
-                }
+            public void onFileSelected(File file, boolean checked) {
+                mExportFile = file;
+                exportKeys(masterKeyIds, checked);
             }
-        };
-
-        // Create a new Messenger for the communication back
-        final Messenger messenger = new Messenger(returnHandler);
-
-        DialogFragmentWorkaround.INTERFACE.runnableRunDelayed(new Runnable() {
-            public void run() {
-                String title = null;
-                if (masterKeyIds == null) {
-                    // export all keys
-                    title = mActivity.getString(R.string.title_export_keys);
-                } else {
-                    // export only key specified at data uri
-                    title = mActivity.getString(R.string.title_export_key);
-                }
-
-                String message = mActivity.getString(R.string.specify_file_to_export_to);
-                String checkMsg = showSecretCheckbox ?
-                        mActivity.getString(R.string.also_export_secret_keys) : null;
-
-                mFileDialog = FileDialogFragment.newInstance(messenger, title, message,
-                        exportFilename, checkMsg);
-
-                mFileDialog.show(mActivity.getSupportFragmentManager(), "fileDialog");
-            }
-        });
+        }, mActivity.getSupportFragmentManager() ,title, message, exportFile, checkMsg);
     }
 
     /**
@@ -125,7 +108,7 @@ public class ExportHelper {
         // fill values for this action
         Bundle data = new Bundle();
 
-        data.putString(KeychainIntentService.EXPORT_FILENAME, mExportFilename);
+        data.putString(KeychainIntentService.EXPORT_FILENAME, mExportFile.getAbsolutePath());
         data.putBoolean(KeychainIntentService.EXPORT_SECRET, exportSecret);
 
         if (masterKeyIds == null) {

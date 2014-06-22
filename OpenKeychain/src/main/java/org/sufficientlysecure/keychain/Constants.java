@@ -27,6 +27,8 @@ import org.sufficientlysecure.keychain.ui.DecryptActivity;
 import org.sufficientlysecure.keychain.ui.EncryptActivity;
 import org.sufficientlysecure.keychain.ui.KeyListActivity;
 
+import java.io.File;
+
 public final class Constants {
 
     public static final boolean DEBUG = BuildConfig.DEBUG;
@@ -52,9 +54,8 @@ public final class Constants {
     public static boolean KITKAT = Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT;
 
     public static final class Path {
-        public static final String APP_DIR = Environment.getExternalStorageDirectory()
-                + "/OpenKeychain";
-        public static final String APP_DIR_FILE = APP_DIR + "/export.asc";
+        public static final File APP_DIR = new File(Environment.getExternalStorageDirectory(), "OpenKeychain");
+        public static final File APP_DIR_FILE = new File(APP_DIR, "export.asc");
     }
 
     public static final class Pref {

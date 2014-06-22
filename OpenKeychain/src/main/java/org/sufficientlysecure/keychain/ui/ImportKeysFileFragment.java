@@ -66,7 +66,7 @@ public class ImportKeysFileFragment extends Fragment {
                 // open .asc or .gpg files
                 // setting it to text/plain prevents Cyanogenmod's file manager from selecting asc
                 // or gpg types!
-                FileHelper.openFile(ImportKeysFileFragment.this, Constants.Path.APP_DIR + "/",
+                FileHelper.openFile(ImportKeysFileFragment.this, Uri.fromFile(Constants.Path.APP_DIR),
                         "*/*", REQUEST_CODE_FILE);
             }
         });

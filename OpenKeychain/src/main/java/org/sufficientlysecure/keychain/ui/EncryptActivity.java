@@ -23,11 +23,9 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.view.PagerTabStrip;
 import android.support.v4.view.ViewPager;
-import android.widget.Toast;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.helper.FileHelper;
 import org.sufficientlysecure.keychain.ui.adapter.PagerTabStripAdapter;
 import org.sufficientlysecure.keychain.util.Log;
 
@@ -98,11 +96,7 @@ public class EncryptActivity extends DrawerActivity implements
 
     @Override
     public boolean isModeSymmetric() {
-        if (PAGER_MODE_SYMMETRIC == mViewPagerMode.getCurrentItem()) {
-            return true;
-        } else {
-            return false;
-        }
+        return PAGER_MODE_SYMMETRIC == mViewPagerMode.getCurrentItem();
     }
 
     @Override
@@ -201,7 +195,7 @@ public class EncryptActivity extends DrawerActivity implements
                 }
             } else {
                 // Files via content provider, override uri and action
-                uri = (Uri) intent.getParcelableExtra(Intent.EXTRA_STREAM);
+                uri = intent.getParcelableExtra(Intent.EXTRA_STREAM);
                 action = ACTION_ENCRYPT;
             }
         }
@@ -232,23 +226,8 @@ public class EncryptActivity extends DrawerActivity implements
             mSwitchToContent = PAGER_CONTENT_MESSAGE;
         } else if (ACTION_ENCRYPT.equals(action) && uri != null) {
             // encrypt file based on Uri
-
-            // get file path from uri
-            String path = FileHelper.getPath(this, uri);
-
-            if (path != null) {
-                mFileFragmentBundle.putString(EncryptFileFragment.ARG_FILENAME, path);
-                mSwitchToContent = PAGER_CONTENT_FILE;
-            } else {
-                Log.e(Constants.TAG,
-                        "Direct binary data without actual file in filesystem is not supported " +
-                                "by Intents. Please use the Remote Service API!"
-                );
-                Toast.makeText(this, R.string.error_only_files_are_supported,
-                        Toast.LENGTH_LONG).show();
-                // end activity
-                finish();
-            }
+            mFileFragmentBundle.putParcelable(EncryptFileFragment.ARG_URI, uri);
+            mSwitchToContent = PAGER_CONTENT_FILE;
         } else {
             Log.e(Constants.TAG,
                     "Include the extra 'text' or an Uri with setData() in your Intent!");

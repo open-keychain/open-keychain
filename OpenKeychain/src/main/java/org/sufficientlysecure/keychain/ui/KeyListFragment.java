@@ -181,8 +181,8 @@ public class KeyListFragment extends LoaderFragment
                         case R.id.menu_key_list_multi_export: {
                             ids = mAdapter.getCurrentSelectedMasterKeyIds();
                             ExportHelper mExportHelper = new ExportHelper((ActionBarActivity) getActivity());
-                            mExportHelper.showExportKeysDialog(
-                                    ids, Constants.Path.APP_DIR_FILE, mAdapter.isAnySecretSelected());
+                            mExportHelper.showExportKeysDialog(ids, Constants.Path.APP_DIR_FILE,
+                                    mAdapter.isAnySecretSelected());
                             break;
                         }
                         case R.id.menu_key_list_multi_select_all: {
@@ -205,7 +205,7 @@ public class KeyListFragment extends LoaderFragment
                 public void onItemCheckedStateChanged(ActionMode mode, int position, long id,
                                                       boolean checked) {
                     if (checked) {
-                        mAdapter.setNewSelection(position, checked);
+                        mAdapter.setNewSelection(position, true);
                     } else {
                         mAdapter.removeSelection(position);
                     }
@@ -452,7 +452,7 @@ public class KeyListFragment extends LoaderFragment
             ItemViewHolder holder = new ItemViewHolder();
             holder.mMainUserId = (TextView) view.findViewById(R.id.mainUserId);
             holder.mMainUserIdRest = (TextView) view.findViewById(R.id.mainUserIdRest);
-            holder.mStatusDivider = (View) view.findViewById(R.id.status_divider);
+            holder.mStatusDivider = view.findViewById(R.id.status_divider);
             holder.mStatusLayout = (FrameLayout) view.findViewById(R.id.status_layout);
             holder.mButton = (ImageButton) view.findViewById(R.id.edit);
             holder.mRevoked = (TextView) view.findViewById(R.id.revoked);

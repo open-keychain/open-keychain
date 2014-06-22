@@ -139,6 +139,7 @@ public class KeychainIntentService extends IntentService
     // export key
     public static final String EXPORT_OUTPUT_STREAM = "export_output_stream";
     public static final String EXPORT_FILENAME = "export_filename";
+    public static final String EXPORT_URI = "export_uri";
     public static final String EXPORT_SECRET = "export_secret";
     public static final String EXPORT_ALL = "export_all";
     public static final String EXPORT_KEY_RING_MASTER_KEY_ID = "export_key_ring_id";
@@ -393,13 +394,16 @@ public class KeychainIntentService extends IntentService
                 boolean exportSecret = data.getBoolean(EXPORT_SECRET, false);
                 long[] masterKeyIds = data.getLongArray(EXPORT_KEY_RING_MASTER_KEY_ID);
                 String outputFile = data.getString(EXPORT_FILENAME);
+                Uri outputUri = data.getParcelable(EXPORT_URI);
 
                 // If not exporting all keys get the masterKeyIds of the keys to export from the intent
                 boolean exportAll = data.getBoolean(EXPORT_ALL);
 
-                // check if storage is ready
-                if (!FileHelper.isStorageMounted(outputFile)) {
-                    throw new PgpGeneralException(getString(R.string.error_external_storage_not_ready));
+                if (outputFile != null) {
+                    // check if storage is ready
+                    if (!FileHelper.isStorageMounted(outputFile)) {
+                        throw new PgpGeneralException(getString(R.string.error_external_storage_not_ready));
+                    }
                 }
 
                 ArrayList<Long> publicMasterKeyIds = new ArrayList<Long>();
@@ -431,12 +435,19 @@ public class KeychainIntentService extends IntentService
                     }
                 }
 
+                OutputStream outStream;
+                if (outputFile != null) {
+                    outStream = new FileOutputStream(outputFile);
+                } else {
+                    outStream = getContentResolver().openOutputStream(outputUri);
+                }
+
                 PgpImportExport pgpImportExport = new PgpImportExport(this, this, this);
                 Bundle resultData = pgpImportExport
                         .exportKeyRings(publicMasterKeyIds, secretMasterKeyIds,
-                                new FileOutputStream(outputFile));
+                                outStream);
 
-                if (mIsCanceled) {
+                if (mIsCanceled && outputFile != null) {
                     boolean isDeleted = new File(outputFile).delete();
                 }
 
