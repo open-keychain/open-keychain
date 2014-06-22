@@ -34,3 +34,6 @@
 [submodule "extern/KeybaseLib"]
 	path = extern/KeybaseLib
 	url = https://github.com/timbray/KeybaseLib.git
+[submodule "OpenKeychain/src/test/resources/extern/OpenPGP-Haskell"]
+	path = OpenKeychain/src/test/resources/extern/OpenPGP-Haskell
+	url = git://github.com/singpolyma/OpenPGP-Haskell.git
