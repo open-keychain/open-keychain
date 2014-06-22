@@ -20,6 +20,7 @@ dependencies {
     compile project(':extern:AppMsg:library')
     compile project(':extern:SuperToasts:supertoasts')
     compile project(':extern:dnsjava')
+    compile project(':extern:KeybaseLib:Lib')
 
 
     // Unit tests are run with Robolectric
@@ -27,21 +28,7 @@ dependencies {
     testCompile 'org.robolectric:robolectric:2.3'
     testCompile 'com.squareup:fest-android:1.0.8'
     testCompile 'com.google.android:android:4.1.1.4'
-    testCompile 'com.android.support:support-v4:19.1.0'
-    testCompile 'com.android.support:appcompat-v7:19.1.0'
-    testCompile project(':extern:openpgp-api-lib')
-    testCompile project(':extern:openkeychain-api-lib')
-    testCompile project(':extern:html-textview')
-    testCompile project(':extern:StickyListHeaders:library')
-    testCompile project(':extern:AndroidBootstrap:AndroidBootstrap')
-    testCompile project(':extern:zxing-qr-code')
-    testCompile project(':extern:zxing-android-integration')
-    testCompile project(':extern:spongycastle:core')
-    testCompile project(':extern:spongycastle:pg')
-    testCompile project(':extern:spongycastle:pkix')
-    testCompile project(':extern:spongycastle:prov')
-    testCompile project(':extern:AppMsg:library')
-    testCompile project(':extern:SuperToasts:supertoasts')
+    // compile dependencies are automatically also included in testCompile
 
 }
 

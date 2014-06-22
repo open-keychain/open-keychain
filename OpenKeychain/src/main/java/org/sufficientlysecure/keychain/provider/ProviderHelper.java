@@ -29,6 +29,7 @@ import android.support.v4.util.LongSparseArray;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
+import org.sufficientlysecure.keychain.pgp.NullProgressable;
 import org.sufficientlysecure.keychain.pgp.Progressable;
 import org.sufficientlysecure.keychain.pgp.WrappedPublicKey;
 import org.sufficientlysecure.keychain.service.OperationResultParcel.LogType;
@@ -655,19 +656,7 @@ public class ProviderHelper {
 
     @Deprecated
     public SaveKeyringResult savePublicKeyRing(UncachedKeyRing keyRing) {
-        return savePublicKeyRing(keyRing, new Progressable() {
-            @Override
-            public void setProgress(String message, int current, int total) {
-            }
-
-            @Override
-            public void setProgress(int resourceId, int current, int total) {
-            }
-
-            @Override
-            public void setProgress(int current, int total) {
-            }
-        });
+        return savePublicKeyRing(keyRing, new NullProgressable());
     }
 
     /** Save a public keyring into the database.
