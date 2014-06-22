@@ -27,7 +27,9 @@ public class ParcelableKeyRing implements Parcelable {
 
     public static final Creator<ParcelableKeyRing> CREATOR = new Creator<ParcelableKeyRing>() {
         public ParcelableKeyRing createFromParcel(final Parcel source) {
-            return new ParcelableKeyRing(source.createByteArray());
+            byte[] bytes = source.createByteArray();
+            String expectedFingerprint = source.readString();
+            return new ParcelableKeyRing(bytes, expectedFingerprint);
         }
 
         public ParcelableKeyRing[] newArray(final int size) {

@@ -46,6 +46,7 @@ public class ImportKeysListEntry implements Serializable, Parcelable {
     private String mExtraData;
     private String mQuery;
     private String mOrigin;
+    private Integer mHashCode = null;
 
     private boolean mSelected;
 
@@ -97,6 +98,13 @@ public class ImportKeysListEntry implements Serializable, Parcelable {
             return new ImportKeysListEntry[size];
         }
     };
+
+    public int hashCode() {
+        if (mHashCode != null) {
+            return mHashCode;
+        }
+        return super.hashCode();
+    }
 
     public String getKeyIdHex() {
         return mKeyIdHex;
@@ -239,6 +247,8 @@ public class ImportKeysListEntry implements Serializable, Parcelable {
 
         mSecretKey = ring.isSecret();
         UncachedPublicKey key = ring.getPublicKey();
+
+        mHashCode = key.hashCode();
 
         mPrimaryUserId = key.getPrimaryUserId();
         mUserIds = key.getUnorderedUserIds();

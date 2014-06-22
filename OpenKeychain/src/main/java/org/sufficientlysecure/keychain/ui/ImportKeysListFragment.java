@@ -79,7 +79,7 @@ public class ImportKeysListFragment extends ListFragment implements
     public ArrayList<ParcelableKeyRing> getSelectedData() {
         ArrayList<ParcelableKeyRing> result = new ArrayList<ParcelableKeyRing>();
         for (ImportKeysListEntry entry : getSelectedEntries()) {
-            result.add(mCachedKeyData.get(entry.getKeyId()));
+            result.add(mCachedKeyData.get(entry.hashCode()));
         }
         return result;
     }

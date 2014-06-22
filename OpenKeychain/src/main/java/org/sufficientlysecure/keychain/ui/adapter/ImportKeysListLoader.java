@@ -138,7 +138,7 @@ public class ImportKeysListLoader
                 for(UncachedKeyRing key : rings) {
                     ImportKeysListEntry item = new ImportKeysListEntry(getContext(), key);
                     mData.add(item);
-                    mParcelableRings.put(key.getMasterKeyId(), new ParcelableKeyRing(key.getEncoded()));
+                    mParcelableRings.put(item.hashCode(), new ParcelableKeyRing(key.getEncoded()));
                     isEmpty = false;
                 }
             }

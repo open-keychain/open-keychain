@@ -4,7 +4,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import java.io.Serializable;
-import java.util.HashMap;
+import java.util.ArrayList;
 
 /** This class is a a transferable representation for a collection of changes
  * to be done on a keyring.
@@ -29,14 +29,14 @@ public class SaveKeyringParcel implements Parcelable {
 
     public String newPassphrase;
 
-    public String[] addUserIds;
-    public SubkeyAdd[] addSubKeys;
+    public ArrayList<String> addUserIds;
+    public ArrayList<SubkeyAdd> addSubKeys;
 
-    public SubkeyChange[] changeSubKeys;
+    public ArrayList<SubkeyChange> changeSubKeys;
     public String changePrimaryUserId;
 
-    public String[] revokeUserIds;
-    public long[] revokeSubKeys;
+    public ArrayList<String> revokeUserIds;
+    public ArrayList<Long> revokeSubKeys;
 
     public SaveKeyringParcel(long masterKeyId, byte[] fingerprint) {
         mMasterKeyId = masterKeyId;
@@ -73,14 +73,14 @@ public class SaveKeyringParcel implements Parcelable {
         mMasterKeyId = source.readLong();
         mFingerprint = source.createByteArray();
 
-        addUserIds = source.createStringArray();
-        addSubKeys = (SubkeyAdd[]) source.readSerializable();
+        addUserIds = source.createStringArrayList();
+        addSubKeys = (ArrayList<SubkeyAdd>) source.readSerializable();
 
-        changeSubKeys = (SubkeyChange[]) source.readSerializable();
+        changeSubKeys = (ArrayList<SubkeyChange>) source.readSerializable();
         changePrimaryUserId = source.readString();
 
-        revokeUserIds = source.createStringArray();
-        revokeSubKeys = source.createLongArray();
+        revokeUserIds = source.createStringArrayList();
+        revokeSubKeys = (ArrayList<Long>) source.readSerializable();
     }
 
     @Override
@@ -88,14 +88,14 @@ public class SaveKeyringParcel implements Parcelable {
         destination.writeLong(mMasterKeyId);
         destination.writeByteArray(mFingerprint);
 
-        destination.writeStringArray(addUserIds);
+        destination.writeStringList(addUserIds);
         destination.writeSerializable(addSubKeys);
 
         destination.writeSerializable(changeSubKeys);
         destination.writeString(changePrimaryUserId);
 
-        destination.writeStringArray(revokeUserIds);
-        destination.writeLongArray(revokeSubKeys);
+        destination.writeStringList(revokeUserIds);
+        destination.writeSerializable(revokeSubKeys);
     }
 
     public static final Creator<SaveKeyringParcel> CREATOR = new Creator<SaveKeyringParcel>() {
