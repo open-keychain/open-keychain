@@ -40,7 +40,7 @@ import org.sufficientlysecure.keychain.util.Log;
 
 public class ImportKeysServerFragment extends Fragment {
     public static final String ARG_QUERY = "query";
-    public static final String ARG_KEY_SERVER = "key_server";
+    public static final String ARG_KEYSERVER = "keyserver";
     public static final String ARG_DISABLE_QUERY_EDIT = "disable_query_edit";
 
     private ImportKeysActivity mImportActivity;
@@ -55,12 +55,12 @@ public class ImportKeysServerFragment extends Fragment {
     /**
      * Creates new instance of this fragment
      */
-    public static ImportKeysServerFragment newInstance(String query, String keyServer) {
+    public static ImportKeysServerFragment newInstance(String query, String keyserver) {
         ImportKeysServerFragment frag = new ImportKeysServerFragment();
 
         Bundle args = new Bundle();
         args.putString(ARG_QUERY, query);
-        args.putString(ARG_KEY_SERVER, keyServer);
+        args.putString(ARG_KEYSERVER, keyserver);
 
         frag.setArguments(args);
 
@@ -149,12 +149,12 @@ public class ImportKeysServerFragment extends Fragment {
                 Log.d(Constants.TAG, "query: " + query);
             }
 
-            if (getArguments().containsKey(ARG_KEY_SERVER)) {
-                String keyServer = getArguments().getString(ARG_KEY_SERVER);
-                int keyServerPos = mServerAdapter.getPosition(keyServer);
-                mServerSpinner.setSelection(keyServerPos);
+            if (getArguments().containsKey(ARG_KEYSERVER)) {
+                String keyserver = getArguments().getString(ARG_KEYSERVER);
+                int keyserverPos = mServerAdapter.getPosition(keyserver);
+                mServerSpinner.setSelection(keyserverPos);
 
-                Log.d(Constants.TAG, "keyServer: " + keyServer);
+                Log.d(Constants.TAG, "keyserver: " + keyserver);
             }
 
             if (getArguments().getBoolean(ARG_DISABLE_QUERY_EDIT, false)) {
@@ -172,6 +172,12 @@ public class ImportKeysServerFragment extends Fragment {
 
     private void search(String query, String keyserver) {
         mImportActivity.loadCallback(new ImportKeysListFragment.KeyserverLoaderState(query, keyserver));
+    }
+
+    public void setQueryAndKeyserver(String query, String keyserver) {
+        mQueryEditText.setText(query, TextView.BufferType.EDITABLE);
+        int keyServerPos = mServerAdapter.getPosition(keyserver);
+        mServerSpinner.setSelection(keyServerPos);
     }
 
 }

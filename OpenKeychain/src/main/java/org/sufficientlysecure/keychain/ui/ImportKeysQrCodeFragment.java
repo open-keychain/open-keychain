@@ -132,7 +132,7 @@ public class ImportKeysQrCodeFragment extends Fragment {
     }
 
     public void importFingerprint(Uri dataUri) {
-        mImportActivity.loadFromFingerprintUri(null, dataUri);
+        mImportActivity.loadFromFingerprintUri(dataUri);
     }
 
 }

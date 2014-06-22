@@ -29,6 +29,7 @@ import android.support.v4.util.LongSparseArray;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
+import org.sufficientlysecure.keychain.pgp.NullProgressable;
 import org.sufficientlysecure.keychain.pgp.Progressable;
 import org.sufficientlysecure.keychain.pgp.WrappedPublicKey;
 import org.sufficientlysecure.keychain.service.OperationResultParcel.LogType;
@@ -497,13 +498,12 @@ public class ProviderHelper {
                 }
             }
 
-            mIndent -= 1;
-
         } catch (IOException e) {
             log(LogLevel.ERROR, LogType.MSG_IP_FAIL_IO_EXC);
             Log.e(Constants.TAG, "IOException during import", e);
-            mIndent -= 1;
             return SaveKeyringResult.RESULT_ERROR;
+        } finally {
+            mIndent -= 1;
         }
 
         try {
@@ -522,19 +522,16 @@ public class ProviderHelper {
             mContentResolver.applyBatch(KeychainContract.CONTENT_AUTHORITY, operations);
 
             log(LogLevel.OK, LogType.MSG_IP_SUCCESS);
-            mIndent -= 1;
             progress.setProgress(LogType.MSG_IP_SUCCESS.getMsgId(), 90, 100);
             return result;
 
         } catch (RemoteException e) {
             log(LogLevel.ERROR, LogType.MSG_IP_FAIL_REMOTE_EX);
             Log.e(Constants.TAG, "RemoteException during import", e);
-            mIndent -= 1;
             return SaveKeyringResult.RESULT_ERROR;
         } catch (OperationApplicationException e) {
             log(LogLevel.ERROR, LogType.MSG_IP_FAIL_OP_EXC);
             Log.e(Constants.TAG, "OperationApplicationException during import", e);
-            mIndent -= 1;
             return SaveKeyringResult.RESULT_ERROR;
         }
 
@@ -580,94 +577,87 @@ public class ProviderHelper {
         log(LogLevel.START, LogType.MSG_IS,
                 new String[]{ PgpKeyHelper.convertKeyIdToHex(masterKeyId) });
         mIndent += 1;
-
-        // Canonicalize this key, to assert a number of assumptions made about it.
-        keyRing = keyRing.canonicalize(mLog, mIndent);
-        if (keyRing == null) {
-            return SaveKeyringResult.RESULT_ERROR;
-        }
-
-        // IF this is successful, it's a secret key
-        int result = SaveKeyringResult.SAVED_SECRET;
-
-        // save secret keyring
         try {
-            ContentValues values = new ContentValues();
-            values.put(KeyRingData.MASTER_KEY_ID, masterKeyId);
-            values.put(KeyRingData.KEY_RING_DATA, keyRing.getEncoded());
-            // insert new version of this keyRing
-            Uri uri = KeyRingData.buildSecretKeyRingUri(Long.toString(masterKeyId));
-            if (mContentResolver.insert(uri, values) == null) {
-                log(LogLevel.ERROR, LogType.MSG_IS_DB_EXCEPTION);
+
+            // Canonicalize this key, to assert a number of assumptions made about it.
+            keyRing = keyRing.canonicalize(mLog, mIndent);
+            if (keyRing == null) {
                 return SaveKeyringResult.RESULT_ERROR;
             }
-        } catch (IOException e) {
-            Log.e(Constants.TAG, "Failed to encode key!", e);
-            log(LogLevel.ERROR, LogType.MSG_IS_FAIL_IO_EXC);
-            return SaveKeyringResult.RESULT_ERROR;
-        }
 
-        {
-            Uri uri = Keys.buildKeysUri(Long.toString(masterKeyId));
+            // IF this is successful, it's a secret key
+            int result = SaveKeyringResult.SAVED_SECRET;
 
-            // first, mark all keys as not available
-            ContentValues values = new ContentValues();
-            values.put(Keys.HAS_SECRET, 0);
-            mContentResolver.update(uri, values, null, null);
+            // save secret keyring
+            try {
+                ContentValues values = new ContentValues();
+                values.put(KeyRingData.MASTER_KEY_ID, masterKeyId);
+                values.put(KeyRingData.KEY_RING_DATA, keyRing.getEncoded());
+                // insert new version of this keyRing
+                Uri uri = KeyRingData.buildSecretKeyRingUri(Long.toString(masterKeyId));
+                if (mContentResolver.insert(uri, values) == null) {
+                    log(LogLevel.ERROR, LogType.MSG_IS_DB_EXCEPTION);
+                    return SaveKeyringResult.RESULT_ERROR;
+                }
+            } catch (IOException e) {
+                Log.e(Constants.TAG, "Failed to encode key!", e);
+                log(LogLevel.ERROR, LogType.MSG_IS_FAIL_IO_EXC);
+                return SaveKeyringResult.RESULT_ERROR;
+            }
 
-            values.put(Keys.HAS_SECRET, 1);
-            // then, mark exactly the keys we have available
-            log(LogLevel.INFO, LogType.MSG_IS_IMPORTING_SUBKEYS);
-            mIndent += 1;
-            Set<Long> available = keyRing.getAvailableSubkeys();
-            for (UncachedPublicKey sub :
-                    new IterableIterator<UncachedPublicKey>(keyRing.getPublicKeys())) {
-                long id = sub.getKeyId();
-                if(available.contains(id)) {
-                    int upd = mContentResolver.update(uri, values, Keys.KEY_ID + " = ?",
-                            new String[] { Long.toString(id) });
-                    if (upd == 1) {
-                        log(LogLevel.DEBUG, LogType.MSG_IS_SUBKEY_OK, new String[]{
-                                PgpKeyHelper.convertKeyIdToHex(id)
-                        });
+            {
+                Uri uri = Keys.buildKeysUri(Long.toString(masterKeyId));
+
+                // first, mark all keys as not available
+                ContentValues values = new ContentValues();
+                values.put(Keys.HAS_SECRET, 0);
+                mContentResolver.update(uri, values, null, null);
+
+                values.put(Keys.HAS_SECRET, 1);
+                // then, mark exactly the keys we have available
+                log(LogLevel.INFO, LogType.MSG_IS_IMPORTING_SUBKEYS);
+                mIndent += 1;
+                Set<Long> available = keyRing.getAvailableSubkeys();
+                for (UncachedPublicKey sub :
+                        new IterableIterator<UncachedPublicKey>(keyRing.getPublicKeys())) {
+                    long id = sub.getKeyId();
+                    if (available.contains(id)) {
+                        int upd = mContentResolver.update(uri, values, Keys.KEY_ID + " = ?",
+                                new String[]{Long.toString(id)});
+                        if (upd == 1) {
+                            log(LogLevel.DEBUG, LogType.MSG_IS_SUBKEY_OK, new String[]{
+                                    PgpKeyHelper.convertKeyIdToHex(id)
+                            });
+                        } else {
+                            log(LogLevel.WARN, LogType.MSG_IS_SUBKEY_NONEXISTENT, new String[]{
+                                    PgpKeyHelper.convertKeyIdToHex(id)
+                            });
+                        }
                     } else {
-                        log(LogLevel.WARN, LogType.MSG_IS_SUBKEY_NONEXISTENT, new String[]{
+                        log(LogLevel.INFO, LogType.MSG_IS_SUBKEY_STRIPPED, new String[]{
                                 PgpKeyHelper.convertKeyIdToHex(id)
                         });
                     }
-                } else {
-                    log(LogLevel.INFO, LogType.MSG_IS_SUBKEY_STRIPPED, new String[]{
-                            PgpKeyHelper.convertKeyIdToHex(id)
-                    });
                 }
+                mIndent -= 1;
+
+                // this implicitly leaves all keys which were not in the secret key ring
+                // with has_secret = 0
             }
+
+            log(LogLevel.OK, LogType.MSG_IS_SUCCESS);
+            return result;
+
+        } finally {
             mIndent -= 1;
-
-            // this implicitly leaves all keys which were not in the secret key ring
-            // with has_secret = 0
         }
-
-        log(LogLevel.OK, LogType.MSG_IS_SUCCESS);
-        return result;
 
     }
 
 
     @Deprecated
     public SaveKeyringResult savePublicKeyRing(UncachedKeyRing keyRing) {
-        return savePublicKeyRing(keyRing, new Progressable() {
-            @Override
-            public void setProgress(String message, int current, int total) {
-            }
-
-            @Override
-            public void setProgress(int resourceId, int current, int total) {
-            }
-
-            @Override
-            public void setProgress(int current, int total) {
-            }
-        });
+        return savePublicKeyRing(keyRing, new NullProgressable());
     }
 
     /** Save a public keyring into the database.
@@ -749,12 +739,13 @@ public class ProviderHelper {
                 }
             }
 
-            mIndent -= 1;
             return new SaveKeyringResult(result, mLog);
 
         } catch (IOException e) {
             log(LogLevel.ERROR, LogType.MSG_IP_FAIL_IO_EXC);
             return new SaveKeyringResult(SaveKeyringResult.RESULT_ERROR, mLog);
+        } finally {
+            mIndent -= 1;
         }
 
     }
@@ -844,6 +835,8 @@ public class ProviderHelper {
         } catch (IOException e) {
             log(LogLevel.ERROR, LogType.MSG_IS_FAIL_IO_EXC, null);
             return new SaveKeyringResult(SaveKeyringResult.RESULT_ERROR, mLog);
+        } finally {
+            mIndent -= 1;
         }
 
     }

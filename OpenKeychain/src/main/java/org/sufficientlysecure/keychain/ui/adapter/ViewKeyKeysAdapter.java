@@ -53,6 +53,22 @@ public class ViewKeyKeysAdapter extends CursorAdapter {
 
     private ColorStateList mDefaultTextColor;
 
+    public static final String[] KEYS_PROJECTION = new String[] {
+            Keys._ID,
+            Keys.KEY_ID,
+            Keys.RANK,
+            Keys.ALGORITHM,
+            Keys.KEY_SIZE,
+            Keys.HAS_SECRET,
+            Keys.CAN_CERTIFY,
+            Keys.CAN_ENCRYPT,
+            Keys.CAN_SIGN,
+            Keys.IS_REVOKED,
+            Keys.CREATION,
+            Keys.EXPIRY,
+            Keys.FINGERPRINT
+    };
+
     public ViewKeyKeysAdapter(Context context, Cursor c, int flags) {
         super(context, c, flags);
 

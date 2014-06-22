@@ -24,7 +24,9 @@ import android.support.v4.app.ListFragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.support.v4.util.LongSparseArray;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.View.OnTouchListener;
 import android.widget.ListView;
 
 import org.sufficientlysecure.keychain.Constants;
@@ -77,7 +79,7 @@ public class ImportKeysListFragment extends ListFragment implements
     public ArrayList<ParcelableKeyRing> getSelectedData() {
         ArrayList<ParcelableKeyRing> result = new ArrayList<ParcelableKeyRing>();
         for (ImportKeysListEntry entry : getSelectedEntries()) {
-            result.add(mCachedKeyData.get(entry.getKeyId()));
+            result.add(mCachedKeyData.get(entry.hashCode()));
         }
         return result;
     }
@@ -149,18 +151,29 @@ public class ImportKeysListFragment extends ListFragment implements
         mAdapter = new ImportKeysAdapter(mActivity);
         setListAdapter(mAdapter);
 
-        if (getArguments().containsKey(ARG_DATA_URI) || getArguments().containsKey(ARG_BYTES)) {
-            Uri dataUri = getArguments().getParcelable(ARG_DATA_URI);
-            byte[] bytes = getArguments().getByteArray(ARG_BYTES);
+        Uri dataUri = getArguments().getParcelable(ARG_DATA_URI);
+        byte[] bytes = getArguments().getByteArray(ARG_BYTES);
+        String query = getArguments().getString(ARG_SERVER_QUERY);
+
+        if (dataUri != null || bytes != null) {
             mLoaderState = new BytesLoaderState(bytes, dataUri);
-        } else if (getArguments().containsKey(ARG_SERVER_QUERY)) {
-            String query = getArguments().getString(ARG_SERVER_QUERY);
-            // TODO: this is used when scanning QR Code or updating a key.
+        } else if (query != null) {
+            // TODO: this is used when updating a key.
             // Currently it simply uses keyserver nr 0
             String keyserver = Preferences.getPreferences(getActivity())
                     .getKeyServers()[0];
             mLoaderState = new KeyserverLoaderState(query, keyserver);
         }
+
+        getListView().setOnTouchListener(new OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if (!mAdapter.isEmpty()) {
+                    mActivity.onTouchEvent(event);
+                }
+                return false;
+            }
+        });
 
         restartLoaders();
     }
@@ -184,27 +197,34 @@ public class ImportKeysListFragment extends ListFragment implements
         restartLoaders();
     }
 
+    public void destroyLoader() {
+        if (getLoaderManager().getLoader(LOADER_ID_BYTES) != null) {
+            getLoaderManager().destroyLoader(LOADER_ID_BYTES);
+        }
+        if (getLoaderManager().getLoader(LOADER_ID_SERVER_QUERY) != null) {
+            getLoaderManager().destroyLoader(LOADER_ID_SERVER_QUERY);
+        }
+        if (getLoaderManager().getLoader(LOADER_ID_KEYBASE) != null) {
+            getLoaderManager().destroyLoader(LOADER_ID_KEYBASE);
+        }
+        setListShown(true);
+    }
+
     private void restartLoaders() {
         if (mLoaderState instanceof BytesLoaderState) {
             // Start out with a progress indicator.
             setListShown(false);
 
             getLoaderManager().restartLoader(LOADER_ID_BYTES, null, this);
-            getLoaderManager().destroyLoader(LOADER_ID_SERVER_QUERY);
-            getLoaderManager().destroyLoader(LOADER_ID_KEYBASE);
         } else if (mLoaderState instanceof KeyserverLoaderState) {
             // Start out with a progress indicator.
             setListShown(false);
 
-            getLoaderManager().destroyLoader(LOADER_ID_BYTES);
             getLoaderManager().restartLoader(LOADER_ID_SERVER_QUERY, null, this);
-            getLoaderManager().destroyLoader(LOADER_ID_KEYBASE);
         } else if (mLoaderState instanceof KeybaseLoaderState) {
             // Start out with a progress indicator.
             setListShown(false);
 
-            getLoaderManager().destroyLoader(LOADER_ID_BYTES);
-            getLoaderManager().destroyLoader(LOADER_ID_SERVER_QUERY);
             getLoaderManager().restartLoader(LOADER_ID_KEYBASE, null, this);
         }
     }

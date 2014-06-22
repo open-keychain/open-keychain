@@ -47,7 +47,6 @@ public class ImportKeysListServerLoader
 
     @Override
     public AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>> loadInBackground() {
-
         mEntryListWrapper = new AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>>(mEntryList, null);
 
         if (mServerQuery == null) {
