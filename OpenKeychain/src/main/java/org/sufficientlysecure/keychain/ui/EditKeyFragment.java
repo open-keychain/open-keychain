@@ -34,9 +34,8 @@ import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.helper.ActionBarHelper;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
-import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
-import org.sufficientlysecure.keychain.ui.adapter.ViewKeyKeysAdapter;
-import org.sufficientlysecure.keychain.ui.adapter.ViewKeyUserIdsAdapter;
+import org.sufficientlysecure.keychain.ui.adapter.SubkeysAdapter;
+import org.sufficientlysecure.keychain.ui.adapter.UserIdsAdapter;
 import org.sufficientlysecure.keychain.util.Log;
 
 public class EditKeyFragment extends LoaderFragment implements
@@ -50,8 +49,8 @@ public class EditKeyFragment extends LoaderFragment implements
     private static final int LOADER_ID_USER_IDS = 0;
     private static final int LOADER_ID_KEYS = 1;
 
-    private ViewKeyUserIdsAdapter mUserIdsAdapter;
-    private ViewKeyKeysAdapter mKeysAdapter;
+    private UserIdsAdapter mUserIdsAdapter;
+    private SubkeysAdapter mKeysAdapter;
 
     private Uri mDataUri;
 
@@ -128,9 +127,9 @@ public class EditKeyFragment extends LoaderFragment implements
 //        });
 
 
-        mUserIdsAdapter = new ViewKeyUserIdsAdapter(getActivity(), null, 0);
+        mUserIdsAdapter = new UserIdsAdapter(getActivity(), null, 0);
         mUserIds.setAdapter(mUserIdsAdapter);
-        mKeysAdapter = new ViewKeyKeysAdapter(getActivity(), null, 0);
+        mKeysAdapter = new SubkeysAdapter(getActivity(), null, 0);
         mKeys.setAdapter(mKeysAdapter);
 
         // Prepare the loaders. Either re-connect with an existing ones,
@@ -146,13 +145,13 @@ public class EditKeyFragment extends LoaderFragment implements
             case LOADER_ID_USER_IDS: {
                 Uri baseUri = KeychainContract.UserIds.buildUserIdsUri(mDataUri);
                 return new CursorLoader(getActivity(), baseUri,
-                        ViewKeyUserIdsAdapter.USER_IDS_PROJECTION, null, null, null);
+                        UserIdsAdapter.USER_IDS_PROJECTION, null, null, null);
             }
 
             case LOADER_ID_KEYS: {
                 Uri baseUri = KeychainContract.Keys.buildKeysUri(mDataUri);
                 return new CursorLoader(getActivity(), baseUri,
-                        ViewKeyKeysAdapter.KEYS_PROJECTION, null, null, null);
+                        SubkeysAdapter.KEYS_PROJECTION, null, null, null);
             }
 
             default:

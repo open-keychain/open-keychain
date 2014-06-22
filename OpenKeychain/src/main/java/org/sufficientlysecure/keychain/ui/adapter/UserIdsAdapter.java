@@ -34,16 +34,19 @@ import org.sufficientlysecure.keychain.helper.OtherHelper;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.provider.KeychainContract.Certs;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UserIds;
+import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
 
 import java.util.ArrayList;
 
-public class ViewKeyUserIdsAdapter extends CursorAdapter implements AdapterView.OnItemClickListener {
+public class UserIdsAdapter extends CursorAdapter implements AdapterView.OnItemClickListener {
     private LayoutInflater mInflater;
 
     private int mIndexUserId, mIndexRank;
     private int mVerifiedId, mIsRevoked, mIsPrimary;
 
     private final ArrayList<Boolean> mCheckStates;
+
+    private SaveKeyringParcel mSaveKeyringParcel;
 
     public static final String[] USER_IDS_PROJECTION = new String[]{
             UserIds._ID,
@@ -54,18 +57,27 @@ public class ViewKeyUserIdsAdapter extends CursorAdapter implements AdapterView.
             UserIds.IS_REVOKED
     };
 
-    public ViewKeyUserIdsAdapter(Context context, Cursor c, int flags, boolean showCheckBoxes) {
+    public UserIdsAdapter(Context context, Cursor c, int flags, boolean showCheckBoxes,
+                          SaveKeyringParcel saveKeyringParcel) {
         super(context, c, flags);
-
         mInflater = LayoutInflater.from(context);
 
         mCheckStates = showCheckBoxes ? new ArrayList<Boolean>() : null;
+        mSaveKeyringParcel = saveKeyringParcel;
 
         initIndex(c);
     }
 
-    public ViewKeyUserIdsAdapter(Context context, Cursor c, int flags) {
-        this(context, c, flags, false);
+    public UserIdsAdapter(Context context, Cursor c, int flags, boolean showCheckBoxes) {
+        this(context, c, flags, showCheckBoxes, null);
+    }
+
+    public UserIdsAdapter(Context context, Cursor c, int flags, SaveKeyringParcel saveKeyringParcel) {
+        this(context, c, flags, false, saveKeyringParcel);
+    }
+
+    public UserIdsAdapter(Context context, Cursor c, int flags) {
+        this(context, c, flags, false, null);
     }
 
     @Override
@@ -181,7 +193,6 @@ public class ViewKeyUserIdsAdapter extends CursorAdapter implements AdapterView.
             }
         });
         vCheckBox.setClickable(false);
-
     }
 
     public void onItemClick(AdapterView<?> adapter, View view, int position, long id) {

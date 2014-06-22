@@ -35,7 +35,7 @@ import org.sufficientlysecure.keychain.provider.KeychainContract.Keys;
 
 import java.util.Date;
 
-public class ViewKeyKeysAdapter extends CursorAdapter {
+public class SubkeysAdapter extends CursorAdapter {
     private LayoutInflater mInflater;
 
     private int mIndexKeyId;
@@ -69,7 +69,7 @@ public class ViewKeyKeysAdapter extends CursorAdapter {
             Keys.FINGERPRINT
     };
 
-    public ViewKeyKeysAdapter(Context context, Cursor c, int flags) {
+    public SubkeysAdapter(Context context, Cursor c, int flags) {
         super(context, c, flags);
 
         mInflater = LayoutInflater.from(context);
