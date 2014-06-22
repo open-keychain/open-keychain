@@ -13,7 +13,6 @@
             style="@style/SectionHeader"
             android:layout_width="wrap_content"
             android:layout_height="0dp"
-            android:layout_marginBottom="4dp"
             android:layout_marginTop="8dp"
             android:text="Passphrase"
             android:layout_weight="1" />
@@ -37,7 +36,6 @@
             style="@style/SectionHeader"
             android:layout_width="wrap_content"
             android:layout_height="0dp"
-            android:layout_marginBottom="4dp"
             android:layout_marginTop="8dp"
             android:text="@string/section_user_ids"
             android:layout_weight="1" />
@@ -45,9 +43,12 @@
         <org.sufficientlysecure.keychain.ui.widget.FixedListView
             android:id="@+id/edit_key_user_ids"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_marginBottom="4dp"
-            android:layout_weight="1" />
+            android:layout_height="wrap_content" />
+
+        <org.sufficientlysecure.keychain.ui.widget.FixedListView
+            android:id="@+id/edit_key_user_ids_added"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
 
         <View
             android:layout_width="match_parent"
@@ -55,7 +56,7 @@
             android:background="?android:attr/listDivider" />
 
         <TextView
-            android:id="@+id/edit_key_add_user_id"
+            android:id="@+id/edit_key_action_add_user_id"
             android:paddingLeft="8dp"
             android:paddingRight="8dp"
             android:textAppearance="?android:attr/textAppearanceMedium"
@@ -73,15 +74,18 @@
             style="@style/SectionHeader"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="4dp"
             android:layout_marginTop="8dp"
             android:text="@string/section_keys" />
 
         <org.sufficientlysecure.keychain.ui.widget.FixedListView
             android:id="@+id/edit_key_keys"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp" />
+            android:layout_height="wrap_content" />
+
+        <org.sufficientlysecure.keychain.ui.widget.FixedListView
+            android:id="@+id/edit_key_keys_added"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
 
         <View
             android:layout_width="match_parent"

@@ -149,7 +149,6 @@ public class CertifyKeyActivity extends ActionBarActivity implements
 
         getSupportLoaderManager().initLoader(LOADER_ID_KEYRING, null, this);
         getSupportLoaderManager().initLoader(LOADER_ID_USER_IDS, null, this);
-
     }
 
     static final String USER_IDS_SELECTION = UserIds.IS_REVOKED + " = 0";

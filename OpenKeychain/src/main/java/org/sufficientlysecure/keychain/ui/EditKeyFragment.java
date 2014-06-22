@@ -20,6 +20,9 @@ package org.sufficientlysecure.keychain.ui;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.os.Messenger;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
@@ -28,14 +31,22 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.compatibility.DialogFragmentWorkaround;
 import org.sufficientlysecure.keychain.helper.ActionBarHelper;
+import org.sufficientlysecure.keychain.pgp.WrappedSecretKeyRing;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
+import org.sufficientlysecure.keychain.provider.ProviderHelper;
+import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
 import org.sufficientlysecure.keychain.ui.adapter.SubkeysAdapter;
 import org.sufficientlysecure.keychain.ui.adapter.UserIdsAdapter;
+import org.sufficientlysecure.keychain.ui.dialog.AddUserIdDialogFragment;
+import org.sufficientlysecure.keychain.ui.dialog.EditUserIdDialogFragment;
 import org.sufficientlysecure.keychain.util.Log;
 
 public class EditKeyFragment extends LoaderFragment implements
@@ -43,8 +54,13 @@ public class EditKeyFragment extends LoaderFragment implements
 
     public static final String ARG_DATA_URI = "uri";
 
-    private ListView mUserIds;
-    private ListView mKeys;
+    private ListView mUserIdsList;
+    private ListView mKeysList;
+    private ListView mUserIdsAddedList;
+    private ListView mKeysAddedList;
+    private View mChangePassphrase;
+    private View mAddUserId;
+    private View mAddKey;
 
     private static final int LOADER_ID_USER_IDS = 0;
     private static final int LOADER_ID_KEYS = 1;
@@ -53,6 +69,8 @@ public class EditKeyFragment extends LoaderFragment implements
     private SubkeysAdapter mKeysAdapter;
 
     private Uri mDataUri;
+
+    private SaveKeyringParcel mSaveKeyringParcel;
 
     /**
      * Creates new instance of this fragment
@@ -73,9 +91,13 @@ public class EditKeyFragment extends LoaderFragment implements
         View root = super.onCreateView(inflater, superContainer, savedInstanceState);
         View view = inflater.inflate(R.layout.edit_key_fragment, getContainer());
 
-        mUserIds = (ListView) view.findViewById(R.id.edit_key_user_ids);
-        mKeys = (ListView) view.findViewById(R.id.edit_key_keys);
-//        mActionEdit = view.findViewById(R.id.view_key_action_edit);
+        mUserIdsList = (ListView) view.findViewById(R.id.edit_key_user_ids);
+        mKeysList = (ListView) view.findViewById(R.id.edit_key_keys);
+        mUserIdsAddedList = (ListView) view.findViewById(R.id.edit_key_user_ids_added);
+        mKeysAddedList = (ListView) view.findViewById(R.id.edit_key_keys_added);
+        mChangePassphrase = view.findViewById(R.id.edit_key_action_change_passphrase);
+        mAddUserId = view.findViewById(R.id.edit_key_action_add_user_id);
+        mAddKey = view.findViewById(R.id.edit_key_action_add_key);
 
         return root;
     }
@@ -83,7 +105,6 @@ public class EditKeyFragment extends LoaderFragment implements
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-
 
         // Inflate a "Done"/"Cancel" custom action bar view
         ActionBarHelper.setTwoButtonView(((ActionBarActivity) getActivity()).getSupportActionBar(),
@@ -114,23 +135,108 @@ public class EditKeyFragment extends LoaderFragment implements
         loadData(dataUri);
     }
 
+    private void editUserId(final String userId) {
+        Handler returnHandler = new Handler() {
+            @Override
+            public void handleMessage(Message message) {
+                switch (message.what) {
+                    case EditUserIdDialogFragment.MESSAGE_CHANGE_PRIMARY_USER_ID:
+                        // toggle
+                        if (mSaveKeyringParcel.changePrimaryUserId != null
+                                && mSaveKeyringParcel.changePrimaryUserId.equals(userId)) {
+                            mSaveKeyringParcel.changePrimaryUserId = null;
+                        } else {
+                            mSaveKeyringParcel.changePrimaryUserId = userId;
+                        }
+                        break;
+                    case EditUserIdDialogFragment.MESSAGE_REVOKE:
+                        // toggle
+                        if (mSaveKeyringParcel.revokeUserIds.contains(userId)) {
+                            mSaveKeyringParcel.revokeUserIds.remove(userId);
+                        } else {
+                            mSaveKeyringParcel.revokeUserIds.add(userId);
+                        }
+                        break;
+                }
+                getLoaderManager().restartLoader(LOADER_ID_USER_IDS, null, EditKeyFragment.this);
+            }
+        };
+
+        // Create a new Messenger for the communication back
+        final Messenger messenger = new Messenger(returnHandler);
+
+        DialogFragmentWorkaround.INTERFACE.runnableRunDelayed(new Runnable() {
+            public void run() {
+                EditUserIdDialogFragment dialogFragment =
+                        EditUserIdDialogFragment.newInstance(messenger);
+
+                dialogFragment.show(getActivity().getSupportFragmentManager(), "editUserIdDialog");
+            }
+        });
+    }
+
+    private void addUserId() {
+        Handler returnHandler = new Handler() {
+            @Override
+            public void handleMessage(Message message) {
+                if (message.what == AddUserIdDialogFragment.MESSAGE_OK) {
+
+                }
+//                getLoaderManager().restartLoader(LOADER_ID_USER_IDS, null, EditKeyFragment.this);
+            }
+        };
+
+        // Create a new Messenger for the communication back
+        final Messenger messenger = new Messenger(returnHandler);
+
+        DialogFragmentWorkaround.INTERFACE.runnableRunDelayed(new Runnable() {
+            public void run() {
+                AddUserIdDialogFragment dialogFragment =
+                        AddUserIdDialogFragment.newInstance(messenger);
+
+                dialogFragment.show(getActivity().getSupportFragmentManager(), "addUserIdDialog");
+            }
+        });
+    }
+
     private void loadData(Uri dataUri) {
         mDataUri = dataUri;
 
         Log.i(Constants.TAG, "mDataUri: " + mDataUri.toString());
 
-//        mActionEncrypt.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                encrypt(mDataUri);
-//            }
-//        });
+        try {
+            Uri secretUri = KeychainContract.KeyRings.buildUnifiedKeyRingUri(mDataUri);
+            WrappedSecretKeyRing keyRing =
+                    new ProviderHelper(getActivity()).getWrappedSecretKeyRing(secretUri);
 
+            mSaveKeyringParcel = new SaveKeyringParcel(keyRing.getMasterKeyId(),
+                    keyRing.getUncachedKeyRing().getFingerprint());
+        } catch (ProviderHelper.NotFoundException e) {
+            Log.e(Constants.TAG, "Keyring not found: " + e.getMessage(), e);
+            Toast.makeText(getActivity(), R.string.error_no_secret_key_found, Toast.LENGTH_SHORT).show();
+            getActivity().finish();
+        }
 
-        mUserIdsAdapter = new UserIdsAdapter(getActivity(), null, 0);
-        mUserIds.setAdapter(mUserIdsAdapter);
+        mAddUserId.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                addUserId();
+            }
+        });
+
+        mUserIdsAdapter = new UserIdsAdapter(getActivity(), null, 0, mSaveKeyringParcel);
+        mUserIdsList.setAdapter(mUserIdsAdapter);
+
+        mUserIdsList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                String userId = mUserIdsAdapter.getUserId(position);
+                editUserId(userId);
+            }
+        });
+
         mKeysAdapter = new SubkeysAdapter(getActivity(), null, 0);
-        mKeys.setAdapter(mKeysAdapter);
+        mKeysList.setAdapter(mKeysAdapter);
 
         // Prepare the loaders. Either re-connect with an existing ones,
         // or start new ones.
