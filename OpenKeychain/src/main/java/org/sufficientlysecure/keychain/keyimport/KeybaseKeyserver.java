@@ -42,6 +42,9 @@ public class KeybaseKeyserver extends Keyserver {
             // cut off "0x" if a user is searching for a key id
             query = query.substring(2);
         }
+        if (query.isEmpty()) {
+            throw new QueryTooShortException();
+        }
         mQuery = query;
 
         try {
