@@ -320,12 +320,11 @@ public class HkpKeyserver extends Keyserver {
 
     @Override
     public String get(String keyIdHex) throws QueryFailedException {
-        String query = getUrlPrefix() + mHost + ":" + mPort +
-                "/pks/lookup?op=get&options=mr&search=" + keyIdHex;
-        Log.d(Constants.TAG, "hkp keyserver get: " + query);
+        String request = "/pks/lookup?op=get&options=mr&search=" + keyIdHex;
+        Log.d(Constants.TAG, "hkp keyserver get: " + request);
         String data;
         try {
-            data = query(query);
+            data = query(request);
         } catch (HttpError httpError) {
             throw new QueryFailedException("not found");
         }
