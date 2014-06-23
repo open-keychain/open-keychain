@@ -22,32 +22,26 @@ import de.measite.minidns.Client;
 import de.measite.minidns.Question;
 import de.measite.minidns.Record;
 import de.measite.minidns.record.SRV;
-import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.util.EntityUtils;
 import org.sufficientlysecure.keychain.Constants;
+import org.sufficientlysecure.keychain.helper.TlsHelper;
 import org.sufficientlysecure.keychain.pgp.PgpHelper;
 import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
 import org.sufficientlysecure.keychain.util.Log;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
-import java.net.InetAddress;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -200,48 +194,39 @@ public class HkpKeyserver extends Keyserver {
         return mSecure ? "https://" : "http://";
     }
 
+    private HttpURLConnection openConnection(URL url) throws IOException {
+        HttpURLConnection conn = null;
+        if (mHost.endsWith("pool.sks-keyservers.net") && mSecure) {
+            try {
+                conn = TlsHelper.openCAConnection(Constants.SKS_KEYSERVERS_NET_CA.getBytes(), url);
+            } catch (TlsHelper.TlsHelperException e) {
+                Log.w(Constants.TAG, e);
+            }
+        }
+        if (conn == null) {
+            conn = (HttpURLConnection) url.openConnection();
+        }
+        conn.setConnectTimeout(5000);
+        conn.setReadTimeout(25000);
+        return conn;
+    }
+
     private String query(String request) throws QueryFailedException, HttpError {
-        List<String> urls = new ArrayList<String>();
-        if (mSecure) {
-            urls.add(getUrlPrefix() + mHost + ":" + mPort + request);
-        } else {
-            InetAddress ips[];
-            try {
-                ips = InetAddress.getAllByName(mHost);
-            } catch (UnknownHostException e) {
-                throw new QueryFailedException(e.toString());
+        try {
+            URL url = new URL(getUrlPrefix() + mHost + ":" + mPort + request);
+            Log.d(Constants.TAG, "hkp keyserver query: " + url);
+            HttpURLConnection conn = openConnection(url);
+            conn.connect();
+            int response = conn.getResponseCode();
+            if (response >= 200 && response < 300) {
+                return readAll(conn.getInputStream(), conn.getContentEncoding());
+            } else {
+                String data = readAll(conn.getErrorStream(), conn.getContentEncoding());
+                throw new HttpError(response, data);
             }
-            for (InetAddress ip : ips) {
-                // Note: This is actually not HTTP 1.1 compliant, as we hide the real "Host" value,
-                //       but Android's HTTPUrlConnection does not support any other way to set
-                //       Socket's remote IP address...
-                urls.add(getUrlPrefix() + ip.getHostAddress() + ":" + mPort + request);
-            }
+        } catch (IOException e) {
+            throw new QueryFailedException("querying server(s) for '" + mHost + "' failed");
         }
-
-        for (String url : urls) {
-            try {
-                Log.d(Constants.TAG, "hkp keyserver query: " + url);
-                URL realUrl = new URL(url);
-                HttpURLConnection conn = (HttpURLConnection) realUrl.openConnection();
-                conn.setConnectTimeout(5000);
-                conn.setReadTimeout(25000);
-                conn.connect();
-                int response = conn.getResponseCode();
-                if (response >= 200 && response < 300) {
-                    return readAll(conn.getInputStream(), conn.getContentEncoding());
-                } else {
-                    String data = readAll(conn.getErrorStream(), conn.getContentEncoding());
-                    throw new HttpError(response, data);
-                }
-            } catch (MalformedURLException e) {
-                // nothing to do, try next IP
-            } catch (IOException e) {
-                // nothing to do, try next IP
-            }
-        }
-
-        throw new QueryFailedException("querying server(s) for '" + mHost + "' failed");
     }
 
     @Override
@@ -335,33 +320,25 @@ public class HkpKeyserver extends Keyserver {
 
     @Override
     public String get(String keyIdHex) throws QueryFailedException {
-        HttpClient client = new DefaultHttpClient();
+        String query = getUrlPrefix() + mHost + ":" + mPort +
+                "/pks/lookup?op=get&options=mr&search=" + keyIdHex;
+        Log.d(Constants.TAG, "hkp keyserver get: " + query);
+        String data;
         try {
-            String query = getUrlPrefix() + mHost + ":" + mPort +
-                    "/pks/lookup?op=get&options=mr&search=" + keyIdHex;
-            Log.d(Constants.TAG, "hkp keyserver get: " + query);
-            HttpGet get = new HttpGet(query);
-            HttpResponse response = client.execute(get);
-            if (response.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
-                throw new QueryFailedException("not found");
-            }
-
-            HttpEntity entity = response.getEntity();
-            InputStream is = entity.getContent();
-            String data = readAll(is, EntityUtils.getContentCharSet(entity));
-            Matcher matcher = PgpHelper.PGP_PUBLIC_KEY.matcher(data);
-            if (matcher.find()) {
-                return matcher.group(1);
-            }
-        } catch (IOException e) {
-            // nothing to do, better luck on the next keyserver
-        } finally {
-            client.getConnectionManager().shutdown();
+            data = query(query);
+        } catch (HttpError httpError) {
+            throw new QueryFailedException("not found");
         }
-
+        Matcher matcher = PgpHelper.PGP_PUBLIC_KEY.matcher(data);
+        if (matcher.find()) {
+            return matcher.group(1);
+        }
         return null;
     }
 
+    /*
+     * TODO Use openConnection
+     */
     @Override
     public void add(String armoredKey) throws AddKeyException {
         HttpClient client = new DefaultHttpClient();
