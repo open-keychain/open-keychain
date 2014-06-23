@@ -18,7 +18,6 @@
 
 package org.sufficientlysecure.keychain.keyimport;
 
-import android.net.Uri;
 import de.measite.minidns.Client;
 import de.measite.minidns.Question;
 import de.measite.minidns.Record;
@@ -332,7 +331,12 @@ public class HkpKeyserver extends Keyserver {
     public void add(String armoredKey) throws AddKeyException {
         try {
             String query = getUrlPrefix() + mHost + ":" + mPort + "/pks/add";
-            String params = "keytext=" + Uri.encode(armoredKey);
+            String params;
+            try {
+                params = "keytext=" + URLEncoder.encode(armoredKey, "utf8");
+            } catch (UnsupportedEncodingException e) {
+                throw new AddKeyException();
+            }
             Log.d(Constants.TAG, "hkp keyserver add: " + query);
 
             HttpURLConnection connection = openConnection(new URL(query));
