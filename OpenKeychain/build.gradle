@@ -19,7 +19,7 @@ dependencies {
     compile project(':extern:spongycastle:prov')
     compile project(':extern:AppMsg:library')
     compile project(':extern:SuperToasts:supertoasts')
-    compile project(':extern:dnsjava')
+    compile project(':extern:minidns')
     compile project(':extern:KeybaseLib:Lib')
 
 
