@@ -18,24 +18,18 @@
 
 package org.sufficientlysecure.keychain.keyimport;
 
+import android.net.Uri;
 import de.measite.minidns.Client;
 import de.measite.minidns.Question;
 import de.measite.minidns.Record;
 import de.measite.minidns.record.SRV;
-import org.apache.http.HttpResponse;
-import org.apache.http.HttpStatus;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.message.BasicNameValuePair;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.helper.TlsHelper;
 import org.sufficientlysecure.keychain.pgp.PgpHelper;
 import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
 import org.sufficientlysecure.keychain.util.Log;
 
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
@@ -46,7 +40,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.GregorianCalendar;
-import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
 import java.util.regex.Matcher;
@@ -335,28 +328,24 @@ public class HkpKeyserver extends Keyserver {
         return null;
     }
 
-    /*
-     * TODO Use openConnection
-     */
     @Override
     public void add(String armoredKey) throws AddKeyException {
-        HttpClient client = new DefaultHttpClient();
         try {
             String query = getUrlPrefix() + mHost + ":" + mPort + "/pks/add";
-            HttpPost post = new HttpPost(query);
+            String params = "keytext=" + Uri.encode(armoredKey);
             Log.d(Constants.TAG, "hkp keyserver add: " + query);
-            List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
-            nameValuePairs.add(new BasicNameValuePair("keytext", armoredKey));
-            post.setEntity(new UrlEncodedFormEntity(nameValuePairs));
 
-            HttpResponse response = client.execute(post);
-            if (response.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
-                throw new AddKeyException();
-            }
+            HttpURLConnection connection = openConnection(new URL(query));
+            connection.setRequestMethod("POST");
+            connection.addRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+            connection.setRequestProperty("Content-Length", Integer.toString(params.getBytes().length));
+            connection.setDoOutput(true);
+            DataOutputStream wr = new DataOutputStream(connection.getOutputStream());
+            wr.writeBytes(params);
+            wr.flush();
+            wr.close();
         } catch (IOException e) {
-            // nothing to do, better luck on the next keyserver
-        } finally {
-            client.getConnectionManager().shutdown();
+            throw new AddKeyException();
         }
     }
 
