@@ -316,6 +316,12 @@ public class HkpKeyserver extends Keyserver {
             while (uidMatcher.find()) {
                 String tmp = uidMatcher.group(1).trim();
                 if (tmp.contains("%")) {
+                    if(tmp.contains("%%")) {
+                        // This is a fix for issue #683
+                        // The server encodes a percent sign as %%, so it is swapped out with its
+                        // urlencoded counterpart to prevent errors
+                        tmp = tmp.replace("%%", "%25");
+                    }
                     try {
                         // converts Strings like "Universit%C3%A4t" to a proper encoding form "Universität".
                         tmp = (URLDecoder.decode(tmp, "UTF8"));
