@@ -10,7 +10,7 @@
     <string name="title_create_key">Create Key</string>
     <string name="title_edit_key">Edit Key</string>
     <string name="title_preferences">Preferences</string>
-    <string name="title_api_registered_apps">Registered Applications</string>
+    <string name="title_api_registered_apps">Apps</string>
     <string name="title_key_server_preference">Keyserver Preference</string>
     <string name="title_change_passphrase">Change Passphrase</string>
     <string name="title_set_passphrase">Set Passphrase</string>
@@ -476,7 +476,7 @@
     <string name="nav_encrypt">Sign and Encrypt</string>
     <string name="nav_decrypt">Decrypt and Verify</string>
     <string name="nav_import">Import Keys</string>
-    <string name="nav_apps">Registered Apps</string>
+    <string name="nav_apps">Apps</string>
     <string name="drawer_open">Open navigation drawer</string>
     <string name="drawer_close">Close navigation drawer</string>
     <string name="edit">Edit</string>
