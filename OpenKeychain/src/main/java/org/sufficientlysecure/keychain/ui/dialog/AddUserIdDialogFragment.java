@@ -24,16 +24,31 @@ import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
 import android.support.v4.app.DialogFragment;
+import android.text.TextUtils;
+import android.view.KeyEvent;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.WindowManager;
+import android.view.inputmethod.EditorInfo;
+import android.widget.EditText;
+import android.widget.TextView;
 
 import org.sufficientlysecure.keychain.Constants;
+import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.util.Log;
 
-public class AddUserIdDialogFragment extends DialogFragment {
+public class AddUserIdDialogFragment extends DialogFragment implements EditText.OnEditorActionListener {
     private static final String ARG_MESSENGER = "messenger";
 
-    public static final int MESSAGE_OK = 1;
+    public static final int MESSAGE_OKAY = 1;
+
+    public static final String MESSAGE_DATA_USER_ID = "user_id";
 
     private Messenger mMessenger;
+
+    EditText mName;
+    EditText mAddress;
+    EditText mComment;
 
     /**
      * Creates new instance of this dialog fragment
@@ -55,34 +70,75 @@ public class AddUserIdDialogFragment extends DialogFragment {
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         mMessenger = getArguments().getParcelable(ARG_MESSENGER);
 
-        CustomAlertDialogBuilder builder = new CustomAlertDialogBuilder(getActivity());
-//        CharSequence[] array = {"change to primary user id", "revoke"};
-//
-//        builder.setTitle("select action!");
-//        builder.setItems(array, new DialogInterface.OnClickListener() {
-//
-//            @Override
-//            public void onClick(DialogInterface dialog, int which) {
-//                switch (which) {
-//                    case 0:
-//                        sendMessageToHandler(MESSAGE_CHANGE_PRIMARY_USER_ID, null);
-//                        break;
-//                    case 1:
-//                        sendMessageToHandler(MESSAGE_REVOKE, null);
-//                        break;
-//                    default:
-//                        break;
-//                }
-//            }
-//        });
-//        builder.setNegativeButton("cancel", new DialogInterface.OnClickListener() {
-//            @Override
-//            public void onClick(DialogInterface dialog, int id) {
-//                dismiss();
-//            }
-//        });
+        CustomAlertDialogBuilder alert = new CustomAlertDialogBuilder(getActivity());
+        LayoutInflater inflater = getActivity().getLayoutInflater();
+        View view = inflater.inflate(R.layout.add_user_id_dialog, null);
+        alert.setView(view);
+        alert.setTitle("Add Identity");
 
-        return builder.show();
+        mName = (EditText) view.findViewById(R.id.name);
+        mAddress = (EditText) view.findViewById(R.id.address);
+        mComment = (EditText) view.findViewById(R.id.comment);
+
+        alert.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+
+            @Override
+            public void onClick(DialogInterface dialog, int id) {
+                done();
+            }
+        });
+
+        alert.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+
+            @Override
+            public void onClick(DialogInterface dialog, int id) {
+                dialog.cancel();
+            }
+        });
+
+
+        return alert.show();
+    }
+
+    @Override
+    public void onActivityCreated(Bundle arg0) {
+        super.onActivityCreated(arg0);
+        // Show soft keyboard automatically
+        mName.requestFocus();
+        getDialog().getWindow().setSoftInputMode(
+                WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
+        mComment.setOnEditorActionListener(this);
+    }
+
+    @Override
+    public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+        if (EditorInfo.IME_ACTION_DONE == actionId) {
+            done();
+            return true;
+        }
+        return false;
+    }
+
+    private void done() {
+        String name = mName.getText().toString();
+        String email = mAddress.getText().toString();
+        String comment = mComment.getText().toString();
+
+        String userId = null;
+        if (!TextUtils.isEmpty(name)) {
+            userId = name;
+            if (!TextUtils.isEmpty(comment)) {
+                userId += " (" + comment + ")";
+            }
+            if (!TextUtils.isEmpty(email)) {
+                userId += " <" + email + ">";
+            }
+        }
+        Bundle data = new Bundle();
+        data.putString(MESSAGE_DATA_USER_ID, userId);
+        sendMessageToHandler(MESSAGE_OKAY, data);
+
+        this.dismiss();
     }
 
     /**
@@ -105,4 +161,5 @@ public class AddUserIdDialogFragment extends DialogFragment {
             Log.w(Constants.TAG, "Messenger is null!", e);
         }
     }
+
 }

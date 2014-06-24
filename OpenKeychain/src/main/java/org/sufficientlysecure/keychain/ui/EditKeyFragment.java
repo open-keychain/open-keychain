@@ -27,6 +27,7 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v7.app.ActionBarActivity;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -45,6 +46,7 @@ import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
 import org.sufficientlysecure.keychain.ui.adapter.SubkeysAdapter;
 import org.sufficientlysecure.keychain.ui.adapter.UserIdsAdapter;
+import org.sufficientlysecure.keychain.ui.adapter.UserIdsArrayAdapter;
 import org.sufficientlysecure.keychain.ui.dialog.AddUserIdDialogFragment;
 import org.sufficientlysecure.keychain.ui.dialog.EditUserIdDialogFragment;
 import org.sufficientlysecure.keychain.ui.dialog.SetPassphraseDialogFragment;
@@ -68,6 +70,7 @@ public class EditKeyFragment extends LoaderFragment implements
 
     private UserIdsAdapter mUserIdsAdapter;
     private SubkeysAdapter mKeysAdapter;
+    private UserIdsArrayAdapter mUserIdsAddedAdapter;
 
     private Uri mDataUri;
 
@@ -179,6 +182,10 @@ public class EditKeyFragment extends LoaderFragment implements
                 editUserId(userId);
             }
         });
+
+        mUserIdsAddedAdapter = new UserIdsArrayAdapter(getActivity());
+        mUserIdsAddedList.setAdapter(mUserIdsAddedAdapter);
+        mUserIdsAddedAdapter.setData(mSaveKeyringParcel.addUserIds);
 
         mKeysAdapter = new SubkeysAdapter(getActivity(), null, 0);
         mKeysList.setAdapter(mKeysAdapter);
@@ -321,9 +328,17 @@ public class EditKeyFragment extends LoaderFragment implements
         Handler returnHandler = new Handler() {
             @Override
             public void handleMessage(Message message) {
-                if (message.what == AddUserIdDialogFragment.MESSAGE_OK) {
+                switch (message.what) {
+                    case AddUserIdDialogFragment.MESSAGE_OKAY:
+                        Bundle data = message.getData();
+                        String userId = data.getString(AddUserIdDialogFragment.MESSAGE_DATA_USER_ID);
 
+                        if (userId != null) {
+                            mSaveKeyringParcel.addUserIds.add(userId);
+                            mUserIdsAddedAdapter.setData(mSaveKeyringParcel.addUserIds);
+                        }
                 }
+                getLoaderManager().getLoader(LOADER_ID_USER_IDS).forceLoad();
             }
         };
 
@@ -344,6 +359,5 @@ public class EditKeyFragment extends LoaderFragment implements
         getActivity().finish();
         // TODO
     }
-
 
 }
