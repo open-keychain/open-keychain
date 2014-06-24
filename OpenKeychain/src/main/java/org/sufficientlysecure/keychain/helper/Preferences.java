@@ -169,4 +169,22 @@ public class Preferences {
         editor.putString(Constants.Pref.KEY_SERVERS, rawData);
         editor.commit();
     }
+
+    public void updateKeyServers() {
+        if (mSharedPreferences.getInt(Constants.Pref.KEY_SERVERS_DEFAULT_VERSION, 0) !=
+                Constants.Defaults.KEY_SERVERS_VERSION) {
+            String[] servers = getKeyServers();
+            for (int i = 0; i < servers.length; i++) {
+                if (servers[i].equals("pool.sks-keyservers.net")) {
+                    servers[i] = "hkps://hkps.pool.sks-keyservers.net";
+                } else if (servers[i].equals("pgp.mit.edu")) {
+                    servers[i] = "hkps://pgp.mit.edu";
+                }
+            }
+            setKeyServers(servers);
+            mSharedPreferences.edit()
+                    .putInt(Constants.Pref.KEY_SERVERS_DEFAULT_VERSION, Constants.Defaults.KEY_SERVERS_VERSION)
+                    .commit();
+        }
+    }
 }

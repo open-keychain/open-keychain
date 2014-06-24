@@ -26,7 +26,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Environment;
 
 import org.spongycastle.jce.provider.BouncyCastleProvider;
-import org.sufficientlysecure.keychain.helper.ContactHelper;
+import org.sufficientlysecure.keychain.helper.Preferences;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.PRNGFixes;
 
@@ -81,6 +81,9 @@ public class KeychainApplication extends Application {
                 getApplicationContext().getResources().getColor(R.color.emphasis));
 
         setupAccountAsNeeded(this);
+
+        // Update keyserver list as needed
+        Preferences.getPreferences(this).updateKeyServers();
     }
 
     public static void setupAccountAsNeeded(Context context) {
