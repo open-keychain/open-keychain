@@ -17,23 +17,69 @@
 
 package org.sufficientlysecure.keychain.helper;
 
+import android.content.res.AssetManager;
+import org.sufficientlysecure.keychain.Constants;
+import org.sufficientlysecure.keychain.util.Log;
+
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManagerFactory;
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
+import java.net.URLConnection;
 import java.security.KeyManagementException;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.*;
+import java.util.HashMap;
+import java.util.Map;
 
 public class TlsHelper {
+
     public static class TlsHelperException extends Exception {
         public TlsHelperException(Exception e) {
             super(e);
         }
+    }
+
+    private static Map<String, byte[]> sStaticCA = new HashMap<String, byte[]>();
+
+    public static void addStaticCA(String domain, byte[] certificate) {
+        sStaticCA.put(domain, certificate);
+    }
+
+    public static void addStaticCA(String domain, AssetManager assetManager, String name) {
+        try {
+            InputStream is = assetManager.open(name);
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            int reads = is.read();
+
+            while(reads != -1){
+                baos.write(reads);
+                reads = is.read();
+            }
+
+            is.close();
+
+            addStaticCA(domain, baos.toByteArray());
+        } catch (IOException e) {
+            Log.w(Constants.TAG, e);
+        }
+    }
+
+    public static URLConnection openConnection(URL url) throws IOException, TlsHelperException {
+        if (url.getProtocol().equals("https")) {
+            for (String domain : sStaticCA.keySet()) {
+                if (url.getHost().endsWith(domain)) {
+                    return openCAConnection(sStaticCA.get(domain), url);
+                }
+            }
+        }
+        return url.openConnection();
     }
 
     /**

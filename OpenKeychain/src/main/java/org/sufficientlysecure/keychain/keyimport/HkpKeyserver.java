@@ -188,12 +188,10 @@ public class HkpKeyserver extends Keyserver {
 
     private HttpURLConnection openConnection(URL url) throws IOException {
         HttpURLConnection conn = null;
-        if (mHost.endsWith("pool.sks-keyservers.net") && mSecure) {
-            try {
-                conn = TlsHelper.openCAConnection(Constants.SKS_KEYSERVERS_NET_CA.getBytes(), url);
-            } catch (TlsHelper.TlsHelperException e) {
-                Log.w(Constants.TAG, e);
-            }
+        try {
+            conn = (HttpURLConnection) TlsHelper.openConnection(url);
+        } catch (TlsHelper.TlsHelperException e) {
+            Log.w(Constants.TAG, e);
         }
         if (conn == null) {
             conn = (HttpURLConnection) url.openConnection();
