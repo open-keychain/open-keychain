@@ -53,7 +53,7 @@ import org.sufficientlysecure.keychain.provider.KeychainContract.UserIds;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
 import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
 import org.sufficientlysecure.keychain.service.PassphraseCacheService;
-import org.sufficientlysecure.keychain.ui.adapter.ViewKeyUserIdsAdapter;
+import org.sufficientlysecure.keychain.ui.adapter.UserIdsAdapter;
 import org.sufficientlysecure.keychain.ui.dialog.PassphraseDialogFragment;
 import org.sufficientlysecure.keychain.util.Log;
 
@@ -75,7 +75,7 @@ public class CertifyKeyActivity extends ActionBarActivity implements
     private long mMasterKeyId = 0;
 
     private ListView mUserIds;
-    private ViewKeyUserIdsAdapter mUserIdsAdapter;
+    private UserIdsAdapter mUserIdsAdapter;
 
     private static final int LOADER_ID_KEYRING = 0;
     private static final int LOADER_ID_USER_IDS = 1;
@@ -143,13 +143,12 @@ public class CertifyKeyActivity extends ActionBarActivity implements
 
         mUserIds = (ListView) findViewById(R.id.view_key_user_ids);
 
-        mUserIdsAdapter = new ViewKeyUserIdsAdapter(this, null, 0, true);
+        mUserIdsAdapter = new UserIdsAdapter(this, null, 0, true);
         mUserIds.setAdapter(mUserIdsAdapter);
         mUserIds.setOnItemClickListener(mUserIdsAdapter);
 
         getSupportLoaderManager().initLoader(LOADER_ID_KEYRING, null, this);
         getSupportLoaderManager().initLoader(LOADER_ID_USER_IDS, null, this);
-
     }
 
     static final String USER_IDS_SELECTION = UserIds.IS_REVOKED + " = 0";
@@ -175,7 +174,7 @@ public class CertifyKeyActivity extends ActionBarActivity implements
             case LOADER_ID_USER_IDS: {
                 Uri uri = UserIds.buildUserIdsUri(mDataUri);
                 return new CursorLoader(this, uri,
-                        ViewKeyUserIdsAdapter.USER_IDS_PROJECTION, USER_IDS_SELECTION, null, null);
+                        UserIdsAdapter.USER_IDS_PROJECTION, USER_IDS_SELECTION, null, null);
             }
         }
         return null;

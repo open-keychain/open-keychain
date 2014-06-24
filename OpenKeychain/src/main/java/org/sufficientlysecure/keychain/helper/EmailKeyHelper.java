@@ -57,11 +57,13 @@ public class EmailKeyHelper {
             }
         }
 
-        // Most users don't have the SRV record, so ask a default server as well
-        String[] servers = Preferences.getPreferences(context).getKeyServers();
-        if (servers != null && servers.length != 0) {
-            HkpKeyserver hkp = new HkpKeyserver(servers[0]);
-            keys.addAll(getEmailKeys(mail, hkp));
+        if (keys.isEmpty()) {
+            // Most users don't have the SRV record, so ask a default server as well
+            String[] servers = Preferences.getPreferences(context).getKeyServers();
+            if (servers != null && servers.length != 0) {
+                HkpKeyserver hkp = new HkpKeyserver(servers[0]);
+                keys.addAll(getEmailKeys(mail, hkp));
+            }
         }
         return new ArrayList<ImportKeysListEntry>(keys);
     }

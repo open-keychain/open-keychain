@@ -41,6 +41,11 @@ public class SaveKeyringParcel implements Parcelable {
     public SaveKeyringParcel(long masterKeyId, byte[] fingerprint) {
         mMasterKeyId = masterKeyId;
         mFingerprint = fingerprint;
+        addUserIds = new ArrayList<String>();
+        addSubKeys = new ArrayList<SubkeyAdd>();
+        changeSubKeys = new ArrayList<SubkeyChange>();
+        revokeUserIds = new ArrayList<String>();
+        revokeSubKeys = new ArrayList<Long>();
     }
 
     // performance gain for using Parcelable here would probably be negligible,

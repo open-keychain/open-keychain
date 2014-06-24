@@ -18,6 +18,10 @@
 
 package org.sufficientlysecure.keychain.keyimport;
 
+import de.measite.minidns.Client;
+import de.measite.minidns.Question;
+import de.measite.minidns.Record;
+import de.measite.minidns.record.SRV;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
@@ -33,10 +37,6 @@ import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.pgp.PgpHelper;
 import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
 import org.sufficientlysecure.keychain.util.Log;
-import org.xbill.DNS.Lookup;
-import org.xbill.DNS.Record;
-import org.xbill.DNS.SRVRecord;
-import org.xbill.DNS.Type;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -316,6 +316,12 @@ public class HkpKeyserver extends Keyserver {
             while (uidMatcher.find()) {
                 String tmp = uidMatcher.group(1).trim();
                 if (tmp.contains("%")) {
+                    if(tmp.contains("%%")) {
+                        // This is a fix for issue #683
+                        // The server encodes a percent sign as %%, so it is swapped out with its
+                        // urlencoded counterpart to prevent errors
+                        tmp = tmp.replace("%%", "%25");
+                    }
                     try {
                         // converts Strings like "Universit%C3%A4t" to a proper encoding form "Universität".
                         tmp = (URLDecoder.decode(tmp, "UTF8"));
@@ -396,19 +402,20 @@ public class HkpKeyserver extends Keyserver {
      */
     public static HkpKeyserver resolve(String domain) {
         try {
-            Record[] records = new Lookup("_hkp._tcp." + domain, Type.SRV).run();
+            Record[] records = new Client().query(new Question("_hkp._tcp." + domain, Record.TYPE.SRV)).getAnswers();
             if (records.length > 0) {
                 Arrays.sort(records, new Comparator<Record>() {
                     @Override
                     public int compare(Record lhs, Record rhs) {
-                        if (!(lhs instanceof SRVRecord)) return 1;
-                        if (!(rhs instanceof SRVRecord)) return -1;
-                        return ((SRVRecord) lhs).getPriority() - ((SRVRecord) rhs).getPriority();
+                        if (lhs.getPayload().getType() != Record.TYPE.SRV) return 1;
+                        if (rhs.getPayload().getType() != Record.TYPE.SRV) return -1;
+                        return ((SRV) lhs.getPayload()).getPriority() - ((SRV) rhs.getPayload()).getPriority();
                     }
                 });
                 Record record = records[0]; // This is our best choice
-                if (record instanceof SRVRecord) {
-                    return new HkpKeyserver(((SRVRecord) record).getTarget().toString(), (short) ((SRVRecord) record).getPort());
+                if (record.getPayload().getType() == Record.TYPE.SRV) {
+                    return new HkpKeyserver(((SRV) record.getPayload()).getName(),
+                            (short) ((SRV) record.getPayload()).getPort());
                 }
             }
         } catch (Exception ignored) {
