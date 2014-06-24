@@ -34,16 +34,19 @@ import org.sufficientlysecure.keychain.helper.OtherHelper;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.provider.KeychainContract.Certs;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UserIds;
+import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
 
 import java.util.ArrayList;
 
-public class ViewKeyUserIdsAdapter extends CursorAdapter implements AdapterView.OnItemClickListener {
+public class UserIdsAdapter extends CursorAdapter implements AdapterView.OnItemClickListener {
     private LayoutInflater mInflater;
 
     private int mIndexUserId, mIndexRank;
     private int mVerifiedId, mIsRevoked, mIsPrimary;
 
     private final ArrayList<Boolean> mCheckStates;
+
+    private SaveKeyringParcel mSaveKeyringParcel;
 
     public static final String[] USER_IDS_PROJECTION = new String[]{
             UserIds._ID,
@@ -54,18 +57,27 @@ public class ViewKeyUserIdsAdapter extends CursorAdapter implements AdapterView.
             UserIds.IS_REVOKED
     };
 
-    public ViewKeyUserIdsAdapter(Context context, Cursor c, int flags, boolean showCheckBoxes) {
+    public UserIdsAdapter(Context context, Cursor c, int flags, boolean showCheckBoxes,
+                          SaveKeyringParcel saveKeyringParcel) {
         super(context, c, flags);
-
         mInflater = LayoutInflater.from(context);
 
         mCheckStates = showCheckBoxes ? new ArrayList<Boolean>() : null;
+        mSaveKeyringParcel = saveKeyringParcel;
 
         initIndex(c);
     }
 
-    public ViewKeyUserIdsAdapter(Context context, Cursor c, int flags) {
-        this(context, c, flags, false);
+    public UserIdsAdapter(Context context, Cursor c, int flags, boolean showCheckBoxes) {
+        this(context, c, flags, showCheckBoxes, null);
+    }
+
+    public UserIdsAdapter(Context context, Cursor c, int flags, SaveKeyringParcel saveKeyringParcel) {
+        this(context, c, flags, false, saveKeyringParcel);
+    }
+
+    public UserIdsAdapter(Context context, Cursor c, int flags) {
+        this(context, c, flags, false, null);
     }
 
     @Override
@@ -110,21 +122,23 @@ public class ViewKeyUserIdsAdapter extends CursorAdapter implements AdapterView.
         TextView vAddress = (TextView) view.findViewById(R.id.address);
         TextView vComment = (TextView) view.findViewById(R.id.comment);
         ImageView vVerified = (ImageView) view.findViewById(R.id.certified);
+        ImageView vHasChanges = (ImageView) view.findViewById(R.id.has_changes);
 
-        String[] userId = KeyRing.splitUserId(cursor.getString(mIndexUserId));
-        if (userId[0] != null) {
-            vName.setText(userId[0]);
+        String userId = cursor.getString(mIndexUserId);
+        String[] splitUserId = KeyRing.splitUserId(userId);
+        if (splitUserId[0] != null) {
+            vName.setText(splitUserId[0]);
         } else {
             vName.setText(R.string.user_id_no_name);
         }
-        if (userId[1] != null) {
-            vAddress.setText(userId[1]);
+        if (splitUserId[1] != null) {
+            vAddress.setText(splitUserId[1]);
             vAddress.setVisibility(View.VISIBLE);
         } else {
             vAddress.setVisibility(View.GONE);
         }
-        if (userId[2] != null) {
-            vComment.setText(userId[2]);
+        if (splitUserId[2] != null) {
+            vComment.setText(splitUserId[2]);
             vComment.setVisibility(View.VISIBLE);
         } else {
             vComment.setVisibility(View.GONE);
@@ -132,9 +146,33 @@ public class ViewKeyUserIdsAdapter extends CursorAdapter implements AdapterView.
 
         // show small star icon for primary user ids
         boolean isPrimary = cursor.getInt(mIsPrimary) != 0;
+        boolean isRevoked = cursor.getInt(mIsRevoked) > 0;
 
-        if (cursor.getInt(mIsRevoked) > 0) {
+        // for edit key
+        if (mSaveKeyringParcel != null) {
+            boolean changeUserId = (mSaveKeyringParcel.changePrimaryUserId != null
+                    && mSaveKeyringParcel.changePrimaryUserId.equals(userId));
+            boolean revoke = (mSaveKeyringParcel.revokeUserIds.contains(userId));
 
+            if (changeUserId) {
+                isPrimary = !isPrimary;
+            }
+            if (revoke) {
+                if (!isRevoked) {
+                    isRevoked = true;
+                }
+            }
+
+            if (changeUserId || revoke) {
+                vHasChanges.setVisibility(View.VISIBLE);
+            } else {
+                vHasChanges.setVisibility(View.GONE);
+            }
+        } else {
+            vHasChanges.setVisibility(View.GONE);
+        }
+
+        if (isRevoked) {
             // set revocation icon (can this even be primary?)
             vVerified.setImageResource(R.drawable.key_certify_revoke);
 
@@ -181,7 +219,6 @@ public class ViewKeyUserIdsAdapter extends CursorAdapter implements AdapterView.
             }
         });
         vCheckBox.setClickable(false);
-
     }
 
     public void onItemClick(AdapterView<?> adapter, View view, int position, long id) {
@@ -202,6 +239,11 @@ public class ViewKeyUserIdsAdapter extends CursorAdapter implements AdapterView.
         return result;
     }
 
+    public String getUserId(int position) {
+        mCursor.moveToPosition(position);
+        return mCursor.getString(mIndexUserId);
+    }
+
     @Override
     public View newView(Context context, Cursor cursor, ViewGroup parent) {
         View view = mInflater.inflate(R.layout.view_key_userids_item, null);
@@ -213,7 +255,7 @@ public class ViewKeyUserIdsAdapter extends CursorAdapter implements AdapterView.
     // Disable selection of items for lists without checkboxes, http://stackoverflow.com/a/4075045
     @Override
     public boolean areAllItemsEnabled() {
-        if (mCheckStates == null) {
+        if (mCheckStates == null && mSaveKeyringParcel == null) {
             return false;
         } else {
             return super.areAllItemsEnabled();
@@ -223,7 +265,7 @@ public class ViewKeyUserIdsAdapter extends CursorAdapter implements AdapterView.
     // Disable selection of items for lists without checkboxes, http://stackoverflow.com/a/4075045
     @Override
     public boolean isEnabled(int position) {
-        if (mCheckStates == null) {
+        if (mCheckStates == null && mSaveKeyringParcel == null) {
             return false;
         } else {
             return super.isEnabled(position);

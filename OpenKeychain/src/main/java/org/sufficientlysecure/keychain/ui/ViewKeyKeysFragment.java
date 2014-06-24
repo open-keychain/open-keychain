@@ -31,7 +31,7 @@ import android.widget.ListView;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.provider.KeychainContract.Keys;
-import org.sufficientlysecure.keychain.ui.adapter.ViewKeyKeysAdapter;
+import org.sufficientlysecure.keychain.ui.adapter.SubkeysAdapter;
 import org.sufficientlysecure.keychain.util.Log;
 
 
@@ -42,7 +42,7 @@ public class ViewKeyKeysFragment extends LoaderFragment implements
 
     private ListView mKeys;
 
-    private ViewKeyKeysAdapter mKeysAdapter;
+    private SubkeysAdapter mKeysAdapter;
 
     private Uri mDataUri;
 
@@ -75,7 +75,7 @@ public class ViewKeyKeysFragment extends LoaderFragment implements
 
         Log.i(Constants.TAG, "mDataUri: " + mDataUri.toString());
 
-        mKeysAdapter = new ViewKeyKeysAdapter(getActivity(), null, 0);
+        mKeysAdapter = new SubkeysAdapter(getActivity(), null, 0);
         mKeys.setAdapter(mKeysAdapter);
 
         // Prepare the loaders. Either re-connect with an existing ones,
@@ -87,7 +87,7 @@ public class ViewKeyKeysFragment extends LoaderFragment implements
         setContentShown(false);
         Uri baseUri = Keys.buildKeysUri(mDataUri);
         return new CursorLoader(getActivity(), baseUri,
-                ViewKeyKeysAdapter.KEYS_PROJECTION, null, null, null);
+                SubkeysAdapter.KEYS_PROJECTION, null, null, null);
     }
 
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {

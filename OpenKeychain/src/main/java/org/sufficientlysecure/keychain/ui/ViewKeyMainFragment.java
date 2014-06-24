@@ -38,7 +38,7 @@ import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UserIds;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
-import org.sufficientlysecure.keychain.ui.adapter.ViewKeyUserIdsAdapter;
+import org.sufficientlysecure.keychain.ui.adapter.UserIdsAdapter;
 import org.sufficientlysecure.keychain.util.Log;
 
 import java.util.Date;
@@ -63,7 +63,7 @@ public class ViewKeyMainFragment extends LoaderFragment implements
     // conservative attitude
     private boolean mHasEncrypt = true;
 
-    private ViewKeyUserIdsAdapter mUserIdsAdapter;
+    private UserIdsAdapter mUserIdsAdapter;
 
     private Uri mDataUri;
 
@@ -124,7 +124,7 @@ public class ViewKeyMainFragment extends LoaderFragment implements
             }
         });
 
-        mUserIdsAdapter = new ViewKeyUserIdsAdapter(getActivity(), null, 0);
+        mUserIdsAdapter = new UserIdsAdapter(getActivity(), null, 0);
         mUserIds.setAdapter(mUserIdsAdapter);
 
         // Prepare the loaders. Either re-connect with an existing ones,
@@ -154,7 +154,7 @@ public class ViewKeyMainFragment extends LoaderFragment implements
             case LOADER_ID_USER_IDS: {
                 Uri baseUri = UserIds.buildUserIdsUri(mDataUri);
                 return new CursorLoader(getActivity(), baseUri,
-                        ViewKeyUserIdsAdapter.USER_IDS_PROJECTION, null, null, null);
+                        UserIdsAdapter.USER_IDS_PROJECTION, null, null, null);
             }
 
             default:
