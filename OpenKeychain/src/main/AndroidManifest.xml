@@ -59,6 +59,7 @@
     <uses-permission android:name="android.permission.WRITE_SYNC_SETTINGS"/>
     <uses-permission android:name="android.permission.READ_CONTACTS" />
     <uses-permission android:name="android.permission.WRITE_CONTACTS" />
+    <uses-permission android:name="android.permission.READ_PROFILE" />
 
     <!-- android:allowBackup="false": Don't allow backup over adb backup or other apps! -->
     <application

@@ -143,7 +143,7 @@ public class WizardActivity extends ActionBarActivity {
             emailView.setAdapter(
                     new ArrayAdapter<String>
                             (getActivity(), android.R.layout.simple_dropdown_item_1line,
-                                    ContactHelper.getMailAccounts(getActivity())
+                                    ContactHelper.getPossibleUserEmails(getActivity())
                             )
             );
             emailView.addTextChangedListener(new TextWatcher() {
@@ -173,6 +173,14 @@ public class WizardActivity extends ActionBarActivity {
                     }
                 }
             });
+            final AutoCompleteTextView nameView = (AutoCompleteTextView) view.findViewById(R.id.name);
+            nameView.setThreshold(1); // Start working from first character
+            nameView.setAdapter(
+                    new ArrayAdapter<String>
+                            (getActivity(), android.R.layout.simple_dropdown_item_1line,
+                                    ContactHelper.getPossibleUserNames(getActivity())
+                            )
+            );
             return view;
         }
     }
