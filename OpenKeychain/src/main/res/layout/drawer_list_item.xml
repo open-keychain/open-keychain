@@ -4,9 +4,10 @@
     android:layout_height="wrap_content">
 
     <ImageView
-        android:layout_width="30 dp"
-        android:layout_height="wrap_content"
         android:id="@+id/drawer_item_icon"
+        android:gravity="center_vertical"
+        android:layout_width="30dp"
+        android:layout_height="wrap_content"
         android:layout_marginLeft="8dp"
         android:layout_alignParentStart="true"
         android:layout_alignParentLeft="true"
@@ -24,6 +25,7 @@
         android:paddingTop="16dp"
         android:textAppearance="@android:style/TextAppearance.Medium"
         android:textColor="#111"
-        android:layout_alignParentTop="true" />
+        android:layout_alignParentTop="true"
+        android:layout_toRightOf="@id/drawer_item_icon"/>
 
 </RelativeLayout>
