@@ -9,6 +9,7 @@
     <string name="title_authentication">Passphrase</string>
     <string name="title_create_key">Create Key</string>
     <string name="title_edit_key">Edit Key</string>
+    <string name="title_wizard">Welcome to OpenKeychain</string>
     <string name="title_preferences">Preferences</string>
     <string name="title_api_registered_apps">Apps</string>
     <string name="title_key_server_preference">Keyserver Preference</string>

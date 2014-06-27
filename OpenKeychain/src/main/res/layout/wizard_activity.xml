@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:id="@+id/wizard_buttons"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/wizard_back"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:onClick="backOnClick"
+            android:text="cancel"
+            style="@style/SelectableItem" />
+
+        <View
+            android:layout_width="1dip"
+            android:layout_height="match_parent"
+            android:layout_marginBottom="4dip"
+            android:layout_marginTop="4dip"
+            android:background="?android:attr/listDivider" />
+
+        <Button
+            android:id="@+id/wizard_next"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:onClick="nextOnClick"
+            android:text="next"
+            style="@style/SelectableItem" />
+    </LinearLayout>
+
+    <View
+        android:id="@+id/wizard_progress_line"
+        android:layout_width="match_parent"
+        android:layout_height="1dip"
+        android:layout_above="@+id/wizard_buttons"
+        android:layout_marginLeft="4dip"
+        android:layout_marginRight="4dip"
+        android:background="?android:attr/listDivider"
+        android:visibility="gone" />
+
+    <LinearLayout
+        android:id="@+id/wizard_progress"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/wizard_progress_line"
+        android:visibility="gone">
+
+        <ProgressBar
+            android:id="@+id/wizard_progress_progressbar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <ImageView
+            android:id="@+id/wizard_progress_image"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/icon_light_refresh" />
+
+        <TextView
+            android:id="@+id/wizard_progress_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:text="asd"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+    </LinearLayout>
+
+    <View
+        android:id="@+id/wizard_line2"
+        android:layout_width="match_parent"
+        android:layout_height="1dip"
+        android:layout_above="@+id/wizard_progress"
+        android:layout_marginLeft="4dip"
+        android:layout_marginRight="4dip"
+        android:background="?android:attr/listDivider" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/wizard_line2">
+
+        <LinearLayout
+            android:id="@+id/wizard_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp" />
+    </ScrollView>
+
+</RelativeLayout>
