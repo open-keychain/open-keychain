@@ -17,7 +17,11 @@
 
 package org.sufficientlysecure.keychain.ui;
 
+import android.app.Activity;
+import android.content.ActivityNotFoundException;
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -41,8 +45,11 @@ import android.widget.ProgressBar;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 
+import org.sufficientlysecure.htmltextview.HtmlTextView;
+import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.helper.ContactHelper;
+import org.sufficientlysecure.keychain.util.Log;
 
 import java.util.regex.Matcher;
 
@@ -53,15 +60,22 @@ public class WizardActivity extends ActionBarActivity {
 
     // values for mCurrentScreen
     private enum State {
-        START, CREATE_KEY, NFC, FINISH
+        START, CREATE_KEY, IMPORT_KEY, K9
     }
+
+    public static final int REQUEST_CODE_IMPORT = 0x00007703;
 
     Button mBackButton;
     Button mNextButton;
     StartFragment mStartFragment;
     CreateKeyFragment mCreateKeyFragment;
-    GenericFragment mNFCFragment;
-    GenericFragment mFinishFragment;
+    K9Fragment mK9Fragment;
+
+    private static final String K9_PACKAGE = "com.fsck.k9";
+    //    private static final String K9_MARKET_INTENT_URI_BASE = "market://details?id=%s";
+//    private static final Intent K9_MARKET_INTENT = new Intent(Intent.ACTION_VIEW, Uri.parse(
+//            String.format(K9_MARKET_INTENT_URI_BASE, K9_PACKAGE)));
+    private static final Intent K9_MARKET_INTENT = new Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/k9mail/k-9/releases/tag/4.904"));
 
     LinearLayout mProgressLayout;
     View mProgressLine;
@@ -121,7 +135,7 @@ public class WizardActivity extends ActionBarActivity {
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
-            View view =  inflater.inflate(R.layout.wizard_create_key_fragment,
+            View view = inflater.inflate(R.layout.wizard_create_key_fragment,
                     container, false);
 
             final AutoCompleteTextView emailView = (AutoCompleteTextView) view.findViewById(R.id.email);
@@ -157,21 +171,17 @@ public class WizardActivity extends ActionBarActivity {
                         // remove drawable if email is empty
                         emailView.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
                     }
-//                    if (mEditorListener != null) {
-//                        mEditorListener.onEdited();
-//                    }
                 }
             });
             return view;
         }
     }
 
-    public static class GenericFragment extends Fragment {
-        public static GenericFragment newInstance(String text) {
-            GenericFragment myFragment = new GenericFragment();
+    public static class K9Fragment extends Fragment {
+        public static K9Fragment newInstance() {
+            K9Fragment myFragment = new K9Fragment();
 
             Bundle args = new Bundle();
-            args.putString("text", text);
             myFragment.setArguments(args);
 
             return myFragment;
@@ -180,12 +190,12 @@ public class WizardActivity extends ActionBarActivity {
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
-            View v = inflater.inflate(R.layout.wizard_generic_fragment,
+            View v = inflater.inflate(R.layout.wizard_k9_fragment,
                     container, false);
 
-            TextView text = (TextView) v
-                    .findViewById(R.id.fragment_vehicle_reg_generic_text);
-            text.setText(getArguments().getString("text"));
+            HtmlTextView text = (HtmlTextView) v
+                    .findViewById(R.id.wizard_k9_text);
+            text.setHtmlFromString("Install K9. It's good for you! Here is a screenhot how to enable OK in K9: (TODO)", true);
 
             return v;
         }
@@ -221,12 +231,10 @@ public class WizardActivity extends ActionBarActivity {
         mProgressLayout = (LinearLayout) findViewById(R.id.wizard_progress);
         mProgressLine = findViewById(R.id.wizard_progress_line);
         mProgressBar = (ProgressBar) findViewById(R.id.wizard_progress_progressbar);
-		mProgressImage = (ImageView) findViewById(R.id.wizard_progress_image);
-		mProgressText = (TextView) findViewById(R.id.wizard_progress_text);
+        mProgressImage = (ImageView) findViewById(R.id.wizard_progress_image);
+        mProgressText = (TextView) findViewById(R.id.wizard_progress_text);
 
-        mStartFragment = StartFragment.newInstance();
-        loadFragment(mStartFragment);
-        mCurrentState = State.START;
+        changeToState(State.START);
     }
 
     private enum ProgressState {
@@ -281,80 +289,119 @@ public class WizardActivity extends ActionBarActivity {
         }
 
         switch (mCurrentState) {
-
             case START: {
                 RadioGroup radioGroup = (RadioGroup) findViewById(R.id.wizard_start_radio_group);
                 int selectedId = radioGroup.getCheckedRadioButtonId();
                 switch (selectedId) {
                     case R.id.wizard_start_new_key: {
-                        mCurrentState = State.CREATE_KEY;
-                        mCreateKeyFragment = CreateKeyFragment.newInstance();
-                        loadFragment(mCreateKeyFragment);
+                        changeToState(State.CREATE_KEY);
+                        break;
+                    }
+                    case R.id.wizard_start_import: {
+                        changeToState(State.IMPORT_KEY);
+                        break;
+                    }
+                    case R.id.wizard_start_skip: {
+                        finish();
                         break;
                     }
                 }
 
                 mBackButton.setText(R.string.btn_back);
-
-//			if (isEditTextNotEmpty(this, asd)) {
-//				mLicensePlate = asd.getText().toString();
-//
-//				showProgress(ProgressState.WORKING,
-//						"doing something";
-//			}
                 break;
             }
             case CREATE_KEY:
+                EditText nameEdit = (EditText) findViewById(R.id.name);
+                EditText emailEdit = (EditText) findViewById(R.id.email);
+                EditText passphraseEdit = (EditText) findViewById(R.id.passphrase);
 
-                AsyncTask<String, Boolean, Boolean> generateTask = new AsyncTask<String, Boolean, Boolean>() {
+                if (isEditTextNotEmpty(this, nameEdit)
+                        && isEditTextNotEmpty(this, emailEdit)
+                        && isEditTextNotEmpty(this, passphraseEdit)) {
 
-                    @Override
-                    protected void onPreExecute() {
-                        super.onPreExecute();
+//                    SaveKeyringParcel newKey = new SaveKeyringParcel();
+//                    newKey.addUserIds.add(nameEdit.getText().toString() + " <"
+//                            + emailEdit.getText().toString() + ">");
 
-                        showProgress(ProgressState.WORKING, "generating key...");
-                    }
 
-                    @Override
-                    protected Boolean doInBackground(String... params) {
-                        return false;
-                    }
+                    AsyncTask<String, Boolean, Boolean> generateTask = new AsyncTask<String, Boolean, Boolean>() {
 
-                    @Override
-                    protected void onPostExecute(Boolean result) {
-                        super.onPostExecute(result);
+                        @Override
+                        protected void onPreExecute() {
+                            super.onPreExecute();
 
-//					if (result) {
-//						showProgress(
-//								ProgressState.WORKING,
-//								"asd");
-//
-//					} else {
-//						showProgress(
-//								ProgressState.ERROR, "asd");
-//					}
-                    }
+                            showProgress(ProgressState.WORKING, "generating key...");
+                        }
 
-                };
+                        @Override
+                        protected Boolean doInBackground(String... params) {
+                            return true;
+                        }
 
-                generateTask.execute("");
+                        @Override
+                        protected void onPostExecute(Boolean result) {
+                            super.onPostExecute(result);
 
+                            if (result) {
+                                showProgress(ProgressState.ENABLED, "key generated successfully!");
+
+                                changeToState(State.K9);
+                            } else {
+                                showProgress(ProgressState.ERROR, "error in key gen");
+                            }
+                        }
+
+                    };
+
+                    generateTask.execute("");
+                }
                 break;
-            case NFC:
+            case K9: {
+                RadioGroup radioGroup = (RadioGroup) findViewById(R.id.wizard_k9_radio_group);
+                int selectedId = radioGroup.getCheckedRadioButtonId();
+                switch (selectedId) {
+                    case R.id.wizard_k9_install: {
+                        try {
+                            startActivity(K9_MARKET_INTENT);
+                        } catch (ActivityNotFoundException e) {
+                            Log.e(Constants.TAG, "Activity not found for: " + K9_MARKET_INTENT);
+                        }
+                        break;
+                    }
+                    case R.id.wizard_k9_skip: {
+                        finish();
+                        break;
+                    }
+                }
 
-                mCurrentState = State.FINISH;
-                hideProgress();
-                mFinishFragment = GenericFragment
-                        .newInstance("asd");
-                loadFragment(mFinishFragment);
-                mNextButton.setText("finish");
-
-                break;
-            case FINISH:
                 finish();
                 break;
+            }
             default:
                 break;
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        switch (requestCode) {
+            case REQUEST_CODE_IMPORT: {
+                if (resultCode == Activity.RESULT_OK) {
+                    // imported now...
+                    changeToState(State.K9);
+                } else {
+                    // back to start
+                    changeToState(State.START);
+                }
+                break;
+            }
+
+            default: {
+                super.onActivityResult(requestCode, resultCode, data);
+
+                break;
+            }
         }
     }
 
@@ -363,32 +410,48 @@ public class WizardActivity extends ActionBarActivity {
             case START:
                 finish();
                 break;
-
             case CREATE_KEY:
-                loadFragment(mStartFragment);
-                mCurrentState = State.START;
-                mBackButton.setText(android.R.string.cancel);
-                mNextButton.setText(R.string.btn_next);
+                changeToState(State.START);
                 break;
-            case NFC:
-                loadFragment(mCreateKeyFragment);
-                mCurrentState = State.CREATE_KEY;
-                mBackButton.setText(R.string.btn_back);
-                mNextButton.setText(R.string.btn_next);
+            case IMPORT_KEY:
+                changeToState(State.START);
                 break;
-            case FINISH:
-                loadFragment(mNFCFragment);
-                mCurrentState = State.NFC;
-                mBackButton.setText(R.string.btn_back);
-                mNextButton.setText(R.string.btn_next);
-                break;
-
             default:
-                loadFragment(mStartFragment);
+                changeToState(State.START);
+                break;
+        }
+    }
+
+    private void changeToState(State state) {
+        switch (state) {
+            case START: {
                 mCurrentState = State.START;
+                mStartFragment = StartFragment.newInstance();
+                loadFragment(mStartFragment);
                 mBackButton.setText(android.R.string.cancel);
                 mNextButton.setText(R.string.btn_next);
                 break;
+            }
+            case CREATE_KEY: {
+                mCurrentState = State.CREATE_KEY;
+                mCreateKeyFragment = CreateKeyFragment.newInstance();
+                loadFragment(mCreateKeyFragment);
+                break;
+            }
+            case IMPORT_KEY: {
+                mCurrentState = State.IMPORT_KEY;
+                Intent intent = new Intent(this, ImportKeysActivity.class);
+                intent.setAction(ImportKeysActivity.ACTION_IMPORT_KEY_FROM_FILE_AND_RETURN);
+                startActivityForResult(intent, REQUEST_CODE_IMPORT);
+                break;
+            }
+            case K9: {
+                mCurrentState = State.K9;
+                mBackButton.setEnabled(false); // don't go back to import/create key
+                mK9Fragment = K9Fragment.newInstance();
+                loadFragment(mK9Fragment);
+                break;
+            }
         }
     }
 

@@ -18,6 +18,7 @@
 package org.sufficientlysecure.keychain.ui;
 
 import android.annotation.TargetApi;
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.net.Uri;
@@ -66,6 +67,8 @@ public class ImportKeysActivity extends ActionBarActivity {
             + "IMPORT_KEY_FROM_KEYSERVER";
     public static final String ACTION_IMPORT_KEY_FROM_KEYSERVER_AND_RETURN = Constants.INTENT_PREFIX
             + "IMPORT_KEY_FROM_KEY_SERVER_AND_RETURN";
+    public static final String ACTION_IMPORT_KEY_FROM_FILE_AND_RETURN = Constants.INTENT_PREFIX
+            + "IMPORT_KEY_FROM_FILE_AND_RETURN";
     public static final String ACTION_IMPORT_KEY_FROM_KEYBASE = Constants.INTENT_PREFIX
             + "IMPORT_KEY_FROM_KEYBASE";
 
@@ -224,7 +227,8 @@ public class ImportKeysActivity extends ActionBarActivity {
                 );
                 return;
             }
-        } else if (ACTION_IMPORT_KEY_FROM_FILE.equals(action)) {
+        } else if (ACTION_IMPORT_KEY_FROM_FILE.equals(action)
+                    || ACTION_IMPORT_KEY_FROM_FILE_AND_RETURN.equals(action)) {
             // NOTE: this only displays the appropriate fragment, no actions are taken
             mSwitchToTab = TAB_FILE;
 
@@ -509,12 +513,13 @@ public class ImportKeysActivity extends ActionBarActivity {
                     }
                     */
 
-                    /*
                     if (ACTION_IMPORT_KEY_FROM_KEYSERVER_AND_RETURN.equals(getIntent().getAction())) {
-                        ImportKeysActivity.this.setResult(Activity.RESULT_OK, mPendingIntentData);
-                        finish();
+                        ImportKeysActivity.this.setResult(RESULT_OK, mPendingIntentData);
+                        ImportKeysActivity.this.finish();
+                    } else if (ACTION_IMPORT_KEY_FROM_FILE_AND_RETURN.equals(getIntent().getAction())) {
+                        ImportKeysActivity.this.setResult(RESULT_OK);
+                        ImportKeysActivity.this.finish();
                     }
-                    */
                 }
             }
         };

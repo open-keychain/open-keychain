@@ -207,7 +207,9 @@ public class ImportKeysListFragment extends ListFragment implements
         if (getLoaderManager().getLoader(LOADER_ID_KEYBASE) != null) {
             getLoaderManager().destroyLoader(LOADER_ID_KEYBASE);
         }
-        setListShown(true);
+        if (getView() != null) {
+            setListShown(true);
+        }
     }
 
     private void restartLoaders() {
