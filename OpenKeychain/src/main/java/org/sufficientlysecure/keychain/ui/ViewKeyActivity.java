@@ -55,6 +55,7 @@ import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
+import org.sufficientlysecure.keychain.service.OperationResults.ImportResult;
 import org.sufficientlysecure.keychain.ui.adapter.PagerTabStripAdapter;
 import org.sufficientlysecure.keychain.ui.widget.SlidingTabLayout.TabColorizer;
 import org.sufficientlysecure.keychain.util.Log;
@@ -331,7 +332,7 @@ public class ViewKeyActivity extends ActionBarActivity implements
         String fingerprint = PgpKeyHelper.convertFingerprintToHex(blob);
 
         Intent queryIntent = new Intent(this, ImportKeysActivity.class);
-        queryIntent.setAction(ImportKeysActivity.ACTION_IMPORT_KEY_FROM_KEYSERVER_AND_RETURN);
+        queryIntent.setAction(ImportKeysActivity.ACTION_IMPORT_KEY_FROM_KEYSERVER_AND_RETURN_RESULT);
         queryIntent.putExtra(ImportKeysActivity.EXTRA_FINGERPRINT, fingerprint);
 
         startActivityForResult(queryIntent, REQUEST_CODE_LOOKUP_KEY);
@@ -355,7 +356,10 @@ public class ViewKeyActivity extends ActionBarActivity implements
         switch (requestCode) {
             case REQUEST_CODE_LOOKUP_KEY: {
                 if (resultCode == Activity.RESULT_OK) {
-                    // TODO: reload key??? move this into fragment?
+                    ImportResult result = data.getParcelableExtra(ImportKeysActivity.EXTRA_RESULT);
+                    if (result != null) {
+                        result.displayToast(this);
+                    }
                 }
                 break;
             }

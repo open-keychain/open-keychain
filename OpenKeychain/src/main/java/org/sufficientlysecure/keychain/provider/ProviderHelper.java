@@ -686,7 +686,7 @@ public class ProviderHelper {
                 if (Arrays.hashCode(publicRing.getEncoded())
                         == Arrays.hashCode(oldPublicRing.getEncoded())) {
                     log(LogLevel.OK, LogType.MSG_IP_SUCCESS_IDENTICAL);
-                    return new SaveKeyringResult(SaveKeyringResult.RESULT_OK, mLog);
+                    return new SaveKeyringResult(SaveKeyringResult.UPDATED, mLog);
                 }
             } catch (NotFoundException e) {
                 // Not an issue, just means we are dealing with a new keyring.
@@ -771,7 +771,7 @@ public class ProviderHelper {
                         == Arrays.hashCode(oldSecretRing.getEncoded())) {
                     log(LogLevel.OK, LogType.MSG_IS_SUCCESS_IDENTICAL,
                             PgpKeyHelper.convertKeyIdToHex(masterKeyId) );
-                    return new SaveKeyringResult(SaveKeyringResult.RESULT_OK, mLog);
+                    return new SaveKeyringResult(SaveKeyringResult.UPDATED, mLog);
                 }
             } catch (NotFoundException e) {
                 // Not an issue, just means we are dealing with a new keyring
