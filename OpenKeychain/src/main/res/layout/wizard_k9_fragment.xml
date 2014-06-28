@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical" >
+
+    <org.sufficientlysecure.htmltextview.HtmlTextView
+        android:id="@+id/wizard_k9_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingBottom="4dp"
+        android:text="Text..."
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    <RadioGroup
+        android:id="@+id/wizard_k9_radio_group"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <RadioButton
+            android:layout_width="match_parent"
+            android:layout_height="?android:attr/listPreferredItemHeight"
+            android:checked="true"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            style="@style/SelectableItem"
+            android:text="install K9"
+            android:id="@+id/wizard_k9_install" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dip"
+            android:background="?android:attr/listDivider" />
+
+        <RadioButton
+            android:layout_width="match_parent"
+            android:layout_height="?android:attr/listPreferredItemHeight"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            style="@style/SelectableItem"
+            android:text="skip install"
+            android:id="@+id/wizard_k9_skip" />
+    </RadioGroup>
+
+</LinearLayout>
