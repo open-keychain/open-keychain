@@ -37,8 +37,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
-
-import com.beardedhen.androidbootstrap.FontAwesomeText;
+import android.widget.ImageView;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
@@ -79,10 +78,10 @@ public class DrawerActivity extends ActionBarActivity {
         }
 
         NavItem mItemIconTexts[] = new NavItem[]{
-                new NavItem("fa-user", getString(R.string.nav_keys)),
-                new NavItem("fa-lock", getString(R.string.nav_encrypt)),
-                new NavItem("fa-unlock", getString(R.string.nav_decrypt)),
-                new NavItem("fa-android", getString(R.string.nav_apps))};
+                new NavItem(R.drawable.ic_action_person, getString(R.string.nav_keys)),
+                new NavItem(R.drawable.ic_action_secure, getString(R.string.nav_encrypt)),
+                new NavItem(R.drawable.ic_action_not_secure, getString(R.string.nav_decrypt)),
+                new NavItem(R.drawable.ic_action_view_as_list, getString(R.string.nav_apps))};
 
         mDrawerList.setAdapter(new NavigationDrawerAdapter(this, R.layout.drawer_list_item,
                 mItemIconTexts));
@@ -239,10 +238,15 @@ public class DrawerActivity extends ActionBarActivity {
     }
 
     private class NavItem {
-        public String icon;
+        public int icon; // res-id
         public String title;
 
-        public NavItem(String icon, String title) {
+        /**
+         * NavItem constructor
+         * @param icon The icons resource-id
+         * @param title The title of the menu entry
+         */
+        public NavItem(int icon, String title) {
             super();
             this.icon = icon;
             this.title = title;
@@ -271,7 +275,7 @@ public class DrawerActivity extends ActionBarActivity {
                 row = inflater.inflate(mLayoutResourceId, parent, false);
 
                 holder = new NavItemHolder();
-                holder.mImg = (FontAwesomeText) row.findViewById(R.id.drawer_item_icon);
+                holder.mImg = (ImageView) row.findViewById(R.id.drawer_item_icon);
                 holder.mTxtTitle = (TextView) row.findViewById(R.id.drawer_item_text);
 
                 row.setTag(holder);
@@ -281,7 +285,7 @@ public class DrawerActivity extends ActionBarActivity {
 
             NavItem item = mData[position];
             holder.mTxtTitle.setText(item.title);
-            holder.mImg.setIcon(item.icon);
+            holder.mImg.setImageResource(item.icon);
 
             return row;
         }
@@ -289,7 +293,7 @@ public class DrawerActivity extends ActionBarActivity {
     }
 
     static class NavItemHolder {
-        FontAwesomeText mImg;
+        ImageView mImg;
         TextView mTxtTitle;
     }
 
