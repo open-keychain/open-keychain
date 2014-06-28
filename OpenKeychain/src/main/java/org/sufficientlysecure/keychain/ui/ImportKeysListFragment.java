@@ -35,6 +35,7 @@ import org.sufficientlysecure.keychain.helper.Preferences;
 import org.sufficientlysecure.keychain.keyimport.ImportKeysListEntry;
 import org.sufficientlysecure.keychain.keyimport.Keyserver;
 import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
+import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
 import org.sufficientlysecure.keychain.ui.adapter.AsyncTaskResultWrapper;
 import org.sufficientlysecure.keychain.ui.adapter.ImportKeysAdapter;
 import org.sufficientlysecure.keychain.ui.adapter.ImportKeysListKeybaseLoader;
@@ -79,6 +80,7 @@ public class ImportKeysListFragment extends ListFragment implements
     public ArrayList<ParcelableKeyRing> getSelectedData() {
         ArrayList<ParcelableKeyRing> result = new ArrayList<ParcelableKeyRing>();
         for (ImportKeysListEntry entry : getSelectedEntries()) {
+            Log.d(Constants.TAG, "code" + Integer.toString(entry.hashCode()));
             result.add(mCachedKeyData.get(entry.hashCode()));
         }
         return result;

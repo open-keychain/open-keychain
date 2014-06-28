@@ -390,9 +390,6 @@ public class ImportKeysActivity extends ActionBarActivity {
 
     /**
      * Scroll ViewPager left and right
-     *
-     * @param event
-     * @return
      */
     @Override
     public boolean onTouchEvent(MotionEvent event) {
@@ -432,7 +429,7 @@ public class ImportKeysActivity extends ActionBarActivity {
                     // get returned data bundle
                     Bundle returnData = message.getData();
                     final ImportResult result =
-                            returnData.<ImportResult>getParcelable(KeychainIntentService.RESULT);
+                            returnData.getParcelable(KeychainIntentService.RESULT);
 
                     int resultType = result.getResult();
 
