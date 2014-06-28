@@ -428,9 +428,14 @@ public class ImportKeysActivity extends ActionBarActivity {
                 if (message.arg1 == KeychainIntentServiceHandler.MESSAGE_OKAY) {
                     // get returned data bundle
                     Bundle returnData = message.getData();
+                    if (returnData == null) {
+                        return;
+                    }
                     final ImportResult result =
                             returnData.getParcelable(KeychainIntentService.RESULT);
-
+                    if (result == null) {
+                        return;
+                    }
                     int resultType = result.getResult();
 
                     String str;
