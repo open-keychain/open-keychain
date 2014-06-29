@@ -42,22 +42,14 @@
                     android:minLines="2"
                     android:scrollbars="vertical" />
 
-                <!--<com.beardedhen.androidbootstrap.BootstrapButton
-                    android:id="@+id/decrypt_file_browse"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="4dp"
-                    bootstrapbutton:bb_icon_left="fa-folder-open"
-                    bootstrapbutton:bb_roundedCorners="true"
-                    bootstrapbutton:bb_size="default"
-                    bootstrapbutton:bb_type="default" />-->
                 <ImageButton
                     android:id="@+id/decrypt_file_browse"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_margin="4dp"
                     android:src="@drawable/ic_action_collection"
-                    android:background="@drawable/button_rounded"/>
+                    android:background="@drawable/button_rounded"
+                    android:layout_gravity="center_vertical"/>
             </LinearLayout>
 
             <CheckBox
