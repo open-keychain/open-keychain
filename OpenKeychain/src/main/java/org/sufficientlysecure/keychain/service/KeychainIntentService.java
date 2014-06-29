@@ -209,6 +209,10 @@ public class KeychainIntentService extends IntentService
 
         mMessenger = (Messenger) extras.get(EXTRA_MESSENGER);
         Bundle data = extras.getBundle(EXTRA_DATA);
+        if (data == null) {
+            Log.e(Constants.TAG, "data extra is null!");
+            return;
+        }
 
         OtherHelper.logDebugBundle(data, "EXTRA_DATA");
 
@@ -320,32 +324,39 @@ public class KeychainIntentService extends IntentService
             try {
                 /* Input */
                 SaveKeyringParcel saveParcel = data.getParcelable(SAVE_KEYRING_PARCEL);
-                long masterKeyId = saveParcel.mMasterKeyId;
+                if (saveParcel == null) {
+                    Log.e(Constants.TAG, "bug: missing save_keyring_parcel in data!");
+                    return;
+                }
 
                 /* Operation */
                 ProviderHelper providerHelper = new ProviderHelper(this);
                 PgpKeyOperation keyOperations = new PgpKeyOperation(new ProgressScaler(this, 10, 50, 100));
                 try {
-                    String passphrase = data.getString(SAVE_KEYRING_PASSPHRASE);
-                    WrappedSecretKeyRing secRing = providerHelper.getWrappedSecretKeyRing(masterKeyId);
-
                     OperationLog log = new OperationLog();
-                    UncachedKeyRing ring = keyOperations.modifySecretKeyRing(secRing, saveParcel,
-                            passphrase, log, 0);
-                    providerHelper.saveSecretKeyRing(ring, new ProgressScaler(this, 60, 95, 100));
+                    UncachedKeyRing ring;
+                    if (saveParcel.mMasterKeyId != null) {
+                        String passphrase = data.getString(SAVE_KEYRING_PASSPHRASE);
+                        WrappedSecretKeyRing secRing =
+                                providerHelper.getWrappedSecretKeyRing(saveParcel.mMasterKeyId);
+
+                        ring = keyOperations.modifySecretKeyRing(secRing, saveParcel,
+                                passphrase, log, 0);
+                    } else {
+                        ring = keyOperations.createSecretKeyRing(saveParcel, log, 0);
+                    }
+
+                    providerHelper.saveSecretKeyRing(ring, new ProgressScaler(this, 10, 95, 100));
+
+                    if (saveParcel.newPassphrase != null) {
+                        PassphraseCacheService.addCachedPassphrase(this, ring.getMasterKeyId(),
+                                saveParcel.newPassphrase);
+                    }
                 } catch (ProviderHelper.NotFoundException e) {
-                    // UncachedKeyRing ring = keyOperations.(saveParcel); //new Keyring
-                    // save the pair
-                    setProgress(R.string.progress_saving_key_ring, 95, 100);
-                    // providerHelper.saveSecretKeyRing(ring);
                     sendErrorToHandler(e);
                 }
 
                 setProgress(R.string.progress_done, 100, 100);
-
-                if (saveParcel.newPassphrase != null) {
-                    PassphraseCacheService.addCachedPassphrase(this, masterKeyId, saveParcel.newPassphrase);
-                }
 
                 /* Output */
                 sendMessageToHandler(KeychainIntentServiceHandler.MESSAGE_OKAY);
@@ -437,7 +448,7 @@ public class KeychainIntentService extends IntentService
                                 new FileOutputStream(outputFile));
 
                 if (mIsCanceled) {
-                    boolean isDeleted = new File(outputFile).delete();
+                    new File(outputFile).delete();
                 }
 
                 sendMessageToHandler(KeychainIntentServiceHandler.MESSAGE_OKAY, resultData);
@@ -593,6 +604,7 @@ public class KeychainIntentService extends IntentService
             return;
         }
         Message msg = Message.obtain();
+        assert msg != null;
         msg.arg1 = arg1;
         if (arg2 != null) {
             msg.arg2 = arg2;

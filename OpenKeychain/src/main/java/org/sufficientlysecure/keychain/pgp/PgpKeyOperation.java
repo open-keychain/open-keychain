@@ -38,6 +38,7 @@ import org.spongycastle.openpgp.operator.PBESecretKeyDecryptor;
 import org.spongycastle.openpgp.operator.PBESecretKeyEncryptor;
 import org.spongycastle.openpgp.operator.PGPContentSignerBuilder;
 import org.spongycastle.openpgp.operator.PGPDigestCalculator;
+import org.spongycastle.openpgp.operator.jcajce.JcaKeyFingerprintCalculator;
 import org.spongycastle.openpgp.operator.jcajce.JcaPGPContentSignerBuilder;
 import org.spongycastle.openpgp.operator.jcajce.JcaPGPDigestCalculatorProviderBuilder;
 import org.spongycastle.openpgp.operator.jcajce.JcaPGPKeyPair;
@@ -50,6 +51,8 @@ import org.sufficientlysecure.keychain.service.OperationResultParcel.LogLevel;
 import org.sufficientlysecure.keychain.service.OperationResultParcel.LogType;
 import org.sufficientlysecure.keychain.service.OperationResultParcel.OperationLog;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
+import org.sufficientlysecure.keychain.service.SaveKeyringParcel.SubkeyAdd;
+import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Primes;
 
 import java.io.IOException;
@@ -175,6 +178,40 @@ public class PgpKeyOperation {
         }
     }
 
+    public UncachedKeyRing createSecretKeyRing(SaveKeyringParcel saveParcel, OperationLog log,
+                                               int indent) {
+
+        try {
+
+            log.add(LogLevel.ERROR, LogType.MSG_MF_ERROR_KEYID, indent);
+            indent += 1;
+            updateProgress(R.string.progress_building_key, 0, 100);
+
+            if (saveParcel.addSubKeys == null || saveParcel.addSubKeys.isEmpty()) {
+                log.add(LogLevel.ERROR, LogType.MSG_CR_ERROR_NO_MASTER, indent);
+                return null;
+            }
+
+            SubkeyAdd add = saveParcel.addSubKeys.remove(0);
+            PGPSecretKey masterSecretKey = createKey(add.mAlgorithm, add.mKeysize,
+                    saveParcel.newPassphrase, true);
+            PGPSecretKeyRing sKR = new PGPSecretKeyRing(
+                    masterSecretKey.getEncoded(), new JcaKeyFingerprintCalculator());
+
+            return internal(sKR, masterSecretKey, saveParcel, saveParcel.newPassphrase, log, indent);
+
+        } catch (PGPException e) {
+            Log.e(Constants.TAG, "pgp error encoding key", e);
+            return null;
+        } catch (IOException e) {
+            Log.e(Constants.TAG, "io error encoding key", e);
+            return null;
+        } catch (PgpGeneralMsgIdException e) {
+            return null;
+        }
+
+    }
+
     /** This method introduces a list of modifications specified by a SaveKeyringParcel to a
      * WrappedSecretKeyRing.
      *
@@ -204,28 +241,49 @@ public class PgpKeyOperation {
         indent += 1;
         updateProgress(R.string.progress_building_key, 0, 100);
 
+        // Make sure this is called with a proper SaveKeyringParcel
+        if (saveParcel.mMasterKeyId == null || saveParcel.mMasterKeyId != wsKR.getMasterKeyId()) {
+            log.add(LogLevel.ERROR, LogType.MSG_MF_ERROR_KEYID, indent);
+            return null;
+        }
+
         // We work on bouncycastle object level here
         PGPSecretKeyRing sKR = wsKR.getRing();
-        PGPPublicKey masterPublicKey = sKR.getPublicKey();
         PGPSecretKey masterSecretKey = sKR.getSecretKey();
+
+        // Make sure the fingerprint matches
+        if (saveParcel.mFingerprint == null
+                || !Arrays.equals(saveParcel.mFingerprint,
+                                    masterSecretKey.getPublicKey().getFingerprint())) {
+            log.add(LogLevel.ERROR, LogType.MSG_MF_ERROR_FINGERPRINT, indent);
+            return null;
+        }
+
+        return internal(sKR, masterSecretKey, saveParcel, passphrase, log, indent);
+
+    }
+
+    private UncachedKeyRing internal(PGPSecretKeyRing sKR, PGPSecretKey masterSecretKey,
+                                     SaveKeyringParcel saveParcel, String passphrase,
+                                     OperationLog log, int indent) {
+
+        updateProgress(R.string.progress_certifying_master_key, 20, 100);
+
+        PGPPublicKey masterPublicKey = masterSecretKey.getPublicKey();
 
         // 1. Unlock private key
         log.add(LogLevel.DEBUG, LogType.MSG_MF_UNLOCK, indent);
-        PGPPrivateKey masterPrivateKey; {
+        PGPPrivateKey masterPrivateKey;
+        {
             try {
                 PBESecretKeyDecryptor keyDecryptor = new JcePBESecretKeyDecryptorBuilder().setProvider(
                         Constants.BOUNCY_CASTLE_PROVIDER_NAME).build(passphrase.toCharArray());
                 masterPrivateKey = masterSecretKey.extractPrivateKey(keyDecryptor);
             } catch (PGPException e) {
-                log.add(LogLevel.ERROR, LogType.MSG_MF_UNLOCK_ERROR, indent+1);
+                log.add(LogLevel.ERROR, LogType.MSG_MF_UNLOCK_ERROR, indent + 1);
                 return null;
             }
         }
-        if (!Arrays.equals(saveParcel.mFingerprint, sKR.getPublicKey().getFingerprint())) {
-            return null;
-        }
-
-        updateProgress(R.string.progress_certifying_master_key, 20, 100);
 
         // work on master secret key
         try {
@@ -262,7 +320,7 @@ public class PgpKeyOperation {
             }
 
 
-        // 4a. For each subkey change, generate new subkey binding certificate
+            // 4a. For each subkey change, generate new subkey binding certificate
             for (SaveKeyringParcel.SubkeyChange change : saveParcel.changeSubKeys) {
                 log.add(LogLevel.INFO, LogType.MSG_MF_SUBKEY_CHANGE,
                         indent, PgpKeyHelper.convertKeyIdToHex(change.mKeyId));
