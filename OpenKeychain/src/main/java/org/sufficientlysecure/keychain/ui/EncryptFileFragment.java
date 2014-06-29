@@ -34,9 +34,9 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.Spinner;
 
-import com.beardedhen.androidbootstrap.BootstrapButton;
 import com.devspark.appmsg.AppMsg;
 
 import org.sufficientlysecure.keychain.Constants;
@@ -68,7 +68,7 @@ public class EncryptFileFragment extends Fragment {
     private EditText mFilename = null;
     private CheckBox mDeleteAfter = null;
     private CheckBox mShareAfter = null;
-    private BootstrapButton mBrowse = null;
+    private ImageButton mBrowse = null;
     private View mEncryptFile;
 
     private FileDialogFragment mFileDialog;
@@ -105,7 +105,7 @@ public class EncryptFileFragment extends Fragment {
         });
 
         mFilename = (EditText) view.findViewById(R.id.filename);
-        mBrowse = (BootstrapButton) view.findViewById(R.id.btn_browse);
+        mBrowse = (ImageButton) view.findViewById(R.id.btn_browse);
         mBrowse.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 if (Constants.KITKAT) {
