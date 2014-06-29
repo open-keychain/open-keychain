@@ -4,6 +4,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
+import java.util.Iterator;
 
 /**
  * Misc support functions. Would just use Guava / Apache Commons but
@@ -37,8 +38,71 @@ public class TestDataUtil {
         return output.toByteArray();
     }
 
-
     public static InputStream getResourceAsStream(String resourceName) {
         return TestDataUtil.class.getResourceAsStream(resourceName);
     }
+
+    /**
+     * Null-safe equivalent of {@code a.equals(b)}.
+     */
+    public static boolean equals(Object a, Object b) {
+        return (a == null) ? (b == null) : a.equals(b);
+    }
+
+    public static <T> boolean iterEquals(Iterator<T> a, Iterator<T> b, EqualityChecker<T> comparator) {
+        while (a.hasNext()) {
+            T aObject = a.next();
+            if (!b.hasNext()) {
+                return false;
+            }
+            T bObject = b.next();
+            if (!comparator.areEquals(aObject, bObject)) {
+                return false;
+            }
+        }
+
+        if (b.hasNext()) {
+            return false;
+        }
+
+        return true;
+    }
+
+
+    public static <T> boolean iterEquals(Iterator<T> a, Iterator<T> b) {
+        return iterEquals(a, b, new EqualityChecker<T>() {
+            @Override
+            public boolean areEquals(T lhs, T rhs) {
+                return TestDataUtil.equals(lhs, rhs);
+            }
+        });
+    }
+
+    public static interface EqualityChecker<T> {
+        public boolean areEquals(T lhs, T rhs);
+    }
+
+    public static byte[] concatAll(byte[]... byteArrays) {
+        if (byteArrays.length == 1) {
+            return byteArrays[0];
+        } else if (byteArrays.length == 2) {
+            return concat(byteArrays[0], byteArrays[1]);
+        } else {
+            byte[] first = concat(byteArrays[0], byteArrays[1]);
+            byte[][] remainingArrays = new byte[byteArrays.length - 1][];
+            remainingArrays[0] = first;
+            System.arraycopy(byteArrays, 2, remainingArrays, 1, byteArrays.length - 2);
+            return concatAll(remainingArrays);
+        }
+    }
+
+    private static byte[] concat(byte[] a, byte[] b) {
+        int aLen = a.length;
+        int bLen = b.length;
+        byte[] c = new byte[aLen + bLen];
+        System.arraycopy(a, 0, c, 0, aLen);
+        System.arraycopy(b, 0, c, aLen, bLen);
+        return c;
+    }
+
 }
