@@ -155,15 +155,13 @@
             </TableRow>
         </TableLayout>
 
-        <com.beardedhen.androidbootstrap.BootstrapButton
+        <ImageButton
             android:id="@+id/delete"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="10dp"
-            bootstrapbutton:bb_icon_left="fa-minus"
-            bootstrapbutton:bb_roundedCorners="true"
-            bootstrapbutton:bb_size="small"
-            bootstrapbutton:bb_type="danger" />
+            android:src="@drawable/minus"
+            android:background="@drawable/button_rounded_red"/>
     </LinearLayout>
 
     <View

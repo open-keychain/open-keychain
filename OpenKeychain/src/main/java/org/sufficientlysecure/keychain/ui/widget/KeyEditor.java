@@ -31,6 +31,7 @@ import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.DatePicker;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TableLayout;
 import android.widget.TableRow;
@@ -54,7 +55,7 @@ public class KeyEditor extends LinearLayout implements Editor, OnClickListener {
     private EditorListener mEditorListener = null;
 
     private boolean mIsMasterKey;
-    BootstrapButton mDeleteButton;
+    ImageButton mDeleteButton;
     TextView mAlgorithm;
     TextView mKeyId;
     TextView mCreationDate;
@@ -124,7 +125,7 @@ public class KeyEditor extends LinearLayout implements Editor, OnClickListener {
         mCreationDate = (TextView) findViewById(R.id.creation);
         mExpiryDateButton = (BootstrapButton) findViewById(R.id.expiry);
 
-        mDeleteButton = (BootstrapButton) findViewById(R.id.delete);
+        mDeleteButton = (ImageButton) findViewById(R.id.delete);
         mDeleteButton.setOnClickListener(this);
         mChkCertify = (CheckBox) findViewById(R.id.chkCertify);
         mChkCertify.setOnCheckedChangeListener(mCheckChanged);

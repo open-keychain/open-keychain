@@ -8,8 +8,8 @@
                 android:left="6dip"
                 android:right="6dip"
                 android:top="6dip" />
-            <solid android:color="#ebebeb" />
-            <stroke android:color="#cccccc" android:width="1.5dip" />
+            <corners android:radius="6dip" />
+            <solid android:color="#d2322d" />
         </shape>
     </item>
     <item android:state_focused="true">
@@ -19,8 +19,8 @@
                 android:left="6dip"
                 android:right="6dip"
                 android:top="6dip" />
-            <solid android:color="#ebebeb"/>
-            <stroke android:color="#cccccc" android:width="1.5dip" />
+            <corners android:radius="6dip" />
+            <solid android:color="#d2322d"/>
         </shape>
     </item>
     <item >
@@ -30,8 +30,8 @@
                 android:left="6dip"
                 android:right="6dip"
                 android:top="6dip" />
-            <solid android:color="#ffffff" />
-            <stroke android:color="#cccccc" android:width="1.5dip" />
+            <corners android:radius="6dip" />
+            <solid android:color="#d9534f" />
         </shape>
     </item>
 </selector>

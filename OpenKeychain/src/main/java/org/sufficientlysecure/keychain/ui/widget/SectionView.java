@@ -32,8 +32,7 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-
-import com.beardedhen.androidbootstrap.BootstrapButton;
+import android.widget.ImageButton;
 
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.PgpConversionHelper;
@@ -52,7 +51,7 @@ import java.util.Vector;
 
 public class SectionView extends LinearLayout implements OnClickListener, EditorListener, Editor {
     private LayoutInflater mInflater;
-    private BootstrapButton mPlusButton;
+    private ImageButton mPlusButton;
     private ViewGroup mEditors;
     private TextView mTitle;
     private int mType = 0;
@@ -126,7 +125,7 @@ public class SectionView extends LinearLayout implements OnClickListener, Editor
         setDrawingCacheEnabled(true);
         setAlwaysDrawnWithCacheEnabled(true);
 
-        mPlusButton = (BootstrapButton) findViewById(R.id.plusbutton);
+        mPlusButton = (ImageButton) findViewById(R.id.plusbutton);
         mPlusButton.setOnClickListener(this);
 
         mEditors = (ViewGroup) findViewById(R.id.editors);

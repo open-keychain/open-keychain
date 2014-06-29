@@ -34,13 +34,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
-import com.beardedhen.androidbootstrap.BootstrapButton;
 import com.devspark.appmsg.AppMsg;
 
 import org.sufficientlysecure.keychain.Constants;
@@ -97,7 +97,7 @@ public class EditKeyActivity extends ActionBarActivity implements EditorListener
     private boolean mNeedsSaving;
     private boolean mIsBrandNewKeyring = false;
 
-    private BootstrapButton mChangePassphrase;
+    private Button mChangePassphrase;
 
     private CheckBox mNoPassphrase;
 
@@ -372,7 +372,7 @@ public class EditKeyActivity extends ActionBarActivity implements EditorListener
         setContentView(R.layout.edit_key_activity);
 
         // find views
-        mChangePassphrase = (BootstrapButton) findViewById(R.id.edit_key_btn_change_passphrase);
+        mChangePassphrase = (Button) findViewById(R.id.edit_key_btn_change_passphrase);
         mNoPassphrase = (CheckBox) findViewById(R.id.edit_key_no_passphrase);
         // Build layout based on given userIds and keys
 
