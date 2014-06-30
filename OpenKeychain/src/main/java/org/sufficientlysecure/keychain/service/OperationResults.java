@@ -80,7 +80,7 @@ public abstract class OperationResults {
             }
         };
 
-        public void displayToast(final Activity activity) {
+        public void displayNotify(final Activity activity) {
 
             int resultType = getResult();
 
@@ -130,6 +130,7 @@ public abstract class OperationResults {
                 }
             }
 
+            // TODO: externalize into Notify class?
             boolean button = getLog() != null && !getLog().isEmpty();
             SuperCardToast toast = new SuperCardToast(activity,
                     button ? SuperToast.Type.BUTTON : SuperToast.Type.STANDARD,

@@ -20,7 +20,6 @@ package org.sufficientlysecure.keychain.ui;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
@@ -358,7 +357,7 @@ public class ViewKeyActivity extends ActionBarActivity implements
                 if (resultCode == Activity.RESULT_OK) {
                     ImportResult result = data.getParcelableExtra(ImportKeysActivity.EXTRA_RESULT);
                     if (result != null) {
-                        result.displayToast(this);
+                        result.displayNotify(this);
                     }
                 }
                 break;

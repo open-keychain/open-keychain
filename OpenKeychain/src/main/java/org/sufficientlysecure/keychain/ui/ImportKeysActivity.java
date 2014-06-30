@@ -18,7 +18,6 @@
 package org.sufficientlysecure.keychain.ui;
 
 import android.annotation.TargetApi;
-import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.net.Uri;
@@ -37,11 +36,6 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 
-import com.github.johnpersano.supertoasts.SuperCardToast;
-import com.github.johnpersano.supertoasts.SuperToast;
-import com.github.johnpersano.supertoasts.util.OnClickWrapper;
-import com.github.johnpersano.supertoasts.util.Style;
-
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.helper.OtherHelper;
@@ -55,6 +49,7 @@ import org.sufficientlysecure.keychain.service.OperationResults.ImportResult;
 import org.sufficientlysecure.keychain.ui.adapter.PagerTabStripAdapter;
 import org.sufficientlysecure.keychain.ui.widget.SlidingTabLayout;
 import org.sufficientlysecure.keychain.util.Log;
+import org.sufficientlysecure.keychain.util.Notify;
 
 import java.util.ArrayList;
 import java.util.Locale;
@@ -382,11 +377,7 @@ public class ImportKeysActivity extends ActionBarActivity {
 
     private boolean isFingerprintValid(String fingerprint) {
         if (fingerprint == null || fingerprint.length() < 40) {
-            SuperCardToast toast = SuperCardToast.create(this,
-                    getString(R.string.import_qr_code_too_short_fingerprint),
-                    SuperToast.Duration.LONG);
-            toast.setBackground(SuperToast.Background.RED);
-            toast.show();
+            Notify.showNotify(this, R.string.import_qr_code_too_short_fingerprint, Notify.Style.ERROR);
             return false;
         } else {
             return true;
@@ -460,7 +451,7 @@ public class ImportKeysActivity extends ActionBarActivity {
                         return;
                     }
 
-                    result.displayToast(ImportKeysActivity.this);
+                    result.displayNotify(ImportKeysActivity.this);
                 }
             }
         };
@@ -546,11 +537,7 @@ public class ImportKeysActivity extends ActionBarActivity {
             startService(intent);
 
         } else {
-            SuperCardToast toast = SuperCardToast.create(this,
-                    getString(R.string.error_nothing_import),
-                    SuperToast.Duration.LONG);
-            toast.setBackground(SuperToast.Background.RED);
-            toast.show();
+            Notify.showNotify(this, R.string.error_nothing_import, Notify.Style.ERROR);
         }
     }
 
