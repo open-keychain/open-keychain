@@ -51,8 +51,8 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Button;
 
-import com.beardedhen.androidbootstrap.BootstrapButton;
 import com.devspark.appmsg.AppMsg;
 
 import org.sufficientlysecure.keychain.Constants;
@@ -85,8 +85,8 @@ public class KeyListFragment extends LoaderFragment
     private String mQuery;
     private SearchView mSearchView;
     // empty list layout
-    private BootstrapButton mButtonEmptyCreate;
-    private BootstrapButton mButtonEmptyImport;
+    private Button mButtonEmptyCreate;
+    private Button mButtonEmptyImport;
 
 
     /**
@@ -101,7 +101,7 @@ public class KeyListFragment extends LoaderFragment
         mStickyList.setOnItemClickListener(this);
 
         // empty view
-        mButtonEmptyCreate = (BootstrapButton) view.findViewById(R.id.key_list_empty_button_create);
+        mButtonEmptyCreate = (Button) view.findViewById(R.id.key_list_empty_button_create);
         mButtonEmptyCreate.setOnClickListener(new OnClickListener() {
 
             @Override
@@ -113,7 +113,7 @@ public class KeyListFragment extends LoaderFragment
                 startActivityForResult(intent, 0);
             }
         });
-        mButtonEmptyImport = (BootstrapButton) view.findViewById(R.id.key_list_empty_button_import);
+        mButtonEmptyImport = (Button) view.findViewById(R.id.key_list_empty_button_import);
         mButtonEmptyImport.setOnClickListener(new OnClickListener() {
 
             @Override

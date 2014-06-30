@@ -26,8 +26,7 @@ import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-
-import com.beardedhen.androidbootstrap.FontAwesomeText;
+import android.widget.ImageButton;
 
 import org.sufficientlysecure.keychain.R;
 
@@ -50,7 +49,7 @@ import org.sufficientlysecure.keychain.R;
  */
 public class FoldableLinearLayout extends LinearLayout {
 
-    private FontAwesomeText mFoldableIcon;
+    private ImageButton mFoldableIcon;
     private boolean mFolded;
     private boolean mHasMigrated = false;
     private Integer mShortAnimationDuration = null;
@@ -58,8 +57,6 @@ public class FoldableLinearLayout extends LinearLayout {
     private LinearLayout mFoldableContainer = null;
     private View mFoldableLayout = null;
 
-    private String mFoldedIconName;
-    private String mUnFoldedIconName;
     private String mFoldedLabel;
     private String mUnFoldedLabel;
 
@@ -87,15 +84,11 @@ public class FoldableLinearLayout extends LinearLayout {
         if (attrs != null) {
             TypedArray a = context.obtainStyledAttributes(attrs,
                     R.styleable.FoldableLinearLayout, 0, 0);
-            mFoldedIconName = a.getString(R.styleable.FoldableLinearLayout_foldedIcon);
-            mUnFoldedIconName = a.getString(R.styleable.FoldableLinearLayout_unFoldedIcon);
             mFoldedLabel = a.getString(R.styleable.FoldableLinearLayout_foldedLabel);
             mUnFoldedLabel = a.getString(R.styleable.FoldableLinearLayout_unFoldedLabel);
             a.recycle();
         }
         // If any attribute isn't found then set a default one
-        mFoldedIconName = (mFoldedIconName == null) ? "fa-chevron-right" : mFoldedIconName;
-        mUnFoldedIconName = (mUnFoldedIconName == null) ? "fa-chevron-down" : mUnFoldedIconName;
         mFoldedLabel = (mFoldedLabel == null) ? context.getString(R.id.none) : mFoldedLabel;
         mUnFoldedLabel = (mUnFoldedLabel == null) ? context.getString(R.id.none) : mUnFoldedLabel;
     }
@@ -146,8 +139,8 @@ public class FoldableLinearLayout extends LinearLayout {
     }
 
     private void initialiseInnerViews() {
-        mFoldableIcon = (FontAwesomeText) mFoldableLayout.findViewById(R.id.foldableIcon);
-        mFoldableIcon.setIcon(mFoldedIconName);
+        mFoldableIcon = (ImageButton) mFoldableLayout.findViewById(R.id.foldableIcon);
+        mFoldableIcon.setImageResource(R.drawable.ic_action_expand);
         mFoldableTextView = (TextView) mFoldableLayout.findViewById(R.id.foldableText);
         mFoldableTextView.setText(mFoldedLabel);
 
@@ -160,7 +153,7 @@ public class FoldableLinearLayout extends LinearLayout {
             public void onClick(View view) {
                 mFolded = !mFolded;
                 if (mFolded) {
-                    mFoldableIcon.setIcon(mUnFoldedIconName);
+                    mFoldableIcon.setImageResource(R.drawable.ic_action_collapse);
                     mFoldableContainer.setVisibility(View.VISIBLE);
                     AlphaAnimation animation = new AlphaAnimation(0f, 1f);
                     animation.setDuration(mShortAnimationDuration);
@@ -168,7 +161,7 @@ public class FoldableLinearLayout extends LinearLayout {
                     mFoldableTextView.setText(mUnFoldedLabel);
 
                 } else {
-                    mFoldableIcon.setIcon(mFoldedIconName);
+                    mFoldableIcon.setImageResource(R.drawable.ic_action_expand);
                     AlphaAnimation animation = new AlphaAnimation(1f, 0f);
                     animation.setDuration(mShortAnimationDuration);
                     animation.setAnimationListener(new Animation.AnimationListener() {

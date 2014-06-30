@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:bootstrapbutton="http://schemas.android.com/apk/res-auto"
     android:id="@+id/result"
     android:orientation="vertical"
     android:layout_width="match_parent"
@@ -83,16 +82,15 @@
             android:layout_toRightOf="@+id/result_signature_image"
             android:textColor="@color/white" />
 
-        <com.beardedhen.androidbootstrap.BootstrapButton
+        <Button
             android:id="@+id/lookup_key"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/btn_lookup_key"
-            bootstrapbutton:bb_icon_left="fa-download"
-            bootstrapbutton:bb_type="info"
-            bootstrapbutton:bb_size="small"
+            android:drawableRight="@drawable/ic_action_download"
             android:layout_alignParentRight="true"
-            android:layout_centerVertical="true" />
+            android:layout_centerVertical="true"
+            android:background="@drawable/button_edgy"/>
 
     </RelativeLayout>
 

@@ -12,21 +12,21 @@
             android:orientation="horizontal"
             android:clickable="true">
 
-        <com.beardedhen.androidbootstrap.FontAwesomeText
+        <ImageButton
                 android:id="@+id/foldableIcon"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
                 android:layout_marginRight="10dp"
-                android:textSize="12sp"
-                android:paddingTop="@dimen/padding_medium"
-                android:paddingBottom="@dimen/padding_medium"
-                fontawesometext:fa_icon="fa-chevron-right"/>
+                android:src="@drawable/ic_action_expand"
+                android:background="@drawable/button_no_style"/>
 
         <TextView
                 android:id="@+id/foldableText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/none"
+                android:layout_gravity="center_vertical"
                 android:paddingTop="@dimen/padding_medium"
                 android:paddingBottom="@dimen/padding_medium"
                 android:textColor="@color/emphasis"/>
