@@ -26,14 +26,14 @@
             android:layout_height="wrap_content"
             android:text="@string/label_no_passphrase" />
 
-        <com.beardedhen.androidbootstrap.BootstrapButton
+        <Button
             android:id="@+id/edit_key_btn_change_passphrase"
             android:layout_width="match_parent"
             android:layout_height="60dp"
             android:padding="4dp"
             android:text="@string/btn_set_passphrase"
-            bootstrapbutton:bb_icon_left="fa-pencil"
-            bootstrapbutton:bb_type="default" />
+            android:drawableLeft="@drawable/ic_action_edit"
+            android:background="@drawable/button_edgy" />
 
         <LinearLayout
             android:id="@+id/edit_key_container"

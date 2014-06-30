@@ -10,7 +10,6 @@ dependencies {
     compile project(':extern:openkeychain-api-lib')
     compile project(':extern:html-textview')
     compile project(':extern:StickyListHeaders:library')
-    compile project(':extern:AndroidBootstrap:AndroidBootstrap')
     compile project(':extern:zxing-qr-code')
     compile project(':extern:zxing-android-integration')
     compile project(':extern:spongycastle:core')
