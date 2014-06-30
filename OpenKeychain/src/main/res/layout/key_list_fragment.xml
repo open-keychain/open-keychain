@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:bootstrapbutton="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
@@ -49,14 +48,15 @@
             android:text="@string/key_list_empty_text2"
             android:textAppearance="?android:attr/textAppearanceSmall" />
 
-        <com.beardedhen.androidbootstrap.BootstrapButton
+        <Button
             android:id="@+id/key_list_empty_button_create"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="4dp"
+            android:textSize="14sp"
             android:text="@string/key_list_empty_button_create"
-            bootstrapbutton:bb_icon_left="fa-plus"
-            bootstrapbutton:bb_type="default" />
+            android:drawableLeft="@drawable/ic_action_new_account"
+            android:background="@drawable/button_edgy"/>
 
         <TextView
             android:layout_width="wrap_content"
@@ -66,14 +66,15 @@
             android:text="@string/key_list_empty_text3"
             android:textAppearance="?android:attr/textAppearanceSmall" />
 
-        <com.beardedhen.androidbootstrap.BootstrapButton
+        <Button
             android:id="@+id/key_list_empty_button_import"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="4dp"
+            android:textSize="14sp"
             android:text="@string/key_list_empty_button_import"
-            bootstrapbutton:bb_icon_left="fa-download"
-            bootstrapbutton:bb_type="default" />
+            android:drawableLeft="@drawable/ic_action_download"
+            android:background="@drawable/button_edgy" />
     </LinearLayout>
 
 </FrameLayout>

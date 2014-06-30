@@ -31,12 +31,12 @@ import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.DatePicker;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
-
-import com.beardedhen.androidbootstrap.BootstrapButton;
+import android.widget.Button;
 
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
@@ -54,11 +54,11 @@ public class KeyEditor extends LinearLayout implements Editor, OnClickListener {
     private EditorListener mEditorListener = null;
 
     private boolean mIsMasterKey;
-    BootstrapButton mDeleteButton;
+    ImageButton mDeleteButton;
     TextView mAlgorithm;
     TextView mKeyId;
     TextView mCreationDate;
-    BootstrapButton mExpiryDateButton;
+    Button mExpiryDateButton;
     Calendar mCreatedDate;
     Calendar mExpiryDate;
     Calendar mOriginalExpiryDate = null;
@@ -122,9 +122,9 @@ public class KeyEditor extends LinearLayout implements Editor, OnClickListener {
         mAlgorithm = (TextView) findViewById(R.id.algorithm);
         mKeyId = (TextView) findViewById(R.id.keyId);
         mCreationDate = (TextView) findViewById(R.id.creation);
-        mExpiryDateButton = (BootstrapButton) findViewById(R.id.expiry);
+        mExpiryDateButton = (Button) findViewById(R.id.expiry);
 
-        mDeleteButton = (BootstrapButton) findViewById(R.id.delete);
+        mDeleteButton = (ImageButton) findViewById(R.id.delete);
         mDeleteButton.setOnClickListener(this);
         mChkCertify = (CheckBox) findViewById(R.id.chkCertify);
         mChkCertify.setOnCheckedChangeListener(mCheckChanged);

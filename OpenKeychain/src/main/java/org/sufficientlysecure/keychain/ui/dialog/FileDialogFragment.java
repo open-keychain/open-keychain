@@ -35,9 +35,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.TextView;
-
-import com.beardedhen.androidbootstrap.BootstrapButton;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
@@ -60,7 +59,7 @@ public class FileDialogFragment extends DialogFragment {
     private Messenger mMessenger;
 
     private EditText mFilename;
-    private BootstrapButton mBrowse;
+    private ImageButton mBrowse;
     private CheckBox mCheckBox;
     private TextView mMessageTextView;
 
@@ -114,7 +113,7 @@ public class FileDialogFragment extends DialogFragment {
 
         mFilename = (EditText) view.findViewById(R.id.input);
         mFilename.setText(mOutputFilename);
-        mBrowse = (BootstrapButton) view.findViewById(R.id.btn_browse);
+        mBrowse = (ImageButton) view.findViewById(R.id.btn_browse);
         mBrowse.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 // only .asc or .gpg files

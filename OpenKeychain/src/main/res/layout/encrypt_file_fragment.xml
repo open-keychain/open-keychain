@@ -31,15 +31,14 @@
                 android:minLines="2"
                 android:scrollbars="vertical" />
 
-            <com.beardedhen.androidbootstrap.BootstrapButton
+            <ImageButton
                 android:id="@+id/btn_browse"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="4dp"
-                bootstrapbutton:bb_icon_left="fa-folder-open"
-                bootstrapbutton:bb_roundedCorners="true"
-                bootstrapbutton:bb_size="default"
-                bootstrapbutton:bb_type="default" />
+                android:layout_gravity="center_vertical"
+                android:src="@drawable/ic_action_collection"
+                android:background="@drawable/button_rounded"/>
         </LinearLayout>
 
         <org.sufficientlysecure.keychain.ui.widget.FoldableLinearLayout

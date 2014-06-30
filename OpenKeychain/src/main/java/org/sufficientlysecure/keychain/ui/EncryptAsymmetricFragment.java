@@ -27,8 +27,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.TextView;
-
-import com.beardedhen.androidbootstrap.BootstrapButton;
+import android.widget.Button;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
@@ -52,7 +51,7 @@ public class EncryptAsymmetricFragment extends Fragment {
     OnAsymmetricKeySelection mKeySelectionListener;
 
     // view
-    private BootstrapButton mSelectKeysButton;
+    private Button mSelectKeysButton;
     private CheckBox mSign;
     private TextView mMainUserId;
     private TextView mMainUserIdRest;
@@ -99,7 +98,7 @@ public class EncryptAsymmetricFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.encrypt_asymmetric_fragment, container, false);
 
-        mSelectKeysButton = (BootstrapButton) view.findViewById(R.id.btn_selectEncryptKeys);
+        mSelectKeysButton = (Button) view.findViewById(R.id.btn_selectEncryptKeys);
         mSign = (CheckBox) view.findViewById(R.id.sign);
         mMainUserId = (TextView) view.findViewById(R.id.mainUserId);
         mMainUserIdRest = (TextView) view.findViewById(R.id.mainUserIdRest);
@@ -204,7 +203,7 @@ public class EncryptAsymmetricFragment extends Fragment {
                 userId = null;
             }
             if (userId != null && userId[0] != null) {
-                mMainUserId.setText(userId[0]);
+                mMainUserId.setText(String.format("%#16x", Long.parseLong(userId[0])));
             } else {
                 mMainUserId.setText(getResources().getString(R.string.user_id_no_name));
             }

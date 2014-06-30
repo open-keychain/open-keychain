@@ -28,8 +28,7 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.Spinner;
 import android.widget.TextView;
-
-import com.beardedhen.androidbootstrap.BootstrapButton;
+import android.widget.Button;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
@@ -57,7 +56,7 @@ public class AccountSettingsFragment extends Fragment implements
     private Spinner mCompression;
 
     private SelectSecretKeyLayoutFragment mSelectKeyFragment;
-    private BootstrapButton mCreateKeyButton;
+    private Button mCreateKeyButton;
 
     KeyValueSpinnerAdapter mEncryptionAdapter;
     KeyValueSpinnerAdapter mHashAdapter;
@@ -107,7 +106,7 @@ public class AccountSettingsFragment extends Fragment implements
                 .findViewById(R.id.api_account_settings_encryption_algorithm);
         mHashAlgorithm = (Spinner) view.findViewById(R.id.api_account_settings_hash_algorithm);
         mCompression = (Spinner) view.findViewById(R.id.api_account_settings_compression);
-        mCreateKeyButton = (BootstrapButton) view.findViewById(R.id.api_account_settings_create_key);
+        mCreateKeyButton = (Button) view.findViewById(R.id.api_account_settings_create_key);
 
         mCreateKeyButton.setOnClickListener(new View.OnClickListener() {
             @Override
