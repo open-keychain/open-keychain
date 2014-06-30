@@ -113,10 +113,10 @@ public class KeyListActivity extends DrawerActivity {
     }
 
     private void createKey() {
-        Intent intent = new Intent(this, EditKeyActivity.class);
-        intent.setAction(EditKeyActivity.ACTION_CREATE_KEY);
-        intent.putExtra(EditKeyActivity.EXTRA_GENERATE_DEFAULT_KEYS, true);
-        intent.putExtra(EditKeyActivity.EXTRA_USER_IDS, ""); // show user id view
+        Intent intent = new Intent(this, WizardActivity.class);
+//        intent.setAction(EditKeyActivity.ACTION_CREATE_KEY);
+//        intent.putExtra(EditKeyActivity.EXTRA_GENERATE_DEFAULT_KEYS, true);
+//        intent.putExtra(EditKeyActivity.EXTRA_USER_IDS, ""); // show user id view
         startActivityForResult(intent, 0);
     }
 

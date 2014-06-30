@@ -173,7 +173,14 @@ public class LogDisplayFragment extends ListFragment implements OnTouchListener 
                 ih = (ItemHolder) convertView.getTag();
             }
 
-            ih.mText.setText(getResources().getString(entry.mType.getMsgId(), (Object[]) entry.mParameters));
+            // special case: first parameter may be a quantity
+            if (entry.mParameters != null && entry.mParameters.length > 0
+                    && entry.mParameters[0] instanceof Integer) {
+                ih.mText.setText(getResources().getQuantityString(entry.mType.getMsgId(),
+                        (Integer) entry.mParameters[0], entry.mParameters));
+            } else {
+                ih.mText.setText(getResources().getString(entry.mType.getMsgId(), entry.mParameters));
+            }
             ih.mText.setTextColor(entry.mLevel == LogLevel.DEBUG ? Color.GRAY : Color.BLACK);
             convertView.setPadding((entry.mIndent) * dipFactor, 0, 0, 0);
             switch (entry.mLevel) {

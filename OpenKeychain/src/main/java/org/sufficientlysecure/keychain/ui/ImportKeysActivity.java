@@ -18,6 +18,7 @@
 package org.sufficientlysecure.keychain.ui;
 
 import android.annotation.TargetApi;
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.net.Uri;
@@ -64,8 +65,12 @@ public class ImportKeysActivity extends ActionBarActivity {
             + "IMPORT_KEY_FROM_QR_CODE";
     public static final String ACTION_IMPORT_KEY_FROM_KEYSERVER = Constants.INTENT_PREFIX
             + "IMPORT_KEY_FROM_KEYSERVER";
+    public static final String ACTION_IMPORT_KEY_FROM_KEYSERVER_AND_RETURN_RESULT =
+            Constants.INTENT_PREFIX + "IMPORT_KEY_FROM_KEY_SERVER_AND_RETURN_RESULT";
     public static final String ACTION_IMPORT_KEY_FROM_KEYSERVER_AND_RETURN = Constants.INTENT_PREFIX
             + "IMPORT_KEY_FROM_KEY_SERVER_AND_RETURN";
+    public static final String ACTION_IMPORT_KEY_FROM_FILE_AND_RETURN = Constants.INTENT_PREFIX
+            + "IMPORT_KEY_FROM_FILE_AND_RETURN";
     public static final String ACTION_IMPORT_KEY_FROM_KEYBASE = Constants.INTENT_PREFIX
             + "IMPORT_KEY_FROM_KEYBASE";
 
@@ -74,6 +79,8 @@ public class ImportKeysActivity extends ActionBarActivity {
             + "IMPORT_KEY_FROM_FILE";
     public static final String ACTION_IMPORT_KEY_FROM_NFC = Constants.INTENT_PREFIX
             + "IMPORT_KEY_FROM_NFC";
+
+    public static final String EXTRA_RESULT = "result";
 
     // only used by ACTION_IMPORT_KEY
     public static final String EXTRA_KEY_BYTES = "key_bytes";
@@ -165,7 +172,8 @@ public class ImportKeysActivity extends ActionBarActivity {
                 startListFragment(savedInstanceState, importData, null, null);
             }
         } else if (ACTION_IMPORT_KEY_FROM_KEYSERVER.equals(action)
-                || ACTION_IMPORT_KEY_FROM_KEYSERVER_AND_RETURN.equals(action)) {
+                || ACTION_IMPORT_KEY_FROM_KEYSERVER_AND_RETURN.equals(action)
+                || ACTION_IMPORT_KEY_FROM_KEYSERVER_AND_RETURN_RESULT.equals(action)) {
 
             // only used for OpenPgpService
             if (extras.containsKey(EXTRA_PENDING_INTENT_DATA)) {
@@ -224,7 +232,8 @@ public class ImportKeysActivity extends ActionBarActivity {
                 );
                 return;
             }
-        } else if (ACTION_IMPORT_KEY_FROM_FILE.equals(action)) {
+        } else if (ACTION_IMPORT_KEY_FROM_FILE.equals(action)
+                    || ACTION_IMPORT_KEY_FROM_FILE_AND_RETURN.equals(action)) {
             // NOTE: this only displays the appropriate fragment, no actions are taken
             mSwitchToTab = TAB_FILE;
 
@@ -386,9 +395,6 @@ public class ImportKeysActivity extends ActionBarActivity {
 
     /**
      * Scroll ViewPager left and right
-     *
-     * @param event
-     * @return
      */
     @Override
     public boolean onTouchEvent(MotionEvent event) {
@@ -427,94 +433,34 @@ public class ImportKeysActivity extends ActionBarActivity {
                 if (message.arg1 == KeychainIntentServiceHandler.MESSAGE_OKAY) {
                     // get returned data bundle
                     Bundle returnData = message.getData();
+                    if (returnData == null) {
+                        return;
+                    }
                     final ImportResult result =
-                            returnData.<ImportResult>getParcelable(KeychainIntentService.RESULT);
-
-                    int resultType = result.getResult();
-
-                    String str;
-                    int duration, color;
-
-                    // Not an overall failure
-                    if ((resultType & ImportResult.RESULT_ERROR) == 0) {
-                        String withWarnings;
-
-                        // Any warnings?
-                        if ((resultType & ImportResult.RESULT_WITH_WARNINGS) > 0) {
-                            duration = 0;
-                            color = Style.ORANGE;
-                            withWarnings = getResources().getString(R.string.import_with_warnings);
-                        } else {
-                            duration = SuperToast.Duration.LONG;
-                            color = Style.GREEN;
-                            withWarnings = "";
-                        }
-
-                        // New and updated keys
-                        if (result.isOkBoth()) {
-                            str = getResources().getQuantityString(
-                                    R.plurals.import_keys_added_and_updated_1, result.mNewKeys, result.mNewKeys);
-                            str += getResources().getQuantityString(
-                                    R.plurals.import_keys_added_and_updated_2, result.mUpdatedKeys, result.mUpdatedKeys, withWarnings);
-                        } else if (result.isOkUpdated()) {
-                            str = getResources().getQuantityString(
-                                    R.plurals.import_keys_updated, result.mUpdatedKeys, result.mUpdatedKeys, withWarnings);
-                        } else if (result.isOkNew()) {
-                            str = getResources().getQuantityString(
-                                    R.plurals.import_keys_added, result.mNewKeys, result.mNewKeys, withWarnings);
-                        } else {
-                            duration = 0;
-                            color = Style.RED;
-                            str = "internal error";
-                        }
-
-                    } else {
-                        duration = 0;
-                        color = Style.RED;
-                        if (result.isFailNothing()) {
-                            str = getString(R.string.import_error_nothing);
-                        } else {
-                            str = getString(R.string.import_error);
-                        }
+                            returnData.getParcelable(KeychainIntentService.RESULT);
+                    if (result == null) {
+                        return;
                     }
 
-                    SuperCardToast toast = new SuperCardToast(ImportKeysActivity.this,
-                            SuperToast.Type.BUTTON, Style.getStyle(color, SuperToast.Animations.POPUP));
-                    toast.setText(str);
-                    toast.setDuration(duration);
-                    toast.setIndeterminate(duration == 0);
-                    toast.setSwipeToDismiss(true);
-                    toast.setButtonIcon(R.drawable.ic_action_view_as_list,
-                            getResources().getString(R.string.import_view_log));
-                    toast.setButtonTextColor(getResources().getColor(R.color.black));
-                    toast.setTextColor(getResources().getColor(R.color.black));
-                    toast.setOnClickWrapper(new OnClickWrapper("supercardtoast",
-                            new SuperToast.OnClickListener() {
-                                @Override
-                                public void onClick(View view, Parcelable token) {
-                                    Intent intent = new Intent(
-                                            ImportKeysActivity.this, LogDisplayActivity.class);
-                                    intent.putExtra(LogDisplayFragment.EXTRA_RESULT, result);
-                                    startActivity(intent);
-                                }
-                            }
-                    ));
-                    toast.show();
-
-                    /*
-                    if (bad > 0) {
-                        BadImportKeyDialogFragment badImportKeyDialogFragment =
-                                BadImportKeyDialogFragment.newInstance(bad);
-                        badImportKeyDialogFragment.show(getSupportFragmentManager(), "badKeyDialog");
+                    if (ACTION_IMPORT_KEY_FROM_KEYSERVER_AND_RETURN_RESULT.equals(getIntent().getAction())) {
+                        Intent intent = new Intent();
+                        intent.putExtra(EXTRA_RESULT, result);
+                        ImportKeysActivity.this.setResult(RESULT_OK, intent);
+                        ImportKeysActivity.this.finish();
+                        return;
                     }
-                    */
-
-                    /*
                     if (ACTION_IMPORT_KEY_FROM_KEYSERVER_AND_RETURN.equals(getIntent().getAction())) {
-                        ImportKeysActivity.this.setResult(Activity.RESULT_OK, mPendingIntentData);
-                        finish();
+                        ImportKeysActivity.this.setResult(RESULT_OK, mPendingIntentData);
+                        ImportKeysActivity.this.finish();
+                        return;
                     }
-                    */
+                    if (ACTION_IMPORT_KEY_FROM_FILE_AND_RETURN.equals(getIntent().getAction())) {
+                        ImportKeysActivity.this.setResult(RESULT_OK);
+                        ImportKeysActivity.this.finish();
+                        return;
+                    }
+
+                    result.displayToast(ImportKeysActivity.this);
                 }
             }
         };

@@ -33,7 +33,6 @@ import org.spongycastle.openpgp.PGPSecretKeyRing;
 import org.spongycastle.openpgp.PGPSignature;
 import org.spongycastle.openpgp.PGPSignatureGenerator;
 import org.spongycastle.openpgp.PGPSignatureSubpacketGenerator;
-import org.spongycastle.openpgp.PGPSignatureSubpacketVector;
 import org.spongycastle.openpgp.PGPUtil;
 import org.spongycastle.openpgp.operator.PBESecretKeyDecryptor;
 import org.spongycastle.openpgp.operator.PBESecretKeyEncryptor;
@@ -51,7 +50,6 @@ import org.sufficientlysecure.keychain.service.OperationResultParcel.LogLevel;
 import org.sufficientlysecure.keychain.service.OperationResultParcel.LogType;
 import org.sufficientlysecure.keychain.service.OperationResultParcel.OperationLog;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
-import org.sufficientlysecure.keychain.util.IterableIterator;
 import org.sufficientlysecure.keychain.util.Primes;
 
 import java.io.IOException;
@@ -65,7 +63,6 @@ import java.security.SignatureException;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.List;
 import java.util.TimeZone;
 
 /**
@@ -268,18 +265,18 @@ public class PgpKeyOperation {
         // 4a. For each subkey change, generate new subkey binding certificate
             for (SaveKeyringParcel.SubkeyChange change : saveParcel.changeSubKeys) {
                 log.add(LogLevel.INFO, LogType.MSG_MF_SUBKEY_CHANGE,
-                        new String[]{PgpKeyHelper.convertKeyIdToHex(change.mKeyId)}, indent);
+                        indent, PgpKeyHelper.convertKeyIdToHex(change.mKeyId));
                 PGPSecretKey sKey = sKR.getSecretKey(change.mKeyId);
                 if (sKey == null) {
                     log.add(LogLevel.ERROR, LogType.MSG_MF_SUBKEY_MISSING,
-                            new String[]{PgpKeyHelper.convertKeyIdToHex(change.mKeyId)}, indent + 1);
+                            indent + 1, PgpKeyHelper.convertKeyIdToHex(change.mKeyId));
                     return null;
                 }
                 PGPPublicKey pKey = sKey.getPublicKey();
 
                 if (change.mExpiry != null && new Date(change.mExpiry).before(new Date())) {
                     log.add(LogLevel.ERROR, LogType.MSG_MF_SUBKEY_PAST_EXPIRY,
-                            new String[]{PgpKeyHelper.convertKeyIdToHex(change.mKeyId)}, indent + 1);
+                            indent + 1, PgpKeyHelper.convertKeyIdToHex(change.mKeyId));
                     return null;
                 }
 
@@ -293,11 +290,11 @@ public class PgpKeyOperation {
             // 4b. For each subkey revocation, generate new subkey revocation certificate
             for (long revocation : saveParcel.revokeSubKeys) {
                 log.add(LogLevel.INFO, LogType.MSG_MF_SUBKEY_REVOKE,
-                        new String[] { PgpKeyHelper.convertKeyIdToHex(revocation) }, indent);
+                        indent, PgpKeyHelper.convertKeyIdToHex(revocation));
                 PGPSecretKey sKey = sKR.getSecretKey(revocation);
                 if (sKey == null) {
                     log.add(LogLevel.ERROR, LogType.MSG_MF_SUBKEY_MISSING,
-                            new String[] { PgpKeyHelper.convertKeyIdToHex(revocation) }, indent+1);
+                            indent+1, PgpKeyHelper.convertKeyIdToHex(revocation));
                     return null;
                 }
                 PGPPublicKey pKey = sKey.getPublicKey();
@@ -321,7 +318,7 @@ public class PgpKeyOperation {
                     log.add(LogLevel.INFO, LogType.MSG_MF_SUBKEY_NEW, indent);
                     PGPSecretKey sKey = createKey(add.mAlgorithm, add.mKeysize, passphrase, false);
                     log.add(LogLevel.DEBUG, LogType.MSG_MF_SUBKEY_NEW_ID,
-                            new String[] { PgpKeyHelper.convertKeyIdToHex(sKey.getKeyID()) }, indent+1);
+                            indent+1, PgpKeyHelper.convertKeyIdToHex(sKey.getKeyID()));
 
                     PGPPublicKey pKey = sKey.getPublicKey();
                     PGPSignature cert = generateSubkeyBindingSignature(masterPublicKey, masterPrivateKey,

@@ -207,7 +207,7 @@ public class UncachedKeyRing {
     public UncachedKeyRing canonicalize(OperationLog log, int indent) {
 
         log.add(LogLevel.START, isSecret() ? LogType.MSG_KC_SECRET : LogType.MSG_KC_PUBLIC,
-                new String[]{PgpKeyHelper.convertKeyIdToHex(getMasterKeyId())}, indent);
+                indent, PgpKeyHelper.convertKeyIdToHex(getMasterKeyId()));
         indent += 1;
 
         final Date now = new Date();
@@ -220,7 +220,7 @@ public class UncachedKeyRing {
 
         {
             log.add(LogLevel.DEBUG, LogType.MSG_KC_MASTER,
-                    new String[]{PgpKeyHelper.convertKeyIdToHex(masterKey.getKeyID())}, indent);
+                    indent, PgpKeyHelper.convertKeyIdToHex(masterKey.getKeyID()));
             indent += 1;
 
             PGPPublicKey modified = masterKey;
@@ -240,9 +240,7 @@ public class UncachedKeyRing {
 
                 if (type != PGPSignature.KEY_REVOCATION) {
                     // Unknown type, just remove
-                    log.add(LogLevel.WARN, LogType.MSG_KC_REVOKE_BAD_TYPE, new String[]{
-                            "0x" + Integer.toString(type, 16)
-                    }, indent);
+                    log.add(LogLevel.WARN, LogType.MSG_KC_REVOKE_BAD_TYPE, indent, "0x" + Integer.toString(type, 16));
                     modified = PGPPublicKey.removeCertification(modified, zert);
                     badCerts += 1;
                     continue;
@@ -250,7 +248,7 @@ public class UncachedKeyRing {
 
                 if (cert.getCreationTime().after(now)) {
                     // Creation date in the future? No way!
-                    log.add(LogLevel.WARN, LogType.MSG_KC_REVOKE_BAD_TIME, null, indent);
+                    log.add(LogLevel.WARN, LogType.MSG_KC_REVOKE_BAD_TIME, indent);
                     modified = PGPPublicKey.removeCertification(modified, zert);
                     badCerts += 1;
                     continue;
@@ -258,7 +256,7 @@ public class UncachedKeyRing {
 
                 if (cert.isLocal()) {
                     // Creation date in the future? No way!
-                    log.add(LogLevel.WARN, LogType.MSG_KC_REVOKE_BAD_LOCAL, null, indent);
+                    log.add(LogLevel.WARN, LogType.MSG_KC_REVOKE_BAD_LOCAL, indent);
                     modified = PGPPublicKey.removeCertification(modified, zert);
                     badCerts += 1;
                     continue;
@@ -267,13 +265,13 @@ public class UncachedKeyRing {
                 try {
                     cert.init(masterKey);
                     if (!cert.verifySignature(masterKey)) {
-                        log.add(LogLevel.WARN, LogType.MSG_KC_REVOKE_BAD, null, indent);
+                        log.add(LogLevel.WARN, LogType.MSG_KC_REVOKE_BAD, indent);
                         modified = PGPPublicKey.removeCertification(modified, zert);
                         badCerts += 1;
                         continue;
                     }
                 } catch (PgpGeneralException e) {
-                    log.add(LogLevel.WARN, LogType.MSG_KC_REVOKE_BAD_ERR, null, indent);
+                    log.add(LogLevel.WARN, LogType.MSG_KC_REVOKE_BAD_ERR, indent);
                     modified = PGPPublicKey.removeCertification(modified, zert);
                     badCerts += 1;
                     continue;
@@ -286,12 +284,12 @@ public class UncachedKeyRing {
                 } else if (revocation.getCreationTime().before(zert.getCreationTime())) {
                     modified = PGPPublicKey.removeCertification(modified, revocation);
                     redundantCerts += 1;
-                    log.add(LogLevel.INFO, LogType.MSG_KC_REVOKE_DUP, null, indent);
+                    log.add(LogLevel.INFO, LogType.MSG_KC_REVOKE_DUP, indent);
                     revocation = zert;
                 } else {
                     modified = PGPPublicKey.removeCertification(modified, zert);
                     redundantCerts += 1;
-                    log.add(LogLevel.INFO, LogType.MSG_KC_REVOKE_DUP, null, indent);
+                    log.add(LogLevel.INFO, LogType.MSG_KC_REVOKE_DUP, indent);
                 }
             }
 
@@ -312,16 +310,14 @@ public class UncachedKeyRing {
                             && type != PGPSignature.POSITIVE_CERTIFICATION
                             && type != PGPSignature.CERTIFICATION_REVOCATION) {
                         log.add(LogLevel.WARN, LogType.MSG_KC_UID_BAD_TYPE,
-                                new String[] {
-                                        "0x" + Integer.toString(zert.getSignatureType(), 16)
-                                }, indent);
+                                indent, "0x" + Integer.toString(zert.getSignatureType(), 16));
                         modified = PGPPublicKey.removeCertification(modified, userId, zert);
                         badCerts += 1;
                     }
 
                     if (cert.getCreationTime().after(now)) {
                         // Creation date in the future? No way!
-                        log.add(LogLevel.WARN, LogType.MSG_KC_REVOKE_BAD_TIME, null, indent);
+                        log.add(LogLevel.WARN, LogType.MSG_KC_REVOKE_BAD_TIME, indent);
                         modified = PGPPublicKey.removeCertification(modified, zert);
                         badCerts += 1;
                         continue;
@@ -329,7 +325,7 @@ public class UncachedKeyRing {
 
                     if (cert.isLocal()) {
                         // Creation date in the future? No way!
-                        log.add(LogLevel.WARN, LogType.MSG_KC_REVOKE_BAD_LOCAL, null, indent);
+                        log.add(LogLevel.WARN, LogType.MSG_KC_REVOKE_BAD_LOCAL, indent);
                         modified = PGPPublicKey.removeCertification(modified, zert);
                         badCerts += 1;
                         continue;
@@ -340,7 +336,7 @@ public class UncachedKeyRing {
                         // never mind any further for public keys, but remove them from secret ones
                         if (isSecret()) {
                             log.add(LogLevel.WARN, LogType.MSG_KC_UID_FOREIGN,
-                                    new String[] { PgpKeyHelper.convertKeyIdToHex(certId) }, indent);
+                                    indent, PgpKeyHelper.convertKeyIdToHex(certId));
                             modified = PGPPublicKey.removeCertification(modified, userId, zert);
                             badCerts += 1;
                         }
@@ -352,14 +348,14 @@ public class UncachedKeyRing {
                         cert.init(masterKey);
                         if (!cert.verifySignature(masterKey, userId)) {
                             log.add(LogLevel.WARN, LogType.MSG_KC_UID_BAD,
-                                    new String[] { userId }, indent);
+                                    indent, userId);
                             modified = PGPPublicKey.removeCertification(modified, userId, zert);
                             badCerts += 1;
                             continue;
                         }
                     } catch (PgpGeneralException e) {
                         log.add(LogLevel.WARN, LogType.MSG_KC_UID_BAD_ERR,
-                                new String[] { userId }, indent);
+                                indent, userId);
                         modified = PGPPublicKey.removeCertification(modified, userId, zert);
                         badCerts += 1;
                         continue;
@@ -376,13 +372,13 @@ public class UncachedKeyRing {
                                 modified = PGPPublicKey.removeCertification(modified, userId, selfCert);
                                 redundantCerts += 1;
                                 log.add(LogLevel.DEBUG, LogType.MSG_KC_UID_DUP,
-                                        new String[] { userId }, indent);
+                                        indent, userId);
                                 selfCert = zert;
                             } else {
                                 modified = PGPPublicKey.removeCertification(modified, userId, zert);
                                 redundantCerts += 1;
                                 log.add(LogLevel.DEBUG, LogType.MSG_KC_UID_DUP,
-                                        new String[] { userId }, indent);
+                                        indent, userId);
                             }
                             // If there is a revocation certificate, and it's older than this, drop it
                             if (revocation != null
@@ -391,7 +387,7 @@ public class UncachedKeyRing {
                                 revocation = null;
                                 redundantCerts += 1;
                                 log.add(LogLevel.DEBUG, LogType.MSG_KC_UID_REVOKE_OLD,
-                                        new String[] { userId }, indent);
+                                        indent, userId);
                             }
                             break;
 
@@ -401,7 +397,7 @@ public class UncachedKeyRing {
                                 modified = PGPPublicKey.removeCertification(modified, userId, zert);
                                 redundantCerts += 1;
                                 log.add(LogLevel.DEBUG, LogType.MSG_KC_UID_REVOKE_OLD,
-                                        new String[] { userId }, indent);
+                                        indent, userId);
                                 continue;
                             }
                             // first revocation? remember it.
@@ -412,13 +408,13 @@ public class UncachedKeyRing {
                                 modified = PGPPublicKey.removeCertification(modified, userId, revocation);
                                 redundantCerts += 1;
                                 log.add(LogLevel.DEBUG, LogType.MSG_KC_UID_REVOKE_DUP,
-                                        new String[] { userId }, indent);
+                                        indent, userId);
                                 revocation = zert;
                             } else {
                                 modified = PGPPublicKey.removeCertification(modified, userId, zert);
                                 redundantCerts += 1;
                                 log.add(LogLevel.DEBUG, LogType.MSG_KC_UID_REVOKE_DUP,
-                                        new String[] { userId }, indent);
+                                        indent, userId);
                             }
                             break;
 
@@ -430,13 +426,13 @@ public class UncachedKeyRing {
                 if (selfCert == null && revocation == null) {
                     modified = PGPPublicKey.removeCertification(modified, userId);
                     log.add(LogLevel.ERROR, LogType.MSG_KC_UID_REVOKE_DUP,
-                            new String[] { userId }, indent);
+                            indent, userId);
                 }
             }
 
             // If NO user ids remain, error out!
             if (!modified.getUserIDs().hasNext()) {
-                log.add(LogLevel.ERROR, LogType.MSG_KC_FATAL_NO_UID, null, indent);
+                log.add(LogLevel.ERROR, LogType.MSG_KC_FATAL_NO_UID, indent);
                 return null;
             }
 
@@ -453,7 +449,7 @@ public class UncachedKeyRing {
                 continue;
             }
             log.add(LogLevel.DEBUG, LogType.MSG_KC_SUB,
-                    new String[]{PgpKeyHelper.convertKeyIdToHex(key.getKeyID())}, indent);
+                    indent, PgpKeyHelper.convertKeyIdToHex(key.getKeyID()));
             indent += 1;
             // A subkey needs exactly one subkey binding certificate, and optionally one revocation
             // certificate.
@@ -468,29 +464,27 @@ public class UncachedKeyRing {
 
                 // filter out bad key types...
                 if (cert.getKeyId() != masterKey.getKeyID()) {
-                    log.add(LogLevel.WARN, LogType.MSG_KC_SUB_BAD_KEYID, null, indent);
+                    log.add(LogLevel.WARN, LogType.MSG_KC_SUB_BAD_KEYID, indent);
                     badCerts += 1;
                     continue;
                 }
 
                 if (type != PGPSignature.SUBKEY_BINDING && type != PGPSignature.SUBKEY_REVOCATION) {
-                    log.add(LogLevel.WARN, LogType.MSG_KC_SUB_BAD_TYPE, new String[]{
-                            "0x" + Integer.toString(type, 16)
-                    }, indent);
+                    log.add(LogLevel.WARN, LogType.MSG_KC_SUB_BAD_TYPE, indent, "0x" + Integer.toString(type, 16));
                     badCerts += 1;
                     continue;
                 }
 
                 if (cert.getCreationTime().after(now)) {
                     // Creation date in the future? No way!
-                    log.add(LogLevel.WARN, LogType.MSG_KC_SUB_BAD_TIME, null, indent);
+                    log.add(LogLevel.WARN, LogType.MSG_KC_SUB_BAD_TIME, indent);
                     badCerts += 1;
                     continue;
                 }
 
                 if (cert.isLocal()) {
                     // Creation date in the future? No way!
-                    log.add(LogLevel.WARN, LogType.MSG_KC_SUB_BAD_LOCAL, null, indent);
+                    log.add(LogLevel.WARN, LogType.MSG_KC_SUB_BAD_LOCAL, indent);
                     badCerts += 1;
                     continue;
                 }
@@ -501,12 +495,12 @@ public class UncachedKeyRing {
                     try {
                         cert.init(masterKey);
                         if (!cert.verifySignature(masterKey, key)) {
-                            log.add(LogLevel.WARN, LogType.MSG_KC_SUB_BAD, null, indent);
+                            log.add(LogLevel.WARN, LogType.MSG_KC_SUB_BAD, indent);
                             badCerts += 1;
                             continue;
                         }
                     } catch (PgpGeneralException e) {
-                        log.add(LogLevel.WARN, LogType.MSG_KC_SUB_BAD_ERR, null, indent);
+                        log.add(LogLevel.WARN, LogType.MSG_KC_SUB_BAD_ERR, indent);
                         badCerts += 1;
                         continue;
                     }
@@ -526,19 +520,19 @@ public class UncachedKeyRing {
                                         if (subsig.verifySignature(masterKey, key)) {
                                             ok = true;
                                         } else {
-                                            log.add(LogLevel.WARN, LogType.MSG_KC_SUB_PRIMARY_BAD, null, indent);
+                                            log.add(LogLevel.WARN, LogType.MSG_KC_SUB_PRIMARY_BAD, indent);
                                             badCerts += 1;
                                             continue uids;
                                         }
                                     }
                                 }
                                 if (!ok) {
-                                    log.add(LogLevel.WARN, LogType.MSG_KC_SUB_PRIMARY_NONE, null, indent);
+                                    log.add(LogLevel.WARN, LogType.MSG_KC_SUB_PRIMARY_NONE, indent);
                                     badCerts += 1;
                                     continue;
                                 }
                             } catch (Exception e) {
-                                log.add(LogLevel.WARN, LogType.MSG_KC_SUB_PRIMARY_BAD_ERR, null, indent);
+                                log.add(LogLevel.WARN, LogType.MSG_KC_SUB_PRIMARY_BAD_ERR, indent);
                                 badCerts += 1;
                                 continue;
                             }
@@ -565,12 +559,12 @@ public class UncachedKeyRing {
                     try {
                         cert.init(masterKey);
                         if (!cert.verifySignature(key)) {
-                            log.add(LogLevel.WARN, LogType.MSG_KC_SUB_REVOKE_BAD, null, indent);
+                            log.add(LogLevel.WARN, LogType.MSG_KC_SUB_REVOKE_BAD, indent);
                             badCerts += 1;
                             continue;
                         }
                     } catch (PgpGeneralException e) {
-                        log.add(LogLevel.WARN, LogType.MSG_KC_SUB_REVOKE_BAD_ERR, null, indent);
+                        log.add(LogLevel.WARN, LogType.MSG_KC_SUB_REVOKE_BAD_ERR, indent);
                         badCerts += 1;
                         continue;
                     }
@@ -591,7 +585,7 @@ public class UncachedKeyRing {
                 ring = replacePublicKey(ring, modified);
 
                 log.add(LogLevel.ERROR, LogType.MSG_KC_SUB_NO_CERT,
-                        new String[]{ PgpKeyHelper.convertKeyIdToHex(key.getKeyID()) }, indent);
+                        indent, PgpKeyHelper.convertKeyIdToHex(key.getKeyID()));
                 indent -= 1;
                 continue;
             }
@@ -608,17 +602,17 @@ public class UncachedKeyRing {
         }
 
         if (badCerts > 0 && redundantCerts > 0) {
+            // multi plural would make this complex, just leaving this as is...
             log.add(LogLevel.OK, LogType.MSG_KC_SUCCESS_BAD_AND_RED,
-                    new String[] { Integer.toString(badCerts),
-                            Integer.toString(redundantCerts) }, indent);
+                    indent, Integer.toString(badCerts), Integer.toString(redundantCerts));
         } else if (badCerts > 0) {
             log.add(LogLevel.OK, LogType.MSG_KC_SUCCESS_BAD,
-                    new String[] { Integer.toString(badCerts) }, indent);
+                    indent, badCerts);
         } else if (redundantCerts > 0) {
             log.add(LogLevel.OK, LogType.MSG_KC_SUCCESS_REDUNDANT,
-                    new String[] { Integer.toString(redundantCerts) }, indent);
+                    indent, redundantCerts);
         } else {
-            log.add(LogLevel.OK, LogType.MSG_KC_SUCCESS, null, indent);
+            log.add(LogLevel.OK, LogType.MSG_KC_SUCCESS, indent);
         }
 
         return new UncachedKeyRing(ring, true);
@@ -638,13 +632,13 @@ public class UncachedKeyRing {
     public UncachedKeyRing merge(UncachedKeyRing other, OperationLog log, int indent) {
 
         log.add(LogLevel.DEBUG, isSecret() ? LogType.MSG_MG_SECRET : LogType.MSG_MG_PUBLIC,
-                new String[]{ PgpKeyHelper.convertKeyIdToHex(getMasterKeyId()) }, indent);
+                indent, PgpKeyHelper.convertKeyIdToHex(getMasterKeyId()));
         indent += 1;
 
         long masterKeyId = other.getMasterKeyId();
 
         if (getMasterKeyId() != masterKeyId) {
-            log.add(LogLevel.ERROR, LogType.MSG_MG_HETEROGENEOUS, null, indent);
+            log.add(LogLevel.ERROR, LogType.MSG_MG_HETEROGENEOUS, indent);
             return null;
         }
 
@@ -683,7 +677,7 @@ public class UncachedKeyRing {
 
                 final PGPPublicKey resultKey = result.getPublicKey(key.getKeyID());
                 if (resultKey == null) {
-                    log.add(LogLevel.DEBUG, LogType.MSG_MG_NEW_SUBKEY, null, indent);
+                    log.add(LogLevel.DEBUG, LogType.MSG_MG_NEW_SUBKEY, indent);
                     result = replacePublicKey(result, key);
                     continue;
                 }
@@ -751,12 +745,12 @@ public class UncachedKeyRing {
             }
 
             log.add(LogLevel.DEBUG, LogType.MSG_MG_FOUND_NEW,
-                    new String[] { Integer.toString(newCerts) }, indent);
+                    indent, Integer.toString(newCerts));
 
             return new UncachedKeyRing(result);
 
         } catch (IOException e) {
-            log.add(LogLevel.ERROR, LogType.MSG_MG_FATAL_ENCODE, null, indent);
+            log.add(LogLevel.ERROR, LogType.MSG_MG_FATAL_ENCODE, indent);
             return null;
         }
 

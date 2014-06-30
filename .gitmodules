@@ -30,7 +30,7 @@
 	url = https://github.com/open-keychain/SuperToasts.git
 [submodule "extern/KeybaseLib"]
 	path = extern/KeybaseLib
-	url = https://github.com/timbray/KeybaseLib.git
+	url = https://github.com/open-keychain/KeybaseLib.git
 [submodule "extern/minidns"]
 	path = extern/minidns
 	url = https://github.com/open-keychain/minidns.git

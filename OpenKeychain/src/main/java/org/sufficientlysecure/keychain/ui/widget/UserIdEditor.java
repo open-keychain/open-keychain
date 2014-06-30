@@ -118,7 +118,7 @@ public class UserIdEditor extends LinearLayout implements Editor, OnClickListene
         mEmail.setAdapter(
                 new ArrayAdapter<String>
                         (this.getContext(), android.R.layout.simple_dropdown_item_1line,
-                                ContactHelper.getMailAccounts(getContext())
+                                ContactHelper.getPossibleUserEmails(getContext())
                         ));
         mEmail.addTextChangedListener(new TextWatcher(){
             @Override

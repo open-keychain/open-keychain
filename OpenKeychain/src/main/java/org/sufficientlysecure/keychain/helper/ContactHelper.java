@@ -22,8 +22,10 @@ import android.accounts.AccountManager;
 import android.content.*;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Build;
 import android.provider.ContactsContract;
 import android.util.Patterns;
+
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
@@ -58,7 +60,27 @@ public class ContactHelper {
             ContactsContract.Data.RAW_CONTACT_ID + "=? AND " + ContactsContract.Data.MIMETYPE + "=?";
     public static final String ID_SELECTION = ContactsContract.RawContacts._ID + "=?";
 
-    public static List<String> getMailAccounts(Context context) {
+    public static List<String> getPossibleUserEmails(Context context) {
+        Set<String> accountMails = getAccountEmails(context);
+        accountMails.addAll(getMainProfileContactEmails(context));
+        // now return the Set (without duplicates) as a List
+        return new ArrayList<String>(accountMails);
+    }
+
+    public static List<String> getPossibleUserNames(Context context) {
+        Set<String> accountMails = getAccountEmails(context);
+        Set<String> names = getContactNamesFromEmails(context, accountMails);
+        names.addAll(getMainProfileContactName(context));
+        return new ArrayList<String>(names);
+    }
+
+    /**
+     * Get emails from AccountManager
+     *
+     * @param context
+     * @return
+     */
+    private static Set<String> getAccountEmails(Context context) {
         final Account[] accounts = AccountManager.get(context).getAccounts();
         final Set<String> emailSet = new HashSet<String>();
         for (Account account : accounts) {
@@ -66,7 +88,118 @@ public class ContactHelper {
                 emailSet.add(account.name);
             }
         }
-        return new ArrayList<String>(emailSet);
+        return emailSet;
+    }
+
+    /**
+     * Search for contact names based on a list of emails (to find out the names of the
+     * device owner based on the email addresses from AccountsManager)
+     *
+     * @param context
+     * @param emails
+     * @return
+     */
+    private static Set<String> getContactNamesFromEmails(Context context, Set<String> emails) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+            Set<String> names = new HashSet<String>();
+            for (String email : emails) {
+                ContentResolver resolver = context.getContentResolver();
+                Cursor profileCursor = resolver.query(
+                        ContactsContract.CommonDataKinds.Email.CONTENT_URI,
+                        new String[]{ContactsContract.CommonDataKinds.Email.ADDRESS,
+                                ContactsContract.Contacts.DISPLAY_NAME},
+                        ContactsContract.CommonDataKinds.Email.ADDRESS + "=?",
+                        new String[]{email}, null
+                );
+                if (profileCursor == null) return null;
+
+                Set<String> currNames = new HashSet<String>();
+                while (profileCursor.moveToNext()) {
+                    String name = profileCursor.getString(1);
+                    Log.d(Constants.TAG, "name" + name);
+                    if (name != null) {
+                        currNames.add(name);
+                    }
+                }
+                profileCursor.close();
+                names.addAll(currNames);
+            }
+            return names;
+        } else {
+            return new HashSet<String>();
+        }
+    }
+
+    /**
+     * Retrieves the emails of the primary profile contact
+     * http://developer.android.com/reference/android/provider/ContactsContract.Profile.html
+     *
+     * @param context
+     * @return
+     */
+    private static Set<String> getMainProfileContactEmails(Context context) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+            ContentResolver resolver = context.getContentResolver();
+            Cursor profileCursor = resolver.query(
+                    Uri.withAppendedPath(
+                            ContactsContract.Profile.CONTENT_URI,
+                            ContactsContract.Contacts.Data.CONTENT_DIRECTORY),
+                    new String[]{ContactsContract.CommonDataKinds.Email.ADDRESS,
+                            ContactsContract.CommonDataKinds.Email.IS_PRIMARY},
+
+                    // Selects only email addresses
+                    ContactsContract.Contacts.Data.MIMETYPE + "=?",
+                    new String[]{
+                            ContactsContract.CommonDataKinds.Email.CONTENT_ITEM_TYPE,
+                    },
+                    // Show primary rows first. Note that there won't be a primary email address if the
+                    // user hasn't specified one.
+                    ContactsContract.Contacts.Data.IS_PRIMARY + " DESC"
+            );
+            if (profileCursor == null) return null;
+
+            Set<String> emails = new HashSet<String>();
+            while (profileCursor.moveToNext()) {
+                String email = profileCursor.getString(0);
+                if (email != null) {
+                    emails.add(email);
+                }
+            }
+            profileCursor.close();
+            return emails;
+        } else {
+            return new HashSet<String>();
+        }
+    }
+
+    /**
+     * Retrieves the name of the primary profile contact
+     * http://developer.android.com/reference/android/provider/ContactsContract.Profile.html
+     *
+     * @param context
+     * @return
+     */
+    private static List<String> getMainProfileContactName(Context context) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+            ContentResolver resolver = context.getContentResolver();
+            Cursor profileCursor = resolver.query(ContactsContract.Profile.CONTENT_URI,
+                    new String[]{ContactsContract.Profile.DISPLAY_NAME},
+                    null, null, null);
+            if (profileCursor == null) return null;
+
+            Set<String> names = new HashSet<String>();
+            // should only contain one entry!
+            while (profileCursor.moveToNext()) {
+                String name = profileCursor.getString(0);
+                if (name != null) {
+                    names.add(name);
+                }
+            }
+            profileCursor.close();
+            return new ArrayList<String>(names);
+        } else {
+            return new ArrayList<String>();
+        }
     }
 
     public static List<String> getContactMails(Context context) {
