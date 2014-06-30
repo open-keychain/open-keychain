@@ -152,7 +152,7 @@ public class ViewCertActivity extends ActionBarActivity
                     sig.init(signerRing.getSubkey());
                     if (sig.verifySignature(signeeRing.getSubkey(), signeeUid)) {
                         mStatus.setText(R.string.cert_verify_ok);
-                        mStatus.setTextColor(getResources().getColor(R.color.bbutton_success));
+                        mStatus.setTextColor(getResources().getColor(R.color.result_green));
                     } else {
                         mStatus.setText(R.string.cert_verify_failed);
                         mStatus.setTextColor(getResources().getColor(R.color.alert));
