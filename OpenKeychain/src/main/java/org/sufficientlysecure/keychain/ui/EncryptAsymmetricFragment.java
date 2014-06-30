@@ -203,7 +203,7 @@ public class EncryptAsymmetricFragment extends Fragment {
                 userId = null;
             }
             if (userId != null && userId[0] != null) {
-                mMainUserId.setText(userId[0]);
+                mMainUserId.setText(String.format("%#16x", Long.parseLong(userId[0])));
             } else {
                 mMainUserId.setText(getResources().getString(R.string.user_id_no_name));
             }
