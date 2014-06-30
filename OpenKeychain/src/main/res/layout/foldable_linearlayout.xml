@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              xmlns:fontawesometext="http://schemas.android.com/apk/res-auto"
               android:orientation="vertical"
               android:layout_width="match_parent"
               android:layout_height="match_parent">
@@ -27,8 +26,6 @@
                 android:layout_height="wrap_content"
                 android:text="@string/none"
                 android:layout_gravity="center_vertical"
-                android:paddingTop="@dimen/padding_medium"
-                android:paddingBottom="@dimen/padding_medium"
                 android:textColor="@color/emphasis"/>
     </LinearLayout>
 
