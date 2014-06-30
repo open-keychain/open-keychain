@@ -1,6 +1,19 @@
 package org.sufficientlysecure.keychain.service;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Parcel;
+import android.os.Parcelable;
+import android.view.View;
+
+import com.github.johnpersano.supertoasts.SuperCardToast;
+import com.github.johnpersano.supertoasts.SuperToast;
+import com.github.johnpersano.supertoasts.util.OnClickWrapper;
+import com.github.johnpersano.supertoasts.util.Style;
+
+import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.ui.LogDisplayActivity;
+import org.sufficientlysecure.keychain.ui.LogDisplayFragment;
 
 public abstract class OperationResults {
 
@@ -66,6 +79,87 @@ public abstract class OperationResults {
                 return new ImportResult[size];
             }
         };
+
+        public void displayNotify(final Activity activity) {
+
+            int resultType = getResult();
+
+            String str;
+            int duration, color;
+
+            // Not an overall failure
+            if ((resultType & ImportResult.RESULT_ERROR) == 0) {
+                String withWarnings;
+
+                // Any warnings?
+                if ((resultType & ImportResult.RESULT_WITH_WARNINGS) > 0) {
+                    duration = 0;
+                    color = Style.ORANGE;
+                    withWarnings = activity.getResources().getString(R.string.import_with_warnings);
+                } else {
+                    duration = SuperToast.Duration.LONG;
+                    color = Style.GREEN;
+                    withWarnings = "";
+                }
+
+                // New and updated keys
+                if (this.isOkBoth()) {
+                    str = activity.getResources().getQuantityString(
+                            R.plurals.import_keys_added_and_updated_1, mNewKeys, mNewKeys);
+                    str += activity.getResources().getQuantityString(
+                            R.plurals.import_keys_added_and_updated_2, mUpdatedKeys, mUpdatedKeys, withWarnings);
+                } else if (isOkUpdated()) {
+                    str = activity.getResources().getQuantityString(
+                            R.plurals.import_keys_updated, mUpdatedKeys, mUpdatedKeys, withWarnings);
+                } else if (isOkNew()) {
+                    str = activity.getResources().getQuantityString(
+                            R.plurals.import_keys_added, mNewKeys, mNewKeys, withWarnings);
+                } else {
+                    duration = 0;
+                    color = Style.RED;
+                    str = "internal error";
+                }
+
+            } else {
+                duration = 0;
+                color = Style.RED;
+                if (isFailNothing()) {
+                    str = activity.getString(R.string.import_error_nothing);
+                } else {
+                    str = activity.getString(R.string.import_error);
+                }
+            }
+
+            // TODO: externalize into Notify class?
+            boolean button = getLog() != null && !getLog().isEmpty();
+            SuperCardToast toast = new SuperCardToast(activity,
+                    button ? SuperToast.Type.BUTTON : SuperToast.Type.STANDARD,
+                    Style.getStyle(color, SuperToast.Animations.POPUP));
+            toast.setText(str);
+            toast.setDuration(duration);
+            toast.setIndeterminate(duration == 0);
+            toast.setSwipeToDismiss(true);
+            // If we have a log and it's non-empty, show a View Log button
+            if (button) {
+                toast.setButtonIcon(R.drawable.ic_action_view_as_list,
+                        activity.getResources().getString(R.string.import_view_log));
+                toast.setButtonTextColor(activity.getResources().getColor(R.color.black));
+                toast.setTextColor(activity.getResources().getColor(R.color.black));
+                toast.setOnClickWrapper(new OnClickWrapper("supercardtoast",
+                        new SuperToast.OnClickListener() {
+                            @Override
+                            public void onClick(View view, Parcelable token) {
+                                Intent intent = new Intent(
+                                        activity, LogDisplayActivity.class);
+                                intent.putExtra(LogDisplayFragment.EXTRA_RESULT, ImportResult.this);
+                                activity.startActivity(intent);
+                            }
+                        }
+                ));
+            }
+            toast.show();
+
+        }
 
     }
 

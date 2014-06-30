@@ -165,10 +165,10 @@ public class KeychainDatabase extends SQLiteOpenHelper {
 
         // make sure this is only done once, on the first instance!
         boolean iAmIt = false;
-        synchronized(apgHack) {
-            if(!apgHack) {
+        synchronized(KeychainDatabase.class) {
+            if(!KeychainDatabase.apgHack) {
                 iAmIt = true;
-                apgHack = true;
+                KeychainDatabase.apgHack = true;
             }
         }
         // if it's us, do the import
@@ -206,6 +206,7 @@ public class KeychainDatabase extends SQLiteOpenHelper {
             try {
                 db.execSQL("ALTER TABLE keys ADD COLUMN has_secret BOOLEAN");
             } catch (Exception e) {
+                // never mind, the column probably already existed
             }
         }
     }
@@ -261,8 +262,8 @@ public class KeychainDatabase extends SQLiteOpenHelper {
             cursor = db.rawQuery("SELECT key_ring_data FROM key_rings WHERE type = 1 OR EXISTS ("
                     + " SELECT 1 FROM key_rings d2 WHERE key_rings.master_key_id = d2.master_key_id"
                     + " AND d2.type = 1) ORDER BY type ASC", null);
-            Log.d(Constants.TAG, "Importing " + cursor.getCount() + " secret keyrings from apg.db...");
             if (cursor != null) {
+                Log.d(Constants.TAG, "Importing " + cursor.getCount() + " secret keyrings from apg.db...");
                 for (int i = 0; i < cursor.getCount(); i++) {
                     cursor.moveToPosition(i);
                     byte[] data = cursor.getBlob(0);
@@ -285,8 +286,8 @@ public class KeychainDatabase extends SQLiteOpenHelper {
                     + " SELECT 1 FROM key_rings d2 WHERE key_rings.master_key_id = d2.master_key_id AND"
                     + " d2.type = 1)) DESC, type DESC", null);
             // import from old database
-            Log.d(Constants.TAG, "Importing " + cursor.getCount() + " keyrings from apg.db...");
             if (cursor != null) {
+                Log.d(Constants.TAG, "Importing " + cursor.getCount() + " keyrings from apg.db...");
                 for (int i = 0; i < cursor.getCount(); i++) {
                     cursor.moveToPosition(i);
                     byte[] data = cursor.getBlob(0);

@@ -5,8 +5,9 @@ import android.content.Context;
 import org.sufficientlysecure.keychain.pgp.NullProgressable;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
-import org.sufficientlysecure.keychain.remote.AppSettings;
 import org.sufficientlysecure.keychain.service.OperationResults;
+
+import java.util.Collection;
 
 /**
  * Helper for tests of the Keyring import in ProviderHelper.
@@ -19,13 +20,11 @@ public class KeyringTestingHelper {
         this.context = robolectricContext;
     }
 
-    public boolean addKeyring() throws Exception {
+    public boolean addKeyring(Collection<String> blobFiles) throws Exception {
 
         ProviderHelper providerHelper = new ProviderHelper(context);
 
-//        providerHelper.insertApiApp(new AppSettings("robo-test-package", new byte[]{5, 4, 3, 2, 1}));
-
-        byte[] data = TestDataUtil.readFully(getClass().getResourceAsStream("/public-key-for-sample.blob"));
+        byte[] data = TestDataUtil.readAllFully(blobFiles);
         UncachedKeyRing ring = UncachedKeyRing.decodeFromData(data);
         long masterKeyId = ring.getMasterKeyId();
 
@@ -44,6 +43,7 @@ public class KeyringTestingHelper {
 
         return saveSuccess;
     }
+
 
     private void retrieveKeyAndExpectNotFound(ProviderHelper providerHelper, long masterKeyId) {
         try {

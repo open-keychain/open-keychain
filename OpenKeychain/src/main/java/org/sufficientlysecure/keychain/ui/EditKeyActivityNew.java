@@ -20,18 +20,12 @@ package org.sufficientlysecure.keychain.ui;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
-import android.view.View;
-import android.view.View.OnClickListener;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.helper.ActionBarHelper;
-import org.sufficientlysecure.keychain.remote.ui.AccountsListFragment;
 import org.sufficientlysecure.keychain.util.Log;
 
 public class EditKeyActivityNew extends ActionBarActivity {
-
-    private Uri mDataUri;
 
     private EditKeyFragment mEditKeyFragment;
 
@@ -40,25 +34,6 @@ public class EditKeyActivityNew extends ActionBarActivity {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.edit_key_activity_new);
-
-//        // Inflate a "Done"/"Cancel" custom action bar view
-//        ActionBarHelper.setTwoButtonView(getSupportActionBar(),
-//                R.string.btn_save, R.drawable.ic_action_save,
-//                new OnClickListener() {
-//                    @Override
-//                    public void onClick(View v) {
-//                        // Save
-//
-//                    }
-//                }, R.string.menu_key_edit_cancel, R.drawable.ic_action_cancel,
-//                new OnClickListener() {
-//                    @Override
-//                    public void onClick(View v) {
-//                        // Cancel
-//
-//                    }
-//                }
-//        );
 
         Uri dataUri = getIntent().getData();
         if (dataUri == null) {

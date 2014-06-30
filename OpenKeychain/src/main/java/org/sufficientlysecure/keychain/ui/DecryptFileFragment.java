@@ -29,8 +29,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.TextView;
-
-import com.beardedhen.androidbootstrap.BootstrapButton;
+import android.widget.ImageButton;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
@@ -53,7 +52,7 @@ public class DecryptFileFragment extends DecryptFragment {
     // view
     private TextView mFilename;
     private CheckBox mDeleteAfter;
-    private BootstrapButton mBrowse;
+    private ImageButton mBrowse;
     private View mDecryptButton;
 
     // model
@@ -68,7 +67,7 @@ public class DecryptFileFragment extends DecryptFragment {
         View view = inflater.inflate(R.layout.decrypt_file_fragment, container, false);
 
         mFilename = (TextView) view.findViewById(R.id.decrypt_file_filename);
-        mBrowse = (BootstrapButton) view.findViewById(R.id.decrypt_file_browse);
+        mBrowse = (ImageButton) view.findViewById(R.id.decrypt_file_browse);
         mDeleteAfter = (CheckBox) view.findViewById(R.id.decrypt_file_delete_after_decryption);
         mDecryptButton = view.findViewById(R.id.decrypt_file_action_decrypt);
         mBrowse.setOnClickListener(new View.OnClickListener() {

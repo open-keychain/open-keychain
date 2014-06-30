@@ -59,23 +59,23 @@ public class OperationResultParcel implements Parcelable {
     public static class LogEntryParcel implements Parcelable {
         public final LogLevel mLevel;
         public final LogType mType;
-        public final String[] mParameters;
+        public final Object[] mParameters;
         public final int mIndent;
 
-        public LogEntryParcel(LogLevel level, LogType type, String[] parameters, int indent) {
+        public LogEntryParcel(LogLevel level, LogType type, int indent, Object... parameters) {
             mLevel = level;
             mType = type;
             mParameters = parameters;
             mIndent = indent;
         }
-        public LogEntryParcel(LogLevel level, LogType type, String[] parameters) {
-            this(level, type, parameters, 0);
+        public LogEntryParcel(LogLevel level, LogType type, Object... parameters) {
+            this(level, type, 0, parameters);
         }
 
         public LogEntryParcel(Parcel source) {
             mLevel = LogLevel.values()[source.readInt()];
             mType = LogType.values()[source.readInt()];
-            mParameters = source.createStringArray();
+            mParameters = (Object[]) source.readSerializable();
             mIndent = source.readInt();
         }
 
@@ -88,7 +88,7 @@ public class OperationResultParcel implements Parcelable {
         public void writeToParcel(Parcel dest, int flags) {
             dest.writeInt(mLevel.ordinal());
             dest.writeInt(mType.ordinal());
-            dest.writeStringArray(mParameters);
+            dest.writeSerializable(mParameters);
             dest.writeInt(mIndent);
         }
 
@@ -164,8 +164,8 @@ public class OperationResultParcel implements Parcelable {
         MSG_IP_UID_CERT_BAD (R.string.msg_ip_uid_cert_bad),
         MSG_IP_UID_CERT_ERROR (R.string.msg_ip_uid_cert_error),
         MSG_IP_UID_CERT_GOOD (R.string.msg_ip_uid_cert_good),
-        MSG_IP_UID_CERTS_UNKNOWN (R.string.msg_ip_uid_certs_unknown),
-        MSG_IP_UID_CLASSIFYING (R.string.msg_ip_uid_classifying),
+        MSG_IP_UID_CERTS_UNKNOWN (R.plurals.msg_ip_uid_certs_unknown),
+        MSG_IP_UID_CLASSIFYING (R.plurals.msg_ip_uid_classifying),
         MSG_IP_UID_REORDER(R.string.msg_ip_uid_reorder),
         MSG_IP_UID_PROCESSING (R.string.msg_ip_uid_processing),
         MSG_IP_UID_REVOKED (R.string.msg_ip_uid_revoked),
@@ -209,9 +209,9 @@ public class OperationResultParcel implements Parcelable {
         MSG_KC_SUB_REVOKE_BAD_ERR (R.string.msg_kc_sub_revoke_bad_err),
         MSG_KC_SUB_REVOKE_BAD (R.string.msg_kc_sub_revoke_bad),
         MSG_KC_SUB_REVOKE_DUP (R.string.msg_kc_sub_revoke_dup),
-        MSG_KC_SUCCESS_BAD (R.string.msg_kc_success_bad),
+        MSG_KC_SUCCESS_BAD (R.plurals.msg_kc_success_bad),
         MSG_KC_SUCCESS_BAD_AND_RED (R.string.msg_kc_success_bad_and_red),
-        MSG_KC_SUCCESS_REDUNDANT (R.string.msg_kc_success_redundant),
+        MSG_KC_SUCCESS_REDUNDANT (R.plurals.msg_kc_success_redundant),
         MSG_KC_SUCCESS (R.string.msg_kc_success),
         MSG_KC_UID_BAD_ERR (R.string.msg_kc_uid_bad_err),
         MSG_KC_UID_BAD_LOCAL (R.string.msg_kc_uid_bad_local),
@@ -296,13 +296,13 @@ public class OperationResultParcel implements Parcelable {
     public static class OperationLog extends ArrayList<LogEntryParcel> {
 
         /// Simple convenience method
-        public void add(LogLevel level, LogType type, String[] parameters, int indent) {
+        public void add(LogLevel level, LogType type, int indent, Object... parameters) {
             Log.d(Constants.TAG, type.toString());
-            add(new OperationResultParcel.LogEntryParcel(level, type, parameters, indent));
+            add(new OperationResultParcel.LogEntryParcel(level, type, indent, parameters));
         }
 
         public void add(LogLevel level, LogType type, int indent) {
-            add(new OperationResultParcel.LogEntryParcel(level, type, null, indent));
+            add(new OperationResultParcel.LogEntryParcel(level, type, indent, (Object[]) null));
         }
 
         public boolean containsWarnings() {

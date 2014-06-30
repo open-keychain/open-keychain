@@ -17,6 +17,8 @@
 
 package org.sufficientlysecure.keychain.ui;
 
+import android.app.ProgressDialog;
+import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -42,11 +44,17 @@ import org.sufficientlysecure.keychain.helper.ActionBarHelper;
 import org.sufficientlysecure.keychain.pgp.WrappedSecretKeyRing;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
+import org.sufficientlysecure.keychain.service.KeychainIntentService;
+import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
+import org.sufficientlysecure.keychain.service.OperationResults;
+import org.sufficientlysecure.keychain.service.PassphraseCacheService;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
 import org.sufficientlysecure.keychain.ui.adapter.SubkeysAdapter;
 import org.sufficientlysecure.keychain.ui.adapter.UserIdsAdapter;
+import org.sufficientlysecure.keychain.ui.adapter.UserIdsArrayAdapter;
 import org.sufficientlysecure.keychain.ui.dialog.AddUserIdDialogFragment;
 import org.sufficientlysecure.keychain.ui.dialog.EditUserIdDialogFragment;
+import org.sufficientlysecure.keychain.ui.dialog.PassphraseDialogFragment;
 import org.sufficientlysecure.keychain.ui.dialog.SetPassphraseDialogFragment;
 import org.sufficientlysecure.keychain.util.Log;
 
@@ -68,6 +76,7 @@ public class EditKeyFragment extends LoaderFragment implements
 
     private UserIdsAdapter mUserIdsAdapter;
     private SubkeysAdapter mKeysAdapter;
+    private UserIdsArrayAdapter mUserIdsAddedAdapter;
 
     private Uri mDataUri;
 
@@ -180,6 +189,10 @@ public class EditKeyFragment extends LoaderFragment implements
             }
         });
 
+        mUserIdsAddedAdapter = new UserIdsArrayAdapter(getActivity());
+        mUserIdsAddedList.setAdapter(mUserIdsAddedAdapter);
+        mUserIdsAddedAdapter.setData(mSaveKeyringParcel.addUserIds);
+
         mKeysAdapter = new SubkeysAdapter(getActivity(), null, 0);
         mKeysList.setAdapter(mKeysAdapter);
 
@@ -253,8 +266,6 @@ public class EditKeyFragment extends LoaderFragment implements
                     String newPassphrase = data
                             .getString(SetPassphraseDialogFragment.MESSAGE_NEW_PASSPHRASE);
 
-//                    updatePassphraseButtonText();
-//                    somethingChanged();
                     mSaveKeyringParcel.newPassphrase = newPassphrase;
                 }
             }
@@ -262,14 +273,6 @@ public class EditKeyFragment extends LoaderFragment implements
 
         // Create a new Messenger for the communication back
         Messenger messenger = new Messenger(returnHandler);
-
-        // set title based on isPassphraseSet()
-//        int title;
-//        if (isPassphraseSet()) {
-//            title = R.string.title_change_passphrase;
-//        } else {
-//            title = R.string.title_set_passphrase;
-//        }
 
         SetPassphraseDialogFragment setPassphraseDialog = SetPassphraseDialogFragment.newInstance(
                 messenger, R.string.title_change_passphrase);
@@ -321,9 +324,17 @@ public class EditKeyFragment extends LoaderFragment implements
         Handler returnHandler = new Handler() {
             @Override
             public void handleMessage(Message message) {
-                if (message.what == AddUserIdDialogFragment.MESSAGE_OK) {
+                switch (message.what) {
+                    case AddUserIdDialogFragment.MESSAGE_OKAY:
+                        Bundle data = message.getData();
+                        String userId = data.getString(AddUserIdDialogFragment.MESSAGE_DATA_USER_ID);
 
+                        if (userId != null) {
+                            mSaveKeyringParcel.addUserIds.add(userId);
+                            mUserIdsAddedAdapter.setData(mSaveKeyringParcel.addUserIds);
+                        }
                 }
+                getLoaderManager().getLoader(LOADER_ID_USER_IDS).forceLoad();
             }
         };
 
@@ -341,9 +352,73 @@ public class EditKeyFragment extends LoaderFragment implements
     }
 
     private void save() {
-        getActivity().finish();
-        // TODO
+        String passphrase = PassphraseCacheService.getCachedPassphrase(getActivity(),
+                mSaveKeyringParcel.mMasterKeyId);
+        if (passphrase == null) {
+            PassphraseDialogFragment.show(getActivity(), mSaveKeyringParcel.mMasterKeyId,
+                    new Handler() {
+                        @Override
+                        public void handleMessage(Message message) {
+                            if (message.what == PassphraseDialogFragment.MESSAGE_OKAY) {
+                                saveFinal();
+                            }
+                        }
+                    }
+            );
+
+        }
+
     }
 
+    private void saveFinal() {
+        // Message is received after importing is done in KeychainIntentService
+        KeychainIntentServiceHandler saveHandler = new KeychainIntentServiceHandler(
+                getActivity(),
+                getString(R.string.progress_saving),
+                ProgressDialog.STYLE_HORIZONTAL) {
+            public void handleMessage(Message message) {
+                // handle messages by standard KeychainIntentServiceHandler first
+                super.handleMessage(message);
 
+                if (message.arg1 == KeychainIntentServiceHandler.MESSAGE_OKAY) {
+                    // get returned data bundle
+                    Bundle returnData = message.getData();
+                    if (returnData == null) {
+                        return;
+                    }
+                    final OperationResults.SaveKeyringResult result =
+                            returnData.getParcelable(KeychainIntentService.RESULT);
+                    if (result == null) {
+                        return;
+                    }
+
+                    // if good -> finish, return result to showkey and display there!
+                    // if bad -> display here!
+
+//                    result.displayNotify(ImportKeysActivity.this);
+
+//                    getActivity().finish();
+                }
+            }
+        };
+
+        // Send all information needed to service to import key in other thread
+        Intent intent = new Intent(getActivity(), KeychainIntentService.class);
+        intent.setAction(KeychainIntentService.ACTION_SAVE_KEYRING);
+
+        // fill values for this action
+        Bundle data = new Bundle();
+        data.putParcelable(KeychainIntentService.SAVE_KEYRING_PARCEL, mSaveKeyringParcel);
+        intent.putExtra(KeychainIntentService.EXTRA_DATA, data);
+
+        // Create a new Messenger for the communication back
+        Messenger messenger = new Messenger(saveHandler);
+        intent.putExtra(KeychainIntentService.EXTRA_MESSENGER, messenger);
+
+        // show progress dialog
+        saveHandler.showProgressDialog(getActivity());
+
+        // start service with intent
+        getActivity().startService(intent);
+    }
 }

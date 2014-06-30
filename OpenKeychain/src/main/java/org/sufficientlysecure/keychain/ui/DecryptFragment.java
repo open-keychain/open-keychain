@@ -29,8 +29,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-
-import com.beardedhen.androidbootstrap.BootstrapButton;
+import android.widget.Button;
 
 import org.openintents.openpgp.OpenPgpSignatureResult;
 import org.sufficientlysecure.keychain.R;
@@ -52,7 +51,7 @@ public class DecryptFragment extends Fragment {
     protected TextView mUserId;
     protected TextView mUserIdRest;
 
-    protected BootstrapButton mLookupKey;
+    protected Button mLookupKey;
 
 
     @Override
@@ -65,7 +64,7 @@ public class DecryptFragment extends Fragment {
         mSignatureStatusImage = (ImageView) getView().findViewById(R.id.ic_signature_status);
         mUserId = (TextView) getView().findViewById(R.id.mainUserId);
         mUserIdRest = (TextView) getView().findViewById(R.id.mainUserIdRest);
-        mLookupKey = (BootstrapButton) getView().findViewById(R.id.lookup_key);
+        mLookupKey = (Button) getView().findViewById(R.id.lookup_key);
         mLookupKey.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {

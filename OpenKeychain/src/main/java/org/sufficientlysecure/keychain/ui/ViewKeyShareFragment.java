@@ -152,7 +152,11 @@ public class ViewKeyShareFragment extends LoaderFragment implements
                         KeyRings.buildUnifiedKeyRingUri(dataUri),
                         Keys.FINGERPRINT, ProviderHelper.FIELD_TYPE_BLOB);
                 String fingerprint = PgpKeyHelper.convertFingerprintToHex(data);
-                content = Constants.FINGERPRINT_SCHEME + ":" + fingerprint;
+                if(!toClipboard){
+                    content = Constants.FINGERPRINT_SCHEME + ":" + fingerprint;
+                } else {
+                    content = fingerprint;
+                }
             } else {
                 // get public keyring as ascii armored string
                 Uri uri = KeychainContract.KeyRingData.buildPublicKeyRingUri(dataUri);

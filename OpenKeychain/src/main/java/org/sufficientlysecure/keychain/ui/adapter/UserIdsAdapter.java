@@ -144,7 +144,6 @@ public class UserIdsAdapter extends CursorAdapter implements AdapterView.OnItemC
             vComment.setVisibility(View.GONE);
         }
 
-        // show small star icon for primary user ids
         boolean isPrimary = cursor.getInt(mIsPrimary) != 0;
         boolean isRevoked = cursor.getInt(mIsRevoked) > 0;
 
@@ -185,6 +184,8 @@ public class UserIdsAdapter extends CursorAdapter implements AdapterView.OnItemC
             vName.setEnabled(true);
             vAddress.setEnabled(true);
 
+            // verified: has been verified
+            // isPrimary: show small star icon for primary user ids
             int verified = cursor.getInt(mVerifiedId);
             switch (verified) {
                 case Certs.VERIFIED_SECRET:

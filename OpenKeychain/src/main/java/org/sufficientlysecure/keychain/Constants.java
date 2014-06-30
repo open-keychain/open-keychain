@@ -68,10 +68,12 @@ public final class Constants {
         public static final String LANGUAGE = "language";
         public static final String FORCE_V3_SIGNATURES = "forceV3Signatures";
         public static final String KEY_SERVERS = "keyServers";
+        public static final String KEY_SERVERS_DEFAULT_VERSION = "keyServersDefaultVersion";
     }
 
     public static final class Defaults {
-        public static final String KEY_SERVERS = "pool.sks-keyservers.net, subkeys.pgp.net, pgp.mit.edu";
+        public static final String KEY_SERVERS = "hkps://hkps.pool.sks-keyservers.net, subkeys.pgp.net, hkps://pgp.mit.edu";
+        public static final int KEY_SERVERS_VERSION = 2;
     }
 
     public static final class DrawerItems {

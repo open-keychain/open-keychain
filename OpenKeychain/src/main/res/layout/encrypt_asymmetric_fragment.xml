@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:bootstrapbutton="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
@@ -65,15 +64,14 @@
             android:text="@string/label_select_public_keys"
             android:textAppearance="?android:attr/textAppearanceMedium" />
 
-        <com.beardedhen.androidbootstrap.BootstrapButton
+        <Button
             android:id="@+id/btn_selectEncryptKeys"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:layout_margin="4dp"
             android:text="@string/select_keys_button_default"
-            bootstrapbutton:bb_icon_left="fa-user"
-            bootstrapbutton:bb_size="default"
-            bootstrapbutton:bb_type="default" />
+            android:background="@drawable/button_edgy"
+            android:drawableLeft="@drawable/ic_action_person" />
     </LinearLayout>
 </LinearLayout>

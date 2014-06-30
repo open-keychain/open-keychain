@@ -31,8 +31,7 @@ import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
-
-import com.beardedhen.androidbootstrap.BootstrapButton;
+import android.widget.ImageButton;
 
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.helper.ContactHelper;
@@ -43,7 +42,7 @@ import java.util.regex.Matcher;
 public class UserIdEditor extends LinearLayout implements Editor, OnClickListener {
     private EditorListener mEditorListener = null;
 
-    private BootstrapButton mDeleteButton;
+    private ImageButton mDeleteButton;
     private RadioButton mIsMainUserId;
     private String mOriginalID;
     private EditText mName;
@@ -103,7 +102,7 @@ public class UserIdEditor extends LinearLayout implements Editor, OnClickListene
         setDrawingCacheEnabled(true);
         setAlwaysDrawnWithCacheEnabled(true);
 
-        mDeleteButton = (BootstrapButton) findViewById(R.id.delete);
+        mDeleteButton = (ImageButton) findViewById(R.id.delete);
         mDeleteButton.setOnClickListener(this);
         mIsMainUserId = (RadioButton) findViewById(R.id.isMainUserId);
         mIsMainUserId.setOnClickListener(this);
@@ -119,7 +118,7 @@ public class UserIdEditor extends LinearLayout implements Editor, OnClickListene
         mEmail.setAdapter(
                 new ArrayAdapter<String>
                         (this.getContext(), android.R.layout.simple_dropdown_item_1line,
-                                ContactHelper.getMailAccounts(getContext())
+                                ContactHelper.getPossibleUserEmails(getContext())
                         ));
         mEmail.addTextChangedListener(new TextWatcher(){
             @Override

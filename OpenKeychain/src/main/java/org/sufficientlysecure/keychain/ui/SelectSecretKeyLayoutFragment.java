@@ -30,9 +30,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
-
-import com.beardedhen.androidbootstrap.BootstrapButton;
 
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
@@ -45,7 +44,7 @@ public class SelectSecretKeyLayoutFragment extends Fragment implements LoaderMan
     private TextView mKeyUserIdRest;
     private TextView mKeyMasterKeyIdHex;
     private TextView mNoKeySelected;
-    private BootstrapButton mSelectKeyButton;
+    private Button mSelectKeyButton;
     private Boolean mFilterCertify, mFilterSign;
 
     private Uri mReceivedUri = null;
@@ -117,8 +116,7 @@ public class SelectSecretKeyLayoutFragment extends Fragment implements LoaderMan
         mKeyUserId = (TextView) view.findViewById(R.id.select_secret_key_user_id);
         mKeyUserIdRest = (TextView) view.findViewById(R.id.select_secret_key_user_id_rest);
         mKeyMasterKeyIdHex = (TextView) view.findViewById(R.id.select_secret_key_master_key_hex);
-        mSelectKeyButton = (BootstrapButton) view
-                .findViewById(R.id.select_secret_key_select_key_button);
+        mSelectKeyButton = (Button) view.findViewById(R.id.select_secret_key_select_key_button);
         mFilterCertify = false;
         mFilterSign = false;
         mSelectKeyButton.setOnClickListener(new OnClickListener() {

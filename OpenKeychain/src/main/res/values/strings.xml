@@ -9,8 +9,9 @@
     <string name="title_authentication">Passphrase</string>
     <string name="title_create_key">Create Key</string>
     <string name="title_edit_key">Edit Key</string>
+    <string name="title_wizard">Welcome to OpenKeychain</string>
     <string name="title_preferences">Preferences</string>
-    <string name="title_api_registered_apps">Registered Applications</string>
+    <string name="title_api_registered_apps">Apps</string>
     <string name="title_key_server_preference">Keyserver Preference</string>
     <string name="title_change_passphrase">Change Passphrase</string>
     <string name="title_set_passphrase">Set Passphrase</string>
@@ -388,19 +389,19 @@
 
     <!-- Import result toast -->
     <plurals name="import_keys_added_and_updated_1">
-        <item quantity="one">Successfully added %1$d key</item>
-        <item quantity="other">Successfully added %1$d keys</item>
+        <item quantity="one">Successfully imported key</item>
+        <item quantity="other">Successfully imported %1$d keys</item>
     </plurals>
     <plurals name="import_keys_added_and_updated_2">
-        <item quantity="one"> and updated %1$d key%2$s.</item>
+        <item quantity="one"> and updated key%2$s.</item>
         <item quantity="other"> and updated %1$d keys%2$s.</item>
     </plurals>
     <plurals name="import_keys_added">
-        <item quantity="one">Successfully added %1$d key%2$s.</item>
-        <item quantity="other">Successfully added %1$d keys%2$s.</item>
+        <item quantity="one">Successfully imported key%2$s.</item>
+        <item quantity="other">Successfully imported %1$d keys%2$s.</item>
     </plurals>
     <plurals name="import_keys_updated">
-        <item quantity="one">Successfully updated %1$d key%2$s.</item>
+        <item quantity="one">Successfully updated key%2$s.</item>
         <item quantity="other">Successfully updated %1$d keys%2$s.</item>
     </plurals>
     <string name="import_view_log">View Log</string>
@@ -477,7 +478,7 @@
     <string name="nav_encrypt">Sign and Encrypt</string>
     <string name="nav_decrypt">Decrypt and Verify</string>
     <string name="nav_import">Import Keys</string>
-    <string name="nav_apps">Registered Apps</string>
+    <string name="nav_apps">Apps</string>
     <string name="drawer_open">Open navigation drawer</string>
     <string name="drawer_close">Close navigation drawer</string>
     <string name="edit">Edit</string>
@@ -542,8 +543,15 @@
     <string name="msg_ip_uid_cert_bad">Encountered bad certificate!</string>
     <string name="msg_ip_uid_cert_error">Error processing certificate!</string>
     <string name="msg_ip_uid_cert_good">User id is certified by %1$s (%2$s)</string>
-    <string name="msg_ip_uid_certs_unknown">Ignoring %s certificates from unknown pubkeys</string>
-    <string name="msg_ip_uid_classifying">Classifying user ids, using %s trusted signatures</string>
+    <plurals name="msg_ip_uid_certs_unknown">
+        <item quantity="one">Ignoring one certificate issued by an unknown public key</item>
+        <item quantity="other">Ignoring %s certificates issued by unknown public keys</item>
+    </plurals>
+    <plurals name="msg_ip_uid_classifying">
+        <item quantity="zero">Classifying user ids (no trusted keys available)</item>
+        <item quantity="one">Classifying user ids (using one trusted key)</item>
+        <item quantity="other">Classifying user ids (using %s trusted keys)</item>
+    </plurals>
     <string name="msg_ip_uid_reorder">Re-ordering user ids</string>
     <string name="msg_ip_uid_processing">Processing user id %s</string>
     <string name="msg_ip_uid_revoked">User id is revoked</string>
@@ -588,9 +596,15 @@
     <string name="msg_kc_sub_revoke_bad">Removing bad subkey revocation certificate</string>
     <string name="msg_kc_sub_revoke_dup">Removing redundant subkey revocation certificate</string>
     <string name="msg_kc_success">Keyring canonicalization successful, no changes</string>
-    <string name="msg_kc_success_bad">Keyring canonicalization successful, removed %s erroneous certificates</string>
+    <plurals name="msg_kc_success_bad">
+        <item quantity="one">Keyring canonicalization successful, removed one erroneous certificate</item>
+        <item quantity="other">Keyring canonicalization successful, removed %d erroneous certificates</item>
+    </plurals>
     <string name="msg_kc_success_bad_and_red">Keyring canonicalization successful, removed %1$s erroneous and %2$s redundant certificates</string>
-    <string name="msg_kc_success_redundant">Keyring canonicalization successful, removed %s redundant certificates</string>
+    <plurals name="msg_kc_success_redundant">
+        <item quantity="one">Keyring canonicalization successful, removed one redundant certificate</item>
+        <item quantity="other">Keyring canonicalization successful, removed %d redundant certificates</item>
+    </plurals>
     <string name="msg_kc_uid_bad_err">Removing bad self certificate for user id %s</string>
     <string name="msg_kc_uid_bad_local">Removing user id certificate with "local" flag</string>
     <string name="msg_kc_uid_bad_time">Removing user id with future timestamp</string>
