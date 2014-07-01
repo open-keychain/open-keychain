@@ -28,6 +28,7 @@ import android.os.Environment;
 import org.spongycastle.jce.provider.BouncyCastleProvider;
 import org.sufficientlysecure.keychain.helper.Preferences;
 import org.sufficientlysecure.keychain.helper.TlsHelper;
+import org.sufficientlysecure.keychain.provider.TemporaryStorageProvider;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.PRNGFixes;
 
@@ -85,6 +86,8 @@ public class KeychainApplication extends Application {
         Preferences.getPreferences(this).updateKeyServers();
 
         TlsHelper.addStaticCA("pool.sks-keyservers.net", getAssets(), "sks-keyservers.netCA.cer");
+
+        TemporaryStorageProvider.cleanUp(this);
     }
 
     public static void setupAccountAsNeeded(Context context) {

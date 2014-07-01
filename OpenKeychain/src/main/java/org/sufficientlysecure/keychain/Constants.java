@@ -53,6 +53,8 @@ public final class Constants {
 
     public static boolean KITKAT = Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT;
 
+    public static int TEMPFILE_TTL = 24*60*60*1000; // 1 day
+
     public static final class Path {
         public static final File APP_DIR = new File(Environment.getExternalStorageDirectory(), "OpenKeychain");
         public static final File APP_DIR_FILE = new File(APP_DIR, "export.asc");

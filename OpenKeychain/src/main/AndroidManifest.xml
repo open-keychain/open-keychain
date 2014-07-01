@@ -49,6 +49,9 @@
         android:name="android.hardware.touchscreen"
         android:required="false" />
 
+    <permission android:name="org.sufficientlysecure.keychain.WRITE_TEMPORARY_STORAGE"/>
+    <uses-permission android:name="org.sufficientlysecure.keychain.WRITE_TEMPORARY_STORAGE"/>
+
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.NFC" />
@@ -483,6 +486,12 @@
                     android:name="android.provider.CONTACTS_STRUCTURE"
                     android:resource="@xml/custom_pgp_contacts_structure"/>
         </service>
+
+        <provider
+                android:name=".provider.TemporaryStorageProvider"
+                android:authorities="org.sufficientlysecure.keychain.tempstorage"
+                android:writePermission="org.sufficientlysecure.keychain.WRITE_TEMPORARY_STORAGE"
+                android:exported="true"/>
 
     </application>
 
