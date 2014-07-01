@@ -59,12 +59,15 @@ public class EncryptAsymmetricFragment extends Fragment {
     // model
     private long mSecretKeyId = Constants.key.none;
     private long mEncryptionKeyIds[] = null;
+    private String mEncryptionUserIds[] = null;
 
     // Container Activity must implement this interface
     public interface OnAsymmetricKeySelection {
         public void onSigningKeySelected(long signingKeyId);
 
         public void onEncryptionKeysSelected(long[] encryptionKeyIds);
+
+        public void onEncryptionUserSelected(String[] encryptionUserIds);
     }
 
     @Override
@@ -88,6 +91,13 @@ public class EncryptAsymmetricFragment extends Fragment {
         mEncryptionKeyIds = encryptionKeyIds;
         // update key selection in EncryptActivity
         mKeySelectionListener.onEncryptionKeysSelected(encryptionKeyIds);
+        updateView();
+    }
+
+    private void setEncryptionUserIds(String[] encryptionUserIds) {
+        mEncryptionUserIds = encryptionUserIds;
+        // update key selection in EncryptActivity
+        mKeySelectionListener.onEncryptionUserSelected(encryptionUserIds);
         updateView();
     }
 
@@ -159,12 +169,14 @@ public class EncryptAsymmetricFragment extends Fragment {
 
         if (preselectedEncryptionKeyIds != null) {
             Vector<Long> goodIds = new Vector<Long>();
-            for (int i = 0; i < preselectedEncryptionKeyIds.length; ++i) {
+            Vector<String> goodUserIds = new Vector<String>();
+            for (long preselectedId : preselectedEncryptionKeyIds) {
                 try {
-                    long id = providerHelper.getCachedPublicKeyRing(
-                            KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(
-                                    preselectedEncryptionKeyIds[i])
-                    ).getMasterKeyId();
+                    CachedPublicKeyRing ring = providerHelper.getCachedPublicKeyRing(
+                            KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(preselectedId));
+                    long id = ring.getMasterKeyId();
+                    ring.getSplitPrimaryUserId();
+                    goodUserIds.add(ring.getPrimaryUserId());
                     goodIds.add(id);
                 } catch (PgpGeneralException e) {
                     Log.e(Constants.TAG, "key not found!", e);
@@ -176,6 +188,7 @@ public class EncryptAsymmetricFragment extends Fragment {
                     keyIds[i] = goodIds.get(i);
                 }
                 setEncryptionKeyIds(keyIds);
+                setEncryptionUserIds(goodUserIds.toArray(new String[goodUserIds.size()]));
             }
         }
     }
@@ -249,6 +262,7 @@ public class EncryptAsymmetricFragment extends Fragment {
                     Bundle bundle = data.getExtras();
                     setEncryptionKeyIds(bundle
                             .getLongArray(SelectPublicKeyActivity.RESULT_EXTRA_MASTER_KEY_IDS));
+                    setEncryptionUserIds(bundle.getStringArray(SelectPublicKeyActivity.RESULT_EXTRA_USER_IDS));
                 }
                 break;
             }

@@ -36,11 +36,16 @@ import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.compatibility.ClipboardReflection;
 import org.sufficientlysecure.keychain.helper.Preferences;
+import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
 import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
 import org.sufficientlysecure.keychain.service.PassphraseCacheService;
 import org.sufficientlysecure.keychain.ui.dialog.PassphraseDialogFragment;
 import org.sufficientlysecure.keychain.util.Log;
+
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 public class EncryptMessageFragment extends Fragment {
     public static final String ARG_TEXT = "text";
@@ -235,7 +240,17 @@ public class EncryptMessageFragment extends Fragment {
                         // Type is set to text/plain so that encrypted messages can
                         // be sent with Whatsapp, Hangouts, SMS etc...
                         sendIntent.setType("text/plain");
-
+                        Log.d(Constants.TAG, "encrypt to:" + Arrays.toString(mEncryptInterface.getEncryptionUsers()));
+                        if (!mEncryptInterface.isModeSymmetric() && mEncryptInterface.getEncryptionUsers() != null) {
+                            Set<String> users = new HashSet<String>();
+                            for (String user : mEncryptInterface.getEncryptionUsers()) {
+                                String[] userId = KeyRing.splitUserId(user);
+                                if (userId[1] != null) {
+                                    users.add(userId[1]);
+                                }
+                            }
+                            sendIntent.putExtra(Intent.EXTRA_EMAIL, users.toArray(new String[users.size()]));
+                        }
                         sendIntent.putExtra(Intent.EXTRA_TEXT, output);
                         startActivity(Intent.createChooser(sendIntent,
                                 getString(R.string.title_share_with)));

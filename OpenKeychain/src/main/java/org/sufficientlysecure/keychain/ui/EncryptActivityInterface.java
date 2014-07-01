@@ -23,6 +23,7 @@ public interface EncryptActivityInterface {
 
     public long getSignatureKey();
     public long[] getEncryptionKeys();
+    public String[] getEncryptionUsers();
 
     public String getPassphrase();
     public String getPassphraseAgain();

@@ -25,6 +25,7 @@ import android.provider.DocumentsContract;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
 
+import android.widget.Toast;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.helper.FileHelper;
@@ -53,8 +54,8 @@ public class DeleteFileDialogFragment extends DialogFragment {
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         final FragmentActivity activity = getActivity();
 
-        final Uri deleteUri = getArguments().containsKey(ARG_DELETE_URI) ? getArguments().<Uri>getParcelable(ARG_DELETE_URI) : null;
-        String deleteFilename = FileHelper.getFilename(getActivity(), deleteUri);
+        final Uri deleteUri = getArguments().getParcelable(ARG_DELETE_URI);
+        final String deleteFilename = FileHelper.getFilename(getActivity(), deleteUri);
 
         CustomAlertDialogBuilder alert = new CustomAlertDialogBuilder(activity);
 
@@ -69,53 +70,23 @@ public class DeleteFileDialogFragment extends DialogFragment {
             public void onClick(DialogInterface dialog, int id) {
                 dismiss();
 
+                // We can not securely delete Uris, so just use usual delete on them
                 if (Constants.KITKAT) {
-                    // We can not securely delete Documents, so just use usual delete on them
-                    if (DocumentsContract.deleteDocument(getActivity().getContentResolver(), deleteUri)) return;
+                    if (DocumentsContract.deleteDocument(getActivity().getContentResolver(), deleteUri)) {
+                        Toast.makeText(getActivity(), R.string.file_delete_successful, Toast.LENGTH_SHORT).show();
+                        return;
+                    }
                 }
 
-                // TODO!!! We can't delete files from Uri without trying to find it's real path
+                if (getActivity().getContentResolver().delete(deleteUri, null, null) > 0) {
+                    Toast.makeText(getActivity(), R.string.file_delete_successful, Toast.LENGTH_SHORT).show();
+                    return;
+                }
 
-                /*
-                // Send all information needed to service to edit key in other thread
-                Intent intent = new Intent(activity, KeychainIntentService.class);
+                Toast.makeText(getActivity(), getActivity().getString(R.string.error_file_delete_failed, deleteFilename), Toast.LENGTH_SHORT).show();
 
-                // fill values for this action
-                Bundle data = new Bundle();
-
-                intent.setAction(KeychainIntentService.ACTION_DELETE_FILE_SECURELY);
-                intent.putExtra(KeychainIntentService.EXTRA_DATA, data);
-
-                ProgressDialogFragment deletingDialog = ProgressDialogFragment.newInstance(
-                        getString(R.string.progress_deleting_securely),
-                        ProgressDialog.STYLE_HORIZONTAL,
-                        false,
-                        null);
-
-                // Message is received after deleting is done in KeychainIntentService
-                KeychainIntentServiceHandler saveHandler =
-                        new KeychainIntentServiceHandler(activity, deletingDialog) {
-                    public void handleMessage(Message message) {
-                        // handle messages by standard KeychainIntentHandler first
-                        super.handleMessage(message);
-
-                        if (message.arg1 == KeychainIntentServiceHandler.MESSAGE_OKAY) {
-                            Toast.makeText(activity, R.string.file_delete_successful,
-                                    Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                };
-
-                // Create a new Messenger for the communication back
-                Messenger messenger = new Messenger(saveHandler);
-                intent.putExtra(KeychainIntentService.EXTRA_MESSENGER, messenger);
-
-                // show progress dialog
-                deletingDialog.show(activity.getSupportFragmentManager(), "deletingDialog");
-
-                // start service with intent
-                activity.startService(intent);
-                */
+                // TODO: We can't delete that file...
+                // If possible we should find out if deletion is possible before even showing the option to do so.
             }
         });
         alert.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {

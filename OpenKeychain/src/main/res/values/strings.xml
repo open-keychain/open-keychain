@@ -55,6 +55,7 @@
     <string name="btn_decrypt_verify_message">Decrypt and verify message</string>
     <string name="btn_decrypt_verify_clipboard">From Clipboard</string>
     <string name="btn_encrypt_file">Encrypt and save file</string>
+    <string name="btn_encrypt_share_file">Encrypt and share file</string>
     <string name="btn_save">Save</string>
     <string name="btn_do_not_save">Cancel</string>
     <string name="btn_delete">Delete</string>
@@ -105,6 +106,7 @@
     <string name="label_sign">Sign</string>
     <string name="label_message">Message</string>
     <string name="label_file">File</string>
+    <string name="label_file_colon">File:</string>
     <string name="label_no_passphrase">No Passphrase</string>
     <string name="label_passphrase">Passphrase</string>
     <string name="label_passphrase_again">Again</string>

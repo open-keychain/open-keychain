@@ -33,12 +33,13 @@ import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.ImageButton;
 
 import com.devspark.appmsg.AppMsg;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.pgp.KeyRing;
+import org.sufficientlysecure.keychain.provider.TemporaryStorageProvider;
 import org.sufficientlysecure.keychain.helper.FileHelper;
 import org.sufficientlysecure.keychain.helper.Preferences;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
@@ -50,6 +51,8 @@ import org.sufficientlysecure.keychain.util.Choice;
 import org.sufficientlysecure.keychain.util.Log;
 
 import java.io.File;
+import java.util.HashSet;
+import java.util.Set;
 
 public class EncryptFileFragment extends Fragment {
     public static final String ARG_URI = "uri";
@@ -65,8 +68,7 @@ public class EncryptFileFragment extends Fragment {
     private Spinner mFileCompression = null;
     private TextView mFilename = null;
     private CheckBox mDeleteAfter = null;
-    private CheckBox mShareAfter = null;
-    private ImageButton mBrowse = null;
+    private View mShareFile;
     private View mEncryptFile;
 
     // model
@@ -94,13 +96,19 @@ public class EncryptFileFragment extends Fragment {
         mEncryptFile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                encryptClicked();
+                encryptClicked(false);
+            }
+        });
+        mShareFile = view.findViewById(R.id.action_encrypt_share);
+        mShareFile.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                encryptClicked(true);
             }
         });
 
         mFilename = (TextView) view.findViewById(R.id.filename);
-        mBrowse = (ImageButton) view.findViewById(R.id.btn_browse);
-        mBrowse.setOnClickListener(new View.OnClickListener() {
+        view.findViewById(R.id.btn_browse).setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 if (Constants.KITKAT) {
                     FileHelper.openDocument(EncryptFileFragment.this, "*/*", REQUEST_CODE_INPUT);
@@ -136,7 +144,6 @@ public class EncryptFileFragment extends Fragment {
         }
 
         mDeleteAfter = (CheckBox) view.findViewById(R.id.deleteAfterEncryption);
-        mShareAfter = (CheckBox) view.findViewById(R.id.shareAfterEncryption);
 
         mAsciiArmor = (CheckBox) view.findViewById(R.id.asciiArmor);
         mAsciiArmor.setChecked(Preferences.getPreferences(getActivity()).getDefaultAsciiArmor());
@@ -181,7 +188,7 @@ public class EncryptFileFragment extends Fragment {
         }
     }
 
-    private void encryptClicked() {
+    private void encryptClicked(boolean share) {
         if (mInputUri == null) {
             AppMsg.makeText(getActivity(), R.string.no_file_selected, AppMsg.STYLE_ALERT).show();
             return;
@@ -236,10 +243,17 @@ public class EncryptFileFragment extends Fragment {
             }
         }
 
-        showOutputFileDialog();
+        if (share) {
+            String targetName = FileHelper.getFilename(getActivity(), mInputUri) +
+                    (mAsciiArmor.isChecked() ? ".asc" : ".gpg");
+            mOutputUri = TemporaryStorageProvider.createFile(getActivity(), targetName);
+            encryptStart(true);
+        } else {
+            showOutputFileDialog();
+        }
     }
 
-    private void encryptStart() {
+    private void encryptStart(final boolean share) {
         if (mInputUri == null || mOutputUri == null) {
             throw new IllegalStateException("Something went terribly wrong if this happens!");
         }
@@ -300,11 +314,21 @@ public class EncryptFileFragment extends Fragment {
                         setInputUri(null);
                     }
 
-                    if (mShareAfter.isChecked()) {
+                    if (share) {
                         // Share encrypted file
                         Intent sendFileIntent = new Intent(Intent.ACTION_SEND);
                         sendFileIntent.setType("*/*");
                         sendFileIntent.putExtra(Intent.EXTRA_STREAM, mOutputUri);
+                        if (!mEncryptInterface.isModeSymmetric() && mEncryptInterface.getEncryptionUsers() != null) {
+                            Set<String> users = new HashSet<String>();
+                            for (String user : mEncryptInterface.getEncryptionUsers()) {
+                                String[] userId = KeyRing.splitUserId(user);
+                                if (userId[1] != null) {
+                                    users.add(userId[1]);
+                                }
+                            }
+                            sendFileIntent.putExtra(Intent.EXTRA_EMAIL, users.toArray(new String[users.size()]));
+                        }
                         startActivity(Intent.createChooser(sendFileIntent,
                                 getString(R.string.title_share_file)));
                     }
@@ -336,7 +360,7 @@ public class EncryptFileFragment extends Fragment {
                 // This happens after output file was selected, so start our operation
                 if (resultCode == Activity.RESULT_OK && data != null) {
                     mOutputUri = data.getData();
-                    encryptStart();
+                    encryptStart(false);
                 }
                 return;
             }

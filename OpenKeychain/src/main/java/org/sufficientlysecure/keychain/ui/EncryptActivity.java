@@ -70,6 +70,7 @@ public class EncryptActivity extends DrawerActivity implements
 
     // model used by message and file fragments
     private long mEncryptionKeyIds[] = null;
+    private String mEncryptionUserIds[] = null;
     private long mSigningKeyId = Constants.key.none;
     private String mPassphrase;
     private String mPassphraseAgain;
@@ -82,6 +83,11 @@ public class EncryptActivity extends DrawerActivity implements
     @Override
     public void onEncryptionKeysSelected(long[] encryptionKeyIds) {
         mEncryptionKeyIds = encryptionKeyIds;
+    }
+
+    @Override
+    public void onEncryptionUserSelected(String[] encryptionUserIds) {
+        mEncryptionUserIds = encryptionUserIds;
     }
 
     @Override
@@ -107,6 +113,11 @@ public class EncryptActivity extends DrawerActivity implements
     @Override
     public long[] getEncryptionKeys() {
         return mEncryptionKeyIds;
+    }
+
+    @Override
+    public String[] getEncryptionUsers() {
+        return mEncryptionUserIds;
     }
 
     @Override
