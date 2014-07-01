@@ -51,7 +51,7 @@ import org.sufficientlysecure.keychain.service.PassphraseCacheService;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
 import org.sufficientlysecure.keychain.ui.adapter.SubkeysAdapter;
 import org.sufficientlysecure.keychain.ui.adapter.UserIdsAdapter;
-import org.sufficientlysecure.keychain.ui.adapter.UserIdsArrayAdapter;
+import org.sufficientlysecure.keychain.ui.adapter.UserIdsNewAdapter;
 import org.sufficientlysecure.keychain.ui.dialog.AddUserIdDialogFragment;
 import org.sufficientlysecure.keychain.ui.dialog.EditUserIdDialogFragment;
 import org.sufficientlysecure.keychain.ui.dialog.PassphraseDialogFragment;
@@ -76,7 +76,7 @@ public class EditKeyFragment extends LoaderFragment implements
 
     private UserIdsAdapter mUserIdsAdapter;
     private SubkeysAdapter mKeysAdapter;
-    private UserIdsArrayAdapter mUserIdsAddedAdapter;
+    private UserIdsNewAdapter mUserIdsAddedAdapter;
 
     private Uri mDataUri;
 
@@ -189,7 +189,7 @@ public class EditKeyFragment extends LoaderFragment implements
             }
         });
 
-        mUserIdsAddedAdapter = new UserIdsArrayAdapter(getActivity());
+        mUserIdsAddedAdapter = new UserIdsNewAdapter(getActivity());
         mUserIdsAddedList.setAdapter(mUserIdsAddedAdapter);
         mUserIdsAddedAdapter.setData(mSaveKeyringParcel.addUserIds);
 
@@ -321,34 +321,37 @@ public class EditKeyFragment extends LoaderFragment implements
     }
 
     private void addUserId() {
-        Handler returnHandler = new Handler() {
-            @Override
-            public void handleMessage(Message message) {
-                switch (message.what) {
-                    case AddUserIdDialogFragment.MESSAGE_OKAY:
-                        Bundle data = message.getData();
-                        String userId = data.getString(AddUserIdDialogFragment.MESSAGE_DATA_USER_ID);
+//        mSaveKeyringParcel.addUserIds.add(userId);
+//        mUserIdsAddedAdapter.setData(mSaveKeyringParcel.addUserIds);
 
-                        if (userId != null) {
-                            mSaveKeyringParcel.addUserIds.add(userId);
-                            mUserIdsAddedAdapter.setData(mSaveKeyringParcel.addUserIds);
-                        }
-                }
-                getLoaderManager().getLoader(LOADER_ID_USER_IDS).forceLoad();
-            }
-        };
 
-        // Create a new Messenger for the communication back
-        final Messenger messenger = new Messenger(returnHandler);
+//        Handler returnHandler = new Handler() {
+//            @Override
+//            public void handleMessage(Message message) {
+//                switch (message.what) {
+//                    case AddUserIdDialogFragment.MESSAGE_OKAY:
+//                        Bundle data = message.getData();
+//                        String userId = data.getString(AddUserIdDialogFragment.MESSAGE_DATA_USER_ID);
+//
+//                        if (userId != null) {
 
-        DialogFragmentWorkaround.INTERFACE.runnableRunDelayed(new Runnable() {
-            public void run() {
-                AddUserIdDialogFragment dialogFragment =
-                        AddUserIdDialogFragment.newInstance(messenger);
-
-                dialogFragment.show(getActivity().getSupportFragmentManager(), "addUserIdDialog");
-            }
-        });
+//                        }
+//                }
+//                getLoaderManager().getLoader(LOADER_ID_USER_IDS).forceLoad();
+//            }
+//        };
+//
+//        // Create a new Messenger for the communication back
+//        final Messenger messenger = new Messenger(returnHandler);
+//
+//        DialogFragmentWorkaround.INTERFACE.runnableRunDelayed(new Runnable() {
+//            public void run() {
+//                AddUserIdDialogFragment dialogFragment =
+//                        AddUserIdDialogFragment.newInstance(messenger);
+//
+//                dialogFragment.show(getActivity().getSupportFragmentManager(), "addUserIdDialog");
+//            }
+//        });
     }
 
     private void save() {
