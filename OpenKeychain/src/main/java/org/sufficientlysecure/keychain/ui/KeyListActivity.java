@@ -17,21 +17,33 @@
 
 package org.sufficientlysecure.keychain.ui;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Message;
+import android.os.Messenger;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import com.devspark.appmsg.AppMsg;
 
+import org.spongycastle.bcpg.sig.KeyFlags;
 import org.sufficientlysecure.keychain.Constants;
+import org.sufficientlysecure.keychain.Constants.choice.algorithm;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.helper.ExportHelper;
+import org.sufficientlysecure.keychain.helper.OtherHelper;
+import org.sufficientlysecure.keychain.keyimport.ImportKeysListEntry;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainDatabase;
+import org.sufficientlysecure.keychain.service.KeychainIntentService;
+import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
+import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
+import org.sufficientlysecure.keychain.service.SaveKeyringParcel.SubkeyAdd;
 import org.sufficientlysecure.keychain.util.Log;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 public class KeyListActivity extends DrawerActivity {
 
@@ -121,9 +133,42 @@ public class KeyListActivity extends DrawerActivity {
     }
 
     private void createKeyExpert() {
-        Intent intent = new Intent(this, EditKeyActivity.class);
-        intent.setAction(EditKeyActivity.ACTION_CREATE_KEY);
-        startActivityForResult(intent, 0);
-    }
+        Intent intent = new Intent(this, KeychainIntentService.class);
+        intent.setAction(KeychainIntentService.ACTION_SAVE_KEYRING);
 
+        // Message is received after importing is done in KeychainIntentService
+        KeychainIntentServiceHandler saveHandler = new KeychainIntentServiceHandler(
+                this,
+                getString(R.string.progress_importing),
+                ProgressDialog.STYLE_HORIZONTAL) {
+            public void handleMessage(Message message) {
+                // handle messages by standard KeychainIntentServiceHandler first
+                super.handleMessage(message);
+                Bundle data = message.getData();
+                // OtherHelper.logDebugBundle(data, "message reply");
+            }
+        };
+
+        // fill values for this action
+        Bundle data = new Bundle();
+
+        SaveKeyringParcel parcel = new SaveKeyringParcel();
+        parcel.addSubKeys.add(new SubkeyAdd(algorithm.rsa, 1024, KeyFlags.CERTIFY_OTHER, null));
+        parcel.addSubKeys.add(new SubkeyAdd(algorithm.rsa, 1024, KeyFlags.SIGN_DATA, null));
+        parcel.addUserIds.add("swagerinho");
+        parcel.newPassphrase = "swag";
+
+        // get selected key entries
+        data.putParcelable(KeychainIntentService.SAVE_KEYRING_PARCEL, parcel);
+
+        intent.putExtra(KeychainIntentService.EXTRA_DATA, data);
+
+        // Create a new Messenger for the communication back
+        Messenger messenger = new Messenger(saveHandler);
+        intent.putExtra(KeychainIntentService.EXTRA_MESSENGER, messenger);
+
+        saveHandler.showProgressDialog(this);
+
+        startService(intent);
+    }
 }

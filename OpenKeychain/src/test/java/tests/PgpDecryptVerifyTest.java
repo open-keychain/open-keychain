@@ -22,7 +22,6 @@ public class PgpDecryptVerifyTest {
         Assert.assertEquals(expectedSignatureResult, status);
     }
 
-
     @Test
     public void testVerifyFailure() throws Exception {
 
