@@ -51,12 +51,13 @@ import org.sufficientlysecure.keychain.service.PassphraseCacheService;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
 import org.sufficientlysecure.keychain.ui.adapter.SubkeysAdapter;
 import org.sufficientlysecure.keychain.ui.adapter.UserIdsAdapter;
-import org.sufficientlysecure.keychain.ui.adapter.UserIdsArrayAdapter;
-import org.sufficientlysecure.keychain.ui.dialog.AddUserIdDialogFragment;
+import org.sufficientlysecure.keychain.ui.adapter.UserIdsAddedAdapter;
 import org.sufficientlysecure.keychain.ui.dialog.EditUserIdDialogFragment;
 import org.sufficientlysecure.keychain.ui.dialog.PassphraseDialogFragment;
 import org.sufficientlysecure.keychain.ui.dialog.SetPassphraseDialogFragment;
 import org.sufficientlysecure.keychain.util.Log;
+
+import java.util.ArrayList;
 
 public class EditKeyFragment extends LoaderFragment implements
         LoaderManager.LoaderCallbacks<Cursor> {
@@ -76,7 +77,8 @@ public class EditKeyFragment extends LoaderFragment implements
 
     private UserIdsAdapter mUserIdsAdapter;
     private SubkeysAdapter mKeysAdapter;
-    private UserIdsArrayAdapter mUserIdsAddedAdapter;
+    private UserIdsAddedAdapter mUserIdsAddedAdapter;
+    private ArrayList<UserIdsAddedAdapter.UserIdModel> mUserIdsAddedData;
 
     private Uri mDataUri;
 
@@ -189,9 +191,10 @@ public class EditKeyFragment extends LoaderFragment implements
             }
         });
 
-        mUserIdsAddedAdapter = new UserIdsArrayAdapter(getActivity());
+        // TODO: from savedInstance?!
+        mUserIdsAddedData = new ArrayList<UserIdsAddedAdapter.UserIdModel>();
+        mUserIdsAddedAdapter = new UserIdsAddedAdapter(getActivity(), mUserIdsAddedData);
         mUserIdsAddedList.setAdapter(mUserIdsAddedAdapter);
-        mUserIdsAddedAdapter.setData(mSaveKeyringParcel.addUserIds);
 
         mKeysAdapter = new SubkeysAdapter(getActivity(), null, 0);
         mKeysList.setAdapter(mKeysAdapter);
@@ -321,34 +324,7 @@ public class EditKeyFragment extends LoaderFragment implements
     }
 
     private void addUserId() {
-        Handler returnHandler = new Handler() {
-            @Override
-            public void handleMessage(Message message) {
-                switch (message.what) {
-                    case AddUserIdDialogFragment.MESSAGE_OKAY:
-                        Bundle data = message.getData();
-                        String userId = data.getString(AddUserIdDialogFragment.MESSAGE_DATA_USER_ID);
-
-                        if (userId != null) {
-                            mSaveKeyringParcel.addUserIds.add(userId);
-                            mUserIdsAddedAdapter.setData(mSaveKeyringParcel.addUserIds);
-                        }
-                }
-                getLoaderManager().getLoader(LOADER_ID_USER_IDS).forceLoad();
-            }
-        };
-
-        // Create a new Messenger for the communication back
-        final Messenger messenger = new Messenger(returnHandler);
-
-        DialogFragmentWorkaround.INTERFACE.runnableRunDelayed(new Runnable() {
-            public void run() {
-                AddUserIdDialogFragment dialogFragment =
-                        AddUserIdDialogFragment.newInstance(messenger);
-
-                dialogFragment.show(getActivity().getSupportFragmentManager(), "addUserIdDialog");
-            }
-        });
+        mUserIdsAddedAdapter.add(new UserIdsAddedAdapter.UserIdModel());
     }
 
     private void save() {
@@ -360,17 +336,23 @@ public class EditKeyFragment extends LoaderFragment implements
                         @Override
                         public void handleMessage(Message message) {
                             if (message.what == PassphraseDialogFragment.MESSAGE_OKAY) {
-                                saveFinal();
+                                String passphrase =
+                                        message.getData().getString(PassphraseDialogFragment.MESSAGE_DATA_PASSPHRASE);
+                                Log.d(Constants.TAG, "after caching passphrase");
+                                saveFinal(passphrase);
                             }
                         }
                     }
             );
-
+        } else {
+            saveFinal(passphrase);
         }
-
     }
 
-    private void saveFinal() {
+    private void saveFinal(String passphrase) {
+        Log.d(Constants.TAG, "add userids to parcel: " + mUserIdsAddedAdapter.getDataAsStringList());
+        mSaveKeyringParcel.addUserIds = mUserIdsAddedAdapter.getDataAsStringList();
+
         // Message is received after importing is done in KeychainIntentService
         KeychainIntentServiceHandler saveHandler = new KeychainIntentServiceHandler(
                 getActivity(),
@@ -408,6 +390,7 @@ public class EditKeyFragment extends LoaderFragment implements
 
         // fill values for this action
         Bundle data = new Bundle();
+        data.putString(KeychainIntentService.SAVE_KEYRING_PASSPHRASE, passphrase);
         data.putParcelable(KeychainIntentService.SAVE_KEYRING_PARCEL, mSaveKeyringParcel);
         intent.putExtra(KeychainIntentService.EXTRA_DATA, data);
 

@@ -388,7 +388,7 @@ public class SectionView extends LinearLayout implements OnClickListener, Editor
 
                 if (message.arg1 == KeychainIntentServiceHandler.MESSAGE_OKAY) {
                     // get new key from data bundle returned from service
-                    Bundle data = message.getData();
+                    Bundle data = message.getDataAsStringList();
                     UncachedSecretKey newKey = PgpConversionHelper
                             .BytesToPGPSecretKey(data
                                     .getByteArray(KeychainIntentService.RESULT_NEW_KEY));

@@ -231,7 +231,7 @@ public class EditKeyActivity extends ActionBarActivity implements EditorListener
 
                             if (message.arg1 == KeychainIntentServiceHandler.MESSAGE_OKAY) {
                                 // get new key from data bundle returned from service
-                                Bundle data = message.getData();
+                                Bundle data = message.getDataAsStringList();
 
                                 ArrayList<UncachedSecretKey> newKeys =
                                         PgpConversionHelper.BytesToPGPSecretKeyList(data

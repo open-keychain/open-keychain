@@ -49,7 +49,6 @@ import java.util.Date;
  * convenience.
  */
 public class PassphraseCacheService extends Service {
-    public static final String TAG = Constants.TAG + ": PassphraseCacheService";
 
     public static final String ACTION_PASSPHRASE_CACHE_ADD = Constants.INTENT_PREFIX
             + "PASSPHRASE_CACHE_ADD";
@@ -83,7 +82,7 @@ public class PassphraseCacheService extends Service {
      * @param passphrase
      */
     public static void addCachedPassphrase(Context context, long keyId, String passphrase) {
-        Log.d(TAG, "cacheNewPassphrase() for " + keyId);
+        Log.d(Constants.TAG, "PassphraseCacheService.cacheNewPassphrase() for " + keyId);
 
         Intent intent = new Intent(context, PassphraseCacheService.class);
         intent.setAction(ACTION_PASSPHRASE_CACHE_ADD);
@@ -103,7 +102,7 @@ public class PassphraseCacheService extends Service {
      * @return passphrase or null (if no passphrase is cached for this keyId)
      */
     public static String getCachedPassphrase(Context context, long keyId) {
-        Log.d(TAG, "getCachedPassphrase() get masterKeyId for " + keyId);
+        Log.d(Constants.TAG, "PassphraseCacheService.getCachedPassphrase() get masterKeyId for " + keyId);
 
         Intent intent = new Intent(context, PassphraseCacheService.class);
         intent.setAction(ACTION_PASSPHRASE_CACHE_GET);
@@ -159,7 +158,7 @@ public class PassphraseCacheService extends Service {
     private String getCachedPassphraseImpl(long keyId) {
         // passphrase for symmetric encryption?
         if (keyId == Constants.key.symmetric) {
-            Log.d(TAG, "getCachedPassphraseImpl() for symmetric encryption");
+            Log.d(Constants.TAG, "PassphraseCacheService.getCachedPassphraseImpl() for symmetric encryption");
             String cachedPassphrase = mPassphraseCache.get(Constants.key.symmetric);
             if (cachedPassphrase == null) {
                 return null;
@@ -170,7 +169,7 @@ public class PassphraseCacheService extends Service {
 
         // try to get master key id which is used as an identifier for cached passphrases
         try {
-            Log.d(TAG, "getCachedPassphraseImpl() for masterKeyId " + keyId);
+            Log.d(Constants.TAG, "PassphraseCacheService.getCachedPassphraseImpl() for masterKeyId " + keyId);
             WrappedSecretKeyRing key = new ProviderHelper(this).getWrappedSecretKeyRing(
                     KeychainContract.KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(keyId));
             // no passphrase needed? just add empty string and return it, then
@@ -184,18 +183,18 @@ public class PassphraseCacheService extends Service {
             // get cached passphrase
             String cachedPassphrase = mPassphraseCache.get(keyId);
             if (cachedPassphrase == null) {
-                Log.d(TAG, "Passphrase not (yet) cached, returning null");
+                Log.d(Constants.TAG, "PassphraseCacheService Passphrase not (yet) cached, returning null");
                 // not really an error, just means the passphrase is not cached but not empty either
                 return null;
             }
 
             // set it again to reset the cache life cycle
-            Log.d(TAG, "Cache passphrase again when getting it!");
+            Log.d(Constants.TAG, "PassphraseCacheService Cache passphrase again when getting it!");
             addCachedPassphrase(this, keyId, cachedPassphrase);
             return cachedPassphrase;
 
         } catch (ProviderHelper.NotFoundException e) {
-            Log.e(TAG, "Passphrase for unknown key was requested!");
+            Log.e(Constants.TAG, "PassphraseCacheService Passphrase for unknown key was requested!");
             return null;
         }
     }
@@ -212,7 +211,7 @@ public class PassphraseCacheService extends Service {
                 public void onReceive(Context context, Intent intent) {
                     String action = intent.getAction();
 
-                    Log.d(TAG, "Received broadcast...");
+                    Log.d(Constants.TAG, "PassphraseCacheService Received broadcast...");
 
                     if (action.equals(BROADCAST_ACTION_PASSPHRASE_CACHE_SERVICE)) {
                         long keyId = intent.getLongExtra(EXTRA_KEY_ID, -1);
@@ -248,7 +247,7 @@ public class PassphraseCacheService extends Service {
      */
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        Log.d(TAG, "onStartCommand()");
+        Log.d(Constants.TAG, "PassphraseCacheService.onStartCommand()");
 
         // register broadcastreceiver
         registerReceiver();
@@ -259,8 +258,8 @@ public class PassphraseCacheService extends Service {
                 long keyId = intent.getLongExtra(EXTRA_KEY_ID, -1);
                 String passphrase = intent.getStringExtra(EXTRA_PASSPHRASE);
 
-                Log.d(TAG,
-                        "Received ACTION_PASSPHRASE_CACHE_ADD intent in onStartCommand() with keyId: "
+                Log.d(Constants.TAG,
+                        "PassphraseCacheService Received ACTION_PASSPHRASE_CACHE_ADD intent in onStartCommand() with keyId: "
                                 + keyId + ", ttl: " + ttl);
 
                 // add keyId and passphrase to memory
@@ -285,10 +284,10 @@ public class PassphraseCacheService extends Service {
                 try {
                     messenger.send(msg);
                 } catch (RemoteException e) {
-                    Log.e(Constants.TAG, "Sending message failed", e);
+                    Log.e(Constants.TAG, "PassphraseCacheService Sending message failed", e);
                 }
             } else {
-                Log.e(Constants.TAG, "Intent or Intent Action not supported!");
+                Log.e(Constants.TAG, "PassphraseCacheService Intent or Intent Action not supported!");
             }
         }
 
@@ -305,11 +304,11 @@ public class PassphraseCacheService extends Service {
         // remove passphrase corresponding to keyId from memory
         mPassphraseCache.remove(keyId);
 
-        Log.d(TAG, "Timeout of keyId " + keyId + ", removed from memory!");
+        Log.d(Constants.TAG, "PassphraseCacheService Timeout of keyId " + keyId + ", removed from memory!");
 
         // stop whole service if no cached passphrases remaining
         if (mPassphraseCache.size() == 0) {
-            Log.d(TAG, "No passphrases remaining in memory, stopping service!");
+            Log.d(Constants.TAG, "PassphraseCacheServic No passphrases remaining in memory, stopping service!");
             stopSelf();
         }
     }
