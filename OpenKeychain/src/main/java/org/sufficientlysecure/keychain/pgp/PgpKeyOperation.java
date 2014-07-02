@@ -52,6 +52,7 @@ import org.sufficientlysecure.keychain.service.OperationResultParcel.LogType;
 import org.sufficientlysecure.keychain.service.OperationResultParcel.OperationLog;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel.SubkeyAdd;
+import org.sufficientlysecure.keychain.util.IterableIterator;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Primes;
 
@@ -66,6 +67,7 @@ import java.security.SignatureException;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.TimeZone;
 
 /**
@@ -289,14 +291,42 @@ public class PgpKeyOperation {
             // 2a. Add certificates for new user ids
             for (String userId : saveParcel.addUserIds) {
                 log.add(LogLevel.INFO, LogType.MSG_MF_UID_ADD, indent);
+
+                // this operation supersedes all previous binding and revocation certificates,
+                // so remove those to retain assertions from canonicalization for later operations
+                @SuppressWarnings("unchecked")
+                Iterator<PGPSignature> it = modifiedPublicKey.getSignaturesForID(userId);
+                if (it != null) {
+                    for (PGPSignature cert : new IterableIterator<PGPSignature>(it)) {
+                        // if it's not a self cert, never mind
+                        if (cert.getKeyID() != masterPublicKey.getKeyID()) {
+                            continue;
+                        }
+                        if (cert.getSignatureType() == PGPSignature.CERTIFICATION_REVOCATION
+                                || cert.getSignatureType() == PGPSignature.NO_CERTIFICATION
+                                || cert.getSignatureType() == PGPSignature.CASUAL_CERTIFICATION
+                                || cert.getSignatureType() == PGPSignature.POSITIVE_CERTIFICATION
+                                || cert.getSignatureType() == PGPSignature.DEFAULT_CERTIFICATION) {
+                            modifiedPublicKey = PGPPublicKey.removeCertification(
+                                    modifiedPublicKey, userId, cert);
+                        }
+                    }
+                }
+
+                // if it's supposed to be primary, we can do that here as well
+                boolean isPrimary = saveParcel.changePrimaryUserId != null
+                        && userId.equals(saveParcel.changePrimaryUserId);
+                // generate and add new certificate
                 PGPSignature cert = generateUserIdSignature(masterPrivateKey,
-                        masterPublicKey, userId, false);
+                        masterPublicKey, userId, isPrimary);
                 modifiedPublicKey = PGPPublicKey.addCertification(masterPublicKey, userId, cert);
             }
 
             // 2b. Add revocations for revoked user ids
             for (String userId : saveParcel.revokeUserIds) {
                 log.add(LogLevel.INFO, LogType.MSG_MF_UID_REVOKE, indent);
+                // a duplicate revocatin will be removed during canonicalization, so no need to
+                // take care of that here.
                 PGPSignature cert = generateRevocationSignature(masterPrivateKey,
                         masterPublicKey, userId);
                 modifiedPublicKey = PGPPublicKey.addCertification(masterPublicKey, userId, cert);
@@ -305,7 +335,84 @@ public class PgpKeyOperation {
             // 3. If primary user id changed, generate new certificates for both old and new
             if (saveParcel.changePrimaryUserId != null) {
                 log.add(LogLevel.INFO, LogType.MSG_MF_UID_PRIMARY, indent);
-                // todo
+
+                // we work on the modifiedPublicKey here, to respect new or newly revoked uids
+                // noinspection unchecked
+                for (String userId : new IterableIterator<String>(modifiedPublicKey.getUserIDs())) {
+                    boolean isRevoked = false;
+                    PGPSignature currentCert = null;
+                    // noinspection unchecked
+                    for (PGPSignature cert : new IterableIterator<PGPSignature>(
+                            masterPublicKey.getSignaturesForID(userId))) {
+                        // if it's not a self cert, never mind
+                        if (cert.getKeyID() != masterPublicKey.getKeyID()) {
+                            continue;
+                        }
+                        // we know from canonicalization that if there is any revocation here, it
+                        // is valid and not superseded by a newer certification.
+                        if (cert.getSignatureType() == PGPSignature.CERTIFICATION_REVOCATION) {
+                            isRevoked = true;
+                            continue;
+                        }
+                        // we know from canonicalization that there is only one binding
+                        // certification here, so we can just work with the first one.
+                        if (cert.getSignatureType() == PGPSignature.NO_CERTIFICATION ||
+                                cert.getSignatureType() == PGPSignature.CASUAL_CERTIFICATION ||
+                                cert.getSignatureType() == PGPSignature.POSITIVE_CERTIFICATION ||
+                                cert.getSignatureType() == PGPSignature.DEFAULT_CERTIFICATION) {
+                            currentCert = cert;
+                        }
+                    }
+
+                    if (currentCert == null) {
+                        // no certificate found?! error error error
+                        log.add(LogLevel.ERROR, LogType.MSG_MF_ERROR_INTEGRITY, indent);
+                        return null;
+                    }
+
+                    // we definitely should not update certifications of revoked keys, so just leave it.
+                    if (isRevoked) {
+                        // revoked user ids cannot be primary!
+                        if (userId.equals(saveParcel.changePrimaryUserId)) {
+                            log.add(LogLevel.ERROR, LogType.MSG_MF_ERROR_REVOKED_PRIMARY, indent);
+                            return null;
+                        }
+                        continue;
+                    }
+
+                    // if this is~ the/a primary user id
+                    if (currentCert.hasSubpackets() && currentCert.getHashedSubPackets().isPrimaryUserID()) {
+                        // if it's the one we want, just leave it as is
+                        if (userId.equals(saveParcel.changePrimaryUserId)) {
+                            continue;
+                        }
+                        // otherwise, generate new non-primary certification
+                        modifiedPublicKey = PGPPublicKey.removeCertification(
+                                modifiedPublicKey, userId, currentCert);
+                        PGPSignature newCert = generateUserIdSignature(
+                                masterPrivateKey, masterPublicKey, userId, false);
+                        modifiedPublicKey = PGPPublicKey.addCertification(
+                                modifiedPublicKey, userId, newCert);
+                        continue;
+                    }
+
+                    // if we are here, this is not currently a primary user id
+
+                    // if it should be
+                    if (userId.equals(saveParcel.changePrimaryUserId)) {
+                        // add shiny new primary user id certificate
+                        modifiedPublicKey = PGPPublicKey.removeCertification(
+                                modifiedPublicKey, userId, currentCert);
+                        PGPSignature newCert = generateUserIdSignature(
+                                masterPrivateKey, masterPublicKey, userId, true);
+                        modifiedPublicKey = PGPPublicKey.addCertification(
+                                modifiedPublicKey, userId, newCert);
+                    }
+
+                    // user id is not primary and is not supposed to be - nothing to do here.
+
+                }
+
             }
 
             // Update the secret key ring
@@ -314,7 +421,6 @@ public class PgpKeyOperation {
                 masterPublicKey = modifiedPublicKey;
                 sKR = PGPSecretKeyRing.insertSecretKey(sKR, masterSecretKey);
             }
-
 
             // 4a. For each subkey change, generate new subkey binding certificate
             for (SaveKeyringParcel.SubkeyChange change : saveParcel.changeSubKeys) {
@@ -334,7 +440,8 @@ public class PgpKeyOperation {
                     return null;
                 }
 
-                // generate and add new signature
+                // generate and add new signature. we can be sloppy here and just leave the old one,
+                // it will be removed during canonicalization
                 PGPSignature sig = generateSubkeyBindingSignature(masterPublicKey, masterPrivateKey,
                         sKey, pKey, change.mFlags, change.mExpiry, passphrase);
                 pKey = PGPPublicKey.addCertification(pKey, sig);

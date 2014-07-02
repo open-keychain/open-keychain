@@ -241,6 +241,8 @@ public class OperationResultParcel implements Parcelable {
         MSG_MF_ERROR_ENCODE (R.string.msg_mf_error_encode),
         MSG_MF_ERROR_FINGERPRINT (R.string.msg_mf_error_fingerprint),
         MSG_MF_ERROR_KEYID (R.string.msg_mf_error_keyid),
+        MSG_MF_ERROR_INTEGRITY (R.string.msg_mf_error_integrity),
+        MSG_MF_ERROR_REVOKED_PRIMARY (R.string.msg_mf_error_revoked_primary),
         MSG_MF_ERROR_PGP (R.string.msg_mf_error_pgp),
         MSG_MF_ERROR_SIG (R.string.msg_mf_error_sig),
         MSG_MF_PASSPHRASE (R.string.msg_mf_passphrase),
