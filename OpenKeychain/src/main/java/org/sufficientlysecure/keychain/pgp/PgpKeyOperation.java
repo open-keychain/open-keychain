@@ -102,16 +102,11 @@ public class PgpKeyOperation {
     }
 
     /** Creates new secret key. */
-    private PGPSecretKey createKey(int algorithmChoice, int keySize, String passphrase,
-                                  boolean isMasterKey) throws PgpGeneralMsgIdException {
+    private PGPKeyPair createKey(int algorithmChoice, int keySize) throws PgpGeneralMsgIdException {
 
         try {
             if (keySize < 512) {
                 throw new PgpGeneralMsgIdException(R.string.error_key_size_minimum512bit);
-            }
-
-            if (passphrase == null) {
-                passphrase = "";
             }
 
             int algorithm;
@@ -126,9 +121,6 @@ public class PgpKeyOperation {
                 }
 
                 case Constants.choice.algorithm.elgamal: {
-                    if (isMasterKey) {
-                        throw new PgpGeneralMsgIdException(R.string.error_master_key_must_not_be_el_gamal);
-                    }
                     keyGen = KeyPairGenerator.getInstance("ElGamal", Constants.BOUNCY_CASTLE_PROVIDER_NAME);
                     BigInteger p = Primes.getBestPrime(keySize);
                     BigInteger g = new BigInteger("2");
@@ -154,19 +146,8 @@ public class PgpKeyOperation {
             }
 
             // build new key pair
-            PGPKeyPair keyPair = new JcaPGPKeyPair(algorithm, keyGen.generateKeyPair(), new Date());
+            return new JcaPGPKeyPair(algorithm, keyGen.generateKeyPair(), new Date());
 
-            // define hashing and signing algos
-            PGPDigestCalculator sha1Calc = new JcaPGPDigestCalculatorProviderBuilder().build().get(
-                    HashAlgorithmTags.SHA1);
-
-            // Build key encrypter and decrypter based on passphrase
-            PBESecretKeyEncryptor keyEncryptor = new JcePBESecretKeyEncryptorBuilder(
-                    PGPEncryptedData.CAST5, sha1Calc)
-                    .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME).build(passphrase.toCharArray());
-
-            return new PGPSecretKey(keyPair.getPrivateKey(), keyPair.getPublicKey(),
-                    sha1Calc, isMasterKey, keyEncryptor);
         } catch(NoSuchProviderException e) {
             throw new RuntimeException(e);
         } catch(NoSuchAlgorithmException e) {
@@ -193,12 +174,26 @@ public class PgpKeyOperation {
             }
 
             SubkeyAdd add = saveParcel.addSubKeys.remove(0);
-            PGPSecretKey masterSecretKey = createKey(add.mAlgorithm, add.mKeysize,
-                    saveParcel.newPassphrase, true);
+            PGPKeyPair keyPair = createKey(add.mAlgorithm, add.mKeysize);
+
+            if (add.mAlgorithm == Constants.choice.algorithm.elgamal) {
+                throw new PgpGeneralMsgIdException(R.string.error_master_key_must_not_be_el_gamal);
+            }
+
+            // define hashing and signing algos
+            PGPDigestCalculator sha1Calc = new JcaPGPDigestCalculatorProviderBuilder()
+                    .build().get(HashAlgorithmTags.SHA1);
+            // Build key encrypter and decrypter based on passphrase
+            PBESecretKeyEncryptor keyEncryptor = new JcePBESecretKeyEncryptorBuilder(
+                    PGPEncryptedData.CAST5, sha1Calc)
+                    .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME).build("".toCharArray());
+            PGPSecretKey masterSecretKey = new PGPSecretKey(keyPair.getPrivateKey(), keyPair.getPublicKey(),
+                    sha1Calc, true, keyEncryptor);
+
             PGPSecretKeyRing sKR = new PGPSecretKeyRing(
                     masterSecretKey.getEncoded(), new JcaKeyFingerprintCalculator());
 
-            return internal(sKR, masterSecretKey, saveParcel, saveParcel.newPassphrase, log, indent);
+            return internal(sKR, masterSecretKey, saveParcel, "", log, indent);
 
         } catch (PGPException e) {
             Log.e(Constants.TAG, "pgp error encoding key", e);
@@ -207,6 +202,7 @@ public class PgpKeyOperation {
             Log.e(Constants.TAG, "io error encoding key", e);
             return null;
         } catch (PgpGeneralMsgIdException e) {
+            Log.e(Constants.TAG, "pgp msg id error", e);
             return null;
         }
 
@@ -374,16 +370,36 @@ public class PgpKeyOperation {
                     }
 
                     log.add(LogLevel.INFO, LogType.MSG_MF_SUBKEY_NEW, indent);
-                    PGPSecretKey sKey = createKey(add.mAlgorithm, add.mKeysize, passphrase, false);
+
+                    // generate a new secret key (privkey only for now)
+                    PGPKeyPair keyPair = createKey(add.mAlgorithm, add.mKeysize);
+
+                    // add subkey binding signature (making this a sub rather than master key)
+                    PGPPublicKey pKey = keyPair.getPublicKey();
+                    PGPSignature cert = generateSubkeyBindingSignature(
+                            masterPublicKey, masterPrivateKey, keyPair.getPrivateKey(), pKey,
+                            add.mFlags, add.mExpiry);
+                    pKey = PGPPublicKey.addSubkeyBindingCertification(pKey, cert);
+
+                    PGPSecretKey sKey; {
+                        // define hashing and signing algos
+                        PGPDigestCalculator sha1Calc = new JcaPGPDigestCalculatorProviderBuilder()
+                                .build().get(HashAlgorithmTags.SHA1);
+
+                        // Build key encrypter and decrypter based on passphrase
+                        PBESecretKeyEncryptor keyEncryptor = new JcePBESecretKeyEncryptorBuilder(
+                                PGPEncryptedData.CAST5, sha1Calc)
+                                .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME).build("".toCharArray());
+
+                        sKey = new PGPSecretKey(keyPair.getPrivateKey(), pKey,
+                                sha1Calc, false, keyEncryptor);
+                    }
+
                     log.add(LogLevel.DEBUG, LogType.MSG_MF_SUBKEY_NEW_ID,
                             indent+1, PgpKeyHelper.convertKeyIdToHex(sKey.getKeyID()));
 
-                    PGPPublicKey pKey = sKey.getPublicKey();
-                    PGPSignature cert = generateSubkeyBindingSignature(masterPublicKey, masterPrivateKey,
-                            sKey, pKey, add.mFlags, add.mExpiry, passphrase);
-                    pKey = PGPPublicKey.addCertification(pKey, cert);
-                    sKey = PGPSecretKey.replacePublicKey(sKey, pKey);
-                    sKR = PGPSecretKeyRing.insertSecretKey(sKR, PGPSecretKey.replacePublicKey(sKey, pKey));
+                    sKR = PGPSecretKeyRing.insertSecretKey(sKR, sKey);
+
                 } catch (PgpGeneralMsgIdException e) {
                     return null;
                 }
@@ -478,6 +494,18 @@ public class PgpKeyOperation {
             PGPPublicKey masterPublicKey, PGPPrivateKey masterPrivateKey,
             PGPSecretKey sKey, PGPPublicKey pKey, int flags, Long expiry, String passphrase)
             throws IOException, PGPException, SignatureException {
+        PBESecretKeyDecryptor keyDecryptor = new JcePBESecretKeyDecryptorBuilder()
+                .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME).build(
+                        passphrase.toCharArray());
+        PGPPrivateKey subPrivateKey = sKey.extractPrivateKey(keyDecryptor);
+        return generateSubkeyBindingSignature(masterPublicKey, masterPrivateKey, subPrivateKey,
+                pKey, flags, expiry);
+    }
+
+    private static PGPSignature generateSubkeyBindingSignature(
+            PGPPublicKey masterPublicKey, PGPPrivateKey masterPrivateKey,
+            PGPPrivateKey subPrivateKey, PGPPublicKey pKey, int flags, Long expiry)
+            throws IOException, PGPException, SignatureException {
 
         // date for signing
         Date todayDate = new Date();
@@ -485,12 +513,6 @@ public class PgpKeyOperation {
 
         // If this key can sign, we need a primary key binding signature
         if ((flags & KeyFlags.SIGN_DATA) != 0) {
-
-            PBESecretKeyDecryptor keyDecryptor = new JcePBESecretKeyDecryptorBuilder()
-                    .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME).build(
-                            passphrase.toCharArray());
-            PGPPrivateKey subPrivateKey = sKey.extractPrivateKey(keyDecryptor);
-
             // cross-certify signing keys
             PGPSignatureSubpacketGenerator subHashedPacketsGen = new PGPSignatureSubpacketGenerator();
             subHashedPacketsGen.setSignatureCreationTime(false, todayDate);
