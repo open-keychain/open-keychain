@@ -8,16 +8,13 @@ import org.spongycastle.openpgp.PGPPublicKey;
 import org.spongycastle.openpgp.PGPSecretKey;
 import org.spongycastle.openpgp.PGPSecretKeyRing;
 import org.spongycastle.openpgp.operator.PBESecretKeyDecryptor;
-import org.spongycastle.openpgp.operator.jcajce.JcaPGPDigestCalculatorProviderBuilder;
 import org.spongycastle.openpgp.operator.jcajce.JcePBESecretKeyDecryptorBuilder;
-import org.spongycastle.openpgp.operator.jcajce.JcePBESecretKeyEncryptorBuilder;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.util.IterableIterator;
 import org.sufficientlysecure.keychain.util.Log;
 
 import java.io.IOException;
-import java.security.NoSuchProviderException;
 import java.util.Iterator;
 
 public class WrappedSecretKeyRing extends WrappedKeyRing {
@@ -89,29 +86,6 @@ public class WrappedSecretKeyRing extends WrappedKeyRing {
             // this means the crc check failed -> passphrase required
             return true;
         }
-    }
-
-    public UncachedKeyRing changeSecretKeyPassphrase(String oldPassphrase,
-                                                     String newPassphrase)
-            throws IOException, PGPException, NoSuchProviderException {
-
-        if (oldPassphrase == null) {
-            oldPassphrase = "";
-        }
-        if (newPassphrase == null) {
-            newPassphrase = "";
-        }
-
-        PGPSecretKeyRing newKeyRing = PGPSecretKeyRing.copyWithNewPassword(
-                mRing,
-                new JcePBESecretKeyDecryptorBuilder(new JcaPGPDigestCalculatorProviderBuilder()
-                        .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME).build()).setProvider(
-                        Constants.BOUNCY_CASTLE_PROVIDER_NAME).build(oldPassphrase.toCharArray()),
-                new JcePBESecretKeyEncryptorBuilder(mRing.getSecretKey()
-                        .getKeyEncryptionAlgorithm()).build(newPassphrase.toCharArray()));
-
-        return new UncachedKeyRing(newKeyRing);
-
     }
 
     public IterableIterator<WrappedSecretKey> secretKeyIterator() {
