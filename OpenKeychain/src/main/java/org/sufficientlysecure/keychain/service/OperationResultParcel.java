@@ -165,6 +165,7 @@ public class OperationResultParcel implements Parcelable {
         MSG_IP_UID_CERT_ERROR (R.string.msg_ip_uid_cert_error),
         MSG_IP_UID_CERT_GOOD (R.string.msg_ip_uid_cert_good),
         MSG_IP_UID_CERTS_UNKNOWN (R.plurals.msg_ip_uid_certs_unknown),
+        MSG_IP_UID_CLASSIFYING_ZERO (R.string.msg_ip_uid_classifying_zero),
         MSG_IP_UID_CLASSIFYING (R.plurals.msg_ip_uid_classifying),
         MSG_IP_UID_REORDER(R.string.msg_ip_uid_reorder),
         MSG_IP_UID_PROCESSING (R.string.msg_ip_uid_processing),
