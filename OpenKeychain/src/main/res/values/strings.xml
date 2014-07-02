@@ -546,8 +546,8 @@
         <item quantity="one">Ignoring one certificate issued by an unknown public key</item>
         <item quantity="other">Ignoring %s certificates issued by unknown public keys</item>
     </plurals>
+    <string name="msg_ip_uid_classifying_zero">Classifying user ids (no trusted keys available)</string>
     <plurals name="msg_ip_uid_classifying">
-        <item quantity="zero">Classifying user ids (no trusted keys available)</item>
         <item quantity="one">Classifying user ids (using one trusted key)</item>
         <item quantity="other">Classifying user ids (using %s trusted keys)</item>
     </plurals>

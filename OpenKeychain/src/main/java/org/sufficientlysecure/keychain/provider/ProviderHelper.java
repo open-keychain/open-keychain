@@ -405,7 +405,11 @@ public class ProviderHelper {
 
             // classify and order user ids. primary are moved to the front, revoked to the back,
             // otherwise the order in the keyfile is preserved.
-            log(LogLevel.INFO, LogType.MSG_IP_UID_CLASSIFYING, trustedKeys.size());
+            if (trustedKeys.size() == 0) {
+                log(LogLevel.INFO, LogType.MSG_IP_UID_CLASSIFYING_ZERO);
+            } else {
+                log(LogLevel.INFO, LogType.MSG_IP_UID_CLASSIFYING, trustedKeys.size());
+            }
             mIndent += 1;
             List<UserIdItem> uids = new ArrayList<UserIdItem>();
             for (String userId : new IterableIterator<String>(
