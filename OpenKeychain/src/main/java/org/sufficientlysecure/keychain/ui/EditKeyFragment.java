@@ -328,8 +328,6 @@ public class EditKeyFragment extends LoaderFragment implements
     }
 
     private void save() {
-        Log.d(Constants.TAG, "data: " + mUserIdsAddedAdapter.getDataAsStringList());
-
         String passphrase = PassphraseCacheService.getCachedPassphrase(getActivity(),
                 mSaveKeyringParcel.mMasterKeyId);
         if (passphrase == null) {
@@ -338,17 +336,23 @@ public class EditKeyFragment extends LoaderFragment implements
                         @Override
                         public void handleMessage(Message message) {
                             if (message.what == PassphraseDialogFragment.MESSAGE_OKAY) {
-                                saveFinal();
+                                String passphrase =
+                                        message.getData().getString(PassphraseDialogFragment.MESSAGE_DATA_PASSPHRASE);
+                                Log.d(Constants.TAG, "after caching passphrase");
+                                saveFinal(passphrase);
                             }
                         }
                     }
             );
-
+        } else {
+            saveFinal(passphrase);
         }
-
     }
 
-    private void saveFinal() {
+    private void saveFinal(String passphrase) {
+        Log.d(Constants.TAG, "add userids to parcel: " + mUserIdsAddedAdapter.getDataAsStringList());
+        mSaveKeyringParcel.addUserIds = mUserIdsAddedAdapter.getDataAsStringList();
+
         // Message is received after importing is done in KeychainIntentService
         KeychainIntentServiceHandler saveHandler = new KeychainIntentServiceHandler(
                 getActivity(),
@@ -386,6 +390,7 @@ public class EditKeyFragment extends LoaderFragment implements
 
         // fill values for this action
         Bundle data = new Bundle();
+        data.putString(KeychainIntentService.SAVE_KEYRING_PASSPHRASE, passphrase);
         data.putParcelable(KeychainIntentService.SAVE_KEYRING_PARCEL, mSaveKeyringParcel);
         intent.putExtra(KeychainIntentService.EXTRA_DATA, data);
 

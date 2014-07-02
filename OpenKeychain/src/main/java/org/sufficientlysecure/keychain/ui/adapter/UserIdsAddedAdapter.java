@@ -55,15 +55,12 @@ public class UserIdsAddedAdapter extends ArrayAdapter<UserIdsAddedAdapter.UserId
 
         @Override
         public String toString() {
-            String userId = null;
-            if (!TextUtils.isEmpty(name)) {
-                userId = name;
-                if (!TextUtils.isEmpty(comment)) {
-                    userId += " (" + comment + ")";
-                }
-                if (!TextUtils.isEmpty(address)) {
-                    userId += " <" + address + ">";
-                }
+            String userId = name;
+            if (!TextUtils.isEmpty(comment)) {
+                userId += " (" + comment + ")";
+            }
+            if (!TextUtils.isEmpty(address)) {
+                userId += " <" + address + ">";
             }
             return userId;
         }
@@ -84,10 +81,13 @@ public class UserIdsAddedAdapter extends ArrayAdapter<UserIdsAddedAdapter.UserId
                 );
     }
 
-    public List<String> getDataAsStringList() {
+    public ArrayList<String> getDataAsStringList() {
         ArrayList<String> out = new ArrayList<String>();
         for (UserIdModel id : mData) {
-            out.add(id.toString());
+            // ignore empty user ids
+            if (!TextUtils.isEmpty(id.toString())) {
+                out.add(id.toString());
+            }
         }
 
         return out;

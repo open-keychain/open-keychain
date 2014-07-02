@@ -38,14 +38,6 @@
             android:textAppearance="?android:attr/textAppearanceSmall" />
     </LinearLayout>
 
-    <View
-        android:id="@+id/status_divider"
-        android:layout_width="1dip"
-        android:layout_height="match_parent"
-        android:layout_marginBottom="8dp"
-        android:layout_marginTop="8dp"
-        android:background="?android:attr/listDivider" />
-
     <FrameLayout
         android:id="@+id/status_layout"
         android:layout_width="wrap_content"
