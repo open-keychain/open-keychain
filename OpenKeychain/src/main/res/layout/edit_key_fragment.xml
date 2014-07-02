@@ -111,7 +111,7 @@
             android:layout_height="match_parent"
             android:text="add key"
             android:minHeight="?android:attr/listPreferredItemHeight"
-            android:drawableRight="@drawable/ic_action_add_person"
+            android:drawableRight="@drawable/ic_action_new_account"
             android:drawablePadding="8dp"
             android:gravity="center_vertical"
             android:clickable="true"

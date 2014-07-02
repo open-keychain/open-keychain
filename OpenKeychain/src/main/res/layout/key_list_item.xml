@@ -51,19 +51,6 @@
         android:layout_width="wrap_content"
         android:layout_height="match_parent">
 
-        <ImageButton
-            android:id="@+id/edit"
-            style="@style/SelectableItem"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:focusable="false"
-            android:enabled="true"
-            android:textAppearance="?android:attr/textAppearanceSmall"
-            android:textColor="@color/black"
-            android:src="@drawable/ic_action_edit"
-            android:text="@string/edit"
-            android:padding="12dp" />
-
         <TextView
             android:id="@+id/revoked"
             android:layout_width="wrap_content"

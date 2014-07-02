@@ -441,7 +441,6 @@ public class KeyListFragment extends LoaderFragment
             TextView mMainUserIdRest;
             View mStatusDivider;
             FrameLayout mStatusLayout;
-            ImageButton mButton;
             TextView mRevoked;
             ImageView mVerified;
         }
@@ -454,7 +453,6 @@ public class KeyListFragment extends LoaderFragment
             holder.mMainUserIdRest = (TextView) view.findViewById(R.id.mainUserIdRest);
             holder.mStatusDivider = (View) view.findViewById(R.id.status_divider);
             holder.mStatusLayout = (FrameLayout) view.findViewById(R.id.status_layout);
-            holder.mButton = (ImageButton) view.findViewById(R.id.edit);
             holder.mRevoked = (TextView) view.findViewById(R.id.revoked);
             holder.mVerified = (ImageView) view.findViewById(R.id.verified);
             view.setTag(holder);
@@ -496,21 +494,9 @@ public class KeyListFragment extends LoaderFragment
                     h.mStatusLayout.setVisibility(View.VISIBLE);
                     h.mRevoked.setVisibility(View.GONE);
                     h.mVerified.setVisibility(View.GONE);
-                    h.mButton.setVisibility(View.VISIBLE);
-
-                    final long id = cursor.getLong(INDEX_MASTER_KEY_ID);
-                    h.mButton.setOnClickListener(new OnClickListener() {
-                        public void onClick(View view) {
-                            Intent editIntent = new Intent(getActivity(), EditKeyActivity.class);
-                            editIntent.setData(KeyRingData.buildSecretKeyRingUri(Long.toString(id)));
-                            editIntent.setAction(EditKeyActivity.ACTION_EDIT_KEY);
-                            startActivityForResult(editIntent, 0);
-                        }
-                    });
                 } else {
                     // this is a public key - hide the edit mButton, show if it's revoked
                     h.mStatusDivider.setVisibility(View.GONE);
-                    h.mButton.setVisibility(View.GONE);
 
                     boolean isRevoked = cursor.getInt(INDEX_IS_REVOKED) > 0;
                     boolean isExpired = !cursor.isNull(INDEX_EXPIRY)

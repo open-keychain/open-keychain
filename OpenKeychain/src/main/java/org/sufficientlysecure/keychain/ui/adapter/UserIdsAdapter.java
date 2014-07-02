@@ -123,6 +123,7 @@ public class UserIdsAdapter extends CursorAdapter implements AdapterView.OnItemC
         TextView vComment = (TextView) view.findViewById(R.id.comment);
         ImageView vVerified = (ImageView) view.findViewById(R.id.certified);
         ImageView vHasChanges = (ImageView) view.findViewById(R.id.has_changes);
+        ImageView vEditImage = (ImageView) view.findViewById(R.id.edit_image);
 
         String userId = cursor.getString(mIndexUserId);
         String[] splitUserId = KeyRing.splitUserId(userId);
@@ -167,8 +168,10 @@ public class UserIdsAdapter extends CursorAdapter implements AdapterView.OnItemC
             } else {
                 vHasChanges.setVisibility(View.GONE);
             }
+            vEditImage.setVisibility(View.VISIBLE);
         } else {
             vHasChanges.setVisibility(View.GONE);
+            vEditImage.setVisibility(View.GONE);
         }
 
         if (isRevoked) {
