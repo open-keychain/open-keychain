@@ -73,7 +73,7 @@ public class EditKeyFragment extends LoaderFragment implements
     private View mAddKey;
 
     private static final int LOADER_ID_USER_IDS = 0;
-    private static final int LOADER_ID_KEYS = 1;
+    private static final int LOADER_ID_SUBKEYS = 1;
 
     private UserIdsAdapter mUserIdsAdapter;
     private SubkeysAdapter mSubkeysAdapter;
@@ -202,7 +202,7 @@ public class EditKeyFragment extends LoaderFragment implements
         // Prepare the loaders. Either re-connect with an existing ones,
         // or start new ones.
         getLoaderManager().initLoader(LOADER_ID_USER_IDS, null, this);
-        getLoaderManager().initLoader(LOADER_ID_KEYS, null, this);
+        getLoaderManager().initLoader(LOADER_ID_SUBKEYS, null, this);
     }
 
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
@@ -215,10 +215,10 @@ public class EditKeyFragment extends LoaderFragment implements
                         UserIdsAdapter.USER_IDS_PROJECTION, null, null, null);
             }
 
-            case LOADER_ID_KEYS: {
+            case LOADER_ID_SUBKEYS: {
                 Uri baseUri = KeychainContract.Keys.buildKeysUri(mDataUri);
                 return new CursorLoader(getActivity(), baseUri,
-                        SubkeysAdapter.KEYS_PROJECTION, null, null, null);
+                        SubkeysAdapter.SUBKEYS_PROJECTION, null, null, null);
             }
 
             default:
@@ -234,7 +234,7 @@ public class EditKeyFragment extends LoaderFragment implements
                 mUserIdsAdapter.swapCursor(data);
                 break;
 
-            case LOADER_ID_KEYS:
+            case LOADER_ID_SUBKEYS:
                 mSubkeysAdapter.swapCursor(data);
                 break;
 
@@ -251,7 +251,7 @@ public class EditKeyFragment extends LoaderFragment implements
             case LOADER_ID_USER_IDS:
                 mUserIdsAdapter.swapCursor(null);
                 break;
-            case LOADER_ID_KEYS:
+            case LOADER_ID_SUBKEYS:
                 mSubkeysAdapter.swapCursor(null);
                 break;
         }

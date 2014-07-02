@@ -87,7 +87,7 @@ public class ViewKeyKeysFragment extends LoaderFragment implements
         setContentShown(false);
         Uri baseUri = Keys.buildKeysUri(mDataUri);
         return new CursorLoader(getActivity(), baseUri,
-                SubkeysAdapter.KEYS_PROJECTION, null, null, null);
+                SubkeysAdapter.SUBKEYS_PROJECTION, null, null, null);
     }
 
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {

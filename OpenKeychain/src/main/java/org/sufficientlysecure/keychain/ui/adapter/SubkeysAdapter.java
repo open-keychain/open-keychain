@@ -42,7 +42,7 @@ public class SubkeysAdapter extends CursorAdapter {
 
     private ColorStateList mDefaultTextColor;
 
-    public static final String[] KEYS_PROJECTION = new String[]{
+    public static final String[] SUBKEYS_PROJECTION = new String[]{
             Keys._ID,
             Keys.KEY_ID,
             Keys.RANK,
@@ -80,8 +80,7 @@ public class SubkeysAdapter extends CursorAdapter {
     @Override
     public Cursor swapCursor(Cursor newCursor) {
         hasAnySecret = false;
-        if (newCursor != null) {
-            newCursor.moveToFirst();
+        if (newCursor != null && newCursor.moveToFirst()) {
             do {
                 if (newCursor.getInt(INDEX_HAS_SECRET) != 0) {
                     hasAnySecret = true;
