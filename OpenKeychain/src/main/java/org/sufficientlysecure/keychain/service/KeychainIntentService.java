@@ -109,6 +109,9 @@ public class KeychainIntentService extends IntentService
     public static final int IO_BYTES = 1;
     public static final int IO_FILE = 2; // This was misleadingly TARGET_URI before!
     public static final int IO_URI = 3;
+    public static final int IO_URIS = 4;
+
+    public static final String SELECTED_URI = "selected_uri";
 
     // encrypt
     public static final String ENCRYPT_SIGNATURE_KEY_ID = "secret_key_id";
@@ -118,8 +121,10 @@ public class KeychainIntentService extends IntentService
     public static final String ENCRYPT_MESSAGE_BYTES = "message_bytes";
     public static final String ENCRYPT_INPUT_FILE = "input_file";
     public static final String ENCRYPT_INPUT_URI = "input_uri";
+    public static final String ENCRYPT_INPUT_URIS = "input_uris";
     public static final String ENCRYPT_OUTPUT_FILE = "output_file";
     public static final String ENCRYPT_OUTPUT_URI = "output_uri";
+    public static final String ENCRYPT_OUTPUT_URIS = "output_uris";
     public static final String ENCRYPT_SYMMETRIC_PASSPHRASE = "passphrase";
 
     // decrypt/verify
@@ -220,6 +225,7 @@ public class KeychainIntentService extends IntentService
             try {
                 /* Input */
                 int source = data.get(SOURCE) != null ? data.getInt(SOURCE) : data.getInt(TARGET);
+                Bundle resultData = new Bundle();
 
                 long signatureKeyId = data.getLong(ENCRYPT_SIGNATURE_KEY_ID);
                 String symmetricPassphrase = data.getString(ENCRYPT_SYMMETRIC_PASSPHRASE);
@@ -227,44 +233,48 @@ public class KeychainIntentService extends IntentService
                 boolean useAsciiArmor = data.getBoolean(ENCRYPT_USE_ASCII_ARMOR);
                 long encryptionKeyIds[] = data.getLongArray(ENCRYPT_ENCRYPTION_KEYS_IDS);
                 int compressionId = data.getInt(ENCRYPT_COMPRESSION_ID);
-                InputData inputData = createEncryptInputData(data);
-                OutputStream outStream = createCryptOutputStream(data);
+                int urisCount = data.containsKey(ENCRYPT_INPUT_URIS) ? data.getParcelableArrayList(ENCRYPT_INPUT_URIS).size() : 1;
+                for (int i = 0; i < urisCount; i++) {
+                    data.putInt(SELECTED_URI, i);
+                    InputData inputData = createEncryptInputData(data);
+                    OutputStream outStream = createCryptOutputStream(data);
 
-                /* Operation */
-                PgpSignEncrypt.Builder builder =
-                        new PgpSignEncrypt.Builder(
-                                new ProviderHelper(this),
-                                PgpHelper.getFullVersion(this),
-                                inputData, outStream);
-                builder.setProgressable(this);
+                    /* Operation */
+                    PgpSignEncrypt.Builder builder =
+                            new PgpSignEncrypt.Builder(
+                                    new ProviderHelper(this),
+                                    PgpHelper.getFullVersion(this),
+                                    inputData, outStream);
+                    builder.setProgressable(this);
 
-                builder.setEnableAsciiArmorOutput(useAsciiArmor)
-                        .setCompressionId(compressionId)
-                        .setSymmetricEncryptionAlgorithm(
-                                Preferences.getPreferences(this).getDefaultEncryptionAlgorithm())
-                        .setSignatureForceV3(Preferences.getPreferences(this).getForceV3Signatures())
-                        .setEncryptionMasterKeyIds(encryptionKeyIds)
-                        .setSymmetricPassphrase(symmetricPassphrase)
-                        .setSignatureMasterKeyId(signatureKeyId)
-                        .setEncryptToSigner(true)
-                        .setSignatureHashAlgorithm(
-                                Preferences.getPreferences(this).getDefaultHashAlgorithm())
-                        .setSignaturePassphrase(
-                                PassphraseCacheService.getCachedPassphrase(this, signatureKeyId));
+                    builder.setEnableAsciiArmorOutput(useAsciiArmor)
+                            .setCompressionId(compressionId)
+                            .setSymmetricEncryptionAlgorithm(
+                                    Preferences.getPreferences(this).getDefaultEncryptionAlgorithm())
+                            .setSignatureForceV3(Preferences.getPreferences(this).getForceV3Signatures())
+                            .setEncryptionMasterKeyIds(encryptionKeyIds)
+                            .setSymmetricPassphrase(symmetricPassphrase)
+                            .setSignatureMasterKeyId(signatureKeyId)
+                            .setEncryptToSigner(true)
+                            .setSignatureHashAlgorithm(
+                                    Preferences.getPreferences(this).getDefaultHashAlgorithm())
+                            .setSignaturePassphrase(
+                                    PassphraseCacheService.getCachedPassphrase(this, signatureKeyId));
 
-                // this assumes that the bytes are cleartext (valid for current implementation!)
-                if (source == IO_BYTES) {
-                    builder.setCleartextInput(true);
+                    // this assumes that the bytes are cleartext (valid for current implementation!)
+                    if (source == IO_BYTES) {
+                        builder.setCleartextInput(true);
+                    }
+
+                    builder.build().execute();
+
+                    outStream.close();
+
+                    /* Output */
+
+                    finalizeEncryptOutputStream(data, resultData, outStream);
+
                 }
-
-                builder.build().execute();
-
-                outStream.close();
-
-                /* Output */
-
-                Bundle resultData = new Bundle();
-                finalizeEncryptOutputStream(data, resultData, outStream);
 
                 OtherHelper.logDebugBundle(resultData, "resultData");
 
@@ -688,8 +698,13 @@ public class KeychainIntentService extends IntentService
                 Uri providerUri = data.getParcelable(ENCRYPT_INPUT_URI);
 
                 // InputStream
-                InputStream in = getContentResolver().openInputStream(providerUri);
-                return new InputData(in, 0);
+                return new InputData(getContentResolver().openInputStream(providerUri), 0);
+
+            case IO_URIS:
+                providerUri = data.<Uri>getParcelableArrayList(ENCRYPT_INPUT_URIS).get(data.getInt(SELECTED_URI));
+
+                // InputStream
+                return new InputData(getContentResolver().openInputStream(providerUri), 0);
 
             default:
                 throw new PgpGeneralException("No target choosen!");
@@ -719,6 +734,11 @@ public class KeychainIntentService extends IntentService
 
                 return getContentResolver().openOutputStream(providerUri);
 
+            case IO_URIS:
+                providerUri = data.<Uri>getParcelableArrayList(ENCRYPT_OUTPUT_URIS).get(data.getInt(SELECTED_URI));
+
+                return getContentResolver().openOutputStream(providerUri);
+
             default:
                 throw new PgpGeneralException("No target choosen!");
         }
@@ -744,6 +764,7 @@ public class KeychainIntentService extends IntentService
 
                 break;
             case IO_URI:
+            case IO_URIS:
                 // nothing, output was written, just send okay and verification bundle
 
                 break;
