@@ -343,6 +343,7 @@ public class KeychainIntentService extends IntentService
 
                 setProgress(R.string.progress_done, 100, 100);
 
+                // cache new passphrase
                 if (saveParcel.newPassphrase != null) {
                     PassphraseCacheService.addCachedPassphrase(this, masterKeyId, saveParcel.newPassphrase);
                 }

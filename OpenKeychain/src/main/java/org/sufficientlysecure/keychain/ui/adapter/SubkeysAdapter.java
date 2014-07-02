@@ -38,22 +38,11 @@ import java.util.Date;
 public class SubkeysAdapter extends CursorAdapter {
     private LayoutInflater mInflater;
 
-    private int mIndexKeyId;
-    private int mIndexAlgorithm;
-    private int mIndexKeySize;
-    private int mIndexRank;
-    private int mIndexCanCertify;
-    private int mIndexCanEncrypt;
-    private int mIndexCanSign;
-    private int mIndexHasSecret;
-    private int mIndexRevokedKey;
-    private int mIndexExpiry;
-
     private boolean hasAnySecret;
 
     private ColorStateList mDefaultTextColor;
 
-    public static final String[] KEYS_PROJECTION = new String[] {
+    public static final String[] KEYS_PROJECTION = new String[]{
             Keys._ID,
             Keys.KEY_ID,
             Keys.RANK,
@@ -68,24 +57,33 @@ public class SubkeysAdapter extends CursorAdapter {
             Keys.EXPIRY,
             Keys.FINGERPRINT
     };
+    private static final int INDEX_ID = 0;
+    private static final int INDEX_KEY_ID = 1;
+    private static final int INDEX_RANK = 2;
+    private static final int INDEX_ALGORITHM = 3;
+    private static final int INDEX_KEY_SIZE = 4;
+    private static final int INDEX_HAS_SECRET = 5;
+    private static final int INDEX_CAN_CERTIFY = 6;
+    private static final int INDEX_CAN_ENCRYPT = 7;
+    private static final int INDEX_CAN_SIGN = 8;
+    private static final int INDEX_IS_REVOKED = 9;
+    private static final int INDEX_CREATION = 10;
+    private static final int INDEX_EXPIRY = 11;
+    private static final int INDEX_FINGERPRINT = 12;
 
     public SubkeysAdapter(Context context, Cursor c, int flags) {
         super(context, c, flags);
 
         mInflater = LayoutInflater.from(context);
-
-        initIndex(c);
     }
 
     @Override
     public Cursor swapCursor(Cursor newCursor) {
-        initIndex(newCursor);
-
         hasAnySecret = false;
         if (newCursor != null) {
             newCursor.moveToFirst();
             do {
-                if (newCursor.getInt(mIndexHasSecret) != 0) {
+                if (newCursor.getInt(INDEX_HAS_SECRET) != 0) {
                     hasAnySecret = true;
                     break;
                 }
@@ -93,27 +91,6 @@ public class SubkeysAdapter extends CursorAdapter {
         }
 
         return super.swapCursor(newCursor);
-    }
-
-    /**
-     * Get column indexes for performance reasons just once in constructor and swapCursor. For a
-     * performance comparison see http://stackoverflow.com/a/17999582
-     *
-     * @param cursor
-     */
-    private void initIndex(Cursor cursor) {
-        if (cursor != null) {
-            mIndexKeyId = cursor.getColumnIndexOrThrow(Keys.KEY_ID);
-            mIndexAlgorithm = cursor.getColumnIndexOrThrow(Keys.ALGORITHM);
-            mIndexKeySize = cursor.getColumnIndexOrThrow(Keys.KEY_SIZE);
-            mIndexRank = cursor.getColumnIndexOrThrow(Keys.RANK);
-            mIndexCanCertify = cursor.getColumnIndexOrThrow(Keys.CAN_CERTIFY);
-            mIndexCanEncrypt = cursor.getColumnIndexOrThrow(Keys.CAN_ENCRYPT);
-            mIndexCanSign = cursor.getColumnIndexOrThrow(Keys.CAN_SIGN);
-            mIndexHasSecret = cursor.getColumnIndexOrThrow(Keys.HAS_SECRET);
-            mIndexRevokedKey = cursor.getColumnIndexOrThrow(Keys.IS_REVOKED);
-            mIndexExpiry = cursor.getColumnIndexOrThrow(Keys.EXPIRY);
-        }
     }
 
     @Override
@@ -127,16 +104,16 @@ public class SubkeysAdapter extends CursorAdapter {
         ImageView signIcon = (ImageView) view.findViewById(R.id.ic_signKey);
         ImageView revokedKeyIcon = (ImageView) view.findViewById(R.id.ic_revokedKey);
 
-        String keyIdStr = PgpKeyHelper.convertKeyIdToHex(cursor.getLong(mIndexKeyId));
+        String keyIdStr = PgpKeyHelper.convertKeyIdToHex(cursor.getLong(INDEX_KEY_ID));
         String algorithmStr = PgpKeyHelper.getAlgorithmInfo(
                 context,
-                cursor.getInt(mIndexAlgorithm),
-                cursor.getInt(mIndexKeySize)
+                cursor.getInt(INDEX_ALGORITHM),
+                cursor.getInt(INDEX_KEY_SIZE)
         );
 
         keyId.setText(keyIdStr);
         // may be set with additional "stripped" later on
-        if (hasAnySecret && cursor.getInt(mIndexHasSecret) == 0) {
+        if (hasAnySecret && cursor.getInt(INDEX_HAS_SECRET) == 0) {
             keyDetails.setText(algorithmStr + ", " +
                     context.getString(R.string.key_stripped));
         } else {
@@ -144,13 +121,13 @@ public class SubkeysAdapter extends CursorAdapter {
         }
 
         // Set icons according to properties
-        masterKeyIcon.setVisibility(cursor.getInt(mIndexRank) == 0 ? View.VISIBLE : View.INVISIBLE);
-        certifyIcon.setVisibility(cursor.getInt(mIndexCanCertify) != 0 ? View.VISIBLE : View.GONE);
-        encryptIcon.setVisibility(cursor.getInt(mIndexCanEncrypt) != 0 ? View.VISIBLE : View.GONE);
-        signIcon.setVisibility(cursor.getInt(mIndexCanSign) != 0 ? View.VISIBLE : View.GONE);
+        masterKeyIcon.setVisibility(cursor.getInt(INDEX_RANK) == 0 ? View.VISIBLE : View.INVISIBLE);
+        certifyIcon.setVisibility(cursor.getInt(INDEX_CAN_CERTIFY) != 0 ? View.VISIBLE : View.GONE);
+        encryptIcon.setVisibility(cursor.getInt(INDEX_CAN_ENCRYPT) != 0 ? View.VISIBLE : View.GONE);
+        signIcon.setVisibility(cursor.getInt(INDEX_CAN_SIGN) != 0 ? View.VISIBLE : View.GONE);
 
         boolean valid = true;
-        if (cursor.getInt(mIndexRevokedKey) > 0) {
+        if (cursor.getInt(INDEX_IS_REVOKED) > 0) {
             revokedKeyIcon.setVisibility(View.VISIBLE);
 
             valid = false;
@@ -162,17 +139,19 @@ public class SubkeysAdapter extends CursorAdapter {
             revokedKeyIcon.setVisibility(View.GONE);
         }
 
-        if (!cursor.isNull(mIndexExpiry)) {
-            Date expiryDate = new Date(cursor.getLong(mIndexExpiry) * 1000);
+        if (!cursor.isNull(INDEX_EXPIRY)) {
+            Date expiryDate = new Date(cursor.getLong(INDEX_EXPIRY) * 1000);
 
             valid = valid && expiryDate.after(new Date());
             keyExpiry.setText(
                     context.getString(R.string.label_expiry) + ": " +
-                    DateFormat.getDateFormat(context).format(expiryDate));
+                            DateFormat.getDateFormat(context).format(expiryDate)
+            );
         } else {
             keyExpiry.setText(
                     context.getString(R.string.label_expiry) + ": " +
-                    context.getString(R.string.none));
+                            context.getString(R.string.none)
+            );
         }
 
         // if key is expired or revoked, strike through text

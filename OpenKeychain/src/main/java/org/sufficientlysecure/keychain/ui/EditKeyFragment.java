@@ -65,7 +65,7 @@ public class EditKeyFragment extends LoaderFragment implements
     public static final String ARG_DATA_URI = "uri";
 
     private ListView mUserIdsList;
-    private ListView mKeysList;
+    private ListView mSubkeysList;
     private ListView mUserIdsAddedList;
     private ListView mKeysAddedList;
     private View mChangePassphrase;
@@ -76,7 +76,7 @@ public class EditKeyFragment extends LoaderFragment implements
     private static final int LOADER_ID_KEYS = 1;
 
     private UserIdsAdapter mUserIdsAdapter;
-    private SubkeysAdapter mKeysAdapter;
+    private SubkeysAdapter mSubkeysAdapter;
     private UserIdsAddedAdapter mUserIdsAddedAdapter;
     private ArrayList<UserIdsAddedAdapter.UserIdModel> mUserIdsAddedData;
 
@@ -104,7 +104,7 @@ public class EditKeyFragment extends LoaderFragment implements
         View view = inflater.inflate(R.layout.edit_key_fragment, getContainer());
 
         mUserIdsList = (ListView) view.findViewById(R.id.edit_key_user_ids);
-        mKeysList = (ListView) view.findViewById(R.id.edit_key_keys);
+        mSubkeysList = (ListView) view.findViewById(R.id.edit_key_keys);
         mUserIdsAddedList = (ListView) view.findViewById(R.id.edit_key_user_ids_added);
         mKeysAddedList = (ListView) view.findViewById(R.id.edit_key_keys_added);
         mChangePassphrase = view.findViewById(R.id.edit_key_action_change_passphrase);
@@ -191,13 +191,13 @@ public class EditKeyFragment extends LoaderFragment implements
             }
         });
 
-        // TODO: from savedInstance?!
+        // TODO: mUserIdsAddedData and SaveParcel from savedInstance?!
         mUserIdsAddedData = new ArrayList<UserIdsAddedAdapter.UserIdModel>();
         mUserIdsAddedAdapter = new UserIdsAddedAdapter(getActivity(), mUserIdsAddedData);
         mUserIdsAddedList.setAdapter(mUserIdsAddedAdapter);
 
-        mKeysAdapter = new SubkeysAdapter(getActivity(), null, 0);
-        mKeysList.setAdapter(mKeysAdapter);
+        mSubkeysAdapter = new SubkeysAdapter(getActivity(), null, 0);
+        mSubkeysList.setAdapter(mSubkeysAdapter);
 
         // Prepare the loaders. Either re-connect with an existing ones,
         // or start new ones.
@@ -235,7 +235,7 @@ public class EditKeyFragment extends LoaderFragment implements
                 break;
 
             case LOADER_ID_KEYS:
-                mKeysAdapter.swapCursor(data);
+                mSubkeysAdapter.swapCursor(data);
                 break;
 
         }
@@ -252,7 +252,7 @@ public class EditKeyFragment extends LoaderFragment implements
                 mUserIdsAdapter.swapCursor(null);
                 break;
             case LOADER_ID_KEYS:
-                mKeysAdapter.swapCursor(null);
+                mSubkeysAdapter.swapCursor(null);
                 break;
         }
     }
