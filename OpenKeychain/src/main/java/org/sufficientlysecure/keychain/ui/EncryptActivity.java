@@ -249,7 +249,7 @@ public class EncryptActivity extends DrawerActivity implements
                 // end activity
                 finish();
             }
-        } else {
+        } else if (ACTION_ENCRYPT.equals(action)) {
             Log.e(Constants.TAG,
                     "Include the extra 'text' or an Uri with setData() in your Intent!");
         }

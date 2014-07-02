@@ -170,7 +170,7 @@ public class DecryptActivity extends DrawerActivity {
                 // end activity
                 finish();
             }
-        } else {
+        } else if (ACTION_DECRYPT.equals(action)) {
             Log.e(Constants.TAG,
                     "Include the extra 'text' or an Uri with setData() in your Intent!");
         }
