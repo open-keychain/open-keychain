@@ -291,6 +291,7 @@ public class SubkeysAddedAdapter extends ArrayAdapter<SaveKeyringParcel.SubkeyAd
         return properKeyLength;
     }
 
+    // TODO: make this an error message on the field
 //    private boolean setOkButtonAvailability(AlertDialog alertDialog) {
 //        final Choice selectedAlgorithm = (Choice) mAlgorithmSpinner.getSelectedItem();
 //        final int selectedKeySize = getSelectedKeyLength(); //Integer.parseInt((String) mKeySizeSpinner.getSelectedItem());

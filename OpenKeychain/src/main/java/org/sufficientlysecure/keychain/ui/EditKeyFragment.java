@@ -287,6 +287,7 @@ public class EditKeyFragment extends LoaderFragment implements
                             .getString(SetPassphraseDialogFragment.MESSAGE_NEW_PASSPHRASE);
 
                     mSaveKeyringParcel.newPassphrase = newPassphrase;
+                    Log.d(Constants.TAG, "newPassphrase set");
                 }
             }
         };
@@ -385,6 +386,9 @@ public class EditKeyFragment extends LoaderFragment implements
                 super.handleMessage(message);
 
                 if (message.arg1 == KeychainIntentServiceHandler.MESSAGE_OKAY) {
+                    getActivity().finish();
+
+                    // TODO below
                     // get returned data bundle
                     Bundle returnData = message.getData();
                     if (returnData == null) {
