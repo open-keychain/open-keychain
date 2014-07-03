@@ -47,7 +47,6 @@ import android.view.ViewGroup;
 import android.widget.AbsListView.MultiChoiceModeListener;
 import android.widget.AdapterView;
 import android.widget.FrameLayout;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -59,7 +58,6 @@ import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.helper.ExportHelper;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
-import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRingData;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.ui.dialog.DeleteKeyDialogFragment;
 import org.sufficientlysecure.keychain.util.Highlighter;
@@ -106,10 +104,10 @@ public class KeyListFragment extends LoaderFragment
 
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getActivity(), EditKeyActivity.class);
-                intent.setAction(EditKeyActivity.ACTION_CREATE_KEY);
-                intent.putExtra(EditKeyActivity.EXTRA_GENERATE_DEFAULT_KEYS, true);
-                intent.putExtra(EditKeyActivity.EXTRA_USER_IDS, ""); // show user id view
+                Intent intent = new Intent(getActivity(), EditKeyActivityOld.class);
+                intent.setAction(EditKeyActivityOld.ACTION_CREATE_KEY);
+                intent.putExtra(EditKeyActivityOld.EXTRA_GENERATE_DEFAULT_KEYS, true);
+                intent.putExtra(EditKeyActivityOld.EXTRA_USER_IDS, ""); // show user id view
                 startActivityForResult(intent, 0);
             }
         });

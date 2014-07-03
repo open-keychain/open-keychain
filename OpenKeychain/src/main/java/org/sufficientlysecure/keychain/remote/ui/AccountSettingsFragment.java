@@ -35,7 +35,7 @@ import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.remote.AccountSettings;
-import org.sufficientlysecure.keychain.ui.EditKeyActivity;
+import org.sufficientlysecure.keychain.ui.EditKeyActivityOld;
 import org.sufficientlysecure.keychain.ui.SelectSecretKeyLayoutFragment;
 import org.sufficientlysecure.keychain.ui.adapter.KeyValueSpinnerAdapter;
 import org.sufficientlysecure.keychain.util.AlgorithmNames;
@@ -163,11 +163,11 @@ public class AccountSettingsFragment extends Fragment implements
     }
 
     private void createKey() {
-        Intent intent = new Intent(getActivity(), EditKeyActivity.class);
-        intent.setAction(EditKeyActivity.ACTION_CREATE_KEY);
-        intent.putExtra(EditKeyActivity.EXTRA_GENERATE_DEFAULT_KEYS, true);
+        Intent intent = new Intent(getActivity(), EditKeyActivityOld.class);
+        intent.setAction(EditKeyActivityOld.ACTION_CREATE_KEY);
+        intent.putExtra(EditKeyActivityOld.EXTRA_GENERATE_DEFAULT_KEYS, true);
         // set default user id to account name
-        intent.putExtra(EditKeyActivity.EXTRA_USER_IDS, mAccSettings.getAccountName());
+        intent.putExtra(EditKeyActivityOld.EXTRA_USER_IDS, mAccSettings.getAccountName());
         startActivityForResult(intent, REQUEST_CODE_CREATE_KEY);
     }
 

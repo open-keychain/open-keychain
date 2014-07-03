@@ -74,22 +74,6 @@
             android:drawablePadding="8dp"
             android:gravity="center_vertical" />
 
-        <TextView
-            android:id="@+id/view_key_action_edit_new"
-            android:paddingLeft="8dp"
-            android:paddingRight="8dp"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:minHeight="?android:attr/listPreferredItemHeight"
-            android:clickable="true"
-            style="@style/SelectableItem"
-            android:text="NEW EDIT"
-            android:layout_weight="1"
-            android:drawableRight="@drawable/ic_action_edit"
-            android:drawablePadding="8dp"
-            android:gravity="center_vertical" />
-
         <View
             android:id="@+id/view_key_action_edit_divider"
             android:layout_width="match_parent"
