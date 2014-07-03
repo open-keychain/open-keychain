@@ -47,7 +47,7 @@ import org.sufficientlysecure.keychain.util.Log;
 public class SetPassphraseDialogFragment extends DialogFragment implements OnEditorActionListener {
     private static final String ARG_MESSENGER = "messenger";
     private static final String ARG_TITLE = "title";
-    private static final String ARG_OLD_PASSPHRASE = "title";
+    private static final String ARG_OLD_PASSPHRASE = "old_passphrase";
 
     public static final int MESSAGE_OKAY = 1;
 
@@ -103,6 +103,8 @@ public class SetPassphraseDialogFragment extends DialogFragment implements OnEdi
 
         if (TextUtils.isEmpty(oldPassphrase)) {
             mNoPassphraseCheckBox.setChecked(true);
+            mPassphraseEditText.setEnabled(false);
+            mPassphraseAgainEditText.setEnabled(false);
         }
 
         mNoPassphraseCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
