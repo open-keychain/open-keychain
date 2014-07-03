@@ -113,7 +113,7 @@ public class EditKeyFragment extends LoaderFragment implements
         mUserIdsList = (ListView) view.findViewById(R.id.edit_key_user_ids);
         mSubkeysList = (ListView) view.findViewById(R.id.edit_key_keys);
         mUserIdsAddedList = (ListView) view.findViewById(R.id.edit_key_user_ids_added);
-        mSubkeysAddedList = (ListView) view.findViewById(R.id.edit_key_keys_added);
+        mSubkeysAddedList = (ListView) view.findViewById(R.id.edit_key_subkeys_added);
         mChangePassphrase = view.findViewById(R.id.edit_key_action_change_passphrase);
         mAddUserId = view.findViewById(R.id.edit_key_action_add_user_id);
         mAddSubkey = view.findViewById(R.id.edit_key_action_add_key);

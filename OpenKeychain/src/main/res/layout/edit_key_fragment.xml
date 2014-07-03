@@ -93,7 +93,7 @@
             android:background="?android:attr/listDivider" />
 
         <org.sufficientlysecure.keychain.ui.widget.FixedListView
-            android:id="@+id/edit_key_keys_added"
+            android:id="@+id/edit_key_subkeys_added"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
