@@ -142,7 +142,7 @@ public class WizardActivity extends ActionBarActivity {
             emailView.setThreshold(1); // Start working from first character
             emailView.setAdapter(
                     new ArrayAdapter<String>
-                            (getActivity(), android.R.layout.simple_dropdown_item_1line,
+                            (getActivity(), android.R.layout.simple_spinner_dropdown_item,
                                     ContactHelper.getPossibleUserEmails(getActivity())
                             )
             );
@@ -177,7 +177,7 @@ public class WizardActivity extends ActionBarActivity {
             nameView.setThreshold(1); // Start working from first character
             nameView.setAdapter(
                     new ArrayAdapter<String>
-                            (getActivity(), android.R.layout.simple_dropdown_item_1line,
+                            (getActivity(), android.R.layout.simple_spinner_dropdown_item,
                                     ContactHelper.getPossibleUserNames(getActivity())
                             )
             );

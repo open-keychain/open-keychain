@@ -72,11 +72,11 @@ public class UserIdsAddedAdapter extends ArrayAdapter<UserIdsAddedAdapter.UserId
         mInflater = (LayoutInflater) activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         mData = data;
         mAutoCompleteNameAdapter = new ArrayAdapter<String>
-                (mActivity, android.R.layout.simple_dropdown_item_1line,
+                (mActivity, android.R.layout.simple_spinner_dropdown_item,
                         ContactHelper.getPossibleUserNames(mActivity)
                 );
         mAutoCompleteEmailAdapter = new ArrayAdapter<String>
-                (mActivity, android.R.layout.simple_dropdown_item_1line,
+                (mActivity, android.R.layout.simple_spinner_dropdown_item,
                         ContactHelper.getPossibleUserEmails(mActivity)
                 );
     }
