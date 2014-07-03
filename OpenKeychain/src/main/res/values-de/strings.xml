@@ -9,6 +9,7 @@
   <string name="title_create_key">Schlüssel erstellen</string>
   <string name="title_edit_key">Schlüssel bearbeiten</string>
   <string name="title_preferences">Einstellungen</string>
+  <string name="title_api_registered_apps">Apps</string>
   <string name="title_key_server_preference">Schlüsselserver</string>
   <string name="title_change_passphrase">Passphrase ändern</string>
   <string name="title_set_passphrase">Passwort setzen</string>
@@ -64,7 +65,7 @@
   <string name="btn_lookup_key">Schlüssel nachschlagen</string>
   <string name="btn_encryption_advanced_settings_show">Erweiterte Einstellungen anzeigen</string>
   <string name="btn_encryption_advanced_settings_hide">Erweiterte Einstellungen verbergen</string>
-  <string name="btn_share_encrypted_signed">Verschlüsselt/signierten Text teilen…</string>
+  <string name="btn_share_encrypted_signed">Verschlüsselt/signierte Nachricht teilen…</string>
   <string name="btn_view_cert_key">Beglaubigungsschlüssel anzeigen</string>
   <!--menu-->
   <string name="menu_preferences">Einstellungen</string>
@@ -404,6 +405,7 @@
   <string name="nav_encrypt">Signieren und Verschlüsseln</string>
   <string name="nav_decrypt">Entschlüsseln und Verifizieren</string>
   <string name="nav_import">Schlüssel Importieren</string>
+  <string name="nav_apps">Apps</string>
   <string name="drawer_open">Menü öffnen</string>
   <string name="drawer_close">Menü schließen</string>
   <string name="edit">Bearbeiten</string>
@@ -412,8 +414,8 @@
   <string name="secret_key_yes">verfügbar</string>
   <string name="secret_key_no">nicht verfügbar</string>
   <!--hints-->
-  <string name="encrypt_content_edit_text_hint">Hier den Text schreiben welche verschlüsselt und/oder signiert werden soll...</string>
-  <string name="decrypt_content_edit_text_hint">Hier den verschlüsselten Text eingeben um ihn zu entschlüsseln und/oder zu verifzieren…</string>
+  <string name="encrypt_content_edit_text_hint">Hier die Nachricht schreiben welche verschlüsselt und/oder signiert werden soll…</string>
+  <string name="decrypt_content_edit_text_hint">Hier die verschlüsselte Nachricht eingeben um sie zu entschlüsseln und/oder zu verifzieren…</string>
   <!--certs-->
   <string name="cert_default">normal</string>
   <string name="cert_none">kein</string>

@@ -359,12 +359,16 @@
     <item quantity="other">%1$d claves importadas con éxito</item>
   </plurals>
   <plurals name="import_keys_added_and_updated_2">
-    <item quantity="one"> y actualizada clave%2$s.</item>
-    <item quantity="other"> y actualizadas %1$d claves%2$s.</item>
+    <item quantity="one"> y clave%2$s actualizada.</item>
+    <item quantity="other"> y %1$d claves%2$s actualizadas.</item>
   </plurals>
   <plurals name="import_keys_added">
     <item quantity="one">Clave%2$s importada con éxito.</item>
-    <item quantity="other">Successfully imported %1$d keys%2$s.</item>
+    <item quantity="other">%1$d claves%2$s importadas con éxito.</item>
+  </plurals>
+  <plurals name="import_keys_updated">
+    <item quantity="one">Clave%2$s importada con éxito.</item>
+    <item quantity="other">%1$d claves%2$s importadas con éxito.</item>
   </plurals>
   <string name="import_view_log">Ver registro (log)</string>
   <string name="import_error_nothing">No hay nada que importar.</string>
@@ -495,6 +499,15 @@
   <string name="msg_ip_uid_cert_bad">¡Se encontró un certificado defectuoso!</string>
   <string name="msg_ip_uid_cert_error">¡Error procesando certificado!</string>
   <string name="msg_ip_uid_cert_good">La identificación de usuario está certificada por %1$s (%2$s)</string>
+  <plurals name="msg_ip_uid_certs_unknown">
+    <item quantity="one">Ignorando un certificado publicado por una clave pública desconocida</item>
+    <item quantity="other">Ignorando %s certificados publicados por claves públicas desconocidas</item>
+  </plurals>
+  <string name="msg_ip_uid_classifying_zero">Clasificando identidades de usuario (no hay claves de confianza disponibles)</string>
+  <plurals name="msg_ip_uid_classifying">
+    <item quantity="one">Clasificando identidades de usuario (usando una clave de confianza)</item>
+    <item quantity="other">Clasificando identidades de usuario (usando %s claves de confianza)</item>
+  </plurals>
   <string name="msg_ip_uid_reorder">Re-ordenando identidades de usuario</string>
   <string name="msg_ip_uid_processing">Procesando identidad (id) de usuario %s</string>
   <string name="msg_ip_uid_revoked">La identificación de usuario está revocada</string>
@@ -537,7 +550,15 @@
   <string name="msg_kc_sub_revoke_bad">Eliminando certificado defectuoso de revocación de subclave</string>
   <string name="msg_kc_sub_revoke_dup">Eliminando certificado redundante de revocación de subclave</string>
   <string name="msg_kc_success">Canonicalización del juego de claves exitosa, no hay cambios</string>
+  <plurals name="msg_kc_success_bad">
+    <item quantity="one">Canonicalización de juego de claves completada, se eliminó un certificado erróneo</item>
+    <item quantity="other">Canonicalización de juego de claves completada, se eliminaron %d certificados erróneos</item>
+  </plurals>
   <string name="msg_kc_success_bad_and_red">Canonicalización de juego de claves completada, eliminados %1$s certificados erróneos y %2$s redundantes </string>
+  <plurals name="msg_kc_success_redundant">
+    <item quantity="one">Canonicalización de juego de claves completada, se eliminó un certificado redundante</item>
+    <item quantity="other">Canonicalización de juego de claves completada, se eliminaron %d certificados redundantes</item>
+  </plurals>
   <string name="msg_kc_uid_bad_err">Eliminando auto-certificado defectuoso para la identidad de usuario %s</string>
   <string name="msg_kc_uid_bad_local">Eliminando certificado de identidad de usuario, con distintivo \"local\"</string>
   <string name="msg_kc_uid_bad_time">Eliminando identidad de usuario con marca de tiempo futura</string>
