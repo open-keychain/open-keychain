@@ -127,8 +127,6 @@ public class EditKeyFragment extends LoaderFragment implements
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        cachePassphraseForEdit();
-
         // Inflate a "Done"/"Cancel" custom action bar view
         ActionBarHelper.setTwoButtonView(((ActionBarActivity) getActivity()).getSupportActionBar(),
                 R.string.btn_save, R.drawable.ic_action_save,
@@ -176,6 +174,8 @@ public class EditKeyFragment extends LoaderFragment implements
             Toast.makeText(getActivity(), R.string.error_no_secret_key_found, Toast.LENGTH_SHORT).show();
             getActivity().finish();
         }
+
+        cachePassphraseForEdit();
 
         mChangePassphrase.setOnClickListener(new View.OnClickListener() {
             @Override
