@@ -55,10 +55,10 @@ public class SaveKeyringParcel implements Parcelable {
     // performance gain for using Parcelable here would probably be negligible,
     // use Serializable instead.
     public static class SubkeyAdd implements Serializable {
-        public final int mAlgorithm;
-        public final int mKeysize;
-        public final int mFlags;
-        public final Long mExpiry;
+        public int mAlgorithm;
+        public int mKeysize;
+        public int mFlags;
+        public Long mExpiry;
         public SubkeyAdd(int algorithm, int keysize, int flags, Long expiry) {
             mAlgorithm = algorithm;
             mKeysize = keysize;
@@ -68,9 +68,9 @@ public class SaveKeyringParcel implements Parcelable {
     }
 
     public static class SubkeyChange implements Serializable {
-        public final long mKeyId;
-        public final Integer mFlags;
-        public final Long mExpiry;
+        public long mKeyId;
+        public Integer mFlags;
+        public Long mExpiry;
         public SubkeyChange(long keyId, Integer flags, Long expiry) {
             mKeyId = keyId;
             mFlags = flags;

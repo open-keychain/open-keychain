@@ -37,6 +37,7 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import org.spongycastle.bcpg.sig.KeyFlags;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.compatibility.DialogFragmentWorkaround;
@@ -50,6 +51,7 @@ import org.sufficientlysecure.keychain.service.OperationResults;
 import org.sufficientlysecure.keychain.service.PassphraseCacheService;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
 import org.sufficientlysecure.keychain.ui.adapter.SubkeysAdapter;
+import org.sufficientlysecure.keychain.ui.adapter.SubkeysAddedAdapter;
 import org.sufficientlysecure.keychain.ui.adapter.UserIdsAdapter;
 import org.sufficientlysecure.keychain.ui.adapter.UserIdsAddedAdapter;
 import org.sufficientlysecure.keychain.ui.dialog.EditUserIdDialogFragment;
@@ -67,17 +69,22 @@ public class EditKeyFragment extends LoaderFragment implements
     private ListView mUserIdsList;
     private ListView mSubkeysList;
     private ListView mUserIdsAddedList;
-    private ListView mKeysAddedList;
+    private ListView mSubkeysAddedList;
     private View mChangePassphrase;
     private View mAddUserId;
-    private View mAddKey;
+    private View mAddSubkey;
 
     private static final int LOADER_ID_USER_IDS = 0;
     private static final int LOADER_ID_SUBKEYS = 1;
 
+    // cursor adapter
     private UserIdsAdapter mUserIdsAdapter;
     private SubkeysAdapter mSubkeysAdapter;
+
+    // array adapter
     private UserIdsAddedAdapter mUserIdsAddedAdapter;
+    private SubkeysAddedAdapter mSubkeysAddedAdapter;
+
     private ArrayList<UserIdsAddedAdapter.UserIdModel> mUserIdsAddedData;
 
     private Uri mDataUri;
@@ -106,10 +113,10 @@ public class EditKeyFragment extends LoaderFragment implements
         mUserIdsList = (ListView) view.findViewById(R.id.edit_key_user_ids);
         mSubkeysList = (ListView) view.findViewById(R.id.edit_key_keys);
         mUserIdsAddedList = (ListView) view.findViewById(R.id.edit_key_user_ids_added);
-        mKeysAddedList = (ListView) view.findViewById(R.id.edit_key_keys_added);
+        mSubkeysAddedList = (ListView) view.findViewById(R.id.edit_key_keys_added);
         mChangePassphrase = view.findViewById(R.id.edit_key_action_change_passphrase);
         mAddUserId = view.findViewById(R.id.edit_key_action_add_user_id);
-        mAddKey = view.findViewById(R.id.edit_key_action_add_key);
+        mAddSubkey = view.findViewById(R.id.edit_key_action_add_key);
 
         return root;
     }
@@ -180,6 +187,13 @@ public class EditKeyFragment extends LoaderFragment implements
             }
         });
 
+        mAddSubkey.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                addSubkey();
+            }
+        });
+
         mUserIdsAdapter = new UserIdsAdapter(getActivity(), null, 0, mSaveKeyringParcel);
         mUserIdsList.setAdapter(mUserIdsAdapter);
 
@@ -198,6 +212,9 @@ public class EditKeyFragment extends LoaderFragment implements
 
         mSubkeysAdapter = new SubkeysAdapter(getActivity(), null, 0);
         mSubkeysList.setAdapter(mSubkeysAdapter);
+
+        mSubkeysAddedAdapter = new SubkeysAddedAdapter(getActivity(), mSaveKeyringParcel.addSubKeys);
+        mSubkeysAddedList.setAdapter(mSubkeysAddedAdapter);
 
         // Prepare the loaders. Either re-connect with an existing ones,
         // or start new ones.
@@ -325,6 +342,11 @@ public class EditKeyFragment extends LoaderFragment implements
 
     private void addUserId() {
         mUserIdsAddedAdapter.add(new UserIdsAddedAdapter.UserIdModel());
+    }
+
+    private void addSubkey() {
+        // default values
+        mSubkeysAddedAdapter.add(new SaveKeyringParcel.SubkeyAdd(Constants.choice.algorithm.rsa, 4096, KeyFlags.SIGN_DATA, null));
     }
 
     private void save() {

@@ -222,7 +222,6 @@
     <string name="keys_exported">Successfully exported %d keys.</string>
     <string name="no_keys_exported">No keys exported.</string>
     <string name="key_creation_el_gamal_info">Note: only subkeys support ElGamal.</string>
-    <string name="key_creation_weak_rsa_info">Note: generating RSA key with length 1024-bit and less is considered unsafe and it\'s disabled for generating new keys.</string>
     <string name="key_not_found">Couldn\'t find key %08X.</string>
 
     <plurals name="bad_keys_encountered">
@@ -626,8 +625,8 @@
     <!-- modifySecretKeyRing -->
     <string name="msg_mr">Modifying keyring %s</string>
     <string name="msg_mf_error_encode">Encoding exception!</string>
-    <string name="msg_mf_error_fingerprint">Actual key fingerprint does not match expected!</string>
-    <string name="msg_mf_error_keyid">No keyid. This is a programming error, please file a bug report!</string>
+    <string name="msg_mf_error_fingerprint">Actual key fingerprint does not match the expected one!</string>
+    <string name="msg_mf_error_keyid">No key ID. This is an internal error, please file a bug report!</string>
     <string name="msg_mf_error_integrity">Internal error, integrity check failed!</string>
     <string name="msg_mf_error_revoked_primary">Revoked user ids cannot be primary!</string>
     <string name="msg_mf_error_pgp">PGP internal exception!</string>
@@ -636,7 +635,7 @@
     <string name="msg_mf_subkey_change">Modifying subkey %s</string>
     <string name="msg_mf_subkey_missing">Tried to operate on missing subkey %s!</string>
     <string name="msg_mf_subkey_new">Generating new %1$s bit %2$s subkey</string>
-    <string name="msg_mf_subkey_new_id">New subkey id: %s</string>
+    <string name="msg_mf_subkey_new_id">New subkey ID: %s</string>
     <string name="msg_mf_subkey_past_expiry">Expiry date cannot be in the past!</string>
     <string name="msg_mf_subkey_revoke">Revoking subkey %s</string>
     <string name="msg_mf_success">Keyring successfully modified</string>

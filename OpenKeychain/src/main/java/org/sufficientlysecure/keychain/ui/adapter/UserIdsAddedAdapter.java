@@ -106,14 +106,14 @@ public class UserIdsAddedAdapter extends ArrayAdapter<UserIdsAddedAdapter.UserId
         if (convertView == null) {
             // Not recycled, inflate a new view
             convertView = mInflater.inflate(R.layout.edit_key_user_id_added_item, null);
-            final ViewHolder viewHolder = new ViewHolder();
-            viewHolder.vAddress = (AutoCompleteTextView) convertView.findViewById(R.id.user_id_added_item_address);
-            viewHolder.vName = (AutoCompleteTextView) convertView.findViewById(R.id.user_id_added_item_name);
-            viewHolder.vComment = (EditText) convertView.findViewById(R.id.user_id_added_item_comment);
-            viewHolder.vDelete = (ImageButton) convertView.findViewById(R.id.user_id_added_item_delete);
-            convertView.setTag(viewHolder);
+            final ViewHolder holder = new ViewHolder();
+            holder.vAddress = (AutoCompleteTextView) convertView.findViewById(R.id.user_id_added_item_address);
+            holder.vName = (AutoCompleteTextView) convertView.findViewById(R.id.user_id_added_item_name);
+            holder.vComment = (EditText) convertView.findViewById(R.id.user_id_added_item_comment);
+            holder.vDelete = (ImageButton) convertView.findViewById(R.id.user_id_added_item_delete);
+            convertView.setTag(holder);
 
-            viewHolder.vAddress.addTextChangedListener(new TextWatcher() {
+            holder.vAddress.addTextChangedListener(new TextWatcher() {
                 @Override
                 public void beforeTextChanged(CharSequence s, int start, int count, int after) {
                 }
@@ -125,26 +125,26 @@ public class UserIdsAddedAdapter extends ArrayAdapter<UserIdsAddedAdapter.UserId
                 @Override
                 public void afterTextChanged(Editable s) {
                     // update referenced item in view holder
-                    viewHolder.mModel.address = s.toString();
+                    holder.mModel.address = s.toString();
 
                     // show icon on valid email addresses
-                    if (viewHolder.mModel.address.length() > 0) {
-                        Matcher emailMatcher = Patterns.EMAIL_ADDRESS.matcher(viewHolder.mModel.address);
+                    if (holder.mModel.address.length() > 0) {
+                        Matcher emailMatcher = Patterns.EMAIL_ADDRESS.matcher(holder.mModel.address);
                         if (emailMatcher.matches()) {
-                            viewHolder.vAddress.setCompoundDrawablesWithIntrinsicBounds(0, 0,
+                            holder.vAddress.setCompoundDrawablesWithIntrinsicBounds(0, 0,
                                     R.drawable.uid_mail_ok, 0);
                         } else {
-                            viewHolder.vAddress.setCompoundDrawablesWithIntrinsicBounds(0, 0,
+                            holder.vAddress.setCompoundDrawablesWithIntrinsicBounds(0, 0,
                                     R.drawable.uid_mail_bad, 0);
                         }
                     } else {
                         // remove drawable if email is empty
-                        viewHolder.vAddress.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
+                        holder.vAddress.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
                     }
                 }
             });
 
-            viewHolder.vName.addTextChangedListener(new TextWatcher() {
+            holder.vName.addTextChangedListener(new TextWatcher() {
                 @Override
                 public void beforeTextChanged(CharSequence s, int start, int count, int after) {
                 }
@@ -156,11 +156,11 @@ public class UserIdsAddedAdapter extends ArrayAdapter<UserIdsAddedAdapter.UserId
                 @Override
                 public void afterTextChanged(Editable s) {
                     // update referenced item in view holder
-                    viewHolder.mModel.name = s.toString();
+                    holder.mModel.name = s.toString();
                 }
             });
 
-            viewHolder.vComment.addTextChangedListener(new TextWatcher() {
+            holder.vComment.addTextChangedListener(new TextWatcher() {
                 @Override
                 public void beforeTextChanged(CharSequence s, int start, int count, int after) {
                 }
@@ -172,15 +172,15 @@ public class UserIdsAddedAdapter extends ArrayAdapter<UserIdsAddedAdapter.UserId
                 @Override
                 public void afterTextChanged(Editable s) {
                     // update referenced item in view holder
-                    viewHolder.mModel.comment = s.toString();
+                    holder.mModel.comment = s.toString();
                 }
             });
 
-            viewHolder.vDelete.setOnClickListener(new View.OnClickListener() {
+            holder.vDelete.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     // remove reference model item from adapter (data and notify about change)
-                    UserIdsAddedAdapter.this.remove(viewHolder.mModel);
+                    UserIdsAddedAdapter.this.remove(holder.mModel);
                 }
             });
 

@@ -107,7 +107,6 @@ public class UserIdsAdapter extends CursorAdapter implements AdapterView.OnItemC
         TextView vAddress = (TextView) view.findViewById(R.id.address);
         TextView vComment = (TextView) view.findViewById(R.id.comment);
         ImageView vVerified = (ImageView) view.findViewById(R.id.certified);
-        ImageView vHasChanges = (ImageView) view.findViewById(R.id.has_changes);
         ImageView vEditImage = (ImageView) view.findViewById(R.id.edit_image);
 
         String userId = cursor.getString(INDEX_USER_ID);
@@ -135,27 +134,23 @@ public class UserIdsAdapter extends CursorAdapter implements AdapterView.OnItemC
 
         // for edit key
         if (mSaveKeyringParcel != null) {
-            boolean changeUserId = (mSaveKeyringParcel.changePrimaryUserId != null
+            boolean changeAnyPrimaryUserId = (mSaveKeyringParcel.changePrimaryUserId != null);
+            boolean changeThisPrimaryUserId = (mSaveKeyringParcel.changePrimaryUserId != null
                     && mSaveKeyringParcel.changePrimaryUserId.equals(userId));
-            boolean revoke = (mSaveKeyringParcel.revokeUserIds.contains(userId));
+            boolean revokeThisUserId = (mSaveKeyringParcel.revokeUserIds.contains(userId));
 
-            if (changeUserId) {
-                isPrimary = !isPrimary;
+            if (changeAnyPrimaryUserId) {
+                // change all user ids, only this one should be primary
+                isPrimary = changeThisPrimaryUserId;
             }
-            if (revoke) {
+            if (revokeThisUserId) {
                 if (!isRevoked) {
                     isRevoked = true;
                 }
             }
 
-            if (changeUserId || revoke) {
-                vHasChanges.setVisibility(View.VISIBLE);
-            } else {
-                vHasChanges.setVisibility(View.GONE);
-            }
             vEditImage.setVisibility(View.VISIBLE);
         } else {
-            vHasChanges.setVisibility(View.GONE);
             vEditImage.setVisibility(View.GONE);
         }
 
@@ -166,11 +161,14 @@ public class UserIdsAdapter extends CursorAdapter implements AdapterView.OnItemC
             // disable and strike through text for revoked user ids
             vName.setEnabled(false);
             vAddress.setEnabled(false);
+            vComment.setEnabled(false);
             vName.setText(OtherHelper.strikeOutText(vName.getText()));
             vAddress.setText(OtherHelper.strikeOutText(vAddress.getText()));
+            vComment.setText(OtherHelper.strikeOutText(vComment.getText()));
         } else {
             vName.setEnabled(true);
             vAddress.setEnabled(true);
+            vComment.setEnabled(true);
 
             // verified: has been verified
             // isPrimary: show small star icon for primary user ids

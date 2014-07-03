@@ -7,7 +7,6 @@
     android:singleLine="true">
 
     <ImageView
-        android:id="@+id/has_changes"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:minWidth="10dp"
