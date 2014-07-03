@@ -4,11 +4,15 @@
     android:layout_height="wrap_content"
     android:paddingLeft="16dp"
     android:paddingRight="16dp"
-    android:stretchColumns="1" >
+    android:stretchColumns="1">
 
-    <TableRow
-        android:layout_marginBottom="5dip"
-        >
+    <CheckBox
+        android:id="@+id/passphrase_no_passphrase"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/label_no_passphrase" />
+
+    <TableRow android:layout_marginBottom="5dip">
 
         <TextView
             android:id="@+id/passphrase_label_passphrase"
@@ -26,9 +30,7 @@
             android:padding="4dp" />
     </TableRow>
 
-    <TableRow
-        android:layout_marginBottom="10dip"
-        >
+    <TableRow android:layout_marginBottom="10dip">
 
         <TextView
             android:id="@+id/passphrase_label_passphrase_again"

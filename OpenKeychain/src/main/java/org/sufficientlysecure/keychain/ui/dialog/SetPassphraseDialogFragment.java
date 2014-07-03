@@ -26,12 +26,15 @@ import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
 import android.support.v4.app.DialogFragment;
+import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager.LayoutParams;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
@@ -44,6 +47,7 @@ import org.sufficientlysecure.keychain.util.Log;
 public class SetPassphraseDialogFragment extends DialogFragment implements OnEditorActionListener {
     private static final String ARG_MESSENGER = "messenger";
     private static final String ARG_TITLE = "title";
+    private static final String ARG_OLD_PASSPHRASE = "title";
 
     public static final int MESSAGE_OKAY = 1;
 
@@ -52,6 +56,7 @@ public class SetPassphraseDialogFragment extends DialogFragment implements OnEdi
     private Messenger mMessenger;
     private EditText mPassphraseEditText;
     private EditText mPassphraseAgainEditText;
+    private CheckBox mNoPassphraseCheckBox;
 
     /**
      * Creates new instance of this dialog fragment
@@ -60,11 +65,12 @@ public class SetPassphraseDialogFragment extends DialogFragment implements OnEdi
      * @param messenger to communicate back after setting the passphrase
      * @return
      */
-    public static SetPassphraseDialogFragment newInstance(Messenger messenger, int title) {
+    public static SetPassphraseDialogFragment newInstance(Messenger messenger, String oldPassphrase, int title) {
         SetPassphraseDialogFragment frag = new SetPassphraseDialogFragment();
         Bundle args = new Bundle();
         args.putInt(ARG_TITLE, title);
         args.putParcelable(ARG_MESSENGER, messenger);
+        args.putString(ARG_OLD_PASSPHRASE, oldPassphrase);
 
         frag.setArguments(args);
 
@@ -80,6 +86,7 @@ public class SetPassphraseDialogFragment extends DialogFragment implements OnEdi
 
         int title = getArguments().getInt(ARG_TITLE);
         mMessenger = getArguments().getParcelable(ARG_MESSENGER);
+        String oldPassphrase = getArguments().getString(ARG_OLD_PASSPHRASE);
 
         CustomAlertDialogBuilder alert = new CustomAlertDialogBuilder(activity);
 
@@ -92,6 +99,19 @@ public class SetPassphraseDialogFragment extends DialogFragment implements OnEdi
 
         mPassphraseEditText = (EditText) view.findViewById(R.id.passphrase_passphrase);
         mPassphraseAgainEditText = (EditText) view.findViewById(R.id.passphrase_passphrase_again);
+        mNoPassphraseCheckBox = (CheckBox) view.findViewById(R.id.passphrase_no_passphrase);
+
+        if (TextUtils.isEmpty(oldPassphrase)) {
+            mNoPassphraseCheckBox.setChecked(true);
+        }
+
+        mNoPassphraseCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                mPassphraseEditText.setEnabled(!isChecked);
+                mPassphraseAgainEditText.setEnabled(!isChecked);
+            }
+        });
 
         alert.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
 
@@ -99,24 +119,31 @@ public class SetPassphraseDialogFragment extends DialogFragment implements OnEdi
             public void onClick(DialogInterface dialog, int id) {
                 dismiss();
 
-                String passphrase1 = mPassphraseEditText.getText().toString();
-                String passphrase2 = mPassphraseAgainEditText.getText().toString();
-                if (!passphrase1.equals(passphrase2)) {
-                    Toast.makeText(
-                            activity,
-                            getString(R.string.error_message,
-                                    getString(R.string.passphrases_do_not_match)), Toast.LENGTH_SHORT)
-                            .show();
-                    return;
-                }
+                String passphrase1;
+                if (mNoPassphraseCheckBox.isChecked()) {
+                    passphrase1 = "";
+                } else {
+                    passphrase1 = mPassphraseEditText.getText().toString();
+                    String passphrase2 = mPassphraseAgainEditText.getText().toString();
+                    if (!passphrase1.equals(passphrase2)) {
+                        Toast.makeText(
+                                activity,
+                                getString(R.string.error_message,
+                                        getString(R.string.passphrases_do_not_match)), Toast.LENGTH_SHORT
+                        )
+                                .show();
+                        return;
+                    }
 
-                if (passphrase1.equals("")) {
-                    Toast.makeText(
-                            activity,
-                            getString(R.string.error_message,
-                                    getString(R.string.passphrase_must_not_be_empty)),
-                            Toast.LENGTH_SHORT).show();
-                    return;
+                    if (passphrase1.equals("")) {
+                        Toast.makeText(
+                                activity,
+                                getString(R.string.error_message,
+                                        getString(R.string.passphrase_must_not_be_empty)),
+                                Toast.LENGTH_SHORT
+                        ).show();
+                        return;
+                    }
                 }
 
                 // return resulting data back to activity

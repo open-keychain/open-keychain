@@ -18,6 +18,89 @@
         android:paddingLeft="8dp"
         android:stretchColumns="1">
 
+        <TableRow>
+
+            <TextView
+                android:id="@+id/label_expiry"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:paddingRight="10dip"
+                android:text="@string/label_expiry" />
+
+            <Button
+                android:id="@+id/expiry"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:text="@string/none"
+                android:background="@drawable/button_edgy" />
+        </TableRow>
+
+        <TableRow
+            android:id="@+id/row_certify">
+
+            <TextView
+                android:id="@+id/label_usage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:paddingRight="10dip"
+                android:text="@string/label_usage" />
+            <CheckBox
+                android:id="@+id/chkCertify"
+                android:enabled = "false"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/flag_certify" />
+        </TableRow>
+
+        <TableRow
+            android:id="@+id/row_sign">
+
+            <TextView
+                android:id="@+id/label_usage2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:paddingRight="10dip"
+                android:text="@string/label_usage" />
+            <CheckBox
+                android:id="@+id/chkSign"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/flag_sign" />
+        </TableRow>
+
+        <TableRow
+            android:id="@+id/row_encrypt">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:paddingRight="10dip" />
+            <CheckBox
+                android:id="@+id/chkEncrypt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/flag_encrypt" />
+        </TableRow>
+
+        <TableRow
+            android:id="@+id/row_authenticate">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:paddingRight="10dip" />
+            <CheckBox
+                android:id="@+id/chkAuthenticate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/flag_authenticate" />
+        </TableRow>
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

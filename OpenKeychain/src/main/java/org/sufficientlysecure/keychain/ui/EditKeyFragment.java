@@ -91,6 +91,8 @@ public class EditKeyFragment extends LoaderFragment implements
 
     private SaveKeyringParcel mSaveKeyringParcel;
 
+    private String mCurrentPassphrase;
+
     /**
      * Creates new instance of this fragment
      */
@@ -125,6 +127,8 @@ public class EditKeyFragment extends LoaderFragment implements
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
+        cachePassphraseForEdit();
+
         // Inflate a "Done"/"Cancel" custom action bar view
         ActionBarHelper.setTwoButtonView(((ActionBarActivity) getActivity()).getSupportActionBar(),
                 R.string.btn_save, R.drawable.ic_action_save,
@@ -132,7 +136,7 @@ public class EditKeyFragment extends LoaderFragment implements
                     @Override
                     public void onClick(View v) {
                         // Save
-                        save();
+                        save(mCurrentPassphrase);
                     }
                 }, R.string.menu_key_edit_cancel, R.drawable.ic_action_cancel,
                 new OnClickListener() {
@@ -296,7 +300,7 @@ public class EditKeyFragment extends LoaderFragment implements
         Messenger messenger = new Messenger(returnHandler);
 
         SetPassphraseDialogFragment setPassphraseDialog = SetPassphraseDialogFragment.newInstance(
-                messenger, R.string.title_change_passphrase);
+                messenger, mCurrentPassphrase, R.string.title_change_passphrase);
 
         setPassphraseDialog.show(getActivity().getSupportFragmentManager(), "setPassphraseDialog");
     }
@@ -350,29 +354,28 @@ public class EditKeyFragment extends LoaderFragment implements
         mSubkeysAddedAdapter.add(new SaveKeyringParcel.SubkeyAdd(Constants.choice.algorithm.rsa, 4096, KeyFlags.SIGN_DATA, null));
     }
 
-    private void save() {
-        String passphrase = PassphraseCacheService.getCachedPassphrase(getActivity(),
+    private void cachePassphraseForEdit() {
+        mCurrentPassphrase = PassphraseCacheService.getCachedPassphrase(getActivity(),
                 mSaveKeyringParcel.mMasterKeyId);
-        if (passphrase == null) {
+        if (mCurrentPassphrase == null) {
             PassphraseDialogFragment.show(getActivity(), mSaveKeyringParcel.mMasterKeyId,
                     new Handler() {
                         @Override
                         public void handleMessage(Message message) {
                             if (message.what == PassphraseDialogFragment.MESSAGE_OKAY) {
-                                String passphrase =
+                                mCurrentPassphrase =
                                         message.getData().getString(PassphraseDialogFragment.MESSAGE_DATA_PASSPHRASE);
                                 Log.d(Constants.TAG, "after caching passphrase");
-                                saveFinal(passphrase);
+                            } else {
+                                EditKeyFragment.this.getActivity().finish();
                             }
                         }
                     }
             );
-        } else {
-            saveFinal(passphrase);
         }
     }
 
-    private void saveFinal(String passphrase) {
+    private void save(String passphrase) {
         Log.d(Constants.TAG, "add userids to parcel: " + mUserIdsAddedAdapter.getDataAsStringList());
         mSaveKeyringParcel.addUserIds = mUserIdsAddedAdapter.getDataAsStringList();
 

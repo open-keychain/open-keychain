@@ -357,7 +357,7 @@ public class EditKeyActivity extends ActionBarActivity implements EditorListener
         }
 
         SetPassphraseDialogFragment setPassphraseDialog = SetPassphraseDialogFragment.newInstance(
-                messenger, title);
+                messenger, null, title);
 
         setPassphraseDialog.show(getSupportFragmentManager(), "setPassphraseDialog");
     }
