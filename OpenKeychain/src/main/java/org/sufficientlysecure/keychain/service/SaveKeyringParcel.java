@@ -82,6 +82,8 @@ public class SaveKeyringParcel implements Parcelable {
         mMasterKeyId = source.readInt() != 0 ? source.readLong() : null;
         mFingerprint = source.createByteArray();
 
+        newPassphrase = source.readString();
+
         addUserIds = source.createStringArrayList();
         addSubKeys = (ArrayList<SubkeyAdd>) source.readSerializable();
 
@@ -99,6 +101,8 @@ public class SaveKeyringParcel implements Parcelable {
             destination.writeLong(mMasterKeyId);
         }
         destination.writeByteArray(mFingerprint);
+
+        destination.writeString(newPassphrase);
 
         destination.writeStringList(addUserIds);
         destination.writeSerializable(addSubKeys);
