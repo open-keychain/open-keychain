@@ -471,6 +471,16 @@
     <string name="key_view_tab_keys">Subkeys</string>
     <string name="key_view_tab_certs">Certificates</string>
 
+    <!-- Edit key -->
+    <string name="edit_key_action_change_passphrase">Change Passphrase</string>
+    <string name="edit_key_action_add_identity">Add Identity</string>
+    <string name="edit_key_action_add_subkey">Add Subkey</string>
+    <string name="edit_key_edit_user_id_title">Select an action!</string>
+    <string-array name="edit_key_edit_user_id">
+        <item>Change to Primary Identity</item>
+        <item>Revoke Identity</item>
+    </string-array>
+
     <!-- Navigation Drawer -->
     <string name="nav_keys">Keys</string>
     <string name="nav_encrypt">Sign and Encrypt</string>
