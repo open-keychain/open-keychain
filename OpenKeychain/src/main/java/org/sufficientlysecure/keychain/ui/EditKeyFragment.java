@@ -286,12 +286,9 @@ public class EditKeyFragment extends LoaderFragment implements
                 if (message.what == SetPassphraseDialogFragment.MESSAGE_OKAY) {
                     Bundle data = message.getData();
 
-                    // set new returned passphrase!
-                    String newPassphrase = data
+                    // cache new returned passphrase!
+                    mSaveKeyringParcel.newPassphrase = data
                             .getString(SetPassphraseDialogFragment.MESSAGE_NEW_PASSPHRASE);
-
-                    mSaveKeyringParcel.newPassphrase = newPassphrase;
-                    Log.d(Constants.TAG, "newPassphrase set");
                 }
             }
         };
@@ -377,6 +374,8 @@ public class EditKeyFragment extends LoaderFragment implements
 
     private void save(String passphrase) {
         Log.d(Constants.TAG, "add userids to parcel: " + mUserIdsAddedAdapter.getDataAsStringList());
+        Log.d(Constants.TAG, "mSaveKeyringParcel.newPassphrase: " + mSaveKeyringParcel.newPassphrase);
+
         mSaveKeyringParcel.addUserIds = mUserIdsAddedAdapter.getDataAsStringList();
 
         // Message is received after importing is done in KeychainIntentService
