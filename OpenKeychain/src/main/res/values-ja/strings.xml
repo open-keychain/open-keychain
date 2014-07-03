@@ -8,8 +8,9 @@
   <string name="title_authentication">パスフレーズ</string>
   <string name="title_create_key">鍵の生成</string>
   <string name="title_edit_key">鍵の編集</string>
+  <string name="title_wizard">OpenKeychainへようこそ</string>
   <string name="title_preferences">設定</string>
-  <string name="title_api_registered_apps">登録済みのアプリケーション</string>
+  <string name="title_api_registered_apps">アプリ</string>
   <string name="title_key_server_preference">鍵サーバ設定</string>
   <string name="title_change_passphrase">パスフレーズの変更</string>
   <string name="title_set_passphrase">パスフレーズの設定</string>
@@ -27,6 +28,7 @@
   <string name="title_certify_key">ユーザID検証</string>
   <string name="title_key_details">鍵の概要</string>
   <string name="title_help">ヘルプ</string>
+  <string name="title_log_display">ログ</string>
   <!--section-->
   <string name="section_user_ids">ユーザID</string>
   <string name="section_keys">副鍵</string>
@@ -70,16 +72,11 @@
   <!--menu-->
   <string name="menu_preferences">設定</string>
   <string name="menu_help">ヘルプ</string>
-  <string name="menu_import_from_file">ファイルからインポート</string>
-  <string name="menu_import_from_qr_code">QRコードからインポート</string>
-  <string name="menu_import_from_nfc">NFCからインポート</string>
   <string name="menu_export_key">ファイルへのエクスポート</string>
   <string name="menu_delete_key">鍵の削除</string>
   <string name="menu_create_key">鍵の生成</string>
   <string name="menu_create_key_expert">鍵の生成(上級)</string>
   <string name="menu_search">検索</string>
-  <string name="menu_import_from_key_server">鍵サーバ</string>
-  <string name="menu_import_from_keybase">Keybase.ioからのインポート</string>
   <string name="menu_key_server">鍵サーバ...</string>
   <string name="menu_update_key">鍵サーバからの更新</string>
   <string name="menu_export_key_to_server">鍵サーバへのアップロード</string>
@@ -98,6 +95,7 @@
   <string name="menu_select_all">すべて選択</string>
   <string name="menu_add_keys">鍵の追加</string>
   <string name="menu_export_all_keys">すべての鍵のエクスポート</string>
+  <string name="menu_advanced">詳細情報を表示</string>
   <!--label-->
   <string name="label_sign">署名</string>
   <string name="label_message">メッセージ</string>
@@ -203,28 +201,12 @@
   <string name="ask_empty_id_ok">あなたは空のユーザIDを追加しました、このまま続けますか?</string>
   <string name="public_key_deletetion_confirmation">公開鍵\'%s\'を本当に削除してもよいですか?\nこれは元に戻せません!</string>
   <string name="also_export_secret_keys">秘密鍵もエクスポートしますか?</string>
-  <plurals name="import_keys_added_and_updated_1">
-    <item quantity="other">%d の鍵を追加しました</item>
-  </plurals>
-  <plurals name="import_keys_added_and_updated_2">
-    <item quantity="other">そして %d の鍵をアップロードしました。</item>
-  </plurals>
-  <plurals name="import_keys_added">
-    <item quantity="other">%d の鍵を追加しました。</item>
-  </plurals>
-  <plurals name="import_keys_updated">
-    <item quantity="other">%d の鍵をアップロードしました。</item>
-  </plurals>
-  <string name="import_error_nothing">鍵の追加もしくは更新はありませんでした。</string>
   <string name="key_exported">1つの鍵をエクスポートしました。</string>
   <string name="keys_exported">%d の鍵をエクスポートしました。</string>
   <string name="no_keys_exported">鍵をエクスポートしていません。</string>
   <string name="key_creation_el_gamal_info">ノート: 副鍵はElGamalでのみサポートされます。</string>
   <string name="key_creation_weak_rsa_info">付記: 長さ1024bitかそれ以下で生成されたRSA鍵は安全とはみなされず、新な鍵の生成は無効にされています。</string>
   <string name="key_not_found">鍵 %08X は見付かりませんでした。</string>
-  <plurals name="keys_found">
-    <item quantity="other">%d の鍵を発見。</item>
-  </plurals>
   <plurals name="bad_keys_encountered">
     <item quantity="other">%d の問題ある鍵を無視しました。 おそらく次のオプションでエクスポートしています\n --export-secret-subkeys\n代りに次のオプションでエクスポートしてください。\n --export-secret-keys</item>
   </plurals>
@@ -263,11 +245,11 @@
   <string name="error_only_files_are_supported">ファイルシステムに存在するファイルではないバイナリデータはサポートされません。</string>
   <string name="error_jelly_bean_needed">Android NFC Beam機能を使うにはAndroid 4.1  が必要です!</string>
   <string name="error_nfc_needed">あなたのデバイスにはNFCが存在しません!</string>
-  <string name="error_nothing_import">インポートするものがありません!</string>
+  <string name="error_nothing_import">鍵が見当りません!</string>
   <string name="error_keyserver_insufficient_query">鍵検索のクエリが短かすぎます</string>
   <string name="error_searching_keys">サーバでの鍵の検索が回復不可能なエラーになりました</string>
   <string name="error_keyserver_too_many_responses">鍵検索のクエリが沢山の候補を返しました; クエリを精密化してください</string>
-  <string name="error_import_file_no_content">ファイルに内容がありません</string>
+  <string name="error_import_file_no_content">ファイル/クリップボードが空です</string>
   <string name="error_generic_report_bug">一般エラーが発生しました、この新しいバグの情報をOpenKeychainプロジェクトに送ってください</string>
   <plurals name="error_import_non_pgp_part">
     <item quantity="other">読み込んだファイルのOpenPGPオブジェクト部分は正しいですが、OpenPGPの鍵ではありません</item>
@@ -315,10 +297,10 @@
   <string name="progress_verifying_integrity">完全性の検証中...</string>
   <string name="progress_deleting_securely">\'%s\' を完全に削除中…</string>
   <!--action strings-->
-  <string name="hint_public_keys">公開鍵の検索</string>
+  <string name="hint_public_keys">名前/メール/鍵ID...</string>
   <string name="hint_secret_keys">秘密鍵の検索</string>
   <string name="action_share_key_with">...で鍵の共有</string>
-  <string name="hint_keybase_search">Keybase.ioでの検索</string>
+  <string name="hint_keybase_search">名前/Keybase.io名...</string>
   <!--key bit length selections-->
   <string name="key_size_512">512</string>
   <string name="key_size_768">768</string>
@@ -344,6 +326,10 @@
   <string name="help_tab_about">これについて</string>
   <string name="help_about_version">バージョン:</string>
   <!--Import-->
+  <string name="import_tab_keyserver">鍵サーバ</string>
+  <string name="import_tab_direct">ファイル/クリップボード</string>
+  <string name="import_tab_qr_code">QRコード/NFC</string>
+  <string name="import_tab_keybase">Keybase.io</string>
   <string name="import_import">選択した鍵のインポート</string>
   <string name="import_from_clipboard">クリップボードからインポート</string>
   <plurals name="import_qr_code_missing">
@@ -356,8 +342,26 @@
   <string name="import_qr_scan_button">\'バーコードスキャナー\'でQRコードをスキャンする</string>
   <string name="import_nfc_text">NFCで鍵を受信しました、デバイスのロックを解除する必要があります。</string>
   <string name="import_nfc_help_button">ヘルプ</string>
+  <string name="import_qr_code_button">QCコードのスキャン...</string>
   <string name="import_clipboard_button">クリップボードから鍵を取得</string>
   <string name="import_keybase_button">Keybase.ioから鍵を取得</string>
+  <!--Import result toast-->
+  <plurals name="import_keys_added_and_updated_1">
+    <item quantity="other">%1$d の鍵のインポートに成功</item>
+  </plurals>
+  <plurals name="import_keys_added_and_updated_2">
+    <item quantity="other">そして%1$d の鍵%2$s をアップデート。</item>
+  </plurals>
+  <plurals name="import_keys_added">
+    <item quantity="other">%1$d の鍵%2$sのインポートに成功。</item>
+  </plurals>
+  <plurals name="import_keys_updated">
+    <item quantity="other">%1$d の鍵%2$sのアップデートに成功。</item>
+  </plurals>
+  <string name="import_view_log">ログを見る</string>
+  <string name="import_error_nothing">インポートするものがありません。</string>
+  <string name="import_error">鍵のインポートのエラー!</string>
+  <string name="import_with_warnings">、とワーニング</string>
   <!--Intent labels-->
   <string name="intent_decrypt_file">OpenKeychainでファイルを復号化</string>
   <string name="intent_import_key">OpenKeychainに鍵をインポート</string>
@@ -420,7 +424,7 @@
   <string name="nav_encrypt">署名と暗号化</string>
   <string name="nav_decrypt">復号化と検証</string>
   <string name="nav_import">鍵のインポート</string>
-  <string name="nav_apps">登録済みのアプリ</string>
+  <string name="nav_apps">アプリ</string>
   <string name="drawer_open">ナビゲーションドロワーを開く</string>
   <string name="drawer_close">ナビゲーションドロワーを閉める</string>
   <string name="edit">編集</string>
@@ -441,6 +445,142 @@
   <string name="cert_verify_failed">失敗!</string>
   <string name="cert_verify_error">エラー!</string>
   <string name="cert_verify_unavailable">鍵がありません</string>
+  <!--Import Public log entries-->
+  <string name="msg_ip_apply_batch">連続挿入処理を適用する。</string>
+  <string name="msg_ip_bad_type_secret">秘密鍵の鍵輪を公開鍵としてインポートを試行しました。これはバグで、ファイルをレポートしてください!</string>
+  <string name="msg_ip_delete_old_fail">削除された古い鍵はありません (新しく作りますか?)</string>
+  <string name="msg_ip_delete_old_ok">データベースから古い鍵を削除しました</string>
+  <string name="msg_ip_encode_fail">エンコードエラーにより操作が失敗しました</string>
+  <string name="msg_ip_fail_io_exc">I/Oエラーにより操作が失敗しました</string>
+  <string name="msg_ip_fail_op_exc">データベースエラーにより操作が失敗しました</string>
+  <string name="msg_ip_fail_remote_ex">内部エラーにより操作が失敗しました</string>
+  <string name="msg_ip">公開鍵の鍵輪 %s をインポート</string>
+  <string name="msg_ip_insert_keyring">鍵輪データのエンコード中</string>
+  <string name="msg_ip_insert_keys">鍵の解析中</string>
+  <string name="msg_ip_prepare">データベース操作の準備</string>
+  <string name="msg_ip_master">主鍵処理中 %s</string>
+  <string name="msg_ip_master_expired">%s が鍵輪の期限切れ</string>
+  <string name="msg_ip_master_expires">%s に鍵輪が期限切れ</string>
+  <string name="msg_ip_master_flags_ces">主鍵のフラグ: 検証、暗号化、署名</string>
+  <string name="msg_ip_master_flags_cex">主鍵のフラグ: 検証、暗号化</string>
+  <string name="msg_ip_master_flags_cxs">主鍵のフラグ: 検証、署名</string>
+  <string name="msg_ip_master_flags_xes">主鍵のフラグ: 暗号化、署名</string>
+  <string name="msg_ip_master_flags_cxx">主鍵のフラグ: 検証</string>
+  <string name="msg_ip_master_flags_xex">主鍵のフラグ: 暗号化</string>
+  <string name="msg_ip_master_flags_xxs">主鍵のフラグ: 署名</string>
+  <string name="msg_ip_master_flags_xxx">主鍵のフラグ: なし</string>
+  <string name="msg_ip_subkey">副鍵 %s の処理中</string>
+  <string name="msg_ip_subkey_expired">%s が副鍵の期限切れ</string>
+  <string name="msg_ip_subkey_expires">%s に副鍵が期限切れ</string>
+  <string name="msg_ip_subkey_flags_ces">副鍵のフラグ: 検証、暗号化、署名</string>
+  <string name="msg_ip_subkey_flags_cex">副鍵のフラグ: 検証、暗号化</string>
+  <string name="msg_ip_subkey_flags_cxs">副鍵のフラグ: 検証、署名</string>
+  <string name="msg_ip_subkey_flags_xes">副鍵のフラグ: 暗号化、署名</string>
+  <string name="msg_ip_subkey_flags_cxx">副鍵のフラグ: 検証</string>
+  <string name="msg_ip_subkey_flags_xex">副鍵のフラグ: 暗号化</string>
+  <string name="msg_ip_subkey_flags_xxs">副鍵のフラグ: 署名</string>
+  <string name="msg_ip_subkey_flags_xxx">副鍵のフラグ: なし</string>
+  <string name="msg_ip_success">公開鍵の鍵輪のインポートに成功</string>
+  <string name="msg_ip_success_identical">鍵輪にデータがないため、なにもしません</string>
+  <string name="msg_ip_reinsert_secret">秘密鍵を再挿入中</string>
+  <string name="msg_ip_uid_cert_bad">問題のある検証と遭遇しました!</string>
+  <string name="msg_ip_uid_cert_error">検証の処理中にエラーしました!</string>
+  <string name="msg_ip_uid_cert_good">ユーザIDは %1$s (%2$s) によって検証されました</string>
+  <plurals name="msg_ip_uid_certs_unknown">
+    <item quantity="other">不明な公開鍵から %s の検証を無視</item>
+  </plurals>
+  <string name="msg_ip_uid_classifying_zero">ユーザIDを検証 (信頼された鍵がありません)</string>
+  <plurals name="msg_ip_uid_classifying">
+    <item quantity="other">ユーザIDを検証 ( %s の信頼された鍵を使いました)</item>
+  </plurals>
+  <string name="msg_ip_uid_reorder">ユーザIDの並べ直し</string>
+  <string name="msg_ip_uid_processing">ユーザID %s の処理中</string>
+  <string name="msg_ip_uid_revoked">ユーザIDは破棄されました</string>
+  <string name="msg_is_bad_type_public">公開鍵の鍵輪を秘密鍵としてインポートを試行しました。これはバグで、ファイルをレポートしてください\"</string>
+  <!--Import Secret log entries-->
+  <string name="msg_is">秘密鍵 %s のインポート中</string>
+  <string name="msg_is_db_exception">データベースエラー!</string>
+  <string name="msg_is_importing_subkeys">秘密鍵の副鍵の処理中</string>
+  <string name="msg_is_io_exc">鍵輪のエンコードエラー</string>
+  <string name="msg_is_pubring_generate">秘密鍵の鍵輪から公開鍵の鍵輪を生成中</string>
+  <string name="msg_is_subkey_nonexistent">公開鍵の中の副鍵 %s が利用不可能</string>
+  <string name="msg_is_subkey_ok"> %s を利用可能としてマーク</string>
+  <string name="msg_is_subkey_stripped">%s をストリップとしてマーク</string>
+  <string name="msg_is_success_identical">鍵輪にデータがないため、なにもしません</string>
+  <string name="msg_is_success">秘密鍵の鍵輪のインポートに成功</string>
+  <!--Keyring Canonicalization log entries-->
+  <string name="msg_kc_public">公開鍵の鍵輪 %s の正規化中</string>
+  <string name="msg_kc_secret">秘密鍵の鍵輪 %s の正規化中</string>
+  <string name="msg_kc_fatal_no_uid">鍵輪の正規化に失敗: 鍵輪が正しいユーザIDを含んでいませんでした</string>
+  <string name="msg_kc_master">主鍵処理中</string>
+  <string name="msg_kc_revoke_bad_err">問題のある鍵輪の破棄証明を破棄中</string>
+  <string name="msg_kc_revoke_bad_local">鍵輪のローカルフラグ付き破棄証明を破棄中</string>
+  <string name="msg_kc_revoke_bad_time">鍵輪の未来にタイムスタンプがある破棄証明を破棄中</string>
+  <string name="msg_kc_revoke_bad_type">問題のある主鍵の不明な型 (%s) の証明を破棄中</string>
+  <string name="msg_kc_revoke_bad">問題のある鍵輪の破棄証明を破棄中</string>
+  <string name="msg_kc_revoke_dup">重複している鍵輪の破棄証明を破棄中</string>
+  <string name="msg_kc_sub">副鍵 %s の処理中</string>
+  <string name="msg_kc_sub_bad">証明が付随する不正な副鍵を破棄中</string>
+  <string name="msg_kc_sub_bad_err">証明が付随する問題のある副鍵を破棄中</string>
+  <string name="msg_kc_sub_bad_local">ローカルフラグ付きの証明が付随する副鍵を破棄中</string>
+  <string name="msg_kc_sub_bad_keyid">副鍵の発行者のIDと付随するIDがミスマッチ</string>
+  <string name="msg_kc_sub_bad_time">未来にタイムスタンプがある証明が付随する副鍵を破棄中</string>
+  <string name="msg_kc_sub_bad_type">不明な検証のタイプ: %sの副鍵</string>
+  <string name="msg_kc_sub_dup">証明が付随する重複する副鍵を破棄中</string>
+  <string name="msg_kc_sub_primary_bad">付随する主たる証明が正しくない証明が付随する副鍵を破棄中</string>
+  <string name="msg_kc_sub_primary_bad_err">付随する主たる証明に問題がある証明が付随する副鍵を破棄中</string>
+  <string name="msg_kc_sub_primary_none">付随する主たる証明が失なわれている証明が付随する副鍵を破棄中</string>
+  <string name="msg_kc_sub_no_cert">%s から正常な検証が見付かりません、鍵輪から除外します</string>
+  <string name="msg_kc_sub_revoke_bad_err">問題のある副鍵の破棄証明を破棄中</string>
+  <string name="msg_kc_sub_revoke_bad">問題のある副鍵の破棄証明を破棄中</string>
+  <string name="msg_kc_sub_revoke_dup">重複している副鍵の破棄証明を破棄中</string>
+  <string name="msg_kc_success">鍵輪の正規化に成功、変更なし</string>
+  <plurals name="msg_kc_success_bad">
+    <item quantity="other">鍵輪の認可に成功、 %d 個のエラーのある証明を除去</item>
+  </plurals>
+  <string name="msg_kc_success_bad_and_red">鍵輪の認可に成功、 %1$s なエラーのある証明と %2$s  の重複を除去</string>
+  <plurals name="msg_kc_success_redundant">
+    <item quantity="other">鍵輪の認可に成功、 %d 個の重複を除去</item>
+  </plurals>
+  <string name="msg_kc_uid_bad_err">ユーザID %s による問題のある自己検証を破棄中</string>
+  <string name="msg_kc_uid_bad_local">ローカルフラグ付きのユーザID検証を破棄中</string>
+  <string name="msg_kc_uid_bad_time">未来にタイムスタンプがあるユーザIDを破棄中</string>
+  <string name="msg_kc_uid_bad_type">不明な型 (%s) でのユーザID検証を破棄中</string>
+  <string name="msg_kc_uid_bad">ユーザID \"%s\" による問題のある自己検証を破棄中</string>
+  <string name="msg_kc_uid_dup">期限の切れたユーザID \"%s\" による自己検証を破棄中</string>
+  <string name="msg_kc_uid_foreign">%s によって検証されている外部ユーザIDを破棄中</string>
+  <string name="msg_kc_uid_revoke_dup">ユーザID \"%s\" による重複した破棄証明を破棄中</string>
+  <string name="msg_kc_uid_revoke_old">ユーザID \"%s\" による期限切れ破棄証明を破棄中</string>
+  <string name="msg_kc_uid_no_cert">ユーザID %s の正常な自己署名が見付かりませんでした、鍵輪から除去しました</string>
+  <!--Keyring merging log entries-->
+  <string name="msg_mg_public">公開鍵の鍵輪 %s にマージ中</string>
+  <string name="msg_mg_secret">秘密鍵の鍵輪 %s にマージ中</string>
+  <string name="msg_mg_fatal_encode">署名のエンコードでの致命的なエラー</string>
+  <string name="msg_mg_heterogeneous">種類の異なる鍵輪を統合しようとした</string>
+  <string name="msg_mg_new_subkey">新しい副鍵 %s を追加中</string>
+  <string name="msg_mg_found_new">鍵輪に新しい検証を %s 発見</string>
+  <!--modifySecretKeyRing-->
+  <string name="msg_mr">鍵輪 %s を変更中</string>
+  <string name="msg_mf_error_encode">エンコード例外!</string>
+  <string name="msg_mf_error_fingerprint">現実の鍵指紋が予想と合致しませんでした!</string>
+  <string name="msg_mf_error_keyid">鍵IDがない。 これはプログラミングのエラーで、バグレポートの提出をお願いします!</string>
+  <string name="msg_mf_error_integrity">内部エラー、完全性チェックが失敗!</string>
+  <string name="msg_mf_error_revoked_primary">主ユーザIDの破棄はできません!</string>
+  <string name="msg_mf_error_pgp">PGP内部例外!</string>
+  <string name="msg_mf_error_sig">署名例外!</string>
+  <string name="msg_mf_passphrase">パスフレーズの変更中</string>
+  <string name="msg_mf_subkey_change">副鍵 %s を変更中</string>
+  <string name="msg_mf_subkey_missing">遺失した副鍵 %s の操作をしようとした!</string>
+  <string name="msg_mf_subkey_new">新しい %1$s ビットの %2$s 副鍵の生成中</string>
+  <string name="msg_mf_subkey_new_id">新しい副鍵 ID: %s</string>
+  <string name="msg_mf_subkey_past_expiry">期限切れ日を過去にはできません!</string>
+  <string name="msg_mf_subkey_revoke">副鍵 %s を破棄中</string>
+  <string name="msg_mf_success">鍵輪の変更に成功</string>
+  <string name="msg_mf_uid_add">ユーザID %s を追加中</string>
+  <string name="msg_mf_uid_primary">主UIDを %s に変更中</string>
+  <string name="msg_mf_uid_revoke">ユーザID %s を破棄中</string>
+  <string name="msg_mf_unlock_error">鍵輪のロック解除エラー!</string>
+  <string name="msg_mf_unlock">鍵輪のロック解除中</string>
   <!--unsorted-->
   <string name="section_certifier_id">検証者</string>
   <string name="section_cert">証明の詳細</string>
@@ -452,12 +592,15 @@
   <string name="label_verify_status">検証ステータス</string>
   <string name="label_cert_type">種別</string>
   <string name="error_key_not_found">鍵が見当りません!</string>
-  <string name="error_key_processing">鍵処理のエラー!</string>
+  <string name="error_key_processing">鍵処理中のエラー!</string>
   <string name="no_subkey">副鍵がありません</string>
   <string name="key_stripped">スリム化</string>
   <string name="secret_cannot_multiple">秘密鍵は個別にしか削除できません!</string>
   <string name="title_view_cert">証明の詳細を見る</string>
   <string name="unknown_algorithm">不明</string>
   <string name="can_sign_not">署名不可</string>
+  <string name="error_encoding">エンコードエラー</string>
   <string name="error_no_encrypt_subkey">暗号化の副鍵がありません!</string>
+  <string name="info_no_manual_account_creation">OpenKeychainのアカウントを手動では生成できません.\nより詳細は、ヘルプを参照のこと。</string>
+  <string name="contact_show_key">鍵 (%s) を表示</string>
 </resources>

@@ -1,16 +1,150 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <resources>
   <!--title-->
+  <string name="title_select_recipients">Vybrat veřejný klíč</string>
+  <string name="title_select_secret_key">Vybrat veřjný klíč</string>
+  <string name="title_encrypt">Zašifrovat</string>
+  <string name="title_decrypt">Rozšifrovat</string>
+  <string name="title_authentication">Heslo</string>
+  <string name="title_create_key">Vytvořit klíč</string>
+  <string name="title_edit_key">Editovat klíč</string>
+  <string name="title_preferences">Možnosti</string>
+  <string name="title_api_registered_apps">Appky</string>
+  <string name="title_key_server_preference">Nastavení keyservrů</string>
+  <string name="title_set_passphrase">Nastavit heslo</string>
+  <string name="title_encrypt_to_file">Zašifrovat do souboru</string>
+  <string name="title_decrypt_to_file">Rozšifrovat do souboru</string>
+  <string name="title_import_keys">Importovat klíče</string>
+  <string name="title_export_key">Exportovat klíče</string>
+  <string name="title_export_keys">Exportovat klíče</string>
+  <string name="title_key_not_found">Klíč nebyl nalezen</string>
+  <string name="title_send_key">Nahrát na keyserver</string>
+  <string name="title_help">Nápověda</string>
   <!--section-->
+  <string name="section_user_ids">Identity</string>
+  <string name="section_keys">Podklíče</string>
+  <string name="section_general">Obecné</string>
+  <string name="section_defaults">Výchozí hodnoty</string>
+  <string name="section_advanced">Pokročilé</string>
   <!--button-->
+  <string name="btn_encrypt_file">Zaširovat a uložit soubor</string>
+  <string name="btn_save">Uložit</string>
+  <string name="btn_do_not_save">Zrušit</string>
+  <string name="btn_delete">Smazat</string>
+  <string name="btn_no_date">Nic</string>
+  <string name="btn_okay">OK</string>
+  <string name="btn_change_passphrase">Změnit nové heslo</string>
+  <string name="btn_set_passphrase">Nastavit nové heslo</string>
+  <string name="btn_export_to_server">Nahrát na keyserver</string>
+  <string name="btn_next">Další</string>
+  <string name="btn_back">Zpět</string>
   <!--menu-->
+  <string name="menu_preferences">Nastavení</string>
+  <string name="menu_export_key">Exportovat do souboru</string>
+  <string name="menu_delete_key">Smazat klíč</string>
+  <string name="menu_create_key">Vytvořit klíč</string>
+  <string name="menu_create_key_expert">Vytvořit klíč (pokročilé)</string>
+  <string name="menu_search">Hledat</string>
+  <string name="menu_key_server">Keyserver...</string>
+  <string name="menu_update_key">Obnovit z keyservru</string>
+  <string name="menu_export_key_to_server">Obnovit na keyserveru</string>
+  <string name="menu_share">Sdílet...</string>
+  <string name="menu_share_qr_code">pomocí QR kódu</string>
+  <string name="menu_share_nfc">pomocí NFC</string>
+  <string name="menu_beam_preferences">Beam settings</string>
   <!--label-->
+  <string name="label_sign">Podepsat</string>
+  <string name="label_message">Zpráva</string>
+  <string name="label_file">Soubor</string>
+  <string name="label_no_passphrase">Bez hesla</string>
+  <string name="label_passphrase">Heslo</string>
+  <string name="label_passphrase_again">Znovu</string>
+  <string name="label_algorithm">Algoritmus</string>
+  <string name="label_ascii_armor">ASCII Armor</string>
+  <string name="label_select_public_keys">Příjemci</string>
+  <string name="label_delete_after_encryption">Smazat po zašifrování</string>
+  <string name="label_delete_after_decryption">Smazat po rozšifrování</string>
+  <string name="label_encryption_algorithm">Šifrovací algoritmus</string>
+  <string name="label_hash_algorithm">Hashovací algoritmus</string>
+  <string name="label_asymmetric">veřejným klíčem</string>
+  <string name="label_symmetric">heslem</string>
+  <string name="label_passphrase_cache_ttl">Cache hesel</string>
+  <string name="label_message_compression">Komprimovat zprávu</string>
+  <string name="label_file_compression">Komprimovat soubor</string>
+  <string name="label_force_v3_signature">Vynutit staré OpenPGPv3 podpisy</string>
+  <string name="label_key_id">ID klíče</string>
+  <string name="label_creation">Vytvořeno</string>
+  <string name="label_expiry">Expirace</string>
+  <string name="label_usage">Použití</string>
+  <string name="label_key_size">Délka klíče</string>
+  <string name="label_main_user_id">Hlavní identita</string>
+  <string name="label_name">Jméno</string>
+  <string name="label_comment">Komentář</string>
+  <string name="label_email">Email</string>
+  <string name="label_send_key">Po vytvoření nahrt na vybraný keyserver</string>
+  <string name="none">&lt;žádný&gt;</string>
+  <string name="no_key">&lt;žádný klíč&gt;</string>
+  <string name="can_encrypt">slouží k šifrovní</string>
+  <string name="can_sign">slouží k podpisu</string>
+  <string name="expired">po epiraci</string>
+  <string name="secret_key">Tajný klíč:</string>
   <!--choice-->
+  <string name="choice_none">Žádný</string>
+  <string name="choice_15secs">15 sekund</string>
+  <string name="choice_1min">1 minuta</string>
+  <string name="choice_3mins">3 minuty</string>
+  <string name="choice_5mins">5 minut</string>
+  <string name="choice_10mins">10 minut</string>
+  <string name="choice_20mins">20 minut</string>
+  <string name="choice_40mins">40 minut</string>
+  <string name="choice_1hour">1 hodina</string>
+  <string name="choice_2hours">2 hodiny</string>
+  <string name="choice_4hours">4 hodiny</string>
+  <string name="choice_8hours">8 hodin</string>
+  <string name="dsa">DSA</string>
+  <string name="filemanager_title_open">Otevřít...</string>
+  <string name="warning">Varovnání</string>
+  <string name="error">Chyba</string>
+  <string name="error_message">Chyba: %s</string>
   <!--key flags-->
   <!--sentences-->
+  <string name="wrong_passphrase">Špatné heslo.</string>
+  <string name="set_a_passphrase">Nejprve nastavit heslo.</string>
+  <string name="no_filemanager_installed">Není nainstalován žádný compatibilní správce souborů.</string>
+  <string name="passphrases_do_not_match">Hesla se neshodují.</string>
+  <string name="passphrase_must_not_be_empty">Prosím zadejte heslo.</string>
+  <string name="passphrase_for_symmetric_encryption">Symetrická šifra.</string>
+  <string name="passphrase_for">Zadejte heslo pro \'%s\'</string>
+  <string name="file_delete_confirmation">Určitě smazat\n%s?</string>
+  <string name="file_delete_successful">Úspěšně smazáno.</string>
+  <string name="no_file_selected">Nejprve vyberte soubor.</string>
+  <string name="enter_passphrase_twice">Heslo zadejte dvakrát.</string>
+  <string name="select_encryption_key">Vyberte alespoň jeden šifrovací klíč.</string>
+  <string name="select_encryption_or_signature_key">Vyberte alespoň jeden šifrovací nebo podpisový klíč.</string>
+  <string name="specify_file_to_encrypt_to">Prosím specifikujte do kterého souboru zašifrovat.\nVAROVÁNÍ: Pokud soubor již existuje, bude přepsán.</string>
+  <string name="specify_file_to_decrypt_to">Prosím specifikujte do kterého souboru rozšifrovat.\nVAROVÁNÍ: Pokud soubor již existuje, bude přepsán.</string>
+  <string name="specify_file_to_export_to">Prosím specifikujte do kterého souboru exportovat.\nVAROVÁNÍ: Pokud soubor již existuje, bude přepsán.</string>
+  <string name="secret_key_deletion_confirmation">Opravdu chcete smazat TAJNÝ klíč \'%s\'?\nToto je nevratná operace!</string>
+  <string name="key_exported">Úspěšně exportován 1 klíč.</string>
+  <string name="keys_exported">Úspěšně exportován %d klíč.</string>
+  <string name="no_keys_exported">Žádný kláč pro export.</string>
+  <string name="key_creation_el_gamal_info">Žádný: pouze podklíče podporují ElGamal.</string>
+  <string name="key_not_found">Nemohu najít klíč %08X.</string>
+  <string name="key_send_success">Úspěšně nahráno na keyserver.</string>
+  <string name="list_empty">Seznam je prázný!</string>
   <!--errors
          no punctuation, all lowercase,
          they will be put after "error_message", e.g. "Error: file not found"-->
+  <string name="error_file_delete_failed">mazání \'%s\' selhalo</string>
+  <string name="error_file_not_found">soubor nenalezen</string>
+  <string name="error_no_secret_key_found">žádný vhodný tajný klíč nenalezen</string>
+  <string name="error_external_storage_not_ready">externí úložiště není připraveno</string>
+  <string name="error_key_size_minimum512bit">délka klíče musí být alespoň 512 bitů</string>
+  <string name="error_master_key_must_not_be_el_gamal">hlavní klíč nemůže být typu ElGamal</string>
+  <string name="error_unknown_algorithm_choice">neznámý typ algoritmu</string>
+  <string name="error_key_needs_a_user_id">potřebuji alespoň jednu identitu</string>
+  <string name="error_main_user_id_must_not_be_empty">hlavní identita nesmí být prázdná</string>
+  <string name="error_key_needs_master_key">potřebuji alespoň hlavní klíč</string>
   <!--errors without preceeding Error:-->
   <!--results shown after decryption/verification-->
   <!--progress dialogs, usually ending in '…'-->
@@ -19,6 +153,7 @@
   <!--compression-->
   <!--Help-->
   <!--Import-->
+  <!--Import result toast-->
   <!--Intent labels-->
   <!--Remote API-->
   <!--Share-->
@@ -27,5 +162,10 @@
   <!--Navigation Drawer-->
   <!--hints-->
   <!--certs-->
+  <!--Import Public log entries-->
+  <!--Import Secret log entries-->
+  <!--Keyring Canonicalization log entries-->
+  <!--Keyring merging log entries-->
+  <!--modifySecretKeyRing-->
   <!--unsorted-->
 </resources>

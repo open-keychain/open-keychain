@@ -9,7 +9,6 @@
   <string name="title_create_key">Створити ключ</string>
   <string name="title_edit_key">Редагувати ключ</string>
   <string name="title_preferences">Налаштування</string>
-  <string name="title_api_registered_apps">Зареєстровані програми</string>
   <string name="title_key_server_preference">Налаштування сервера ключів</string>
   <string name="title_change_passphrase">Змінити парольну фразу</string>
   <string name="title_set_passphrase">Задати парольну фразу</string>
@@ -27,6 +26,7 @@
   <string name="title_certify_key">Сертифікувати сутності</string>
   <string name="title_key_details">Подробиці про ключ</string>
   <string name="title_help">Довідка</string>
+  <string name="title_log_display">Журнал</string>
   <!--section-->
   <string name="section_user_ids">Сутності</string>
   <string name="section_keys">Підключі</string>
@@ -70,16 +70,11 @@
   <!--menu-->
   <string name="menu_preferences">Параметри</string>
   <string name="menu_help">Довідка</string>
-  <string name="menu_import_from_file">Імпорт з файлу</string>
-  <string name="menu_import_from_qr_code">Імпорт з штрих-коду</string>
-  <string name="menu_import_from_nfc">Імпорт з NFC</string>
   <string name="menu_export_key">Експорт до файлу</string>
   <string name="menu_delete_key">Вилучити ключ</string>
   <string name="menu_create_key">Створити ключ</string>
   <string name="menu_create_key_expert">Створити ключ (експерт)</string>
   <string name="menu_search">Пошук</string>
-  <string name="menu_import_from_key_server">Сервер ключів</string>
-  <string name="menu_import_from_keybase">Імпорт із Keybase.io</string>
   <string name="menu_key_server">Сервер ключів…</string>
   <string name="menu_update_key">Оновити з сервера ключів</string>
   <string name="menu_export_key_to_server">Завантажити на сервер ключів</string>
@@ -98,6 +93,7 @@
   <string name="menu_select_all">Вибрати усе</string>
   <string name="menu_add_keys">Додати ключі</string>
   <string name="menu_export_all_keys">Експортувати усі ключі</string>
+  <string name="menu_advanced">Показати додаткову інформацію</string>
   <!--label-->
   <string name="label_sign">Підпис</string>
   <string name="label_message">Повідомлення</string>
@@ -209,38 +205,12 @@
   <string name="ask_empty_id_ok">Ви вже додали порожню сутність. Ви справді хочете продовжити?</string>
   <string name="public_key_deletetion_confirmation">Ви справді хочете вилучити відкритий ключ \'%s\'?\nВи не зможете це відмінити!</string>
   <string name="also_export_secret_keys">Також експортувати секретні ключі?</string>
-  <plurals name="import_keys_added_and_updated_1">
-    <item quantity="one">Успішно додано %d ключ</item>
-    <item quantity="few">Успішно додано %d ключі</item>
-    <item quantity="other">Успішно додано %d ключів</item>
-  </plurals>
-  <plurals name="import_keys_added_and_updated_2">
-    <item quantity="one">і оновлено %d ключ.</item>
-    <item quantity="few">і оновлено %d ключі.</item>
-    <item quantity="other">і оновлено %d ключів.</item>
-  </plurals>
-  <plurals name="import_keys_added">
-    <item quantity="one">Успішно додано %d ключ.</item>
-    <item quantity="few">Успішно додано %d ключі.</item>
-    <item quantity="other">Успішно додано %d ключів.</item>
-  </plurals>
-  <plurals name="import_keys_updated">
-    <item quantity="one">Успішно оновлено %d ключ.</item>
-    <item quantity="few">Успішно оновлено %d ключі.</item>
-    <item quantity="other">Успішно оновлено %d ключів.</item>
-  </plurals>
-  <string name="import_error_nothing">Жодного ключа не додано та не оновлено.</string>
   <string name="key_exported">Успішно експортовано 1 ключ.</string>
   <string name="keys_exported">Успішно експортовано %d ключів.</string>
   <string name="no_keys_exported">Жодного ключа не експортовано.</string>
   <string name="key_creation_el_gamal_info">Примітка: лише підключі підтримують ElGamal.</string>
   <string name="key_creation_weak_rsa_info">Примітка: генерація ключа RSA з довжиною 1024 біти і менше вважається небезпечною і вона вимкнена для генерації нових ключів.</string>
   <string name="key_not_found">Не можливо знайти ключ %08X.</string>
-  <plurals name="keys_found">
-    <item quantity="one">Знайдено %d ключ.</item>
-    <item quantity="few">Знайдено %d ключі.</item>
-    <item quantity="other">Знайдено %d ключів.</item>
-  </plurals>
   <plurals name="bad_keys_encountered">
     <item quantity="one">%d поганий секретний ключ проігнорований. Можливо ви експортували з параметром\n --export-secret-subkeys\nЗробіть ваш експорт з \n --export-secret-keys\nнатомість.</item>
     <item quantity="few">%d погані секретні ключі проігноровані. Можливо ви експортували з параметром\n --export-secret-subkeys\nЗробіть ваш експорт з \n --export-secret-keys\nнатомість.</item>
@@ -281,11 +251,10 @@
   <string name="error_only_files_are_supported">Пряма передача даних без використання файлу в пам\'яті пристрою не підтримується.</string>
   <string name="error_jelly_bean_needed">Вам потрібний Android 4.1 для використання функції Androids NFC промінь!</string>
   <string name="error_nfc_needed">NFC недоступний на вашому пристрої!</string>
-  <string name="error_nothing_import">Нема що імпортувати!</string>
+  <string name="error_nothing_import">Ключ не знайдено!</string>
   <string name="error_keyserver_insufficient_query">Запит пошуку ключа надто короткий</string>
   <string name="error_searching_keys">Невиправна помилка пошуку ключів в сервері</string>
   <string name="error_keyserver_too_many_responses">Запит пошуку ключа видав надто багато варіантів. Уточніть пошуковий запит</string>
-  <string name="error_import_file_no_content">Файл не має вмісту</string>
   <string name="error_generic_report_bug">Трапилася загальна помилка, будь ласка, створіть новий звіт про помилку для OpenKeychain.</string>
   <plurals name="error_import_non_pgp_part">
     <item quantity="one">частина завантаженого файлу є вірним об\'єктом OpenPGP, але не ключем OpenPGP</item>
@@ -339,10 +308,8 @@
   <string name="progress_verifying_integrity">перевірка цілісності…</string>
   <string name="progress_deleting_securely">вилучення безпечно \'%s\'…</string>
   <!--action strings-->
-  <string name="hint_public_keys">Пошук публічних ключів</string>
   <string name="hint_secret_keys">Пошук секретних ключів</string>
   <string name="action_share_key_with">Поділитися ключем з…</string>
-  <string name="hint_keybase_search">Пошук Keybase.io</string>
   <!--key bit length selections-->
   <string name="key_size_512">512</string>
   <string name="key_size_768">768</string>
@@ -384,6 +351,10 @@
   <string name="import_nfc_help_button">Довідка</string>
   <string name="import_clipboard_button">Отримати ключ з буфера обміну</string>
   <string name="import_keybase_button">Отримати ключ із Keybase.io</string>
+  <!--Import result toast-->
+  <string name="import_view_log">Переглянути журнал</string>
+  <string name="import_error_nothing">Нема що імпортувати.</string>
+  <string name="import_error">Помилка імпорту ключів!</string>
   <!--Intent labels-->
   <string name="intent_decrypt_file">Розшифрувати файл з OpenKeychain</string>
   <string name="intent_import_key">Імпортувати ключ з OpenKeychain</string>
@@ -448,7 +419,6 @@
   <string name="nav_encrypt">Підписати і зашифрувати</string>
   <string name="nav_decrypt">Розшифрувати і Перевірити</string>
   <string name="nav_import">Імпортувати ключі</string>
-  <string name="nav_apps">Зареєстровані програми</string>
   <string name="drawer_open">Відкрити панель навігації</string>
   <string name="drawer_close">Закрити панель навігації</string>
   <string name="edit">Редагувати</string>
@@ -469,6 +439,26 @@
   <string name="cert_verify_failed">Невдача!</string>
   <string name="cert_verify_error">Помилка!</string>
   <string name="cert_verify_unavailable">Недоступний ключ</string>
+  <!--Import Public log entries-->
+  <string name="msg_ip_apply_batch">Застосовується пакетна операція вставки.</string>
+  <string name="msg_ip_delete_old_fail">Нема вилученого старого ключа (створюється новий?)</string>
+  <string name="msg_ip_delete_old_ok">Вилучений старий ключ з бази даних</string>
+  <string name="msg_ip_encode_fail">Операція не вдалася через помилку кодування</string>
+  <string name="msg_ip_fail_io_exc">Операція не вдалася через помилку вводу/виводу</string>
+  <string name="msg_ip_fail_remote_ex">Операція не вдалася через внутрішню помилку</string>
+  <string name="msg_ip_prepare">Підготовка операцій з базою даних</string>
+  <string name="msg_ip_subkey">Опрацьовується підключ %s</string>
+  <string name="msg_ip_reinsert_secret">Повторне вставлення секретного ключа</string>
+  <string name="msg_ip_uid_cert_bad">Виявлено поганий сертифікат!</string>
+  <string name="msg_ip_uid_cert_error">Помилка опрацювання сертифікату!</string>
+  <string name="msg_ip_uid_processing">Обробляється ІД користувача %s</string>
+  <!--Import Secret log entries-->
+  <string name="msg_is_importing_subkeys">Опрацьовуються секретні підключі</string>
+  <string name="msg_is_subkey_nonexistent">Підключ %s недоступний у публічному ключі</string>
+  <string name="msg_is_subkey_ok">Позначено %s як доступно</string>
+  <!--Keyring Canonicalization log entries-->
+  <!--Keyring merging log entries-->
+  <!--modifySecretKeyRing-->
   <!--unsorted-->
   <string name="section_certifier_id">Ким підписаний</string>
   <string name="section_cert">Дані сертифікату</string>
@@ -482,9 +472,13 @@
   <string name="error_key_not_found">Ключ не знайдено!</string>
   <string name="error_key_processing">Помилка опрацювання ключа!</string>
   <string name="no_subkey">підключ недоступний</string>
+  <string name="key_stripped">голий</string>
   <string name="secret_cannot_multiple">Секретні ключі можна вилучити лише окремо!</string>
   <string name="title_view_cert">Переглянути дані сертифікату</string>
   <string name="unknown_algorithm">невідомий</string>
   <string name="can_sign_not">не можна підписати</string>
+  <string name="error_encoding">Помилка шифрування</string>
   <string name="error_no_encrypt_subkey">Жодний підключ шифрування недоступний!</string>
+  <string name="info_no_manual_account_creation">Вручну не створюються профілі OpenKeychain.\nЗа подробицями дивіться Довідку.</string>
+  <string name="contact_show_key">Показати ключ (%s)</string>
 </resources>

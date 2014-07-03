@@ -32,15 +32,11 @@
   <!--menu-->
   <string name="menu_preferences">Ayarlar</string>
   <string name="menu_help">Yardım</string>
-  <string name="menu_import_from_file">Dosyadan al</string>
-  <string name="menu_import_from_qr_code">QR Kodundan al</string>
-  <string name="menu_import_from_nfc">NFCden al</string>
   <string name="menu_export_key">Dosyaya ver</string>
   <string name="menu_delete_key">Anahtar sil</string>
   <string name="menu_create_key">Anahtar oluştur</string>
   <string name="menu_create_key_expert">Anahtar oluştur (uzman)</string>
   <string name="menu_search">Ara</string>
-  <string name="menu_import_from_key_server">Anahtar Sunucusu</string>
   <string name="menu_share">Paylaş...</string>
   <string name="menu_share_qr_code">QR Kod ile</string>
   <string name="menu_share_nfc">NFC ile</string>
@@ -105,7 +101,6 @@
   <string name="error_key_size_minimum512bit">anahtar uzunluğu en az 512bit olmalı</string>
   <string name="error_user_id_no_email">eposta bulunamadı</string>
   <!--errors without preceeding Error:-->
-  <string name="error_import_file_no_content">Dosyanın içeriği boş</string>
   <!--results shown after decryption/verification-->
   <string name="decrypt_result_invalid_signature">Geçersiz imza!</string>
   <!--progress dialogs, usually ending in '…'-->
@@ -148,6 +143,7 @@
   <!--Import-->
   <string name="import_import">Seçili anahtarları al</string>
   <string name="import_nfc_help_button">Yardım</string>
+  <!--Import result toast-->
   <!--Intent labels-->
   <!--Remote API-->
   <string name="api_settings_no_key">Anahtar seçilmedi</string>
@@ -179,6 +175,11 @@
   <string name="cert_verify_failed">başarısız!</string>
   <string name="cert_verify_error">hata!</string>
   <string name="cert_verify_unavailable">anahtar mevcut değil</string>
+  <!--Import Public log entries-->
+  <!--Import Secret log entries-->
+  <!--Keyring Canonicalization log entries-->
+  <!--Keyring merging log entries-->
+  <!--modifySecretKeyRing-->
   <!--unsorted-->
   <string name="can_sign_not">imzalanamadı</string>
 </resources>

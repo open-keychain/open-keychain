@@ -9,7 +9,6 @@
   <string name="title_create_key">Utwórz Klucz</string>
   <string name="title_edit_key">Edytuj Klucz</string>
   <string name="title_preferences">Właściwości</string>
-  <string name="title_api_registered_apps">Zarejestrowane Aplikacje</string>
   <string name="title_key_server_preference">Właściwości serwera kluczy</string>
   <string name="title_change_passphrase">Zmień hasło</string>
   <string name="title_set_passphrase">Ustaw hasło</string>
@@ -55,15 +54,11 @@
   <!--menu-->
   <string name="menu_preferences">Ustawienia</string>
   <string name="menu_help">Pomoc</string>
-  <string name="menu_import_from_file">Zaimportuj z pliku</string>
-  <string name="menu_import_from_qr_code">Zaimportuj z kodu QR</string>
-  <string name="menu_import_from_nfc">Zaimportuj przy użyciu NFC</string>
   <string name="menu_export_key">Eksportuj do pliku</string>
   <string name="menu_delete_key">Usuń klucz</string>
   <string name="menu_create_key">Stwórz klucz</string>
   <string name="menu_create_key_expert">Stwórz klucz (tryb zaawansowany)</string>
   <string name="menu_search">Znajdź</string>
-  <string name="menu_import_from_key_server">Serwer kluczy</string>
   <string name="menu_key_server">Serwer kluczy...</string>
   <string name="menu_update_key">Aktualizuj z serwera kluczy</string>
   <string name="menu_export_key_to_server">Wyślij do serwera kluczy</string>
@@ -191,38 +186,12 @@
   <string name="ask_save_changed_key">Zostały dokonane zmiany w pęku kluczy, czy chcesz je zachować?</string>
   <string name="public_key_deletetion_confirmation">Czy na pewno chcesz usunąć klucz publiczny \'%s\'?\nNie można cofnąć tej operacji!</string>
   <string name="also_export_secret_keys">Czy wyeksportować również klucze prywatne?</string>
-  <plurals name="import_keys_added_and_updated_1">
-    <item quantity="one">Pomyślnie dodano %d klucz</item>
-    <item quantity="few">Pomyślnie dodano %d kluczy</item>
-    <item quantity="other">Pomyślnie dodano %d kluczy</item>
-  </plurals>
-  <plurals name="import_keys_added_and_updated_2">
-    <item quantity="one">i zaktualizowano %d klucz.</item>
-    <item quantity="few">i zaktualizowano %d kluczy.</item>
-    <item quantity="other">i zaktualizowano %d kluczy.</item>
-  </plurals>
-  <plurals name="import_keys_added">
-    <item quantity="one">Pomyślnie dodano %d klucz.</item>
-    <item quantity="few">Pomyślnie dodano %d kluczy.</item>
-    <item quantity="other">Pomyślnie dodano %d kluczy.</item>
-  </plurals>
-  <plurals name="import_keys_updated">
-    <item quantity="one">Pomyślnie zaktualizowano %d klucz.</item>
-    <item quantity="few">Pomyślnie zaktualizowano %d kluczy.</item>
-    <item quantity="other">Pomyślnie zaktualizowano %d kluczy.</item>
-  </plurals>
-  <string name="import_error_nothing">Nie dodano ani zaktualizowano żadnych kluczy.</string>
   <string name="key_exported">Pomyślnie wyeksportowano 1 klucz.</string>
   <string name="keys_exported">Pomyślnie wyeksportowano %d kluczy.</string>
   <string name="no_keys_exported">Nie wyeksportowano żadnych kluczy.</string>
   <string name="key_creation_el_gamal_info">Informacja: tylko podklucze mogą być tworzone przy użyciu algorytmu ElGamal.</string>
   <string name="key_creation_weak_rsa_info">Uwaga: generowanie klucza RSA o długości 1024 bity i mniejszej jest uważane za niebezpieczne i wyłączone dla tworzenia nowych kluczy.</string>
   <string name="key_not_found">Nie można znaleźć klucza %08X.</string>
-  <plurals name="keys_found">
-    <item quantity="one">Znaleziono %d klucz.</item>
-    <item quantity="few">Znaleziono %d kluczy.</item>
-    <item quantity="other">Znaleziono %d kluczy.</item>
-  </plurals>
   <plurals name="bad_keys_encountered">
     <item quantity="one">Zignorowano %d niepoprawny klucz prywatny. Prawdopodobnie został wyeksportowany przy uzyciu opcji\n --export-secret-subkeys\nUpewnij się że eksportujesz go z opcją\n --export-secret-keys\nktóra jest poprawna.</item>
     <item quantity="few">Zignorowano %d niepoprawnych kluczy prywatnych. Prawdopodobnie zostały wyeksportowane przy uzyciu opcji\n --export-secret-subkeys\nUpewnij się że eksportujesz je z opcją\n --export-secret-keys\nktóra jest poprawna.</item>
@@ -258,8 +227,6 @@
   <string name="error_only_files_are_supported">Dane binarne pozbawione pliku nie są obsługiwane.</string>
   <string name="error_jelly_bean_needed">Potrzebujesz Androida 4.1 aby korzystać z Android NFC Beam</string>
   <string name="error_nfc_needed">NCF jest niedostępne na twoim urządzeniu</string>
-  <string name="error_nothing_import">Nie ma nic do zaimportowania!</string>
-  <string name="error_import_file_no_content">Plik jest pusty</string>
   <string name="error_generic_report_bug">Wystąpił błąd ogólny, proszę zgłoś go autorom OpenKeychain.</string>
   <plurals name="error_import_non_pgp_part">
     <item quantity="one">Część wczytanego pliku jest poprawnym obiektem OpenPGP, ale nie jest kluczem OpenPGP</item>
@@ -313,7 +280,6 @@
   <string name="progress_verifying_integrity">weryfikacja spójności...</string>
   <string name="progress_deleting_securely">usuwanie \'%s\' bezpiecznie…</string>
   <!--action strings-->
-  <string name="hint_public_keys">Wyszukaj klucze publiczne</string>
   <string name="hint_secret_keys">Wyszukaj klucze prywatne</string>
   <string name="action_share_key_with">Udostępnij klucz...</string>
   <!--key bit length selections-->
@@ -356,6 +322,7 @@
   <string name="import_nfc_text">Aby odbierać klucze przez NFC, urządzenie musi być odblokowane.</string>
   <string name="import_nfc_help_button">Pomoc</string>
   <string name="import_clipboard_button">Odczytaj klucz ze schowka</string>
+  <!--Import result toast-->
   <!--Intent labels-->
   <string name="intent_decrypt_file">Deszyfruj plik korzystając z OpenKeychain</string>
   <string name="intent_import_key">Importuj klucz korzystając z OpenKeychain</string>
@@ -408,7 +375,6 @@
   <string name="nav_encrypt">Podpisz i zaszyfruj</string>
   <string name="nav_decrypt">Deszyfruj i weryfikuj</string>
   <string name="nav_import">Importuj klucze</string>
-  <string name="nav_apps">Zarejestrowane aplikacje</string>
   <string name="drawer_open">Otwórz panel nawigacji</string>
   <string name="drawer_close">Zamknij panel nawigacji</string>
   <string name="edit">Edytuj</string>
@@ -428,6 +394,11 @@
   <string name="cert_verify_failed">niepowodzenie!</string>
   <string name="cert_verify_error">błąd!</string>
   <string name="cert_verify_unavailable">klucz niedostępny</string>
+  <!--Import Public log entries-->
+  <!--Import Secret log entries-->
+  <!--Keyring Canonicalization log entries-->
+  <!--Keyring merging log entries-->
+  <!--modifySecretKeyRing-->
   <!--unsorted-->
   <string name="section_cert">Szczegóły certyfikatu</string>
   <string name="unknown_uid">&lt;nieznany&gt;</string>

@@ -9,7 +9,6 @@
   <string name="title_create_key">Ustvari kluč</string>
   <string name="title_edit_key">Uredi ključ</string>
   <string name="title_preferences">Nastavitve</string>
-  <string name="title_api_registered_apps">Prijavljene aplikacije</string>
   <string name="title_key_server_preference">Nastavitve strežnikov</string>
   <string name="title_change_passphrase">Spremeni geslo</string>
   <string name="title_set_passphrase">Določi geslo</string>
@@ -70,16 +69,11 @@
   <!--menu-->
   <string name="menu_preferences">Nastavitve</string>
   <string name="menu_help">Pomoč</string>
-  <string name="menu_import_from_file">Uvozi iz datoteke</string>
-  <string name="menu_import_from_qr_code">Uvozi iz kode QR</string>
-  <string name="menu_import_from_nfc">Uvozi preko NFC</string>
   <string name="menu_export_key">Izvozi v datoteko</string>
   <string name="menu_delete_key">Izbriši ključ</string>
   <string name="menu_create_key">Ustvari ključ</string>
   <string name="menu_create_key_expert">Ustvari ključ (napredno)</string>
   <string name="menu_search">Išči</string>
-  <string name="menu_import_from_key_server">Strežnik</string>
-  <string name="menu_import_from_keybase">Uvozi iz Keybase.io</string>
   <string name="menu_key_server">Strežnik...</string>
   <string name="menu_update_key">Posodobi s strežnika</string>
   <string name="menu_export_key_to_server">Naloži na strežnik</string>
@@ -98,6 +92,7 @@
   <string name="menu_select_all">Izberi vse</string>
   <string name="menu_add_keys">Dodaj ključe</string>
   <string name="menu_export_all_keys">Izvozi vse ključe</string>
+  <string name="menu_advanced">Prikaži dodatne informacije</string>
   <!--label-->
   <string name="label_sign">Podpiši</string>
   <string name="label_message">Sporočilo</string>
@@ -208,47 +203,16 @@
   <string name="specify_file_to_export_to">Določite datoteko, kamor želite izvoziti vsebino.\nPOZOR: če datoteka že obstaja, bo prepisana.</string>
   <string name="key_deletion_confirmation_multi">Ali res želite izbrisati vse izbrane javne ključe?\nTega koraka ne boste mogli preklicati!</string>
   <string name="secret_key_deletion_confirmation">Ali res želite izbrisati ZASEBNI ključ \'%s\'?\nTega koraka ne boste mogli preklicati!</string>
-  <string name="ask_save_changed_key">Vnesli ste spremembe v vaš \'keyring\'. Jih želite shraniti?</string>
+  <string name="ask_save_changed_key">Vnesli ste spremembe v zbirko ključev. Jih želite shraniti?</string>
   <string name="ask_empty_id_ok">Dodali ste prazno identiteto, ali res želite nadaljevati?</string>
   <string name="public_key_deletetion_confirmation">Ali res želite izbrisati javni ključ \'%s\'?\nTega koraka ne boste mogli preklicati!</string>
   <string name="also_export_secret_keys">Želite izvoziti tudi zasebne ključe?</string>
-  <plurals name="import_keys_added_and_updated_1">
-    <item quantity="one">Uspešno dodan %d ključ</item>
-    <item quantity="two">Uspešno dodana %d ključa</item>
-    <item quantity="few">Uspešno dodani %d ključi</item>
-    <item quantity="other">Uspešno dodanih %d ključev</item>
-  </plurals>
-  <plurals name="import_keys_added_and_updated_2">
-    <item quantity="one">in posodbljen %d.</item>
-    <item quantity="two">in posodobljena %d.</item>
-    <item quantity="few">in posodobljeni %d.</item>
-    <item quantity="other">in posodobljenih %d.</item>
-  </plurals>
-  <plurals name="import_keys_added">
-    <item quantity="one">Uspešno dodan %d ključ.</item>
-    <item quantity="two">Uspešno dodana %d ključa.</item>
-    <item quantity="few">Uspešno dodani %d ključi.</item>
-    <item quantity="other">Uspešno dodanih %d ključev.</item>
-  </plurals>
-  <plurals name="import_keys_updated">
-    <item quantity="one">Uspešno posodobljen %d ključ.</item>
-    <item quantity="two">Uspešno posodobljena %d ključa.</item>
-    <item quantity="few">Uspešno posodobljeni %d ključi.</item>
-    <item quantity="other">Uspešno posodobljenih %d ključev.</item>
-  </plurals>
-  <string name="import_error_nothing">Noben ključ ni bil dodan ali posodobljen.</string>
   <string name="key_exported">Uspešno izvožen 1 ključ.</string>
   <string name="keys_exported">Uspešno izvoženih ključev: %d</string>
   <string name="no_keys_exported">Noben ključ ni bil izvožen.</string>
   <string name="key_creation_el_gamal_info">Pozor: ELGamal podpirajo samo podključi.</string>
   <string name="key_creation_weak_rsa_info">Pozor: ključi RSA dolžine 1024 bitov ali manj ne veljajo več za varne, zato je njihovo ustvarjanje onemogočeno.</string>
   <string name="key_not_found">Ne najdem ključa %08X.</string>
-  <plurals name="keys_found">
-    <item quantity="one">Najden %d ključ.</item>
-    <item quantity="two">Najdena %d ključa.</item>
-    <item quantity="few">Najdeni %d ključi.</item>
-    <item quantity="other">Najdeno %d ključev.</item>
-  </plurals>
   <plurals name="bad_keys_encountered">
     <item quantity="one">Neupoštevan %d slab zasebni ključ. Morda je bil izvožen na način\n --export-secret-subkeys\nPoskrbite, da bo izvožen z\n --export-secret-keys</item>
     <item quantity="two">Neupoštevana %d slaba zasebna ključa. Morda sta bila izvožena na način\n --export-secret-subkeys\nPoskrbite, da bosta izvožena z\n --export-secret-keys</item>
@@ -290,8 +254,9 @@
   <string name="error_only_files_are_supported">Neposredni binarni podatki brez dejanske datoteke v datotečnem sistemu niso podprti.</string>
   <string name="error_jelly_bean_needed">Za uporabo storitve NFC Beam potrebujete najmanj Android 4.1!</string>
   <string name="error_nfc_needed">NFC ni na voljo na vaši napravi!</string>
-  <string name="error_nothing_import">Ni česa uvoziti!</string>
-  <string name="error_import_file_no_content">Datoteka nima vsebine</string>
+  <string name="error_keyserver_insufficient_query">Iskalni pojem je prekratek</string>
+  <string name="error_searching_keys">Nepremostljiva napaka pri iskanju ključev na strežniku</string>
+  <string name="error_keyserver_too_many_responses">Iskanje ključev je vrnilo preveč zadetkov; prosimo redefinirajte iskalni pojem</string>
   <string name="error_generic_report_bug">Pripetila se je splošna napaka, prosimo ustvarite poročilo o \'hrošču\'.</string>
   <plurals name="error_import_non_pgp_part">
     <item quantity="one">Del naložene datoteke je veljavnen objekt OpenPGP a ni ključ.</item>
@@ -299,7 +264,7 @@
     <item quantity="few">Deli naložene datoteke so veljavni objekti OpenPGP a niso ključi.</item>
     <item quantity="other">Deli naložene datoteke so veljavni objekti OpenPGP a niso ključi.</item>
   </plurals>
-  <string name="error_change_something_first">V \'keyring\' morate vnesti spremembe, šele nato ga lahko shranite</string>
+  <string name="error_change_something_first">V zbirko ključev morate najprej vnesti spremembe, šele nato jo lahko shranite</string>
   <!--results shown after decryption/verification-->
   <string name="decrypt_result_invalid_signature">Neveljaven podpis!</string>
   <string name="decrypt_result_signature_unknown_pub_key">Neznan javni ključ</string>
@@ -348,10 +313,8 @@
   <string name="progress_verifying_integrity">preverjam neokrnjenost...</string>
   <string name="progress_deleting_securely">varno brišem \'%s\'…</string>
   <!--action strings-->
-  <string name="hint_public_keys">Iskanje javnih ključev</string>
   <string name="hint_secret_keys">Iskanje zasebnih ključev</string>
   <string name="action_share_key_with">Deli ključ z...</string>
-  <string name="hint_keybase_search">Išči v Keybase.io</string>
   <!--key bit length selections-->
   <string name="key_size_512">512</string>
   <string name="key_size_768">768</string>
@@ -394,6 +357,7 @@
   <string name="import_nfc_help_button">Pomoč</string>
   <string name="import_clipboard_button">Pridobi ključ iz odložišča</string>
   <string name="import_keybase_button">Pridobi ključ iz Keybase.io</string>
+  <!--Import result toast-->
   <!--Intent labels-->
   <string name="intent_decrypt_file">Dešifriraj datoteko z OpenKeychain</string>
   <string name="intent_import_key">Uvozi ključ z OpenKeychain</string>
@@ -459,7 +423,6 @@
   <string name="nav_encrypt">Podpiši in šifriraj</string>
   <string name="nav_decrypt">Dešifriraj in preveri</string>
   <string name="nav_import">Uvozi ključe</string>
-  <string name="nav_apps">Prijavljene aplikacije</string>
   <string name="drawer_open">Odprite navigacijski poteznik</string>
   <string name="drawer_close">Zaprite navigacijski poteznik</string>
   <string name="edit">Uredi</string>
@@ -480,6 +443,27 @@
   <string name="cert_verify_failed">neuspešno!</string>
   <string name="cert_verify_error">napaka!</string>
   <string name="cert_verify_unavailable">ključ ni na voljo</string>
+  <!--Import Public log entries-->
+  <string name="msg_ip_apply_batch">Uveljavljam serijsko dodajanje.</string>
+  <string name="msg_ip_bad_type_secret">Poskus uvoza zasebne zbirke ključev kot javne. Prosimo prijavite dogodek kot \"hrošč\" (napako).</string>
+  <string name="msg_ip_delete_old_fail">Noben star ključ ni bil izbrisan (ustvarim novega?)</string>
+  <string name="msg_ip_delete_old_ok">Star ključ je bil izbrisan iz baze</string>
+  <string name="msg_ip_encode_fail">Operacija ni uspela zaradi napake</string>
+  <string name="msg_ip_fail_io_exc">Operacija ni uspela zaradi napake pri branju/pisanju</string>
+  <string name="msg_ip_fail_remote_ex">Operacija ni uspela zaradi notranje napake</string>
+  <string name="msg_ip_reinsert_secret">Ponovno vnašam zasebni ključ</string>
+  <string name="msg_ip_uid_cert_bad">Naleteli ste na slab certifikat!</string>
+  <string name="msg_ip_uid_cert_error">Napaka pri obdelavi certifikata!</string>
+  <string name="msg_ip_uid_processing">Procesiram uporabniško identiteto %s</string>
+  <string name="msg_is_bad_type_public">Poskus uvoza javne zbirke ključev kot zasebne. Prosimo prijavite dogodek kot \'hrošč\' (napako).</string>
+  <!--Import Secret log entries-->
+  <string name="msg_is_importing_subkeys">Procesiram zasebne podključe</string>
+  <string name="msg_is_subkey_nonexistent">Podključ %s ni na voljo v javnem ključu</string>
+  <string name="msg_is_subkey_ok">%s označen kot razpoložljiv</string>
+  <string name="msg_is_subkey_stripped">%s označen kot slečen</string>
+  <!--Keyring Canonicalization log entries-->
+  <!--Keyring merging log entries-->
+  <!--modifySecretKeyRing-->
   <!--unsorted-->
   <string name="section_certifier_id">Overovitelj</string>
   <string name="section_cert">Podrobnosti potrdil</string>
@@ -498,5 +482,8 @@
   <string name="title_view_cert">Preglej podrobosti certifikata</string>
   <string name="unknown_algorithm">neznan</string>
   <string name="can_sign_not">ne more podpisati</string>
+  <string name="error_encoding">Napaka pri šifriranju</string>
   <string name="error_no_encrypt_subkey">Ni nobenega podključa za šifriranje!</string>
+  <string name="info_no_manual_account_creation">Ne ustvari računov OpenKeychain ročno.\nZa več informacij poglej poglavje Pomoč.</string>
+  <string name="contact_show_key">Prikaži ključ (%s)</string>
 </resources>

@@ -9,7 +9,6 @@
   <string name="title_create_key">Loo võti</string>
   <string name="title_edit_key">Muuda võtit</string>
   <string name="title_preferences">Seaded</string>
-  <string name="title_api_registered_apps">Registreeritud rakendused</string>
   <string name="title_key_server_preference">Võtmeserveri seaded</string>
   <string name="title_set_passphrase">Määra salasõne</string>
   <string name="title_import_keys">Impordi võtmeid</string>
@@ -94,6 +93,7 @@
   <!--compression-->
   <!--Help-->
   <!--Import-->
+  <!--Import result toast-->
   <!--Intent labels-->
   <!--Remote API-->
   <!--Share-->
@@ -102,5 +102,10 @@
   <!--Navigation Drawer-->
   <!--hints-->
   <!--certs-->
+  <!--Import Public log entries-->
+  <!--Import Secret log entries-->
+  <!--Keyring Canonicalization log entries-->
+  <!--Keyring merging log entries-->
+  <!--modifySecretKeyRing-->
   <!--unsorted-->
 </resources>
