@@ -28,4 +28,6 @@ public interface EncryptActivityInterface {
     public String getPassphrase();
     public String getPassphraseAgain();
 
+    boolean isUseArmor();
+    boolean isDeleteAfterEncrypt();
 }

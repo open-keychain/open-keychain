@@ -113,6 +113,7 @@
     <string name="label_algorithm">Algorithm</string>
     <string name="label_ascii_armor">ASCII Armor</string>
     <string name="label_select_public_keys">Recipients</string>
+    <string name="label_to">To</string>
     <string name="label_delete_after_encryption">Delete After Encryption</string>
     <string name="label_delete_after_decryption">Delete After Decryption</string>
     <string name="label_share_after_encryption">Share After Encryption</string>

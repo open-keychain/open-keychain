@@ -1034,4 +1034,8 @@ public class ProviderHelper {
             }
         }
     }
+
+    public ContentResolver getContentResolver() {
+        return mContentResolver;
+    }
 }

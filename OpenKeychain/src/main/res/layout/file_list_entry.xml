@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="48dip"
+        android:background="@drawable/attachment_bg_holo">
+
+    <ImageView
+            android:id="@+id/thumbnail"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:scaleType="center"
+            android:layout_width="48dip"
+            android:layout_height="48dip"/>
+
+    <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@+id/thumbnail"
+            android:layout_centerVertical="true">
+
+        <TextView
+                android:id="@+id/filename"
+                android:layout_marginLeft="8dip"
+                android:layout_marginRight="32dip"
+                android:maxLines="1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="?android:attr/textColorSecondary"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:ellipsize="end"/>
+
+        <TextView
+                android:id="@+id/filesize"
+                android:layout_marginLeft="8dip"
+                android:layout_marginRight="32dip"
+                android:maxLines="1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="?android:attr/textColorTertiary"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:textSize="12sp"
+                android:ellipsize="end"/>
+
+    </LinearLayout>
+
+    <ImageButton
+            android:id="@+id/action_remove_file_from_list"
+            android:layout_width="48dip"
+            android:layout_height="48dip"
+            android:layout_alignParentRight="true"
+            android:paddingRight="16dip"
+            android:paddingLeft="16dip"
+            android:src="@drawable/ic_action_cancel"
+            android:clickable="true"
+            android:layout_centerVertical="true"
+            style="@style/SelectableItem"/>
+</RelativeLayout>

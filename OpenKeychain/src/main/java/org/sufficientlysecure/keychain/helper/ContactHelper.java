@@ -21,6 +21,8 @@ import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.content.*;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Build;
 import android.provider.ContactsContract;
@@ -33,6 +35,7 @@ import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.util.Log;
 
+import java.io.InputStream;
 import java.util.*;
 
 public class ContactHelper {
@@ -230,6 +233,17 @@ public class ContactHelper {
             contactMasterKey.close();
         }
         return null;
+    }
+
+    public static Bitmap photoFromFingerprint(ContentResolver contentResolver, String fingerprint) {
+        int rawContactId = findRawContactId(contentResolver, fingerprint);
+        if (rawContactId == -1) return null;
+        Uri rawContactUri = ContentUris.withAppendedId(ContactsContract.RawContacts.CONTENT_URI, rawContactId);
+        Uri contactUri = ContactsContract.RawContacts.getContactLookupUri(contentResolver, rawContactUri);
+        InputStream photoInputStream =
+                ContactsContract.Contacts.openContactPhotoInputStream(contentResolver, contactUri);
+        if (photoInputStream == null) return null;
+        return BitmapFactory.decodeStream(photoInputStream);
     }
 
     /**

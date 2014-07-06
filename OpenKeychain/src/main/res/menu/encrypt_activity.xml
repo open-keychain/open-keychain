@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/check_use_symmetric" android:title="@string/label_symmetric" android:checkable="true"/>
+    <item android:id="@+id/check_use_armor" android:title="@string/label_ascii_armor" android:checkable="true" />
+    <item android:id="@+id/check_delete_after_encrypt" android:title="@string/label_delete_after_encryption" android:checkable="true" />
+</menu>

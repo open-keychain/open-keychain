@@ -23,22 +23,28 @@ import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.Point;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.os.Messenger;
+import android.provider.DocumentsContract;
 import android.provider.OpenableColumns;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.widget.Toast;
 
+import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.compatibility.DialogFragmentWorkaround;
 import org.sufficientlysecure.keychain.ui.dialog.FileDialogFragment;
 
 import java.io.File;
+import java.text.DecimalFormat;
 
 public class FileHelper {
 
@@ -180,6 +186,41 @@ public class FileHelper {
             filename = split[split.length - 1];
         }
         return filename;
+    }
+
+    public static long getFileSize(Context context, Uri uri) {
+        long size = -1;
+        try {
+            Cursor cursor = context.getContentResolver().query(uri, new String[]{OpenableColumns.SIZE}, null, null, null);
+
+            if (cursor != null) {
+                if (cursor.moveToNext()) {
+                    size = cursor.getLong(0);
+                }
+                cursor.close();
+            }
+        } catch (Exception ignored) {
+            // This happens in rare cases (eg: document deleted since selection) and should not cause a failure
+        }
+        return size;
+    }
+
+    /**
+     * Retrieve thumbnail of file, document api feature and thus KitKat only
+     */
+    public static Bitmap getThumbnail(Context context, Uri uri, Point size) {
+        if (Constants.KITKAT) {
+            return DocumentsContract.getDocumentThumbnail(context.getContentResolver(), uri, size, null);
+        } else {
+            return null;
+        }
+    }
+
+    public static String readableFileSize(long size) {
+        if(size <= 0) return "0";
+        final String[] units = new String[] { "B", "KB", "MB", "GB", "TB" };
+        int digitGroups = (int) (Math.log10(size)/Math.log10(1024));
+        return new DecimalFormat("#,##0.#").format(size/Math.pow(1024, digitGroups)) + " " + units[digitGroups];
     }
 
     public static interface FileDialogCallback {

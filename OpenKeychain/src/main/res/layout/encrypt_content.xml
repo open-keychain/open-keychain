@@ -6,19 +6,12 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <android.support.v4.view.ViewPager
+    <org.sufficientlysecure.keychain.ui.widget.NoSwipeWrapContentViewPager
         android:id="@+id/encrypt_pager_mode"
         android:layout_width="match_parent"
-        android:layout_height="150dp">
+        android:layout_height="wrap_content">
 
-        <android.support.v4.view.PagerTabStrip
-            android:id="@+id/encrypt_pager_tab_strip_mode"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="top"
-            android:background="@color/emphasis"
-            android:textColor="#fff" />
-    </android.support.v4.view.ViewPager>
+    </org.sufficientlysecure.keychain.ui.widget.NoSwipeWrapContentViewPager>
 
     <android.support.v4.view.ViewPager
         android:id="@+id/encrypt_pager_content"
@@ -30,8 +23,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="top"
-            android:background="@color/emphasis"
-            android:textColor="#fff" />
+            android:textColor="@color/emphasis" />
     </android.support.v4.view.ViewPager>
 
 </LinearLayout>

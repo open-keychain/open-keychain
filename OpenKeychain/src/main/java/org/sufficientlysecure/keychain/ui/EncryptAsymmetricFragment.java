@@ -19,25 +19,30 @@ package org.sufficientlysecure.keychain.ui;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CheckBox;
-import android.widget.TextView;
-import android.widget.Button;
+import android.widget.*;
 
+import com.tokenautocomplete.TokenCompleteTextView;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
+import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
+import org.sufficientlysecure.keychain.ui.widget.EncryptKeyCompletionView;
 import org.sufficientlysecure.keychain.util.Log;
 
-import java.util.Vector;
+import java.util.*;
 
 public class EncryptAsymmetricFragment extends Fragment {
     public static final String ARG_SIGNATURE_KEY_ID = "signature_key_id";
@@ -51,10 +56,8 @@ public class EncryptAsymmetricFragment extends Fragment {
     OnAsymmetricKeySelection mKeySelectionListener;
 
     // view
-    private Button mSelectKeysButton;
     private CheckBox mSign;
-    private TextView mMainUserId;
-    private TextView mMainUserIdRest;
+    private EncryptKeyCompletionView mEncryptKeyView;
 
     // model
     private long mSecretKeyId = Constants.key.none;
@@ -108,15 +111,7 @@ public class EncryptAsymmetricFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.encrypt_asymmetric_fragment, container, false);
 
-        mSelectKeysButton = (Button) view.findViewById(R.id.btn_selectEncryptKeys);
         mSign = (CheckBox) view.findViewById(R.id.sign);
-        mMainUserId = (TextView) view.findViewById(R.id.mainUserId);
-        mMainUserIdRest = (TextView) view.findViewById(R.id.mainUserIdRest);
-        mSelectKeysButton.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                selectPublicKeys();
-            }
-        });
         mSign.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 CheckBox checkBox = (CheckBox) v;
@@ -127,6 +122,7 @@ public class EncryptAsymmetricFragment extends Fragment {
                 }
             }
         });
+        mEncryptKeyView = (EncryptKeyCompletionView) view.findViewById(R.id.recipient_list);
 
         return view;
     }
@@ -139,6 +135,40 @@ public class EncryptAsymmetricFragment extends Fragment {
         long[] encryptionKeyIds = getArguments().getLongArray(ARG_ENCRYPTION_KEY_IDS);
 
         mProviderHelper = new ProviderHelper(getActivity());
+
+        getLoaderManager().initLoader(0, null, new LoaderManager.LoaderCallbacks<Cursor>() {
+            @Override
+            public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+                return new CursorLoader(getActivity(), KeychainContract.KeyRings.buildUnifiedKeyRingsUri(),
+                        new String[]{KeyRings.HAS_ENCRYPT, KeyRings.KEY_ID, KeyRings.USER_ID, KeyRings.FINGERPRINT},
+                        null, null, null);
+            }
+
+            @Override
+            public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+                mEncryptKeyView.fromCursor(data);
+            }
+
+            @Override
+            public void onLoaderReset(Loader<Cursor> loader) {
+                mEncryptKeyView.fromCursor(null);
+            }
+        });
+        mEncryptKeyView.setTokenListener(new TokenCompleteTextView.TokenListener() {
+            @Override
+            public void onTokenAdded(Object token) {
+                if (token instanceof EncryptKeyCompletionView.EncryptionKey) {
+                    updateEncryptionKeys();
+                }
+            }
+
+            @Override
+            public void onTokenRemoved(Object token) {
+                if (token instanceof EncryptKeyCompletionView.EncryptionKey) {
+                    updateEncryptionKeys();
+                }
+            }
+        });
 
         // preselect keys given by arguments (given by Intent to EncryptActivity)
         preselectKeys(signatureKeyId, encryptionKeyIds, mProviderHelper);
@@ -168,44 +198,31 @@ public class EncryptAsymmetricFragment extends Fragment {
         }
 
         if (preselectedEncryptionKeyIds != null) {
-            Vector<Long> goodIds = new Vector<Long>();
-            Vector<String> goodUserIds = new Vector<String>();
             for (long preselectedId : preselectedEncryptionKeyIds) {
                 try {
                     CachedPublicKeyRing ring = providerHelper.getCachedPublicKeyRing(
                             KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(preselectedId));
-                    long id = ring.getMasterKeyId();
-                    ring.getSplitPrimaryUserId();
-                    goodUserIds.add(ring.getPrimaryUserId());
-                    goodIds.add(id);
+                    mEncryptKeyView.addObject(mEncryptKeyView.new EncryptionKey(ring));
                 } catch (PgpGeneralException e) {
                     Log.e(Constants.TAG, "key not found!", e);
                 }
             }
-            if (goodIds.size() > 0) {
-                long[] keyIds = new long[goodIds.size()];
-                for (int i = 0; i < goodIds.size(); ++i) {
-                    keyIds[i] = goodIds.get(i);
-                }
-                setEncryptionKeyIds(keyIds);
-                setEncryptionUserIds(goodUserIds.toArray(new String[goodUserIds.size()]));
-            }
+            updateEncryptionKeys();
         }
     }
 
     private void updateView() {
-        if (mEncryptionKeyIds == null || mEncryptionKeyIds.length == 0) {
+        /*if (mEncryptionKeyIds == null || mEncryptionKeyIds.length == 0) {
             mSelectKeysButton.setText(getString(R.string.select_keys_button_default));
         } else {
             mSelectKeysButton.setText(getResources().getQuantityString(
                     R.plurals.select_keys_button, mEncryptionKeyIds.length,
                     mEncryptionKeyIds.length));
-        }
+        }*/
 
+        /*
         if (mSecretKeyId == Constants.key.none) {
             mSign.setChecked(false);
-            mMainUserId.setText("");
-            mMainUserIdRest.setText("");
         } else {
             // See if we can get a user_id from a unified query
             String[] userId;
@@ -216,7 +233,7 @@ public class EncryptAsymmetricFragment extends Fragment {
                 userId = null;
             }
             if (userId != null && userId[0] != null) {
-                mMainUserId.setText(String.format("%#16x", Long.parseLong(userId[0])));
+                mMainUserId.setText(userId[0]);
             } else {
                 mMainUserId.setText(getResources().getString(R.string.user_id_no_name));
             }
@@ -227,6 +244,26 @@ public class EncryptAsymmetricFragment extends Fragment {
             }
             mSign.setChecked(true);
         }
+        */
+    }
+
+    private void updateEncryptionKeys() {
+        List<Object> objects = mEncryptKeyView.getObjects();
+        List<Long> keyIds = new ArrayList<Long>();
+        List<String> userIds = new ArrayList<String>();
+        for (Object object : objects) {
+            if (object instanceof EncryptKeyCompletionView.EncryptionKey) {
+                keyIds.add(((EncryptKeyCompletionView.EncryptionKey) object).getKeyId());
+                userIds.add(((EncryptKeyCompletionView.EncryptionKey) object).getUserId());
+            }
+        }
+        long[] keyIdsArr = new long[keyIds.size()];
+        Iterator<Long> iterator = keyIds.iterator();
+        for (int i = 0; i < keyIds.size(); i++) {
+            keyIdsArr[i] = iterator.next();
+        }
+        setEncryptionKeyIds(keyIdsArr);
+        setEncryptionUserIds(userIds.toArray(new String[userIds.size()]));
     }
 
     private void selectPublicKeys() {

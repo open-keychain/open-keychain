@@ -21,13 +21,20 @@ package org.sufficientlysecure.keychain.ui;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v4.view.PagerTabStrip;
 import android.support.v4.view.ViewPager;
 
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.ViewGroup;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.helper.Preferences;
 import org.sufficientlysecure.keychain.ui.adapter.PagerTabStripAdapter;
 import org.sufficientlysecure.keychain.util.Log;
+
+import java.util.ArrayList;
 
 public class EncryptActivity extends DrawerActivity implements
         EncryptSymmetricFragment.OnSymmetricKeySelection,
@@ -49,7 +56,7 @@ public class EncryptActivity extends DrawerActivity implements
 
     // view
     ViewPager mViewPagerMode;
-    PagerTabStrip mPagerTabStripMode;
+    //PagerTabStrip mPagerTabStripMode;
     PagerTabStripAdapter mTabsAdapterMode;
     ViewPager mViewPagerContent;
     PagerTabStrip mPagerTabStripContent;
@@ -74,6 +81,9 @@ public class EncryptActivity extends DrawerActivity implements
     private long mSigningKeyId = Constants.key.none;
     private String mPassphrase;
     private String mPassphraseAgain;
+    private int mCurrentMode = PAGER_MODE_ASYMMETRIC;
+    private boolean mUseArmor;
+    private boolean mDeleteAfterEncrypt = false;
 
     @Override
     public void onSigningKeySelected(long signingKeyId) {
@@ -102,7 +112,7 @@ public class EncryptActivity extends DrawerActivity implements
 
     @Override
     public boolean isModeSymmetric() {
-        return PAGER_MODE_SYMMETRIC == mViewPagerMode.getCurrentItem();
+        return PAGER_MODE_SYMMETRIC == mCurrentMode;
     }
 
     @Override
@@ -130,10 +140,19 @@ public class EncryptActivity extends DrawerActivity implements
         return mPassphraseAgain;
     }
 
+    @Override
+    public boolean isUseArmor() {
+        return mUseArmor;
+    }
+
+    @Override
+    public boolean isDeleteAfterEncrypt() {
+        return mDeleteAfterEncrypt;
+    }
 
     private void initView() {
         mViewPagerMode = (ViewPager) findViewById(R.id.encrypt_pager_mode);
-        mPagerTabStripMode = (PagerTabStrip) findViewById(R.id.encrypt_pager_tab_strip_mode);
+        //mPagerTabStripMode = (PagerTabStrip) findViewById(R.id.encrypt_pager_tab_strip_mode);
         mViewPagerContent = (ViewPager) findViewById(R.id.encrypt_pager_content);
         mPagerTabStripContent = (PagerTabStrip) findViewById(R.id.encrypt_pager_tab_strip_content);
 
@@ -172,6 +191,37 @@ public class EncryptActivity extends DrawerActivity implements
         mTabsAdapterContent.addTab(EncryptFileFragment.class,
                 mFileFragmentBundle, getString(R.string.label_file));
         mViewPagerContent.setCurrentItem(mSwitchToContent);
+
+        mUseArmor = Preferences.getPreferences(this).getDefaultAsciiArmor();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.encrypt_activity, menu);
+        menu.findItem(R.id.check_use_armor).setChecked(mUseArmor);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.isCheckable()) {
+            item.setChecked(!item.isChecked());
+        }
+        switch (item.getItemId()) {
+            case R.id.check_use_symmetric:
+                mSwitchToMode = item.isChecked() ? PAGER_MODE_SYMMETRIC : PAGER_MODE_ASYMMETRIC;
+                mViewPagerMode.setCurrentItem(mSwitchToMode);
+                break;
+            case R.id.check_use_armor:
+                mUseArmor = item.isChecked();
+                break;
+            case R.id.check_delete_after_encrypt:
+                mDeleteAfterEncrypt = item.isChecked();
+                break;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+        return true;
     }
 
     /**
@@ -183,10 +233,14 @@ public class EncryptActivity extends DrawerActivity implements
         String action = intent.getAction();
         Bundle extras = intent.getExtras();
         String type = intent.getType();
-        Uri uri = intent.getData();
+        ArrayList<Uri> uris = new ArrayList<Uri>();
 
         if (extras == null) {
             extras = new Bundle();
+        }
+
+        if (intent.getData() != null) {
+            uris.add(intent.getData());
         }
 
         /*
@@ -206,14 +260,19 @@ public class EncryptActivity extends DrawerActivity implements
                 }
             } else {
                 // Files via content provider, override uri and action
-                uri = intent.getParcelableExtra(Intent.EXTRA_STREAM);
+                uris.clear();
+                uris.add(intent.<Uri>getParcelableExtra(Intent.EXTRA_STREAM));
                 action = ACTION_ENCRYPT;
             }
         }
 
+        if (Intent.ACTION_SEND_MULTIPLE.equals(action) && type != null) {
+            uris = intent.getParcelableArrayListExtra(Intent.EXTRA_STREAM);
+            action = ACTION_ENCRYPT;
+        }
+
         if (extras.containsKey(EXTRA_ASCII_ARMOR)) {
-            boolean requestAsciiArmor = extras.getBoolean(EXTRA_ASCII_ARMOR, true);
-            mFileFragmentBundle.putBoolean(EncryptFileFragment.ARG_ASCII_ARMOR, requestAsciiArmor);
+            mUseArmor = extras.getBoolean(EXTRA_ASCII_ARMOR, true);
         }
 
         String textData = extras.getString(EXTRA_TEXT);
@@ -235,9 +294,9 @@ public class EncryptActivity extends DrawerActivity implements
             // encrypt text based on given extra
             mMessageFragmentBundle.putString(EncryptMessageFragment.ARG_TEXT, textData);
             mSwitchToContent = PAGER_CONTENT_MESSAGE;
-        } else if (ACTION_ENCRYPT.equals(action) && uri != null) {
+        } else if (ACTION_ENCRYPT.equals(action) && uris != null && !uris.isEmpty()) {
             // encrypt file based on Uri
-            mFileFragmentBundle.putParcelable(EncryptFileFragment.ARG_URI, uri);
+            mFileFragmentBundle.putParcelableArrayList(EncryptFileFragment.ARG_URIS, uris);
             mSwitchToContent = PAGER_CONTENT_FILE;
         } else {
             Log.e(Constants.TAG,

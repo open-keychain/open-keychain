@@ -20,7 +20,7 @@ dependencies {
     compile project(':extern:SuperToasts:supertoasts')
     compile project(':extern:minidns')
     compile project(':extern:KeybaseLib:Lib')
-
+    compile project(':extern:TokenAutoComplete:library')
 
     // Unit tests are run with Robolectric
     testCompile 'junit:junit:4.11'
