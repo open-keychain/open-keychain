@@ -9,6 +9,8 @@ import org.sufficientlysecure.keychain.testsupport.*;
 import org.sufficientlysecure.keychain.testsupport.KeyringBuilder;
 import org.sufficientlysecure.keychain.testsupport.TestDataUtil;
 
+import java.io.*;
+
 @RunWith(RobolectricTestRunner.class)
 @org.robolectric.annotation.Config(emulateSdk = 18) // Robolectric doesn't yet support 19
 public class UncachedKeyringTest {
@@ -17,6 +19,8 @@ public class UncachedKeyringTest {
     public void testVerifySuccess() throws Exception {
         UncachedKeyRing expectedKeyRing = KeyringBuilder.ring2();
         UncachedKeyRing inputKeyRing = KeyringBuilder.ring1();
+        // Uncomment to dump the encoded key for manual inspection
+//        inputKeyRing.getPublicKey().getPublicKey().encode(new FileOutputStream(new File("/tmp/key-encoded")));
         new UncachedKeyringTestingHelper().doTestCanonicalize(inputKeyRing, expectedKeyRing);
     }
 

@@ -13,10 +13,10 @@ import org.spongycastle.bcpg.SymmetricKeyAlgorithmTags;
 import org.spongycastle.bcpg.UserIDPacket;
 import org.spongycastle.bcpg.sig.Features;
 import org.spongycastle.bcpg.sig.IssuerKeyID;
+import org.spongycastle.bcpg.sig.KeyExpirationTime;
 import org.spongycastle.bcpg.sig.KeyFlags;
 import org.spongycastle.bcpg.sig.PreferredAlgorithms;
 import org.spongycastle.bcpg.sig.SignatureCreationTime;
-import org.spongycastle.bcpg.sig.SignatureExpirationTime;
 import org.spongycastle.openpgp.PGPException;
 import org.spongycastle.openpgp.PGPPublicKey;
 import org.spongycastle.openpgp.PGPPublicKeyRing;
@@ -26,6 +26,7 @@ import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
 
 import java.math.BigInteger;
 import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by art on 05/07/14.
@@ -56,11 +57,11 @@ public class KeyringBuilder {
     private static final BigInteger exponent = new BigInteger("010001", 16);
 
     public static UncachedKeyRing ring1() {
-        return ringForModulus(new Date(1404566755), "user1@example.com");
+        return ringForModulus(new Date(1404566755000L), "OpenKeychain User (NOT A REAL KEY) <openkeychain@example.com>");
     }
 
     public static UncachedKeyRing ring2() {
-        return ringForModulus(new Date(1404566755), "user1@example.com");
+        return ringForModulus(new Date(1404566755000L), "OpenKeychain User (NOT A REAL KEY) <openkeychain@example.com>");
     }
 
     private static UncachedKeyRing ringForModulus(Date date, String userIdString) {
@@ -91,38 +92,38 @@ public class KeyringBuilder {
 
     private static SignaturePacket createSignaturePacket(Date date) {
         int signatureType = PGPSignature.POSITIVE_CERTIFICATION;
-        long keyID = 1;
+        long keyID = 0x15130BCF071AE6BFL;
         int keyAlgorithm = SignaturePacket.RSA_GENERAL;
         int hashAlgorithm = HashAlgorithmTags.SHA1;
 
         SignatureSubpacket[] hashedData = new SignatureSubpacket[]{
-                new SignatureCreationTime(true, date),
-                new KeyFlags(true, KeyFlags.SIGN_DATA & KeyFlags.CERTIFY_OTHER),
-                new SignatureExpirationTime(true, date.getTime() + 24 * 60 * 60 * 2),
-                new PreferredAlgorithms(SignatureSubpacketTags.PREFERRED_SYM_ALGS, true, new int[]{
+                new SignatureCreationTime(false, date),
+                new KeyFlags(false, KeyFlags.CERTIFY_OTHER + KeyFlags.SIGN_DATA),
+                new KeyExpirationTime(false, TimeUnit.DAYS.toSeconds(2)),
+                new PreferredAlgorithms(SignatureSubpacketTags.PREFERRED_SYM_ALGS, false, new int[]{
                         SymmetricKeyAlgorithmTags.AES_256,
                         SymmetricKeyAlgorithmTags.AES_192,
                         SymmetricKeyAlgorithmTags.AES_128,
                         SymmetricKeyAlgorithmTags.CAST5,
                         SymmetricKeyAlgorithmTags.TRIPLE_DES
                 }),
-                new PreferredAlgorithms(SignatureSubpacketTags.PREFERRED_HASH_ALGS, true, new int[]{
+                new PreferredAlgorithms(SignatureSubpacketTags.PREFERRED_HASH_ALGS, false, new int[]{
                         HashAlgorithmTags.SHA256,
                         HashAlgorithmTags.SHA1,
                         HashAlgorithmTags.SHA384,
                         HashAlgorithmTags.SHA512,
                         HashAlgorithmTags.SHA224
                 }),
-                new PreferredAlgorithms(SignatureSubpacketTags.PREFERRED_COMP_ALGS, true, new int[]{
+                new PreferredAlgorithms(SignatureSubpacketTags.PREFERRED_COMP_ALGS, false, new int[]{
                         CompressionAlgorithmTags.ZLIB,
                         CompressionAlgorithmTags.BZIP2,
-                        CompressionAlgorithmTags.ZLIB
+                        CompressionAlgorithmTags.ZIP
                 }),
                 new Features(false, Features.FEATURE_MODIFICATION_DETECTION),
                 // can't do keyserver prefs
         };
         SignatureSubpacket[] unhashedData = new SignatureSubpacket[]{
-                new IssuerKeyID(true, new BigInteger("15130BCF071AE6BF", 16).toByteArray())
+                new IssuerKeyID(false, new BigInteger("15130BCF071AE6BF", 16).toByteArray())
         };
         byte[] fingerPrint = new BigInteger("522c", 16).toByteArray();
         MPInteger[] signature = new MPInteger[]{
@@ -156,7 +157,7 @@ public class KeyringBuilder {
     }
 
     private static PGPPublicKey createPgpPublicKey(BigInteger modulus, Date date) throws PGPException {
-        PublicKeyPacket publicKeyPacket = new PublicKeyPacket(PublicKeyAlgorithmTags.RSA_SIGN, date, new RSAPublicBCPGKey(modulus, exponent));
+        PublicKeyPacket publicKeyPacket = new PublicKeyPacket(PublicKeyAlgorithmTags.RSA_GENERAL, date, new RSAPublicBCPGKey(modulus, exponent));
         return new PGPPublicKey(
                 publicKeyPacket, new BcKeyFingerprintCalculator());
     }
