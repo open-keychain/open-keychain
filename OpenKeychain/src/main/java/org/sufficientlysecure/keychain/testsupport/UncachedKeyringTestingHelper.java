@@ -14,10 +14,12 @@ import org.spongycastle.openpgp.PGPUserAttributeSubpacketVector;
 import org.spongycastle.openpgp.operator.bc.BcKeyFingerprintCalculator;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
 import org.sufficientlysecure.keychain.pgp.UncachedPublicKey;
+import org.sufficientlysecure.keychain.service.OperationResultParcel;
 
 import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.Objects;
 
 /**
  * Created by art on 28/06/14.
@@ -25,7 +27,14 @@ import java.util.Date;
 public class UncachedKeyringTestingHelper {
 
     public static boolean compareRing(UncachedKeyRing keyRing1, UncachedKeyRing keyRing2) {
-        return TestDataUtil.iterEquals(keyRing1.getPublicKeys(), keyRing2.getPublicKeys(), new
+        OperationResultParcel.OperationLog operationLog = new OperationResultParcel.OperationLog();
+        UncachedKeyRing canonicalized = keyRing1.canonicalize(operationLog, 0);
+
+        if (canonicalized == null) {
+            throw new AssertionError("Canonicalization failed; messages: [" + operationLog.toString() + "]");
+        }
+
+        return TestDataUtil.iterEquals(canonicalized.getPublicKeys(), keyRing2.getPublicKeys(), new
                 TestDataUtil.EqualityChecker<UncachedPublicKey>() {
                     @Override
                     public boolean areEquals(UncachedPublicKey lhs, UncachedPublicKey rhs) {
