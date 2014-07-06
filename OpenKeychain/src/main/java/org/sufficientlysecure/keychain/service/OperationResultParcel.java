@@ -9,6 +9,8 @@ import org.sufficientlysecure.keychain.util.IterableIterator;
 import org.sufficientlysecure.keychain.util.Log;
 
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 /** Represent the result of an operation.
  *
@@ -288,7 +290,7 @@ public class OperationResultParcel implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeInt(mResult);
-        dest.writeTypedList(mLog);
+        dest.writeTypedList(mLog.toList());
     }
 
     public static final Creator<OperationResultParcel> CREATOR = new Creator<OperationResultParcel>() {
@@ -301,20 +303,22 @@ public class OperationResultParcel implements Parcelable {
         }
     };
 
-    public static class OperationLog extends ArrayList<LogEntryParcel> {
+    public static class OperationLog implements Iterable<LogEntryParcel> {
+
+        private final List<LogEntryParcel> parcels = new ArrayList<LogEntryParcel>();
 
         /// Simple convenience method
         public void add(LogLevel level, LogType type, int indent, Object... parameters) {
             Log.d(Constants.TAG, type.toString());
-            add(new OperationResultParcel.LogEntryParcel(level, type, indent, parameters));
+            parcels.add(new OperationResultParcel.LogEntryParcel(level, type, indent, parameters));
         }
 
         public void add(LogLevel level, LogType type, int indent) {
-            add(new OperationResultParcel.LogEntryParcel(level, type, indent, (Object[]) null));
+            parcels.add(new OperationResultParcel.LogEntryParcel(level, type, indent, (Object[]) null));
         }
 
         public boolean containsWarnings() {
-            for(LogEntryParcel entry : new IterableIterator<LogEntryParcel>(iterator())) {
+            for(LogEntryParcel entry : new IterableIterator<LogEntryParcel>(parcels.iterator())) {
                 if (entry.mLevel == LogLevel.WARN || entry.mLevel == LogLevel.ERROR) {
                     return true;
                 }
@@ -322,6 +326,22 @@ public class OperationResultParcel implements Parcelable {
             return false;
         }
 
+        public void addAll(List<LogEntryParcel> parcels) {
+            parcels.addAll(parcels);
+        }
+
+        public List<LogEntryParcel> toList() {
+            return parcels;
+        }
+
+        public boolean isEmpty() {
+            return parcels.isEmpty();
+        }
+
+        @Override
+        public Iterator<LogEntryParcel> iterator() {
+            return parcels.iterator();
+        }
     }
 
 }
