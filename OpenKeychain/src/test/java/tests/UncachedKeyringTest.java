@@ -16,11 +16,8 @@ public class UncachedKeyringTest {
     @Test
     public void testVerifySuccess() throws Exception {
         UncachedKeyRing expectedKeyRing = KeyringBuilder.ring2();
-//        Uncomment to prove it's working - the createdDate will then be different
-//        Thread.sleep(1500);
         UncachedKeyRing inputKeyRing = KeyringBuilder.ring1();
-        new UncachedKeyringTestingHelper().doTestCanonicalize(
-                inputKeyRing, expectedKeyRing);
+        new UncachedKeyringTestingHelper().doTestCanonicalize(inputKeyRing, expectedKeyRing);
     }
 
     /**
