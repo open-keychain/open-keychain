@@ -1,8 +1,11 @@
 package org.sufficientlysecure.keychain.testsupport;
 
+import org.spongycastle.bcpg.ContainedPacket;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Collection;
 import java.util.Iterator;
 
@@ -17,7 +20,7 @@ public class TestDataUtil {
         return output.toByteArray();
     }
 
-    private static void appendToOutput(InputStream input, ByteArrayOutputStream output) {
+    public static void appendToOutput(InputStream input, OutputStream output) {
         byte[] buffer = new byte[8192];
         int bytesRead;
         try {
@@ -80,6 +83,20 @@ public class TestDataUtil {
 
     public static interface EqualityChecker<T> {
         public boolean areEquals(T lhs, T rhs);
+    }
+
+
+    public static byte[] concatAll(java.util.List<ContainedPacket>  packets) {
+        byte[][] byteArrays = new byte[packets.size()][];
+        try {
+            for (int i = 0; i < packets.size(); i++) {
+                byteArrays[i] = packets.get(i).getEncoded();
+            }
+        } catch (IOException ex) {
+            throw new RuntimeException(ex);
+        }
+
+        return concatAll(byteArrays);
     }
 
     public static byte[] concatAll(byte[]... byteArrays) {
