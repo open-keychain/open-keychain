@@ -9,7 +9,6 @@
   <string name="title_create_key">创建密钥</string>
   <string name="title_edit_key">编辑密钥</string>
   <string name="title_preferences">参数</string>
-  <string name="title_api_registered_apps">已注册应用</string>
   <string name="title_key_server_preference">密钥服务器偏好</string>
   <string name="title_set_passphrase">设置密码短语</string>
   <string name="title_encrypt_to_file">加密至文件</string>
@@ -134,6 +133,7 @@
   <string name="import_from_clipboard">从剪贴板导入</string>
   <string name="import_qr_code_finished">二维码扫描完成！</string>
   <string name="import_nfc_help_button">帮助</string>
+  <!--Import result toast-->
   <!--Intent labels-->
   <!--Remote API-->
   <string name="api_settings_show_advanced">显示高级设置</string>
@@ -156,5 +156,10 @@
   <string name="nav_import">导入密钥</string>
   <!--hints-->
   <!--certs-->
+  <!--Import Public log entries-->
+  <!--Import Secret log entries-->
+  <!--Keyring Canonicalization log entries-->
+  <!--Keyring merging log entries-->
+  <!--modifySecretKeyRing-->
   <!--unsorted-->
 </resources>

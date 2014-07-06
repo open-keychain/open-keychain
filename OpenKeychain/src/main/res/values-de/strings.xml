@@ -9,7 +9,7 @@
   <string name="title_create_key">Schlüssel erstellen</string>
   <string name="title_edit_key">Schlüssel bearbeiten</string>
   <string name="title_preferences">Einstellungen</string>
-  <string name="title_api_registered_apps">Registrierte Anwendungen</string>
+  <string name="title_api_registered_apps">Apps</string>
   <string name="title_key_server_preference">Schlüsselserver</string>
   <string name="title_change_passphrase">Passphrase ändern</string>
   <string name="title_set_passphrase">Passwort setzen</string>
@@ -65,21 +65,16 @@
   <string name="btn_lookup_key">Schlüssel nachschlagen</string>
   <string name="btn_encryption_advanced_settings_show">Erweiterte Einstellungen anzeigen</string>
   <string name="btn_encryption_advanced_settings_hide">Erweiterte Einstellungen verbergen</string>
-  <string name="btn_share_encrypted_signed">Verschlüsselt/signierten Text teilen…</string>
+  <string name="btn_share_encrypted_signed">Verschlüsselt/signierte Nachricht teilen…</string>
   <string name="btn_view_cert_key">Beglaubigungsschlüssel anzeigen</string>
   <!--menu-->
   <string name="menu_preferences">Einstellungen</string>
   <string name="menu_help">Hilfe</string>
-  <string name="menu_import_from_file">Datei</string>
-  <string name="menu_import_from_qr_code">QR-Code</string>
-  <string name="menu_import_from_nfc">NFC</string>
   <string name="menu_export_key">In Datei exportieren</string>
   <string name="menu_delete_key">Schlüssel löschen</string>
   <string name="menu_create_key">Schlüssel erstellen</string>
   <string name="menu_create_key_expert">Schlüssel erstellen (Experte)</string>
   <string name="menu_search">Suchen</string>
-  <string name="menu_import_from_key_server">Schlüsselserver</string>
-  <string name="menu_import_from_keybase">Keybase.io</string>
   <string name="menu_key_server">Schlüsselserver…</string>
   <string name="menu_update_key">Von einem Schlüsselserver aktualisieren</string>
   <string name="menu_export_key_to_server">Auf Schlüsselserver hochladen</string>
@@ -98,6 +93,7 @@
   <string name="menu_select_all">Alles auswählen</string>
   <string name="menu_add_keys">Schlüssel hinzufügen</string>
   <string name="menu_export_all_keys">Alle Schlüssel exportieren</string>
+  <string name="menu_advanced">Erweiterte Info anzeigen</string>
   <!--label-->
   <string name="label_sign">Signieren</string>
   <string name="label_message">Nachricht</string>
@@ -206,33 +202,12 @@
   <string name="ask_empty_id_ok">Es wurde eine leere Identität hinzugefügt. Wirklich fortfahren?</string>
   <string name="public_key_deletetion_confirmation">Soll der öffentliche Schlüssel \'%s\' wirklich gelöscht werden?\nDies kann nicht rückgängig gemacht werden! </string>
   <string name="also_export_secret_keys">Private Schlüssel auch exportieren</string>
-  <plurals name="import_keys_added_and_updated_1">
-    <item quantity="one">%d Schlüssel erfolgreich hinzugefügt</item>
-    <item quantity="other">%d Schlüssel erfolgreich hinzugefügt</item>
-  </plurals>
-  <plurals name="import_keys_added_and_updated_2">
-    <item quantity="one">und %d Schlüssel erfolgreich aktualisiert.</item>
-    <item quantity="other">und %d Schlüssel erfolgreich aktualisiert.</item>
-  </plurals>
-  <plurals name="import_keys_added">
-    <item quantity="one">%d Schlüssel erfolgreich hinzugefügt.</item>
-    <item quantity="other">%d Schlüssel erfolgreich hinzugefügt.</item>
-  </plurals>
-  <plurals name="import_keys_updated">
-    <item quantity="one">%d Schlüssel erfolgreich aktualisiert.</item>
-    <item quantity="other">%d Schlüssel erfolgreich aktualisiert.</item>
-  </plurals>
-  <string name="import_error_nothing">Keine Schlüssel hinzugefügt oder aktualisiert.</string>
   <string name="key_exported">1 Schlüssel erfolgreich exportiert.</string>
   <string name="keys_exported">%d Schlüssel erfolgreich exportiert.</string>
   <string name="no_keys_exported">Keine Schlüssel exportiert.</string>
   <string name="key_creation_el_gamal_info">Beachte: Nur Unterschlüssel unterstützen ElGamal.</string>
   <string name="key_creation_weak_rsa_info">Beachte: RSA-Schlüssel mit einer Schlüssellänge von 1024-Bits oder weniger werden als unsicher angesehen und können daher nicht für neue Schlüssel erstellt werden.</string>
   <string name="key_not_found">Schlüssel %08X konnte nicht gefunden werden.</string>
-  <plurals name="keys_found">
-    <item quantity="one">%d Schlüssel gefunden.</item>
-    <item quantity="other">%d Schlüssel gefunden.</item>
-  </plurals>
   <plurals name="bad_keys_encountered">
     <item quantity="one">%d schlechter privater Schlüssel ignoriert. Evtl. wurde er mit folgender Option exportiert:\n --export-secret-subkeys\nUnbedingt mit der Option \n --export-secret-keys\nexportieren.</item>
     <item quantity="other">%d schlechte private Schlüssel ignoriert. Evtl. wurden sie mit folgender Option exportiert:\n --export-secret-subkeys\nUnbedingt mit der Option \n --export-secret-keys\nexportieren.</item>
@@ -272,8 +247,8 @@
   <string name="error_only_files_are_supported">Binäre Daten ohne ohne Datei im Dateisystem werden nicht unterstützt.</string>
   <string name="error_jelly_bean_needed">Android 4.1 wird benötigt um Androids NFC Beam nutzen zu können!</string>
   <string name="error_nfc_needed">NFC steht auf diesem Gerät nicht zur Verfügung!</string>
-  <string name="error_nothing_import">Nichts zu importieren!</string>
-  <string name="error_import_file_no_content">Datei ist leer</string>
+  <string name="error_keyserver_insufficient_query">zu kurze Schlüsselanfrage</string>
+  <string name="error_keyserver_too_many_responses">Die Schlüsselanfrage liefert zu viele Ergebnisse. Bitte verfeinern sie sie Anfrage.</string>
   <string name="error_generic_report_bug">Ein allgemeiner Fehler trat auf, bitte schreiben Sie einen neuen Bugreport für OpenKeychain.</string>
   <plurals name="error_import_non_pgp_part">
     <item quantity="one">Ein Teil der geladenen Datei ist ein gültiges OpenPGP Objekt aber kein OpenPGP Schlüssel</item>
@@ -366,6 +341,7 @@
   <string name="import_nfc_help_button">Hilfe</string>
   <string name="import_clipboard_button">Schlüssel aus der Zwischenablage einfügen</string>
   <string name="import_keybase_button">Schlüssel von Keybase.io erhalten</string>
+  <!--Import result toast-->
   <!--Intent labels-->
   <string name="intent_decrypt_file">Datei entschlüsseln mit OpenKeychain</string>
   <string name="intent_import_key">Schlüssel importieren mit OpenKeychain</string>
@@ -429,7 +405,7 @@
   <string name="nav_encrypt">Signieren und Verschlüsseln</string>
   <string name="nav_decrypt">Entschlüsseln und Verifizieren</string>
   <string name="nav_import">Schlüssel Importieren</string>
-  <string name="nav_apps">Registrierte Anwendungen</string>
+  <string name="nav_apps">Apps</string>
   <string name="drawer_open">Menü öffnen</string>
   <string name="drawer_close">Menü schließen</string>
   <string name="edit">Bearbeiten</string>
@@ -438,8 +414,8 @@
   <string name="secret_key_yes">verfügbar</string>
   <string name="secret_key_no">nicht verfügbar</string>
   <!--hints-->
-  <string name="encrypt_content_edit_text_hint">Hier den Text schreiben welche verschlüsselt und/oder signiert werden soll...</string>
-  <string name="decrypt_content_edit_text_hint">Hier den verschlüsselten Text eingeben um ihn zu entschlüsseln und/oder zu verifzieren…</string>
+  <string name="encrypt_content_edit_text_hint">Hier die Nachricht schreiben welche verschlüsselt und/oder signiert werden soll…</string>
+  <string name="decrypt_content_edit_text_hint">Hier die verschlüsselte Nachricht eingeben um sie zu entschlüsseln und/oder zu verifzieren…</string>
   <!--certs-->
   <string name="cert_default">normal</string>
   <string name="cert_none">kein</string>
@@ -450,6 +426,19 @@
   <string name="cert_verify_failed">fehlgeschlagen!</string>
   <string name="cert_verify_error">Fehler!</string>
   <string name="cert_verify_unavailable">Schlüssel nicht verfügbar</string>
+  <!--Import Public log entries-->
+  <string name="msg_ip_delete_old_ok">Alte Schlüssel aus der Datenbank löschen</string>
+  <string name="msg_ip_encode_fail">Die Anwendung ist wegen Kodierungsfehler fehlgeschlagen</string>
+  <string name="msg_ip_fail_io_exc">Die Anwendung is wegen Eingabe/Ausgabe-Fehler fehlgeschlagen</string>
+  <string name="msg_ip_fail_remote_ex">Die Anwendung ist wegen internen Fehler fehlgeschlagen</string>
+  <string name="msg_ip_insert_keyring">Schlüsselbund-daten werden kodiert</string>
+  <string name="msg_ip_prepare">Datenbank-Transaktionen werden vorbereitet</string>
+  <string name="msg_ip_subkey">Unterschlüssel %s wird bearbeitet</string>
+  <!--Import Secret log entries-->
+  <string name="msg_is_importing_subkeys">Geheime Unterschlüssel werden bearbeitet</string>
+  <!--Keyring Canonicalization log entries-->
+  <!--Keyring merging log entries-->
+  <!--modifySecretKeyRing-->
   <!--unsorted-->
   <string name="section_certifier_id">Beglaubiger</string>
   <string name="section_cert">Zertifikatdetails</string>
@@ -468,5 +457,7 @@
   <string name="title_view_cert">Zertifikatdetails anzeigen</string>
   <string name="unknown_algorithm">unbekannt</string>
   <string name="can_sign_not">Kann nicht unterschreiben</string>
+  <string name="error_encoding">Kodierungsfehler</string>
   <string name="error_no_encrypt_subkey">Kein Unterschlüssel zum Verschlüsseln verfügbar!</string>
+  <string name="contact_show_key">Schlüssel anzeigen (%s)</string>
 </resources>

@@ -298,7 +298,7 @@ public class EncryptActivity extends DrawerActivity implements
             // encrypt file based on Uri
             mFileFragmentBundle.putParcelableArrayList(EncryptFileFragment.ARG_URIS, uris);
             mSwitchToContent = PAGER_CONTENT_FILE;
-        } else {
+        } else if (ACTION_ENCRYPT.equals(action)) {
             Log.e(Constants.TAG,
                     "Include the extra 'text' or an Uri with setData() in your Intent!");
         }

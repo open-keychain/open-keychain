@@ -155,7 +155,7 @@ public class DecryptActivity extends DrawerActivity {
         } else if (ACTION_DECRYPT.equals(action) && uri != null) {
             mFileFragmentBundle.putParcelable(DecryptFileFragment.ARG_URI, uri);
             mSwitchToTab = PAGER_TAB_FILE;
-        } else {
+        } else if (ACTION_DECRYPT.equals(action)) {
             Log.e(Constants.TAG,
                     "Include the extra 'text' or an Uri with setData() in your Intent!");
         }

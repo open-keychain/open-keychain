@@ -51,8 +51,6 @@ public class CreateKeyDialogFragment extends DialogFragment {
 
     private static final String ARG_EDITOR_CHILD_COUNT = "child_count";
 
-    private int mNewKeySize;
-    private Choice mNewKeyAlgorithmChoice;
     private OnAlgorithmSelectedListener mAlgorithmSelectedListener;
     private Spinner mAlgorithmSpinner;
     private Spinner mKeySizeSpinner;
@@ -131,9 +129,9 @@ public class CreateKeyDialogFragment extends DialogFragment {
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface di, int id) {
                         di.dismiss();
-                        mNewKeyAlgorithmChoice = (Choice) mAlgorithmSpinner.getSelectedItem();
-                        mNewKeySize = getProperKeyLength(mNewKeyAlgorithmChoice.getId(), getSelectedKeyLength());
-                        mAlgorithmSelectedListener.onAlgorithmSelected(mNewKeyAlgorithmChoice, mNewKeySize);
+                        Choice newKeyAlgorithmChoice = (Choice) mAlgorithmSpinner.getSelectedItem();
+                        int newKeySize = getProperKeyLength(newKeyAlgorithmChoice.getId(), getSelectedKeyLength());
+                        mAlgorithmSelectedListener.onAlgorithmSelected(newKeyAlgorithmChoice, newKeySize);
                     }
                 }
         );

@@ -26,6 +26,7 @@ import android.os.RemoteException;
 import android.support.v4.app.DialogFragment;
 
 import org.sufficientlysecure.keychain.Constants;
+import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.util.Log;
 
 public class EditUserIdDialogFragment extends DialogFragment {
@@ -57,9 +58,9 @@ public class EditUserIdDialogFragment extends DialogFragment {
         mMessenger = getArguments().getParcelable(ARG_MESSENGER);
 
         CustomAlertDialogBuilder builder = new CustomAlertDialogBuilder(getActivity());
-        CharSequence[] array = {"change to primary user id", "revoke"};
+        CharSequence[] array = getResources().getStringArray(R.array.edit_key_edit_user_id);
 
-        builder.setTitle("select action!");
+        builder.setTitle(R.string.edit_key_edit_user_id_title);
         builder.setItems(array, new DialogInterface.OnClickListener() {
 
             @Override
@@ -76,7 +77,7 @@ public class EditUserIdDialogFragment extends DialogFragment {
                 }
             }
         });
-        builder.setNegativeButton("cancel", new DialogInterface.OnClickListener() {
+        builder.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int id) {
                 dismiss();

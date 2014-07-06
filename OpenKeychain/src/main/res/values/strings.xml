@@ -226,7 +226,6 @@
     <string name="keys_exported">Successfully exported %d keys.</string>
     <string name="no_keys_exported">No keys exported.</string>
     <string name="key_creation_el_gamal_info">Note: only subkeys support ElGamal.</string>
-    <string name="key_creation_weak_rsa_info">Note: generating RSA key with length 1024-bit and less is considered unsafe and it\'s disabled for generating new keys.</string>
     <string name="key_not_found">Couldn\'t find key %08X.</string>
 
     <plurals name="bad_keys_encountered">
@@ -419,7 +418,7 @@
     <string name="intent_send_decrypt">Decrypt with OpenKeychain</string>
 
     <!-- Remote API -->
-    <string name="api_no_apps">No registered applications!\n\nA list of supported third-party applications can be found in \'Help\'!</string>
+    <string name="api_no_apps">No registered apps!\n\nA list of supported third-party applications can be found in \'Help\'!</string>
     <string name="api_settings_show_info">Show advanced information</string>
     <string name="api_settings_hide_info">Hide advanced information</string>
     <string name="api_settings_show_advanced">Show advanced settings</string>
@@ -435,9 +434,9 @@
     <string name="api_settings_package_name">Package Name</string>
     <string name="api_settings_package_signature">SHA-256 of Package Signature</string>
     <string name="api_settings_accounts">Accounts</string>
-    <string name="api_settings_accounts_empty">No accounts attached to this application.</string>
-    <string name="api_create_account_text">The application requests the creation of a new account. Please select an existing private key or create a new one.\nApplications are restricted to the usage of keys you select here!</string>
-    <string name="api_register_text">The displayed application requests access to OpenKeychain.\nAllow access?\n\nWARNING: If you do not know why this screen appeared, disallow access! You can revoke access later using the \'Registered Applications\' screen.</string>
+    <string name="api_settings_accounts_empty">No accounts attached to this app.</string>
+    <string name="api_create_account_text">The app requests the creation of a new account. Please select an existing private key or create a new one.\nApps are restricted to the usage of keys you select here!</string>
+    <string name="api_register_text">The displayed app wants to encrypt/decrypt messages and sign them in your name.\nAllow access?\n\nWARNING: If you do not know why this screen appeared, disallow access! You can revoke access later using the \'Apps\' screen.</string>
     <string name="api_register_allow">Allow access</string>
     <string name="api_register_disallow">Disallow access</string>
     <string name="api_register_error_select_key">Please select a key!</string>
@@ -475,6 +474,16 @@
     <string name="key_view_tab_share">Share</string>
     <string name="key_view_tab_keys">Subkeys</string>
     <string name="key_view_tab_certs">Certificates</string>
+
+    <!-- Edit key -->
+    <string name="edit_key_action_change_passphrase">Change Passphrase</string>
+    <string name="edit_key_action_add_identity">Add Identity</string>
+    <string name="edit_key_action_add_subkey">Add Subkey</string>
+    <string name="edit_key_edit_user_id_title">Select an action!</string>
+    <string-array name="edit_key_edit_user_id">
+        <item>Change to Primary Identity</item>
+        <item>Revoke Identity</item>
+    </string-array>
 
     <!-- Navigation Drawer -->
     <string name="nav_keys">Keys</string>
@@ -550,8 +559,8 @@
         <item quantity="one">Ignoring one certificate issued by an unknown public key</item>
         <item quantity="other">Ignoring %s certificates issued by unknown public keys</item>
     </plurals>
+    <string name="msg_ip_uid_classifying_zero">Classifying user ids (no trusted keys available)</string>
     <plurals name="msg_ip_uid_classifying">
-        <item quantity="zero">Classifying user ids (no trusted keys available)</item>
         <item quantity="one">Classifying user ids (using one trusted key)</item>
         <item quantity="other">Classifying user ids (using %s trusted keys)</item>
     </plurals>
@@ -630,13 +639,17 @@
     <!-- modifySecretKeyRing -->
     <string name="msg_mr">Modifying keyring %s</string>
     <string name="msg_mf_error_encode">Encoding exception!</string>
+    <string name="msg_mf_error_fingerprint">Actual key fingerprint does not match the expected one!</string>
+    <string name="msg_mf_error_keyid">No key ID. This is an internal error, please file a bug report!</string>
+    <string name="msg_mf_error_integrity">Internal error, integrity check failed!</string>
+    <string name="msg_mf_error_revoked_primary">Revoked user ids cannot be primary!</string>
     <string name="msg_mf_error_pgp">PGP internal exception!</string>
     <string name="msg_mf_error_sig">Signature exception!</string>
     <string name="msg_mf_passphrase">Changing passphrase</string>
     <string name="msg_mf_subkey_change">Modifying subkey %s</string>
     <string name="msg_mf_subkey_missing">Tried to operate on missing subkey %s!</string>
     <string name="msg_mf_subkey_new">Generating new %1$s bit %2$s subkey</string>
-    <string name="msg_mf_subkey_new_id">New subkey id: %s</string>
+    <string name="msg_mf_subkey_new_id">New subkey ID: %s</string>
     <string name="msg_mf_subkey_past_expiry">Expiry date cannot be in the past!</string>
     <string name="msg_mf_subkey_revoke">Revoking subkey %s</string>
     <string name="msg_mf_success">Keyring successfully modified</string>

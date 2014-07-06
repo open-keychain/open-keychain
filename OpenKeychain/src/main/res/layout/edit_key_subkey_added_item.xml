@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="5dp">
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:minWidth="10dp"
+        android:background="@color/result_green" />
+
+    <TableLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:paddingLeft="8dp"
+        android:stretchColumns="1">
+
+        <TableRow>
+
+            <TextView
+                android:id="@+id/label_expiry"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:paddingRight="10dip"
+                android:text="@string/label_expiry" />
+
+            <Button
+                android:id="@+id/expiry"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:text="@string/none"
+                android:background="@drawable/button_edgy" />
+        </TableRow>
+
+        <TableRow
+            android:id="@+id/row_certify">
+
+            <TextView
+                android:id="@+id/label_usage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:paddingRight="10dip"
+                android:text="@string/label_usage" />
+            <CheckBox
+                android:id="@+id/chkCertify"
+                android:enabled = "false"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/flag_certify" />
+        </TableRow>
+
+        <TableRow
+            android:id="@+id/row_sign">
+
+            <TextView
+                android:id="@+id/label_usage2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:paddingRight="10dip"
+                android:text="@string/label_usage" />
+            <CheckBox
+                android:id="@+id/chkSign"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/flag_sign" />
+        </TableRow>
+
+        <TableRow
+            android:id="@+id/row_encrypt">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:paddingRight="10dip" />
+            <CheckBox
+                android:id="@+id/chkEncrypt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/flag_encrypt" />
+        </TableRow>
+
+        <TableRow
+            android:id="@+id/row_authenticate">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:paddingRight="10dip" />
+            <CheckBox
+                android:id="@+id/chkAuthenticate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/flag_authenticate" />
+        </TableRow>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:padding="4dp"
+            android:text="@string/key_creation_el_gamal_info" />
+
+        <TableRow>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:padding="4dp"
+                android:text="@string/label_algorithm" />
+
+            <Spinner
+                android:id="@+id/create_key_algorithm"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="4dp" />
+        </TableRow>
+
+        <TableRow>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:padding="4dp"
+                android:text="@string/label_key_size" />
+
+            <Spinner
+                android:id="@+id/create_key_size"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="right"
+                android:padding="4dp" />
+        </TableRow>
+
+        <TextView
+            android:id="@+id/custom_key_size_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:padding="4dp"
+            android:text="@string/key_size_custom_info"
+            android:visibility="gone" />
+
+        <EditText
+            android:id="@+id/custom_key_size_input"
+            android:layout_width="0dip"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:inputType="number"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/custom_key_size_info"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:padding="4dp"
+            android:visibility="gone" />
+
+    </TableLayout>
+
+    <ImageButton
+        android:id="@+id/subkey_added_item_delete"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:padding="8dp"
+        android:src="@drawable/ic_action_cancel"
+        android:layout_gravity="center_vertical"
+        style="@style/SelectableItem" />
+</LinearLayout>

@@ -27,8 +27,10 @@ import android.support.v4.app.FragmentManager;
 
 import com.devspark.appmsg.AppMsg;
 
+import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.ui.dialog.ProgressDialogFragment;
+import org.sufficientlysecure.keychain.util.Log;
 
 public class KeychainIntentServiceHandler extends Handler {
 
@@ -126,6 +128,7 @@ public class KeychainIntentServiceHandler extends Handler {
                 break;
 
             default:
+                Log.e(Constants.TAG, "unknown handler message!");
                 break;
         }
     }

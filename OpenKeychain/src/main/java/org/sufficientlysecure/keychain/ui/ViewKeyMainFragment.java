@@ -49,7 +49,6 @@ public class ViewKeyMainFragment extends LoaderFragment implements
     public static final String ARG_DATA_URI = "uri";
 
     private View mActionEdit;
-    private View mActionEditNew;
     private View mActionEditDivider;
     private View mActionEncrypt;
     private View mActionCertify;
@@ -74,7 +73,6 @@ public class ViewKeyMainFragment extends LoaderFragment implements
 
         mUserIds = (ListView) view.findViewById(R.id.view_key_user_ids);
         mActionEdit = view.findViewById(R.id.view_key_action_edit);
-        mActionEditNew = view.findViewById(R.id.view_key_action_edit_new);
         mActionEditDivider = view.findViewById(R.id.view_key_action_edit_divider);
         mActionEncrypt = view.findViewById(R.id.view_key_action_encrypt);
         mActionCertify = view.findViewById(R.id.view_key_action_certify);
@@ -116,11 +114,6 @@ public class ViewKeyMainFragment extends LoaderFragment implements
         mActionEdit.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
                 editKey(mDataUri);
-            }
-        });
-        mActionEditNew.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View view) {
-                editKeyNew(mDataUri);
             }
         });
 
@@ -259,16 +252,9 @@ public class ViewKeyMainFragment extends LoaderFragment implements
     private void editKey(Uri dataUri) {
         Intent editIntent = new Intent(getActivity(), EditKeyActivity.class);
         editIntent.setData(KeychainContract.KeyRingData.buildSecretKeyRingUri(dataUri));
-        editIntent.setAction(EditKeyActivity.ACTION_EDIT_KEY);
-        startActivityForResult(editIntent, 0);
-    }
-
-    private void editKeyNew(Uri dataUri) {
-        Intent editIntent = new Intent(getActivity(), EditKeyActivityNew.class);
-//        editIntent.setData(KeychainContract.KeyRingData.buildSecretKeyRingUri(dataUri));
-        editIntent.setData(KeychainContract.KeyRingData.buildSecretKeyRingUri(dataUri));
-        editIntent.setAction(EditKeyActivity.ACTION_EDIT_KEY);
-        startActivityForResult(editIntent, 0);
+//        editIntent.setAction(EditKeyActivity.ACTION_EDIT_KEY);
+//        startActivityForResult(editIntent, 0);
+        startActivity(editIntent);
     }
 
 }

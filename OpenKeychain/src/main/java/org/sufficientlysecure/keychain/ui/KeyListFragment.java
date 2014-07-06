@@ -47,7 +47,6 @@ import android.view.ViewGroup;
 import android.widget.AbsListView.MultiChoiceModeListener;
 import android.widget.AdapterView;
 import android.widget.FrameLayout;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -59,7 +58,6 @@ import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.helper.ExportHelper;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
-import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRingData;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.ui.dialog.DeleteKeyDialogFragment;
 import org.sufficientlysecure.keychain.util.Highlighter;
@@ -106,10 +104,10 @@ public class KeyListFragment extends LoaderFragment
 
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getActivity(), EditKeyActivity.class);
-                intent.setAction(EditKeyActivity.ACTION_CREATE_KEY);
-                intent.putExtra(EditKeyActivity.EXTRA_GENERATE_DEFAULT_KEYS, true);
-                intent.putExtra(EditKeyActivity.EXTRA_USER_IDS, ""); // show user id view
+                Intent intent = new Intent(getActivity(), EditKeyActivityOld.class);
+                intent.setAction(EditKeyActivityOld.ACTION_CREATE_KEY);
+                intent.putExtra(EditKeyActivityOld.EXTRA_GENERATE_DEFAULT_KEYS, true);
+                intent.putExtra(EditKeyActivityOld.EXTRA_USER_IDS, ""); // show user id view
                 startActivityForResult(intent, 0);
             }
         });
@@ -205,7 +203,7 @@ public class KeyListFragment extends LoaderFragment
                 public void onItemCheckedStateChanged(ActionMode mode, int position, long id,
                                                       boolean checked) {
                     if (checked) {
-                        mAdapter.setNewSelection(position, true);
+                        mAdapter.setNewSelection(position, checked);
                     } else {
                         mAdapter.removeSelection(position);
                     }
@@ -439,9 +437,7 @@ public class KeyListFragment extends LoaderFragment
         private class ItemViewHolder {
             TextView mMainUserId;
             TextView mMainUserIdRest;
-            View mStatusDivider;
             FrameLayout mStatusLayout;
-            ImageButton mButton;
             TextView mRevoked;
             ImageView mVerified;
         }
@@ -452,9 +448,7 @@ public class KeyListFragment extends LoaderFragment
             ItemViewHolder holder = new ItemViewHolder();
             holder.mMainUserId = (TextView) view.findViewById(R.id.mainUserId);
             holder.mMainUserIdRest = (TextView) view.findViewById(R.id.mainUserIdRest);
-            holder.mStatusDivider = view.findViewById(R.id.status_divider);
             holder.mStatusLayout = (FrameLayout) view.findViewById(R.id.status_layout);
-            holder.mButton = (ImageButton) view.findViewById(R.id.edit);
             holder.mRevoked = (TextView) view.findViewById(R.id.revoked);
             holder.mVerified = (ImageView) view.findViewById(R.id.verified);
             view.setTag(holder);
@@ -491,26 +485,12 @@ public class KeyListFragment extends LoaderFragment
             { // set edit button and revoked info, specific by key type
 
                 if (cursor.getInt(KeyListFragment.INDEX_HAS_ANY_SECRET) != 0) {
-                    // this is a secret key - show the edit mButton
-                    h.mStatusDivider.setVisibility(View.VISIBLE);
+                    // this is a secret key
                     h.mStatusLayout.setVisibility(View.VISIBLE);
                     h.mRevoked.setVisibility(View.GONE);
                     h.mVerified.setVisibility(View.GONE);
-                    h.mButton.setVisibility(View.VISIBLE);
-
-                    final long id = cursor.getLong(INDEX_MASTER_KEY_ID);
-                    h.mButton.setOnClickListener(new OnClickListener() {
-                        public void onClick(View view) {
-                            Intent editIntent = new Intent(getActivity(), EditKeyActivity.class);
-                            editIntent.setData(KeyRingData.buildSecretKeyRingUri(Long.toString(id)));
-                            editIntent.setAction(EditKeyActivity.ACTION_EDIT_KEY);
-                            startActivityForResult(editIntent, 0);
-                        }
-                    });
                 } else {
-                    // this is a public key - hide the edit mButton, show if it's revoked
-                    h.mStatusDivider.setVisibility(View.GONE);
-                    h.mButton.setVisibility(View.GONE);
+                    // this is a public key - show if it's revoked
 
                     boolean isRevoked = cursor.getInt(INDEX_IS_REVOKED) > 0;
                     boolean isExpired = !cursor.isNull(INDEX_EXPIRY)

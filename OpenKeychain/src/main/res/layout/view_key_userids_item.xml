@@ -6,13 +6,6 @@
     android:orientation="horizontal"
     android:singleLine="true">
 
-    <ImageView
-        android:id="@+id/has_changes"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:minWidth="10dp"
-        android:background="@color/emphasis" />
-
     <CheckBox
         android:id="@+id/checkBox"
         android:layout_width="wrap_content"
@@ -41,6 +34,8 @@
         android:layout_gravity="center_vertical"
         android:layout_width="0dip"
         android:layout_marginLeft="8dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginBottom="4dp"
         android:layout_height="wrap_content"
         android:layout_weight="1">
 
@@ -67,5 +62,14 @@
             android:textAppearance="?android:attr/textAppearanceSmall" />
 
     </LinearLayout>
+
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:id="@+id/edit_image"
+        android:src="@drawable/ic_action_edit"
+        android:padding="8dp"
+        android:layout_gravity="center_horizontal" />
 
 </LinearLayout>

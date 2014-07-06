@@ -165,6 +165,7 @@ public class OperationResultParcel implements Parcelable {
         MSG_IP_UID_CERT_ERROR (R.string.msg_ip_uid_cert_error),
         MSG_IP_UID_CERT_GOOD (R.string.msg_ip_uid_cert_good),
         MSG_IP_UID_CERTS_UNKNOWN (R.plurals.msg_ip_uid_certs_unknown),
+        MSG_IP_UID_CLASSIFYING_ZERO (R.string.msg_ip_uid_classifying_zero),
         MSG_IP_UID_CLASSIFYING (R.plurals.msg_ip_uid_classifying),
         MSG_IP_UID_REORDER(R.string.msg_ip_uid_reorder),
         MSG_IP_UID_PROCESSING (R.string.msg_ip_uid_processing),
@@ -233,9 +234,16 @@ public class OperationResultParcel implements Parcelable {
         MSG_MG_NEW_SUBKEY (R.string.msg_mg_new_subkey),
         MSG_MG_FOUND_NEW (R.string.msg_mg_found_new),
 
+        // secret key create
+        MSG_CR_ERROR_NO_MASTER (R.string.msg_mr),
+
         // secret key modify
         MSG_MF (R.string.msg_mr),
         MSG_MF_ERROR_ENCODE (R.string.msg_mf_error_encode),
+        MSG_MF_ERROR_FINGERPRINT (R.string.msg_mf_error_fingerprint),
+        MSG_MF_ERROR_KEYID (R.string.msg_mf_error_keyid),
+        MSG_MF_ERROR_INTEGRITY (R.string.msg_mf_error_integrity),
+        MSG_MF_ERROR_REVOKED_PRIMARY (R.string.msg_mf_error_revoked_primary),
         MSG_MF_ERROR_PGP (R.string.msg_mf_error_pgp),
         MSG_MF_ERROR_SIG (R.string.msg_mf_error_sig),
         MSG_MF_PASSPHRASE (R.string.msg_mf_passphrase),

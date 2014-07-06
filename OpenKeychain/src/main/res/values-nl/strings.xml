@@ -9,7 +9,6 @@
   <string name="title_create_key">Sleutel aanmaken</string>
   <string name="title_edit_key">Sleutel bewerken</string>
   <string name="title_preferences">Instellingen</string>
-  <string name="title_api_registered_apps">Geregistreerde apps</string>
   <string name="title_key_server_preference">Sleutelserver Voorkeur</string>
   <string name="title_change_passphrase">Wachtwoord wijzigen</string>
   <string name="title_set_passphrase">Wachtwoord instellen</string>
@@ -70,16 +69,11 @@
   <!--menu-->
   <string name="menu_preferences">Instellingen</string>
   <string name="menu_help">Help</string>
-  <string name="menu_import_from_file">Importeren uit bestand</string>
-  <string name="menu_import_from_qr_code">Importeren met QR-code</string>
-  <string name="menu_import_from_nfc">Importeren met NFC</string>
   <string name="menu_export_key">Exporteren naar bestand</string>
   <string name="menu_delete_key">Sleutel verwijderen</string>
   <string name="menu_create_key">Sleutel aanmaken</string>
   <string name="menu_create_key_expert">Sleutel aanmaken (expert)</string>
   <string name="menu_search">Zoeken</string>
-  <string name="menu_import_from_key_server">Sleutelserver</string>
-  <string name="menu_import_from_keybase">Importeren uit Keybase.io</string>
   <string name="menu_key_server">Sleutelserver...</string>
   <string name="menu_update_key">Update van sleutelserver</string>
   <string name="menu_export_key_to_server">Upload naar sleutelserver</string>
@@ -206,33 +200,12 @@
   <string name="ask_empty_id_ok">U heeft een lege identiteit toegevoegd, weet u zeker dat u wilt doorgaan?</string>
   <string name="public_key_deletetion_confirmation">Wilt u echt de publieke sleutel \'%s\' verwijderen?\nDit kunt u niet ongedaan maken!</string>
   <string name="also_export_secret_keys">Ook geheime sleutels exporteren?</string>
-  <plurals name="import_keys_added_and_updated_1">
-    <item quantity="one">Succesvol %d sleutel toegevoegd</item>
-    <item quantity="other">Succesvol %d sleutels toegevoegd</item>
-  </plurals>
-  <plurals name="import_keys_added_and_updated_2">
-    <item quantity="one">en %d sleutel bijgewerkt.</item>
-    <item quantity="other">en %d sleutels bijgewerkt.</item>
-  </plurals>
-  <plurals name="import_keys_added">
-    <item quantity="one">Succesvol %d sleutel toegevoegd.</item>
-    <item quantity="other">Succesvol %d sleutels toegevoegd.</item>
-  </plurals>
-  <plurals name="import_keys_updated">
-    <item quantity="one">Succesvol %d sleutel bijgewerkt.</item>
-    <item quantity="other">Succesvol %d sleutels bijgewerkt.</item>
-  </plurals>
-  <string name="import_error_nothing">Geen sleutels toegevoegd of bijgewerkt.</string>
   <string name="key_exported">1 sleutel succesvol geëxporteerd.</string>
   <string name="keys_exported">Succesvol %d sleutels geëxporteerd.</string>
   <string name="no_keys_exported">Geen sleutels geëxporteerd.</string>
   <string name="key_creation_el_gamal_info">Opmerking: alleen subsleutels ondersteunen ElGamal.</string>
   <string name="key_creation_weak_rsa_info">Opmerking: RSA sleutel met lengte 1024-bit en minder genereren wordt als onveilig beschouwd en is uitgeschakeld voor het genereren van nieuwe sleutels.</string>
   <string name="key_not_found">Kan de sleutel %08X niet vinden.</string>
-  <plurals name="keys_found">
-    <item quantity="one">%d sleutel gevonden.</item>
-    <item quantity="other">%d sleutels gevonden.</item>
-  </plurals>
   <plurals name="bad_keys_encountered">
     <item quantity="one">%d slechte geheime sleutel genegeerd. Misschien heeft u geëxporteerd met de optie\n --export-secret-subkeys\nZorg ervoor dat u in plaats daarvan met\n --export-secret-keys\nexporteert.</item>
     <item quantity="other">%d slechte geheime sleutels genegeerd. Misschien heeft u geëxporteerd met de optie\n --export-secret-subkeys\nZorg ervoor dat u in plaats daarvan met\n --export-secret-keys\nexporteert.</item>
@@ -272,8 +245,6 @@
   <string name="error_only_files_are_supported">Directe binaire data zonder eigenlijke bestand in bestandssysteem wordt niet ondersteund.</string>
   <string name="error_jelly_bean_needed">U heeft minstens Android 4.1 nodig om Androids NFC Beam eigenschap te gebruiken!</string>
   <string name="error_nfc_needed">Uw apparaat biedt geen ondersteuning voor NFC</string>
-  <string name="error_nothing_import">Niets te importeren</string>
-  <string name="error_import_file_no_content">Bestand heeft geen inhoud</string>
   <string name="error_generic_report_bug">Een algemene fout is opgetreden, maak alstublieft een nieuwe bug report voor OpenKeychain.</string>
   <plurals name="error_import_non_pgp_part">
     <item quantity="one">Deel van het geladen bestand is geldig OpenPGP object maar niet een OpenPGP sleutel</item>
@@ -324,10 +295,8 @@
   <string name="progress_verifying_integrity">integriteit verifiëren...</string>
   <string name="progress_deleting_securely">\'%s\' veilig verwijderen...</string>
   <!--action strings-->
-  <string name="hint_public_keys">Publieke sleutels zoeken</string>
   <string name="hint_secret_keys">Privésleutels zoeken</string>
   <string name="action_share_key_with">Sleutel delen met...</string>
-  <string name="hint_keybase_search">Doorzoek Keybase.io</string>
   <!--key bit length selections-->
   <string name="key_size_512">512</string>
   <string name="key_size_768">768</string>
@@ -368,6 +337,7 @@
   <string name="import_nfc_help_button">Help</string>
   <string name="import_clipboard_button">Verkrijg sleutel uit klembord</string>
   <string name="import_keybase_button">Verkrijg sleutel uit Keybase.io</string>
+  <!--Import result toast-->
   <!--Intent labels-->
   <string name="intent_decrypt_file">Decodeer bestand met OpenKeychain</string>
   <string name="intent_import_key">Importeer Sleutel met OpenKeychain</string>
@@ -431,7 +401,6 @@
   <string name="nav_encrypt">Ondertekenen en Versleutelen</string>
   <string name="nav_decrypt">Decoderen en Verifiëren</string>
   <string name="nav_import">Importeer Sleutels</string>
-  <string name="nav_apps">Geregistreerde apps</string>
   <string name="drawer_open">Open navigatiemenu</string>
   <string name="drawer_close">Sluit navigatiemenu</string>
   <string name="edit">Bewerken</string>
@@ -452,6 +421,11 @@
   <string name="cert_verify_failed">mislukt!</string>
   <string name="cert_verify_error">fout!</string>
   <string name="cert_verify_unavailable">sleutel onbeschikbaar</string>
+  <!--Import Public log entries-->
+  <!--Import Secret log entries-->
+  <!--Keyring Canonicalization log entries-->
+  <!--Keyring merging log entries-->
+  <!--modifySecretKeyRing-->
   <!--unsorted-->
   <string name="section_certifier_id">Certificeer</string>
   <string name="section_cert">Certificaat Details</string>

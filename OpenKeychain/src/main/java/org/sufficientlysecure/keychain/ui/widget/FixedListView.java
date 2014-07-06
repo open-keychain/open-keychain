@@ -25,9 +25,7 @@ import android.widget.ListView;
  * Automatically calculate height of ListView based on contained items. This enables to put this
  * ListView into a ScrollView without messing up.
  * <p/>
- * from
- * http://stackoverflow.com/questions/2419246/how-do-i-create-a-listview-thats-not-in-a-scrollview-
- * or-has-the-scrollview-dis
+ * from http://stackoverflow.com/a/3580117
  */
 public class FixedListView extends ListView {
 

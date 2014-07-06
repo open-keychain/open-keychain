@@ -41,9 +41,6 @@ import java.util.ArrayList;
 public class UserIdsAdapter extends CursorAdapter implements AdapterView.OnItemClickListener {
     private LayoutInflater mInflater;
 
-    private int mIndexUserId, mIndexRank;
-    private int mVerifiedId, mIsRevoked, mIsPrimary;
-
     private final ArrayList<Boolean> mCheckStates;
 
     private SaveKeyringParcel mSaveKeyringParcel;
@@ -56,6 +53,13 @@ public class UserIdsAdapter extends CursorAdapter implements AdapterView.OnItemC
             UserIds.IS_PRIMARY,
             UserIds.IS_REVOKED
     };
+    private static final int INDEX_ID = 0;
+    private static final int INDEX_USER_ID = 1;
+    private static final int INDEX_RANK = 2;
+    private static final int INDEX_VERIFIED = 3;
+    private static final int INDEX_IS_PRIMARY = 4;
+    private static final int INDEX_IS_REVOKED = 5;
+
 
     public UserIdsAdapter(Context context, Cursor c, int flags, boolean showCheckBoxes,
                           SaveKeyringParcel saveKeyringParcel) {
@@ -64,8 +68,6 @@ public class UserIdsAdapter extends CursorAdapter implements AdapterView.OnItemC
 
         mCheckStates = showCheckBoxes ? new ArrayList<Boolean>() : null;
         mSaveKeyringParcel = saveKeyringParcel;
-
-        initIndex(c);
     }
 
     public UserIdsAdapter(Context context, Cursor c, int flags, boolean showCheckBoxes) {
@@ -82,7 +84,6 @@ public class UserIdsAdapter extends CursorAdapter implements AdapterView.OnItemC
 
     @Override
     public Cursor swapCursor(Cursor newCursor) {
-        initIndex(newCursor);
         if (mCheckStates != null) {
             mCheckStates.clear();
             if (newCursor != null) {
@@ -91,7 +92,7 @@ public class UserIdsAdapter extends CursorAdapter implements AdapterView.OnItemC
                 // initialize to true (use case knowledge: we usually want to sign all uids)
                 for (int i = 0; i < count; i++) {
                     newCursor.moveToPosition(i);
-                    int verified = newCursor.getInt(mVerifiedId);
+                    int verified = newCursor.getInt(INDEX_VERIFIED);
                     mCheckStates.add(verified != Certs.VERIFIED_SECRET);
                 }
             }
@@ -100,31 +101,15 @@ public class UserIdsAdapter extends CursorAdapter implements AdapterView.OnItemC
         return super.swapCursor(newCursor);
     }
 
-    /**
-     * Get column indexes for performance reasons just once in constructor and swapCursor. For a
-     * performance comparison see http://stackoverflow.com/a/17999582
-     *
-     * @param cursor
-     */
-    private void initIndex(Cursor cursor) {
-        if (cursor != null) {
-            mIndexUserId = cursor.getColumnIndexOrThrow(UserIds.USER_ID);
-            mIndexRank = cursor.getColumnIndexOrThrow(UserIds.RANK);
-            mVerifiedId = cursor.getColumnIndexOrThrow(UserIds.VERIFIED);
-            mIsRevoked = cursor.getColumnIndexOrThrow(UserIds.IS_REVOKED);
-            mIsPrimary = cursor.getColumnIndexOrThrow(UserIds.IS_PRIMARY);
-        }
-    }
-
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
         TextView vName = (TextView) view.findViewById(R.id.userId);
         TextView vAddress = (TextView) view.findViewById(R.id.address);
         TextView vComment = (TextView) view.findViewById(R.id.comment);
         ImageView vVerified = (ImageView) view.findViewById(R.id.certified);
-        ImageView vHasChanges = (ImageView) view.findViewById(R.id.has_changes);
+        ImageView vEditImage = (ImageView) view.findViewById(R.id.edit_image);
 
-        String userId = cursor.getString(mIndexUserId);
+        String userId = cursor.getString(INDEX_USER_ID);
         String[] splitUserId = KeyRing.splitUserId(userId);
         if (splitUserId[0] != null) {
             vName.setText(splitUserId[0]);
@@ -144,31 +129,29 @@ public class UserIdsAdapter extends CursorAdapter implements AdapterView.OnItemC
             vComment.setVisibility(View.GONE);
         }
 
-        boolean isPrimary = cursor.getInt(mIsPrimary) != 0;
-        boolean isRevoked = cursor.getInt(mIsRevoked) > 0;
+        boolean isPrimary = cursor.getInt(INDEX_IS_PRIMARY) != 0;
+        boolean isRevoked = cursor.getInt(INDEX_IS_REVOKED) > 0;
 
         // for edit key
         if (mSaveKeyringParcel != null) {
-            boolean changeUserId = (mSaveKeyringParcel.changePrimaryUserId != null
+            boolean changeAnyPrimaryUserId = (mSaveKeyringParcel.changePrimaryUserId != null);
+            boolean changeThisPrimaryUserId = (mSaveKeyringParcel.changePrimaryUserId != null
                     && mSaveKeyringParcel.changePrimaryUserId.equals(userId));
-            boolean revoke = (mSaveKeyringParcel.revokeUserIds.contains(userId));
+            boolean revokeThisUserId = (mSaveKeyringParcel.revokeUserIds.contains(userId));
 
-            if (changeUserId) {
-                isPrimary = !isPrimary;
+            if (changeAnyPrimaryUserId) {
+                // change all user ids, only this one should be primary
+                isPrimary = changeThisPrimaryUserId;
             }
-            if (revoke) {
+            if (revokeThisUserId) {
                 if (!isRevoked) {
                     isRevoked = true;
                 }
             }
 
-            if (changeUserId || revoke) {
-                vHasChanges.setVisibility(View.VISIBLE);
-            } else {
-                vHasChanges.setVisibility(View.GONE);
-            }
+            vEditImage.setVisibility(View.VISIBLE);
         } else {
-            vHasChanges.setVisibility(View.GONE);
+            vEditImage.setVisibility(View.GONE);
         }
 
         if (isRevoked) {
@@ -178,15 +161,18 @@ public class UserIdsAdapter extends CursorAdapter implements AdapterView.OnItemC
             // disable and strike through text for revoked user ids
             vName.setEnabled(false);
             vAddress.setEnabled(false);
+            vComment.setEnabled(false);
             vName.setText(OtherHelper.strikeOutText(vName.getText()));
             vAddress.setText(OtherHelper.strikeOutText(vAddress.getText()));
+            vComment.setText(OtherHelper.strikeOutText(vComment.getText()));
         } else {
             vName.setEnabled(true);
             vAddress.setEnabled(true);
+            vComment.setEnabled(true);
 
             // verified: has been verified
             // isPrimary: show small star icon for primary user ids
-            int verified = cursor.getInt(mVerifiedId);
+            int verified = cursor.getInt(INDEX_VERIFIED);
             switch (verified) {
                 case Certs.VERIFIED_SECRET:
                     vVerified.setImageResource(isPrimary
@@ -234,7 +220,7 @@ public class UserIdsAdapter extends CursorAdapter implements AdapterView.OnItemC
         for (int i = 0; i < mCheckStates.size(); i++) {
             if (mCheckStates.get(i)) {
                 mCursor.moveToPosition(i);
-                result.add(mCursor.getString(mIndexUserId));
+                result.add(mCursor.getString(INDEX_USER_ID));
             }
         }
         return result;
@@ -242,7 +228,7 @@ public class UserIdsAdapter extends CursorAdapter implements AdapterView.OnItemC
 
     public String getUserId(int position) {
         mCursor.moveToPosition(position);
-        return mCursor.getString(mIndexUserId);
+        return mCursor.getString(INDEX_USER_ID);
     }
 
     @Override

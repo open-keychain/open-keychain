@@ -22,10 +22,10 @@ import java.util.ArrayList;
  */
 public class SaveKeyringParcel implements Parcelable {
 
-    // the master key id to be edited
-    public final long mMasterKeyId;
-    // the key fingerprint, for safety
-    public final byte[] mFingerprint;
+    // the master key id to be edited. if this is null, a new one will be created
+    public Long mMasterKeyId;
+    // the key fingerprint, for safety. MUST be null for a new key.
+    public byte[] mFingerprint;
 
     public String newPassphrase;
 
@@ -38,9 +38,7 @@ public class SaveKeyringParcel implements Parcelable {
     public ArrayList<String> revokeUserIds;
     public ArrayList<Long> revokeSubKeys;
 
-    public SaveKeyringParcel(long masterKeyId, byte[] fingerprint) {
-        mMasterKeyId = masterKeyId;
-        mFingerprint = fingerprint;
+    public SaveKeyringParcel() {
         addUserIds = new ArrayList<String>();
         addSubKeys = new ArrayList<SubkeyAdd>();
         changeSubKeys = new ArrayList<SubkeyChange>();
@@ -48,13 +46,19 @@ public class SaveKeyringParcel implements Parcelable {
         revokeSubKeys = new ArrayList<Long>();
     }
 
+    public SaveKeyringParcel(long masterKeyId, byte[] fingerprint) {
+        this();
+        mMasterKeyId = masterKeyId;
+        mFingerprint = fingerprint;
+    }
+
     // performance gain for using Parcelable here would probably be negligible,
     // use Serializable instead.
     public static class SubkeyAdd implements Serializable {
-        public final int mAlgorithm;
-        public final int mKeysize;
-        public final int mFlags;
-        public final Long mExpiry;
+        public int mAlgorithm;
+        public int mKeysize;
+        public int mFlags;
+        public Long mExpiry;
         public SubkeyAdd(int algorithm, int keysize, int flags, Long expiry) {
             mAlgorithm = algorithm;
             mKeysize = keysize;
@@ -64,9 +68,9 @@ public class SaveKeyringParcel implements Parcelable {
     }
 
     public static class SubkeyChange implements Serializable {
-        public final long mKeyId;
-        public final Integer mFlags;
-        public final Long mExpiry;
+        public long mKeyId;
+        public Integer mFlags;
+        public Long mExpiry;
         public SubkeyChange(long keyId, Integer flags, Long expiry) {
             mKeyId = keyId;
             mFlags = flags;
@@ -75,8 +79,10 @@ public class SaveKeyringParcel implements Parcelable {
     }
 
     public SaveKeyringParcel(Parcel source) {
-        mMasterKeyId = source.readLong();
+        mMasterKeyId = source.readInt() != 0 ? source.readLong() : null;
         mFingerprint = source.createByteArray();
+
+        newPassphrase = source.readString();
 
         addUserIds = source.createStringArrayList();
         addSubKeys = (ArrayList<SubkeyAdd>) source.readSerializable();
@@ -90,8 +96,13 @@ public class SaveKeyringParcel implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel destination, int flags) {
-        destination.writeLong(mMasterKeyId);
+        destination.writeInt(mMasterKeyId == null ? 0 : 1);
+        if(mMasterKeyId != null) {
+            destination.writeLong(mMasterKeyId);
+        }
         destination.writeByteArray(mFingerprint);
+
+        destination.writeString(newPassphrase);
 
         destination.writeStringList(addUserIds);
         destination.writeSerializable(addSubKeys);

@@ -41,6 +41,7 @@
   <!--compression-->
   <!--Help-->
   <!--Import-->
+  <!--Import result toast-->
   <!--Intent labels-->
   <!--Remote API-->
   <!--Share-->
@@ -49,5 +50,10 @@
   <!--Navigation Drawer-->
   <!--hints-->
   <!--certs-->
+  <!--Import Public log entries-->
+  <!--Import Secret log entries-->
+  <!--Keyring Canonicalization log entries-->
+  <!--Keyring merging log entries-->
+  <!--modifySecretKeyRing-->
   <!--unsorted-->
 </resources>
