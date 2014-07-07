@@ -11,6 +11,7 @@ import org.sufficientlysecure.keychain.util.Log;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Arrays;
 
 /** Represent the result of an operation.
  *
@@ -104,6 +105,15 @@ public class OperationResultParcel implements Parcelable {
             }
         };
 
+        @Override
+        public String toString() {
+            return "LogEntryParcel{" +
+                    "mLevel=" + mLevel +
+                    ", mType=" + mType +
+                    ", mParameters=" + Arrays.toString(mParameters) +
+                    ", mIndent=" + mIndent +
+                    '}';
+        }
     }
 
     /** This is an enum of all possible log events.
