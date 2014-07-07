@@ -60,7 +60,7 @@ public class KeyringTestingHelper {
         }
 
         public int hashCode() {
-            System.out.println("tag: " + tag + ", code: " + Arrays.hashCode(buf));
+            // System.out.println("tag: " + tag + ", code: " + Arrays.hashCode(buf));
             return Arrays.hashCode(buf);
         }
     }

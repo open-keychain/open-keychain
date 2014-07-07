@@ -5,7 +5,11 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.*;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
+import org.sufficientlysecure.keychain.service.OperationResultParcel;
 import org.sufficientlysecure.keychain.testsupport.*;
+import org.sufficientlysecure.keychain.testsupport.KeyringBuilder;
+import org.sufficientlysecure.keychain.testsupport.KeyringTestingHelper;
+import org.sufficientlysecure.keychain.testsupport.TestDataUtil;
 
 import java.util.*;
 import java.io.*;
@@ -21,6 +25,20 @@ public class UncachedKeyringTest {
 //        Uncomment to dump the encoded key for manual inspection
 //        TestDataUtil.appendToOutput(new ByteArrayInputStream(inputKeyRing.getEncoded()), new FileOutputStream(new File("/tmp/key-encoded")));
         new UncachedKeyringTestingHelper().doTestCanonicalize(inputKeyRing, expectedKeyRing);
+
+        OperationResultParcel.OperationLog log = new OperationResultParcel.OperationLog();
+        UncachedKeyRing canonicalizedRing = inputKeyRing.canonicalize(log, 0);
+
+        if (canonicalizedRing == null) {
+            throw new AssertionError("Canonicalization failed; messages: [" + log.toString() + "]");
+        }
+
+        HashSet onlyA = new HashSet<KeyringTestingHelper.Packet>();
+        HashSet onlyB = new HashSet<KeyringTestingHelper.Packet>();
+        Assert.assertTrue(KeyringTestingHelper.diffKeyrings(
+                canonicalizedRing.getEncoded(), expectedKeyRing.getEncoded(), onlyA, onlyB));
+
+
     }
 
 
