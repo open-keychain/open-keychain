@@ -44,8 +44,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 
-import com.devspark.appmsg.AppMsg;
-
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.helper.ContactHelper;
@@ -54,11 +52,13 @@ import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
+import org.sufficientlysecure.keychain.service.OperationResultParcel;
 import org.sufficientlysecure.keychain.service.OperationResults.ImportResult;
 import org.sufficientlysecure.keychain.ui.adapter.PagerTabStripAdapter;
 import org.sufficientlysecure.keychain.ui.widget.SlidingTabLayout.TabColorizer;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.ui.widget.SlidingTabLayout;
+import org.sufficientlysecure.keychain.util.Notify;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -295,7 +295,7 @@ public class ViewKeyActivity extends ActionBarActivity implements
                 }
             }
         } catch (ProviderHelper.NotFoundException e) {
-            AppMsg.makeText(this, R.string.error_key_not_found, AppMsg.STYLE_ALERT).show();
+            Notify.showNotify(this, R.string.error_key_not_found, Notify.Style.ERROR);
             Log.e(Constants.TAG, "Key not found", e);
         }
         return super.onOptionsItemSelected(item);
@@ -352,22 +352,11 @@ public class ViewKeyActivity extends ActionBarActivity implements
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        switch (requestCode) {
-            case REQUEST_CODE_LOOKUP_KEY: {
-                if (resultCode == Activity.RESULT_OK) {
-                    ImportResult result = data.getParcelableExtra(ImportKeysActivity.EXTRA_RESULT);
-                    if (result != null) {
-                        result.displayNotify(this);
-                    }
-                }
-                break;
-            }
-
-            default: {
-                super.onActivityResult(requestCode, resultCode, data);
-
-                break;
-            }
+        if (data.hasExtra(OperationResultParcel.EXTRA_RESULT)) {
+            OperationResultParcel result = data.getParcelableExtra(OperationResultParcel.EXTRA_RESULT);
+            result.createNotify(this).show();
+        } else {
+            super.onActivityResult(requestCode, resultCode, data);
         }
     }
 
@@ -455,8 +444,8 @@ public class ViewKeyActivity extends ActionBarActivity implements
         public void handleMessage(Message msg) {
             switch (msg.what) {
                 case NFC_SENT:
-                    AppMsg.makeText(ViewKeyActivity.this, R.string.nfc_successful,
-                            AppMsg.STYLE_INFO).show();
+                    Notify.showNotify(
+                            ViewKeyActivity.this, R.string.nfc_successful, Notify.Style.INFO);
                     break;
             }
         }

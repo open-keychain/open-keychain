@@ -30,8 +30,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.devspark.appmsg.AppMsg;
-
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.compatibility.ClipboardReflection;
@@ -41,6 +39,7 @@ import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
 import org.sufficientlysecure.keychain.service.PassphraseCacheService;
 import org.sufficientlysecure.keychain.ui.dialog.PassphraseDialogFragment;
 import org.sufficientlysecure.keychain.util.Log;
+import org.sufficientlysecure.keychain.util.Notify;
 
 public class EncryptMessageFragment extends Fragment {
     public static final String ARG_TEXT = "text";
@@ -126,13 +125,12 @@ public class EncryptMessageFragment extends Fragment {
             boolean gotPassphrase = (mEncryptInterface.getPassphrase() != null
                     && mEncryptInterface.getPassphrase().length() != 0);
             if (!gotPassphrase) {
-                AppMsg.makeText(getActivity(), R.string.passphrase_must_not_be_empty, AppMsg.STYLE_ALERT)
-                        .show();
+                Notify.showNotify(getActivity(), R.string.passphrase_must_not_be_empty, Notify.Style.ERROR);
                 return;
             }
 
             if (!mEncryptInterface.getPassphrase().equals(mEncryptInterface.getPassphraseAgain())) {
-                AppMsg.makeText(getActivity(), R.string.passphrases_do_not_match, AppMsg.STYLE_ALERT).show();
+                Notify.showNotify(getActivity(), R.string.passphrases_do_not_match, Notify.Style.ERROR);
                 return;
             }
 
@@ -143,8 +141,8 @@ public class EncryptMessageFragment extends Fragment {
                     && mEncryptInterface.getEncryptionKeys().length > 0);
 
             if (!gotEncryptionKeys && mEncryptInterface.getSignatureKey() == 0) {
-                AppMsg.makeText(getActivity(), R.string.select_encryption_or_signature_key,
-                        AppMsg.STYLE_ALERT).show();
+                Notify.showNotify(getActivity(), R.string.select_encryption_or_signature_key,
+                        Notify.Style.ERROR);
                 return;
             }
 
@@ -226,9 +224,8 @@ public class EncryptMessageFragment extends Fragment {
 
                     if (toClipboard) {
                         ClipboardReflection.copyToClipboard(getActivity(), output);
-                        AppMsg.makeText(getActivity(),
-                                R.string.encrypt_sign_clipboard_successful, AppMsg.STYLE_INFO)
-                                .show();
+                        Notify.showNotify(getActivity(),
+                                R.string.encrypt_sign_clipboard_successful, Notify.Style.INFO);
                     } else {
                         Intent sendIntent = new Intent(Intent.ACTION_SEND);
 

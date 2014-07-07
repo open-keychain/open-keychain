@@ -52,8 +52,6 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Button;
 
-import com.devspark.appmsg.AppMsg;
-
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.helper.ExportHelper;
@@ -62,6 +60,7 @@ import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.ui.dialog.DeleteKeyDialogFragment;
 import org.sufficientlysecure.keychain.util.Highlighter;
 import org.sufficientlysecure.keychain.util.Log;
+import org.sufficientlysecure.keychain.util.Notify;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -104,10 +103,10 @@ public class KeyListFragment extends LoaderFragment
 
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getActivity(), EditKeyActivityOld.class);
-                intent.setAction(EditKeyActivityOld.ACTION_CREATE_KEY);
-                intent.putExtra(EditKeyActivityOld.EXTRA_GENERATE_DEFAULT_KEYS, true);
-                intent.putExtra(EditKeyActivityOld.EXTRA_USER_IDS, ""); // show user id view
+                Intent intent = new Intent(getActivity(), EditKeyActivity.class);
+                intent.setAction(EditKeyActivity.ACTION_CREATE_KEY);
+                intent.putExtra(EditKeyActivity.EXTRA_GENERATE_DEFAULT_KEYS, true);
+                intent.putExtra(EditKeyActivity.EXTRA_USER_IDS, ""); // show user id view
                 startActivityForResult(intent, 0);
             }
         });
@@ -339,8 +338,8 @@ public class KeyListFragment extends LoaderFragment
     public void showDeleteKeyDialog(final ActionMode mode, long[] masterKeyIds, boolean hasSecret) {
         // Can only work on singular secret keys
         if(hasSecret && masterKeyIds.length > 1) {
-            AppMsg.makeText(getActivity(), R.string.secret_cannot_multiple,
-                    AppMsg.STYLE_ALERT).show();
+            Notify.showNotify(getActivity(), R.string.secret_cannot_multiple,
+                    Notify.Style.ERROR);
             return;
         }
 

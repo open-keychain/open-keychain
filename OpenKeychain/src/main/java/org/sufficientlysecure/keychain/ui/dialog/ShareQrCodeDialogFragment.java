@@ -27,14 +27,13 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.devspark.appmsg.AppMsg;
-
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.util.Log;
+import org.sufficientlysecure.keychain.util.Notify;
 import org.sufficientlysecure.keychain.util.QrCodeUtils;
 
 public class ShareQrCodeDialogFragment extends DialogFragment {
@@ -87,7 +86,7 @@ public class ShareQrCodeDialogFragment extends DialogFragment {
                     KeyRings.FINGERPRINT, ProviderHelper.FIELD_TYPE_BLOB);
             if (blob == null) {
                 Log.e(Constants.TAG, "key not found!");
-                AppMsg.makeText(getActivity(), R.string.error_key_not_found, AppMsg.STYLE_ALERT).show();
+                Notify.showNotify(getActivity(), R.string.error_key_not_found, Notify.Style.ERROR);
                 return null;
             }
 
@@ -97,7 +96,7 @@ public class ShareQrCodeDialogFragment extends DialogFragment {
             setQrCode(content);
         } catch (ProviderHelper.NotFoundException e) {
             Log.e(Constants.TAG, "key not found!", e);
-            AppMsg.makeText(getActivity(), R.string.error_key_not_found, AppMsg.STYLE_ALERT).show();
+            Notify.showNotify(getActivity(), R.string.error_key_not_found, Notify.Style.ERROR);
             return null;
         }
 

@@ -86,11 +86,6 @@
             android:label="@string/title_wizard"
             android:windowSoftInputMode="stateHidden" />
         <activity
-            android:name=".ui.EditKeyActivityOld"
-            android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
-            android:label="@string/title_edit_key"
-            android:windowSoftInputMode="stateHidden" />
-        <activity
             android:name=".ui.EditKeyActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
             android:label="@string/title_edit_key"

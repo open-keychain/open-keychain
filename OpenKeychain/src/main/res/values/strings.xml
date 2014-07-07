@@ -656,6 +656,7 @@
     <string name="msg_mf_unlock">Unlocking keyring</string>
 
     <!-- unsorted -->
+    <string name="internal_error">Internal error!</string>
     <string name="section_certifier_id">Certifier</string>
     <string name="section_cert">Certificate Details</string>
     <string name="label_user_id">Identity</string>

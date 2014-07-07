@@ -33,8 +33,6 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.devspark.appmsg.AppMsg;
-
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.compatibility.ClipboardReflection;
@@ -47,6 +45,7 @@ import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.ui.dialog.ShareNfcDialogFragment;
 import org.sufficientlysecure.keychain.ui.dialog.ShareQrCodeDialogFragment;
 import org.sufficientlysecure.keychain.util.Log;
+import org.sufficientlysecure.keychain.util.Notify;
 import org.sufficientlysecure.keychain.util.QrCodeUtils;
 
 import java.io.IOException;
@@ -171,13 +170,13 @@ public class ViewKeyShareFragment extends LoaderFragment implements
                 } else {
                     message = getResources().getString(R.string.key_copied_to_clipboard);
                 }
-                AppMsg.makeText(getActivity(), message, AppMsg.STYLE_INFO).show();
+                Notify.showNotify(getActivity(), message, Notify.Style.OK);
             } else {
                 // Android will fail with android.os.TransactionTooLargeException if key is too big
                 // see http://www.lonestarprod.com/?p=34
                 if (content.length() >= 86389) {
-                    AppMsg.makeText(getActivity(), R.string.key_too_big_for_sharing,
-                            AppMsg.STYLE_ALERT).show();
+                    Notify.showNotify(getActivity(), R.string.key_too_big_for_sharing,
+                            Notify.Style.ERROR);
                     return;
                 }
 
@@ -195,13 +194,13 @@ public class ViewKeyShareFragment extends LoaderFragment implements
             }
         } catch (PgpGeneralException e) {
             Log.e(Constants.TAG, "error processing key!", e);
-            AppMsg.makeText(getActivity(), R.string.error_key_processing, AppMsg.STYLE_ALERT).show();
+            Notify.showNotify(getActivity(), R.string.error_key_processing, Notify.Style.ERROR);
         } catch (IOException e) {
             Log.e(Constants.TAG, "error processing key!", e);
-            AppMsg.makeText(getActivity(), R.string.error_key_processing, AppMsg.STYLE_ALERT).show();
+            Notify.showNotify(getActivity(), R.string.error_key_processing, Notify.Style.ERROR);
         } catch (ProviderHelper.NotFoundException e) {
             Log.e(Constants.TAG, "key not found!", e);
-            AppMsg.makeText(getActivity(), R.string.error_key_not_found, AppMsg.STYLE_ALERT).show();
+            Notify.showNotify(getActivity(), R.string.error_key_not_found, Notify.Style.ERROR);
         }
     }
 

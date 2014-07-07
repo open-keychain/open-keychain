@@ -29,8 +29,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 
-import com.devspark.appmsg.AppMsg;
-
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
@@ -40,6 +38,7 @@ import org.sufficientlysecure.keychain.provider.KeychainContract.UserIds;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.ui.adapter.UserIdsAdapter;
 import org.sufficientlysecure.keychain.util.Log;
+import org.sufficientlysecure.keychain.util.Notify;
 
 import java.util.Date;
 
@@ -225,7 +224,7 @@ public class ViewKeyMainFragment extends LoaderFragment implements
     private void encrypt(Uri dataUri) {
         // If there is no encryption key, don't bother.
         if (!mHasEncrypt) {
-            AppMsg.makeText(getActivity(), R.string.error_no_encrypt_subkey, AppMsg.STYLE_ALERT).show();
+            Notify.showNotify(getActivity(), R.string.error_no_encrypt_subkey, Notify.Style.ERROR);
             return;
         }
         try {
@@ -246,7 +245,7 @@ public class ViewKeyMainFragment extends LoaderFragment implements
     private void certify(Uri dataUri) {
         Intent signIntent = new Intent(getActivity(), CertifyKeyActivity.class);
         signIntent.setData(dataUri);
-        startActivity(signIntent);
+        startActivityForResult(signIntent, 0);
     }
 
     private void editKey(Uri dataUri) {
