@@ -1,10 +1,20 @@
 package org.sufficientlysecure.keychain.service;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.view.View;
+
+import com.github.johnpersano.supertoasts.SuperCardToast;
+import com.github.johnpersano.supertoasts.SuperToast;
+import com.github.johnpersano.supertoasts.util.OnClickWrapper;
+import com.github.johnpersano.supertoasts.util.Style;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.ui.LogDisplayActivity;
+import org.sufficientlysecure.keychain.ui.LogDisplayFragment;
 import org.sufficientlysecure.keychain.util.IterableIterator;
 import org.sufficientlysecure.keychain.util.Log;
 
@@ -21,6 +31,9 @@ import java.util.ArrayList;
  *
  */
 public class OperationResultParcel implements Parcelable {
+
+    public static final String EXTRA_RESULT = "operation_result";
+
     /** Holds the overall result, the number specifying varying degrees of success. The first bit
      * is 0 on overall success, 1 on overall failure. All other bits may be used for more specific
      * conditions. */
@@ -104,6 +117,43 @@ public class OperationResultParcel implements Parcelable {
 
     }
 
+    public SuperCardToast createNotify(final Activity activity) {
+
+        int resultType = getResult();
+
+        String str;
+        int duration, color;
+
+        // Not an overall failure
+        if ((resultType & OperationResultParcel.RESULT_ERROR) == 0) {
+
+            if (getLog().containsWarnings()) {
+                duration = 0;
+                color = Style.ORANGE;
+            } else {
+                duration = SuperToast.Duration.LONG;
+                color = Style.GREEN;
+            }
+
+            str = activity.getString(R.string.import_error);
+
+        } else {
+            duration = 0;
+            color = Style.RED;
+            str = activity.getString(R.string.import_error);
+        }
+
+        SuperCardToast toast = new SuperCardToast(activity,
+                SuperToast.Type.STANDARD, Style.getStyle(color, SuperToast.Animations.POPUP));
+        toast.setText(str);
+        toast.setDuration(duration);
+        toast.setIndeterminate(duration == 0);
+        toast.setSwipeToDismiss(true);
+
+        return toast;
+
+    }
+
     /** This is an enum of all possible log events.
      *
      * Element names should generally be prefixed with MSG_XX_ where XX is an
@@ -122,6 +172,8 @@ public class OperationResultParcel implements Parcelable {
      *
      */
     public static enum LogType {
+
+        INTERNAL_ERROR (R.string.internal_error),
 
         // import public
         MSG_IP(R.string.msg_ip),
@@ -311,6 +363,14 @@ public class OperationResultParcel implements Parcelable {
 
         public void add(LogLevel level, LogType type, int indent) {
             add(new OperationResultParcel.LogEntryParcel(level, type, indent, (Object[]) null));
+        }
+
+        public LogEntryParcel getResultId() {
+            LogEntryParcel entry = get(size()-1);
+            if (entry.mLevel != LogLevel.OK && entry.mLevel != LogLevel.ERROR) {
+                return new LogEntryParcel(LogLevel.ERROR, LogType.INTERNAL_ERROR, 0);
+            }
+            return entry;
         }
 
         public boolean containsWarnings() {

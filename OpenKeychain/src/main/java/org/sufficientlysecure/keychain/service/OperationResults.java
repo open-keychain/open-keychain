@@ -80,7 +80,7 @@ public abstract class OperationResults {
             }
         };
 
-        public void displayNotify(final Activity activity) {
+        public SuperCardToast createNotify(final Activity activity) {
 
             int resultType = getResult();
 
@@ -88,7 +88,7 @@ public abstract class OperationResults {
             int duration, color;
 
             // Not an overall failure
-            if ((resultType & ImportResult.RESULT_ERROR) == 0) {
+            if ((resultType & OperationResultParcel.RESULT_ERROR) == 0) {
                 String withWarnings;
 
                 // Any warnings?
@@ -157,7 +157,8 @@ public abstract class OperationResults {
                         }
                 ));
             }
-            toast.show();
+
+            return toast;
 
         }
 
