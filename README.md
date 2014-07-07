@@ -219,10 +219,6 @@ Some parts and some libraries are Apache License v2, MIT X11 License (see below)
   https://github.com/Bearded-Hen/Android-Bootstrap  
   MIT License
 
-* Android AppMsg  
-  https://github.com/johnkil/Android-AppMsg  
-  Apache License v2
-
 ### Images
 * icon.svg  
   modified version of kgpg_key2_kopete.svgz
