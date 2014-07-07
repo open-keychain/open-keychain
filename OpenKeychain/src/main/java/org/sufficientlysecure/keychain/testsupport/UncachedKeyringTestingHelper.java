@@ -41,7 +41,7 @@ public class UncachedKeyringTestingHelper {
         UncachedKeyRing canonicalized = keyRing1.canonicalize(operationLog, 0);
 
         if (canonicalized == null) {
-            throw new AssertionError("Canonicalization failed; messages: [" + operationLog + "]");
+            throw new AssertionError("Canonicalization failed; messages: [" + operationLog.toList() + "]");
         }
 
         return TestDataUtil.iterEquals(canonicalized.getPublicKeys(), keyRing2.getPublicKeys(), new
