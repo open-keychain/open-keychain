@@ -5,9 +5,13 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.*;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
+import org.sufficientlysecure.keychain.service.OperationResultParcel;
 import org.sufficientlysecure.keychain.testsupport.*;
 import org.sufficientlysecure.keychain.testsupport.KeyringBuilder;
+import org.sufficientlysecure.keychain.testsupport.KeyringTestingHelper;
 import org.sufficientlysecure.keychain.testsupport.TestDataUtil;
+
+import java.util.HashSet;
 
 @RunWith(RobolectricTestRunner.class)
 @org.robolectric.annotation.Config(emulateSdk = 18) // Robolectric doesn't yet support 19
@@ -17,7 +21,20 @@ public class UncachedKeyringTest {
     public void testVerifySuccess() throws Exception {
         UncachedKeyRing expectedKeyRing = KeyringBuilder.ring2();
         UncachedKeyRing inputKeyRing = KeyringBuilder.ring1();
-        new UncachedKeyringTestingHelper().doTestCanonicalize(inputKeyRing, expectedKeyRing);
+        // new UncachedKeyringTestingHelper().doTestCanonicalize(inputKeyRing, expectedKeyRing);
+
+        OperationResultParcel.OperationLog log = new OperationResultParcel.OperationLog();
+        UncachedKeyRing canonicalizedRing = inputKeyRing.canonicalize(log, 0);
+
+        if (canonicalizedRing == null) {
+            throw new AssertionError("Canonicalization failed; messages: [" + log.toString() + "]");
+        }
+
+        HashSet onlyA = new HashSet<KeyringTestingHelper.Packet>();
+        HashSet onlyB = new HashSet<KeyringTestingHelper.Packet>();
+        Assert.assertTrue(KeyringTestingHelper.diffKeyrings(
+                canonicalizedRing.getEncoded(), expectedKeyRing.getEncoded(), onlyA, onlyB));
+
     }
 
     /**
