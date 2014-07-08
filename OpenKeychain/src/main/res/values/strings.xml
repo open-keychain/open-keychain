@@ -480,6 +480,11 @@
         <item>Change to Primary Identity</item>
         <item>Revoke Identity</item>
     </string-array>
+    <string name="edit_key_edit_subkey_title">Select an action!</string>
+    <string-array name="edit_key_edit_subkey">
+        <item>Change Expiry</item>
+        <item>Revoke Subkey</item>
+    </string-array>
 
     <!-- Navigation Drawer -->
     <string name="nav_keys">Keys</string>

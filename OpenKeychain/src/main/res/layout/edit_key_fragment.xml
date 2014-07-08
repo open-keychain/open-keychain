@@ -117,6 +117,36 @@
             android:clickable="true"
             style="@style/SelectableItem" />
 
+        <LinearLayout
+            android:id="@+id/edit_key_debug_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                style="@style/SectionHeader"
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:layout_marginTop="8dp"
+                android:text="DEBUG options"
+                android:layout_weight="1" />
+
+            <TextView
+                android:id="@+id/edit_key_debug_change_passphrase"
+                android:paddingLeft="8dp"
+                android:paddingRight="8dp"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="@string/edit_key_action_change_passphrase"
+                android:minHeight="?android:attr/listPreferredItemHeight"
+                android:drawableRight="@drawable/ic_action_edit"
+                android:drawablePadding="8dp"
+                android:gravity="center_vertical"
+                android:clickable="true"
+                style="@style/SelectableItem" />
+        </LinearLayout>
+
     </LinearLayout>
 
 </ScrollView>
