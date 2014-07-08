@@ -53,6 +53,12 @@ import java.util.Set;
 
 public class OpenPgpService extends RemoteService {
 
+    static final String[] KEYRING_PROJECTION =
+            new String[]{
+                    KeyRings._ID,
+                    KeyRings.MASTER_KEY_ID,
+            };
+
     /**
      * Search database for key ids based on emails.
      *
@@ -70,7 +76,7 @@ public class OpenPgpService extends RemoteService {
 
         for (String email : encryptionUserIds) {
             Uri uri = KeyRings.buildUnifiedKeyRingsFindByEmailUri(email);
-            Cursor cursor = getContentResolver().query(uri, null, null, null, null);
+            Cursor cursor = getContentResolver().query(uri, KEYRING_PROJECTION, null, null, null);
             try {
                 if (cursor != null && cursor.moveToFirst()) {
                     long id = cursor.getLong(cursor.getColumnIndex(KeyRings.MASTER_KEY_ID));
