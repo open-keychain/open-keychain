@@ -27,6 +27,7 @@ public class UncachedKeyringTest {
 
     @Before
     public void setUp() throws Exception {
+        // show Log.x messages in system.out
         ShadowLog.stream = System.out;
     }
 
@@ -46,13 +47,11 @@ public class UncachedKeyringTest {
         UncachedKeyRing ring = op.createSecretKeyRing(parcel, log, 0);
 
         if (ring == null) {
-            log.print(activity);
-            throw new AssertionError("oh no");
+            throw new AssertionError("key creation failed");
         }
 
-        if (!"swagerinho".equals(ring.getMasterKeyId())) {
-            log.print(activity);
-            throw new AssertionError("oh noo");
+        if (!"swagerinho".equals(ring.getPublicKey().getPrimaryUserId())) {
+            throw new AssertionError("incorrect primary user id");
         }
 
     }
@@ -66,7 +65,7 @@ public class UncachedKeyringTest {
         UncachedKeyRing canonicalizedRing = inputKeyRing.canonicalize(log, 0);
 
         if (canonicalizedRing == null) {
-            throw new AssertionError("Canonicalization failed; messages: [" + log.toString() + "]");
+            throw new AssertionError("Canonicalization failed; messages: [" + log + "]");
         }
 
         HashSet onlyA = new HashSet<KeyringTestingHelper.Packet>();
