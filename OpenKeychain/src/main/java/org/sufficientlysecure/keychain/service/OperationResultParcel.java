@@ -325,6 +325,7 @@ public class OperationResultParcel implements Parcelable {
         }
 
         public void add(LogLevel level, LogType type, int indent) {
+            Log.d(Constants.TAG, type.toString());
             parcels.add(new OperationResultParcel.LogEntryParcel(level, type, indent, (Object[]) null));
         }
 

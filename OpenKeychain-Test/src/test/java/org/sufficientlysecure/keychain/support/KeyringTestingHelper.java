@@ -30,6 +30,7 @@ import java.io.InputStream;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.SortedSet;
 
 /**
  * Helper for tests of the Keyring import in ProviderHelper.
@@ -66,10 +67,15 @@ public class KeyringTestingHelper {
         return saveSuccess;
     }
 
-    public static class Packet {
-        int tag;
-        int length;
-        byte[] buf;
+    public static class Packet implements Comparable<Packet> {
+        public int position;
+        public int tag;
+        public int length;
+        public byte[] buf;
+
+        public int compareTo(Packet other) {
+            return Integer.compare(position, other.position);
+        }
 
         public boolean equals(Object other) {
             return other instanceof Packet && Arrays.areEqual(this.buf, ((Packet) other).buf);
@@ -81,7 +87,8 @@ public class KeyringTestingHelper {
         }
     }
 
-    public static boolean diffKeyrings(byte[] ringA, byte[] ringB, Set<Packet> onlyA, Set<Packet> onlyB)
+    public static boolean diffKeyrings(byte[] ringA, byte[] ringB,
+                                       SortedSet<Packet> onlyA, SortedSet<Packet> onlyB)
             throws IOException {
         InputStream streamA = new ByteArrayInputStream(ringA);
         InputStream streamB = new ByteArrayInputStream(ringB);
@@ -89,18 +96,22 @@ public class KeyringTestingHelper {
         HashSet<Packet> a = new HashSet<Packet>(), b = new HashSet<Packet>();
 
         Packet p;
+        int pos = 0;
         while(true) {
             p = readPacket(streamA);
             if (p == null) {
                 break;
             }
+            p.position = pos++;
             a.add(p);
         }
+        pos = 0;
         while(true) {
             p = readPacket(streamB);
             if (p == null) {
                 break;
             }
+            p.position = pos++;
             b.add(p);
         }
 
@@ -109,7 +120,7 @@ public class KeyringTestingHelper {
         onlyB.addAll(b);
         onlyB.removeAll(a);
 
-        return onlyA.isEmpty() && onlyB.isEmpty();
+        return !onlyA.isEmpty() || !onlyB.isEmpty();
     }
 
     private static Packet readPacket(InputStream in) throws IOException {
