@@ -1,10 +1,9 @@
 package org.sufficientlysecure.keychain.tests;
 
-import android.app.Activity;
-
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.runner.RunWith;
 import org.robolectric.*;
 import org.robolectric.shadows.ShadowLog;
@@ -17,7 +16,6 @@ import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
 import org.sufficientlysecure.keychain.support.KeyringBuilder;
 import org.sufficientlysecure.keychain.support.KeyringTestingHelper;
 import org.sufficientlysecure.keychain.support.TestDataUtil;
-import org.sufficientlysecure.keychain.ui.KeyListActivity;
 
 import java.util.HashSet;
 
@@ -25,39 +23,46 @@ import java.util.HashSet;
 @org.robolectric.annotation.Config(emulateSdk = 18) // Robolectric doesn't yet support 19
 public class UncachedKeyringTest {
 
-    @Before
-    public void setUp() throws Exception {
-        // show Log.x messages in system.out
-        ShadowLog.stream = System.out;
-    }
+    static UncachedKeyRing staticRing;
+    UncachedKeyRing ring;
 
-    @Test
-    public void testCreateKey() throws Exception {
-        Activity activity = Robolectric.buildActivity(KeyListActivity.class).create().get();
-
+    @BeforeClass public static void setUpOnce() throws Exception {
         SaveKeyringParcel parcel = new SaveKeyringParcel();
         parcel.addSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
                 Constants.choice.algorithm.rsa, 1024, KeyFlags.CERTIFY_OTHER, null));
-        // parcel.addSubKeys.add(new SubkeyAdd(algorithm.rsa, 1024, KeyFlags.SIGN_DATA, null));
+
         parcel.addUserIds.add("swagerinho");
         parcel.newPassphrase = "swag";
         PgpKeyOperation op = new PgpKeyOperation(null);
 
         OperationResultParcel.OperationLog log = new OperationResultParcel.OperationLog();
-        UncachedKeyRing ring = op.createSecretKeyRing(parcel, log, 0);
+        staticRing = op.createSecretKeyRing(parcel, log, 0);
+    }
 
-        if (ring == null) {
-            throw new AssertionError("key creation failed");
-        }
+    @Before public void setUp() throws Exception {
+        // show Log.x messages in system.out
+        ShadowLog.stream = System.out;
+        ring = staticRing;
+    }
 
-        if (!"swagerinho".equals(ring.getPublicKey().getPrimaryUserId())) {
-            throw new AssertionError("incorrect primary user id");
-        }
+    @Test
+    public void testCreateKey() throws Exception {
+
+        // parcel.addSubKeys.add(new SubkeyAdd(algorithm.rsa, 1024, KeyFlags.SIGN_DATA, null));
+
+        Assert.assertNotNull("key creation failed", ring);
+
+        Assert.assertEquals("incorrect primary user id",
+                "swagerinho", ring.getPublicKey().getPrimaryUserId());
+
+        Assert.assertEquals("wrong number of subkeys",
+                1, ring.getAvailableSubkeys().size());
 
     }
 
     @Test
     public void testVerifySuccess() throws Exception {
+
         UncachedKeyRing expectedKeyRing = KeyringBuilder.correctRing();
         UncachedKeyRing inputKeyRing = KeyringBuilder.ringWithExtraIncorrectSignature();
 
