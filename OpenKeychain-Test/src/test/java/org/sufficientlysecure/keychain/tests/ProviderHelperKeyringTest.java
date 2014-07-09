@@ -39,7 +39,7 @@ public class ProviderHelperKeyringTest {
         )));
     }
 
-    @Test
+    // @Test
     public void testSavePublicKeyringRsa() throws Exception {
         Assert.assertTrue(new KeyringTestingHelper(Robolectric.application).addKeyring(prependResourcePath(Arrays.asList(
                         "000001-006.public_key",
@@ -60,7 +60,7 @@ public class ProviderHelperKeyringTest {
                 ))));
     }
 
-    @Test
+    // @Test
     public void testSavePublicKeyringDsa() throws Exception {
         Assert.assertTrue(new KeyringTestingHelper(Robolectric.application).addKeyring(prependResourcePath(Arrays.asList(
                         "000016-006.public_key",
@@ -77,7 +77,7 @@ public class ProviderHelperKeyringTest {
                 ))));
     }
 
-    @Test
+    // @Test
     public void testSavePublicKeyringDsa2() throws Exception {
         Assert.assertTrue(new KeyringTestingHelper(Robolectric.application).addKeyring(prependResourcePath(Arrays.asList(
                         "000027-006.public_key",
