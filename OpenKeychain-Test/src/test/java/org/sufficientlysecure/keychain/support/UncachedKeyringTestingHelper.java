@@ -1,25 +1,35 @@
-package org.sufficientlysecure.keychain.testsupport;
+/*
+ * Copyright (C) Art O Cathain
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+package org.sufficientlysecure.keychain.support;
 
 import org.spongycastle.bcpg.BCPGKey;
-import org.spongycastle.bcpg.PublicKeyAlgorithmTags;
 import org.spongycastle.bcpg.PublicKeyPacket;
-import org.spongycastle.bcpg.RSAPublicBCPGKey;
 import org.spongycastle.bcpg.SignatureSubpacket;
 import org.spongycastle.openpgp.PGPException;
 import org.spongycastle.openpgp.PGPPublicKey;
-import org.spongycastle.openpgp.PGPPublicKeyRing;
 import org.spongycastle.openpgp.PGPSignature;
 import org.spongycastle.openpgp.PGPSignatureSubpacketVector;
 import org.spongycastle.openpgp.PGPUserAttributeSubpacketVector;
-import org.spongycastle.openpgp.operator.bc.BcKeyFingerprintCalculator;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
 import org.sufficientlysecure.keychain.pgp.UncachedPublicKey;
 import org.sufficientlysecure.keychain.service.OperationResultParcel;
 
-import java.math.BigInteger;
 import java.util.Arrays;
-import java.util.Date;
-import java.util.Objects;
 
 /**
  * Created by art on 28/06/14.
@@ -31,7 +41,7 @@ public class UncachedKeyringTestingHelper {
         UncachedKeyRing canonicalized = keyRing1.canonicalize(operationLog, 0);
 
         if (canonicalized == null) {
-            throw new AssertionError("Canonicalization failed; messages: [" + operationLog.toString() + "]");
+            throw new AssertionError("Canonicalization failed; messages: [" + operationLog.toList() + "]");
         }
 
         return TestDataUtil.iterEquals(canonicalized.getPublicKeys(), keyRing2.getPublicKeys(), new

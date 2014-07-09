@@ -14,9 +14,9 @@ import org.sufficientlysecure.keychain.pgp.PgpKeyOperation;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
 import org.sufficientlysecure.keychain.service.OperationResultParcel;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
-import org.sufficientlysecure.keychain.testsupport.KeyringBuilder;
-import org.sufficientlysecure.keychain.testsupport.KeyringTestingHelper;
-import org.sufficientlysecure.keychain.testsupport.TestDataUtil;
+import org.sufficientlysecure.keychain.support.KeyringBuilder;
+import org.sufficientlysecure.keychain.support.KeyringTestingHelper;
+import org.sufficientlysecure.keychain.support.TestDataUtil;
 import org.sufficientlysecure.keychain.ui.KeyListActivity;
 
 import java.util.HashSet;
@@ -59,9 +59,8 @@ public class UncachedKeyringTest {
 
     @Test
     public void testVerifySuccess() throws Exception {
-        UncachedKeyRing expectedKeyRing = KeyringBuilder.ring2();
-        UncachedKeyRing inputKeyRing = KeyringBuilder.ring1();
-        // new UncachedKeyringTestingHelper().doTestCanonicalize(inputKeyRing, expectedKeyRing);
+        UncachedKeyRing expectedKeyRing = KeyringBuilder.correctRing();
+        UncachedKeyRing inputKeyRing = KeyringBuilder.ringWithExtraIncorrectSignature();
 
         OperationResultParcel.OperationLog log = new OperationResultParcel.OperationLog();
         UncachedKeyRing canonicalizedRing = inputKeyRing.canonicalize(log, 0);
