@@ -12,6 +12,7 @@ before_install:
     # Install required Android components.
     #- echo "y" | android update sdk -a --filter build-tools-19.1.0,android-19,platform-tools,extra-android-support,extra-android-m2repository --no-ui --force
     - ( sleep 5 && while [ 1 ]; do sleep 1; echo y; done ) | android update sdk --no-ui --all --force --filter build-tools-19.1.0,android-19,platform-tools,extra-android-support,extra-android-m2repository
+    - ./install-custom-gradle-test-plugin.sh
 install: echo "Installation done"
 script: gradle assemble -S -q
 

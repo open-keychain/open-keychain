@@ -1,12 +1,16 @@
 buildscript {
     repositories {
         mavenCentral()
+        // need this for com.novoda:gradle-android-test-plugin:0.9.9-SNAPSHOT below (0.9.3 in repos doesn't work!)
+        // run ./install-custom-gradle-test-plugin.sh to pull the thing into the local repository
+        mavenLocal()
     }
 
     dependencies {
         // NOTE: Always use fixed version codes not dynamic ones, e.g. 0.7.3 instead of 0.7.+, see README for more information
         classpath 'com.android.tools.build:gradle:0.12.0'
         classpath 'org.robolectric:robolectric-gradle-plugin:0.11.0'
+        classpath 'com.novoda:gradle-android-test-plugin:0.9.9-SNAPSHOT'
     }
 }
 

@@ -21,13 +21,6 @@ dependencies {
     compile project(':extern:minidns')
     compile project(':extern:KeybaseLib:Lib')
 
-
-    // Unit tests are run with Robolectric
-    testCompile 'junit:junit:4.11'
-    testCompile 'org.robolectric:robolectric:2.3'
-    testCompile 'com.squareup:fest-android:1.0.8'
-    testCompile 'com.google.android:android:4.1.1.4'
-    // compile dependencies are automatically also included in testCompile
 }
 
 android {

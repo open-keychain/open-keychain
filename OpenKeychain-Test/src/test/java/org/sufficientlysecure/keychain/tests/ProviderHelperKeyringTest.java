@@ -1,4 +1,4 @@
-package tests;
+package org.sufficientlysecure.keychain.tests;
 
 import java.util.Collections;
 import java.util.Arrays;
@@ -9,9 +9,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.*;
-import org.openintents.openpgp.OpenPgpSignatureResult;
 import org.sufficientlysecure.keychain.testsupport.KeyringTestingHelper;
-import org.sufficientlysecure.keychain.testsupport.PgpVerifyTestingHelper;
 
 @RunWith(RobolectricTestRunner.class)
 @org.robolectric.annotation.Config(emulateSdk = 18) // Robolectric doesn't yet support 19

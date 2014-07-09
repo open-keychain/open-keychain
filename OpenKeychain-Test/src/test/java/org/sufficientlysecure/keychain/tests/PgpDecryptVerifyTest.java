@@ -1,4 +1,4 @@
-package tests;
+package org.sufficientlysecure.keychain.tests;
 
 import org.junit.Assert;
 import org.junit.Test;
