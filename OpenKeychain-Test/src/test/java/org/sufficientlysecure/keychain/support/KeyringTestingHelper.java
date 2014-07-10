@@ -29,7 +29,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.Set;
 import java.util.SortedSet;
 
 /**
@@ -67,18 +66,18 @@ public class KeyringTestingHelper {
         return saveSuccess;
     }
 
-    public static class Packet implements Comparable<Packet> {
+    public static class RawPacket implements Comparable<RawPacket> {
         public int position;
         public int tag;
         public int length;
         public byte[] buf;
 
-        public int compareTo(Packet other) {
+        public int compareTo(RawPacket other) {
             return Integer.compare(position, other.position);
         }
 
         public boolean equals(Object other) {
-            return other instanceof Packet && Arrays.areEqual(this.buf, ((Packet) other).buf);
+            return other instanceof RawPacket && Arrays.areEqual(this.buf, ((RawPacket) other).buf);
         }
 
         public int hashCode() {
@@ -88,14 +87,14 @@ public class KeyringTestingHelper {
     }
 
     public static boolean diffKeyrings(byte[] ringA, byte[] ringB,
-                                       SortedSet<Packet> onlyA, SortedSet<Packet> onlyB)
+                                       SortedSet<RawPacket> onlyA, SortedSet<RawPacket> onlyB)
             throws IOException {
         InputStream streamA = new ByteArrayInputStream(ringA);
         InputStream streamB = new ByteArrayInputStream(ringB);
 
-        HashSet<Packet> a = new HashSet<Packet>(), b = new HashSet<Packet>();
+        HashSet<RawPacket> a = new HashSet<RawPacket>(), b = new HashSet<RawPacket>();
 
-        Packet p;
+        RawPacket p;
         int pos = 0;
         while(true) {
             p = readPacket(streamA);
@@ -123,7 +122,7 @@ public class KeyringTestingHelper {
         return !onlyA.isEmpty() || !onlyB.isEmpty();
     }
 
-    private static Packet readPacket(InputStream in) throws IOException {
+    private static RawPacket readPacket(InputStream in) throws IOException {
 
         // save here. this is tag + length, max 6 bytes
         in.mark(6);
@@ -196,7 +195,7 @@ public class KeyringTestingHelper {
         if (in.read(buf) != headerLength+bodyLen) {
             throw new IOException("read length mismatch!");
         }
-        Packet p = new Packet();
+        RawPacket p = new RawPacket();
         p.tag = tag;
         p.length = bodyLen;
         p.buf = buf;

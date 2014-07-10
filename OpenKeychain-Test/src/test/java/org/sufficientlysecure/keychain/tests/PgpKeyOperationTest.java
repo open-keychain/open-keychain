@@ -7,8 +7,12 @@ import org.junit.BeforeClass;
 import org.junit.runner.RunWith;
 import org.robolectric.*;
 import org.robolectric.shadows.ShadowLog;
-import org.spongycastle.bcpg.PacketTags;
+import org.spongycastle.bcpg.BCPGInputStream;
+import org.spongycastle.bcpg.Packet;
+import org.spongycastle.bcpg.SecretKeyPacket;
+import org.spongycastle.bcpg.SignaturePacket;
 import org.spongycastle.bcpg.sig.KeyFlags;
+import org.spongycastle.openpgp.PGPSignature;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.Constants.choice.algorithm;
 import org.sufficientlysecure.keychain.pgp.PgpKeyOperation;
@@ -19,9 +23,10 @@ import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel.SubkeyAdd;
 import org.sufficientlysecure.keychain.support.KeyringBuilder;
 import org.sufficientlysecure.keychain.support.KeyringTestingHelper;
-import org.sufficientlysecure.keychain.support.KeyringTestingHelper.Packet;
+import org.sufficientlysecure.keychain.support.KeyringTestingHelper.RawPacket;
 import org.sufficientlysecure.keychain.support.TestDataUtil;
 
+import java.io.ByteArrayInputStream;
 import java.util.Iterator;
 import java.util.TreeSet;
 
@@ -79,20 +84,36 @@ public class PgpKeyOperationTest {
         parcel.addSubKeys.add(new SubkeyAdd(algorithm.rsa, 1024, KeyFlags.SIGN_DATA, null));
 
         OperationResultParcel.OperationLog log = new OperationResultParcel.OperationLog();
-        UncachedKeyRing modified = op.modifySecretKeyRing(ring, parcel, "swag", log, 0);
+        UncachedKeyRing rawModified = op.modifySecretKeyRing(ring, parcel, "swag", log, 0);
 
-        Assert.assertNotNull("key modification failed", modified);
+        Assert.assertNotNull("key modification failed", rawModified);
 
-        TreeSet<Packet> onlyA = new TreeSet<Packet>();
-        TreeSet<Packet> onlyB = new TreeSet<Packet>();
-        Assert.assertTrue("keyrings do not differ", KeyringTestingHelper.diffKeyrings(
+        UncachedKeyRing modified = rawModified.canonicalize(log, 0);
+
+        TreeSet<RawPacket> onlyA = new TreeSet<RawPacket>();
+        TreeSet<RawPacket> onlyB = new TreeSet<RawPacket>();
+        Assert.assertTrue("key must be constant through canonicalization",
+                !KeyringTestingHelper.diffKeyrings(
+                        modified.getEncoded(), rawModified.getEncoded(), onlyA, onlyB));
+
+        Assert.assertTrue("keyring must differ from original", KeyringTestingHelper.diffKeyrings(
                 ring.getUncached().getEncoded(), modified.getEncoded(), onlyA, onlyB));
 
-        Assert.assertEquals("no extra packets in original", onlyA.size(), 0);
-        Assert.assertEquals("two extra packets in modified", onlyB.size(), 2);
-        Iterator<Packet> it = onlyB.iterator();
-        Assert.assertEquals("first new packet must be secret subkey", it.next().tag, PacketTags.SECRET_SUBKEY);
-        Assert.assertEquals("second new packet must be signature", it.next().tag, PacketTags.SIGNATURE);
+        Assert.assertEquals("no extra packets in original", 0, onlyA.size());
+        Assert.assertEquals("exactly two extra packets in modified", 2, onlyB.size());
+
+        Iterator<RawPacket> it = onlyB.iterator();
+        Packet p;
+
+        p = new BCPGInputStream(new ByteArrayInputStream(it.next().buf)).readPacket();
+        Assert.assertTrue("first new packet must be secret subkey", p instanceof SecretKeyPacket);
+
+        p = new BCPGInputStream(new ByteArrayInputStream(it.next().buf)).readPacket();
+        Assert.assertTrue("second new packet must be signature", p instanceof SignaturePacket);
+        Assert.assertEquals("signature type must be subkey binding certificate",
+                PGPSignature.SUBKEY_BINDING, ((SignaturePacket) p).getSignatureType());
+        Assert.assertEquals("signature must have been created by master key",
+                ring.getMasterKeyId(), ((SignaturePacket) p).getKeyID());
 
     }
 
@@ -109,8 +130,8 @@ public class PgpKeyOperationTest {
             throw new AssertionError("Canonicalization failed; messages: [" + log + "]");
         }
 
-        TreeSet onlyA = new TreeSet<KeyringTestingHelper.Packet>();
-        TreeSet onlyB = new TreeSet<KeyringTestingHelper.Packet>();
+        TreeSet onlyA = new TreeSet<RawPacket>();
+        TreeSet onlyB = new TreeSet<RawPacket>();
         Assert.assertTrue("keyrings differ", !KeyringTestingHelper.diffKeyrings(
                 expectedKeyRing.getEncoded(), expectedKeyRing.getEncoded(), onlyA, onlyB));
 
