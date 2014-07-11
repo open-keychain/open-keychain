@@ -248,7 +248,9 @@ public class OperationResultParcel implements Parcelable {
         MSG_MG_FOUND_NEW (R.string.msg_mg_found_new),
 
         // secret key create
-        MSG_CR_ERROR_NO_MASTER (R.string.msg_mr),
+        MSG_CR (R.string.msg_cr),
+        MSG_CR_ERROR_NO_MASTER (R.string.msg_cr_error_no_master),
+        MSG_CR_ERROR_NO_CERTIFY (R.string.msg_cr_error_no_certify),
 
         // secret key modify
         MSG_MF (R.string.msg_mr),
@@ -260,6 +262,8 @@ public class OperationResultParcel implements Parcelable {
         MSG_MF_ERROR_PGP (R.string.msg_mf_error_pgp),
         MSG_MF_ERROR_SIG (R.string.msg_mf_error_sig),
         MSG_MF_PASSPHRASE (R.string.msg_mf_passphrase),
+        MSG_MF_PRIMARY_REPLACE_OLD (R.string.msg_mf_primary_replace_old),
+        MSG_MF_PRIMARY_NEW (R.string.msg_mf_primary_new),
         MSG_MF_SUBKEY_CHANGE (R.string.msg_mf_subkey_change),
         MSG_MF_SUBKEY_MISSING (R.string.msg_mf_subkey_missing),
         MSG_MF_SUBKEY_NEW_ID (R.string.msg_mf_subkey_new_id),

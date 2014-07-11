@@ -166,7 +166,7 @@ public class PgpKeyOperation {
 
         try {
 
-            log.add(LogLevel.ERROR, LogType.MSG_MF_ERROR_KEYID, indent);
+            log.add(LogLevel.START, LogType.MSG_CR, indent);
             indent += 1;
             updateProgress(R.string.progress_building_key, 0, 100);
 
@@ -176,6 +176,11 @@ public class PgpKeyOperation {
             }
 
             SubkeyAdd add = saveParcel.addSubKeys.remove(0);
+            if ((add.mFlags & KeyFlags.CERTIFY_OTHER) != KeyFlags.CERTIFY_OTHER) {
+                log.add(LogLevel.ERROR, LogType.MSG_CR_ERROR_NO_CERTIFY, indent);
+                return null;
+            }
+
             PGPKeyPair keyPair = createKey(add.mAlgorithm, add.mKeysize);
 
             if (add.mAlgorithm == Constants.choice.algorithm.elgamal) {

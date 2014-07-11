@@ -550,7 +550,7 @@
     <string name="msg_ip_reinsert_secret">Re-inserting secret key</string>
     <string name="msg_ip_uid_cert_bad">Encountered bad certificate!</string>
     <string name="msg_ip_uid_cert_error">Error processing certificate!</string>
-    <string name="msg_ip_uid_cert_good">User id is certified by %1$s (%2$s)</string>
+    <string name="msg_ip_uid_cert_good">User id is certified by %1$s</string>
     <plurals name="msg_ip_uid_certs_unknown">
         <item quantity="one">Ignoring one certificate issued by an unknown public key</item>
         <item quantity="other">Ignoring %s certificates issued by unknown public keys</item>
@@ -632,6 +632,11 @@
     <string name="msg_mg_new_subkey">Adding new subkey %s</string>
     <string name="msg_mg_found_new">Found %s new certificates in keyring</string>
 
+    <!-- createSecretKeyRing -->
+    <string name="msg_cr">Generating new master key</string>
+    <string name="msg_cr_error_no_master">No master key options specified!</string>
+    <string name="msg_cr_error_no_certify">Master key must have certify flag!</string>
+
     <!-- modifySecretKeyRing -->
     <string name="msg_mr">Modifying keyring %s</string>
     <string name="msg_mf_error_encode">Encoding exception!</string>
@@ -642,6 +647,8 @@
     <string name="msg_mf_error_pgp">PGP internal exception!</string>
     <string name="msg_mf_error_sig">Signature exception!</string>
     <string name="msg_mf_passphrase">Changing passphrase</string>
+    <string name="msg_mf_primary_replace_old">Replacing certificate of previous primary user id</string>
+    <string name="msg_mf_primary_new">Generating new certificate for new primary user id</string>
     <string name="msg_mf_subkey_change">Modifying subkey %s</string>
     <string name="msg_mf_subkey_missing">Tried to operate on missing subkey %s!</string>
     <string name="msg_mf_subkey_new">Generating new %1$s bit %2$s subkey</string>
