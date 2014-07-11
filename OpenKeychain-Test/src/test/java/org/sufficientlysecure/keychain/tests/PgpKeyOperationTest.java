@@ -74,7 +74,7 @@ public class PgpKeyOperationTest {
         op = new PgpKeyOperation(null);
 
         // set this up, gonna need it more than once
-        SaveKeyringParcel parcel = new SaveKeyringParcel();
+        parcel = new SaveKeyringParcel();
         parcel.mMasterKeyId = ring.getMasterKeyId();
         parcel.mFingerprint = ring.getFingerprint();
 
