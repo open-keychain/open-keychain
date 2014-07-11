@@ -200,7 +200,7 @@ public class PgpKeyOperation {
             PGPSecretKeyRing sKR = new PGPSecretKeyRing(
                     masterSecretKey.getEncoded(), new JcaKeyFingerprintCalculator());
 
-            return internal(sKR, masterSecretKey, saveParcel, "", log, indent);
+            return internal(sKR, masterSecretKey, add.mFlags, saveParcel, "", log, indent);
 
         } catch (PGPException e) {
             Log.e(Constants.TAG, "pgp error encoding key", e);
@@ -262,11 +262,16 @@ public class PgpKeyOperation {
             return null;
         }
 
-        return internal(sKR, masterSecretKey, saveParcel, passphrase, log, indent);
+        // read masterKeyFlags, and use the same as before.
+        // since this is the master key, this contains at least CERTIFY_OTHER
+        int masterKeyFlags = readMasterKeyFlags(masterSecretKey.getPublicKey());
+
+        return internal(sKR, masterSecretKey, masterKeyFlags, saveParcel, passphrase, log, indent);
 
     }
 
     private UncachedKeyRing internal(PGPSecretKeyRing sKR, PGPSecretKey masterSecretKey,
+                                     int masterKeyFlags,
                                      SaveKeyringParcel saveParcel, String passphrase,
                                      OperationLog log, int indent) {
 
@@ -323,8 +328,8 @@ public class PgpKeyOperation {
                         && userId.equals(saveParcel.changePrimaryUserId);
                 // generate and add new certificate
                 PGPSignature cert = generateUserIdSignature(masterPrivateKey,
-                        masterPublicKey, userId, isPrimary);
-                modifiedPublicKey = PGPPublicKey.addCertification(masterPublicKey, userId, cert);
+                        masterPublicKey, userId, isPrimary, masterKeyFlags);
+                modifiedPublicKey = PGPPublicKey.addCertification(modifiedPublicKey, userId, cert);
             }
 
             // 2b. Add revocations for revoked user ids
@@ -551,7 +556,7 @@ public class PgpKeyOperation {
     }
 
     private static PGPSignature generateUserIdSignature(
-            PGPPrivateKey masterPrivateKey, PGPPublicKey pKey, String userId, boolean primary)
+            PGPPrivateKey masterPrivateKey, PGPPublicKey pKey, String userId, boolean primary, int flags)
             throws IOException, PGPException, SignatureException {
         PGPContentSignerBuilder signerBuilder = new JcaPGPContentSignerBuilder(
                 pKey.getAlgorithm(), PGPUtil.SHA1)
@@ -563,6 +568,7 @@ public class PgpKeyOperation {
         subHashedPacketsGen.setPreferredHashAlgorithms(true, PREFERRED_HASH_ALGORITHMS);
         subHashedPacketsGen.setPreferredCompressionAlgorithms(true, PREFERRED_COMPRESSION_ALGORITHMS);
         subHashedPacketsGen.setPrimaryUserID(false, primary);
+        subHashedPacketsGen.setKeyFlags(false, flags);
         sGen.setHashedSubpackets(subHashedPacketsGen.generate());
         sGen.init(PGPSignature.POSITIVE_CERTIFICATION, masterPrivateKey);
         return sGen.generateCertification(userId, pKey);
@@ -668,6 +674,17 @@ public class PgpKeyOperation {
 
         return sGen.generateCertification(masterPublicKey, pKey);
 
+    }
+
+    private static int readMasterKeyFlags(PGPPublicKey masterKey) {
+        int flags = KeyFlags.CERTIFY_OTHER;
+        for(PGPSignature sig : new IterableIterator<PGPSignature>(masterKey.getSignatures())) {
+            if (!sig.hasSubpackets()) {
+                continue;
+            }
+            flags |= sig.getHashedSubPackets().getKeyFlags();
+        }
+        return flags;
     }
 
 }
