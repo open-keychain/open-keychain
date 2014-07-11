@@ -16,6 +16,7 @@ import org.spongycastle.bcpg.SecretSubkeyPacket;
 import org.spongycastle.bcpg.SignaturePacket;
 import org.spongycastle.bcpg.UserIDPacket;
 import org.spongycastle.bcpg.sig.KeyFlags;
+import org.spongycastle.openpgp.PGPSecretKey;
 import org.spongycastle.openpgp.PGPSignature;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.Constants.choice.algorithm;
@@ -38,6 +39,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.Random;
 
 @RunWith(RobolectricTestRunner.class)
 @org.robolectric.annotation.Config(emulateSdk = 18) // Robolectric doesn't yet support 19
@@ -149,9 +151,12 @@ public class PgpKeyOperationTest {
     @Test
     public void testSubkeyAdd() throws Exception {
 
-        parcel.mAddSubKeys.add(new SubkeyAdd(algorithm.rsa, 1024, KeyFlags.SIGN_DATA, null));
+        long expiry = new Date().getTime() / 1000 + 159;
+        int flags = KeyFlags.SIGN_DATA;
+        int bits = 1024 + new Random().nextInt(8);
+        parcel.mAddSubKeys.add(new SubkeyAdd(algorithm.rsa, bits, flags, expiry));
 
-        applyModificationWithChecks(parcel, ring, onlyA, onlyB);
+        UncachedKeyRing modified = applyModificationWithChecks(parcel, ring, onlyA, onlyB);
 
         Assert.assertEquals("no extra packets in original", 0, onlyA.size());
         Assert.assertEquals("exactly two extra packets in modified", 2, onlyB.size());
@@ -167,6 +172,37 @@ public class PgpKeyOperationTest {
                 PGPSignature.SUBKEY_BINDING, ((SignaturePacket) p).getSignatureType());
         Assert.assertEquals("signature must have been created by master key",
                 ring.getMasterKeyId(), ((SignaturePacket) p).getKeyID());
+
+        // get new key from ring. it should be the last one (add a check to make sure?)
+        UncachedPublicKey newKey = null;
+        {
+            Iterator<UncachedPublicKey> it = modified.getPublicKeys();
+            while (it.hasNext()) {
+                newKey = it.next();
+            }
+        }
+
+        Assert.assertNotNull("new key is not null", newKey);
+        Assert.assertNotNull("added key must have an expiry date",
+                newKey.getExpiryTime());
+        Assert.assertEquals("added key must have expected expiry date",
+                expiry, newKey.getExpiryTime().getTime()/1000);
+        Assert.assertEquals("added key must have expected flags",
+                flags, newKey.getKeyUsage());
+        Assert.assertEquals("added key must have expected bitsize",
+                bits, newKey.getBitStrength());
+
+        { // a past expiry should fail
+            parcel.reset();
+            parcel.mAddSubKeys.add(new SubkeyAdd(algorithm.rsa, 1024, KeyFlags.SIGN_DATA,
+                    new Date().getTime()/1000-10));
+
+            WrappedSecretKeyRing secretRing = new WrappedSecretKeyRing(ring.getEncoded(), false, 0);
+            OperationResultParcel.OperationLog log = new OperationResultParcel.OperationLog();
+            modified = op.modifySecretKeyRing(secretRing, parcel, "swag", log, 0);
+
+            Assert.assertNull("setting subkey expiry to a past date should fail", modified);
+        }
 
     }
 
@@ -201,7 +237,7 @@ public class PgpKeyOperationTest {
 
             Assert.assertNotNull("modified key must have an expiry date",
                     modified.getPublicKey(keyId).getExpiryTime());
-            Assert.assertEquals("modified key must have an expiry date",
+            Assert.assertEquals("modified key must have expected expiry date",
                     expiry, modified.getPublicKey(keyId).getExpiryTime().getTime()/1000);
             Assert.assertEquals("modified key must have same flags as before",
                     ring.getPublicKey(keyId).getKeyUsage(), modified.getPublicKey(keyId).getKeyUsage());
