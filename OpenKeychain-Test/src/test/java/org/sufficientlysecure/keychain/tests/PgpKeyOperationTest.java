@@ -172,6 +172,41 @@ public class PgpKeyOperationTest {
     }
 
     @Test
+    public void testSubkeyRevoke() throws Exception {
+
+        SaveKeyringParcel parcel = new SaveKeyringParcel();
+        parcel.mMasterKeyId = ring.getMasterKeyId();
+        parcel.mFingerprint = ring.getFingerprint();
+        {
+            Iterator<UncachedPublicKey> it = ring.getPublicKeys();
+            it.next();
+            parcel.revokeSubKeys.add(it.next().getKeyId());
+        }
+
+        UncachedKeyRing modified = applyModificationWithChecks(parcel, ring);
+
+        ArrayList<RawPacket> onlyA = new ArrayList<RawPacket>();
+        ArrayList<RawPacket> onlyB = new ArrayList<RawPacket>();
+
+        Assert.assertTrue("keyring must differ from original", KeyringTestingHelper.diffKeyrings(
+                ring.getEncoded(), modified.getEncoded(), onlyA, onlyB));
+
+        Assert.assertEquals("no extra packets in original", 0, onlyA.size());
+        Assert.assertEquals("exactly one extra packet in modified", 1, onlyB.size());
+
+        Iterator<RawPacket> it = onlyB.iterator();
+        Packet p;
+
+        p = new BCPGInputStream(new ByteArrayInputStream(it.next().buf)).readPacket();
+        Assert.assertTrue("first new packet must be secret subkey", p instanceof SignaturePacket);
+        Assert.assertEquals("signature type must be subkey binding certificate",
+                PGPSignature.SUBKEY_REVOCATION, ((SignaturePacket) p).getSignatureType());
+        Assert.assertEquals("signature must have been created by master key",
+                ring.getMasterKeyId(), ((SignaturePacket) p).getKeyID());
+
+    }
+
+    @Test
     public void testUserIdAdd() throws Exception {
 
         SaveKeyringParcel parcel = new SaveKeyringParcel();
