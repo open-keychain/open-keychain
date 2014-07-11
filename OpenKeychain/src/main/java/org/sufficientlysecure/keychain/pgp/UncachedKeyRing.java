@@ -558,7 +558,7 @@ public class UncachedKeyRing {
                     // make sure the certificate checks out
                     try {
                         cert.init(masterKey);
-                        if (!cert.verifySignature(key)) {
+                        if (!cert.verifySignature(masterKey, key)) {
                             log.add(LogLevel.WARN, LogType.MSG_KC_SUB_REVOKE_BAD, indent);
                             badCerts += 1;
                             continue;
