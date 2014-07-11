@@ -43,6 +43,7 @@ public class PgpKeyOperationTest {
     static UncachedKeyRing staticRing;
     UncachedKeyRing ring;
     PgpKeyOperation op;
+    SaveKeyringParcel parcel;
     ArrayList<RawPacket> onlyA = new ArrayList<RawPacket>();
     ArrayList<RawPacket> onlyB = new ArrayList<RawPacket>();
 
@@ -72,6 +73,11 @@ public class PgpKeyOperationTest {
         // setting up some parameters just to reduce code duplication
         op = new PgpKeyOperation(null);
 
+        // set this up, gonna need it more than once
+        SaveKeyringParcel parcel = new SaveKeyringParcel();
+        parcel.mMasterKeyId = ring.getMasterKeyId();
+        parcel.mFingerprint = ring.getFingerprint();
+
     }
 
     @Test
@@ -94,10 +100,6 @@ public class PgpKeyOperationTest {
 
     @Test
     public void testCreatedKey() throws Exception {
-
-        SaveKeyringParcel parcel = new SaveKeyringParcel();
-        parcel.mMasterKeyId = ring.getMasterKeyId();
-        parcel.mFingerprint = ring.getFingerprint();
 
         // an empty modification should change nothing. this also ensures the keyring
         // is constant through canonicalization.
@@ -141,9 +143,6 @@ public class PgpKeyOperationTest {
     @Test
     public void testSubkeyAdd() throws Exception {
 
-        SaveKeyringParcel parcel = new SaveKeyringParcel();
-        parcel.mMasterKeyId = ring.getMasterKeyId();
-        parcel.mFingerprint = ring.getFingerprint();
         parcel.addSubKeys.add(new SubkeyAdd(algorithm.rsa, 1024, KeyFlags.SIGN_DATA, null));
 
         applyModificationWithChecks(parcel, ring, onlyA, onlyB);
@@ -169,9 +168,6 @@ public class PgpKeyOperationTest {
     @Test
     public void testSubkeyRevoke() throws Exception {
 
-        SaveKeyringParcel parcel = new SaveKeyringParcel();
-        parcel.mMasterKeyId = ring.getMasterKeyId();
-        parcel.mFingerprint = ring.getFingerprint();
         {
             Iterator<UncachedPublicKey> it = ring.getPublicKeys();
             it.next();
@@ -203,9 +199,6 @@ public class PgpKeyOperationTest {
 
         { // revoke second user id
 
-            SaveKeyringParcel parcel = new SaveKeyringParcel();
-            parcel.mMasterKeyId = ring.getMasterKeyId();
-            parcel.mFingerprint = ring.getFingerprint();
             parcel.revokeUserIds.add(uid);
 
             modified = applyModificationWithChecks(parcel, ring, onlyA, onlyB);
@@ -226,9 +219,8 @@ public class PgpKeyOperationTest {
         }
 
         { // re-add second user id
-            SaveKeyringParcel parcel = new SaveKeyringParcel();
-            parcel.mMasterKeyId = ring.getMasterKeyId();
-            parcel.mFingerprint = ring.getFingerprint();
+            // new parcel
+            parcel.reset();
             parcel.addUserIds.add(uid);
 
             applyModificationWithChecks(parcel, modified, onlyA, onlyB, true, false);
@@ -265,9 +257,6 @@ public class PgpKeyOperationTest {
     @Test
     public void testUserIdAdd() throws Exception {
 
-        SaveKeyringParcel parcel = new SaveKeyringParcel();
-        parcel.mMasterKeyId = ring.getMasterKeyId();
-        parcel.mFingerprint = ring.getFingerprint();
         parcel.addUserIds.add("rainbow");
 
         UncachedKeyRing modified = applyModificationWithChecks(parcel, ring, onlyA, onlyB);
@@ -304,9 +293,6 @@ public class PgpKeyOperationTest {
         String uid = ring.getPublicKey().getUnorderedUserIds().get(1);
 
         { // first part, add new user id which is also primary
-            SaveKeyringParcel parcel = new SaveKeyringParcel();
-            parcel.mMasterKeyId = modified.getMasterKeyId();
-            parcel.mFingerprint = modified.getFingerprint();
             parcel.addUserIds.add("jack");
             parcel.changePrimaryUserId = "jack";
 
@@ -317,9 +303,7 @@ public class PgpKeyOperationTest {
         }
 
         { // second part, change primary to a different one
-            SaveKeyringParcel parcel = new SaveKeyringParcel();
-            parcel.mMasterKeyId = ring.getMasterKeyId();
-            parcel.mFingerprint = ring.getFingerprint();
+            parcel.reset();
             parcel.changePrimaryUserId = uid;
 
             modified = applyModificationWithChecks(parcel, modified, onlyA, onlyB);
@@ -332,9 +316,7 @@ public class PgpKeyOperationTest {
         }
 
         { // third part, change primary to a non-existent one
-            SaveKeyringParcel parcel = new SaveKeyringParcel();
-            parcel.mMasterKeyId = ring.getMasterKeyId();
-            parcel.mFingerprint = ring.getFingerprint();
+            parcel.reset();
             //noinspection SpellCheckingInspection
             parcel.changePrimaryUserId = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 
