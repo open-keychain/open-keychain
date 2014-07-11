@@ -65,10 +65,8 @@ import java.security.NoSuchProviderException;
 import java.security.SecureRandom;
 import java.security.SignatureException;
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.Iterator;
-import java.util.TimeZone;
 
 /**
  * This class is the single place where ALL operations that actually modify a PGP public or secret
@@ -264,7 +262,7 @@ public class PgpKeyOperation {
 
         // read masterKeyFlags, and use the same as before.
         // since this is the master key, this contains at least CERTIFY_OTHER
-        int masterKeyFlags = readMasterKeyFlags(masterSecretKey.getPublicKey());
+        int masterKeyFlags = readKeyFlags(masterSecretKey.getPublicKey()) | KeyFlags.CERTIFY_OTHER;
 
         return internal(sKR, masterSecretKey, masterKeyFlags, saveParcel, passphrase, log, indent);
 
@@ -450,6 +448,13 @@ public class PgpKeyOperation {
             for (SaveKeyringParcel.SubkeyChange change : saveParcel.mChangeSubKeys) {
                 log.add(LogLevel.INFO, LogType.MSG_MF_SUBKEY_CHANGE,
                         indent, PgpKeyHelper.convertKeyIdToHex(change.mKeyId));
+
+                // TODO allow changes in master key? this implies generating new user id certs...
+                if (change.mKeyId == masterPublicKey.getKeyID()) {
+                    Log.e(Constants.TAG, "changing the master key not supported");
+                    return null;
+                }
+
                 PGPSecretKey sKey = sKR.getSecretKey(change.mKeyId);
                 if (sKey == null) {
                     log.add(LogLevel.ERROR, LogType.MSG_MF_SUBKEY_MISSING,
@@ -458,16 +463,39 @@ public class PgpKeyOperation {
                 }
                 PGPPublicKey pKey = sKey.getPublicKey();
 
-                if (change.mExpiry != null && new Date(change.mExpiry).before(new Date())) {
+                // expiry must not be in the past
+                if (change.mExpiry != null && new Date(change.mExpiry*1000).before(new Date())) {
                     log.add(LogLevel.ERROR, LogType.MSG_MF_SUBKEY_PAST_EXPIRY,
                             indent + 1, PgpKeyHelper.convertKeyIdToHex(change.mKeyId));
                     return null;
                 }
 
-                // generate and add new signature. we can be sloppy here and just leave the old one,
-                // it will be removed during canonicalization
+                // keep old flags, or replace with new ones
+                int flags = change.mFlags == null ? readKeyFlags(pKey) : change.mFlags;
+                long expiry;
+                if (change.mExpiry == null) {
+                    long valid = pKey.getValidSeconds();
+                    expiry = valid == 0
+                            ? 0
+                            : pKey.getCreationTime().getTime() / 1000 + pKey.getValidSeconds();
+                } else {
+                    expiry = change.mExpiry;
+                }
+
+                // drop all old signatures, they will be superseded by the new one
+                //noinspection unchecked
+                for (PGPSignature sig : new IterableIterator<PGPSignature>(pKey.getSignatures())) {
+                    // special case: if there is a revocation, don't use expiry from before
+                    if (change.mExpiry == null
+                            && sig.getSignatureType() == PGPSignature.SUBKEY_REVOCATION) {
+                        expiry = 0;
+                    }
+                    pKey = PGPPublicKey.removeCertification(pKey, sig);
+                }
+
+                // generate and add new signature
                 PGPSignature sig = generateSubkeyBindingSignature(masterPublicKey, masterPrivateKey,
-                        sKey, pKey, change.mFlags, change.mExpiry, passphrase);
+                        sKey, pKey, flags, expiry, passphrase);
                 pKey = PGPPublicKey.addCertification(pKey, sig);
                 sKR = PGPSecretKeyRing.insertSecretKey(sKR, PGPSecretKey.replacePublicKey(sKey, pKey));
             }
@@ -509,7 +537,7 @@ public class PgpKeyOperation {
                     PGPPublicKey pKey = keyPair.getPublicKey();
                     PGPSignature cert = generateSubkeyBindingSignature(
                             masterPublicKey, masterPrivateKey, keyPair.getPrivateKey(), pKey,
-                            add.mFlags, add.mExpiry);
+                            add.mFlags, add.mExpiry == null ? 0 : add.mExpiry);
                     pKey = PGPPublicKey.addSubkeyBindingCertification(pKey, cert);
 
                     PGPSecretKey sKey; {
@@ -624,7 +652,7 @@ public class PgpKeyOperation {
 
     private static PGPSignature generateSubkeyBindingSignature(
             PGPPublicKey masterPublicKey, PGPPrivateKey masterPrivateKey,
-            PGPSecretKey sKey, PGPPublicKey pKey, int flags, Long expiry, String passphrase)
+            PGPSecretKey sKey, PGPPublicKey pKey, int flags, long expiry, String passphrase)
             throws IOException, PGPException, SignatureException {
         PBESecretKeyDecryptor keyDecryptor = new JcePBESecretKeyDecryptorBuilder()
                 .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME).build(
@@ -636,7 +664,7 @@ public class PgpKeyOperation {
 
     private static PGPSignature generateSubkeyBindingSignature(
             PGPPublicKey masterPublicKey, PGPPrivateKey masterPrivateKey,
-            PGPPrivateKey subPrivateKey, PGPPublicKey pKey, int flags, Long expiry)
+            PGPPrivateKey subPrivateKey, PGPPublicKey pKey, int flags, long expiry)
             throws IOException, PGPException, SignatureException {
 
         // date for signing
@@ -665,17 +693,9 @@ public class PgpKeyOperation {
             hashedPacketsGen.setKeyFlags(false, flags);
         }
 
-        if (expiry != null) {
-            Calendar creationDate = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
-            creationDate.setTime(pKey.getCreationTime());
-
-            // (Just making sure there's no programming error here, this MUST have been checked above!)
-            if (new Date(expiry).before(todayDate)) {
-                throw new RuntimeException("Bad subkey creation date, this is a bug!");
-            }
-            hashedPacketsGen.setKeyExpirationTime(false, expiry - creationDate.getTimeInMillis());
-        } else {
-            hashedPacketsGen.setKeyExpirationTime(false, 0);
+        if (expiry > 0) {
+            long creationTime = pKey.getCreationTime().getTime() / 1000;
+            hashedPacketsGen.setKeyExpirationTime(false, expiry - creationTime);
         }
 
         PGPContentSignerBuilder signerBuilder = new JcaPGPContentSignerBuilder(
@@ -690,10 +710,16 @@ public class PgpKeyOperation {
 
     }
 
-    private static int readMasterKeyFlags(PGPPublicKey masterKey) {
-        int flags = KeyFlags.CERTIFY_OTHER;
+    /** Returns all flags valid for this key.
+     *
+     * This method does not do any validity checks on the signature, so it should not be used on
+     * a non-canonicalized key!
+     *
+     */
+    private static int readKeyFlags(PGPPublicKey key) {
+        int flags = 0;
         //noinspection unchecked
-        for(PGPSignature sig : new IterableIterator<PGPSignature>(masterKey.getSignatures())) {
+        for(PGPSignature sig : new IterableIterator<PGPSignature>(key.getSignatures())) {
             if (!sig.hasSubpackets()) {
                 continue;
             }

@@ -81,6 +81,10 @@ public class UncachedKeyRing {
         return new UncachedPublicKey(mRing.getPublicKey());
     }
 
+    public UncachedPublicKey getPublicKey(long keyId) {
+        return new UncachedPublicKey(mRing.getPublicKey(keyId));
+    }
+
     public Iterator<UncachedPublicKey> getPublicKeys() {
         final Iterator<PGPPublicKey> it = mRing.getPublicKeys();
         return new Iterator<UncachedPublicKey>() {

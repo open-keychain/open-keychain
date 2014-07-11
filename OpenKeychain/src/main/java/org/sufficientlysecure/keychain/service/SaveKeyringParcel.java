@@ -76,6 +76,7 @@ public class SaveKeyringParcel implements Parcelable {
     public static class SubkeyChange implements Serializable {
         public long mKeyId;
         public Integer mFlags;
+        // this is a long unix timestamp, in seconds (NOT MILLISECONDS!)
         public Long mExpiry;
         public SubkeyChange(long keyId, Integer flags, Long expiry) {
             mKeyId = keyId;

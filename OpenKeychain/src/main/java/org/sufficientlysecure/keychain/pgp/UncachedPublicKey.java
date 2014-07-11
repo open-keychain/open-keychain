@@ -9,6 +9,7 @@ import org.spongycastle.openpgp.PGPSignatureSubpacketVector;
 import org.spongycastle.openpgp.operator.jcajce.JcaPGPContentVerifierBuilderProvider;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.util.IterableIterator;
+import org.sufficientlysecure.keychain.util.Log;
 
 import java.security.SignatureException;
 import java.util.ArrayList;
@@ -44,14 +45,19 @@ public class UncachedPublicKey {
     }
 
     public Date getExpiryTime() {
-        Date creationDate = getCreationTime();
-        if (mPublicKey.getValidDays() == 0) {
+        long seconds = mPublicKey.getValidSeconds();
+        if (seconds > Integer.MAX_VALUE) {
+            Log.e(Constants.TAG, "error, expiry time too large");
+            return null;
+        }
+        if (seconds == 0) {
             // no expiry
             return null;
         }
+        Date creationDate = getCreationTime();
         Calendar calendar = GregorianCalendar.getInstance();
         calendar.setTime(creationDate);
-        calendar.add(Calendar.DATE, mPublicKey.getValidDays());
+        calendar.add(Calendar.SECOND, (int) seconds);
 
         return calendar.getTime();
     }
