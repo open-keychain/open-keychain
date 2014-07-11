@@ -339,12 +339,13 @@ public class PgpKeyOperation {
                 // take care of that here.
                 PGPSignature cert = generateRevocationSignature(masterPrivateKey,
                         masterPublicKey, userId);
-                modifiedPublicKey = PGPPublicKey.addCertification(masterPublicKey, userId, cert);
+                modifiedPublicKey = PGPPublicKey.addCertification(modifiedPublicKey, userId, cert);
             }
 
             // 3. If primary user id changed, generate new certificates for both old and new
             if (saveParcel.changePrimaryUserId != null) {
                 log.add(LogLevel.INFO, LogType.MSG_MF_UID_PRIMARY, indent);
+                indent += 1;
 
                 // we work on the modifiedPublicKey here, to respect new or newly revoked uids
                 // noinspection unchecked
@@ -353,7 +354,7 @@ public class PgpKeyOperation {
                     PGPSignature currentCert = null;
                     // noinspection unchecked
                     for (PGPSignature cert : new IterableIterator<PGPSignature>(
-                            masterPublicKey.getSignaturesForID(userId))) {
+                            modifiedPublicKey.getSignaturesForID(userId))) {
                         // if it's not a self cert, never mind
                         if (cert.getKeyID() != masterPublicKey.getKeyID()) {
                             continue;
@@ -397,10 +398,11 @@ public class PgpKeyOperation {
                             continue;
                         }
                         // otherwise, generate new non-primary certification
+                        log.add(LogLevel.DEBUG, LogType.MSG_MF_PRIMARY_REPLACE_OLD, indent);
                         modifiedPublicKey = PGPPublicKey.removeCertification(
                                 modifiedPublicKey, userId, currentCert);
                         PGPSignature newCert = generateUserIdSignature(
-                                masterPrivateKey, masterPublicKey, userId, false);
+                                masterPrivateKey, masterPublicKey, userId, false, masterKeyFlags);
                         modifiedPublicKey = PGPPublicKey.addCertification(
                                 modifiedPublicKey, userId, newCert);
                         continue;
@@ -411,10 +413,11 @@ public class PgpKeyOperation {
                     // if it should be
                     if (userId.equals(saveParcel.changePrimaryUserId)) {
                         // add shiny new primary user id certificate
+                        log.add(LogLevel.DEBUG, LogType.MSG_MF_PRIMARY_NEW, indent);
                         modifiedPublicKey = PGPPublicKey.removeCertification(
                                 modifiedPublicKey, userId, currentCert);
                         PGPSignature newCert = generateUserIdSignature(
-                                masterPrivateKey, masterPublicKey, userId, true);
+                                masterPrivateKey, masterPublicKey, userId, true, masterKeyFlags);
                         modifiedPublicKey = PGPPublicKey.addCertification(
                                 modifiedPublicKey, userId, newCert);
                     }
@@ -423,6 +426,7 @@ public class PgpKeyOperation {
 
                 }
 
+                indent -= 1;
             }
 
             // Update the secret key ring

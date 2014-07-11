@@ -15,6 +15,7 @@ import org.sufficientlysecure.keychain.util.Log;
 
 import java.io.IOException;
 import java.security.SignatureException;
+import java.util.ArrayList;
 import java.util.Date;
 
 /** OpenKeychain wrapper around PGPSignature objects.
@@ -53,6 +54,31 @@ public class WrappedSignature {
 
     public Date getCreationTime() {
         return mSig.getCreationTime();
+    }
+
+    public ArrayList<WrappedSignature> getEmbeddedSignatures() {
+        ArrayList<WrappedSignature> sigs = new ArrayList<WrappedSignature>();
+        if (!mSig.hasSubpackets()) {
+            return sigs;
+        }
+        try {
+            PGPSignatureList list;
+            list = mSig.getHashedSubPackets().getEmbeddedSignatures();
+            for(int i = 0; i < list.size(); i++) {
+                sigs.add(new WrappedSignature(list.get(i)));
+            }
+            list = mSig.getUnhashedSubPackets().getEmbeddedSignatures();
+            for(int i = 0; i < list.size(); i++) {
+                sigs.add(new WrappedSignature(list.get(i)));
+            }
+        } catch (PGPException e) {
+            // no matter
+            Log.e(Constants.TAG, "exception reading embedded signatures", e);
+        } catch (IOException e) {
+            // no matter
+            Log.e(Constants.TAG, "exception reading embedded signatures", e);
+        }
+        return sigs;
     }
 
     public byte[] getEncoded() throws IOException {
