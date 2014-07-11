@@ -44,6 +44,8 @@ public class PgpKeyOperationTest {
     static UncachedKeyRing staticRing;
     UncachedKeyRing ring;
     PgpKeyOperation op;
+    ArrayList<RawPacket> onlyA = new ArrayList<RawPacket>();
+    ArrayList<RawPacket> onlyB = new ArrayList<RawPacket>();
 
     @BeforeClass public static void setUpOnce() throws Exception {
         SaveKeyringParcel parcel = new SaveKeyringParcel();
@@ -100,7 +102,7 @@ public class PgpKeyOperationTest {
 
         // an empty modification should change nothing. this also ensures the keyring
         // is constant through canonicalization.
-        applyModificationWithChecks(parcel, ring);
+        // applyModificationWithChecks(parcel, ring, onlyA, onlyB);
 
         Assert.assertNotNull("key creation failed", ring);
 
@@ -145,13 +147,7 @@ public class PgpKeyOperationTest {
         parcel.mFingerprint = ring.getFingerprint();
         parcel.addSubKeys.add(new SubkeyAdd(algorithm.rsa, 1024, KeyFlags.SIGN_DATA, null));
 
-        UncachedKeyRing modified = applyModificationWithChecks(parcel, ring);
-
-        ArrayList<RawPacket> onlyA = new ArrayList<RawPacket>();
-        ArrayList<RawPacket> onlyB = new ArrayList<RawPacket>();
-
-        Assert.assertTrue("keyring must differ from original", KeyringTestingHelper.diffKeyrings(
-                ring.getEncoded(), modified.getEncoded(), onlyA, onlyB));
+        UncachedKeyRing modified = applyModificationWithChecks(parcel, ring, onlyA, onlyB);
 
         Assert.assertEquals("no extra packets in original", 0, onlyA.size());
         Assert.assertEquals("exactly two extra packets in modified", 2, onlyB.size());
@@ -183,13 +179,7 @@ public class PgpKeyOperationTest {
             parcel.revokeSubKeys.add(it.next().getKeyId());
         }
 
-        UncachedKeyRing modified = applyModificationWithChecks(parcel, ring);
-
-        ArrayList<RawPacket> onlyA = new ArrayList<RawPacket>();
-        ArrayList<RawPacket> onlyB = new ArrayList<RawPacket>();
-
-        Assert.assertTrue("keyring must differ from original", KeyringTestingHelper.diffKeyrings(
-                ring.getEncoded(), modified.getEncoded(), onlyA, onlyB));
+        UncachedKeyRing modified = applyModificationWithChecks(parcel, ring, onlyA, onlyB);
 
         Assert.assertEquals("no extra packets in original", 0, onlyA.size());
         Assert.assertEquals("exactly one extra packet in modified", 1, onlyB.size());
@@ -214,16 +204,10 @@ public class PgpKeyOperationTest {
         parcel.mFingerprint = ring.getFingerprint();
         parcel.addUserIds.add("rainbow");
 
-        UncachedKeyRing modified = applyModificationWithChecks(parcel, ring);
+        UncachedKeyRing modified = applyModificationWithChecks(parcel, ring, onlyA, onlyB);
 
         Assert.assertTrue("keyring must contain added user id",
                 modified.getPublicKey().getUnorderedUserIds().contains("rainbow"));
-
-        ArrayList<RawPacket> onlyA = new ArrayList<RawPacket>();
-        ArrayList<RawPacket> onlyB = new ArrayList<RawPacket>();
-
-        Assert.assertTrue("keyring must differ from original", KeyringTestingHelper.diffKeyrings(
-                ring.getEncoded(), modified.getEncoded(), onlyA, onlyB));
 
         Assert.assertEquals("no extra packets in original", 0, onlyA.size());
         Assert.assertEquals("exactly two extra packets in modified", 2, onlyB.size());
@@ -271,16 +255,10 @@ public class PgpKeyOperationTest {
             parcel.mFingerprint = ring.getFingerprint();
             parcel.changePrimaryUserId = "pink";
 
-            modified = applyModificationWithChecks(parcel, modified);
+            modified = applyModificationWithChecks(parcel, modified, onlyA, onlyB);
 
-            ArrayList<RawPacket> onlyA = new ArrayList<RawPacket>();
-            ArrayList<RawPacket> onlyB = new ArrayList<RawPacket>();
-
-            Assert.assertTrue("keyring must differ from original", KeyringTestingHelper.diffKeyrings(
-                    ring.getEncoded(), modified.getEncoded(), onlyA, onlyB));
-
-            Assert.assertEquals("old keyring must have one outdated certificate", 1, onlyA.size());
-            Assert.assertEquals("new keyring must have three new packets", 3, onlyB.size());
+            Assert.assertEquals("old keyring must have two outdated certificates", 2, onlyA.size());
+            Assert.assertEquals("new keyring must have two new packets", 2, onlyB.size());
 
             Assert.assertEquals("primary user id must be the one changed to",
                     "pink", modified.getPublicKey().getPrimaryUserId());
@@ -288,9 +266,21 @@ public class PgpKeyOperationTest {
 
     }
 
+
+    private static UncachedKeyRing applyModificationWithChecks(SaveKeyringParcel parcel,
+                                                               UncachedKeyRing ring,
+                                                               ArrayList<RawPacket> onlyA,
+                                                               ArrayList<RawPacket> onlyB) {
+        return applyModificationWithChecks(parcel, ring, onlyA, onlyB, true, true);
+    }
+
     // applies a parcel modification while running some integrity checks
     private static UncachedKeyRing applyModificationWithChecks(SaveKeyringParcel parcel,
-                                                               UncachedKeyRing ring) {
+                                                               UncachedKeyRing ring,
+                                                               ArrayList<RawPacket> onlyA,
+                                                               ArrayList<RawPacket> onlyB,
+                                                               boolean canonicalize,
+                                                               boolean constantCanonicalize) {
         try {
 
             Assert.assertTrue("modified keyring must be secret", ring.isSecret());
@@ -300,15 +290,22 @@ public class PgpKeyOperationTest {
             OperationResultParcel.OperationLog log = new OperationResultParcel.OperationLog();
             UncachedKeyRing rawModified = op.modifySecretKeyRing(secretRing, parcel, "swag", log, 0);
             Assert.assertNotNull("key modification failed", rawModified);
-            UncachedKeyRing modified = rawModified.canonicalize(log, 0);
 
-            ArrayList<RawPacket> onlyA = new ArrayList<RawPacket>();
-            ArrayList<RawPacket> onlyB = new ArrayList<RawPacket>();
+            if (!canonicalize) {
+                Assert.assertTrue("keyring must differ from original", KeyringTestingHelper.diffKeyrings(
+                        ring.getEncoded(), rawModified.getEncoded(), onlyA, onlyB));
+                return rawModified;
+            }
+
+            UncachedKeyRing modified = rawModified.canonicalize(log, 0);
+            if (constantCanonicalize) {
                 Assert.assertTrue("key must be constant through canonicalization",
                         !KeyringTestingHelper.diffKeyrings(
                                 modified.getEncoded(), rawModified.getEncoded(), onlyA, onlyB)
                 );
-
+            }
+            Assert.assertTrue("keyring must differ from original", KeyringTestingHelper.diffKeyrings(
+                    ring.getEncoded(), modified.getEncoded(), onlyA, onlyB));
             return modified;
 
         } catch (IOException e) {

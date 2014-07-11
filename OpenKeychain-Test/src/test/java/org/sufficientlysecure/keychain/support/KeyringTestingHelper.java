@@ -118,6 +118,9 @@ public class KeyringTestingHelper {
             b.add(p);
         }
 
+        onlyA.clear();
+        onlyB.clear();
+
         onlyA.addAll(a);
         onlyA.removeAll(b);
         onlyB.addAll(b);
