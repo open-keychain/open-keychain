@@ -14,5 +14,7 @@ before_install:
     - ( sleep 5 && while [ 1 ]; do sleep 1; echo y; done ) | android update sdk --no-ui --all --force --filter build-tools-19.1.0,android-19,platform-tools,extra-android-support,extra-android-m2repository
     - ./install-custom-gradle-test-plugin.sh
 install: echo "Installation done"
-script: gradle assemble OpenKeychain-Test:testDebug -S -q
+script:
+    - gradle assemble -S -q
+    - gradle --info OpenKeychain-Test:testDebug
 
