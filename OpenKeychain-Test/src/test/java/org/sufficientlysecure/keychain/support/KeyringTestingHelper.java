@@ -28,8 +28,10 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
-import java.util.SortedSet;
+import java.util.List;
 
 /**
  * Helper for tests of the Keyring import in ProviderHelper.
@@ -66,15 +68,11 @@ public class KeyringTestingHelper {
         return saveSuccess;
     }
 
-    public static class RawPacket implements Comparable<RawPacket> {
+    public static class RawPacket {
         public int position;
         public int tag;
         public int length;
         public byte[] buf;
-
-        public int compareTo(RawPacket other) {
-            return Integer.compare(position, other.position);
-        }
 
         public boolean equals(Object other) {
             return other instanceof RawPacket && Arrays.areEqual(this.buf, ((RawPacket) other).buf);
@@ -86,8 +84,14 @@ public class KeyringTestingHelper {
         }
     }
 
+    public static final Comparator<RawPacket> packetOrder = new Comparator<RawPacket>() {
+        public int compare(RawPacket left, RawPacket right) {
+            return Integer.compare(left.position, right.position);
+        }
+    };
+
     public static boolean diffKeyrings(byte[] ringA, byte[] ringB,
-                                       SortedSet<RawPacket> onlyA, SortedSet<RawPacket> onlyB)
+                                       List<RawPacket> onlyA, List<RawPacket> onlyB)
             throws IOException {
         InputStream streamA = new ByteArrayInputStream(ringA);
         InputStream streamB = new ByteArrayInputStream(ringB);
@@ -118,6 +122,9 @@ public class KeyringTestingHelper {
         onlyA.removeAll(b);
         onlyB.addAll(b);
         onlyB.removeAll(a);
+
+        Collections.sort(onlyA, packetOrder);
+        Collections.sort(onlyB, packetOrder);
 
         return !onlyA.isEmpty() || !onlyB.isEmpty();
     }
