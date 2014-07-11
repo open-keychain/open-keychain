@@ -54,6 +54,7 @@ import org.sufficientlysecure.keychain.ui.adapter.SubkeysAdapter;
 import org.sufficientlysecure.keychain.ui.adapter.SubkeysAddedAdapter;
 import org.sufficientlysecure.keychain.ui.adapter.UserIdsAdapter;
 import org.sufficientlysecure.keychain.ui.adapter.UserIdsAddedAdapter;
+import org.sufficientlysecure.keychain.ui.dialog.EditSubkeyDialogFragment;
 import org.sufficientlysecure.keychain.ui.dialog.EditUserIdDialogFragment;
 import org.sufficientlysecure.keychain.ui.dialog.PassphraseDialogFragment;
 import org.sufficientlysecure.keychain.ui.dialog.SetPassphraseDialogFragment;
@@ -214,8 +215,16 @@ public class EditKeyFragment extends LoaderFragment implements
         mUserIdsAddedAdapter = new UserIdsAddedAdapter(getActivity(), mUserIdsAddedData);
         mUserIdsAddedList.setAdapter(mUserIdsAddedAdapter);
 
-        mSubkeysAdapter = new SubkeysAdapter(getActivity(), null, 0);
+        mSubkeysAdapter = new SubkeysAdapter(getActivity(), null, 0, mSaveKeyringParcel);
         mSubkeysList.setAdapter(mSubkeysAdapter);
+
+        mSubkeysList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                long keyId = mSubkeysAdapter.getKeyId(position);
+                editSubkey(keyId);
+            }
+        });
 
         mSubkeysAddedAdapter = new SubkeysAddedAdapter(getActivity(), mSaveKeyringParcel.mAddSubKeys);
         mSubkeysAddedList.setAdapter(mSubkeysAddedAdapter);
@@ -338,6 +347,46 @@ public class EditKeyFragment extends LoaderFragment implements
                         EditUserIdDialogFragment.newInstance(messenger);
 
                 dialogFragment.show(getActivity().getSupportFragmentManager(), "editUserIdDialog");
+            }
+        });
+    }
+
+    private void editSubkey(final long keyId) {
+        Handler returnHandler = new Handler() {
+            @Override
+            public void handleMessage(Message message) {
+                switch (message.what) {
+                    case EditSubkeyDialogFragment.MESSAGE_CHANGE_EXPIRY:
+                        // toggle
+//                        if (mSaveKeyringParcel.changePrimaryUserId != null
+//                                && mSaveKeyringParcel.changePrimaryUserId.equals(userId)) {
+//                            mSaveKeyringParcel.changePrimaryUserId = null;
+//                        } else {
+//                            mSaveKeyringParcel.changePrimaryUserId = userId;
+//                        }
+                        break;
+                    case EditSubkeyDialogFragment.MESSAGE_REVOKE:
+                        // toggle
+                        if (mSaveKeyringParcel.mRevokeSubKeys.contains(keyId)) {
+                            mSaveKeyringParcel.mRevokeSubKeys.remove(keyId);
+                        } else {
+                            mSaveKeyringParcel.mRevokeSubKeys.add(keyId);
+                        }
+                        break;
+                }
+                getLoaderManager().getLoader(LOADER_ID_SUBKEYS).forceLoad();
+            }
+        };
+
+        // Create a new Messenger for the communication back
+        final Messenger messenger = new Messenger(returnHandler);
+
+        DialogFragmentWorkaround.INTERFACE.runnableRunDelayed(new Runnable() {
+            public void run() {
+                EditSubkeyDialogFragment dialogFragment =
+                        EditSubkeyDialogFragment.newInstance(messenger);
+
+                dialogFragment.show(getActivity().getSupportFragmentManager(), "editSubkeyDialog");
             }
         });
     }

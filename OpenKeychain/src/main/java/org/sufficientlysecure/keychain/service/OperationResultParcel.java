@@ -317,21 +317,21 @@ public class OperationResultParcel implements Parcelable {
 
     public static class OperationLog implements Iterable<LogEntryParcel> {
 
-        private final List<LogEntryParcel> parcels = new ArrayList<LogEntryParcel>();
+        private final List<LogEntryParcel> mParcels = new ArrayList<LogEntryParcel>();
 
         /// Simple convenience method
         public void add(LogLevel level, LogType type, int indent, Object... parameters) {
             Log.d(Constants.TAG, type.toString());
-            parcels.add(new OperationResultParcel.LogEntryParcel(level, type, indent, parameters));
+            mParcels.add(new OperationResultParcel.LogEntryParcel(level, type, indent, parameters));
         }
 
         public void add(LogLevel level, LogType type, int indent) {
             Log.d(Constants.TAG, type.toString());
-            parcels.add(new OperationResultParcel.LogEntryParcel(level, type, indent, (Object[]) null));
+            mParcels.add(new OperationResultParcel.LogEntryParcel(level, type, indent, (Object[]) null));
         }
 
         public boolean containsWarnings() {
-            for(LogEntryParcel entry : new IterableIterator<LogEntryParcel>(parcels.iterator())) {
+            for(LogEntryParcel entry : new IterableIterator<LogEntryParcel>(mParcels.iterator())) {
                 if (entry.mLevel == LogLevel.WARN || entry.mLevel == LogLevel.ERROR) {
                     return true;
                 }
@@ -340,20 +340,20 @@ public class OperationResultParcel implements Parcelable {
         }
 
         public void addAll(List<LogEntryParcel> parcels) {
-            parcels.addAll(parcels);
+            mParcels.addAll(parcels);
         }
 
         public List<LogEntryParcel> toList() {
-            return parcels;
+            return mParcels;
         }
 
         public boolean isEmpty() {
-            return parcels.isEmpty();
+            return mParcels.isEmpty();
         }
 
         @Override
         public Iterator<LogEntryParcel> iterator() {
-            return parcels.iterator();
+            return mParcels.iterator();
         }
     }
 

@@ -40,9 +40,7 @@ import java.util.ArrayList;
 
 public class UserIdsAdapter extends CursorAdapter implements AdapterView.OnItemClickListener {
     private LayoutInflater mInflater;
-
     private final ArrayList<Boolean> mCheckStates;
-
     private SaveKeyringParcel mSaveKeyringParcel;
 
     public static final String[] USER_IDS_PROJECTION = new String[]{
@@ -59,7 +57,6 @@ public class UserIdsAdapter extends CursorAdapter implements AdapterView.OnItemC
     private static final int INDEX_VERIFIED = 3;
     private static final int INDEX_IS_PRIMARY = 4;
     private static final int INDEX_IS_REVOKED = 5;
-
 
     public UserIdsAdapter(Context context, Cursor c, int flags, boolean showCheckBoxes,
                           SaveKeyringParcel saveKeyringParcel) {
@@ -139,10 +136,13 @@ public class UserIdsAdapter extends CursorAdapter implements AdapterView.OnItemC
                     && mSaveKeyringParcel.mChangePrimaryUserId.equals(userId));
             boolean revokeThisUserId = (mSaveKeyringParcel.mRevokeUserIds.contains(userId));
 
+            // only if primary user id will be changed
+            // (this is not triggered if the user id is currently the primary one)
             if (changeAnyPrimaryUserId) {
-                // change all user ids, only this one should be primary
+                // change _all_ primary user ids and set new one to true
                 isPrimary = changeThisPrimaryUserId;
             }
+
             if (revokeThisUserId) {
                 if (!isRevoked) {
                     isRevoked = true;
@@ -233,7 +233,7 @@ public class UserIdsAdapter extends CursorAdapter implements AdapterView.OnItemC
 
     @Override
     public View newView(Context context, Cursor cursor, ViewGroup parent) {
-        View view = mInflater.inflate(R.layout.view_key_userids_item, null);
+        View view = mInflater.inflate(R.layout.view_key_user_id_item, null);
         // only need to do this once ever, since mShowCheckBoxes is final
         view.findViewById(R.id.checkBox).setVisibility(mCheckStates != null ? View.VISIBLE : View.GONE);
         return view;
