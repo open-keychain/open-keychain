@@ -150,13 +150,12 @@ public class PgpKeyOperationTest {
         Assert.assertEquals("no extra packets in original", 0, onlyA.size());
         Assert.assertEquals("exactly two extra packets in modified", 2, onlyB.size());
 
-        Iterator<RawPacket> it = onlyB.iterator();
         Packet p;
 
-        p = new BCPGInputStream(new ByteArrayInputStream(it.next().buf)).readPacket();
+        p = new BCPGInputStream(new ByteArrayInputStream(onlyB.get(0).buf)).readPacket();
         Assert.assertTrue("first new packet must be secret subkey", p instanceof SecretSubkeyPacket);
 
-        p = new BCPGInputStream(new ByteArrayInputStream(it.next().buf)).readPacket();
+        p = new BCPGInputStream(new ByteArrayInputStream(onlyB.get(1).buf)).readPacket();
         Assert.assertTrue("second new packet must be signature", p instanceof SignaturePacket);
         Assert.assertEquals("signature type must be subkey binding certificate",
                 PGPSignature.SUBKEY_BINDING, ((SignaturePacket) p).getSignatureType());
@@ -179,10 +178,9 @@ public class PgpKeyOperationTest {
         Assert.assertEquals("no extra packets in original", 0, onlyA.size());
         Assert.assertEquals("exactly one extra packet in modified", 1, onlyB.size());
 
-        Iterator<RawPacket> it = onlyB.iterator();
         Packet p;
 
-        p = new BCPGInputStream(new ByteArrayInputStream(it.next().buf)).readPacket();
+        p = new BCPGInputStream(new ByteArrayInputStream(onlyB.get(0).buf)).readPacket();
         Assert.assertTrue("first new packet must be secret subkey", p instanceof SignaturePacket);
         Assert.assertEquals("signature type must be subkey binding certificate",
                 PGPSignature.SUBKEY_REVOCATION, ((SignaturePacket) p).getSignatureType());
@@ -206,10 +204,9 @@ public class PgpKeyOperationTest {
             Assert.assertEquals("no extra packets in original", 0, onlyA.size());
             Assert.assertEquals("exactly one extra packet in modified", 1, onlyB.size());
 
-            Iterator<RawPacket> it = onlyB.iterator();
             Packet p;
 
-            p = new BCPGInputStream(new ByteArrayInputStream(it.next().buf)).readPacket();
+            p = new BCPGInputStream(new ByteArrayInputStream(onlyB.get(0).buf)).readPacket();
             Assert.assertTrue("first new packet must be secret subkey", p instanceof SignaturePacket);
             Assert.assertEquals("signature type must be subkey binding certificate",
                     PGPSignature.CERTIFICATION_REVOCATION, ((SignaturePacket) p).getSignatureType());
@@ -267,18 +264,17 @@ public class PgpKeyOperationTest {
         Assert.assertEquals("no extra packets in original", 0, onlyA.size());
         Assert.assertEquals("exactly two extra packets in modified", 2, onlyB.size());
 
-        Iterator<RawPacket> it = onlyB.iterator();
-        Packet p;
-
         Assert.assertTrue("keyring must contain added user id",
                 modified.getPublicKey().getUnorderedUserIds().contains("rainbow"));
 
-        p = new BCPGInputStream(new ByteArrayInputStream(it.next().buf)).readPacket();
+        Packet p;
+
+        p = new BCPGInputStream(new ByteArrayInputStream(onlyB.get(0).buf)).readPacket();
         Assert.assertTrue("first new packet must be user id", p instanceof UserIDPacket);
         Assert.assertEquals("user id packet must match added user id",
                 "rainbow", ((UserIDPacket) p).getID());
 
-        p = new BCPGInputStream(new ByteArrayInputStream(it.next().buf)).readPacket();
+        p = new BCPGInputStream(new ByteArrayInputStream(onlyB.get(1).buf)).readPacket();
         System.out.println(p.getClass().getName());
         Assert.assertTrue("second new packet must be signature", p instanceof SignaturePacket);
         Assert.assertEquals("signature type must be positive certification",
