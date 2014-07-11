@@ -102,11 +102,12 @@ public class PgpKeyOperation {
     }
 
     /** Creates new secret key. */
-    private PGPKeyPair createKey(int algorithmChoice, int keySize) throws PgpGeneralMsgIdException {
+    private PGPKeyPair createKey(int algorithmChoice, int keySize, OperationLog log, int indent) {
 
         try {
             if (keySize < 512) {
-                throw new PgpGeneralMsgIdException(R.string.error_key_size_minimum512bit);
+                log.add(LogLevel.ERROR, LogType.MSG_CR_ERROR_KEYSIZE_512, indent);
+                return null;
             }
 
             int algorithm;
@@ -141,7 +142,8 @@ public class PgpKeyOperation {
                 }
 
                 default: {
-                    throw new PgpGeneralMsgIdException(R.string.error_unknown_algorithm_choice);
+                    log.add(LogLevel.ERROR, LogType.MSG_CR_ERROR_UNKNOWN_ALGO, indent);
+                    return null;
                 }
             }
 
@@ -155,7 +157,9 @@ public class PgpKeyOperation {
         } catch(InvalidAlgorithmParameterException e) {
             throw new RuntimeException(e);
         } catch(PGPException e) {
-            throw new PgpGeneralMsgIdException(R.string.msg_mf_error_pgp, e);
+            Log.e(Constants.TAG, "internal pgp error", e);
+            log.add(LogLevel.ERROR, LogType.MSG_CR_ERROR_INTERNAL_PGP, indent);
+            return null;
         }
     }
 
@@ -168,8 +172,13 @@ public class PgpKeyOperation {
             indent += 1;
             updateProgress(R.string.progress_building_key, 0, 100);
 
-            if (saveParcel.mAddSubKeys == null || saveParcel.mAddSubKeys.isEmpty()) {
+            if (saveParcel.mAddSubKeys.isEmpty()) {
                 log.add(LogLevel.ERROR, LogType.MSG_CR_ERROR_NO_MASTER, indent);
+                return null;
+            }
+
+            if (saveParcel.mAddUserIds.isEmpty()) {
+                log.add(LogLevel.ERROR, LogType.MSG_CR_ERROR_NO_USER_ID, indent);
                 return null;
             }
 
@@ -179,10 +188,16 @@ public class PgpKeyOperation {
                 return null;
             }
 
-            PGPKeyPair keyPair = createKey(add.mAlgorithm, add.mKeysize);
+            PGPKeyPair keyPair = createKey(add.mAlgorithm, add.mKeysize, log, indent);
 
             if (add.mAlgorithm == Constants.choice.algorithm.elgamal) {
-                throw new PgpGeneralMsgIdException(R.string.error_master_key_must_not_be_el_gamal);
+                log.add(LogLevel.ERROR, LogType.MSG_CR_ERROR_MASTER_ELGAMAL, indent);
+                return null;
+            }
+
+            // return null if this failed (it will already have been logged by createKey)
+            if (keyPair == null) {
+                return null;
             }
 
             // define hashing and signing algos
@@ -201,13 +216,11 @@ public class PgpKeyOperation {
             return internal(sKR, masterSecretKey, add.mFlags, saveParcel, "", log, indent);
 
         } catch (PGPException e) {
+            log.add(LogLevel.ERROR, LogType.MSG_CR_ERROR_INTERNAL_PGP, indent);
             Log.e(Constants.TAG, "pgp error encoding key", e);
             return null;
         } catch (IOException e) {
             Log.e(Constants.TAG, "io error encoding key", e);
-            return null;
-        } catch (PgpGeneralMsgIdException e) {
-            Log.e(Constants.TAG, "pgp msg id error", e);
             return null;
         }
 
@@ -521,47 +534,46 @@ public class PgpKeyOperation {
 
             // 5. Generate and add new subkeys
             for (SaveKeyringParcel.SubkeyAdd add : saveParcel.mAddSubKeys) {
-                try {
 
-                    if (add.mExpiry != null && new Date(add.mExpiry*1000).before(new Date())) {
-                        log.add(LogLevel.ERROR, LogType.MSG_MF_SUBKEY_PAST_EXPIRY, indent +1);
-                        return null;
-                    }
-
-                    log.add(LogLevel.INFO, LogType.MSG_MF_SUBKEY_NEW, indent);
-
-                    // generate a new secret key (privkey only for now)
-                    PGPKeyPair keyPair = createKey(add.mAlgorithm, add.mKeysize);
-
-                    // add subkey binding signature (making this a sub rather than master key)
-                    PGPPublicKey pKey = keyPair.getPublicKey();
-                    PGPSignature cert = generateSubkeyBindingSignature(
-                            masterPublicKey, masterPrivateKey, keyPair.getPrivateKey(), pKey,
-                            add.mFlags, add.mExpiry == null ? 0 : add.mExpiry);
-                    pKey = PGPPublicKey.addSubkeyBindingCertification(pKey, cert);
-
-                    PGPSecretKey sKey; {
-                        // define hashing and signing algos
-                        PGPDigestCalculator sha1Calc = new JcaPGPDigestCalculatorProviderBuilder()
-                                .build().get(HashAlgorithmTags.SHA1);
-
-                        // Build key encrypter and decrypter based on passphrase
-                        PBESecretKeyEncryptor keyEncryptor = new JcePBESecretKeyEncryptorBuilder(
-                                PGPEncryptedData.CAST5, sha1Calc)
-                                .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME).build("".toCharArray());
-
-                        sKey = new PGPSecretKey(keyPair.getPrivateKey(), pKey,
-                                sha1Calc, false, keyEncryptor);
-                    }
-
-                    log.add(LogLevel.DEBUG, LogType.MSG_MF_SUBKEY_NEW_ID,
-                            indent+1, PgpKeyHelper.convertKeyIdToHex(sKey.getKeyID()));
-
-                    sKR = PGPSecretKeyRing.insertSecretKey(sKR, sKey);
-
-                } catch (PgpGeneralMsgIdException e) {
+                if (add.mExpiry != null && new Date(add.mExpiry*1000).before(new Date())) {
+                    log.add(LogLevel.ERROR, LogType.MSG_MF_SUBKEY_PAST_EXPIRY, indent +1);
                     return null;
                 }
+
+                log.add(LogLevel.INFO, LogType.MSG_MF_SUBKEY_NEW, indent);
+
+                // generate a new secret key (privkey only for now)
+                PGPKeyPair keyPair = createKey(add.mAlgorithm, add.mKeysize, log, indent);
+                if(keyPair == null) {
+                    return null;
+                }
+
+                // add subkey binding signature (making this a sub rather than master key)
+                PGPPublicKey pKey = keyPair.getPublicKey();
+                PGPSignature cert = generateSubkeyBindingSignature(
+                        masterPublicKey, masterPrivateKey, keyPair.getPrivateKey(), pKey,
+                        add.mFlags, add.mExpiry == null ? 0 : add.mExpiry);
+                pKey = PGPPublicKey.addSubkeyBindingCertification(pKey, cert);
+
+                PGPSecretKey sKey; {
+                    // define hashing and signing algos
+                    PGPDigestCalculator sha1Calc = new JcaPGPDigestCalculatorProviderBuilder()
+                            .build().get(HashAlgorithmTags.SHA1);
+
+                    // Build key encrypter and decrypter based on passphrase
+                    PBESecretKeyEncryptor keyEncryptor = new JcePBESecretKeyEncryptorBuilder(
+                            PGPEncryptedData.CAST5, sha1Calc)
+                            .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME).build("".toCharArray());
+
+                    sKey = new PGPSecretKey(keyPair.getPrivateKey(), pKey,
+                            sha1Calc, false, keyEncryptor);
+                }
+
+                log.add(LogLevel.DEBUG, LogType.MSG_MF_SUBKEY_NEW_ID,
+                        indent+1, PgpKeyHelper.convertKeyIdToHex(sKey.getKeyID()));
+
+                sKR = PGPSecretKeyRing.insertSecretKey(sKR, sKey);
+
             }
 
             // 6. If requested, change passphrase

@@ -246,7 +246,12 @@ public class OperationResultParcel implements Parcelable {
         // secret key create
         MSG_CR (R.string.msg_cr),
         MSG_CR_ERROR_NO_MASTER (R.string.msg_cr_error_no_master),
+        MSG_CR_ERROR_NO_USER_ID (R.string.msg_cr_error_no_user_id),
         MSG_CR_ERROR_NO_CERTIFY (R.string.msg_cr_error_no_certify),
+        MSG_CR_ERROR_KEYSIZE_512 (R.string.msg_cr_error_keysize_512),
+        MSG_CR_ERROR_UNKNOWN_ALGO (R.string.msg_cr_error_unknown_algo),
+        MSG_CR_ERROR_INTERNAL_PGP (R.string.msg_cr_error_internal_pgp),
+        MSG_CR_ERROR_MASTER_ELGAMAL (R.string.msg_cr_error_master_elgamal),
 
         // secret key modify
         MSG_MF (R.string.msg_mr),

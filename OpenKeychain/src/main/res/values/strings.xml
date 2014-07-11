@@ -640,7 +640,12 @@
     <!-- createSecretKeyRing -->
     <string name="msg_cr">Generating new master key</string>
     <string name="msg_cr_error_no_master">No master key options specified!</string>
+    <string name="msg_cr_error_no_user_id">Keyrings must be created with at least one user id!</string>
     <string name="msg_cr_error_no_certify">Master key must have certify flag!</string>
+    <string name="msg_cr_error_keysize_512">Key size must be greater or equal 512!</string>
+    <string name="msg_cr_error_internal_pgp">Internal PGP error!</string>
+    <string name="msg_cr_error_unknown_algo">Bad algorithm choice!</string>
+    <string name="msg_cr_error_master_elgamal">Master key must not be of type ElGamal!</string>
 
     <!-- modifySecretKeyRing -->
     <string name="msg_mr">Modifying keyring %s</string>
