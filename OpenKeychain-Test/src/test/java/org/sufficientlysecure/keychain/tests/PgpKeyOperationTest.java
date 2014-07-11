@@ -197,6 +197,74 @@ public class PgpKeyOperationTest {
     }
 
     @Test
+    public void testUserIdRevokeReadd() throws Exception {
+
+        UncachedKeyRing modified;
+        String uid = ring.getPublicKey().getUnorderedUserIds().get(1);
+
+        { // revoke second user id
+
+            SaveKeyringParcel parcel = new SaveKeyringParcel();
+            parcel.mMasterKeyId = ring.getMasterKeyId();
+            parcel.mFingerprint = ring.getFingerprint();
+            parcel.revokeUserIds.add(uid);
+
+            modified = applyModificationWithChecks(parcel, ring, onlyA, onlyB);
+
+            Assert.assertEquals("no extra packets in original", 0, onlyA.size());
+            Assert.assertEquals("exactly one extra packet in modified", 1, onlyB.size());
+
+            Iterator<RawPacket> it = onlyB.iterator();
+            Packet p;
+
+            p = new BCPGInputStream(new ByteArrayInputStream(it.next().buf)).readPacket();
+            Assert.assertTrue("first new packet must be secret subkey", p instanceof SignaturePacket);
+            Assert.assertEquals("signature type must be subkey binding certificate",
+                    PGPSignature.CERTIFICATION_REVOCATION, ((SignaturePacket) p).getSignatureType());
+            Assert.assertEquals("signature must have been created by master key",
+                    ring.getMasterKeyId(), ((SignaturePacket) p).getKeyID());
+
+        }
+
+        { // re-add second user id
+            SaveKeyringParcel parcel = new SaveKeyringParcel();
+            parcel.mMasterKeyId = ring.getMasterKeyId();
+            parcel.mFingerprint = ring.getFingerprint();
+            parcel.addUserIds.add(uid);
+
+            modified = applyModificationWithChecks(
+                    parcel, modified, onlyA, onlyB, true, false);
+
+            Assert.assertEquals("exactly two outdated packets in original", 2, onlyA.size());
+            Assert.assertEquals("exactly one extra packet in modified", 1, onlyB.size());
+
+            Packet p;
+
+            p = new BCPGInputStream(new ByteArrayInputStream(onlyA.get(0).buf)).readPacket();
+            Assert.assertTrue("first outdated packet must be signature", p instanceof SignaturePacket);
+            Assert.assertEquals("first outdated signature type must be positive certification",
+                    PGPSignature.POSITIVE_CERTIFICATION, ((SignaturePacket) p).getSignatureType());
+            Assert.assertEquals("first outdated signature must have been created by master key",
+                    ring.getMasterKeyId(), ((SignaturePacket) p).getKeyID());
+
+            p = new BCPGInputStream(new ByteArrayInputStream(onlyA.get(1).buf)).readPacket();
+            Assert.assertTrue("second outdated packet must be signature", p instanceof SignaturePacket);
+            Assert.assertEquals("second outdated signature type must be certificate revocation",
+                    PGPSignature.CERTIFICATION_REVOCATION, ((SignaturePacket) p).getSignatureType());
+            Assert.assertEquals("second outdated signature must have been created by master key",
+                    ring.getMasterKeyId(), ((SignaturePacket) p).getKeyID());
+
+            p = new BCPGInputStream(new ByteArrayInputStream(onlyB.get(0).buf)).readPacket();
+            Assert.assertTrue("new packet must be signature ", p instanceof SignaturePacket);
+            Assert.assertEquals("new signature type must be positive certification",
+                    PGPSignature.POSITIVE_CERTIFICATION, ((SignaturePacket) p).getSignatureType());
+            Assert.assertEquals("signature must have been created by master key",
+                    ring.getMasterKeyId(), ((SignaturePacket) p).getKeyID());
+        }
+
+    }
+
+    @Test
     public void testUserIdAdd() throws Exception {
 
         SaveKeyringParcel parcel = new SaveKeyringParcel();
@@ -235,6 +303,7 @@ public class PgpKeyOperationTest {
     public void testUserIdPrimary() throws Exception {
 
         UncachedKeyRing modified = ring;
+        String uid = ring.getPublicKey().getUnorderedUserIds().get(1);
 
         { // first part, add new user id which is also primary
             SaveKeyringParcel parcel = new SaveKeyringParcel();
@@ -243,7 +312,7 @@ public class PgpKeyOperationTest {
             parcel.addUserIds.add("jack");
             parcel.changePrimaryUserId = "jack";
 
-            modified = applyModificationWithChecks(parcel, modified);
+            modified = applyModificationWithChecks(parcel, modified, onlyA, onlyB);
 
             Assert.assertEquals("primary user id must be the one added",
                     "jack", modified.getPublicKey().getPrimaryUserId());
@@ -253,7 +322,7 @@ public class PgpKeyOperationTest {
             SaveKeyringParcel parcel = new SaveKeyringParcel();
             parcel.mMasterKeyId = ring.getMasterKeyId();
             parcel.mFingerprint = ring.getFingerprint();
-            parcel.changePrimaryUserId = "pink";
+            parcel.changePrimaryUserId = uid;
 
             modified = applyModificationWithChecks(parcel, modified, onlyA, onlyB);
 
@@ -262,6 +331,20 @@ public class PgpKeyOperationTest {
 
             Assert.assertEquals("primary user id must be the one changed to",
                     "pink", modified.getPublicKey().getPrimaryUserId());
+        }
+
+        { // third part, change primary to a non-existent one
+            SaveKeyringParcel parcel = new SaveKeyringParcel();
+            parcel.mMasterKeyId = ring.getMasterKeyId();
+            parcel.mFingerprint = ring.getFingerprint();
+            //noinspection SpellCheckingInspection
+            parcel.changePrimaryUserId = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+
+            WrappedSecretKeyRing secretRing = new WrappedSecretKeyRing(ring.getEncoded(), false, 0);
+            OperationResultParcel.OperationLog log = new OperationResultParcel.OperationLog();
+            modified = op.modifySecretKeyRing(secretRing, parcel, "swag", log, 0);
+
+            Assert.assertNull("changing primary user id to a non-existent one should fail", modified);
         }
 
     }
