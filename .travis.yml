@@ -15,6 +15,6 @@ before_install:
     - ./install-custom-gradle-test-plugin.sh
 install: echo "Installation done"
 script:
-    - gradle -PwithTesting=true assemble -S -q
-    - gradle -PwithTesting=true --info OpenKeychain-Test:testDebug
+    - gradle assemble -S -q
+    - gradle --info OpenKeychain-Test:testDebug
 

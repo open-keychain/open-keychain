@@ -68,6 +68,8 @@ public class PgpKeyOperationTest {
         OperationResultParcel.OperationLog log = new OperationResultParcel.OperationLog();
         staticRing = op.createSecretKeyRing(parcel, log, 0);
 
+        Assert.assertNotNull("initial test key creation must succeed", staticRing);
+
         // we sleep here for a second, to make sure all new certificates have different timestamps
         Thread.sleep(1000);
     }
@@ -84,6 +86,78 @@ public class PgpKeyOperationTest {
         parcel = new SaveKeyringParcel();
         parcel.mMasterKeyId = ring.getMasterKeyId();
         parcel.mFingerprint = ring.getFingerprint();
+
+    }
+
+    @Test
+    public void testAlgorithmChoice() {
+
+        OperationResultParcel.OperationLog log = new OperationResultParcel.OperationLog();
+
+        {
+            parcel.reset();
+            parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
+                    Constants.choice.algorithm.rsa, new Random().nextInt(256)+255, KeyFlags.CERTIFY_OTHER, null));
+            parcel.mAddUserIds.add("shy");
+            parcel.mNewPassphrase = "swag";
+
+            UncachedKeyRing ring = op.createSecretKeyRing(parcel, log, 0);
+
+            Assert.assertNull("creating ring with < 512 bytes keysize should fail", ring);
+        }
+
+        {
+            parcel.reset();
+            parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
+                    Constants.choice.algorithm.elgamal, 1024, KeyFlags.CERTIFY_OTHER, null));
+            parcel.mAddUserIds.add("shy");
+            parcel.mNewPassphrase = "swag";
+
+            UncachedKeyRing ring = op.createSecretKeyRing(parcel, log, 0);
+
+            Assert.assertNull("creating ring with ElGamal master key should fail", ring);
+        }
+
+        {
+            parcel.reset();
+            parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
+                    12345, 1024, KeyFlags.CERTIFY_OTHER, null));
+            parcel.mAddUserIds.add("shy");
+            parcel.mNewPassphrase = "swag";
+
+            UncachedKeyRing ring = op.createSecretKeyRing(parcel, log, 0);
+            Assert.assertNull("creating ring with bad algorithm choice should fail", ring);
+        }
+
+        {
+            parcel.reset();
+            parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
+                    Constants.choice.algorithm.rsa, 1024, KeyFlags.SIGN_DATA, null));
+            parcel.mAddUserIds.add("shy");
+            parcel.mNewPassphrase = "swag";
+
+            UncachedKeyRing ring = op.createSecretKeyRing(parcel, log, 0);
+            Assert.assertNull("creating ring with non-certifying master key should fail", ring);
+        }
+
+        {
+            parcel.reset();
+            parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
+                    Constants.choice.algorithm.rsa, 1024, KeyFlags.CERTIFY_OTHER, null));
+            parcel.mNewPassphrase = "swag";
+
+            UncachedKeyRing ring = op.createSecretKeyRing(parcel, log, 0);
+            Assert.assertNull("creating ring without user ids should fail", ring);
+        }
+
+        {
+            parcel.reset();
+            parcel.mAddUserIds.add("shy");
+            parcel.mNewPassphrase = "swag";
+
+            UncachedKeyRing ring = op.createSecretKeyRing(parcel, log, 0);
+            Assert.assertNull("creating ring without subkeys should fail", ring);
+        }
 
     }
 

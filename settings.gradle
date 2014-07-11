@@ -1,5 +1,5 @@
 include ':OpenKeychain'
-if (hasProperty('withTesting') && withTesting) include ':OpenKeychain-Test'
+include ':OpenKeychain-Test'
 include ':extern:openpgp-api-lib'
 include ':extern:openkeychain-api-lib'
 include ':extern:html-textview'
