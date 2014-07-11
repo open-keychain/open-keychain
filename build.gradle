@@ -23,3 +23,9 @@ allprojects {
 task wrapper(type: Wrapper) {
     gradleVersion = '1.12'
 }
+
+subprojects {
+    tasks.withType(Test) {
+        maxParallelForks = 1
+    }
+}
