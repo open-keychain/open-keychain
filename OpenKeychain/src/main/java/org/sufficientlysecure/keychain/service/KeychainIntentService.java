@@ -349,9 +349,9 @@ public class KeychainIntentService extends IntentService
                     providerHelper.saveSecretKeyRing(ring, new ProgressScaler(this, 10, 95, 100));
 
                     // cache new passphrase
-                    if (saveParcel.newPassphrase != null) {
+                    if (saveParcel.mNewPassphrase != null) {
                         PassphraseCacheService.addCachedPassphrase(this, ring.getMasterKeyId(),
-                                saveParcel.newPassphrase);
+                                saveParcel.mNewPassphrase);
                     }
                 } catch (ProviderHelper.NotFoundException e) {
                     sendErrorToHandler(e);

@@ -170,12 +170,12 @@ public class PgpKeyOperation {
             indent += 1;
             updateProgress(R.string.progress_building_key, 0, 100);
 
-            if (saveParcel.addSubKeys == null || saveParcel.addSubKeys.isEmpty()) {
+            if (saveParcel.mAddSubKeys == null || saveParcel.mAddSubKeys.isEmpty()) {
                 log.add(LogLevel.ERROR, LogType.MSG_CR_ERROR_NO_MASTER, indent);
                 return null;
             }
 
-            SubkeyAdd add = saveParcel.addSubKeys.remove(0);
+            SubkeyAdd add = saveParcel.mAddSubKeys.remove(0);
             if ((add.mFlags & KeyFlags.CERTIFY_OTHER) != KeyFlags.CERTIFY_OTHER) {
                 log.add(LogLevel.ERROR, LogType.MSG_CR_ERROR_NO_CERTIFY, indent);
                 return null;
@@ -299,7 +299,7 @@ public class PgpKeyOperation {
             PGPPublicKey modifiedPublicKey = masterPublicKey;
 
             // 2a. Add certificates for new user ids
-            for (String userId : saveParcel.addUserIds) {
+            for (String userId : saveParcel.mAddUserIds) {
                 log.add(LogLevel.INFO, LogType.MSG_MF_UID_ADD, indent);
 
                 // this operation supersedes all previous binding and revocation certificates,
@@ -324,8 +324,8 @@ public class PgpKeyOperation {
                 }
 
                 // if it's supposed to be primary, we can do that here as well
-                boolean isPrimary = saveParcel.changePrimaryUserId != null
-                        && userId.equals(saveParcel.changePrimaryUserId);
+                boolean isPrimary = saveParcel.mChangePrimaryUserId != null
+                        && userId.equals(saveParcel.mChangePrimaryUserId);
                 // generate and add new certificate
                 PGPSignature cert = generateUserIdSignature(masterPrivateKey,
                         masterPublicKey, userId, isPrimary, masterKeyFlags);
@@ -333,7 +333,7 @@ public class PgpKeyOperation {
             }
 
             // 2b. Add revocations for revoked user ids
-            for (String userId : saveParcel.revokeUserIds) {
+            for (String userId : saveParcel.mRevokeUserIds) {
                 log.add(LogLevel.INFO, LogType.MSG_MF_UID_REVOKE, indent);
                 // a duplicate revocatin will be removed during canonicalization, so no need to
                 // take care of that here.
@@ -343,7 +343,7 @@ public class PgpKeyOperation {
             }
 
             // 3. If primary user id changed, generate new certificates for both old and new
-            if (saveParcel.changePrimaryUserId != null) {
+            if (saveParcel.mChangePrimaryUserId != null) {
 
                 // keep track if we actually changed one
                 boolean ok = false;
@@ -387,7 +387,7 @@ public class PgpKeyOperation {
                     // we definitely should not update certifications of revoked keys, so just leave it.
                     if (isRevoked) {
                         // revoked user ids cannot be primary!
-                        if (userId.equals(saveParcel.changePrimaryUserId)) {
+                        if (userId.equals(saveParcel.mChangePrimaryUserId)) {
                             log.add(LogLevel.ERROR, LogType.MSG_MF_ERROR_REVOKED_PRIMARY, indent);
                             return null;
                         }
@@ -397,7 +397,7 @@ public class PgpKeyOperation {
                     // if this is~ the/a primary user id
                     if (currentCert.hasSubpackets() && currentCert.getHashedSubPackets().isPrimaryUserID()) {
                         // if it's the one we want, just leave it as is
-                        if (userId.equals(saveParcel.changePrimaryUserId)) {
+                        if (userId.equals(saveParcel.mChangePrimaryUserId)) {
                             ok = true;
                             continue;
                         }
@@ -415,7 +415,7 @@ public class PgpKeyOperation {
                     // if we are here, this is not currently a primary user id
 
                     // if it should be
-                    if (userId.equals(saveParcel.changePrimaryUserId)) {
+                    if (userId.equals(saveParcel.mChangePrimaryUserId)) {
                         // add shiny new primary user id certificate
                         log.add(LogLevel.DEBUG, LogType.MSG_MF_PRIMARY_NEW, indent);
                         modifiedPublicKey = PGPPublicKey.removeCertification(
@@ -447,7 +447,7 @@ public class PgpKeyOperation {
             }
 
             // 4a. For each subkey change, generate new subkey binding certificate
-            for (SaveKeyringParcel.SubkeyChange change : saveParcel.changeSubKeys) {
+            for (SaveKeyringParcel.SubkeyChange change : saveParcel.mChangeSubKeys) {
                 log.add(LogLevel.INFO, LogType.MSG_MF_SUBKEY_CHANGE,
                         indent, PgpKeyHelper.convertKeyIdToHex(change.mKeyId));
                 PGPSecretKey sKey = sKR.getSecretKey(change.mKeyId);
@@ -473,7 +473,7 @@ public class PgpKeyOperation {
             }
 
             // 4b. For each subkey revocation, generate new subkey revocation certificate
-            for (long revocation : saveParcel.revokeSubKeys) {
+            for (long revocation : saveParcel.mRevokeSubKeys) {
                 log.add(LogLevel.INFO, LogType.MSG_MF_SUBKEY_REVOKE,
                         indent, PgpKeyHelper.convertKeyIdToHex(revocation));
                 PGPSecretKey sKey = sKR.getSecretKey(revocation);
@@ -492,7 +492,7 @@ public class PgpKeyOperation {
             }
 
             // 5. Generate and add new subkeys
-            for (SaveKeyringParcel.SubkeyAdd add : saveParcel.addSubKeys) {
+            for (SaveKeyringParcel.SubkeyAdd add : saveParcel.mAddSubKeys) {
                 try {
 
                     if (add.mExpiry != null && new Date(add.mExpiry).before(new Date())) {
@@ -537,7 +537,7 @@ public class PgpKeyOperation {
             }
 
             // 6. If requested, change passphrase
-            if (saveParcel.newPassphrase != null) {
+            if (saveParcel.mNewPassphrase != null) {
                 log.add(LogLevel.INFO, LogType.MSG_MF_PASSPHRASE, indent);
                 PGPDigestCalculator sha1Calc = new JcaPGPDigestCalculatorProviderBuilder().build()
                         .get(HashAlgorithmTags.SHA1);
@@ -547,7 +547,7 @@ public class PgpKeyOperation {
                 PBESecretKeyEncryptor keyEncryptorNew = new JcePBESecretKeyEncryptorBuilder(
                         PGPEncryptedData.CAST5, sha1Calc)
                         .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME).build(
-                                saveParcel.newPassphrase.toCharArray());
+                                saveParcel.mNewPassphrase.toCharArray());
 
                 sKR = PGPSecretKeyRing.copyWithNewPassword(sKR, keyDecryptor, keyEncryptorNew);
             }

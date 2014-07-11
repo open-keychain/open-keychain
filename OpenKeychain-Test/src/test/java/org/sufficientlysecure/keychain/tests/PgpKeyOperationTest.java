@@ -49,16 +49,16 @@ public class PgpKeyOperationTest {
 
     @BeforeClass public static void setUpOnce() throws Exception {
         SaveKeyringParcel parcel = new SaveKeyringParcel();
-        parcel.addSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
+        parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
                 Constants.choice.algorithm.rsa, 1024, KeyFlags.CERTIFY_OTHER, null));
-        parcel.addSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
+        parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
                 Constants.choice.algorithm.rsa, 1024, KeyFlags.SIGN_DATA, null));
-        parcel.addSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
+        parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
                 Constants.choice.algorithm.rsa, 1024, KeyFlags.ENCRYPT_COMMS, null));
 
-        parcel.addUserIds.add("twi");
-        parcel.addUserIds.add("pink");
-        parcel.newPassphrase = "swag";
+        parcel.mAddUserIds.add("twi");
+        parcel.mAddUserIds.add("pink");
+        parcel.mNewPassphrase = "swag";
         PgpKeyOperation op = new PgpKeyOperation(null);
 
         OperationResultParcel.OperationLog log = new OperationResultParcel.OperationLog();
@@ -85,9 +85,9 @@ public class PgpKeyOperationTest {
     // subkey binding certificates
     public void testMasterFlags() throws Exception {
         SaveKeyringParcel parcel = new SaveKeyringParcel();
-        parcel.addSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
+        parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
                 Constants.choice.algorithm.rsa, 1024, KeyFlags.CERTIFY_OTHER | KeyFlags.SIGN_DATA, null));
-        parcel.addUserIds.add("luna");
+        parcel.mAddUserIds.add("luna");
         OperationResultParcel.OperationLog log = new OperationResultParcel.OperationLog();
         ring = op.createSecretKeyRing(parcel, log, 0);
 
@@ -143,7 +143,7 @@ public class PgpKeyOperationTest {
     @Test
     public void testSubkeyAdd() throws Exception {
 
-        parcel.addSubKeys.add(new SubkeyAdd(algorithm.rsa, 1024, KeyFlags.SIGN_DATA, null));
+        parcel.mAddSubKeys.add(new SubkeyAdd(algorithm.rsa, 1024, KeyFlags.SIGN_DATA, null));
 
         applyModificationWithChecks(parcel, ring, onlyA, onlyB);
 
@@ -171,7 +171,7 @@ public class PgpKeyOperationTest {
         {
             Iterator<UncachedPublicKey> it = ring.getPublicKeys();
             it.next();
-            parcel.revokeSubKeys.add(it.next().getKeyId());
+            parcel.mRevokeSubKeys.add(it.next().getKeyId());
         }
 
         applyModificationWithChecks(parcel, ring, onlyA, onlyB);
@@ -199,7 +199,7 @@ public class PgpKeyOperationTest {
 
         { // revoke second user id
 
-            parcel.revokeUserIds.add(uid);
+            parcel.mRevokeUserIds.add(uid);
 
             modified = applyModificationWithChecks(parcel, ring, onlyA, onlyB);
 
@@ -221,7 +221,7 @@ public class PgpKeyOperationTest {
         { // re-add second user id
             // new parcel
             parcel.reset();
-            parcel.addUserIds.add(uid);
+            parcel.mAddUserIds.add(uid);
 
             applyModificationWithChecks(parcel, modified, onlyA, onlyB, true, false);
 
@@ -257,7 +257,7 @@ public class PgpKeyOperationTest {
     @Test
     public void testUserIdAdd() throws Exception {
 
-        parcel.addUserIds.add("rainbow");
+        parcel.mAddUserIds.add("rainbow");
 
         UncachedKeyRing modified = applyModificationWithChecks(parcel, ring, onlyA, onlyB);
 
@@ -293,8 +293,8 @@ public class PgpKeyOperationTest {
         String uid = ring.getPublicKey().getUnorderedUserIds().get(1);
 
         { // first part, add new user id which is also primary
-            parcel.addUserIds.add("jack");
-            parcel.changePrimaryUserId = "jack";
+            parcel.mAddUserIds.add("jack");
+            parcel.mChangePrimaryUserId = "jack";
 
             modified = applyModificationWithChecks(parcel, modified, onlyA, onlyB);
 
@@ -304,7 +304,7 @@ public class PgpKeyOperationTest {
 
         { // second part, change primary to a different one
             parcel.reset();
-            parcel.changePrimaryUserId = uid;
+            parcel.mChangePrimaryUserId = uid;
 
             modified = applyModificationWithChecks(parcel, modified, onlyA, onlyB);
 
@@ -318,7 +318,7 @@ public class PgpKeyOperationTest {
         { // third part, change primary to a non-existent one
             parcel.reset();
             //noinspection SpellCheckingInspection
-            parcel.changePrimaryUserId = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+            parcel.mChangePrimaryUserId = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 
             WrappedSecretKeyRing secretRing = new WrappedSecretKeyRing(ring.getEncoded(), false, 0);
             OperationResultParcel.OperationLog log = new OperationResultParcel.OperationLog();

@@ -27,16 +27,16 @@ public class SaveKeyringParcel implements Parcelable {
     // the key fingerprint, for safety. MUST be null for a new key.
     public byte[] mFingerprint;
 
-    public String newPassphrase;
+    public String mNewPassphrase;
 
-    public ArrayList<String> addUserIds;
-    public ArrayList<SubkeyAdd> addSubKeys;
+    public ArrayList<String> mAddUserIds;
+    public ArrayList<SubkeyAdd> mAddSubKeys;
 
-    public ArrayList<SubkeyChange> changeSubKeys;
-    public String changePrimaryUserId;
+    public ArrayList<SubkeyChange> mChangeSubKeys;
+    public String mChangePrimaryUserId;
 
-    public ArrayList<String> revokeUserIds;
-    public ArrayList<Long> revokeSubKeys;
+    public ArrayList<String> mRevokeUserIds;
+    public ArrayList<Long> mRevokeSubKeys;
 
     public SaveKeyringParcel() {
         reset();
@@ -49,13 +49,13 @@ public class SaveKeyringParcel implements Parcelable {
     }
 
     public void reset() {
-        newPassphrase = null;
-        addUserIds = new ArrayList<String>();
-        addSubKeys = new ArrayList<SubkeyAdd>();
-        changePrimaryUserId = null;
-        changeSubKeys = new ArrayList<SubkeyChange>();
-        revokeUserIds = new ArrayList<String>();
-        revokeSubKeys = new ArrayList<Long>();
+        mNewPassphrase = null;
+        mAddUserIds = new ArrayList<String>();
+        mAddSubKeys = new ArrayList<SubkeyAdd>();
+        mChangePrimaryUserId = null;
+        mChangeSubKeys = new ArrayList<SubkeyChange>();
+        mRevokeUserIds = new ArrayList<String>();
+        mRevokeSubKeys = new ArrayList<Long>();
     }
 
     // performance gain for using Parcelable here would probably be negligible,
@@ -88,16 +88,16 @@ public class SaveKeyringParcel implements Parcelable {
         mMasterKeyId = source.readInt() != 0 ? source.readLong() : null;
         mFingerprint = source.createByteArray();
 
-        newPassphrase = source.readString();
+        mNewPassphrase = source.readString();
 
-        addUserIds = source.createStringArrayList();
-        addSubKeys = (ArrayList<SubkeyAdd>) source.readSerializable();
+        mAddUserIds = source.createStringArrayList();
+        mAddSubKeys = (ArrayList<SubkeyAdd>) source.readSerializable();
 
-        changeSubKeys = (ArrayList<SubkeyChange>) source.readSerializable();
-        changePrimaryUserId = source.readString();
+        mChangeSubKeys = (ArrayList<SubkeyChange>) source.readSerializable();
+        mChangePrimaryUserId = source.readString();
 
-        revokeUserIds = source.createStringArrayList();
-        revokeSubKeys = (ArrayList<Long>) source.readSerializable();
+        mRevokeUserIds = source.createStringArrayList();
+        mRevokeSubKeys = (ArrayList<Long>) source.readSerializable();
     }
 
     @Override
@@ -108,16 +108,16 @@ public class SaveKeyringParcel implements Parcelable {
         }
         destination.writeByteArray(mFingerprint);
 
-        destination.writeString(newPassphrase);
+        destination.writeString(mNewPassphrase);
 
-        destination.writeStringList(addUserIds);
-        destination.writeSerializable(addSubKeys);
+        destination.writeStringList(mAddUserIds);
+        destination.writeSerializable(mAddSubKeys);
 
-        destination.writeSerializable(changeSubKeys);
-        destination.writeString(changePrimaryUserId);
+        destination.writeSerializable(mChangeSubKeys);
+        destination.writeString(mChangePrimaryUserId);
 
-        destination.writeStringList(revokeUserIds);
-        destination.writeSerializable(revokeSubKeys);
+        destination.writeStringList(mRevokeUserIds);
+        destination.writeSerializable(mRevokeSubKeys);
     }
 
     public static final Creator<SaveKeyringParcel> CREATOR = new Creator<SaveKeyringParcel>() {

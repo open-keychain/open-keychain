@@ -217,7 +217,7 @@ public class EditKeyFragment extends LoaderFragment implements
         mSubkeysAdapter = new SubkeysAdapter(getActivity(), null, 0);
         mSubkeysList.setAdapter(mSubkeysAdapter);
 
-        mSubkeysAddedAdapter = new SubkeysAddedAdapter(getActivity(), mSaveKeyringParcel.addSubKeys);
+        mSubkeysAddedAdapter = new SubkeysAddedAdapter(getActivity(), mSaveKeyringParcel.mAddSubKeys);
         mSubkeysAddedList.setAdapter(mSubkeysAddedAdapter);
 
         // Prepare the loaders. Either re-connect with an existing ones,
@@ -287,7 +287,7 @@ public class EditKeyFragment extends LoaderFragment implements
                     Bundle data = message.getData();
 
                     // cache new returned passphrase!
-                    mSaveKeyringParcel.newPassphrase = data
+                    mSaveKeyringParcel.mNewPassphrase = data
                             .getString(SetPassphraseDialogFragment.MESSAGE_NEW_PASSPHRASE);
                 }
             }
@@ -309,19 +309,19 @@ public class EditKeyFragment extends LoaderFragment implements
                 switch (message.what) {
                     case EditUserIdDialogFragment.MESSAGE_CHANGE_PRIMARY_USER_ID:
                         // toggle
-                        if (mSaveKeyringParcel.changePrimaryUserId != null
-                                && mSaveKeyringParcel.changePrimaryUserId.equals(userId)) {
-                            mSaveKeyringParcel.changePrimaryUserId = null;
+                        if (mSaveKeyringParcel.mChangePrimaryUserId != null
+                                && mSaveKeyringParcel.mChangePrimaryUserId.equals(userId)) {
+                            mSaveKeyringParcel.mChangePrimaryUserId = null;
                         } else {
-                            mSaveKeyringParcel.changePrimaryUserId = userId;
+                            mSaveKeyringParcel.mChangePrimaryUserId = userId;
                         }
                         break;
                     case EditUserIdDialogFragment.MESSAGE_REVOKE:
                         // toggle
-                        if (mSaveKeyringParcel.revokeUserIds.contains(userId)) {
-                            mSaveKeyringParcel.revokeUserIds.remove(userId);
+                        if (mSaveKeyringParcel.mRevokeUserIds.contains(userId)) {
+                            mSaveKeyringParcel.mRevokeUserIds.remove(userId);
                         } else {
-                            mSaveKeyringParcel.revokeUserIds.add(userId);
+                            mSaveKeyringParcel.mRevokeUserIds.add(userId);
                         }
                         break;
                 }
@@ -374,9 +374,9 @@ public class EditKeyFragment extends LoaderFragment implements
 
     private void save(String passphrase) {
         Log.d(Constants.TAG, "add userids to parcel: " + mUserIdsAddedAdapter.getDataAsStringList());
-        Log.d(Constants.TAG, "mSaveKeyringParcel.newPassphrase: " + mSaveKeyringParcel.newPassphrase);
+        Log.d(Constants.TAG, "mSaveKeyringParcel.mNewPassphrase: " + mSaveKeyringParcel.mNewPassphrase);
 
-        mSaveKeyringParcel.addUserIds = mUserIdsAddedAdapter.getDataAsStringList();
+        mSaveKeyringParcel.mAddUserIds = mUserIdsAddedAdapter.getDataAsStringList();
 
         // Message is received after importing is done in KeychainIntentService
         KeychainIntentServiceHandler saveHandler = new KeychainIntentServiceHandler(

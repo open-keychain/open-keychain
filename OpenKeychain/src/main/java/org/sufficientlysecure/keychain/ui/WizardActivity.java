@@ -328,7 +328,7 @@ public class WizardActivity extends ActionBarActivity {
                         && isEditTextNotEmpty(this, passphraseEdit)) {
 
 //                    SaveKeyringParcel newKey = new SaveKeyringParcel();
-//                    newKey.addUserIds.add(nameEdit.getText().toString() + " <"
+//                    newKey.mAddUserIds.add(nameEdit.getText().toString() + " <"
 //                            + emailEdit.getText().toString() + ">");
 
 
