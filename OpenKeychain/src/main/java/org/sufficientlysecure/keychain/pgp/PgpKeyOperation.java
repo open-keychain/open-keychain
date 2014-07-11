@@ -333,7 +333,7 @@ public class PgpKeyOperation {
             // 2b. Add revocations for revoked user ids
             for (String userId : saveParcel.mRevokeUserIds) {
                 log.add(LogLevel.INFO, LogType.MSG_MF_UID_REVOKE, indent);
-                // a duplicate revocatin will be removed during canonicalization, so no need to
+                // a duplicate revocation will be removed during canonicalization, so no need to
                 // take care of that here.
                 PGPSignature cert = generateRevocationSignature(masterPrivateKey,
                         masterPublicKey, userId);
@@ -523,7 +523,7 @@ public class PgpKeyOperation {
             for (SaveKeyringParcel.SubkeyAdd add : saveParcel.mAddSubKeys) {
                 try {
 
-                    if (add.mExpiry != null && new Date(add.mExpiry).before(new Date())) {
+                    if (add.mExpiry != null && new Date(add.mExpiry*1000).before(new Date())) {
                         log.add(LogLevel.ERROR, LogType.MSG_MF_SUBKEY_PAST_EXPIRY, indent +1);
                         return null;
                     }
