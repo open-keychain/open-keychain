@@ -79,7 +79,7 @@ android {
 
 // NOTE: This disables Lint!
 tasks.whenTaskAdded { task ->
-    if (task.name.equals("lint")) {
+    if (task.name.contains("lint")) {
         task.enabled = false
     }
 }
