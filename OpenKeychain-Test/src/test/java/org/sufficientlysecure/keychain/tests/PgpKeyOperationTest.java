@@ -16,7 +16,6 @@ import org.spongycastle.bcpg.SecretSubkeyPacket;
 import org.spongycastle.bcpg.SignaturePacket;
 import org.spongycastle.bcpg.UserIDPacket;
 import org.spongycastle.bcpg.sig.KeyFlags;
-import org.spongycastle.openpgp.PGPSecretKey;
 import org.spongycastle.openpgp.PGPSignature;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.Constants.choice.algorithm;
@@ -68,6 +67,9 @@ public class PgpKeyOperationTest {
 
         OperationResultParcel.OperationLog log = new OperationResultParcel.OperationLog();
         staticRing = op.createSecretKeyRing(parcel, log, 0);
+
+        // we sleep here for a second, to make sure all new certificates have different timestamps
+        Thread.sleep(1000);
     }
 
     @Before public void setUp() throws Exception {
@@ -294,30 +296,82 @@ public class PgpKeyOperationTest {
     @Test
     public void testSubkeyRevoke() throws Exception {
 
+        long keyId;
         {
             Iterator<UncachedPublicKey> it = ring.getPublicKeys();
             it.next();
-            parcel.mRevokeSubKeys.add(it.next().getKeyId());
+            keyId = it.next().getKeyId();
         }
 
-        applyModificationWithChecks(parcel, ring, onlyA, onlyB);
+        int flags = ring.getPublicKey(keyId).getKeyUsage();
 
-        Assert.assertEquals("no extra packets in original", 0, onlyA.size());
-        Assert.assertEquals("exactly one extra packet in modified", 1, onlyB.size());
+        UncachedKeyRing modified;
 
-        Packet p;
+        { // revoked second subkey
 
-        p = new BCPGInputStream(new ByteArrayInputStream(onlyB.get(0).buf)).readPacket();
-        Assert.assertTrue("first new packet must be secret subkey", p instanceof SignaturePacket);
-        Assert.assertEquals("signature type must be subkey binding certificate",
-                PGPSignature.SUBKEY_REVOCATION, ((SignaturePacket) p).getSignatureType());
-        Assert.assertEquals("signature must have been created by master key",
-                ring.getMasterKeyId(), ((SignaturePacket) p).getKeyID());
+            parcel.mRevokeSubKeys.add(keyId);
 
+            modified = applyModificationWithChecks(parcel, ring, onlyA, onlyB);
+
+            Assert.assertEquals("no extra packets in original", 0, onlyA.size());
+            Assert.assertEquals("exactly one extra packet in modified", 1, onlyB.size());
+
+            Packet p;
+
+            p = new BCPGInputStream(new ByteArrayInputStream(onlyB.get(0).buf)).readPacket();
+            Assert.assertTrue("first new packet must be secret subkey", p instanceof SignaturePacket);
+            Assert.assertEquals("signature type must be subkey binding certificate",
+                    PGPSignature.SUBKEY_REVOCATION, ((SignaturePacket) p).getSignatureType());
+            Assert.assertEquals("signature must have been created by master key",
+                    ring.getMasterKeyId(), ((SignaturePacket) p).getKeyID());
+
+            Assert.assertTrue("subkey must actually be revoked",
+                    modified.getPublicKey(keyId).isRevoked());
+        }
+
+        { // re-add second subkey
+
+            parcel.reset();
+            parcel.mChangeSubKeys.add(new SubkeyChange(keyId, null, null));
+
+            modified = applyModificationWithChecks(parcel, modified, onlyA, onlyB);
+
+            Assert.assertEquals("exactly two outdated packets in original", 2, onlyA.size());
+            Assert.assertEquals("exactly one extra packet in modified", 1, onlyB.size());
+
+            Packet p;
+
+            p = new BCPGInputStream(new ByteArrayInputStream(onlyA.get(0).buf)).readPacket();
+            Assert.assertTrue("first outdated packet must be signature", p instanceof SignaturePacket);
+            Assert.assertEquals("first outdated signature type must be subkey binding certification",
+                    PGPSignature.SUBKEY_BINDING, ((SignaturePacket) p).getSignatureType());
+            Assert.assertEquals("first outdated signature must have been created by master key",
+                    ring.getMasterKeyId(), ((SignaturePacket) p).getKeyID());
+
+            p = new BCPGInputStream(new ByteArrayInputStream(onlyA.get(1).buf)).readPacket();
+            Assert.assertTrue("second outdated packet must be signature", p instanceof SignaturePacket);
+            Assert.assertEquals("second outdated signature type must be subkey revocation",
+                    PGPSignature.SUBKEY_REVOCATION, ((SignaturePacket) p).getSignatureType());
+            Assert.assertEquals("second outdated signature must have been created by master key",
+                    ring.getMasterKeyId(), ((SignaturePacket) p).getKeyID());
+
+            p = new BCPGInputStream(new ByteArrayInputStream(onlyB.get(0).buf)).readPacket();
+            Assert.assertTrue("new packet must be signature ", p instanceof SignaturePacket);
+            Assert.assertEquals("new signature type must be subkey binding certification",
+                    PGPSignature.SUBKEY_BINDING, ((SignaturePacket) p).getSignatureType());
+            Assert.assertEquals("signature must have been created by master key",
+                    ring.getMasterKeyId(), ((SignaturePacket) p).getKeyID());
+
+            Assert.assertFalse("subkey must no longer be revoked",
+                    modified.getPublicKey(keyId).isRevoked());
+            Assert.assertEquals("subkey must have the same usage flags as before",
+                    flags, modified.getPublicKey(keyId).getKeyUsage());
+
+        }
     }
 
     @Test
-    public void testUserIdRevokeRead() throws Exception {
+    public void testUserIdRevoke() throws Exception {
 
         UncachedKeyRing modified;
         String uid = ring.getPublicKey().getUnorderedUserIds().get(1);
@@ -343,11 +397,11 @@ public class PgpKeyOperationTest {
         }
 
         { // re-add second user id
-            // new parcel
+
             parcel.reset();
             parcel.mAddUserIds.add(uid);
 
-            applyModificationWithChecks(parcel, modified, onlyA, onlyB, true, false);
+            applyModificationWithChecks(parcel, modified, onlyA, onlyB);
 
             Assert.assertEquals("exactly two outdated packets in original", 2, onlyA.size());
             Assert.assertEquals("exactly one extra packet in modified", 1, onlyB.size());
@@ -402,7 +456,6 @@ public class PgpKeyOperationTest {
                 "rainbow", ((UserIDPacket) p).getID());
 
         p = new BCPGInputStream(new ByteArrayInputStream(onlyB.get(1).buf)).readPacket();
-        System.out.println(p.getClass().getName());
         Assert.assertTrue("second new packet must be signature", p instanceof SignaturePacket);
         Assert.assertEquals("signature type must be positive certification",
                 PGPSignature.POSITIVE_CERTIFICATION, ((SignaturePacket) p).getSignatureType());
