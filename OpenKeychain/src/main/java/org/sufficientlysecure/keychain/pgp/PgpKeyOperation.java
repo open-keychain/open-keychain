@@ -344,6 +344,9 @@ public class PgpKeyOperation {
 
             // 3. If primary user id changed, generate new certificates for both old and new
             if (saveParcel.changePrimaryUserId != null) {
+
+                // keep track if we actually changed one
+                boolean ok = false;
                 log.add(LogLevel.INFO, LogType.MSG_MF_UID_PRIMARY, indent);
                 indent += 1;
 
@@ -395,6 +398,7 @@ public class PgpKeyOperation {
                     if (currentCert.hasSubpackets() && currentCert.getHashedSubPackets().isPrimaryUserID()) {
                         // if it's the one we want, just leave it as is
                         if (userId.equals(saveParcel.changePrimaryUserId)) {
+                            ok = true;
                             continue;
                         }
                         // otherwise, generate new non-primary certification
@@ -420,6 +424,7 @@ public class PgpKeyOperation {
                                 masterPrivateKey, masterPublicKey, userId, true, masterKeyFlags);
                         modifiedPublicKey = PGPPublicKey.addCertification(
                                 modifiedPublicKey, userId, newCert);
+                        ok = true;
                     }
 
                     // user id is not primary and is not supposed to be - nothing to do here.
@@ -427,6 +432,11 @@ public class PgpKeyOperation {
                 }
 
                 indent -= 1;
+
+                if (!ok) {
+                    log.add(LogLevel.ERROR, LogType.MSG_MF_ERROR_NOEXIST_PRIMARY, indent);
+                    return null;
+                }
             }
 
             // Update the secret key ring
