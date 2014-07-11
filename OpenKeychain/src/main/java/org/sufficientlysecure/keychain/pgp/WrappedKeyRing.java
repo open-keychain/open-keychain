@@ -105,8 +105,4 @@ public abstract class WrappedKeyRing extends KeyRing {
         return getRing().getEncoded();
     }
 
-    public UncachedKeyRing getUncached() {
-        return new UncachedKeyRing(getRing());
-    }
-
 }

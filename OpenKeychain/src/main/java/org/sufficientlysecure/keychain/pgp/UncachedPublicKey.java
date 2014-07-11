@@ -77,26 +77,65 @@ public class UncachedPublicKey {
         return mPublicKey.getBitStrength();
     }
 
+    /** Returns the primary user id, as indicated by the public key's self certificates.
+     *
+     * This is an expensive operation, since potentially a lot of certificates (and revocations)
+     * have to be checked, and even then the result is NOT guaranteed to be constant through a
+     * canonicalization operation.
+     *
+     * Returns null if there is no primary user id (as indicated by certificates)
+     *
+     */
     public String getPrimaryUserId() {
+        String found = null;
+        PGPSignature foundSig = null;
         for (String userId : new IterableIterator<String>(mPublicKey.getUserIDs())) {
+            PGPSignature revocation = null;
+
             for (PGPSignature sig : new IterableIterator<PGPSignature>(mPublicKey.getSignaturesForID(userId))) {
-                if (sig.getHashedSubPackets() != null
-                        && sig.getHashedSubPackets().hasSubpacket(SignatureSubpacketTags.PRIMARY_USER_ID)) {
-                    try {
+                try {
+
+                    // if this is a revocation, this is not the user id
+                    if (sig.getSignatureType() == PGPSignature.CERTIFICATION_REVOCATION) {
+                        // make sure it's actually valid
+                        sig.init(new JcaPGPContentVerifierBuilderProvider().setProvider(
+                                Constants.BOUNCY_CASTLE_PROVIDER_NAME), mPublicKey);
+                        if (!sig.verifyCertification(userId, mPublicKey)) {
+                            continue;
+                        }
+                        if (found != null && found.equals(userId)) {
+                            found = null;
+                        }
+                        revocation = sig;
+                        // this revocation may still be overridden by a newer cert
+                        continue;
+                    }
+
+                    if (sig.getHashedSubPackets() != null && sig.getHashedSubPackets().isPrimaryUserID()) {
+                        if (foundSig != null && sig.getCreationTime().before(foundSig.getCreationTime())) {
+                            continue;
+                        }
+                        // ignore if there is a newer revocation for this user id
+                        if (revocation != null && sig.getCreationTime().before(revocation.getCreationTime())) {
+                            continue;
+                        }
                         // make sure it's actually valid
                         sig.init(new JcaPGPContentVerifierBuilderProvider().setProvider(
                                 Constants.BOUNCY_CASTLE_PROVIDER_NAME), mPublicKey);
                         if (sig.verifyCertification(userId, mPublicKey)) {
-                            return userId;
+                            found = userId;
+                            foundSig = sig;
+                            // this one can't be relevant anymore at this point
+                            revocation = null;
                         }
-                    } catch (Exception e) {
-                        // nothing bad happens, the key is just not considered the primary key id
                     }
-                }
 
+                } catch (Exception e) {
+                    // nothing bad happens, the key is just not considered the primary key id
+                }
             }
         }
-        return null;
+        return found;
     }
 
     public ArrayList<String> getUnorderedUserIds() {
@@ -184,6 +223,21 @@ public class UncachedPublicKey {
     // (It's still used in ProviderHelper at this point)
     public PGPPublicKey getPublicKey() {
         return mPublicKey;
+    }
+
+    public Iterator<WrappedSignature> getSignatures() {
+        final Iterator<PGPSignature> it = mPublicKey.getSignatures();
+        return new Iterator<WrappedSignature>() {
+            public void remove() {
+                it.remove();
+            }
+            public WrappedSignature next() {
+                return new WrappedSignature(it.next());
+            }
+            public boolean hasNext() {
+                return it.hasNext();
+            }
+        };
     }
 
     public Iterator<WrappedSignature> getSignaturesForId(String userId) {
