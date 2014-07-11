@@ -11,6 +11,7 @@ import org.robolectric.*;
 import org.robolectric.shadows.ShadowLog;
 import org.spongycastle.bcpg.BCPGInputStream;
 import org.spongycastle.bcpg.Packet;
+import org.spongycastle.bcpg.PacketTags;
 import org.spongycastle.bcpg.SecretSubkeyPacket;
 import org.spongycastle.bcpg.SignaturePacket;
 import org.spongycastle.bcpg.UserIDPacket;
@@ -26,6 +27,7 @@ import org.sufficientlysecure.keychain.pgp.WrappedSignature;
 import org.sufficientlysecure.keychain.service.OperationResultParcel;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel.SubkeyAdd;
+import org.sufficientlysecure.keychain.service.SaveKeyringParcel.SubkeyChange;
 import org.sufficientlysecure.keychain.support.KeyringBuilder;
 import org.sufficientlysecure.keychain.support.KeyringTestingHelper;
 import org.sufficientlysecure.keychain.support.KeyringTestingHelper.RawPacket;
@@ -34,6 +36,7 @@ import org.sufficientlysecure.keychain.support.TestDataUtil;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Iterator;
 
 @RunWith(RobolectricTestRunner.class)
@@ -113,11 +116,14 @@ public class PgpKeyOperationTest {
         Assert.assertEquals("number of user ids must be two",
                 2, ring.getPublicKey().getUnorderedUserIds().size());
 
-        Assert.assertNull("expiry must be none",
-                ring.getPublicKey().getExpiryTime());
-
         Assert.assertEquals("number of subkeys must be three",
                 3, ring.getAvailableSubkeys().size());
+
+        Assert.assertTrue("key ring should have been created in the last 120 seconds",
+                ring.getPublicKey().getCreationTime().after(new Date(new Date().getTime()-1000*120)));
+
+        Assert.assertNull("key ring should not expire",
+                ring.getPublicKey().getExpiryTime());
 
         Iterator<UncachedPublicKey> it = ring.getPublicKeys();
 
@@ -161,6 +167,91 @@ public class PgpKeyOperationTest {
                 PGPSignature.SUBKEY_BINDING, ((SignaturePacket) p).getSignatureType());
         Assert.assertEquals("signature must have been created by master key",
                 ring.getMasterKeyId(), ((SignaturePacket) p).getKeyID());
+
+    }
+
+    @Test
+    public void testSubkeyModify() throws Exception {
+
+        long expiry = new Date().getTime()/1000 + 1024;
+        long keyId;
+        {
+            Iterator<UncachedPublicKey> it = ring.getPublicKeys();
+            it.next();
+            keyId = it.next().getKeyId();
+        }
+
+        UncachedKeyRing modified = ring;
+        {
+            parcel.mChangeSubKeys.add(new SubkeyChange(keyId, null, expiry));
+            modified = applyModificationWithChecks(parcel, modified, onlyA, onlyB);
+
+            Assert.assertEquals("one extra packet in original", 1, onlyA.size());
+            Assert.assertEquals("one extra packet in modified", 1, onlyB.size());
+
+            Assert.assertEquals("old packet must be signature",
+                    PacketTags.SIGNATURE, onlyA.get(0).tag);
+
+            Packet p = new BCPGInputStream(new ByteArrayInputStream(onlyB.get(0).buf)).readPacket();
+            Assert.assertTrue("first new packet must be signature", p instanceof SignaturePacket);
+            Assert.assertEquals("signature type must be subkey binding certificate",
+                    PGPSignature.SUBKEY_BINDING, ((SignaturePacket) p).getSignatureType());
+            Assert.assertEquals("signature must have been created by master key",
+                    ring.getMasterKeyId(), ((SignaturePacket) p).getKeyID());
+
+            Assert.assertNotNull("modified key must have an expiry date",
+                    modified.getPublicKey(keyId).getExpiryTime());
+            Assert.assertEquals("modified key must have an expiry date",
+                    expiry, modified.getPublicKey(keyId).getExpiryTime().getTime()/1000);
+            Assert.assertEquals("modified key must have same flags as before",
+                    ring.getPublicKey(keyId).getKeyUsage(), modified.getPublicKey(keyId).getKeyUsage());
+        }
+
+        {
+            int flags = KeyFlags.SIGN_DATA | KeyFlags.ENCRYPT_COMMS;
+            parcel.reset();
+            parcel.mChangeSubKeys.add(new SubkeyChange(keyId, flags, null));
+            modified = applyModificationWithChecks(parcel, modified, onlyA, onlyB);
+
+            Assert.assertEquals("old packet must be signature",
+                    PacketTags.SIGNATURE, onlyA.get(0).tag);
+
+            Packet p = new BCPGInputStream(new ByteArrayInputStream(onlyB.get(0).buf)).readPacket();
+            Assert.assertTrue("first new packet must be signature", p instanceof SignaturePacket);
+            Assert.assertEquals("signature type must be subkey binding certificate",
+                    PGPSignature.SUBKEY_BINDING, ((SignaturePacket) p).getSignatureType());
+            Assert.assertEquals("signature must have been created by master key",
+                    ring.getMasterKeyId(), ((SignaturePacket) p).getKeyID());
+
+            Assert.assertEquals("modified key must have expected flags",
+                    flags, modified.getPublicKey(keyId).getKeyUsage());
+            Assert.assertNotNull("key must retain its expiry",
+                    modified.getPublicKey(keyId).getExpiryTime());
+            Assert.assertEquals("key expiry must be unchanged",
+                    expiry, modified.getPublicKey(keyId).getExpiryTime().getTime()/1000);
+        }
+
+        { // a past expiry should fail
+            parcel.reset();
+            parcel.mChangeSubKeys.add(new SubkeyChange(keyId, null, new Date().getTime()/1000-10));
+
+            WrappedSecretKeyRing secretRing = new WrappedSecretKeyRing(ring.getEncoded(), false, 0);
+            OperationResultParcel.OperationLog log = new OperationResultParcel.OperationLog();
+            modified = op.modifySecretKeyRing(secretRing, parcel, "swag", log, 0);
+
+            Assert.assertNull("setting subkey expiry to a past date should fail", modified);
+        }
+
+        { // modifying nonexistent keyring should fail
+            parcel.reset();
+            parcel.mChangeSubKeys.add(new SubkeyChange(123, null, null));
+
+            WrappedSecretKeyRing secretRing = new WrappedSecretKeyRing(ring.getEncoded(), false, 0);
+            OperationResultParcel.OperationLog log = new OperationResultParcel.OperationLog();
+            modified = op.modifySecretKeyRing(secretRing, parcel, "swag", log, 0);
+
+            Assert.assertNull("modifying non-existent subkey should fail", modified);
+        }
 
     }
 
