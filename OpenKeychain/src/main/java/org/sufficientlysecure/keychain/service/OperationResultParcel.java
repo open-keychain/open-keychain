@@ -12,7 +12,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Arrays;
 
 /** Represent the result of an operation.
  *
@@ -71,9 +70,6 @@ public class OperationResultParcel implements Parcelable {
             mType = type;
             mParameters = parameters;
             mIndent = indent;
-        }
-        public LogEntryParcel(LogLevel level, LogType type, Object... parameters) {
-            this(level, type, 0, parameters);
         }
 
         public LogEntryParcel(Parcel source) {

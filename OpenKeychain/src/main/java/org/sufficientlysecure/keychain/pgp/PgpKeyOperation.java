@@ -692,6 +692,7 @@ public class PgpKeyOperation {
 
     private static int readMasterKeyFlags(PGPPublicKey masterKey) {
         int flags = KeyFlags.CERTIFY_OTHER;
+        //noinspection unchecked
         for(PGPSignature sig : new IterableIterator<PGPSignature>(masterKey.getSignatures())) {
             if (!sig.hasSubpackets()) {
                 continue;

@@ -11,7 +11,6 @@ import org.robolectric.*;
 import org.robolectric.shadows.ShadowLog;
 import org.spongycastle.bcpg.BCPGInputStream;
 import org.spongycastle.bcpg.Packet;
-import org.spongycastle.bcpg.SecretKeyPacket;
 import org.spongycastle.bcpg.SecretSubkeyPacket;
 import org.spongycastle.bcpg.SignaturePacket;
 import org.spongycastle.bcpg.UserIDPacket;
@@ -147,7 +146,7 @@ public class PgpKeyOperationTest {
         parcel.mFingerprint = ring.getFingerprint();
         parcel.addSubKeys.add(new SubkeyAdd(algorithm.rsa, 1024, KeyFlags.SIGN_DATA, null));
 
-        UncachedKeyRing modified = applyModificationWithChecks(parcel, ring, onlyA, onlyB);
+        applyModificationWithChecks(parcel, ring, onlyA, onlyB);
 
         Assert.assertEquals("no extra packets in original", 0, onlyA.size());
         Assert.assertEquals("exactly two extra packets in modified", 2, onlyB.size());
@@ -179,7 +178,7 @@ public class PgpKeyOperationTest {
             parcel.revokeSubKeys.add(it.next().getKeyId());
         }
 
-        UncachedKeyRing modified = applyModificationWithChecks(parcel, ring, onlyA, onlyB);
+        applyModificationWithChecks(parcel, ring, onlyA, onlyB);
 
         Assert.assertEquals("no extra packets in original", 0, onlyA.size());
         Assert.assertEquals("exactly one extra packet in modified", 1, onlyB.size());
@@ -197,7 +196,7 @@ public class PgpKeyOperationTest {
     }
 
     @Test
-    public void testUserIdRevokeReadd() throws Exception {
+    public void testUserIdRevokeRead() throws Exception {
 
         UncachedKeyRing modified;
         String uid = ring.getPublicKey().getUnorderedUserIds().get(1);
@@ -232,8 +231,7 @@ public class PgpKeyOperationTest {
             parcel.mFingerprint = ring.getFingerprint();
             parcel.addUserIds.add(uid);
 
-            modified = applyModificationWithChecks(
-                    parcel, modified, onlyA, onlyB, true, false);
+            applyModificationWithChecks(parcel, modified, onlyA, onlyB, true, false);
 
             Assert.assertEquals("exactly two outdated packets in original", 2, onlyA.size());
             Assert.assertEquals("exactly one extra packet in modified", 1, onlyB.size());
@@ -411,6 +409,7 @@ public class PgpKeyOperationTest {
 
         ArrayList onlyA = new ArrayList<RawPacket>();
         ArrayList onlyB = new ArrayList<RawPacket>();
+        //noinspection unchecked
         Assert.assertTrue("keyrings differ", !KeyringTestingHelper.diffKeyrings(
                 expectedKeyRing.getEncoded(), expectedKeyRing.getEncoded(), onlyA, onlyB));
 

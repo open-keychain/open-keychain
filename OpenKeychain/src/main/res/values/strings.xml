@@ -505,7 +505,7 @@
     <string name="cert_casual">casual</string>
     <string name="cert_positive">positive</string>
     <string name="cert_revoke">revoked</string>
-    <string name="cert_verify_ok">ok</string>
+    <string name="cert_verify_ok">OK</string>
     <string name="cert_verify_failed">failed!</string>
     <string name="cert_verify_error">error!</string>
     <string name="cert_verify_unavailable">key unavailable</string>
