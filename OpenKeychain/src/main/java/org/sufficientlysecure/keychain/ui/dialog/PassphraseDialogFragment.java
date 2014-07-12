@@ -189,7 +189,8 @@ public class PassphraseDialogFragment extends DialogFragment implements OnEditor
 
                 // Early breakout if we are dealing with a symmetric key
                 if (secretRing == null) {
-                    PassphraseCacheService.addCachedPassphrase(activity, Constants.key.symmetric, passphrase);
+                    PassphraseCacheService.addCachedPassphrase(activity, Constants.key.symmetric,
+                                                                passphrase, "Password");
                     // also return passphrase back to activity
                     Bundle data = new Bundle();
                     data.putString(MESSAGE_DATA_PASSPHRASE, passphrase);
@@ -228,10 +229,18 @@ public class PassphraseDialogFragment extends DialogFragment implements OnEditor
 
                 // cache the new passphrase
                 Log.d(Constants.TAG, "Everything okay! Caching entered passphrase");
-                PassphraseCacheService.addCachedPassphrase(activity, masterKeyId, passphrase);
+
+                try {
+                    PassphraseCacheService.addCachedPassphrase(activity, masterKeyId, passphrase,
+                        secretRing.getPrimaryUserId());
+                } catch(PgpGeneralException e) {
+                    Log.e(Constants.TAG, e.getMessage());
+                }
+
                 if (unlockedSecretKey.getKeyId() != masterKeyId) {
                     PassphraseCacheService.addCachedPassphrase(
-                            activity, unlockedSecretKey.getKeyId(), passphrase);
+                            activity, unlockedSecretKey.getKeyId(), passphrase,
+                            unlockedSecretKey.getPrimaryUserId());
                 }
 
                 // also return passphrase back to activity
