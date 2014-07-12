@@ -37,6 +37,7 @@ import android.support.v4.util.LongSparseArray;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.helper.Preferences;
 import org.sufficientlysecure.keychain.pgp.WrappedSecretKeyRing;
+import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.util.Log;
@@ -54,6 +55,8 @@ public class PassphraseCacheService extends Service {
             + "PASSPHRASE_CACHE_ADD";
     public static final String ACTION_PASSPHRASE_CACHE_GET = Constants.INTENT_PREFIX
             + "PASSPHRASE_CACHE_GET";
+    public static final String ACTION_PASSPHRASE_CACHE_PURGE = Constants.INTENT_PREFIX
+            + "PASSPHRASE_CACHE_PURGE";
 
     public static final String BROADCAST_ACTION_PASSPHRASE_CACHE_SERVICE = Constants.INTENT_PREFIX
             + "PASSPHRASE_CACHE_BROADCAST";
@@ -62,13 +65,14 @@ public class PassphraseCacheService extends Service {
     public static final String EXTRA_KEY_ID = "key_id";
     public static final String EXTRA_PASSPHRASE = "passphrase";
     public static final String EXTRA_MESSENGER = "messenger";
+    public static final String EXTRA_USERID = "userid";
 
     private static final int REQUEST_ID = 0;
     private static final long DEFAULT_TTL = 15;
 
     private BroadcastReceiver mIntentReceiver;
 
-    private LongSparseArray<String> mPassphraseCache = new LongSparseArray<String>();
+    private LongSparseArray<CachedPassphrase> mPassphraseCache = new LongSparseArray<CachedPassphrase>();
 
     Context mContext;
 
@@ -81,14 +85,17 @@ public class PassphraseCacheService extends Service {
      * @param keyId
      * @param passphrase
      */
-    public static void addCachedPassphrase(Context context, long keyId, String passphrase) {
+    public static void addCachedPassphrase(Context context, long keyId, String passphrase,
+                                           String primaryUserId) {
         Log.d(Constants.TAG, "PassphraseCacheService.cacheNewPassphrase() for " + keyId);
 
         Intent intent = new Intent(context, PassphraseCacheService.class);
         intent.setAction(ACTION_PASSPHRASE_CACHE_ADD);
+
         intent.putExtra(EXTRA_TTL, Preferences.getPreferences(context).getPassphraseCacheTtl());
         intent.putExtra(EXTRA_PASSPHRASE, passphrase);
         intent.putExtra(EXTRA_KEY_ID, keyId);
+        intent.putExtra(EXTRA_USERID, primaryUserId);
 
         context.startService(intent);
     }
@@ -159,11 +166,11 @@ public class PassphraseCacheService extends Service {
         // passphrase for symmetric encryption?
         if (keyId == Constants.key.symmetric) {
             Log.d(Constants.TAG, "PassphraseCacheService.getCachedPassphraseImpl() for symmetric encryption");
-            String cachedPassphrase = mPassphraseCache.get(Constants.key.symmetric);
+            String cachedPassphrase = mPassphraseCache.get(Constants.key.symmetric).getPassphrase();
             if (cachedPassphrase == null) {
                 return null;
             }
-            addCachedPassphrase(this, Constants.key.symmetric, cachedPassphrase);
+            addCachedPassphrase(this, Constants.key.symmetric, cachedPassphrase, "Password");
             return cachedPassphrase;
         }
 
@@ -176,13 +183,17 @@ public class PassphraseCacheService extends Service {
             if (!key.hasPassphrase()) {
                 Log.d(Constants.TAG, "Key has no passphrase! Caches and returns empty passphrase!");
 
-                addCachedPassphrase(this, keyId, "");
+                try {
+                    addCachedPassphrase(this, keyId, "", key.getPrimaryUserId());
+                } catch (PgpGeneralException e) {
+                    Log.d(Constants.TAG, "PgpGeneralException occured");
+                }
                 return "";
             }
 
             // get cached passphrase
-            String cachedPassphrase = mPassphraseCache.get(keyId);
-            if (cachedPassphrase == null) {
+            CachedPassphrase cachedPassphrase = mPassphraseCache.get(keyId);
+            if (cachedPassphrase == null && cachedPassphrase.getPassphrase() != null) {
                 Log.d(Constants.TAG, "PassphraseCacheService Passphrase not (yet) cached, returning null");
                 // not really an error, just means the passphrase is not cached but not empty either
                 return null;
@@ -190,8 +201,8 @@ public class PassphraseCacheService extends Service {
 
             // set it again to reset the cache life cycle
             Log.d(Constants.TAG, "PassphraseCacheService Cache passphrase again when getting it!");
-            addCachedPassphrase(this, keyId, cachedPassphrase);
-            return cachedPassphrase;
+            addCachedPassphrase(this, keyId, cachedPassphrase.getPassphrase(), cachedPassphrase.getPrimaryUserID());
+            return cachedPassphrase.getPassphrase();
 
         } catch (ProviderHelper.NotFoundException e) {
             Log.e(Constants.TAG, "PassphraseCacheService Passphrase for unknown key was requested!");
@@ -256,14 +267,16 @@ public class PassphraseCacheService extends Service {
             if (ACTION_PASSPHRASE_CACHE_ADD.equals(intent.getAction())) {
                 long ttl = intent.getLongExtra(EXTRA_TTL, DEFAULT_TTL);
                 long keyId = intent.getLongExtra(EXTRA_KEY_ID, -1);
+
                 String passphrase = intent.getStringExtra(EXTRA_PASSPHRASE);
+                String primaryUserID = intent.getStringExtra(EXTRA_USERID);
 
                 Log.d(Constants.TAG,
                         "PassphraseCacheService Received ACTION_PASSPHRASE_CACHE_ADD intent in onStartCommand() with keyId: "
                                 + keyId + ", ttl: " + ttl);
 
                 // add keyId and passphrase to memory
-                mPassphraseCache.put(keyId, passphrase);
+                mPassphraseCache.put(keyId, new CachedPassphrase(passphrase, primaryUserID));
 
                 if (ttl > 0) {
                     // register new alarm with keyId for this passphrase
@@ -341,4 +354,27 @@ public class PassphraseCacheService extends Service {
 
     private final IBinder mBinder = new PassphraseCacheBinder();
 
+    public class CachedPassphrase {
+        private String primaryUserID = "";
+        private String passphrase = "";
+
+        public CachedPassphrase(String passphrase, String primaryUserID) {
+            setPassphrase(passphrase);
+            setPrimaryUserID(primaryUserID);
+        }
+
+        public String getPrimaryUserID() {
+            return primaryUserID;
+        }
+        public String getPassphrase() {
+            return passphrase;
+        }
+
+        public void setPrimaryUserID(String primaryUserID) {
+            this.primaryUserID = primaryUserID;
+        }
+        public void setPassphrase(String passphrase) {
+            this.passphrase = passphrase;
+        }
+    }
 }
