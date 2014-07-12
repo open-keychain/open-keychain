@@ -359,7 +359,7 @@ public class PassphraseCacheService extends Service {
 
                 builder.setSmallIcon(R.drawable.ic_launcher)
                     .setContentTitle(getString(R.string.app_name))
-                    .setContentText(String.format(getString(R.string.passp_cache_notif_n_keys, mPassphraseCache.size())));
+                    .setContentText(String.format(getString(R.string.passp_cache_notif_n_keys), mPassphraseCache.size()));
 
                 NotificationCompat.InboxStyle inboxStyle = new NotificationCompat.InboxStyle();
 
