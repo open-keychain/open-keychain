@@ -54,6 +54,7 @@ import org.sufficientlysecure.keychain.ui.adapter.SubkeysAdapter;
 import org.sufficientlysecure.keychain.ui.adapter.SubkeysAddedAdapter;
 import org.sufficientlysecure.keychain.ui.adapter.UserIdsAdapter;
 import org.sufficientlysecure.keychain.ui.adapter.UserIdsAddedAdapter;
+import org.sufficientlysecure.keychain.ui.dialog.ChangeExpiryDialogFragment;
 import org.sufficientlysecure.keychain.ui.dialog.EditSubkeyDialogFragment;
 import org.sufficientlysecure.keychain.ui.dialog.EditUserIdDialogFragment;
 import org.sufficientlysecure.keychain.ui.dialog.PassphraseDialogFragment;
@@ -61,6 +62,7 @@ import org.sufficientlysecure.keychain.ui.dialog.SetPassphraseDialogFragment;
 import org.sufficientlysecure.keychain.util.Log;
 
 import java.util.ArrayList;
+import java.util.Date;
 
 public class EditKeyFragment extends LoaderFragment implements
         LoaderManager.LoaderCallbacks<Cursor> {
@@ -357,13 +359,7 @@ public class EditKeyFragment extends LoaderFragment implements
             public void handleMessage(Message message) {
                 switch (message.what) {
                     case EditSubkeyDialogFragment.MESSAGE_CHANGE_EXPIRY:
-                        // toggle
-//                        if (mSaveKeyringParcel.changePrimaryUserId != null
-//                                && mSaveKeyringParcel.changePrimaryUserId.equals(userId)) {
-//                            mSaveKeyringParcel.changePrimaryUserId = null;
-//                        } else {
-//                            mSaveKeyringParcel.changePrimaryUserId = userId;
-//                        }
+                        editSubkeyExpiry(keyId);
                         break;
                     case EditSubkeyDialogFragment.MESSAGE_REVOKE:
                         // toggle
@@ -387,6 +383,38 @@ public class EditKeyFragment extends LoaderFragment implements
                         EditSubkeyDialogFragment.newInstance(messenger);
 
                 dialogFragment.show(getActivity().getSupportFragmentManager(), "editSubkeyDialog");
+            }
+        });
+    }
+
+    private void editSubkeyExpiry(final long keyId) {
+        Handler returnHandler = new Handler() {
+            @Override
+            public void handleMessage(Message message) {
+                switch (message.what) {
+                    case ChangeExpiryDialogFragment.MESSAGE_NEW_EXPIRY_DATE:
+                        // toggle
+//                        if (mSaveKeyringParcel.changePrimaryUserId != null
+//                                && mSaveKeyringParcel.changePrimaryUserId.equals(userId)) {
+//                            mSaveKeyringParcel.changePrimaryUserId = null;
+//                        } else {
+//                            mSaveKeyringParcel.changePrimaryUserId = userId;
+//                        }
+                        break;
+                }
+                getLoaderManager().getLoader(LOADER_ID_SUBKEYS).forceLoad();
+            }
+        };
+
+        // Create a new Messenger for the communication back
+        final Messenger messenger = new Messenger(returnHandler);
+
+        DialogFragmentWorkaround.INTERFACE.runnableRunDelayed(new Runnable() {
+            public void run() {
+                ChangeExpiryDialogFragment dialogFragment =
+                        ChangeExpiryDialogFragment.newInstance(messenger, new Date(), new Date());
+
+                dialogFragment.show(getActivity().getSupportFragmentManager(), "editSubkeyExpiryDialog");
             }
         });
     }
