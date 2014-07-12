@@ -188,14 +188,14 @@ public class PgpKeyOperation {
                 return null;
             }
 
-            PGPKeyPair keyPair = createKey(add.mAlgorithm, add.mKeysize, log, indent);
-
             if (add.mAlgorithm == Constants.choice.algorithm.elgamal) {
                 log.add(LogLevel.ERROR, LogType.MSG_CR_ERROR_MASTER_ELGAMAL, indent);
                 return null;
             }
 
-            // return null if this failed (it will already have been logged by createKey)
+            PGPKeyPair keyPair = createKey(add.mAlgorithm, add.mKeysize, log, indent);
+
+            // return null if this failed (an error will already have been logged by createKey)
             if (keyPair == null) {
                 return null;
             }
@@ -319,9 +319,10 @@ public class PgpKeyOperation {
                 Iterator<PGPSignature> it = modifiedPublicKey.getSignaturesForID(userId);
                 if (it != null) {
                     for (PGPSignature cert : new IterableIterator<PGPSignature>(it)) {
-                        // if it's not a self cert, never mind
                         if (cert.getKeyID() != masterPublicKey.getKeyID()) {
-                            continue;
+                            // foreign certificate?! error error error
+                            log.add(LogLevel.ERROR, LogType.MSG_MF_ERROR_INTEGRITY, indent);
+                            return null;
                         }
                         if (cert.getSignatureType() == PGPSignature.CERTIFICATION_REVOCATION
                                 || cert.getSignatureType() == PGPSignature.NO_CERTIFICATION
@@ -369,9 +370,10 @@ public class PgpKeyOperation {
                     // noinspection unchecked
                     for (PGPSignature cert : new IterableIterator<PGPSignature>(
                             modifiedPublicKey.getSignaturesForID(userId))) {
-                        // if it's not a self cert, never mind
                         if (cert.getKeyID() != masterPublicKey.getKeyID()) {
-                            continue;
+                            // foreign certificate?! error error error
+                            log.add(LogLevel.ERROR, LogType.MSG_MF_ERROR_INTEGRITY, indent);
+                            return null;
                         }
                         // we know from canonicalization that if there is any revocation here, it
                         // is valid and not superseded by a newer certification.
