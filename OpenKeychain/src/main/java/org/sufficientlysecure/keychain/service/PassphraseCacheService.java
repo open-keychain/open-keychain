@@ -358,12 +358,12 @@ public class PassphraseCacheService extends Service {
                 NotificationCompat.Builder builder = new NotificationCompat.Builder(this);
 
                 builder.setSmallIcon(R.drawable.ic_launcher)
-                    .setContentTitle("Open Keychain")
-                    .setContentText("Open Keychain has cached " + mPassphraseCache.size() + " keys.");
+                    .setContentTitle(getString(R.string.app_name))
+                    .setContentText(String.format(getString(R.string.passp_cache_notif_n_keys, mPassphraseCache.size())));
 
                 NotificationCompat.InboxStyle inboxStyle = new NotificationCompat.InboxStyle();
 
-                inboxStyle.setBigContentTitle("Cached Passphrases:");
+                inboxStyle.setBigContentTitle(getString(R.string.passp_cache_notif_keys));
 
                 // Moves events into the big view
                 for (int i = 0; i < mPassphraseCache.size(); i++) {
@@ -378,7 +378,7 @@ public class PassphraseCacheService extends Service {
                 intent.setAction(ACTION_PASSPHRASE_CACHE_PURGE);
                 builder.addAction(
                     R.drawable.abc_ic_clear_normal,
-                    "Purge Cache",
+                    getString(R.string.passp_cache_notif_purge),
                     PendingIntent.getService(
                         getApplicationContext(),
                         0,
@@ -392,8 +392,8 @@ public class PassphraseCacheService extends Service {
                 NotificationCompat.Builder builder = new NotificationCompat.Builder(this);
 
                 builder.setSmallIcon(R.drawable.ic_launcher)
-                    .setContentTitle("Open Keychain has cached " + mPassphraseCache.size() + " keys.")
-                    .setContentText("Click to purge the cache");
+                    .setContentTitle(String.format(getString(R.string.passp_cache_notif_n_keys, mPassphraseCache.size())))
+                    .setContentText(getString(R.string.passp_cache_notif_click_to_purge));
 
                 Intent intent = new Intent(getApplicationContext(), PassphraseCacheService.class);
                 intent.setAction(ACTION_PASSPHRASE_CACHE_PURGE);
