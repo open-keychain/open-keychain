@@ -38,6 +38,11 @@
             android:key="defaultAsciiArmor"
             android:persistent="false"
             android:title="@string/label_ascii_armor" />
+
+        <CheckBoxPreference
+            android:key="concealPgpApplication"
+            android:persistent="false"
+            android:title="@string/label_conceal_pgp_application" />
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/section_advanced" >
         <CheckBoxPreference
