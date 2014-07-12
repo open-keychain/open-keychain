@@ -32,6 +32,7 @@ import org.sufficientlysecure.keychain.support.KeyringBuilder;
 import org.sufficientlysecure.keychain.support.KeyringTestingHelper;
 import org.sufficientlysecure.keychain.support.KeyringTestingHelper.RawPacket;
 import org.sufficientlysecure.keychain.support.TestDataUtil;
+import org.sufficientlysecure.keychain.util.ProgressScaler;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -80,7 +81,7 @@ public class PgpKeyOperationTest {
         ring = staticRing;
 
         // setting up some parameters just to reduce code duplication
-        op = new PgpKeyOperation(null);
+        op = new PgpKeyOperation(new ProgressScaler(null, 0, 100, 100));
 
         // set this up, gonna need it more than once
         parcel = new SaveKeyringParcel();
@@ -221,6 +222,71 @@ public class PgpKeyOperationTest {
 
         Assert.assertEquals("third key can encrypt",
                 KeyFlags.ENCRYPT_COMMS, it.next().getKeyUsage());
+
+    }
+
+    @Test
+    public void testBadKeyModification() throws Exception {
+
+        {
+            SaveKeyringParcel parcel = new SaveKeyringParcel();
+            // off by one
+            parcel.mMasterKeyId = ring.getMasterKeyId() -1;
+            parcel.mFingerprint = ring.getFingerprint();
+
+            WrappedSecretKeyRing secretRing = new WrappedSecretKeyRing(ring.getEncoded(), false, 0);
+            OperationResultParcel.OperationLog log = new OperationResultParcel.OperationLog();
+            UncachedKeyRing modified = op.modifySecretKeyRing(secretRing, parcel, "swag", log, 0);
+
+            Assert.assertNull("keyring modification with bad master key id should fail", modified);
+        }
+
+        {
+            SaveKeyringParcel parcel = new SaveKeyringParcel();
+            // off by one
+            parcel.mMasterKeyId = null;
+            parcel.mFingerprint = ring.getFingerprint();
+
+            WrappedSecretKeyRing secretRing = new WrappedSecretKeyRing(ring.getEncoded(), false, 0);
+            OperationResultParcel.OperationLog log = new OperationResultParcel.OperationLog();
+            UncachedKeyRing modified = op.modifySecretKeyRing(secretRing, parcel, "swag", log, 0);
+
+            Assert.assertNull("keyring modification with null master key id should fail", modified);
+        }
+
+        {
+            SaveKeyringParcel parcel = new SaveKeyringParcel();
+            parcel.mMasterKeyId = ring.getMasterKeyId();
+            parcel.mFingerprint = ring.getFingerprint();
+            // some byte, off by one
+            parcel.mFingerprint[5] += 1;
+
+            WrappedSecretKeyRing secretRing = new WrappedSecretKeyRing(ring.getEncoded(), false, 0);
+            OperationResultParcel.OperationLog log = new OperationResultParcel.OperationLog();
+            UncachedKeyRing modified = op.modifySecretKeyRing(secretRing, parcel, "swag", log, 0);
+
+            Assert.assertNull("keyring modification with bad fingerprint should fail", modified);
+        }
+
+        {
+            SaveKeyringParcel parcel = new SaveKeyringParcel();
+            parcel.mMasterKeyId = ring.getMasterKeyId();
+            parcel.mFingerprint = null;
+
+            WrappedSecretKeyRing secretRing = new WrappedSecretKeyRing(ring.getEncoded(), false, 0);
+            OperationResultParcel.OperationLog log = new OperationResultParcel.OperationLog();
+            UncachedKeyRing modified = op.modifySecretKeyRing(secretRing, parcel, "swag", log, 0);
+
+            Assert.assertNull("keyring modification with null fingerprint should fail", modified);
+        }
+
+        {
+            WrappedSecretKeyRing secretRing = new WrappedSecretKeyRing(ring.getEncoded(), false, 0);
+            OperationResultParcel.OperationLog log = new OperationResultParcel.OperationLog();
+            UncachedKeyRing modified = op.modifySecretKeyRing(secretRing, parcel, "bad passphrase", log, 0);
+
+            Assert.assertNull("keyring modification with bad passphrase should fail", modified);
+        }
 
     }
 
