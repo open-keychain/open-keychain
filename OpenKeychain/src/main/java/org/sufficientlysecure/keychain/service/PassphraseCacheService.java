@@ -60,8 +60,8 @@ public class PassphraseCacheService extends Service {
             + "PASSPHRASE_CACHE_ADD";
     public static final String ACTION_PASSPHRASE_CACHE_GET = Constants.INTENT_PREFIX
             + "PASSPHRASE_CACHE_GET";
-    public static final String ACTION_PASSPHRASE_CACHE_PURGE = Constants.INTENT_PREFIX
-            + "PASSPHRASE_CACHE_PURGE";
+    public static final String ACTION_PASSPHRASE_CACHE_CLEAR = Constants.INTENT_PREFIX
+            + "PASSPHRASE_CACHE_CLEAR";
 
     public static final String BROADCAST_ACTION_PASSPHRASE_CACHE_SERVICE = Constants.INTENT_PREFIX
             + "PASSPHRASE_CACHE_BROADCAST";
@@ -177,7 +177,7 @@ public class PassphraseCacheService extends Service {
             if (cachedPassphrase == null) {
                 return null;
             }
-            addCachedPassphrase(this, Constants.key.symmetric, cachedPassphrase, "Password");
+            addCachedPassphrase(this, Constants.key.symmetric, cachedPassphrase, getString(R.string.passp_cache_notif_pwd));
             return cachedPassphrase;
         }
 
@@ -309,7 +309,7 @@ public class PassphraseCacheService extends Service {
                 } catch (RemoteException e) {
                     Log.e(Constants.TAG, "PassphraseCacheService Sending message failed", e);
                 }
-            } else if (ACTION_PASSPHRASE_CACHE_PURGE.equals(intent.getAction())) {
+            } else if (ACTION_PASSPHRASE_CACHE_CLEAR.equals(intent.getAction())) {
                 AlarmManager am = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
 
                 // Stop all ttl alarms
@@ -375,10 +375,10 @@ public class PassphraseCacheService extends Service {
 
                 // Add purging action
                 Intent intent = new Intent(getApplicationContext(), PassphraseCacheService.class);
-                intent.setAction(ACTION_PASSPHRASE_CACHE_PURGE);
+                intent.setAction(ACTION_PASSPHRASE_CACHE_CLEAR);
                 builder.addAction(
                     R.drawable.abc_ic_clear_normal,
-                    getString(R.string.passp_cache_notif_purge),
+                    getString(R.string.passp_cache_notif_clear),
                     PendingIntent.getService(
                         getApplicationContext(),
                         0,
@@ -393,10 +393,10 @@ public class PassphraseCacheService extends Service {
 
                 builder.setSmallIcon(R.drawable.ic_launcher)
                     .setContentTitle(String.format(getString(R.string.passp_cache_notif_n_keys, mPassphraseCache.size())))
-                    .setContentText(getString(R.string.passp_cache_notif_click_to_purge));
+                    .setContentText(getString(R.string.passp_cache_notif_click_to_clear));
 
                 Intent intent = new Intent(getApplicationContext(), PassphraseCacheService.class);
-                intent.setAction(ACTION_PASSPHRASE_CACHE_PURGE);
+                intent.setAction(ACTION_PASSPHRASE_CACHE_CLEAR);
 
                 builder.setContentIntent(
                     PendingIntent.getService(
@@ -444,8 +444,8 @@ public class PassphraseCacheService extends Service {
     private final IBinder mBinder = new PassphraseCacheBinder();
 
     public class CachedPassphrase {
-        private String primaryUserID = "";
-        private String passphrase = "";
+        private String primaryUserID;
+        private String passphrase;
 
         public CachedPassphrase(String passphrase, String primaryUserID) {
             setPassphrase(passphrase);

@@ -190,7 +190,7 @@ public class PassphraseDialogFragment extends DialogFragment implements OnEditor
                 // Early breakout if we are dealing with a symmetric key
                 if (secretRing == null) {
                     PassphraseCacheService.addCachedPassphrase(activity, Constants.key.symmetric,
-                                                                passphrase, "Password");
+                                        passphrase, getString(R.string.passp_cache_notif_pwd));
                     // also return passphrase back to activity
                     Bundle data = new Bundle();
                     data.putString(MESSAGE_DATA_PASSPHRASE, passphrase);
@@ -234,7 +234,7 @@ public class PassphraseDialogFragment extends DialogFragment implements OnEditor
                     PassphraseCacheService.addCachedPassphrase(activity, masterKeyId, passphrase,
                         secretRing.getPrimaryUserId());
                 } catch(PgpGeneralException e) {
-                    Log.e(Constants.TAG, e.getMessage());
+                    Log.e(Constants.TAG, "adding of a passhrase failed", e);
                 }
 
                 if (unlockedSecretKey.getKeyId() != masterKeyId) {
