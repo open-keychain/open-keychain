@@ -334,6 +334,17 @@ public class PgpKeyOperationTest {
         Assert.assertEquals("added key must have expected bitsize",
                 bits, newKey.getBitStrength());
 
+        { // bad keysize should fail
+            parcel.reset();
+            parcel.mAddSubKeys.add(new SubkeyAdd(algorithm.rsa, 77, KeyFlags.SIGN_DATA, null));
+
+            WrappedSecretKeyRing secretRing = new WrappedSecretKeyRing(ring.getEncoded(), false, 0);
+            OperationResultParcel.OperationLog log = new OperationResultParcel.OperationLog();
+            modified = op.modifySecretKeyRing(secretRing, parcel, "swag", log, 0);
+
+            Assert.assertNull("creating a subkey with keysize < 512 should fail", modified);
+        }
+
         { // a past expiry should fail
             parcel.reset();
             parcel.mAddSubKeys.add(new SubkeyAdd(algorithm.rsa, 1024, KeyFlags.SIGN_DATA,
@@ -343,7 +354,7 @@ public class PgpKeyOperationTest {
             OperationResultParcel.OperationLog log = new OperationResultParcel.OperationLog();
             modified = op.modifySecretKeyRing(secretRing, parcel, "swag", log, 0);
 
-            Assert.assertNull("setting subkey expiry to a past date should fail", modified);
+            Assert.assertNull("creating subkey with past expiry date should fail", modified);
         }
 
     }
@@ -447,8 +458,22 @@ public class PgpKeyOperationTest {
 
         UncachedKeyRing modified;
 
+        {
+
+            parcel.reset();
+            parcel.mRevokeSubKeys.add(123L);
+
+            WrappedSecretKeyRing secretRing = new WrappedSecretKeyRing(ring.getEncoded(), false, 0);
+            OperationResultParcel.OperationLog log = new OperationResultParcel.OperationLog();
+            UncachedKeyRing otherModified = op.modifySecretKeyRing(secretRing, parcel, "swag", log, 0);
+
+            Assert.assertNull("revoking a nonexistent subkey should fail", otherModified);
+
+        }
+
         { // revoked second subkey
 
+            parcel.reset();
             parcel.mRevokeSubKeys.add(keyId);
 
             modified = applyModificationWithChecks(parcel, ring, onlyA, onlyB);
@@ -533,6 +558,19 @@ public class PgpKeyOperationTest {
                     PGPSignature.CERTIFICATION_REVOCATION, ((SignaturePacket) p).getSignatureType());
             Assert.assertEquals("signature must have been created by master key",
                     ring.getMasterKeyId(), ((SignaturePacket) p).getKeyID());
+
+        }
+
+        { // re-add second user id
+
+            parcel.reset();
+            parcel.mChangePrimaryUserId = uid;
+
+            WrappedSecretKeyRing secretRing = new WrappedSecretKeyRing(modified.getEncoded(), false, 0);
+            OperationResultParcel.OperationLog log = new OperationResultParcel.OperationLog();
+            UncachedKeyRing otherModified = op.modifySecretKeyRing(secretRing, parcel, "swag", log, 0);
+
+            Assert.assertNull("setting primary user id to a revoked user id should fail", otherModified);
 
         }
 
@@ -642,6 +680,8 @@ public class PgpKeyOperationTest {
 
             Assert.assertNull("changing primary user id to a non-existent one should fail", modified);
         }
+
+        // check for revoked primary user id already done in revoke test
 
     }
 
