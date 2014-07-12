@@ -26,6 +26,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Binder;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.HandlerThread;
@@ -353,39 +354,61 @@ public class PassphraseCacheService extends Service {
             (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
         if(mPassphraseCache.size() > 0) {
-            NotificationCompat.Builder builder = new NotificationCompat.Builder(this);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                NotificationCompat.Builder builder = new NotificationCompat.Builder(this);
 
-            builder.setSmallIcon(R.drawable.ic_launcher)
-                .setContentTitle("Open Keychain")
-                .setContentText("Open Keychain has cached " + mPassphraseCache.size() + " keys.");
+                builder.setSmallIcon(R.drawable.ic_launcher)
+                    .setContentTitle("Open Keychain")
+                    .setContentText("Open Keychain has cached " + mPassphraseCache.size() + " keys.");
 
-            NotificationCompat.InboxStyle inboxStyle = new NotificationCompat.InboxStyle();
+                NotificationCompat.InboxStyle inboxStyle = new NotificationCompat.InboxStyle();
 
-            inboxStyle.setBigContentTitle("Cached Passphrases:");
+                inboxStyle.setBigContentTitle("Cached Passphrases:");
 
-            // Moves events into the big view
-            for (int i = 0; i < mPassphraseCache.size(); i++) {
-                inboxStyle.addLine(mPassphraseCache.valueAt(i).getPrimaryUserID());
+                // Moves events into the big view
+                for (int i = 0; i < mPassphraseCache.size(); i++) {
+                    inboxStyle.addLine(mPassphraseCache.valueAt(i).getPrimaryUserID());
+                }
+
+                // Moves the big view style object into the notification object.
+                builder.setStyle(inboxStyle);
+
+                // Add purging action
+                Intent intent = new Intent(getApplicationContext(), PassphraseCacheService.class);
+                intent.setAction(ACTION_PASSPHRASE_CACHE_PURGE);
+                builder.addAction(
+                    R.drawable.abc_ic_clear_normal,
+                    "Purge Cache",
+                    PendingIntent.getService(
+                        getApplicationContext(),
+                        0,
+                        intent,
+                        PendingIntent.FLAG_UPDATE_CURRENT
+                    )
+                );
+
+                notificationManager.notify(NOTIFICATION_ID, builder.build());
+            } else { // Fallback, since expandable notifications weren't available back then
+                NotificationCompat.Builder builder = new NotificationCompat.Builder(this);
+
+                builder.setSmallIcon(R.drawable.ic_launcher)
+                    .setContentTitle("Open Keychain has cached " + mPassphraseCache.size() + " keys.")
+                    .setContentText("Click to purge the cache");
+
+                Intent intent = new Intent(getApplicationContext(), PassphraseCacheService.class);
+                intent.setAction(ACTION_PASSPHRASE_CACHE_PURGE);
+
+                builder.setContentIntent(
+                    PendingIntent.getService(
+                        getApplicationContext(),
+                        0,
+                        intent,
+                        PendingIntent.FLAG_UPDATE_CURRENT
+                    )
+                );
+
+                notificationManager.notify(NOTIFICATION_ID, builder.build());
             }
-
-            // Moves the big view style object into the notification object.
-            builder.setStyle(inboxStyle);
-
-            // Add purging action
-            Intent intent = new Intent(getApplicationContext(), PassphraseCacheService.class);
-            intent.setAction(ACTION_PASSPHRASE_CACHE_PURGE);
-            builder.addAction(
-                R.drawable.abc_ic_clear_normal,
-                "Purge Cache",
-                PendingIntent.getService(
-                    getApplicationContext(),
-                    0,
-                    intent,
-                    PendingIntent.FLAG_UPDATE_CURRENT
-                )
-            );
-
-            notificationManager.notify(NOTIFICATION_ID, builder.build());
 
         } else {
             notificationManager.cancel(NOTIFICATION_ID);
