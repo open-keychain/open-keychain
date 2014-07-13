@@ -46,6 +46,8 @@ import java.util.Random;
 public class PgpKeyOperationTest {
 
     static UncachedKeyRing staticRing;
+    static String passphrase;
+
     UncachedKeyRing ring;
     PgpKeyOperation op;
     SaveKeyringParcel parcel;
@@ -53,6 +55,20 @@ public class PgpKeyOperationTest {
     ArrayList<RawPacket> onlyB = new ArrayList<RawPacket>();
 
     @BeforeClass public static void setUpOnce() throws Exception {
+        ShadowLog.stream = System.out;
+
+        {
+            String chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ123456789!@#$%^&*()-_=";
+            Random r = new Random();
+            StringBuilder passbuilder = new StringBuilder();
+            // 20% chance for an empty passphrase
+            for(int i = 0, j = r.nextInt(10) > 2 ? r.nextInt(20) : 0; i < j; i++) {
+                passbuilder.append(chars.charAt(r.nextInt(chars.length())));
+            }
+            passphrase = passbuilder.toString();
+            System.out.println("Passphrase is '" + passphrase + "'");
+        }
+
         SaveKeyringParcel parcel = new SaveKeyringParcel();
         parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
                 Constants.choice.algorithm.rsa, 1024, KeyFlags.CERTIFY_OTHER, null));
@@ -63,7 +79,7 @@ public class PgpKeyOperationTest {
 
         parcel.mAddUserIds.add("twi");
         parcel.mAddUserIds.add("pink");
-        parcel.mNewPassphrase = "swag";
+        parcel.mNewPassphrase = passphrase;
         PgpKeyOperation op = new PgpKeyOperation(null);
 
         OperationResultParcel.OperationLog log = new OperationResultParcel.OperationLog();
@@ -100,7 +116,7 @@ public class PgpKeyOperationTest {
             parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
                     Constants.choice.algorithm.rsa, new Random().nextInt(256)+255, KeyFlags.CERTIFY_OTHER, null));
             parcel.mAddUserIds.add("shy");
-            parcel.mNewPassphrase = "swag";
+            parcel.mNewPassphrase = passphrase;
 
             UncachedKeyRing ring = op.createSecretKeyRing(parcel, log, 0);
 
@@ -112,7 +128,7 @@ public class PgpKeyOperationTest {
             parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
                     Constants.choice.algorithm.elgamal, 1024, KeyFlags.CERTIFY_OTHER, null));
             parcel.mAddUserIds.add("shy");
-            parcel.mNewPassphrase = "swag";
+            parcel.mNewPassphrase = passphrase;
 
             UncachedKeyRing ring = op.createSecretKeyRing(parcel, log, 0);
 
@@ -124,7 +140,7 @@ public class PgpKeyOperationTest {
             parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
                     12345, 1024, KeyFlags.CERTIFY_OTHER, null));
             parcel.mAddUserIds.add("shy");
-            parcel.mNewPassphrase = "swag";
+            parcel.mNewPassphrase = passphrase;
 
             UncachedKeyRing ring = op.createSecretKeyRing(parcel, log, 0);
             Assert.assertNull("creating ring with bad algorithm choice should fail", ring);
@@ -135,7 +151,7 @@ public class PgpKeyOperationTest {
             parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
                     Constants.choice.algorithm.rsa, 1024, KeyFlags.SIGN_DATA, null));
             parcel.mAddUserIds.add("shy");
-            parcel.mNewPassphrase = "swag";
+            parcel.mNewPassphrase = passphrase;
 
             UncachedKeyRing ring = op.createSecretKeyRing(parcel, log, 0);
             Assert.assertNull("creating ring with non-certifying master key should fail", ring);
@@ -145,7 +161,7 @@ public class PgpKeyOperationTest {
             parcel.reset();
             parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
                     Constants.choice.algorithm.rsa, 1024, KeyFlags.CERTIFY_OTHER, null));
-            parcel.mNewPassphrase = "swag";
+            parcel.mNewPassphrase = passphrase;
 
             UncachedKeyRing ring = op.createSecretKeyRing(parcel, log, 0);
             Assert.assertNull("creating ring without user ids should fail", ring);
@@ -154,7 +170,7 @@ public class PgpKeyOperationTest {
         {
             parcel.reset();
             parcel.mAddUserIds.add("shy");
-            parcel.mNewPassphrase = "swag";
+            parcel.mNewPassphrase = passphrase;
 
             UncachedKeyRing ring = op.createSecretKeyRing(parcel, log, 0);
             Assert.assertNull("creating ring without subkeys should fail", ring);
@@ -236,7 +252,7 @@ public class PgpKeyOperationTest {
 
             WrappedSecretKeyRing secretRing = new WrappedSecretKeyRing(ring.getEncoded(), false, 0);
             OperationResultParcel.OperationLog log = new OperationResultParcel.OperationLog();
-            UncachedKeyRing modified = op.modifySecretKeyRing(secretRing, parcel, "swag", log, 0);
+            UncachedKeyRing modified = op.modifySecretKeyRing(secretRing, parcel, passphrase, log, 0);
 
             Assert.assertNull("keyring modification with bad master key id should fail", modified);
         }
@@ -249,7 +265,7 @@ public class PgpKeyOperationTest {
 
             WrappedSecretKeyRing secretRing = new WrappedSecretKeyRing(ring.getEncoded(), false, 0);
             OperationResultParcel.OperationLog log = new OperationResultParcel.OperationLog();
-            UncachedKeyRing modified = op.modifySecretKeyRing(secretRing, parcel, "swag", log, 0);
+            UncachedKeyRing modified = op.modifySecretKeyRing(secretRing, parcel, passphrase, log, 0);
 
             Assert.assertNull("keyring modification with null master key id should fail", modified);
         }
@@ -263,7 +279,7 @@ public class PgpKeyOperationTest {
 
             WrappedSecretKeyRing secretRing = new WrappedSecretKeyRing(ring.getEncoded(), false, 0);
             OperationResultParcel.OperationLog log = new OperationResultParcel.OperationLog();
-            UncachedKeyRing modified = op.modifySecretKeyRing(secretRing, parcel, "swag", log, 0);
+            UncachedKeyRing modified = op.modifySecretKeyRing(secretRing, parcel, passphrase, log, 0);
 
             Assert.assertNull("keyring modification with bad fingerprint should fail", modified);
         }
@@ -275,7 +291,7 @@ public class PgpKeyOperationTest {
 
             WrappedSecretKeyRing secretRing = new WrappedSecretKeyRing(ring.getEncoded(), false, 0);
             OperationResultParcel.OperationLog log = new OperationResultParcel.OperationLog();
-            UncachedKeyRing modified = op.modifySecretKeyRing(secretRing, parcel, "swag", log, 0);
+            UncachedKeyRing modified = op.modifySecretKeyRing(secretRing, parcel, passphrase, log, 0);
 
             Assert.assertNull("keyring modification with null fingerprint should fail", modified);
         }
@@ -340,7 +356,7 @@ public class PgpKeyOperationTest {
 
             WrappedSecretKeyRing secretRing = new WrappedSecretKeyRing(ring.getEncoded(), false, 0);
             OperationResultParcel.OperationLog log = new OperationResultParcel.OperationLog();
-            modified = op.modifySecretKeyRing(secretRing, parcel, "swag", log, 0);
+            modified = op.modifySecretKeyRing(secretRing, parcel, passphrase, log, 0);
 
             Assert.assertNull("creating a subkey with keysize < 512 should fail", modified);
         }
@@ -352,7 +368,7 @@ public class PgpKeyOperationTest {
 
             WrappedSecretKeyRing secretRing = new WrappedSecretKeyRing(ring.getEncoded(), false, 0);
             OperationResultParcel.OperationLog log = new OperationResultParcel.OperationLog();
-            modified = op.modifySecretKeyRing(secretRing, parcel, "swag", log, 0);
+            modified = op.modifySecretKeyRing(secretRing, parcel, passphrase, log, 0);
 
             Assert.assertNull("creating subkey with past expiry date should fail", modified);
         }
@@ -426,7 +442,7 @@ public class PgpKeyOperationTest {
 
             WrappedSecretKeyRing secretRing = new WrappedSecretKeyRing(ring.getEncoded(), false, 0);
             OperationResultParcel.OperationLog log = new OperationResultParcel.OperationLog();
-            modified = op.modifySecretKeyRing(secretRing, parcel, "swag", log, 0);
+            modified = op.modifySecretKeyRing(secretRing, parcel, passphrase, log, 0);
 
             Assert.assertNull("setting subkey expiry to a past date should fail", modified);
         }
@@ -437,7 +453,7 @@ public class PgpKeyOperationTest {
 
             WrappedSecretKeyRing secretRing = new WrappedSecretKeyRing(ring.getEncoded(), false, 0);
             OperationResultParcel.OperationLog log = new OperationResultParcel.OperationLog();
-            modified = op.modifySecretKeyRing(secretRing, parcel, "swag", log, 0);
+            modified = op.modifySecretKeyRing(secretRing, parcel, passphrase, log, 0);
 
             Assert.assertNull("modifying non-existent subkey should fail", modified);
         }
@@ -465,7 +481,7 @@ public class PgpKeyOperationTest {
 
             WrappedSecretKeyRing secretRing = new WrappedSecretKeyRing(ring.getEncoded(), false, 0);
             OperationResultParcel.OperationLog log = new OperationResultParcel.OperationLog();
-            UncachedKeyRing otherModified = op.modifySecretKeyRing(secretRing, parcel, "swag", log, 0);
+            UncachedKeyRing otherModified = op.modifySecretKeyRing(secretRing, parcel, passphrase, log, 0);
 
             Assert.assertNull("revoking a nonexistent subkey should fail", otherModified);
 
@@ -568,7 +584,7 @@ public class PgpKeyOperationTest {
 
             WrappedSecretKeyRing secretRing = new WrappedSecretKeyRing(modified.getEncoded(), false, 0);
             OperationResultParcel.OperationLog log = new OperationResultParcel.OperationLog();
-            UncachedKeyRing otherModified = op.modifySecretKeyRing(secretRing, parcel, "swag", log, 0);
+            UncachedKeyRing otherModified = op.modifySecretKeyRing(secretRing, parcel, passphrase, log, 0);
 
             Assert.assertNull("setting primary user id to a revoked user id should fail", otherModified);
 
@@ -676,7 +692,7 @@ public class PgpKeyOperationTest {
 
             WrappedSecretKeyRing secretRing = new WrappedSecretKeyRing(ring.getEncoded(), false, 0);
             OperationResultParcel.OperationLog log = new OperationResultParcel.OperationLog();
-            modified = op.modifySecretKeyRing(secretRing, parcel, "swag", log, 0);
+            modified = op.modifySecretKeyRing(secretRing, parcel, passphrase, log, 0);
 
             Assert.assertNull("changing primary user id to a non-existent one should fail", modified);
         }
@@ -707,7 +723,7 @@ public class PgpKeyOperationTest {
 
             PgpKeyOperation op = new PgpKeyOperation(null);
             OperationResultParcel.OperationLog log = new OperationResultParcel.OperationLog();
-            UncachedKeyRing rawModified = op.modifySecretKeyRing(secretRing, parcel, "swag", log, 0);
+            UncachedKeyRing rawModified = op.modifySecretKeyRing(secretRing, parcel, passphrase, log, 0);
             Assert.assertNotNull("key modification failed", rawModified);
 
             if (!canonicalize) {

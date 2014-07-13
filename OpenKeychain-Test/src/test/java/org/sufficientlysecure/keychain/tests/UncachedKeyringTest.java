@@ -50,7 +50,8 @@ public class UncachedKeyringTest {
 
         parcel.mAddUserIds.add("twi");
         parcel.mAddUserIds.add("pink");
-        parcel.mNewPassphrase = "swag";
+        // passphrase is tested in PgpKeyOperationTest, just use empty here
+        parcel.mNewPassphrase = "";
         PgpKeyOperation op = new PgpKeyOperation(null);
 
         OperationResultParcel.OperationLog log = new OperationResultParcel.OperationLog();
