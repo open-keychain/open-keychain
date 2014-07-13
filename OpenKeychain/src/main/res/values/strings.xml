@@ -663,8 +663,8 @@
 
     <!-- PassphraseCache -->
     <string name="passp_cache_notif_click_to_clear">Click to clear cached passphrases</string>
-    <string name="passp_cache_notif_n_keys">OpenKeychain has cached %d keys</string>
-    <string name="passp_cache_notif_keys">Cached Keys:</string>
+    <string name="passp_cache_notif_n_keys">OpenKeychain has cached %d passphrases</string>
+    <string name="passp_cache_notif_keys">Cached Passphrases:</string>
     <string name="passp_cache_notif_clear">Clear Cache</string>
     <string name="passp_cache_notif_pwd">Password</string>
 
