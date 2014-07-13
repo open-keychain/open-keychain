@@ -25,17 +25,17 @@ import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.OperationResults;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 
-/**
- * Helper for tests of the Keyring import in ProviderHelper.
- */
+/** Helper methods for keyring tests. */
 public class KeyringTestingHelper {
 
     private final Context context;
@@ -68,40 +68,100 @@ public class KeyringTestingHelper {
         return saveSuccess;
     }
 
+    public static byte[] removePacket(byte[] ring, int position) throws IOException {
+        Iterator<RawPacket> it = parseKeyring(ring);
+        ByteArrayOutputStream out = new ByteArrayOutputStream(ring.length);
+
+        int i = 0;
+        while(it.hasNext()) {
+            // at the right position, skip the packet
+            if(i++ == position) {
+                continue;
+            }
+            // write the old one
+            out.write(it.next().buf);
+        }
+
+        if (i <= position) {
+            throw new IndexOutOfBoundsException("injection index did not not occur in stream!");
+        }
+
+        return out.toByteArray();
+    }
+
+    public static byte[] injectPacket(byte[] ring, byte[] inject, int position) throws IOException {
+
+        Iterator<RawPacket> it = parseKeyring(ring);
+        ByteArrayOutputStream out = new ByteArrayOutputStream(ring.length + inject.length);
+
+        int i = 0;
+        while(it.hasNext()) {
+            // at the right position, inject the new packet
+            if(i++ == position) {
+                out.write(inject);
+            }
+            // write the old one
+            out.write(it.next().buf);
+        }
+
+        if (i <= position) {
+            throw new IndexOutOfBoundsException("injection index did not not occur in stream!");
+        }
+
+        return out.toByteArray();
+
+    }
+
+    /** This class contains a single pgp packet, together with information about its position
+     * in the keyring and its packet tag.
+     */
     public static class RawPacket {
         public int position;
+
+        // packet tag for convenience, this can also be read from the header
         public int tag;
-        public int length;
+
+        public int headerLength, length;
+        // this buf includes the header, so its length is headerLength + length!
         public byte[] buf;
 
+        @Override
         public boolean equals(Object other) {
             return other instanceof RawPacket && Arrays.areEqual(this.buf, ((RawPacket) other).buf);
         }
 
+        @Override
         public int hashCode() {
-            // System.out.println("tag: " + tag + ", code: " + Arrays.hashCode(buf));
             return Arrays.hashCode(buf);
         }
     }
 
+    /** A comparator which compares RawPackets by their position */
     public static final Comparator<RawPacket> packetOrder = new Comparator<RawPacket>() {
         public int compare(RawPacket left, RawPacket right) {
             return Integer.compare(left.position, right.position);
         }
     };
 
+    /** Diff two keyrings, returning packets only present in one keyring in its associated List.
+     *
+     * Packets in the returned lists are annotated and ordered by their original order of appearance
+     * in their origin keyrings.
+     *
+     * @return true if keyrings differ in at least one packet
+     */
     public static boolean diffKeyrings(byte[] ringA, byte[] ringB,
                                        List<RawPacket> onlyA, List<RawPacket> onlyB)
             throws IOException {
-        InputStream streamA = new ByteArrayInputStream(ringA);
-        InputStream streamB = new ByteArrayInputStream(ringB);
+        Iterator<RawPacket> streamA = parseKeyring(ringA);
+        Iterator<RawPacket> streamB = parseKeyring(ringB);
 
         HashSet<RawPacket> a = new HashSet<RawPacket>(), b = new HashSet<RawPacket>();
 
         RawPacket p;
         int pos = 0;
         while(true) {
-            p = readPacket(streamA);
+            p = streamA.next();
             if (p == null) {
                 break;
             }
@@ -110,7 +170,7 @@ public class KeyringTestingHelper {
         }
         pos = 0;
         while(true) {
-            p = readPacket(streamB);
+            p = streamB.next();
             if (p == null) {
                 break;
             }
@@ -132,6 +192,51 @@ public class KeyringTestingHelper {
         return !onlyA.isEmpty() || !onlyB.isEmpty();
     }
 
+    /** Creates an iterator of RawPackets over a binary keyring. */
+    public static Iterator<RawPacket> parseKeyring(byte[] ring) {
+
+        final InputStream stream = new ByteArrayInputStream(ring);
+
+        return new Iterator<RawPacket>() {
+            RawPacket next;
+
+            @Override
+            public boolean hasNext() {
+                if (next == null) try {
+                    next = readPacket(stream);
+                } catch (IOException e) {
+                    return false;
+                }
+                return next != null;
+            }
+
+            @Override
+            public RawPacket next() {
+                if (!hasNext()) {
+                    return null;
+                }
+                try {
+                    return next;
+                } finally {
+                    next = null;
+                }
+            }
+
+            @Override
+            public void remove() {
+                throw new UnsupportedOperationException();
+            }
+        };
+
+    }
+
+    /** Read a single (raw) pgp packet from an input stream.
+     *
+     * Note that the RawPacket.position field is NOT set here!
+     *
+     * Variable length packets are not handled here. we don't use those in our test classes, and
+     * otherwise rely on BouncyCastle's own unit tests to handle those correctly.
+     */
     private static RawPacket readPacket(InputStream in) throws IOException {
 
         // save here. this is tag + length, max 6 bytes
@@ -149,8 +254,8 @@ public class KeyringTestingHelper {
         }
 
         boolean newPacket = (hdr & 0x40) != 0;
-        int tag = 0;
-        int bodyLen = 0;
+        int tag;
+        int bodyLen;
 
         if (newPacket) {
             tag = hdr & 0x3f;
@@ -207,6 +312,7 @@ public class KeyringTestingHelper {
         }
         RawPacket p = new RawPacket();
         p.tag = tag;
+        p.headerLength = headerLength;
         p.length = bodyLen;
         p.buf = buf;
         return p;
