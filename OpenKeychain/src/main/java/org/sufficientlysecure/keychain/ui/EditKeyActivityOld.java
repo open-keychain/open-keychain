@@ -556,7 +556,7 @@ public class EditKeyActivityOld extends ActionBarActivity implements EditorListe
             saveParams.deletedKeys = mKeysView.getDeletedKeys();
             saveParams.keysExpiryDates = getKeysExpiryDates(mKeysView);
             saveParams.keysUsages = getKeysUsages(mKeysView);
-            saveParams.newPassphrase = mNewPassphrase;
+            saveParams.mNewPassphrase = mNewPassphrase;
             saveParams.oldPassphrase = mCurrentPassphrase;
             saveParams.newKeys = toPrimitiveArray(mKeysView.getNewKeysArray());
             saveParams.keys = getKeys(mKeysView);

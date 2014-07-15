@@ -32,8 +32,6 @@ import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.Constants.choice.algorithm;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.helper.ExportHelper;
-import org.sufficientlysecure.keychain.helper.OtherHelper;
-import org.sufficientlysecure.keychain.keyimport.ImportKeysListEntry;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainDatabase;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
@@ -43,7 +41,6 @@ import org.sufficientlysecure.keychain.service.SaveKeyringParcel.SubkeyAdd;
 import org.sufficientlysecure.keychain.util.Log;
 
 import java.io.IOException;
-import java.util.ArrayList;
 
 public class KeyListActivity extends DrawerActivity {
 
@@ -153,10 +150,10 @@ public class KeyListActivity extends DrawerActivity {
         Bundle data = new Bundle();
 
         SaveKeyringParcel parcel = new SaveKeyringParcel();
-        parcel.addSubKeys.add(new SubkeyAdd(algorithm.rsa, 1024, KeyFlags.CERTIFY_OTHER, null));
-        parcel.addSubKeys.add(new SubkeyAdd(algorithm.rsa, 1024, KeyFlags.SIGN_DATA, null));
-        parcel.addUserIds.add("swagerinho");
-        parcel.newPassphrase = "swag";
+        parcel.mAddSubKeys.add(new SubkeyAdd(algorithm.rsa, 1024, KeyFlags.CERTIFY_OTHER, null));
+        parcel.mAddSubKeys.add(new SubkeyAdd(algorithm.rsa, 1024, KeyFlags.SIGN_DATA, null));
+        parcel.mAddUserIds.add("swagerinho");
+        parcel.mNewPassphrase = "swag";
 
         // get selected key entries
         data.putParcelable(KeychainIntentService.SAVE_KEYRING_PARCEL, parcel);

@@ -9,6 +9,7 @@ import org.sufficientlysecure.keychain.util.IterableIterator;
 import org.sufficientlysecure.keychain.util.Log;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
@@ -70,9 +71,6 @@ public class OperationResultParcel implements Parcelable {
             mParameters = parameters;
             mIndent = indent;
         }
-        public LogEntryParcel(LogLevel level, LogType type, Object... parameters) {
-            this(level, type, 0, parameters);
-        }
 
         public LogEntryParcel(Parcel source) {
             mLevel = LogLevel.values()[source.readInt()];
@@ -104,6 +102,15 @@ public class OperationResultParcel implements Parcelable {
             }
         };
 
+        @Override
+        public String toString() {
+            return "LogEntryParcel{" +
+                    "mLevel=" + mLevel +
+                    ", mType=" + mType +
+                    ", mParameters=" + Arrays.toString(mParameters) +
+                    ", mIndent=" + mIndent +
+                    '}';
+        }
     }
 
     /** This is an enum of all possible log events.
@@ -237,7 +244,14 @@ public class OperationResultParcel implements Parcelable {
         MSG_MG_FOUND_NEW (R.string.msg_mg_found_new),
 
         // secret key create
-        MSG_CR_ERROR_NO_MASTER (R.string.msg_mr),
+        MSG_CR (R.string.msg_cr),
+        MSG_CR_ERROR_NO_MASTER (R.string.msg_cr_error_no_master),
+        MSG_CR_ERROR_NO_USER_ID (R.string.msg_cr_error_no_user_id),
+        MSG_CR_ERROR_NO_CERTIFY (R.string.msg_cr_error_no_certify),
+        MSG_CR_ERROR_KEYSIZE_512 (R.string.msg_cr_error_keysize_512),
+        MSG_CR_ERROR_UNKNOWN_ALGO (R.string.msg_cr_error_unknown_algo),
+        MSG_CR_ERROR_INTERNAL_PGP (R.string.msg_cr_error_internal_pgp),
+        MSG_CR_ERROR_MASTER_ELGAMAL (R.string.msg_cr_error_master_elgamal),
 
         // secret key modify
         MSG_MF (R.string.msg_mr),
@@ -245,10 +259,13 @@ public class OperationResultParcel implements Parcelable {
         MSG_MF_ERROR_FINGERPRINT (R.string.msg_mf_error_fingerprint),
         MSG_MF_ERROR_KEYID (R.string.msg_mf_error_keyid),
         MSG_MF_ERROR_INTEGRITY (R.string.msg_mf_error_integrity),
+        MSG_MF_ERROR_NOEXIST_PRIMARY (R.string.msg_mf_error_noexist_primary),
         MSG_MF_ERROR_REVOKED_PRIMARY (R.string.msg_mf_error_revoked_primary),
         MSG_MF_ERROR_PGP (R.string.msg_mf_error_pgp),
         MSG_MF_ERROR_SIG (R.string.msg_mf_error_sig),
         MSG_MF_PASSPHRASE (R.string.msg_mf_passphrase),
+        MSG_MF_PRIMARY_REPLACE_OLD (R.string.msg_mf_primary_replace_old),
+        MSG_MF_PRIMARY_NEW (R.string.msg_mf_primary_new),
         MSG_MF_SUBKEY_CHANGE (R.string.msg_mf_subkey_change),
         MSG_MF_SUBKEY_MISSING (R.string.msg_mf_subkey_missing),
         MSG_MF_SUBKEY_NEW_ID (R.string.msg_mf_subkey_new_id),
@@ -314,6 +331,7 @@ public class OperationResultParcel implements Parcelable {
         }
 
         public void add(LogLevel level, LogType type, int indent) {
+            Log.d(Constants.TAG, type.toString());
             mParcels.add(new OperationResultParcel.LogEntryParcel(level, type, indent, (Object[]) null));
         }
 

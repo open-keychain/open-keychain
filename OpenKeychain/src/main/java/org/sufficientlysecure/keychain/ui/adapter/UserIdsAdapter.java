@@ -131,10 +131,10 @@ public class UserIdsAdapter extends CursorAdapter implements AdapterView.OnItemC
 
         // for edit key
         if (mSaveKeyringParcel != null) {
-            boolean changeAnyPrimaryUserId = (mSaveKeyringParcel.changePrimaryUserId != null);
-            boolean changeThisPrimaryUserId = (mSaveKeyringParcel.changePrimaryUserId != null
-                    && mSaveKeyringParcel.changePrimaryUserId.equals(userId));
-            boolean revokeThisUserId = (mSaveKeyringParcel.revokeUserIds.contains(userId));
+            boolean changeAnyPrimaryUserId = (mSaveKeyringParcel.mChangePrimaryUserId != null);
+            boolean changeThisPrimaryUserId = (mSaveKeyringParcel.mChangePrimaryUserId != null
+                    && mSaveKeyringParcel.mChangePrimaryUserId.equals(userId));
+            boolean revokeThisUserId = (mSaveKeyringParcel.mRevokeUserIds.contains(userId));
 
             // only if primary user id will be changed
             // (this is not triggered if the user id is currently the primary one)

@@ -1,0 +1,80 @@
+apply plugin: 'java'
+apply plugin: 'android-test'
+
+dependencies {
+    testCompile 'junit:junit:4.11'
+    testCompile 'com.google.android:android:4.1.1.4'
+    testCompile('com.squareup:fest-android:1.0.+') { exclude module: 'support-v4' }
+    testCompile ('org.robolectric:robolectric:2.3') {
+        exclude module: 'classworlds'
+        exclude module: 'maven-artifact'
+        exclude module: 'maven-artifact-manager'
+        exclude module: 'maven-error-diagnostics'
+        exclude module: 'maven-model'
+        exclude module: 'maven-plugin-registry'
+        exclude module: 'maven-profile'
+        exclude module: 'maven-project'
+        exclude module: 'maven-settings'
+        exclude module: 'nekohtml'
+        exclude module: 'plexus-container-default'
+        exclude module: 'plexus-interpolation'
+        exclude module: 'plexus-utils'
+        exclude module: 'support-v4' // crazy but my android studio don't like this dependency and to fix it remove .idea and re import project
+        exclude module: 'wagon-file'
+        exclude module: 'wagon-http-lightweight'
+        exclude module: 'wagon-http-shared'
+        exclude module: 'wagon-provider-api'
+    }
+}
+
+android {
+    projectUnderTest ':OpenKeychain'
+}
+
+// new workaround to force add custom output dirs for android studio
+task addTest {
+    def file = file(project.name + ".iml")
+    doLast {
+        try {
+            def parsedXml = (new XmlParser()).parse(file)
+            def node = parsedXml.component[1]
+            def outputNode = parsedXml.component[1].output[0]
+            def outputTestNode = parsedXml.component[1].'output-test'[0]
+            def rewrite = false
+
+            new Node(node, 'sourceFolder', ['url': 'file://$MODULE_DIR$/' + "${it}", 'isTestSource': "true"])
+
+            if(outputNode == null) {
+                new Node(node, 'output', ['url': 'file://$MODULE_DIR$/build/resources/testDebug'])
+            } else {
+                if(outputNode.attributes['url'] != 'file://$MODULE_DIR$/build/resources/testDebug') {
+                    outputNode.attributes = ['url': 'file://$MODULE_DIR$/build/resources/testDebug']
+                    rewrite = true
+                }
+            }
+
+            if(outputTestNode == null) {
+                new Node(node, 'output-test', ['url': 'file://$MODULE_DIR$/build/test-classes/debug'])
+            } else {
+                if(outputTestNode.attributes['url'] != 'file://$MODULE_DIR$/build/test-classes/debug') {
+                    outputTestNode.attributes = ['url': 'file://$MODULE_DIR$/build/test-classes/debug']
+                    rewrite = true
+                }
+            }
+
+            if(rewrite) {
+                def writer = new StringWriter()
+                new XmlNodePrinter(new PrintWriter(writer)).print(parsedXml)
+                file.text = writer.toString()
+            }
+        } catch (FileNotFoundException e) {
+            // iml not found, common on command line only builds
+        }
+
+    }
+}
+
+// always do the addtest on prebuild
+gradle.projectsEvaluated {
+    testDebugClasses.dependsOn(addTest)
+}

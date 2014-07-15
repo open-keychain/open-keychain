@@ -101,8 +101,8 @@ public abstract class WrappedKeyRing extends KeyRing {
 
     abstract public IterableIterator<WrappedPublicKey> publicKeyIterator();
 
-    public UncachedKeyRing getUncached() {
-        return new UncachedKeyRing(getRing());
+    public byte[] getEncoded() throws IOException {
+        return getRing().getEncoded();
     }
 
 }

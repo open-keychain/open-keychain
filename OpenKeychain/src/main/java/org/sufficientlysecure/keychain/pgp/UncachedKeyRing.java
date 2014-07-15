@@ -81,6 +81,10 @@ public class UncachedKeyRing {
         return new UncachedPublicKey(mRing.getPublicKey());
     }
 
+    public UncachedPublicKey getPublicKey(long keyId) {
+        return new UncachedPublicKey(mRing.getPublicKey(keyId));
+    }
+
     public Iterator<UncachedPublicKey> getPublicKeys() {
         final Iterator<PGPPublicKey> it = mRing.getPublicKeys();
         return new Iterator<UncachedPublicKey>() {
@@ -558,7 +562,7 @@ public class UncachedKeyRing {
                     // make sure the certificate checks out
                     try {
                         cert.init(masterKey);
-                        if (!cert.verifySignature(key)) {
+                        if (!cert.verifySignature(masterKey, key)) {
                             log.add(LogLevel.WARN, LogType.MSG_KC_SUB_REVOKE_BAD, indent);
                             badCerts += 1;
                             continue;
