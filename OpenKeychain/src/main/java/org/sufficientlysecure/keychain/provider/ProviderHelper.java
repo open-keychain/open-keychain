@@ -756,7 +756,7 @@ public class ProviderHelper {
                 UncachedKeyRing oldSecretRing = getWrappedSecretKeyRing(masterKeyId).getUncachedKeyRing();
 
                 // Merge data from new secret ring into old one
-                secretRing = oldSecretRing.merge(secretRing, mLog, mIndent);
+                secretRing = secretRing.merge(oldSecretRing, mLog, mIndent);
 
                 // If this is null, there is an error in the log so we can just return
                 if (secretRing == null) {
