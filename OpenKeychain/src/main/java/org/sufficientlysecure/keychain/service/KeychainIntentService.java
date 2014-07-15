@@ -44,6 +44,7 @@ import org.sufficientlysecure.keychain.pgp.PgpKeyOperation;
 import org.sufficientlysecure.keychain.pgp.PgpSignEncrypt;
 import org.sufficientlysecure.keychain.pgp.Progressable;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
+import org.sufficientlysecure.keychain.pgp.WrappedPublicKey;
 import org.sufficientlysecure.keychain.pgp.WrappedPublicKeyRing;
 import org.sufficientlysecure.keychain.pgp.WrappedSecretKey;
 import org.sufficientlysecure.keychain.pgp.WrappedSecretKeyRing;
@@ -351,7 +352,7 @@ public class KeychainIntentService extends IntentService
                     // cache new passphrase
                     if (saveParcel.mNewPassphrase != null) {
                         PassphraseCacheService.addCachedPassphrase(this, ring.getMasterKeyId(),
-                                saveParcel.mNewPassphrase);
+                                saveParcel.mNewPassphrase, ring.getPublicKey().getPrimaryUserId());
                     }
                 } catch (ProviderHelper.NotFoundException e) {
                     sendErrorToHandler(e);

@@ -673,6 +673,13 @@
     <string name="msg_mf_unlock_error">Error unlocking keyring!</string>
     <string name="msg_mf_unlock">Unlocking keyring</string>
 
+    <!-- PassphraseCache -->
+    <string name="passp_cache_notif_click_to_clear">Click to clear cached passphrases</string>
+    <string name="passp_cache_notif_n_keys">OpenKeychain has cached %d passphrases</string>
+    <string name="passp_cache_notif_keys">Cached Passphrases:</string>
+    <string name="passp_cache_notif_clear">Clear Cache</string>
+    <string name="passp_cache_notif_pwd">Password</string>
+
     <!-- unsorted -->
     <string name="section_certifier_id">Certifier</string>
     <string name="section_cert">Certificate Details</string>
