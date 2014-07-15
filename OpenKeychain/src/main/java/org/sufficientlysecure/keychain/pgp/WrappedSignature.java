@@ -86,7 +86,7 @@ public class WrappedSignature {
     }
 
     public boolean isRevocation() {
-        return mSig.getHashedSubPackets().hasSubpacket(SignatureSubpacketTags.REVOCATION_REASON);
+        return mSig.getSignatureType() == PGPSignature.CERTIFICATION_REVOCATION;
     }
 
     public boolean isPrimaryUserId() {
