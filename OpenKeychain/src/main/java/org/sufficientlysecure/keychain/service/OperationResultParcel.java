@@ -242,6 +242,7 @@ public class OperationResultParcel implements Parcelable {
         MSG_MG_HETEROGENEOUS (R.string.msg_mg_heterogeneous),
         MSG_MG_NEW_SUBKEY (R.string.msg_mg_new_subkey),
         MSG_MG_FOUND_NEW (R.string.msg_mg_found_new),
+        MSG_MG_UNCHANGED (R.string.msg_mg_unchanged),
 
         // secret key create
         MSG_CR (R.string.msg_cr),
