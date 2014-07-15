@@ -41,11 +41,11 @@ public class WrappedSecretKeyRing extends WrappedKeyRing {
         return mRing;
     }
 
-    public WrappedSecretKey getSubKey() {
+    public WrappedSecretKey getSecretKey() {
         return new WrappedSecretKey(this, mRing.getSecretKey());
     }
 
-    public WrappedSecretKey getSubKey(long id) {
+    public WrappedSecretKey getSecretKey(long id) {
         return new WrappedSecretKey(this, mRing.getSecretKey(id));
     }
 

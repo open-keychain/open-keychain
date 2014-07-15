@@ -280,7 +280,7 @@ public class EditKeyActivityOld extends ActionBarActivity implements EditorListe
                 Uri secretUri = KeyRings.buildUnifiedKeyRingUri(mDataUri);
                 WrappedSecretKeyRing keyRing = new ProviderHelper(this).getWrappedSecretKeyRing(secretUri);
 
-                mMasterCanSign = keyRing.getSubKey().canCertify();
+                mMasterCanSign = keyRing.getSecretKey().canCertify();
                 for (WrappedSecretKey key : keyRing.secretKeyIterator()) {
                     // Turn into uncached instance
                     mKeys.add(key.getUncached());
@@ -288,7 +288,7 @@ public class EditKeyActivityOld extends ActionBarActivity implements EditorListe
                 }
 
                 boolean isSet = false;
-                for (String userId : keyRing.getSubKey().getUserIds()) {
+                for (String userId : keyRing.getSecretKey().getUserIds()) {
                     Log.d(Constants.TAG, "Added userId " + userId);
                     if (!isSet) {
                         isSet = true;

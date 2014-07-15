@@ -149,8 +149,8 @@ public class ViewCertActivity extends ActionBarActivity
                         providerHelper.getWrappedPublicKeyRing(sig.getKeyId());
 
                 try {
-                    sig.init(signerRing.getSubkey());
-                    if (sig.verifySignature(signeeRing.getSubkey(), signeeUid)) {
+                    sig.init(signerRing.getPublicKey());
+                    if (sig.verifySignature(signeeRing.getPublicKey(), signeeUid)) {
                         mStatus.setText(R.string.cert_verify_ok);
                         mStatus.setTextColor(getResources().getColor(R.color.result_green));
                     } else {

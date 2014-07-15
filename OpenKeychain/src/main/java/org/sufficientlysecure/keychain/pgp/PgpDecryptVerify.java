@@ -258,7 +258,7 @@ public class PgpDecryptVerify {
                     continue;
                 }
                 // get subkey which has been used for this encryption packet
-                secretEncryptionKey = secretKeyRing.getSubKey(encData.getKeyID());
+                secretEncryptionKey = secretKeyRing.getSecretKey(encData.getKeyID());
                 if (secretEncryptionKey == null) {
                     // continue with the next packet in the while loop
                     continue;
@@ -393,7 +393,7 @@ public class PgpDecryptVerify {
                     signingRing = mProviderHelper.getWrappedPublicKeyRing(
                             KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(sigKeyId)
                     );
-                    signingKey = signingRing.getSubkey(sigKeyId);
+                    signingKey = signingRing.getPublicKey(sigKeyId);
                     signatureIndex = i;
                 } catch (ProviderHelper.NotFoundException e) {
                     Log.d(Constants.TAG, "key not found!");
@@ -578,7 +578,7 @@ public class PgpDecryptVerify {
                 signingRing = mProviderHelper.getWrappedPublicKeyRing(
                         KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(sigKeyId)
                 );
-                signingKey = signingRing.getSubkey(sigKeyId);
+                signingKey = signingRing.getPublicKey(sigKeyId);
                 signatureIndex = i;
             } catch (ProviderHelper.NotFoundException e) {
                 Log.d(Constants.TAG, "key not found!");

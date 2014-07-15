@@ -39,7 +39,7 @@ public abstract class WrappedKeyRing extends KeyRing {
     }
 
     public String getPrimaryUserId() throws PgpGeneralException {
-        return (String) getRing().getPublicKey().getUserIDs().next();
+        return getPublicKey().getPrimaryUserId();
     };
 
     public boolean isRevoked() throws PgpGeneralException {
@@ -100,6 +100,14 @@ public abstract class WrappedKeyRing extends KeyRing {
     abstract PGPKeyRing getRing();
 
     abstract public IterableIterator<WrappedPublicKey> publicKeyIterator();
+
+    public WrappedPublicKey getPublicKey() {
+        return new WrappedPublicKey(this, getRing().getPublicKey());
+    }
+
+    public WrappedPublicKey getPublicKey(long id) {
+        return new WrappedPublicKey(this, getRing().getPublicKey(id));
+    }
 
     public byte[] getEncoded() throws IOException {
         return getRing().getEncoded();

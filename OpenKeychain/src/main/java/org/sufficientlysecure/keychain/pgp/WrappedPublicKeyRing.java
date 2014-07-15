@@ -44,14 +44,6 @@ public class WrappedPublicKeyRing extends WrappedKeyRing {
         getRing().encode(stream);
     }
 
-    public WrappedPublicKey getSubkey() {
-        return new WrappedPublicKey(this, getRing().getPublicKey());
-    }
-
-    public WrappedPublicKey getSubkey(long id) {
-        return new WrappedPublicKey(this, getRing().getPublicKey(id));
-    }
-
     /** Getter that returns the subkey that should be used for signing. */
     WrappedPublicKey getEncryptionSubKey() throws PgpGeneralException {
         PGPPublicKey key = getRing().getPublicKey(getEncryptId());

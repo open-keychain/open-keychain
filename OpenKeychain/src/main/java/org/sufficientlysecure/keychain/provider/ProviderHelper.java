@@ -199,7 +199,7 @@ public class ProviderHelper {
                 byte[] blob = cursor.getBlob(3);
                 if (blob != null) {
                     result.put(masterKeyId,
-                            new WrappedPublicKeyRing(blob, hasAnySecret, verified).getSubkey());
+                            new WrappedPublicKeyRing(blob, hasAnySecret, verified).getPublicKey());
                 }
             } while (cursor.moveToNext());
 
