@@ -792,7 +792,7 @@ public class ProviderHelper {
             try {
                 UncachedKeyRing oldPublicRing = getWrappedPublicKeyRing(masterKeyId).getUncachedKeyRing();
 
-                // Merge data from new public ring into secret one
+                // Merge data from new secret ring into public one
                 publicRing = oldPublicRing.merge(secretRing, mLog, mIndent);
                 if (publicRing == null) {
                     return new SaveKeyringResult(SaveKeyringResult.RESULT_ERROR, mLog);

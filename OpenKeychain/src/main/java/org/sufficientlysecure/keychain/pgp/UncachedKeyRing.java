@@ -748,8 +748,12 @@ public class UncachedKeyRing {
 
             }
 
-            log.add(LogLevel.DEBUG, LogType.MSG_MG_FOUND_NEW,
-                    indent, Integer.toString(newCerts));
+            if (newCerts > 0) {
+                log.add(LogLevel.DEBUG, LogType.MSG_MG_FOUND_NEW, indent,
+                        Integer.toString(newCerts));
+            } else {
+                log.add(LogLevel.DEBUG, LogType.MSG_MG_UNCHANGED, indent);
+            }
 
             return new UncachedKeyRing(result);
 
