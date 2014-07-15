@@ -40,7 +40,11 @@ public abstract class WrappedKeyRing extends KeyRing {
 
     public String getPrimaryUserId() throws PgpGeneralException {
         return getPublicKey().getPrimaryUserId();
-    };
+    }
+
+    public String getPrimaryUserIdWithFallback() throws PgpGeneralException {
+        return getPublicKey().getPrimaryUserIdWithFallback();
+    }
 
     public boolean isRevoked() throws PgpGeneralException {
         // Is the master key revoked?

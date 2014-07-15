@@ -144,6 +144,17 @@ public class UncachedPublicKey {
         return found;
     }
 
+    /**
+     * Returns primary user id if existing. If not, return first encountered user id.
+     */
+    public String getPrimaryUserIdWithFallback()  {
+        String userId = getPrimaryUserId();
+        if (userId == null) {
+            userId = (String) mPublicKey.getUserIDs().next();
+        }
+        return userId;
+    }
+
     public ArrayList<String> getUnorderedUserIds() {
         ArrayList<String> userIds = new ArrayList<String>();
         for (String userId : new IterableIterator<String>(mPublicKey.getUserIDs())) {

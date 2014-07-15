@@ -22,8 +22,10 @@ public abstract class KeyRing {
 
     abstract public String getPrimaryUserId() throws PgpGeneralException;
 
-    public String[] getSplitPrimaryUserId() throws PgpGeneralException {
-        return splitUserId(getPrimaryUserId());
+    abstract public String getPrimaryUserIdWithFallback() throws PgpGeneralException;
+
+    public String[] getSplitPrimaryUserIdWithFallback() throws PgpGeneralException {
+        return splitUserId(getPrimaryUserIdWithFallback());
     }
 
     abstract public boolean isRevoked() throws PgpGeneralException;

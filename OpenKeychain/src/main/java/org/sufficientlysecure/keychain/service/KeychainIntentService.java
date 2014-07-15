@@ -351,7 +351,7 @@ public class KeychainIntentService extends IntentService
                     // cache new passphrase
                     if (saveParcel.mNewPassphrase != null) {
                         PassphraseCacheService.addCachedPassphrase(this, ring.getMasterKeyId(),
-                                saveParcel.mNewPassphrase, ring.getPublicKey().getPrimaryUserId());
+                                saveParcel.mNewPassphrase, ring.getPublicKey().getPrimaryUserIdWithFallback());
                     }
                 } catch (ProviderHelper.NotFoundException e) {
                     sendErrorToHandler(e);

@@ -70,6 +70,10 @@ public class CachedPublicKeyRing extends KeyRing {
         }
     }
 
+    public String getPrimaryUserIdWithFallback() throws PgpGeneralException {
+        return getPrimaryUserId();
+    }
+
     public boolean isRevoked() throws PgpGeneralException {
         try {
             Object data = mProviderHelper.getGenericData(mUri,

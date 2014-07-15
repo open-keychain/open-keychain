@@ -409,7 +409,7 @@ public class PgpDecryptVerify {
                 signatureResultBuilder.knownKey(true);
                 signatureResultBuilder.keyId(signingRing.getMasterKeyId());
                 try {
-                    signatureResultBuilder.userId(signingRing.getPrimaryUserId());
+                    signatureResultBuilder.userId(signingRing.getPrimaryUserIdWithFallback());
                 } catch(PgpGeneralException e) {
                     Log.d(Constants.TAG, "No primary user id in key " + signingRing.getMasterKeyId());
                 }
@@ -596,7 +596,7 @@ public class PgpDecryptVerify {
             signatureResultBuilder.knownKey(true);
             signatureResultBuilder.keyId(signingRing.getMasterKeyId());
             try {
-                signatureResultBuilder.userId(signingRing.getPrimaryUserId());
+                signatureResultBuilder.userId(signingRing.getPrimaryUserIdWithFallback());
             } catch(PgpGeneralException e) {
                 Log.d(Constants.TAG, "No primary user id in key " + signingRing.getMasterKeyId());
             }

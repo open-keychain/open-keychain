@@ -97,7 +97,7 @@ public class WrappedSecretKey extends WrappedPublicKey {
             signatureGenerator.init(signatureType, mPrivateKey);
 
             PGPSignatureSubpacketGenerator spGen = new PGPSignatureSubpacketGenerator();
-            spGen.setSignerUserID(false, mRing.getPrimaryUserId());
+            spGen.setSignerUserID(false, mRing.getPrimaryUserIdWithFallback());
             signatureGenerator.setHashedSubpackets(spGen.generate());
             return signatureGenerator;
         } catch(PGPException e) {
