@@ -49,6 +49,7 @@ public class FirstTimeActivity extends ActionBarActivity {
             public void onClick(View v) {
                 Intent intent = new Intent(FirstTimeActivity.this, KeyListActivity.class);
                 startActivity(intent);
+                finish();
             }
         });
 
@@ -58,6 +59,7 @@ public class FirstTimeActivity extends ActionBarActivity {
                 Intent intent = new Intent(FirstTimeActivity.this, ImportKeysActivity.class);
                 intent.setAction(ImportKeysActivity.ACTION_IMPORT_KEY_FROM_FILE_AND_RETURN);
                 startActivity(intent);
+                finish();
             }
         });
 
@@ -66,6 +68,7 @@ public class FirstTimeActivity extends ActionBarActivity {
             public void onClick(View v) {
                 Intent intent = new Intent(FirstTimeActivity.this, CreateKeyActivity.class);
                 startActivity(intent);
+                finish();
             }
         });
 
