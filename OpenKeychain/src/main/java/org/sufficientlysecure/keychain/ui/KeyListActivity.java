@@ -32,6 +32,7 @@ import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.Constants.choice.algorithm;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.helper.ExportHelper;
+import org.sufficientlysecure.keychain.helper.Preferences;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainDatabase;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
@@ -50,6 +51,15 @@ public class KeyListActivity extends DrawerActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        Preferences prefs = Preferences.getPreferences(this);
+        if (prefs.getFirstTime()) {
+            prefs.setFirstTime(false);
+            Intent intent = new Intent(this, FirstTimeActivity.class);
+            startActivity(intent);
+            finish();
+            return;
+        }
+
         mExportHelper = new ExportHelper(this);
 
         setContentView(R.layout.key_list_activity);
@@ -63,9 +73,10 @@ public class KeyListActivity extends DrawerActivity {
         super.onCreateOptionsMenu(menu);
         getMenuInflater().inflate(R.menu.key_list, menu);
 
-        if(Constants.DEBUG) {
+        if (Constants.DEBUG) {
             menu.findItem(R.id.menu_key_list_debug_read).setVisible(true);
             menu.findItem(R.id.menu_key_list_debug_write).setVisible(true);
+            menu.findItem(R.id.menu_key_list_debug_first_time).setVisible(true);
         }
 
         return true;
@@ -95,7 +106,7 @@ public class KeyListActivity extends DrawerActivity {
                     KeychainDatabase.debugRead(this);
                     AppMsg.makeText(this, "Restored from backup", AppMsg.STYLE_CONFIRM).show();
                     getContentResolver().notifyChange(KeychainContract.KeyRings.CONTENT_URI, null);
-                } catch(IOException e) {
+                } catch (IOException e) {
                     Log.e(Constants.TAG, "IO Error", e);
                     AppMsg.makeText(this, "IO Error: " + e.getMessage(), AppMsg.STYLE_ALERT).show();
                 }
@@ -105,10 +116,16 @@ public class KeyListActivity extends DrawerActivity {
                 try {
                     KeychainDatabase.debugWrite(this);
                     AppMsg.makeText(this, "Backup successful", AppMsg.STYLE_CONFIRM).show();
-                } catch(IOException e) {
+                } catch (IOException e) {
                     Log.e(Constants.TAG, "IO Error", e);
                     AppMsg.makeText(this, "IO Error: " + e.getMessage(), AppMsg.STYLE_ALERT).show();
                 }
+                return true;
+
+            case R.id.menu_key_list_debug_first_time:
+                Intent intent = new Intent(this, FirstTimeActivity.class);
+                startActivity(intent);
+                finish();
                 return true;
 
             default:
@@ -122,11 +139,8 @@ public class KeyListActivity extends DrawerActivity {
     }
 
     private void createKey() {
-        Intent intent = new Intent(this, WizardActivity.class);
-//        intent.setAction(EditKeyActivity.ACTION_CREATE_KEY);
-//        intent.putExtra(EditKeyActivity.EXTRA_GENERATE_DEFAULT_KEYS, true);
-//        intent.putExtra(EditKeyActivity.EXTRA_USER_IDS, ""); // show user id view
-        startActivityForResult(intent, 0);
+        Intent intent = new Intent(this, CreateKeyActivity.class);
+        startActivity(intent);
     }
 
     private void createKeyExpert() {

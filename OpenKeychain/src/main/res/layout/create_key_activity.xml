@@ -2,6 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:padding="8dp"
     android:orientation="vertical">
 
     <TextView
@@ -36,6 +37,18 @@
         android:ems="10"
         android:id="@+id/passphrase"
         android:layout_gravity="center_horizontal" />
+
+
+    <Button
+        android:id="@+id/create_key_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:layout_gravity="center_horizontal"
+        android:layout_margin="8dp"
+        android:text="@string/first_time_create_key"
+        android:background="@drawable/button_edgy"
+        android:drawableLeft="@drawable/ic_action_new_account" />
 
 
 </LinearLayout>

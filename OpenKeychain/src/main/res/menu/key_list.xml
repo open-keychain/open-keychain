@@ -43,4 +43,10 @@
         android:title="Debug / DB backup"
         android:visible="false" />
 
+    <item
+        android:id="@+id/menu_key_list_debug_first_time"
+        app:showAsAction="never"
+        android:title="Debug / Show first time screen"
+        android:visible="false" />
+
 </menu>

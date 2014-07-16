@@ -81,9 +81,14 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ui.WizardActivity"
+            android:name=".ui.FirstTimeActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
-            android:label="@string/title_wizard"
+            android:label="@string/app_name"
+            android:windowSoftInputMode="stateHidden" />
+        <activity
+            android:name=".ui.CreateKeyActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
+            android:label="@string/title_create_key"
             android:windowSoftInputMode="stateHidden" />
         <activity
             android:name=".ui.EditKeyActivityOld"
