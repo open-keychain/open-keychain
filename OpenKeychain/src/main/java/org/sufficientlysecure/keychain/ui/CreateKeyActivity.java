@@ -148,7 +148,6 @@ public class CreateKeyActivity extends ActionBarActivity {
         parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(Constants.choice.algorithm.rsa, 4096, KeyFlags.ENCRYPT_COMMS | KeyFlags.ENCRYPT_STORAGE, null));
         String userId = nameEdit.getText().toString() + " <" + emailEdit.getText().toString() + ">";
         parcel.mAddUserIds.add(userId);
-        parcel.
         parcel.mNewPassphrase = passphraseEdit.getText().toString();
 
         // get selected key entries
