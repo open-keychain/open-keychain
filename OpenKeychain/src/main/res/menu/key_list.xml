@@ -27,11 +27,6 @@
         android:title="@string/menu_create_key" />
 
     <item
-        android:id="@+id/menu_key_list_create_expert"
-        app:showAsAction="never"
-        android:title="@string/menu_create_key_expert" />
-
-    <item
         android:id="@+id/menu_key_list_debug_read"
         app:showAsAction="never"
         android:title="Debug / DB restore"

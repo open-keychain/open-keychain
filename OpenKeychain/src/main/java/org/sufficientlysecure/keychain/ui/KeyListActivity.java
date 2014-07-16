@@ -93,10 +93,6 @@ public class KeyListActivity extends DrawerActivity {
                 createKey();
                 return true;
 
-            case R.id.menu_key_list_create_expert:
-                createKeyExpert();
-                return true;
-
             case R.id.menu_key_list_export:
                 mExportHelper.showExportKeysDialog(null, Constants.Path.APP_DIR_FILE, true);
                 return true;
@@ -143,43 +139,4 @@ public class KeyListActivity extends DrawerActivity {
         startActivity(intent);
     }
 
-    private void createKeyExpert() {
-        Intent intent = new Intent(this, KeychainIntentService.class);
-        intent.setAction(KeychainIntentService.ACTION_SAVE_KEYRING);
-
-        // Message is received after importing is done in KeychainIntentService
-        KeychainIntentServiceHandler saveHandler = new KeychainIntentServiceHandler(
-                this,
-                getString(R.string.progress_importing),
-                ProgressDialog.STYLE_HORIZONTAL) {
-            public void handleMessage(Message message) {
-                // handle messages by standard KeychainIntentServiceHandler first
-                super.handleMessage(message);
-                Bundle data = message.getData();
-                // OtherHelper.logDebugBundle(data, "message reply");
-            }
-        };
-
-        // fill values for this action
-        Bundle data = new Bundle();
-
-        SaveKeyringParcel parcel = new SaveKeyringParcel();
-        parcel.mAddSubKeys.add(new SubkeyAdd(algorithm.rsa, 1024, KeyFlags.CERTIFY_OTHER, null));
-        parcel.mAddSubKeys.add(new SubkeyAdd(algorithm.rsa, 1024, KeyFlags.SIGN_DATA, null));
-        parcel.mAddUserIds.add("swagerinho");
-        parcel.mNewPassphrase = "swag";
-
-        // get selected key entries
-        data.putParcelable(KeychainIntentService.SAVE_KEYRING_PARCEL, parcel);
-
-        intent.putExtra(KeychainIntentService.EXTRA_DATA, data);
-
-        // Create a new Messenger for the communication back
-        Messenger messenger = new Messenger(saveHandler);
-        intent.putExtra(KeychainIntentService.EXTRA_MESSENGER, messenger);
-
-        saveHandler.showProgressDialog(this);
-
-        startService(intent);
-    }
 }
