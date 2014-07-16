@@ -152,7 +152,7 @@ public class PassphraseDialogFragment extends DialogFragment implements OnEditor
                 // above can't be statically verified to have been set in all cases because
                 // the catch clause doesn't return.
                 try {
-                    userId = secretRing.getPrimaryUserId();
+                    userId = secretRing.getPrimaryUserIdWithFallback();
                 } catch (PgpGeneralException e) {
                     userId = null;
                 }
@@ -232,7 +232,7 @@ public class PassphraseDialogFragment extends DialogFragment implements OnEditor
 
                 try {
                     PassphraseCacheService.addCachedPassphrase(activity, masterKeyId, passphrase,
-                        secretRing.getPrimaryUserId());
+                        secretRing.getPrimaryUserIdWithFallback());
                 } catch(PgpGeneralException e) {
                     Log.e(Constants.TAG, "adding of a passhrase failed", e);
                 }
@@ -240,7 +240,7 @@ public class PassphraseDialogFragment extends DialogFragment implements OnEditor
                 if (unlockedSecretKey.getKeyId() != masterKeyId) {
                     PassphraseCacheService.addCachedPassphrase(
                             activity, unlockedSecretKey.getKeyId(), passphrase,
-                            unlockedSecretKey.getPrimaryUserId());
+                            unlockedSecretKey.getPrimaryUserIdWithFallback());
                 }
 
                 // also return passphrase back to activity

@@ -139,6 +139,16 @@ public class Preferences {
         editor.commit();
     }
 
+    public boolean getFirstTime() {
+        return mSharedPreferences.getBoolean(Constants.Pref.FIRST_TIME, true);
+    }
+
+    public void setFirstTime(boolean value) {
+        SharedPreferences.Editor editor = mSharedPreferences.edit();
+        editor.putBoolean(Constants.Pref.FIRST_TIME, value);
+        editor.commit();
+    }
+
     public String[] getKeyServers() {
         String rawData = mSharedPreferences.getString(Constants.Pref.KEY_SERVERS,
                 Constants.Defaults.KEY_SERVERS);

@@ -44,7 +44,6 @@ import org.sufficientlysecure.keychain.pgp.PgpKeyOperation;
 import org.sufficientlysecure.keychain.pgp.PgpSignEncrypt;
 import org.sufficientlysecure.keychain.pgp.Progressable;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
-import org.sufficientlysecure.keychain.pgp.WrappedPublicKey;
 import org.sufficientlysecure.keychain.pgp.WrappedPublicKeyRing;
 import org.sufficientlysecure.keychain.pgp.WrappedSecretKey;
 import org.sufficientlysecure.keychain.pgp.WrappedSecretKeyRing;
@@ -350,9 +349,9 @@ public class KeychainIntentService extends IntentService
                     providerHelper.saveSecretKeyRing(ring, new ProgressScaler(this, 10, 95, 100));
 
                     // cache new passphrase
-                    if (saveParcel.newPassphrase != null) {
+                    if (saveParcel.mNewPassphrase != null) {
                         PassphraseCacheService.addCachedPassphrase(this, ring.getMasterKeyId(),
-                                saveParcel.newPassphrase, ring.getPublicKey().getPrimaryUserId());
+                                saveParcel.mNewPassphrase, ring.getPublicKey().getPrimaryUserIdWithFallback());
                     }
                 } catch (ProviderHelper.NotFoundException e) {
                     sendErrorToHandler(e);
@@ -546,7 +545,7 @@ public class KeychainIntentService extends IntentService
                 ProviderHelper providerHelper = new ProviderHelper(this);
                 WrappedPublicKeyRing publicRing = providerHelper.getWrappedPublicKeyRing(pubKeyId);
                 WrappedSecretKeyRing secretKeyRing = providerHelper.getWrappedSecretKeyRing(masterKeyId);
-                WrappedSecretKey certificationKey = secretKeyRing.getSubKey();
+                WrappedSecretKey certificationKey = secretKeyRing.getSecretKey();
                 if(!certificationKey.unlock(signaturePassphrase)) {
                     throw new PgpGeneralException("Error extracting key (bad passphrase?)");
                 }

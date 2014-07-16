@@ -143,7 +143,7 @@ public class SubkeysAdapter extends CursorAdapter {
 
         // for edit key
         if (mSaveKeyringParcel != null) {
-            boolean revokeThisSubkey = (mSaveKeyringParcel.revokeSubKeys.contains(keyId));
+            boolean revokeThisSubkey = (mSaveKeyringParcel.mRevokeSubKeys.contains(keyId));
 
             if (revokeThisSubkey) {
                 if (!isRevoked) {

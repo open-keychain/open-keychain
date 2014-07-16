@@ -9,7 +9,6 @@
     <string name="title_authentication">Passphrase</string>
     <string name="title_create_key">Create Key</string>
     <string name="title_edit_key">Edit Key</string>
-    <string name="title_wizard">Welcome to OpenKeychain</string>
     <string name="title_preferences">Preferences</string>
     <string name="title_api_registered_apps">Apps</string>
     <string name="title_key_server_preference">Keyserver Preference</string>
@@ -511,7 +510,7 @@
     <string name="cert_casual">casual</string>
     <string name="cert_positive">positive</string>
     <string name="cert_revoke">revoked</string>
-    <string name="cert_verify_ok">ok</string>
+    <string name="cert_verify_ok">OK</string>
     <string name="cert_verify_failed">failed!</string>
     <string name="cert_verify_error">error!</string>
     <string name="cert_verify_unavailable">key unavailable</string>
@@ -556,7 +555,7 @@
     <string name="msg_ip_reinsert_secret">Re-inserting secret key</string>
     <string name="msg_ip_uid_cert_bad">Encountered bad certificate!</string>
     <string name="msg_ip_uid_cert_error">Error processing certificate!</string>
-    <string name="msg_ip_uid_cert_good">User id is certified by %1$s (%2$s)</string>
+    <string name="msg_ip_uid_cert_good">User id is certified by %1$s</string>
     <plurals name="msg_ip_uid_certs_unknown">
         <item quantity="one">Ignoring one certificate issued by an unknown public key</item>
         <item quantity="other">Ignoring %s certificates issued by unknown public keys</item>
@@ -637,6 +636,17 @@
     <string name="msg_mg_heterogeneous">Tried to consolidate heterogeneous keyrings</string>
     <string name="msg_mg_new_subkey">Adding new subkey %s</string>
     <string name="msg_mg_found_new">Found %s new certificates in keyring</string>
+    <string name="msg_mg_unchanged">No new certificates</string>
+
+    <!-- createSecretKeyRing -->
+    <string name="msg_cr">Generating new master key</string>
+    <string name="msg_cr_error_no_master">No master key options specified!</string>
+    <string name="msg_cr_error_no_user_id">Keyrings must be created with at least one user id!</string>
+    <string name="msg_cr_error_no_certify">Master key must have certify flag!</string>
+    <string name="msg_cr_error_keysize_512">Key size must be greater or equal 512!</string>
+    <string name="msg_cr_error_internal_pgp">Internal PGP error!</string>
+    <string name="msg_cr_error_unknown_algo">Bad algorithm choice!</string>
+    <string name="msg_cr_error_master_elgamal">Master key must not be of type ElGamal!</string>
 
     <!-- modifySecretKeyRing -->
     <string name="msg_mr">Modifying keyring %s</string>
@@ -644,10 +654,13 @@
     <string name="msg_mf_error_fingerprint">Actual key fingerprint does not match the expected one!</string>
     <string name="msg_mf_error_keyid">No key ID. This is an internal error, please file a bug report!</string>
     <string name="msg_mf_error_integrity">Internal error, integrity check failed!</string>
+    <string name="msg_mf_error_noexist_primary">Bad primary user id specified!</string>
     <string name="msg_mf_error_revoked_primary">Revoked user ids cannot be primary!</string>
     <string name="msg_mf_error_pgp">PGP internal exception!</string>
     <string name="msg_mf_error_sig">Signature exception!</string>
     <string name="msg_mf_passphrase">Changing passphrase</string>
+    <string name="msg_mf_primary_replace_old">Replacing certificate of previous primary user id</string>
+    <string name="msg_mf_primary_new">Generating new certificate for new primary user id</string>
     <string name="msg_mf_subkey_change">Modifying subkey %s</string>
     <string name="msg_mf_subkey_missing">Tried to operate on missing subkey %s!</string>
     <string name="msg_mf_subkey_new">Generating new %1$s bit %2$s subkey</string>
@@ -690,5 +703,11 @@
     <string name="error_no_encrypt_subkey">No encryption subkey available!</string>
     <string name="info_no_manual_account_creation">Do not create OpenKeychain-Accounts manually.\nFor more information, see Help.</string>
     <string name="contact_show_key">Show key (%s)</string>
+
+    <!-- First Time -->
+    <string name="first_time_text1">Take back your privacy with OpenKeychain!</string>
+    <string name="first_time_create_key">Create Key</string>
+    <string name="first_time_import_key">Import Key</string>
+    <string name="first_time_skip">Skip Setup</string>
 
 </resources>

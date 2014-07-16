@@ -39,8 +39,12 @@ public abstract class WrappedKeyRing extends KeyRing {
     }
 
     public String getPrimaryUserId() throws PgpGeneralException {
-        return (String) getRing().getPublicKey().getUserIDs().next();
-    };
+        return getPublicKey().getPrimaryUserId();
+    }
+
+    public String getPrimaryUserIdWithFallback() throws PgpGeneralException {
+        return getPublicKey().getPrimaryUserIdWithFallback();
+    }
 
     public boolean isRevoked() throws PgpGeneralException {
         // Is the master key revoked?
@@ -101,8 +105,16 @@ public abstract class WrappedKeyRing extends KeyRing {
 
     abstract public IterableIterator<WrappedPublicKey> publicKeyIterator();
 
-    public UncachedKeyRing getUncached() {
-        return new UncachedKeyRing(getRing());
+    public WrappedPublicKey getPublicKey() {
+        return new WrappedPublicKey(this, getRing().getPublicKey());
+    }
+
+    public WrappedPublicKey getPublicKey(long id) {
+        return new WrappedPublicKey(this, getRing().getPublicKey(id));
+    }
+
+    public byte[] getEncoded() throws IOException {
+        return getRing().getEncoded();
     }
 
 }

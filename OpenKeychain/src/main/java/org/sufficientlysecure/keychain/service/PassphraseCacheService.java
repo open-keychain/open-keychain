@@ -191,7 +191,7 @@ public class PassphraseCacheService extends Service {
                 Log.d(Constants.TAG, "Key has no passphrase! Caches and returns empty passphrase!");
 
                 try {
-                    addCachedPassphrase(this, keyId, "", key.getPrimaryUserId());
+                    addCachedPassphrase(this, keyId, "", key.getPrimaryUserIdWithFallback());
                 } catch (PgpGeneralException e) {
                     Log.d(Constants.TAG, "PgpGeneralException occured");
                 }

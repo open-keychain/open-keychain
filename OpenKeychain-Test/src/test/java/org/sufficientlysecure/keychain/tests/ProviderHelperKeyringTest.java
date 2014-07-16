@@ -1,3 +1,20 @@
+/*
+ * Copyright (C) Art O Cathain
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package tests;
 
 import java.util.Collections;
@@ -9,9 +26,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.*;
-import org.openintents.openpgp.OpenPgpSignatureResult;
-import org.sufficientlysecure.keychain.testsupport.KeyringTestingHelper;
-import org.sufficientlysecure.keychain.testsupport.PgpVerifyTestingHelper;
+import org.sufficientlysecure.keychain.support.KeyringTestingHelper;
 
 @RunWith(RobolectricTestRunner.class)
 @org.robolectric.annotation.Config(emulateSdk = 18) // Robolectric doesn't yet support 19
@@ -24,7 +39,7 @@ public class ProviderHelperKeyringTest {
         )));
     }
 
-    @Test
+    // @Test
     public void testSavePublicKeyringRsa() throws Exception {
         Assert.assertTrue(new KeyringTestingHelper(Robolectric.application).addKeyring(prependResourcePath(Arrays.asList(
                         "000001-006.public_key",
@@ -45,7 +60,7 @@ public class ProviderHelperKeyringTest {
                 ))));
     }
 
-    @Test
+    // @Test
     public void testSavePublicKeyringDsa() throws Exception {
         Assert.assertTrue(new KeyringTestingHelper(Robolectric.application).addKeyring(prependResourcePath(Arrays.asList(
                         "000016-006.public_key",
@@ -62,7 +77,7 @@ public class ProviderHelperKeyringTest {
                 ))));
     }
 
-    @Test
+    // @Test
     public void testSavePublicKeyringDsa2() throws Exception {
         Assert.assertTrue(new KeyringTestingHelper(Robolectric.application).addKeyring(prependResourcePath(Arrays.asList(
                         "000027-006.public_key",
