@@ -31,6 +31,6 @@
 [submodule "extern/minidns"]
 	path = extern/minidns
 	url = https://github.com/open-keychain/minidns.git
-[submodule "OpenKeychain/src/test/resources/extern/OpenPGP-Haskell"]
-	path = OpenKeychain/src/test/resources/extern/OpenPGP-Haskell
+[submodule "OpenKeychain-Test/src/test/resources/extern/OpenPGP-Haskell"]
+	path = OpenKeychain-Test/src/test/resources/extern/OpenPGP-Haskell
 	url = https://github.com/singpolyma/OpenPGP-Haskell.git
