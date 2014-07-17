@@ -28,6 +28,7 @@ import org.openintents.openpgp.IOpenPgpService;
 import org.openintents.openpgp.OpenPgpError;
 import org.openintents.openpgp.OpenPgpSignatureResult;
 import org.openintents.openpgp.util.OpenPgpApi;
+import org.openkeychain.nfc.NfcActivity;
 import org.spongycastle.util.Arrays;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
@@ -135,7 +136,26 @@ public class OpenPgpService extends RemoteService {
         return result;
     }
 
-    private Intent getPassphraseBundleIntent(Intent data, long keyId) {
+    private Intent getNfcIntent(Intent data, String in) {
+        // build PendingIntent for Yubikey NFC operations
+        Intent intent = new Intent(getBaseContext(), NfcActivity.class);
+        intent.setAction(NfcActivity.ACTION_SIGN);
+        intent.putExtra(NfcActivity.EXTRA_NFC_DATA, in);
+        intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        // pass params through to activity that it can be returned again later to repeat pgp operation
+        intent.putExtra(NfcActivity.EXTRA_DATA, data);
+        PendingIntent pi = PendingIntent.getActivity(getBaseContext(), 0,
+                intent,
+                PendingIntent.FLAG_CANCEL_CURRENT);
+
+        // return PendingIntent to be executed by client
+        Intent result = new Intent();
+        result.putExtra(OpenPgpApi.RESULT_INTENT, pi);
+        result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_USER_INTERACTION_REQUIRED);
+        return result;
+    }
+
+    private Intent getPassphraseIntent(Intent data, long keyId) {
         // build PendingIntent for passphrase input
         Intent intent = new Intent(getBaseContext(), RemoteServiceActivity.class);
         intent.setAction(RemoteServiceActivity.ACTION_CACHE_PASSPHRASE);
@@ -167,9 +187,11 @@ public class OpenPgpService extends RemoteService {
             }
             if (passphrase == null) {
                 // get PendingIntent for passphrase input, add it to given params and return to client
-                Intent passphraseBundle = getPassphraseBundleIntent(data, accSettings.getKeyId());
+                Intent passphraseBundle = getPassphraseIntent(data, accSettings.getKeyId());
                 return passphraseBundle;
             }
+
+            String nfcData = data.getStringExtra(OpenPgpApi.EXTRA_NFC_DATA);
 
             // Get Input- and OutputStream from ParcelFileDescriptor
             InputStream is = new ParcelFileDescriptor.AutoCloseInputStream(input);
@@ -187,7 +209,8 @@ public class OpenPgpService extends RemoteService {
                         .setSignatureHashAlgorithm(accSettings.getHashAlgorithm())
                         .setSignatureForceV3(false)
                         .setSignatureMasterKeyId(accSettings.getKeyId())
-                        .setSignaturePassphrase(passphrase);
+                        .setSignaturePassphrase(passphrase)
+                        .setNfcData(nfcData);
 
                 // TODO: currently always assume cleartext input, no sign-only of binary currently!
                 builder.setCleartextInput(true);
@@ -202,6 +225,10 @@ public class OpenPgpService extends RemoteService {
                     throw new Exception(getString(R.string.error_no_signature_passphrase));
                 } catch (PgpSignEncrypt.NoSigningKeyException e) {
                     throw new Exception(getString(R.string.error_no_signature_key));
+                } catch (PgpSignEncrypt.NeedNfcDataException e) {
+                    // return PendingIntent to execute NFC activity
+                    Intent nfcIntent = getNfcIntent(data, e.mData);
+                    return nfcIntent;
                 }
             } finally {
                 is.close();
@@ -212,6 +239,7 @@ public class OpenPgpService extends RemoteService {
             result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_SUCCESS);
             return result;
         } catch (Exception e) {
+            Log.d(Constants.TAG, "signImpl", e);
             Intent result = new Intent();
             result.putExtra(OpenPgpApi.RESULT_ERROR,
                     new OpenPgpError(OpenPgpError.GENERIC_ERROR, e.getMessage()));
@@ -282,7 +310,7 @@ public class OpenPgpService extends RemoteService {
                     }
                     if (passphrase == null) {
                         // get PendingIntent for passphrase input, add it to given params and return to client
-                        Intent passphraseBundle = getPassphraseBundleIntent(data, accSettings.getKeyId());
+                        Intent passphraseBundle = getPassphraseIntent(data, accSettings.getKeyId());
                         return passphraseBundle;
                     }
 
@@ -317,6 +345,7 @@ public class OpenPgpService extends RemoteService {
             result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_SUCCESS);
             return result;
         } catch (Exception e) {
+            Log.d(Constants.TAG, "encryptAndSignImpl", e);
             Intent result = new Intent();
             result.putExtra(OpenPgpApi.RESULT_ERROR,
                     new OpenPgpError(OpenPgpError.GENERIC_ERROR, e.getMessage()));
@@ -376,7 +405,7 @@ public class OpenPgpService extends RemoteService {
                 if (PgpDecryptVerifyResult.KEY_PASSHRASE_NEEDED == decryptVerifyResult.getStatus()) {
                     // get PendingIntent for passphrase input, add it to given params and return to client
                     Intent passphraseBundle =
-                            getPassphraseBundleIntent(data, decryptVerifyResult.getKeyIdPassphraseNeeded());
+                            getPassphraseIntent(data, decryptVerifyResult.getKeyIdPassphraseNeeded());
                     return passphraseBundle;
                 } else if (PgpDecryptVerifyResult.SYMMETRIC_PASSHRASE_NEEDED ==
                         decryptVerifyResult.getStatus()) {
@@ -411,6 +440,7 @@ public class OpenPgpService extends RemoteService {
             result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_SUCCESS);
             return result;
         } catch (Exception e) {
+            Log.d(Constants.TAG, "decryptAndVerifyImpl", e);
             Intent result = new Intent();
             result.putExtra(OpenPgpApi.RESULT_ERROR,
                     new OpenPgpError(OpenPgpError.GENERIC_ERROR, e.getMessage()));

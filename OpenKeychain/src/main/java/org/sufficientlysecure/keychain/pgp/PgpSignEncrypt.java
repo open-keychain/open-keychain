@@ -20,6 +20,7 @@ package org.sufficientlysecure.keychain.pgp;
 
 import org.spongycastle.bcpg.ArmoredOutputStream;
 import org.spongycastle.bcpg.BCPGOutputStream;
+import org.spongycastle.bcpg.S2K;
 import org.spongycastle.openpgp.PGPCompressedDataGenerator;
 import org.spongycastle.openpgp.PGPEncryptedDataGenerator;
 import org.spongycastle.openpgp.PGPException;
@@ -38,11 +39,13 @@ import org.sufficientlysecure.keychain.util.InputData;
 import org.sufficientlysecure.keychain.util.Log;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.security.SignatureException;
@@ -70,6 +73,7 @@ public class PgpSignEncrypt {
     private String mSignaturePassphrase;
     private boolean mEncryptToSigner;
     private boolean mCleartextInput;
+    private String mNfcData;
 
     private static byte[] NEW_LINE;
 
@@ -100,6 +104,7 @@ public class PgpSignEncrypt {
         this.mSignaturePassphrase = builder.mSignaturePassphrase;
         this.mEncryptToSigner = builder.mEncryptToSigner;
         this.mCleartextInput = builder.mCleartextInput;
+        this.mNfcData = builder.mNfcData;
     }
 
     public static class Builder {
@@ -122,6 +127,7 @@ public class PgpSignEncrypt {
         private String mSignaturePassphrase = null;
         private boolean mEncryptToSigner = false;
         private boolean mCleartextInput = false;
+        private String mNfcData = null;
 
         public Builder(ProviderHelper providerHelper, String versionHeader, InputData data, OutputStream outStream) {
             this.mProviderHelper = providerHelper;
@@ -130,7 +136,7 @@ public class PgpSignEncrypt {
             this.mOutStream = outStream;
         }
 
-       public Builder setProgressable(Progressable progressable) {
+        public Builder setProgressable(Progressable progressable) {
             mProgressable = progressable;
             return this;
         }
@@ -170,6 +176,12 @@ public class PgpSignEncrypt {
             return this;
         }
 
+        /**
+         * Generate old V3 signatures
+         *
+         * @param signatureForceV3
+         * @return
+         */
         public Builder setSignatureForceV3(boolean signatureForceV3) {
             mSignatureForceV3 = signatureForceV3;
             return this;
@@ -197,6 +209,11 @@ public class PgpSignEncrypt {
          */
         public Builder setCleartextInput(boolean cleartextInput) {
             this.mCleartextInput = cleartextInput;
+            return this;
+        }
+
+        public Builder setNfcData(String nfcData) {
+            mNfcData = nfcData;
             return this;
         }
 
@@ -232,12 +249,26 @@ public class PgpSignEncrypt {
         }
     }
 
+    public static class NeedNfcDataException extends Exception {
+        public String mData;
+
+        public NeedNfcDataException(String data) {
+            mData = data;
+        }
+    }
+
+    // TODO: remove later
+    static String convertStreamToString(java.io.InputStream is) {
+        java.util.Scanner s = new java.util.Scanner(is).useDelimiter("\\A");
+        return s.hasNext() ? s.next() : "";
+    }
+
     /**
      * Signs and/or encrypts data based on parameters of class
      */
     public void execute()
             throws IOException, PGPException, NoSuchProviderException,
-            NoSuchAlgorithmException, SignatureException, KeyExtractionException, NoSigningKeyException, NoPassphraseException {
+            NoSuchAlgorithmException, SignatureException, KeyExtractionException, NoSigningKeyException, NoPassphraseException, NeedNfcDataException {
 
         boolean enableSignature = mSignatureMasterKeyId != Constants.key.none;
         boolean enableEncryption = ((mEncryptionMasterKeyIds != null && mEncryptionMasterKeyIds.length > 0)
@@ -255,16 +286,6 @@ public class PgpSignEncrypt {
             mEncryptionMasterKeyIds[mEncryptionMasterKeyIds.length - 1] = mSignatureMasterKeyId;
         }
 
-        ArmoredOutputStream armorOut = null;
-        OutputStream out;
-        if (mEnableAsciiArmorOutput) {
-            armorOut = new ArmoredOutputStream(mOutStream);
-            armorOut.setHeader("Version", mVersionHeader);
-            out = armorOut;
-        } else {
-            out = mOutStream;
-        }
-
         /* Get keys for signature generation for later usage */
         WrappedSecretKey signingKey = null;
         if (enableSignature) {
@@ -276,7 +297,7 @@ public class PgpSignEncrypt {
             }
             try {
                 signingKey = signingKeyRing.getSigningSubKey();
-            } catch(PgpGeneralException e) {
+            } catch (PgpGeneralException e) {
                 throw new NoSigningKeyException();
             }
 
@@ -329,17 +350,24 @@ public class PgpSignEncrypt {
             }
         }
 
+        // HACK
+        boolean useNfc = false;
+        if (signingKey.getSecretKey().getS2K().getType() == S2K.GNU_DUMMY_S2K
+                && signingKey.getSecretKey().getS2K().getProtectionMode() == 2) {
+            useNfc = true;
+        }
+
         /* Initialize signature generator object for later usage */
         PGPSignatureGenerator signatureGenerator = null;
         PGPV3SignatureGenerator signatureV3Generator = null;
-        if (enableSignature) {
+        if (enableSignature && !useNfc) {
             updateProgress(R.string.progress_preparing_signature, 10, 100);
 
             try {
                 boolean cleartext = mCleartextInput && mEnableAsciiArmorOutput && !enableEncryption;
                 if (mSignatureForceV3) {
                     signatureV3Generator = signingKey.getV3SignatureGenerator(
-                            mSignatureHashAlgorithm,cleartext);
+                            mSignatureHashAlgorithm, cleartext);
                 } else {
                     signatureGenerator = signingKey.getSignatureGenerator(
                             mSignatureHashAlgorithm, cleartext);
@@ -349,12 +377,39 @@ public class PgpSignEncrypt {
                 throw new KeyExtractionException();
             }
         }
+//        else if (enableSignature && useNfc) {
+//
+//        }
+
+
+        ArmoredOutputStream armorOut = null;
+        OutputStream out = null;
+        if (mEnableAsciiArmorOutput && !useNfc) {
+            armorOut = new ArmoredOutputStream(mOutStream);
+            armorOut.setHeader("Version", mVersionHeader);
+            out = armorOut;
+        } else {
+            out = mOutStream;
+        }
 
         PGPCompressedDataGenerator compressGen = null;
-        OutputStream pOut;
+        OutputStream pOut = null;
         OutputStream encryptionOut = null;
         BCPGOutputStream bcpgOut;
-        if (enableEncryption) {
+
+        // Barrier function!
+        if (useNfc && mNfcData == null) {
+            Log.d(Constants.TAG, "mNfcData is null");
+            String nfcData = convertStreamToString(mData.getInputStream());
+            Log.d(Constants.TAG, "nfcData: " + nfcData);
+            throw new NeedNfcDataException(nfcData);
+        }
+
+        if (useNfc) {
+            Log.d(Constants.TAG, "mNfcData: " + mNfcData);
+            out.write(mNfcData.getBytes());
+            out.flush();
+        } else if (enableEncryption) {
             /* actual encryption */
 
             encryptionOut = cPk.open(out, new byte[1 << 16]);
@@ -488,7 +543,7 @@ public class PgpSignEncrypt {
             Log.e(Constants.TAG, "not supported!");
         }
 
-        if (enableSignature) {
+        if (enableSignature && !useNfc) {
             updateProgress(R.string.progress_generating_signature, 95, 100);
             if (mSignatureForceV3) {
                 signatureV3Generator.generate().encode(pOut);
@@ -507,7 +562,7 @@ public class PgpSignEncrypt {
 
             encryptionOut.close();
         }
-        if (mEnableAsciiArmorOutput) {
+        if (mEnableAsciiArmorOutput && !useNfc) {
             armorOut.close();
         }
 

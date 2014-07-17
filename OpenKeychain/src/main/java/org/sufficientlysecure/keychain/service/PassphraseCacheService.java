@@ -38,6 +38,7 @@ import android.os.RemoteException;
 import android.support.v4.util.LongSparseArray;
 import android.support.v4.app.NotificationCompat;
 
+import org.spongycastle.bcpg.S2K;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.helper.Preferences;
@@ -196,6 +197,13 @@ public class PassphraseCacheService extends Service {
                     Log.d(Constants.TAG, "PgpGeneralException occured");
                 }
                 return "";
+            }
+
+            // TODO: HACK
+            if (key.getSecretKey().getSecretKey().getS2K().getType() == S2K.GNU_DUMMY_S2K
+                    && key.getSecretKey().getSecretKey().getS2K().getProtectionMode() == 2) {
+                // NFC!
+                return "123456";
             }
 
             // get cached passphrase

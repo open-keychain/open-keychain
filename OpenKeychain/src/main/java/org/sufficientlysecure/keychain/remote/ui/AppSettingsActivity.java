@@ -17,9 +17,12 @@
 
 package org.sufficientlysecure.keychain.remote.ui;
 
+import android.content.ComponentName;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
@@ -33,6 +36,8 @@ import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.remote.AppSettings;
 import org.sufficientlysecure.keychain.util.Log;
+
+import java.util.List;
 
 public class AppSettingsActivity extends ActionBarActivity {
     private Uri mAppUri;
@@ -90,6 +95,7 @@ public class AppSettingsActivity extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    // disabled: breaks Yubikey NFC Foreground dispatching
     private void startApp() {
         Intent i;
         PackageManager manager = getPackageManager();
@@ -97,6 +103,8 @@ public class AppSettingsActivity extends ActionBarActivity {
             i = manager.getLaunchIntentForPackage(mAppSettings.getPackageName());
             if (i == null)
                 throw new PackageManager.NameNotFoundException();
+            // start like the Android launcher would do
+            i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
             i.addCategory(Intent.CATEGORY_LAUNCHER);
             startActivity(i);
         } catch (PackageManager.NameNotFoundException e) {

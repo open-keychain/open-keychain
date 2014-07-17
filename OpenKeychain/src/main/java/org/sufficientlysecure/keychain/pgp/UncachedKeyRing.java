@@ -179,6 +179,8 @@ public class UncachedKeyRing {
             // Set to 1, except if the encryption type is GNU_DUMMY_S2K
             if(s2k == null || s2k.getType() != S2K.GNU_DUMMY_S2K) {
                 result.add(sub.getKeyID());
+            } else {
+                Log.d(Constants.TAG, "S2K GNU extension!, mode: " + s2k.getProtectionMode());
             }
         }
         return result;

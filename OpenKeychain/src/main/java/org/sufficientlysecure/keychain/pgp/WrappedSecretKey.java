@@ -197,4 +197,9 @@ public class WrappedSecretKey extends WrappedPublicKey {
         return new UncachedSecretKey(mSecretKey);
     }
 
+    // HACK
+    public PGPSecretKey getSecretKey() {
+        return mSecretKey;
+    }
+
 }
