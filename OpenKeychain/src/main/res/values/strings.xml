@@ -110,7 +110,7 @@
     <string name="label_algorithm">Algorithm</string>
     <string name="label_ascii_armor">ASCII Armor</string>
     <string name="label_conceal_pgp_application">Let others know that you're using OpenKeychain</string>
-    <string name="label_conceal_pgp_application_summary">Writes 'OpenKeychain v2.7' to OpenPGP signatures, ciphertext, and exported keys</string>
+    <string name="label_conceal_pgp_application_summary">Writes \'OpenKeychain v2.7\' to OpenPGP signatures, ciphertext, and exported keys</string>
     <string name="label_select_public_keys">Recipients</string>
     <string name="label_delete_after_encryption">Delete After Encryption</string>
     <string name="label_delete_after_decryption">Delete After Decryption</string>
