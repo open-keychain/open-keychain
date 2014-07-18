@@ -197,4 +197,14 @@ public class Preferences {
                     .commit();
         }
     }
+
+    public void setConcealPgpApplication(boolean conceal) {
+        SharedPreferences.Editor editor = mSharedPreferences.edit();
+        editor.putBoolean(Constants.Pref.CONCEAL_PGP_APPLICATION, conceal);
+        editor.commit();
+    }
+
+    public boolean getConcealPgpApplication() {
+        return mSharedPreferences.getBoolean(Constants.Pref.CONCEAL_PGP_APPLICATION, false);
+    }
 }
