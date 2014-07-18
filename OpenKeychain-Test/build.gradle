@@ -1,5 +1,6 @@
 apply plugin: 'java'
 apply plugin: 'android-test'
+apply plugin: 'jacoco'
 
 dependencies {
     testCompile 'junit:junit:4.11'
@@ -29,6 +30,29 @@ dependencies {
 
 android {
     projectUnderTest ':OpenKeychain'
+}
+
+jacoco {
+    toolVersion = "0.7.0.201403182114"
+}
+
+coverageSourceDirs = [
+        '../OpenKeychain/src/main/java',
+        '../OpenKeychain/src/gen',
+        '../OpenKeychain/build/source/apt/debug',
+        '../OpenKeychain/build/source/generated/buildConfig/debug',
+        '../OpenKeychain/build/source/generated/r/debug'
+        ]
+
+jacocoTestReport {
+    reports {
+        xml.enabled = true
+        html.destination "${buildDir}/jacocoHtml"
+    }
+    // class R is used, but usage will not be covered, so ignore this class from report
+    classDirectories = fileTree(dir: '../OpenKeychain/build/intermediates/classes/debug/org/sufficientlysecure/keychain', exclude: 'R*.class')
+    additionalSourceDirs = files(coverageSourceDirs)
+    executionData = files('build/jacoco/testDebug.exec')
 }
 
 // new workaround to force add custom output dirs for android studio
