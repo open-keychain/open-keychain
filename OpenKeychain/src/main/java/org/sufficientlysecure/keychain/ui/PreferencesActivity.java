@@ -121,6 +121,9 @@ public class PreferencesActivity extends PreferenceActivity {
             initializeForceV3Signatures(
                     (CheckBoxPreference) findPreference(Constants.Pref.FORCE_V3_SIGNATURES));
 
+            initializeConcealPgpApplication(
+                    (CheckBoxPreference) findPreference(Constants.Pref.CONCEAL_PGP_APPLICATION));
+
         } else if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
             // Load the legacy preferences headers
             addPreferencesFromResource(R.xml.preference_headers_legacy);
@@ -264,6 +267,9 @@ public class PreferencesActivity extends PreferenceActivity {
 
             initializeForceV3Signatures(
                     (CheckBoxPreference) findPreference(Constants.Pref.FORCE_V3_SIGNATURES));
+
+            initializeConcealPgpApplication(
+                    (CheckBoxPreference) findPreference(Constants.Pref.CONCEAL_PGP_APPLICATION));
         }
     }
 
@@ -395,5 +401,16 @@ public class PreferencesActivity extends PreferenceActivity {
                         return false;
                     }
                 });
+    }
+
+    private static void initializeConcealPgpApplication(final CheckBoxPreference mConcealPgpApplication) {
+        mConcealPgpApplication.setChecked(sPreferences.getConcealPgpApplication());
+        mConcealPgpApplication.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+            public boolean onPreferenceChange(Preference preference, Object newValue) {
+                mConcealPgpApplication.setChecked((Boolean) newValue);
+                sPreferences.setConcealPgpApplication((Boolean) newValue);
+                return false;
+            }
+        });
     }
 }
