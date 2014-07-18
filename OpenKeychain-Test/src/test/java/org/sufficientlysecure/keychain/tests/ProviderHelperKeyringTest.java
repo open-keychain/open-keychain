@@ -94,7 +94,7 @@ public class ProviderHelperKeyringTest {
     private static Collection<String> prependResourcePath(Collection<String> files) {
         Collection<String> prependedFiles = new ArrayList<String>();
         for (String file: files) {
-            prependedFiles.add("/extern/OpenPGP-Haskell/tests/data/" + file);
+            prependedFiles.add("/OpenPGP-Haskell/tests/data/" + file);
         }
         return prependedFiles;
     }
