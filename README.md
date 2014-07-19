@@ -56,10 +56,7 @@ Select everything for the newest SDK Platform (API-Level 19)
 I am using the newest [Android Studio](http://developer.android.com/sdk/installing/studio.html) for development. Development with Eclipse is currently not possible because I am using the new [project structure](http://developer.android.com/sdk/installing/studio-tips.html).
 
 1. Clone the project from github
-2. From Android Studio: File -> Import Project ->  ...
-  * Select the cloned top folder if you want to develop on the main project
-  * Select the "OpenKeychain-API" folder if you want to develop on the API example
-3. Import project from external model -> choose Gradle
+2. From Android Studio: File -> Import Project ->  Select the cloned top folder
 
 ## OpenKeychain's API
 
