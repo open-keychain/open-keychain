@@ -53,9 +53,9 @@ Select everything for the newest SDK Platform (API-Level 19)
 
 ### Development with Android Studio
 
-I am using the newest [Android Studio](http://developer.android.com/sdk/installing/studio.html) for development. Development with Eclipse is currently not possible because I am using the new [project structure](http://developer.android.com/sdk/installing/studio-tips.html).
+We are using the newest [Android Studio](http://developer.android.com/sdk/installing/studio.html) for development. Development with Eclipse is currently not possible because we are using the new [project structure](http://developer.android.com/sdk/installing/studio-tips.html).
 
-1. Clone the project from github
+1. Clone the project from Github
 2. From Android Studio: File -> Import Project ->  Select the cloned top folder
 
 ## OpenKeychain's API
