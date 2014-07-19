@@ -599,6 +599,7 @@ public class PgpKeyOperation {
             log.add(LogLevel.ERROR, LogType.MSG_MF_ERROR_ENCODE, indent+1);
             return null;
         } catch (PGPException e) {
+            Log.e(Constants.TAG, "encountered pgp error while modifying key", e);
             log.add(LogLevel.ERROR, LogType.MSG_MF_ERROR_PGP, indent+1);
             return null;
         } catch (SignatureException e) {

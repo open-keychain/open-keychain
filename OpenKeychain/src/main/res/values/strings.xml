@@ -592,6 +592,7 @@
     <string name="msg_kc_revoke_bad_local">Removing keyring revocation certificate with "local" flag</string>
     <string name="msg_kc_revoke_bad_time">Removing keyring revocation certificate with future timestamp</string>
     <string name="msg_kc_revoke_bad_type">Removing master key certificate of unknown type (%s)</string>
+    <string name="msg_kc_revoke_bad_type_uid">Removing user id certification in bad position</string>
     <string name="msg_kc_revoke_bad">Removing bad keyring revocation certificate</string>
     <string name="msg_kc_revoke_dup">Removing redundant keyring revocation certificate</string>
     <string name="msg_kc_sub">Processing subkey %s</string>
@@ -629,6 +630,7 @@
     <string name="msg_kc_uid_revoke_dup">Removing redundant revocation certificate for user id "%s"</string>
     <string name="msg_kc_uid_revoke_old">Removing outdated revocation certificate for user id "%s"</string>
     <string name="msg_kc_uid_no_cert">No valid self-certificate found for user id %s, removing from ring</string>
+    <string name="msg_kc_uid_remove">Removing invalid user id %s</string>
 
     <!-- Keyring merging log entries -->
     <string name="msg_mg_public">Merging into public keyring %s</string>

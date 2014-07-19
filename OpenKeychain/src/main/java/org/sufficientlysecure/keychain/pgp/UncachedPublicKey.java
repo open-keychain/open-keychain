@@ -1,8 +1,6 @@
 package org.sufficientlysecure.keychain.pgp;
 
-import org.spongycastle.bcpg.SignatureSubpacketTags;
 import org.spongycastle.bcpg.sig.KeyFlags;
-import org.spongycastle.openpgp.PGPException;
 import org.spongycastle.openpgp.PGPPublicKey;
 import org.spongycastle.openpgp.PGPSignature;
 import org.spongycastle.openpgp.PGPSignatureSubpacketVector;
@@ -11,7 +9,6 @@ import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.util.IterableIterator;
 import org.sufficientlysecure.keychain.util.Log;
 
-import java.security.SignatureException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
