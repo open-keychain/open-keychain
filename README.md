@@ -37,10 +37,13 @@ Expand the Tools directory and select "Android SDK Build-tools (Version 19.1)".
 Expand the Extras directory and install "Android Support Repository"  
 Select everything for the newest SDK Platform (API-Level 19)
 4. Export ANDROID_HOME pointing to your Android SDK
-5. Use OpenJDK 7 instead of Oracle JDK (this is required for OpenKeychain's tests based on Bouncy Castle)
-6. Execute ``./install-custom-gradle-test-plugin.sh``
-7. Execute ``./gradlew build``
-8. You can install the app with ``adb install -r OpenKeychain/build/outputs/apk/OpenKeychain-debug-unaligned.apk``
+5. Execute ``./gradlew build``
+6. You can install the app with ``adb install -r OpenKeychain/build/outputs/apk/OpenKeychain-debug-unaligned.apk``
+
+### Run Tests
+1. Use OpenJDK instead of Oracle JDK
+2. Execute ``./prepare-tests.sh``
+3. Execute ``./gradlew build``
 
 ### Build API Demo with Gradle
 
