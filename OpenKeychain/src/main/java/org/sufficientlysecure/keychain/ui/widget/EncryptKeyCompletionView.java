@@ -43,7 +43,7 @@ public class EncryptKeyCompletionView extends TokenCompleteTextView {
     }
 
     private void initView() {
-        fromCursor(null);
+        swapCursor(null);
         setPrefix(getContext().getString(R.string.label_to) + ": ");
         allowDuplicates(false);
     }
@@ -81,7 +81,7 @@ public class EncryptKeyCompletionView extends TokenCompleteTextView {
         return null;
     }
 
-    public void fromCursor(Cursor cursor) {
+    public void swapCursor(Cursor cursor) {
         if (cursor == null) {
             setAdapter(new EncryptKeyAdapter(Collections.<EncryptionKey>emptyList()));
             return;

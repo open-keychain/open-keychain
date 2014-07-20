@@ -236,14 +236,19 @@ public class ContactHelper {
     }
 
     public static Bitmap photoFromFingerprint(ContentResolver contentResolver, String fingerprint) {
-        int rawContactId = findRawContactId(contentResolver, fingerprint);
-        if (rawContactId == -1) return null;
-        Uri rawContactUri = ContentUris.withAppendedId(ContactsContract.RawContacts.CONTENT_URI, rawContactId);
-        Uri contactUri = ContactsContract.RawContacts.getContactLookupUri(contentResolver, rawContactUri);
-        InputStream photoInputStream =
-                ContactsContract.Contacts.openContactPhotoInputStream(contentResolver, contactUri);
-        if (photoInputStream == null) return null;
-        return BitmapFactory.decodeStream(photoInputStream);
+        if (fingerprint == null) return null;
+        try {
+            int rawContactId = findRawContactId(contentResolver, fingerprint);
+            if (rawContactId == -1) return null;
+            Uri rawContactUri = ContentUris.withAppendedId(ContactsContract.RawContacts.CONTENT_URI, rawContactId);
+            Uri contactUri = ContactsContract.RawContacts.getContactLookupUri(contentResolver, rawContactUri);
+            InputStream photoInputStream =
+                    ContactsContract.Contacts.openContactPhotoInputStream(contentResolver, contactUri);
+            if (photoInputStream == null) return null;
+            return BitmapFactory.decodeStream(photoInputStream);
+        } catch (Throwable ignored) {
+            return null;
+        }
     }
 
     /**

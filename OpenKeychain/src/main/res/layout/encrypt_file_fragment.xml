@@ -28,14 +28,6 @@
         <View
                 android:layout_width="match_parent"
                 android:layout_height="1dip"
-                android:background="?android:attr/listDivider"
-                android:layout_marginBottom="8dp"/>
-
-        <include layout="@layout/encrypt_content_adv_settings" />
-
-        <View
-                android:layout_width="match_parent"
-                android:layout_height="1dip"
                 android:background="?android:attr/listDivider"/>
 
         <LinearLayout
