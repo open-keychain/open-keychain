@@ -136,10 +136,10 @@ public class OpenPgpService extends RemoteService {
         return result;
     }
 
-    private Intent getNfcIntent(Intent data, String in) {
+    private Intent getNfcIntent(Intent data, byte[] in) {
         // build PendingIntent for Yubikey NFC operations
         Intent intent = new Intent(getBaseContext(), NfcActivity.class);
-        intent.setAction(NfcActivity.ACTION_SIGN);
+        intent.setAction(NfcActivity.ACTION_SIGN_HASH);
         intent.putExtra(NfcActivity.EXTRA_NFC_DATA, in);
         intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
         // pass params through to activity that it can be returned again later to repeat pgp operation
@@ -191,7 +191,7 @@ public class OpenPgpService extends RemoteService {
                 return passphraseBundle;
             }
 
-            String nfcData = data.getStringExtra(OpenPgpApi.EXTRA_NFC_DATA);
+            byte[] nfcData = data.getByteArrayExtra(OpenPgpApi.EXTRA_NFC_DATA);
 
             // Get Input- and OutputStream from ParcelFileDescriptor
             InputStream is = new ParcelFileDescriptor.AutoCloseInputStream(input);
@@ -223,6 +223,8 @@ public class OpenPgpService extends RemoteService {
                     throw new Exception(getString(R.string.error_could_not_extract_private_key));
                 } catch (PgpSignEncrypt.NoPassphraseException e) {
                     throw new Exception(getString(R.string.error_no_signature_passphrase));
+                } catch (PgpSignEncrypt.WrongPassphraseException e) {
+                    throw new Exception(getString(R.string.error_wrong_passphrase));
                 } catch (PgpSignEncrypt.NoSigningKeyException e) {
                     throw new Exception(getString(R.string.error_no_signature_key));
                 } catch (PgpSignEncrypt.NeedNfcDataException e) {
@@ -333,6 +335,8 @@ public class OpenPgpService extends RemoteService {
                     throw new Exception(getString(R.string.error_could_not_extract_private_key));
                 } catch (PgpSignEncrypt.NoPassphraseException e) {
                     throw new Exception(getString(R.string.error_no_signature_passphrase));
+                } catch (PgpSignEncrypt.WrongPassphraseException e) {
+                    throw new Exception(getString(R.string.error_wrong_passphrase));
                 } catch (PgpSignEncrypt.NoSigningKeyException e) {
                     throw new Exception(getString(R.string.error_no_signature_key));
                 }

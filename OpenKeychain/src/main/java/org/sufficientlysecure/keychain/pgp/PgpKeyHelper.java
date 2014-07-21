@@ -95,7 +95,7 @@ public class PgpKeyHelper {
     }
 
     /**
-     * Converts fingerprint to hex (optional: with whitespaces after 4 characters)
+     * Converts fingerprint to hex
      * <p/>
      * Fingerprint is shown using lowercase characters. Studies have shown that humans can
      * better differentiate between numbers and letters when letters are lowercase.

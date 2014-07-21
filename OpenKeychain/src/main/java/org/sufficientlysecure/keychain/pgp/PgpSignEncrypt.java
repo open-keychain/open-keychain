@@ -18,6 +18,7 @@
 
 package org.sufficientlysecure.keychain.pgp;
 
+import org.openkeychain.nfc.NfcHandler;
 import org.spongycastle.bcpg.ArmoredOutputStream;
 import org.spongycastle.bcpg.BCPGOutputStream;
 import org.spongycastle.bcpg.S2K;
@@ -30,6 +31,7 @@ import org.spongycastle.openpgp.PGPSignatureGenerator;
 import org.spongycastle.openpgp.PGPV3SignatureGenerator;
 import org.spongycastle.openpgp.operator.jcajce.JcePBEKeyEncryptionMethodGenerator;
 import org.spongycastle.openpgp.operator.jcajce.JcePGPDataEncryptorBuilder;
+import org.spongycastle.openpgp.operator.jcajce.NfcSyncPGPContentSignerBuilder;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
@@ -49,8 +51,10 @@ import java.nio.charset.Charset;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.security.SignatureException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.LinkedList;
 
 /**
  * This class uses a Builder pattern!
@@ -73,7 +77,7 @@ public class PgpSignEncrypt {
     private String mSignaturePassphrase;
     private boolean mEncryptToSigner;
     private boolean mCleartextInput;
-    private String mNfcData;
+    private byte[] mNfcData;
 
     private static byte[] NEW_LINE;
 
@@ -127,7 +131,7 @@ public class PgpSignEncrypt {
         private String mSignaturePassphrase = null;
         private boolean mEncryptToSigner = false;
         private boolean mCleartextInput = false;
-        private String mNfcData = null;
+        private byte[] mNfcData = null;
 
         public Builder(ProviderHelper providerHelper, String versionHeader, InputData data, OutputStream outStream) {
             this.mProviderHelper = providerHelper;
@@ -212,7 +216,7 @@ public class PgpSignEncrypt {
             return this;
         }
 
-        public Builder setNfcData(String nfcData) {
+        public Builder setNfcData(byte[] nfcData) {
             mNfcData = nfcData;
             return this;
         }
@@ -244,15 +248,20 @@ public class PgpSignEncrypt {
         }
     }
 
+    public static class WrongPassphraseException extends Exception {
+        public WrongPassphraseException() {
+        }
+    }
+
     public static class NoSigningKeyException extends Exception {
         public NoSigningKeyException() {
         }
     }
 
     public static class NeedNfcDataException extends Exception {
-        public String mData;
+        public byte[] mData;
 
-        public NeedNfcDataException(String data) {
+        public NeedNfcDataException(byte[] data) {
             mData = data;
         }
     }
@@ -268,7 +277,7 @@ public class PgpSignEncrypt {
      */
     public void execute()
             throws IOException, PGPException, NoSuchProviderException,
-            NoSuchAlgorithmException, SignatureException, KeyExtractionException, NoSigningKeyException, NoPassphraseException, NeedNfcDataException {
+            NoSuchAlgorithmException, SignatureException, KeyExtractionException, NoSigningKeyException, NoPassphraseException, NeedNfcDataException, WrongPassphraseException {
 
         boolean enableSignature = mSignatureMasterKeyId != Constants.key.none;
         boolean enableEncryption = ((mEncryptionMasterKeyIds != null && mEncryptionMasterKeyIds.length > 0)
@@ -308,9 +317,18 @@ public class PgpSignEncrypt {
             updateProgress(R.string.progress_extracting_signature_key, 0, 100);
 
             try {
-                signingKey.unlock(mSignaturePassphrase);
+                if (!signingKey.unlock(mSignaturePassphrase)) {
+                    throw new WrongPassphraseException();
+                }
             } catch (PgpGeneralException e) {
                 throw new KeyExtractionException();
+            }
+
+            // check if hash algo is supported
+            LinkedList<Integer> supported = signingKey.getSupportedHashAlgorithms();
+            if (!supported.contains(mSignatureHashAlgorithm)) {
+                // get most preferred
+                mSignatureHashAlgorithm = supported.getLast();
             }
         }
         updateProgress(R.string.progress_preparing_streams, 5, 100);
@@ -350,17 +368,10 @@ public class PgpSignEncrypt {
             }
         }
 
-        // HACK
-        boolean useNfc = false;
-        if (signingKey.getSecretKey().getS2K().getType() == S2K.GNU_DUMMY_S2K
-                && signingKey.getSecretKey().getS2K().getProtectionMode() == 2) {
-            useNfc = true;
-        }
-
         /* Initialize signature generator object for later usage */
         PGPSignatureGenerator signatureGenerator = null;
         PGPV3SignatureGenerator signatureV3Generator = null;
-        if (enableSignature && !useNfc) {
+        if (enableSignature) {
             updateProgress(R.string.progress_preparing_signature, 10, 100);
 
             try {
@@ -370,21 +381,17 @@ public class PgpSignEncrypt {
                             mSignatureHashAlgorithm, cleartext);
                 } else {
                     signatureGenerator = signingKey.getSignatureGenerator(
-                            mSignatureHashAlgorithm, cleartext);
+                            mSignatureHashAlgorithm, cleartext, mNfcData);
                 }
             } catch (PgpGeneralException e) {
                 // TODO throw correct type of exception (which shouldn't be PGPException)
                 throw new KeyExtractionException();
             }
         }
-//        else if (enableSignature && useNfc) {
-//
-//        }
-
 
         ArmoredOutputStream armorOut = null;
-        OutputStream out = null;
-        if (mEnableAsciiArmorOutput && !useNfc) {
+        OutputStream out;
+        if (mEnableAsciiArmorOutput) {
             armorOut = new ArmoredOutputStream(mOutStream);
             armorOut.setHeader("Version", mVersionHeader);
             out = armorOut;
@@ -397,19 +404,7 @@ public class PgpSignEncrypt {
         OutputStream encryptionOut = null;
         BCPGOutputStream bcpgOut;
 
-        // Barrier function!
-        if (useNfc && mNfcData == null) {
-            Log.d(Constants.TAG, "mNfcData is null");
-            String nfcData = convertStreamToString(mData.getInputStream());
-            Log.d(Constants.TAG, "nfcData: " + nfcData);
-            throw new NeedNfcDataException(nfcData);
-        }
-
-        if (useNfc) {
-            Log.d(Constants.TAG, "mNfcData: " + mNfcData);
-            out.write(mNfcData.getBytes());
-            out.flush();
-        } else if (enableEncryption) {
+        if (enableEncryption) {
             /* actual encryption */
 
             encryptionOut = cPk.open(out, new byte[1 << 16]);
@@ -543,12 +538,17 @@ public class PgpSignEncrypt {
             Log.e(Constants.TAG, "not supported!");
         }
 
-        if (enableSignature && !useNfc) {
+        if (enableSignature) {
             updateProgress(R.string.progress_generating_signature, 95, 100);
             if (mSignatureForceV3) {
                 signatureV3Generator.generate().encode(pOut);
             } else {
-                signatureGenerator.generate().encode(pOut);
+                try {
+                    signatureGenerator.generate().encode(pOut);
+                } catch (NfcSyncPGPContentSignerBuilder.NfcInteractionNeeded e) {
+                    // this secret key diverts to a OpenPGP card, throw exception with to-be-signed hash
+                    throw new NeedNfcDataException(e.hashToSign);
+                }
             }
         }
 
@@ -562,7 +562,7 @@ public class PgpSignEncrypt {
 
             encryptionOut.close();
         }
-        if (mEnableAsciiArmorOutput && !useNfc) {
+        if (mEnableAsciiArmorOutput) {
             armorOut.close();
         }
 

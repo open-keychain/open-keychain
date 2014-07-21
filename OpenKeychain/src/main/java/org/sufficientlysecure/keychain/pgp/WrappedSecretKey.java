@@ -1,5 +1,8 @@
 package org.sufficientlysecure.keychain.pgp;
 
+import org.spongycastle.bcpg.HashAlgorithmTags;
+import org.spongycastle.bcpg.PublicKeyAlgorithmTags;
+import org.spongycastle.bcpg.S2K;
 import org.spongycastle.openpgp.PGPException;
 import org.spongycastle.openpgp.PGPPrivateKey;
 import org.spongycastle.openpgp.PGPPublicKey;
@@ -12,19 +15,26 @@ import org.spongycastle.openpgp.PGPSignatureSubpacketVector;
 import org.spongycastle.openpgp.PGPUtil;
 import org.spongycastle.openpgp.PGPV3SignatureGenerator;
 import org.spongycastle.openpgp.operator.PBESecretKeyDecryptor;
+import org.spongycastle.openpgp.operator.PGPContentSignerBuilder;
 import org.spongycastle.openpgp.operator.PublicKeyDataDecryptorFactory;
 import org.spongycastle.openpgp.operator.jcajce.JcaPGPContentSignerBuilder;
 import org.spongycastle.openpgp.operator.jcajce.JcePBESecretKeyDecryptorBuilder;
 import org.spongycastle.openpgp.operator.jcajce.JcePublicKeyDataDecryptorFactoryBuilder;
+import org.spongycastle.openpgp.operator.jcajce.NfcSyncPGPContentSignerBuilder;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralMsgIdException;
 import org.sufficientlysecure.keychain.util.IterableIterator;
+import org.sufficientlysecure.keychain.util.Log;
 
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.security.SignatureException;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 /** Wrapper for a PGPSecretKey.
  *
@@ -41,6 +51,11 @@ public class WrappedSecretKey extends WrappedPublicKey {
 
     private final PGPSecretKey mSecretKey;
     private PGPPrivateKey mPrivateKey = null;
+
+    private int mPrivateKeyState = PRIVATE_KEY_STATE_LOCKED;
+    private static int PRIVATE_KEY_STATE_LOCKED = 0;
+    private static int PRIVATE_KEY_STATE_UNLOCKED = 1;
+    private static int PRIVATE_KEY_STATE_DIVERT_TO_CARD = 2;
 
     WrappedSecretKey(WrappedSecretKeyRing ring, PGPSecretKey key) {
         super(ring, key.getPublicKey());
@@ -59,11 +74,23 @@ public class WrappedSecretKey extends WrappedPublicKey {
         return mSecretKey;
     }
 
+    /**
+     * Returns true on right passphrase
+     */
     public boolean unlock(String passphrase) throws PgpGeneralException {
+        // handle keys on OpenPGP cards like they were unlocked
+        if (mSecretKey.getS2K().getType() == S2K.GNU_DUMMY_S2K
+                && mSecretKey.getS2K().getProtectionMode() == S2K.GNU_PROTECTION_MODE_DIVERT_TO_CARD) {
+            mPrivateKeyState = PRIVATE_KEY_STATE_DIVERT_TO_CARD;
+            return true;
+        }
+
+        // try to extract keys using the passphrase
         try {
             PBESecretKeyDecryptor keyDecryptor = new JcePBESecretKeyDecryptorBuilder().setProvider(
                     Constants.BOUNCY_CASTLE_PROVIDER_NAME).build(passphrase.toCharArray());
             mPrivateKey = mSecretKey.extractPrivateKey(keyDecryptor);
+            mPrivateKeyState = PRIVATE_KEY_STATE_UNLOCKED;
         } catch (PGPException e) {
             return false;
         }
@@ -73,16 +100,46 @@ public class WrappedSecretKey extends WrappedPublicKey {
         return true;
     }
 
-    public PGPSignatureGenerator getSignatureGenerator(int hashAlgo, boolean cleartext)
+    // TODO: just a hack currently
+    public LinkedList<Integer> getSupportedHashAlgorithms() {
+        LinkedList<Integer> supported = new LinkedList<Integer>();
+
+        if (mPrivateKeyState == PRIVATE_KEY_STATE_DIVERT_TO_CARD) {
+            // TODO: only works with SHA256 ?!
+            supported.add(HashAlgorithmTags.SHA256);
+        } else {
+            supported.add(HashAlgorithmTags.MD5);
+            supported.add(HashAlgorithmTags.RIPEMD160);
+            supported.add(HashAlgorithmTags.SHA1);
+            supported.add(HashAlgorithmTags.SHA224);
+            supported.add(HashAlgorithmTags.SHA256);
+            supported.add(HashAlgorithmTags.SHA384);
+            supported.add(HashAlgorithmTags.SHA512); // preferred is latest
+        }
+
+        return supported;
+    }
+
+    public PGPSignatureGenerator getSignatureGenerator(int hashAlgo, boolean cleartext,
+                                                       byte[] nfcSignedHash)
             throws PgpGeneralException {
-        if(mPrivateKey == null) {
+        if (mPrivateKeyState == PRIVATE_KEY_STATE_LOCKED) {
             throw new PrivateKeyNotUnlockedException();
         }
 
-        // content signer based on signing key algorithm and chosen hash algorithm
-        JcaPGPContentSignerBuilder contentSignerBuilder = new JcaPGPContentSignerBuilder(
-                mSecretKey.getPublicKey().getAlgorithm(), hashAlgo)
-                .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME);
+        PGPContentSignerBuilder contentSignerBuilder;
+        if (mPrivateKeyState == PRIVATE_KEY_STATE_DIVERT_TO_CARD) {
+            // use synchronous "NFC based" SignerBuilder
+            contentSignerBuilder = new NfcSyncPGPContentSignerBuilder(
+                    mSecretKey.getPublicKey().getAlgorithm(), hashAlgo,
+                    mSecretKey.getKeyID(), nfcSignedHash)
+                    .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME);
+        } else {
+            // content signer based on signing key algorithm and chosen hash algorithm
+            contentSignerBuilder = new JcaPGPContentSignerBuilder(
+                    mSecretKey.getPublicKey().getAlgorithm(), hashAlgo)
+                    .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME);
+        }
 
         int signatureType;
         if (cleartext) {
@@ -101,13 +158,15 @@ public class WrappedSecretKey extends WrappedPublicKey {
             signatureGenerator.setHashedSubpackets(spGen.generate());
             return signatureGenerator;
         } catch(PGPException e) {
+            // TODO: simply throw PGPException!
             throw new PgpGeneralException("Error initializing signature!", e);
         }
     }
 
     public PGPV3SignatureGenerator getV3SignatureGenerator(int hashAlgo, boolean cleartext)
             throws PgpGeneralException {
-        if(mPrivateKey == null) {
+        // TODO: divert to card missing
+        if (mPrivateKeyState != PRIVATE_KEY_STATE_UNLOCKED) {
             throw new PrivateKeyNotUnlockedException();
         }
 
@@ -134,7 +193,8 @@ public class WrappedSecretKey extends WrappedPublicKey {
     }
 
     public PublicKeyDataDecryptorFactory getDecryptorFactory() {
-        if(mPrivateKey == null) {
+        // TODO: divert to card missing
+        if (mPrivateKeyState != PRIVATE_KEY_STATE_UNLOCKED) {
             throw new PrivateKeyNotUnlockedException();
         }
         return new JcePublicKeyDataDecryptorFactoryBuilder()
@@ -152,7 +212,8 @@ public class WrappedSecretKey extends WrappedPublicKey {
             throws PgpGeneralMsgIdException, NoSuchAlgorithmException, NoSuchProviderException,
             PGPException, SignatureException {
 
-        if(mPrivateKey == null) {
+        // TODO: divert to card missing
+        if (mPrivateKeyState != PRIVATE_KEY_STATE_UNLOCKED) {
             throw new PrivateKeyNotUnlockedException();
         }
 
