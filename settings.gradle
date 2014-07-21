@@ -1,5 +1,4 @@
 include ':OpenKeychain'
-include ':OpenKeychain-Test'
 include ':extern:openpgp-api-lib'
 include ':extern:openkeychain-api-lib'
 include ':extern:html-textview'

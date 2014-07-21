@@ -37,10 +37,13 @@ Expand the Tools directory and select "Android SDK Build-tools (Version 19.1)".
 Expand the Extras directory and install "Android Support Repository"  
 Select everything for the newest SDK Platform (API-Level 19)
 4. Export ANDROID_HOME pointing to your Android SDK
-5. Use OpenJDK 7 instead of Oracle JDK (this is required for OpenKeychain's tests based on Bouncy Castle)
-6. Execute ``./install-custom-gradle-test-plugin.sh``
-7. Execute ``./gradlew build``
-8. You can install the app with ``adb install -r OpenKeychain/build/outputs/apk/OpenKeychain-debug-unaligned.apk``
+5. Execute ``./gradlew build``
+6. You can install the app with ``adb install -r OpenKeychain/build/outputs/apk/OpenKeychain-debug-unaligned.apk``
+
+### Run Tests
+1. Use OpenJDK instead of Oracle JDK
+2. Execute ``./prepare-tests.sh``
+3. Execute ``./gradlew build``
 
 ### Build API Demo with Gradle
 
@@ -50,13 +53,10 @@ Select everything for the newest SDK Platform (API-Level 19)
 
 ### Development with Android Studio
 
-I am using the newest [Android Studio](http://developer.android.com/sdk/installing/studio.html) for development. Development with Eclipse is currently not possible because I am using the new [project structure](http://developer.android.com/sdk/installing/studio-tips.html).
+We are using the newest [Android Studio](http://developer.android.com/sdk/installing/studio.html) for development. Development with Eclipse is currently not possible because we are using the new [project structure](http://developer.android.com/sdk/installing/studio-tips.html).
 
-1. Clone the project from github
-2. From Android Studio: File -> Import Project ->  ...
-  * Select the cloned top folder if you want to develop on the main project
-  * Select the "OpenKeychain-API" folder if you want to develop on the API example
-3. Import project from external model -> choose Gradle
+1. Clone the project from Github
+2. From Android Studio: File -> Import Project ->  Select the cloned top folder
 
 ## OpenKeychain's API
 

@@ -202,6 +202,7 @@ public class OperationResultParcel implements Parcelable {
         MSG_KC_REVOKE_BAD_LOCAL (R.string.msg_kc_revoke_bad_local),
         MSG_KC_REVOKE_BAD_TIME (R.string.msg_kc_revoke_bad_time),
         MSG_KC_REVOKE_BAD_TYPE (R.string.msg_kc_revoke_bad_type),
+        MSG_KC_REVOKE_BAD_TYPE_UID (R.string.msg_kc_revoke_bad_type_uid),
         MSG_KC_REVOKE_BAD (R.string.msg_kc_revoke_bad),
         MSG_KC_REVOKE_DUP (R.string.msg_kc_revoke_dup),
         MSG_KC_SUB (R.string.msg_kc_sub),
@@ -233,6 +234,7 @@ public class OperationResultParcel implements Parcelable {
         MSG_KC_UID_NO_CERT (R.string.msg_kc_uid_no_cert),
         MSG_KC_UID_REVOKE_DUP (R.string.msg_kc_uid_revoke_dup),
         MSG_KC_UID_REVOKE_OLD (R.string.msg_kc_uid_revoke_old),
+        MSG_KC_UID_REMOVE (R.string.msg_kc_uid_remove),
 
 
         // keyring consolidation

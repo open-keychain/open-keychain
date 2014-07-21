@@ -232,7 +232,7 @@ public class UncachedKeyRing {
 
             PGPPublicKey modified = masterKey;
             PGPSignature revocation = null;
-            for (PGPSignature zert : new IterableIterator<PGPSignature>(masterKey.getSignatures())) {
+            for (PGPSignature zert : new IterableIterator<PGPSignature>(masterKey.getKeySignatures())) {
                 int type = zert.getSignatureType();
 
                 // Disregard certifications on user ids, we will deal with those later
@@ -241,6 +241,10 @@ public class UncachedKeyRing {
                         || type == PGPSignature.CASUAL_CERTIFICATION
                         || type == PGPSignature.POSITIVE_CERTIFICATION
                         || type == PGPSignature.CERTIFICATION_REVOCATION) {
+                    // These should not be here...
+                    log.add(LogLevel.WARN, LogType.MSG_KC_REVOKE_BAD_TYPE_UID, indent);
+                    modified = PGPPublicKey.removeCertification(modified, zert);
+                    badCerts += 1;
                     continue;
                 }
                 WrappedSignature cert = new WrappedSignature(zert);
@@ -432,7 +436,7 @@ public class UncachedKeyRing {
                 // If no valid certificate (if only a revocation) remains, drop it
                 if (selfCert == null && revocation == null) {
                     modified = PGPPublicKey.removeCertification(modified, userId);
-                    log.add(LogLevel.ERROR, LogType.MSG_KC_UID_REVOKE_DUP,
+                    log.add(LogLevel.ERROR, LogType.MSG_KC_UID_REMOVE,
                             indent, userId);
                 }
             }

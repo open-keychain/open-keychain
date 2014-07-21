@@ -21,6 +21,7 @@ import android.content.Context;
 import org.spongycastle.util.Arrays;
 import org.sufficientlysecure.keychain.pgp.NullProgressable;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
+import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.OperationResults;
 
@@ -68,6 +69,11 @@ public class KeyringTestingHelper {
         return saveSuccess;
     }
 
+    public static UncachedKeyRing removePacket(UncachedKeyRing ring, int position)
+            throws IOException, PgpGeneralException {
+        return UncachedKeyRing.decodeFromData(removePacket(ring.getEncoded(), position));
+    }
+
     public static byte[] removePacket(byte[] ring, int position) throws IOException {
         Iterator<RawPacket> it = parseKeyring(ring);
         ByteArrayOutputStream out = new ByteArrayOutputStream(ring.length);
@@ -76,6 +82,7 @@ public class KeyringTestingHelper {
         while(it.hasNext()) {
             // at the right position, skip the packet
             if(i++ == position) {
+                it.next();
                 continue;
             }
             // write the old one
@@ -87,6 +94,11 @@ public class KeyringTestingHelper {
         }
 
         return out.toByteArray();
+    }
+
+    public static UncachedKeyRing injectPacket(UncachedKeyRing ring, byte[] inject, int position)
+            throws IOException, PgpGeneralException {
+        return UncachedKeyRing.decodeFromData(injectPacket(ring.getEncoded(), inject, position));
     }
 
     public static byte[] injectPacket(byte[] ring, byte[] inject, int position) throws IOException {
