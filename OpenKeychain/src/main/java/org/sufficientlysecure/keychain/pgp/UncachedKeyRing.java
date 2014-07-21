@@ -177,8 +177,7 @@ public class UncachedKeyRing {
                 ((PGPSecretKeyRing) mRing).getSecretKeys())) {
             S2K s2k = sub.getS2K();
             // add key, except if the private key has been stripped (GNU extension)
-            if(s2k == null || (s2k.getType() == S2K.GNU_DUMMY_S2K
-                        && s2k.getProtectionMode() != S2K.GNU_PROTECTION_MODE_NO_PRIVATE_KEY)) {
+            if(s2k == null || (s2k.getProtectionMode() != S2K.GNU_PROTECTION_MODE_NO_PRIVATE_KEY)) {
                 result.add(sub.getKeyID());
             } else {
                 Log.d(Constants.TAG, "S2K GNU extension!, mode: " + s2k.getProtectionMode());
