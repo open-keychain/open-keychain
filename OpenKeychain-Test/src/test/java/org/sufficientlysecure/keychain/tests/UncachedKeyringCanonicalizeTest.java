@@ -28,7 +28,7 @@ import java.util.Iterator;
 
 @RunWith(RobolectricTestRunner.class)
 @org.robolectric.annotation.Config(emulateSdk = 18) // Robolectric doesn't yet support 19
-public class UncachedKeyringTest {
+public class UncachedKeyringCanonicalizeTest {
 
     static UncachedKeyRing staticRing;
     static int totalPackets;
