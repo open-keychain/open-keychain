@@ -188,8 +188,7 @@ public class OpenPgpService extends RemoteService {
             }
             if (passphrase == null) {
                 // get PendingIntent for passphrase input, add it to given params and return to client
-                Intent passphraseBundle = getPassphraseIntent(data, accSettings.getKeyId());
-                return passphraseBundle;
+                return getPassphraseIntent(data, accSettings.getKeyId());
             }
 
             byte[] nfcSignedHash = data.getByteArrayExtra(OpenPgpApi.EXTRA_NFC_SIGNED_HASH);
@@ -231,9 +230,10 @@ public class OpenPgpService extends RemoteService {
                     throw new Exception(getString(R.string.error_no_signature_key));
                 } catch (PgpSignEncrypt.NeedNfcDataException e) {
                     // return PendingIntent to execute NFC activity
+                    // pass through the signature creation timestamp to be used again on second execution
+                    // of PgpSignEncrypt when we have the signed hash!
                     data.putExtra(OpenPgpApi.EXTRA_NFC_SIG_CREATION_TIMESTAMP, e.mCreationTimestamp.getTime());
-                    Intent nfcIntent = getNfcIntent(data, e.mHashToSign);
-                    return nfcIntent;
+                    return getNfcIntent(data, e.mHashToSign);
                 }
             } finally {
                 is.close();
@@ -315,8 +315,7 @@ public class OpenPgpService extends RemoteService {
                     }
                     if (passphrase == null) {
                         // get PendingIntent for passphrase input, add it to given params and return to client
-                        Intent passphraseBundle = getPassphraseIntent(data, accSettings.getKeyId());
-                        return passphraseBundle;
+                        return getPassphraseIntent(data, accSettings.getKeyId());
                     }
 
                     // sign and encrypt
@@ -411,9 +410,7 @@ public class OpenPgpService extends RemoteService {
 
                 if (PgpDecryptVerifyResult.KEY_PASSHRASE_NEEDED == decryptVerifyResult.getStatus()) {
                     // get PendingIntent for passphrase input, add it to given params and return to client
-                    Intent passphraseBundle =
-                            getPassphraseIntent(data, decryptVerifyResult.getKeyIdPassphraseNeeded());
-                    return passphraseBundle;
+                    return getPassphraseIntent(data, decryptVerifyResult.getKeyIdPassphraseNeeded());
                 } else if (PgpDecryptVerifyResult.SYMMETRIC_PASSHRASE_NEEDED ==
                         decryptVerifyResult.getStatus()) {
                     throw new PgpGeneralException("Decryption of symmetric content not supported by API!");
@@ -517,10 +514,8 @@ public class OpenPgpService extends RemoteService {
             return result;
         } else {
             // get key ids based on given user ids
-
             String[] userIds = data.getStringArrayExtra(OpenPgpApi.EXTRA_USER_IDS);
-            Intent result = getKeyIdsFromEmails(data, userIds);
-            return result;
+            return getKeyIdsFromEmails(data, userIds);
         }
     }
 
