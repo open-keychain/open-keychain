@@ -245,7 +245,6 @@ public class KeychainIntentService extends IntentService
                         .setCompressionId(compressionId)
                         .setSymmetricEncryptionAlgorithm(
                                 Preferences.getPreferences(this).getDefaultEncryptionAlgorithm())
-                        .setSignatureForceV3(Preferences.getPreferences(this).getForceV3Signatures())
                         .setEncryptionMasterKeyIds(encryptionKeyIds)
                         .setSymmetricPassphrase(symmetricPassphrase)
                         .setSignatureMasterKeyId(signatureKeyId)

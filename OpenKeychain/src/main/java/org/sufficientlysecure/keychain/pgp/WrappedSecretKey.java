@@ -12,7 +12,6 @@ import org.spongycastle.openpgp.PGPSignatureGenerator;
 import org.spongycastle.openpgp.PGPSignatureSubpacketGenerator;
 import org.spongycastle.openpgp.PGPSignatureSubpacketVector;
 import org.spongycastle.openpgp.PGPUtil;
-import org.spongycastle.openpgp.PGPV3SignatureGenerator;
 import org.spongycastle.openpgp.operator.PBESecretKeyDecryptor;
 import org.spongycastle.openpgp.operator.PGPContentSignerBuilder;
 import org.spongycastle.openpgp.operator.PublicKeyDataDecryptorFactory;
@@ -170,35 +169,6 @@ public class WrappedSecretKey extends WrappedPublicKey {
             return signatureGenerator;
         } catch(PGPException e) {
             // TODO: simply throw PGPException!
-            throw new PgpGeneralException("Error initializing signature!", e);
-        }
-    }
-
-    public PGPV3SignatureGenerator getV3SignatureGenerator(int hashAlgo, boolean cleartext)
-            throws PgpGeneralException {
-        // TODO: divert to card missing
-        if (mPrivateKeyState != PRIVATE_KEY_STATE_UNLOCKED) {
-            throw new PrivateKeyNotUnlockedException();
-        }
-
-        // content signer based on signing key algorithm and chosen hash algorithm
-        JcaPGPContentSignerBuilder contentSignerBuilder = new JcaPGPContentSignerBuilder(
-                mSecretKey.getPublicKey().getAlgorithm(), hashAlgo)
-                .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME);
-
-        int signatureType;
-        if (cleartext) {
-            // for sign-only ascii text
-            signatureType = PGPSignature.CANONICAL_TEXT_DOCUMENT;
-        } else {
-            signatureType = PGPSignature.BINARY_DOCUMENT;
-        }
-
-        try {
-            PGPV3SignatureGenerator signatureV3Generator = new PGPV3SignatureGenerator(contentSignerBuilder);
-            signatureV3Generator.init(signatureType, mPrivateKey);
-            return signatureV3Generator;
-        } catch(PGPException e) {
             throw new PgpGeneralException("Error initializing signature!", e);
         }
     }

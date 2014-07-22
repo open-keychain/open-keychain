@@ -129,16 +129,6 @@ public class Preferences {
         editor.commit();
     }
 
-    public boolean getForceV3Signatures() {
-        return mSharedPreferences.getBoolean(Constants.Pref.FORCE_V3_SIGNATURES, false);
-    }
-
-    public void setForceV3Signatures(boolean value) {
-        SharedPreferences.Editor editor = mSharedPreferences.edit();
-        editor.putBoolean(Constants.Pref.FORCE_V3_SIGNATURES, value);
-        editor.commit();
-    }
-
     public boolean getFirstTime() {
         return mSharedPreferences.getBoolean(Constants.Pref.FIRST_TIME, true);
     }

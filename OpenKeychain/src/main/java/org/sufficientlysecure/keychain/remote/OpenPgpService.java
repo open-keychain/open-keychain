@@ -208,7 +208,6 @@ public class OpenPgpService extends RemoteService {
                         inputData, os);
                 builder.setEnableAsciiArmorOutput(asciiArmor)
                         .setSignatureHashAlgorithm(accSettings.getHashAlgorithm())
-                        .setSignatureForceV3(false)
                         .setSignatureMasterKeyId(accSettings.getKeyId())
                         .setSignaturePassphrase(passphrase)
                         .setNfcState(nfcSignedHash, nfcCreationTimestamp);
@@ -320,7 +319,6 @@ public class OpenPgpService extends RemoteService {
 
                     // sign and encrypt
                     builder.setSignatureHashAlgorithm(accSettings.getHashAlgorithm())
-                            .setSignatureForceV3(false)
                             .setSignatureMasterKeyId(accSettings.getKeyId())
                             .setSignaturePassphrase(passphrase);
                 } else {
