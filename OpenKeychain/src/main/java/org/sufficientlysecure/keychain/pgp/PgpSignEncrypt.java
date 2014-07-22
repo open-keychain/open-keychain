@@ -18,10 +18,8 @@
 
 package org.sufficientlysecure.keychain.pgp;
 
-import org.openkeychain.nfc.NfcHandler;
 import org.spongycastle.bcpg.ArmoredOutputStream;
 import org.spongycastle.bcpg.BCPGOutputStream;
-import org.spongycastle.bcpg.S2K;
 import org.spongycastle.openpgp.PGPCompressedDataGenerator;
 import org.spongycastle.openpgp.PGPEncryptedDataGenerator;
 import org.spongycastle.openpgp.PGPException;
@@ -41,17 +39,14 @@ import org.sufficientlysecure.keychain.util.InputData;
 import org.sufficientlysecure.keychain.util.Log;
 
 import java.io.BufferedReader;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
-import java.nio.charset.Charset;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.security.SignatureException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.LinkedList;
@@ -77,7 +72,9 @@ public class PgpSignEncrypt {
     private String mSignaturePassphrase;
     private boolean mEncryptToSigner;
     private boolean mCleartextInput;
-    private byte[] mNfcData;
+
+    private byte[] mNfcSignedHash = null;
+    private Date mNfcCreationTimestamp = null;
 
     private static byte[] NEW_LINE;
 
@@ -108,7 +105,8 @@ public class PgpSignEncrypt {
         this.mSignaturePassphrase = builder.mSignaturePassphrase;
         this.mEncryptToSigner = builder.mEncryptToSigner;
         this.mCleartextInput = builder.mCleartextInput;
-        this.mNfcData = builder.mNfcData;
+        this.mNfcSignedHash = builder.mNfcSignedHash;
+        this.mNfcCreationTimestamp = builder.mNfcCreationTimestamp;
     }
 
     public static class Builder {
@@ -131,7 +129,9 @@ public class PgpSignEncrypt {
         private String mSignaturePassphrase = null;
         private boolean mEncryptToSigner = false;
         private boolean mCleartextInput = false;
-        private byte[] mNfcData = null;
+
+        private byte[] mNfcSignedHash = null;
+        private Date mNfcCreationTimestamp = null;
 
         public Builder(ProviderHelper providerHelper, String versionHeader, InputData data, OutputStream outStream) {
             this.mProviderHelper = providerHelper;
@@ -216,8 +216,9 @@ public class PgpSignEncrypt {
             return this;
         }
 
-        public Builder setNfcData(byte[] nfcData) {
-            mNfcData = nfcData;
+        public Builder setNfcState(byte[] signedHash, Date creationTimestamp) {
+            mNfcSignedHash = signedHash;
+            mNfcCreationTimestamp = creationTimestamp;
             return this;
         }
 
@@ -259,17 +260,13 @@ public class PgpSignEncrypt {
     }
 
     public static class NeedNfcDataException extends Exception {
-        public byte[] mData;
+        public byte[] mHashToSign;
+        public Date mCreationTimestamp;
 
-        public NeedNfcDataException(byte[] data) {
-            mData = data;
+        public NeedNfcDataException(byte[] hashToSign, Date creationTimestamp) {
+            mHashToSign = hashToSign;
+            mCreationTimestamp = creationTimestamp;
         }
-    }
-
-    // TODO: remove later
-    static String convertStreamToString(java.io.InputStream is) {
-        java.util.Scanner s = new java.util.Scanner(is).useDelimiter("\\A");
-        return s.hasNext() ? s.next() : "";
     }
 
     /**
@@ -381,7 +378,7 @@ public class PgpSignEncrypt {
                             mSignatureHashAlgorithm, cleartext);
                 } else {
                     signatureGenerator = signingKey.getSignatureGenerator(
-                            mSignatureHashAlgorithm, cleartext, mNfcData);
+                            mSignatureHashAlgorithm, cleartext, mNfcSignedHash, mNfcCreationTimestamp);
                 }
             } catch (PgpGeneralException e) {
                 // TODO throw correct type of exception (which shouldn't be PGPException)
@@ -546,8 +543,8 @@ public class PgpSignEncrypt {
                 try {
                     signatureGenerator.generate().encode(pOut);
                 } catch (NfcSyncPGPContentSignerBuilder.NfcInteractionNeeded e) {
-                    // this secret key diverts to a OpenPGP card, throw exception with to-be-signed hash
-                    throw new NeedNfcDataException(e.hashToSign);
+                    // this secret key diverts to a OpenPGP card, throw exception with hash that will be signed
+                    throw new NeedNfcDataException(e.hashToSign, e.creationTimestamp);
                 }
             }
         }

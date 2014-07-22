@@ -50,6 +50,7 @@ import org.sufficientlysecure.keychain.util.Log;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Set;
 
 public class OpenPgpService extends RemoteService {
@@ -136,11 +137,11 @@ public class OpenPgpService extends RemoteService {
         return result;
     }
 
-    private Intent getNfcIntent(Intent data, byte[] in) {
+    private Intent getNfcIntent(Intent data, byte[] hashToSign) {
         // build PendingIntent for Yubikey NFC operations
         Intent intent = new Intent(getBaseContext(), NfcActivity.class);
         intent.setAction(NfcActivity.ACTION_SIGN_HASH);
-        intent.putExtra(NfcActivity.EXTRA_NFC_DATA, in);
+        intent.putExtra(NfcActivity.EXTRA_NFC_HASH_TO_SIGN, hashToSign);
         intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
         // pass params through to activity that it can be returned again later to repeat pgp operation
         intent.putExtra(NfcActivity.EXTRA_DATA, data);
@@ -191,7 +192,8 @@ public class OpenPgpService extends RemoteService {
                 return passphraseBundle;
             }
 
-            byte[] nfcData = data.getByteArrayExtra(OpenPgpApi.EXTRA_NFC_DATA);
+            byte[] nfcSignedHash = data.getByteArrayExtra(OpenPgpApi.EXTRA_NFC_SIGNED_HASH);
+            Date nfcCreationTimestamp = new Date(data.getLongExtra(OpenPgpApi.EXTRA_NFC_SIG_CREATION_TIMESTAMP, 0));
 
             // Get Input- and OutputStream from ParcelFileDescriptor
             InputStream is = new ParcelFileDescriptor.AutoCloseInputStream(input);
@@ -210,7 +212,7 @@ public class OpenPgpService extends RemoteService {
                         .setSignatureForceV3(false)
                         .setSignatureMasterKeyId(accSettings.getKeyId())
                         .setSignaturePassphrase(passphrase)
-                        .setNfcData(nfcData);
+                        .setNfcState(nfcSignedHash, nfcCreationTimestamp);
 
                 // TODO: currently always assume cleartext input, no sign-only of binary currently!
                 builder.setCleartextInput(true);
@@ -229,7 +231,8 @@ public class OpenPgpService extends RemoteService {
                     throw new Exception(getString(R.string.error_no_signature_key));
                 } catch (PgpSignEncrypt.NeedNfcDataException e) {
                     // return PendingIntent to execute NFC activity
-                    Intent nfcIntent = getNfcIntent(data, e.mData);
+                    data.putExtra(OpenPgpApi.EXTRA_NFC_SIG_CREATION_TIMESTAMP, e.mCreationTimestamp.getTime());
+                    Intent nfcIntent = getNfcIntent(data, e.mHashToSign);
                     return nfcIntent;
                 }
             } finally {

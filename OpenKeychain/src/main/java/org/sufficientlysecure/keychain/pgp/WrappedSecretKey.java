@@ -1,7 +1,6 @@
 package org.sufficientlysecure.keychain.pgp;
 
 import org.spongycastle.bcpg.HashAlgorithmTags;
-import org.spongycastle.bcpg.PublicKeyAlgorithmTags;
 import org.spongycastle.bcpg.S2K;
 import org.spongycastle.openpgp.PGPException;
 import org.spongycastle.openpgp.PGPPrivateKey;
@@ -30,11 +29,9 @@ import org.sufficientlysecure.keychain.util.Log;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.security.SignatureException;
-import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 
 /** Wrapper for a PGPSecretKey.
  *
@@ -121,7 +118,7 @@ public class WrappedSecretKey extends WrappedPublicKey {
     }
 
     public PGPSignatureGenerator getSignatureGenerator(int hashAlgo, boolean cleartext,
-                                                       byte[] nfcSignedHash)
+                                                       byte[] nfcSignedHash, Date nfcCreationTimestamp)
             throws PgpGeneralException {
         if (mPrivateKeyState == PRIVATE_KEY_STATE_LOCKED) {
             throw new PrivateKeyNotUnlockedException();
@@ -129,11 +126,21 @@ public class WrappedSecretKey extends WrappedPublicKey {
 
         PGPContentSignerBuilder contentSignerBuilder;
         if (mPrivateKeyState == PRIVATE_KEY_STATE_DIVERT_TO_CARD) {
+            // to sign using nfc PgpSignEncrypt is executed two times.
+            // the first time it stops to return the PendingIntent for nfc connection and signing the hash
+            // the second time the signed hash is used.
+            // to get the same hash we cache the timestamp for the second round!
+            if (nfcCreationTimestamp == null) {
+                nfcCreationTimestamp = new Date();
+            }
+
             // use synchronous "NFC based" SignerBuilder
             contentSignerBuilder = new NfcSyncPGPContentSignerBuilder(
                     mSecretKey.getPublicKey().getAlgorithm(), hashAlgo,
-                    mSecretKey.getKeyID(), nfcSignedHash)
+                    mSecretKey.getKeyID(), nfcSignedHash, nfcCreationTimestamp)
                     .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME);
+
+            Log.d(Constants.TAG, "mSecretKey.getKeyID() "+ PgpKeyHelper.convertKeyIdToHex(mSecretKey.getKeyID()));
         } else {
             // content signer based on signing key algorithm and chosen hash algorithm
             contentSignerBuilder = new JcaPGPContentSignerBuilder(
@@ -155,6 +162,10 @@ public class WrappedSecretKey extends WrappedPublicKey {
 
             PGPSignatureSubpacketGenerator spGen = new PGPSignatureSubpacketGenerator();
             spGen.setSignerUserID(false, mRing.getPrimaryUserIdWithFallback());
+            if (nfcCreationTimestamp != null) {
+                spGen.setSignatureCreationTime(false, nfcCreationTimestamp);
+                Log.d(Constants.TAG, "For NFC: set sig creation time to " + nfcCreationTimestamp);
+            }
             signatureGenerator.setHashedSubpackets(spGen.generate());
             return signatureGenerator;
         } catch(PGPException e) {
