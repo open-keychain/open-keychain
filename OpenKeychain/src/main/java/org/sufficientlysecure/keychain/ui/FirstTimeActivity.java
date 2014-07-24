@@ -25,6 +25,7 @@ import android.view.Window;
 import android.widget.Button;
 
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.helper.Preferences;
 
 public class FirstTimeActivity extends ActionBarActivity {
 
@@ -47,9 +48,7 @@ public class FirstTimeActivity extends ActionBarActivity {
         mSkipSetup.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(FirstTimeActivity.this, KeyListActivity.class);
-                startActivity(intent);
-                finish();
+                finishSetup();
             }
         });
 
@@ -58,8 +57,7 @@ public class FirstTimeActivity extends ActionBarActivity {
             public void onClick(View v) {
                 Intent intent = new Intent(FirstTimeActivity.this, ImportKeysActivity.class);
                 intent.setAction(ImportKeysActivity.ACTION_IMPORT_KEY_FROM_FILE_AND_RETURN);
-                startActivity(intent);
-                finish();
+                startActivityForResult(intent, 1);
             }
         });
 
@@ -67,11 +65,26 @@ public class FirstTimeActivity extends ActionBarActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(FirstTimeActivity.this, CreateKeyActivity.class);
-                startActivity(intent);
-                finish();
+                startActivityForResult(intent, 1);
             }
         });
 
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (resultCode == RESULT_OK) {
+            finishSetup();
+        }
+    }
+
+    private void finishSetup() {
+        Preferences prefs = Preferences.getPreferences(this);
+        prefs.setFirstTime(false);
+        Intent intent = new Intent(FirstTimeActivity.this, KeyListActivity.class);
+        startActivity(intent);
+        finish();
+    }
 }

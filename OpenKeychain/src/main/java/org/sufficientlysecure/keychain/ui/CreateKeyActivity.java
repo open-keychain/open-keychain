@@ -45,10 +45,10 @@ import java.util.regex.Matcher;
 
 public class CreateKeyActivity extends ActionBarActivity {
 
-    AutoCompleteTextView nameEdit;
-    AutoCompleteTextView emailEdit;
-    EditText passphraseEdit;
-    Button createButton;
+    AutoCompleteTextView mNameEdit;
+    AutoCompleteTextView mEmailEdit;
+    EditText mPassphraseEdit;
+    Button mCreateButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,19 +56,19 @@ public class CreateKeyActivity extends ActionBarActivity {
 
         setContentView(R.layout.create_key_activity);
 
-        nameEdit = (AutoCompleteTextView) findViewById(R.id.name);
-        emailEdit = (AutoCompleteTextView) findViewById(R.id.email);
-        passphraseEdit = (EditText) findViewById(R.id.passphrase);
-        createButton = (Button) findViewById(R.id.create_key_button);
+        mNameEdit = (AutoCompleteTextView) findViewById(R.id.name);
+        mEmailEdit = (AutoCompleteTextView) findViewById(R.id.email);
+        mPassphraseEdit = (EditText) findViewById(R.id.passphrase);
+        mCreateButton = (Button) findViewById(R.id.create_key_button);
 
-        emailEdit.setThreshold(1); // Start working from first character
-        emailEdit.setAdapter(
+        mEmailEdit.setThreshold(1); // Start working from first character
+        mEmailEdit.setAdapter(
                 new ArrayAdapter<String>
                         (this, android.R.layout.simple_spinner_dropdown_item,
                                 ContactHelper.getPossibleUserEmails(this)
                         )
         );
-        emailEdit.addTextChangedListener(new TextWatcher() {
+        mEmailEdit.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i2, int i3) {
             }
@@ -83,27 +83,28 @@ public class CreateKeyActivity extends ActionBarActivity {
                 if (email.length() > 0) {
                     Matcher emailMatcher = Patterns.EMAIL_ADDRESS.matcher(email);
                     if (emailMatcher.matches()) {
-                        emailEdit.setCompoundDrawablesWithIntrinsicBounds(0, 0,
+                        mEmailEdit.setCompoundDrawablesWithIntrinsicBounds(0, 0,
                                 R.drawable.uid_mail_ok, 0);
                     } else {
-                        emailEdit.setCompoundDrawablesWithIntrinsicBounds(0, 0,
+                        mEmailEdit.setCompoundDrawablesWithIntrinsicBounds(0, 0,
                                 R.drawable.uid_mail_bad, 0);
                     }
                 } else {
                     // remove drawable if email is empty
-                    emailEdit.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
+                    mEmailEdit.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
                 }
             }
         });
-        nameEdit.setThreshold(1); // Start working from first character
-        nameEdit.setAdapter(
+
+        mNameEdit.setThreshold(1); // Start working from first character
+        mNameEdit.setAdapter(
                 new ArrayAdapter<String>
                         (this, android.R.layout.simple_spinner_dropdown_item,
                                 ContactHelper.getPossibleUserNames(this)
                         )
         );
 
-        createButton.setOnClickListener(new View.OnClickListener() {
+        mCreateButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 createKeyCheck();
@@ -113,9 +114,9 @@ public class CreateKeyActivity extends ActionBarActivity {
     }
 
     private void createKeyCheck() {
-        if (isEditTextNotEmpty(this, nameEdit)
-                && isEditTextNotEmpty(this, emailEdit)
-                && isEditTextNotEmpty(this, passphraseEdit)) {
+        if (isEditTextNotEmpty(this, mNameEdit)
+                && isEditTextNotEmpty(this, mEmailEdit)
+                && isEditTextNotEmpty(this, mPassphraseEdit)) {
             createKey();
         }
     }
@@ -134,6 +135,7 @@ public class CreateKeyActivity extends ActionBarActivity {
                 super.handleMessage(message);
 
                 if (message.arg1 == KeychainIntentServiceHandler.MESSAGE_OKAY) {
+                    CreateKeyActivity.this.setResult(RESULT_OK);
                     CreateKeyActivity.this.finish();
                 }
             }
@@ -146,9 +148,9 @@ public class CreateKeyActivity extends ActionBarActivity {
         parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(Constants.choice.algorithm.rsa, 4096, KeyFlags.CERTIFY_OTHER, null));
         parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(Constants.choice.algorithm.rsa, 4096, KeyFlags.SIGN_DATA, null));
         parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(Constants.choice.algorithm.rsa, 4096, KeyFlags.ENCRYPT_COMMS | KeyFlags.ENCRYPT_STORAGE, null));
-        String userId = nameEdit.getText().toString() + " <" + emailEdit.getText().toString() + ">";
+        String userId = mNameEdit.getText().toString() + " <" + mEmailEdit.getText().toString() + ">";
         parcel.mAddUserIds.add(userId);
-        parcel.mNewPassphrase = passphraseEdit.getText().toString();
+        parcel.mNewPassphrase = mPassphraseEdit.getText().toString();
 
         // get selected key entries
         data.putParcelable(KeychainIntentService.SAVE_KEYRING_PARCEL, parcel);
