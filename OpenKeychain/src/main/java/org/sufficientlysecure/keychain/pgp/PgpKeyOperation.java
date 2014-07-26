@@ -313,6 +313,11 @@ public class PgpKeyOperation {
             for (String userId : saveParcel.mAddUserIds) {
                 log.add(LogLevel.INFO, LogType.MSG_MF_UID_ADD, indent);
 
+                if (userId.equals("")) {
+                    log.add(LogLevel.ERROR, LogType.MSG_MF_UID_ERROR_EMPTY, indent+1);
+                    return null;
+                }
+
                 // this operation supersedes all previous binding and revocation certificates,
                 // so remove those to retain assertions from canonicalization for later operations
                 @SuppressWarnings("unchecked")

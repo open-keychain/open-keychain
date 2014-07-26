@@ -279,6 +279,7 @@ public class OperationResultParcel implements Parcelable {
         MSG_MF_UID_ADD (R.string.msg_mf_uid_add),
         MSG_MF_UID_PRIMARY (R.string.msg_mf_uid_primary),
         MSG_MF_UID_REVOKE (R.string.msg_mf_uid_revoke),
+        MSG_MF_UID_ERROR_EMPTY (R.string.msg_mf_uid_error_empty),
         MSG_MF_UNLOCK_ERROR (R.string.msg_mf_unlock_error),
         MSG_MF_UNLOCK (R.string.msg_mf_unlock),
         ;

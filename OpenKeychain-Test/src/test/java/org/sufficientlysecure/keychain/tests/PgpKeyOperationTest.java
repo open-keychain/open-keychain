@@ -107,7 +107,7 @@ public class PgpKeyOperationTest {
     }
 
     @Test
-    public void testAlgorithmChoice() {
+    public void createSecretKeyRingTests() {
 
         OperationResultParcel.OperationLog log = new OperationResultParcel.OperationLog();
 
@@ -629,6 +629,15 @@ public class PgpKeyOperationTest {
     @Test
     public void testUserIdAdd() throws Exception {
 
+        {
+            parcel.mAddUserIds.add("");
+            WrappedSecretKeyRing secretRing = new WrappedSecretKeyRing(ring.getEncoded(), false, 0);
+            OperationResultParcel.OperationLog log = new OperationResultParcel.OperationLog();
+            UncachedKeyRing modified = op.modifySecretKeyRing(secretRing, parcel, passphrase, log, 0);
+            Assert.assertNull("adding an empty user id should fail", modified);
+        }
+
+        parcel.reset();
         parcel.mAddUserIds.add("rainbow");
 
         UncachedKeyRing modified = applyModificationWithChecks(parcel, ring, onlyA, onlyB);
@@ -689,6 +698,9 @@ public class PgpKeyOperationTest {
             parcel.reset();
             //noinspection SpellCheckingInspection
             parcel.mChangePrimaryUserId = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+            if (parcel.mChangePrimaryUserId.equals(passphrase)) {
+                parcel.mChangePrimaryUserId += "A";
+            }
 
             WrappedSecretKeyRing secretRing = new WrappedSecretKeyRing(ring.getEncoded(), false, 0);
             OperationResultParcel.OperationLog log = new OperationResultParcel.OperationLog();

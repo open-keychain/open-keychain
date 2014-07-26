@@ -674,6 +674,7 @@
     <string name="msg_mf_uid_add">Adding user id %s</string>
     <string name="msg_mf_uid_primary">Changing primary uid to %s</string>
     <string name="msg_mf_uid_revoke">Revoking user id %s</string>
+    <string name="msg_mf_uid_error_empty">User ID must not be empty!</string>
     <string name="msg_mf_unlock_error">Error unlocking keyring!</string>
     <string name="msg_mf_unlock">Unlocking keyring</string>
 
