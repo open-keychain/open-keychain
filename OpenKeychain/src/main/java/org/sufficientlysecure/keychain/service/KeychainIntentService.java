@@ -53,6 +53,7 @@ import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.KeychainDatabase;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.OperationResultParcel.OperationLog;
+import org.sufficientlysecure.keychain.service.OperationResults.ImportKeyResult;
 import org.sufficientlysecure.keychain.util.InputData;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.ProgressScaler;
@@ -390,7 +391,7 @@ public class KeychainIntentService extends IntentService
                 List<ParcelableKeyRing> entries = data.getParcelableArrayList(IMPORT_KEY_LIST);
 
                 PgpImportExport pgpImportExport = new PgpImportExport(this, this);
-                OperationResults.ImportResult result = pgpImportExport.importKeyRings(entries);
+                ImportKeyResult result = pgpImportExport.importKeyRings(entries);
 
                 Bundle resultData = new Bundle();
                 resultData.putParcelable(RESULT, result);

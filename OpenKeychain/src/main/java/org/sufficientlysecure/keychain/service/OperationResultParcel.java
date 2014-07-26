@@ -391,14 +391,6 @@ public class OperationResultParcel implements Parcelable {
             mParcels.add(new OperationResultParcel.LogEntryParcel(level, type, indent, (Object[]) null));
         }
 
-        public LogEntryParcel getResultId() {
-            LogEntryParcel entry = get(size()-1);
-            if (entry.mLevel != LogLevel.OK && entry.mLevel != LogLevel.ERROR) {
-                return new LogEntryParcel(LogLevel.ERROR, LogType.INTERNAL_ERROR, 0);
-            }
-            return entry;
-        }
-
         public boolean containsWarnings() {
             for(LogEntryParcel entry : new IterableIterator<LogEntryParcel>(mParcels.iterator())) {
                 if (entry.mLevel == LogLevel.WARN || entry.mLevel == LogLevel.ERROR) {

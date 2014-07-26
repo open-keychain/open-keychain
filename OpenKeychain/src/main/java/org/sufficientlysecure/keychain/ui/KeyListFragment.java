@@ -103,11 +103,8 @@ public class KeyListFragment extends LoaderFragment
 
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getActivity(), EditKeyActivity.class);
-                intent.setAction(EditKeyActivity.ACTION_CREATE_KEY);
-                intent.putExtra(EditKeyActivity.EXTRA_GENERATE_DEFAULT_KEYS, true);
-                intent.putExtra(EditKeyActivity.EXTRA_USER_IDS, ""); // show user id view
-                startActivityForResult(intent, 0);
+                Intent intent = new Intent(getActivity(), CreateKeyActivity.class);
+                startActivity(intent);
             }
         });
         mButtonEmptyImport = (Button) view.findViewById(R.id.key_list_empty_button_import);

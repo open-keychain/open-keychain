@@ -19,7 +19,6 @@
 package org.sufficientlysecure.keychain.ui;
 
 import android.annotation.TargetApi;
-import android.app.Activity;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
@@ -53,7 +52,6 @@ import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.OperationResultParcel;
-import org.sufficientlysecure.keychain.service.OperationResults.ImportResult;
 import org.sufficientlysecure.keychain.ui.adapter.PagerTabStripAdapter;
 import org.sufficientlysecure.keychain.ui.widget.SlidingTabLayout.TabColorizer;
 import org.sufficientlysecure.keychain.util.Log;
