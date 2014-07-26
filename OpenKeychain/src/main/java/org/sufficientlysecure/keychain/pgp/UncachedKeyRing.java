@@ -23,13 +23,11 @@ import org.sufficientlysecure.keychain.service.OperationResultParcel.LogType;
 import org.sufficientlysecure.keychain.util.IterableIterator;
 import org.sufficientlysecure.keychain.util.Log;
 
-import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashSet;
@@ -514,14 +512,16 @@ public class UncachedKeyRing {
                         continue;
                     }
 
+                    // if this certificate says it allows signing for the key
                     if (zert.getHashedSubPackets().hasSubpacket(SignatureSubpacketTags.KEY_FLAGS)) {
+
                         int flags = ((KeyFlags) zert.getHashedSubPackets()
                                 .getSubpacket(SignatureSubpacketTags.KEY_FLAGS)).getFlags();
-                        // If this subkey is allowed to sign data,
                         if ((flags & PGPKeyFlags.CAN_SIGN) == PGPKeyFlags.CAN_SIGN) {
+                            boolean ok = false;
+                            // it MUST have an embedded primary key binding signature
                             try {
                                 PGPSignatureList list = zert.getUnhashedSubPackets().getEmbeddedSignatures();
-                                boolean ok = false;
                                 for (int i = 0; i < list.size(); i++) {
                                     WrappedSignature subsig = new WrappedSignature(list.get(i));
                                     if (subsig.getSignatureType() == PGPSignature.PRIMARYKEY_BINDING) {
@@ -535,17 +535,19 @@ public class UncachedKeyRing {
                                         }
                                     }
                                 }
-                                if (!ok) {
-                                    log.add(LogLevel.WARN, LogType.MSG_KC_SUB_PRIMARY_NONE, indent);
-                                    badCerts += 1;
-                                    continue;
-                                }
                             } catch (Exception e) {
                                 log.add(LogLevel.WARN, LogType.MSG_KC_SUB_PRIMARY_BAD_ERR, indent);
                                 badCerts += 1;
                                 continue;
                             }
+                            // if it doesn't, get rid of this!
+                            if (!ok) {
+                                log.add(LogLevel.WARN, LogType.MSG_KC_SUB_PRIMARY_NONE, indent);
+                                badCerts += 1;
+                                continue;
+                            }
                         }
+
                     }
 
                     // if we already have a cert, and this one is not newer: skip it
@@ -558,6 +560,8 @@ public class UncachedKeyRing {
                     selfCert = zert;
                     // if this is newer than a possibly existing revocation, drop that one
                     if (revocation != null && selfCert.getCreationTime().after(revocation.getCreationTime())) {
+                        log.add(LogLevel.DEBUG, LogType.MSG_KC_SUB_REVOKE_DUP, indent);
+                        redundantCerts += 1;
                         revocation = null;
                     }
 
@@ -591,7 +595,7 @@ public class UncachedKeyRing {
 
             // it is not properly bound? error!
             if (selfCert == null) {
-                ring = replacePublicKey(ring, modified);
+                ring = removeSubKey(ring, key);
 
                 log.add(LogLevel.ERROR, LogType.MSG_KC_SUB_NO_CERT,
                         indent, PgpKeyHelper.convertKeyIdToHex(key.getKeyID()));
@@ -801,6 +805,22 @@ public class UncachedKeyRing {
         }
         sKey = PGPSecretKey.replacePublicKey(sKey, key);
         return PGPSecretKeyRing.insertSecretKey(secRing, sKey);
+    }
+
+    /** This method removes a subkey in a keyring.
+     *
+     * This method essentially wraps PGP*KeyRing.remove*Key, where the keyring may be of either
+     * the secret or public subclass.
+     *
+     * @return the resulting PGPKeyRing of the same type as the input
+     */
+    private static PGPKeyRing removeSubKey(PGPKeyRing ring, PGPPublicKey key) {
+        if (ring instanceof PGPPublicKeyRing) {
+            return PGPPublicKeyRing.removePublicKey((PGPPublicKeyRing) ring, key);
+        } else {
+            PGPSecretKey sKey = ((PGPSecretKeyRing) ring).getSecretKey(key.getKeyID());
+            return PGPSecretKeyRing.removeSecretKey((PGPSecretKeyRing) ring, sKey);
+        }
     }
 
 }
