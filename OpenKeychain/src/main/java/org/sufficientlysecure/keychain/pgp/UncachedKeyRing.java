@@ -14,6 +14,7 @@ import org.spongycastle.openpgp.PGPSecretKeyRing;
 import org.spongycastle.openpgp.PGPSignature;
 import org.spongycastle.openpgp.PGPSignatureList;
 import org.spongycastle.openpgp.PGPUtil;
+import org.spongycastle.openpgp.operator.jcajce.JcaKeyFingerprintCalculator;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.service.OperationResultParcel.OperationLog;
@@ -24,6 +25,7 @@ import org.sufficientlysecure.keychain.util.Log;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -193,7 +195,7 @@ public class UncachedKeyRing {
      *  - Remove all certificates flagged as "local"
      *  - Remove all certificates which are superseded by a newer one on the same target,
      *      including revocations with later re-certifications.
-     *  - Remove all certificates of unknown type:
+     *  - Remove all certificates in other positions if not of known type:
      *   - key revocation signatures on the master key
      *   - subkey binding signatures for subkeys
      *   - certifications and certification revocations for user ids
@@ -658,7 +660,7 @@ public class UncachedKeyRing {
                     return left.length - right.length;
                 }
                 // compare byte-by-byte
-                for (int i = 0; i < left.length && i < right.length; i++) {
+                for (int i = 0; i < left.length; i++) {
                     if (left[i] != right[i]) {
                         return (left[i] & 0xff) - (right[i] & 0xff);
                     }
@@ -768,19 +770,20 @@ public class UncachedKeyRing {
 
     }
 
-    public UncachedKeyRing extractPublicKeyRing() {
+    public UncachedKeyRing extractPublicKeyRing() throws IOException {
         if(!isSecret()) {
             throw new RuntimeException("Tried to extract public keyring from non-secret keyring. " +
                     "This is a programming error and should never happen!");
         }
 
-        ArrayList<PGPPublicKey> keys = new ArrayList();
         Iterator<PGPPublicKey> it = mRing.getPublicKeys();
+        ByteArrayOutputStream stream = new ByteArrayOutputStream(2048);
         while (it.hasNext()) {
-            keys.add(it.next());
+            stream.write(it.next().getEncoded());
         }
 
-        return new UncachedKeyRing(new PGPPublicKeyRing(keys));
+        return new UncachedKeyRing(
+                new PGPPublicKeyRing(stream.toByteArray(), new JcaKeyFingerprintCalculator()));
     }
 
     /** This method replaces a public key in a keyring.

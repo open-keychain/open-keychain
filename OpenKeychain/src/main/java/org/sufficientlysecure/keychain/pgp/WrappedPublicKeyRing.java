@@ -1,14 +1,11 @@
 package org.sufficientlysecure.keychain.pgp;
 
 import org.spongycastle.bcpg.ArmoredOutputStream;
-import org.spongycastle.openpgp.PGPKeyRing;
 import org.spongycastle.openpgp.PGPObjectFactory;
 import org.spongycastle.openpgp.PGPPublicKey;
 import org.spongycastle.openpgp.PGPPublicKeyRing;
-import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.util.IterableIterator;
-import org.sufficientlysecure.keychain.util.Log;
 
 import java.io.IOException;
 import java.util.Iterator;
@@ -25,17 +22,20 @@ public class WrappedPublicKeyRing extends WrappedKeyRing {
 
     PGPPublicKeyRing getRing() {
         if(mRing == null) {
+            // get first object in block
             PGPObjectFactory factory = new PGPObjectFactory(mPubKey);
-            PGPKeyRing keyRing = null;
             try {
-                if ((keyRing = (PGPKeyRing) factory.nextObject()) == null) {
-                    Log.e(Constants.TAG, "No keys given!");
+                Object obj = factory.nextObject();
+                if (! (obj instanceof PGPPublicKeyRing)) {
+                    throw new RuntimeException("Error constructing WrappedPublicKeyRing, should never happen!");
+                }
+                mRing = (PGPPublicKeyRing) obj;
+                if (factory.nextObject() != null) {
+                    throw new RuntimeException("Encountered trailing data after keyring, should never happen!");
                 }
             } catch (IOException e) {
-                Log.e(Constants.TAG, "Error while converting to PGPKeyRing!", e);
+                throw new RuntimeException("IO Error constructing WrappedPublicKeyRing, should never happen!");
             }
-
-            mRing = (PGPPublicKeyRing) keyRing;
         }
         return mRing;
     }
