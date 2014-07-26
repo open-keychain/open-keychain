@@ -688,7 +688,14 @@ public class UncachedKeyRing {
                 final PGPPublicKey resultKey = result.getPublicKey(key.getKeyID());
                 if (resultKey == null) {
                     log.add(LogLevel.DEBUG, LogType.MSG_MG_NEW_SUBKEY, indent);
-                    result = replacePublicKey(result, key);
+                    // special case: if both rings are secret, copy over the secret key
+                    if (isSecret() && other.isSecret()) {
+                        PGPSecretKey sKey = ((PGPSecretKeyRing) candidate).getSecretKey(key.getKeyID());
+                        result = PGPSecretKeyRing.insertSecretKey((PGPSecretKeyRing) result, sKey);
+                    } else {
+                        // otherwise, just insert the public key
+                        result = replacePublicKey(result, key);
+                    }
                     continue;
                 }
 
@@ -696,17 +703,7 @@ public class UncachedKeyRing {
                 PGPPublicKey modified = resultKey;
 
                 // Iterate certifications
-                for (PGPSignature cert : new IterableIterator<PGPSignature>(key.getSignatures())) {
-                    int type = cert.getSignatureType();
-                    // Disregard certifications on user ids, we will deal with those later
-                    if (type == PGPSignature.NO_CERTIFICATION
-                            || type == PGPSignature.DEFAULT_CERTIFICATION
-                            || type == PGPSignature.CASUAL_CERTIFICATION
-                            || type == PGPSignature.POSITIVE_CERTIFICATION
-                            || type == PGPSignature.CERTIFICATION_REVOCATION) {
-                        continue;
-                    }
-
+                for (PGPSignature cert : new IterableIterator<PGPSignature>(key.getKeySignatures())) {
                     // Don't merge foreign stuff into secret keys
                     if (cert.getKeyID() != masterKeyId && isSecret()) {
                         continue;
