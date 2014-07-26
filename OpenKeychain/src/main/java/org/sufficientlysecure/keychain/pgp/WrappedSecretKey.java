@@ -51,14 +51,6 @@ public class WrappedSecretKey extends WrappedPublicKey {
         return (WrappedSecretKeyRing) mRing;
     }
 
-    /** Returns the wrapped PGPSecretKeyRing.
-     * This function is for compatibility only, should not be used anymore and will be removed
-     */
-    @Deprecated
-    public PGPSecretKey getKeyExternal() {
-        return mSecretKey;
-    }
-
     public boolean unlock(String passphrase) throws PgpGeneralException {
         try {
             PBESecretKeyDecryptor keyDecryptor = new JcePBESecretKeyDecryptorBuilder().setProvider(
@@ -97,7 +89,7 @@ public class WrappedSecretKey extends WrappedPublicKey {
             signatureGenerator.init(signatureType, mPrivateKey);
 
             PGPSignatureSubpacketGenerator spGen = new PGPSignatureSubpacketGenerator();
-            spGen.setSignerUserID(false, mRing.getPrimaryUserId());
+            spGen.setSignerUserID(false, mRing.getPrimaryUserIdWithFallback());
             signatureGenerator.setHashedSubpackets(spGen.generate());
             return signatureGenerator;
         } catch(PGPException e) {
@@ -175,7 +167,7 @@ public class WrappedSecretKey extends WrappedPublicKey {
         }
 
         // get the master subkey (which we certify for)
-        PGPPublicKey publicKey = publicKeyRing.getSubkey().getPublicKey();
+        PGPPublicKey publicKey = publicKeyRing.getPublicKey().getPublicKey();
 
         // fetch public key ring, add the certification and return it
         for (String userId : new IterableIterator<String>(userIds.iterator())) {

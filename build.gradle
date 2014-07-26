@@ -6,7 +6,6 @@ buildscript {
     dependencies {
         // NOTE: Always use fixed version codes not dynamic ones, e.g. 0.7.3 instead of 0.7.+, see README for more information
         classpath 'com.android.tools.build:gradle:0.12.0'
-        classpath 'org.robolectric:robolectric-gradle-plugin:0.11.0'
     }
 }
 
@@ -18,4 +17,10 @@ allprojects {
 
 task wrapper(type: Wrapper) {
     gradleVersion = '1.12'
+}
+
+subprojects {
+    tasks.withType(Test) {
+        maxParallelForks = 1
+    }
 }

@@ -199,7 +199,7 @@ public class ProviderHelper {
                 byte[] blob = cursor.getBlob(3);
                 if (blob != null) {
                     result.put(masterKeyId,
-                            new WrappedPublicKeyRing(blob, hasAnySecret, verified).getSubkey());
+                            new WrappedPublicKeyRing(blob, hasAnySecret, verified).getPublicKey());
                 }
             } while (cursor.moveToNext());
 
@@ -450,8 +450,7 @@ public class ProviderHelper {
                             if (cert.verifySignature(masterKey, userId)) {
                                 item.trustedCerts.add(cert);
                                 log(LogLevel.INFO, LogType.MSG_IP_UID_CERT_GOOD,
-                                        PgpKeyHelper.convertKeyIdToHexShort(trustedKey.getKeyId()),
-                                        trustedKey.getPrimaryUserId()
+                                        PgpKeyHelper.convertKeyIdToHexShort(trustedKey.getKeyId())
                                 );
                             } else {
                                 log(LogLevel.WARN, LogType.MSG_IP_UID_CERT_BAD);
@@ -670,7 +669,7 @@ public class ProviderHelper {
 
             // If there is an old keyring, merge it
             try {
-                UncachedKeyRing oldPublicRing = getWrappedPublicKeyRing(masterKeyId).getUncached();
+                UncachedKeyRing oldPublicRing = getWrappedPublicKeyRing(masterKeyId).getUncachedKeyRing();
 
                 // Merge data from new public ring into the old one
                 publicRing = oldPublicRing.merge(publicRing, mLog, mIndent);
@@ -706,7 +705,7 @@ public class ProviderHelper {
             // If there is a secret key, merge new data (if any) and save the key for later
             UncachedKeyRing secretRing;
             try {
-                secretRing = getWrappedSecretKeyRing(publicRing.getMasterKeyId()).getUncached();
+                secretRing = getWrappedSecretKeyRing(publicRing.getMasterKeyId()).getUncachedKeyRing();
 
                 // Merge data from new public ring into secret one
                 secretRing = secretRing.merge(publicRing, mLog, mIndent);
@@ -754,10 +753,10 @@ public class ProviderHelper {
 
             // If there is an old secret key, merge it.
             try {
-                UncachedKeyRing oldSecretRing = getWrappedSecretKeyRing(masterKeyId).getUncached();
+                UncachedKeyRing oldSecretRing = getWrappedSecretKeyRing(masterKeyId).getUncachedKeyRing();
 
                 // Merge data from new secret ring into old one
-                secretRing = oldSecretRing.merge(secretRing, mLog, mIndent);
+                secretRing = secretRing.merge(oldSecretRing, mLog, mIndent);
 
                 // If this is null, there is an error in the log so we can just return
                 if (secretRing == null) {
@@ -791,9 +790,9 @@ public class ProviderHelper {
             // Merge new data into public keyring as well, if there is any
             UncachedKeyRing publicRing;
             try {
-                UncachedKeyRing oldPublicRing = getWrappedPublicKeyRing(masterKeyId).getUncached();
+                UncachedKeyRing oldPublicRing = getWrappedPublicKeyRing(masterKeyId).getUncachedKeyRing();
 
-                // Merge data from new public ring into secret one
+                // Merge data from new secret ring into public one
                 publicRing = oldPublicRing.merge(secretRing, mLog, mIndent);
                 if (publicRing == null) {
                     return new SaveKeyringResult(SaveKeyringResult.RESULT_ERROR, mLog);

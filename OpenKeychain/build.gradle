@@ -1,5 +1,4 @@
 apply plugin: 'android'
-apply plugin: 'robolectric'
 
 dependencies {
     // NOTE: Always use fixed version codes not dynamic ones, e.g. 0.7.3 instead of 0.7.+, see README for more information
@@ -20,13 +19,6 @@ dependencies {
     compile project(':extern:minidns')
     compile project(':extern:KeybaseLib:Lib')
 
-
-    // Unit tests are run with Robolectric
-    testCompile 'junit:junit:4.11'
-    testCompile 'org.robolectric:robolectric:2.3'
-    testCompile 'com.squareup:fest-android:1.0.8'
-    testCompile 'com.google.android:android:4.1.1.4'
-    // compile dependencies are automatically also included in testCompile
 }
 
 android {
@@ -85,7 +77,7 @@ android {
 
 // NOTE: This disables Lint!
 tasks.whenTaskAdded { task ->
-    if (task.name.equals("lint")) {
+    if (task.name.contains("lint")) {
         task.enabled = false
     }
 }

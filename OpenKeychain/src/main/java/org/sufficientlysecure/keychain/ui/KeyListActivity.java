@@ -17,25 +17,17 @@
 
 package org.sufficientlysecure.keychain.ui;
 
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Message;
-import android.os.Messenger;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import org.spongycastle.bcpg.sig.KeyFlags;
 import org.sufficientlysecure.keychain.Constants;
-import org.sufficientlysecure.keychain.Constants.choice.algorithm;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.helper.ExportHelper;
+import org.sufficientlysecure.keychain.helper.Preferences;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainDatabase;
-import org.sufficientlysecure.keychain.service.KeychainIntentService;
-import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
-import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
-import org.sufficientlysecure.keychain.service.SaveKeyringParcel.SubkeyAdd;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Notify;
 
@@ -48,6 +40,14 @@ public class KeyListActivity extends DrawerActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // if this is the first time show first time activity
+        Preferences prefs = Preferences.getPreferences(this);
+        if (prefs.isFirstTime()) {
+            startActivity(new Intent(this, FirstTimeActivity.class));
+            finish();
+            return;
+        }
 
         mExportHelper = new ExportHelper(this);
 
@@ -62,9 +62,10 @@ public class KeyListActivity extends DrawerActivity {
         super.onCreateOptionsMenu(menu);
         getMenuInflater().inflate(R.menu.key_list, menu);
 
-        if(Constants.DEBUG) {
+        if (Constants.DEBUG) {
             menu.findItem(R.id.menu_key_list_debug_read).setVisible(true);
             menu.findItem(R.id.menu_key_list_debug_write).setVisible(true);
+            menu.findItem(R.id.menu_key_list_debug_first_time).setVisible(true);
         }
 
         return true;
@@ -81,10 +82,6 @@ public class KeyListActivity extends DrawerActivity {
                 createKey();
                 return true;
 
-            case R.id.menu_key_list_create_expert:
-                createKeyExpert();
-                return true;
-
             case R.id.menu_key_list_export:
                 mExportHelper.showExportKeysDialog(null, Constants.Path.APP_DIR_FILE, true);
                 return true;
@@ -94,7 +91,7 @@ public class KeyListActivity extends DrawerActivity {
                     KeychainDatabase.debugRead(this);
                     Notify.showNotify(this, "Restored Notify.Style backup", Notify.Style.INFO);
                     getContentResolver().notifyChange(KeychainContract.KeyRings.CONTENT_URI, null);
-                } catch(IOException e) {
+                } catch (IOException e) {
                     Log.e(Constants.TAG, "IO Error", e);
                     Notify.showNotify(this, "IO Notify.Style: " + e.getMessage(), Notify.Style.ERROR);
                 }
@@ -110,6 +107,12 @@ public class KeyListActivity extends DrawerActivity {
                 }
                 return true;
 
+            case R.id.menu_key_list_debug_first_time:
+                Intent intent = new Intent(this, FirstTimeActivity.class);
+                startActivity(intent);
+                finish();
+                return true;
+
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -121,50 +124,8 @@ public class KeyListActivity extends DrawerActivity {
     }
 
     private void createKey() {
-        Intent intent = new Intent(this, WizardActivity.class);
-//        intent.setAction(EditKeyActivity.ACTION_CREATE_KEY);
-//        intent.putExtra(EditKeyActivity.EXTRA_GENERATE_DEFAULT_KEYS, true);
-//        intent.putExtra(EditKeyActivity.EXTRA_USER_IDS, ""); // show user id view
-        startActivityForResult(intent, 0);
+        Intent intent = new Intent(this, CreateKeyActivity.class);
+        startActivity(intent);
     }
 
-    private void createKeyExpert() {
-        Intent intent = new Intent(this, KeychainIntentService.class);
-        intent.setAction(KeychainIntentService.ACTION_SAVE_KEYRING);
-
-        // Message is received after importing is done in KeychainIntentService
-        KeychainIntentServiceHandler saveHandler = new KeychainIntentServiceHandler(
-                this,
-                getString(R.string.progress_importing),
-                ProgressDialog.STYLE_HORIZONTAL) {
-            public void handleMessage(Message message) {
-                // handle messages by standard KeychainIntentServiceHandler first
-                super.handleMessage(message);
-                Bundle data = message.getData();
-                // OtherHelper.logDebugBundle(data, "message reply");
-            }
-        };
-
-        // fill values for this action
-        Bundle data = new Bundle();
-
-        SaveKeyringParcel parcel = new SaveKeyringParcel();
-        parcel.addSubKeys.add(new SubkeyAdd(algorithm.rsa, 1024, KeyFlags.CERTIFY_OTHER, null));
-        parcel.addSubKeys.add(new SubkeyAdd(algorithm.rsa, 1024, KeyFlags.SIGN_DATA, null));
-        parcel.addUserIds.add("swagerinho");
-        parcel.newPassphrase = "swag";
-
-        // get selected key entries
-        data.putParcelable(KeychainIntentService.SAVE_KEYRING_PARCEL, parcel);
-
-        intent.putExtra(KeychainIntentService.EXTRA_DATA, data);
-
-        // Create a new Messenger for the communication back
-        Messenger messenger = new Messenger(saveHandler);
-        intent.putExtra(KeychainIntentService.EXTRA_MESSENGER, messenger);
-
-        saveHandler.showProgressDialog(this);
-
-        startService(intent);
-    }
 }

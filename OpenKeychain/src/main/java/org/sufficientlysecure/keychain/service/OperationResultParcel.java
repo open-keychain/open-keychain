@@ -19,6 +19,9 @@ import org.sufficientlysecure.keychain.util.IterableIterator;
 import org.sufficientlysecure.keychain.util.Log;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
 
 /** Represent the result of an operation.
  *
@@ -81,9 +84,6 @@ public class OperationResultParcel implements Parcelable {
             mParameters = parameters;
             mIndent = indent;
         }
-        public LogEntryParcel(LogLevel level, LogType type, Object... parameters) {
-            this(level, type, 0, parameters);
-        }
 
         public LogEntryParcel(Parcel source) {
             mLevel = LogLevel.values()[source.readInt()];
@@ -115,6 +115,15 @@ public class OperationResultParcel implements Parcelable {
             }
         };
 
+        @Override
+        public String toString() {
+            return "LogEntryParcel{" +
+                    "mLevel=" + mLevel +
+                    ", mType=" + mType +
+                    ", mParameters=" + Arrays.toString(mParameters) +
+                    ", mIndent=" + mIndent +
+                    '}';
+        }
     }
 
     public SuperCardToast createNotify(final Activity activity) {
@@ -245,6 +254,7 @@ public class OperationResultParcel implements Parcelable {
         MSG_KC_REVOKE_BAD_LOCAL (R.string.msg_kc_revoke_bad_local),
         MSG_KC_REVOKE_BAD_TIME (R.string.msg_kc_revoke_bad_time),
         MSG_KC_REVOKE_BAD_TYPE (R.string.msg_kc_revoke_bad_type),
+        MSG_KC_REVOKE_BAD_TYPE_UID (R.string.msg_kc_revoke_bad_type_uid),
         MSG_KC_REVOKE_BAD (R.string.msg_kc_revoke_bad),
         MSG_KC_REVOKE_DUP (R.string.msg_kc_revoke_dup),
         MSG_KC_SUB (R.string.msg_kc_sub),
@@ -276,6 +286,7 @@ public class OperationResultParcel implements Parcelable {
         MSG_KC_UID_NO_CERT (R.string.msg_kc_uid_no_cert),
         MSG_KC_UID_REVOKE_DUP (R.string.msg_kc_uid_revoke_dup),
         MSG_KC_UID_REVOKE_OLD (R.string.msg_kc_uid_revoke_old),
+        MSG_KC_UID_REMOVE (R.string.msg_kc_uid_remove),
 
 
         // keyring consolidation
@@ -285,9 +296,17 @@ public class OperationResultParcel implements Parcelable {
         MSG_MG_HETEROGENEOUS (R.string.msg_mg_heterogeneous),
         MSG_MG_NEW_SUBKEY (R.string.msg_mg_new_subkey),
         MSG_MG_FOUND_NEW (R.string.msg_mg_found_new),
+        MSG_MG_UNCHANGED (R.string.msg_mg_unchanged),
 
         // secret key create
-        MSG_CR_ERROR_NO_MASTER (R.string.msg_mr),
+        MSG_CR (R.string.msg_cr),
+        MSG_CR_ERROR_NO_MASTER (R.string.msg_cr_error_no_master),
+        MSG_CR_ERROR_NO_USER_ID (R.string.msg_cr_error_no_user_id),
+        MSG_CR_ERROR_NO_CERTIFY (R.string.msg_cr_error_no_certify),
+        MSG_CR_ERROR_KEYSIZE_512 (R.string.msg_cr_error_keysize_512),
+        MSG_CR_ERROR_UNKNOWN_ALGO (R.string.msg_cr_error_unknown_algo),
+        MSG_CR_ERROR_INTERNAL_PGP (R.string.msg_cr_error_internal_pgp),
+        MSG_CR_ERROR_MASTER_ELGAMAL (R.string.msg_cr_error_master_elgamal),
 
         // secret key modify
         MSG_MF (R.string.msg_mr),
@@ -295,10 +314,13 @@ public class OperationResultParcel implements Parcelable {
         MSG_MF_ERROR_FINGERPRINT (R.string.msg_mf_error_fingerprint),
         MSG_MF_ERROR_KEYID (R.string.msg_mf_error_keyid),
         MSG_MF_ERROR_INTEGRITY (R.string.msg_mf_error_integrity),
+        MSG_MF_ERROR_NOEXIST_PRIMARY (R.string.msg_mf_error_noexist_primary),
         MSG_MF_ERROR_REVOKED_PRIMARY (R.string.msg_mf_error_revoked_primary),
         MSG_MF_ERROR_PGP (R.string.msg_mf_error_pgp),
         MSG_MF_ERROR_SIG (R.string.msg_mf_error_sig),
         MSG_MF_PASSPHRASE (R.string.msg_mf_passphrase),
+        MSG_MF_PRIMARY_REPLACE_OLD (R.string.msg_mf_primary_replace_old),
+        MSG_MF_PRIMARY_NEW (R.string.msg_mf_primary_new),
         MSG_MF_SUBKEY_CHANGE (R.string.msg_mf_subkey_change),
         MSG_MF_SUBKEY_MISSING (R.string.msg_mf_subkey_missing),
         MSG_MF_SUBKEY_NEW_ID (R.string.msg_mf_subkey_new_id),
@@ -309,6 +331,7 @@ public class OperationResultParcel implements Parcelable {
         MSG_MF_UID_ADD (R.string.msg_mf_uid_add),
         MSG_MF_UID_PRIMARY (R.string.msg_mf_uid_primary),
         MSG_MF_UID_REVOKE (R.string.msg_mf_uid_revoke),
+        MSG_MF_UID_ERROR_EMPTY (R.string.msg_mf_uid_error_empty),
         MSG_MF_UNLOCK_ERROR (R.string.msg_mf_unlock_error),
         MSG_MF_UNLOCK (R.string.msg_mf_unlock),
         ;
@@ -340,7 +363,7 @@ public class OperationResultParcel implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeInt(mResult);
-        dest.writeTypedList(mLog);
+        dest.writeTypedList(mLog.toList());
     }
 
     public static final Creator<OperationResultParcel> CREATOR = new Creator<OperationResultParcel>() {
@@ -353,16 +376,19 @@ public class OperationResultParcel implements Parcelable {
         }
     };
 
-    public static class OperationLog extends ArrayList<LogEntryParcel> {
+    public static class OperationLog implements Iterable<LogEntryParcel> {
+
+        private final List<LogEntryParcel> mParcels = new ArrayList<LogEntryParcel>();
 
         /// Simple convenience method
         public void add(LogLevel level, LogType type, int indent, Object... parameters) {
             Log.d(Constants.TAG, type.toString());
-            add(new OperationResultParcel.LogEntryParcel(level, type, indent, parameters));
+            mParcels.add(new OperationResultParcel.LogEntryParcel(level, type, indent, parameters));
         }
 
         public void add(LogLevel level, LogType type, int indent) {
-            add(new OperationResultParcel.LogEntryParcel(level, type, indent, (Object[]) null));
+            Log.d(Constants.TAG, type.toString());
+            mParcels.add(new OperationResultParcel.LogEntryParcel(level, type, indent, (Object[]) null));
         }
 
         public LogEntryParcel getResultId() {
@@ -374,7 +400,7 @@ public class OperationResultParcel implements Parcelable {
         }
 
         public boolean containsWarnings() {
-            for(LogEntryParcel entry : new IterableIterator<LogEntryParcel>(iterator())) {
+            for(LogEntryParcel entry : new IterableIterator<LogEntryParcel>(mParcels.iterator())) {
                 if (entry.mLevel == LogLevel.WARN || entry.mLevel == LogLevel.ERROR) {
                     return true;
                 }
@@ -382,6 +408,22 @@ public class OperationResultParcel implements Parcelable {
             return false;
         }
 
+        public void addAll(List<LogEntryParcel> parcels) {
+            mParcels.addAll(parcels);
+        }
+
+        public List<LogEntryParcel> toList() {
+            return mParcels;
+        }
+
+        public boolean isEmpty() {
+            return mParcels.isEmpty();
+        }
+
+        @Override
+        public Iterator<LogEntryParcel> iterator() {
+            return mParcels.iterator();
+        }
     }
 
 }

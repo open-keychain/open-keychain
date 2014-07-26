@@ -152,7 +152,7 @@ public class PassphraseDialogFragment extends DialogFragment implements OnEditor
                 // above can't be statically verified to have been set in all cases because
                 // the catch clause doesn't return.
                 try {
-                    userId = secretRing.getPrimaryUserId();
+                    userId = secretRing.getPrimaryUserIdWithFallback();
                 } catch (PgpGeneralException e) {
                     userId = null;
                 }
@@ -189,7 +189,8 @@ public class PassphraseDialogFragment extends DialogFragment implements OnEditor
 
                 // Early breakout if we are dealing with a symmetric key
                 if (secretRing == null) {
-                    PassphraseCacheService.addCachedPassphrase(activity, Constants.key.symmetric, passphrase);
+                    PassphraseCacheService.addCachedPassphrase(activity, Constants.key.symmetric,
+                                        passphrase, getString(R.string.passp_cache_notif_pwd));
                     // also return passphrase back to activity
                     Bundle data = new Bundle();
                     data.putString(MESSAGE_DATA_PASSPHRASE, passphrase);
@@ -228,10 +229,18 @@ public class PassphraseDialogFragment extends DialogFragment implements OnEditor
 
                 // cache the new passphrase
                 Log.d(Constants.TAG, "Everything okay! Caching entered passphrase");
-                PassphraseCacheService.addCachedPassphrase(activity, masterKeyId, passphrase);
+
+                try {
+                    PassphraseCacheService.addCachedPassphrase(activity, masterKeyId, passphrase,
+                        secretRing.getPrimaryUserIdWithFallback());
+                } catch(PgpGeneralException e) {
+                    Log.e(Constants.TAG, "adding of a passhrase failed", e);
+                }
+
                 if (unlockedSecretKey.getKeyId() != masterKeyId) {
                     PassphraseCacheService.addCachedPassphrase(
-                            activity, unlockedSecretKey.getKeyId(), passphrase);
+                            activity, unlockedSecretKey.getKeyId(), passphrase,
+                            unlockedSecretKey.getPrimaryUserIdWithFallback());
                 }
 
                 // also return passphrase back to activity

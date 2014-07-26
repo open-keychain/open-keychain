@@ -250,7 +250,7 @@ public class ImportKeysListEntry implements Serializable, Parcelable {
 
         mHashCode = key.hashCode();
 
-        mPrimaryUserId = key.getPrimaryUserId();
+        mPrimaryUserId = key.getPrimaryUserIdWithFallback();
         mUserIds = key.getUnorderedUserIds();
 
         // if there was no user id flagged as primary, use the first one

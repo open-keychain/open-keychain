@@ -198,7 +198,7 @@ public class EncryptAsymmetricFragment extends Fragment {
             String[] userId;
             try {
                 userId = mProviderHelper.getCachedPublicKeyRing(
-                        KeyRings.buildUnifiedKeyRingUri(mSecretKeyId)).getSplitPrimaryUserId();
+                        KeyRings.buildUnifiedKeyRingUri(mSecretKeyId)).getSplitPrimaryUserIdWithFallback();
             } catch (PgpGeneralException e) {
                 userId = null;
             }
