@@ -319,21 +319,11 @@ public class UncachedKeyringMergeTest {
 
     private UncachedKeyRing mergeWithChecks(UncachedKeyRing a, UncachedKeyRing b)
             throws Exception {
-        return mergeWithChecks(a, b, a, true);
-    }
-
-    private UncachedKeyRing mergeWithChecks(UncachedKeyRing a, UncachedKeyRing b, boolean commutative)
-            throws Exception {
-        return mergeWithChecks(a, b, a, commutative);
-    }
-
-    private UncachedKeyRing mergeWithChecks(UncachedKeyRing a, UncachedKeyRing b, UncachedKeyRing base)
-            throws Exception {
-        return mergeWithChecks(a, b, base, true);
+        return mergeWithChecks(a, b, a);
     }
 
     private UncachedKeyRing mergeWithChecks(UncachedKeyRing a, UncachedKeyRing b,
-                                            UncachedKeyRing base, boolean commutative)
+                                            UncachedKeyRing base)
             throws Exception {
 
         Assert.assertTrue("merging keyring must be secret type", a.isSecret());
@@ -350,12 +340,10 @@ public class UncachedKeyringMergeTest {
             Assert.assertNotNull("merge must succeed as sec(b)+sec(a)", resultB);
 
             // check commutativity, if requested
-            if (commutative) {
-                Assert.assertFalse("result of merge must be commutative",
-                        KeyringTestingHelper.diffKeyrings(
-                                resultA.getEncoded(), resultB.getEncoded(), onlyA, onlyB)
-                );
-            }
+            Assert.assertFalse("result of merge must be commutative",
+                    KeyringTestingHelper.diffKeyrings(
+                            resultA.getEncoded(), resultB.getEncoded(), onlyA, onlyB)
+            );
         }
 
         final UncachedKeyRing pubA = a.extractPublicKeyRing();
