@@ -251,9 +251,7 @@ public class ViewKeyMainFragment extends LoaderFragment implements
     private void editKey(Uri dataUri) {
         Intent editIntent = new Intent(getActivity(), EditKeyActivity.class);
         editIntent.setData(KeychainContract.KeyRingData.buildSecretKeyRingUri(dataUri));
-//        editIntent.setAction(EditKeyActivity.ACTION_EDIT_KEY);
-//        startActivityForResult(editIntent, 0);
-        startActivity(editIntent);
+        startActivityForResult(editIntent, 0);
     }
 
 }

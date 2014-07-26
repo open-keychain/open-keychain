@@ -350,7 +350,7 @@ public class ViewKeyActivity extends ActionBarActivity implements
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (data.hasExtra(OperationResultParcel.EXTRA_RESULT)) {
+        if (data != null && data.hasExtra(OperationResultParcel.EXTRA_RESULT)) {
             OperationResultParcel result = data.getParcelableExtra(OperationResultParcel.EXTRA_RESULT);
             result.createNotify(this).show();
         } else {

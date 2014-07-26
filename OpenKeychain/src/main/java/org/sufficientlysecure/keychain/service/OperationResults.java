@@ -143,7 +143,7 @@ public abstract class OperationResults {
             // If we have a log and it's non-empty, show a View Log button
             if (button) {
                 toast.setButtonIcon(R.drawable.ic_action_view_as_list,
-                        activity.getResources().getString(R.string.import_view_log));
+                        activity.getResources().getString(R.string.view_log));
                 toast.setButtonTextColor(activity.getResources().getColor(R.color.black));
                 toast.setTextColor(activity.getResources().getColor(R.color.black));
                 toast.setOnClickWrapper(new OnClickWrapper("supercardtoast",
@@ -166,6 +166,18 @@ public abstract class OperationResults {
     }
 
     public static class EditKeyResult extends OperationResultParcel {
+
+        private transient UncachedKeyRing mRing;
+
+        public EditKeyResult(int result, OperationLog log,
+                               UncachedKeyRing ring) {
+            super(result, log);
+            mRing = ring;
+        }
+
+        public UncachedKeyRing getRing() {
+            return mRing;
+        }
 
         public EditKeyResult(Parcel source) {
             super(source);

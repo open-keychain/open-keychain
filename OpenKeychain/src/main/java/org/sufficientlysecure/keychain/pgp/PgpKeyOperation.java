@@ -47,9 +47,11 @@ import org.spongycastle.openpgp.operator.jcajce.JcePBESecretKeyEncryptorBuilder;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralMsgIdException;
+import org.sufficientlysecure.keychain.service.OperationResultParcel;
 import org.sufficientlysecure.keychain.service.OperationResultParcel.LogLevel;
 import org.sufficientlysecure.keychain.service.OperationResultParcel.LogType;
 import org.sufficientlysecure.keychain.service.OperationResultParcel.OperationLog;
+import org.sufficientlysecure.keychain.service.OperationResults.EditKeyResult;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel.SubkeyAdd;
 import org.sufficientlysecure.keychain.util.IterableIterator;
@@ -163,8 +165,10 @@ public class PgpKeyOperation {
         }
     }
 
-    public UncachedKeyRing createSecretKeyRing(SaveKeyringParcel saveParcel, OperationLog log,
-                                               int indent) {
+    public EditKeyResult createSecretKeyRing(SaveKeyringParcel saveParcel) {
+
+        OperationLog log = new OperationLog();
+        int indent = 0;
 
         try {
 
@@ -213,7 +217,7 @@ public class PgpKeyOperation {
             PGPSecretKeyRing sKR = new PGPSecretKeyRing(
                     masterSecretKey.getEncoded(), new JcaKeyFingerprintCalculator());
 
-            return internal(sKR, masterSecretKey, add.mFlags, saveParcel, "", log, indent);
+            return internal(sKR, masterSecretKey, add.mFlags, saveParcel, "", log);
 
         } catch (PGPException e) {
             log.add(LogLevel.ERROR, LogType.MSG_CR_ERROR_INTERNAL_PGP, indent);
@@ -237,8 +241,11 @@ public class PgpKeyOperation {
      * are changed by adding new certificates, which implicitly override older certificates.
      *
      */
-    public UncachedKeyRing modifySecretKeyRing(WrappedSecretKeyRing wsKR, SaveKeyringParcel saveParcel,
-                                               String passphrase, OperationLog log, int indent) {
+    public EditKeyResult modifySecretKeyRing(WrappedSecretKeyRing wsKR, SaveKeyringParcel saveParcel,
+                                               String passphrase) {
+
+        OperationLog log = new OperationLog();
+        int indent = 0;
 
         /*
          * 1. Unlock private key
@@ -277,14 +284,16 @@ public class PgpKeyOperation {
         // since this is the master key, this contains at least CERTIFY_OTHER
         int masterKeyFlags = readKeyFlags(masterSecretKey.getPublicKey()) | KeyFlags.CERTIFY_OTHER;
 
-        return internal(sKR, masterSecretKey, masterKeyFlags, saveParcel, passphrase, log, indent);
+        return internal(sKR, masterSecretKey, masterKeyFlags, saveParcel, passphrase, log);
 
     }
 
-    private UncachedKeyRing internal(PGPSecretKeyRing sKR, PGPSecretKey masterSecretKey,
+    private EditKeyResult internal(PGPSecretKeyRing sKR, PGPSecretKey masterSecretKey,
                                      int masterKeyFlags,
                                      SaveKeyringParcel saveParcel, String passphrase,
-                                     OperationLog log, int indent) {
+                                     OperationLog log) {
+
+        int indent = 1;
 
         updateProgress(R.string.progress_certifying_master_key, 20, 100);
 
@@ -613,7 +622,7 @@ public class PgpKeyOperation {
         }
 
         log.add(LogLevel.OK, LogType.MSG_MF_SUCCESS, indent);
-        return new UncachedKeyRing(sKR);
+        return new EditKeyResult(OperationResultParcel.RESULT_OK, log, new UncachedKeyRing(sKR));
 
     }
 

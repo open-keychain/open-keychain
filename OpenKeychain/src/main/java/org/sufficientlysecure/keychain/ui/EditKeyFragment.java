@@ -48,6 +48,7 @@ import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
 import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
 import org.sufficientlysecure.keychain.service.OperationResults;
+import org.sufficientlysecure.keychain.service.OperationResults.EditKeyResult;
 import org.sufficientlysecure.keychain.service.OperationResults.ImportKeyResult;
 import org.sufficientlysecure.keychain.service.PassphraseCacheService;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
@@ -467,20 +468,17 @@ public class EditKeyFragment extends LoaderFragment implements
                 super.handleMessage(message);
 
                 if (message.arg1 == KeychainIntentServiceHandler.MESSAGE_OKAY) {
-                    getActivity().finish();
 
-                    // TODO below
                     // get returned data bundle
                     Bundle returnData = message.getData();
                     if (returnData == null) {
                         return;
                     }
-                    final OperationResults.SaveKeyringResult result =
-                            returnData.getParcelable(KeychainIntentService.RESULT);
+                    final OperationResults.EditKeyResult result =
+                            returnData.getParcelable(EditKeyResult.EXTRA_RESULT);
                     if (result == null) {
                         return;
                     }
-
 
                     // if bad -> display here!
                     if (!result.success()) {
@@ -490,7 +488,7 @@ public class EditKeyFragment extends LoaderFragment implements
 
                     // if good -> finish, return result to showkey and display there!
                     Intent intent = new Intent();
-                    intent.putExtra(ImportKeyResult.EXTRA_RESULT, result);
+                    intent.putExtra(EditKeyResult.EXTRA_RESULT, result);
                     getActivity().setResult(EditKeyActivity.RESULT_OK, intent);
                     getActivity().finish();
 

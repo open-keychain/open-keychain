@@ -144,20 +144,45 @@ public class OperationResultParcel implements Parcelable {
                 color = Style.GREEN;
             }
 
-            str = activity.getString(R.string.import_error);
+            str = "operation succeeded!";
+            // str = activity.getString(R.string.import_error);
 
         } else {
+
             duration = 0;
             color = Style.RED;
-            str = activity.getString(R.string.import_error);
+
+            str = "operation failed";
+            // str = activity.getString(R.string.import_error);
+
         }
 
+        boolean button = getLog() != null && !getLog().isEmpty();
         SuperCardToast toast = new SuperCardToast(activity,
-                SuperToast.Type.STANDARD, Style.getStyle(color, SuperToast.Animations.POPUP));
+                button ? SuperToast.Type.BUTTON : SuperToast.Type.STANDARD,
+                Style.getStyle(color, SuperToast.Animations.POPUP));
         toast.setText(str);
         toast.setDuration(duration);
         toast.setIndeterminate(duration == 0);
         toast.setSwipeToDismiss(true);
+        // If we have a log and it's non-empty, show a View Log button
+        if (button) {
+            toast.setButtonIcon(R.drawable.ic_action_view_as_list,
+                    activity.getResources().getString(R.string.view_log));
+            toast.setButtonTextColor(activity.getResources().getColor(R.color.black));
+            toast.setTextColor(activity.getResources().getColor(R.color.black));
+            toast.setOnClickWrapper(new OnClickWrapper("supercardtoast",
+                    new SuperToast.OnClickListener() {
+                        @Override
+                        public void onClick(View view, Parcelable token) {
+                            Intent intent = new Intent(
+                                    activity, LogDisplayActivity.class);
+                            intent.putExtra(LogDisplayFragment.EXTRA_RESULT, OperationResultParcel.this);
+                            activity.startActivity(intent);
+                        }
+                    }
+            ));
+        }
 
         return toast;
 

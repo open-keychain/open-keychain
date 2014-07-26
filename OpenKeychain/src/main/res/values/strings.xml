@@ -403,7 +403,7 @@
         <item quantity="one">Successfully updated key%2$s.</item>
         <item quantity="other">Successfully updated %1$d keys%2$s.</item>
     </plurals>
-    <string name="import_view_log">View Log</string>
+    <string name="view_log">View Log</string>
     <string name="import_error_nothing">Nothing to import.</string>
     <string name="import_error">Error importing keys!</string>
     <string name="import_with_warnings">, with warnings</string>
