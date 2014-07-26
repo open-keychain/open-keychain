@@ -60,7 +60,6 @@ import java.util.Iterator;
 public class UncachedKeyringMergeTest {
 
     static UncachedKeyRing staticRingA, staticRingB;
-    static int totalPackets;
     UncachedKeyRing ringA, ringB;
     ArrayList<RawPacket> onlyA = new ArrayList<RawPacket>();
     ArrayList<RawPacket> onlyB = new ArrayList<RawPacket>();

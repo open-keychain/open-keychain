@@ -174,13 +174,11 @@ public class UncachedKeyringCanonicalizeTest {
             Assert.assertEquals("two packets should be stripped after canonicalization", 2, onlyA.size());
             Assert.assertEquals("no new packets after canonicalization", 0, onlyB.size());
 
-            Packet p;
-            p = new BCPGInputStream(new ByteArrayInputStream(onlyA.get(0).buf)).readPacket();
+            Packet p = new BCPGInputStream(new ByteArrayInputStream(onlyA.get(0).buf)).readPacket();
             Assert.assertTrue("first stripped packet must be user id", p instanceof UserIDPacket);
             Assert.assertEquals("missing user id must be the expected one",
                     "twi", ((UserIDPacket) p).getID());
 
-            p = new BCPGInputStream(new ByteArrayInputStream(onlyA.get(1).buf)).readPacket();
             Assert.assertArrayEquals("second stripped packet must be signature we removed",
                     sig.getEncoded(), onlyA.get(1).buf);
 
@@ -197,13 +195,11 @@ public class UncachedKeyringCanonicalizeTest {
             Assert.assertEquals("two packets should be missing after canonicalization", 2, onlyA.size());
             Assert.assertEquals("no new packets after canonicalization", 0, onlyB.size());
 
-            Packet p;
-            p = new BCPGInputStream(new ByteArrayInputStream(onlyA.get(0).buf)).readPacket();
+            Packet p = new BCPGInputStream(new ByteArrayInputStream(onlyA.get(0).buf)).readPacket();
             Assert.assertTrue("first stripped packet must be user id", p instanceof UserIDPacket);
             Assert.assertEquals("missing user id must be the expected one",
                     "twi", ((UserIDPacket) p).getID());
 
-            p = new BCPGInputStream(new ByteArrayInputStream(onlyA.get(1).buf)).readPacket();
             Assert.assertArrayEquals("second stripped packet must be signature we removed",
                     sig.getEncoded(), onlyA.get(1).buf);
         }

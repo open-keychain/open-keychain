@@ -353,7 +353,7 @@ public class PgpKeyOperationTest {
         { // bad keysize should fail
             parcel.reset();
             parcel.mAddSubKeys.add(new SubkeyAdd(
-                    algorithm.rsa, new Random().nextInt(1024), KeyFlags.SIGN_DATA, null));
+                    algorithm.rsa, new Random().nextInt(512), KeyFlags.SIGN_DATA, null));
 
             WrappedSecretKeyRing secretRing = new WrappedSecretKeyRing(ring.getEncoded(), false, 0);
             OperationResultParcel.OperationLog log = new OperationResultParcel.OperationLog();
