@@ -9,6 +9,7 @@ import org.robolectric.RobolectricTestRunner;
 import org.robolectric.shadows.ShadowLog;
 import org.spongycastle.bcpg.BCPGInputStream;
 import org.spongycastle.bcpg.Packet;
+import org.spongycastle.bcpg.PacketTags;
 import org.spongycastle.bcpg.PublicKeyPacket;
 import org.spongycastle.bcpg.sig.KeyFlags;
 import org.sufficientlysecure.keychain.Constants;
@@ -199,17 +200,8 @@ public class UncachedKeyringMergeTest {
             modifiedA = op.modifySecretKeyRing(secretRing, parcel, "", log, 0);
             modifiedB = op.modifySecretKeyRing(secretRing, parcel, "", log, 0);
 
-            {
-                Iterator<UncachedPublicKey> it = modifiedA.getPublicKeys();
-                it.next(); it.next();
-                subKeyIdA = it.next().getKeyId();
-            }
-
-            {
-                Iterator<UncachedPublicKey> it = modifiedB.getPublicKeys();
-                it.next(); it.next();
-                subKeyIdB = it.next().getKeyId();
-            }
+            subKeyIdA = KeyringTestingHelper.getSubkeyId(modifiedA, 2);
+            subKeyIdB = KeyringTestingHelper.getSubkeyId(modifiedB, 2);
 
         }
 
@@ -219,12 +211,7 @@ public class UncachedKeyringMergeTest {
             Assert.assertEquals("merged keyring must have lost no packets", 0, onlyA.size());
             Assert.assertEquals("merged keyring must have gained two packets", 2, onlyB.size());
 
-            long mergedKeyId;
-            {
-                Iterator<UncachedPublicKey> it = merged.getPublicKeys();
-                it.next(); it.next();
-                mergedKeyId = it.next().getKeyId();
-            }
+            long mergedKeyId = KeyringTestingHelper.getSubkeyId(merged, 2);
             Assert.assertEquals("merged keyring must contain the new subkey", subKeyIdA, mergedKeyId);
         }
 
@@ -246,6 +233,24 @@ public class UncachedKeyringMergeTest {
 
     @Test
     public void testAddedKeySignature() throws Exception {
+
+        final UncachedKeyRing modified; {
+            parcel.reset();
+            parcel.mRevokeSubKeys.add(KeyringTestingHelper.getSubkeyId(ringA, 1));
+            WrappedSecretKeyRing secretRing = new WrappedSecretKeyRing(
+                    ringA.getEncoded(), false, 0);
+            modified = op.modifySecretKeyRing(secretRing, parcel, "", log, 0);
+        }
+
+        {
+            UncachedKeyRing merged = ringA.merge(modified, log, 0);
+            Assert.assertNotNull("merge must succeed", merged);
+            Assert.assertFalse(
+                    "merging keyring with extra signatures into its base should yield that same keyring",
+                    KeyringTestingHelper.diffKeyrings(merged.getEncoded(), modified.getEncoded(), onlyA, onlyB)
+            );
+        }
+
     }
 
     @Test
@@ -270,6 +275,36 @@ public class UncachedKeyringMergeTest {
             Assert.assertArrayEquals("foreign signatures should not be merged into secret key",
                     ringA.getEncoded(), merged.getEncoded()
             );
+        }
+
+        {
+            byte[] sig = KeyringTestingHelper.getNth(
+                    modified.getPublicKey().getSignaturesForId("twi"), 1).getEncoded();
+
+            // inject the (foreign!) signature into subkey signature position
+            UncachedKeyRing moreModified = KeyringTestingHelper.injectPacket(modified, sig, 1);
+
+            UncachedKeyRing merged = ringA.merge(moreModified, log, 0);
+            Assert.assertNotNull("merge must succeed", merged);
+            Assert.assertArrayEquals("foreign signatures should not be merged into secret key",
+                    ringA.getEncoded(), merged.getEncoded()
+            );
+
+            merged = pubRing.merge(moreModified, log, 0);
+            Assert.assertNotNull("merge must succeed", merged);
+            Assert.assertTrue(
+                    "merged keyring should contain new signature",
+                    KeyringTestingHelper.diffKeyrings(pubRing.getEncoded(), merged.getEncoded(), onlyA, onlyB)
+            );
+            Assert.assertEquals("merged keyring should be missing no packets", 0, onlyA.size());
+            Assert.assertEquals("merged keyring should contain exactly two more packets", 2, onlyB.size());
+            Assert.assertEquals("first added packet should be a signature",
+                    PacketTags.SIGNATURE, onlyB.get(0).tag);
+            Assert.assertEquals("first added packet should be in the position we injected it at",
+                    1, onlyB.get(0).position);
+            Assert.assertEquals("second added packet should be a signature",
+                    PacketTags.SIGNATURE, onlyB.get(1).tag);
+
         }
 
         {

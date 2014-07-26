@@ -21,6 +21,7 @@ import android.content.Context;
 import org.spongycastle.util.Arrays;
 import org.sufficientlysecure.keychain.pgp.NullProgressable;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
+import org.sufficientlysecure.keychain.pgp.UncachedPublicKey;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.OperationResults;
@@ -329,6 +330,17 @@ public class KeyringTestingHelper {
         p.buf = buf;
         return p;
 
+    }
+
+    public static <E> E getNth(Iterator<E> it, int position) {
+        while(position-- > 0) {
+            it.next();
+        }
+        return it.next();
+    }
+
+    public static long getSubkeyId(UncachedKeyRing ring, int position) {
+        return getNth(ring.getPublicKeys(), position).getKeyId();
     }
 
     private void retrieveKeyAndExpectNotFound(ProviderHelper providerHelper, long masterKeyId) {
