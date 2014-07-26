@@ -352,7 +352,8 @@ public class PgpKeyOperationTest {
 
         { // bad keysize should fail
             parcel.reset();
-            parcel.mAddSubKeys.add(new SubkeyAdd(algorithm.rsa, 77, KeyFlags.SIGN_DATA, null));
+            parcel.mAddSubKeys.add(new SubkeyAdd(
+                    algorithm.rsa, new Random().nextInt(1024), KeyFlags.SIGN_DATA, null));
 
             WrappedSecretKeyRing secretRing = new WrappedSecretKeyRing(ring.getEncoded(), false, 0);
             OperationResultParcel.OperationLog log = new OperationResultParcel.OperationLog();
@@ -379,12 +380,7 @@ public class PgpKeyOperationTest {
     public void testSubkeyModify() throws Exception {
 
         long expiry = new Date().getTime()/1000 + 1024;
-        long keyId;
-        {
-            Iterator<UncachedPublicKey> it = ring.getPublicKeys();
-            it.next();
-            keyId = it.next().getKeyId();
-        }
+        long keyId = KeyringTestingHelper.getSubkeyId(ring, 1);
 
         UncachedKeyRing modified = ring;
         {
@@ -463,13 +459,7 @@ public class PgpKeyOperationTest {
     @Test
     public void testSubkeyRevoke() throws Exception {
 
-        long keyId;
-        {
-            Iterator<UncachedPublicKey> it = ring.getPublicKeys();
-            it.next();
-            keyId = it.next().getKeyId();
-        }
-
+        long keyId = KeyringTestingHelper.getSubkeyId(ring, 1);
         int flags = ring.getPublicKey(keyId).getKeyUsage();
 
         UncachedKeyRing modified;
