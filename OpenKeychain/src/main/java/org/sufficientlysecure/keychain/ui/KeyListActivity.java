@@ -17,28 +17,19 @@
 
 package org.sufficientlysecure.keychain.ui;
 
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Message;
-import android.os.Messenger;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import com.devspark.appmsg.AppMsg;
 
-import org.spongycastle.bcpg.sig.KeyFlags;
 import org.sufficientlysecure.keychain.Constants;
-import org.sufficientlysecure.keychain.Constants.choice.algorithm;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.helper.ExportHelper;
 import org.sufficientlysecure.keychain.helper.Preferences;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainDatabase;
-import org.sufficientlysecure.keychain.service.KeychainIntentService;
-import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
-import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
-import org.sufficientlysecure.keychain.service.SaveKeyringParcel.SubkeyAdd;
 import org.sufficientlysecure.keychain.util.Log;
 
 import java.io.IOException;
@@ -51,11 +42,10 @@ public class KeyListActivity extends DrawerActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        // if this is the first time show first time activity
         Preferences prefs = Preferences.getPreferences(this);
-        if (prefs.getFirstTime()) {
-            prefs.setFirstTime(false);
-            Intent intent = new Intent(this, FirstTimeActivity.class);
-            startActivity(intent);
+        if (prefs.isFirstTime()) {
+            startActivity(new Intent(this, FirstTimeActivity.class));
             finish();
             return;
         }

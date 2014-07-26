@@ -139,7 +139,7 @@ public class Preferences {
         editor.commit();
     }
 
-    public boolean getFirstTime() {
+    public boolean isFirstTime() {
         return mSharedPreferences.getBoolean(Constants.Pref.FIRST_TIME, true);
     }
 
