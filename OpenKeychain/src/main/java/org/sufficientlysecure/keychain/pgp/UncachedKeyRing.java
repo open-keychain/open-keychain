@@ -91,7 +91,7 @@ public class UncachedKeyRing {
         final Iterator<PGPPublicKey> it = mRing.getPublicKeys();
         return new Iterator<UncachedPublicKey>() {
             public void remove() {
-                it.remove();
+                throw new UnsupportedOperationException();
             }
             public UncachedPublicKey next() {
                 return new UncachedPublicKey(it.next());
@@ -121,42 +121,41 @@ public class UncachedKeyRing {
 
     public static UncachedKeyRing decodeFromData(byte[] data)
             throws PgpGeneralException, IOException {
-        BufferedInputStream bufferedInput =
-                new BufferedInputStream(new ByteArrayInputStream(data));
-        if (bufferedInput.available() > 0) {
-            InputStream in = PGPUtil.getDecoderStream(bufferedInput);
-            PGPObjectFactory objectFactory = new PGPObjectFactory(in);
 
-            // get first object in block
-            Object obj;
-            if ((obj = objectFactory.nextObject()) != null && obj instanceof PGPKeyRing) {
-                return new UncachedKeyRing((PGPKeyRing) obj);
-            } else {
-                throw new PgpGeneralException("Object not recognized as PGPKeyRing!");
-            }
-        } else {
+        List<UncachedKeyRing> parsed = fromStream(new ByteArrayInputStream(data));
+
+        if (parsed.isEmpty()) {
             throw new PgpGeneralException("Object not recognized as PGPKeyRing!");
         }
+        if (parsed.size() > 1) {
+            throw new PgpGeneralException(
+                    "Expected single keyring in stream, found " + parsed.size());
+        }
+
+        return parsed.get(0);
+
     }
 
     public static List<UncachedKeyRing> fromStream(InputStream stream)
             throws PgpGeneralException, IOException {
 
-        PGPObjectFactory objectFactory = new PGPObjectFactory(PGPUtil.getDecoderStream(stream));
-
         List<UncachedKeyRing> result = new Vector<UncachedKeyRing>();
 
-        // go through all objects in this block
-        Object obj;
-        while ((obj = objectFactory.nextObject()) != null) {
-            Log.d(Constants.TAG, "Found class: " + obj.getClass());
+        while(stream.available() > 0) {
+            PGPObjectFactory objectFactory = new PGPObjectFactory(PGPUtil.getDecoderStream(stream));
 
-            if (obj instanceof PGPKeyRing) {
+            // go through all objects in this block
+            Object obj;
+            while ((obj = objectFactory.nextObject()) != null) {
+                Log.d(Constants.TAG, "Found class: " + obj.getClass());
+                if (!(obj instanceof PGPKeyRing)) {
+                    throw new PgpGeneralException(
+                            "Bad object of type " + obj.getClass().getName() + " in stream!");
+                }
                 result.add(new UncachedKeyRing((PGPKeyRing) obj));
-            } else {
-                Log.e(Constants.TAG, "Object not recognized as PGPKeyRing!");
             }
         }
+
         return result;
     }
 
@@ -327,7 +326,7 @@ public class UncachedKeyRing {
 
                     if (cert.getCreationTime().after(now)) {
                         // Creation date in the future? No way!
-                        log.add(LogLevel.WARN, LogType.MSG_KC_REVOKE_BAD_TIME, indent);
+                        log.add(LogLevel.WARN, LogType.MSG_KC_UID_BAD_TIME, indent);
                         modified = PGPPublicKey.removeCertification(modified, zert);
                         badCerts += 1;
                         continue;
@@ -335,7 +334,7 @@ public class UncachedKeyRing {
 
                     if (cert.isLocal()) {
                         // Creation date in the future? No way!
-                        log.add(LogLevel.WARN, LogType.MSG_KC_REVOKE_BAD_LOCAL, indent);
+                        log.add(LogLevel.WARN, LogType.MSG_KC_UID_BAD_LOCAL, indent);
                         modified = PGPPublicKey.removeCertification(modified, zert);
                         badCerts += 1;
                         continue;
