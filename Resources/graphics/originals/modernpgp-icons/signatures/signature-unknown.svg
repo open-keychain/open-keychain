@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg width="100px" height="100px" viewBox="0 0 100 100" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:sketch="http://www.bohemiancoding.com/sketch/ns">
+    <!-- Generator: Sketch 3.0.4 (8053) - http://www.bohemiancoding.com/sketch -->
+    <title>signature-unknown</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" sketch:type="MSPage">
+        <g id="signature-unknown" sketch:type="MSArtboardGroup" fill="#000000">
+            <path d="M90,0 L10,0 C4.478,0 0,4.478 0,10 L0,89.977 C0,95.5 4.478,99.977 10,99.977 L90,99.977 C95.523,99.977 100,95.5 100,89.977 L100,10 C100,4.477 95.523,0 90,0 L90,0 Z M81.015,83.034 C80.993,83.04 17.896,83.083 17.895,83.034 C14.215,83.038 11.855,75.247 14.581,71.294 C14.855,70.567 40.853,18.404 40.924,18.251 C43.794,11.822 55.129,11.497 58.031,18.251 C58.005,18.235 85.745,71.73 85.475,71.285 C87.98,74.948 85.14,82.991 81.015,83.034 Z M50.046,65.331 C47.613,65.331 45.416,67.331 45.416,69.887 C45.416,72.448 47.535,74.448 50.046,74.448 C52.557,74.448 54.675,72.448 54.675,69.887 C54.676,67.331 52.479,65.331 50.046,65.331 Z M49.875,29.502 C47.117,29.502 44.27,30.961 44.537,33.082 L46.607,59.861 L53.144,59.861 L55.213,33.082 C55.48,30.961 52.633,29.502 49.875,29.502 Z" sketch:type="MSShapeGroup"></path>
+        </g>
+    </g>
+</svg>

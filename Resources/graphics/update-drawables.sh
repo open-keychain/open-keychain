@@ -39,8 +39,18 @@ inkscape -w 512 -h 512 -e "$PLAY_DIR/$NAME.png" $NAME.svg
 
 for NAME in "ic_action_nfc" "ic_action_qr_code"
 do
+echo $NAME
 inkscape -w 32 -h 32 -e "$MDPI_DIR/$NAME.png" $NAME.svg
 inkscape -w 48 -h 48 -e "$HDPI_DIR/$NAME.png" $NAME.svg
 inkscape -w 64 -h 64 -e "$XDPI_DIR/$NAME.png" $NAME.svg
 inkscape -w 96 -h 96 -e "$XXDPI_DIR/$NAME.png" $NAME.svg
+done
+
+for NAME in status*.svg
+do
+echo $NAME
+inkscape -w 32 -h 32 -e "$MDPI_DIR/${NAME%%.*}.png" $NAME
+inkscape -w 48 -h 48 -e "$HDPI_DIR/${NAME%%.*}.png" $NAME
+inkscape -w 64 -h 64 -e "$XDPI_DIR/${NAME%%.*}.png" $NAME
+inkscape -w 96 -h 96 -e "$XXDPI_DIR/${NAME%%.*}.png" $NAME
 done
