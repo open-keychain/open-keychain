@@ -22,7 +22,6 @@ import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.View;
 import android.view.Window;
-import android.widget.Button;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
@@ -31,9 +30,9 @@ import org.sufficientlysecure.keychain.util.Log;
 
 public class FirstTimeActivity extends ActionBarActivity {
 
-    Button mCreateKey;
-    Button mImportKey;
-    Button mSkipSetup;
+    View mCreateKey;
+    View mImportKey;
+    View mSkipSetup;
 
     public static final int REQUEST_CODE_CREATE_OR_IMPORT_KEY = 0x00007012;
 
@@ -45,9 +44,9 @@ public class FirstTimeActivity extends ActionBarActivity {
 
         setContentView(R.layout.first_time_activity);
 
-        mCreateKey = (Button) findViewById(R.id.first_time_create_key);
-        mImportKey = (Button) findViewById(R.id.first_time_import_key);
-        mSkipSetup = (Button) findViewById(R.id.first_time_cancel);
+        mCreateKey = findViewById(R.id.first_time_create_key);
+        mImportKey = findViewById(R.id.first_time_import_key);
+        mSkipSetup = findViewById(R.id.first_time_cancel);
 
         mSkipSetup.setOnClickListener(new View.OnClickListener() {
             @Override
