@@ -212,8 +212,6 @@ public class ViewKeyShareFragment extends LoaderFragment implements
     }
 
     private void showQrCodeDialog() {
-//        ShareQrCodeDialogFragment dialog = ShareQrCodeDialogFragment.newInstance(mDataUri);
-//        dialog.show(ViewKeyShareFragment.this.getActivity().getSupportFragmentManager(), "shareQrCodeDialog");
         Intent qrCodeIntent = new Intent(getActivity(), QrCodeActivity.class);
         qrCodeIntent.setData(mDataUri);
         startActivity(qrCodeIntent);
