@@ -24,3 +24,12 @@ subprojects {
         maxParallelForks = 1
     }
 }
+
+// Ignore tests for external dependency
+project(':extern:spongycastle') {
+    subprojects {
+        // Need to re-apply the plugin here otherwise the test property below can't be set.
+        apply plugin: 'java'
+        test.enabled = false
+    }
+}
