@@ -18,9 +18,9 @@
 package org.sufficientlysecure.keychain.service;
 
 import android.app.AlarmManager;
+import android.app.Notification;
 import android.app.PendingIntent;
 import android.app.Service;
-import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -70,7 +70,7 @@ public class PassphraseCacheService extends Service {
     public static final String EXTRA_KEY_ID = "key_id";
     public static final String EXTRA_PASSPHRASE = "passphrase";
     public static final String EXTRA_MESSENGER = "messenger";
-    public static final String EXTRA_USERID = "userid";
+    public static final String EXTRA_USER_ID = "user_id";
 
     private static final int REQUEST_ID = 0;
     private static final long DEFAULT_TTL = 15;
@@ -102,7 +102,7 @@ public class PassphraseCacheService extends Service {
         intent.putExtra(EXTRA_TTL, Preferences.getPreferences(context).getPassphraseCacheTtl());
         intent.putExtra(EXTRA_PASSPHRASE, passphrase);
         intent.putExtra(EXTRA_KEY_ID, keyId);
-        intent.putExtra(EXTRA_USERID, primaryUserId);
+        intent.putExtra(EXTRA_USER_ID, primaryUserId);
 
         context.startService(intent);
     }
@@ -201,18 +201,18 @@ public class PassphraseCacheService extends Service {
             // get cached passphrase
             CachedPassphrase cachedPassphrase = mPassphraseCache.get(keyId);
             if (cachedPassphrase == null) {
-                Log.d(Constants.TAG, "PassphraseCacheService Passphrase not (yet) cached, returning null");
+                Log.d(Constants.TAG, "PassphraseCacheService: Passphrase not (yet) cached, returning null");
                 // not really an error, just means the passphrase is not cached but not empty either
                 return null;
             }
 
             // set it again to reset the cache life cycle
-            Log.d(Constants.TAG, "PassphraseCacheService Cache passphrase again when getting it!");
+            Log.d(Constants.TAG, "PassphraseCacheService: Cache passphrase again when getting it!");
             addCachedPassphrase(this, keyId, cachedPassphrase.getPassphrase(), cachedPassphrase.getPrimaryUserID());
             return cachedPassphrase.getPassphrase();
 
         } catch (ProviderHelper.NotFoundException e) {
-            Log.e(Constants.TAG, "PassphraseCacheService Passphrase for unknown key was requested!");
+            Log.e(Constants.TAG, "PassphraseCacheService: Passphrase for unknown key was requested!");
             return null;
         }
     }
@@ -229,7 +229,7 @@ public class PassphraseCacheService extends Service {
                 public void onReceive(Context context, Intent intent) {
                     String action = intent.getAction();
 
-                    Log.d(Constants.TAG, "PassphraseCacheService Received broadcast...");
+                    Log.d(Constants.TAG, "PassphraseCacheService: Received broadcast...");
 
                     if (action.equals(BROADCAST_ACTION_PASSPHRASE_CACHE_SERVICE)) {
                         long keyId = intent.getLongExtra(EXTRA_KEY_ID, -1);
@@ -254,10 +254,8 @@ public class PassphraseCacheService extends Service {
     private static PendingIntent buildIntent(Context context, long keyId) {
         Intent intent = new Intent(BROADCAST_ACTION_PASSPHRASE_CACHE_SERVICE);
         intent.putExtra(EXTRA_KEY_ID, keyId);
-        PendingIntent sender = PendingIntent.getBroadcast(context, REQUEST_ID, intent,
+        return PendingIntent.getBroadcast(context, REQUEST_ID, intent,
                 PendingIntent.FLAG_CANCEL_CURRENT);
-
-        return sender;
     }
 
     /**
@@ -276,11 +274,12 @@ public class PassphraseCacheService extends Service {
                 long keyId = intent.getLongExtra(EXTRA_KEY_ID, -1);
 
                 String passphrase = intent.getStringExtra(EXTRA_PASSPHRASE);
-                String primaryUserID = intent.getStringExtra(EXTRA_USERID);
+                String primaryUserID = intent.getStringExtra(EXTRA_USER_ID);
 
                 Log.d(Constants.TAG,
-                        "PassphraseCacheService Received ACTION_PASSPHRASE_CACHE_ADD intent in onStartCommand() with keyId: "
-                                + keyId + ", ttl: " + ttl + ", usrId: " + primaryUserID);
+                        "PassphraseCacheService: Received ACTION_PASSPHRASE_CACHE_ADD intent in onStartCommand() with keyId: "
+                                + keyId + ", ttl: " + ttl + ", usrId: " + primaryUserID
+                );
 
                 // add keyId, passphrase and primary user id to memory
                 mPassphraseCache.put(keyId, new CachedPassphrase(passphrase, primaryUserID));
@@ -292,8 +291,7 @@ public class PassphraseCacheService extends Service {
                     am.set(AlarmManager.RTC_WAKEUP, triggerTime, buildIntent(this, keyId));
                 }
 
-                updateNotifications();
-
+                updateService();
             } else if (ACTION_PASSPHRASE_CACHE_GET.equals(intent.getAction())) {
                 long keyId = intent.getLongExtra(EXTRA_KEY_ID, -1);
                 Messenger messenger = intent.getParcelableExtra(EXTRA_MESSENGER);
@@ -307,21 +305,21 @@ public class PassphraseCacheService extends Service {
                 try {
                     messenger.send(msg);
                 } catch (RemoteException e) {
-                    Log.e(Constants.TAG, "PassphraseCacheService Sending message failed", e);
+                    Log.e(Constants.TAG, "PassphraseCacheService: Sending message failed", e);
                 }
             } else if (ACTION_PASSPHRASE_CACHE_CLEAR.equals(intent.getAction())) {
                 AlarmManager am = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
 
                 // Stop all ttl alarms
-                for(int i = 0; i < mPassphraseCache.size(); i++) {
+                for (int i = 0; i < mPassphraseCache.size(); i++) {
                     am.cancel(buildIntent(this, mPassphraseCache.keyAt(i)));
                 }
 
                 mPassphraseCache.clear();
 
-                updateNotifications();
+                updateService();
             } else {
-                Log.e(Constants.TAG, "PassphraseCacheService Intent or Intent Action not supported!");
+                Log.e(Constants.TAG, "PassphraseCacheService: Intent or Intent Action not supported!");
             }
         }
 
@@ -340,79 +338,74 @@ public class PassphraseCacheService extends Service {
 
         Log.d(Constants.TAG, "PassphraseCacheService Timeout of keyId " + keyId + ", removed from memory!");
 
-        // stop whole service if no cached passphrases remaining
-        if (mPassphraseCache.size() == 0) {
-            Log.d(Constants.TAG, "PassphraseCacheServic No passphrases remaining in memory, stopping service!");
-            stopSelf();
-        }
-
-        updateNotifications();
+        updateService();
     }
 
-    private void updateNotifications() {
-        NotificationManager notificationManager =
-            (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+    private void updateService() {
+        if (mPassphraseCache.size() > 0) {
+            startForeground(NOTIFICATION_ID, getNotification());
+        } else {
+            // stop whole service if no cached passphrases remaining
+            Log.d(Constants.TAG, "PassphraseCacheService: No passphrases remaining in memory, stopping service!");
+            stopForeground(true);
+        }
+    }
 
-        if(mPassphraseCache.size() > 0) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-                NotificationCompat.Builder builder = new NotificationCompat.Builder(this);
+    private Notification getNotification() {
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this);
 
-                builder.setSmallIcon(R.drawable.ic_launcher)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+            builder.setSmallIcon(R.drawable.ic_launcher)
                     .setContentTitle(getString(R.string.app_name))
-                    .setContentText(String.format(getString(R.string.passp_cache_notif_n_keys), mPassphraseCache.size()));
+                    .setContentText(String.format(getString(R.string.passp_cache_notif_n_keys),
+                            mPassphraseCache.size()));
 
-                NotificationCompat.InboxStyle inboxStyle = new NotificationCompat.InboxStyle();
+            NotificationCompat.InboxStyle inboxStyle = new NotificationCompat.InboxStyle();
 
-                inboxStyle.setBigContentTitle(getString(R.string.passp_cache_notif_keys));
+            inboxStyle.setBigContentTitle(getString(R.string.passp_cache_notif_keys));
 
-                // Moves events into the big view
-                for (int i = 0; i < mPassphraseCache.size(); i++) {
-                    inboxStyle.addLine(mPassphraseCache.valueAt(i).getPrimaryUserID());
-                }
+            // Moves events into the big view
+            for (int i = 0; i < mPassphraseCache.size(); i++) {
+                inboxStyle.addLine(mPassphraseCache.valueAt(i).getPrimaryUserID());
+            }
 
-                // Moves the big view style object into the notification object.
-                builder.setStyle(inboxStyle);
+            // Moves the big view style object into the notification object.
+            builder.setStyle(inboxStyle);
 
-                // Add purging action
-                Intent intent = new Intent(getApplicationContext(), PassphraseCacheService.class);
-                intent.setAction(ACTION_PASSPHRASE_CACHE_CLEAR);
-                builder.addAction(
+            // Add purging action
+            Intent intent = new Intent(getApplicationContext(), PassphraseCacheService.class);
+            intent.setAction(ACTION_PASSPHRASE_CACHE_CLEAR);
+            builder.addAction(
                     R.drawable.abc_ic_clear_normal,
                     getString(R.string.passp_cache_notif_clear),
                     PendingIntent.getService(
-                        getApplicationContext(),
-                        0,
-                        intent,
-                        PendingIntent.FLAG_UPDATE_CURRENT
+                            getApplicationContext(),
+                            0,
+                            intent,
+                            PendingIntent.FLAG_UPDATE_CURRENT
                     )
-                );
-
-                notificationManager.notify(NOTIFICATION_ID, builder.build());
-            } else { // Fallback, since expandable notifications weren't available back then
-                NotificationCompat.Builder builder = new NotificationCompat.Builder(this);
-
-                builder.setSmallIcon(R.drawable.ic_launcher)
-                    .setContentTitle(String.format(getString(R.string.passp_cache_notif_n_keys, mPassphraseCache.size())))
+            );
+        } else {
+            // Fallback, since expandable notifications weren't available back then
+            builder.setSmallIcon(R.drawable.ic_launcher)
+                    .setContentTitle(String.format(getString(R.string.passp_cache_notif_n_keys,
+                            mPassphraseCache.size())))
                     .setContentText(getString(R.string.passp_cache_notif_click_to_clear));
 
-                Intent intent = new Intent(getApplicationContext(), PassphraseCacheService.class);
-                intent.setAction(ACTION_PASSPHRASE_CACHE_CLEAR);
+            Intent intent = new Intent(getApplicationContext(), PassphraseCacheService.class);
+            intent.setAction(ACTION_PASSPHRASE_CACHE_CLEAR);
 
-                builder.setContentIntent(
+            builder.setContentIntent(
                     PendingIntent.getService(
-                        getApplicationContext(),
-                        0,
-                        intent,
-                        PendingIntent.FLAG_UPDATE_CURRENT
+                            getApplicationContext(),
+                            0,
+                            intent,
+                            PendingIntent.FLAG_UPDATE_CURRENT
                     )
-                );
-
-                notificationManager.notify(NOTIFICATION_ID, builder.build());
-            }
-
-        } else {
-            notificationManager.cancel(NOTIFICATION_ID);
+            );
         }
+
+        return builder.build();
     }
 
     @Override
@@ -455,6 +448,7 @@ public class PassphraseCacheService extends Service {
         public String getPrimaryUserID() {
             return primaryUserID;
         }
+
         public String getPassphrase() {
             return passphrase;
         }
@@ -462,6 +456,7 @@ public class PassphraseCacheService extends Service {
         public void setPrimaryUserID(String primaryUserID) {
             this.primaryUserID = primaryUserID;
         }
+
         public void setPassphrase(String passphrase) {
             this.passphrase = passphrase;
         }
