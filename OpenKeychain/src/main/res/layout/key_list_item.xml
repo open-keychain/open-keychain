@@ -58,9 +58,9 @@
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/verified"
+            android:id="@+id/status_image"
             android:layout_gravity="center"
-            android:src="@drawable/key_certify_ok_depth0"
+            android:src="@drawable/status_signature_verified_cutout"
             android:padding="16dp" />
     </FrameLayout>
 

@@ -22,6 +22,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -437,7 +438,7 @@ public class KeyListFragment extends LoaderFragment
             TextView mMainUserIdRest;
             FrameLayout mStatusLayout;
             TextView mRevoked;
-            ImageView mVerified;
+            ImageView mStatus;
         }
 
         @Override
@@ -448,7 +449,7 @@ public class KeyListFragment extends LoaderFragment
             holder.mMainUserIdRest = (TextView) view.findViewById(R.id.mainUserIdRest);
             holder.mStatusLayout = (FrameLayout) view.findViewById(R.id.status_layout);
             holder.mRevoked = (TextView) view.findViewById(R.id.revoked);
-            holder.mVerified = (ImageView) view.findViewById(R.id.verified);
+            holder.mStatus = (ImageView) view.findViewById(R.id.status_image);
             view.setTag(holder);
             return view;
         }
@@ -486,7 +487,7 @@ public class KeyListFragment extends LoaderFragment
                     // this is a secret key
                     h.mStatusLayout.setVisibility(View.VISIBLE);
                     h.mRevoked.setVisibility(View.GONE);
-                    h.mVerified.setVisibility(View.GONE);
+                    h.mStatus.setVisibility(View.GONE);
                 } else {
                     // this is a public key - show if it's revoked
 
@@ -496,13 +497,17 @@ public class KeyListFragment extends LoaderFragment
                     if(isRevoked || isExpired) {
                         h.mStatusLayout.setVisibility(View.VISIBLE);
                         h.mRevoked.setVisibility(View.VISIBLE);
-                        h.mVerified.setVisibility(View.GONE);
+                        h.mStatus.setVisibility(View.GONE);
                         h.mRevoked.setText(isRevoked ? R.string.revoked : R.string.expired);
                     } else {
                         boolean isVerified = cursor.getInt(INDEX_VERIFIED) > 0;
                         h.mStatusLayout.setVisibility(isVerified ? View.VISIBLE : View.GONE);
                         h.mRevoked.setVisibility(View.GONE);
-                        h.mVerified.setVisibility(isVerified ? View.VISIBLE : View.GONE);
+                        h.mStatus.setVisibility(isVerified ? View.VISIBLE : View.GONE);
+                        if (isVerified) {
+                            h.mStatus.setColorFilter(getResources().getColor(R.color.result_green),
+                                    PorterDuff.Mode.MULTIPLY);
+                        }
                     }
                 }
             }
