@@ -19,7 +19,6 @@ package org.sufficientlysecure.keychain.ui;
 
 import android.annotation.TargetApi;
 import android.content.Intent;
-import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Color;
@@ -53,7 +52,6 @@ import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.KeychainContract.Keys;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.ui.dialog.ShareNfcDialogFragment;
-import org.sufficientlysecure.keychain.ui.dialog.ShareQrCodeDialogFragment;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.QrCodeUtils;
 
@@ -214,8 +212,11 @@ public class ViewKeyShareFragment extends LoaderFragment implements
     }
 
     private void showQrCodeDialog() {
-        ShareQrCodeDialogFragment dialog = ShareQrCodeDialogFragment.newInstance(mDataUri);
-        dialog.show(ViewKeyShareFragment.this.getActivity().getSupportFragmentManager(), "shareQrCodeDialog");
+//        ShareQrCodeDialogFragment dialog = ShareQrCodeDialogFragment.newInstance(mDataUri);
+//        dialog.show(ViewKeyShareFragment.this.getActivity().getSupportFragmentManager(), "shareQrCodeDialog");
+        Intent qrCodeIntent = new Intent(getActivity(), QrCodeActivity.class);
+        qrCodeIntent.setData(mDataUri);
+        startActivity(qrCodeIntent);
     }
 
     private void showNfcHelpDialog() {

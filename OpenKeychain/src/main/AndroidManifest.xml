@@ -103,6 +103,10 @@
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
             android:label="@string/title_edit_key" />
         <activity
+            android:name=".ui.QrCodeActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
+            android:label="@string/share_qr_code_dialog_title" />
+        <activity
             android:name=".ui.ViewKeyActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
             android:label="@string/title_key_details"
