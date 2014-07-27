@@ -109,6 +109,8 @@ public class KeyListActivity extends DrawerActivity {
                 return true;
 
             case R.id.menu_key_list_debug_first_time:
+                Preferences prefs = Preferences.getPreferences(this);
+                prefs.setFirstTime(true);
                 Intent intent = new Intent(this, FirstTimeActivity.class);
                 startActivity(intent);
                 finish();

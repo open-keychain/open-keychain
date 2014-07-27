@@ -58,7 +58,7 @@ public class EncryptFileFragment extends Fragment {
     public static final String ARG_FILENAME = "filename";
     public static final String ARG_ASCII_ARMOR = "ascii_armor";
 
-    private static final int RESULT_CODE_FILE = 0x00007003;
+    private static final int REQUEST_CODE_FILE = 0x00007003;
 
     private EncryptActivityInterface mEncryptInterface;
 
@@ -109,10 +109,10 @@ public class EncryptFileFragment extends Fragment {
         mBrowse.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 if (Constants.KITKAT) {
-                    FileHelper.openDocument(EncryptFileFragment.this, mInputUri, "*/*", RESULT_CODE_FILE);
+                    FileHelper.openDocument(EncryptFileFragment.this, mInputUri, "*/*", REQUEST_CODE_FILE);
                 } else {
                     FileHelper.openFile(EncryptFileFragment.this, mFilename.getText().toString(), "*/*",
-                            RESULT_CODE_FILE);
+                            REQUEST_CODE_FILE);
                 }
             }
         });
@@ -390,7 +390,7 @@ public class EncryptFileFragment extends Fragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
-            case RESULT_CODE_FILE: {
+            case REQUEST_CODE_FILE: {
                 if (resultCode == Activity.RESULT_OK && data != null) {
                     if (Constants.KITKAT) {
                         mInputUri = data.getData();

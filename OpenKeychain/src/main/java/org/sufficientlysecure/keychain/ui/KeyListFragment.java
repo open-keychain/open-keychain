@@ -86,6 +86,7 @@ public class KeyListFragment extends LoaderFragment
     private Button mButtonEmptyCreate;
     private Button mButtonEmptyImport;
 
+    public static final int REQUEST_CODE_CREATE_OR_IMPORT_KEY = 0x00007012;
 
     /**
      * Load custom layout with StickyListView from library
@@ -104,11 +105,8 @@ public class KeyListFragment extends LoaderFragment
 
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getActivity(), EditKeyActivityOld.class);
-                intent.setAction(EditKeyActivityOld.ACTION_CREATE_KEY);
-                intent.putExtra(EditKeyActivityOld.EXTRA_GENERATE_DEFAULT_KEYS, true);
-                intent.putExtra(EditKeyActivityOld.EXTRA_USER_IDS, ""); // show user id view
-                startActivityForResult(intent, 0);
+                Intent intent = new Intent(getActivity(), CreateKeyActivity.class);
+                startActivityForResult(intent, REQUEST_CODE_CREATE_OR_IMPORT_KEY);
             }
         });
         mButtonEmptyImport = (Button) view.findViewById(R.id.key_list_empty_button_import);
@@ -117,8 +115,8 @@ public class KeyListFragment extends LoaderFragment
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getActivity(), ImportKeysActivity.class);
-                intent.setAction(ImportKeysActivity.ACTION_IMPORT_KEY_FROM_FILE);
-                startActivityForResult(intent, 0);
+                intent.setAction(ImportKeysActivity.ACTION_IMPORT_KEY_FROM_FILE_AND_RETURN);
+                startActivityForResult(intent, REQUEST_CODE_CREATE_OR_IMPORT_KEY);
             }
         });
 

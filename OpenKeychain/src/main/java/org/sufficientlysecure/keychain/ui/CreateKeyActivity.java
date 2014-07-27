@@ -20,6 +20,7 @@ package org.sufficientlysecure.keychain.ui;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Message;
 import android.os.Messenger;
@@ -31,7 +32,11 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.Spinner;
+
+import com.devspark.appmsg.AppMsg;
 
 import org.spongycastle.bcpg.sig.KeyFlags;
 import org.sufficientlysecure.keychain.Constants;
@@ -48,7 +53,8 @@ public class CreateKeyActivity extends ActionBarActivity {
     AutoCompleteTextView mNameEdit;
     AutoCompleteTextView mEmailEdit;
     EditText mPassphraseEdit;
-    Button mCreateButton;
+    View mCreateButton;
+    CheckBox mUploadCheckbox;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,7 +65,8 @@ public class CreateKeyActivity extends ActionBarActivity {
         mNameEdit = (AutoCompleteTextView) findViewById(R.id.name);
         mEmailEdit = (AutoCompleteTextView) findViewById(R.id.email);
         mPassphraseEdit = (EditText) findViewById(R.id.passphrase);
-        mCreateButton = (Button) findViewById(R.id.create_key_button);
+        mCreateButton = findViewById(R.id.create_key_button);
+        mUploadCheckbox = (CheckBox) findViewById(R.id.create_key_upload);
 
         mEmailEdit.setThreshold(1); // Start working from first character
         mEmailEdit.setAdapter(
@@ -134,10 +141,15 @@ public class CreateKeyActivity extends ActionBarActivity {
                 // handle messages by standard KeychainIntentServiceHandler first
                 super.handleMessage(message);
 
-                if (message.arg1 == KeychainIntentServiceHandler.MESSAGE_OKAY) {
-                    CreateKeyActivity.this.setResult(RESULT_OK);
-                    CreateKeyActivity.this.finish();
-                }
+                // TODO
+//                if (mUploadCheckbox.isChecked()) {
+//                    uploadKey();
+//                } else {
+                    if (message.arg1 == KeychainIntentServiceHandler.MESSAGE_OKAY) {
+                        CreateKeyActivity.this.setResult(RESULT_OK);
+                        CreateKeyActivity.this.finish();
+                    }
+//                }
             }
         };
 
@@ -166,6 +178,54 @@ public class CreateKeyActivity extends ActionBarActivity {
         startService(intent);
     }
 
+    private void uploadKey() {
+        // Send all information needed to service to upload key in other thread
+        Intent intent = new Intent(this, KeychainIntentService.class);
+
+        intent.setAction(KeychainIntentService.ACTION_UPLOAD_KEYRING);
+
+        // set data uri as path to keyring
+        // TODO
+//        Uri blobUri = KeychainContract.KeyRingData.buildPublicKeyRingUri(mDataUri);
+//        intent.setData(blobUri);
+
+        // fill values for this action
+        Bundle data = new Bundle();
+
+        Spinner keyServer = (Spinner) findViewById(R.id.upload_key_keyserver);
+        String server = (String) keyServer.getSelectedItem();
+        data.putString(KeychainIntentService.UPLOAD_KEY_SERVER, server);
+
+        intent.putExtra(KeychainIntentService.EXTRA_DATA, data);
+
+        // Message is received after uploading is done in KeychainIntentService
+        KeychainIntentServiceHandler saveHandler = new KeychainIntentServiceHandler(this,
+                getString(R.string.progress_exporting), ProgressDialog.STYLE_HORIZONTAL) {
+            public void handleMessage(Message message) {
+                // handle messages by standard KeychainIntentServiceHandler first
+                super.handleMessage(message);
+
+                if (message.arg1 == KeychainIntentServiceHandler.MESSAGE_OKAY) {
+                    AppMsg.makeText(CreateKeyActivity.this, R.string.key_send_success,
+                            AppMsg.STYLE_INFO).show();
+
+                    CreateKeyActivity.this.setResult(RESULT_OK);
+                    CreateKeyActivity.this.finish();
+                }
+            }
+        };
+
+        // Create a new Messenger for the communication back
+        Messenger messenger = new Messenger(saveHandler);
+        intent.putExtra(KeychainIntentService.EXTRA_MESSENGER, messenger);
+
+        // show progress dialog
+        saveHandler.showProgressDialog(this);
+
+        // start service with intent
+        startService(intent);
+    }
+
     /**
      * Checks if text of given EditText is not empty. If it is empty an error is
      * set and the EditText gets the focus.
@@ -177,7 +237,7 @@ public class CreateKeyActivity extends ActionBarActivity {
     private static boolean isEditTextNotEmpty(Context context, EditText editText) {
         boolean output = true;
         if (editText.getText().toString().length() == 0) {
-            editText.setError("empty!");
+            editText.setError(context.getString(R.string.create_key_empty));
             editText.requestFocus();
             output = false;
         } else {

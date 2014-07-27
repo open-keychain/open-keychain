@@ -487,6 +487,11 @@
         <item>Revoke Subkey</item>
     </string-array>
 
+    <!-- Create key -->
+    <string name="create_key_text">Enter Full Name, Email and Passphrase!</string>
+    <string name="create_key_upload">Upload key to keyserver</string>
+    <string name="create_key_empty">This field is required</string>
+
     <!-- Navigation Drawer -->
     <string name="nav_keys">Keys</string>
     <string name="nav_encrypt">Sign and Encrypt</string>

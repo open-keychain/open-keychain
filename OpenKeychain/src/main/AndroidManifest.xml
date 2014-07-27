@@ -89,7 +89,11 @@
             android:name=".ui.CreateKeyActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
             android:label="@string/title_create_key"
-            android:windowSoftInputMode="stateHidden" />
+            android:windowSoftInputMode="stateHidden">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".ui.KeyListActivity" />
+        </activity>
         <activity
             android:name=".ui.EditKeyActivityOld"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"

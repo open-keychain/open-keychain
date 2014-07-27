@@ -24,14 +24,18 @@ import android.view.View;
 import android.view.Window;
 import android.widget.Button;
 
+import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.helper.Preferences;
+import org.sufficientlysecure.keychain.util.Log;
 
 public class FirstTimeActivity extends ActionBarActivity {
 
     Button mCreateKey;
     Button mImportKey;
     Button mSkipSetup;
+
+    public static final int REQUEST_CODE_CREATE_OR_IMPORT_KEY = 0x00007012;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,7 +61,7 @@ public class FirstTimeActivity extends ActionBarActivity {
             public void onClick(View v) {
                 Intent intent = new Intent(FirstTimeActivity.this, ImportKeysActivity.class);
                 intent.setAction(ImportKeysActivity.ACTION_IMPORT_KEY_FROM_FILE_AND_RETURN);
-                startActivityForResult(intent, 1);
+                startActivityForResult(intent, REQUEST_CODE_CREATE_OR_IMPORT_KEY);
             }
         });
 
@@ -65,7 +69,7 @@ public class FirstTimeActivity extends ActionBarActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(FirstTimeActivity.this, CreateKeyActivity.class);
-                startActivityForResult(intent, 1);
+                startActivityForResult(intent, REQUEST_CODE_CREATE_OR_IMPORT_KEY);
             }
         });
 
@@ -75,8 +79,12 @@ public class FirstTimeActivity extends ActionBarActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (resultCode == RESULT_OK) {
-            finishSetup();
+        if (requestCode == REQUEST_CODE_CREATE_OR_IMPORT_KEY) {
+            if (resultCode == RESULT_OK) {
+                finishSetup();
+            }
+        } else {
+            Log.e(Constants.TAG, "No valid request code!");
         }
     }
 
