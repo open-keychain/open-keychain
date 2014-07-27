@@ -22,6 +22,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="8dp"
+            android:imeOptions="actionNext"
             android:inputType="textPersonName"
             android:hint="@string/label_name"
             android:ems="10"
@@ -32,6 +33,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="8dp"
+            android:imeOptions="actionNext"
             android:hint="@string/label_email"
             android:ems="10"
             android:inputType="textEmailAddress" />
