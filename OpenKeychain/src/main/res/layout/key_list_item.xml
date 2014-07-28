@@ -43,7 +43,7 @@
         android:layout_height="wrap_content"
         android:id="@+id/status_image"
         android:layout_gravity="center"
-        android:src="@drawable/status_signature_verified_cutout"
+        android:src="@drawable/status_signature_revoked_cutout"
         android:padding="16dp" />
 
 </LinearLayout>

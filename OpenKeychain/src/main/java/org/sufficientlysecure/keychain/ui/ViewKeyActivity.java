@@ -22,6 +22,7 @@ import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.PorterDuff;
 import android.net.Uri;
 import android.nfc.NdefMessage;
 import android.nfc.NdefRecord;
@@ -43,6 +44,9 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.devspark.appmsg.AppMsg;
 
@@ -81,9 +85,11 @@ public class ViewKeyActivity extends ActionBarActivity implements
     private ViewPager mViewPager;
     private SlidingTabLayout mSlidingTabLayout;
     private PagerTabStripAdapter mTabsAdapter;
+
+    private LinearLayout mStatusLayout;
+    private TextView mStatusText;
+    private ImageView mStatusImage;
     private View mStatusDivider;
-    private View mStatusRevoked;
-    private View mStatusExpired;
 
     public static final int REQUEST_CODE_LOOKUP_KEY = 0x00007006;
 
@@ -115,9 +121,10 @@ public class ViewKeyActivity extends ActionBarActivity implements
 
         setContentView(R.layout.view_key_activity);
 
-        mStatusDivider = findViewById(R.id.status_divider);
-        mStatusRevoked = findViewById(R.id.view_key_revoked);
-        mStatusExpired = findViewById(R.id.view_key_expired);
+        mStatusLayout = (LinearLayout) findViewById(R.id.view_key_status_layout);
+        mStatusText = (TextView) findViewById(R.id.view_key_status_text);
+        mStatusImage = (ImageView) findViewById(R.id.view_key_status_image);
+        mStatusDivider = findViewById(R.id.view_key_status_divider);
 
         mViewPager = (ViewPager) findViewById(R.id.view_key_pager);
         mSlidingTabLayout = (SlidingTabLayout) findViewById(R.id.view_key_sliding_tab_layout);
@@ -515,22 +522,32 @@ public class ViewKeyActivity extends ActionBarActivity implements
                     String keyIdStr = PgpKeyHelper.convertKeyIdToHex(masterKeyId);
                     getSupportActionBar().setSubtitle(keyIdStr);
 
-                    // If this key is revoked, it cannot be used for anything!
-                    if (data.getInt(INDEX_UNIFIED_IS_REVOKED) != 0) {
-                        mStatusDivider.setVisibility(View.VISIBLE);
-                        mStatusRevoked.setVisibility(View.VISIBLE);
-                        mStatusExpired.setVisibility(View.GONE);
-                    } else {
-                        mStatusRevoked.setVisibility(View.GONE);
+                    boolean isRevoked = data.getInt(INDEX_UNIFIED_IS_REVOKED) > 0;
+                    boolean isExpired = !data.isNull(INDEX_UNIFIED_EXPIRY)
+                            && new Date(data.getLong(INDEX_UNIFIED_EXPIRY) * 1000).before(new Date());
 
-                        Date expiryDate = new Date(data.getLong(INDEX_UNIFIED_EXPIRY) * 1000);
-                        if (!data.isNull(INDEX_UNIFIED_EXPIRY) && expiryDate.before(new Date())) {
-                            mStatusDivider.setVisibility(View.VISIBLE);
-                            mStatusExpired.setVisibility(View.VISIBLE);
-                        } else {
-                            mStatusDivider.setVisibility(View.GONE);
-                            mStatusExpired.setVisibility(View.GONE);
-                        }
+                    // Note: order is important
+                    if (isRevoked) {
+                        mStatusDivider.setVisibility(View.VISIBLE);
+                        mStatusLayout.setVisibility(View.VISIBLE);
+                        mStatusText.setText(R.string.view_key_revoked);
+                        mStatusText.setTextColor(getResources().getColor(R.color.result_red));
+                        mStatusImage.setImageDrawable(
+                                getResources().getDrawable(R.drawable.status_signature_revoked));
+                        mStatusImage.setColorFilter(getResources().getColor(R.color.result_red),
+                                PorterDuff.Mode.SRC_ATOP);
+                    } else if (isExpired) {
+                        mStatusDivider.setVisibility(View.VISIBLE);
+                        mStatusLayout.setVisibility(View.VISIBLE);
+                        mStatusText.setText(R.string.view_key_expired);
+                        mStatusText.setTextColor(getResources().getColor(R.color.result_orange));
+                        mStatusImage.setImageDrawable(
+                                getResources().getDrawable(R.drawable.status_signature_expired_cutout));
+                        mStatusImage.setColorFilter(getResources().getColor(R.color.result_orange),
+                                PorterDuff.Mode.SRC_ATOP);
+                    } else {
+                        mStatusDivider.setVisibility(View.GONE);
+                        mStatusLayout.setVisibility(View.GONE);
                     }
 
                     break;

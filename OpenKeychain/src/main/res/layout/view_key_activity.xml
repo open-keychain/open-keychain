@@ -10,36 +10,36 @@
         android:layout_height="wrap_content"
         android:orientation="vertical" />
 
-    <TextView
-        android:layout_width="match_parent"
+    <LinearLayout
+        android:id="@+id/view_key_status_layout"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="This key is expired!"
-        android:id="@+id/view_key_expired"
-        android:textColor="@color/alert"
-        android:textAppearance="?android:attr/textAppearanceSmall"
-        android:gravity="center_vertical|center_horizontal"
+        android:layout_gravity="center"
         android:layout_marginTop="8dp"
         android:layout_marginBottom="8dp"
-        android:visibility="gone" />
+        android:orientation="horizontal">
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="This key has been revoked!"
-        android:id="@+id/view_key_revoked"
-        android:textColor="@color/alert"
-        android:textAppearance="?android:attr/textAppearanceSmall"
-        android:gravity="center_vertical|center_horizontal"
-        android:visibility="gone"
-        android:layout_marginTop="8dp"
-        android:layout_marginBottom="8dp" />
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/view_key_status_image" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/view_key_status_text"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="8dp"/>
+
+    </LinearLayout>
 
     <View
         android:layout_width="match_parent"
         android:layout_height="1dip"
         android:background="?android:attr/listDivider"
         android:visibility="gone"
-        android:id="@+id/status_divider" />
+        android:id="@+id/view_key_status_divider" />
 
     <org.sufficientlysecure.keychain.ui.widget.SlidingTabLayout
         android:id="@+id/view_key_sliding_tab_layout"
