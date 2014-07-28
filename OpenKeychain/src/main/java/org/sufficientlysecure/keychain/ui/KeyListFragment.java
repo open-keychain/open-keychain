@@ -492,23 +492,23 @@ public class KeyListFragment extends LoaderFragment
 
                     // Note: order is important!
                     if (isRevoked) {
-                        h.mStatus.setVisibility(View.VISIBLE);
                         h.mStatus.setImageDrawable(
                                 getResources().getDrawable(R.drawable.status_signature_revoked));
                         h.mStatus.setColorFilter(getResources().getColor(R.color.result_red),
                                 PorterDuff.Mode.SRC_ATOP);
-                    } else if (isExpired) {
                         h.mStatus.setVisibility(View.VISIBLE);
+                    } else if (isExpired) {
                         h.mStatus.setImageDrawable(
                                 getResources().getDrawable(R.drawable.status_signature_expired));
                         h.mStatus.setColorFilter(getResources().getColor(R.color.result_orange),
                                 PorterDuff.Mode.SRC_ATOP);
-                    } else if (isVerified) {
                         h.mStatus.setVisibility(View.VISIBLE);
+                    } else if (isVerified) {
                         h.mStatus.setImageDrawable(
                                 getResources().getDrawable(R.drawable.status_signature_verified));
                         h.mStatus.setColorFilter(getResources().getColor(R.color.result_green),
                                 PorterDuff.Mode.SRC_ATOP);
+                        h.mStatus.setVisibility(View.VISIBLE);
                     } else {
                         h.mStatus.setVisibility(View.GONE);
                     }
