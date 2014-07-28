@@ -506,7 +506,7 @@ public class KeyListFragment extends LoaderFragment
                         h.mStatus.setVisibility(isVerified ? View.VISIBLE : View.GONE);
                         if (isVerified) {
                             h.mStatus.setColorFilter(getResources().getColor(R.color.result_green),
-                                    PorterDuff.Mode.MULTIPLY);
+                                    PorterDuff.Mode.SRC_ATOP);
                         }
                     }
                 }
