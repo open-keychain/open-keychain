@@ -413,7 +413,8 @@ public class PgpKeyOperation {
                     }
 
                     // if this is~ the/a primary user id
-                    if (currentCert.hasSubpackets() && currentCert.getHashedSubPackets().isPrimaryUserID()) {
+                    if (currentCert.getHashedSubPackets() != null
+                            && currentCert.getHashedSubPackets().isPrimaryUserID()) {
                         // if it's the one we want, just leave it as is
                         if (userId.equals(saveParcel.mChangePrimaryUserId)) {
                             ok = true;
@@ -740,7 +741,7 @@ public class PgpKeyOperation {
         int flags = 0;
         //noinspection unchecked
         for(PGPSignature sig : new IterableIterator<PGPSignature>(key.getSignatures())) {
-            if (!sig.hasSubpackets()) {
+            if (sig.getHashedSubPackets() == null) {
                 continue;
             }
             flags |= sig.getHashedSubPackets().getKeyFlags();
