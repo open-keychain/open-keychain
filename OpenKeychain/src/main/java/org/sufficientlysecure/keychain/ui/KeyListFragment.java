@@ -436,8 +436,6 @@ public class KeyListFragment extends LoaderFragment
         private class ItemViewHolder {
             TextView mMainUserId;
             TextView mMainUserIdRest;
-            FrameLayout mStatusLayout;
-            TextView mRevoked;
             ImageView mStatus;
         }
 
@@ -447,8 +445,6 @@ public class KeyListFragment extends LoaderFragment
             ItemViewHolder holder = new ItemViewHolder();
             holder.mMainUserId = (TextView) view.findViewById(R.id.mainUserId);
             holder.mMainUserIdRest = (TextView) view.findViewById(R.id.mainUserIdRest);
-            holder.mStatusLayout = (FrameLayout) view.findViewById(R.id.status_layout);
-            holder.mRevoked = (TextView) view.findViewById(R.id.revoked);
             holder.mStatus = (ImageView) view.findViewById(R.id.status_image);
             view.setTag(holder);
             return view;
@@ -485,29 +481,36 @@ public class KeyListFragment extends LoaderFragment
 
                 if (cursor.getInt(KeyListFragment.INDEX_HAS_ANY_SECRET) != 0) {
                     // this is a secret key
-                    h.mStatusLayout.setVisibility(View.VISIBLE);
-                    h.mRevoked.setVisibility(View.GONE);
                     h.mStatus.setVisibility(View.GONE);
                 } else {
-                    // this is a public key - show if it's revoked
+                    // this is a public key - show if it's revoked, expired, or verified
 
                     boolean isRevoked = cursor.getInt(INDEX_IS_REVOKED) > 0;
                     boolean isExpired = !cursor.isNull(INDEX_EXPIRY)
                             && new Date(cursor.getLong(INDEX_EXPIRY)*1000).before(new Date());
-                    if(isRevoked || isExpired) {
-                        h.mStatusLayout.setVisibility(View.VISIBLE);
-                        h.mRevoked.setVisibility(View.VISIBLE);
-                        h.mStatus.setVisibility(View.GONE);
-                        h.mRevoked.setText(isRevoked ? R.string.revoked : R.string.expired);
+                    boolean isVerified = cursor.getInt(INDEX_VERIFIED) > 0;
+
+                    // Note: order is important!
+                    if (isRevoked) {
+                        h.mStatus.setVisibility(View.VISIBLE);
+                        h.mStatus.setImageDrawable(
+                                getResources().getDrawable(R.drawable.status_signature_revoked_cutout));
+                        h.mStatus.setColorFilter(getResources().getColor(R.color.result_red),
+                                PorterDuff.Mode.SRC_ATOP);
+                    } else if (isExpired) {
+                        h.mStatus.setVisibility(View.VISIBLE);
+                        h.mStatus.setImageDrawable(
+                                getResources().getDrawable(R.drawable.status_signature_expired_cutout));
+                        h.mStatus.setColorFilter(getResources().getColor(R.color.result_orange),
+                                PorterDuff.Mode.SRC_ATOP);
+                    } else if (isVerified) {
+                        h.mStatus.setVisibility(View.VISIBLE);
+                        h.mStatus.setImageDrawable(
+                                getResources().getDrawable(R.drawable.status_signature_verified_cutout));
+                        h.mStatus.setColorFilter(getResources().getColor(R.color.result_green),
+                                PorterDuff.Mode.SRC_ATOP);
                     } else {
-                        boolean isVerified = cursor.getInt(INDEX_VERIFIED) > 0;
-                        h.mStatusLayout.setVisibility(isVerified ? View.VISIBLE : View.GONE);
-                        h.mRevoked.setVisibility(View.GONE);
-                        h.mStatus.setVisibility(isVerified ? View.VISIBLE : View.GONE);
-                        if (isVerified) {
-                            h.mStatus.setColorFilter(getResources().getColor(R.color.result_green),
-                                    PorterDuff.Mode.SRC_ATOP);
-                        }
+                        h.mStatus.setVisibility(View.GONE);
                     }
                 }
             }
