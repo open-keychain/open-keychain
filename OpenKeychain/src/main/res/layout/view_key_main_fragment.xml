@@ -35,20 +35,49 @@
             android:layout_height="1dip"
             android:background="?android:attr/listDivider" />
 
-        <TextView
+        <!--<TextView-->
+            <!--android:id="@+id/view_key_action_certify"-->
+            <!--android:paddingLeft="8dp"-->
+            <!--android:paddingRight="8dp"-->
+            <!--android:textAppearance="?android:attr/textAppearanceMedium"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="match_parent"-->
+            <!--android:text="@string/key_view_action_certify"-->
+            <!--android:minHeight="?android:attr/listPreferredItemHeight"-->
+            <!--android:drawableRight="@drawable/ic_action_good"-->
+            <!--android:drawablePadding="8dp"-->
+            <!--android:gravity="center_vertical"-->
+            <!--android:clickable="true"-->
+            <!--style="@style/SelectableItem" />-->
+
+        <LinearLayout
             android:id="@+id/view_key_action_certify"
-            android:paddingLeft="8dp"
-            android:paddingRight="8dp"
-            android:textAppearance="?android:attr/textAppearanceMedium"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:text="@string/key_view_action_certify"
-            android:minHeight="?android:attr/listPreferredItemHeight"
-            android:drawableRight="@drawable/ic_action_good"
-            android:drawablePadding="8dp"
-            android:gravity="center_vertical"
+            android:layout_height="?android:attr/listPreferredItemHeight"
             android:clickable="true"
-            style="@style/SelectableItem" />
+            android:paddingRight="4dp"
+            style="@style/SelectableItem"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/view_key_action_certify_text"
+                android:paddingLeft="8dp"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:layout_width="0dip"
+                android:layout_height="match_parent"
+                android:text="@string/key_view_action_certify"
+                android:layout_weight="1"
+                android:gravity="center_vertical" />
+
+            <ImageView
+                android:id="@+id/view_key_action_certify_image"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:padding="8dp"
+                android:src="@drawable/status_signature_verified_cutout"
+                android:layout_gravity="center_vertical" />
+
+        </LinearLayout>
 
         <TextView
             style="@style/SectionHeader"
