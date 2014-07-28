@@ -20,6 +20,7 @@ package org.sufficientlysecure.keychain.ui;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.PorterDuff;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -37,6 +38,7 @@ import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -64,7 +66,8 @@ import java.util.ArrayList;
  */
 public class CertifyKeyActivity extends ActionBarActivity implements
         SelectSecretKeyLayoutFragment.SelectSecretKeyCallback, LoaderManager.LoaderCallbacks<Cursor> {
-    private View mSignButton;
+    private View mCertifyButton;
+    private ImageView mActionCertifyImage;
     private CheckBox mUploadKeyCheckbox;
     private Spinner mSelectKeyserverSpinner;
 
@@ -88,10 +91,19 @@ public class CertifyKeyActivity extends ActionBarActivity implements
 
         mSelectKeyFragment = (SelectSecretKeyLayoutFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.sign_key_select_key_fragment);
+        mSelectKeyserverSpinner = (Spinner) findViewById(R.id.upload_key_keyserver);
+        mUploadKeyCheckbox = (CheckBox) findViewById(R.id.sign_key_upload_checkbox);
+        mCertifyButton = findViewById(R.id.certify_key_certify_button);
+        mActionCertifyImage = (ImageView) findViewById(R.id.certify_key_action_certify_image);
+        mUserIds = (ListView) findViewById(R.id.view_key_user_ids);
+
+        // make certify image gray, like action icons
+        mActionCertifyImage.setColorFilter(getResources().getColor(R.color.tertiary_text_light),
+                PorterDuff.Mode.SRC_IN);
+
         mSelectKeyFragment.setCallback(this);
         mSelectKeyFragment.setFilterCertify(true);
 
-        mSelectKeyserverSpinner = (Spinner) findViewById(R.id.upload_key_keyserver);
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
                 android.R.layout.simple_spinner_item, Preferences.getPreferences(this)
                 .getKeyServers()
@@ -99,7 +111,6 @@ public class CertifyKeyActivity extends ActionBarActivity implements
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         mSelectKeyserverSpinner.setAdapter(adapter);
 
-        mUploadKeyCheckbox = (CheckBox) findViewById(R.id.sign_key_upload_checkbox);
         if (!mUploadKeyCheckbox.isChecked()) {
             mSelectKeyserverSpinner.setEnabled(false);
         } else {
@@ -118,8 +129,7 @@ public class CertifyKeyActivity extends ActionBarActivity implements
             }
         });
 
-        mSignButton = findViewById(R.id.sign_key_sign_button);
-        mSignButton.setOnClickListener(new OnClickListener() {
+        mCertifyButton.setOnClickListener(new OnClickListener() {
 
             @Override
             public void onClick(View v) {
@@ -141,7 +151,6 @@ public class CertifyKeyActivity extends ActionBarActivity implements
         }
         Log.e(Constants.TAG, "uri: " + mDataUri);
 
-        mUserIds = (ListView) findViewById(R.id.view_key_user_ids);
 
         mUserIdsAdapter = new UserIdsAdapter(this, null, 0, true);
         mUserIds.setAdapter(mUserIdsAdapter);
@@ -230,7 +239,8 @@ public class CertifyKeyActivity extends ActionBarActivity implements
                                 startSigning();
                             }
                         }
-                    });
+                    }
+            );
             // bail out; need to wait until the user has entered the passphrase before trying again
             return;
         } else {

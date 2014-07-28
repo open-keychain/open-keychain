@@ -19,6 +19,8 @@ package org.sufficientlysecure.keychain.ui.adapter;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.graphics.PorterDuff;
+import android.graphics.Typeface;
 import android.support.v4.widget.CursorAdapter;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -156,7 +158,10 @@ public class UserIdsAdapter extends CursorAdapter implements AdapterView.OnItemC
 
         if (isRevoked) {
             // set revocation icon (can this even be primary?)
-            vVerified.setImageResource(R.drawable.key_certify_revoke);
+            vVerified.setImageResource(R.drawable.status_signature_revoked_cutout);
+            vVerified.setColorFilter(
+                    mContext.getResources().getColor(R.color.bg_gray),
+                    PorterDuff.Mode.SRC_IN);
 
             // disable and strike through text for revoked user ids
             vName.setEnabled(false);
@@ -170,22 +175,33 @@ public class UserIdsAdapter extends CursorAdapter implements AdapterView.OnItemC
             vAddress.setEnabled(true);
             vComment.setEnabled(true);
 
-            // verified: has been verified
-            // isPrimary: show small star icon for primary user ids
-            int verified = cursor.getInt(INDEX_VERIFIED);
-            switch (verified) {
+            if (isPrimary) {
+                vName.setTypeface(null, Typeface.BOLD);
+                vAddress.setTypeface(null, Typeface.BOLD);
+            } else {
+                vName.setTypeface(null, Typeface.NORMAL);
+                vAddress.setTypeface(null, Typeface.NORMAL);
+            }
+
+            int isVerified = cursor.getInt(INDEX_VERIFIED);
+            switch (isVerified) {
                 case Certs.VERIFIED_SECRET:
-                    vVerified.setImageResource(isPrimary
-                            ? R.drawable.key_certify_primary_ok_depth0
-                            : R.drawable.key_certify_ok_depth0);
+                    vVerified.setImageResource(R.drawable.status_signature_verified_cutout);
+                    vVerified.setColorFilter(
+                            mContext.getResources().getColor(R.color.result_green),
+                            PorterDuff.Mode.SRC_IN);
                     break;
                 case Certs.VERIFIED_SELF:
-                    vVerified.setImageResource(isPrimary
-                            ? R.drawable.key_certify_primary_ok_self
-                            : R.drawable.key_certify_ok_self);
+                    vVerified.setImageResource(R.drawable.status_signature_unverified_cutout);
+                    vVerified.setColorFilter(
+                            mContext.getResources().getColor(R.color.bg_gray),
+                            PorterDuff.Mode.SRC_IN);
                     break;
                 default:
-                    vVerified.setImageResource(R.drawable.key_certify_error);
+                    vVerified.setImageResource(R.drawable.status_signature_invalid_cutout);
+                    vVerified.setColorFilter(
+                            mContext.getResources().getColor(R.color.result_red),
+                            PorterDuff.Mode.SRC_IN);
                     break;
             }
         }

@@ -531,7 +531,7 @@ public class ViewKeyActivity extends ActionBarActivity implements
                         mStatusText.setText(R.string.view_key_revoked);
                         mStatusText.setTextColor(getResources().getColor(R.color.result_red));
                         mStatusImage.setImageDrawable(
-                                getResources().getDrawable(R.drawable.status_signature_revoked));
+                                getResources().getDrawable(R.drawable.status_signature_revoked_cutout));
                         mStatusImage.setColorFilter(getResources().getColor(R.color.result_red),
                                 PorterDuff.Mode.SRC_ATOP);
                         mStatusDivider.setVisibility(View.VISIBLE);
