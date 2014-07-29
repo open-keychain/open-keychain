@@ -100,7 +100,7 @@ public class QrCodeActivity extends ActionBarActivity {
         super.onResume();
 
         // custom activity transition to get zoom in effect
-        this.overridePendingTransition(R.anim.zoom_enter, android.R.anim.fade_out);
+        this.overridePendingTransition(R.anim.qr_code_zoom_enter, android.R.anim.fade_out);
     }
 
     @Override
@@ -108,7 +108,7 @@ public class QrCodeActivity extends ActionBarActivity {
         super.onPause();
 
         // custom activity transition to get zoom out effect
-        this.overridePendingTransition(0, R.anim.zoom_exit);
+        this.overridePendingTransition(0, R.anim.qr_code_zoom_exit);
     }
 
 }
