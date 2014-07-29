@@ -20,7 +20,6 @@ package org.sufficientlysecure.keychain.ui;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Message;
 import android.os.Messenger;
@@ -31,12 +30,9 @@ import android.util.Patterns;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
-import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Spinner;
-
-import com.devspark.appmsg.AppMsg;
 
 import org.spongycastle.bcpg.sig.KeyFlags;
 import org.sufficientlysecure.keychain.Constants;
@@ -45,6 +41,7 @@ import org.sufficientlysecure.keychain.helper.ContactHelper;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
 import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
+import org.sufficientlysecure.keychain.util.Notify;
 
 import java.util.regex.Matcher;
 
@@ -206,8 +203,8 @@ public class CreateKeyActivity extends ActionBarActivity {
                 super.handleMessage(message);
 
                 if (message.arg1 == KeychainIntentServiceHandler.MESSAGE_OKAY) {
-                    AppMsg.makeText(CreateKeyActivity.this, R.string.key_send_success,
-                            AppMsg.STYLE_INFO).show();
+                    Notify.showNotify(CreateKeyActivity.this, R.string.key_send_success,
+                            Notify.Style.INFO);
 
                     CreateKeyActivity.this.setResult(RESULT_OK);
                     CreateKeyActivity.this.finish();

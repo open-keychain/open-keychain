@@ -23,8 +23,6 @@ import android.support.v7.app.ActionBarActivity;
 import android.view.View;
 import android.widget.ImageView;
 
-import com.devspark.appmsg.AppMsg;
-
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.helper.ActionBarHelper;
@@ -32,6 +30,8 @@ import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.util.Log;
+import org.sufficientlysecure.keychain.util.Notify;
+import org.sufficientlysecure.keychain.util.Notify.Style;
 import org.sufficientlysecure.keychain.util.QrCodeUtils;
 
 public class QrCodeActivity extends ActionBarActivity {
@@ -81,7 +81,7 @@ public class QrCodeActivity extends ActionBarActivity {
                     KeychainContract.KeyRings.FINGERPRINT, ProviderHelper.FIELD_TYPE_BLOB);
             if (blob == null) {
                 Log.e(Constants.TAG, "key not found!");
-                AppMsg.makeText(this, R.string.error_key_not_found, AppMsg.STYLE_ALERT).show();
+                Notify.showNotify(this, R.string.error_key_not_found, Style.ERROR);
                 finish();
             }
 
@@ -90,7 +90,7 @@ public class QrCodeActivity extends ActionBarActivity {
             mFingerprintQrCode.setImageBitmap(QrCodeUtils.getQRCodeBitmap(qrCodeContent, QR_CODE_SIZE));
         } catch (ProviderHelper.NotFoundException e) {
             Log.e(Constants.TAG, "key not found!", e);
-            AppMsg.makeText(this, R.string.error_key_not_found, AppMsg.STYLE_ALERT).show();
+            Notify.showNotify(this, R.string.error_key_not_found, Style.ERROR);
             finish();
         }
     }
