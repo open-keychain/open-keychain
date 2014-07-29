@@ -68,7 +68,8 @@ public class CreateKeyActivity extends ActionBarActivity {
                 transaction.setCustomAnimations(R.anim.frag_slide_in_from_left, R.anim.frag_slide_out_to_right);
                 break;
             case ANIM_TO_RIGHT:
-                transaction.setCustomAnimations(R.anim.frag_slide_out_to_left, R.anim.frag_slide_in_from_right);
+                transaction.setCustomAnimations(R.anim.frag_slide_out_to_left, R.anim.frag_slide_in_from_right,
+                        R.anim.frag_slide_in_from_left, R.anim.frag_slide_out_to_right);
                 transaction.addToBackStack("back");
                 break;
 

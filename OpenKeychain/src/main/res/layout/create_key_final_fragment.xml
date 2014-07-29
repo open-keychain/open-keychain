@@ -53,16 +53,37 @@
                 android:layout_height="wrap_content"
                 android:text="max@musterman.com"
                 android:textAppearance="?android:attr/textAppearanceMedium"
-                android:layout_marginBottom="32dp"
+                android:layout_marginBottom="8dp"
                 android:layout_marginLeft="8dp" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dip"
+                android:background="?android:attr/listDivider" />
 
             <CheckBox
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
                 android:layout_marginBottom="8dp"
                 android:textAppearance="?android:attr/textAppearanceMedium"
                 android:text="@string/create_key_upload"
                 android:id="@+id/create_key_upload" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dip"
+                android:background="?android:attr/listDivider" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingTop="16dp"
+                android:paddingBottom="8dp"
+                android:text="Creating the key can take up to 3 Minutes, be patient!"
+                android:textColor="@color/result_orange"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:id="@+id/textView" />
 
         </LinearLayout>
     </ScrollView>
@@ -91,7 +112,7 @@
             android:gravity="center_vertical"
             android:clickable="true"
             style="@style/SelectableItem"
-            android:layout_gravity="center_vertical"/>
+            android:layout_gravity="center_vertical" />
 
         <View
             android:layout_width="1dp"
