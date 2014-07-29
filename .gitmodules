@@ -7,9 +7,6 @@
 [submodule "extern/zxing-qr-code"]
 	path = extern/zxing-qr-code
 	url = https://github.com/open-keychain/zxing-qr-code.git
-[submodule "extern/AppMsg"]
-	path = extern/AppMsg
-	url = https://github.com/open-keychain/Android-AppMsg.git
 [submodule "extern/spongycastle"]
 	path = extern/spongycastle
 	url = https://github.com/open-keychain/spongycastle.git

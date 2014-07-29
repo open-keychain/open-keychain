@@ -22,8 +22,6 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import com.devspark.appmsg.AppMsg;
-
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.helper.ExportHelper;
@@ -31,6 +29,7 @@ import org.sufficientlysecure.keychain.helper.Preferences;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainDatabase;
 import org.sufficientlysecure.keychain.util.Log;
+import org.sufficientlysecure.keychain.util.Notify;
 
 import java.io.IOException;
 
@@ -90,21 +89,21 @@ public class KeyListActivity extends DrawerActivity {
             case R.id.menu_key_list_debug_read:
                 try {
                     KeychainDatabase.debugRead(this);
-                    AppMsg.makeText(this, "Restored from backup", AppMsg.STYLE_CONFIRM).show();
+                    Notify.showNotify(this, "Restored Notify.Style backup", Notify.Style.INFO);
                     getContentResolver().notifyChange(KeychainContract.KeyRings.CONTENT_URI, null);
                 } catch (IOException e) {
                     Log.e(Constants.TAG, "IO Error", e);
-                    AppMsg.makeText(this, "IO Error: " + e.getMessage(), AppMsg.STYLE_ALERT).show();
+                    Notify.showNotify(this, "IO Notify.Style: " + e.getMessage(), Notify.Style.ERROR);
                 }
                 return true;
 
             case R.id.menu_key_list_debug_write:
                 try {
                     KeychainDatabase.debugWrite(this);
-                    AppMsg.makeText(this, "Backup successful", AppMsg.STYLE_CONFIRM).show();
-                } catch (IOException e) {
+                    Notify.showNotify(this, "Backup Notify.Style", Notify.Style.INFO);
+                } catch(IOException e) {
                     Log.e(Constants.TAG, "IO Error", e);
-                    AppMsg.makeText(this, "IO Error: " + e.getMessage(), AppMsg.STYLE_ALERT).show();
+                    Notify.showNotify(this, "IO Notify.Style: " + e.getMessage(), Notify.Style.ERROR);
                 }
                 return true;
 

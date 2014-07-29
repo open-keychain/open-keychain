@@ -1,10 +1,20 @@
 package org.sufficientlysecure.keychain.service;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.view.View;
+
+import com.github.johnpersano.supertoasts.SuperCardToast;
+import com.github.johnpersano.supertoasts.SuperToast;
+import com.github.johnpersano.supertoasts.util.OnClickWrapper;
+import com.github.johnpersano.supertoasts.util.Style;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.ui.LogDisplayActivity;
+import org.sufficientlysecure.keychain.ui.LogDisplayFragment;
 import org.sufficientlysecure.keychain.util.IterableIterator;
 import org.sufficientlysecure.keychain.util.Log;
 
@@ -24,6 +34,9 @@ import java.util.List;
  *
  */
 public class OperationResultParcel implements Parcelable {
+
+    public static final String EXTRA_RESULT = "operation_result";
+
     /** Holds the overall result, the number specifying varying degrees of success. The first bit
      * is 0 on overall success, 1 on overall failure. All other bits may be used for more specific
      * conditions. */
@@ -113,6 +126,68 @@ public class OperationResultParcel implements Parcelable {
         }
     }
 
+    public SuperCardToast createNotify(final Activity activity) {
+
+        int resultType = getResult();
+
+        String str;
+        int duration, color;
+
+        // Not an overall failure
+        if ((resultType & OperationResultParcel.RESULT_ERROR) == 0) {
+
+            if (getLog().containsWarnings()) {
+                duration = 0;
+                color = Style.ORANGE;
+            } else {
+                duration = SuperToast.Duration.LONG;
+                color = Style.GREEN;
+            }
+
+            str = "operation succeeded!";
+            // str = activity.getString(R.string.import_error);
+
+        } else {
+
+            duration = 0;
+            color = Style.RED;
+
+            str = "operation failed";
+            // str = activity.getString(R.string.import_error);
+
+        }
+
+        boolean button = getLog() != null && !getLog().isEmpty();
+        SuperCardToast toast = new SuperCardToast(activity,
+                button ? SuperToast.Type.BUTTON : SuperToast.Type.STANDARD,
+                Style.getStyle(color, SuperToast.Animations.POPUP));
+        toast.setText(str);
+        toast.setDuration(duration);
+        toast.setIndeterminate(duration == 0);
+        toast.setSwipeToDismiss(true);
+        // If we have a log and it's non-empty, show a View Log button
+        if (button) {
+            toast.setButtonIcon(R.drawable.ic_action_view_as_list,
+                    activity.getResources().getString(R.string.view_log));
+            toast.setButtonTextColor(activity.getResources().getColor(R.color.black));
+            toast.setTextColor(activity.getResources().getColor(R.color.black));
+            toast.setOnClickWrapper(new OnClickWrapper("supercardtoast",
+                    new SuperToast.OnClickListener() {
+                        @Override
+                        public void onClick(View view, Parcelable token) {
+                            Intent intent = new Intent(
+                                    activity, LogDisplayActivity.class);
+                            intent.putExtra(LogDisplayFragment.EXTRA_RESULT, OperationResultParcel.this);
+                            activity.startActivity(intent);
+                        }
+                    }
+            ));
+        }
+
+        return toast;
+
+    }
+
     /** This is an enum of all possible log events.
      *
      * Element names should generally be prefixed with MSG_XX_ where XX is an
@@ -131,6 +206,8 @@ public class OperationResultParcel implements Parcelable {
      *
      */
     public static enum LogType {
+
+        INTERNAL_ERROR (R.string.internal_error),
 
         // import public
         MSG_IP(R.string.msg_ip),

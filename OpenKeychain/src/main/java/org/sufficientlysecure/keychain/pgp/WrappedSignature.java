@@ -63,13 +63,17 @@ public class WrappedSignature {
         }
         try {
             PGPSignatureList list;
-            list = mSig.getHashedSubPackets().getEmbeddedSignatures();
-            for(int i = 0; i < list.size(); i++) {
-                sigs.add(new WrappedSignature(list.get(i)));
+            if (mSig.getHashedSubPackets() != null) {
+                list = mSig.getHashedSubPackets().getEmbeddedSignatures();
+                for (int i = 0; i < list.size(); i++) {
+                    sigs.add(new WrappedSignature(list.get(i)));
+                }
             }
-            list = mSig.getUnhashedSubPackets().getEmbeddedSignatures();
-            for(int i = 0; i < list.size(); i++) {
-                sigs.add(new WrappedSignature(list.get(i)));
+            if (mSig.getUnhashedSubPackets() != null) {
+                list = mSig.getUnhashedSubPackets().getEmbeddedSignatures();
+                for (int i = 0; i < list.size(); i++) {
+                    sigs.add(new WrappedSignature(list.get(i)));
+                }
             }
         } catch (PGPException e) {
             // no matter
@@ -96,6 +100,9 @@ public class WrappedSignature {
     public String getRevocationReason() throws PgpGeneralException {
         if(!isRevocation()) {
             throw new PgpGeneralException("Not a revocation signature.");
+        }
+        if (mSig.getHashedSubPackets() == null) {
+            return null;
         }
         SignatureSubpacket p = mSig.getHashedSubPackets().getSubpacket(
                 SignatureSubpacketTags.REVOCATION_REASON);
@@ -205,7 +212,7 @@ public class WrappedSignature {
     }
 
     public boolean isLocal() {
-        if (!mSig.hasSubpackets()
+        if (mSig.getHashedSubPackets() == null
                 || !mSig.getHashedSubPackets().hasSubpacket(SignatureSubpacketTags.EXPORTABLE)) {
             return false;
         }

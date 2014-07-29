@@ -31,14 +31,13 @@ import android.widget.CheckBox;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-import com.devspark.appmsg.AppMsg;
-
 import org.spongycastle.bcpg.sig.KeyFlags;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
 import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
+import org.sufficientlysecure.keychain.util.Notify;
 
 public class CreateKeyFinalFragment extends Fragment {
 
@@ -197,8 +196,8 @@ public class CreateKeyFinalFragment extends Fragment {
                 super.handleMessage(message);
 
                 if (message.arg1 == KeychainIntentServiceHandler.MESSAGE_OKAY) {
-                    AppMsg.makeText(getActivity(), R.string.key_send_success,
-                            AppMsg.STYLE_INFO).show();
+                    Notify.showNotify(getActivity(), R.string.key_send_success,
+                            Notify.Style.INFO);
 
                     getActivity().setResult(Activity.RESULT_OK);
                     getActivity().finish();

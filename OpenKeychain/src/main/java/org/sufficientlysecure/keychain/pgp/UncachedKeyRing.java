@@ -513,7 +513,8 @@ public class UncachedKeyRing {
                     }
 
                     // if this certificate says it allows signing for the key
-                    if (zert.getHashedSubPackets().hasSubpacket(SignatureSubpacketTags.KEY_FLAGS)) {
+                    if (zert.getHashedSubPackets() != null &&
+                            zert.getHashedSubPackets().hasSubpacket(SignatureSubpacketTags.KEY_FLAGS)) {
 
                         int flags = ((KeyFlags) zert.getHashedSubPackets()
                                 .getSubpacket(SignatureSubpacketTags.KEY_FLAGS)).getFlags();

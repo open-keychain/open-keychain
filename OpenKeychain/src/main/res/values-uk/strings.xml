@@ -352,7 +352,7 @@
   <string name="import_clipboard_button">Отримати ключ з буфера обміну</string>
   <string name="import_keybase_button">Отримати ключ із Keybase.io</string>
   <!--Import result toast-->
-  <string name="import_view_log">Переглянути журнал</string>
+  <string name="view_log">Переглянути журнал</string>
   <string name="import_error_nothing">Нема що імпортувати.</string>
   <string name="import_error">Помилка імпорту ключів!</string>
   <!--Intent labels-->

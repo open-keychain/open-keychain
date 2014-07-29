@@ -370,7 +370,7 @@
     <item quantity="one">Clave%2$s importada con éxito.</item>
     <item quantity="other">%1$d claves%2$s importadas con éxito.</item>
   </plurals>
-  <string name="import_view_log">Ver registro (log)</string>
+  <string name="view_log">Ver registro (log)</string>
   <string name="import_error_nothing">No hay nada que importar.</string>
   <string name="import_error">¡Error importando claves!</string>
   <string name="import_with_warnings">, con advertencias</string>
