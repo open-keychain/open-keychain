@@ -34,8 +34,6 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageButton;
 
-import com.devspark.appmsg.AppMsg;
-
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.helper.FileHelper;
@@ -129,7 +127,6 @@ public class DecryptFileFragment extends DecryptFragment {
         }
 
         if (mInputFilename.equals("")) {
-            //AppMsg.makeText(getActivity(), R.string.no_file_selected, AppMsg.STYLE_ALERT).show();
             Notify.showNotify(getActivity(), R.string.no_file_selected, Notify.Style.ERROR);
             return;
         }
@@ -137,11 +134,8 @@ public class DecryptFileFragment extends DecryptFragment {
         if (mInputUri == null && mInputFilename.startsWith("file")) {
             File file = new File(mInputFilename);
             if (!file.exists() || !file.isFile()) {
-                AppMsg.makeText(
-                        getActivity(),
-                        getString(R.string.error_message,
-                                getString(R.string.error_file_not_found)), AppMsg.STYLE_ALERT)
-                        .show();
+                Notify.showNotify(getActivity(), getString(R.string.error_message,
+                                getString(R.string.error_file_not_found)), Notify.Style.ERROR);
                 return;
             }
         }

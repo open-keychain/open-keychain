@@ -358,7 +358,7 @@
   <plurals name="import_keys_updated">
     <item quantity="other">%1$d の鍵%2$sのアップデートに成功。</item>
   </plurals>
-  <string name="import_view_log">ログを見る</string>
+  <string name="view_log">ログを見る</string>
   <string name="import_error_nothing">インポートするものがありません。</string>
   <string name="import_error">鍵のインポートのエラー!</string>
   <string name="import_with_warnings">、とワーニング</string>

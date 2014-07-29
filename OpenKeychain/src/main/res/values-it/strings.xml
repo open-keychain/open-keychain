@@ -354,7 +354,7 @@
   <string name="import_clipboard_button">Ottieni chiave dagli appunti</string>
   <string name="import_keybase_button">Ottieni chiave da Keybase.io</string>
   <!--Import result toast-->
-  <string name="import_view_log">Mostra registro</string>
+  <string name="view_log">Mostra registro</string>
   <string name="import_error_nothing">Niente da importare</string>
   <string name="import_error">Errore di importazione chiavi!</string>
   <string name="import_with_warnings">, con avvisi</string>

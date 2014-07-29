@@ -33,7 +33,7 @@ public class EditKeyActivity extends ActionBarActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.edit_key_activity_new);
+        setContentView(R.layout.edit_key_activity);
 
         Uri dataUri = getIntent().getData();
         if (dataUri == null) {

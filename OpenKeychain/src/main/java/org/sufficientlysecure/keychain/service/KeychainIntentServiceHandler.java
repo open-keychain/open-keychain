@@ -25,12 +25,11 @@ import android.os.Message;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 
-import com.devspark.appmsg.AppMsg;
-
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.ui.dialog.ProgressDialogFragment;
 import org.sufficientlysecure.keychain.util.Log;
+import org.sufficientlysecure.keychain.util.Notify;
 
 public class KeychainIntentServiceHandler extends Handler {
 
@@ -102,9 +101,9 @@ public class KeychainIntentServiceHandler extends Handler {
 
                 // show error from service
                 if (data.containsKey(DATA_ERROR)) {
-                    AppMsg.makeText(mActivity,
+                    Notify.showNotify(mActivity,
                             mActivity.getString(R.string.error_message, data.getString(DATA_ERROR)),
-                            AppMsg.STYLE_ALERT).show();
+                            Notify.Style.ERROR);
                 }
 
                 break;

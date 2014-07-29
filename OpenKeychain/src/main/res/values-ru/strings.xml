@@ -371,7 +371,7 @@
     <item quantity="few">и обновлено %1$d ключей%2$s.</item>
     <item quantity="other">и обновлено %1$d ключей%2$s.</item>
   </plurals>
-  <string name="import_view_log">Смотреть журнал</string>
+  <string name="view_log">Смотреть журнал</string>
   <string name="import_error_nothing">Нет данных для импорта.</string>
   <string name="import_error">Ошибка импорта ключей!</string>
   <string name="import_with_warnings">, с предупреждениями</string>

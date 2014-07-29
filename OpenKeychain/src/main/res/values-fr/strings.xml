@@ -358,7 +358,7 @@
     <item quantity="one">Clef importée avec succès</item>
     <item quantity="other">%1$d clefs importées avec succès</item>
   </plurals>
-  <string name="import_view_log">Consulter le journal</string>
+  <string name="view_log">Consulter le journal</string>
   <string name="import_error_nothing">Rien à importer.</string>
   <string name="import_error">Erreur lors de l\'importation des clefs !</string>
   <string name="import_with_warnings">, avec des avertissements</string>

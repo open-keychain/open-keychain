@@ -15,7 +15,6 @@ dependencies {
     compile project(':extern:spongycastle:pg')
     compile project(':extern:spongycastle:pkix')
     compile project(':extern:spongycastle:prov')
-    compile project(':extern:AppMsg:library')
     compile project(':extern:SuperToasts:supertoasts')
     compile project(':extern:minidns')
     compile project(':extern:KeybaseLib:Lib')

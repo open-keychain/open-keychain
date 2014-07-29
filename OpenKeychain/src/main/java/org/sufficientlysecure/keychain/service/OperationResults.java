@@ -12,12 +12,13 @@ import com.github.johnpersano.supertoasts.util.OnClickWrapper;
 import com.github.johnpersano.supertoasts.util.Style;
 
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
 import org.sufficientlysecure.keychain.ui.LogDisplayActivity;
 import org.sufficientlysecure.keychain.ui.LogDisplayFragment;
 
 public abstract class OperationResults {
 
-    public static class ImportResult extends OperationResultParcel {
+    public static class ImportKeyResult extends OperationResultParcel {
 
         public final int mNewKeys, mUpdatedKeys, mBadKeys;
 
@@ -47,15 +48,15 @@ public abstract class OperationResults {
             return (mResult & RESULT_FAIL_NOTHING) == RESULT_FAIL_NOTHING;
         }
 
-        public ImportResult(Parcel source) {
+        public ImportKeyResult(Parcel source) {
             super(source);
             mNewKeys = source.readInt();
             mUpdatedKeys = source.readInt();
             mBadKeys = source.readInt();
         }
 
-        public ImportResult(int result, OperationLog log,
-                            int newKeys, int updatedKeys, int badKeys) {
+        public ImportKeyResult(int result, OperationLog log,
+                               int newKeys, int updatedKeys, int badKeys) {
             super(result, log);
             mNewKeys = newKeys;
             mUpdatedKeys = updatedKeys;
@@ -70,17 +71,17 @@ public abstract class OperationResults {
             dest.writeInt(mBadKeys);
         }
 
-        public static Creator<ImportResult> CREATOR = new Creator<ImportResult>() {
-            public ImportResult createFromParcel(final Parcel source) {
-                return new ImportResult(source);
+        public static Creator<ImportKeyResult> CREATOR = new Creator<ImportKeyResult>() {
+            public ImportKeyResult createFromParcel(final Parcel source) {
+                return new ImportKeyResult(source);
             }
 
-            public ImportResult[] newArray(final int size) {
-                return new ImportResult[size];
+            public ImportKeyResult[] newArray(final int size) {
+                return new ImportKeyResult[size];
             }
         };
 
-        public void displayNotify(final Activity activity) {
+        public SuperCardToast createNotify(final Activity activity) {
 
             int resultType = getResult();
 
@@ -88,11 +89,11 @@ public abstract class OperationResults {
             int duration, color;
 
             // Not an overall failure
-            if ((resultType & ImportResult.RESULT_ERROR) == 0) {
+            if ((resultType & OperationResultParcel.RESULT_ERROR) == 0) {
                 String withWarnings;
 
                 // Any warnings?
-                if ((resultType & ImportResult.RESULT_WITH_WARNINGS) > 0) {
+                if ((resultType & ImportKeyResult.RESULT_WITH_WARNINGS) > 0) {
                     duration = 0;
                     color = Style.ORANGE;
                     withWarnings = activity.getResources().getString(R.string.import_with_warnings);
@@ -142,7 +143,7 @@ public abstract class OperationResults {
             // If we have a log and it's non-empty, show a View Log button
             if (button) {
                 toast.setButtonIcon(R.drawable.ic_action_view_as_list,
-                        activity.getResources().getString(R.string.import_view_log));
+                        activity.getResources().getString(R.string.view_log));
                 toast.setButtonTextColor(activity.getResources().getColor(R.color.black));
                 toast.setTextColor(activity.getResources().getColor(R.color.black));
                 toast.setOnClickWrapper(new OnClickWrapper("supercardtoast",
@@ -151,17 +152,49 @@ public abstract class OperationResults {
                             public void onClick(View view, Parcelable token) {
                                 Intent intent = new Intent(
                                         activity, LogDisplayActivity.class);
-                                intent.putExtra(LogDisplayFragment.EXTRA_RESULT, ImportResult.this);
+                                intent.putExtra(LogDisplayFragment.EXTRA_RESULT, ImportKeyResult.this);
                                 activity.startActivity(intent);
                             }
                         }
                 ));
             }
-            toast.show();
+
+            return toast;
 
         }
 
     }
+
+    public static class EditKeyResult extends OperationResultParcel {
+
+        private transient UncachedKeyRing mRing;
+
+        public EditKeyResult(int result, OperationLog log,
+                               UncachedKeyRing ring) {
+            super(result, log);
+            mRing = ring;
+        }
+
+        public UncachedKeyRing getRing() {
+            return mRing;
+        }
+
+        public EditKeyResult(Parcel source) {
+            super(source);
+        }
+
+        public static Creator<EditKeyResult> CREATOR = new Creator<EditKeyResult>() {
+            public EditKeyResult createFromParcel(final Parcel source) {
+                return new EditKeyResult(source);
+            }
+
+            public EditKeyResult[] newArray(final int size) {
+                return new EditKeyResult[size];
+            }
+        };
+
+    }
+
 
     public static class SaveKeyringResult extends OperationResultParcel {
 

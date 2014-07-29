@@ -43,8 +43,6 @@ import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-import com.devspark.appmsg.AppMsg;
-
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.helper.Preferences;
@@ -54,10 +52,12 @@ import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UserIds;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
 import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
+import org.sufficientlysecure.keychain.service.OperationResultParcel;
 import org.sufficientlysecure.keychain.service.PassphraseCacheService;
 import org.sufficientlysecure.keychain.ui.adapter.UserIdsAdapter;
 import org.sufficientlysecure.keychain.ui.dialog.PassphraseDialogFragment;
 import org.sufficientlysecure.keychain.util.Log;
+import org.sufficientlysecure.keychain.util.Notify;
 
 import java.util.ArrayList;
 
@@ -256,8 +256,8 @@ public class CertifyKeyActivity extends ActionBarActivity implements
         // Bail out if there is not at least one user id selected
         ArrayList<String> userIds = mUserIdsAdapter.getSelectedUserIds();
         if (userIds.isEmpty()) {
-            AppMsg.makeText(CertifyKeyActivity.this, "No User IDs to sign selected!",
-                    AppMsg.STYLE_ALERT).show();
+            Notify.showNotify(CertifyKeyActivity.this, "No Notify.Style IDs to sign selected!",
+                    Notify.Style.ERROR);
             return;
         }
 
@@ -284,8 +284,8 @@ public class CertifyKeyActivity extends ActionBarActivity implements
 
                 if (message.arg1 == KeychainIntentServiceHandler.MESSAGE_OKAY) {
 
-                    AppMsg.makeText(CertifyKeyActivity.this, R.string.key_certify_success,
-                            AppMsg.STYLE_INFO).show();
+                    Notify.showNotify(CertifyKeyActivity.this, R.string.key_certify_success,
+                            Notify.Style.INFO);
 
                     // check if we need to send the key to the server or not
                     if (mUploadKeyCheckbox.isChecked()) {
@@ -337,8 +337,10 @@ public class CertifyKeyActivity extends ActionBarActivity implements
                 super.handleMessage(message);
 
                 if (message.arg1 == KeychainIntentServiceHandler.MESSAGE_OKAY) {
-                    AppMsg.makeText(CertifyKeyActivity.this, R.string.key_send_success,
-                            AppMsg.STYLE_INFO).show();
+                    Intent intent = new Intent();
+                    intent.putExtra(OperationResultParcel.EXTRA_RESULT, message.getData());
+                    Notify.showNotify(CertifyKeyActivity.this, R.string.key_send_success,
+                            Notify.Style.INFO);
 
                     setResult(RESULT_OK);
                     finish();
