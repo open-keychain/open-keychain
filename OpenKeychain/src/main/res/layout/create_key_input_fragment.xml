@@ -6,7 +6,8 @@
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:fillViewport="false">
+        android:fillViewport="false"
+        android:layout_above="@+id/create_key_button_divider">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -58,6 +59,7 @@
     </ScrollView>
 
     <View
+        android:id="@+id/create_key_button_divider"
         android:layout_width="match_parent"
         android:layout_height="1dip"
         android:layout_marginLeft="16dp"
