@@ -20,6 +20,7 @@ package org.sufficientlysecure.keychain.ui;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Message;
 import android.os.Messenger;
@@ -34,6 +35,7 @@ import android.widget.TextView;
 import org.spongycastle.bcpg.sig.KeyFlags;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
 import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
 import org.sufficientlysecure.keychain.service.OperationResultParcel;
@@ -145,16 +147,16 @@ public class CreateKeyFinalFragment extends Fragment {
                         return;
                     }
 
-                    result.createNotify(getActivity());
+                    if (mUploadCheckbox.isChecked()) {
+                        // result will be displayed after upload
+                        uploadKey(result);
+                    } else {
+                        // TODO: return result
+                        result.createNotify(getActivity());
 
-                    // TODO
-//                if (mUploadCheckbox.isChecked()) {
-//                    uploadKey();
-//                } else {
-                    getActivity().setResult(Activity.RESULT_OK);
-                    getActivity().finish();
-                    //                }
-
+                        getActivity().setResult(Activity.RESULT_OK);
+                        getActivity().finish();
+                    }
                 }
             }
         };
@@ -184,16 +186,17 @@ public class CreateKeyFinalFragment extends Fragment {
         getActivity().startService(intent);
     }
 
-    private void uploadKey() {
+    private void uploadKey(final OperationResults.EditKeyResult editKeyResult) {
         // Send all information needed to service to upload key in other thread
         Intent intent = new Intent(getActivity(), KeychainIntentService.class);
 
         intent.setAction(KeychainIntentService.ACTION_UPLOAD_KEYRING);
 
         // set data uri as path to keyring
-        // TODO
-//        Uri blobUri = KeychainContract.KeyRingData.buildPublicKeyRingUri(mDataUri);
-//        intent.setData(blobUri);
+        Uri blobUri = KeychainContract.KeyRingData.buildPublicKeyRingUri(
+                Long.toString(editKeyResult.getRing().getMasterKeyId())
+        );
+        intent.setData(blobUri);
 
         // fill values for this action
         Bundle data = new Bundle();
@@ -212,6 +215,10 @@ public class CreateKeyFinalFragment extends Fragment {
                 super.handleMessage(message);
 
                 if (message.arg1 == KeychainIntentServiceHandler.MESSAGE_OKAY) {
+                    // TODO: return results
+
+                    editKeyResult.createNotify(getActivity());
+
                     Notify.showNotify(getActivity(), R.string.key_send_success,
                             Notify.Style.INFO);
 
