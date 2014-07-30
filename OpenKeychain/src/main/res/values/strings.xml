@@ -106,7 +106,7 @@
     <string name="label_file">File</string>
     <string name="label_no_passphrase">No Passphrase</string>
     <string name="label_passphrase">Passphrase</string>
-    <string name="label_passphrase_again">Again</string>
+    <string name="label_passphrase_again">Repeat Passphrase</string>
     <string name="label_algorithm">Algorithm</string>
     <string name="label_ascii_armor">ASCII Armor</string>
     <string name="label_conceal_pgp_application">Let others know that you\'re using OpenKeychain</string>
@@ -488,9 +488,10 @@
     </string-array>
 
     <!-- Create key -->
-    <string name="create_key_text">Enter Full Name, Email and Passphrase!</string>
+    <string name="create_key_text">Enter Full Name, Email and a Passphrase.</string>
     <string name="create_key_upload">Upload key to keyserver</string>
     <string name="create_key_empty">This field is required</string>
+    <string name="create_key_passphrases_not_equal">Passphrases are not equal</string>
 
     <!-- View key -->
     <string name="view_key_revoked">This key has been revoked!</string>

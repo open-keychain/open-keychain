@@ -121,11 +121,6 @@ public class PassphraseDialogFragment extends DialogFragment implements OnEditor
         return frag;
     }
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
-
     /**
      * Creates dialog
      */

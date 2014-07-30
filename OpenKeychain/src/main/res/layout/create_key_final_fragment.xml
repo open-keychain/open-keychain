@@ -82,7 +82,7 @@
                 android:paddingTop="16dp"
                 android:paddingBottom="8dp"
                 android:text="Creating the key can take up to 3 Minutes, be patient!"
-                android:textColor="@color/result_orange"
+                android:textColor="@color/result_red"
                 android:textAppearance="?android:attr/textAppearanceMedium"
                 android:id="@+id/textView" />
 

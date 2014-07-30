@@ -26,6 +26,7 @@ import android.util.Patterns;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
@@ -42,6 +43,7 @@ public class CreateKeyInputFragment extends Fragment {
     AutoCompleteTextView mNameEdit;
     AutoCompleteTextView mEmailEdit;
     EditText mPassphraseEdit;
+    EditText mPassphraseEditAgain;
     View mCreateButton;
 
     public static final String ARG_NAME = "name";
@@ -69,7 +71,7 @@ public class CreateKeyInputFragment extends Fragment {
         mNameEdit = (AutoCompleteTextView) view.findViewById(R.id.name);
         mEmailEdit = (AutoCompleteTextView) view.findViewById(R.id.email);
         mPassphraseEdit = (EditText) view.findViewById(R.id.passphrase);
-        // TODO: second passphrase field
+        mPassphraseEditAgain = (EditText) view.findViewById(R.id.passphrase_again);
         mCreateButton = view.findViewById(R.id.create_key_button);
 
         // initial values
@@ -149,7 +151,8 @@ public class CreateKeyInputFragment extends Fragment {
     private void createKeyCheck() {
         if (isEditTextNotEmpty(getActivity(), mNameEdit)
                 && isEditTextNotEmpty(getActivity(), mEmailEdit)
-                && isEditTextNotEmpty(getActivity(), mPassphraseEdit)) {
+                && isEditTextNotEmpty(getActivity(), mPassphraseEdit)
+                && areEditTextsEqual(getActivity(), mPassphraseEdit, mPassphraseEditAgain)) {
 
             CreateKeyFinalFragment frag =
                     CreateKeyFinalFragment.newInstance(
@@ -157,8 +160,22 @@ public class CreateKeyInputFragment extends Fragment {
                             mEmailEdit.getText().toString(),
                             mPassphraseEdit.getText().toString()
                     );
+
+            hideKeyboard();
             mCreateKeyActivity.loadFragment(null, frag, CreateKeyActivity.ANIM_TO_RIGHT);
         }
+    }
+
+    private void hideKeyboard() {
+        InputMethodManager inputManager = (InputMethodManager) getActivity()
+                .getSystemService(Context.INPUT_METHOD_SERVICE);
+
+        //check if no view has focus:
+        View v = getActivity().getCurrentFocus();
+        if (v == null)
+            return;
+
+        inputManager.hideSoftInputFromWindow(v.getWindowToken(), 0);
     }
 
     /**
@@ -177,6 +194,19 @@ public class CreateKeyInputFragment extends Fragment {
             output = false;
         } else {
             editText.setError(null);
+        }
+
+        return output;
+    }
+
+    private static boolean areEditTextsEqual(Context context, EditText editText1, EditText editText2) {
+        boolean output = true;
+        if (!editText1.getText().toString().equals(editText2.getText().toString())) {
+            editText2.setError(context.getString(R.string.create_key_passphrases_not_equal));
+            editText2.requestFocus();
+            output = false;
+        } else {
+            editText2.setError(null);
         }
 
         return output;
