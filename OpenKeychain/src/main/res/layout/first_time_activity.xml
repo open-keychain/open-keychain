@@ -24,6 +24,29 @@
             android:orientation="horizontal">
 
             <TextView
+                android:id="@+id/first_time_import_key"
+                android:paddingLeft="8dp"
+                android:paddingRight="8dp"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/first_time_import_key"
+                android:minHeight="?android:attr/listPreferredItemHeight"
+                android:drawableRight="@drawable/ic_action_download"
+                android:drawablePadding="8dp"
+                android:gravity="center_vertical"
+                android:clickable="true"
+                style="@style/SelectableItem" />
+
+            <View
+                android:layout_width="1dp"
+                android:layout_height="match_parent"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                android:background="?android:attr/listDivider" />
+
+            <TextView
                 android:id="@+id/first_time_create_key"
                 android:paddingLeft="8dp"
                 android:paddingRight="8dp"
@@ -39,28 +62,6 @@
                 android:clickable="true"
                 style="@style/SelectableItem" />
 
-            <View
-                android:layout_width="1dp"
-                android:layout_height="match_parent"
-                android:layout_marginTop="8dp"
-                android:layout_marginBottom="8dp"
-                android:background="?android:attr/listDivider" />
-
-            <TextView
-                android:id="@+id/first_time_import_key"
-                android:paddingLeft="8dp"
-                android:paddingRight="8dp"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/first_time_import_key"
-                android:minHeight="?android:attr/listPreferredItemHeight"
-                android:drawableRight="@drawable/ic_action_download"
-                android:drawablePadding="8dp"
-                android:gravity="center_vertical"
-                android:clickable="true"
-                style="@style/SelectableItem" />
         </LinearLayout>
 
         <View

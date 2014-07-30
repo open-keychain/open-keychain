@@ -147,7 +147,6 @@ public class CreateKeyInputFragment extends Fragment {
         mCreateKeyActivity = (CreateKeyActivity) getActivity();
     }
 
-
     private void createKeyCheck() {
         if (isEditTextNotEmpty(getActivity(), mNameEdit)
                 && isEditTextNotEmpty(getActivity(), mEmailEdit)

@@ -354,9 +354,8 @@ public class ImportKeysActivity extends ActionBarActivity {
         ImportKeysServerFragment f = (ImportKeysServerFragment)
                 getActiveFragment(mViewPager, TAB_KEYSERVER);
 
-        // TODO: Currently it simply uses keyserver nr 0
-        String keyserver = Preferences.getPreferences(ImportKeysActivity.this)
-                .getKeyServers()[0];
+        // ask favorite keyserver
+        String keyserver = Preferences.getPreferences(ImportKeysActivity.this).getKeyServers()[0];
 
         // set fields of ImportKeysServerFragment
         f.setQueryAndKeyserver(query, keyserver);

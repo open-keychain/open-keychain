@@ -20,8 +20,11 @@ package org.sufficientlysecure.keychain.ui;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.database.ContentObserver;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
 import android.os.Messenger;
 import android.support.v4.app.Fragment;
@@ -35,6 +38,7 @@ import android.widget.TextView;
 import org.spongycastle.bcpg.sig.KeyFlags;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.helper.Preferences;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
 import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
@@ -188,22 +192,22 @@ public class CreateKeyFinalFragment extends Fragment {
 
     private void uploadKey(final OperationResults.EditKeyResult editKeyResult) {
         // Send all information needed to service to upload key in other thread
-        Intent intent = new Intent(getActivity(), KeychainIntentService.class);
+        final Intent intent = new Intent(getActivity(), KeychainIntentService.class);
 
         intent.setAction(KeychainIntentService.ACTION_UPLOAD_KEYRING);
 
         // set data uri as path to keyring
         Uri blobUri = KeychainContract.KeyRingData.buildPublicKeyRingUri(
-                Long.toString(editKeyResult.getRing().getMasterKeyId())
+                Long.toString(editKeyResult.mRingMasterKeyId)
         );
         intent.setData(blobUri);
 
         // fill values for this action
         Bundle data = new Bundle();
 
-        Spinner keyServer = (Spinner) getActivity().findViewById(R.id.upload_key_keyserver);
-        String server = (String) keyServer.getSelectedItem();
-        data.putString(KeychainIntentService.UPLOAD_KEY_SERVER, server);
+        // upload to favorite keyserver
+        String keyserver = Preferences.getPreferences(getActivity()).getKeyServers()[0];
+        data.putString(KeychainIntentService.UPLOAD_KEY_SERVER, keyserver);
 
         intent.putExtra(KeychainIntentService.EXTRA_DATA, data);
 

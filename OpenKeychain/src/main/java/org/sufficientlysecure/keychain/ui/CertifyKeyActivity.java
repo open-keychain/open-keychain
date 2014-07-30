@@ -136,6 +136,8 @@ public class CertifyKeyActivity extends ActionBarActivity implements
                 if (mPubKeyId != 0) {
                     if (mMasterKeyId == 0) {
                         mSelectKeyFragment.setError(getString(R.string.select_key_to_certify));
+                        Notify.showNotify(CertifyKeyActivity.this, getString(R.string.select_key_to_certify),
+                                Notify.Style.ERROR);
                     } else {
                         initiateSigning();
                     }
@@ -256,7 +258,7 @@ public class CertifyKeyActivity extends ActionBarActivity implements
         // Bail out if there is not at least one user id selected
         ArrayList<String> userIds = mUserIdsAdapter.getSelectedUserIds();
         if (userIds.isEmpty()) {
-            Notify.showNotify(CertifyKeyActivity.this, "No Notify.Style IDs to sign selected!",
+            Notify.showNotify(CertifyKeyActivity.this, "No identities selected!",
                     Notify.Style.ERROR);
             return;
         }

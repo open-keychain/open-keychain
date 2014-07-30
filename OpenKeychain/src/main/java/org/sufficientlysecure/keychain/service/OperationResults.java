@@ -168,11 +168,13 @@ public abstract class OperationResults {
     public static class EditKeyResult extends OperationResultParcel {
 
         private transient UncachedKeyRing mRing;
+        public final long mRingMasterKeyId;
 
         public EditKeyResult(int result, OperationLog log,
                                UncachedKeyRing ring) {
             super(result, log);
             mRing = ring;
+            mRingMasterKeyId = ring.getMasterKeyId();
         }
 
         public UncachedKeyRing getRing() {
@@ -181,6 +183,13 @@ public abstract class OperationResults {
 
         public EditKeyResult(Parcel source) {
             super(source);
+            mRingMasterKeyId = source.readLong();
+        }
+
+        @Override
+        public void writeToParcel(Parcel dest, int flags) {
+            super.writeToParcel(dest, flags);
+            dest.writeLong(mRingMasterKeyId);
         }
 
         public static Creator<EditKeyResult> CREATOR = new Creator<EditKeyResult>() {
