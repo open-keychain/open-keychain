@@ -567,20 +567,15 @@ public class ProviderHelper {
         }
 
         if (!keyRing.isCanonicalized()) {
-            log(LogLevel.ERROR, LogType.MSG_IS_BAD_TYPE_PUBLIC);
+            log(LogLevel.ERROR, LogType.MSG_IS_BAD_TYPE_UNCANON);
             return SaveKeyringResult.RESULT_ERROR;
         }
 
         long masterKeyId = keyRing.getMasterKeyId();
         log(LogLevel.START, LogType.MSG_IS, PgpKeyHelper.convertKeyIdToHex(masterKeyId));
         mIndent += 1;
-        try {
 
-            // Canonicalize this key, to assert a number of assumptions made about it.
-            keyRing = keyRing.canonicalize(mLog, mIndent);
-            if (keyRing == null) {
-                return SaveKeyringResult.RESULT_ERROR;
-            }
+        try {
 
             // IF this is successful, it's a secret key
             int result = SaveKeyringResult.SAVED_SECRET;
@@ -798,31 +793,26 @@ public class ProviderHelper {
                     return new SaveKeyringResult(SaveKeyringResult.RESULT_ERROR, mLog);
                 }
 
-                // If nothing changed, never mind
-                if (Arrays.hashCode(publicRing.getEncoded())
-                        == Arrays.hashCode(oldPublicRing.getEncoded())) {
-                    publicRing = null;
-                }
-
             } catch (NotFoundException e) {
                 log(LogLevel.DEBUG, LogType.MSG_IS_PUBRING_GENERATE);
                 publicRing = secretRing.extractPublicKeyRing();
             }
 
-            if (publicRing != null) {
-                publicRing = publicRing.canonicalize(mLog, mIndent);
-                if (publicRing == null) {
-                    return new SaveKeyringResult(SaveKeyringResult.RESULT_ERROR, mLog);
-                }
+            publicRing = publicRing.canonicalize(mLog, mIndent);
+            if (publicRing == null) {
+                return new SaveKeyringResult(SaveKeyringResult.RESULT_ERROR, mLog);
+            }
 
-                int result = internalSavePublicKeyRing(publicRing, progress, true);
-                if ((result & SaveKeyringResult.RESULT_ERROR) == SaveKeyringResult.RESULT_ERROR) {
-                    return new SaveKeyringResult(SaveKeyringResult.RESULT_ERROR, mLog);
-                }
+            int result;
+
+            result = internalSavePublicKeyRing(publicRing, progress, true);
+            if ((result & SaveKeyringResult.RESULT_ERROR) == SaveKeyringResult.RESULT_ERROR) {
+                return new SaveKeyringResult(SaveKeyringResult.RESULT_ERROR, mLog);
             }
 
             progress.setProgress(LogType.MSG_IP_REINSERT_SECRET.getMsgId(), 90, 100);
-            int result = internalSaveSecretKeyRing(secretRing);
+            result = internalSaveSecretKeyRing(secretRing);
+
             return new SaveKeyringResult(result, mLog);
 
         } catch (IOException e) {
