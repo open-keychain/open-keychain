@@ -9,12 +9,12 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <include layout="@layout/notify_area"/>
+        <include layout="@layout/notify_area" />
 
-        <include layout="@layout/key_list_content"/>
-
-        <include layout="@layout/drawer_list" />
+        <include layout="@layout/key_list_content" />
 
     </LinearLayout>
+
+    <include layout="@layout/drawer_list" />
 
 </android.support.v4.widget.FixedDrawerLayout>
