@@ -36,6 +36,8 @@ import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
 import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
+import org.sufficientlysecure.keychain.service.OperationResultParcel;
+import org.sufficientlysecure.keychain.service.OperationResults;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
 import org.sufficientlysecure.keychain.util.Notify;
 
@@ -131,15 +133,29 @@ public class CreateKeyFinalFragment extends Fragment {
                 // handle messages by standard KeychainIntentServiceHandler first
                 super.handleMessage(message);
 
-                // TODO
+                if (message.arg1 == KeychainIntentServiceHandler.MESSAGE_OKAY) {
+                    // get returned data bundle
+                    Bundle returnData = message.getData();
+                    if (returnData == null) {
+                        return;
+                    }
+                    final OperationResults.EditKeyResult result =
+                            returnData.getParcelable(OperationResultParcel.EXTRA_RESULT);
+                    if (result == null) {
+                        return;
+                    }
+
+                    result.createNotify(getActivity());
+
+                    // TODO
 //                if (mUploadCheckbox.isChecked()) {
 //                    uploadKey();
 //                } else {
-                if (message.arg1 == KeychainIntentServiceHandler.MESSAGE_OKAY) {
                     getActivity().setResult(Activity.RESULT_OK);
                     getActivity().finish();
+                    //                }
+
                 }
-//                }
             }
         };
 

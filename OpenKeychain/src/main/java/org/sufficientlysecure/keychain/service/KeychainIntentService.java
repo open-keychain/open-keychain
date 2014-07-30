@@ -24,7 +24,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Message;
 import android.os.Messenger;
-import android.os.Parcelable;
 import android.os.RemoteException;
 
 import org.sufficientlysecure.keychain.Constants;
@@ -53,7 +52,6 @@ import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralMsgIdException;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.KeychainDatabase;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
-import org.sufficientlysecure.keychain.service.OperationResultParcel.OperationLog;
 import org.sufficientlysecure.keychain.service.OperationResults.EditKeyResult;
 import org.sufficientlysecure.keychain.service.OperationResults.ImportKeyResult;
 import org.sufficientlysecure.keychain.util.InputData;
@@ -172,7 +170,7 @@ public class KeychainIntentService extends IntentService
     // export
     public static final String RESULT_EXPORT = "exported";
 
-    public static final String RESULT = "result";
+    public static final String RESULT_IMPORT = "result";
 
     Messenger mMessenger;
 
@@ -394,7 +392,7 @@ public class KeychainIntentService extends IntentService
                 ImportKeyResult result = pgpImportExport.importKeyRings(entries);
 
                 Bundle resultData = new Bundle();
-                resultData.putParcelable(RESULT, result);
+                resultData.putParcelable(RESULT_IMPORT, result);
 
                 sendMessageToHandler(KeychainIntentServiceHandler.MESSAGE_OKAY, resultData);
             } catch (Exception e) {

@@ -428,7 +428,7 @@ public class ImportKeysActivity extends ActionBarActivity {
                         return;
                     }
                     final ImportKeyResult result =
-                            returnData.getParcelable(KeychainIntentService.RESULT);
+                            returnData.getParcelable(KeychainIntentService.RESULT_IMPORT);
                     if (result == null) {
                         return;
                     }
