@@ -40,6 +40,7 @@ import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.helper.OtherHelper;
 import org.sufficientlysecure.keychain.helper.Preferences;
+import org.sufficientlysecure.keychain.keyimport.FileImportCache;
 import org.sufficientlysecure.keychain.keyimport.ImportKeysListEntry;
 import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
 import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
@@ -51,6 +52,7 @@ import org.sufficientlysecure.keychain.ui.widget.SlidingTabLayout;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Notify;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Locale;
 
@@ -469,19 +471,29 @@ public class ImportKeysActivity extends ActionBarActivity {
 
             // get DATA from selected key entries
             ArrayList<ParcelableKeyRing> selectedEntries = mListFragment.getSelectedData();
-            data.putParcelableArrayList(KeychainIntentService.IMPORT_KEY_LIST, selectedEntries);
 
-            intent.putExtra(KeychainIntentService.EXTRA_DATA, data);
+            // instead of given the entries by Intent extra, cache them into a file
+            // to prevent Java Binder problems on heavy imports
+            // read FileImportCache for more info.
+            try {
+                FileImportCache cache = new FileImportCache(this);
+                cache.writeCache(selectedEntries);
 
-            // Create a new Messenger for the communication back
-            Messenger messenger = new Messenger(saveHandler);
-            intent.putExtra(KeychainIntentService.EXTRA_MESSENGER, messenger);
+                intent.putExtra(KeychainIntentService.EXTRA_DATA, data);
 
-            // show progress dialog
-            saveHandler.showProgressDialog(this);
+                // Create a new Messenger for the communication back
+                Messenger messenger = new Messenger(saveHandler);
+                intent.putExtra(KeychainIntentService.EXTRA_MESSENGER, messenger);
 
-            // start service with intent
-            startService(intent);
+                // show progress dialog
+                saveHandler.showProgressDialog(this);
+
+                // start service with intent
+                startService(intent);
+            } catch (IOException e) {
+                Log.e(Constants.TAG, "Problem writing cache file", e);
+                Notify.showNotify(this, "Problem writing cache file!", Notify.Style.ERROR);
+            }
         } else if (ls instanceof ImportKeysListFragment.KeyserverLoaderState) {
             ImportKeysListFragment.KeyserverLoaderState sls = (ImportKeysListFragment.KeyserverLoaderState) ls;
 
