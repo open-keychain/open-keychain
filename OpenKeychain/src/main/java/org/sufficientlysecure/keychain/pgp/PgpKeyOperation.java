@@ -257,7 +257,8 @@ public class PgpKeyOperation {
          * 6. If requested, change passphrase
          */
 
-        log.add(LogLevel.START, LogType.MSG_MF, indent);
+        log.add(LogLevel.START, LogType.MSG_MF, indent,
+                PgpKeyHelper.convertKeyIdToHex(wsKR.getMasterKeyId()));
         indent += 1;
         updateProgress(R.string.progress_building_key, 0, 100);
 
@@ -359,7 +360,7 @@ public class PgpKeyOperation {
 
             // 2b. Add revocations for revoked user ids
             for (String userId : saveParcel.mRevokeUserIds) {
-                log.add(LogLevel.INFO, LogType.MSG_MF_UID_REVOKE, indent);
+                log.add(LogLevel.INFO, LogType.MSG_MF_UID_REVOKE, indent, userId);
                 // a duplicate revocation will be removed during canonicalization, so no need to
                 // take care of that here.
                 PGPSignature cert = generateRevocationSignature(masterPrivateKey,

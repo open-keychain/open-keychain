@@ -83,6 +83,7 @@ public class OperationResultParcel implements Parcelable {
             mType = type;
             mParameters = parameters;
             mIndent = indent;
+            Log.v(Constants.TAG, "log: " + this.toString());
         }
 
         public LogEntryParcel(Parcel source) {
@@ -407,12 +408,10 @@ public class OperationResultParcel implements Parcelable {
 
         /// Simple convenience method
         public void add(LogLevel level, LogType type, int indent, Object... parameters) {
-            Log.d(Constants.TAG, type.toString());
             mParcels.add(new OperationResultParcel.LogEntryParcel(level, type, indent, parameters));
         }
 
         public void add(LogLevel level, LogType type, int indent) {
-            Log.d(Constants.TAG, type.toString());
             mParcels.add(new OperationResultParcel.LogEntryParcel(level, type, indent, (Object[]) null));
         }
 
