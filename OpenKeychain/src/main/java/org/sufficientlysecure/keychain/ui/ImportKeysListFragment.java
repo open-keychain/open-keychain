@@ -287,8 +287,8 @@ public class ImportKeysListFragment extends ListFragment implements
                 if (error == null) {
                     // No error
                     mCachedKeyData = ((ImportKeysListLoader) loader).getParcelableRings();
-                } else if (error instanceof ImportKeysListLoader.FileHasNoContentException) {
-                    Notify.showNotify(getActivity(), R.string.error_import_file_no_content, Notify.Style.ERROR);
+                } else if (error instanceof ImportKeysListLoader.NoValidKeysException) {
+                    Notify.showNotify(getActivity(), R.string.error_import_no_valid_keys, Notify.Style.ERROR);
                 } else if (error instanceof ImportKeysListLoader.NonPgpPartException) {
                     Notify.showNotify(getActivity(),
                             ((ImportKeysListLoader.NonPgpPartException) error).getCount() + " " + getResources().

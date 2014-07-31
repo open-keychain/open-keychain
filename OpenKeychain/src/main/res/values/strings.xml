@@ -273,7 +273,7 @@
     <string name="error_keyserver_insufficient_query">Key search query too short</string>
     <string name="error_searching_keys">Unrecoverable error searching for keys at server</string>
     <string name="error_keyserver_too_many_responses">Key search query returned too many candidates; Please refine query</string>
-    <string name="error_import_file_no_content">File/Clipboard is empty</string>
+    <string name="error_import_no_valid_keys">No valid keys found in File/Clipboard!</string>
     <string name="error_generic_report_bug">A generic error occurred, please create a new bug report for OpenKeychain.</string>
     <plurals name="error_import_non_pgp_part">
         <item quantity="one">part of the loaded file is a valid OpenPGP object but not a OpenPGP key</item>

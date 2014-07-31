@@ -253,7 +253,7 @@
   <string name="error_keyserver_insufficient_query">La requête de recherche de clef est trop courte</string>
   <string name="error_searching_keys">Erreur irrécupérable lors de la recherche de clef sur le serveur</string>
   <string name="error_keyserver_too_many_responses">La requête de recherche de clef a retourné trop de candidats. Veuillez raffiner la requête</string>
-  <string name="error_import_file_no_content">Le fichier/le presse-papiers est vide</string>
+  <string name="error_import_no_valid_keys">Le fichier/le presse-papiers est vide</string>
   <string name="error_generic_report_bug">Une erreur générique est survenue, veuillez créer un nouveau rapport de bogue pour OpenKeychain.</string>
   <plurals name="error_import_non_pgp_part">
     <item quantity="one">une partie du fichier chargé est un objet OpenPGP valide mais pas une clef OpenPGP</item>

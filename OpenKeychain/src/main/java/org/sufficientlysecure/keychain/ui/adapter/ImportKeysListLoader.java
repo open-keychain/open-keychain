@@ -37,7 +37,7 @@ import java.util.List;
 public class ImportKeysListLoader
         extends AsyncTaskLoader<AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>>> {
 
-    public static class FileHasNoContentException extends Exception {
+    public static class NoValidKeysException extends Exception {
     }
 
     public static class NonPgpPartException extends Exception {
@@ -118,8 +118,6 @@ public class ImportKeysListLoader
      * @return
      */
     private void generateListOfKeyrings(InputData inputData) {
-        boolean isEmpty = true;
-
         PositionAwareInputStream progressIn = new PositionAwareInputStream(
                 inputData.getInputStream());
 
@@ -127,42 +125,24 @@ public class ImportKeysListLoader
         // PGPObject chunks after the first one, e.g. files with several consecutive ASCII
         // armor blocks
         BufferedInputStream bufferedInput = new BufferedInputStream(progressIn);
-        bufferedInput.mark(1024);
         try {
-
-            // read all available blocks... (asc files can contain many blocks with BEGIN END)
-            while (bufferedInput.available() > 0) {
-                // TODO: deal with non-keyring objects?
-                List<UncachedKeyRing> rings = UncachedKeyRing.fromStream(bufferedInput);
-                for (UncachedKeyRing key : rings) {
-                    ImportKeysListEntry item = new ImportKeysListEntry(getContext(), key);
-                    mData.add(item);
-                    mParcelableRings.put(item.hashCode(), new ParcelableKeyRing(key.getEncoded()));
-                    isEmpty = false;
-                }
+            // parse all keyrings
+            List<UncachedKeyRing> rings = UncachedKeyRing.fromStream(bufferedInput);
+            for (UncachedKeyRing key : rings) {
+                ImportKeysListEntry item = new ImportKeysListEntry(getContext(), key);
+                mData.add(item);
+                mParcelableRings.put(item.hashCode(), new ParcelableKeyRing(key.getEncoded()));
             }
+        } catch (IOException e) {
+            Log.e(Constants.TAG, "IOException on parsing key file! Return NoValidKeysException!", e);
+
+            NoValidKeysException e1 = new NoValidKeysException();
+            mEntryListWrapper = new AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>>
+                    (mData, e1);
         } catch (Exception e) {
-            Log.e(Constants.TAG, "Exception on parsing key file!", e);
-
-            try {
-                bufferedInput.reset();
-            } catch (IOException e1) {
-            }
-            Log.d(Constants.TAG, "Last 1024 byte input data: " + convertStreamToString(bufferedInput));
+            Log.e(Constants.TAG, "Other Exception on parsing key file!", e);
             mEntryListWrapper = new AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>>(mData, e);
         }
-
-        if (isEmpty) {
-            FileHasNoContentException e = new FileHasNoContentException();
-            Log.e(Constants.TAG, "File has no content!", e);
-            mEntryListWrapper = new AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>>
-                    (mData, e);
-        }
-    }
-
-    static String convertStreamToString(java.io.InputStream is) {
-        java.util.Scanner s = new java.util.Scanner(is).useDelimiter("\\A");
-        return s.hasNext() ? s.next() : "";
     }
 
 }

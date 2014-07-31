@@ -249,7 +249,7 @@
   <string name="error_keyserver_insufficient_query">鍵検索のクエリが短かすぎます</string>
   <string name="error_searching_keys">サーバでの鍵の検索が回復不可能なエラーになりました</string>
   <string name="error_keyserver_too_many_responses">鍵検索のクエリが沢山の候補を返しました; クエリを精密化してください</string>
-  <string name="error_import_file_no_content">ファイル/クリップボードが空です</string>
+  <string name="error_import_no_valid_keys">ファイル/クリップボードが空です</string>
   <string name="error_generic_report_bug">一般エラーが発生しました、この新しいバグの情報をOpenKeychainプロジェクトに送ってください</string>
   <plurals name="error_import_non_pgp_part">
     <item quantity="other">読み込んだファイルのOpenPGPオブジェクト部分は正しいですが、OpenPGPの鍵ではありません</item>

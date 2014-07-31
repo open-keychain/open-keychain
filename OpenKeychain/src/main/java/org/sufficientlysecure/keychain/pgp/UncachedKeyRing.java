@@ -134,9 +134,7 @@ public class UncachedKeyRing {
 
     }
 
-    public static List<UncachedKeyRing> fromStream(InputStream stream)
-            throws PgpGeneralException, IOException {
-
+    public static List<UncachedKeyRing> fromStream(InputStream stream) throws IOException {
         List<UncachedKeyRing> result = new Vector<UncachedKeyRing>();
 
         while(stream.available() > 0) {
@@ -147,8 +145,10 @@ public class UncachedKeyRing {
             while ((obj = objectFactory.nextObject()) != null) {
                 Log.d(Constants.TAG, "Found class: " + obj.getClass());
                 if (!(obj instanceof PGPKeyRing)) {
-                    throw new PgpGeneralException(
-                            "Bad object of type " + obj.getClass().getName() + " in stream!");
+                    Log.d(Constants.TAG,
+                            "Bad object of type " + obj.getClass().getName() + " in stream, proceed with next object...");
+                    // skip object
+                    continue;
                 }
                 result.add(new UncachedKeyRing((PGPKeyRing) obj));
             }
