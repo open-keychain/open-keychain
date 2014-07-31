@@ -26,11 +26,13 @@ import org.spongycastle.openpgp.operator.jcajce.JcaKeyFingerprintCalculator;
 import org.spongycastle.openpgp.operator.jcajce.JcaPGPContentSignerBuilder;
 import org.spongycastle.openpgp.operator.jcajce.JcePBESecretKeyDecryptorBuilder;
 import org.sufficientlysecure.keychain.Constants;
+import org.sufficientlysecure.keychain.pgp.CanonicalizedKeyRing;
 import org.sufficientlysecure.keychain.pgp.PgpKeyOperation;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
 import org.sufficientlysecure.keychain.pgp.UncachedPublicKey;
 import org.sufficientlysecure.keychain.pgp.WrappedSignature;
 import org.sufficientlysecure.keychain.service.OperationResultParcel;
+import org.sufficientlysecure.keychain.service.OperationResults.EditKeyResult;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
 import org.sufficientlysecure.keychain.support.KeyringTestingHelper;
 import org.sufficientlysecure.keychain.support.KeyringTestingHelper.RawPacket;
@@ -78,9 +80,9 @@ public class UncachedKeyringCanonicalizeTest {
         parcel.mNewPassphrase = "";
         PgpKeyOperation op = new PgpKeyOperation(null);
 
-        OperationResultParcel.OperationLog log = new OperationResultParcel.OperationLog();
-        staticRing = op.createSecretKeyRing(parcel, log, 0);
-
+        EditKeyResult result = op.createSecretKeyRing(parcel);
+        Assert.assertTrue("initial test key creation must succeed", result.success());
+        staticRing = result.getRing();
         Assert.assertNotNull("initial test key creation must succeed", staticRing);
 
         // just for later reference
@@ -147,18 +149,18 @@ public class UncachedKeyringCanonicalizeTest {
 
         { // bad certificates get stripped
             UncachedKeyRing modified = KeyringTestingHelper.injectPacket(ring, brokenSig.getEncoded(), 3);
-            modified = modified.canonicalize(log, 0);
+            CanonicalizedKeyRing canonicalized = modified.canonicalize(log, 0);
 
             Assert.assertTrue("canonicalized keyring with invalid extra sig must be same as original one",
                     !KeyringTestingHelper.diffKeyrings(
-                        ring.getEncoded(), modified.getEncoded(), onlyA, onlyB));
+                        ring.getEncoded(), canonicalized.getEncoded(), onlyA, onlyB));
         }
 
         // remove user id certificate for one user
         final UncachedKeyRing base = KeyringTestingHelper.removePacket(ring, 2);
 
         { // user id without certificate should be removed
-            UncachedKeyRing modified = base.canonicalize(log, 0);
+            CanonicalizedKeyRing modified = base.canonicalize(log, 0);
             Assert.assertTrue("canonicalized keyring must differ", KeyringTestingHelper.diffKeyrings(
                     ring.getEncoded(), modified.getEncoded(), onlyA, onlyB));
 
@@ -178,10 +180,10 @@ public class UncachedKeyringCanonicalizeTest {
         { // add error to signature
 
             UncachedKeyRing modified = KeyringTestingHelper.injectPacket(base, brokenSig.getEncoded(), 3);
-            modified = modified.canonicalize(log, 0);
+            CanonicalizedKeyRing canonicalized = modified.canonicalize(log, 0);
 
             Assert.assertTrue("canonicalized keyring must differ", KeyringTestingHelper.diffKeyrings(
-                    ring.getEncoded(), modified.getEncoded(), onlyA, onlyB));
+                    ring.getEncoded(), canonicalized.getEncoded(), onlyA, onlyB));
 
             Assert.assertEquals("two packets should be missing after canonicalization", 2, onlyA.size());
             Assert.assertEquals("no new packets after canonicalization", 0, onlyB.size());
@@ -205,7 +207,7 @@ public class UncachedKeyringCanonicalizeTest {
         ring = KeyringTestingHelper.removePacket(ring, 3);
 
         // canonicalization should fail, because there are no valid uids left
-        UncachedKeyRing canonicalized = ring.canonicalize(log, 0);
+        CanonicalizedKeyRing canonicalized = ring.canonicalize(log, 0);
         Assert.assertNull("canonicalization of keyring with no valid uids should fail", canonicalized);
 
     }
@@ -284,7 +286,7 @@ public class UncachedKeyringCanonicalizeTest {
         PgpKeyOperation op = new PgpKeyOperation(null);
 
         OperationResultParcel.OperationLog log = new OperationResultParcel.OperationLog();
-        UncachedKeyRing foreign = op.createSecretKeyRing(parcel, log, 0);
+        UncachedKeyRing foreign = op.createSecretKeyRing(parcel).getRing();
 
         Assert.assertNotNull("initial test key creation must succeed", foreign);
         PGPSecretKey foreignSecretKey =
@@ -321,7 +323,7 @@ public class UncachedKeyringCanonicalizeTest {
         UncachedKeyRing modified = KeyringTestingHelper.removePacket(ring, 6);
 
         // canonicalization should fail, because there are no valid uids left
-        UncachedKeyRing canonicalized = modified.canonicalize(log, 0);
+        CanonicalizedKeyRing canonicalized = modified.canonicalize(log, 0);
         Assert.assertTrue("keyring with missing subkey binding sig should differ from intact one after canonicalization",
                 KeyringTestingHelper.diffKeyrings(ring.getEncoded(), canonicalized.getEncoded(),
                         onlyA, onlyB)
@@ -367,7 +369,7 @@ public class UncachedKeyringCanonicalizeTest {
             UncachedKeyRing modified = KeyringTestingHelper.injectPacket(ring, sig.getEncoded(), 6);
 
             // canonicalize, and check if we lose the bad signature
-            UncachedKeyRing canonicalized = modified.canonicalize(log, 0);
+            CanonicalizedKeyRing canonicalized = modified.canonicalize(log, 0);
             Assert.assertFalse("subkey binding signature should be gone after canonicalization",
                     KeyringTestingHelper.diffKeyrings(ring.getEncoded(), canonicalized.getEncoded(),
                             onlyA, onlyB)
@@ -392,7 +394,7 @@ public class UncachedKeyringCanonicalizeTest {
             UncachedKeyRing modified = KeyringTestingHelper.injectPacket(ring, sig.getEncoded(), 6);
 
             // canonicalize, and check if we lose the bad signature
-            UncachedKeyRing canonicalized = modified.canonicalize(log, 0);
+            CanonicalizedKeyRing canonicalized = modified.canonicalize(log, 0);
             Assert.assertFalse("subkey binding signature should be gone after canonicalization",
                     KeyringTestingHelper.diffKeyrings(ring.getEncoded(), canonicalized.getEncoded(),
                             onlyA, onlyB)
@@ -427,7 +429,7 @@ public class UncachedKeyringCanonicalizeTest {
         modified = KeyringTestingHelper.injectPacket(modified, sig3.getEncoded(), 11);
 
         // canonicalize, and check if we lose the bad signature
-        UncachedKeyRing canonicalized = modified.canonicalize(log, 0);
+        CanonicalizedKeyRing canonicalized = modified.canonicalize(log, 0);
         Assert.assertTrue("subkey binding signature should be gone after canonicalization",
                 KeyringTestingHelper.diffKeyrings(modified.getEncoded(), canonicalized.getEncoded(),
                         onlyA, onlyB)
@@ -524,14 +526,14 @@ public class UncachedKeyringCanonicalizeTest {
 
                 UncachedKeyRing brokenRing = UncachedKeyRing.decodeFromData(brokenEncoded);
 
-                brokenRing = brokenRing.canonicalize(log, 0);
-                if (brokenRing == null) {
+                CanonicalizedKeyRing canonicalized = brokenRing.canonicalize(log, 0);
+                if (canonicalized == null) {
                     System.out.println("ok, canonicalization failed.");
                     continue;
                 }
 
                 Assert.assertArrayEquals("injected bad signature must be gone after canonicalization",
-                        ring.getEncoded(), brokenRing.getEncoded());
+                        ring.getEncoded(), canonicalized.getEncoded());
 
             } catch (Exception e) {
                 System.out.println("ok, rejected with: " + e.getMessage());

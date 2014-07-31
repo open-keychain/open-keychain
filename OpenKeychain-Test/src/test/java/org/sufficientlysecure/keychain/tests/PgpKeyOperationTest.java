@@ -19,12 +19,13 @@ import org.spongycastle.bcpg.sig.KeyFlags;
 import org.spongycastle.openpgp.PGPSignature;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.Constants.choice.algorithm;
+import org.sufficientlysecure.keychain.pgp.CanonicalizedKeyRing;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKeyRing;
 import org.sufficientlysecure.keychain.pgp.PgpKeyOperation;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
 import org.sufficientlysecure.keychain.pgp.UncachedPublicKey;
 import org.sufficientlysecure.keychain.pgp.WrappedSignature;
-import org.sufficientlysecure.keychain.service.OperationResultParcel;
+import org.sufficientlysecure.keychain.service.OperationResultParcel.OperationLog;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel.SubkeyAdd;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel.SubkeyChange;
@@ -82,8 +83,7 @@ public class PgpKeyOperationTest {
         parcel.mNewPassphrase = passphrase;
         PgpKeyOperation op = new PgpKeyOperation(null);
 
-        OperationResultParcel.OperationLog log = new OperationResultParcel.OperationLog();
-        staticRing = op.createSecretKeyRing(parcel, log, 0);
+        staticRing = op.createSecretKeyRing(parcel).getRing();
 
         Assert.assertNotNull("initial test key creation must succeed", staticRing);
 
@@ -109,8 +109,6 @@ public class PgpKeyOperationTest {
     @Test
     public void createSecretKeyRingTests() {
 
-        OperationResultParcel.OperationLog log = new OperationResultParcel.OperationLog();
-
         {
             parcel.reset();
             parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
@@ -118,7 +116,7 @@ public class PgpKeyOperationTest {
             parcel.mAddUserIds.add("shy");
             parcel.mNewPassphrase = passphrase;
 
-            UncachedKeyRing ring = op.createSecretKeyRing(parcel, log, 0);
+            UncachedKeyRing ring = op.createSecretKeyRing(parcel).getRing();
 
             Assert.assertNull("creating ring with < 512 bytes keysize should fail", ring);
         }
@@ -130,7 +128,7 @@ public class PgpKeyOperationTest {
             parcel.mAddUserIds.add("shy");
             parcel.mNewPassphrase = passphrase;
 
-            UncachedKeyRing ring = op.createSecretKeyRing(parcel, log, 0);
+            UncachedKeyRing ring = op.createSecretKeyRing(parcel).getRing();
 
             Assert.assertNull("creating ring with ElGamal master key should fail", ring);
         }
@@ -142,7 +140,7 @@ public class PgpKeyOperationTest {
             parcel.mAddUserIds.add("shy");
             parcel.mNewPassphrase = passphrase;
 
-            UncachedKeyRing ring = op.createSecretKeyRing(parcel, log, 0);
+            UncachedKeyRing ring = op.createSecretKeyRing(parcel).getRing();
             Assert.assertNull("creating ring with bad algorithm choice should fail", ring);
         }
 
@@ -153,7 +151,7 @@ public class PgpKeyOperationTest {
             parcel.mAddUserIds.add("shy");
             parcel.mNewPassphrase = passphrase;
 
-            UncachedKeyRing ring = op.createSecretKeyRing(parcel, log, 0);
+            UncachedKeyRing ring = op.createSecretKeyRing(parcel).getRing();
             Assert.assertNull("creating ring with non-certifying master key should fail", ring);
         }
 
@@ -163,7 +161,7 @@ public class PgpKeyOperationTest {
                     Constants.choice.algorithm.rsa, 1024, KeyFlags.CERTIFY_OTHER, null));
             parcel.mNewPassphrase = passphrase;
 
-            UncachedKeyRing ring = op.createSecretKeyRing(parcel, log, 0);
+            UncachedKeyRing ring = op.createSecretKeyRing(parcel).getRing();
             Assert.assertNull("creating ring without user ids should fail", ring);
         }
 
@@ -172,7 +170,7 @@ public class PgpKeyOperationTest {
             parcel.mAddUserIds.add("shy");
             parcel.mNewPassphrase = passphrase;
 
-            UncachedKeyRing ring = op.createSecretKeyRing(parcel, log, 0);
+            UncachedKeyRing ring = op.createSecretKeyRing(parcel).getRing();
             Assert.assertNull("creating ring without subkeys should fail", ring);
         }
 
@@ -186,11 +184,10 @@ public class PgpKeyOperationTest {
         parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
                 Constants.choice.algorithm.rsa, 1024, KeyFlags.CERTIFY_OTHER | KeyFlags.SIGN_DATA, null));
         parcel.mAddUserIds.add("luna");
-        OperationResultParcel.OperationLog log = new OperationResultParcel.OperationLog();
-        ring = op.createSecretKeyRing(parcel, log, 0);
+        ring = op.createSecretKeyRing(parcel).getRing();
 
         Assert.assertEquals("the keyring should contain only the master key",
-                1, ring.getAvailableSubkeys().size());
+                1, KeyringTestingHelper.itToList(ring.getPublicKeys()).size());
         Assert.assertEquals("first (master) key must have both flags",
                 KeyFlags.CERTIFY_OTHER | KeyFlags.SIGN_DATA, ring.getPublicKey().getKeyUsage());
 
@@ -212,7 +209,7 @@ public class PgpKeyOperationTest {
                 2, ring.getPublicKey().getUnorderedUserIds().size());
 
         Assert.assertEquals("number of subkeys must be three",
-                3, ring.getAvailableSubkeys().size());
+                3, KeyringTestingHelper.itToList(ring.getPublicKeys()).size());
 
         Assert.assertTrue("key ring should have been created in the last 120 seconds",
                 ring.getPublicKey().getCreationTime().after(new Date(new Date().getTime()-1000*120)));
@@ -251,8 +248,7 @@ public class PgpKeyOperationTest {
             parcel.mFingerprint = ring.getFingerprint();
 
             CanonicalizedSecretKeyRing secretRing = new CanonicalizedSecretKeyRing(ring.getEncoded(), false, 0);
-            OperationResultParcel.OperationLog log = new OperationResultParcel.OperationLog();
-            UncachedKeyRing modified = op.modifySecretKeyRing(secretRing, parcel, passphrase, log, 0);
+            UncachedKeyRing modified = op.modifySecretKeyRing(secretRing, parcel, passphrase).getRing();
 
             Assert.assertNull("keyring modification with bad master key id should fail", modified);
         }
@@ -264,8 +260,7 @@ public class PgpKeyOperationTest {
             parcel.mFingerprint = ring.getFingerprint();
 
             CanonicalizedSecretKeyRing secretRing = new CanonicalizedSecretKeyRing(ring.getEncoded(), false, 0);
-            OperationResultParcel.OperationLog log = new OperationResultParcel.OperationLog();
-            UncachedKeyRing modified = op.modifySecretKeyRing(secretRing, parcel, passphrase, log, 0);
+            UncachedKeyRing modified = op.modifySecretKeyRing(secretRing, parcel, passphrase).getRing();
 
             Assert.assertNull("keyring modification with null master key id should fail", modified);
         }
@@ -278,8 +273,7 @@ public class PgpKeyOperationTest {
             parcel.mFingerprint[5] += 1;
 
             CanonicalizedSecretKeyRing secretRing = new CanonicalizedSecretKeyRing(ring.getEncoded(), false, 0);
-            OperationResultParcel.OperationLog log = new OperationResultParcel.OperationLog();
-            UncachedKeyRing modified = op.modifySecretKeyRing(secretRing, parcel, passphrase, log, 0);
+            UncachedKeyRing modified = op.modifySecretKeyRing(secretRing, parcel, passphrase).getRing();
 
             Assert.assertNull("keyring modification with bad fingerprint should fail", modified);
         }
@@ -290,16 +284,18 @@ public class PgpKeyOperationTest {
             parcel.mFingerprint = null;
 
             CanonicalizedSecretKeyRing secretRing = new CanonicalizedSecretKeyRing(ring.getEncoded(), false, 0);
-            OperationResultParcel.OperationLog log = new OperationResultParcel.OperationLog();
-            UncachedKeyRing modified = op.modifySecretKeyRing(secretRing, parcel, passphrase, log, 0);
+            UncachedKeyRing modified = op.modifySecretKeyRing(secretRing, parcel, passphrase).getRing();
 
             Assert.assertNull("keyring modification with null fingerprint should fail", modified);
         }
 
         {
+            String badphrase = "";
+            if (badphrase.equals(passphrase)) {
+                badphrase = "a";
+            }
             CanonicalizedSecretKeyRing secretRing = new CanonicalizedSecretKeyRing(ring.getEncoded(), false, 0);
-            OperationResultParcel.OperationLog log = new OperationResultParcel.OperationLog();
-            UncachedKeyRing modified = op.modifySecretKeyRing(secretRing, parcel, "bad passphrase", log, 0);
+            UncachedKeyRing modified = op.modifySecretKeyRing(secretRing, parcel, badphrase).getRing();
 
             Assert.assertNull("keyring modification with bad passphrase should fail", modified);
         }
@@ -356,8 +352,7 @@ public class PgpKeyOperationTest {
                     algorithm.rsa, new Random().nextInt(512), KeyFlags.SIGN_DATA, null));
 
             CanonicalizedSecretKeyRing secretRing = new CanonicalizedSecretKeyRing(ring.getEncoded(), false, 0);
-            OperationResultParcel.OperationLog log = new OperationResultParcel.OperationLog();
-            modified = op.modifySecretKeyRing(secretRing, parcel, passphrase, log, 0);
+            modified = op.modifySecretKeyRing(secretRing, parcel, passphrase).getRing();
 
             Assert.assertNull("creating a subkey with keysize < 512 should fail", modified);
         }
@@ -368,8 +363,7 @@ public class PgpKeyOperationTest {
                     new Date().getTime()/1000-10));
 
             CanonicalizedSecretKeyRing secretRing = new CanonicalizedSecretKeyRing(ring.getEncoded(), false, 0);
-            OperationResultParcel.OperationLog log = new OperationResultParcel.OperationLog();
-            modified = op.modifySecretKeyRing(secretRing, parcel, passphrase, log, 0);
+            modified = op.modifySecretKeyRing(secretRing, parcel, passphrase).getRing();
 
             Assert.assertNull("creating subkey with past expiry date should fail", modified);
         }
@@ -437,8 +431,7 @@ public class PgpKeyOperationTest {
             parcel.mChangeSubKeys.add(new SubkeyChange(keyId, null, new Date().getTime()/1000-10));
 
             CanonicalizedSecretKeyRing secretRing = new CanonicalizedSecretKeyRing(ring.getEncoded(), false, 0);
-            OperationResultParcel.OperationLog log = new OperationResultParcel.OperationLog();
-            modified = op.modifySecretKeyRing(secretRing, parcel, passphrase, log, 0);
+            modified = op.modifySecretKeyRing(secretRing, parcel, passphrase).getRing();
 
             Assert.assertNull("setting subkey expiry to a past date should fail", modified);
         }
@@ -448,8 +441,7 @@ public class PgpKeyOperationTest {
             parcel.mChangeSubKeys.add(new SubkeyChange(123, null, null));
 
             CanonicalizedSecretKeyRing secretRing = new CanonicalizedSecretKeyRing(ring.getEncoded(), false, 0);
-            OperationResultParcel.OperationLog log = new OperationResultParcel.OperationLog();
-            modified = op.modifySecretKeyRing(secretRing, parcel, passphrase, log, 0);
+            modified = op.modifySecretKeyRing(secretRing, parcel, passphrase).getRing();
 
             Assert.assertNull("modifying non-existent subkey should fail", modified);
         }
@@ -470,8 +462,7 @@ public class PgpKeyOperationTest {
             parcel.mRevokeSubKeys.add(123L);
 
             CanonicalizedSecretKeyRing secretRing = new CanonicalizedSecretKeyRing(ring.getEncoded(), false, 0);
-            OperationResultParcel.OperationLog log = new OperationResultParcel.OperationLog();
-            UncachedKeyRing otherModified = op.modifySecretKeyRing(secretRing, parcel, passphrase, log, 0);
+            UncachedKeyRing otherModified = op.modifySecretKeyRing(secretRing, parcel, passphrase).getRing();
 
             Assert.assertNull("revoking a nonexistent subkey should fail", otherModified);
 
@@ -573,8 +564,7 @@ public class PgpKeyOperationTest {
             parcel.mChangePrimaryUserId = uid;
 
             CanonicalizedSecretKeyRing secretRing = new CanonicalizedSecretKeyRing(modified.getEncoded(), false, 0);
-            OperationResultParcel.OperationLog log = new OperationResultParcel.OperationLog();
-            UncachedKeyRing otherModified = op.modifySecretKeyRing(secretRing, parcel, passphrase, log, 0);
+            UncachedKeyRing otherModified = op.modifySecretKeyRing(secretRing, parcel, passphrase).getRing();
 
             Assert.assertNull("setting primary user id to a revoked user id should fail", otherModified);
 
@@ -622,8 +612,7 @@ public class PgpKeyOperationTest {
         {
             parcel.mAddUserIds.add("");
             CanonicalizedSecretKeyRing secretRing = new CanonicalizedSecretKeyRing(ring.getEncoded(), false, 0);
-            OperationResultParcel.OperationLog log = new OperationResultParcel.OperationLog();
-            UncachedKeyRing modified = op.modifySecretKeyRing(secretRing, parcel, passphrase, log, 0);
+            UncachedKeyRing modified = op.modifySecretKeyRing(secretRing, parcel, passphrase).getRing();
             Assert.assertNull("adding an empty user id should fail", modified);
         }
 
@@ -693,8 +682,7 @@ public class PgpKeyOperationTest {
             }
 
             CanonicalizedSecretKeyRing secretRing = new CanonicalizedSecretKeyRing(ring.getEncoded(), false, 0);
-            OperationResultParcel.OperationLog log = new OperationResultParcel.OperationLog();
-            modified = op.modifySecretKeyRing(secretRing, parcel, passphrase, log, 0);
+            modified = op.modifySecretKeyRing(secretRing, parcel, passphrase).getRing();
 
             Assert.assertNull("changing primary user id to a non-existent one should fail", modified);
         }
@@ -718,14 +706,14 @@ public class PgpKeyOperationTest {
                                                                ArrayList<RawPacket> onlyB,
                                                                boolean canonicalize,
                                                                boolean constantCanonicalize) {
+
         try {
 
             Assert.assertTrue("modified keyring must be secret", ring.isSecret());
             CanonicalizedSecretKeyRing secretRing = new CanonicalizedSecretKeyRing(ring.getEncoded(), false, 0);
 
             PgpKeyOperation op = new PgpKeyOperation(null);
-            OperationResultParcel.OperationLog log = new OperationResultParcel.OperationLog();
-            UncachedKeyRing rawModified = op.modifySecretKeyRing(secretRing, parcel, passphrase, log, 0);
+            UncachedKeyRing rawModified = op.modifySecretKeyRing(secretRing, parcel, passphrase).getRing();
             Assert.assertNotNull("key modification failed", rawModified);
 
             if (!canonicalize) {
@@ -734,7 +722,7 @@ public class PgpKeyOperationTest {
                 return rawModified;
             }
 
-            UncachedKeyRing modified = rawModified.canonicalize(log, 0);
+            CanonicalizedKeyRing modified = rawModified.canonicalize(new OperationLog(), 0);
             if (constantCanonicalize) {
                 Assert.assertTrue("key must be constant through canonicalization",
                         !KeyringTestingHelper.diffKeyrings(
@@ -743,7 +731,8 @@ public class PgpKeyOperationTest {
             }
             Assert.assertTrue("keyring must differ from original", KeyringTestingHelper.diffKeyrings(
                     ring.getEncoded(), modified.getEncoded(), onlyA, onlyB));
-            return modified;
+
+            return modified.getUncachedKeyRing();
 
         } catch (IOException e) {
             throw new AssertionFailedError("error during encoding!");
@@ -756,12 +745,8 @@ public class PgpKeyOperationTest {
         UncachedKeyRing expectedKeyRing = KeyringBuilder.correctRing();
         UncachedKeyRing inputKeyRing = KeyringBuilder.ringWithExtraIncorrectSignature();
 
-        OperationResultParcel.OperationLog log = new OperationResultParcel.OperationLog();
-        UncachedKeyRing canonicalizedRing = inputKeyRing.canonicalize(log, 0);
-
-        if (canonicalizedRing == null) {
-            throw new AssertionError("Canonicalization failed; messages: [" + log + "]");
-        }
+        CanonicalizedKeyRing canonicalized = inputKeyRing.canonicalize(new OperationLog(), 0);
+        Assert.assertNotNull("canonicalization must succeed", canonicalized);
 
         ArrayList onlyA = new ArrayList<RawPacket>();
         ArrayList onlyB = new ArrayList<RawPacket>();

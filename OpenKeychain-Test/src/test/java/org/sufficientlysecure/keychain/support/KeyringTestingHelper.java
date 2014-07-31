@@ -29,6 +29,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -349,6 +350,14 @@ public class KeyringTestingHelper {
         } catch (ProviderHelper.NotFoundException expectedException) {
             // good
         }
+    }
+
+    public static <E> List<E> itToList(Iterator<E> it) {
+        List<E> result = new ArrayList<E>();
+        while(it.hasNext()) {
+            result.add(it.next());
+        }
+        return result;
     }
 
 }

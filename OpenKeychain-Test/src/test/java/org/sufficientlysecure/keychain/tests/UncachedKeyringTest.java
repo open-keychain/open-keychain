@@ -14,6 +14,7 @@ import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
 import org.sufficientlysecure.keychain.pgp.UncachedPublicKey;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.service.OperationResultParcel;
+import org.sufficientlysecure.keychain.service.OperationResults.EditKeyResult;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
 import org.sufficientlysecure.keychain.support.KeyringTestingHelper.RawPacket;
 import org.sufficientlysecure.keychain.util.ProgressScaler;
@@ -32,7 +33,6 @@ public class UncachedKeyringTest {
     UncachedKeyRing ring, pubRing;
     ArrayList<RawPacket> onlyA = new ArrayList<RawPacket>();
     ArrayList<RawPacket> onlyB = new ArrayList<RawPacket>();
-    OperationResultParcel.OperationLog log = new OperationResultParcel.OperationLog();
     PgpKeyOperation op;
     SaveKeyringParcel parcel;
 
@@ -54,8 +54,8 @@ public class UncachedKeyringTest {
         parcel.mNewPassphrase = "";
         PgpKeyOperation op = new PgpKeyOperation(null);
 
-        OperationResultParcel.OperationLog log = new OperationResultParcel.OperationLog();
-        staticRing = op.createSecretKeyRing(parcel, log, 0);
+        EditKeyResult result = op.createSecretKeyRing(parcel);
+        staticRing = result.getRing();
         staticPubRing = staticRing.extractPublicKeyRing();
 
         Assert.assertNotNull("initial test key creation must succeed", staticRing);
@@ -102,22 +102,18 @@ public class UncachedKeyringTest {
         ring.encodeArmored(out, "OpenKeychain");
         pubRing.encodeArmored(out, "OpenKeychain");
 
-        List<UncachedKeyRing> rings =
+        Iterator<UncachedKeyRing> it =
                 UncachedKeyRing.fromStream(new ByteArrayInputStream(out.toByteArray()));
-        Assert.assertEquals("there should be two rings in the stream", 2, rings.size());
+        Assert.assertTrue("there should be two rings in the stream", it.hasNext());
         Assert.assertArrayEquals("first ring should be the first we put in",
-                ring.getEncoded(), rings.get(0).getEncoded());
+                ring.getEncoded(), it.next().getEncoded());
+        Assert.assertTrue("there should be two rings in the stream", it.hasNext());
         Assert.assertArrayEquals("second ring should be the second we put in",
-                pubRing.getEncoded(), rings.get(1).getEncoded());
+                pubRing.getEncoded(), it.next().getEncoded());
+        Assert.assertFalse("there should be two rings in the stream", it.hasNext());
 
         // this should fail with PgpGeneralException, since it expects exactly one ring
         UncachedKeyRing.decodeFromData(out.toByteArray());
-    }
-
-    @Test(expected = RuntimeException.class)
-    public void testPublicAvailableSubkeys() throws Exception {
-        // can't do this!
-        pubRing.getAvailableSubkeys();
     }
 
     @Test(expected = RuntimeException.class)

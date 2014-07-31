@@ -10,13 +10,15 @@ import org.robolectric.shadows.ShadowLog;
 import org.spongycastle.bcpg.PacketTags;
 import org.spongycastle.bcpg.sig.KeyFlags;
 import org.sufficientlysecure.keychain.Constants;
+import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKeyRing;
 import org.sufficientlysecure.keychain.pgp.PgpKeyOperation;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
 import org.sufficientlysecure.keychain.pgp.UncachedPublicKey;
-import org.sufficientlysecure.keychain.pgp.WrappedPublicKeyRing;
+import org.sufficientlysecure.keychain.pgp.CanonicalizedPublicKeyRing;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey;
-import org.sufficientlysecure.keychain.pgp.WrappedSecretKeyRing;
+import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKeyRing;
 import org.sufficientlysecure.keychain.service.OperationResultParcel;
+import org.sufficientlysecure.keychain.service.OperationResults.EditKeyResult;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
 import org.sufficientlysecure.keychain.support.KeyringTestingHelper;
 import org.sufficientlysecure.keychain.support.KeyringTestingHelper.RawPacket;
@@ -79,7 +81,9 @@ public class UncachedKeyringMergeTest {
             PgpKeyOperation op = new PgpKeyOperation(null);
 
             OperationResultParcel.OperationLog log = new OperationResultParcel.OperationLog();
-            staticRingA = op.createSecretKeyRing(parcel, log, 0);
+
+            EditKeyResult result = op.createSecretKeyRing(parcel);
+            staticRingA = result.getRing();
         }
 
         {
@@ -93,7 +97,8 @@ public class UncachedKeyringMergeTest {
             PgpKeyOperation op = new PgpKeyOperation(null);
 
             OperationResultParcel.OperationLog log = new OperationResultParcel.OperationLog();
-            staticRingB = op.createSecretKeyRing(parcel, log, 0);
+            EditKeyResult result = op.createSecretKeyRing(parcel);
+            staticRingB = result.getRing();
         }
 
         Assert.assertNotNull("initial test key creation must succeed", staticRingA);
@@ -145,15 +150,16 @@ public class UncachedKeyringMergeTest {
     public void testAddedUserId() throws Exception {
 
         UncachedKeyRing modifiedA, modifiedB; {
-            WrappedSecretKeyRing secretRing = new WrappedSecretKeyRing(ringA.getEncoded(), false, 0);
+            CanonicalizedSecretKeyRing secretRing =
+                    new CanonicalizedSecretKeyRing(ringA.getEncoded(), false, 0);
 
             parcel.reset();
             parcel.mAddUserIds.add("flim");
-            modifiedA = op.modifySecretKeyRing(secretRing, parcel, "", log, 0);
+            modifiedA = op.modifySecretKeyRing(secretRing, parcel, "").getRing();
 
             parcel.reset();
             parcel.mAddUserIds.add("flam");
-            modifiedB = op.modifySecretKeyRing(secretRing, parcel, "", log, 0);
+            modifiedB = op.modifySecretKeyRing(secretRing, parcel, "").getRing();
         }
 
         { // merge A into base
@@ -185,13 +191,13 @@ public class UncachedKeyringMergeTest {
         UncachedKeyRing modifiedA, modifiedB;
         long subKeyIdA, subKeyIdB;
         {
-            WrappedSecretKeyRing secretRing = new WrappedSecretKeyRing(ringA.getEncoded(), false, 0);
+            CanonicalizedSecretKeyRing secretRing = new CanonicalizedSecretKeyRing(ringA.getEncoded(), false, 0);
 
             parcel.reset();
             parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
                     Constants.choice.algorithm.rsa, 1024, KeyFlags.SIGN_DATA, null));
-            modifiedA = op.modifySecretKeyRing(secretRing, parcel, "", log, 0);
-            modifiedB = op.modifySecretKeyRing(secretRing, parcel, "", log, 0);
+            modifiedA = op.modifySecretKeyRing(secretRing, parcel, "").getRing();
+            modifiedB = op.modifySecretKeyRing(secretRing, parcel, "").getRing();
 
             subKeyIdA = KeyringTestingHelper.getSubkeyId(modifiedA, 2);
             subKeyIdB = KeyringTestingHelper.getSubkeyId(modifiedB, 2);
@@ -230,9 +236,9 @@ public class UncachedKeyringMergeTest {
         final UncachedKeyRing modified; {
             parcel.reset();
             parcel.mRevokeSubKeys.add(KeyringTestingHelper.getSubkeyId(ringA, 1));
-            WrappedSecretKeyRing secretRing = new WrappedSecretKeyRing(
+            CanonicalizedSecretKeyRing secretRing = new CanonicalizedSecretKeyRing(
                     ringA.getEncoded(), false, 0);
-            modified = op.modifySecretKeyRing(secretRing, parcel, "", log, 0);
+            modified = op.modifySecretKeyRing(secretRing, parcel, "").getRing();
         }
 
         {
@@ -252,10 +258,10 @@ public class UncachedKeyringMergeTest {
         final UncachedKeyRing pubRing = ringA.extractPublicKeyRing();
 
         final UncachedKeyRing modified; {
-            WrappedPublicKeyRing publicRing = new WrappedPublicKeyRing(
-                    pubRing.getEncoded(), false, 0);
+            CanonicalizedPublicKeyRing publicRing = new CanonicalizedPublicKeyRing(
+                    pubRing.getEncoded(), 0);
 
-            CanonicalizedSecretKey secretKey = new WrappedSecretKeyRing(
+            CanonicalizedSecretKey secretKey = new CanonicalizedSecretKeyRing(
                     ringB.getEncoded(), false, 0).getSecretKey();
             secretKey.unlock("");
             // sign all user ids
