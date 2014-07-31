@@ -475,41 +475,40 @@ public class KeyListFragment extends LoaderFragment
                 }
             }
 
-            { // set edit button and revoked info, specific by key type
+            { // set edit button and status, specific by key type
 
-                if (cursor.getInt(KeyListFragment.INDEX_HAS_ANY_SECRET) != 0) {
-                    // this is a secret key
-                    h.mStatus.setVisibility(View.GONE);
-                } else {
-                    // this is a public key - show if it's revoked, expired, or verified
+                boolean isRevoked = cursor.getInt(INDEX_IS_REVOKED) > 0;
+                boolean isExpired = !cursor.isNull(INDEX_EXPIRY)
+                        && new Date(cursor.getLong(INDEX_EXPIRY)*1000).before(new Date());
+                boolean isVerified = cursor.getInt(INDEX_VERIFIED) > 0;
 
-                    boolean isRevoked = cursor.getInt(INDEX_IS_REVOKED) > 0;
-                    boolean isExpired = !cursor.isNull(INDEX_EXPIRY)
-                            && new Date(cursor.getLong(INDEX_EXPIRY)*1000).before(new Date());
-                    boolean isVerified = cursor.getInt(INDEX_VERIFIED) > 0;
-
-                    // Note: order is important!
-                    if (isRevoked) {
-                        h.mStatus.setImageDrawable(
-                                getResources().getDrawable(R.drawable.status_signature_revoked_cutout));
-                        h.mStatus.setColorFilter(getResources().getColor(R.color.android_red_light),
-                                PorterDuff.Mode.SRC_ATOP);
-                        h.mStatus.setVisibility(View.VISIBLE);
-                    } else if (isExpired) {
-                        h.mStatus.setImageDrawable(
-                                getResources().getDrawable(R.drawable.status_signature_expired_cutout));
-                        h.mStatus.setColorFilter(getResources().getColor(R.color.android_orange_light),
-                                PorterDuff.Mode.SRC_ATOP);
-                        h.mStatus.setVisibility(View.VISIBLE);
-                    } else if (isVerified) {
+                // Note: order is important!
+                if (isRevoked) {
+                    h.mStatus.setImageDrawable(
+                            getResources().getDrawable(R.drawable.status_signature_revoked_cutout));
+                    h.mStatus.setColorFilter(getResources().getColor(R.color.android_red_light),
+                            PorterDuff.Mode.SRC_ATOP);
+                    h.mStatus.setVisibility(View.VISIBLE);
+                } else if (isExpired) {
+                    h.mStatus.setImageDrawable(
+                            getResources().getDrawable(R.drawable.status_signature_expired_cutout));
+                    h.mStatus.setColorFilter(getResources().getColor(R.color.android_orange_light),
+                            PorterDuff.Mode.SRC_ATOP);
+                    h.mStatus.setVisibility(View.VISIBLE);
+                } else if (isVerified) {
+                    if (cursor.getInt(KeyListFragment.INDEX_HAS_ANY_SECRET) != 0) {
+                        // this is a secret key
+                        h.mStatus.setVisibility(View.GONE);
+                    } else {
+                        // this is a public key - show if it's verified
                         h.mStatus.setImageDrawable(
                                 getResources().getDrawable(R.drawable.status_signature_verified_cutout));
                         h.mStatus.setColorFilter(getResources().getColor(R.color.android_green_light),
                                 PorterDuff.Mode.SRC_ATOP);
                         h.mStatus.setVisibility(View.VISIBLE);
-                    } else {
-                        h.mStatus.setVisibility(View.GONE);
                     }
+                } else {
+                    h.mStatus.setVisibility(View.GONE);
                 }
             }
 
