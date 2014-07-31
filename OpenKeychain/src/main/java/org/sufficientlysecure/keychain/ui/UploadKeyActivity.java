@@ -36,6 +36,7 @@ import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.helper.Preferences;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
+import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
 import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
 import org.sufficientlysecure.keychain.util.Log;
@@ -92,7 +93,7 @@ public class UploadKeyActivity extends ActionBarActivity {
         intent.setAction(KeychainIntentService.ACTION_UPLOAD_KEYRING);
 
         // set data uri as path to keyring
-        Uri blobUri = KeychainContract.KeyRingData.buildPublicKeyRingUri(mDataUri);
+        Uri blobUri = KeyRings.buildUnifiedKeyRingUri(mDataUri);
         intent.setData(blobUri);
 
         // fill values for this action
