@@ -23,7 +23,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceMedium"
-                android:text="@string/from"/>
+                android:text="@string/label_asymmetric_from"/>
         <Spinner
                 android:id="@+id/sign"
                 android:layout_width="match_parent"

@@ -429,7 +429,7 @@ public class EncryptActivity extends DrawerActivity implements EncryptActivityIn
         mTabsAdapterContent.addTab(EncryptMessageFragment.class,
                 mMessageFragmentBundle, getString(R.string.label_message));
         mTabsAdapterContent.addTab(EncryptFileFragment.class,
-                mFileFragmentBundle, getString(R.string.label_file));
+                mFileFragmentBundle, getString(R.string.label_files));
         mViewPagerContent.setCurrentItem(mSwitchToContent);
 
         mUseArmor = Preferences.getPreferences(this).getDefaultAsciiArmor();
