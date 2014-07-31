@@ -217,7 +217,7 @@ public class HkpKeyserver extends Keyserver {
                 throw new HttpError(response, data);
             }
         } catch (IOException e) {
-            throw new QueryFailedException("querying server(s) for '" + mHost + "' failed");
+            throw new QueryFailedException("Keyserver '" + mHost + "' is unavailable. Check your Internet connection!");
         }
     }
 
@@ -242,24 +242,26 @@ public class HkpKeyserver extends Keyserver {
         try {
             data = query(request);
         } catch (HttpError e) {
-            if (e.getCode() == 404) {
-                throw new QueryFailedException("keyserver '" + mHost + "' not found. Error 404");
-            } else if (e.getData() != null) {
+            if (e.getData() != null) {
                 Log.d(Constants.TAG, "returned error data: " + e.getData().toLowerCase(Locale.US));
 
                 if (e.getData().toLowerCase(Locale.US).contains("no keys found")) {
+                    // NOTE: This is also a 404 error for some keyservers!
                     return results;
                 } else if (e.getData().toLowerCase(Locale.US).contains("too many")) {
                     throw new TooManyResponsesException();
                 } else if (e.getData().toLowerCase(Locale.US).contains("insufficient")) {
                     throw new QueryTooShortException();
+                } else if (e.getCode() == 404) {
+                    // NOTE: handle this 404 at last, maybe it was a "no keys found" error
+                    throw new QueryFailedException("Keyserver '" + mHost + "' not found. Error 404");
+                } else {
+                    // NOTE: some keyserver do not provide a more detailed error response
+                    throw new QueryFailedException("Either no keys or too many have been found. Please improve your query!");
                 }
-
-                // NOTE: some keyserver do not provide a more detailed error response
-                throw new QueryFailedException("Either no keys or too many have been found. Please improve your query!");
             }
 
-            throw new QueryFailedException("querying server(s) for '" + mHost + "' failed");
+            throw new QueryFailedException("Querying server(s) for '" + mHost + "' failed.");
         }
 
         final Matcher matcher = PUB_KEY_LINE.matcher(data);
