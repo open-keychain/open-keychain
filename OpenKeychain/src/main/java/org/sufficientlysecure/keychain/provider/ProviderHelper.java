@@ -233,12 +233,6 @@ public class ProviderHelper {
     }
 
     private KeyRing getCanonicalizedKeyRing(Uri queryUri, boolean secret) throws NotFoundException {
-
-        // if this is not a unified query, we /will/ get hard to trace errors below!
-        if ( ! queryUri.getPath().contains("unified")) {
-            throw new RuntimeException("only unified uris can be passed to getCanonicalizedKeyRing!");
-        }
-
         Cursor cursor = mContentResolver.query(queryUri,
                 new String[]{
                         // we pick from cache only information that is not easily available from keyrings
