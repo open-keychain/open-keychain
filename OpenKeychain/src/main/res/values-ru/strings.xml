@@ -254,9 +254,9 @@
   <string name="error_jelly_bean_needed">Для использования NFC Beam требуется Android 4.1+ !</string>
   <string name="error_nfc_needed">Ваше устройство не поддерживает NFC!</string>
   <string name="error_nothing_import">Ключи не найдены!</string>
-  <string name="error_keyserver_insufficient_query">Запрос слишком короткий</string>
+  <string name="error_query_too_short">Запрос слишком короткий</string>
   <string name="error_searching_keys">Ошибка поиска ключей на сервере</string>
-  <string name="error_keyserver_too_many_responses">Поиск ключа вернул слишком много вариантов; Пожалуйста, уточните запрос</string>
+  <string name="error_too_many_responses">Поиск ключа вернул слишком много вариантов; Пожалуйста, уточните запрос</string>
   <string name="error_import_no_valid_keys">Файл/Буфер пуст</string>
   <string name="error_generic_report_bug">Выявлена ошибка. Пожалуйста, сообщите о ней разработчику.</string>
   <plurals name="error_import_non_pgp_part">

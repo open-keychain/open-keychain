@@ -265,7 +265,7 @@ public class HkpKeyserver extends Keyserver {
                     throw new QueryFailedException("Keyserver '" + mHost + "' not found. Error 404");
                 } else {
                     // NOTE: some keyserver do not provide a more detailed error response
-                    throw new QueryFailedException("Either no keys or too many have been found. Please improve your query!");
+                    throw new QueryTooShortOrTooManyResponsesException();
                 }
             }
 

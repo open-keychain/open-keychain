@@ -252,9 +252,9 @@
   <string name="error_jelly_bean_needed">Вам потрібний Android 4.1 для використання функції Androids NFC промінь!</string>
   <string name="error_nfc_needed">NFC недоступний на вашому пристрої!</string>
   <string name="error_nothing_import">Ключ не знайдено!</string>
-  <string name="error_keyserver_insufficient_query">Запит пошуку ключа надто короткий</string>
+  <string name="error_query_too_short">Запит пошуку ключа надто короткий</string>
   <string name="error_searching_keys">Невиправна помилка пошуку ключів в сервері</string>
-  <string name="error_keyserver_too_many_responses">Запит пошуку ключа видав надто багато варіантів. Уточніть пошуковий запит</string>
+  <string name="error_too_many_responses">Запит пошуку ключа видав надто багато варіантів. Уточніть пошуковий запит</string>
   <string name="error_generic_report_bug">Трапилася загальна помилка, будь ласка, створіть новий звіт про помилку для OpenKeychain.</string>
   <plurals name="error_import_non_pgp_part">
     <item quantity="one">частина завантаженого файлу є вірним об\'єктом OpenPGP, але не ключем OpenPGP</item>

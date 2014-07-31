@@ -307,9 +307,11 @@ public class ImportKeysListFragment extends ListFragment implements
                 if (error == null) {
                     // No error
                 } else if (error instanceof Keyserver.QueryTooShortException) {
-                    Notify.showNotify(getActivity(), R.string.error_keyserver_insufficient_query, Notify.Style.ERROR);
+                    Notify.showNotify(getActivity(), R.string.error_query_too_short, Notify.Style.ERROR);
                 } else if (error instanceof Keyserver.TooManyResponsesException) {
-                    Notify.showNotify(getActivity(), R.string.error_keyserver_too_many_responses, Notify.Style.ERROR);
+                    Notify.showNotify(getActivity(), R.string.error_too_many_responses, Notify.Style.ERROR);
+                } else if (error instanceof Keyserver.QueryTooShortOrTooManyResponsesException) {
+                    Notify.showNotify(getActivity(), R.string.error_too_short_or_too_many_responses, Notify.Style.ERROR);
                 } else if (error instanceof Keyserver.QueryFailedException) {
                     Log.d(Constants.TAG,
                             "Unrecoverable keyserver query error: " + error.getLocalizedMessage());

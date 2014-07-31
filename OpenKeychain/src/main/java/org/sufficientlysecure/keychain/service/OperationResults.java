@@ -107,7 +107,7 @@ public abstract class OperationResults {
                 if (this.isOkBoth()) {
                     str = activity.getResources().getQuantityString(
                             R.plurals.import_keys_added_and_updated_1, mNewKeys, mNewKeys);
-                    str += activity.getResources().getQuantityString(
+                    str += " "+ activity.getResources().getQuantityString(
                             R.plurals.import_keys_added_and_updated_2, mUpdatedKeys, mUpdatedKeys, withWarnings);
                 } else if (isOkUpdated()) {
                     str = activity.getResources().getQuantityString(

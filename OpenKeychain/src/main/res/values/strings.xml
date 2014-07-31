@@ -270,9 +270,11 @@
     <string name="error_jelly_bean_needed">You need Android 4.1 to use Android\'s NFC Beam feature!</string>
     <string name="error_nfc_needed">NFC is not available on your device!</string>
     <string name="error_nothing_import">No keys found!</string>
-    <string name="error_keyserver_insufficient_query">Key search query too short</string>
-    <string name="error_searching_keys">An error occurred when searching for keys</string>
-    <string name="error_keyserver_too_many_responses">Key search query returned too many candidates; Please refine query</string>
+    <string name="error_query_too_short">Search query too short. Please refine your query!</string>
+    <string name="error_searching_keys">An error occurred when searching for keys.</string>
+    <string name="error_too_many_responses">Key search query returned too many candidates. Please refine your query!</string>
+    <string name="error_too_short_or_too_many_responses">Either no keys or too many have been found. Please improve your query!</string>
+
     <string name="error_import_no_valid_keys">No valid keys found in File/Clipboard!</string>
     <string name="error_generic_report_bug">A generic error occurred, please create a new bug report for OpenKeychain.</string>
     <plurals name="error_import_non_pgp_part">
@@ -392,8 +394,8 @@
         <item quantity="other">Successfully imported %1$d keys</item>
     </plurals>
     <plurals name="import_keys_added_and_updated_2">
-        <item quantity="one"> and updated key%2$s.</item>
-        <item quantity="other"> and updated %1$d keys%2$s.</item>
+        <item quantity="one">and updated key%2$s.</item>
+        <item quantity="other">and updated %1$d keys%2$s.</item>
     </plurals>
     <plurals name="import_keys_added">
         <item quantity="one">Successfully imported key%2$s.</item>

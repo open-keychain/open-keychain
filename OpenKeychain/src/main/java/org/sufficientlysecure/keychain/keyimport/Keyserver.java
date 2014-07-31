@@ -44,6 +44,13 @@ public abstract class Keyserver {
         private static final long serialVersionUID = 2703768928624654514L;
     }
 
+    /**
+     * query too short _or_ too many responses
+     */
+    public static class QueryTooShortOrTooManyResponsesException extends QueryNeedsRepairException {
+        private static final long serialVersionUID = 2703768928624654514L;
+    }
+
     public static class AddKeyException extends Exception {
         private static final long serialVersionUID = -507574859137295530L;
     }
