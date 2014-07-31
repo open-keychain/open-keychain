@@ -168,13 +168,13 @@ public abstract class OperationResults {
     public static class EditKeyResult extends OperationResultParcel {
 
         private transient UncachedKeyRing mRing;
-        public final long mRingMasterKeyId;
+        public final Long mRingMasterKeyId;
 
         public EditKeyResult(int result, OperationLog log,
                                UncachedKeyRing ring) {
             super(result, log);
             mRing = ring;
-            mRingMasterKeyId = ring.getMasterKeyId();
+            mRingMasterKeyId = ring != null ? ring.getMasterKeyId() : null;
         }
 
         public UncachedKeyRing getRing() {
