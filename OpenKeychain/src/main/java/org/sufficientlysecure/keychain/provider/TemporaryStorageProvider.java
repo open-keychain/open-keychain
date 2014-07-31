@@ -104,6 +104,8 @@ public class TemporaryStorageProvider extends ContentProvider {
 
     @Override
     public String getType(Uri uri) {
+        // Note: If we can find a files mime type, we can decrypt it to temp storage and open it after
+        //       encryption. The mime type is needed, else UI really sucks and some apps break.
         return "*/*";
     }
 

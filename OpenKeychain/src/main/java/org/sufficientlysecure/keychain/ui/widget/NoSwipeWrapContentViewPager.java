@@ -17,12 +17,13 @@ public class NoSwipeWrapContentViewPager extends android.support.v4.view.ViewPag
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
 
-        int height = 0;
-        for(int i = 0; i < getChildCount(); i++) {
-            View child = getChildAt(i);
+        int height;
+        View child = getChildAt(getCurrentItem());
+        if (child != null) {
             child.measure(widthMeasureSpec, MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED));
-            int h = child.getMeasuredHeight();
-            if(h > height) height = h;
+            height = child.getMeasuredHeight();
+        } else {
+            height = 0;
         }
 
         heightMeasureSpec = MeasureSpec.makeMeasureSpec(height, MeasureSpec.EXACTLY);

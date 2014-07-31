@@ -4,6 +4,11 @@ import android.app.Activity;
 import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -48,8 +53,6 @@ public class EncryptKeyCompletionView extends TokenCompleteTextView {
         allowDuplicates(false);
     }
 
-    private EncryptKeyAdapter mAdapter;
-
     @Override
     protected View getViewForObject(Object object) {
         if (object instanceof EncryptionKey) {
@@ -79,6 +82,31 @@ public class EncryptKeyCompletionView extends TokenCompleteTextView {
 
         }*/
         return null;
+    }
+
+    @Override
+    protected void onAttachedToWindow() {
+        super.onAttachedToWindow();
+        if (getContext() instanceof FragmentActivity) {
+            ((FragmentActivity) getContext()).getSupportLoaderManager().initLoader(0, null, new LoaderManager.LoaderCallbacks<Cursor>() {
+                @Override
+                public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+                    return new CursorLoader(getContext(), KeychainContract.KeyRings.buildUnifiedKeyRingsUri(),
+                            new String[]{KeychainContract.KeyRings.HAS_ENCRYPT, KeychainContract.KeyRings.KEY_ID, KeychainContract.KeyRings.USER_ID, KeychainContract.KeyRings.FINGERPRINT},
+                            null, null, null);
+                }
+
+                @Override
+                public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+                    swapCursor(data);
+                }
+
+                @Override
+                public void onLoaderReset(Loader<Cursor> loader) {
+                    swapCursor(null);
+                }
+            });
+        }
     }
 
     public void swapCursor(Cursor cursor) {

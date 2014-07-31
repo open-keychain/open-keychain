@@ -17,24 +17,27 @@
 
 package org.sufficientlysecure.keychain.ui;
 
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Point;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.*;
+import android.widget.BaseAdapter;
+import android.widget.ImageView;
+import android.widget.ListView;
+import android.widget.TextView;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.helper.FileHelper;
 import org.sufficientlysecure.keychain.helper.OtherHelper;
-import org.sufficientlysecure.keychain.helper.Preferences;
 import org.sufficientlysecure.keychain.provider.TemporaryStorageProvider;
-import org.sufficientlysecure.keychain.util.Choice;
 
 import java.io.File;
 import java.util.List;
@@ -89,44 +92,12 @@ public class EncryptFileFragment extends Fragment implements EncryptActivityInte
         mAddView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (Constants.KITKAT) {
-                    FileHelper.openDocument(EncryptFileFragment.this, "*/*", REQUEST_CODE_INPUT);
-                } else {
-                    FileHelper.openFile(EncryptFileFragment.this,
-                            mEncryptInterface.getInputUris().isEmpty() ? null : mEncryptInterface.getInputUris().get(mEncryptInterface.getInputUris().size() - 1), "*/*", REQUEST_CODE_INPUT);
-                }
+                addInputUri();
             }
         });
         ListView listView = (ListView) view.findViewById(R.id.selected_files_list);
         listView.addFooterView(mAddView);
         listView.setAdapter(mAdapter);
-
-        /*
-        mFileCompression = (Spinner) view.findViewById(R.id.fileCompression);
-        Choice[] choices = new Choice[]{
-                new Choice(Constants.choice.compression.none, getString(R.string.choice_none) + " ("
-                        + getString(R.string.compression_fast) + ")"),
-                new Choice(Constants.choice.compression.zip, "ZIP ("
-                        + getString(R.string.compression_fast) + ")"),
-                new Choice(Constants.choice.compression.zlib, "ZLIB ("
-                        + getString(R.string.compression_fast) + ")"),
-                new Choice(Constants.choice.compression.bzip2, "BZIP2 ("
-                        + getString(R.string.compression_very_slow) + ")"),
-        };
-        ArrayAdapter<Choice> adapter = new ArrayAdapter<Choice>(getActivity(),
-                android.R.layout.simple_spinner_item, choices);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        mFileCompression.setAdapter(adapter);
-
-
-        int defaultFileCompression = Preferences.getPreferences(getActivity()).getDefaultFileCompression();
-        for (int i = 0; i < choices.length; ++i) {
-            if (choices[i].getId() == defaultFileCompression) {
-                mFileCompression.setSelection(i);
-                break;
-            }
-        }
-        */
 
         return view;
     }
@@ -136,6 +107,16 @@ public class EncryptFileFragment extends Fragment implements EncryptActivityInte
         super.onActivityCreated(savedInstanceState);
 
         addInputUris(getArguments().<Uri>getParcelableArrayList(ARG_URIS));
+    }
+
+    private void addInputUri() {
+        if (Constants.KITKAT) {
+            FileHelper.openDocument(EncryptFileFragment.this, "*/*", true, REQUEST_CODE_INPUT);
+        } else {
+            FileHelper.openFile(EncryptFileFragment.this, mEncryptInterface.getInputUris().isEmpty() ?
+                            null : mEncryptInterface.getInputUris().get(mEncryptInterface.getInputUris().size() - 1),
+                    "*/*", REQUEST_CODE_INPUT);
+        }
     }
 
     private void addInputUris(List<Uri> uris) {
@@ -206,10 +187,22 @@ public class EncryptFileFragment extends Fragment implements EncryptActivityInte
                         (mEncryptInterface.isUseArmor() ? ".asc" : ".gpg");
                 mEncryptInterface.getOutputUris().add(TemporaryStorageProvider.createFile(getActivity(), targetName));
             }
-            mEncryptInterface.startEncrypt(share);
+            mEncryptInterface.startEncrypt(true);
         } else if (mEncryptInterface.getInputUris().size() == 1) {
             showOutputFileDialog();
         }
+    }
+
+    @TargetApi(Build.VERSION_CODES.KITKAT)
+    public boolean handleClipData(Intent data) {
+        if (data.getClipData() != null && data.getClipData().getItemCount() > 0) {
+            for (int i = 0; i < data.getClipData().getItemCount(); i++) {
+                Uri uri = data.getClipData().getItemAt(i).getUri();
+                if (uri != null) addInputUri(uri);
+            }
+            return true;
+        }
+        return false;
     }
 
     @Override
@@ -217,14 +210,18 @@ public class EncryptFileFragment extends Fragment implements EncryptActivityInte
         switch (requestCode) {
             case REQUEST_CODE_INPUT: {
                 if (resultCode == Activity.RESULT_OK && data != null) {
-                    addInputUri(data.getData());
+                    if (!Constants.KITKAT || !handleClipData(data)) {
+                        addInputUri(data.getData());
+                    }
                 }
                 return;
             }
             case REQUEST_CODE_OUTPUT: {
                 // This happens after output file was selected, so start our operation
                 if (resultCode == Activity.RESULT_OK && data != null) {
+                    mEncryptInterface.getOutputUris().clear();
                     mEncryptInterface.getOutputUris().add(data.getData());
+                    mEncryptInterface.notifyUpdate();
                     mEncryptInterface.startEncrypt(false);
                 }
                 return;

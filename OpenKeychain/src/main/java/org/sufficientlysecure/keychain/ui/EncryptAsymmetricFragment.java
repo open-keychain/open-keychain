@@ -37,7 +37,6 @@ import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
-import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.ui.widget.EncryptKeyCompletionView;
@@ -48,13 +47,8 @@ import java.util.Iterator;
 import java.util.List;
 
 public class EncryptAsymmetricFragment extends Fragment implements EncryptActivityInterface.UpdateListener {
-    private static final String SIGN_KEY_SELECTION = KeyRings.CAN_SIGN + " = 1 AND " + KeyRings.IS_REVOKED + " = 0";
-
     public static final String ARG_SIGNATURE_KEY_ID = "signature_key_id";
     public static final String ARG_ENCRYPTION_KEY_IDS = "encryption_key_ids";
-
-    public static final int REQUEST_CODE_PUBLIC_KEYS = 0x00007001;
-    public static final int REQUEST_CODE_SECRET_KEYS = 0x00007002;
 
     ProviderHelper mProviderHelper;
 
@@ -130,26 +124,6 @@ public class EncryptAsymmetricFragment extends Fragment implements EncryptActivi
         // preselect keys given by arguments (given by Intent to EncryptActivity)
         preselectKeys(signatureKeyId, encryptionKeyIds, mProviderHelper);
 
-        // TODO: Move this into widget!
-
-        getLoaderManager().initLoader(0, null, new LoaderManager.LoaderCallbacks<Cursor>() {
-            @Override
-            public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-                return new CursorLoader(getActivity(), KeychainContract.KeyRings.buildUnifiedKeyRingsUri(),
-                        new String[]{KeyRings.HAS_ENCRYPT, KeyRings.KEY_ID, KeyRings.USER_ID, KeyRings.FINGERPRINT},
-                        null, null, null);
-            }
-
-            @Override
-            public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-                mEncryptKeyView.swapCursor(data);
-            }
-
-            @Override
-            public void onLoaderReset(Loader<Cursor> loader) {
-                mEncryptKeyView.swapCursor(null);
-            }
-        });
         getLoaderManager().initLoader(1, null, new LoaderManager.LoaderCallbacks<Cursor>() {
             @Override
             public Loader<Cursor> onCreateLoader(int id, Bundle args) {

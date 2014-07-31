@@ -26,18 +26,12 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Point;
 import android.net.Uri;
-import android.os.Build;
-import android.os.Environment;
-import android.os.Handler;
-import android.os.Message;
-import android.os.Messenger;
+import android.os.*;
 import android.provider.DocumentsContract;
 import android.provider.OpenableColumns;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.widget.Toast;
-
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.compatibility.DialogFragmentWorkaround;
@@ -135,18 +129,25 @@ public class FileHelper {
         }, fragment.getActivity().getSupportFragmentManager(), title, message, defaultFile, checkMsg);
     }
 
+    @TargetApi(Build.VERSION_CODES.KITKAT)
+    public static void openDocument(Fragment fragment, String mimeType, int requestCode) {
+        openDocument(fragment, mimeType, false, requestCode);
+    }
 
     /**
      * Opens the storage browser on Android 4.4 or later for opening a file
      * @param fragment
      * @param mimeType can be text/plain for example
+     * @param multiple allow file chooser to return multiple files
      * @param requestCode used to identify the result coming back from storage browser onActivityResult() in your
      */
     @TargetApi(Build.VERSION_CODES.KITKAT)
-    public static void openDocument(Fragment fragment, String mimeType, int requestCode) {
+    public static void openDocument(Fragment fragment, String mimeType, boolean multiple, int requestCode) {
         Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
         intent.addCategory(Intent.CATEGORY_OPENABLE);
         intent.setType(mimeType);
+        intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, multiple);
+
         fragment.startActivityForResult(intent, requestCode);
     }
 

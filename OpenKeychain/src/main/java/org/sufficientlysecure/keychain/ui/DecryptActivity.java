@@ -23,7 +23,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.view.PagerTabStrip;
 import android.support.v4.view.ViewPager;
-
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.PgpHelper;
@@ -120,6 +119,7 @@ public class DecryptActivity extends DrawerActivity {
 
             // override action
             action = ACTION_DECRYPT;
+            mFileFragmentBundle.putBoolean(DecryptFileFragment.ARG_FROM_VIEW_INTENT, true);
         }
 
         String textData = extras.getString(EXTRA_TEXT);

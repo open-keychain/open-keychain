@@ -149,8 +149,8 @@
                 <action android:name="org.sufficientlysecure.keychain.action.ENCRYPT" />
 
                 <category android:name="android.intent.category.DEFAULT" />
-                <!-- TODO: accept other schemes! -->
                 <data android:scheme="file" />
+                <data android:scheme="content"/>
             </intent-filter>
             <!-- Android's Send Action -->
             <intent-filter android:label="@string/intent_send_encrypt">
@@ -200,8 +200,8 @@
                 <action android:name="org.sufficientlysecure.keychain.action.DECRYPT" />
 
                 <category android:name="android.intent.category.DEFAULT" />
-                <!-- TODO: accept other schemes! -->
                 <data android:scheme="file" />
+                <data android:scheme="content"/>
             </intent-filter>
             <!-- Android's Send Action -->
             <intent-filter android:label="@string/intent_send_decrypt">
@@ -221,6 +221,7 @@
                 <data android:host="*" />
                 <data android:scheme="file" />
                 <data android:scheme="content" />
+                <data android:mimeType="*/*"/>
                 <!-- Workaround to match files in pathes with dots in them, like /cdcard/my.folder/test.gpg -->
                 <data android:pathPattern=".*\\.gpg" />
                 <data android:pathPattern=".*\\..*\\.gpg" />

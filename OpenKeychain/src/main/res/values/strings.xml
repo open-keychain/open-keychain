@@ -56,6 +56,7 @@
     <string name="btn_decrypt_verify_clipboard">From Clipboard</string>
     <string name="btn_encrypt_file">Encrypt and save file</string>
     <string name="btn_encrypt_share_file">Encrypt and share file</string>
+    <string name="btn_encrypt_sign_share">Encrypt, sign and share</string>
     <string name="btn_save">Save</string>
     <string name="btn_do_not_save">Cancel</string>
     <string name="btn_delete">Delete</string>
@@ -166,6 +167,7 @@
     </plurals>
 
     <string name="secret_key">Secret Key:</string>
+    <string name="from">From:</string>
 
     <!-- choice -->
     <string name="choice_none">None</string>

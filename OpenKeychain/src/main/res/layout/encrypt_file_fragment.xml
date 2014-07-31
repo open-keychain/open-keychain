@@ -10,17 +10,11 @@
             android:paddingLeft="16dp"
             android:paddingRight="16dp"
             android:orientation="vertical">
-
-        <View
-                android:layout_width="match_parent"
-                android:layout_height="1dip"
-                android:background="?android:attr/listDivider"
-                android:layout_marginBottom="8dp"/>
-
         <ListView
                 android:id="@+id/selected_files_list"
                 android:dividerHeight="4dip"
                 android:divider="@android:color/transparent"
+                android:layout_marginTop="8dp"
                 android:layout_width="match_parent"
                 android:layout_height="0dip"
                 android:layout_weight="1"/>
@@ -29,6 +23,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="1dip"
                 android:background="?android:attr/listDivider"/>
+
+        <!-- Note: The following construct should be a widget, we use it quiet often -->
 
         <LinearLayout
                 android:id="@+id/action_encrypt_share"

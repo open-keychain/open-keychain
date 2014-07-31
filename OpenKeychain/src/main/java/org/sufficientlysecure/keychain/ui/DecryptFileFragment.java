@@ -29,21 +29,21 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.TextView;
-
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.helper.FileHelper;
 import org.sufficientlysecure.keychain.pgp.PgpDecryptVerifyResult;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
 import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
-import org.sufficientlysecure.keychain.util.Notify;
 import org.sufficientlysecure.keychain.ui.dialog.DeleteFileDialogFragment;
 import org.sufficientlysecure.keychain.util.Log;
+import org.sufficientlysecure.keychain.util.Notify;
 
 import java.io.File;
 
 public class DecryptFileFragment extends DecryptFragment {
     public static final String ARG_URI = "uri";
+    public static final String ARG_FROM_VIEW_INTENT = "view_intent";
 
     private static final int REQUEST_CODE_INPUT = 0x00007003;
     private static final int REQUEST_CODE_OUTPUT = 0x00007007;
@@ -189,6 +189,15 @@ public class DecryptFileFragment extends DecryptFragment {
                             deleteFileDialog.show(getActivity().getSupportFragmentManager(), "deleteDialog");
                             setInputUri(null);
                         }
+
+                        /*
+                        // A future open after decryption feature
+                        if () {
+                            Intent viewFile = new Intent(Intent.ACTION_VIEW);
+                            viewFile.setData(mOutputUri);
+                            startActivity(viewFile);
+                        }
+                        */
                     }
                 }
             }

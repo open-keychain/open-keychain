@@ -28,7 +28,6 @@ import android.os.Messenger;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.PagerTabStrip;
 import android.support.v4.view.ViewPager;
-
 import android.view.Menu;
 import android.view.MenuItem;
 import com.devspark.appmsg.AppMsg;
@@ -41,8 +40,8 @@ import org.sufficientlysecure.keychain.service.KeychainIntentService;
 import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
 import org.sufficientlysecure.keychain.service.PassphraseCacheService;
 import org.sufficientlysecure.keychain.ui.adapter.PagerTabStripAdapter;
+import org.sufficientlysecure.keychain.ui.dialog.DeleteFileDialogFragment;
 import org.sufficientlysecure.keychain.ui.dialog.PassphraseDialogFragment;
-import org.sufficientlysecure.keychain.util.Choice;
 import org.sufficientlysecure.keychain.util.Log;
 
 import java.util.ArrayList;
@@ -220,9 +219,12 @@ public class EncryptActivity extends DrawerActivity implements EncryptActivityIn
 
                     if (!isContentMessage() && mDeleteAfterEncrypt) {
                         // TODO: Create and show dialog to delete original file
-                        //DeleteFileDialogFragment deleteFileDialog = DeleteFileDialogFragment.newInstance(mInputUri);
-                        //deleteFileDialog.show(getActivity().getSupportFragmentManager(), "deleteDialog");
-                        //setInputUri(null);
+                        for (Uri inputUri : mInputUris) {
+                            DeleteFileDialogFragment deleteFileDialog = DeleteFileDialogFragment.newInstance(inputUri);
+                            deleteFileDialog.show(getSupportFragmentManager(), "deleteDialog");
+                        }
+                        mInputUris.clear();
+                        notifyUpdate();
                     }
 
                     if (mShareAfterEncrypt) {
@@ -327,12 +329,11 @@ public class EncryptActivity extends DrawerActivity implements EncryptActivityIn
                 AppMsg.makeText(this, R.string.no_file_selected, AppMsg.STYLE_ALERT).show();
                 return false;
             } else if (mInputUris.size() > 1 && !mShareAfterEncrypt) {
-                AppMsg.makeText(this, "TODO", AppMsg.STYLE_ALERT).show(); // TODO
+                // This should be impossible...
                 return false;
-            }
-
-            if (mInputUris.size() != mOutputUris.size()) {
-                throw new IllegalStateException("Something went terribly wrong if this happens!");
+            } else if (mInputUris.size() != mOutputUris.size()) {
+                // This as well
+                return false;
             }
         }
 
@@ -445,6 +446,7 @@ public class EncryptActivity extends DrawerActivity implements EncryptActivityIn
         switch (item.getItemId()) {
             case R.id.check_use_symmetric:
                 mSwitchToMode = item.isChecked() ? PAGER_MODE_SYMMETRIC : PAGER_MODE_ASYMMETRIC;
+
                 mViewPagerMode.setCurrentItem(mSwitchToMode);
                 notifyUpdate();
                 break;
