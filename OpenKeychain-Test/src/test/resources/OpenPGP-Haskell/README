@@ -1,0 +1,26 @@
+These test files were copied from the OpenPGP Haskell project.
+
+
+
+Original README
+===============
+
+This is an OpenPGP library inspired by my work on OpenPGP libraries in
+Ruby <https://github.com/singpolyma/openpgp>,
+PHP <http://github.com/singpolyma/openpgp-php>,
+and Python <https://github.com/singpolyma/OpenPGP-Python>.
+
+It defines types to represent OpenPGP messages as a series of packets
+and then defines instances of Data.Binary for each to facilitate
+encoding/decoding.
+
+For performing cryptography, see
+<http://hackage.haskell.org/package/openpgp-crypto-api> or
+<http://hackage.haskell.org/package/openpgp-Crypto>
+
+For dealing with ASCII armor, see
+<http://hackage.haskell.org/package/openpgp-asciiarmor>
+
+It is intended that you use qualified imports with this library.
+
+> import qualified Data.OpenPGP as OpenPGP

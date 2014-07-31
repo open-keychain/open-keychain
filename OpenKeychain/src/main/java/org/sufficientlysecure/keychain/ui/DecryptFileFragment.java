@@ -28,6 +28,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
+import android.widget.EditText;
+import android.widget.ImageButton;
+
 import android.widget.TextView;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
@@ -107,7 +110,6 @@ public class DecryptFileFragment extends DecryptFragment {
 
     private void decryptAction() {
         if (mInputUri == null) {
-            //AppMsg.makeText(getActivity(), R.string.no_file_selected, AppMsg.STYLE_ALERT).show();
             Notify.showNotify(getActivity(), R.string.no_file_selected, Notify.Style.ERROR);
             return;
         }

@@ -7,9 +7,6 @@
 [submodule "extern/zxing-qr-code"]
 	path = extern/zxing-qr-code
 	url = https://github.com/open-keychain/zxing-qr-code.git
-[submodule "extern/AppMsg"]
-	path = extern/AppMsg
-	url = https://github.com/open-keychain/Android-AppMsg.git
 [submodule "extern/spongycastle"]
 	path = extern/spongycastle
 	url = https://github.com/open-keychain/spongycastle.git
@@ -31,9 +28,6 @@
 [submodule "extern/minidns"]
 	path = extern/minidns
 	url = https://github.com/open-keychain/minidns.git
-[submodule "OpenKeychain/src/test/resources/extern/OpenPGP-Haskell"]
-	path = OpenKeychain/src/test/resources/extern/OpenPGP-Haskell
-	url = https://github.com/singpolyma/OpenPGP-Haskell.git
 [submodule "extern/TokenAutoComplete"]
 	path = extern/TokenAutoComplete
 	url = https://github.com/open-keychain/TokenAutoComplete

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg width="100px" height="100px" viewBox="0 0 100 100" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:sketch="http://www.bohemiancoding.com/sketch/ns">
+    <!-- Generator: Sketch 3.0.4 (8053) - http://www.bohemiancoding.com/sketch -->
+    <title>signature-revoked</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" sketch:type="MSPage">
+        <g id="signature-revoked" sketch:type="MSArtboardGroup" fill="#000000">
+            <path d="M90.087,-0.389 L10.087,-0.389 C4.564,-0.389 0.087,4.089 0.087,9.611 L0.087,89.589 C0.087,95.112 4.564,99.589 10.087,99.589 L90.087,99.589 C95.61,99.589 100.087,95.112 100.087,89.589 L100.087,9.611 C100.087,4.089 95.61,-0.389 90.087,-0.389 Z M38.756,69.4 C42.098,71.32 45.966,72.423 50.088,72.423 C62.673,72.423 72.912,62.185 72.912,49.599 C72.912,45.476 71.808,41.608 69.887,38.266 L38.756,69.4 Z M50.088,26.776 C37.503,26.776 27.264,37.014 27.264,49.6 C27.264,53.648 28.329,57.45 30.184,60.75 L61.239,29.696 C57.938,27.84 54.137,26.776 50.088,26.776 Z M50.088,84.6 C30.79,84.6 15.087,68.901 15.087,49.6 C15.087,30.301 30.791,14.6 50.088,14.6 C69.385,14.6 85.088,30.301 85.088,49.6 C85.088,68.9 69.386,84.6 50.088,84.6 L50.088,84.6 Z" sketch:type="MSShapeGroup"></path>
+        </g>
+    </g>
+</svg>

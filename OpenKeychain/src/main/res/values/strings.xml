@@ -9,7 +9,6 @@
     <string name="title_authentication">Passphrase</string>
     <string name="title_create_key">Create Key</string>
     <string name="title_edit_key">Edit Key</string>
-    <string name="title_wizard">Welcome to OpenKeychain</string>
     <string name="title_preferences">Preferences</string>
     <string name="title_api_registered_apps">Apps</string>
     <string name="title_key_server_preference">Keyserver Preference</string>
@@ -110,9 +109,11 @@
     <string name="label_file_colon">File:</string>
     <string name="label_no_passphrase">No Passphrase</string>
     <string name="label_passphrase">Passphrase</string>
-    <string name="label_passphrase_again">Again</string>
+    <string name="label_passphrase_again">Repeat Passphrase</string>
     <string name="label_algorithm">Algorithm</string>
     <string name="label_ascii_armor">ASCII Armor</string>
+    <string name="label_conceal_pgp_application">Let others know that you\'re using OpenKeychain</string>
+    <string name="label_conceal_pgp_application_summary">Writes \'OpenKeychain v2.7\' to OpenPGP signatures, ciphertext, and exported keys</string>
     <string name="label_select_public_keys">Recipients</string>
     <string name="label_to">To</string>
     <string name="label_delete_after_encryption">Delete After Encryption</string>
@@ -275,10 +276,12 @@
     <string name="error_jelly_bean_needed">You need Android 4.1 to use Android\'s NFC Beam feature!</string>
     <string name="error_nfc_needed">NFC is not available on your device!</string>
     <string name="error_nothing_import">No keys found!</string>
-    <string name="error_keyserver_insufficient_query">Key search query too short</string>
-    <string name="error_searching_keys">Unrecoverable error searching for keys at server</string>
-    <string name="error_keyserver_too_many_responses">Key search query returned too many candidates; Please refine query</string>
-    <string name="error_import_file_no_content">File/Clipboard is empty</string>
+    <string name="error_query_too_short">Search query too short. Please refine your query!</string>
+    <string name="error_searching_keys">An error occurred when searching for keys.</string>
+    <string name="error_too_many_responses">Key search query returned too many candidates. Please refine your query!</string>
+    <string name="error_too_short_or_too_many_responses">Either no keys or too many have been found. Please improve your query!</string>
+
+    <string name="error_import_no_valid_keys">No valid keys found in File/Clipboard!</string>
     <string name="error_generic_report_bug">A generic error occurred, please create a new bug report for OpenKeychain.</string>
     <plurals name="error_import_non_pgp_part">
         <item quantity="one">part of the loaded file is a valid OpenPGP object but not a OpenPGP key</item>
@@ -307,6 +310,20 @@
     <string name="progress_building_master_key">building master ring…</string>
     <string name="progress_adding_sub_keys">adding sub keys…</string>
     <string name="progress_saving_key_ring">saving key…</string>
+    <string name="progress_generating_rsa">generating new RSA key…</string>
+    <string name="progress_generating_dsa">generating new DSA key…</string>
+    <string name="progress_generating_elgamal">generating new ElGamal key…</string>
+
+    <string name="progress_modify">modifying keyring…</string>
+
+    <string name="progress_modify_unlock">unlocking keyring…</string>
+    <string name="progress_modify_adduid">adding user ids…</string>
+    <string name="progress_modify_revokeuid">revoking user ids…</string>
+    <string name="progress_modify_primaryuid">changing primary user id…</string>
+    <string name="progress_modify_subkeychange">modifying subkeys…</string>
+    <string name="progress_modify_subkeyrevoke">revoking subkeys…</string>
+    <string name="progress_modify_subkeyadd">adding subkeys…</string>
+    <string name="progress_modify_passphrase">changing passphrase…</string>
 
     <plurals name="progress_exporting_key">
         <item quantity="one">exporting key…</item>
@@ -397,8 +414,8 @@
         <item quantity="other">Successfully imported %1$d keys</item>
     </plurals>
     <plurals name="import_keys_added_and_updated_2">
-        <item quantity="one"> and updated key%2$s.</item>
-        <item quantity="other"> and updated %1$d keys%2$s.</item>
+        <item quantity="one">and updated key%2$s.</item>
+        <item quantity="other">and updated %1$d keys%2$s.</item>
     </plurals>
     <plurals name="import_keys_added">
         <item quantity="one">Successfully imported key%2$s.</item>
@@ -408,7 +425,7 @@
         <item quantity="one">Successfully updated key%2$s.</item>
         <item quantity="other">Successfully updated %1$d keys%2$s.</item>
     </plurals>
-    <string name="import_view_log">View Log</string>
+    <string name="view_log">View Log</string>
     <string name="import_error_nothing">Nothing to import.</string>
     <string name="import_error">Error importing keys!</string>
     <string name="import_with_warnings">, with warnings</string>
@@ -486,6 +503,23 @@
         <item>Change to Primary Identity</item>
         <item>Revoke Identity</item>
     </string-array>
+    <string name="edit_key_edit_subkey_title">Select an action!</string>
+    <string-array name="edit_key_edit_subkey">
+        <item>Change Expiry</item>
+        <item>Revoke Subkey</item>
+    </string-array>
+
+    <!-- Create key -->
+    <string name="create_key_text">Enter Full Name, Email and a Passphrase.</string>
+    <string name="create_key_upload">Upload key to keyserver</string>
+    <string name="create_key_empty">This field is required</string>
+    <string name="create_key_passphrases_not_equal">Passphrases do not match</string>
+    <string name="create_key_final_text">You entered the following credentials:</string>
+    <string name="create_key_final_robot_text">Creating a key may take a while, have a cup of coffee in the meantime…\n(3 subkeys, RSA, 4096 bit)</string>
+
+    <!-- View key -->
+    <string name="view_key_revoked">This key has been revoked!</string>
+    <string name="view_key_expired">This key is expired!</string>
 
     <!-- Navigation Drawer -->
     <string name="nav_keys">Keys</string>
@@ -511,7 +545,7 @@
     <string name="cert_casual">casual</string>
     <string name="cert_positive">positive</string>
     <string name="cert_revoke">revoked</string>
-    <string name="cert_verify_ok">ok</string>
+    <string name="cert_verify_ok">OK</string>
     <string name="cert_verify_failed">failed!</string>
     <string name="cert_verify_error">error!</string>
     <string name="cert_verify_unavailable">key unavailable</string>
@@ -556,7 +590,7 @@
     <string name="msg_ip_reinsert_secret">Re-inserting secret key</string>
     <string name="msg_ip_uid_cert_bad">Encountered bad certificate!</string>
     <string name="msg_ip_uid_cert_error">Error processing certificate!</string>
-    <string name="msg_ip_uid_cert_good">User id is certified by %1$s (%2$s)</string>
+    <string name="msg_ip_uid_cert_good">User id is certified by %1$s</string>
     <plurals name="msg_ip_uid_certs_unknown">
         <item quantity="one">Ignoring one certificate issued by an unknown public key</item>
         <item quantity="other">Ignoring %s certificates issued by unknown public keys</item>
@@ -570,6 +604,7 @@
     <string name="msg_ip_uid_processing">Processing user id %s</string>
     <string name="msg_ip_uid_revoked">User id is revoked</string>
     <string name="msg_is_bad_type_public">Tried to import public keyring as secret. This is a bug, please file a report!</string>
+    <string name="msg_is_bad_type_uncanon">Tried to import a keyring without canonicalization. This is a bug, please file a report!</string>
 
     <!-- Import Secret log entries -->
     <string name="msg_is">Importing secret key %s</string>
@@ -592,6 +627,7 @@
     <string name="msg_kc_revoke_bad_local">Removing keyring revocation certificate with "local" flag</string>
     <string name="msg_kc_revoke_bad_time">Removing keyring revocation certificate with future timestamp</string>
     <string name="msg_kc_revoke_bad_type">Removing master key certificate of unknown type (%s)</string>
+    <string name="msg_kc_revoke_bad_type_uid">Removing user id certification in bad position</string>
     <string name="msg_kc_revoke_bad">Removing bad keyring revocation certificate</string>
     <string name="msg_kc_revoke_dup">Removing redundant keyring revocation certificate</string>
     <string name="msg_kc_sub">Processing subkey %s</string>
@@ -629,6 +665,7 @@
     <string name="msg_kc_uid_revoke_dup">Removing redundant revocation certificate for user id "%s"</string>
     <string name="msg_kc_uid_revoke_old">Removing outdated revocation certificate for user id "%s"</string>
     <string name="msg_kc_uid_no_cert">No valid self-certificate found for user id %s, removing from ring</string>
+    <string name="msg_kc_uid_remove">Removing invalid user id %s</string>
 
     <!-- Keyring merging log entries -->
     <string name="msg_mg_public">Merging into public keyring %s</string>
@@ -637,6 +674,17 @@
     <string name="msg_mg_heterogeneous">Tried to consolidate heterogeneous keyrings</string>
     <string name="msg_mg_new_subkey">Adding new subkey %s</string>
     <string name="msg_mg_found_new">Found %s new certificates in keyring</string>
+    <string name="msg_mg_unchanged">No new certificates</string>
+
+    <!-- createSecretKeyRing -->
+    <string name="msg_cr">Generating new master key</string>
+    <string name="msg_cr_error_no_master">No master key options specified!</string>
+    <string name="msg_cr_error_no_user_id">Keyrings must be created with at least one user id!</string>
+    <string name="msg_cr_error_no_certify">Master key must have certify flag!</string>
+    <string name="msg_cr_error_keysize_512">Key size must be greater or equal 512!</string>
+    <string name="msg_cr_error_internal_pgp">Internal PGP error!</string>
+    <string name="msg_cr_error_unknown_algo">Bad algorithm choice!</string>
+    <string name="msg_cr_error_master_elgamal">Master key must not be of type ElGamal!</string>
 
     <!-- modifySecretKeyRing -->
     <string name="msg_mr">Modifying keyring %s</string>
@@ -644,10 +692,13 @@
     <string name="msg_mf_error_fingerprint">Actual key fingerprint does not match the expected one!</string>
     <string name="msg_mf_error_keyid">No key ID. This is an internal error, please file a bug report!</string>
     <string name="msg_mf_error_integrity">Internal error, integrity check failed!</string>
+    <string name="msg_mf_error_noexist_primary">Bad primary user id specified!</string>
     <string name="msg_mf_error_revoked_primary">Revoked user ids cannot be primary!</string>
     <string name="msg_mf_error_pgp">PGP internal exception!</string>
     <string name="msg_mf_error_sig">Signature exception!</string>
     <string name="msg_mf_passphrase">Changing passphrase</string>
+    <string name="msg_mf_primary_replace_old">Replacing certificate of previous primary user id</string>
+    <string name="msg_mf_primary_new">Generating new certificate for new primary user id</string>
     <string name="msg_mf_subkey_change">Modifying subkey %s</string>
     <string name="msg_mf_subkey_missing">Tried to operate on missing subkey %s!</string>
     <string name="msg_mf_subkey_new">Generating new %1$s bit %2$s subkey</string>
@@ -658,10 +709,19 @@
     <string name="msg_mf_uid_add">Adding user id %s</string>
     <string name="msg_mf_uid_primary">Changing primary uid to %s</string>
     <string name="msg_mf_uid_revoke">Revoking user id %s</string>
+    <string name="msg_mf_uid_error_empty">User ID must not be empty!</string>
     <string name="msg_mf_unlock_error">Error unlocking keyring!</string>
     <string name="msg_mf_unlock">Unlocking keyring</string>
 
+    <!-- PassphraseCache -->
+    <string name="passp_cache_notif_click_to_clear">Click to clear cached passphrases</string>
+    <string name="passp_cache_notif_n_keys">OpenKeychain has cached %d passphrases</string>
+    <string name="passp_cache_notif_keys">Cached Passphrases:</string>
+    <string name="passp_cache_notif_clear">Clear Cache</string>
+    <string name="passp_cache_notif_pwd">Password</string>
+
     <!-- unsorted -->
+    <string name="internal_error">Internal error!</string>
     <string name="section_certifier_id">Certifier</string>
     <string name="section_cert">Certificate Details</string>
     <string name="label_user_id">Identity</string>
@@ -683,5 +743,11 @@
     <string name="error_no_encrypt_subkey">No encryption subkey available!</string>
     <string name="info_no_manual_account_creation">Do not create OpenKeychain-Accounts manually.\nFor more information, see Help.</string>
     <string name="contact_show_key">Show key (%s)</string>
+
+    <!-- First Time -->
+    <string name="first_time_text1">Take back your privacy with OpenKeychain!</string>
+    <string name="first_time_create_key">Create Key</string>
+    <string name="first_time_import_key">Import Key</string>
+    <string name="first_time_skip">Skip Setup</string>
 
 </resources>

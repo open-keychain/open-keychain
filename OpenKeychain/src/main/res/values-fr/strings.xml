@@ -250,10 +250,10 @@
   <string name="error_jelly_bean_needed">Il vous faut Android 4.1 pour utiliser la fonction Beam NFC d\'Android !</string>
   <string name="error_nfc_needed">La NFC n\'est pas disponible sur votre appareil !</string>
   <string name="error_nothing_import">Aucune clef trouvée !</string>
-  <string name="error_keyserver_insufficient_query">La requête de recherche de clef est trop courte</string>
+  <string name="error_query_too_short">La requête de recherche de clef est trop courte</string>
   <string name="error_searching_keys">Erreur irrécupérable lors de la recherche de clef sur le serveur</string>
-  <string name="error_keyserver_too_many_responses">La requête de recherche de clef a retourné trop de candidats. Veuillez raffiner la requête</string>
-  <string name="error_import_file_no_content">Le fichier/le presse-papiers est vide</string>
+  <string name="error_too_many_responses">La requête de recherche de clef a retourné trop de candidats. Veuillez raffiner la requête</string>
+  <string name="error_import_no_valid_keys">Le fichier/le presse-papiers est vide</string>
   <string name="error_generic_report_bug">Une erreur générique est survenue, veuillez créer un nouveau rapport de bogue pour OpenKeychain.</string>
   <plurals name="error_import_non_pgp_part">
     <item quantity="one">une partie du fichier chargé est un objet OpenPGP valide mais pas une clef OpenPGP</item>
@@ -358,7 +358,7 @@
     <item quantity="one">Clef importée avec succès</item>
     <item quantity="other">%1$d clefs importées avec succès</item>
   </plurals>
-  <string name="import_view_log">Consulter le journal</string>
+  <string name="view_log">Consulter le journal</string>
   <string name="import_error_nothing">Rien à importer.</string>
   <string name="import_error">Erreur lors de l\'importation des clefs !</string>
   <string name="import_with_warnings">, avec des avertissements</string>

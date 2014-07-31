@@ -42,24 +42,28 @@ import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.compatibility.DialogFragmentWorkaround;
 import org.sufficientlysecure.keychain.helper.ActionBarHelper;
-import org.sufficientlysecure.keychain.pgp.WrappedSecretKeyRing;
+import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKeyRing;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
 import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
 import org.sufficientlysecure.keychain.service.OperationResults;
+import org.sufficientlysecure.keychain.service.OperationResults.EditKeyResult;
 import org.sufficientlysecure.keychain.service.PassphraseCacheService;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
 import org.sufficientlysecure.keychain.ui.adapter.SubkeysAdapter;
 import org.sufficientlysecure.keychain.ui.adapter.SubkeysAddedAdapter;
 import org.sufficientlysecure.keychain.ui.adapter.UserIdsAdapter;
 import org.sufficientlysecure.keychain.ui.adapter.UserIdsAddedAdapter;
+import org.sufficientlysecure.keychain.ui.dialog.ChangeExpiryDialogFragment;
+import org.sufficientlysecure.keychain.ui.dialog.EditSubkeyDialogFragment;
 import org.sufficientlysecure.keychain.ui.dialog.EditUserIdDialogFragment;
 import org.sufficientlysecure.keychain.ui.dialog.PassphraseDialogFragment;
 import org.sufficientlysecure.keychain.ui.dialog.SetPassphraseDialogFragment;
 import org.sufficientlysecure.keychain.util.Log;
 
 import java.util.ArrayList;
+import java.util.Date;
 
 public class EditKeyFragment extends LoaderFragment implements
         LoaderManager.LoaderCallbacks<Cursor> {
@@ -164,8 +168,8 @@ public class EditKeyFragment extends LoaderFragment implements
 
         try {
             Uri secretUri = KeychainContract.KeyRings.buildUnifiedKeyRingUri(mDataUri);
-            WrappedSecretKeyRing keyRing =
-                    new ProviderHelper(getActivity()).getWrappedSecretKeyRing(secretUri);
+            CanonicalizedSecretKeyRing keyRing =
+                    new ProviderHelper(getActivity()).getCanonicalizedSecretKeyRing(secretUri);
 
             mSaveKeyringParcel = new SaveKeyringParcel(keyRing.getMasterKeyId(),
                     keyRing.getUncachedKeyRing().getFingerprint());
@@ -214,10 +218,18 @@ public class EditKeyFragment extends LoaderFragment implements
         mUserIdsAddedAdapter = new UserIdsAddedAdapter(getActivity(), mUserIdsAddedData);
         mUserIdsAddedList.setAdapter(mUserIdsAddedAdapter);
 
-        mSubkeysAdapter = new SubkeysAdapter(getActivity(), null, 0);
+        mSubkeysAdapter = new SubkeysAdapter(getActivity(), null, 0, mSaveKeyringParcel);
         mSubkeysList.setAdapter(mSubkeysAdapter);
 
-        mSubkeysAddedAdapter = new SubkeysAddedAdapter(getActivity(), mSaveKeyringParcel.addSubKeys);
+        mSubkeysList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                long keyId = mSubkeysAdapter.getKeyId(position);
+                editSubkey(keyId);
+            }
+        });
+
+        mSubkeysAddedAdapter = new SubkeysAddedAdapter(getActivity(), mSaveKeyringParcel.mAddSubKeys);
         mSubkeysAddedList.setAdapter(mSubkeysAddedAdapter);
 
         // Prepare the loaders. Either re-connect with an existing ones,
@@ -287,7 +299,7 @@ public class EditKeyFragment extends LoaderFragment implements
                     Bundle data = message.getData();
 
                     // cache new returned passphrase!
-                    mSaveKeyringParcel.newPassphrase = data
+                    mSaveKeyringParcel.mNewPassphrase = data
                             .getString(SetPassphraseDialogFragment.MESSAGE_NEW_PASSPHRASE);
                 }
             }
@@ -309,19 +321,19 @@ public class EditKeyFragment extends LoaderFragment implements
                 switch (message.what) {
                     case EditUserIdDialogFragment.MESSAGE_CHANGE_PRIMARY_USER_ID:
                         // toggle
-                        if (mSaveKeyringParcel.changePrimaryUserId != null
-                                && mSaveKeyringParcel.changePrimaryUserId.equals(userId)) {
-                            mSaveKeyringParcel.changePrimaryUserId = null;
+                        if (mSaveKeyringParcel.mChangePrimaryUserId != null
+                                && mSaveKeyringParcel.mChangePrimaryUserId.equals(userId)) {
+                            mSaveKeyringParcel.mChangePrimaryUserId = null;
                         } else {
-                            mSaveKeyringParcel.changePrimaryUserId = userId;
+                            mSaveKeyringParcel.mChangePrimaryUserId = userId;
                         }
                         break;
                     case EditUserIdDialogFragment.MESSAGE_REVOKE:
                         // toggle
-                        if (mSaveKeyringParcel.revokeUserIds.contains(userId)) {
-                            mSaveKeyringParcel.revokeUserIds.remove(userId);
+                        if (mSaveKeyringParcel.mRevokeUserIds.contains(userId)) {
+                            mSaveKeyringParcel.mRevokeUserIds.remove(userId);
                         } else {
-                            mSaveKeyringParcel.revokeUserIds.add(userId);
+                            mSaveKeyringParcel.mRevokeUserIds.add(userId);
                         }
                         break;
                 }
@@ -338,6 +350,72 @@ public class EditKeyFragment extends LoaderFragment implements
                         EditUserIdDialogFragment.newInstance(messenger);
 
                 dialogFragment.show(getActivity().getSupportFragmentManager(), "editUserIdDialog");
+            }
+        });
+    }
+
+    private void editSubkey(final long keyId) {
+        Handler returnHandler = new Handler() {
+            @Override
+            public void handleMessage(Message message) {
+                switch (message.what) {
+                    case EditSubkeyDialogFragment.MESSAGE_CHANGE_EXPIRY:
+                        editSubkeyExpiry(keyId);
+                        break;
+                    case EditSubkeyDialogFragment.MESSAGE_REVOKE:
+                        // toggle
+                        if (mSaveKeyringParcel.mRevokeSubKeys.contains(keyId)) {
+                            mSaveKeyringParcel.mRevokeSubKeys.remove(keyId);
+                        } else {
+                            mSaveKeyringParcel.mRevokeSubKeys.add(keyId);
+                        }
+                        break;
+                }
+                getLoaderManager().getLoader(LOADER_ID_SUBKEYS).forceLoad();
+            }
+        };
+
+        // Create a new Messenger for the communication back
+        final Messenger messenger = new Messenger(returnHandler);
+
+        DialogFragmentWorkaround.INTERFACE.runnableRunDelayed(new Runnable() {
+            public void run() {
+                EditSubkeyDialogFragment dialogFragment =
+                        EditSubkeyDialogFragment.newInstance(messenger);
+
+                dialogFragment.show(getActivity().getSupportFragmentManager(), "editSubkeyDialog");
+            }
+        });
+    }
+
+    private void editSubkeyExpiry(final long keyId) {
+        Handler returnHandler = new Handler() {
+            @Override
+            public void handleMessage(Message message) {
+                switch (message.what) {
+                    case ChangeExpiryDialogFragment.MESSAGE_NEW_EXPIRY_DATE:
+                        // toggle
+//                        if (mSaveKeyringParcel.changePrimaryUserId != null
+//                                && mSaveKeyringParcel.changePrimaryUserId.equals(userId)) {
+//                            mSaveKeyringParcel.changePrimaryUserId = null;
+//                        } else {
+//                            mSaveKeyringParcel.changePrimaryUserId = userId;
+//                        }
+                        break;
+                }
+                getLoaderManager().getLoader(LOADER_ID_SUBKEYS).forceLoad();
+            }
+        };
+
+        // Create a new Messenger for the communication back
+        final Messenger messenger = new Messenger(returnHandler);
+
+        DialogFragmentWorkaround.INTERFACE.runnableRunDelayed(new Runnable() {
+            public void run() {
+                ChangeExpiryDialogFragment dialogFragment =
+                        ChangeExpiryDialogFragment.newInstance(messenger, new Date(), new Date());
+
+                dialogFragment.show(getActivity().getSupportFragmentManager(), "editSubkeyExpiryDialog");
             }
         });
     }
@@ -373,10 +451,11 @@ public class EditKeyFragment extends LoaderFragment implements
     }
 
     private void save(String passphrase) {
-        Log.d(Constants.TAG, "add userids to parcel: " + mUserIdsAddedAdapter.getDataAsStringList());
-        Log.d(Constants.TAG, "mSaveKeyringParcel.newPassphrase: " + mSaveKeyringParcel.newPassphrase);
+        mSaveKeyringParcel.mAddUserIds = mUserIdsAddedAdapter.getDataAsStringList();
 
-        mSaveKeyringParcel.addUserIds = mUserIdsAddedAdapter.getDataAsStringList();
+        Log.d(Constants.TAG, "mSaveKeyringParcel.mAddUserIds: " + mSaveKeyringParcel.mAddUserIds);
+        Log.d(Constants.TAG, "mSaveKeyringParcel.mNewPassphrase: " + mSaveKeyringParcel.mNewPassphrase);
+        Log.d(Constants.TAG, "mSaveKeyringParcel.mRevokeUserIds: " + mSaveKeyringParcel.mRevokeUserIds);
 
         // Message is received after importing is done in KeychainIntentService
         KeychainIntentServiceHandler saveHandler = new KeychainIntentServiceHandler(
@@ -388,26 +467,30 @@ public class EditKeyFragment extends LoaderFragment implements
                 super.handleMessage(message);
 
                 if (message.arg1 == KeychainIntentServiceHandler.MESSAGE_OKAY) {
-                    getActivity().finish();
 
-                    // TODO below
                     // get returned data bundle
                     Bundle returnData = message.getData();
                     if (returnData == null) {
                         return;
                     }
-                    final OperationResults.SaveKeyringResult result =
-                            returnData.getParcelable(KeychainIntentService.RESULT);
+                    final OperationResults.EditKeyResult result =
+                            returnData.getParcelable(EditKeyResult.EXTRA_RESULT);
                     if (result == null) {
                         return;
                     }
 
-                    // if good -> finish, return result to showkey and display there!
                     // if bad -> display here!
+                    if (!result.success()) {
+                        result.createNotify(getActivity()).show();
+                        return;
+                    }
 
-//                    result.displayNotify(ImportKeysActivity.this);
+                    // if good -> finish, return result to showkey and display there!
+                    Intent intent = new Intent();
+                    intent.putExtra(EditKeyResult.EXTRA_RESULT, result);
+                    getActivity().setResult(EditKeyActivity.RESULT_OK, intent);
+                    getActivity().finish();
 
-//                    getActivity().finish();
                 }
             }
         };

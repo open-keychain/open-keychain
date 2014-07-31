@@ -139,6 +139,16 @@ public class Preferences {
         editor.commit();
     }
 
+    public boolean isFirstTime() {
+        return mSharedPreferences.getBoolean(Constants.Pref.FIRST_TIME, true);
+    }
+
+    public void setFirstTime(boolean value) {
+        SharedPreferences.Editor editor = mSharedPreferences.edit();
+        editor.putBoolean(Constants.Pref.FIRST_TIME, value);
+        editor.commit();
+    }
+
     public String[] getKeyServers() {
         String rawData = mSharedPreferences.getString(Constants.Pref.KEY_SERVERS,
                 Constants.Defaults.KEY_SERVERS);
@@ -186,5 +196,15 @@ public class Preferences {
                     .putInt(Constants.Pref.KEY_SERVERS_DEFAULT_VERSION, Constants.Defaults.KEY_SERVERS_VERSION)
                     .commit();
         }
+    }
+
+    public void setConcealPgpApplication(boolean conceal) {
+        SharedPreferences.Editor editor = mSharedPreferences.edit();
+        editor.putBoolean(Constants.Pref.CONCEAL_PGP_APPLICATION, conceal);
+        editor.commit();
+    }
+
+    public boolean getConcealPgpApplication() {
+        return mSharedPreferences.getBoolean(Constants.Pref.CONCEAL_PGP_APPLICATION, false);
     }
 }

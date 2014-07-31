@@ -33,8 +33,8 @@ import android.support.v4.app.FragmentActivity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.WindowManager.LayoutParams;
 import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -44,8 +44,8 @@ import android.widget.Toast;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.compatibility.DialogFragmentWorkaround;
-import org.sufficientlysecure.keychain.pgp.WrappedSecretKey;
-import org.sufficientlysecure.keychain.pgp.WrappedSecretKeyRing;
+import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey;
+import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKeyRing;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.PassphraseCacheService;
@@ -62,7 +62,6 @@ public class PassphraseDialogFragment extends DialogFragment implements OnEditor
 
     private Messenger mMessenger;
     private EditText mPassphraseEditText;
-    private boolean mCanKB;
 
     /**
      * Shows passphrase dialog to cache a new passphrase the user enters for using it later for
@@ -102,10 +101,10 @@ public class PassphraseDialogFragment extends DialogFragment implements OnEditor
         // check if secret key has a passphrase
         if (!(secretKeyId == Constants.key.symmetric || secretKeyId == Constants.key.none)) {
             try {
-                if (!new ProviderHelper(context).getWrappedSecretKeyRing(secretKeyId).hasPassphrase()) {
+                if (!new ProviderHelper(context).getCanonicalizedSecretKeyRing(secretKeyId).hasPassphrase()) {
                     throw new PgpGeneralException("No passphrase! No passphrase dialog needed!");
                 }
-            } catch(ProviderHelper.NotFoundException e) {
+            } catch (ProviderHelper.NotFoundException e) {
                 throw new PgpGeneralException("Error: Key not found!", e);
             }
         }
@@ -118,11 +117,6 @@ public class PassphraseDialogFragment extends DialogFragment implements OnEditor
         frag.setArguments(args);
 
         return frag;
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
     }
 
     /**
@@ -138,7 +132,7 @@ public class PassphraseDialogFragment extends DialogFragment implements OnEditor
 
         alert.setTitle(R.string.title_authentication);
 
-        final WrappedSecretKeyRing secretRing;
+        final CanonicalizedSecretKeyRing secretRing;
         String userId;
 
         if (secretKeyId == Constants.key.symmetric || secretKeyId == Constants.key.none) {
@@ -147,12 +141,12 @@ public class PassphraseDialogFragment extends DialogFragment implements OnEditor
         } else {
             try {
                 ProviderHelper helper = new ProviderHelper(activity);
-                secretRing = helper.getWrappedSecretKeyRing(secretKeyId);
+                secretRing = helper.getCanonicalizedSecretKeyRing(secretKeyId);
                 // yes the inner try/catch block is necessary, otherwise the final variable
                 // above can't be statically verified to have been set in all cases because
                 // the catch clause doesn't return.
                 try {
-                    userId = secretRing.getPrimaryUserId();
+                    userId = secretRing.getPrimaryUserIdWithFallback();
                 } catch (PgpGeneralException e) {
                     userId = null;
                 }
@@ -165,7 +159,6 @@ public class PassphraseDialogFragment extends DialogFragment implements OnEditor
                     }
                 });
                 alert.setCancelable(false);
-                mCanKB = false;
                 return alert.create();
             }
 
@@ -189,7 +182,8 @@ public class PassphraseDialogFragment extends DialogFragment implements OnEditor
 
                 // Early breakout if we are dealing with a symmetric key
                 if (secretRing == null) {
-                    PassphraseCacheService.addCachedPassphrase(activity, Constants.key.symmetric, passphrase);
+                    PassphraseCacheService.addCachedPassphrase(activity, Constants.key.symmetric,
+                            passphrase, getString(R.string.passp_cache_notif_pwd));
                     // also return passphrase back to activity
                     Bundle data = new Bundle();
                     data.putString(MESSAGE_DATA_PASSPHRASE, passphrase);
@@ -197,9 +191,9 @@ public class PassphraseDialogFragment extends DialogFragment implements OnEditor
                     return;
                 }
 
-                WrappedSecretKey unlockedSecretKey = null;
+                CanonicalizedSecretKey unlockedSecretKey = null;
 
-                for(WrappedSecretKey clickSecretKey : secretRing.secretKeyIterator()) {
+                for (CanonicalizedSecretKey clickSecretKey : secretRing.secretKeyIterator()) {
                     try {
                         boolean unlocked = clickSecretKey.unlock(passphrase);
                         if (unlocked) {
@@ -228,10 +222,18 @@ public class PassphraseDialogFragment extends DialogFragment implements OnEditor
 
                 // cache the new passphrase
                 Log.d(Constants.TAG, "Everything okay! Caching entered passphrase");
-                PassphraseCacheService.addCachedPassphrase(activity, masterKeyId, passphrase);
+
+                try {
+                    PassphraseCacheService.addCachedPassphrase(activity, masterKeyId, passphrase,
+                            secretRing.getPrimaryUserIdWithFallback());
+                } catch (PgpGeneralException e) {
+                    Log.e(Constants.TAG, "adding of a passphrase failed", e);
+                }
+
                 if (unlockedSecretKey.getKeyId() != masterKeyId) {
                     PassphraseCacheService.addCachedPassphrase(
-                            activity, unlockedSecretKey.getKeyId(), passphrase);
+                            activity, unlockedSecretKey.getKeyId(), passphrase,
+                            unlockedSecretKey.getPrimaryUserIdWithFallback());
                 }
 
                 // also return passphrase back to activity
@@ -249,20 +251,30 @@ public class PassphraseDialogFragment extends DialogFragment implements OnEditor
             }
         });
 
-        mCanKB = true;
+        // Hack to open keyboard.
+        // This is the only method that I found to work across all Android versions
+        // http://turbomanage.wordpress.com/2012/05/02/show-soft-keyboard-automatically-when-edittext-receives-focus/
+        // Notes: * onCreateView can't be used because we want to add buttons to the dialog
+        //        * opening in onActivityCreated does not work on Android 4.4
+        mPassphraseEditText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                mPassphraseEditText.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        InputMethodManager imm = (InputMethodManager) getActivity()
+                                .getSystemService(Context.INPUT_METHOD_SERVICE);
+                        imm.showSoftInput(mPassphraseEditText, InputMethodManager.SHOW_IMPLICIT);
+                    }
+                });
+            }
+        });
+        mPassphraseEditText.requestFocus();
+
+        mPassphraseEditText.setImeActionLabel(getString(android.R.string.ok), EditorInfo.IME_ACTION_DONE);
+        mPassphraseEditText.setOnEditorActionListener(this);
+
         return alert.show();
-    }
-
-    @Override
-    public void onActivityCreated(Bundle arg0) {
-        super.onActivityCreated(arg0);
-        if (mCanKB) {
-            // request focus and open soft keyboard
-            mPassphraseEditText.requestFocus();
-            getDialog().getWindow().setSoftInputMode(LayoutParams.SOFT_INPUT_STATE_VISIBLE);
-
-            mPassphraseEditText.setOnEditorActionListener(this);
-        }
     }
 
     @Override
@@ -271,6 +283,27 @@ public class PassphraseDialogFragment extends DialogFragment implements OnEditor
 
         dismiss();
         sendMessageToHandler(MESSAGE_CANCEL);
+    }
+
+    @Override
+    public void onDismiss(DialogInterface dialog) {
+        super.onDismiss(dialog);
+        Log.d(Constants.TAG, "onDismiss");
+
+        // hide keyboard on dismiss
+        hideKeyboard();
+    }
+
+    private void hideKeyboard() {
+        InputMethodManager inputManager = (InputMethodManager) getActivity()
+                .getSystemService(Context.INPUT_METHOD_SERVICE);
+
+        //check if no view has focus:
+        View v = getActivity().getCurrentFocus();
+        if (v == null)
+            return;
+
+        inputManager.hideSoftInputFromWindow(v.getWindowToken(), 0);
     }
 
     /**

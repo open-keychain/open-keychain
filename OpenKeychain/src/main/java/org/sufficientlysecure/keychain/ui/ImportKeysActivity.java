@@ -40,17 +40,19 @@ import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.helper.OtherHelper;
 import org.sufficientlysecure.keychain.helper.Preferences;
+import org.sufficientlysecure.keychain.keyimport.FileImportCache;
 import org.sufficientlysecure.keychain.keyimport.ImportKeysListEntry;
 import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
 import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
 import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
-import org.sufficientlysecure.keychain.service.OperationResults.ImportResult;
+import org.sufficientlysecure.keychain.service.OperationResults.ImportKeyResult;
 import org.sufficientlysecure.keychain.ui.adapter.PagerTabStripAdapter;
 import org.sufficientlysecure.keychain.ui.widget.SlidingTabLayout;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Notify;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Locale;
 
@@ -354,9 +356,8 @@ public class ImportKeysActivity extends ActionBarActivity {
         ImportKeysServerFragment f = (ImportKeysServerFragment)
                 getActiveFragment(mViewPager, TAB_KEYSERVER);
 
-        // TODO: Currently it simply uses keyserver nr 0
-        String keyserver = Preferences.getPreferences(ImportKeysActivity.this)
-                .getKeyServers()[0];
+        // ask favorite keyserver
+        String keyserver = Preferences.getPreferences(ImportKeysActivity.this).getKeyServers()[0];
 
         // set fields of ImportKeysServerFragment
         f.setQueryAndKeyserver(query, keyserver);
@@ -427,15 +428,15 @@ public class ImportKeysActivity extends ActionBarActivity {
                     if (returnData == null) {
                         return;
                     }
-                    final ImportResult result =
-                            returnData.getParcelable(KeychainIntentService.RESULT);
+                    final ImportKeyResult result =
+                            returnData.getParcelable(KeychainIntentService.RESULT_IMPORT);
                     if (result == null) {
                         return;
                     }
 
                     if (ACTION_IMPORT_KEY_FROM_KEYSERVER_AND_RETURN_RESULT.equals(getIntent().getAction())) {
                         Intent intent = new Intent();
-                        intent.putExtra(EXTRA_RESULT, result);
+                        intent.putExtra(ImportKeyResult.EXTRA_RESULT, result);
                         ImportKeysActivity.this.setResult(RESULT_OK, intent);
                         ImportKeysActivity.this.finish();
                         return;
@@ -451,7 +452,7 @@ public class ImportKeysActivity extends ActionBarActivity {
                         return;
                     }
 
-                    result.displayNotify(ImportKeysActivity.this);
+                    result.createNotify(ImportKeysActivity.this).show();
                 }
             }
         };
@@ -470,19 +471,29 @@ public class ImportKeysActivity extends ActionBarActivity {
 
             // get DATA from selected key entries
             ArrayList<ParcelableKeyRing> selectedEntries = mListFragment.getSelectedData();
-            data.putParcelableArrayList(KeychainIntentService.IMPORT_KEY_LIST, selectedEntries);
 
-            intent.putExtra(KeychainIntentService.EXTRA_DATA, data);
+            // instead of given the entries by Intent extra, cache them into a file
+            // to prevent Java Binder problems on heavy imports
+            // read FileImportCache for more info.
+            try {
+                FileImportCache cache = new FileImportCache(this);
+                cache.writeCache(selectedEntries);
 
-            // Create a new Messenger for the communication back
-            Messenger messenger = new Messenger(saveHandler);
-            intent.putExtra(KeychainIntentService.EXTRA_MESSENGER, messenger);
+                intent.putExtra(KeychainIntentService.EXTRA_DATA, data);
 
-            // show progress dialog
-            saveHandler.showProgressDialog(this);
+                // Create a new Messenger for the communication back
+                Messenger messenger = new Messenger(saveHandler);
+                intent.putExtra(KeychainIntentService.EXTRA_MESSENGER, messenger);
 
-            // start service with intent
-            startService(intent);
+                // show progress dialog
+                saveHandler.showProgressDialog(this);
+
+                // start service with intent
+                startService(intent);
+            } catch (IOException e) {
+                Log.e(Constants.TAG, "Problem writing cache file", e);
+                Notify.showNotify(this, "Problem writing cache file!", Notify.Style.ERROR);
+            }
         } else if (ls instanceof ImportKeysListFragment.KeyserverLoaderState) {
             ImportKeysListFragment.KeyserverLoaderState sls = (ImportKeysListFragment.KeyserverLoaderState) ls;
 

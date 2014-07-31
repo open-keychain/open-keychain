@@ -34,7 +34,7 @@ import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
 import org.sufficientlysecure.keychain.service.OperationResultParcel.OperationLog;
-import org.sufficientlysecure.keychain.service.OperationResults.ImportResult;
+import org.sufficientlysecure.keychain.service.OperationResults.ImportKeyResult;
 import org.sufficientlysecure.keychain.service.OperationResults.SaveKeyringResult;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.ProgressScaler;
@@ -93,7 +93,7 @@ public class PgpImportExport {
         }
     }
 
-    public boolean uploadKeyRingToServer(HkpKeyserver server, WrappedPublicKeyRing keyring) {
+    public boolean uploadKeyRingToServer(HkpKeyserver server, CanonicalizedPublicKeyRing keyring) {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         ArmoredOutputStream aos = null;
         try {
@@ -123,14 +123,14 @@ public class PgpImportExport {
     }
 
     /** Imports keys from given data. If keyIds is given only those are imported */
-    public ImportResult importKeyRings(List<ParcelableKeyRing> entries) {
+    public ImportKeyResult importKeyRings(List<ParcelableKeyRing> entries) {
 
         updateProgress(R.string.progress_importing, 0, 100);
 
         // If there aren't even any keys, do nothing here.
         if (entries == null || entries.size() == 0) {
-            return new ImportResult(
-                    ImportResult.RESULT_FAIL_NOTHING, mProviderHelper.getLog(), 0, 0, 0);
+            return new ImportKeyResult(
+                    ImportKeyResult.RESULT_FAIL_NOTHING, mProviderHelper.getLog(), 0, 0, 0);
         }
 
         int newKeys = 0, oldKeys = 0, badKeys = 0;
@@ -185,26 +185,26 @@ public class PgpImportExport {
         int resultType = 0;
         // special return case: no new keys at all
         if (badKeys == 0 && newKeys == 0 && oldKeys == 0) {
-            resultType = ImportResult.RESULT_FAIL_NOTHING;
+            resultType = ImportKeyResult.RESULT_FAIL_NOTHING;
         } else {
             if (newKeys > 0) {
-                resultType |= ImportResult.RESULT_OK_NEWKEYS;
+                resultType |= ImportKeyResult.RESULT_OK_NEWKEYS;
             }
             if (oldKeys > 0) {
-                resultType |= ImportResult.RESULT_OK_UPDATED;
+                resultType |= ImportKeyResult.RESULT_OK_UPDATED;
             }
             if (badKeys > 0) {
-                resultType |= ImportResult.RESULT_WITH_ERRORS;
+                resultType |= ImportKeyResult.RESULT_WITH_ERRORS;
                 if (newKeys == 0 && oldKeys == 0) {
-                    resultType |= ImportResult.RESULT_ERROR;
+                    resultType |= ImportKeyResult.RESULT_ERROR;
                 }
             }
             if (log.containsWarnings()) {
-                resultType |= ImportResult.RESULT_WITH_WARNINGS;
+                resultType |= ImportKeyResult.RESULT_WITH_WARNINGS;
             }
         }
 
-        return new ImportResult(resultType, log, newKeys, oldKeys, badKeys);
+        return new ImportKeyResult(resultType, log, newKeys, oldKeys, badKeys);
 
     }
 
@@ -235,7 +235,7 @@ public class PgpImportExport {
             updateProgress(progress * 100 / masterKeyIdsSize, 100);
 
             try {
-                WrappedPublicKeyRing ring = mProviderHelper.getWrappedPublicKeyRing(
+                CanonicalizedPublicKeyRing ring = mProviderHelper.getCanonicalizedPublicKeyRing(
                         KeychainContract.KeyRings.buildUnifiedKeyRingUri(pubKeyMasterId)
                 );
 
@@ -263,8 +263,8 @@ public class PgpImportExport {
             updateProgress(progress * 100 / masterKeyIdsSize, 100);
 
             try {
-                WrappedSecretKeyRing secretKeyRing =
-                        mProviderHelper.getWrappedSecretKeyRing(secretKeyMasterId);
+                CanonicalizedSecretKeyRing secretKeyRing =
+                        mProviderHelper.getCanonicalizedSecretKeyRing(secretKeyMasterId);
                 secretKeyRing.encode(arOutStream);
             } catch (ProviderHelper.NotFoundException e) {
                 Log.e(Constants.TAG, "key not found!", e);

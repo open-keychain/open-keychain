@@ -71,6 +71,8 @@ public final class Constants {
         public static final String FORCE_V3_SIGNATURES = "forceV3Signatures";
         public static final String KEY_SERVERS = "keyServers";
         public static final String KEY_SERVERS_DEFAULT_VERSION = "keyServersDefaultVersion";
+        public static final String CONCEAL_PGP_APPLICATION = "concealPgpApplication";
+        public static final String FIRST_TIME = "firstTime";
     }
 
     public static final class Defaults {

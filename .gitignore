@@ -14,6 +14,9 @@ ant.properties
 .gradle
 build
 gradle.properties
+# this is in here because the prepare-tests thing modifies it, and we DON'T
+# want this to be commited.  use git add -f to work on this file.
+settings.gradle
 
 #Maven
 target

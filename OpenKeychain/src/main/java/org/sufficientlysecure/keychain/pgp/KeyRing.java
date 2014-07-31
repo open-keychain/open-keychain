@@ -12,7 +12,7 @@ import java.util.regex.Pattern;
  * keyring should in all cases agree on the output of all methods described
  * here.
  *
- * @see org.sufficientlysecure.keychain.pgp.WrappedKeyRing
+ * @see CanonicalizedKeyRing
  * @see org.sufficientlysecure.keychain.provider.CachedPublicKeyRing
  *
  */
@@ -22,8 +22,10 @@ public abstract class KeyRing {
 
     abstract public String getPrimaryUserId() throws PgpGeneralException;
 
-    public String[] getSplitPrimaryUserId() throws PgpGeneralException {
-        return splitUserId(getPrimaryUserId());
+    abstract public String getPrimaryUserIdWithFallback() throws PgpGeneralException;
+
+    public String[] getSplitPrimaryUserIdWithFallback() throws PgpGeneralException {
+        return splitUserId(getPrimaryUserIdWithFallback());
     }
 
     abstract public boolean isRevoked() throws PgpGeneralException;

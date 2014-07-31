@@ -19,6 +19,8 @@ package org.sufficientlysecure.keychain.ui.adapter;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.graphics.PorterDuff;
+import android.graphics.Typeface;
 import android.support.v4.widget.CursorAdapter;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -40,9 +42,7 @@ import java.util.ArrayList;
 
 public class UserIdsAdapter extends CursorAdapter implements AdapterView.OnItemClickListener {
     private LayoutInflater mInflater;
-
     private final ArrayList<Boolean> mCheckStates;
-
     private SaveKeyringParcel mSaveKeyringParcel;
 
     public static final String[] USER_IDS_PROJECTION = new String[]{
@@ -59,7 +59,6 @@ public class UserIdsAdapter extends CursorAdapter implements AdapterView.OnItemC
     private static final int INDEX_VERIFIED = 3;
     private static final int INDEX_IS_PRIMARY = 4;
     private static final int INDEX_IS_REVOKED = 5;
-
 
     public UserIdsAdapter(Context context, Cursor c, int flags, boolean showCheckBoxes,
                           SaveKeyringParcel saveKeyringParcel) {
@@ -134,15 +133,18 @@ public class UserIdsAdapter extends CursorAdapter implements AdapterView.OnItemC
 
         // for edit key
         if (mSaveKeyringParcel != null) {
-            boolean changeAnyPrimaryUserId = (mSaveKeyringParcel.changePrimaryUserId != null);
-            boolean changeThisPrimaryUserId = (mSaveKeyringParcel.changePrimaryUserId != null
-                    && mSaveKeyringParcel.changePrimaryUserId.equals(userId));
-            boolean revokeThisUserId = (mSaveKeyringParcel.revokeUserIds.contains(userId));
+            boolean changeAnyPrimaryUserId = (mSaveKeyringParcel.mChangePrimaryUserId != null);
+            boolean changeThisPrimaryUserId = (mSaveKeyringParcel.mChangePrimaryUserId != null
+                    && mSaveKeyringParcel.mChangePrimaryUserId.equals(userId));
+            boolean revokeThisUserId = (mSaveKeyringParcel.mRevokeUserIds.contains(userId));
 
+            // only if primary user id will be changed
+            // (this is not triggered if the user id is currently the primary one)
             if (changeAnyPrimaryUserId) {
-                // change all user ids, only this one should be primary
+                // change _all_ primary user ids and set new one to true
                 isPrimary = changeThisPrimaryUserId;
             }
+
             if (revokeThisUserId) {
                 if (!isRevoked) {
                     isRevoked = true;
@@ -156,7 +158,10 @@ public class UserIdsAdapter extends CursorAdapter implements AdapterView.OnItemC
 
         if (isRevoked) {
             // set revocation icon (can this even be primary?)
-            vVerified.setImageResource(R.drawable.key_certify_revoke);
+            vVerified.setImageResource(R.drawable.status_signature_revoked_cutout);
+            vVerified.setColorFilter(
+                    mContext.getResources().getColor(R.color.bg_gray),
+                    PorterDuff.Mode.SRC_IN);
 
             // disable and strike through text for revoked user ids
             vName.setEnabled(false);
@@ -170,22 +175,33 @@ public class UserIdsAdapter extends CursorAdapter implements AdapterView.OnItemC
             vAddress.setEnabled(true);
             vComment.setEnabled(true);
 
-            // verified: has been verified
-            // isPrimary: show small star icon for primary user ids
-            int verified = cursor.getInt(INDEX_VERIFIED);
-            switch (verified) {
+            if (isPrimary) {
+                vName.setTypeface(null, Typeface.BOLD);
+                vAddress.setTypeface(null, Typeface.BOLD);
+            } else {
+                vName.setTypeface(null, Typeface.NORMAL);
+                vAddress.setTypeface(null, Typeface.NORMAL);
+            }
+
+            int isVerified = cursor.getInt(INDEX_VERIFIED);
+            switch (isVerified) {
                 case Certs.VERIFIED_SECRET:
-                    vVerified.setImageResource(isPrimary
-                            ? R.drawable.key_certify_primary_ok_depth0
-                            : R.drawable.key_certify_ok_depth0);
+                    vVerified.setImageResource(R.drawable.status_signature_verified_cutout);
+                    vVerified.setColorFilter(
+                            mContext.getResources().getColor(R.color.android_green_light),
+                            PorterDuff.Mode.SRC_IN);
                     break;
                 case Certs.VERIFIED_SELF:
-                    vVerified.setImageResource(isPrimary
-                            ? R.drawable.key_certify_primary_ok_self
-                            : R.drawable.key_certify_ok_self);
+                    vVerified.setImageResource(R.drawable.status_signature_unverified_cutout);
+                    vVerified.setColorFilter(
+                            mContext.getResources().getColor(R.color.bg_gray),
+                            PorterDuff.Mode.SRC_IN);
                     break;
                 default:
-                    vVerified.setImageResource(R.drawable.key_certify_error);
+                    vVerified.setImageResource(R.drawable.status_signature_invalid_cutout);
+                    vVerified.setColorFilter(
+                            mContext.getResources().getColor(R.color.android_red_light),
+                            PorterDuff.Mode.SRC_IN);
                     break;
             }
         }
@@ -233,7 +249,7 @@ public class UserIdsAdapter extends CursorAdapter implements AdapterView.OnItemC
 
     @Override
     public View newView(Context context, Cursor cursor, ViewGroup parent) {
-        View view = mInflater.inflate(R.layout.view_key_userids_item, null);
+        View view = mInflater.inflate(R.layout.view_key_user_id_item, null);
         // only need to do this once ever, since mShowCheckBoxes is final
         view.findViewById(R.id.checkBox).setVisibility(mCheckStates != null ? View.VISIBLE : View.GONE);
         return view;

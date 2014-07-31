@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg width="100px" height="100px" viewBox="0 0 100 100" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:sketch="http://www.bohemiancoding.com/sketch/ns">
+    <!-- Generator: Sketch 3.0.4 (8053) - http://www.bohemiancoding.com/sketch -->
+    <title>signature-invalid</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" sketch:type="MSPage">
+        <g id="signature-invalid" sketch:type="MSArtboardGroup" fill="#000000">
+            <path d="M90.169,0.282 L10.169,0.282 C4.647,0.282 0.169,4.76 0.169,10.282 L0.169,90.261 C0.169,95.782 4.647,100.261 10.169,100.261 L90.169,100.261 C95.692,100.261 100.169,95.782 100.169,90.261 L100.169,10.282 C100.169,4.76 95.692,0.282 90.169,0.282 L90.169,0.282 Z M80.248,68.521 L70.43,78.342 L52.17,60.082 L33.909,78.342 L24.092,68.521 L42.352,50.27 L24.09,32.017 L33.908,22.202 L52.17,40.456 L70.432,22.201 L80.25,32.014 L61.988,50.27 L80.248,68.521 L80.248,68.521 Z" sketch:type="MSShapeGroup"></path>
+        </g>
+    </g>
+</svg>

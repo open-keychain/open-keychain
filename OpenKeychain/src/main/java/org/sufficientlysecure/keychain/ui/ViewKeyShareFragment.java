@@ -20,7 +20,14 @@ package org.sufficientlysecure.keychain.ui;
 import android.annotation.TargetApi;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.Color;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.TransitionDrawable;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
@@ -33,8 +40,6 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.devspark.appmsg.AppMsg;
-
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.compatibility.ClipboardReflection;
@@ -45,8 +50,8 @@ import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.KeychainContract.Keys;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.ui.dialog.ShareNfcDialogFragment;
-import org.sufficientlysecure.keychain.ui.dialog.ShareQrCodeDialogFragment;
 import org.sufficientlysecure.keychain.util.Log;
+import org.sufficientlysecure.keychain.util.Notify;
 import org.sufficientlysecure.keychain.util.QrCodeUtils;
 
 import java.io.IOException;
@@ -152,7 +157,7 @@ public class ViewKeyShareFragment extends LoaderFragment implements
                         KeyRings.buildUnifiedKeyRingUri(dataUri),
                         Keys.FINGERPRINT, ProviderHelper.FIELD_TYPE_BLOB);
                 String fingerprint = PgpKeyHelper.convertFingerprintToHex(data);
-                if(!toClipboard){
+                if (!toClipboard) {
                     content = Constants.FINGERPRINT_SCHEME + ":" + fingerprint;
                 } else {
                     content = fingerprint;
@@ -171,13 +176,13 @@ public class ViewKeyShareFragment extends LoaderFragment implements
                 } else {
                     message = getResources().getString(R.string.key_copied_to_clipboard);
                 }
-                AppMsg.makeText(getActivity(), message, AppMsg.STYLE_INFO).show();
+                Notify.showNotify(getActivity(), message, Notify.Style.OK);
             } else {
                 // Android will fail with android.os.TransactionTooLargeException if key is too big
                 // see http://www.lonestarprod.com/?p=34
                 if (content.length() >= 86389) {
-                    AppMsg.makeText(getActivity(), R.string.key_too_big_for_sharing,
-                            AppMsg.STYLE_ALERT).show();
+                    Notify.showNotify(getActivity(), R.string.key_too_big_for_sharing,
+                            Notify.Style.ERROR);
                     return;
                 }
 
@@ -195,19 +200,20 @@ public class ViewKeyShareFragment extends LoaderFragment implements
             }
         } catch (PgpGeneralException e) {
             Log.e(Constants.TAG, "error processing key!", e);
-            AppMsg.makeText(getActivity(), R.string.error_key_processing, AppMsg.STYLE_ALERT).show();
+            Notify.showNotify(getActivity(), R.string.error_key_processing, Notify.Style.ERROR);
         } catch (IOException e) {
             Log.e(Constants.TAG, "error processing key!", e);
-            AppMsg.makeText(getActivity(), R.string.error_key_processing, AppMsg.STYLE_ALERT).show();
+            Notify.showNotify(getActivity(), R.string.error_key_processing, Notify.Style.ERROR);
         } catch (ProviderHelper.NotFoundException e) {
             Log.e(Constants.TAG, "key not found!", e);
-            AppMsg.makeText(getActivity(), R.string.error_key_not_found, AppMsg.STYLE_ALERT).show();
+            Notify.showNotify(getActivity(), R.string.error_key_not_found, Notify.Style.ERROR);
         }
     }
 
     private void showQrCodeDialog() {
-        ShareQrCodeDialogFragment dialog = ShareQrCodeDialogFragment.newInstance(mDataUri);
-        dialog.show(ViewKeyShareFragment.this.getActivity().getSupportFragmentManager(), "shareQrCodeDialog");
+        Intent qrCodeIntent = new Intent(getActivity(), QrCodeActivity.class);
+        qrCodeIntent.setData(mDataUri);
+        startActivity(qrCodeIntent);
     }
 
     private void showNfcHelpDialog() {
@@ -292,10 +298,7 @@ public class ViewKeyShareFragment extends LoaderFragment implements
                     String fingerprint = PgpKeyHelper.convertFingerprintToHex(fingerprintBlob);
                     mFingerprint.setText(PgpKeyHelper.colorizeFingerprint(fingerprint));
 
-                    String qrCodeContent = Constants.FINGERPRINT_SCHEME + ":" + fingerprint;
-                    mFingerprintQrCode.setImageBitmap(
-                            QrCodeUtils.getQRCodeBitmap(qrCodeContent, QR_CODE_SIZE)
-                    );
+                    loadQrCode(fingerprint);
 
                     break;
                 }
@@ -310,5 +313,36 @@ public class ViewKeyShareFragment extends LoaderFragment implements
      * We need to make sure we are no longer using it.
      */
     public void onLoaderReset(Loader<Cursor> loader) {
+    }
+
+    /**
+     * Load QR Code asynchronously and with a fade in animation
+     *
+     * @param fingerprint
+     */
+    private void loadQrCode(final String fingerprint) {
+        AsyncTask<Void, Void, Bitmap> loadTask =
+                new AsyncTask<Void, Void, Bitmap>() {
+                    protected Bitmap doInBackground(Void... unused) {
+                        String qrCodeContent = Constants.FINGERPRINT_SCHEME + ":" + fingerprint;
+                        return QrCodeUtils.getQRCodeBitmap(qrCodeContent, QR_CODE_SIZE);
+                    }
+
+                    protected void onPostExecute(Bitmap qrCode) {
+                        mFingerprintQrCode.setImageBitmap(qrCode);
+
+                        // Transition drawable with a transparent drawable and the final bitmap
+                        final TransitionDrawable td =
+                                new TransitionDrawable(new Drawable[]{
+                                        new ColorDrawable(Color.TRANSPARENT),
+                                        new BitmapDrawable(getResources(), qrCode)
+                                });
+
+                        mFingerprintQrCode.setImageDrawable(td);
+                        td.startTransition(200);
+                    }
+                };
+
+        loadTask.execute();
     }
 }

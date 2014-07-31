@@ -15,6 +15,7 @@ import org.sufficientlysecure.keychain.util.Log;
 
 import java.io.IOException;
 import java.security.SignatureException;
+import java.util.ArrayList;
 import java.util.Date;
 
 /** OpenKeychain wrapper around PGPSignature objects.
@@ -55,12 +56,41 @@ public class WrappedSignature {
         return mSig.getCreationTime();
     }
 
+    public ArrayList<WrappedSignature> getEmbeddedSignatures() {
+        ArrayList<WrappedSignature> sigs = new ArrayList<WrappedSignature>();
+        if (!mSig.hasSubpackets()) {
+            return sigs;
+        }
+        try {
+            PGPSignatureList list;
+            if (mSig.getHashedSubPackets() != null) {
+                list = mSig.getHashedSubPackets().getEmbeddedSignatures();
+                for (int i = 0; i < list.size(); i++) {
+                    sigs.add(new WrappedSignature(list.get(i)));
+                }
+            }
+            if (mSig.getUnhashedSubPackets() != null) {
+                list = mSig.getUnhashedSubPackets().getEmbeddedSignatures();
+                for (int i = 0; i < list.size(); i++) {
+                    sigs.add(new WrappedSignature(list.get(i)));
+                }
+            }
+        } catch (PGPException e) {
+            // no matter
+            Log.e(Constants.TAG, "exception reading embedded signatures", e);
+        } catch (IOException e) {
+            // no matter
+            Log.e(Constants.TAG, "exception reading embedded signatures", e);
+        }
+        return sigs;
+    }
+
     public byte[] getEncoded() throws IOException {
         return mSig.getEncoded();
     }
 
     public boolean isRevocation() {
-        return mSig.getHashedSubPackets().hasSubpacket(SignatureSubpacketTags.REVOCATION_REASON);
+        return mSig.getSignatureType() == PGPSignature.CERTIFICATION_REVOCATION;
     }
 
     public boolean isPrimaryUserId() {
@@ -71,6 +101,9 @@ public class WrappedSignature {
         if(!isRevocation()) {
             throw new PgpGeneralException("Not a revocation signature.");
         }
+        if (mSig.getHashedSubPackets() == null) {
+            return null;
+        }
         SignatureSubpacket p = mSig.getHashedSubPackets().getSubpacket(
                 SignatureSubpacketTags.REVOCATION_REASON);
         // For some reason, this is missing in SignatureSubpacketInputStream:146
@@ -80,7 +113,7 @@ public class WrappedSignature {
         return ((RevocationReason) p).getRevocationDescription();
     }
 
-    public void init(WrappedPublicKey key) throws PgpGeneralException {
+    public void init(CanonicalizedPublicKey key) throws PgpGeneralException {
         init(key.getPublicKey());
     }
 
@@ -158,7 +191,7 @@ public class WrappedSignature {
     public boolean verifySignature(UncachedPublicKey key, String uid) throws PgpGeneralException {
         return verifySignature(key.getPublicKey(), uid);
     }
-    public boolean verifySignature(WrappedPublicKey key, String uid) throws PgpGeneralException {
+    public boolean verifySignature(CanonicalizedPublicKey key, String uid) throws PgpGeneralException {
         return verifySignature(key.getPublicKey(), uid);
     }
 
@@ -179,7 +212,7 @@ public class WrappedSignature {
     }
 
     public boolean isLocal() {
-        if (!mSig.hasSubpackets()
+        if (mSig.getHashedSubPackets() == null
                 || !mSig.getHashedSubPackets().hasSubpacket(SignatureSubpacketTags.EXPORTABLE)) {
             return false;
         }

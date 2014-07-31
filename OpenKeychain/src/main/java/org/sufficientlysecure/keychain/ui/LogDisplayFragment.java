@@ -43,6 +43,7 @@ import org.sufficientlysecure.keychain.util.Log;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 public class LogDisplayFragment extends ListFragment implements OnTouchListener {
 
@@ -135,7 +136,7 @@ public class LogDisplayFragment extends ListFragment implements OnTouchListener 
         private LayoutInflater mInflater;
         private int dipFactor;
 
-        public LogAdapter(Context context, ArrayList<LogEntryParcel> log, LogLevel level) {
+        public LogAdapter(Context context, OperationResultParcel.OperationLog log, LogLevel level) {
             super(context, R.layout.log_display_item);
             mInflater = LayoutInflater.from(getContext());
             dipFactor = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
@@ -177,9 +178,11 @@ public class LogDisplayFragment extends ListFragment implements OnTouchListener 
             if (entry.mParameters != null && entry.mParameters.length > 0
                     && entry.mParameters[0] instanceof Integer) {
                 ih.mText.setText(getResources().getQuantityString(entry.mType.getMsgId(),
-                        (Integer) entry.mParameters[0], entry.mParameters));
+                        (Integer) entry.mParameters[0],
+                        entry.mParameters));
             } else {
-                ih.mText.setText(getResources().getString(entry.mType.getMsgId(), entry.mParameters));
+                ih.mText.setText(getResources().getString(entry.mType.getMsgId(),
+                        entry.mParameters));
             }
             ih.mText.setTextColor(entry.mLevel == LogLevel.DEBUG ? Color.GRAY : Color.BLACK);
             convertView.setPadding((entry.mIndent) * dipFactor, 0, 0, 0);

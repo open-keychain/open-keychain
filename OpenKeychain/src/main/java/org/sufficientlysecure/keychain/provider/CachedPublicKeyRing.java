@@ -83,6 +83,10 @@ public class CachedPublicKeyRing extends KeyRing {
         }
     }
 
+    public String getPrimaryUserIdWithFallback() throws PgpGeneralException {
+        return getPrimaryUserId();
+    }
+
     @Override
     public boolean isRevoked() throws PgpGeneralException {
         try {
