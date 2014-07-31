@@ -333,7 +333,7 @@ public class CertifyKeyActivity extends ActionBarActivity implements
 
         // Message is received after uploading is done in KeychainIntentService
         KeychainIntentServiceHandler saveHandler = new KeychainIntentServiceHandler(this,
-                getString(R.string.progress_exporting), ProgressDialog.STYLE_HORIZONTAL) {
+                getString(R.string.progress_uploading), ProgressDialog.STYLE_HORIZONTAL) {
             public void handleMessage(Message message) {
                 // handle messages by standard KeychainIntentServiceHandler first
                 super.handleMessage(message);
