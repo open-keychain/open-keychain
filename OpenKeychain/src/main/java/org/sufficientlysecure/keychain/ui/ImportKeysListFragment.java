@@ -35,7 +35,6 @@ import org.sufficientlysecure.keychain.helper.Preferences;
 import org.sufficientlysecure.keychain.keyimport.ImportKeysListEntry;
 import org.sufficientlysecure.keychain.keyimport.Keyserver;
 import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
-import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
 import org.sufficientlysecure.keychain.ui.adapter.AsyncTaskResultWrapper;
 import org.sufficientlysecure.keychain.ui.adapter.ImportKeysAdapter;
 import org.sufficientlysecure.keychain.ui.adapter.ImportKeysListKeybaseLoader;
@@ -288,13 +287,13 @@ public class ImportKeysListFragment extends ListFragment implements
                 if (error == null) {
                     // No error
                     mCachedKeyData = ((ImportKeysListLoader) loader).getParcelableRings();
-                } else if (error instanceof ImportKeysListLoader.FileHasNoContent) {
+                } else if (error instanceof ImportKeysListLoader.FileHasNoContentException) {
                     Notify.showNotify(getActivity(), R.string.error_import_file_no_content, Notify.Style.ERROR);
-                } else if (error instanceof ImportKeysListLoader.NonPgpPart) {
+                } else if (error instanceof ImportKeysListLoader.NonPgpPartException) {
                     Notify.showNotify(getActivity(),
-                            ((ImportKeysListLoader.NonPgpPart) error).getCount() + " " + getResources().
+                            ((ImportKeysListLoader.NonPgpPartException) error).getCount() + " " + getResources().
                                     getQuantityString(R.plurals.error_import_non_pgp_part,
-                                            ((ImportKeysListLoader.NonPgpPart) error).getCount()),
+                                            ((ImportKeysListLoader.NonPgpPartException) error).getCount()),
                             Notify.Style.OK
                     );
                 } else {

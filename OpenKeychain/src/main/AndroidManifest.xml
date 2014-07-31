@@ -31,7 +31,7 @@
         For OI Filemanager it makes no difference, gpg files can't be associated
     -->
 
-    <!-- Specified in buid.gradle -->
+    <!-- Specified in build.gradle -->
     <!--<uses-sdk-->
     <!--android:minSdkVersion="9"-->
     <!--android:targetSdkVersion="19" />-->
@@ -223,28 +223,8 @@
                 <data android:host="*" />
                 <data android:scheme="file" />
                 <data android:scheme="content" />
-                <!-- Workaround to match files in pathes with dots in them, like /cdcard/my.folder/test.gpg -->
-                <data android:pathPattern=".*\\.gpg" />
-                <data android:pathPattern=".*\\..*\\.gpg" />
-                <data android:pathPattern=".*\\..*\\..*\\.gpg" />
-                <data android:pathPattern=".*\\..*\\..*\\..*\\.gpg" />
-                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\.gpg" />
-                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\.gpg" />
-                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\.gpg" />
-                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\.gpg" />
-                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\.gpg" />
-                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\.gpg" />
-            </intent-filter>
-            <intent-filter android:label="@string/intent_decrypt_file">
-                <action android:name="android.intent.action.VIEW" />
 
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-
-                <data android:host="*" />
-                <data android:scheme="file" />
-                <data android:scheme="content" />
-                <data android:mimeType="*/*" />
+                <!-- GnuPG ASCII data, mostly keys, but sometimes signatures and encrypted data -->
                 <data android:pathPattern=".*\\.asc" />
                 <data android:pathPattern=".*\\..*\\.asc" />
                 <data android:pathPattern=".*\\..*\\..*\\.asc" />
@@ -255,6 +235,101 @@
                 <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\.asc" />
                 <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\.asc" />
                 <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\.asc" />
+                <!-- GnuPG binary encrypted/signed data, binary format -->
+                <data android:pathPattern=".*\\.gpg" />
+                <data android:pathPattern=".*\\..*\\.gpg" />
+                <data android:pathPattern=".*\\..*\\..*\\.gpg" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\.gpg" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\.gpg" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\.gpg" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\.gpg" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\.gpg" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\.gpg" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\.gpg" />
+                <!-- PGP encrypted data, binary format -->
+                <data android:pathPattern=".*\\.pgp" />
+                <data android:pathPattern=".*\\..*\\.pgp" />
+                <data android:pathPattern=".*\\..*\\..*\\.pgp" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\.pgp" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\.pgp" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\.pgp" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\.pgp" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\.pgp" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\.pgp" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\.pgp" />
+                <!-- on some mail clients, PGP attachments show up as *.bin -->
+                <data android:pathPattern=".*\\.bin" />
+                <data android:pathPattern=".*\\..*\\.bin" />
+                <data android:pathPattern=".*\\..*\\..*\\.bin" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\.bin" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\.bin" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\.bin" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\.bin" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\.bin" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\.bin" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\.bin" />
+            </intent-filter>
+            <!--
+                Some apps will only respect these file associations
+                if the mimeType is not set, and other apps will only respect them if mimeType is set
+                to */*. Therefore we have two whole copies of the same thing, besides setting the mimeType.
+            -->
+            <intent-filter android:label="@string/intent_decrypt_file">
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data android:host="*" />
+                <data android:scheme="file" />
+                <data android:scheme="content" />
+
+                <data android:mimeType="*/*" />
+
+                <!-- GnuPG ASCII data, mostly keys, but sometimes signatures and encrypted data -->
+                <data android:pathPattern=".*\\.asc" />
+                <data android:pathPattern=".*\\..*\\.asc" />
+                <data android:pathPattern=".*\\..*\\..*\\.asc" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\.asc" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\.asc" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\.asc" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\.asc" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\.asc" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\.asc" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\.asc" />
+                <!-- GnuPG binary encrypted/signed data, binary format -->
+                <data android:pathPattern=".*\\.gpg" />
+                <data android:pathPattern=".*\\..*\\.gpg" />
+                <data android:pathPattern=".*\\..*\\..*\\.gpg" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\.gpg" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\.gpg" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\.gpg" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\.gpg" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\.gpg" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\.gpg" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\.gpg" />
+                <!-- PGP encrypted data, binary format -->
+                <data android:pathPattern=".*\\.pgp" />
+                <data android:pathPattern=".*\\..*\\.pgp" />
+                <data android:pathPattern=".*\\..*\\..*\\.pgp" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\.pgp" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\.pgp" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\.pgp" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\.pgp" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\.pgp" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\.pgp" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\.pgp" />
+                <!-- on some mail clients, PGP attachments show up as *.bin -->
+                <data android:pathPattern=".*\\.bin" />
+                <data android:pathPattern=".*\\..*\\.bin" />
+                <data android:pathPattern=".*\\..*\\..*\\.bin" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\.bin" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\.bin" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\.bin" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\.bin" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\.bin" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\.bin" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\.bin" />
             </intent-filter>
         </activity>
         <activity
@@ -324,6 +399,9 @@
 
                 <!-- mime type as defined in http://tools.ietf.org/html/rfc3156 -->
                 <data android:mimeType="application/pgp-keys" />
+                <!-- also link to text/plain, AOSP mail and K-9 mail only give mimeType text/plain
+                when the key file has been manually attached -->
+                <data android:mimeType="text/plain" />
             </intent-filter>
             <!-- NFC: Handle NFC tags detected from outside our application -->
             <intent-filter>
@@ -343,28 +421,8 @@
                 <data android:host="*" />
                 <data android:scheme="file" />
                 <data android:scheme="content" />
-                <data android:pathPattern=".*\\.gpg" />
-                <data android:pathPattern=".*\\..*\\.gpg" />
-                <data android:pathPattern=".*\\..*\\..*\\.gpg" />
-                <data android:pathPattern=".*\\..*\\..*\\..*\\.gpg" />
-                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\.gpg" />
-                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\.gpg" />
-                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\.gpg" />
-                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\.gpg" />
-                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\.gpg" />
-                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\.gpg" />
-            </intent-filter>
-            <!-- VIEW with file endings: *.asc -->
-            <intent-filter android:label="@string/intent_import_key">
-                <action android:name="android.intent.action.VIEW" />
 
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-
-                <data android:host="*" />
-                <data android:scheme="file" />
-                <data android:scheme="content" />
-                <data android:mimeType="*/*" />
+                <!-- GnuPG ASCII data, mostly keys, but sometimes signatures and encrypted data -->
                 <data android:pathPattern=".*\\.asc" />
                 <data android:pathPattern=".*\\..*\\.asc" />
                 <data android:pathPattern=".*\\..*\\..*\\.asc" />
@@ -375,7 +433,103 @@
                 <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\.asc" />
                 <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\.asc" />
                 <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\.asc" />
+                <!-- GnuPG binary encrypted/signed data, binary format -->
+                <data android:pathPattern=".*\\.gpg" />
+                <data android:pathPattern=".*\\..*\\.gpg" />
+                <data android:pathPattern=".*\\..*\\..*\\.gpg" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\.gpg" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\.gpg" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\.gpg" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\.gpg" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\.gpg" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\.gpg" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\.gpg" />
+                <!-- PGP encrypted data, binary format -->
+                <data android:pathPattern=".*\\.pgp" />
+                <data android:pathPattern=".*\\..*\\.pgp" />
+                <data android:pathPattern=".*\\..*\\..*\\.pgp" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\.pgp" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\.pgp" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\.pgp" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\.pgp" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\.pgp" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\.pgp" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\.pgp" />
+                <!-- on some mail clients, PGP attachments show up as *.bin -->
+                <data android:pathPattern=".*\\.bin" />
+                <data android:pathPattern=".*\\..*\\.bin" />
+                <data android:pathPattern=".*\\..*\\..*\\.bin" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\.bin" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\.bin" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\.bin" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\.bin" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\.bin" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\.bin" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\.bin" />
             </intent-filter>
+            <!--
+                Some apps will only respect these file associations
+                if the mimeType is not set, and other apps will only respect them if mimeType is set
+                to */*. Therefore we have two whole copies of the same thing, besides setting the mimeType.
+            -->
+            <intent-filter android:label="@string/intent_import_key">
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data android:host="*" />
+                <data android:scheme="file" />
+                <data android:scheme="content" />
+
+                <data android:mimeType="*/*" />
+
+                <!-- GnuPG ASCII data, mostly keys, but sometimes signatures and encrypted data -->
+                <data android:pathPattern=".*\\.asc" />
+                <data android:pathPattern=".*\\..*\\.asc" />
+                <data android:pathPattern=".*\\..*\\..*\\.asc" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\.asc" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\.asc" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\.asc" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\.asc" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\.asc" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\.asc" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\.asc" />
+                <!-- GnuPG binary encrypted/signed data, binary format -->
+                <data android:pathPattern=".*\\.gpg" />
+                <data android:pathPattern=".*\\..*\\.gpg" />
+                <data android:pathPattern=".*\\..*\\..*\\.gpg" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\.gpg" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\.gpg" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\.gpg" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\.gpg" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\.gpg" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\.gpg" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\.gpg" />
+                <!-- PGP encrypted data, binary format -->
+                <data android:pathPattern=".*\\.pgp" />
+                <data android:pathPattern=".*\\..*\\.pgp" />
+                <data android:pathPattern=".*\\..*\\..*\\.pgp" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\.pgp" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\.pgp" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\.pgp" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\.pgp" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\.pgp" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\.pgp" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\.pgp" />
+                <!-- on some mail clients, PGP attachments show up as *.bin -->
+                <data android:pathPattern=".*\\.bin" />
+                <data android:pathPattern=".*\\..*\\.bin" />
+                <data android:pathPattern=".*\\..*\\..*\\.bin" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\.bin" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\.bin" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\.bin" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\.bin" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\.bin" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\.bin" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\.bin" />
+            </intent-filter>
+
             <!-- Keychain's own Actions -->
             <!-- IMPORT_KEY with files TODO: does this work? -->
             <intent-filter android:label="@string/intent_import_key">

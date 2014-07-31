@@ -30,20 +30,20 @@ import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.PositionAwareInputStream;
 
 import java.io.BufferedInputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class ImportKeysListLoader
         extends AsyncTaskLoader<AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>>> {
 
-    public static class FileHasNoContent extends Exception {
-
+    public static class FileHasNoContentException extends Exception {
     }
 
-    public static class NonPgpPart extends Exception {
+    public static class NonPgpPartException extends Exception {
         private int mCount;
 
-        public NonPgpPart(int count) {
+        public NonPgpPartException(int count) {
             this.mCount = count;
         }
 
@@ -67,7 +67,6 @@ public class ImportKeysListLoader
 
     @Override
     public AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>> loadInBackground() {
-
         // This has already been loaded! nvm any further, just return
         if (mEntryListWrapper != null) {
             return mEntryListWrapper;
@@ -119,7 +118,6 @@ public class ImportKeysListLoader
      * @return
      */
     private void generateListOfKeyrings(InputData inputData) {
-
         boolean isEmpty = true;
 
         PositionAwareInputStream progressIn = new PositionAwareInputStream(
@@ -129,13 +127,14 @@ public class ImportKeysListLoader
         // PGPObject chunks after the first one, e.g. files with several consecutive ASCII
         // armor blocks
         BufferedInputStream bufferedInput = new BufferedInputStream(progressIn);
+        bufferedInput.mark(1024);
         try {
 
             // read all available blocks... (asc files can contain many blocks with BEGIN END)
             while (bufferedInput.available() > 0) {
                 // TODO: deal with non-keyring objects?
                 List<UncachedKeyRing> rings = UncachedKeyRing.fromStream(bufferedInput);
-                for(UncachedKeyRing key : rings) {
+                for (UncachedKeyRing key : rings) {
                     ImportKeysListEntry item = new ImportKeysListEntry(getContext(), key);
                     mData.add(item);
                     mParcelableRings.put(item.hashCode(), new ParcelableKeyRing(key.getEncoded()));
@@ -144,14 +143,26 @@ public class ImportKeysListLoader
             }
         } catch (Exception e) {
             Log.e(Constants.TAG, "Exception on parsing key file!", e);
+
+            try {
+                bufferedInput.reset();
+            } catch (IOException e1) {
+            }
+            Log.d(Constants.TAG, "Last 1024 byte input data: " + convertStreamToString(bufferedInput));
             mEntryListWrapper = new AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>>(mData, e);
         }
 
         if (isEmpty) {
-            Log.e(Constants.TAG, "File has no content!", new FileHasNoContent());
+            FileHasNoContentException e = new FileHasNoContentException();
+            Log.e(Constants.TAG, "File has no content!", e);
             mEntryListWrapper = new AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>>
-                    (mData, new FileHasNoContent());
+                    (mData, e);
         }
+    }
+
+    static String convertStreamToString(java.io.InputStream is) {
+        java.util.Scanner s = new java.util.Scanner(is).useDelimiter("\\A");
+        return s.hasNext() ? s.next() : "";
     }
 
 }
