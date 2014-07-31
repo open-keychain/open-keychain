@@ -152,8 +152,13 @@ public class CreateKeyFinalFragment extends Fragment {
                     }
 
                     if (mUploadCheckbox.isChecked()) {
-                        // result will be displayed after upload
-                        uploadKey(result);
+                        if (result.getResult() == OperationResultParcel.RESULT_OK) {
+                            // result will be displayed after upload
+                            uploadKey(result);
+                        } else {
+                            // display result on error without finishing activity
+                            result.createNotify(getActivity());
+                        }
                     } else {
                         // TODO: return result
                         result.createNotify(getActivity());
