@@ -22,6 +22,7 @@ import de.measite.minidns.Client;
 import de.measite.minidns.Question;
 import de.measite.minidns.Record;
 import de.measite.minidns.record.SRV;
+
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.helper.TlsHelper;
 import org.sufficientlysecure.keychain.pgp.PgpHelper;
@@ -102,8 +103,9 @@ public class HkpKeyserver extends Keyserver {
      */
     public static final Pattern PUB_KEY_LINE = Pattern
             .compile("pub:([0-9a-fA-F]+):([0-9]+):([0-9]+):([0-9]+):([0-9]*):([rde]*)[ \n\r]*" // pub line
-                    + "((uid:([^:]*):([0-9]+):([0-9]*):([rde]*)[ \n\r]*)+)", // one or more uid lines
-                    Pattern.CASE_INSENSITIVE);
+                            + "((uid:([^:]*):([0-9]+):([0-9]*):([rde]*)[ \n\r]*)+)", // one or more uid lines
+                    Pattern.CASE_INSENSITIVE
+            );
 
     /**
      * uid:%escaped uid string%:%creationdate%:%expirationdate%:%flags%
@@ -241,8 +243,10 @@ public class HkpKeyserver extends Keyserver {
             data = query(request);
         } catch (HttpError e) {
             if (e.getCode() == 404) {
-                return results;
-            } else {
+                throw new QueryFailedException("keyserver '" + mHost + "' not found. Error 404");
+            } else if (e.getData() != null) {
+                Log.d(Constants.TAG, "returned error data: " + e.getData().toLowerCase(Locale.US));
+
                 if (e.getData().toLowerCase(Locale.US).contains("no keys found")) {
                     return results;
                 } else if (e.getData().toLowerCase(Locale.US).contains("too many")) {
@@ -250,7 +254,11 @@ public class HkpKeyserver extends Keyserver {
                 } else if (e.getData().toLowerCase(Locale.US).contains("insufficient")) {
                     throw new QueryTooShortException();
                 }
+
+                // NOTE: some keyserver do not provide a more detailed error response
+                throw new QueryFailedException("Either no keys or too many have been found. Please improve your query!");
             }
+
             throw new QueryFailedException("querying server(s) for '" + mHost + "' failed");
         }
 
@@ -291,7 +299,7 @@ public class HkpKeyserver extends Keyserver {
             while (uidMatcher.find()) {
                 String tmp = uidMatcher.group(1).trim();
                 if (tmp.contains("%")) {
-                    if(tmp.contains("%%")) {
+                    if (tmp.contains("%%")) {
                         // This is a fix for issue #683
                         // The server encodes a percent sign as %%, so it is swapped out with its
                         // urlencoded counterpart to prevent errors
