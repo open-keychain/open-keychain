@@ -46,13 +46,13 @@ public class ProgressScaler implements Progressable {
 
     public void setProgress(int resourceId, int progress, int max) {
         if (mWrapped != null) {
-            mWrapped.setProgress(resourceId, progress, mMax);
+            mWrapped.setProgress(resourceId, mFrom + progress * (mTo - mFrom) / max, mMax);
         }
     }
 
     public void setProgress(int progress, int max) {
         if (mWrapped != null) {
-            mWrapped.setProgress(progress, max);
+            mWrapped.setProgress(mFrom + progress * (mTo - mFrom) / max, mMax);
         }
     }
 

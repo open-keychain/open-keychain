@@ -330,7 +330,7 @@ public class KeychainIntentService extends IntentService
 
                 /* Operation */
                 ProviderHelper providerHelper = new ProviderHelper(this);
-                PgpKeyOperation keyOperations = new PgpKeyOperation(new ProgressScaler(this, 10, 50, 100));
+                PgpKeyOperation keyOperations = new PgpKeyOperation(new ProgressScaler(this, 10, 60, 100));
                 EditKeyResult result;
 
                 if (saveParcel.mMasterKeyId != null) {
@@ -345,7 +345,7 @@ public class KeychainIntentService extends IntentService
 
                 UncachedKeyRing ring = result.getRing();
 
-                providerHelper.saveSecretKeyRing(ring,  new ProgressScaler(this, 10, 95, 100));
+                providerHelper.saveSecretKeyRing(ring,  new ProgressScaler(this, 60, 95, 100));
 
                 // cache new passphrase
                 if (saveParcel.mNewPassphrase != null) {

@@ -304,6 +304,20 @@
     <string name="progress_building_master_key">building master ring…</string>
     <string name="progress_adding_sub_keys">adding sub keys…</string>
     <string name="progress_saving_key_ring">saving key…</string>
+    <string name="progress_generating_rsa">generating new RSA key…</string>
+    <string name="progress_generating_dsa">generating new DSA key…</string>
+    <string name="progress_generating_elgamal">generating new ElGamal key…</string>
+
+    <string name="progress_modify">modifying keyring…</string>
+
+    <string name="progress_modify_unlock">unlocking keyring…</string>
+    <string name="progress_modify_adduid">adding user ids…</string>
+    <string name="progress_modify_revokeuid">revoking user ids…</string>
+    <string name="progress_modify_primaryuid">changing primary user id…</string>
+    <string name="progress_modify_subkeychange">modifying subkeys…</string>
+    <string name="progress_modify_subkeyrevoke">revoking subkeys…</string>
+    <string name="progress_modify_subkeyadd">adding subkeys…</string>
+    <string name="progress_modify_passphrase">changing passphrase…</string>
 
     <plurals name="progress_exporting_key">
         <item quantity="one">exporting key…</item>

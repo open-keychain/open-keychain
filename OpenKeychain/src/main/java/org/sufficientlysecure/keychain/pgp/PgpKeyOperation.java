@@ -56,6 +56,7 @@ import org.sufficientlysecure.keychain.service.SaveKeyringParcel.SubkeyAdd;
 import org.sufficientlysecure.keychain.util.IterableIterator;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Primes;
+import org.sufficientlysecure.keychain.util.ProgressScaler;
 
 import java.io.IOException;
 import java.math.BigInteger;
@@ -68,6 +69,7 @@ import java.security.SignatureException;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.Stack;
 
 /**
  * This class is the single place where ALL operations that actually modify a PGP public or secret
@@ -79,7 +81,7 @@ import java.util.Iterator;
  * This indicator may be null.
  */
 public class PgpKeyOperation {
-    private Progressable mProgress;
+    private Stack<Progressable> mProgress;
 
     private static final int[] PREFERRED_SYMMETRIC_ALGORITHMS = new int[]{
             SymmetricKeyAlgorithmTags.AES_256, SymmetricKeyAlgorithmTags.AES_192,
@@ -93,13 +95,34 @@ public class PgpKeyOperation {
 
     public PgpKeyOperation(Progressable progress) {
         super();
-        this.mProgress = progress;
+        if (progress != null) {
+            mProgress = new Stack<Progressable>();
+            mProgress.push(progress);
+        }
     }
 
-    void updateProgress(int message, int current, int total) {
-        if (mProgress != null) {
-            mProgress.setProgress(message, current, total);
+    private void subProgressPush(int from, int to) {
+        if (mProgress == null) {
+            return;
         }
+        mProgress.push(new ProgressScaler(mProgress.peek(), from, to, 100));
+    }
+    private void subProgressPop() {
+        if (mProgress == null) {
+            return;
+        }
+        if (mProgress.size() == 1) {
+            throw new RuntimeException("Tried to pop progressable without prior push! "
+                    + "This is a programming error, please file a bug report.");
+        }
+        mProgress.pop();
+    }
+
+    private void progress(int message, int current) {
+        if (mProgress == null) {
+            return;
+        }
+        mProgress.peek().setProgress(message, current, 100);
     }
 
     /** Creates new secret key. */
@@ -116,6 +139,7 @@ public class PgpKeyOperation {
 
             switch (algorithmChoice) {
                 case Constants.choice.algorithm.dsa: {
+                    progress(R.string.progress_generating_dsa, 30);
                     keyGen = KeyPairGenerator.getInstance("DSA", Constants.BOUNCY_CASTLE_PROVIDER_NAME);
                     keyGen.initialize(keySize, new SecureRandom());
                     algorithm = PGPPublicKey.DSA;
@@ -123,6 +147,7 @@ public class PgpKeyOperation {
                 }
 
                 case Constants.choice.algorithm.elgamal: {
+                    progress(R.string.progress_generating_elgamal, 30);
                     keyGen = KeyPairGenerator.getInstance("ElGamal", Constants.BOUNCY_CASTLE_PROVIDER_NAME);
                     BigInteger p = Primes.getBestPrime(keySize);
                     BigInteger g = new BigInteger("2");
@@ -135,6 +160,7 @@ public class PgpKeyOperation {
                 }
 
                 case Constants.choice.algorithm.rsa: {
+                    progress(R.string.progress_generating_rsa, 30);
                     keyGen = KeyPairGenerator.getInstance("RSA", Constants.BOUNCY_CASTLE_PROVIDER_NAME);
                     keyGen.initialize(keySize, new SecureRandom());
 
@@ -172,8 +198,8 @@ public class PgpKeyOperation {
         try {
 
             log.add(LogLevel.START, LogType.MSG_CR, indent);
+            progress(R.string.progress_building_key, 0);
             indent += 1;
-            updateProgress(R.string.progress_building_key, 0, 100);
 
             if (saveParcel.mAddSubKeys.isEmpty()) {
                 log.add(LogLevel.ERROR, LogType.MSG_CR_ERROR_NO_MASTER, indent);
@@ -196,12 +222,16 @@ public class PgpKeyOperation {
                 return new EditKeyResult(EditKeyResult.RESULT_ERROR, log, null);
             }
 
+            subProgressPush(10, 30);
             PGPKeyPair keyPair = createKey(add.mAlgorithm, add.mKeysize, log, indent);
+            subProgressPop();
 
             // return null if this failed (an error will already have been logged by createKey)
             if (keyPair == null) {
                 return new EditKeyResult(EditKeyResult.RESULT_ERROR, log, null);
             }
+
+            progress(R.string.progress_building_master_key, 40);
 
             // define hashing and signing algos
             PGPDigestCalculator sha1Calc = new JcaPGPDigestCalculatorProviderBuilder()
@@ -216,6 +246,7 @@ public class PgpKeyOperation {
             PGPSecretKeyRing sKR = new PGPSecretKeyRing(
                     masterSecretKey.getEncoded(), new JcaKeyFingerprintCalculator());
 
+            subProgressPush(50, 100);
             return internal(sKR, masterSecretKey, add.mFlags, saveParcel, "", log);
 
         } catch (PGPException e) {
@@ -260,7 +291,7 @@ public class PgpKeyOperation {
         log.add(LogLevel.START, LogType.MSG_MF, indent,
                 PgpKeyHelper.convertKeyIdToHex(wsKR.getMasterKeyId()));
         indent += 1;
-        updateProgress(R.string.progress_building_key, 0, 100);
+        progress(R.string.progress_building_key, 0);
 
         // Make sure this is called with a proper SaveKeyringParcel
         if (saveParcel.mMasterKeyId == null || saveParcel.mMasterKeyId != wsKR.getMasterKeyId()) {
@@ -295,11 +326,12 @@ public class PgpKeyOperation {
 
         int indent = 1;
 
-        updateProgress(R.string.progress_certifying_master_key, 20, 100);
+        progress(R.string.progress_modify, 0);
 
         PGPPublicKey masterPublicKey = masterSecretKey.getPublicKey();
 
         // 1. Unlock private key
+        progress(R.string.progress_modify_unlock, 10);
         log.add(LogLevel.DEBUG, LogType.MSG_MF_UNLOCK, indent);
         PGPPrivateKey masterPrivateKey;
         {
@@ -319,7 +351,11 @@ public class PgpKeyOperation {
             PGPPublicKey modifiedPublicKey = masterPublicKey;
 
             // 2a. Add certificates for new user ids
-            for (String userId : saveParcel.mAddUserIds) {
+            subProgressPush(15, 25);
+            for (int i = 0; i < saveParcel.mAddUserIds.size(); i++) {
+
+                progress(R.string.progress_modify_adduid, (i-1) * (100 / saveParcel.mAddSubKeys.size()));
+                String userId = saveParcel.mAddUserIds.get(i);
                 log.add(LogLevel.INFO, LogType.MSG_MF_UID_ADD, indent);
 
                 if (userId.equals("")) {
@@ -357,19 +393,27 @@ public class PgpKeyOperation {
                         masterPublicKey, userId, isPrimary, masterKeyFlags);
                 modifiedPublicKey = PGPPublicKey.addCertification(modifiedPublicKey, userId, cert);
             }
+            subProgressPop();
 
             // 2b. Add revocations for revoked user ids
-            for (String userId : saveParcel.mRevokeUserIds) {
+            subProgressPush(25, 40);
+            for (int i = 0; i < saveParcel.mRevokeUserIds.size(); i++) {
+
+                progress(R.string.progress_modify_revokeuid, (i-1) * (100 / saveParcel.mAddSubKeys.size()));
+                String userId = saveParcel.mRevokeUserIds.get(i);
                 log.add(LogLevel.INFO, LogType.MSG_MF_UID_REVOKE, indent, userId);
+
                 // a duplicate revocation will be removed during canonicalization, so no need to
                 // take care of that here.
                 PGPSignature cert = generateRevocationSignature(masterPrivateKey,
                         masterPublicKey, userId);
                 modifiedPublicKey = PGPPublicKey.addCertification(modifiedPublicKey, userId, cert);
             }
+            subProgressPop();
 
             // 3. If primary user id changed, generate new certificates for both old and new
             if (saveParcel.mChangePrimaryUserId != null) {
+                progress(R.string.progress_modify_primaryuid, 40);
 
                 // keep track if we actually changed one
                 boolean ok = false;
@@ -475,7 +519,11 @@ public class PgpKeyOperation {
             }
 
             // 4a. For each subkey change, generate new subkey binding certificate
-            for (SaveKeyringParcel.SubkeyChange change : saveParcel.mChangeSubKeys) {
+            subProgressPush(50, 60);
+            for (int i = 0; i < saveParcel.mChangeSubKeys.size(); i++) {
+
+                progress(R.string.progress_modify_subkeychange, (i-1) * (100 / saveParcel.mAddSubKeys.size()));
+                SaveKeyringParcel.SubkeyChange change = saveParcel.mChangeSubKeys.get(i);
                 log.add(LogLevel.INFO, LogType.MSG_MF_SUBKEY_CHANGE,
                         indent, PgpKeyHelper.convertKeyIdToHex(change.mKeyId));
 
@@ -529,11 +577,17 @@ public class PgpKeyOperation {
                 pKey = PGPPublicKey.addCertification(pKey, sig);
                 sKR = PGPSecretKeyRing.insertSecretKey(sKR, PGPSecretKey.replacePublicKey(sKey, pKey));
             }
+            subProgressPop();
 
             // 4b. For each subkey revocation, generate new subkey revocation certificate
-            for (long revocation : saveParcel.mRevokeSubKeys) {
+            subProgressPush(60, 70);
+            for (int i = 0; i < saveParcel.mRevokeSubKeys.size(); i++) {
+
+                progress(R.string.progress_modify_subkeyrevoke, (i-1) * (100 / saveParcel.mAddSubKeys.size()));
+                long revocation = saveParcel.mRevokeSubKeys.get(i);
                 log.add(LogLevel.INFO, LogType.MSG_MF_SUBKEY_REVOKE,
                         indent, PgpKeyHelper.convertKeyIdToHex(revocation));
+
                 PGPSecretKey sKey = sKR.getSecretKey(revocation);
                 if (sKey == null) {
                     log.add(LogLevel.ERROR, LogType.MSG_MF_SUBKEY_MISSING,
@@ -548,19 +602,28 @@ public class PgpKeyOperation {
                 pKey = PGPPublicKey.addCertification(pKey, sig);
                 sKR = PGPSecretKeyRing.insertSecretKey(sKR, PGPSecretKey.replacePublicKey(sKey, pKey));
             }
+            subProgressPop();
 
             // 5. Generate and add new subkeys
-            for (SaveKeyringParcel.SubkeyAdd add : saveParcel.mAddSubKeys) {
+            subProgressPush(70, 90);
+            for (int i = 0; i < saveParcel.mAddSubKeys.size(); i++) {
+
+                progress(R.string.progress_modify_subkeyadd, (i-1) * (100 / saveParcel.mAddSubKeys.size()));
+                SaveKeyringParcel.SubkeyAdd add = saveParcel.mAddSubKeys.get(0);
+                log.add(LogLevel.INFO, LogType.MSG_MF_SUBKEY_NEW, indent);
 
                 if (add.mExpiry != null && new Date(add.mExpiry*1000).before(new Date())) {
                     log.add(LogLevel.ERROR, LogType.MSG_MF_SUBKEY_PAST_EXPIRY, indent +1);
                     return new EditKeyResult(EditKeyResult.RESULT_ERROR, log, null);
                 }
 
-                log.add(LogLevel.INFO, LogType.MSG_MF_SUBKEY_NEW, indent);
-
                 // generate a new secret key (privkey only for now)
+                subProgressPush(
+                    (i-1) * (100 / saveParcel.mAddSubKeys.size()),
+                    i * (100 / saveParcel.mAddSubKeys.size())
+                );
                 PGPKeyPair keyPair = createKey(add.mAlgorithm, add.mKeysize, log, indent);
+                subProgressPop();
                 if(keyPair == null) {
                     return new EditKeyResult(EditKeyResult.RESULT_ERROR, log, null);
                 }
@@ -592,9 +655,11 @@ public class PgpKeyOperation {
                 sKR = PGPSecretKeyRing.insertSecretKey(sKR, sKey);
 
             }
+            subProgressPop();
 
             // 6. If requested, change passphrase
             if (saveParcel.mNewPassphrase != null) {
+                progress(R.string.progress_modify_passphrase, 90);
                 log.add(LogLevel.INFO, LogType.MSG_MF_PASSPHRASE, indent);
                 PGPDigestCalculator sha1Calc = new JcaPGPDigestCalculatorProviderBuilder().build()
                         .get(HashAlgorithmTags.SHA1);
@@ -622,6 +687,7 @@ public class PgpKeyOperation {
             return new EditKeyResult(EditKeyResult.RESULT_ERROR, log, null);
         }
 
+        progress(R.string.progress_done, 100);
         log.add(LogLevel.OK, LogType.MSG_MF_SUCCESS, indent);
         return new EditKeyResult(OperationResultParcel.RESULT_OK, log, new UncachedKeyRing(sKR));
 
