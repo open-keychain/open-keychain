@@ -188,7 +188,7 @@ public class UserIdsAdapter extends CursorAdapter implements AdapterView.OnItemC
                 case Certs.VERIFIED_SECRET:
                     vVerified.setImageResource(R.drawable.status_signature_verified_cutout);
                     vVerified.setColorFilter(
-                            mContext.getResources().getColor(R.color.android_green_light),
+                            mContext.getResources().getColor(R.color.android_green_dark),
                             PorterDuff.Mode.SRC_IN);
                     break;
                 case Certs.VERIFIED_SELF:
@@ -200,7 +200,7 @@ public class UserIdsAdapter extends CursorAdapter implements AdapterView.OnItemC
                 default:
                     vVerified.setImageResource(R.drawable.status_signature_invalid_cutout);
                     vVerified.setColorFilter(
-                            mContext.getResources().getColor(R.color.android_red_light),
+                            mContext.getResources().getColor(R.color.android_red_dark),
                             PorterDuff.Mode.SRC_IN);
                     break;
             }

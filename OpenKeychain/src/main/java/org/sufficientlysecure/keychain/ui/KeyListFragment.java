@@ -486,13 +486,13 @@ public class KeyListFragment extends LoaderFragment
                 if (isRevoked) {
                     h.mStatus.setImageDrawable(
                             getResources().getDrawable(R.drawable.status_signature_revoked_cutout));
-                    h.mStatus.setColorFilter(getResources().getColor(R.color.android_red_light),
+                    h.mStatus.setColorFilter(getResources().getColor(R.color.android_red_dark),
                             PorterDuff.Mode.SRC_ATOP);
                     h.mStatus.setVisibility(View.VISIBLE);
                 } else if (isExpired) {
                     h.mStatus.setImageDrawable(
                             getResources().getDrawable(R.drawable.status_signature_expired_cutout));
-                    h.mStatus.setColorFilter(getResources().getColor(R.color.android_orange_light),
+                    h.mStatus.setColorFilter(getResources().getColor(R.color.android_orange_dark),
                             PorterDuff.Mode.SRC_ATOP);
                     h.mStatus.setVisibility(View.VISIBLE);
                 } else if (isVerified) {
@@ -503,7 +503,7 @@ public class KeyListFragment extends LoaderFragment
                         // this is a public key - show if it's verified
                         h.mStatus.setImageDrawable(
                                 getResources().getDrawable(R.drawable.status_signature_verified_cutout));
-                        h.mStatus.setColorFilter(getResources().getColor(R.color.android_green_light),
+                        h.mStatus.setColorFilter(getResources().getColor(R.color.android_green_dark),
                                 PorterDuff.Mode.SRC_ATOP);
                         h.mStatus.setVisibility(View.VISIBLE);
                     }
