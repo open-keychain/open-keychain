@@ -145,20 +145,27 @@ public class ViewKeyActivity extends ActionBarActivity implements
             switchToTab = intent.getExtras().getInt(EXTRA_SELECTED_TAB);
         }
 
-        Uri dataUri = getDataUri();
-        if (dataUri == null) {
-            Log.e(Constants.TAG, "Data missing. Should be Uri of key!");
+        mDataUri = getIntent().getData();
+        if (mDataUri == null) {
+            Log.e(Constants.TAG, "Data missing. Should be uri of key!");
             finish();
             return;
         }
+        if (mDataUri.getHost().equals(ContactsContract.AUTHORITY)) {
+            mDataUri = ContactHelper.dataUriFromContactUri(this, mDataUri);
+        }
 
-        loadData(dataUri);
+        Log.i(Constants.TAG, "mDataUri: " + mDataUri.toString());
 
-        initNfc(dataUri);
+        // Prepare the loaders. Either re-connect with an existing ones,
+        // or start new ones.
+        getSupportLoaderManager().initLoader(LOADER_ID_UNIFIED, null, this);
+
+        initNfc(mDataUri);
 
         mShowAdvancedTabs = false;
 
-        initTabs(dataUri);
+        initTabs(mDataUri);
 
         // switch to tab selected by extra
         mViewPager.setCurrentItem(switchToTab);
@@ -233,24 +240,6 @@ public class ViewKeyActivity extends ActionBarActivity implements
 
         // update layout after operations
         mSlidingTabLayout.setViewPager(mViewPager);
-    }
-
-    private Uri getDataUri() {
-        Uri dataUri = getIntent().getData();
-        if (dataUri != null && dataUri.getHost().equals(ContactsContract.AUTHORITY)) {
-            dataUri = ContactHelper.dataUriFromContactUri(this, dataUri);
-        }
-        return dataUri;
-    }
-
-    private void loadData(Uri dataUri) {
-        mDataUri = dataUri;
-
-        Log.i(Constants.TAG, "mDataUri: " + mDataUri.toString());
-
-        // Prepare the loaders. Either re-connect with an existing ones,
-        // or start new ones.
-        getSupportLoaderManager().initLoader(LOADER_ID_UNIFIED, null, this);
     }
 
     @Override
