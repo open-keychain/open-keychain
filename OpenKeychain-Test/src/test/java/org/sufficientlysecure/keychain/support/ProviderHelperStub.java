@@ -32,7 +32,7 @@ class ProviderHelperStub extends ProviderHelper {
     }
 
     @Override
-    public WrappedPublicKeyRing getWrappedPublicKeyRing(Uri id) throws NotFoundException {
+    public WrappedPublicKeyRing getCanonicalizedPublicKeyRing(Uri id) throws NotFoundException {
         byte[] data = TestDataUtil.readFully(getClass().getResourceAsStream("/public-key-for-sample.blob"));
         return new WrappedPublicKeyRing(data, false, 0);
     }

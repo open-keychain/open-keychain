@@ -16,22 +16,16 @@ import java.io.OutputStream;
  * getter method.
  *
  */
-public abstract class WrappedKeyRing extends KeyRing {
+public abstract class CanonicalizedKeyRing extends KeyRing {
 
-    private final boolean mHasAnySecret;
     private final int mVerified;
 
-    WrappedKeyRing(boolean hasAnySecret, int verified) {
-        mHasAnySecret = hasAnySecret;
+    CanonicalizedKeyRing(int verified) {
         mVerified = verified;
     }
 
     public long getMasterKeyId() {
         return getRing().getPublicKey().getKeyID();
-    }
-
-    public boolean hasAnySecret() {
-        return mHasAnySecret;
     }
 
     public int getVerified() {
@@ -56,7 +50,7 @@ public abstract class WrappedKeyRing extends KeyRing {
     }
 
     public long getEncryptId() throws PgpGeneralException {
-        for(WrappedPublicKey key : publicKeyIterator()) {
+        for(CanonicalizedPublicKey key : publicKeyIterator()) {
             if(key.canEncrypt()) {
                 return key.getKeyId();
             }
@@ -74,7 +68,7 @@ public abstract class WrappedKeyRing extends KeyRing {
     }
 
     public long getSignId() throws PgpGeneralException {
-        for(WrappedPublicKey key : publicKeyIterator()) {
+        for(CanonicalizedPublicKey key : publicKeyIterator()) {
             if(key.canSign()) {
                 return key.getKeyId();
             }
@@ -103,14 +97,14 @@ public abstract class WrappedKeyRing extends KeyRing {
 
     abstract PGPKeyRing getRing();
 
-    abstract public IterableIterator<WrappedPublicKey> publicKeyIterator();
+    abstract public IterableIterator<CanonicalizedPublicKey> publicKeyIterator();
 
-    public WrappedPublicKey getPublicKey() {
-        return new WrappedPublicKey(this, getRing().getPublicKey());
+    public CanonicalizedPublicKey getPublicKey() {
+        return new CanonicalizedPublicKey(this, getRing().getPublicKey());
     }
 
-    public WrappedPublicKey getPublicKey(long id) {
-        return new WrappedPublicKey(this, getRing().getPublicKey(id));
+    public CanonicalizedPublicKey getPublicKey(long id) {
+        return new CanonicalizedPublicKey(this, getRing().getPublicKey(id));
     }
 
     public byte[] getEncoded() throws IOException {

@@ -113,7 +113,7 @@ public class WrappedSignature {
         return ((RevocationReason) p).getRevocationDescription();
     }
 
-    public void init(WrappedPublicKey key) throws PgpGeneralException {
+    public void init(CanonicalizedPublicKey key) throws PgpGeneralException {
         init(key.getPublicKey());
     }
 
@@ -191,7 +191,7 @@ public class WrappedSignature {
     public boolean verifySignature(UncachedPublicKey key, String uid) throws PgpGeneralException {
         return verifySignature(key.getPublicKey(), uid);
     }
-    public boolean verifySignature(WrappedPublicKey key, String uid) throws PgpGeneralException {
+    public boolean verifySignature(CanonicalizedPublicKey key, String uid) throws PgpGeneralException {
         return verifySignature(key.getPublicKey(), uid);
     }
 

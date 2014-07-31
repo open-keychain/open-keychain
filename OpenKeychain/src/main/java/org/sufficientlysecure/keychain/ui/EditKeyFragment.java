@@ -42,14 +42,13 @@ import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.compatibility.DialogFragmentWorkaround;
 import org.sufficientlysecure.keychain.helper.ActionBarHelper;
-import org.sufficientlysecure.keychain.pgp.WrappedSecretKeyRing;
+import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKeyRing;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
 import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
 import org.sufficientlysecure.keychain.service.OperationResults;
 import org.sufficientlysecure.keychain.service.OperationResults.EditKeyResult;
-import org.sufficientlysecure.keychain.service.OperationResults.ImportKeyResult;
 import org.sufficientlysecure.keychain.service.PassphraseCacheService;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
 import org.sufficientlysecure.keychain.ui.adapter.SubkeysAdapter;
@@ -169,8 +168,8 @@ public class EditKeyFragment extends LoaderFragment implements
 
         try {
             Uri secretUri = KeychainContract.KeyRings.buildUnifiedKeyRingUri(mDataUri);
-            WrappedSecretKeyRing keyRing =
-                    new ProviderHelper(getActivity()).getWrappedSecretKeyRing(secretUri);
+            CanonicalizedSecretKeyRing keyRing =
+                    new ProviderHelper(getActivity()).getCanonicalizedSecretKeyRing(secretUri);
 
             mSaveKeyringParcel = new SaveKeyringParcel(keyRing.getMasterKeyId(),
                     keyRing.getUncachedKeyRing().getFingerprint());

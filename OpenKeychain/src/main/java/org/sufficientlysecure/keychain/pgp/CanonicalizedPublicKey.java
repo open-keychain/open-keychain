@@ -14,12 +14,12 @@ import org.sufficientlysecure.keychain.util.IterableIterator;
  * stored in the database.
  *
  */
-public class WrappedPublicKey extends UncachedPublicKey {
+public class CanonicalizedPublicKey extends UncachedPublicKey {
 
     // this is the parent key ring
     final KeyRing mRing;
 
-    WrappedPublicKey(KeyRing ring, PGPPublicKey key) {
+    CanonicalizedPublicKey(KeyRing ring, PGPPublicKey key) {
         super(key);
         mRing = ring;
     }

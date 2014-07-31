@@ -41,7 +41,7 @@ import android.support.v4.app.NotificationCompat;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.helper.Preferences;
-import org.sufficientlysecure.keychain.pgp.WrappedSecretKeyRing;
+import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKeyRing;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
@@ -184,7 +184,7 @@ public class PassphraseCacheService extends Service {
         // try to get master key id which is used as an identifier for cached passphrases
         try {
             Log.d(Constants.TAG, "PassphraseCacheService.getCachedPassphraseImpl() for masterKeyId " + keyId);
-            WrappedSecretKeyRing key = new ProviderHelper(this).getWrappedSecretKeyRing(
+            CanonicalizedSecretKeyRing key = new ProviderHelper(this).getCanonicalizedSecretKeyRing(
                     KeychainContract.KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(keyId));
             // no passphrase needed? just add empty string and return it, then
             if (!key.hasPassphrase()) {

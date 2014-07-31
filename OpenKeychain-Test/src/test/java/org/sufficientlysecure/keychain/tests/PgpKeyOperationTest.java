@@ -19,10 +19,10 @@ import org.spongycastle.bcpg.sig.KeyFlags;
 import org.spongycastle.openpgp.PGPSignature;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.Constants.choice.algorithm;
+import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKeyRing;
 import org.sufficientlysecure.keychain.pgp.PgpKeyOperation;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
 import org.sufficientlysecure.keychain.pgp.UncachedPublicKey;
-import org.sufficientlysecure.keychain.pgp.WrappedSecretKeyRing;
 import org.sufficientlysecure.keychain.pgp.WrappedSignature;
 import org.sufficientlysecure.keychain.service.OperationResultParcel;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
@@ -250,7 +250,7 @@ public class PgpKeyOperationTest {
             parcel.mMasterKeyId = ring.getMasterKeyId() -1;
             parcel.mFingerprint = ring.getFingerprint();
 
-            WrappedSecretKeyRing secretRing = new WrappedSecretKeyRing(ring.getEncoded(), false, 0);
+            CanonicalizedSecretKeyRing secretRing = new CanonicalizedSecretKeyRing(ring.getEncoded(), false, 0);
             OperationResultParcel.OperationLog log = new OperationResultParcel.OperationLog();
             UncachedKeyRing modified = op.modifySecretKeyRing(secretRing, parcel, passphrase, log, 0);
 
@@ -263,7 +263,7 @@ public class PgpKeyOperationTest {
             parcel.mMasterKeyId = null;
             parcel.mFingerprint = ring.getFingerprint();
 
-            WrappedSecretKeyRing secretRing = new WrappedSecretKeyRing(ring.getEncoded(), false, 0);
+            CanonicalizedSecretKeyRing secretRing = new CanonicalizedSecretKeyRing(ring.getEncoded(), false, 0);
             OperationResultParcel.OperationLog log = new OperationResultParcel.OperationLog();
             UncachedKeyRing modified = op.modifySecretKeyRing(secretRing, parcel, passphrase, log, 0);
 
@@ -277,7 +277,7 @@ public class PgpKeyOperationTest {
             // some byte, off by one
             parcel.mFingerprint[5] += 1;
 
-            WrappedSecretKeyRing secretRing = new WrappedSecretKeyRing(ring.getEncoded(), false, 0);
+            CanonicalizedSecretKeyRing secretRing = new CanonicalizedSecretKeyRing(ring.getEncoded(), false, 0);
             OperationResultParcel.OperationLog log = new OperationResultParcel.OperationLog();
             UncachedKeyRing modified = op.modifySecretKeyRing(secretRing, parcel, passphrase, log, 0);
 
@@ -289,7 +289,7 @@ public class PgpKeyOperationTest {
             parcel.mMasterKeyId = ring.getMasterKeyId();
             parcel.mFingerprint = null;
 
-            WrappedSecretKeyRing secretRing = new WrappedSecretKeyRing(ring.getEncoded(), false, 0);
+            CanonicalizedSecretKeyRing secretRing = new CanonicalizedSecretKeyRing(ring.getEncoded(), false, 0);
             OperationResultParcel.OperationLog log = new OperationResultParcel.OperationLog();
             UncachedKeyRing modified = op.modifySecretKeyRing(secretRing, parcel, passphrase, log, 0);
 
@@ -297,7 +297,7 @@ public class PgpKeyOperationTest {
         }
 
         {
-            WrappedSecretKeyRing secretRing = new WrappedSecretKeyRing(ring.getEncoded(), false, 0);
+            CanonicalizedSecretKeyRing secretRing = new CanonicalizedSecretKeyRing(ring.getEncoded(), false, 0);
             OperationResultParcel.OperationLog log = new OperationResultParcel.OperationLog();
             UncachedKeyRing modified = op.modifySecretKeyRing(secretRing, parcel, "bad passphrase", log, 0);
 
@@ -355,7 +355,7 @@ public class PgpKeyOperationTest {
             parcel.mAddSubKeys.add(new SubkeyAdd(
                     algorithm.rsa, new Random().nextInt(512), KeyFlags.SIGN_DATA, null));
 
-            WrappedSecretKeyRing secretRing = new WrappedSecretKeyRing(ring.getEncoded(), false, 0);
+            CanonicalizedSecretKeyRing secretRing = new CanonicalizedSecretKeyRing(ring.getEncoded(), false, 0);
             OperationResultParcel.OperationLog log = new OperationResultParcel.OperationLog();
             modified = op.modifySecretKeyRing(secretRing, parcel, passphrase, log, 0);
 
@@ -367,7 +367,7 @@ public class PgpKeyOperationTest {
             parcel.mAddSubKeys.add(new SubkeyAdd(algorithm.rsa, 1024, KeyFlags.SIGN_DATA,
                     new Date().getTime()/1000-10));
 
-            WrappedSecretKeyRing secretRing = new WrappedSecretKeyRing(ring.getEncoded(), false, 0);
+            CanonicalizedSecretKeyRing secretRing = new CanonicalizedSecretKeyRing(ring.getEncoded(), false, 0);
             OperationResultParcel.OperationLog log = new OperationResultParcel.OperationLog();
             modified = op.modifySecretKeyRing(secretRing, parcel, passphrase, log, 0);
 
@@ -436,7 +436,7 @@ public class PgpKeyOperationTest {
             parcel.reset();
             parcel.mChangeSubKeys.add(new SubkeyChange(keyId, null, new Date().getTime()/1000-10));
 
-            WrappedSecretKeyRing secretRing = new WrappedSecretKeyRing(ring.getEncoded(), false, 0);
+            CanonicalizedSecretKeyRing secretRing = new CanonicalizedSecretKeyRing(ring.getEncoded(), false, 0);
             OperationResultParcel.OperationLog log = new OperationResultParcel.OperationLog();
             modified = op.modifySecretKeyRing(secretRing, parcel, passphrase, log, 0);
 
@@ -447,7 +447,7 @@ public class PgpKeyOperationTest {
             parcel.reset();
             parcel.mChangeSubKeys.add(new SubkeyChange(123, null, null));
 
-            WrappedSecretKeyRing secretRing = new WrappedSecretKeyRing(ring.getEncoded(), false, 0);
+            CanonicalizedSecretKeyRing secretRing = new CanonicalizedSecretKeyRing(ring.getEncoded(), false, 0);
             OperationResultParcel.OperationLog log = new OperationResultParcel.OperationLog();
             modified = op.modifySecretKeyRing(secretRing, parcel, passphrase, log, 0);
 
@@ -469,7 +469,7 @@ public class PgpKeyOperationTest {
             parcel.reset();
             parcel.mRevokeSubKeys.add(123L);
 
-            WrappedSecretKeyRing secretRing = new WrappedSecretKeyRing(ring.getEncoded(), false, 0);
+            CanonicalizedSecretKeyRing secretRing = new CanonicalizedSecretKeyRing(ring.getEncoded(), false, 0);
             OperationResultParcel.OperationLog log = new OperationResultParcel.OperationLog();
             UncachedKeyRing otherModified = op.modifySecretKeyRing(secretRing, parcel, passphrase, log, 0);
 
@@ -572,7 +572,7 @@ public class PgpKeyOperationTest {
             parcel.reset();
             parcel.mChangePrimaryUserId = uid;
 
-            WrappedSecretKeyRing secretRing = new WrappedSecretKeyRing(modified.getEncoded(), false, 0);
+            CanonicalizedSecretKeyRing secretRing = new CanonicalizedSecretKeyRing(modified.getEncoded(), false, 0);
             OperationResultParcel.OperationLog log = new OperationResultParcel.OperationLog();
             UncachedKeyRing otherModified = op.modifySecretKeyRing(secretRing, parcel, passphrase, log, 0);
 
@@ -621,7 +621,7 @@ public class PgpKeyOperationTest {
 
         {
             parcel.mAddUserIds.add("");
-            WrappedSecretKeyRing secretRing = new WrappedSecretKeyRing(ring.getEncoded(), false, 0);
+            CanonicalizedSecretKeyRing secretRing = new CanonicalizedSecretKeyRing(ring.getEncoded(), false, 0);
             OperationResultParcel.OperationLog log = new OperationResultParcel.OperationLog();
             UncachedKeyRing modified = op.modifySecretKeyRing(secretRing, parcel, passphrase, log, 0);
             Assert.assertNull("adding an empty user id should fail", modified);
@@ -692,7 +692,7 @@ public class PgpKeyOperationTest {
                 parcel.mChangePrimaryUserId += "A";
             }
 
-            WrappedSecretKeyRing secretRing = new WrappedSecretKeyRing(ring.getEncoded(), false, 0);
+            CanonicalizedSecretKeyRing secretRing = new CanonicalizedSecretKeyRing(ring.getEncoded(), false, 0);
             OperationResultParcel.OperationLog log = new OperationResultParcel.OperationLog();
             modified = op.modifySecretKeyRing(secretRing, parcel, passphrase, log, 0);
 
@@ -721,7 +721,7 @@ public class PgpKeyOperationTest {
         try {
 
             Assert.assertTrue("modified keyring must be secret", ring.isSecret());
-            WrappedSecretKeyRing secretRing = new WrappedSecretKeyRing(ring.getEncoded(), false, 0);
+            CanonicalizedSecretKeyRing secretRing = new CanonicalizedSecretKeyRing(ring.getEncoded(), false, 0);
 
             PgpKeyOperation op = new PgpKeyOperation(null);
             OperationResultParcel.OperationLog log = new OperationResultParcel.OperationLog();

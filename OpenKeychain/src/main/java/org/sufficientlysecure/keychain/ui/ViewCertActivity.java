@@ -35,7 +35,7 @@ import android.widget.TextView;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
-import org.sufficientlysecure.keychain.pgp.WrappedPublicKeyRing;
+import org.sufficientlysecure.keychain.pgp.CanonicalizedPublicKeyRing;
 import org.sufficientlysecure.keychain.pgp.WrappedSignature;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.provider.KeychainContract.Certs;
@@ -143,10 +143,10 @@ public class ViewCertActivity extends ActionBarActivity
             try {
                 ProviderHelper providerHelper = new ProviderHelper(this);
 
-                WrappedPublicKeyRing signeeRing =
-                        providerHelper.getWrappedPublicKeyRing(data.getLong(INDEX_MASTER_KEY_ID));
-                WrappedPublicKeyRing signerRing =
-                        providerHelper.getWrappedPublicKeyRing(sig.getKeyId());
+                CanonicalizedPublicKeyRing signeeRing =
+                        providerHelper.getCanonicalizedPublicKeyRing(data.getLong(INDEX_MASTER_KEY_ID));
+                CanonicalizedPublicKeyRing signerRing =
+                        providerHelper.getCanonicalizedPublicKeyRing(sig.getKeyId());
 
                 try {
                     sig.init(signerRing.getPublicKey());

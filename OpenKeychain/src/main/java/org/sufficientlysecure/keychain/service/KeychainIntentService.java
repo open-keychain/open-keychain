@@ -36,6 +36,8 @@ import org.sufficientlysecure.keychain.keyimport.Keyserver;
 import org.sufficientlysecure.keychain.keyimport.ImportKeysListEntry;
 import org.sufficientlysecure.keychain.keyimport.KeybaseKeyserver;
 import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
+import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey;
+import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKeyRing;
 import org.sufficientlysecure.keychain.pgp.PgpDecryptVerify;
 import org.sufficientlysecure.keychain.pgp.PgpDecryptVerifyResult;
 import org.sufficientlysecure.keychain.pgp.PgpHelper;
@@ -44,9 +46,7 @@ import org.sufficientlysecure.keychain.pgp.PgpKeyOperation;
 import org.sufficientlysecure.keychain.pgp.PgpSignEncrypt;
 import org.sufficientlysecure.keychain.pgp.Progressable;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
-import org.sufficientlysecure.keychain.pgp.WrappedPublicKeyRing;
-import org.sufficientlysecure.keychain.pgp.WrappedSecretKey;
-import org.sufficientlysecure.keychain.pgp.WrappedSecretKeyRing;
+import org.sufficientlysecure.keychain.pgp.CanonicalizedPublicKeyRing;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralMsgIdException;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
@@ -337,8 +337,8 @@ public class KeychainIntentService extends IntentService
 
                 if (saveParcel.mMasterKeyId != null) {
                     String passphrase = data.getString(SAVE_KEYRING_PASSPHRASE);
-                    WrappedSecretKeyRing secRing =
-                            providerHelper.getWrappedSecretKeyRing(saveParcel.mMasterKeyId);
+                    CanonicalizedSecretKeyRing secRing =
+                            providerHelper.getCanonicalizedSecretKeyRing(saveParcel.mMasterKeyId);
 
                     result = keyOperations.modifySecretKeyRing(secRing, saveParcel, passphrase);
                 } else {
@@ -466,7 +466,7 @@ public class KeychainIntentService extends IntentService
                 HkpKeyserver server = new HkpKeyserver(keyServer);
 
                 ProviderHelper providerHelper = new ProviderHelper(this);
-                WrappedPublicKeyRing keyring = providerHelper.getWrappedPublicKeyRing(dataUri);
+                CanonicalizedPublicKeyRing keyring = providerHelper.getCanonicalizedPublicKeyRing(dataUri);
                 PgpImportExport pgpImportExport = new PgpImportExport(this, null);
 
                 boolean uploaded = pgpImportExport.uploadKeyRingToServer(server, keyring);
@@ -542,9 +542,9 @@ public class KeychainIntentService extends IntentService
                 }
 
                 ProviderHelper providerHelper = new ProviderHelper(this);
-                WrappedPublicKeyRing publicRing = providerHelper.getWrappedPublicKeyRing(pubKeyId);
-                WrappedSecretKeyRing secretKeyRing = providerHelper.getWrappedSecretKeyRing(masterKeyId);
-                WrappedSecretKey certificationKey = secretKeyRing.getSecretKey();
+                CanonicalizedPublicKeyRing publicRing = providerHelper.getCanonicalizedPublicKeyRing(pubKeyId);
+                CanonicalizedSecretKeyRing secretKeyRing = providerHelper.getCanonicalizedSecretKeyRing(masterKeyId);
+                CanonicalizedSecretKey certificationKey = secretKeyRing.getSecretKey();
                 if(!certificationKey.unlock(signaturePassphrase)) {
                     throw new PgpGeneralException("Error extracting key (bad passphrase?)");
                 }

@@ -93,7 +93,7 @@ public class PgpImportExport {
         }
     }
 
-    public boolean uploadKeyRingToServer(HkpKeyserver server, WrappedPublicKeyRing keyring) {
+    public boolean uploadKeyRingToServer(HkpKeyserver server, CanonicalizedPublicKeyRing keyring) {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         ArmoredOutputStream aos = null;
         try {
@@ -235,7 +235,7 @@ public class PgpImportExport {
             updateProgress(progress * 100 / masterKeyIdsSize, 100);
 
             try {
-                WrappedPublicKeyRing ring = mProviderHelper.getWrappedPublicKeyRing(
+                CanonicalizedPublicKeyRing ring = mProviderHelper.getCanonicalizedPublicKeyRing(
                         KeychainContract.KeyRings.buildUnifiedKeyRingUri(pubKeyMasterId)
                 );
 
@@ -263,8 +263,8 @@ public class PgpImportExport {
             updateProgress(progress * 100 / masterKeyIdsSize, 100);
 
             try {
-                WrappedSecretKeyRing secretKeyRing =
-                        mProviderHelper.getWrappedSecretKeyRing(secretKeyMasterId);
+                CanonicalizedSecretKeyRing secretKeyRing =
+                        mProviderHelper.getCanonicalizedSecretKeyRing(secretKeyMasterId);
                 secretKeyRing.encode(arOutStream);
             } catch (ProviderHelper.NotFoundException e) {
                 Log.e(Constants.TAG, "key not found!", e);

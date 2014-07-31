@@ -1,10 +1,12 @@
 package org.sufficientlysecure.keychain.pgp;
 
+import org.spongycastle.bcpg.S2K;
 import org.spongycastle.openpgp.PGPException;
 import org.spongycastle.openpgp.PGPKeyRing;
 import org.spongycastle.openpgp.PGPObjectFactory;
 import org.spongycastle.openpgp.PGPPrivateKey;
 import org.spongycastle.openpgp.PGPPublicKey;
+import org.spongycastle.openpgp.PGPPublicKeyRing;
 import org.spongycastle.openpgp.PGPSecretKey;
 import org.spongycastle.openpgp.PGPSecretKeyRing;
 import org.spongycastle.openpgp.operator.PBESecretKeyDecryptor;
@@ -15,15 +17,21 @@ import org.sufficientlysecure.keychain.util.IterableIterator;
 import org.sufficientlysecure.keychain.util.Log;
 
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.Iterator;
 
-public class WrappedSecretKeyRing extends WrappedKeyRing {
+public class CanonicalizedSecretKeyRing extends CanonicalizedKeyRing {
 
     private PGPSecretKeyRing mRing;
 
-    public WrappedSecretKeyRing(byte[] blob, boolean isRevoked, int verified)
+    CanonicalizedSecretKeyRing(PGPSecretKeyRing ring, int verified) {
+        super(verified);
+        mRing = ring;
+    }
+
+    public CanonicalizedSecretKeyRing(byte[] blob, boolean isRevoked, int verified)
     {
-        super(isRevoked, verified);
+        super(verified);
         PGPObjectFactory factory = new PGPObjectFactory(blob);
         PGPKeyRing keyRing = null;
         try {
@@ -41,19 +49,32 @@ public class WrappedSecretKeyRing extends WrappedKeyRing {
         return mRing;
     }
 
-    public WrappedSecretKey getSecretKey() {
-        return new WrappedSecretKey(this, mRing.getSecretKey());
+    public CanonicalizedSecretKey getSecretKey() {
+        return new CanonicalizedSecretKey(this, mRing.getSecretKey());
     }
 
-    public WrappedSecretKey getSecretKey(long id) {
-        return new WrappedSecretKey(this, mRing.getSecretKey(id));
+    public CanonicalizedSecretKey getSecretKey(long id) {
+        return new CanonicalizedSecretKey(this, mRing.getSecretKey(id));
+    }
+
+    public HashSet<Long> getAvailableSubkeys() {
+        HashSet<Long> result = new HashSet<Long>();
+        // then, mark exactly the keys we have available
+        for (PGPSecretKey sub : new IterableIterator<PGPSecretKey>(getRing().getSecretKeys())) {
+            S2K s2k = sub.getS2K();
+            // Set to 1, except if the encryption type is GNU_DUMMY_S2K
+            if(s2k == null || s2k.getType() != S2K.GNU_DUMMY_S2K) {
+                result.add(sub.getKeyID());
+            }
+        }
+        return result;
     }
 
     /** Getter that returns the subkey that should be used for signing. */
-    WrappedSecretKey getSigningSubKey() throws PgpGeneralException {
+    CanonicalizedSecretKey getSigningSubKey() throws PgpGeneralException {
         PGPSecretKey key = mRing.getSecretKey(getSignId());
         if(key != null) {
-            WrappedSecretKey cKey = new WrappedSecretKey(this, key);
+            CanonicalizedSecretKey cKey = new CanonicalizedSecretKey(this, key);
             if(!cKey.canSign()) {
                 throw new PgpGeneralException("key error");
             }
@@ -88,17 +109,17 @@ public class WrappedSecretKeyRing extends WrappedKeyRing {
         }
     }
 
-    public IterableIterator<WrappedSecretKey> secretKeyIterator() {
+    public IterableIterator<CanonicalizedSecretKey> secretKeyIterator() {
         final Iterator<PGPSecretKey> it = mRing.getSecretKeys();
-        return new IterableIterator<WrappedSecretKey>(new Iterator<WrappedSecretKey>() {
+        return new IterableIterator<CanonicalizedSecretKey>(new Iterator<CanonicalizedSecretKey>() {
             @Override
             public boolean hasNext() {
                 return it.hasNext();
             }
 
             @Override
-            public WrappedSecretKey next() {
-                return new WrappedSecretKey(WrappedSecretKeyRing.this, it.next());
+            public CanonicalizedSecretKey next() {
+                return new CanonicalizedSecretKey(CanonicalizedSecretKeyRing.this, it.next());
             }
 
             @Override
@@ -108,17 +129,17 @@ public class WrappedSecretKeyRing extends WrappedKeyRing {
         });
     }
 
-    public IterableIterator<WrappedPublicKey> publicKeyIterator() {
+    public IterableIterator<CanonicalizedPublicKey> publicKeyIterator() {
         final Iterator<PGPPublicKey> it = getRing().getPublicKeys();
-        return new IterableIterator<WrappedPublicKey>(new Iterator<WrappedPublicKey>() {
+        return new IterableIterator<CanonicalizedPublicKey>(new Iterator<CanonicalizedPublicKey>() {
             @Override
             public boolean hasNext() {
                 return it.hasNext();
             }
 
             @Override
-            public WrappedPublicKey next() {
-                return new WrappedPublicKey(WrappedSecretKeyRing.this, it.next());
+            public CanonicalizedPublicKey next() {
+                return new CanonicalizedPublicKey(CanonicalizedSecretKeyRing.this, it.next());
             }
 
             @Override

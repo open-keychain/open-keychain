@@ -7,17 +7,14 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.shadows.ShadowLog;
-import org.spongycastle.bcpg.BCPGInputStream;
-import org.spongycastle.bcpg.Packet;
 import org.spongycastle.bcpg.PacketTags;
-import org.spongycastle.bcpg.PublicKeyPacket;
 import org.spongycastle.bcpg.sig.KeyFlags;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.pgp.PgpKeyOperation;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
 import org.sufficientlysecure.keychain.pgp.UncachedPublicKey;
 import org.sufficientlysecure.keychain.pgp.WrappedPublicKeyRing;
-import org.sufficientlysecure.keychain.pgp.WrappedSecretKey;
+import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey;
 import org.sufficientlysecure.keychain.pgp.WrappedSecretKeyRing;
 import org.sufficientlysecure.keychain.service.OperationResultParcel;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
@@ -25,9 +22,6 @@ import org.sufficientlysecure.keychain.support.KeyringTestingHelper;
 import org.sufficientlysecure.keychain.support.KeyringTestingHelper.RawPacket;
 import org.sufficientlysecure.keychain.util.ProgressScaler;
 
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
 
@@ -261,7 +255,7 @@ public class UncachedKeyringMergeTest {
             WrappedPublicKeyRing publicRing = new WrappedPublicKeyRing(
                     pubRing.getEncoded(), false, 0);
 
-            WrappedSecretKey secretKey = new WrappedSecretKeyRing(
+            CanonicalizedSecretKey secretKey = new WrappedSecretKeyRing(
                     ringB.getEncoded(), false, 0).getSecretKey();
             secretKey.unlock("");
             // sign all user ids

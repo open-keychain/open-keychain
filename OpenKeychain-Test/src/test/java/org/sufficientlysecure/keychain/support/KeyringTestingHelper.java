@@ -21,7 +21,6 @@ import android.content.Context;
 import org.spongycastle.util.Arrays;
 import org.sufficientlysecure.keychain.pgp.NullProgressable;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
-import org.sufficientlysecure.keychain.pgp.UncachedPublicKey;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.OperationResults;
@@ -62,7 +61,7 @@ public class KeyringTestingHelper {
         boolean saveSuccess = saveKeyringResult.success();
 
         // Now re-retrieve the saved key. Should not throw an exception.
-        providerHelper.getWrappedPublicKeyRing(masterKeyId);
+        providerHelper.getCanonicalizedPublicKeyRing(masterKeyId);
 
         // A different ID should still fail
         retrieveKeyAndExpectNotFound(providerHelper, masterKeyId - 1);
@@ -345,7 +344,7 @@ public class KeyringTestingHelper {
 
     private void retrieveKeyAndExpectNotFound(ProviderHelper providerHelper, long masterKeyId) {
         try {
-            providerHelper.getWrappedPublicKeyRing(masterKeyId);
+            providerHelper.getCanonicalizedPublicKeyRing(masterKeyId);
             throw new AssertionError("Was expecting the previous call to fail!");
         } catch (ProviderHelper.NotFoundException expectedException) {
             // good

@@ -49,7 +49,7 @@ import java.util.Vector;
  * treated equally for most purposes in UI code. It is up to the programmer to
  * take care of the differences.
  *
- * @see org.sufficientlysecure.keychain.pgp.WrappedKeyRing
+ * @see CanonicalizedKeyRing
  * @see org.sufficientlysecure.keychain.pgp.UncachedPublicKey
  * @see org.sufficientlysecure.keychain.pgp.UncachedSecretKey
  *
@@ -59,18 +59,10 @@ public class UncachedKeyRing {
 
     final PGPKeyRing mRing;
     final boolean mIsSecret;
-    final boolean mIsCanonicalized;
 
     UncachedKeyRing(PGPKeyRing ring) {
         mRing = ring;
         mIsSecret = ring instanceof PGPSecretKeyRing;
-        mIsCanonicalized = false;
-    }
-
-    private UncachedKeyRing(PGPKeyRing ring, boolean canonicalized) {
-        mRing = ring;
-        mIsSecret = ring instanceof PGPSecretKeyRing;
-        mIsCanonicalized = canonicalized;
     }
 
     public long getMasterKeyId() {
@@ -103,10 +95,6 @@ public class UncachedKeyRing {
     /** Returns the dynamic (though final) property if this is a secret keyring or not. */
     public boolean isSecret() {
         return mIsSecret;
-    }
-
-    public boolean isCanonicalized() {
-        return mIsCanonicalized;
     }
 
     public byte[] getEncoded() throws IOException {
@@ -164,25 +152,6 @@ public class UncachedKeyRing {
         aos.close();
     }
 
-    public HashSet<Long> getAvailableSubkeys() {
-        if(!isSecret()) {
-            throw new RuntimeException("Tried to find available subkeys from non-secret keys. " +
-                    "This is a programming error and should never happen!");
-        }
-
-        HashSet<Long> result = new HashSet<Long>();
-        // then, mark exactly the keys we have available
-        for (PGPSecretKey sub : new IterableIterator<PGPSecretKey>(
-                ((PGPSecretKeyRing) mRing).getSecretKeys())) {
-            S2K s2k = sub.getS2K();
-            // Set to 1, except if the encryption type is GNU_DUMMY_S2K
-            if(s2k == null || s2k.getType() != S2K.GNU_DUMMY_S2K) {
-                result.add(sub.getKeyID());
-            }
-        }
-        return result;
-    }
-
     /** "Canonicalizes" a public key, removing inconsistencies in the process. This variant can be
      * applied to public keyrings only.
      *
@@ -207,7 +176,7 @@ public class UncachedKeyRing {
      *
      */
     @SuppressWarnings("ConstantConditions")
-    public UncachedKeyRing canonicalize(OperationLog log, int indent) {
+    public CanonicalizedKeyRing canonicalize(OperationLog log, int indent) {
 
         log.add(LogLevel.START, isSecret() ? LogType.MSG_KC_SECRET : LogType.MSG_KC_PUBLIC,
                 indent, PgpKeyHelper.convertKeyIdToHex(getMasterKeyId()));
@@ -629,7 +598,8 @@ public class UncachedKeyRing {
             log.add(LogLevel.OK, LogType.MSG_KC_SUCCESS, indent);
         }
 
-        return new UncachedKeyRing(ring, true);
+        return isSecret() ? new CanonicalizedSecretKeyRing((PGPSecretKeyRing) ring, 1)
+                          : new CanonicalizedPublicKeyRing((PGPPublicKeyRing) ring, 0);
     }
 
     /** This operation merges information from a different keyring, returning a combined

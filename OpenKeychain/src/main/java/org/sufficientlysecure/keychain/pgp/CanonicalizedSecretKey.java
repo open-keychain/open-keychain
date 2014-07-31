@@ -37,18 +37,18 @@ import java.util.List;
  * properly imported secret keys only.
  *
  */
-public class WrappedSecretKey extends WrappedPublicKey {
+public class CanonicalizedSecretKey extends CanonicalizedPublicKey {
 
     private final PGPSecretKey mSecretKey;
     private PGPPrivateKey mPrivateKey = null;
 
-    WrappedSecretKey(WrappedSecretKeyRing ring, PGPSecretKey key) {
+    CanonicalizedSecretKey(CanonicalizedSecretKeyRing ring, PGPSecretKey key) {
         super(ring, key.getPublicKey());
         mSecretKey = key;
     }
 
-    public WrappedSecretKeyRing getRing() {
-        return (WrappedSecretKeyRing) mRing;
+    public CanonicalizedSecretKeyRing getRing() {
+        return (CanonicalizedSecretKeyRing) mRing;
     }
 
     public boolean unlock(String passphrase) throws PgpGeneralException {
@@ -140,7 +140,7 @@ public class WrappedSecretKey extends WrappedPublicKey {
      * @param userIds          User IDs to certify, must not be null or empty
      * @return A keyring with added certifications
      */
-    public UncachedKeyRing certifyUserIds(WrappedPublicKeyRing publicKeyRing, List<String> userIds)
+    public UncachedKeyRing certifyUserIds(CanonicalizedPublicKeyRing publicKeyRing, List<String> userIds)
             throws PgpGeneralMsgIdException, NoSuchAlgorithmException, NoSuchProviderException,
             PGPException, SignatureException {
 
