@@ -7,7 +7,7 @@
     <string name="title_encrypt">Encrypt</string>
     <string name="title_decrypt">Decrypt</string>
     <string name="title_authentication">Passphrase</string>
-    <string name="title_create_key">Create Key</string>
+    <string name="title_create_key">Create My Key</string>
     <string name="title_edit_key">Edit Key</string>
     <string name="title_preferences">Preferences</string>
     <string name="title_api_registered_apps">Apps</string>
@@ -71,14 +71,15 @@
     <string name="btn_encryption_advanced_settings_hide">Hide advanced settings</string>
     <string name="btn_share_encrypted_signed">Share encrypted/signed message…</string>
     <string name="btn_view_cert_key">View certification key</string>
+    <string name="btn_create_key">Create key</string>
 
     <!-- menu -->
     <string name="menu_preferences">Settings</string>
     <string name="menu_help">Help</string>
     <string name="menu_export_key">Export to file</string>
     <string name="menu_delete_key">Delete key</string>
-    <string name="menu_create_key">Create key</string>
-    <string name="menu_create_key_expert">Create key (expert)</string>
+    <string name="menu_create_key">Create my key</string>
+    <string name="menu_import_existing_key">Import existing key</string>
     <string name="menu_search">Search</string>
     <string name="menu_key_server">Keyserver…</string>
     <string name="menu_update_key">Update from keyserver</string>
@@ -475,7 +476,7 @@
     <string name="key_list_empty_text2">You can start by</string>
     <string name="key_list_empty_text3">or</string>
     <string name="key_list_empty_button_create">creating your own key</string>
-    <string name="key_list_empty_button_import">importing keys.</string>
+    <string name="key_list_empty_button_import">importing an existing key.</string>
 
     <!-- Key view -->
     <string name="key_view_action_edit">Edit key</string>
@@ -504,12 +505,13 @@
     </string-array>
 
     <!-- Create key -->
-    <string name="create_key_text">Enter Full Name, Email and a Passphrase.</string>
     <string name="create_key_upload">Upload key to keyserver</string>
     <string name="create_key_empty">This field is required</string>
     <string name="create_key_passphrases_not_equal">Passphrases do not match</string>
     <string name="create_key_final_text">You entered the following credentials:</string>
     <string name="create_key_final_robot_text">Creating a key may take a while, have a cup of coffee in the meantime…\n(3 subkeys, RSA, 4096 bit)</string>
+    <string name="create_key_text">Enter your full name, email address, and choose a passhrase.</string>
+    <string name="create_key_hint_full_name">Full Name, e.g. Max Mustermann</string>
 
     <!-- View key -->
     <string name="view_key_revoked">This key has been revoked!</string>
@@ -740,8 +742,8 @@
 
     <!-- First Time -->
     <string name="first_time_text1">Take back your privacy with OpenKeychain!</string>
-    <string name="first_time_create_key">Create Key</string>
-    <string name="first_time_import_key">Import Key</string>
+    <string name="first_time_create_key">Create my key</string>
+    <string name="first_time_import_key">Import existing key</string>
     <string name="first_time_skip">Skip Setup</string>
 
 </resources>

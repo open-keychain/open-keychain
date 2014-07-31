@@ -74,12 +74,18 @@ public class KeyListActivity extends DrawerActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.menu_key_list_import:
+            case R.id.menu_key_list_add:
                 importKeys();
                 return true;
 
             case R.id.menu_key_list_create:
                 createKey();
+                return true;
+
+            case R.id.menu_key_list_import_existing_key:
+                Intent intentImportExisting = new Intent(this, ImportKeysActivity.class);
+                intentImportExisting.setAction(ImportKeysActivity.ACTION_IMPORT_KEY_FROM_FILE_AND_RETURN);
+                startActivityForResult(intentImportExisting, 0);
                 return true;
 
             case R.id.menu_key_list_export:

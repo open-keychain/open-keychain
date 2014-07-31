@@ -37,7 +37,6 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="8dp"
                 android:layout_marginLeft="8dp"
-                android:text="Max Mustermann"
                 android:textAppearance="?android:attr/textAppearanceMedium" />
 
             <TextView
@@ -52,7 +51,6 @@
                 android:id="@+id/email"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="max@musterman.com"
                 android:textAppearance="?android:attr/textAppearanceMedium"
                 android:layout_marginBottom="8dp"
                 android:layout_marginLeft="8dp" />
@@ -131,7 +129,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="@string/title_create_key"
+            android:text="@string/btn_create_key"
             android:minHeight="?android:attr/listPreferredItemHeight"
             android:drawableRight="@drawable/ic_action_new_account"
             android:drawablePadding="8dp"
