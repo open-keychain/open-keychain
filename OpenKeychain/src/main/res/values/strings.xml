@@ -493,7 +493,7 @@
     <string name="create_key_text">Enter Full Name, Email and a Passphrase.</string>
     <string name="create_key_upload">Upload key to keyserver</string>
     <string name="create_key_empty">This field is required</string>
-    <string name="create_key_passphrases_not_equal">Passphrases are not equal</string>
+    <string name="create_key_passphrases_not_equal">Passphrases do not match</string>
 
     <!-- View key -->
     <string name="view_key_revoked">This key has been revoked!</string>
