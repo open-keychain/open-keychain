@@ -32,6 +32,7 @@ import org.sufficientlysecure.keychain.util.PositionAwareInputStream;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 public class ImportKeysListLoader
@@ -127,11 +128,12 @@ public class ImportKeysListLoader
         BufferedInputStream bufferedInput = new BufferedInputStream(progressIn);
         try {
             // parse all keyrings
-            List<UncachedKeyRing> rings = UncachedKeyRing.fromStream(bufferedInput);
-            for (UncachedKeyRing key : rings) {
-                ImportKeysListEntry item = new ImportKeysListEntry(getContext(), key);
+            Iterator<UncachedKeyRing> it = UncachedKeyRing.fromStream(bufferedInput);
+            while (it.hasNext()) {
+                UncachedKeyRing ring = it.next();
+                ImportKeysListEntry item = new ImportKeysListEntry(getContext(), ring);
                 mData.add(item);
-                mParcelableRings.put(item.hashCode(), new ParcelableKeyRing(key.getEncoded()));
+                mParcelableRings.put(item.hashCode(), new ParcelableKeyRing(ring.getEncoded()));
             }
         } catch (IOException e) {
             Log.e(Constants.TAG, "IOException on parsing key file! Return NoValidKeysException!", e);

@@ -1,7 +1,6 @@
 package org.sufficientlysecure.keychain.pgp;
 
 import org.spongycastle.bcpg.ArmoredOutputStream;
-import org.spongycastle.bcpg.S2K;
 import org.spongycastle.bcpg.SignatureSubpacketTags;
 import org.spongycastle.bcpg.sig.KeyFlags;
 import org.spongycastle.openpgp.PGPKeyFlags;
@@ -30,12 +29,9 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Comparator;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.Vector;
 
 /** Wrapper around PGPKeyRing class, to be constructed from bytes.
  *
@@ -108,41 +104,84 @@ public class UncachedKeyRing {
     public static UncachedKeyRing decodeFromData(byte[] data)
             throws PgpGeneralException, IOException {
 
-        List<UncachedKeyRing> parsed = fromStream(new ByteArrayInputStream(data));
+        Iterator<UncachedKeyRing> parsed = fromStream(new ByteArrayInputStream(data));
 
-        if (parsed.isEmpty()) {
+        if ( ! parsed.hasNext()) {
             throw new PgpGeneralException("Object not recognized as PGPKeyRing!");
         }
-        if (parsed.size() > 1) {
-            throw new PgpGeneralException(
-                    "Expected single keyring in stream, found " + parsed.size());
+
+        UncachedKeyRing ring = parsed.next();
+
+        if (parsed.hasNext()) {
+            throw new PgpGeneralException("Expected single keyring in stream, found at least two");
         }
 
-        return parsed.get(0);
+        return ring;
 
     }
 
-    public static List<UncachedKeyRing> fromStream(InputStream stream) throws IOException {
-        List<UncachedKeyRing> result = new Vector<UncachedKeyRing>();
+    public static Iterator<UncachedKeyRing> fromStream(final InputStream stream) throws IOException {
 
-        while(stream.available() > 0) {
-            PGPObjectFactory objectFactory = new PGPObjectFactory(PGPUtil.getDecoderStream(stream));
+        return new Iterator<UncachedKeyRing>() {
 
-            // go through all objects in this block
-            Object obj;
-            while ((obj = objectFactory.nextObject()) != null) {
-                Log.d(Constants.TAG, "Found class: " + obj.getClass());
-                if (!(obj instanceof PGPKeyRing)) {
-                    Log.d(Constants.TAG,
-                            "Bad object of type " + obj.getClass().getName() + " in stream, proceed with next object...");
-                    // skip object
-                    continue;
+            UncachedKeyRing mNext = null;
+            PGPObjectFactory mObjectFactory = null;
+
+            private void cacheNext() {
+                if (mNext != null) {
+                    return;
                 }
-                result.add(new UncachedKeyRing((PGPKeyRing) obj));
-            }
-        }
 
-        return result;
+                try {
+                    if (mObjectFactory == null) {
+                        if (stream.available() == 0) {
+                            // end of stream. that's fine
+                            return;
+                        }
+                        mObjectFactory = new PGPObjectFactory(PGPUtil.getDecoderStream(stream));
+                    }
+
+                    // go through all objects in this block
+                    Object obj;
+                    while ((obj = mObjectFactory.nextObject()) != null) {
+                        Log.d(Constants.TAG, "Found class: " + obj.getClass());
+                        if (!(obj instanceof PGPKeyRing)) {
+                            Log.i(Constants.TAG,
+                                    "Skipping object of bad type " + obj.getClass().getName() + " in stream");
+                            // skip object
+                            continue;
+                        }
+                        mNext = new UncachedKeyRing((PGPKeyRing) obj);
+                        return;
+                    }
+                } catch (IOException e) {
+                    Log.e(Constants.TAG, "IOException while processing stream", e);
+                }
+
+            }
+
+            @Override
+            public boolean hasNext() {
+                cacheNext();
+                return mNext != null;
+            }
+
+            @Override
+            public UncachedKeyRing next() {
+                try {
+                    cacheNext();
+                    return mNext;
+                } finally {
+                    mNext = null;
+                }
+            }
+
+            @Override
+            public void remove() {
+                throw new UnsupportedOperationException();
+            }
+        };
+
     }
 
     public void encodeArmored(OutputStream out, String version) throws IOException {
