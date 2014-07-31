@@ -221,6 +221,14 @@ public class HkpKeyserver extends Keyserver {
         }
     }
 
+    /**
+     * Results are sorted by creation date of key!
+     *
+     * @param query
+     * @return
+     * @throws QueryFailedException
+     * @throws QueryNeedsRepairException
+     */
     @Override
     public ArrayList<ImportKeysListEntry> search(String query) throws QueryFailedException,
             QueryNeedsRepairException {
