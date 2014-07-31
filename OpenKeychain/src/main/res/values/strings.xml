@@ -82,8 +82,6 @@
     <string name="menu_import_existing_key">Import existing key</string>
     <string name="menu_search">Search</string>
     <string name="menu_key_server">Keyserver…</string>
-    <string name="menu_update_key">Update from keyserver</string>
-    <string name="menu_export_key_to_server">Upload to key server</string>
     <string name="menu_share">Share…</string>
     <string name="menu_share_title_fingerprint">Share fingerprint…</string>
     <string name="menu_share_title">Share whole key…</string>
@@ -482,8 +480,10 @@
     <string name="key_view_action_edit">Edit key</string>
     <string name="key_view_action_encrypt">Encrypt with this key</string>
     <string name="key_view_action_certify">Certify identities</string>
+    <string name="key_view_action_update">Update from keyserver</string>
     <string name="key_view_action_share_with">Share with…</string>
     <string name="key_view_action_share_nfc">Share over NFC by holding the devices back to back</string>
+    <string name="key_view_action_upload">Upload to key server</string>
     <string name="key_view_tab_main">Main Info</string>
     <string name="key_view_tab_share">Share</string>
     <string name="key_view_tab_keys">Subkeys</string>

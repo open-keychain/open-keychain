@@ -33,11 +33,13 @@ import android.widget.ListView;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UserIds;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
+import org.sufficientlysecure.keychain.provider.ProviderHelper.NotFoundException;
 import org.sufficientlysecure.keychain.ui.adapter.UserIdsAdapter;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Notify;
@@ -55,7 +57,7 @@ public class ViewKeyMainFragment extends LoaderFragment implements
     private View mActionCertify;
     private View mActionCertifyText;
     private ImageView mActionCertifyImage;
-    private View mActionCertifyDivider;
+    private View mActionUpdate;
 
     private ListView mUserIds;
 
@@ -84,7 +86,7 @@ public class ViewKeyMainFragment extends LoaderFragment implements
         // make certify image gray, like action icons
         mActionCertifyImage.setColorFilter(getResources().getColor(R.color.tertiary_text_light),
                 PorterDuff.Mode.SRC_IN);
-        mActionCertifyDivider = view.findViewById(R.id.view_key_action_certify_divider);
+        mActionUpdate = view.findViewById(R.id.view_key_action_update);
 
         return root;
     }
@@ -122,6 +124,15 @@ public class ViewKeyMainFragment extends LoaderFragment implements
         mActionEdit.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
                 editKey(mDataUri);
+            }
+        });
+        mActionUpdate.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                try {
+                    updateFromKeyserver(mDataUri, new ProviderHelper(getActivity()));
+                } catch (NotFoundException e) {
+                    Notify.showNotify(getActivity(), R.string.error_key_not_found, Notify.Style.ERROR);
+                }
             }
         });
 
@@ -252,6 +263,20 @@ public class ViewKeyMainFragment extends LoaderFragment implements
         } catch (PgpGeneralException e) {
             Log.e(Constants.TAG, "key not found!", e);
         }
+    }
+
+    private void updateFromKeyserver(Uri dataUri, ProviderHelper providerHelper)
+            throws ProviderHelper.NotFoundException {
+        byte[] blob = (byte[]) providerHelper.getGenericData(
+                KeychainContract.KeyRings.buildUnifiedKeyRingUri(dataUri),
+                KeychainContract.Keys.FINGERPRINT, ProviderHelper.FIELD_TYPE_BLOB);
+        String fingerprint = PgpKeyHelper.convertFingerprintToHex(blob);
+
+        Intent queryIntent = new Intent(getActivity(), ImportKeysActivity.class);
+        queryIntent.setAction(ImportKeysActivity.ACTION_IMPORT_KEY_FROM_KEYSERVER_AND_RETURN_RESULT);
+        queryIntent.putExtra(ImportKeysActivity.EXTRA_FINGERPRINT, fingerprint);
+
+        startActivityForResult(queryIntent, 0);
     }
 
     private void certify(Uri dataUri) {

@@ -285,9 +285,9 @@ public class HkpKeyserver extends Keyserver {
 
             // group 1 contains the full fingerprint (v4) or the long key id if available
             // see http://bit.ly/1d4bxbk and http://bit.ly/1gD1wwr
-            String fingerprintOrKeyId = matcher.group(1);
+            String fingerprintOrKeyId = matcher.group(1).toLowerCase(Locale.US);
             if (fingerprintOrKeyId.length() > 16) {
-                entry.setFingerprintHex(fingerprintOrKeyId.toLowerCase(Locale.US));
+                entry.setFingerprintHex(fingerprintOrKeyId);
                 entry.setKeyIdHex("0x" + fingerprintOrKeyId.substring(fingerprintOrKeyId.length()
                         - 16, fingerprintOrKeyId.length()));
             } else {
