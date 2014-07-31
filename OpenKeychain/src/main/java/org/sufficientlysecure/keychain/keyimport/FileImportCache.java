@@ -21,13 +21,10 @@ import android.content.Context;
 import android.os.Bundle;
 import android.os.Parcel;
 
-import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.KeychainApplication;
-import org.sufficientlysecure.keychain.util.Log;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -80,7 +77,6 @@ public class FileImportCache {
 
         File tempFile = new File(cacheDir, FILENAME);
         try {
-
             FileInputStream fis = new FileInputStream(tempFile);
             byte[] array = new byte[(int) fis.getChannel().size()];
             fis.read(array, 0, array.length);

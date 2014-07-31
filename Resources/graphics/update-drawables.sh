@@ -54,3 +54,12 @@ inkscape -w 32 -h 32 -e "$HDPI_DIR/${NAME%%.*}.png" $NAME
 inkscape -w 48 -h 48 -e "$XDPI_DIR/${NAME%%.*}.png" $NAME
 inkscape -w 64 -h 64 -e "$XXDPI_DIR/${NAME%%.*}.png" $NAME
 done
+
+for NAME in "create_key_robot"
+do
+echo $NAME
+inkscape -w 48 -h 48 -e "$MDPI_DIR/$NAME.png" $NAME.svg
+inkscape -w 64 -h 64 -e "$HDPI_DIR/$NAME.png" $NAME.svg
+inkscape -w 96 -h 96 -e "$XDPI_DIR/$NAME.png" $NAME.svg
+inkscape -w 128 -h 128 -e "$XXDPI_DIR/$NAME.png" $NAME.svg
+done

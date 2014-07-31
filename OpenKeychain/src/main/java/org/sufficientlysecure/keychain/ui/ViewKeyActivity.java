@@ -516,19 +516,19 @@ public class ViewKeyActivity extends ActionBarActivity implements
                     // Note: order is important
                     if (isRevoked) {
                         mStatusText.setText(R.string.view_key_revoked);
-                        mStatusText.setTextColor(getResources().getColor(R.color.result_red));
+                        mStatusText.setTextColor(getResources().getColor(R.color.android_red_light));
                         mStatusImage.setImageDrawable(
                                 getResources().getDrawable(R.drawable.status_signature_revoked_cutout));
-                        mStatusImage.setColorFilter(getResources().getColor(R.color.result_red),
+                        mStatusImage.setColorFilter(getResources().getColor(R.color.android_red_light),
                                 PorterDuff.Mode.SRC_ATOP);
                         mStatusDivider.setVisibility(View.VISIBLE);
                         mStatusLayout.setVisibility(View.VISIBLE);
                     } else if (isExpired) {
                         mStatusText.setText(R.string.view_key_expired);
-                        mStatusText.setTextColor(getResources().getColor(R.color.result_orange));
+                        mStatusText.setTextColor(getResources().getColor(R.color.android_orange_light));
                         mStatusImage.setImageDrawable(
                                 getResources().getDrawable(R.drawable.status_signature_expired_cutout));
-                        mStatusImage.setColorFilter(getResources().getColor(R.color.result_orange),
+                        mStatusImage.setColorFilter(getResources().getColor(R.color.android_orange_light),
                                 PorterDuff.Mode.SRC_ATOP);
                         mStatusDivider.setVisibility(View.VISIBLE);
                         mStatusLayout.setVisibility(View.VISIBLE);

@@ -47,7 +47,6 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.AbsListView.MultiChoiceModeListener;
 import android.widget.AdapterView;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -493,19 +492,19 @@ public class KeyListFragment extends LoaderFragment
                     if (isRevoked) {
                         h.mStatus.setImageDrawable(
                                 getResources().getDrawable(R.drawable.status_signature_revoked_cutout));
-                        h.mStatus.setColorFilter(getResources().getColor(R.color.result_red),
+                        h.mStatus.setColorFilter(getResources().getColor(R.color.android_red_light),
                                 PorterDuff.Mode.SRC_ATOP);
                         h.mStatus.setVisibility(View.VISIBLE);
                     } else if (isExpired) {
                         h.mStatus.setImageDrawable(
                                 getResources().getDrawable(R.drawable.status_signature_expired_cutout));
-                        h.mStatus.setColorFilter(getResources().getColor(R.color.result_orange),
+                        h.mStatus.setColorFilter(getResources().getColor(R.color.android_orange_light),
                                 PorterDuff.Mode.SRC_ATOP);
                         h.mStatus.setVisibility(View.VISIBLE);
                     } else if (isVerified) {
                         h.mStatus.setImageDrawable(
                                 getResources().getDrawable(R.drawable.status_signature_verified_cutout));
-                        h.mStatus.setColorFilter(getResources().getColor(R.color.result_green),
+                        h.mStatus.setColorFilter(getResources().getColor(R.color.android_green_light),
                                 PorterDuff.Mode.SRC_ATOP);
                         h.mStatus.setVisibility(View.VISIBLE);
                     } else {

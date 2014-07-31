@@ -152,7 +152,7 @@ public class ViewCertActivity extends ActionBarActivity
                     sig.init(signerRing.getPublicKey());
                     if (sig.verifySignature(signeeRing.getPublicKey(), signeeUid)) {
                         mStatus.setText(R.string.cert_verify_ok);
-                        mStatus.setTextColor(getResources().getColor(R.color.result_green));
+                        mStatus.setTextColor(getResources().getColor(R.color.android_green_light));
                     } else {
                         mStatus.setText(R.string.cert_verify_failed);
                         mStatus.setTextColor(getResources().getColor(R.color.alert));

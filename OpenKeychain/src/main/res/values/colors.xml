@@ -10,8 +10,14 @@
     <color name="holo_gray_light">#33999999</color>
     <color name="holo_gray_bright">#33CCCCCC</color>
 
-    <color name="result_red">#ffff4444</color>
-    <color name="result_orange">#ffffbb33</color>
-    <color name="result_green">#ff99cc00</color>
-    <color name="result_purple">#aa66cc</color>
+    <!-- http://developer.android.com/design/style/color.html -->
+    <color name="android_red_light">#ffff4444</color>
+    <color name="android_red_dark">#ffCC0000</color>
+    <color name="android_orange_light">#ffffbb33</color>
+    <color name="android_orange_dark">#ffFF8800</color>
+    <color name="android_green_light">#ff99cc00</color>
+    <color name="android_green_dark">#ff669900</color>
+    <color name="android_purple_light">#ffaa66cc</color>
+    <color name="android_purple_dark">#ff9933CC</color>
+
 </resources>
