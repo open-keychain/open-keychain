@@ -27,9 +27,11 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -133,26 +135,27 @@ public class UncachedKeyRing {
                 }
 
                 try {
-                    if (mObjectFactory == null) {
-                        if (stream.available() == 0) {
-                            // end of stream. that's fine
+                    while(stream.available() > 0) {
+                        // if there are no objects left from the last factory, create a new one
+                        if (mObjectFactory == null) {
+                            mObjectFactory = new PGPObjectFactory(PGPUtil.getDecoderStream(stream));
+                        }
+
+                        // go through all objects in this block
+                        Object obj;
+                        while ((obj = mObjectFactory.nextObject()) != null) {
+                            Log.d(Constants.TAG, "Found class: " + obj.getClass());
+                            if (!(obj instanceof PGPKeyRing)) {
+                                Log.i(Constants.TAG,
+                                        "Skipping object of bad type " + obj.getClass().getName() + " in stream");
+                                // skip object
+                                continue;
+                            }
+                            mNext = new UncachedKeyRing((PGPKeyRing) obj);
                             return;
                         }
-                        mObjectFactory = new PGPObjectFactory(PGPUtil.getDecoderStream(stream));
-                    }
-
-                    // go through all objects in this block
-                    Object obj;
-                    while ((obj = mObjectFactory.nextObject()) != null) {
-                        Log.d(Constants.TAG, "Found class: " + obj.getClass());
-                        if (!(obj instanceof PGPKeyRing)) {
-                            Log.i(Constants.TAG,
-                                    "Skipping object of bad type " + obj.getClass().getName() + " in stream");
-                            // skip object
-                            continue;
-                        }
-                        mNext = new UncachedKeyRing((PGPKeyRing) obj);
-                        return;
+                        // if we are past the while loop, that means the objectFactory had no next
+                        mObjectFactory = null;
                     }
                 } catch (IOException e) {
                     Log.e(Constants.TAG, "IOException while processing stream", e);
