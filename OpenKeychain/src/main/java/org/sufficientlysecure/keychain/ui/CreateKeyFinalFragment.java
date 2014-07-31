@@ -20,11 +20,8 @@ package org.sufficientlysecure.keychain.ui;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
-import android.database.ContentObserver;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
 import android.os.Message;
 import android.os.Messenger;
 import android.support.v4.app.Fragment;
@@ -32,7 +29,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
-import android.widget.Spinner;
 import android.widget.TextView;
 
 import org.spongycastle.bcpg.sig.KeyFlags;
@@ -110,9 +106,7 @@ public class CreateKeyFinalFragment extends Fragment {
         mBackButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                CreateKeyInputFragment frag =
-                        CreateKeyInputFragment.newInstance(mName, mEmail);
-                mCreateKeyActivity.loadFragment(null, frag, CreateKeyActivity.ANIM_TO_LEFT);
+                mCreateKeyActivity.loadFragment(null, null, CreateKeyActivity.FRAG_ACTION_TO_LEFT);
             }
         });
 

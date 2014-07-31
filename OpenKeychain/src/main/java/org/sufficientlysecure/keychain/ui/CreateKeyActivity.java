@@ -29,9 +29,9 @@ public class CreateKeyActivity extends ActionBarActivity {
     public static final String EXTRA_NAME = "name";
     public static final String EXTRA_EMAIL = "email";
 
-    public static final int ANIM_NO = 0;
-    public static final int ANIM_TO_RIGHT = 1;
-    public static final int ANIM_TO_LEFT = 2;
+    public static final int FRAG_ACTION_START = 0;
+    public static final int FRAG_ACTION_TO_RIGHT = 1;
+    public static final int FRAG_ACTION_TO_LEFT = 2;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -45,10 +45,10 @@ public class CreateKeyActivity extends ActionBarActivity {
                         getIntent().getStringExtra(EXTRA_NAME),
                         getIntent().getStringExtra(EXTRA_EMAIL)
                 );
-        loadFragment(null, frag, ANIM_NO);
+        loadFragment(null, frag, FRAG_ACTION_START);
     }
 
-    public void loadFragment(Bundle savedInstanceState, Fragment fragment, int animation) {
+    public void loadFragment(Bundle savedInstanceState, Fragment fragment, int action) {
         // However, if we're being restored from a previous state,
         // then we don't need to do anything and should return or else
         // we could end up with overlapping fragments.
@@ -60,22 +60,24 @@ public class CreateKeyActivity extends ActionBarActivity {
         // NOTE: We use commitAllowingStateLoss() to prevent weird crashes!
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
 
-        switch (animation) {
-            case ANIM_NO:
+        switch (action) {
+            case FRAG_ACTION_START:
                 transaction.setCustomAnimations(0, 0);
+                transaction.replace(R.id.create_key_fragment_container, fragment)
+                        .commitAllowingStateLoss();
                 break;
-            case ANIM_TO_LEFT:
-                transaction.setCustomAnimations(R.anim.frag_slide_in_from_left, R.anim.frag_slide_out_to_right);
+            case FRAG_ACTION_TO_LEFT:
+                getSupportFragmentManager().popBackStackImmediate();
                 break;
-            case ANIM_TO_RIGHT:
-                transaction.setCustomAnimations(R.anim.frag_slide_out_to_left, R.anim.frag_slide_in_from_right,
+            case FRAG_ACTION_TO_RIGHT:
+                transaction.setCustomAnimations(R.anim.frag_slide_in_from_right, R.anim.frag_slide_out_to_left,
                         R.anim.frag_slide_in_from_left, R.anim.frag_slide_out_to_right);
-                transaction.addToBackStack("back");
+                transaction.addToBackStack(null);
+                transaction.replace(R.id.create_key_fragment_container, fragment)
+                        .commitAllowingStateLoss();
                 break;
 
         }
-        transaction.replace(R.id.create_key_fragment_container, fragment)
-                .commitAllowingStateLoss();
         // do it immediately!
         getSupportFragmentManager().executePendingTransactions();
     }

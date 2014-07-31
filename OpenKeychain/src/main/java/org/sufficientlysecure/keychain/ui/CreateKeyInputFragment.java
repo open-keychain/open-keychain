@@ -161,7 +161,7 @@ public class CreateKeyInputFragment extends Fragment {
                     );
 
             hideKeyboard();
-            mCreateKeyActivity.loadFragment(null, frag, CreateKeyActivity.ANIM_TO_RIGHT);
+            mCreateKeyActivity.loadFragment(null, frag, CreateKeyActivity.FRAG_ACTION_TO_RIGHT);
         }
     }
 

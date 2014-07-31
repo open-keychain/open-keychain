@@ -20,14 +20,14 @@
                 android:layout_height="wrap_content"
                 android:paddingTop="16dp"
                 android:paddingBottom="8dp"
-                android:text="You entered the following credentials:"
+                android:text="@string/create_key_final_text"
                 android:textAppearance="?android:attr/textAppearanceMedium" />
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="2dp"
-                android:text="Name"
+                android:text="@string/label_name"
                 android:textColor="@color/tertiary_text_light"
                 android:textAppearance="?android:attr/textAppearanceSmall" />
 
@@ -44,7 +44,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="2dp"
-                android:text="Email"
+                android:text="@string/label_email"
                 android:textColor="@color/tertiary_text_light"
                 android:textAppearance="?android:attr/textAppearanceSmall" />
 
@@ -76,30 +76,16 @@
                 android:layout_height="1dip"
                 android:background="?android:attr/listDivider" />
 
-            <LinearLayout
-                android:layout_width="match_parent"
+            <TextView
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:layout_marginBottom="8dp"
-                android:orientation="horizontal">
-
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/imageView"
-                    android:src="@drawable/create_key_robot"
-                    android:layout_gravity="center_vertical" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="8dp"
-                    android:text="Creating a key may take a while, have a cup of coffee in the meantime…\n(3 subkeys, RSA, 4096 bit)"
-                    android:textColor="@color/android_green_dark"
-                    android:textAppearance="?android:attr/textAppearanceMedium"
-                    android:id="@+id/textView" />
-
-            </LinearLayout>
+                android:text="@string/create_key_final_robot_text"
+                android:textColor="@color/android_green_dark"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:drawableLeft="@drawable/create_key_robot"
+                android:drawablePadding="8dp" />
 
         </LinearLayout>
     </ScrollView>
@@ -123,7 +109,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="back"
+            android:text="@string/btn_back"
             android:minHeight="?android:attr/listPreferredItemHeight"
             android:gravity="center_vertical"
             android:clickable="true"
