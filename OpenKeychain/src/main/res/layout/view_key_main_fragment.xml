@@ -97,7 +97,6 @@
             android:id="@+id/view_key_action_encrypt"
             android:paddingLeft="8dp"
             android:paddingRight="8dp"
-            android:layout_marginBottom="8dp"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

@@ -62,7 +62,7 @@ public class CachedPublicKeyRing extends KeyRing {
     public String getPrimaryUserId() throws PgpGeneralException {
         try {
             Object data = mProviderHelper.getGenericData(mUri,
-                    KeychainContract.KeyRings.MASTER_KEY_ID,
+                    KeychainContract.KeyRings.USER_ID,
                     ProviderHelper.FIELD_TYPE_STRING);
             return (String) data;
         } catch(ProviderHelper.NotFoundException e) {
@@ -77,7 +77,7 @@ public class CachedPublicKeyRing extends KeyRing {
     public boolean isRevoked() throws PgpGeneralException {
         try {
             Object data = mProviderHelper.getGenericData(mUri,
-                    KeychainContract.KeyRings.MASTER_KEY_ID,
+                    KeychainContract.KeyRings.IS_REVOKED,
                     ProviderHelper.FIELD_TYPE_INTEGER);
             return (Long) data > 0;
         } catch(ProviderHelper.NotFoundException e) {
@@ -88,7 +88,7 @@ public class CachedPublicKeyRing extends KeyRing {
     public boolean canCertify() throws PgpGeneralException {
         try {
             Object data = mProviderHelper.getGenericData(mUri,
-                    KeychainContract.KeyRings.MASTER_KEY_ID,
+                    KeychainContract.KeyRings.CAN_CERTIFY,
                     ProviderHelper.FIELD_TYPE_INTEGER);
             return (Long) data > 0;
         } catch(ProviderHelper.NotFoundException e) {
@@ -99,7 +99,7 @@ public class CachedPublicKeyRing extends KeyRing {
     public long getEncryptId() throws PgpGeneralException {
         try {
             Object data = mProviderHelper.getGenericData(mUri,
-                    KeychainContract.KeyRings.MASTER_KEY_ID,
+                    KeychainContract.KeyRings.MASTER_KEY_ID, // TODO
                     ProviderHelper.FIELD_TYPE_INTEGER);
             return (Long) data;
         } catch(ProviderHelper.NotFoundException e) {
@@ -110,7 +110,7 @@ public class CachedPublicKeyRing extends KeyRing {
     public boolean hasEncrypt() throws PgpGeneralException {
         try {
             Object data = mProviderHelper.getGenericData(mUri,
-                    KeychainContract.KeyRings.MASTER_KEY_ID,
+                    KeychainContract.KeyRings.CAN_ENCRYPT, // TODO
                     ProviderHelper.FIELD_TYPE_INTEGER);
             return (Long) data > 0;
         } catch(ProviderHelper.NotFoundException e) {
@@ -121,7 +121,7 @@ public class CachedPublicKeyRing extends KeyRing {
     public long getSignId() throws PgpGeneralException {
         try {
             Object data = mProviderHelper.getGenericData(mUri,
-                    KeychainContract.KeyRings.MASTER_KEY_ID,
+                    KeychainContract.KeyRings.MASTER_KEY_ID, // TODO
                     ProviderHelper.FIELD_TYPE_INTEGER);
             return (Long) data;
         } catch(ProviderHelper.NotFoundException e) {
@@ -132,7 +132,7 @@ public class CachedPublicKeyRing extends KeyRing {
     public boolean hasSign() throws PgpGeneralException {
         try {
             Object data = mProviderHelper.getGenericData(mUri,
-                    KeychainContract.KeyRings.MASTER_KEY_ID,
+                    KeychainContract.KeyRings.CAN_SIGN, // TODO
                     ProviderHelper.FIELD_TYPE_INTEGER);
             return (Long) data > 0;
         } catch(ProviderHelper.NotFoundException e) {
@@ -143,7 +143,7 @@ public class CachedPublicKeyRing extends KeyRing {
     public int getVerified() throws PgpGeneralException {
         try {
             Object data = mProviderHelper.getGenericData(mUri,
-                    KeychainContract.KeyRings.MASTER_KEY_ID,
+                    KeychainContract.KeyRings.VERIFIED,
                     ProviderHelper.FIELD_TYPE_INTEGER);
             return (Integer) data;
         } catch(ProviderHelper.NotFoundException e) {
@@ -154,7 +154,7 @@ public class CachedPublicKeyRing extends KeyRing {
     public boolean hasAnySecret() throws PgpGeneralException {
         try {
             Object data = mProviderHelper.getGenericData(mUri,
-                    KeychainContract.KeyRings.MASTER_KEY_ID,
+                    KeychainContract.KeyRings.HAS_ANY_SECRET,
                     ProviderHelper.FIELD_TYPE_INTEGER);
             return (Long) data > 0;
         } catch(ProviderHelper.NotFoundException e) {
