@@ -18,7 +18,6 @@
 package org.sufficientlysecure.keychain.ui.dialog;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -35,11 +34,11 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
-import com.devspark.appmsg.AppMsg;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.helper.FileHelper;
 import org.sufficientlysecure.keychain.util.Log;
+import org.sufficientlysecure.keychain.util.Notify;
 
 import java.io.File;
 
@@ -190,7 +189,7 @@ public class FileDialogFragment extends DialogFragment {
                         mFile = file;
                         mFilename.setText(mFile.getName());
                     } else {
-                        AppMsg.makeText(getActivity(), R.string.no_file_selected, AppMsg.STYLE_ALERT).show();
+                        Notify.showNotify(getActivity(), R.string.no_file_selected, Notify.Style.ERROR);
                     }
                 }
 

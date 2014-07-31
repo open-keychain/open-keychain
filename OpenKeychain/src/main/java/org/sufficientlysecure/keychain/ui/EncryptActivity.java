@@ -30,7 +30,6 @@ import android.support.v4.view.PagerTabStrip;
 import android.support.v4.view.ViewPager;
 import android.view.Menu;
 import android.view.MenuItem;
-import com.devspark.appmsg.AppMsg;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.compatibility.ClipboardReflection;
@@ -43,6 +42,7 @@ import org.sufficientlysecure.keychain.ui.adapter.PagerTabStripAdapter;
 import org.sufficientlysecure.keychain.ui.dialog.DeleteFileDialogFragment;
 import org.sufficientlysecure.keychain.ui.dialog.PassphraseDialogFragment;
 import org.sufficientlysecure.keychain.util.Log;
+import org.sufficientlysecure.keychain.util.Notify;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -94,7 +94,7 @@ public class EncryptActivity extends DrawerActivity implements EncryptActivityIn
     private boolean mShareAfterEncrypt = false;
     private ArrayList<Uri> mInputUris;
     private ArrayList<Uri> mOutputUris;
-    private String mMessage;
+    private String mMessage = "";
 
     public boolean isModeSymmetric() {
         return PAGER_MODE_SYMMETRIC == mViewPagerMode.getCurrentItem();
@@ -198,7 +198,7 @@ public class EncryptActivity extends DrawerActivity implements EncryptActivityIn
 
     public void startEncrypt() {
         if (!inputIsValid()) {
-            // AppMsg was created by inputIsValid.
+            // Notify was created by inputIsValid.
             return;
         }
 
@@ -215,7 +215,7 @@ public class EncryptActivity extends DrawerActivity implements EncryptActivityIn
                 super.handleMessage(message);
 
                 if (message.arg1 == KeychainIntentServiceHandler.MESSAGE_OKAY) {
-                    AppMsg.makeText(EncryptActivity.this, R.string.encrypt_sign_successful, AppMsg.STYLE_INFO).show();
+                    Notify.showNotify(EncryptActivity.this, R.string.encrypt_sign_successful, Notify.Style.INFO);
 
                     if (!isContentMessage() && mDeleteAfterEncrypt) {
                         // TODO: Create and show dialog to delete original file
@@ -233,8 +233,8 @@ public class EncryptActivity extends DrawerActivity implements EncryptActivityIn
                     } else if (isContentMessage()) {
                         // Copy to clipboard
                         copyToClipboard(message);
-                        AppMsg.makeText(EncryptActivity.this,
-                                R.string.encrypt_sign_clipboard_successful, AppMsg.STYLE_INFO).show();
+                        Notify.showNotify(EncryptActivity.this,
+                                R.string.encrypt_sign_clipboard_successful, Notify.Style.INFO);
                     }
                 }
             }
@@ -322,11 +322,16 @@ public class EncryptActivity extends DrawerActivity implements EncryptActivityIn
     }
 
     private boolean inputIsValid() {
-        if (!isContentMessage()) {
+        if (isContentMessage()) {
+            if (mMessage == null) {
+                Notify.showNotify(this, R.string.error_message, Notify.Style.ERROR);
+                return false;
+            }
+        } else {
             // file checks
 
             if (mInputUris.isEmpty()) {
-                AppMsg.makeText(this, R.string.no_file_selected, AppMsg.STYLE_ALERT).show();
+                Notify.showNotify(this, R.string.no_file_selected, Notify.Style.ERROR);
                 return false;
             } else if (mInputUris.size() > 1 && !mShareAfterEncrypt) {
                 // This should be impossible...
@@ -342,11 +347,11 @@ public class EncryptActivity extends DrawerActivity implements EncryptActivityIn
 
 
             if (mPassphrase == null) {
-                AppMsg.makeText(this, R.string.passphrases_do_not_match, AppMsg.STYLE_ALERT).show();
+                Notify.showNotify(this, R.string.passphrases_do_not_match, Notify.Style.ERROR);
                 return false;
             }
             if (mPassphrase.isEmpty()) {
-                AppMsg.makeText(this, R.string.passphrase_must_not_be_empty, AppMsg.STYLE_ALERT).show();
+                Notify.showNotify(this, R.string.passphrase_must_not_be_empty, Notify.Style.ERROR);
                 return false;
             }
 
@@ -358,13 +363,12 @@ public class EncryptActivity extends DrawerActivity implements EncryptActivityIn
 
             // Files must be encrypted, only text can be signed-only right now
             if (!gotEncryptionKeys && !isContentMessage()) {
-                AppMsg.makeText(this, R.string.select_encryption_key, AppMsg.STYLE_ALERT).show();
+                Notify.showNotify(this, R.string.select_encryption_key, Notify.Style.ERROR);
                 return false;
             }
 
             if (!gotEncryptionKeys && mSigningKeyId == 0) {
-                AppMsg.makeText(this, R.string.select_encryption_or_signature_key,
-                        AppMsg.STYLE_ALERT).show();
+                Notify.showNotify(this, R.string.select_encryption_or_signature_key, Notify.Style.ERROR);
                 return false;
             }
 

@@ -18,12 +18,7 @@
 package org.sufficientlysecure.keychain.ui;
 
 import android.app.Activity;
-import android.app.ProgressDialog;
-import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
-import android.os.Messenger;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -31,23 +26,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-
-import com.devspark.appmsg.AppMsg;
-
-import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.compatibility.ClipboardReflection;
-import org.sufficientlysecure.keychain.helper.Preferences;
-import org.sufficientlysecure.keychain.pgp.KeyRing;
-import org.sufficientlysecure.keychain.service.KeychainIntentService;
-import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
-import org.sufficientlysecure.keychain.service.PassphraseCacheService;
-import org.sufficientlysecure.keychain.ui.dialog.PassphraseDialogFragment;
-import org.sufficientlysecure.keychain.util.Log;
-
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
 
 public class EncryptMessageFragment extends Fragment {
     public static final String ARG_TEXT = "text";
