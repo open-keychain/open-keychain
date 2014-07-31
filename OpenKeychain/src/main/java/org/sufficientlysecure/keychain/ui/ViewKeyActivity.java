@@ -89,8 +89,6 @@ public class ViewKeyActivity extends ActionBarActivity implements
     private ImageView mStatusImage;
     private View mStatusDivider;
 
-    public static final int REQUEST_CODE_LOOKUP_KEY = 0x00007006;
-
     // NFC
     private NfcAdapter mNfcAdapter;
     private NfcAdapter.CreateNdefMessageCallback mNdefCallback;
@@ -262,14 +260,6 @@ public class ViewKeyActivity extends ActionBarActivity implements
                     startActivity(homeIntent);
                     return true;
                 }
-                case R.id.menu_key_view_update: {
-                    updateFromKeyserver(mDataUri, mProviderHelper);
-                    return true;
-                }
-                case R.id.menu_key_view_export_keyserver: {
-                    uploadToKeyserver(mDataUri);
-                    return true;
-                }
                 case R.id.menu_key_view_export_file: {
                     exportToFile(mDataUri, mExportHelper, mProviderHelper);
                     return true;
@@ -309,26 +299,6 @@ public class ViewKeyActivity extends ActionBarActivity implements
                 Constants.Path.APP_DIR_FILE,
                 ((Long) data.get(KeychainContract.KeyRings.HAS_SECRET) == 1)
         );
-    }
-
-    private void uploadToKeyserver(Uri dataUri) throws ProviderHelper.NotFoundException {
-        Intent uploadIntent = new Intent(this, UploadKeyActivity.class);
-        uploadIntent.setData(dataUri);
-        startActivityForResult(uploadIntent, 0);
-    }
-
-    private void updateFromKeyserver(Uri dataUri, ProviderHelper providerHelper)
-            throws ProviderHelper.NotFoundException {
-        byte[] blob = (byte[]) providerHelper.getGenericData(
-                KeychainContract.KeyRings.buildUnifiedKeyRingUri(dataUri),
-                KeychainContract.Keys.FINGERPRINT, ProviderHelper.FIELD_TYPE_BLOB);
-        String fingerprint = PgpKeyHelper.convertFingerprintToHex(blob);
-
-        Intent queryIntent = new Intent(this, ImportKeysActivity.class);
-        queryIntent.setAction(ImportKeysActivity.ACTION_IMPORT_KEY_FROM_KEYSERVER_AND_RETURN_RESULT);
-        queryIntent.putExtra(ImportKeysActivity.EXTRA_FINGERPRINT, fingerprint);
-
-        startActivityForResult(queryIntent, REQUEST_CODE_LOOKUP_KEY);
     }
 
     private void deleteKey(Uri dataUri, ExportHelper exportHelper) {
