@@ -339,6 +339,7 @@
     <string name="progress_processing_signature">processing signature…</string>
     <string name="progress_verifying_signature">verifying signature…</string>
     <string name="progress_signing">signing…</string>
+    <string name="progress_certifying">certifying…</string>
     <string name="progress_reading_data">reading data…</string>
     <string name="progress_finding_key">finding key…</string>
     <string name="progress_decompressing_data">decompressing data…</string>
