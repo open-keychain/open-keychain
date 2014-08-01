@@ -25,29 +25,13 @@ import android.os.Bundle;
 import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
-
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.helper.FileHelper;
 import org.sufficientlysecure.keychain.helper.OtherHelper;
 import org.sufficientlysecure.keychain.helper.Preferences;
-import org.sufficientlysecure.keychain.keyimport.FileImportCache;
-import org.sufficientlysecure.keychain.keyimport.HkpKeyserver;
-import org.sufficientlysecure.keychain.keyimport.ImportKeysListEntry;
-import org.sufficientlysecure.keychain.keyimport.KeybaseKeyserver;
-import org.sufficientlysecure.keychain.keyimport.Keyserver;
-import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
-import org.sufficientlysecure.keychain.pgp.CanonicalizedPublicKeyRing;
-import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey;
-import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKeyRing;
-import org.sufficientlysecure.keychain.pgp.PgpDecryptVerify;
-import org.sufficientlysecure.keychain.pgp.PgpDecryptVerifyResult;
-import org.sufficientlysecure.keychain.pgp.PgpHelper;
-import org.sufficientlysecure.keychain.pgp.PgpImportExport;
-import org.sufficientlysecure.keychain.pgp.PgpKeyOperation;
-import org.sufficientlysecure.keychain.pgp.PgpSignEncrypt;
-import org.sufficientlysecure.keychain.pgp.Progressable;
-import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
+import org.sufficientlysecure.keychain.keyimport.*;
+import org.sufficientlysecure.keychain.pgp.*;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralMsgIdException;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
@@ -59,15 +43,7 @@ import org.sufficientlysecure.keychain.util.InputData;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.ProgressScaler;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -134,6 +110,9 @@ public class KeychainIntentService extends IntentService
 
     // delete file securely
     public static final String DELETE_FILE = "deleteFile";
+
+    // import key
+    public static final String IMPORT_KEY_LIST = "import_key_list";
 
     // export key
     public static final String EXPORT_OUTPUT_STREAM = "export_output_stream";
@@ -384,9 +363,15 @@ public class KeychainIntentService extends IntentService
             }
         } else if (ACTION_IMPORT_KEYRING.equals(action)) {
             try {
-                // get entries from cached file
-                FileImportCache cache = new FileImportCache(this);
-                List<ParcelableKeyRing> entries = cache.readCache();
+                List<ParcelableKeyRing> entries;
+                if (data.containsKey(IMPORT_KEY_LIST)) {
+                    // get entries from intent
+                    entries = data.getParcelableArrayList(IMPORT_KEY_LIST);
+                } else {
+                    // get entries from cached file
+                    FileImportCache cache = new FileImportCache(this);
+                    entries = cache.readCache();
+                }
 
                 PgpImportExport pgpImportExport = new PgpImportExport(this, this);
                 ImportKeyResult result = pgpImportExport.importKeyRings(entries);
@@ -515,6 +500,8 @@ public class KeychainIntentService extends IntentService
                 Intent importIntent = new Intent(this, KeychainIntentService.class);
                 importIntent.setAction(ACTION_IMPORT_KEYRING);
                 Bundle importData = new Bundle();
+                // This is not going through binder, nothing to fear of
+                importData.putParcelableArrayList(IMPORT_KEY_LIST, keyRings);
                 importIntent.putExtra(EXTRA_DATA, importData);
                 importIntent.putExtra(EXTRA_MESSENGER, mMessenger);
 
