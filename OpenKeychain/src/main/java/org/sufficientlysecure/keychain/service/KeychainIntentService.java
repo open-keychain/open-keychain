@@ -24,6 +24,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Message;
 import android.os.Messenger;
+import android.os.Parcel;
 import android.os.RemoteException;
 
 import org.sufficientlysecure.keychain.Constants;
@@ -31,7 +32,7 @@ import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.helper.FileHelper;
 import org.sufficientlysecure.keychain.helper.OtherHelper;
 import org.sufficientlysecure.keychain.helper.Preferences;
-import org.sufficientlysecure.keychain.keyimport.FileImportCache;
+import org.sufficientlysecure.keychain.util.FileImportCache;
 import org.sufficientlysecure.keychain.keyimport.HkpKeyserver;
 import org.sufficientlysecure.keychain.keyimport.ImportKeysListEntry;
 import org.sufficientlysecure.keychain.keyimport.KeybaseKeyserver;
@@ -386,14 +387,16 @@ public class KeychainIntentService extends IntentService
             }
         } else if (ACTION_IMPORT_KEYRING.equals(action)) {
             try {
+
                 List<ParcelableKeyRing> entries;
                 if (data.containsKey(IMPORT_KEY_LIST)) {
                     // get entries from intent
                     entries = data.getParcelableArrayList(IMPORT_KEY_LIST);
                 } else {
                     // get entries from cached file
-                    FileImportCache cache = new FileImportCache(this);
-                    entries = cache.readCache();
+                    FileImportCache<ParcelableKeyRing> cache =
+                        new FileImportCache<ParcelableKeyRing>(this);
+                    entries = cache.readCacheIntoList();
                 }
 
                 PgpImportExport pgpImportExport = new PgpImportExport(this, this);
@@ -522,6 +525,7 @@ public class KeychainIntentService extends IntentService
 
                 Intent importIntent = new Intent(this, KeychainIntentService.class);
                 importIntent.setAction(ACTION_IMPORT_KEYRING);
+
                 Bundle importData = new Bundle();
                 // This is not going through binder, nothing to fear of
                 importData.putParcelableArrayList(IMPORT_KEY_LIST, keyRings);

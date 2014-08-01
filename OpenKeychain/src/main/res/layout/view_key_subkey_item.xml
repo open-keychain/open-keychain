@@ -20,7 +20,7 @@
     <ImageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/edit_image"
+        android:id="@+id/user_id_item_edit_image"
         android:src="@drawable/ic_action_edit"
         android:padding="8dp"
         android:layout_centerVertical="true"
@@ -30,7 +30,7 @@
     <LinearLayout
         android:orientation="vertical"
         android:layout_toRightOf="@id/ic_masterKey"
-        android:layout_toLeftOf="@id/edit_image"
+        android:layout_toLeftOf="@id/user_id_item_edit_image"
         android:layout_centerVertical="true"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

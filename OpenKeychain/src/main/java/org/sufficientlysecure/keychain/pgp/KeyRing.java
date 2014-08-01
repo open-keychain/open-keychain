@@ -1,12 +1,15 @@
 package org.sufficientlysecure.keychain.pgp;
 
+import android.text.TextUtils;
+
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-/** An abstract KeyRing.
- *
+/**
+ * An abstract KeyRing.
+ * <p/>
  * This is an abstract class for all KeyRing constructs. It serves as a common
  * denominator of available information, two implementations wrapping the same
  * keyring should in all cases agree on the output of all methods described
@@ -14,7 +17,6 @@ import java.util.regex.Pattern;
  *
  * @see CanonicalizedKeyRing
  * @see org.sufficientlysecure.keychain.provider.CachedPublicKeyRing
- *
  */
 public abstract class KeyRing {
 
@@ -75,6 +77,26 @@ public abstract class KeyRing {
         }
 
         return result;
+    }
+
+    /**
+     * Returns a composed user id. Returns null if name is null!
+     *
+     * @param name
+     * @param email
+     * @param comment
+     * @return
+     */
+    public static String createUserId(String name, String email, String comment) {
+        String userId = name; // consider name a required value
+        if (userId != null && !TextUtils.isEmpty(comment)) {
+            userId += " (" + comment + ")";
+        }
+        if (userId != null && !TextUtils.isEmpty(email)) {
+            userId += " <" + email + ">";
+        }
+
+        return userId;
     }
 
 }

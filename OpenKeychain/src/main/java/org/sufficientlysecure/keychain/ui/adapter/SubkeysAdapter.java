@@ -114,7 +114,7 @@ public class SubkeysAdapter extends CursorAdapter {
         ImageView vEncryptIcon = (ImageView) view.findViewById(R.id.ic_encryptKey);
         ImageView vSignIcon = (ImageView) view.findViewById(R.id.ic_signKey);
         ImageView vRevokedKeyIcon = (ImageView) view.findViewById(R.id.ic_revokedKey);
-        ImageView vEditImage = (ImageView) view.findViewById(R.id.edit_image);
+        ImageView vEditImage = (ImageView) view.findViewById(R.id.user_id_item_edit_image);
 
         long keyId = cursor.getLong(INDEX_KEY_ID);
         String keyIdStr = PgpKeyHelper.convertKeyIdToHex(keyId);

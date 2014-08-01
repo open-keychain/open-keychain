@@ -7,13 +7,14 @@
     android:singleLine="true">
 
     <CheckBox
-        android:id="@+id/checkBox"
+        android:id="@+id/user_id_item_check_box"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:clickable="false"
         android:focusable="false" />
 
     <LinearLayout
+        android:id="@+id/user_id_item_certified_layout"
         android:layout_width="22dp"
         android:layout_height="wrap_content"
         android:layout_marginLeft="8dp"
@@ -21,9 +22,9 @@
         android:orientation="vertical">
 
         <ImageView
+            android:id="@+id/user_id_item_certified"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/certified"
             android:layout_gravity="center_horizontal" />
 
     </LinearLayout>
@@ -39,21 +40,21 @@
         android:layout_weight="1">
 
         <TextView
-            android:id="@+id/address"
+            android:id="@+id/user_id_item_address"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="alice@example.com"
             android:textAppearance="?android:attr/textAppearanceMedium" />
 
         <TextView
-            android:id="@+id/userId"
+            android:id="@+id/user_id_item_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Alice"
             android:textAppearance="?android:attr/textAppearanceSmall" />
 
         <TextView
-            android:id="@+id/comment"
+            android:id="@+id/user_id_item_comment"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="@color/tertiary_text_light"
@@ -63,11 +64,20 @@
     </LinearLayout>
 
     <ImageView
-        android:id="@+id/edit_image"
+        android:id="@+id/user_id_item_edit_image"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:src="@drawable/ic_action_edit"
         android:padding="8dp"
         android:layout_gravity="center_horizontal" />
+
+    <ImageButton
+        android:id="@+id/user_id_item_delete_button"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:padding="8dp"
+        android:src="@drawable/ic_action_cancel"
+        android:layout_gravity="center_vertical"
+        style="@style/SelectableItem" />
 
 </LinearLayout>

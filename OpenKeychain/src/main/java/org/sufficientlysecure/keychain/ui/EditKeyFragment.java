@@ -43,6 +43,8 @@ import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.compatibility.DialogFragmentWorkaround;
 import org.sufficientlysecure.keychain.helper.ActionBarHelper;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKeyRing;
+import org.sufficientlysecure.keychain.pgp.KeyRing;
+import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
@@ -55,6 +57,7 @@ import org.sufficientlysecure.keychain.ui.adapter.SubkeysAdapter;
 import org.sufficientlysecure.keychain.ui.adapter.SubkeysAddedAdapter;
 import org.sufficientlysecure.keychain.ui.adapter.UserIdsAdapter;
 import org.sufficientlysecure.keychain.ui.adapter.UserIdsAddedAdapter;
+import org.sufficientlysecure.keychain.ui.dialog.AddUserIdDialogFragment;
 import org.sufficientlysecure.keychain.ui.dialog.ChangeExpiryDialogFragment;
 import org.sufficientlysecure.keychain.ui.dialog.EditSubkeyDialogFragment;
 import org.sufficientlysecure.keychain.ui.dialog.EditUserIdDialogFragment;
@@ -89,11 +92,10 @@ public class EditKeyFragment extends LoaderFragment implements
     private UserIdsAddedAdapter mUserIdsAddedAdapter;
     private SubkeysAddedAdapter mSubkeysAddedAdapter;
 
-    private ArrayList<UserIdsAddedAdapter.UserIdModel> mUserIdsAddedData;
-
     private Uri mDataUri;
 
     private SaveKeyringParcel mSaveKeyringParcel;
+    private String mPrimaryUserId;
 
     private String mCurrentPassphrase;
 
@@ -173,8 +175,13 @@ public class EditKeyFragment extends LoaderFragment implements
 
             mSaveKeyringParcel = new SaveKeyringParcel(keyRing.getMasterKeyId(),
                     keyRing.getUncachedKeyRing().getFingerprint());
+            mPrimaryUserId = keyRing.getPrimaryUserIdWithFallback();
         } catch (ProviderHelper.NotFoundException e) {
-            Log.e(Constants.TAG, "Keyring not found: " + e.getMessage(), e);
+            Log.e(Constants.TAG, "Keyring not found", e);
+            Toast.makeText(getActivity(), R.string.error_no_secret_key_found, Toast.LENGTH_SHORT).show();
+            getActivity().finish();
+        } catch (PgpGeneralException e) {
+            Log.e(Constants.TAG, "PgpGeneralException", e);
             Toast.makeText(getActivity(), R.string.error_no_secret_key_found, Toast.LENGTH_SHORT).show();
             getActivity().finish();
         }
@@ -213,9 +220,8 @@ public class EditKeyFragment extends LoaderFragment implements
             }
         });
 
-        // TODO: mUserIdsAddedData and SaveParcel from savedInstance?!
-        mUserIdsAddedData = new ArrayList<UserIdsAddedAdapter.UserIdModel>();
-        mUserIdsAddedAdapter = new UserIdsAddedAdapter(getActivity(), mUserIdsAddedData);
+        // TODO: SaveParcel from savedInstance?!
+        mUserIdsAddedAdapter = new UserIdsAddedAdapter(getActivity(), mSaveKeyringParcel.mAddUserIds);
         mUserIdsAddedList.setAdapter(mUserIdsAddedAdapter);
 
         mSubkeysAdapter = new SubkeysAdapter(getActivity(), null, 0, mSaveKeyringParcel);
@@ -421,7 +427,29 @@ public class EditKeyFragment extends LoaderFragment implements
     }
 
     private void addUserId() {
-        mUserIdsAddedAdapter.add(new UserIdsAddedAdapter.UserIdModel());
+        // Message is received after passphrase is cached
+        Handler returnHandler = new Handler() {
+            @Override
+            public void handleMessage(Message message) {
+                if (message.what == SetPassphraseDialogFragment.MESSAGE_OKAY) {
+                    Bundle data = message.getData();
+
+                    // add new user id
+                    mUserIdsAddedAdapter.add(data
+                            .getString(AddUserIdDialogFragment.MESSAGE_DATA_USER_ID));
+                }
+            }
+        };
+
+        // Create a new Messenger for the communication back
+        Messenger messenger = new Messenger(returnHandler);
+
+        // pre-fill out primary name
+        String predefinedName = KeyRing.splitUserId(mPrimaryUserId)[0];
+        AddUserIdDialogFragment addUserIdDialog = AddUserIdDialogFragment.newInstance(messenger,
+                predefinedName);
+
+        addUserIdDialog.show(getActivity().getSupportFragmentManager(), "addUserIdDialog");
     }
 
     private void addSubkey() {
@@ -451,8 +479,6 @@ public class EditKeyFragment extends LoaderFragment implements
     }
 
     private void save(String passphrase) {
-        mSaveKeyringParcel.mAddUserIds = mUserIdsAddedAdapter.getDataAsStringList();
-
         Log.d(Constants.TAG, "mSaveKeyringParcel.mAddUserIds: " + mSaveKeyringParcel.mAddUserIds);
         Log.d(Constants.TAG, "mSaveKeyringParcel.mNewPassphrase: " + mSaveKeyringParcel.mNewPassphrase);
         Log.d(Constants.TAG, "mSaveKeyringParcel.mRevokeUserIds: " + mSaveKeyringParcel.mRevokeUserIds);

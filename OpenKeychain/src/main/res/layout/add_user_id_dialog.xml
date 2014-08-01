@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:paddingLeft="8dp"
+    android:paddingRight="8dp"
+    android:paddingTop="8dp"
+    android:paddingBottom="8dp">
+
+    <AutoCompleteTextView
+        android:id="@+id/add_user_id_address"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/label_email"
+        android:imeOptions="actionNext"
+        android:inputType="textEmailAddress"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    <AutoCompleteTextView
+        android:id="@+id/add_user_id_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:imeOptions="actionNext"
+        android:inputType="textPersonName"
+        android:hint="@string/create_key_hint_full_name"
+        android:textAppearance="?android:attr/textAppearanceSmall" />
+
+    <EditText
+        android:id="@+id/add_user_id_comment"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/tertiary_text_light"
+        android:singleLine="true"
+        android:lines="1"
+        android:maxLines="1"
+        android:imeOptions="actionDone"
+        android:hint="@string/label_comment"
+        android:textAppearance="?android:attr/textAppearanceSmall" />
+
+</LinearLayout>
