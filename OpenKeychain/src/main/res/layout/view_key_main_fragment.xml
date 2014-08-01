@@ -17,7 +17,6 @@
             style="@style/SectionHeader"
             android:layout_width="wrap_content"
             android:layout_height="0dp"
-            android:layout_marginBottom="4dp"
             android:layout_marginTop="8dp"
             android:text="@string/section_user_ids"
             android:layout_weight="1" />
@@ -98,7 +97,6 @@
             android:id="@+id/view_key_action_encrypt"
             android:paddingLeft="8dp"
             android:paddingRight="8dp"
-            android:layout_marginBottom="8dp"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -108,6 +106,28 @@
             android:text="@string/key_view_action_encrypt"
             android:layout_weight="1"
             android:drawableRight="@drawable/ic_action_secure"
+            android:drawablePadding="8dp"
+            android:gravity="center_vertical" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dip"
+            android:background="?android:attr/listDivider" />
+
+        <TextView
+            android:id="@+id/view_key_action_update"
+            android:paddingLeft="8dp"
+            android:paddingRight="8dp"
+            android:layout_marginBottom="8dp"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="?android:attr/listPreferredItemHeight"
+            android:clickable="true"
+            style="@style/SelectableItem"
+            android:text="@string/key_view_action_update"
+            android:layout_weight="1"
+            android:drawableRight="@drawable/ic_action_download"
             android:drawablePadding="8dp"
             android:gravity="center_vertical" />
 

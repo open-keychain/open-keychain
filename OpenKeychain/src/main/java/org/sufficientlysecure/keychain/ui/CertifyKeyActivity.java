@@ -139,7 +139,7 @@ public class CertifyKeyActivity extends ActionBarActivity implements
                         Notify.showNotify(CertifyKeyActivity.this, getString(R.string.select_key_to_certify),
                                 Notify.Style.ERROR);
                     } else {
-                        initiateSigning();
+                        initiateCertifying();
                     }
                 }
             }
@@ -229,7 +229,7 @@ public class CertifyKeyActivity extends ActionBarActivity implements
     /**
      * handles the UI bits of the signing process on the UI thread
      */
-    private void initiateSigning() {
+    private void initiateCertifying() {
         // get the user's passphrase for this key (if required)
         String passphrase = PassphraseCacheService.getCachedPassphrase(this, mMasterKeyId);
         if (passphrase == null) {
@@ -238,7 +238,7 @@ public class CertifyKeyActivity extends ActionBarActivity implements
                         @Override
                         public void handleMessage(Message message) {
                             if (message.what == PassphraseDialogFragment.MESSAGE_OKAY) {
-                                startSigning();
+                                startCertifying();
                             }
                         }
                     }
@@ -246,15 +246,14 @@ public class CertifyKeyActivity extends ActionBarActivity implements
             // bail out; need to wait until the user has entered the passphrase before trying again
             return;
         } else {
-            startSigning();
+            startCertifying();
         }
     }
 
     /**
      * kicks off the actual signing process on a background thread
      */
-    private void startSigning() {
-
+    private void startCertifying() {
         // Bail out if there is not at least one user id selected
         ArrayList<String> userIds = mUserIdsAdapter.getSelectedUserIds();
         if (userIds.isEmpty()) {
@@ -279,7 +278,7 @@ public class CertifyKeyActivity extends ActionBarActivity implements
 
         // Message is received after signing is done in KeychainIntentService
         KeychainIntentServiceHandler saveHandler = new KeychainIntentServiceHandler(this,
-                getString(R.string.progress_signing), ProgressDialog.STYLE_SPINNER) {
+                getString(R.string.progress_certifying), ProgressDialog.STYLE_SPINNER) {
             public void handleMessage(Message message) {
                 // handle messages by standard KeychainIntentServiceHandler first
                 super.handleMessage(message);
@@ -333,7 +332,7 @@ public class CertifyKeyActivity extends ActionBarActivity implements
 
         // Message is received after uploading is done in KeychainIntentService
         KeychainIntentServiceHandler saveHandler = new KeychainIntentServiceHandler(this,
-                getString(R.string.progress_exporting), ProgressDialog.STYLE_HORIZONTAL) {
+                getString(R.string.progress_uploading), ProgressDialog.STYLE_HORIZONTAL) {
             public void handleMessage(Message message) {
                 // handle messages by standard KeychainIntentServiceHandler first
                 super.handleMessage(message);

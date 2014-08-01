@@ -49,6 +49,7 @@ import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.KeychainContract.Keys;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
+import org.sufficientlysecure.keychain.provider.ProviderHelper.NotFoundException;
 import org.sufficientlysecure.keychain.ui.dialog.ShareNfcDialogFragment;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Notify;
@@ -70,6 +71,7 @@ public class ViewKeyShareFragment extends LoaderFragment implements
     private View mKeyClipboardButton;
     private View mNfcHelpButton;
     private View mNfcPrefsButton;
+    private View mKeyUploadButton;
 
     ProviderHelper mProviderHelper;
 
@@ -94,6 +96,7 @@ public class ViewKeyShareFragment extends LoaderFragment implements
         mKeyClipboardButton = view.findViewById(R.id.view_key_action_key_clipboard);
         mNfcHelpButton = view.findViewById(R.id.view_key_action_nfc_help);
         mNfcPrefsButton = view.findViewById(R.id.view_key_action_nfc_prefs);
+        mKeyUploadButton = view.findViewById(R.id.view_key_action_upload);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
             mNfcPrefsButton.setVisibility(View.VISIBLE);
@@ -142,6 +145,12 @@ public class ViewKeyShareFragment extends LoaderFragment implements
             @Override
             public void onClick(View v) {
                 showNfcPrefs();
+            }
+        });
+        mKeyUploadButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                uploadToKeyserver();
             }
         });
 
@@ -345,4 +354,11 @@ public class ViewKeyShareFragment extends LoaderFragment implements
 
         loadTask.execute();
     }
+
+    private void uploadToKeyserver() {
+        Intent uploadIntent = new Intent(getActivity(), UploadKeyActivity.class);
+        uploadIntent.setData(mDataUri);
+        startActivityForResult(uploadIntent, 0);
+    }
+
 }

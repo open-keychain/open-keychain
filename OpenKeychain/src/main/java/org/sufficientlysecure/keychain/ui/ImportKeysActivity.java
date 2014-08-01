@@ -100,6 +100,7 @@ public class ImportKeysActivity extends ActionBarActivity {
 
     public static final int VIEW_PAGER_HEIGHT = 64; // dp
 
+    private static final int ALL_TABS = -1;
     private static final int TAB_KEYSERVER = 0;
     private static final int TAB_QR_CODE = 1;
     private static final int TAB_FILE = 2;
@@ -152,7 +153,7 @@ public class ImportKeysActivity extends ActionBarActivity {
         }
 
         Bundle serverBundle = null;
-        boolean serverOnly = false;
+        int showTabOnly = ALL_TABS;
         if (ACTION_IMPORT_KEY.equals(action)) {
             /* Keychain's own Actions */
 
@@ -216,7 +217,7 @@ public class ImportKeysActivity extends ActionBarActivity {
                     serverBundle.putString(ImportKeysServerFragment.ARG_QUERY, query);
                     serverBundle.putBoolean(ImportKeysServerFragment.ARG_DISABLE_QUERY_EDIT, true);
                     // display server tab only
-                    serverOnly = true;
+                    showTabOnly = TAB_KEYSERVER;
                     mSwitchToTab = TAB_KEYSERVER;
 
                     // action: search immediately
@@ -229,10 +230,17 @@ public class ImportKeysActivity extends ActionBarActivity {
                 );
                 return;
             }
-        } else if (ACTION_IMPORT_KEY_FROM_FILE.equals(action)
-                    || ACTION_IMPORT_KEY_FROM_FILE_AND_RETURN.equals(action)) {
+        } else if (ACTION_IMPORT_KEY_FROM_FILE.equals(action)) {
             // NOTE: this only displays the appropriate fragment, no actions are taken
             mSwitchToTab = TAB_FILE;
+
+            // no immediate actions!
+            startListFragment(savedInstanceState, null, null, null);
+        } else if (ACTION_IMPORT_KEY_FROM_FILE_AND_RETURN.equals(action)) {
+            // NOTE: this only displays the appropriate fragment, no actions are taken
+            mSwitchToTab = TAB_FILE;
+            // display file tab only
+            showTabOnly = TAB_FILE;
 
             // no immediate actions!
             startListFragment(savedInstanceState, null, null, null);
@@ -261,10 +269,10 @@ public class ImportKeysActivity extends ActionBarActivity {
             startListFragment(savedInstanceState, null, null, null);
         }
 
-        initTabs(serverBundle, serverOnly);
+        initTabs(serverBundle, showTabOnly);
     }
 
-    private void initTabs(Bundle serverBundle, boolean serverOnly) {
+    private void initTabs(Bundle serverBundle, int showTabOnly) {
         mTabsAdapter = new PagerTabStripAdapter(this);
         mViewPager.setAdapter(mTabsAdapter);
         mSlidingTabLayout.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
@@ -287,15 +295,34 @@ public class ImportKeysActivity extends ActionBarActivity {
             }
         });
 
-        mTabsAdapter.addTab(ImportKeysServerFragment.class,
-                serverBundle, getString(R.string.import_tab_keyserver));
-        if (!serverOnly) {
-            mTabsAdapter.addTab(ImportKeysQrCodeFragment.class,
-                    null, getString(R.string.import_tab_qr_code));
-            mTabsAdapter.addTab(ImportKeysFileFragment.class,
-                    null, getString(R.string.import_tab_direct));
-            mTabsAdapter.addTab(ImportKeysKeybaseFragment.class,
-                    null, getString(R.string.import_tab_keybase));
+        switch (showTabOnly) {
+            case ALL_TABS:
+                // show all tabs
+                mTabsAdapter.addTab(ImportKeysServerFragment.class,
+                        serverBundle, getString(R.string.import_tab_keyserver));
+                mTabsAdapter.addTab(ImportKeysQrCodeFragment.class,
+                        null, getString(R.string.import_tab_qr_code));
+                mTabsAdapter.addTab(ImportKeysFileFragment.class,
+                        null, getString(R.string.import_tab_direct));
+                mTabsAdapter.addTab(ImportKeysKeybaseFragment.class,
+                        null, getString(R.string.import_tab_keybase));
+                break;
+            case TAB_KEYSERVER:
+                mTabsAdapter.addTab(ImportKeysServerFragment.class,
+                        serverBundle, getString(R.string.import_tab_keyserver));
+                break;
+            case TAB_QR_CODE:
+                mTabsAdapter.addTab(ImportKeysQrCodeFragment.class,
+                        null, getString(R.string.import_tab_qr_code));
+                break;
+            case TAB_FILE:
+                mTabsAdapter.addTab(ImportKeysFileFragment.class,
+                        null, getString(R.string.import_tab_direct));
+                break;
+            case TAB_KEYBASE:
+                mTabsAdapter.addTab(ImportKeysKeybaseFragment.class,
+                        null, getString(R.string.import_tab_keybase));
+                break;
         }
 
         // update layout after operations

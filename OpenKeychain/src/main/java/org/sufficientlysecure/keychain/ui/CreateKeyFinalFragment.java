@@ -145,20 +145,20 @@ public class CreateKeyFinalFragment extends Fragment {
                         return;
                     }
 
-                    if (mUploadCheckbox.isChecked()) {
-                        if (result.getResult() == OperationResultParcel.RESULT_OK) {
+                    if (result.getResult() == OperationResultParcel.RESULT_OK) {
+                        if (mUploadCheckbox.isChecked()) {
                             // result will be displayed after upload
                             uploadKey(result);
                         } else {
-                            // display result on error without finishing activity
+                            // TODO: return result
                             result.createNotify(getActivity());
+
+                            getActivity().setResult(Activity.RESULT_OK);
+                            getActivity().finish();
                         }
                     } else {
-                        // TODO: return result
+                        // display result on error without finishing activity
                         result.createNotify(getActivity());
-
-                        getActivity().setResult(Activity.RESULT_OK);
-                        getActivity().finish();
                     }
                 }
             }
@@ -196,9 +196,8 @@ public class CreateKeyFinalFragment extends Fragment {
         intent.setAction(KeychainIntentService.ACTION_UPLOAD_KEYRING);
 
         // set data uri as path to keyring
-        Uri blobUri = KeychainContract.KeyRingData.buildPublicKeyRingUri(
-                Long.toString(editKeyResult.mRingMasterKeyId)
-        );
+        Uri blobUri = KeychainContract.KeyRings.buildUnifiedKeyRingUri(
+                editKeyResult.mRingMasterKeyId);
         intent.setData(blobUri);
 
         // fill values for this action
@@ -212,14 +211,15 @@ public class CreateKeyFinalFragment extends Fragment {
 
         // Message is received after uploading is done in KeychainIntentService
         KeychainIntentServiceHandler saveHandler = new KeychainIntentServiceHandler(getActivity(),
-                getString(R.string.progress_exporting), ProgressDialog.STYLE_HORIZONTAL) {
+                getString(R.string.progress_uploading), ProgressDialog.STYLE_HORIZONTAL) {
             public void handleMessage(Message message) {
                 // handle messages by standard KeychainIntentServiceHandler first
                 super.handleMessage(message);
 
                 if (message.arg1 == KeychainIntentServiceHandler.MESSAGE_OKAY) {
-                    // TODO: return results
-
+                    // TODO: not supported by upload?
+//                    if (result.getResult() == OperationResultParcel.RESULT_OK) {
+                    // TODO: return result
                     editKeyResult.createNotify(getActivity());
 
                     Notify.showNotify(getActivity(), R.string.key_send_success,
@@ -227,6 +227,10 @@ public class CreateKeyFinalFragment extends Fragment {
 
                     getActivity().setResult(Activity.RESULT_OK);
                     getActivity().finish();
+//                    } else {
+//                        // display result on error without finishing activity
+//                        editKeyResult.createNotify(getActivity());
+//                    }
                 }
             }
         };

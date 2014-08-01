@@ -33,9 +33,10 @@
                 android:layout_weight="1"
                 android:text="@string/first_time_import_key"
                 android:minHeight="?android:attr/listPreferredItemHeight"
-                android:drawableRight="@drawable/ic_action_download"
+                android:drawableRight="@drawable/ic_action_collection"
                 android:drawablePadding="8dp"
                 android:gravity="center_vertical"
+                android:layout_gravity="center_vertical"
                 android:clickable="true"
                 style="@style/SelectableItem" />
 
@@ -59,6 +60,7 @@
                 android:drawableRight="@drawable/ic_action_new_account"
                 android:drawablePadding="8dp"
                 android:gravity="center_vertical"
+                android:layout_gravity="center_vertical"
                 android:clickable="true"
                 style="@style/SelectableItem" />
 

@@ -89,8 +89,6 @@ public class ViewKeyActivity extends ActionBarActivity implements
     private ImageView mStatusImage;
     private View mStatusDivider;
 
-    public static final int REQUEST_CODE_LOOKUP_KEY = 0x00007006;
-
     // NFC
     private NfcAdapter mNfcAdapter;
     private NfcAdapter.CreateNdefMessageCallback mNdefCallback;
@@ -145,20 +143,27 @@ public class ViewKeyActivity extends ActionBarActivity implements
             switchToTab = intent.getExtras().getInt(EXTRA_SELECTED_TAB);
         }
 
-        Uri dataUri = getDataUri();
-        if (dataUri == null) {
-            Log.e(Constants.TAG, "Data missing. Should be Uri of key!");
+        mDataUri = getIntent().getData();
+        if (mDataUri == null) {
+            Log.e(Constants.TAG, "Data missing. Should be uri of key!");
             finish();
             return;
         }
+        if (mDataUri.getHost().equals(ContactsContract.AUTHORITY)) {
+            mDataUri = ContactHelper.dataUriFromContactUri(this, mDataUri);
+        }
 
-        loadData(dataUri);
+        Log.i(Constants.TAG, "mDataUri: " + mDataUri.toString());
 
-        initNfc(dataUri);
+        // Prepare the loaders. Either re-connect with an existing ones,
+        // or start new ones.
+        getSupportLoaderManager().initLoader(LOADER_ID_UNIFIED, null, this);
+
+        initNfc(mDataUri);
 
         mShowAdvancedTabs = false;
 
-        initTabs(dataUri);
+        initTabs(mDataUri);
 
         // switch to tab selected by extra
         mViewPager.setCurrentItem(switchToTab);
@@ -235,24 +240,6 @@ public class ViewKeyActivity extends ActionBarActivity implements
         mSlidingTabLayout.setViewPager(mViewPager);
     }
 
-    private Uri getDataUri() {
-        Uri dataUri = getIntent().getData();
-        if (dataUri != null && dataUri.getHost().equals(ContactsContract.AUTHORITY)) {
-            dataUri = ContactHelper.dataUriFromContactUri(this, dataUri);
-        }
-        return dataUri;
-    }
-
-    private void loadData(Uri dataUri) {
-        mDataUri = dataUri;
-
-        Log.i(Constants.TAG, "mDataUri: " + mDataUri.toString());
-
-        // Prepare the loaders. Either re-connect with an existing ones,
-        // or start new ones.
-        getSupportLoaderManager().initLoader(LOADER_ID_UNIFIED, null, this);
-    }
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
@@ -271,14 +258,6 @@ public class ViewKeyActivity extends ActionBarActivity implements
                     Intent homeIntent = new Intent(this, KeyListActivity.class);
                     homeIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     startActivity(homeIntent);
-                    return true;
-                }
-                case R.id.menu_key_view_update: {
-                    updateFromKeyserver(mDataUri, mProviderHelper);
-                    return true;
-                }
-                case R.id.menu_key_view_export_keyserver: {
-                    uploadToKeyserver(mDataUri);
                     return true;
                 }
                 case R.id.menu_key_view_export_file: {
@@ -319,26 +298,6 @@ public class ViewKeyActivity extends ActionBarActivity implements
                 new long[]{(Long) data.get(KeychainContract.KeyRings.MASTER_KEY_ID)},
                 Constants.Path.APP_DIR_FILE, ((Long) data.get(KeychainContract.KeyRings.HAS_SECRET) == 1)
         );
-    }
-
-    private void uploadToKeyserver(Uri dataUri) throws ProviderHelper.NotFoundException {
-        Intent uploadIntent = new Intent(this, UploadKeyActivity.class);
-        uploadIntent.setData(dataUri);
-        startActivityForResult(uploadIntent, 0);
-    }
-
-    private void updateFromKeyserver(Uri dataUri, ProviderHelper providerHelper)
-            throws ProviderHelper.NotFoundException {
-        byte[] blob = (byte[]) providerHelper.getGenericData(
-                KeychainContract.KeyRings.buildUnifiedKeyRingUri(dataUri),
-                KeychainContract.Keys.FINGERPRINT, ProviderHelper.FIELD_TYPE_BLOB);
-        String fingerprint = PgpKeyHelper.convertFingerprintToHex(blob);
-
-        Intent queryIntent = new Intent(this, ImportKeysActivity.class);
-        queryIntent.setAction(ImportKeysActivity.ACTION_IMPORT_KEY_FROM_KEYSERVER_AND_RETURN_RESULT);
-        queryIntent.putExtra(ImportKeysActivity.EXTRA_FINGERPRINT, fingerprint);
-
-        startActivityForResult(queryIntent, REQUEST_CODE_LOOKUP_KEY);
     }
 
     private void deleteKey(Uri dataUri, ExportHelper exportHelper) {
@@ -515,19 +474,19 @@ public class ViewKeyActivity extends ActionBarActivity implements
                     // Note: order is important
                     if (isRevoked) {
                         mStatusText.setText(R.string.view_key_revoked);
-                        mStatusText.setTextColor(getResources().getColor(R.color.android_red_light));
+                        mStatusText.setTextColor(getResources().getColor(R.color.android_red_dark));
                         mStatusImage.setImageDrawable(
                                 getResources().getDrawable(R.drawable.status_signature_revoked_cutout));
-                        mStatusImage.setColorFilter(getResources().getColor(R.color.android_red_light),
+                        mStatusImage.setColorFilter(getResources().getColor(R.color.android_red_dark),
                                 PorterDuff.Mode.SRC_ATOP);
                         mStatusDivider.setVisibility(View.VISIBLE);
                         mStatusLayout.setVisibility(View.VISIBLE);
                     } else if (isExpired) {
                         mStatusText.setText(R.string.view_key_expired);
-                        mStatusText.setTextColor(getResources().getColor(R.color.android_orange_light));
+                        mStatusText.setTextColor(getResources().getColor(R.color.android_orange_dark));
                         mStatusImage.setImageDrawable(
                                 getResources().getDrawable(R.drawable.status_signature_expired_cutout));
-                        mStatusImage.setColorFilter(getResources().getColor(R.color.android_orange_light),
+                        mStatusImage.setColorFilter(getResources().getColor(R.color.android_orange_dark),
                                 PorterDuff.Mode.SRC_ATOP);
                         mStatusDivider.setVisibility(View.VISIBLE);
                         mStatusLayout.setVisibility(View.VISIBLE);

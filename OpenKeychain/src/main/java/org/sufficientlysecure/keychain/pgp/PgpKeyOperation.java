@@ -354,7 +354,7 @@ public class PgpKeyOperation {
             subProgressPush(15, 25);
             for (int i = 0; i < saveParcel.mAddUserIds.size(); i++) {
 
-                progress(R.string.progress_modify_adduid, (i-1) * (100 / saveParcel.mAddSubKeys.size()));
+                progress(R.string.progress_modify_adduid, (i-1) * (100 / saveParcel.mAddUserIds.size()));
                 String userId = saveParcel.mAddUserIds.get(i);
                 log.add(LogLevel.INFO, LogType.MSG_MF_UID_ADD, indent);
 
@@ -399,7 +399,7 @@ public class PgpKeyOperation {
             subProgressPush(25, 40);
             for (int i = 0; i < saveParcel.mRevokeUserIds.size(); i++) {
 
-                progress(R.string.progress_modify_revokeuid, (i-1) * (100 / saveParcel.mAddSubKeys.size()));
+                progress(R.string.progress_modify_revokeuid, (i-1) * (100 / saveParcel.mRevokeUserIds.size()));
                 String userId = saveParcel.mRevokeUserIds.get(i);
                 log.add(LogLevel.INFO, LogType.MSG_MF_UID_REVOKE, indent, userId);
 
@@ -522,7 +522,7 @@ public class PgpKeyOperation {
             subProgressPush(50, 60);
             for (int i = 0; i < saveParcel.mChangeSubKeys.size(); i++) {
 
-                progress(R.string.progress_modify_subkeychange, (i-1) * (100 / saveParcel.mAddSubKeys.size()));
+                progress(R.string.progress_modify_subkeychange, (i-1) * (100 / saveParcel.mChangeSubKeys.size()));
                 SaveKeyringParcel.SubkeyChange change = saveParcel.mChangeSubKeys.get(i);
                 log.add(LogLevel.INFO, LogType.MSG_MF_SUBKEY_CHANGE,
                         indent, PgpKeyHelper.convertKeyIdToHex(change.mKeyId));
@@ -583,7 +583,7 @@ public class PgpKeyOperation {
             subProgressPush(60, 70);
             for (int i = 0; i < saveParcel.mRevokeSubKeys.size(); i++) {
 
-                progress(R.string.progress_modify_subkeyrevoke, (i-1) * (100 / saveParcel.mAddSubKeys.size()));
+                progress(R.string.progress_modify_subkeyrevoke, (i-1) * (100 / saveParcel.mRevokeSubKeys.size()));
                 long revocation = saveParcel.mRevokeSubKeys.get(i);
                 log.add(LogLevel.INFO, LogType.MSG_MF_SUBKEY_REVOKE,
                         indent, PgpKeyHelper.convertKeyIdToHex(revocation));
