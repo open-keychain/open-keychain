@@ -63,6 +63,8 @@ public class ContactHelper {
             ContactsContract.Data.RAW_CONTACT_ID + "=? AND " + ContactsContract.Data.MIMETYPE + "=?";
     public static final String ID_SELECTION = ContactsContract.RawContacts._ID + "=?";
 
+    private static final Map<String, Bitmap> photoCache = new HashMap<String, Bitmap>();
+
     public static List<String> getPossibleUserEmails(Context context) {
         Set<String> accountMails = getAccountEmails(context);
         accountMails.addAll(getMainProfileContactEmails(context));
@@ -236,6 +238,14 @@ public class ContactHelper {
     }
 
     public static Bitmap photoFromFingerprint(ContentResolver contentResolver, String fingerprint) {
+        if (fingerprint == null) return null;
+        if (!photoCache.containsKey(fingerprint)) {
+            photoCache.put(fingerprint, loadPhotoFromFingerprint(contentResolver, fingerprint));
+        }
+        return photoCache.get(fingerprint);
+    }
+
+    private static Bitmap loadPhotoFromFingerprint(ContentResolver contentResolver, String fingerprint) {
         if (fingerprint == null) return null;
         try {
             int rawContactId = findRawContactId(contentResolver, fingerprint);
