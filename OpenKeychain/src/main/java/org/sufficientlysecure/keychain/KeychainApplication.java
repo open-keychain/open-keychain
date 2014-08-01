@@ -61,6 +61,7 @@ public class KeychainApplication extends Application {
         PRNGFixes.apply();
         Log.d(Constants.TAG, "Bouncy Castle set and PRNG Fixes applied!");
 
+        /*
         if (Constants.DEBUG) {
             Provider[] providers = Security.getProviders();
             Log.d(Constants.TAG, "Installed Security Providers:");
@@ -68,6 +69,7 @@ public class KeychainApplication extends Application {
                 Log.d(Constants.TAG, "provider class: " + p.getClass().getName());
             }
         }
+        */
 
         // Create APG directory on sdcard if not existing
         if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
