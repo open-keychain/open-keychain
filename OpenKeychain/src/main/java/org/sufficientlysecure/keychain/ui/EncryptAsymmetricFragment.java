@@ -40,6 +40,7 @@ import com.tokenautocomplete.TokenCompleteTextView;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
@@ -261,8 +262,9 @@ public class EncryptAsymmetricFragment extends Fragment implements EncryptActivi
 
                 @Override
                 public void bindView(View view, Context context, Cursor cursor) {
-                    ((TextView) view.findViewById(android.R.id.text1)).setText(cursor.getString(mIndexUserId));
-                    view.findViewById(android.R.id.text2).setVisibility(View.VISIBLE);
+                    String[] userId = KeyRing.splitUserId(cursor.getString(mIndexUserId));
+                    ((TextView) view.findViewById(android.R.id.title)).setText(userId[2] == null ? userId[0] : (userId[0] + " (" + userId[2] + ")"));
+                    ((TextView) view.findViewById(android.R.id.text1)).setText(userId[1]);
                     ((TextView) view.findViewById(android.R.id.text2)).setText(PgpKeyHelper.convertKeyIdToHex(cursor.getLong(mIndexKeyId)));
                 }
 
@@ -309,19 +311,29 @@ public class EncryptAsymmetricFragment extends Fragment implements EncryptActivi
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
+            View v = getDropDownView(position, convertView, parent);
+            v.findViewById(android.R.id.text1).setVisibility(View.GONE);
+            return v;
+        }
+
+        @Override
+        public View getDropDownView(int position, View convertView, ViewGroup parent) {
+            View v;
             if (position == 0) {
-                View v;
                 if (convertView == null) {
                     v = inner.newView(null, null, parent);
                 } else {
                     v = convertView;
                 }
-                ((TextView) v.findViewById(android.R.id.text1)).setText("None");
+                ((TextView) v.findViewById(android.R.id.title)).setText("None");
+                v.findViewById(android.R.id.text1).setVisibility(View.GONE);
                 v.findViewById(android.R.id.text2).setVisibility(View.GONE);
-                return v;
             } else {
-                return inner.getView(position - 1, convertView, parent);
+                v = inner.getView(position - 1, convertView, parent);
+                v.findViewById(android.R.id.text1).setVisibility(View.VISIBLE);
+                v.findViewById(android.R.id.text2).setVisibility(View.VISIBLE);
             }
+            return v;
         }
     }
 

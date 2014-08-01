@@ -300,13 +300,12 @@ public class EncryptActivity extends DrawerActivity implements EncryptActivityIn
             // file
             if (mOutputUris.size() == 1) {
                 sendIntent = new Intent(Intent.ACTION_SEND);
-                sendIntent.setType("*/*");
                 sendIntent.putExtra(Intent.EXTRA_STREAM, mOutputUris.get(0));
             } else {
                 sendIntent = new Intent(Intent.ACTION_SEND_MULTIPLE);
-                sendIntent.setType("*/*");
                 sendIntent.putExtra(Intent.EXTRA_STREAM, mOutputUris);
             }
+            sendIntent.setType("application/pgp-encrypted");
         }
         if (!isModeSymmetric() && mEncryptionUserIds != null) {
             Set<String> users = new HashSet<String>();

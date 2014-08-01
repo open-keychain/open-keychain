@@ -130,12 +130,14 @@ public class EncryptKeyCompletionView extends TokenCompleteTextView {
     }
 
     public class EncryptionKey {
-        private String mUserId;
+        private String mUserIdFull;
+        private String[] mUserId;
         private long mKeyId;
         private String mFingerprint;
 
         public EncryptionKey(String userId, long keyId, String fingerprint) {
-            this.mUserId = userId;
+            this.mUserId = KeyRing.splitUserId(userId);
+            this.mUserIdFull = userId;
             this.mKeyId = keyId;
             this.mFingerprint = fingerprint;
         }
@@ -154,7 +156,7 @@ public class EncryptKeyCompletionView extends TokenCompleteTextView {
         }
 
         public String getUserId() {
-            return mUserId;
+            return mUserIdFull;
         }
 
         public String getFingerprint() {
@@ -162,22 +164,28 @@ public class EncryptKeyCompletionView extends TokenCompleteTextView {
         }
 
         public String getPrimary() {
-            String[] userId = KeyRing.splitUserId(mUserId);
-            if (userId[0] != null && userId[2] != null) {
-                return userId[0] + " (" + userId[2] + ")";
-            } else if (userId[0] != null) {
-                return userId[0];
+            if (mUserId[0] != null && mUserId[2] != null) {
+                return mUserId[0] + " (" + mUserId[2] + ")";
+            } else if (mUserId[0] != null) {
+                return mUserId[0];
             } else {
-                return userId[1];
+                return mUserId[1];
             }
         }
 
         public String getSecondary() {
-            String[] userId = KeyRing.splitUserId(mUserId);
-            if (userId[0] != null) {
-                return userId[1] + " (" + getKeyIdHexShort() + ")";
+            if (mUserId[0] != null) {
+                return mUserId[1];
             } else {
                 return getKeyIdHex();
+            }
+        }
+
+        public String getTertiary() {
+            if (mUserId[0] != null) {
+                return getKeyIdHex();
+            } else {
+                return null;
             }
         }
 
@@ -216,6 +224,7 @@ public class EncryptKeyCompletionView extends TokenCompleteTextView {
             }
             ((TextView) view.findViewById(android.R.id.title)).setText(getItem(position).getPrimary());
             ((TextView) view.findViewById(android.R.id.text1)).setText(getItem(position).getSecondary());
+            ((TextView) view.findViewById(android.R.id.text2)).setText(getItem(position).getTertiary());
             setImageByKey((ImageView) view.findViewById(android.R.id.icon), getItem(position));
             return view;
         }

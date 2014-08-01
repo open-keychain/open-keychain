@@ -245,7 +245,6 @@ public class EncryptFileFragment extends Fragment implements EncryptActivityInte
         // Clear cache if needed
         for (Uri uri : new HashSet<Uri>(thumbnailCache.keySet())) {
             if (!mEncryptInterface.getInputUris().contains(uri)) {
-                Log.d(Constants.TAG, "Removed thumbnail for uri: "+uri);
                 thumbnailCache.remove(uri);
             }
         }
