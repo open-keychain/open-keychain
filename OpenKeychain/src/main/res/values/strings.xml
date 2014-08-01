@@ -516,7 +516,7 @@
     <string name="create_key_upload">Upload key to keyserver</string>
     <string name="create_key_empty">This field is required</string>
     <string name="create_key_passphrases_not_equal">Passphrases do not match</string>
-    <string name="create_key_final_text">You entered the following credentials:</string>
+    <string name="create_key_final_text">You entered the following identity:</string>
     <string name="create_key_final_robot_text">Creating a key may take a while, have a cup of coffee in the meantime…\n(3 subkeys, RSA, 4096 bit)</string>
     <string name="create_key_text">Enter your full name, email address, and choose a passhrase.</string>
     <string name="create_key_hint_full_name">Full Name, e.g. Max Mustermann</string>
