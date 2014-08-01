@@ -23,14 +23,14 @@ import android.os.Parcelable;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.KeychainApplication;
-import org.sufficientlysecure.keychain.util.Log;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.EOFException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -66,13 +66,14 @@ public class FileImportCache<E extends Parcelable> {
 
         File tempFile = new File(mContext.getCacheDir(), FILENAME);
 
-        ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(tempFile));
+        DataOutputStream oos = new DataOutputStream(new FileOutputStream(tempFile));
 
         while (it.hasNext()) {
-            E ring = it.next();
             Parcel p = Parcel.obtain(); // creating empty parcel object
-            p.writeParcelable(ring, 0); // saving bundle as parcel
-            oos.writeObject(p.marshall()); // writing parcel to file
+            p.writeParcelable(it.next(), 0); // saving bundle as parcel
+            byte[] buf = p.marshall();
+            oos.writeInt(buf.length);
+            oos.write(buf);
             p.recycle();
         }
 
@@ -98,44 +99,37 @@ public class FileImportCache<E extends Parcelable> {
         }
 
         final File tempFile = new File(cacheDir, FILENAME);
-        final ObjectInputStream ois = new ObjectInputStream(new FileInputStream(tempFile));
+        final DataInputStream ois = new DataInputStream(new FileInputStream(tempFile));
 
         return new Iterator<E>() {
 
             E mRing = null;
             boolean closed = false;
+            byte[] buf = new byte[512];
 
             private void readNext() {
                 if (mRing != null || closed) {
-                    Log.e(Constants.TAG, "err!");
                     return;
                 }
 
                 try {
-                    if (ois.available() == 0) {
-                        return;
-                    }
 
-                    byte[] data = (byte[]) ois.readObject();
-                    Log.e(Constants.TAG, "bla");
-                    if (data == null) {
-                        if (!closed) {
-                            closed = true;
-                            ois.close();
-                            tempFile.delete();
-                        }
-                        return;
+                    int length = ois.readInt();
+                    while (buf.length < length) {
+                        buf = new byte[buf.length * 2];
                     }
+                    ois.readFully(buf, 0, length);
 
                     Parcel parcel = Parcel.obtain(); // creating empty parcel object
-                    parcel.unmarshall(data, 0, data.length);
+                    parcel.unmarshall(buf, 0, length);
                     parcel.setDataPosition(0);
                     mRing = parcel.readParcelable(KeychainApplication.class.getClassLoader());
                     parcel.recycle();
-                } catch (ClassNotFoundException e) {
-                    Log.e(Constants.TAG, "Encountered ClassNotFoundException during cache read, this is a bug!");
+                } catch (EOFException e) {
+                    // aight
+                    close();
                 } catch (IOException e) {
-                    Log.e(Constants.TAG, "Encountered IOException during cache read!");
+                    Log.e(Constants.TAG, "Encountered IOException during cache read!", e);
                 }
 
             }
@@ -163,16 +157,22 @@ public class FileImportCache<E extends Parcelable> {
 
             @Override
             public void finalize() throws Throwable {
+                close();
                 super.finalize();
+            }
+
+            private void close() {
                 if (!closed) {
                     try {
                         ois.close();
                         tempFile.delete();
                     } catch (IOException e) {
-                        // never mind
+                        // nvm
                     }
                 }
+                closed = true;
             }
+
 
         };
     }
