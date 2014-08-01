@@ -30,9 +30,12 @@ import android.support.v4.widget.CursorAdapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CheckBox;
+import android.widget.AdapterView;
+import android.widget.BaseAdapter;
+import android.widget.Spinner;
+import android.widget.SpinnerAdapter;
 import android.widget.TextView;
-import android.widget.Button;
+
 import com.tokenautocomplete.TokenCompleteTextView;
 
 import org.sufficientlysecure.keychain.Constants;
