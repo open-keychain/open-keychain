@@ -356,7 +356,7 @@ public class PgpKeyOperation {
 
                 progress(R.string.progress_modify_adduid, (i-1) * (100 / saveParcel.mAddUserIds.size()));
                 String userId = saveParcel.mAddUserIds.get(i);
-                log.add(LogLevel.INFO, LogType.MSG_MF_UID_ADD, indent);
+                log.add(LogLevel.INFO, LogType.MSG_MF_UID_ADD, indent, userId);
 
                 if (userId.equals("")) {
                     log.add(LogLevel.ERROR, LogType.MSG_MF_UID_ERROR_EMPTY, indent+1);
