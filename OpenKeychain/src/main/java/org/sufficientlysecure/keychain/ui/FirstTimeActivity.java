@@ -22,15 +22,19 @@ import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.View;
 import android.view.Window;
-import android.widget.Button;
 
+import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.helper.Preferences;
+import org.sufficientlysecure.keychain.util.Log;
 
 public class FirstTimeActivity extends ActionBarActivity {
 
-    Button mCreateKey;
-    Button mImportKey;
-    Button mSkipSetup;
+    View mCreateKey;
+    View mImportKey;
+    View mSkipSetup;
+
+    public static final int REQUEST_CODE_CREATE_OR_IMPORT_KEY = 0x00007012;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,16 +44,14 @@ public class FirstTimeActivity extends ActionBarActivity {
 
         setContentView(R.layout.first_time_activity);
 
-        mCreateKey = (Button) findViewById(R.id.first_time_create_key);
-        mImportKey = (Button) findViewById(R.id.first_time_import_key);
-        mSkipSetup = (Button) findViewById(R.id.first_time_cancel);
+        mCreateKey = findViewById(R.id.first_time_create_key);
+        mImportKey = findViewById(R.id.first_time_import_key);
+        mSkipSetup = findViewById(R.id.first_time_cancel);
 
         mSkipSetup.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(FirstTimeActivity.this, KeyListActivity.class);
-                startActivity(intent);
-                finish();
+                finishSetup();
             }
         });
 
@@ -58,8 +60,7 @@ public class FirstTimeActivity extends ActionBarActivity {
             public void onClick(View v) {
                 Intent intent = new Intent(FirstTimeActivity.this, ImportKeysActivity.class);
                 intent.setAction(ImportKeysActivity.ACTION_IMPORT_KEY_FROM_FILE_AND_RETURN);
-                startActivity(intent);
-                finish();
+                startActivityForResult(intent, REQUEST_CODE_CREATE_OR_IMPORT_KEY);
             }
         });
 
@@ -67,11 +68,30 @@ public class FirstTimeActivity extends ActionBarActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(FirstTimeActivity.this, CreateKeyActivity.class);
-                startActivity(intent);
-                finish();
+                startActivityForResult(intent, REQUEST_CODE_CREATE_OR_IMPORT_KEY);
             }
         });
 
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == REQUEST_CODE_CREATE_OR_IMPORT_KEY) {
+            if (resultCode == RESULT_OK) {
+                finishSetup();
+            }
+        } else {
+            Log.e(Constants.TAG, "No valid request code!");
+        }
+    }
+
+    private void finishSetup() {
+        Preferences prefs = Preferences.getPreferences(this);
+        prefs.setFirstTime(false);
+        Intent intent = new Intent(FirstTimeActivity.this, KeyListActivity.class);
+        startActivity(intent);
+        finish();
+    }
 }

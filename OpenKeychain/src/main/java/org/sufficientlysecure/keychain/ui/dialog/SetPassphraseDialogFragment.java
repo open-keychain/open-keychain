@@ -20,6 +20,7 @@ package org.sufficientlysecure.keychain.ui.dialog;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Message;
@@ -32,6 +33,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager.LayoutParams;
 import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
@@ -164,18 +166,50 @@ public class SetPassphraseDialogFragment extends DialogFragment implements OnEdi
             }
         });
 
+        // Hack to open keyboard.
+        // This is the only method that I found to work across all Android versions
+        // http://turbomanage.wordpress.com/2012/05/02/show-soft-keyboard-automatically-when-edittext-receives-focus/
+        // Notes: * onCreateView can't be used because we want to add buttons to the dialog
+        //        * opening in onActivityCreated does not work on Android 4.4
+        mPassphraseEditText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                mPassphraseEditText.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        InputMethodManager imm = (InputMethodManager) getActivity()
+                                .getSystemService(Context.INPUT_METHOD_SERVICE);
+                        imm.showSoftInput(mPassphraseEditText, InputMethodManager.SHOW_IMPLICIT);
+                    }
+                });
+            }
+        });
+        mPassphraseEditText.requestFocus();
+
+        mPassphraseAgainEditText.setImeActionLabel(getString(android.R.string.ok), EditorInfo.IME_ACTION_DONE);
+        mPassphraseAgainEditText.setOnEditorActionListener(this);
+
         return alert.show();
     }
 
     @Override
-    public void onActivityCreated(Bundle arg0) {
-        super.onActivityCreated(arg0);
+    public void onDismiss(DialogInterface dialog) {
+        super.onDismiss(dialog);
 
-        // request focus and open soft keyboard
-        mPassphraseEditText.requestFocus();
-        getDialog().getWindow().setSoftInputMode(LayoutParams.SOFT_INPUT_STATE_VISIBLE);
+        // hide keyboard on dismiss
+        hideKeyboard();
+    }
 
-        mPassphraseAgainEditText.setOnEditorActionListener(this);
+    private void hideKeyboard() {
+        InputMethodManager inputManager = (InputMethodManager) getActivity()
+                .getSystemService(Context.INPUT_METHOD_SERVICE);
+
+        //check if no view has focus:
+        View v = getActivity().getCurrentFocus();
+        if (v == null)
+            return;
+
+        inputManager.hideSoftInputFromWindow(v.getWindowToken(), 0);
     }
 
     /**

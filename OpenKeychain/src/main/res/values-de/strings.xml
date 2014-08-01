@@ -247,8 +247,8 @@
   <string name="error_only_files_are_supported">Binäre Daten ohne ohne Datei im Dateisystem werden nicht unterstützt.</string>
   <string name="error_jelly_bean_needed">Android 4.1 wird benötigt um Androids NFC Beam nutzen zu können!</string>
   <string name="error_nfc_needed">NFC steht auf diesem Gerät nicht zur Verfügung!</string>
-  <string name="error_keyserver_insufficient_query">zu kurze Schlüsselanfrage</string>
-  <string name="error_keyserver_too_many_responses">Die Schlüsselanfrage liefert zu viele Ergebnisse. Bitte verfeinern sie sie Anfrage.</string>
+  <string name="error_query_too_short">zu kurze Schlüsselanfrage</string>
+  <string name="error_too_many_responses">Die Schlüsselanfrage liefert zu viele Ergebnisse. Bitte verfeinern sie sie Anfrage.</string>
   <string name="error_generic_report_bug">Ein allgemeiner Fehler trat auf, bitte schreiben Sie einen neuen Bugreport für OpenKeychain.</string>
   <plurals name="error_import_non_pgp_part">
     <item quantity="one">Ein Teil der geladenen Datei ist ein gültiges OpenPGP Objekt aber kein OpenPGP Schlüssel</item>

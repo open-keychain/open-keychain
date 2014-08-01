@@ -2,18 +2,100 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:paddingTop="16dp"
-    android:paddingBottom="8dp">
+    android:paddingTop="16dp">
+
+    <LinearLayout
+        android:id="@+id/first_time_buttons"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:layout_alignParentBottom="true"
+        android:orientation="vertical">
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dip"
+            android:background="?android:attr/listDivider" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/first_time_import_key"
+                android:paddingLeft="8dp"
+                android:paddingRight="8dp"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/first_time_import_key"
+                android:minHeight="?android:attr/listPreferredItemHeight"
+                android:drawableRight="@drawable/ic_action_collection"
+                android:drawablePadding="8dp"
+                android:gravity="center_vertical"
+                android:layout_gravity="center_vertical"
+                android:clickable="true"
+                style="@style/SelectableItem" />
+
+            <View
+                android:layout_width="1dp"
+                android:layout_height="match_parent"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                android:background="?android:attr/listDivider" />
+
+            <TextView
+                android:id="@+id/first_time_create_key"
+                android:paddingLeft="8dp"
+                android:paddingRight="8dp"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/first_time_create_key"
+                android:minHeight="?android:attr/listPreferredItemHeight"
+                android:drawableRight="@drawable/ic_action_new_account"
+                android:drawablePadding="8dp"
+                android:gravity="center_vertical"
+                android:layout_gravity="center_vertical"
+                android:clickable="true"
+                style="@style/SelectableItem" />
+
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dip"
+            android:background="?android:attr/listDivider" />
+
+        <TextView
+            android:id="@+id/first_time_cancel"
+            android:paddingLeft="8dp"
+            android:paddingRight="8dp"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/first_time_skip"
+            android:minHeight="?android:attr/listPreferredItemHeight"
+            android:gravity="center"
+            android:clickable="true"
+            style="@style/SelectableItem"
+            android:layout_gravity="center_horizontal" />
+
+    </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:layout_above="@+id/first_time_buttons">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="8dp"
             android:textAppearance="?android:attr/textAppearanceLarge"
             android:text="@string/app_name"
             android:drawableLeft="@drawable/ic_launcher"
@@ -23,12 +105,15 @@
 
         <ImageView
             android:layout_width="wrap_content"
-            android:layout_marginLeft="64dp"
-            android:layout_marginRight="64dp"
+            android:layout_height="0dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
             android:layout_marginTop="16dp"
             android:layout_marginBottom="16dp"
-            android:layout_height="256dp"
-            android:src="@drawable/first_time_1" />
+            android:adjustViewBounds="true"
+            android:src="@drawable/first_time_1"
+            android:layout_gravity="center_horizontal"
+            android:layout_weight="1" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -38,51 +123,9 @@
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:text="@string/first_time_text1"
             android:layout_gravity="center_horizontal"
-            android:gravity="center_horizontal" />
+            android:gravity="center_horizontal"
+            android:layout_marginBottom="16dp" />
 
-
-    </LinearLayout>
-
-    <Button
-        android:id="@+id/first_time_cancel"
-        android:layout_alignParentBottom="true"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginRight="8dp"
-        android:text="@string/first_time_skip"
-        android:background="@drawable/button_edgy" />
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_above="@id/first_time_cancel"
-        android:orientation="horizontal">
-
-        <Button
-            android:id="@+id/first_time_create_key"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_weight="1"
-            android:layout_marginLeft="8dp"
-            android:layout_marginRight="8dp"
-            android:text="@string/first_time_create_key"
-            android:background="@drawable/button_edgy"
-            android:drawableLeft="@drawable/ic_action_new_account" />
-
-        <Button
-            android:id="@+id/first_time_import_key"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginLeft="8dp"
-            android:layout_marginRight="8dp"
-            android:text="@string/first_time_import_key"
-            android:background="@drawable/button_edgy"
-            android:drawableLeft="@drawable/ic_action_download" />
     </LinearLayout>
 
 

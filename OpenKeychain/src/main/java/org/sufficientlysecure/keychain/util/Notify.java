@@ -29,7 +29,7 @@ import com.github.johnpersano.supertoasts.SuperToast;
  */
 public class Notify {
 
-    public static enum Style {OK, WARN, ERROR}
+    public static enum Style {OK, WARN, INFO, ERROR}
 
     /**
      * Shows a simple in-layout notification with the CharSequence given as parameter

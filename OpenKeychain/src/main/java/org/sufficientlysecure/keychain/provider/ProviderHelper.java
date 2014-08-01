@@ -28,10 +28,12 @@ import android.os.RemoteException;
 import android.support.v4.util.LongSparseArray;
 
 import org.sufficientlysecure.keychain.Constants;
+import org.sufficientlysecure.keychain.pgp.CanonicalizedPublicKeyRing;
+import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKeyRing;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.pgp.NullProgressable;
 import org.sufficientlysecure.keychain.pgp.Progressable;
-import org.sufficientlysecure.keychain.pgp.WrappedPublicKey;
+import org.sufficientlysecure.keychain.pgp.CanonicalizedPublicKey;
 import org.sufficientlysecure.keychain.service.OperationResultParcel.LogType;
 import org.sufficientlysecure.keychain.service.OperationResultParcel.LogLevel;
 import org.sufficientlysecure.keychain.service.OperationResultParcel.OperationLog;
@@ -39,8 +41,6 @@ import org.sufficientlysecure.keychain.pgp.PgpHelper;
 import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
 import org.sufficientlysecure.keychain.pgp.UncachedPublicKey;
-import org.sufficientlysecure.keychain.pgp.WrappedPublicKeyRing;
-import org.sufficientlysecure.keychain.pgp.WrappedSecretKeyRing;
 import org.sufficientlysecure.keychain.pgp.WrappedSignature;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.provider.KeychainContract.ApiApps;
@@ -180,7 +180,7 @@ public class ProviderHelper {
         return getGenericData(KeyRings.buildUnifiedKeyRingUri(masterKeyId), proj, types);
     }
 
-    private LongSparseArray<WrappedPublicKey> getTrustedMasterKeys() {
+    private LongSparseArray<CanonicalizedPublicKey> getTrustedMasterKeys() {
         Cursor cursor = mContentResolver.query(KeyRings.buildUnifiedKeyRingsUri(), new String[] {
                 KeyRings.MASTER_KEY_ID,
                 // we pick from cache only information that is not easily available from keyrings
@@ -190,16 +190,15 @@ public class ProviderHelper {
             }, KeyRings.HAS_ANY_SECRET + " = 1", null, null);
 
         try {
-            LongSparseArray<WrappedPublicKey> result = new LongSparseArray<WrappedPublicKey>();
+            LongSparseArray<CanonicalizedPublicKey> result = new LongSparseArray<CanonicalizedPublicKey>();
 
             if (cursor != null && cursor.moveToFirst()) do {
                 long masterKeyId = cursor.getLong(0);
-                boolean hasAnySecret = cursor.getInt(1) > 0;
                 int verified = cursor.getInt(2);
                 byte[] blob = cursor.getBlob(3);
                 if (blob != null) {
                     result.put(masterKeyId,
-                            new WrappedPublicKeyRing(blob, hasAnySecret, verified).getPublicKey());
+                            new CanonicalizedPublicKeyRing(blob, verified).getPublicKey());
                 }
             } while (cursor.moveToNext());
 
@@ -217,23 +216,23 @@ public class ProviderHelper {
         return new CachedPublicKeyRing(this, queryUri);
     }
 
-    public WrappedPublicKeyRing getWrappedPublicKeyRing(long id) throws NotFoundException {
-        return (WrappedPublicKeyRing) getWrappedKeyRing(KeyRings.buildUnifiedKeyRingUri(id), false);
+    public CanonicalizedPublicKeyRing getCanonicalizedPublicKeyRing(long id) throws NotFoundException {
+        return (CanonicalizedPublicKeyRing) getCanonicalizedKeyRing(KeyRings.buildUnifiedKeyRingUri(id), false);
     }
 
-    public WrappedPublicKeyRing getWrappedPublicKeyRing(Uri queryUri) throws NotFoundException {
-        return (WrappedPublicKeyRing) getWrappedKeyRing(queryUri, false);
+    public CanonicalizedPublicKeyRing getCanonicalizedPublicKeyRing(Uri queryUri) throws NotFoundException {
+        return (CanonicalizedPublicKeyRing) getCanonicalizedKeyRing(queryUri, false);
     }
 
-    public WrappedSecretKeyRing getWrappedSecretKeyRing(long id) throws NotFoundException {
-        return (WrappedSecretKeyRing) getWrappedKeyRing(KeyRings.buildUnifiedKeyRingUri(id), true);
+    public CanonicalizedSecretKeyRing getCanonicalizedSecretKeyRing(long id) throws NotFoundException {
+        return (CanonicalizedSecretKeyRing) getCanonicalizedKeyRing(KeyRings.buildUnifiedKeyRingUri(id), true);
     }
 
-    public WrappedSecretKeyRing getWrappedSecretKeyRing(Uri queryUri) throws NotFoundException {
-        return (WrappedSecretKeyRing) getWrappedKeyRing(queryUri, true);
+    public CanonicalizedSecretKeyRing getCanonicalizedSecretKeyRing(Uri queryUri) throws NotFoundException {
+        return (CanonicalizedSecretKeyRing) getCanonicalizedKeyRing(queryUri, true);
     }
 
-    private KeyRing getWrappedKeyRing(Uri queryUri, boolean secret) throws NotFoundException {
+    private KeyRing getCanonicalizedKeyRing(Uri queryUri, boolean secret) throws NotFoundException {
         Cursor cursor = mContentResolver.query(queryUri,
                 new String[]{
                         // we pick from cache only information that is not easily available from keyrings
@@ -252,8 +251,8 @@ public class ProviderHelper {
                     throw new NotFoundException("Secret key not available!");
                 }
                 return secret
-                        ? new WrappedSecretKeyRing(blob, true, verified)
-                        : new WrappedPublicKeyRing(blob, hasAnySecret, verified);
+                        ? new CanonicalizedSecretKeyRing(blob, true, verified)
+                        : new CanonicalizedPublicKeyRing(blob, verified);
             } else {
                 throw new NotFoundException("Key not found!");
             }
@@ -271,16 +270,8 @@ public class ProviderHelper {
      * and need to be saved externally to be preserved past the operation.
      */
     @SuppressWarnings("unchecked")
-    private int internalSavePublicKeyRing(UncachedKeyRing keyRing,
-                Progressable progress, boolean selfCertsAreTrusted) {
-        if (keyRing.isSecret()) {
-            log(LogLevel.ERROR, LogType.MSG_IP_BAD_TYPE_SECRET);
-            return SaveKeyringResult.RESULT_ERROR;
-        }
-        if (!keyRing.isCanonicalized()) {
-            log(LogLevel.ERROR, LogType.MSG_IP_BAD_TYPE_SECRET);
-            return SaveKeyringResult.RESULT_ERROR;
-        }
+    private int saveCanonicalizedPublicKeyRing(CanonicalizedPublicKeyRing keyRing,
+                                               Progressable progress, boolean selfCertsAreTrusted) {
 
         // start with ok result
         int result = SaveKeyringResult.SAVED_PUBLIC;
@@ -318,7 +309,7 @@ public class ProviderHelper {
             { // insert subkeys
                 Uri uri = Keys.buildKeysUri(Long.toString(masterKeyId));
                 int rank = 0;
-                for (UncachedPublicKey key : new IterableIterator<UncachedPublicKey>(keyRing.getPublicKeys())) {
+                for (CanonicalizedPublicKey key : keyRing.publicKeyIterator()) {
                     long keyId = key.getKeyId();
                     log(LogLevel.DEBUG, keyId == masterKeyId ? LogType.MSG_IP_MASTER : LogType.MSG_IP_SUBKEY,
                             PgpKeyHelper.convertKeyIdToHex(keyId)
@@ -401,7 +392,7 @@ public class ProviderHelper {
             mIndent -= 1;
 
             // get a list of owned secret keys, for verification filtering
-            LongSparseArray<WrappedPublicKey> trustedKeys = getTrustedMasterKeys();
+            LongSparseArray<CanonicalizedPublicKey> trustedKeys = getTrustedMasterKeys();
 
             // classify and order user ids. primary are moved to the front, revoked to the back,
             // otherwise the order in the keyfile is preserved.
@@ -445,7 +436,7 @@ public class ProviderHelper {
 
                         // verify signatures from known private keys
                         if (trustedKeys.indexOfKey(certId) >= 0) {
-                            WrappedPublicKey trustedKey = trustedKeys.get(certId);
+                            CanonicalizedPublicKey trustedKey = trustedKeys.get(certId);
                             cert.init(trustedKey);
                             if (cert.verifySignature(masterKey, userId)) {
                                 item.trustedCerts.add(cert);
@@ -559,28 +550,13 @@ public class ProviderHelper {
     /** Saves an UncachedKeyRing of the secret variant into the db.
      * This method will fail if no corresponding public keyring is in the database!
      */
-    private int internalSaveSecretKeyRing(UncachedKeyRing keyRing) {
-
-        if (!keyRing.isSecret()) {
-            log(LogLevel.ERROR, LogType.MSG_IS_BAD_TYPE_PUBLIC);
-            return SaveKeyringResult.RESULT_ERROR;
-        }
-
-        if (!keyRing.isCanonicalized()) {
-            log(LogLevel.ERROR, LogType.MSG_IS_BAD_TYPE_PUBLIC);
-            return SaveKeyringResult.RESULT_ERROR;
-        }
+    private int saveCanonicalizedSecretKeyRing(CanonicalizedSecretKeyRing keyRing) {
 
         long masterKeyId = keyRing.getMasterKeyId();
         log(LogLevel.START, LogType.MSG_IS, PgpKeyHelper.convertKeyIdToHex(masterKeyId));
         mIndent += 1;
-        try {
 
-            // Canonicalize this key, to assert a number of assumptions made about it.
-            keyRing = keyRing.canonicalize(mLog, mIndent);
-            if (keyRing == null) {
-                return SaveKeyringResult.RESULT_ERROR;
-            }
+        try {
 
             // IF this is successful, it's a secret key
             int result = SaveKeyringResult.SAVED_SECRET;
@@ -615,8 +591,7 @@ public class ProviderHelper {
                 log(LogLevel.INFO, LogType.MSG_IS_IMPORTING_SUBKEYS);
                 mIndent += 1;
                 Set<Long> available = keyRing.getAvailableSubkeys();
-                for (UncachedPublicKey sub :
-                        new IterableIterator<UncachedPublicKey>(keyRing.getPublicKeys())) {
+                for (UncachedPublicKey sub : keyRing.publicKeyIterator()) {
                     long id = sub.getKeyId();
                     if (available.contains(id)) {
                         int upd = mContentResolver.update(uri, values, Keys.KEY_ID + " = ?",
@@ -667,9 +642,16 @@ public class ProviderHelper {
             log(LogLevel.START, LogType.MSG_IP, PgpKeyHelper.convertKeyIdToHex(masterKeyId));
             mIndent += 1;
 
+            if (publicRing.isSecret()) {
+                log(LogLevel.ERROR, LogType.MSG_IP_BAD_TYPE_SECRET);
+                return new SaveKeyringResult(SaveKeyringResult.RESULT_ERROR, mLog);
+            }
+
+            CanonicalizedPublicKeyRing canPublicRing;
+
             // If there is an old keyring, merge it
             try {
-                UncachedKeyRing oldPublicRing = getWrappedPublicKeyRing(masterKeyId).getUncachedKeyRing();
+                UncachedKeyRing oldPublicRing = getCanonicalizedPublicKeyRing(masterKeyId).getUncachedKeyRing();
 
                 // Merge data from new public ring into the old one
                 publicRing = oldPublicRing.merge(publicRing, mLog, mIndent);
@@ -680,8 +662,8 @@ public class ProviderHelper {
                 }
 
                 // Canonicalize this keyring, to assert a number of assumptions made about it.
-                publicRing = publicRing.canonicalize(mLog, mIndent);
-                if (publicRing == null) {
+                canPublicRing = (CanonicalizedPublicKeyRing) publicRing.canonicalize(mLog, mIndent);
+                if (canPublicRing == null) {
                     return new SaveKeyringResult(SaveKeyringResult.RESULT_ERROR, mLog);
                 }
 
@@ -695,39 +677,40 @@ public class ProviderHelper {
                 // Not an issue, just means we are dealing with a new keyring.
 
                 // Canonicalize this keyring, to assert a number of assumptions made about it.
-                publicRing = publicRing.canonicalize(mLog, mIndent);
-                if (publicRing == null) {
+                canPublicRing = (CanonicalizedPublicKeyRing) publicRing.canonicalize(mLog, mIndent);
+                if (canPublicRing == null) {
                     return new SaveKeyringResult(SaveKeyringResult.RESULT_ERROR, mLog);
                 }
 
             }
 
             // If there is a secret key, merge new data (if any) and save the key for later
-            UncachedKeyRing secretRing;
+            CanonicalizedSecretKeyRing canSecretRing;
             try {
-                secretRing = getWrappedSecretKeyRing(publicRing.getMasterKeyId()).getUncachedKeyRing();
+                UncachedKeyRing secretRing = getCanonicalizedSecretKeyRing(publicRing.getMasterKeyId()).getUncachedKeyRing();
 
                 // Merge data from new public ring into secret one
                 secretRing = secretRing.merge(publicRing, mLog, mIndent);
                 if (secretRing == null) {
                     return new SaveKeyringResult(SaveKeyringResult.RESULT_ERROR, mLog);
                 }
-                secretRing = secretRing.canonicalize(mLog, mIndent);
-                if (secretRing == null) {
+                // This has always been a secret key ring, this is a safe cast
+                canSecretRing = (CanonicalizedSecretKeyRing) secretRing.canonicalize(mLog, mIndent);
+                if (canSecretRing == null) {
                     return new SaveKeyringResult(SaveKeyringResult.RESULT_ERROR, mLog);
                 }
 
             } catch (NotFoundException e) {
                 // No secret key available (this is what happens most of the time)
-                secretRing = null;
+                canSecretRing = null;
             }
 
-            int result = internalSavePublicKeyRing(publicRing, progress, secretRing != null);
+            int result = saveCanonicalizedPublicKeyRing(canPublicRing, progress, canSecretRing != null);
 
             // Save the saved keyring (if any)
-            if (secretRing != null) {
+            if (canSecretRing != null) {
                 progress.setProgress(LogType.MSG_IP_REINSERT_SECRET.getMsgId(), 90, 100);
-                int secretResult = internalSaveSecretKeyRing(secretRing);
+                int secretResult = saveCanonicalizedSecretKeyRing(canSecretRing);
                 if ((secretResult & SaveKeyringResult.RESULT_ERROR) != SaveKeyringResult.RESULT_ERROR) {
                     result |= SaveKeyringResult.SAVED_SECRET;
                 }
@@ -751,9 +734,16 @@ public class ProviderHelper {
             log(LogLevel.START, LogType.MSG_IS, PgpKeyHelper.convertKeyIdToHex(masterKeyId));
             mIndent += 1;
 
+            if ( ! secretRing.isSecret()) {
+                log(LogLevel.ERROR, LogType.MSG_IS_BAD_TYPE_PUBLIC);
+                return new SaveKeyringResult(SaveKeyringResult.RESULT_ERROR, mLog);
+            }
+
+            CanonicalizedSecretKeyRing canSecretRing;
+
             // If there is an old secret key, merge it.
             try {
-                UncachedKeyRing oldSecretRing = getWrappedSecretKeyRing(masterKeyId).getUncachedKeyRing();
+                UncachedKeyRing oldSecretRing = getCanonicalizedSecretKeyRing(masterKeyId).getUncachedKeyRing();
 
                 // Merge data from new secret ring into old one
                 secretRing = secretRing.merge(oldSecretRing, mLog, mIndent);
@@ -764,8 +754,9 @@ public class ProviderHelper {
                 }
 
                 // Canonicalize this keyring, to assert a number of assumptions made about it.
-                secretRing = secretRing.canonicalize(mLog, mIndent);
-                if (secretRing == null) {
+                // This is a safe cast, because we made sure this is a secret ring above
+                canSecretRing = (CanonicalizedSecretKeyRing) secretRing.canonicalize(mLog, mIndent);
+                if (canSecretRing == null) {
                     return new SaveKeyringResult(SaveKeyringResult.RESULT_ERROR, mLog);
                 }
 
@@ -780,8 +771,9 @@ public class ProviderHelper {
                 // Not an issue, just means we are dealing with a new keyring
 
                 // Canonicalize this keyring, to assert a number of assumptions made about it.
-                secretRing = secretRing.canonicalize(mLog, mIndent);
-                if (secretRing == null) {
+                // This is a safe cast, because we made sure this is a secret ring above
+                canSecretRing = (CanonicalizedSecretKeyRing) secretRing.canonicalize(mLog, mIndent);
+                if (canSecretRing == null) {
                     return new SaveKeyringResult(SaveKeyringResult.RESULT_ERROR, mLog);
                 }
 
@@ -790,7 +782,7 @@ public class ProviderHelper {
             // Merge new data into public keyring as well, if there is any
             UncachedKeyRing publicRing;
             try {
-                UncachedKeyRing oldPublicRing = getWrappedPublicKeyRing(masterKeyId).getUncachedKeyRing();
+                UncachedKeyRing oldPublicRing = getCanonicalizedPublicKeyRing(masterKeyId).getUncachedKeyRing();
 
                 // Merge data from new secret ring into public one
                 publicRing = oldPublicRing.merge(secretRing, mLog, mIndent);
@@ -798,31 +790,26 @@ public class ProviderHelper {
                     return new SaveKeyringResult(SaveKeyringResult.RESULT_ERROR, mLog);
                 }
 
-                // If nothing changed, never mind
-                if (Arrays.hashCode(publicRing.getEncoded())
-                        == Arrays.hashCode(oldPublicRing.getEncoded())) {
-                    publicRing = null;
-                }
-
             } catch (NotFoundException e) {
                 log(LogLevel.DEBUG, LogType.MSG_IS_PUBRING_GENERATE);
                 publicRing = secretRing.extractPublicKeyRing();
             }
 
-            if (publicRing != null) {
-                publicRing = publicRing.canonicalize(mLog, mIndent);
-                if (publicRing == null) {
-                    return new SaveKeyringResult(SaveKeyringResult.RESULT_ERROR, mLog);
-                }
+            CanonicalizedPublicKeyRing canPublicRing = (CanonicalizedPublicKeyRing) publicRing.canonicalize(mLog, mIndent);
+            if (canPublicRing == null) {
+                return new SaveKeyringResult(SaveKeyringResult.RESULT_ERROR, mLog);
+            }
 
-                int result = internalSavePublicKeyRing(publicRing, progress, true);
-                if ((result & SaveKeyringResult.RESULT_ERROR) == SaveKeyringResult.RESULT_ERROR) {
-                    return new SaveKeyringResult(SaveKeyringResult.RESULT_ERROR, mLog);
-                }
+            int result;
+
+            result = saveCanonicalizedPublicKeyRing(canPublicRing, progress, true);
+            if ((result & SaveKeyringResult.RESULT_ERROR) == SaveKeyringResult.RESULT_ERROR) {
+                return new SaveKeyringResult(SaveKeyringResult.RESULT_ERROR, mLog);
             }
 
             progress.setProgress(LogType.MSG_IP_REINSERT_SECRET.getMsgId(), 90, 100);
-            int result = internalSaveSecretKeyRing(secretRing);
+            result = saveCanonicalizedSecretKeyRing(canSecretRing);
+
             return new SaveKeyringResult(result, mLog);
 
         } catch (IOException e) {
@@ -1036,5 +1023,9 @@ public class ProviderHelper {
                 cursor.close();
             }
         }
+    }
+
+    public ContentResolver getContentResolver() {
+        return mContentResolver;
     }
 }

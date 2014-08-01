@@ -2,12 +2,12 @@
 <resources>
 
     <!-- title -->
-    <string name="title_select_recipients">Select Public Key</string>
-    <string name="title_select_secret_key">Select Secret Key</string>
+    <string name="title_select_recipients">Select Keys</string>
+    <string name="title_select_secret_key">Select Your Key</string>
     <string name="title_encrypt">Encrypt</string>
     <string name="title_decrypt">Decrypt</string>
     <string name="title_authentication">Passphrase</string>
-    <string name="title_create_key">Create Key</string>
+    <string name="title_create_key">Create My Key</string>
     <string name="title_edit_key">Edit Key</string>
     <string name="title_preferences">Preferences</string>
     <string name="title_api_registered_apps">Apps</string>
@@ -71,18 +71,17 @@
     <string name="btn_encryption_advanced_settings_hide">Hide advanced settings</string>
     <string name="btn_share_encrypted_signed">Share encrypted/signed message…</string>
     <string name="btn_view_cert_key">View certification key</string>
+    <string name="btn_create_key">Create key</string>
 
     <!-- menu -->
     <string name="menu_preferences">Settings</string>
     <string name="menu_help">Help</string>
     <string name="menu_export_key">Export to file</string>
     <string name="menu_delete_key">Delete key</string>
-    <string name="menu_create_key">Create key</string>
-    <string name="menu_create_key_expert">Create key (expert)</string>
+    <string name="menu_create_key">Create my key</string>
+    <string name="menu_import_existing_key">Import existing key</string>
     <string name="menu_search">Search</string>
     <string name="menu_key_server">Keyserver…</string>
-    <string name="menu_update_key">Update from keyserver</string>
-    <string name="menu_export_key_to_server">Upload to key server</string>
     <string name="menu_share">Share…</string>
     <string name="menu_share_title_fingerprint">Share fingerprint…</string>
     <string name="menu_share_title">Share whole key…</string>
@@ -106,7 +105,7 @@
     <string name="label_file">File</string>
     <string name="label_no_passphrase">No Passphrase</string>
     <string name="label_passphrase">Passphrase</string>
-    <string name="label_passphrase_again">Again</string>
+    <string name="label_passphrase_again">Repeat Passphrase</string>
     <string name="label_algorithm">Algorithm</string>
     <string name="label_ascii_armor">ASCII Armor</string>
     <string name="label_conceal_pgp_application">Let others know that you\'re using OpenKeychain</string>
@@ -216,7 +215,7 @@
     <string name="ask_save_changed_key">You have made changes to the keyring, would you like to save it?</string>
     <string name="ask_empty_id_ok">You have added an empty identity, are you sure you want to continue?</string>
     <string name="public_key_deletetion_confirmation">Do you really want to delete the public key \'%s\'?\nYou can\'t undo this!</string>
-    <string name="also_export_secret_keys">Also export secret keys?</string>
+    <string name="also_export_secret_keys">Also export secret keys</string>
 
     <string name="key_exported">Successfully exported 1 key.</string>
     <string name="keys_exported">Successfully exported %d keys.</string>
@@ -269,10 +268,12 @@
     <string name="error_jelly_bean_needed">You need Android 4.1 to use Android\'s NFC Beam feature!</string>
     <string name="error_nfc_needed">NFC is not available on your device!</string>
     <string name="error_nothing_import">No keys found!</string>
-    <string name="error_keyserver_insufficient_query">Key search query too short</string>
-    <string name="error_searching_keys">Unrecoverable error searching for keys at server</string>
-    <string name="error_keyserver_too_many_responses">Key search query returned too many candidates; Please refine query</string>
-    <string name="error_import_file_no_content">File/Clipboard is empty</string>
+    <string name="error_query_too_short">Search query too short. Please refine your query!</string>
+    <string name="error_searching_keys">An error occurred when searching for keys.</string>
+    <string name="error_too_many_responses">Key search query returned too many candidates. Please refine your query!</string>
+    <string name="error_too_short_or_too_many_responses">Either no keys or too many have been found. Please improve your query!</string>
+
+    <string name="error_import_no_valid_keys">No valid keys found in File/Clipboard!</string>
     <string name="error_generic_report_bug">A generic error occurred, please create a new bug report for OpenKeychain.</string>
     <plurals name="error_import_non_pgp_part">
         <item quantity="one">part of the loaded file is a valid OpenPGP object but not a OpenPGP key</item>
@@ -296,11 +297,26 @@
     <string name="progress_saving">saving…</string>
     <string name="progress_importing">importing…</string>
     <string name="progress_exporting">exporting…</string>
+    <string name="progress_uploading">uploading…</string>
     <string name="progress_building_key">building key…</string>
     <string name="progress_certifying_master_key">certifying master key…</string>
     <string name="progress_building_master_key">building master ring…</string>
     <string name="progress_adding_sub_keys">adding sub keys…</string>
     <string name="progress_saving_key_ring">saving key…</string>
+    <string name="progress_generating_rsa">generating new RSA key…</string>
+    <string name="progress_generating_dsa">generating new DSA key…</string>
+    <string name="progress_generating_elgamal">generating new ElGamal key…</string>
+
+    <string name="progress_modify">modifying keyring…</string>
+
+    <string name="progress_modify_unlock">unlocking keyring…</string>
+    <string name="progress_modify_adduid">adding user ids…</string>
+    <string name="progress_modify_revokeuid">revoking user ids…</string>
+    <string name="progress_modify_primaryuid">changing primary user id…</string>
+    <string name="progress_modify_subkeychange">modifying subkeys…</string>
+    <string name="progress_modify_subkeyrevoke">revoking subkeys…</string>
+    <string name="progress_modify_subkeyadd">adding subkeys…</string>
+    <string name="progress_modify_passphrase">changing passphrase…</string>
 
     <plurals name="progress_exporting_key">
         <item quantity="one">exporting key…</item>
@@ -322,6 +338,7 @@
     <string name="progress_processing_signature">processing signature…</string>
     <string name="progress_verifying_signature">verifying signature…</string>
     <string name="progress_signing">signing…</string>
+    <string name="progress_certifying">certifying…</string>
     <string name="progress_reading_data">reading data…</string>
     <string name="progress_finding_key">finding key…</string>
     <string name="progress_decompressing_data">decompressing data…</string>
@@ -330,7 +347,6 @@
 
     <!-- action strings -->
     <string name="hint_public_keys">Name/Email/Key ID…</string>
-    <string name="hint_secret_keys">Search Secret Keys</string>
     <string name="action_share_key_with">Share Key with…</string>
     <string name="hint_keybase_search">Name/Keybase.io username…</string>
 
@@ -391,8 +407,8 @@
         <item quantity="other">Successfully imported %1$d keys</item>
     </plurals>
     <plurals name="import_keys_added_and_updated_2">
-        <item quantity="one"> and updated key%2$s.</item>
-        <item quantity="other"> and updated %1$d keys%2$s.</item>
+        <item quantity="one">and updated key%2$s.</item>
+        <item quantity="other">and updated %1$d keys%2$s.</item>
     </plurals>
     <plurals name="import_keys_added">
         <item quantity="one">Successfully imported key%2$s.</item>
@@ -402,7 +418,7 @@
         <item quantity="one">Successfully updated key%2$s.</item>
         <item quantity="other">Successfully updated %1$d keys%2$s.</item>
     </plurals>
-    <string name="import_view_log">View Log</string>
+    <string name="view_log">View Log</string>
     <string name="import_error_nothing">Nothing to import.</string>
     <string name="import_error">Error importing keys!</string>
     <string name="import_with_warnings">, with warnings</string>
@@ -431,7 +447,7 @@
     <string name="api_settings_package_signature">SHA-256 of Package Signature</string>
     <string name="api_settings_accounts">Accounts</string>
     <string name="api_settings_accounts_empty">No accounts attached to this app.</string>
-    <string name="api_create_account_text">The app requests the creation of a new account. Please select an existing private key or create a new one.\nApps are restricted to the usage of keys you select here!</string>
+    <string name="api_create_account_text">The app requests the creation of a new account. Please select one of your existing keys or create a new one.\nApps are restricted to the usage of keys you select here!</string>
     <string name="api_register_text">The displayed app wants to encrypt/decrypt messages and sign them in your name.\nAllow access?\n\nWARNING: If you do not know why this screen appeared, disallow access! You can revoke access later using the \'Apps\' screen.</string>
     <string name="api_register_allow">Allow access</string>
     <string name="api_register_disallow">Disallow access</string>
@@ -458,14 +474,16 @@
     <string name="key_list_empty_text2">You can start by</string>
     <string name="key_list_empty_text3">or</string>
     <string name="key_list_empty_button_create">creating your own key</string>
-    <string name="key_list_empty_button_import">importing keys.</string>
+    <string name="key_list_empty_button_import">importing an existing key.</string>
 
     <!-- Key view -->
     <string name="key_view_action_edit">Edit key</string>
     <string name="key_view_action_encrypt">Encrypt with this key</string>
     <string name="key_view_action_certify">Certify identities</string>
+    <string name="key_view_action_update">Update from keyserver</string>
     <string name="key_view_action_share_with">Share with…</string>
     <string name="key_view_action_share_nfc">Share over NFC by holding the devices back to back</string>
+    <string name="key_view_action_upload">Upload to key server</string>
     <string name="key_view_tab_main">Main Info</string>
     <string name="key_view_tab_share">Share</string>
     <string name="key_view_tab_keys">Subkeys</string>
@@ -486,6 +504,19 @@
         <item>Revoke Subkey</item>
     </string-array>
 
+    <!-- Create key -->
+    <string name="create_key_upload">Upload key to keyserver</string>
+    <string name="create_key_empty">This field is required</string>
+    <string name="create_key_passphrases_not_equal">Passphrases do not match</string>
+    <string name="create_key_final_text">You entered the following identity:</string>
+    <string name="create_key_final_robot_text">Creating a key may take a while, have a cup of coffee in the meantime…\n(3 subkeys, RSA, 4096 bit)</string>
+    <string name="create_key_text">Enter your full name, email address, and choose a passhrase.</string>
+    <string name="create_key_hint_full_name">Full Name, e.g. Max Mustermann</string>
+
+    <!-- View key -->
+    <string name="view_key_revoked">This key has been revoked!</string>
+    <string name="view_key_expired">This key is expired!</string>
+
     <!-- Navigation Drawer -->
     <string name="nav_keys">Keys</string>
     <string name="nav_encrypt">Sign and Encrypt</string>
@@ -496,9 +527,6 @@
     <string name="drawer_close">Close navigation drawer</string>
     <string name="edit">Edit</string>
     <string name="my_keys">My Keys</string>
-    <string name="label_secret_key">Secret Key</string>
-    <string name="secret_key_yes">available</string>
-    <string name="secret_key_no">unavailable</string>
 
     <!-- hints -->
     <string name="encrypt_content_edit_text_hint">Write message here to encrypt and/or sign…</string>
@@ -569,6 +597,7 @@
     <string name="msg_ip_uid_processing">Processing user id %s</string>
     <string name="msg_ip_uid_revoked">User id is revoked</string>
     <string name="msg_is_bad_type_public">Tried to import public keyring as secret. This is a bug, please file a report!</string>
+    <string name="msg_is_bad_type_uncanon">Tried to import a keyring without canonicalization. This is a bug, please file a report!</string>
 
     <!-- Import Secret log entries -->
     <string name="msg_is">Importing secret key %s</string>
@@ -673,6 +702,7 @@
     <string name="msg_mf_uid_add">Adding user id %s</string>
     <string name="msg_mf_uid_primary">Changing primary uid to %s</string>
     <string name="msg_mf_uid_revoke">Revoking user id %s</string>
+    <string name="msg_mf_uid_error_empty">User ID must not be empty!</string>
     <string name="msg_mf_unlock_error">Error unlocking keyring!</string>
     <string name="msg_mf_unlock">Unlocking keyring</string>
 
@@ -684,6 +714,7 @@
     <string name="passp_cache_notif_pwd">Password</string>
 
     <!-- unsorted -->
+    <string name="internal_error">Internal error!</string>
     <string name="section_certifier_id">Certifier</string>
     <string name="section_cert">Certificate Details</string>
     <string name="label_user_id">Identity</string>
@@ -697,7 +728,7 @@
     <string name="error_key_processing">Error processing key!</string>
     <string name="no_subkey">subkey unavailable</string>
     <string name="key_stripped">stripped</string>
-    <string name="secret_cannot_multiple">Secret keys can only be deleted individually!</string>
+    <string name="secret_cannot_multiple">Your own keys can only be deleted individually!</string>
     <string name="title_view_cert">View Certificate Details</string>
     <string name="unknown_algorithm">unknown</string>
     <string name="can_sign_not">cannot sign</string>
@@ -708,8 +739,8 @@
 
     <!-- First Time -->
     <string name="first_time_text1">Take back your privacy with OpenKeychain!</string>
-    <string name="first_time_create_key">Create Key</string>
-    <string name="first_time_import_key">Import Key</string>
+    <string name="first_time_create_key">Create my key</string>
+    <string name="first_time_import_key">Import existing key</string>
     <string name="first_time_skip">Skip Setup</string>
 
 </resources>

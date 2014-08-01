@@ -19,9 +19,9 @@
 package org.sufficientlysecure.keychain.ui;
 
 import android.annotation.TargetApi;
-import android.app.Activity;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.PorterDuff;
 import android.net.Uri;
 import android.nfc.NdefMessage;
 import android.nfc.NdefRecord;
@@ -43,8 +43,9 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
-
-import com.devspark.appmsg.AppMsg;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
@@ -54,11 +55,12 @@ import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
-import org.sufficientlysecure.keychain.service.OperationResults.ImportResult;
+import org.sufficientlysecure.keychain.service.OperationResultParcel;
 import org.sufficientlysecure.keychain.ui.adapter.PagerTabStripAdapter;
 import org.sufficientlysecure.keychain.ui.widget.SlidingTabLayout.TabColorizer;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.ui.widget.SlidingTabLayout;
+import org.sufficientlysecure.keychain.util.Notify;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -81,11 +83,11 @@ public class ViewKeyActivity extends ActionBarActivity implements
     private ViewPager mViewPager;
     private SlidingTabLayout mSlidingTabLayout;
     private PagerTabStripAdapter mTabsAdapter;
-    private View mStatusDivider;
-    private View mStatusRevoked;
-    private View mStatusExpired;
 
-    public static final int REQUEST_CODE_LOOKUP_KEY = 0x00007006;
+    private LinearLayout mStatusLayout;
+    private TextView mStatusText;
+    private ImageView mStatusImage;
+    private View mStatusDivider;
 
     // NFC
     private NfcAdapter mNfcAdapter;
@@ -115,9 +117,10 @@ public class ViewKeyActivity extends ActionBarActivity implements
 
         setContentView(R.layout.view_key_activity);
 
-        mStatusDivider = findViewById(R.id.status_divider);
-        mStatusRevoked = findViewById(R.id.view_key_revoked);
-        mStatusExpired = findViewById(R.id.view_key_expired);
+        mStatusLayout = (LinearLayout) findViewById(R.id.view_key_status_layout);
+        mStatusText = (TextView) findViewById(R.id.view_key_status_text);
+        mStatusImage = (ImageView) findViewById(R.id.view_key_status_image);
+        mStatusDivider = findViewById(R.id.view_key_status_divider);
 
         mViewPager = (ViewPager) findViewById(R.id.view_key_pager);
         mSlidingTabLayout = (SlidingTabLayout) findViewById(R.id.view_key_sliding_tab_layout);
@@ -140,20 +143,27 @@ public class ViewKeyActivity extends ActionBarActivity implements
             switchToTab = intent.getExtras().getInt(EXTRA_SELECTED_TAB);
         }
 
-        Uri dataUri = getDataUri();
-        if (dataUri == null) {
-            Log.e(Constants.TAG, "Data missing. Should be Uri of key!");
+        mDataUri = getIntent().getData();
+        if (mDataUri == null) {
+            Log.e(Constants.TAG, "Data missing. Should be uri of key!");
             finish();
             return;
         }
+        if (mDataUri.getHost().equals(ContactsContract.AUTHORITY)) {
+            mDataUri = ContactHelper.dataUriFromContactUri(this, mDataUri);
+        }
 
-        loadData(dataUri);
+        Log.i(Constants.TAG, "mDataUri: " + mDataUri.toString());
 
-        initNfc(dataUri);
+        // Prepare the loaders. Either re-connect with an existing ones,
+        // or start new ones.
+        getSupportLoaderManager().initLoader(LOADER_ID_UNIFIED, null, this);
+
+        initNfc(mDataUri);
 
         mShowAdvancedTabs = false;
 
-        initTabs(dataUri);
+        initTabs(mDataUri);
 
         // switch to tab selected by extra
         mViewPager.setCurrentItem(switchToTab);
@@ -230,24 +240,6 @@ public class ViewKeyActivity extends ActionBarActivity implements
         mSlidingTabLayout.setViewPager(mViewPager);
     }
 
-    private Uri getDataUri() {
-        Uri dataUri = getIntent().getData();
-        if (dataUri != null && dataUri.getHost().equals(ContactsContract.AUTHORITY)) {
-            dataUri = ContactHelper.dataUriFromContactUri(this, dataUri);
-        }
-        return dataUri;
-    }
-
-    private void loadData(Uri dataUri) {
-        mDataUri = dataUri;
-
-        Log.i(Constants.TAG, "mDataUri: " + mDataUri.toString());
-
-        // Prepare the loaders. Either re-connect with an existing ones,
-        // or start new ones.
-        getSupportLoaderManager().initLoader(LOADER_ID_UNIFIED, null, this);
-    }
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
@@ -266,14 +258,6 @@ public class ViewKeyActivity extends ActionBarActivity implements
                     Intent homeIntent = new Intent(this, KeyListActivity.class);
                     homeIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     startActivity(homeIntent);
-                    return true;
-                }
-                case R.id.menu_key_view_update: {
-                    updateFromKeyserver(mDataUri, mProviderHelper);
-                    return true;
-                }
-                case R.id.menu_key_view_export_keyserver: {
-                    uploadToKeyserver(mDataUri);
                     return true;
                 }
                 case R.id.menu_key_view_export_file: {
@@ -295,7 +279,7 @@ public class ViewKeyActivity extends ActionBarActivity implements
                 }
             }
         } catch (ProviderHelper.NotFoundException e) {
-            AppMsg.makeText(this, R.string.error_key_not_found, AppMsg.STYLE_ALERT).show();
+            Notify.showNotify(this, R.string.error_key_not_found, Notify.Style.ERROR);
             Log.e(Constants.TAG, "Key not found", e);
         }
         return super.onOptionsItemSelected(item);
@@ -317,26 +301,6 @@ public class ViewKeyActivity extends ActionBarActivity implements
         );
     }
 
-    private void uploadToKeyserver(Uri dataUri) throws ProviderHelper.NotFoundException {
-        Intent uploadIntent = new Intent(this, UploadKeyActivity.class);
-        uploadIntent.setData(dataUri);
-        startActivityForResult(uploadIntent, 0);
-    }
-
-    private void updateFromKeyserver(Uri dataUri, ProviderHelper providerHelper)
-            throws ProviderHelper.NotFoundException {
-        byte[] blob = (byte[]) providerHelper.getGenericData(
-                KeychainContract.KeyRings.buildUnifiedKeyRingUri(dataUri),
-                KeychainContract.Keys.FINGERPRINT, ProviderHelper.FIELD_TYPE_BLOB);
-        String fingerprint = PgpKeyHelper.convertFingerprintToHex(blob);
-
-        Intent queryIntent = new Intent(this, ImportKeysActivity.class);
-        queryIntent.setAction(ImportKeysActivity.ACTION_IMPORT_KEY_FROM_KEYSERVER_AND_RETURN_RESULT);
-        queryIntent.putExtra(ImportKeysActivity.EXTRA_FINGERPRINT, fingerprint);
-
-        startActivityForResult(queryIntent, REQUEST_CODE_LOOKUP_KEY);
-    }
-
     private void deleteKey(Uri dataUri, ExportHelper exportHelper) {
         // Message is received after key is deleted
         Handler returnHandler = new Handler() {
@@ -352,22 +316,11 @@ public class ViewKeyActivity extends ActionBarActivity implements
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        switch (requestCode) {
-            case REQUEST_CODE_LOOKUP_KEY: {
-                if (resultCode == Activity.RESULT_OK) {
-                    ImportResult result = data.getParcelableExtra(ImportKeysActivity.EXTRA_RESULT);
-                    if (result != null) {
-                        result.displayNotify(this);
-                    }
-                }
-                break;
-            }
-
-            default: {
-                super.onActivityResult(requestCode, resultCode, data);
-
-                break;
-            }
+        if (data != null && data.hasExtra(OperationResultParcel.EXTRA_RESULT)) {
+            OperationResultParcel result = data.getParcelableExtra(OperationResultParcel.EXTRA_RESULT);
+            result.createNotify(this).show();
+        } else {
+            super.onActivityResult(requestCode, resultCode, data);
         }
     }
 
@@ -455,8 +408,8 @@ public class ViewKeyActivity extends ActionBarActivity implements
         public void handleMessage(Message msg) {
             switch (msg.what) {
                 case NFC_SENT:
-                    AppMsg.makeText(ViewKeyActivity.this, R.string.nfc_successful,
-                            AppMsg.STYLE_INFO).show();
+                    Notify.showNotify(
+                            ViewKeyActivity.this, R.string.nfc_successful, Notify.Style.INFO);
                     break;
             }
         }
@@ -515,22 +468,32 @@ public class ViewKeyActivity extends ActionBarActivity implements
                     String keyIdStr = PgpKeyHelper.convertKeyIdToHex(masterKeyId);
                     getSupportActionBar().setSubtitle(keyIdStr);
 
-                    // If this key is revoked, it cannot be used for anything!
-                    if (data.getInt(INDEX_UNIFIED_IS_REVOKED) != 0) {
-                        mStatusDivider.setVisibility(View.VISIBLE);
-                        mStatusRevoked.setVisibility(View.VISIBLE);
-                        mStatusExpired.setVisibility(View.GONE);
-                    } else {
-                        mStatusRevoked.setVisibility(View.GONE);
+                    boolean isRevoked = data.getInt(INDEX_UNIFIED_IS_REVOKED) > 0;
+                    boolean isExpired = !data.isNull(INDEX_UNIFIED_EXPIRY)
+                            && new Date(data.getLong(INDEX_UNIFIED_EXPIRY) * 1000).before(new Date());
 
-                        Date expiryDate = new Date(data.getLong(INDEX_UNIFIED_EXPIRY) * 1000);
-                        if (!data.isNull(INDEX_UNIFIED_EXPIRY) && expiryDate.before(new Date())) {
-                            mStatusDivider.setVisibility(View.VISIBLE);
-                            mStatusExpired.setVisibility(View.VISIBLE);
-                        } else {
-                            mStatusDivider.setVisibility(View.GONE);
-                            mStatusExpired.setVisibility(View.GONE);
-                        }
+                    // Note: order is important
+                    if (isRevoked) {
+                        mStatusText.setText(R.string.view_key_revoked);
+                        mStatusText.setTextColor(getResources().getColor(R.color.android_red_dark));
+                        mStatusImage.setImageDrawable(
+                                getResources().getDrawable(R.drawable.status_signature_revoked_cutout));
+                        mStatusImage.setColorFilter(getResources().getColor(R.color.android_red_dark),
+                                PorterDuff.Mode.SRC_ATOP);
+                        mStatusDivider.setVisibility(View.VISIBLE);
+                        mStatusLayout.setVisibility(View.VISIBLE);
+                    } else if (isExpired) {
+                        mStatusText.setText(R.string.view_key_expired);
+                        mStatusText.setTextColor(getResources().getColor(R.color.android_orange_dark));
+                        mStatusImage.setImageDrawable(
+                                getResources().getDrawable(R.drawable.status_signature_expired_cutout));
+                        mStatusImage.setColorFilter(getResources().getColor(R.color.android_orange_dark),
+                                PorterDuff.Mode.SRC_ATOP);
+                        mStatusDivider.setVisibility(View.VISIBLE);
+                        mStatusLayout.setVisibility(View.VISIBLE);
+                    } else {
+                        mStatusDivider.setVisibility(View.GONE);
+                        mStatusLayout.setVisibility(View.GONE);
                     }
 
                     break;

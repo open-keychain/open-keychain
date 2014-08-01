@@ -1,46 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:bootstrapbutton="http://schemas.android.com/apk/res-auto"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    android:fillViewport="true"
-    android:orientation="vertical" >
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
-    <LinearLayout
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:paddingLeft="16dp"
-        android:paddingRight="16dp" >
+    <include layout="@layout/notify_area"/>
 
-        <TextView
-            style="@style/SectionHeader"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:padding="4dp"
-            android:text="@string/label_passphrase" />
+    <FrameLayout
+        android:id="@+id/edit_key_fragment_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical" />
 
-        <CheckBox
-            android:id="@+id/edit_key_no_passphrase"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/label_no_passphrase" />
-
-        <Button
-            android:id="@+id/edit_key_btn_change_passphrase"
-            android:layout_width="match_parent"
-            android:layout_height="60dp"
-            android:padding="4dp"
-            android:text="@string/btn_set_passphrase"
-            android:drawableLeft="@drawable/ic_action_edit"
-            android:background="@drawable/button_edgy" />
-
-        <LinearLayout
-            android:id="@+id/edit_key_container"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical" >
-        </LinearLayout>
-    </LinearLayout>
-
-</ScrollView>
+</LinearLayout>

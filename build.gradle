@@ -5,7 +5,7 @@ buildscript {
 
     dependencies {
         // NOTE: Always use fixed version codes not dynamic ones, e.g. 0.7.3 instead of 0.7.+, see README for more information
-        classpath 'com.android.tools.build:gradle:0.12.0'
+        classpath 'com.android.tools.build:gradle:0.12.2'
     }
 }
 
@@ -22,5 +22,14 @@ task wrapper(type: Wrapper) {
 subprojects {
     tasks.withType(Test) {
         maxParallelForks = 1
+    }
+}
+
+// Ignore tests for external dependency
+project(':extern:spongycastle') {
+    subprojects {
+        // Need to re-apply the plugin here otherwise the test property below can't be set.
+        apply plugin: 'java'
+        test.enabled = false
     }
 }

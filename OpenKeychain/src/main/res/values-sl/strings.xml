@@ -254,9 +254,9 @@
   <string name="error_only_files_are_supported">Neposredni binarni podatki brez dejanske datoteke v datotečnem sistemu niso podprti.</string>
   <string name="error_jelly_bean_needed">Za uporabo storitve NFC Beam potrebujete najmanj Android 4.1!</string>
   <string name="error_nfc_needed">NFC ni na voljo na vaši napravi!</string>
-  <string name="error_keyserver_insufficient_query">Iskalni pojem je prekratek</string>
+  <string name="error_query_too_short">Iskalni pojem je prekratek</string>
   <string name="error_searching_keys">Nepremostljiva napaka pri iskanju ključev na strežniku</string>
-  <string name="error_keyserver_too_many_responses">Iskanje ključev je vrnilo preveč zadetkov; prosimo redefinirajte iskalni pojem</string>
+  <string name="error_too_many_responses">Iskanje ključev je vrnilo preveč zadetkov; prosimo redefinirajte iskalni pojem</string>
   <string name="error_generic_report_bug">Pripetila se je splošna napaka, prosimo ustvarite poročilo o \'hrošču\'.</string>
   <plurals name="error_import_non_pgp_part">
     <item quantity="one">Del naložene datoteke je veljavnen objekt OpenPGP a ni ključ.</item>

@@ -17,171 +17,69 @@
 
 package org.sufficientlysecure.keychain.ui;
 
-import android.app.ProgressDialog;
-import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
-import android.os.Message;
-import android.os.Messenger;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBarActivity;
-import android.text.Editable;
-import android.text.TextWatcher;
-import android.util.Patterns;
-import android.view.View;
-import android.widget.ArrayAdapter;
-import android.widget.AutoCompleteTextView;
-import android.widget.Button;
-import android.widget.EditText;
 
-import org.spongycastle.bcpg.sig.KeyFlags;
-import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.helper.ContactHelper;
-import org.sufficientlysecure.keychain.service.KeychainIntentService;
-import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
-import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
-
-import java.util.regex.Matcher;
 
 public class CreateKeyActivity extends ActionBarActivity {
 
-    AutoCompleteTextView nameEdit;
-    AutoCompleteTextView emailEdit;
-    EditText passphraseEdit;
-    Button createButton;
+    public static final String EXTRA_NAME = "name";
+    public static final String EXTRA_EMAIL = "email";
+
+    public static final int FRAG_ACTION_START = 0;
+    public static final int FRAG_ACTION_TO_RIGHT = 1;
+    public static final int FRAG_ACTION_TO_LEFT = 2;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.create_key_activity);
 
-        nameEdit = (AutoCompleteTextView) findViewById(R.id.name);
-        emailEdit = (AutoCompleteTextView) findViewById(R.id.email);
-        passphraseEdit = (EditText) findViewById(R.id.passphrase);
-        createButton = (Button) findViewById(R.id.create_key_button);
-
-        emailEdit.setThreshold(1); // Start working from first character
-        emailEdit.setAdapter(
-                new ArrayAdapter<String>
-                        (this, android.R.layout.simple_spinner_dropdown_item,
-                                ContactHelper.getPossibleUserEmails(this)
-                        )
-        );
-        emailEdit.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i2, int i3) {
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i2, int i3) {
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-                String email = editable.toString();
-                if (email.length() > 0) {
-                    Matcher emailMatcher = Patterns.EMAIL_ADDRESS.matcher(email);
-                    if (emailMatcher.matches()) {
-                        emailEdit.setCompoundDrawablesWithIntrinsicBounds(0, 0,
-                                R.drawable.uid_mail_ok, 0);
-                    } else {
-                        emailEdit.setCompoundDrawablesWithIntrinsicBounds(0, 0,
-                                R.drawable.uid_mail_bad, 0);
-                    }
-                } else {
-                    // remove drawable if email is empty
-                    emailEdit.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
-                }
-            }
-        });
-        nameEdit.setThreshold(1); // Start working from first character
-        nameEdit.setAdapter(
-                new ArrayAdapter<String>
-                        (this, android.R.layout.simple_spinner_dropdown_item,
-                                ContactHelper.getPossibleUserNames(this)
-                        )
-        );
-
-        createButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                createKeyCheck();
-            }
-        });
-
+        // pass extras into fragment
+        CreateKeyInputFragment frag =
+                CreateKeyInputFragment.newInstance(
+                        getIntent().getStringExtra(EXTRA_NAME),
+                        getIntent().getStringExtra(EXTRA_EMAIL)
+                );
+        loadFragment(null, frag, FRAG_ACTION_START);
     }
 
-    private void createKeyCheck() {
-        if (isEditTextNotEmpty(this, nameEdit)
-                && isEditTextNotEmpty(this, emailEdit)
-                && isEditTextNotEmpty(this, passphraseEdit)) {
-            createKey();
-        }
-    }
-
-    private void createKey() {
-        Intent intent = new Intent(this, KeychainIntentService.class);
-        intent.setAction(KeychainIntentService.ACTION_SAVE_KEYRING);
-
-        // Message is received after importing is done in KeychainIntentService
-        KeychainIntentServiceHandler saveHandler = new KeychainIntentServiceHandler(
-                this,
-                getString(R.string.progress_importing),
-                ProgressDialog.STYLE_HORIZONTAL) {
-            public void handleMessage(Message message) {
-                // handle messages by standard KeychainIntentServiceHandler first
-                super.handleMessage(message);
-
-                if (message.arg1 == KeychainIntentServiceHandler.MESSAGE_OKAY) {
-                    CreateKeyActivity.this.finish();
-                }
-            }
-        };
-
-        // fill values for this action
-        Bundle data = new Bundle();
-
-        SaveKeyringParcel parcel = new SaveKeyringParcel();
-        parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(Constants.choice.algorithm.rsa, 4096, KeyFlags.CERTIFY_OTHER, null));
-        parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(Constants.choice.algorithm.rsa, 4096, KeyFlags.SIGN_DATA, null));
-        parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(Constants.choice.algorithm.rsa, 4096, KeyFlags.ENCRYPT_COMMS | KeyFlags.ENCRYPT_STORAGE, null));
-        String userId = nameEdit.getText().toString() + " <" + emailEdit.getText().toString() + ">";
-        parcel.mAddUserIds.add(userId);
-        parcel.mNewPassphrase = passphraseEdit.getText().toString();
-
-        // get selected key entries
-        data.putParcelable(KeychainIntentService.SAVE_KEYRING_PARCEL, parcel);
-
-        intent.putExtra(KeychainIntentService.EXTRA_DATA, data);
-
-        // Create a new Messenger for the communication back
-        Messenger messenger = new Messenger(saveHandler);
-        intent.putExtra(KeychainIntentService.EXTRA_MESSENGER, messenger);
-
-        saveHandler.showProgressDialog(this);
-
-        startService(intent);
-    }
-
-    /**
-     * Checks if text of given EditText is not empty. If it is empty an error is
-     * set and the EditText gets the focus.
-     *
-     * @param context
-     * @param editText
-     * @return true if EditText is not empty
-     */
-    private static boolean isEditTextNotEmpty(Context context, EditText editText) {
-        boolean output = true;
-        if (editText.getText().toString().length() == 0) {
-            editText.setError("empty!");
-            editText.requestFocus();
-            output = false;
-        } else {
-            editText.setError(null);
+    public void loadFragment(Bundle savedInstanceState, Fragment fragment, int action) {
+        // However, if we're being restored from a previous state,
+        // then we don't need to do anything and should return or else
+        // we could end up with overlapping fragments.
+        if (savedInstanceState != null) {
+            return;
         }
 
-        return output;
+        // Add the fragment to the 'fragment_container' FrameLayout
+        // NOTE: We use commitAllowingStateLoss() to prevent weird crashes!
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+
+        switch (action) {
+            case FRAG_ACTION_START:
+                transaction.setCustomAnimations(0, 0);
+                transaction.replace(R.id.create_key_fragment_container, fragment)
+                        .commitAllowingStateLoss();
+                break;
+            case FRAG_ACTION_TO_LEFT:
+                getSupportFragmentManager().popBackStackImmediate();
+                break;
+            case FRAG_ACTION_TO_RIGHT:
+                transaction.setCustomAnimations(R.anim.frag_slide_in_from_right, R.anim.frag_slide_out_to_left,
+                        R.anim.frag_slide_in_from_left, R.anim.frag_slide_out_to_right);
+                transaction.addToBackStack(null);
+                transaction.replace(R.id.create_key_fragment_container, fragment)
+                        .commitAllowingStateLoss();
+                break;
+
+        }
+        // do it immediately!
+        getSupportFragmentManager().executePendingTransactions();
     }
+
 }

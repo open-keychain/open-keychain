@@ -17,29 +17,19 @@
 
 package org.sufficientlysecure.keychain.ui;
 
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Message;
-import android.os.Messenger;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import com.devspark.appmsg.AppMsg;
-
-import org.spongycastle.bcpg.sig.KeyFlags;
 import org.sufficientlysecure.keychain.Constants;
-import org.sufficientlysecure.keychain.Constants.choice.algorithm;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.helper.ExportHelper;
 import org.sufficientlysecure.keychain.helper.Preferences;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainDatabase;
-import org.sufficientlysecure.keychain.service.KeychainIntentService;
-import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
-import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
-import org.sufficientlysecure.keychain.service.SaveKeyringParcel.SubkeyAdd;
 import org.sufficientlysecure.keychain.util.Log;
+import org.sufficientlysecure.keychain.util.Notify;
 
 import java.io.IOException;
 
@@ -51,11 +41,10 @@ public class KeyListActivity extends DrawerActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        // if this is the first time show first time activity
         Preferences prefs = Preferences.getPreferences(this);
-        if (prefs.getFirstTime()) {
-            prefs.setFirstTime(false);
-            Intent intent = new Intent(this, FirstTimeActivity.class);
-            startActivity(intent);
+        if (prefs.isFirstTime()) {
+            startActivity(new Intent(this, FirstTimeActivity.class));
             finish();
             return;
         }
@@ -85,12 +74,18 @@ public class KeyListActivity extends DrawerActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.menu_key_list_import:
+            case R.id.menu_key_list_add:
                 importKeys();
                 return true;
 
             case R.id.menu_key_list_create:
                 createKey();
+                return true;
+
+            case R.id.menu_key_list_import_existing_key:
+                Intent intentImportExisting = new Intent(this, ImportKeysActivity.class);
+                intentImportExisting.setAction(ImportKeysActivity.ACTION_IMPORT_KEY_FROM_FILE_AND_RETURN);
+                startActivityForResult(intentImportExisting, 0);
                 return true;
 
             case R.id.menu_key_list_export:
@@ -100,25 +95,27 @@ public class KeyListActivity extends DrawerActivity {
             case R.id.menu_key_list_debug_read:
                 try {
                     KeychainDatabase.debugRead(this);
-                    AppMsg.makeText(this, "Restored from backup", AppMsg.STYLE_CONFIRM).show();
+                    Notify.showNotify(this, "Restored Notify.Style backup", Notify.Style.INFO);
                     getContentResolver().notifyChange(KeychainContract.KeyRings.CONTENT_URI, null);
                 } catch (IOException e) {
                     Log.e(Constants.TAG, "IO Error", e);
-                    AppMsg.makeText(this, "IO Error: " + e.getMessage(), AppMsg.STYLE_ALERT).show();
+                    Notify.showNotify(this, "IO Notify.Style: " + e.getMessage(), Notify.Style.ERROR);
                 }
                 return true;
 
             case R.id.menu_key_list_debug_write:
                 try {
                     KeychainDatabase.debugWrite(this);
-                    AppMsg.makeText(this, "Backup successful", AppMsg.STYLE_CONFIRM).show();
-                } catch (IOException e) {
+                    Notify.showNotify(this, "Backup Notify.Style", Notify.Style.INFO);
+                } catch(IOException e) {
                     Log.e(Constants.TAG, "IO Error", e);
-                    AppMsg.makeText(this, "IO Error: " + e.getMessage(), AppMsg.STYLE_ALERT).show();
+                    Notify.showNotify(this, "IO Notify.Style: " + e.getMessage(), Notify.Style.ERROR);
                 }
                 return true;
 
             case R.id.menu_key_list_debug_first_time:
+                Preferences prefs = Preferences.getPreferences(this);
+                prefs.setFirstTime(true);
                 Intent intent = new Intent(this, FirstTimeActivity.class);
                 startActivity(intent);
                 finish();

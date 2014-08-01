@@ -132,7 +132,7 @@ public class DecryptFragment extends Fragment {
                         mResultText.setText(R.string.decrypt_result_decrypted_and_signature_certified);
                     }
 
-                    mResultLayout.setBackgroundColor(getResources().getColor(R.color.result_green));
+                    mResultLayout.setBackgroundColor(getResources().getColor(R.color.android_green_light));
                     mSignatureStatusImage.setImageResource(R.drawable.overlay_ok);
                     mSignatureLayout.setVisibility(View.VISIBLE);
                     mLookupKey.setVisibility(View.GONE);
@@ -146,7 +146,7 @@ public class DecryptFragment extends Fragment {
                         mResultText.setText(R.string.decrypt_result_decrypted_and_signature_uncertified);
                     }
 
-                    mResultLayout.setBackgroundColor(getResources().getColor(R.color.result_orange));
+                    mResultLayout.setBackgroundColor(getResources().getColor(R.color.android_orange_light));
                     mSignatureStatusImage.setImageResource(R.drawable.overlay_ok);
                     mSignatureLayout.setVisibility(View.VISIBLE);
                     mLookupKey.setVisibility(View.GONE);
@@ -160,7 +160,7 @@ public class DecryptFragment extends Fragment {
                         mResultText.setText(R.string.decrypt_result_decrypted_unknown_pub_key);
                     }
 
-                    mResultLayout.setBackgroundColor(getResources().getColor(R.color.result_orange));
+                    mResultLayout.setBackgroundColor(getResources().getColor(R.color.android_orange_light));
                     mSignatureStatusImage.setImageResource(R.drawable.overlay_error);
                     mSignatureLayout.setVisibility(View.VISIBLE);
                     mLookupKey.setVisibility(View.VISIBLE);
@@ -170,7 +170,7 @@ public class DecryptFragment extends Fragment {
                 case OpenPgpSignatureResult.SIGNATURE_ERROR: {
                     mResultText.setText(R.string.decrypt_result_invalid_signature);
 
-                    mResultLayout.setBackgroundColor(getResources().getColor(R.color.result_red));
+                    mResultLayout.setBackgroundColor(getResources().getColor(R.color.android_red_light));
                     mSignatureStatusImage.setImageResource(R.drawable.overlay_error);
                     mSignatureLayout.setVisibility(View.GONE);
                     mLookupKey.setVisibility(View.GONE);
@@ -180,7 +180,7 @@ public class DecryptFragment extends Fragment {
                 default: {
                     mResultText.setText(R.string.error);
 
-                    mResultLayout.setBackgroundColor(getResources().getColor(R.color.result_red));
+                    mResultLayout.setBackgroundColor(getResources().getColor(R.color.android_red_light));
                     mSignatureStatusImage.setImageResource(R.drawable.overlay_error);
                     mSignatureLayout.setVisibility(View.GONE);
                     mLookupKey.setVisibility(View.GONE);
@@ -192,7 +192,7 @@ public class DecryptFragment extends Fragment {
             mLookupKey.setVisibility(View.GONE);
 
             // successful decryption-only
-            mResultLayout.setBackgroundColor(getResources().getColor(R.color.result_purple));
+            mResultLayout.setBackgroundColor(getResources().getColor(R.color.android_purple_light));
             mResultText.setText(R.string.decrypt_result_decrypted);
         }
     }

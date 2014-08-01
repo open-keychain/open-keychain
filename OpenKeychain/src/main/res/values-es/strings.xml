@@ -250,10 +250,10 @@
   <string name="error_jelly_bean_needed">¡Necesita Android 4.1 para usar la característica NFC Beam (haz NFC) de Android!</string>
   <string name="error_nfc_needed">¡NFC no está disponible en tu dispositivo!</string>
   <string name="error_nothing_import">¡No se encontraron claves!</string>
-  <string name="error_keyserver_insufficient_query">Petición de búsqueda de clave demasiado corta</string>
+  <string name="error_query_too_short">Petición de búsqueda de clave demasiado corta</string>
   <string name="error_searching_keys">Error irrecuperable buscando claves en el servidor</string>
-  <string name="error_keyserver_too_many_responses">La petición de búsqueda de clave devolvió demasiados candidatos; por favor refine su petición</string>
-  <string name="error_import_file_no_content">El Fichero/Portapapeles está vacío</string>
+  <string name="error_too_many_responses">La petición de búsqueda de clave devolvió demasiados candidatos; por favor refine su petición</string>
+  <string name="error_import_no_valid_keys">El Fichero/Portapapeles está vacío</string>
   <string name="error_generic_report_bug">Ha ocurrido un error genérico, por favor, informa de este bug a OpenKeychain</string>
   <plurals name="error_import_non_pgp_part">
     <item quantity="one">parte del archivo cargado es un objeto OpenPGP válido pero no una clave OpenPGP</item>
@@ -370,7 +370,7 @@
     <item quantity="one">Clave%2$s importada con éxito.</item>
     <item quantity="other">%1$d claves%2$s importadas con éxito.</item>
   </plurals>
-  <string name="import_view_log">Ver registro (log)</string>
+  <string name="view_log">Ver registro (log)</string>
   <string name="import_error_nothing">No hay nada que importar.</string>
   <string name="import_error">¡Error importando claves!</string>
   <string name="import_with_warnings">, con advertencias</string>

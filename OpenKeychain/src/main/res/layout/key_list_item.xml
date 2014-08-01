@@ -38,30 +38,12 @@
             android:textAppearance="?android:attr/textAppearanceSmall" />
     </LinearLayout>
 
-    <FrameLayout
-        android:id="@+id/status_layout"
+    <ImageView
         android:layout_width="wrap_content"
-        android:layout_height="match_parent">
-
-        <TextView
-            android:id="@+id/revoked"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:singleLine="true"
-            android:ellipsize="end"
-            android:textAppearance="?android:attr/textAppearanceSmall"
-            android:text="@string/revoked"
-            android:textColor="#e00"
-            android:layout_gravity="center"
-            android:padding="12dp" />
-
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/verified"
-            android:layout_gravity="center"
-            android:src="@drawable/key_certify_ok_depth0"
-            android:padding="16dp" />
-    </FrameLayout>
+        android:layout_height="wrap_content"
+        android:id="@+id/status_image"
+        android:layout_gravity="center"
+        android:src="@drawable/status_signature_revoked_cutout"
+        android:padding="16dp" />
 
 </LinearLayout>

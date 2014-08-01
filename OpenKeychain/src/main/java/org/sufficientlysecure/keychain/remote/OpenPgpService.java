@@ -457,7 +457,7 @@ public class OpenPgpService extends RemoteService {
 
             try {
                 // try to find key, throws NotFoundException if not in db!
-                mProviderHelper.getWrappedPublicKeyRing(masterKeyId);
+                mProviderHelper.getCanonicalizedPublicKeyRing(masterKeyId);
 
                 Intent result = new Intent();
                 result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_SUCCESS);

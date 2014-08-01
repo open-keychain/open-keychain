@@ -40,17 +40,19 @@ import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.helper.OtherHelper;
 import org.sufficientlysecure.keychain.helper.Preferences;
+import org.sufficientlysecure.keychain.keyimport.FileImportCache;
 import org.sufficientlysecure.keychain.keyimport.ImportKeysListEntry;
 import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
 import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
 import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
-import org.sufficientlysecure.keychain.service.OperationResults.ImportResult;
+import org.sufficientlysecure.keychain.service.OperationResults.ImportKeyResult;
 import org.sufficientlysecure.keychain.ui.adapter.PagerTabStripAdapter;
 import org.sufficientlysecure.keychain.ui.widget.SlidingTabLayout;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Notify;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Locale;
 
@@ -98,6 +100,7 @@ public class ImportKeysActivity extends ActionBarActivity {
 
     public static final int VIEW_PAGER_HEIGHT = 64; // dp
 
+    private static final int ALL_TABS = -1;
     private static final int TAB_KEYSERVER = 0;
     private static final int TAB_QR_CODE = 1;
     private static final int TAB_FILE = 2;
@@ -150,7 +153,7 @@ public class ImportKeysActivity extends ActionBarActivity {
         }
 
         Bundle serverBundle = null;
-        boolean serverOnly = false;
+        int showTabOnly = ALL_TABS;
         if (ACTION_IMPORT_KEY.equals(action)) {
             /* Keychain's own Actions */
 
@@ -214,7 +217,7 @@ public class ImportKeysActivity extends ActionBarActivity {
                     serverBundle.putString(ImportKeysServerFragment.ARG_QUERY, query);
                     serverBundle.putBoolean(ImportKeysServerFragment.ARG_DISABLE_QUERY_EDIT, true);
                     // display server tab only
-                    serverOnly = true;
+                    showTabOnly = TAB_KEYSERVER;
                     mSwitchToTab = TAB_KEYSERVER;
 
                     // action: search immediately
@@ -227,10 +230,17 @@ public class ImportKeysActivity extends ActionBarActivity {
                 );
                 return;
             }
-        } else if (ACTION_IMPORT_KEY_FROM_FILE.equals(action)
-                    || ACTION_IMPORT_KEY_FROM_FILE_AND_RETURN.equals(action)) {
+        } else if (ACTION_IMPORT_KEY_FROM_FILE.equals(action)) {
             // NOTE: this only displays the appropriate fragment, no actions are taken
             mSwitchToTab = TAB_FILE;
+
+            // no immediate actions!
+            startListFragment(savedInstanceState, null, null, null);
+        } else if (ACTION_IMPORT_KEY_FROM_FILE_AND_RETURN.equals(action)) {
+            // NOTE: this only displays the appropriate fragment, no actions are taken
+            mSwitchToTab = TAB_FILE;
+            // display file tab only
+            showTabOnly = TAB_FILE;
 
             // no immediate actions!
             startListFragment(savedInstanceState, null, null, null);
@@ -259,10 +269,10 @@ public class ImportKeysActivity extends ActionBarActivity {
             startListFragment(savedInstanceState, null, null, null);
         }
 
-        initTabs(serverBundle, serverOnly);
+        initTabs(serverBundle, showTabOnly);
     }
 
-    private void initTabs(Bundle serverBundle, boolean serverOnly) {
+    private void initTabs(Bundle serverBundle, int showTabOnly) {
         mTabsAdapter = new PagerTabStripAdapter(this);
         mViewPager.setAdapter(mTabsAdapter);
         mSlidingTabLayout.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
@@ -285,15 +295,34 @@ public class ImportKeysActivity extends ActionBarActivity {
             }
         });
 
-        mTabsAdapter.addTab(ImportKeysServerFragment.class,
-                serverBundle, getString(R.string.import_tab_keyserver));
-        if (!serverOnly) {
-            mTabsAdapter.addTab(ImportKeysQrCodeFragment.class,
-                    null, getString(R.string.import_tab_qr_code));
-            mTabsAdapter.addTab(ImportKeysFileFragment.class,
-                    null, getString(R.string.import_tab_direct));
-            mTabsAdapter.addTab(ImportKeysKeybaseFragment.class,
-                    null, getString(R.string.import_tab_keybase));
+        switch (showTabOnly) {
+            case ALL_TABS:
+                // show all tabs
+                mTabsAdapter.addTab(ImportKeysServerFragment.class,
+                        serverBundle, getString(R.string.import_tab_keyserver));
+                mTabsAdapter.addTab(ImportKeysQrCodeFragment.class,
+                        null, getString(R.string.import_tab_qr_code));
+                mTabsAdapter.addTab(ImportKeysFileFragment.class,
+                        null, getString(R.string.import_tab_direct));
+                mTabsAdapter.addTab(ImportKeysKeybaseFragment.class,
+                        null, getString(R.string.import_tab_keybase));
+                break;
+            case TAB_KEYSERVER:
+                mTabsAdapter.addTab(ImportKeysServerFragment.class,
+                        serverBundle, getString(R.string.import_tab_keyserver));
+                break;
+            case TAB_QR_CODE:
+                mTabsAdapter.addTab(ImportKeysQrCodeFragment.class,
+                        null, getString(R.string.import_tab_qr_code));
+                break;
+            case TAB_FILE:
+                mTabsAdapter.addTab(ImportKeysFileFragment.class,
+                        null, getString(R.string.import_tab_direct));
+                break;
+            case TAB_KEYBASE:
+                mTabsAdapter.addTab(ImportKeysKeybaseFragment.class,
+                        null, getString(R.string.import_tab_keybase));
+                break;
         }
 
         // update layout after operations
@@ -354,9 +383,8 @@ public class ImportKeysActivity extends ActionBarActivity {
         ImportKeysServerFragment f = (ImportKeysServerFragment)
                 getActiveFragment(mViewPager, TAB_KEYSERVER);
 
-        // TODO: Currently it simply uses keyserver nr 0
-        String keyserver = Preferences.getPreferences(ImportKeysActivity.this)
-                .getKeyServers()[0];
+        // ask favorite keyserver
+        String keyserver = Preferences.getPreferences(ImportKeysActivity.this).getKeyServers()[0];
 
         // set fields of ImportKeysServerFragment
         f.setQueryAndKeyserver(query, keyserver);
@@ -427,15 +455,15 @@ public class ImportKeysActivity extends ActionBarActivity {
                     if (returnData == null) {
                         return;
                     }
-                    final ImportResult result =
-                            returnData.getParcelable(KeychainIntentService.RESULT);
+                    final ImportKeyResult result =
+                            returnData.getParcelable(KeychainIntentService.RESULT_IMPORT);
                     if (result == null) {
                         return;
                     }
 
                     if (ACTION_IMPORT_KEY_FROM_KEYSERVER_AND_RETURN_RESULT.equals(getIntent().getAction())) {
                         Intent intent = new Intent();
-                        intent.putExtra(EXTRA_RESULT, result);
+                        intent.putExtra(ImportKeyResult.EXTRA_RESULT, result);
                         ImportKeysActivity.this.setResult(RESULT_OK, intent);
                         ImportKeysActivity.this.finish();
                         return;
@@ -451,7 +479,7 @@ public class ImportKeysActivity extends ActionBarActivity {
                         return;
                     }
 
-                    result.displayNotify(ImportKeysActivity.this);
+                    result.createNotify(ImportKeysActivity.this).show();
                 }
             }
         };
@@ -470,19 +498,29 @@ public class ImportKeysActivity extends ActionBarActivity {
 
             // get DATA from selected key entries
             ArrayList<ParcelableKeyRing> selectedEntries = mListFragment.getSelectedData();
-            data.putParcelableArrayList(KeychainIntentService.IMPORT_KEY_LIST, selectedEntries);
 
-            intent.putExtra(KeychainIntentService.EXTRA_DATA, data);
+            // instead of given the entries by Intent extra, cache them into a file
+            // to prevent Java Binder problems on heavy imports
+            // read FileImportCache for more info.
+            try {
+                FileImportCache cache = new FileImportCache(this);
+                cache.writeCache(selectedEntries);
 
-            // Create a new Messenger for the communication back
-            Messenger messenger = new Messenger(saveHandler);
-            intent.putExtra(KeychainIntentService.EXTRA_MESSENGER, messenger);
+                intent.putExtra(KeychainIntentService.EXTRA_DATA, data);
 
-            // show progress dialog
-            saveHandler.showProgressDialog(this);
+                // Create a new Messenger for the communication back
+                Messenger messenger = new Messenger(saveHandler);
+                intent.putExtra(KeychainIntentService.EXTRA_MESSENGER, messenger);
 
-            // start service with intent
-            startService(intent);
+                // show progress dialog
+                saveHandler.showProgressDialog(this);
+
+                // start service with intent
+                startService(intent);
+            } catch (IOException e) {
+                Log.e(Constants.TAG, "Problem writing cache file", e);
+                Notify.showNotify(this, "Problem writing cache file!", Notify.Style.ERROR);
+            }
         } else if (ls instanceof ImportKeysListFragment.KeyserverLoaderState) {
             ImportKeysListFragment.KeyserverLoaderState sls = (ImportKeysListFragment.KeyserverLoaderState) ls;
 

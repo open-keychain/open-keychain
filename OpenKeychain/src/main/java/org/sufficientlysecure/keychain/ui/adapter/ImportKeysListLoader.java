@@ -30,20 +30,21 @@ import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.PositionAwareInputStream;
 
 import java.io.BufferedInputStream;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 public class ImportKeysListLoader
         extends AsyncTaskLoader<AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>>> {
 
-    public static class FileHasNoContent extends Exception {
-
+    public static class NoValidKeysException extends Exception {
     }
 
-    public static class NonPgpPart extends Exception {
+    public static class NonPgpPartException extends Exception {
         private int mCount;
 
-        public NonPgpPart(int count) {
+        public NonPgpPartException(int count) {
             this.mCount = count;
         }
 
@@ -67,7 +68,6 @@ public class ImportKeysListLoader
 
     @Override
     public AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>> loadInBackground() {
-
         // This has already been loaded! nvm any further, just return
         if (mEntryListWrapper != null) {
             return mEntryListWrapper;
@@ -119,9 +119,6 @@ public class ImportKeysListLoader
      * @return
      */
     private void generateListOfKeyrings(InputData inputData) {
-
-        boolean isEmpty = true;
-
         PositionAwareInputStream progressIn = new PositionAwareInputStream(
                 inputData.getInputStream());
 
@@ -130,27 +127,23 @@ public class ImportKeysListLoader
         // armor blocks
         BufferedInputStream bufferedInput = new BufferedInputStream(progressIn);
         try {
-
-            // read all available blocks... (asc files can contain many blocks with BEGIN END)
-            while (bufferedInput.available() > 0) {
-                // TODO: deal with non-keyring objects?
-                List<UncachedKeyRing> rings = UncachedKeyRing.fromStream(bufferedInput);
-                for(UncachedKeyRing key : rings) {
-                    ImportKeysListEntry item = new ImportKeysListEntry(getContext(), key);
-                    mData.add(item);
-                    mParcelableRings.put(item.hashCode(), new ParcelableKeyRing(key.getEncoded()));
-                    isEmpty = false;
-                }
+            // parse all keyrings
+            Iterator<UncachedKeyRing> it = UncachedKeyRing.fromStream(bufferedInput);
+            while (it.hasNext()) {
+                UncachedKeyRing ring = it.next();
+                ImportKeysListEntry item = new ImportKeysListEntry(getContext(), ring);
+                mData.add(item);
+                mParcelableRings.put(item.hashCode(), new ParcelableKeyRing(ring.getEncoded()));
             }
-        } catch (Exception e) {
-            Log.e(Constants.TAG, "Exception on parsing key file!", e);
-            mEntryListWrapper = new AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>>(mData, e);
-        }
+        } catch (IOException e) {
+            Log.e(Constants.TAG, "IOException on parsing key file! Return NoValidKeysException!", e);
 
-        if (isEmpty) {
-            Log.e(Constants.TAG, "File has no content!", new FileHasNoContent());
+            NoValidKeysException e1 = new NoValidKeysException();
             mEntryListWrapper = new AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>>
-                    (mData, new FileHasNoContent());
+                    (mData, e1);
+        } catch (Exception e) {
+            Log.e(Constants.TAG, "Other Exception on parsing key file!", e);
+            mEntryListWrapper = new AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>>(mData, e);
         }
     }
 

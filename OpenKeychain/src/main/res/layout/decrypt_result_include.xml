@@ -8,7 +8,7 @@
     android:paddingRight="16dp"
     android:paddingTop="4dp"
     android:paddingBottom="4dp"
-    android:background="@color/result_purple">
+    android:background="@color/android_purple_light">
 
     <View
         android:layout_width="match_parent"

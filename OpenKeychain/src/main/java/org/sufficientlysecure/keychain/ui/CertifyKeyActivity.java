@@ -20,6 +20,7 @@ package org.sufficientlysecure.keychain.ui;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.PorterDuff;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -37,11 +38,10 @@ import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
-
-import com.devspark.appmsg.AppMsg;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
@@ -52,10 +52,12 @@ import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UserIds;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
 import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
+import org.sufficientlysecure.keychain.service.OperationResultParcel;
 import org.sufficientlysecure.keychain.service.PassphraseCacheService;
 import org.sufficientlysecure.keychain.ui.adapter.UserIdsAdapter;
 import org.sufficientlysecure.keychain.ui.dialog.PassphraseDialogFragment;
 import org.sufficientlysecure.keychain.util.Log;
+import org.sufficientlysecure.keychain.util.Notify;
 
 import java.util.ArrayList;
 
@@ -64,7 +66,8 @@ import java.util.ArrayList;
  */
 public class CertifyKeyActivity extends ActionBarActivity implements
         SelectSecretKeyLayoutFragment.SelectSecretKeyCallback, LoaderManager.LoaderCallbacks<Cursor> {
-    private View mSignButton;
+    private View mCertifyButton;
+    private ImageView mActionCertifyImage;
     private CheckBox mUploadKeyCheckbox;
     private Spinner mSelectKeyserverSpinner;
 
@@ -88,10 +91,19 @@ public class CertifyKeyActivity extends ActionBarActivity implements
 
         mSelectKeyFragment = (SelectSecretKeyLayoutFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.sign_key_select_key_fragment);
+        mSelectKeyserverSpinner = (Spinner) findViewById(R.id.upload_key_keyserver);
+        mUploadKeyCheckbox = (CheckBox) findViewById(R.id.sign_key_upload_checkbox);
+        mCertifyButton = findViewById(R.id.certify_key_certify_button);
+        mActionCertifyImage = (ImageView) findViewById(R.id.certify_key_action_certify_image);
+        mUserIds = (ListView) findViewById(R.id.view_key_user_ids);
+
+        // make certify image gray, like action icons
+        mActionCertifyImage.setColorFilter(getResources().getColor(R.color.tertiary_text_light),
+                PorterDuff.Mode.SRC_IN);
+
         mSelectKeyFragment.setCallback(this);
         mSelectKeyFragment.setFilterCertify(true);
 
-        mSelectKeyserverSpinner = (Spinner) findViewById(R.id.upload_key_keyserver);
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
                 android.R.layout.simple_spinner_item, Preferences.getPreferences(this)
                 .getKeyServers()
@@ -99,7 +111,6 @@ public class CertifyKeyActivity extends ActionBarActivity implements
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         mSelectKeyserverSpinner.setAdapter(adapter);
 
-        mUploadKeyCheckbox = (CheckBox) findViewById(R.id.sign_key_upload_checkbox);
         if (!mUploadKeyCheckbox.isChecked()) {
             mSelectKeyserverSpinner.setEnabled(false);
         } else {
@@ -118,16 +129,17 @@ public class CertifyKeyActivity extends ActionBarActivity implements
             }
         });
 
-        mSignButton = findViewById(R.id.sign_key_sign_button);
-        mSignButton.setOnClickListener(new OnClickListener() {
+        mCertifyButton.setOnClickListener(new OnClickListener() {
 
             @Override
             public void onClick(View v) {
                 if (mPubKeyId != 0) {
                     if (mMasterKeyId == 0) {
                         mSelectKeyFragment.setError(getString(R.string.select_key_to_certify));
+                        Notify.showNotify(CertifyKeyActivity.this, getString(R.string.select_key_to_certify),
+                                Notify.Style.ERROR);
                     } else {
-                        initiateSigning();
+                        initiateCertifying();
                     }
                 }
             }
@@ -141,7 +153,6 @@ public class CertifyKeyActivity extends ActionBarActivity implements
         }
         Log.e(Constants.TAG, "uri: " + mDataUri);
 
-        mUserIds = (ListView) findViewById(R.id.view_key_user_ids);
 
         mUserIdsAdapter = new UserIdsAdapter(this, null, 0, true);
         mUserIds.setAdapter(mUserIdsAdapter);
@@ -218,7 +229,7 @@ public class CertifyKeyActivity extends ActionBarActivity implements
     /**
      * handles the UI bits of the signing process on the UI thread
      */
-    private void initiateSigning() {
+    private void initiateCertifying() {
         // get the user's passphrase for this key (if required)
         String passphrase = PassphraseCacheService.getCachedPassphrase(this, mMasterKeyId);
         if (passphrase == null) {
@@ -227,27 +238,27 @@ public class CertifyKeyActivity extends ActionBarActivity implements
                         @Override
                         public void handleMessage(Message message) {
                             if (message.what == PassphraseDialogFragment.MESSAGE_OKAY) {
-                                startSigning();
+                                startCertifying();
                             }
                         }
-                    });
+                    }
+            );
             // bail out; need to wait until the user has entered the passphrase before trying again
             return;
         } else {
-            startSigning();
+            startCertifying();
         }
     }
 
     /**
      * kicks off the actual signing process on a background thread
      */
-    private void startSigning() {
-
+    private void startCertifying() {
         // Bail out if there is not at least one user id selected
         ArrayList<String> userIds = mUserIdsAdapter.getSelectedUserIds();
         if (userIds.isEmpty()) {
-            AppMsg.makeText(CertifyKeyActivity.this, "No User IDs to sign selected!",
-                    AppMsg.STYLE_ALERT).show();
+            Notify.showNotify(CertifyKeyActivity.this, "No identities selected!",
+                    Notify.Style.ERROR);
             return;
         }
 
@@ -267,15 +278,15 @@ public class CertifyKeyActivity extends ActionBarActivity implements
 
         // Message is received after signing is done in KeychainIntentService
         KeychainIntentServiceHandler saveHandler = new KeychainIntentServiceHandler(this,
-                getString(R.string.progress_signing), ProgressDialog.STYLE_SPINNER) {
+                getString(R.string.progress_certifying), ProgressDialog.STYLE_SPINNER) {
             public void handleMessage(Message message) {
                 // handle messages by standard KeychainIntentServiceHandler first
                 super.handleMessage(message);
 
                 if (message.arg1 == KeychainIntentServiceHandler.MESSAGE_OKAY) {
 
-                    AppMsg.makeText(CertifyKeyActivity.this, R.string.key_certify_success,
-                            AppMsg.STYLE_INFO).show();
+                    Notify.showNotify(CertifyKeyActivity.this, R.string.key_certify_success,
+                            Notify.Style.INFO);
 
                     // check if we need to send the key to the server or not
                     if (mUploadKeyCheckbox.isChecked()) {
@@ -321,14 +332,16 @@ public class CertifyKeyActivity extends ActionBarActivity implements
 
         // Message is received after uploading is done in KeychainIntentService
         KeychainIntentServiceHandler saveHandler = new KeychainIntentServiceHandler(this,
-                getString(R.string.progress_exporting), ProgressDialog.STYLE_HORIZONTAL) {
+                getString(R.string.progress_uploading), ProgressDialog.STYLE_HORIZONTAL) {
             public void handleMessage(Message message) {
                 // handle messages by standard KeychainIntentServiceHandler first
                 super.handleMessage(message);
 
                 if (message.arg1 == KeychainIntentServiceHandler.MESSAGE_OKAY) {
-                    AppMsg.makeText(CertifyKeyActivity.this, R.string.key_send_success,
-                            AppMsg.STYLE_INFO).show();
+                    Intent intent = new Intent();
+                    intent.putExtra(OperationResultParcel.EXTRA_RESULT, message.getData());
+                    Notify.showNotify(CertifyKeyActivity.this, R.string.key_send_success,
+                            Notify.Style.INFO);
 
                     setResult(RESULT_OK);
                     finish();

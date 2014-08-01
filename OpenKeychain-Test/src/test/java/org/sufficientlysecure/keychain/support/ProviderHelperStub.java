@@ -20,7 +20,7 @@ package org.sufficientlysecure.keychain.support;
 import android.content.Context;
 import android.net.Uri;
 
-import org.sufficientlysecure.keychain.pgp.WrappedPublicKeyRing;
+import org.sufficientlysecure.keychain.pgp.CanonicalizedPublicKeyRing;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 
 /**
@@ -32,8 +32,8 @@ class ProviderHelperStub extends ProviderHelper {
     }
 
     @Override
-    public WrappedPublicKeyRing getWrappedPublicKeyRing(Uri id) throws NotFoundException {
+    public CanonicalizedPublicKeyRing getCanonicalizedPublicKeyRing(Uri id) throws NotFoundException {
         byte[] data = TestDataUtil.readFully(getClass().getResourceAsStream("/public-key-for-sample.blob"));
-        return new WrappedPublicKeyRing(data, false, 0);
+        return new CanonicalizedPublicKeyRing(data, 0);
     }
 }

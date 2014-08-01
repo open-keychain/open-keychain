@@ -12,7 +12,7 @@ import java.util.regex.Pattern;
  * keyring should in all cases agree on the output of all methods described
  * here.
  *
- * @see org.sufficientlysecure.keychain.pgp.WrappedKeyRing
+ * @see CanonicalizedKeyRing
  * @see org.sufficientlysecure.keychain.provider.CachedPublicKeyRing
  *
  */

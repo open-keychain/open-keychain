@@ -19,6 +19,7 @@ package org.sufficientlysecure.keychain.ui;
 
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.PorterDuff;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
@@ -27,19 +28,21 @@ import android.support.v4.content.Loader;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.ListView;
-
-import com.devspark.appmsg.AppMsg;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UserIds;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
+import org.sufficientlysecure.keychain.provider.ProviderHelper.NotFoundException;
 import org.sufficientlysecure.keychain.ui.adapter.UserIdsAdapter;
 import org.sufficientlysecure.keychain.util.Log;
+import org.sufficientlysecure.keychain.util.Notify;
 
 import java.util.Date;
 
@@ -52,7 +55,9 @@ public class ViewKeyMainFragment extends LoaderFragment implements
     private View mActionEditDivider;
     private View mActionEncrypt;
     private View mActionCertify;
-    private View mActionCertifyDivider;
+    private View mActionCertifyText;
+    private ImageView mActionCertifyImage;
+    private View mActionUpdate;
 
     private ListView mUserIds;
 
@@ -76,7 +81,12 @@ public class ViewKeyMainFragment extends LoaderFragment implements
         mActionEditDivider = view.findViewById(R.id.view_key_action_edit_divider);
         mActionEncrypt = view.findViewById(R.id.view_key_action_encrypt);
         mActionCertify = view.findViewById(R.id.view_key_action_certify);
-        mActionCertifyDivider = view.findViewById(R.id.view_key_action_certify_divider);
+        mActionCertifyText = view.findViewById(R.id.view_key_action_certify_text);
+        mActionCertifyImage = (ImageView) view.findViewById(R.id.view_key_action_certify_image);
+        // make certify image gray, like action icons
+        mActionCertifyImage.setColorFilter(getResources().getColor(R.color.tertiary_text_light),
+                PorterDuff.Mode.SRC_IN);
+        mActionUpdate = view.findViewById(R.id.view_key_action_update);
 
         return root;
     }
@@ -114,6 +124,15 @@ public class ViewKeyMainFragment extends LoaderFragment implements
         mActionEdit.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
                 editKey(mDataUri);
+            }
+        });
+        mActionUpdate.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                try {
+                    updateFromKeyserver(mDataUri, new ProviderHelper(getActivity()));
+                } catch (NotFoundException e) {
+                    Notify.showNotify(getActivity(), R.string.error_key_not_found, Notify.Style.ERROR);
+                }
             }
         });
 
@@ -182,6 +201,7 @@ public class ViewKeyMainFragment extends LoaderFragment implements
                     if (data.getInt(INDEX_UNIFIED_IS_REVOKED) != 0) {
                         mActionEdit.setEnabled(false);
                         mActionCertify.setEnabled(false);
+                        mActionCertifyText.setEnabled(false);
                         mActionEncrypt.setEnabled(false);
                     } else {
                         mActionEdit.setEnabled(true);
@@ -189,9 +209,11 @@ public class ViewKeyMainFragment extends LoaderFragment implements
                         Date expiryDate = new Date(data.getLong(INDEX_UNIFIED_EXPIRY) * 1000);
                         if (!data.isNull(INDEX_UNIFIED_EXPIRY) && expiryDate.before(new Date())) {
                             mActionCertify.setEnabled(false);
+                            mActionCertifyText.setEnabled(false);
                             mActionEncrypt.setEnabled(false);
                         } else {
                             mActionCertify.setEnabled(true);
+                            mActionCertifyText.setEnabled(true);
                             mActionEncrypt.setEnabled(true);
                         }
                     }
@@ -225,7 +247,7 @@ public class ViewKeyMainFragment extends LoaderFragment implements
     private void encrypt(Uri dataUri) {
         // If there is no encryption key, don't bother.
         if (!mHasEncrypt) {
-            AppMsg.makeText(getActivity(), R.string.error_no_encrypt_subkey, AppMsg.STYLE_ALERT).show();
+            Notify.showNotify(getActivity(), R.string.error_no_encrypt_subkey, Notify.Style.ERROR);
             return;
         }
         try {
@@ -243,18 +265,30 @@ public class ViewKeyMainFragment extends LoaderFragment implements
         }
     }
 
+    private void updateFromKeyserver(Uri dataUri, ProviderHelper providerHelper)
+            throws ProviderHelper.NotFoundException {
+        byte[] blob = (byte[]) providerHelper.getGenericData(
+                KeychainContract.KeyRings.buildUnifiedKeyRingUri(dataUri),
+                KeychainContract.Keys.FINGERPRINT, ProviderHelper.FIELD_TYPE_BLOB);
+        String fingerprint = PgpKeyHelper.convertFingerprintToHex(blob);
+
+        Intent queryIntent = new Intent(getActivity(), ImportKeysActivity.class);
+        queryIntent.setAction(ImportKeysActivity.ACTION_IMPORT_KEY_FROM_KEYSERVER_AND_RETURN_RESULT);
+        queryIntent.putExtra(ImportKeysActivity.EXTRA_FINGERPRINT, fingerprint);
+
+        startActivityForResult(queryIntent, 0);
+    }
+
     private void certify(Uri dataUri) {
         Intent signIntent = new Intent(getActivity(), CertifyKeyActivity.class);
         signIntent.setData(dataUri);
-        startActivity(signIntent);
+        startActivityForResult(signIntent, 0);
     }
 
     private void editKey(Uri dataUri) {
         Intent editIntent = new Intent(getActivity(), EditKeyActivity.class);
         editIntent.setData(KeychainContract.KeyRingData.buildSecretKeyRingUri(dataUri));
-//        editIntent.setAction(EditKeyActivity.ACTION_EDIT_KEY);
-//        startActivityForResult(editIntent, 0);
-        startActivity(editIntent);
+        startActivityForResult(editIntent, 0);
     }
 
 }

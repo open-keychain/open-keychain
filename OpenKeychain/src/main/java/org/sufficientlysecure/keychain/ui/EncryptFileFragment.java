@@ -37,8 +37,6 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Spinner;
 
-import com.devspark.appmsg.AppMsg;
-
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.helper.FileHelper;
@@ -51,6 +49,7 @@ import org.sufficientlysecure.keychain.ui.dialog.FileDialogFragment;
 import org.sufficientlysecure.keychain.ui.dialog.PassphraseDialogFragment;
 import org.sufficientlysecure.keychain.util.Choice;
 import org.sufficientlysecure.keychain.util.Log;
+import org.sufficientlysecure.keychain.util.Notify;
 
 import java.io.File;
 
@@ -58,7 +57,7 @@ public class EncryptFileFragment extends Fragment {
     public static final String ARG_FILENAME = "filename";
     public static final String ARG_ASCII_ARMOR = "ascii_armor";
 
-    private static final int RESULT_CODE_FILE = 0x00007003;
+    private static final int REQUEST_CODE_FILE = 0x00007003;
 
     private EncryptActivityInterface mEncryptInterface;
 
@@ -109,10 +108,10 @@ public class EncryptFileFragment extends Fragment {
         mBrowse.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 if (Constants.KITKAT) {
-                    FileHelper.openDocument(EncryptFileFragment.this, mInputUri, "*/*", RESULT_CODE_FILE);
+                    FileHelper.openDocument(EncryptFileFragment.this, mInputUri, "*/*", REQUEST_CODE_FILE);
                 } else {
                     FileHelper.openFile(EncryptFileFragment.this, mFilename.getText().toString(), "*/*",
-                            RESULT_CODE_FILE);
+                            REQUEST_CODE_FILE);
                 }
             }
         });
@@ -218,18 +217,18 @@ public class EncryptFileFragment extends Fragment {
         }
 
         if (mInputFilename.equals("")) {
-            AppMsg.makeText(getActivity(), R.string.no_file_selected, AppMsg.STYLE_ALERT).show();
+            Notify.showNotify(getActivity(), R.string.no_file_selected, Notify.Style.ERROR);
             return;
         }
 
         if (mInputUri == null && !mInputFilename.startsWith("content")) {
             File file = new File(mInputFilename);
             if (!file.exists() || !file.isFile()) {
-                AppMsg.makeText(
+                Notify.showNotify(
                         getActivity(),
                         getString(R.string.error_message,
-                                getString(R.string.error_file_not_found)), AppMsg.STYLE_ALERT)
-                        .show();
+                                getString(R.string.error_file_not_found)), Notify.Style.ERROR
+                );
                 return;
             }
         }
@@ -240,13 +239,13 @@ public class EncryptFileFragment extends Fragment {
             boolean gotPassphrase = (mEncryptInterface.getPassphrase() != null
                     && mEncryptInterface.getPassphrase().length() != 0);
             if (!gotPassphrase) {
-                AppMsg.makeText(getActivity(), R.string.passphrase_must_not_be_empty, AppMsg.STYLE_ALERT)
-                        .show();
+                Notify.showNotify(getActivity(), R.string.passphrase_must_not_be_empty, Notify.Style.ERROR)
+                        ;
                 return;
             }
 
             if (!mEncryptInterface.getPassphrase().equals(mEncryptInterface.getPassphraseAgain())) {
-                AppMsg.makeText(getActivity(), R.string.passphrases_do_not_match, AppMsg.STYLE_ALERT).show();
+                Notify.showNotify(getActivity(), R.string.passphrases_do_not_match, Notify.Style.ERROR);
                 return;
             }
         } else {
@@ -256,13 +255,13 @@ public class EncryptFileFragment extends Fragment {
                     && mEncryptInterface.getEncryptionKeys().length > 0);
 
             if (!gotEncryptionKeys) {
-                AppMsg.makeText(getActivity(), R.string.select_encryption_key, AppMsg.STYLE_ALERT).show();
+                Notify.showNotify(getActivity(), R.string.select_encryption_key, Notify.Style.ERROR);
                 return;
             }
 
             if (!gotEncryptionKeys && mEncryptInterface.getSignatureKey() == 0) {
-                AppMsg.makeText(getActivity(), R.string.select_encryption_or_signature_key,
-                        AppMsg.STYLE_ALERT).show();
+                Notify.showNotify(getActivity(), R.string.select_encryption_or_signature_key,
+                        Notify.Style.ERROR);
                 return;
             }
 
@@ -345,8 +344,8 @@ public class EncryptFileFragment extends Fragment {
                 super.handleMessage(message);
 
                 if (message.arg1 == KeychainIntentServiceHandler.MESSAGE_OKAY) {
-                    AppMsg.makeText(getActivity(), R.string.encrypt_sign_successful,
-                            AppMsg.STYLE_INFO).show();
+                    Notify.showNotify(getActivity(), R.string.encrypt_sign_successful,
+                            Notify.Style.INFO);
 
                     if (mDeleteAfter.isChecked()) {
                         // Create and show dialog to delete original file
@@ -390,7 +389,7 @@ public class EncryptFileFragment extends Fragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
-            case RESULT_CODE_FILE: {
+            case REQUEST_CODE_FILE: {
                 if (resultCode == Activity.RESULT_OK && data != null) {
                     if (Constants.KITKAT) {
                         mInputUri = data.getData();

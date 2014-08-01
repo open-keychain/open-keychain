@@ -28,8 +28,6 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.EditText;
 
-import com.devspark.appmsg.AppMsg;
-
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.compatibility.ClipboardReflection;
@@ -38,6 +36,7 @@ import org.sufficientlysecure.keychain.pgp.PgpHelper;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
 import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
 import org.sufficientlysecure.keychain.util.Log;
+import org.sufficientlysecure.keychain.util.Notify;
 
 import java.util.regex.Matcher;
 
@@ -107,12 +106,10 @@ public class DecryptMessageFragment extends DecryptFragment {
                 mCiphertext = matcher.group(1);
                 decryptStart(null);
             } else {
-                AppMsg.makeText(getActivity(), R.string.error_invalid_data, AppMsg.STYLE_ALERT)
-                        .show();
+                Notify.showNotify(getActivity(), R.string.error_invalid_data, Notify.Style.ERROR);
             }
         } else {
-            AppMsg.makeText(getActivity(), R.string.error_invalid_data, AppMsg.STYLE_ALERT)
-                    .show();
+            Notify.showNotify(getActivity(), R.string.error_invalid_data, Notify.Style.ERROR);
         }
     }
 

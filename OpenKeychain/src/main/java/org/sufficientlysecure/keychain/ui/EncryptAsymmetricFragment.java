@@ -31,11 +31,14 @@ import android.widget.Button;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.pgp.KeyRing;
+import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.util.Log;
+import org.sufficientlysecure.keychain.util.Notify;
 
 import java.util.Vector;
 
@@ -195,22 +198,23 @@ public class EncryptAsymmetricFragment extends Fragment {
             mMainUserIdRest.setText("");
         } else {
             // See if we can get a user_id from a unified query
-            String[] userId;
             try {
-                userId = mProviderHelper.getCachedPublicKeyRing(
+                String[] userIdSplit = mProviderHelper.getCachedPublicKeyRing(
                         KeyRings.buildUnifiedKeyRingUri(mSecretKeyId)).getSplitPrimaryUserIdWithFallback();
+
+                if (userIdSplit[0] != null) {
+                    mMainUserId.setText(userIdSplit[0]);
+                } else {
+                    mMainUserId.setText(R.string.user_id_no_name);
+                }
+                if (userIdSplit[1] != null) {
+                    mMainUserIdRest.setText(userIdSplit[1]);
+                } else {
+                    mMainUserIdRest.setText(getString(R.string.label_key_id) + ": "
+                            + PgpKeyHelper.convertKeyIdToHex(mSecretKeyId));
+                }
             } catch (PgpGeneralException e) {
-                userId = null;
-            }
-            if (userId != null && userId[0] != null) {
-                mMainUserId.setText(String.format("%#16x", Long.parseLong(userId[0])));
-            } else {
-                mMainUserId.setText(getResources().getString(R.string.user_id_no_name));
-            }
-            if (userId != null && userId[1] != null) {
-                mMainUserIdRest.setText(userId[1]);
-            } else {
-                mMainUserIdRest.setText("");
+                Notify.showNotify(getActivity(), "Key not found! This is a bug!", Notify.Style.ERROR);
             }
             mSign.setChecked(true);
         }

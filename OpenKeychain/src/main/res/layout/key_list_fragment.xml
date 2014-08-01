@@ -56,6 +56,7 @@
             android:textSize="14sp"
             android:text="@string/key_list_empty_button_create"
             android:drawableLeft="@drawable/ic_action_new_account"
+            android:drawablePadding="8dp"
             android:background="@drawable/button_edgy"/>
 
         <TextView
@@ -73,7 +74,8 @@
             android:layout_margin="4dp"
             android:textSize="14sp"
             android:text="@string/key_list_empty_button_import"
-            android:drawableLeft="@drawable/ic_action_download"
+            android:drawableLeft="@drawable/ic_action_collection"
+            android:drawablePadding="8dp"
             android:background="@drawable/button_edgy" />
     </LinearLayout>
 
