@@ -110,7 +110,7 @@ public class UserIdEditor extends LinearLayout implements Editor, OnClickListene
         mName = (EditText) findViewById(R.id.name);
         mName.addTextChangedListener(mTextWatcher);
         mEmail = (AutoCompleteTextView) findViewById(R.id.email);
-        mComment = (EditText) findViewById(R.id.comment);
+        mComment = (EditText) findViewById(R.id.user_id_item_comment);
         mComment.addTextChangedListener(mTextWatcher);
 
 

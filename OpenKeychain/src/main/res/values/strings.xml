@@ -311,9 +311,9 @@
     <string name="progress_modify">modifying keyring…</string>
 
     <string name="progress_modify_unlock">unlocking keyring…</string>
-    <string name="progress_modify_adduid">adding user ids…</string>
-    <string name="progress_modify_revokeuid">revoking user ids…</string>
-    <string name="progress_modify_primaryuid">changing primary user id…</string>
+    <string name="progress_modify_adduid">adding user IDs…</string>
+    <string name="progress_modify_revokeuid">revoking user IDs…</string>
+    <string name="progress_modify_primaryuid">changing primary user ID…</string>
     <string name="progress_modify_subkeychange">modifying subkeys…</string>
     <string name="progress_modify_subkeyrevoke">revoking subkeys…</string>
     <string name="progress_modify_subkeyadd">adding subkeys…</string>

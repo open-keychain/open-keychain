@@ -102,11 +102,14 @@ public class UserIdsAdapter extends CursorAdapter implements AdapterView.OnItemC
 
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
-        TextView vName = (TextView) view.findViewById(R.id.userId);
-        TextView vAddress = (TextView) view.findViewById(R.id.address);
-        TextView vComment = (TextView) view.findViewById(R.id.comment);
-        ImageView vVerified = (ImageView) view.findViewById(R.id.certified);
-        ImageView vEditImage = (ImageView) view.findViewById(R.id.edit_image);
+        TextView vName = (TextView) view.findViewById(R.id.user_id_item_name);
+        TextView vAddress = (TextView) view.findViewById(R.id.user_id_item_address);
+        TextView vComment = (TextView) view.findViewById(R.id.user_id_item_comment);
+        ImageView vVerified = (ImageView) view.findViewById(R.id.user_id_item_certified);
+        View vVerifiedLayout = view.findViewById(R.id.user_id_item_certified_layout);
+        ImageView vEditImage = (ImageView) view.findViewById(R.id.user_id_item_edit_image);
+        ImageView vDeleteButton = (ImageView) view.findViewById(R.id.user_id_item_delete_button);
+        vDeleteButton.setVisibility(View.GONE); // not used
 
         String userId = cursor.getString(INDEX_USER_ID);
         String[] splitUserId = KeyRing.splitUserId(userId);
@@ -152,8 +155,10 @@ public class UserIdsAdapter extends CursorAdapter implements AdapterView.OnItemC
             }
 
             vEditImage.setVisibility(View.VISIBLE);
+            vVerifiedLayout.setVisibility(View.GONE);
         } else {
             vEditImage.setVisibility(View.GONE);
+            vVerifiedLayout.setVisibility(View.VISIBLE);
         }
 
         if (isRevoked) {
@@ -211,7 +216,7 @@ public class UserIdsAdapter extends CursorAdapter implements AdapterView.OnItemC
             return;
         }
 
-        final CheckBox vCheckBox = (CheckBox) view.findViewById(R.id.checkBox);
+        final CheckBox vCheckBox = (CheckBox) view.findViewById(R.id.user_id_item_check_box);
         final int position = cursor.getPosition();
         vCheckBox.setOnCheckedChangeListener(null);
         vCheckBox.setChecked(mCheckStates.get(position));
@@ -225,7 +230,7 @@ public class UserIdsAdapter extends CursorAdapter implements AdapterView.OnItemC
     }
 
     public void onItemClick(AdapterView<?> adapter, View view, int position, long id) {
-        CheckBox box = ((CheckBox) view.findViewById(R.id.checkBox));
+        CheckBox box = ((CheckBox) view.findViewById(R.id.user_id_item_check_box));
         if (box != null) {
             box.toggle();
         }
@@ -251,7 +256,7 @@ public class UserIdsAdapter extends CursorAdapter implements AdapterView.OnItemC
     public View newView(Context context, Cursor cursor, ViewGroup parent) {
         View view = mInflater.inflate(R.layout.view_key_user_id_item, null);
         // only need to do this once ever, since mShowCheckBoxes is final
-        view.findViewById(R.id.checkBox).setVisibility(mCheckStates != null ? View.VISIBLE : View.GONE);
+        view.findViewById(R.id.user_id_item_check_box).setVisibility(mCheckStates != null ? View.VISIBLE : View.GONE);
         return view;
     }
 

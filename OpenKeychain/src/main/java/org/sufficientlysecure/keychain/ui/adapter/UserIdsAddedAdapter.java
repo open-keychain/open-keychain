@@ -19,162 +19,65 @@ package org.sufficientlysecure.keychain.ui.adapter;
 
 import android.app.Activity;
 import android.content.Context;
-import android.text.Editable;
-import android.text.TextUtils;
-import android.text.TextWatcher;
-import android.util.Patterns;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.AutoCompleteTextView;
-import android.widget.EditText;
+import android.widget.CheckBox;
 import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.helper.ContactHelper;
+import org.sufficientlysecure.keychain.pgp.KeyRing;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Matcher;
 
-public class UserIdsAddedAdapter extends ArrayAdapter<UserIdsAddedAdapter.UserIdModel> {
+public class UserIdsAddedAdapter extends ArrayAdapter<String> {
     private LayoutInflater mInflater;
-    private Activity mActivity;
-
-    private ArrayAdapter<String> mAutoCompleteNameAdapter;
-    private ArrayAdapter<String> mAutoCompleteEmailAdapter;
 
     // hold a private reference to the underlying data List
-    private List<UserIdModel> mData;
+    private List<String> mData;
 
-    public static class UserIdModel {
-        String name = "";
-        String address = "";
-        String comment = "";
-
-        @Override
-        public String toString() {
-            String userId = name;
-            if (!TextUtils.isEmpty(comment)) {
-                userId += " (" + comment + ")";
-            }
-            if (!TextUtils.isEmpty(address)) {
-                userId += " <" + address + ">";
-            }
-            return userId;
-        }
-    }
-
-    public UserIdsAddedAdapter(Activity activity, List<UserIdModel> data) {
+    public UserIdsAddedAdapter(Activity activity, List<String> data) {
         super(activity, -1, data);
-        mActivity = activity;
         mInflater = (LayoutInflater) activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         mData = data;
-        mAutoCompleteNameAdapter = new ArrayAdapter<String>
-                (mActivity, android.R.layout.simple_spinner_dropdown_item,
-                        ContactHelper.getPossibleUserNames(mActivity)
-                );
-        mAutoCompleteEmailAdapter = new ArrayAdapter<String>
-                (mActivity, android.R.layout.simple_spinner_dropdown_item,
-                        ContactHelper.getPossibleUserEmails(mActivity)
-                );
     }
 
-    public ArrayList<String> getDataAsStringList() {
-        ArrayList<String> out = new ArrayList<String>();
-        for (UserIdModel id : mData) {
-            // ignore empty user ids
-            if (!TextUtils.isEmpty(id.toString())) {
-                out.add(id.toString());
-            }
-        }
-
-        return out;
+    public List<String> getData() {
+        return mData;
     }
 
     static class ViewHolder {
-        public AutoCompleteTextView vAddress;
-        public AutoCompleteTextView vName;
-        public EditText vComment;
+        public TextView vAddress;
+        public TextView vName;
+        public TextView vComment;
         public ImageButton vDelete;
         // also hold a reference to the model item
-        public UserIdModel mModel;
+        public String mModel;
     }
 
     public View getView(final int position, View convertView, ViewGroup parent) {
         if (convertView == null) {
             // Not recycled, inflate a new view
-            convertView = mInflater.inflate(R.layout.edit_key_user_id_added_item, null);
+            convertView = mInflater.inflate(R.layout.view_key_user_id_item, null);
             final ViewHolder holder = new ViewHolder();
-            holder.vAddress = (AutoCompleteTextView) convertView.findViewById(R.id.user_id_added_item_address);
-            holder.vName = (AutoCompleteTextView) convertView.findViewById(R.id.user_id_added_item_name);
-            holder.vComment = (EditText) convertView.findViewById(R.id.user_id_added_item_comment);
-            holder.vDelete = (ImageButton) convertView.findViewById(R.id.user_id_added_item_delete);
+            holder.vAddress = (TextView) convertView.findViewById(R.id.user_id_item_address);
+            holder.vName = (TextView) convertView.findViewById(R.id.user_id_item_name);
+            holder.vComment = (TextView) convertView.findViewById(R.id.user_id_item_comment);
+            holder.vDelete = (ImageButton) convertView.findViewById(R.id.user_id_item_delete_button);
+            holder.vDelete.setVisibility(View.VISIBLE); // always visible
+
+            // not used:
+            CheckBox checkBox = (CheckBox) convertView.findViewById(R.id.user_id_item_check_box);
+            View certifiedLayout = convertView.findViewById(R.id.user_id_item_certified_layout);
+            ImageView editImage = (ImageView) convertView.findViewById(R.id.user_id_item_edit_image);
+            checkBox.setVisibility(View.GONE);
+            certifiedLayout.setVisibility(View.GONE);
+            editImage.setVisibility(View.GONE);
+
             convertView.setTag(holder);
-
-            holder.vAddress.addTextChangedListener(new TextWatcher() {
-                @Override
-                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                }
-
-                @Override
-                public void onTextChanged(CharSequence s, int start, int before, int count) {
-                }
-
-                @Override
-                public void afterTextChanged(Editable s) {
-                    // update referenced item in view holder
-                    holder.mModel.address = s.toString();
-
-                    // show icon on valid email addresses
-                    if (holder.mModel.address.length() > 0) {
-                        Matcher emailMatcher = Patterns.EMAIL_ADDRESS.matcher(holder.mModel.address);
-                        if (emailMatcher.matches()) {
-                            holder.vAddress.setCompoundDrawablesWithIntrinsicBounds(0, 0,
-                                    R.drawable.uid_mail_ok, 0);
-                        } else {
-                            holder.vAddress.setCompoundDrawablesWithIntrinsicBounds(0, 0,
-                                    R.drawable.uid_mail_bad, 0);
-                        }
-                    } else {
-                        // remove drawable if email is empty
-                        holder.vAddress.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
-                    }
-                }
-            });
-
-            holder.vName.addTextChangedListener(new TextWatcher() {
-                @Override
-                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                }
-
-                @Override
-                public void onTextChanged(CharSequence s, int start, int before, int count) {
-                }
-
-                @Override
-                public void afterTextChanged(Editable s) {
-                    // update referenced item in view holder
-                    holder.mModel.name = s.toString();
-                }
-            });
-
-            holder.vComment.addTextChangedListener(new TextWatcher() {
-                @Override
-                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                }
-
-                @Override
-                public void onTextChanged(CharSequence s, int start, int before, int count) {
-                }
-
-                @Override
-                public void afterTextChanged(Editable s) {
-                    // update referenced item in view holder
-                    holder.mModel.comment = s.toString();
-                }
-            });
 
             holder.vDelete.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -183,22 +86,30 @@ public class UserIdsAddedAdapter extends ArrayAdapter<UserIdsAddedAdapter.UserId
                     UserIdsAddedAdapter.this.remove(holder.mModel);
                 }
             });
-
         }
         final ViewHolder holder = (ViewHolder) convertView.getTag();
 
         // save reference to model item
         holder.mModel = getItem(position);
 
-        holder.vAddress.setText(holder.mModel.address);
-        holder.vAddress.setThreshold(1); // Start working from first character
-        holder.vAddress.setAdapter(mAutoCompleteEmailAdapter);
-
-        holder.vName.setText(holder.mModel.name);
-        holder.vName.setThreshold(1); // Start working from first character
-        holder.vName.setAdapter(mAutoCompleteNameAdapter);
-
-        holder.vComment.setText(holder.mModel.comment);
+        String[] splitUserId = KeyRing.splitUserId(holder.mModel);
+        if (splitUserId[0] != null) {
+            holder.vName.setText(splitUserId[0]);
+        } else {
+            holder.vName.setText(R.string.user_id_no_name);
+        }
+        if (splitUserId[1] != null) {
+            holder.vAddress.setText(splitUserId[1]);
+            holder.vAddress.setVisibility(View.VISIBLE);
+        } else {
+            holder.vAddress.setVisibility(View.GONE);
+        }
+        if (splitUserId[2] != null) {
+            holder.vComment.setText(splitUserId[2]);
+            holder.vComment.setVisibility(View.VISIBLE);
+        } else {
+            holder.vComment.setVisibility(View.GONE);
+        }
 
         return convertView;
     }

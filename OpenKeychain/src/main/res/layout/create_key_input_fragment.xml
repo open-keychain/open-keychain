@@ -64,6 +64,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:layout_marginBottom="8dp"
+                android:imeOptions="actionNext"
                 android:inputType="textPassword"
                 android:hint="@string/label_passphrase"
                 android:ems="10"
