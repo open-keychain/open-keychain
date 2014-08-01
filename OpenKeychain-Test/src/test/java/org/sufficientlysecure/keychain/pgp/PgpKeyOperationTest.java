@@ -1,4 +1,4 @@
-package org.sufficientlysecure.keychain.tests;
+package org.sufficientlysecure.keychain.pgp;
 
 import junit.framework.AssertionFailedError;
 
@@ -19,12 +19,6 @@ import org.spongycastle.bcpg.sig.KeyFlags;
 import org.spongycastle.openpgp.PGPSignature;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.Constants.choice.algorithm;
-import org.sufficientlysecure.keychain.pgp.CanonicalizedKeyRing;
-import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKeyRing;
-import org.sufficientlysecure.keychain.pgp.PgpKeyOperation;
-import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
-import org.sufficientlysecure.keychain.pgp.UncachedPublicKey;
-import org.sufficientlysecure.keychain.pgp.WrappedSignature;
 import org.sufficientlysecure.keychain.service.OperationResultParcel.OperationLog;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel.SubkeyAdd;
