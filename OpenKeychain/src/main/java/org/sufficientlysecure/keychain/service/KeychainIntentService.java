@@ -135,6 +135,9 @@ public class KeychainIntentService extends IntentService
     // delete file securely
     public static final String DELETE_FILE = "deleteFile";
 
+    // import key
+    public static final String IMPORT_KEY_LIST = "import_key_list";
+
     // export key
     public static final String EXPORT_OUTPUT_STREAM = "export_output_stream";
     public static final String EXPORT_FILENAME = "export_filename";
@@ -384,9 +387,15 @@ public class KeychainIntentService extends IntentService
             }
         } else if (ACTION_IMPORT_KEYRING.equals(action)) {
             try {
-                // get entries from cached file
-                FileImportCache cache = new FileImportCache(this);
-                List<ParcelableKeyRing> entries = cache.readCache();
+                List<ParcelableKeyRing> entries;
+                if (data.containsKey(IMPORT_KEY_LIST)) {
+                    // get entries from intent
+                    entries = data.getParcelableArrayList(IMPORT_KEY_LIST);
+                } else {
+                    // get entries from cached file
+                    FileImportCache cache = new FileImportCache(this);
+                    entries = cache.readCache();
+                }
 
                 PgpImportExport pgpImportExport = new PgpImportExport(this, this);
                 ImportKeyResult result = pgpImportExport.importKeyRings(entries);
@@ -520,6 +529,8 @@ public class KeychainIntentService extends IntentService
                 FileImportCache cache = new FileImportCache(this);
                 cache.writeCache(keyRings);
                 Bundle importData = new Bundle();
+                // This is not going through binder, nothing to fear of
+                importData.putParcelableArrayList(IMPORT_KEY_LIST, keyRings);
                 importIntent.putExtra(EXTRA_DATA, importData);
                 importIntent.putExtra(EXTRA_MESSENGER, mMessenger);
 
