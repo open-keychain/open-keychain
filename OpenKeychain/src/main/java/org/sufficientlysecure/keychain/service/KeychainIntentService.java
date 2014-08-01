@@ -523,11 +523,6 @@ public class KeychainIntentService extends IntentService
 
                 Intent importIntent = new Intent(this, KeychainIntentService.class);
                 importIntent.setAction(ACTION_IMPORT_KEYRING);
-
-                // TODO: don't use FileImportCache
-                // externalize import key into function
-                FileImportCache cache = new FileImportCache(this);
-                cache.writeCache(keyRings);
                 Bundle importData = new Bundle();
                 // This is not going through binder, nothing to fear of
                 importData.putParcelableArrayList(IMPORT_KEY_LIST, keyRings);
