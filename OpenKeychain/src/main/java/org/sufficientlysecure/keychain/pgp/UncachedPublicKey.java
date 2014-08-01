@@ -169,6 +169,7 @@ public class UncachedPublicKey {
     }
 
     @SuppressWarnings("unchecked")
+    // TODO make this safe
     public int getKeyUsage() {
         if(mCacheUsage == null) {
             mCacheUsage = 0;
@@ -181,11 +182,6 @@ public class UncachedPublicKey {
                     PGPSignatureSubpacketVector hashed = sig.getHashedSubPackets();
                     if (hashed != null) {
                         mCacheUsage |= hashed.getKeyFlags();
-                    }
-
-                    PGPSignatureSubpacketVector unhashed = sig.getUnhashedSubPackets();
-                    if (unhashed != null) {
-                        mCacheUsage |= unhashed.getKeyFlags();
                     }
                 }
             }

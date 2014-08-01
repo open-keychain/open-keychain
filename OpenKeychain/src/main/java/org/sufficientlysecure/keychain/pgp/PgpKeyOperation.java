@@ -609,7 +609,7 @@ public class PgpKeyOperation {
             for (int i = 0; i < saveParcel.mAddSubKeys.size(); i++) {
 
                 progress(R.string.progress_modify_subkeyadd, (i-1) * (100 / saveParcel.mAddSubKeys.size()));
-                SaveKeyringParcel.SubkeyAdd add = saveParcel.mAddSubKeys.get(0);
+                SaveKeyringParcel.SubkeyAdd add = saveParcel.mAddSubKeys.get(i);
                 log.add(LogLevel.INFO, LogType.MSG_MF_SUBKEY_NEW, indent);
 
                 if (add.mExpiry != null && new Date(add.mExpiry*1000).before(new Date())) {

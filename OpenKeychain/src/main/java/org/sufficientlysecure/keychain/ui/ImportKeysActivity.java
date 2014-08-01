@@ -40,7 +40,7 @@ import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.helper.OtherHelper;
 import org.sufficientlysecure.keychain.helper.Preferences;
-import org.sufficientlysecure.keychain.keyimport.FileImportCache;
+import org.sufficientlysecure.keychain.util.FileImportCache;
 import org.sufficientlysecure.keychain.keyimport.ImportKeysListEntry;
 import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
 import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
@@ -503,7 +503,7 @@ public class ImportKeysActivity extends ActionBarActivity {
             // to prevent Java Binder problems on heavy imports
             // read FileImportCache for more info.
             try {
-                FileImportCache cache = new FileImportCache(this);
+                FileImportCache<ParcelableKeyRing> cache = new FileImportCache<ParcelableKeyRing>(this);
                 cache.writeCache(selectedEntries);
 
                 intent.putExtra(KeychainIntentService.EXTRA_DATA, data);
