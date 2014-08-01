@@ -38,9 +38,13 @@ import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.helper.FileHelper;
 import org.sufficientlysecure.keychain.helper.OtherHelper;
 import org.sufficientlysecure.keychain.provider.TemporaryStorageProvider;
+import org.sufficientlysecure.keychain.util.Log;
 
 import java.io.File;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 
 public class EncryptFileFragment extends Fragment implements EncryptActivityInterface.UpdateListener {
     public static final String ARG_URIS = "uris";
@@ -55,6 +59,7 @@ public class EncryptFileFragment extends Fragment implements EncryptActivityInte
     private View mShareFile;
     private View mEncryptFile;
     private SelectedFilesAdapter mAdapter = new SelectedFilesAdapter();
+    private final Map<Uri, Bitmap> thumbnailCache = new HashMap<Uri, Bitmap>();
 
     @Override
     public void onAttach(Activity activity) {
@@ -237,6 +242,14 @@ public class EncryptFileFragment extends Fragment implements EncryptActivityInte
 
     @Override
     public void onNotifyUpdate() {
+        // Clear cache if needed
+        for (Uri uri : new HashSet<Uri>(thumbnailCache.keySet())) {
+            if (!mEncryptInterface.getInputUris().contains(uri)) {
+                Log.d(Constants.TAG, "Removed thumbnail for uri: "+uri);
+                thumbnailCache.remove(uri);
+            }
+        }
+
         mAdapter.notifyDataSetChanged();
     }
 
@@ -258,14 +271,15 @@ public class EncryptFileFragment extends Fragment implements EncryptActivityInte
 
         @Override
         public View getView(final int position, View convertView, ViewGroup parent) {
+            Uri inputUri = mEncryptInterface.getInputUris().get(position);
             View view;
             if (convertView == null) {
                 view = getActivity().getLayoutInflater().inflate(R.layout.file_list_entry, null);
             } else {
                 view = convertView;
             }
-            ((TextView) view.findViewById(R.id.filename)).setText(FileHelper.getFilename(getActivity(), mEncryptInterface.getInputUris().get(position)));
-            long size = FileHelper.getFileSize(getActivity(), mEncryptInterface.getInputUris().get(position));
+            ((TextView) view.findViewById(R.id.filename)).setText(FileHelper.getFilename(getActivity(), inputUri));
+            long size = FileHelper.getFileSize(getActivity(), inputUri);
             if (size == -1) {
                 ((TextView) view.findViewById(R.id.filesize)).setText("");
             } else {
@@ -278,7 +292,10 @@ public class EncryptFileFragment extends Fragment implements EncryptActivityInte
                 }
             });
             int px = OtherHelper.dpToPx(getActivity(), 48);
-            Bitmap bitmap = FileHelper.getThumbnail(getActivity(), mEncryptInterface.getInputUris().get(position), new Point(px, px));
+            if (!thumbnailCache.containsKey(inputUri)) {
+                thumbnailCache.put(inputUri, FileHelper.getThumbnail(getActivity(), inputUri, new Point(px, px)));
+            }
+            Bitmap bitmap = thumbnailCache.get(inputUri);
             if (bitmap != null) {
                 ((ImageView) view.findViewById(R.id.thumbnail)).setImageBitmap(bitmap);
             } else {
