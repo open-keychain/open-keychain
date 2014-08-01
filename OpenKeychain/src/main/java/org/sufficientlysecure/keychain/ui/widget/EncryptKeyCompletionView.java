@@ -115,7 +115,6 @@ public class EncryptKeyCompletionView extends TokenCompleteTextView {
             return;
         }
         ArrayList<EncryptionKey> keys = new ArrayList<EncryptionKey>();
-        cursor.moveToFirst();
         while (cursor.moveToNext()) {
             try {
                 if (cursor.getInt(cursor.getColumnIndexOrThrow(KeychainContract.KeyRings.HAS_ENCRYPT)) != 0) {
