@@ -14,6 +14,8 @@
                 android:id="@+id/selected_files_list"
                 android:dividerHeight="4dip"
                 android:divider="@android:color/transparent"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
                 android:layout_marginTop="8dp"
                 android:layout_width="match_parent"
                 android:layout_height="0dip"

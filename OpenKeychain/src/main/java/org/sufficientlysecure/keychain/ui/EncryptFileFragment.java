@@ -27,6 +27,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -58,6 +59,7 @@ public class EncryptFileFragment extends Fragment implements EncryptActivityInte
     private View mAddView;
     private View mShareFile;
     private View mEncryptFile;
+    private ListView mSelectedFiles;
     private SelectedFilesAdapter mAdapter = new SelectedFilesAdapter();
     private final Map<Uri, Bitmap> thumbnailCache = new HashMap<Uri, Bitmap>();
 
@@ -100,9 +102,9 @@ public class EncryptFileFragment extends Fragment implements EncryptActivityInte
                 addInputUri();
             }
         });
-        ListView listView = (ListView) view.findViewById(R.id.selected_files_list);
-        listView.addFooterView(mAddView);
-        listView.setAdapter(mAdapter);
+        mSelectedFiles = (ListView) view.findViewById(R.id.selected_files_list);
+        mSelectedFiles.addFooterView(mAddView);
+        mSelectedFiles.setAdapter(mAdapter);
 
         return view;
     }
@@ -139,6 +141,7 @@ public class EncryptFileFragment extends Fragment implements EncryptActivityInte
 
         mEncryptInterface.getInputUris().add(inputUri);
         mEncryptInterface.notifyUpdate();
+        mSelectedFiles.requestFocus();
 
         /**
          * We hide the encrypt to file button if multiple files are selected.
@@ -157,6 +160,7 @@ public class EncryptFileFragment extends Fragment implements EncryptActivityInte
     private void delInputUri(int position) {
         mEncryptInterface.getInputUris().remove(position);
         mEncryptInterface.notifyUpdate();
+        mSelectedFiles.requestFocus();
 
         if (mEncryptInterface.getInputUris().size() > 1) {
             mEncryptFile.setVisibility(View.GONE);
