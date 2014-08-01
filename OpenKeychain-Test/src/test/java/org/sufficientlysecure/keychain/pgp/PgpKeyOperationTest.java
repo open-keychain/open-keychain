@@ -34,6 +34,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Random;
 
 @RunWith(RobolectricTestRunner.class)
@@ -202,8 +203,8 @@ public class PgpKeyOperationTest {
         Assert.assertEquals("number of user ids must be two",
                 2, ring.getPublicKey().getUnorderedUserIds().size());
 
-        Assert.assertEquals("number of subkeys must be three",
-                3, KeyringTestingHelper.itToList(ring.getPublicKeys()).size());
+        List<UncachedPublicKey> subkeys = KeyringTestingHelper.itToList(ring.getPublicKeys());
+        Assert.assertEquals("number of subkeys must be three", 3, subkeys.size());
 
         Assert.assertTrue("key ring should have been created in the last 120 seconds",
                 ring.getPublicKey().getCreationTime().after(new Date(new Date().getTime()-1000*120)));
@@ -211,24 +212,21 @@ public class PgpKeyOperationTest {
         Assert.assertNull("key ring should not expire",
                 ring.getPublicKey().getExpiryTime());
 
-        Iterator<UncachedPublicKey> it = ring.getPublicKeys();
-
         Assert.assertEquals("first (master) key can certify",
-                KeyFlags.CERTIFY_OTHER, it.next().getKeyUsage());
+                KeyFlags.CERTIFY_OTHER, subkeys.get(0).getKeyUsage());
 
-        UncachedPublicKey signingKey = it.next();
         Assert.assertEquals("second key can sign",
-                KeyFlags.SIGN_DATA, signingKey.getKeyUsage());
-        ArrayList<WrappedSignature> sigs = signingKey.getSignatures().next().getEmbeddedSignatures();
+                KeyFlags.SIGN_DATA, subkeys.get(1).getKeyUsage());
+        ArrayList<WrappedSignature> sigs = subkeys.get(1).getSignatures().next().getEmbeddedSignatures();
         Assert.assertEquals("signing key signature should have one embedded signature",
                 1, sigs.size());
         Assert.assertEquals("embedded signature should be of primary key binding type",
                 PGPSignature.PRIMARYKEY_BINDING, sigs.get(0).getSignatureType());
         Assert.assertEquals("primary key binding signature issuer should be signing subkey",
-                signingKey.getKeyId(), sigs.get(0).getKeyId());
+                subkeys.get(1).getKeyId(), sigs.get(0).getKeyId());
 
         Assert.assertEquals("third key can encrypt",
-                KeyFlags.ENCRYPT_COMMS, it.next().getKeyUsage());
+                KeyFlags.ENCRYPT_COMMS, subkeys.get(2).getKeyUsage());
 
     }
 
