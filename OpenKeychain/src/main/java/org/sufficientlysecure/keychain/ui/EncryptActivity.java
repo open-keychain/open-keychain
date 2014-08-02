@@ -218,7 +218,6 @@ public class EncryptActivity extends DrawerActivity implements EncryptActivityIn
                     Notify.showNotify(EncryptActivity.this, R.string.encrypt_sign_successful, Notify.Style.INFO);
 
                     if (!isContentMessage() && mDeleteAfterEncrypt) {
-                        // TODO: Create and show dialog to delete original file
                         for (Uri inputUri : mInputUris) {
                             DeleteFileDialogFragment deleteFileDialog = DeleteFileDialogFragment.newInstance(inputUri);
                             deleteFileDialog.show(getSupportFragmentManager(), "deleteDialog");

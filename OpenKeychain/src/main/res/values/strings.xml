@@ -74,6 +74,7 @@
     <string name="btn_share_encrypted_signed">Share encrypted/signed message…</string>
     <string name="btn_view_cert_key">View certification key</string>
     <string name="btn_create_key">Create key</string>
+    <string name="btn_add_files">Add file(s)</string>
 
     <!-- menu -->
     <string name="menu_preferences">Settings</string>

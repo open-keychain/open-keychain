@@ -14,7 +14,7 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_gravity="center"
-            android:text="Add file(s)"
+            android:text="@string/btn_add_files"
             android:drawableLeft="@drawable/ic_action_collection"
             android:drawablePadding="8dp"
             android:gravity="center"/>

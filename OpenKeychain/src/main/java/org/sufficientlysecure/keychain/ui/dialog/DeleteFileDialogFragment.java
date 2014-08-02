@@ -85,7 +85,7 @@ public class DeleteFileDialogFragment extends DialogFragment {
 
                 Toast.makeText(getActivity(), getActivity().getString(R.string.error_file_delete_failed, deleteFilename), Toast.LENGTH_SHORT).show();
 
-                // TODO: We can't delete that file...
+                // Note: We can't delete every file...
                 // If possible we should find out if deletion is possible before even showing the option to do so.
             }
         });
