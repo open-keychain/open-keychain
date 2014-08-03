@@ -50,6 +50,7 @@
         android:required="false" />
 
     <permission android:name="org.sufficientlysecure.keychain.WRITE_TEMPORARY_STORAGE" />
+
     <uses-permission android:name="org.sufficientlysecure.keychain.WRITE_TEMPORARY_STORAGE" />
 
     <uses-permission android:name="android.permission.INTERNET" />
@@ -155,8 +156,9 @@
                 <action android:name="org.sufficientlysecure.keychain.action.ENCRYPT" />
 
                 <category android:name="android.intent.category.DEFAULT" />
+
                 <data android:scheme="file" />
-                <data android:scheme="content"/>
+                <data android:scheme="content" />
             </intent-filter>
             <!-- Android's Send Action -->
             <intent-filter android:label="@string/intent_send_encrypt">
@@ -174,26 +176,16 @@
             android:label="@string/title_decrypt"
             android:windowSoftInputMode="stateHidden">
 
-            <!--&lt;!&ndash; VIEW with mimeType: TODO (from email app)  &ndash;&gt;-->
-            <!--<intent-filter android:label="@string/intent_import_key">-->
-            <!--<action android:name="android.intent.action.VIEW" />-->
+            <!-- VIEW with mimeType application/pgp-encrypted  -->
+            <intent-filter android:label="@string/intent_import_key">
+                <action android:name="android.intent.action.VIEW" />
 
-            <!--<category android:name="android.intent.category.BROWSABLE" />-->
-            <!--<category android:name="android.intent.category.DEFAULT" />-->
+                <category android:name="android.intent.category.BROWSABLE" />
+                <category android:name="android.intent.category.DEFAULT" />
 
-            <!--&lt;!&ndash; mime type as defined in http://tools.ietf.org/html/rfc3156 &ndash;&gt;-->
-            <!--<data android:mimeType="application/pgp-signature" />-->
-            <!--</intent-filter>-->
-            <!--&lt;!&ndash; VIEW with mimeType: TODO (from email app)  &ndash;&gt;-->
-            <!--<intent-filter android:label="@string/intent_import_key">-->
-            <!--<action android:name="android.intent.action.VIEW" />-->
-
-            <!--<category android:name="android.intent.category.BROWSABLE" />-->
-            <!--<category android:name="android.intent.category.DEFAULT" />-->
-
-            <!--&lt;!&ndash; mime type as defined in http://tools.ietf.org/html/rfc3156 &ndash;&gt;-->
-            <!--<data android:mimeType="application/pgp-encrypted" />-->
-            <!--</intent-filter>-->
+                <!-- mime type as defined in http://tools.ietf.org/html/rfc3156 -->
+                <data android:mimeType="application/pgp-encrypted" />
+            </intent-filter>
             <!-- Keychain's own Actions -->
             <!-- DECRYPT with text as extra -->
             <intent-filter>
@@ -206,8 +198,9 @@
                 <action android:name="org.sufficientlysecure.keychain.action.DECRYPT" />
 
                 <category android:name="android.intent.category.DEFAULT" />
+
                 <data android:scheme="file" />
-                <data android:scheme="content"/>
+                <data android:scheme="content" />
             </intent-filter>
             <!-- Android's Send Action -->
             <intent-filter android:label="@string/intent_send_decrypt">
@@ -227,7 +220,7 @@
                 <data android:host="*" />
                 <data android:scheme="file" />
                 <data android:scheme="content" />
-                
+
                 <!-- GnuPG ASCII data, mostly keys, but sometimes signatures and encrypted data -->
                 <data android:pathPattern=".*\\.asc" />
                 <data android:pathPattern=".*\\..*\\.asc" />
@@ -649,10 +642,10 @@
         </service>
 
         <provider
-                android:name=".provider.TemporaryStorageProvider"
-                android:authorities="org.sufficientlysecure.keychain.tempstorage"
-                android:writePermission="org.sufficientlysecure.keychain.WRITE_TEMPORARY_STORAGE"
-                android:exported="true" />
+            android:name=".provider.TemporaryStorageProvider"
+            android:authorities="org.sufficientlysecure.keychain.tempstorage"
+            android:writePermission="org.sufficientlysecure.keychain.WRITE_TEMPORARY_STORAGE"
+            android:exported="true" />
 
     </application>
 

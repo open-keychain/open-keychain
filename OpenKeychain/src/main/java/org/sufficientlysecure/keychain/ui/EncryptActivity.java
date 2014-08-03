@@ -489,7 +489,7 @@ public class EncryptActivity extends DrawerActivity implements EncryptActivityIn
          * Android's Action
          */
         if (Intent.ACTION_SEND.equals(action) && type != null) {
-            // When sending to APG Encrypt via share menu
+            // When sending to OpenKeychain Encrypt via share menu
             if ("text/plain".equals(type)) {
                 // Plain text
                 String sharedText = intent.getStringExtra(Intent.EXTRA_TEXT);

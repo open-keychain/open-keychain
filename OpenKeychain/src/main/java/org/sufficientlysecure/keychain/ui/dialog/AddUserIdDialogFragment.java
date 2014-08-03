@@ -149,6 +149,14 @@ public class AddUserIdDialogFragment extends DialogFragment implements OnEditorA
             }
         });
 
+        mName.setThreshold(1); // Start working from first character
+        mName.setAdapter(
+                new ArrayAdapter<String>
+                        (getActivity(), android.R.layout.simple_spinner_dropdown_item,
+                                ContactHelper.getPossibleUserNames(getActivity())
+                        )
+        );
+
         alert.setNegativeButton(android.R.string.cancel, new OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int id) {

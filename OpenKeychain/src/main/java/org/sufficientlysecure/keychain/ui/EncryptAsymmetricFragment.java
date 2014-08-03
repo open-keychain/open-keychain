@@ -115,6 +115,7 @@ public class EncryptAsymmetricFragment extends Fragment implements EncryptActivi
             }
         });
         mEncryptKeyView = (EncryptKeyCompletionView) view.findViewById(R.id.recipient_list);
+        mEncryptKeyView.setThreshold(1); // Start working from first character
 
         return view;
     }

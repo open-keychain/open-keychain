@@ -113,12 +113,13 @@
     <string name="label_passphrase_again">Repeat Passphrase</string>
     <string name="label_algorithm">Algorithm</string>
     <string name="label_ascii_armor">ASCII Armor</string>
+    <string name="label_file_ascii_armor">Files: ASCII Armor</string>
     <string name="label_conceal_pgp_application">Let others know that you\'re using OpenKeychain</string>
     <string name="label_conceal_pgp_application_summary">Writes \'OpenKeychain v2.7\' to OpenPGP signatures, ciphertext, and exported keys</string>
     <string name="label_select_public_keys">Recipients</string>
     <string name="label_asymmetric_from">From:</string>
     <string name="label_to">To</string>
-    <string name="label_delete_after_encryption">Delete After Encryption</string>
+    <string name="label_delete_after_encryption">Files: Delete After Encryption</string>
     <string name="label_delete_after_decryption">Delete After Decryption</string>
     <string name="label_share_after_encryption">Share After Encryption</string>
     <string name="label_encryption_algorithm">Encryption Algorithm</string>
@@ -538,7 +539,7 @@
     <string name="my_keys">My Keys</string>
 
     <!-- hints -->
-    <string name="encrypt_content_edit_text_hint">Write message here to encrypt and/or sign…</string>
+    <string name="encrypt_content_edit_text_hint">The message entered here will be signed using the key selected in \'From\' and encrypted for all recipients selected in \'To\'.</string>
     <string name="decrypt_content_edit_text_hint">Enter ciphertext here to decrypt and/or verify…</string>
 
     <!-- certs -->
