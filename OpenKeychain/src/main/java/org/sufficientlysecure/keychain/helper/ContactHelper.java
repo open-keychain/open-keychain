@@ -21,6 +21,8 @@ import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.content.*;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Build;
 import android.provider.ContactsContract;
@@ -33,6 +35,7 @@ import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.util.Log;
 
+import java.io.InputStream;
 import java.util.*;
 
 public class ContactHelper {
@@ -59,6 +62,8 @@ public class ContactHelper {
     public static final String RAW_CONTACT_AND_MIMETYPE_SELECTION =
             ContactsContract.Data.RAW_CONTACT_ID + "=? AND " + ContactsContract.Data.MIMETYPE + "=?";
     public static final String ID_SELECTION = ContactsContract.RawContacts._ID + "=?";
+
+    private static final Map<String, Bitmap> photoCache = new HashMap<String, Bitmap>();
 
     public static List<String> getPossibleUserEmails(Context context) {
         Set<String> accountMails = getAccountEmails(context);
@@ -230,6 +235,30 @@ public class ContactHelper {
             contactMasterKey.close();
         }
         return null;
+    }
+
+    public static Bitmap photoFromFingerprint(ContentResolver contentResolver, String fingerprint) {
+        if (fingerprint == null) return null;
+        if (!photoCache.containsKey(fingerprint)) {
+            photoCache.put(fingerprint, loadPhotoFromFingerprint(contentResolver, fingerprint));
+        }
+        return photoCache.get(fingerprint);
+    }
+
+    private static Bitmap loadPhotoFromFingerprint(ContentResolver contentResolver, String fingerprint) {
+        if (fingerprint == null) return null;
+        try {
+            int rawContactId = findRawContactId(contentResolver, fingerprint);
+            if (rawContactId == -1) return null;
+            Uri rawContactUri = ContentUris.withAppendedId(ContactsContract.RawContacts.CONTENT_URI, rawContactId);
+            Uri contactUri = ContactsContract.RawContacts.getContactLookupUri(contentResolver, rawContactUri);
+            InputStream photoInputStream =
+                    ContactsContract.Contacts.openContactPhotoInputStream(contentResolver, contactUri);
+            if (photoInputStream == null) return null;
+            return BitmapFactory.decodeStream(photoInputStream);
+        } catch (Throwable ignored) {
+            return null;
+        }
     }
 
     /**

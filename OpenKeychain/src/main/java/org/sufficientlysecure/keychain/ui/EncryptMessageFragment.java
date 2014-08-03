@@ -18,28 +18,15 @@
 package org.sufficientlysecure.keychain.ui;
 
 import android.app.Activity;
-import android.app.ProgressDialog;
-import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
-import android.os.Messenger;
 import android.support.v4.app.Fragment;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-
-import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.compatibility.ClipboardReflection;
-import org.sufficientlysecure.keychain.helper.Preferences;
-import org.sufficientlysecure.keychain.service.KeychainIntentService;
-import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
-import org.sufficientlysecure.keychain.service.PassphraseCacheService;
-import org.sufficientlysecure.keychain.ui.dialog.PassphraseDialogFragment;
-import org.sufficientlysecure.keychain.util.Log;
-import org.sufficientlysecure.keychain.util.Notify;
 
 public class EncryptMessageFragment extends Fragment {
     public static final String ARG_TEXT = "text";
@@ -69,18 +56,34 @@ public class EncryptMessageFragment extends Fragment {
         View view = inflater.inflate(R.layout.encrypt_message_fragment, container, false);
 
         mMessage = (TextView) view.findViewById(R.id.message);
+        mMessage.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                mEncryptInterface.setMessage(s.toString());
+            }
+        });
         mEncryptClipboard = view.findViewById(R.id.action_encrypt_clipboard);
         mEncryptShare = view.findViewById(R.id.action_encrypt_share);
         mEncryptClipboard.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                encryptClicked(true);
+                mEncryptInterface.startEncrypt(false);
             }
         });
         mEncryptShare.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                encryptClicked(false);
+                mEncryptInterface.startEncrypt(true);
             }
         });
 
@@ -92,7 +95,7 @@ public class EncryptMessageFragment extends Fragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        String text = getArguments().getString(ARG_TEXT);
+        String text = mEncryptInterface.getMessage();
         if (text != null) {
             mMessage.setText(text);
         }
@@ -116,139 +119,5 @@ public class EncryptMessageFragment extends Fragment {
         message = message.replaceFirst("\n*$", "\n");
 
         return message;
-    }
-
-    private void encryptClicked(final boolean toClipboard) {
-        if (mEncryptInterface.isModeSymmetric()) {
-            // symmetric encryption
-
-            boolean gotPassphrase = (mEncryptInterface.getPassphrase() != null
-                    && mEncryptInterface.getPassphrase().length() != 0);
-            if (!gotPassphrase) {
-                Notify.showNotify(getActivity(), R.string.passphrase_must_not_be_empty, Notify.Style.ERROR);
-                return;
-            }
-
-            if (!mEncryptInterface.getPassphrase().equals(mEncryptInterface.getPassphraseAgain())) {
-                Notify.showNotify(getActivity(), R.string.passphrases_do_not_match, Notify.Style.ERROR);
-                return;
-            }
-
-        } else {
-            // asymmetric encryption
-
-            boolean gotEncryptionKeys = (mEncryptInterface.getEncryptionKeys() != null
-                    && mEncryptInterface.getEncryptionKeys().length > 0);
-
-            if (!gotEncryptionKeys && mEncryptInterface.getSignatureKey() == 0) {
-                Notify.showNotify(getActivity(), R.string.select_encryption_or_signature_key,
-                        Notify.Style.ERROR);
-                return;
-            }
-
-            if (mEncryptInterface.getSignatureKey() != 0 &&
-                PassphraseCacheService.getCachedPassphrase(getActivity(),
-                    mEncryptInterface.getSignatureKey()) == null) {
-                PassphraseDialogFragment.show(getActivity(), mEncryptInterface.getSignatureKey(),
-                    new Handler() {
-                        @Override
-                        public void handleMessage(Message message) {
-                            if (message.what == PassphraseDialogFragment.MESSAGE_OKAY) {
-                                encryptStart(toClipboard);
-                            }
-                        }
-                    });
-
-                return;
-            }
-        }
-
-        encryptStart(toClipboard);
-    }
-
-    private void encryptStart(final boolean toClipboard) {
-        // Send all information needed to service to edit key in other thread
-        Intent intent = new Intent(getActivity(), KeychainIntentService.class);
-
-        intent.setAction(KeychainIntentService.ACTION_ENCRYPT_SIGN);
-
-        // fill values for this action
-        Bundle data = new Bundle();
-
-        data.putInt(KeychainIntentService.TARGET, KeychainIntentService.IO_BYTES);
-
-        String message = mMessage.getText().toString();
-
-        if (mEncryptInterface.isModeSymmetric()) {
-            Log.d(Constants.TAG, "Symmetric encryption enabled!");
-            String passphrase = mEncryptInterface.getPassphrase();
-            if (passphrase.length() == 0) {
-                passphrase = null;
-            }
-            data.putString(KeychainIntentService.ENCRYPT_SYMMETRIC_PASSPHRASE, passphrase);
-        } else {
-            data.putLong(KeychainIntentService.ENCRYPT_SIGNATURE_KEY_ID,
-                mEncryptInterface.getSignatureKey());
-            data.putLongArray(KeychainIntentService.ENCRYPT_ENCRYPTION_KEYS_IDS,
-                mEncryptInterface.getEncryptionKeys());
-
-            boolean signOnly = (mEncryptInterface.getEncryptionKeys() == null
-                    || mEncryptInterface.getEncryptionKeys().length == 0);
-            if (signOnly) {
-                message = fixBadCharactersForGmail(message);
-            }
-        }
-
-        data.putByteArray(KeychainIntentService.ENCRYPT_MESSAGE_BYTES, message.getBytes());
-
-        data.putBoolean(KeychainIntentService.ENCRYPT_USE_ASCII_ARMOR, true);
-
-        int compressionId = Preferences.getPreferences(getActivity()).getDefaultMessageCompression();
-        data.putInt(KeychainIntentService.ENCRYPT_COMPRESSION_ID, compressionId);
-
-        intent.putExtra(KeychainIntentService.EXTRA_DATA, data);
-
-        // Message is received after encrypting is done in KeychainIntentService
-        KeychainIntentServiceHandler saveHandler = new KeychainIntentServiceHandler(getActivity(),
-                getString(R.string.progress_encrypting), ProgressDialog.STYLE_HORIZONTAL) {
-            public void handleMessage(Message message) {
-                // handle messages by standard KeychainIntentServiceHandler first
-                super.handleMessage(message);
-
-                if (message.arg1 == KeychainIntentServiceHandler.MESSAGE_OKAY) {
-                    // get returned data bundle
-                    Bundle data = message.getData();
-
-                    String output = new String(data.getByteArray(KeychainIntentService.RESULT_BYTES));
-                    Log.d(Constants.TAG, "output: " + output);
-
-                    if (toClipboard) {
-                        ClipboardReflection.copyToClipboard(getActivity(), output);
-                        Notify.showNotify(getActivity(),
-                                R.string.encrypt_sign_clipboard_successful, Notify.Style.INFO);
-                    } else {
-                        Intent sendIntent = new Intent(Intent.ACTION_SEND);
-
-                        // Type is set to text/plain so that encrypted messages can
-                        // be sent with Whatsapp, Hangouts, SMS etc...
-                        sendIntent.setType("text/plain");
-
-                        sendIntent.putExtra(Intent.EXTRA_TEXT, output);
-                        startActivity(Intent.createChooser(sendIntent,
-                                getString(R.string.title_share_with)));
-                    }
-                }
-            }
-        };
-
-        // Create a new Messenger for the communication back
-        Messenger messenger = new Messenger(saveHandler);
-        intent.putExtra(KeychainIntentService.EXTRA_MESSENGER, messenger);
-
-        // show progress dialog
-        saveHandler.showProgressDialog(getActivity());
-
-        // start service with intent
-        getActivity().startService(intent);
     }
 }

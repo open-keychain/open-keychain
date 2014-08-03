@@ -49,6 +49,9 @@
         android:name="android.hardware.touchscreen"
         android:required="false" />
 
+    <permission android:name="org.sufficientlysecure.keychain.WRITE_TEMPORARY_STORAGE" />
+    <uses-permission android:name="org.sufficientlysecure.keychain.WRITE_TEMPORARY_STORAGE" />
+
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.NFC" />
@@ -152,12 +155,13 @@
                 <action android:name="org.sufficientlysecure.keychain.action.ENCRYPT" />
 
                 <category android:name="android.intent.category.DEFAULT" />
-                <!-- TODO: accept other schemes! -->
                 <data android:scheme="file" />
+                <data android:scheme="content"/>
             </intent-filter>
             <!-- Android's Send Action -->
             <intent-filter android:label="@string/intent_send_encrypt">
                 <action android:name="android.intent.action.SEND" />
+                <action android:name="android.intent.action.SEND_MULTIPLE" />
 
                 <category android:name="android.intent.category.DEFAULT" />
 
@@ -202,8 +206,8 @@
                 <action android:name="org.sufficientlysecure.keychain.action.DECRYPT" />
 
                 <category android:name="android.intent.category.DEFAULT" />
-                <!-- TODO: accept other schemes! -->
                 <data android:scheme="file" />
+                <data android:scheme="content"/>
             </intent-filter>
             <!-- Android's Send Action -->
             <intent-filter android:label="@string/intent_send_decrypt">
@@ -223,7 +227,7 @@
                 <data android:host="*" />
                 <data android:scheme="file" />
                 <data android:scheme="content" />
-
+                
                 <!-- GnuPG ASCII data, mostly keys, but sometimes signatures and encrypted data -->
                 <data android:pathPattern=".*\\.asc" />
                 <data android:pathPattern=".*\\..*\\.asc" />
@@ -643,6 +647,12 @@
                 android:name="android.provider.CONTACTS_STRUCTURE"
                 android:resource="@xml/custom_pgp_contacts_structure" />
         </service>
+
+        <provider
+                android:name=".provider.TemporaryStorageProvider"
+                android:authorities="org.sufficientlysecure.keychain.tempstorage"
+                android:writePermission="org.sufficientlysecure.keychain.WRITE_TEMPORARY_STORAGE"
+                android:exported="true" />
 
     </application>
 

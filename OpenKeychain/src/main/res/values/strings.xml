@@ -54,6 +54,8 @@
     <string name="btn_decrypt_verify_message">Decrypt and verify message</string>
     <string name="btn_decrypt_verify_clipboard">From Clipboard</string>
     <string name="btn_encrypt_file">Encrypt and save file</string>
+    <string name="btn_encrypt_share_file">Encrypt and share file</string>
+    <string name="btn_encrypt_sign_share">Encrypt, sign and share</string>
     <string name="btn_save">Save</string>
     <string name="btn_do_not_save">Cancel</string>
     <string name="btn_delete">Delete</string>
@@ -72,6 +74,7 @@
     <string name="btn_share_encrypted_signed">Share encrypted/signed message…</string>
     <string name="btn_view_cert_key">View certification key</string>
     <string name="btn_create_key">Create key</string>
+    <string name="btn_add_files">Add file(s)</string>
 
     <!-- menu -->
     <string name="menu_preferences">Settings</string>
@@ -103,6 +106,8 @@
     <string name="label_sign">Sign</string>
     <string name="label_message">Message</string>
     <string name="label_file">File</string>
+    <string name="label_files">File(s)</string>
+    <string name="label_file_colon">File:</string>
     <string name="label_no_passphrase">No Passphrase</string>
     <string name="label_passphrase">Passphrase</string>
     <string name="label_passphrase_again">Repeat Passphrase</string>
@@ -111,13 +116,15 @@
     <string name="label_conceal_pgp_application">Let others know that you\'re using OpenKeychain</string>
     <string name="label_conceal_pgp_application_summary">Writes \'OpenKeychain v2.7\' to OpenPGP signatures, ciphertext, and exported keys</string>
     <string name="label_select_public_keys">Recipients</string>
+    <string name="label_asymmetric_from">From:</string>
+    <string name="label_to">To</string>
     <string name="label_delete_after_encryption">Delete After Encryption</string>
     <string name="label_delete_after_decryption">Delete After Decryption</string>
     <string name="label_share_after_encryption">Share After Encryption</string>
     <string name="label_encryption_algorithm">Encryption Algorithm</string>
     <string name="label_hash_algorithm">Hash Algorithm</string>
-    <string name="label_asymmetric">with Public Key</string>
-    <string name="label_symmetric">with Passphrase</string>
+    <string name="label_asymmetric">With Public Key</string>
+    <string name="label_symmetric">With Passphrase</string>
     <string name="label_passphrase_cache_ttl">Passphrase Cache</string>
     <string name="label_message_compression">Message Compression</string>
     <string name="label_file_compression">File Compression</string>
@@ -196,6 +203,7 @@
     <string name="wrong_passphrase">Wrong passphrase.</string>
     <string name="set_a_passphrase">Set a passphrase first.</string>
     <string name="no_filemanager_installed">No compatible file manager installed.</string>
+    <string name="filemanager_no_write">The file manager does not support saving files.</string>
     <string name="passphrases_do_not_match">The passphrases didn\'t match.</string>
     <string name="passphrase_must_not_be_empty">Please enter a passphrase.</string>
     <string name="passphrase_for_symmetric_encryption">Symmetric encryption.</string>

@@ -38,7 +38,7 @@ import org.sufficientlysecure.keychain.pgp.PgpDecryptVerifyResult;
 import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
 import org.sufficientlysecure.keychain.ui.dialog.PassphraseDialogFragment;
 
-public class DecryptFragment extends Fragment {
+public abstract class DecryptFragment extends Fragment {
     private static final int RESULT_CODE_LOOKUP_KEY = 0x00007006;
 
     protected long mSignatureKeyId = 0;
@@ -217,8 +217,6 @@ public class DecryptFragment extends Fragment {
      *
      * @param passphrase
      */
-    protected void decryptStart(String passphrase) {
-
-    }
+    protected abstract void decryptStart(String passphrase);
 
 }

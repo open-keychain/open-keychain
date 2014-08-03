@@ -29,27 +29,20 @@ import android.widget.EditText;
 
 import org.sufficientlysecure.keychain.R;
 
-public class EncryptSymmetricFragment extends Fragment {
+public class EncryptSymmetricFragment extends Fragment implements EncryptActivityInterface.UpdateListener {
 
-    OnSymmetricKeySelection mPassphraseUpdateListener;
+    EncryptActivityInterface mEncryptInterface;
 
     private EditText mPassphrase;
     private EditText mPassphraseAgain;
-
-    // Container Activity must implement this interface
-    public interface OnSymmetricKeySelection {
-        public void onPassphraseUpdate(String passphrase);
-
-        public void onPassphraseAgainUpdate(String passphrase);
-    }
 
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         try {
-            mPassphraseUpdateListener = (OnSymmetricKeySelection) activity;
+            mEncryptInterface = (EncryptActivityInterface) activity;
         } catch (ClassCastException e) {
-            throw new ClassCastException(activity.toString() + " must implement OnSymmetricKeySelection");
+            throw new ClassCastException(activity.toString() + " must implement EncryptActivityInterface");
         }
     }
 
@@ -62,7 +55,7 @@ public class EncryptSymmetricFragment extends Fragment {
 
         mPassphrase = (EditText) view.findViewById(R.id.passphrase);
         mPassphraseAgain = (EditText) view.findViewById(R.id.passphraseAgain);
-        mPassphrase.addTextChangedListener(new TextWatcher() {
+        TextWatcher textWatcher = new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
             }
@@ -74,25 +67,21 @@ public class EncryptSymmetricFragment extends Fragment {
             @Override
             public void afterTextChanged(Editable s) {
                 // update passphrase in EncryptActivity
-                mPassphraseUpdateListener.onPassphraseUpdate(s.toString());
+                if (mPassphrase.getText().toString().equals(mPassphraseAgain.getText().toString())) {
+                    mEncryptInterface.setPassphrase(s.toString());
+                } else {
+                    mEncryptInterface.setPassphrase(null);
+                }
             }
-        });
-        mPassphraseAgain.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                // update passphrase in EncryptActivity
-                mPassphraseUpdateListener.onPassphraseAgainUpdate(s.toString());
-            }
-        });
+        };
+        mPassphrase.addTextChangedListener(textWatcher);
+        mPassphraseAgain.addTextChangedListener(textWatcher);
 
         return view;
+    }
+
+    @Override
+    public void onNotifyUpdate() {
+
     }
 }

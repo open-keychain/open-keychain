@@ -28,3 +28,6 @@
 [submodule "extern/minidns"]
 	path = extern/minidns
 	url = https://github.com/open-keychain/minidns.git
+[submodule "extern/TokenAutoComplete"]
+	path = extern/TokenAutoComplete
+	url = https://github.com/open-keychain/TokenAutoComplete

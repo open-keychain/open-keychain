@@ -18,6 +18,7 @@ dependencies {
     compile project(':extern:SuperToasts:supertoasts')
     compile project(':extern:minidns')
     compile project(':extern:KeybaseLib:Lib')
+    compile project(':extern:TokenAutoComplete:library')
 
 }
 

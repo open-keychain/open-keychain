@@ -18,18 +18,15 @@
 package org.sufficientlysecure.keychain.ui.dialog;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
-import android.provider.OpenableColumns;
 import android.support.v4.app.DialogFragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -37,12 +34,17 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
-
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.helper.FileHelper;
 import org.sufficientlysecure.keychain.util.Log;
+import org.sufficientlysecure.keychain.util.Notify;
 
+import java.io.File;
+
+/**
+ * This is a file chooser dialog no longer used with KitKat
+ */
 public class FileDialogFragment extends DialogFragment {
     private static final String ARG_MESSENGER = "messenger";
     private static final String ARG_TITLE = "title";
@@ -52,8 +54,7 @@ public class FileDialogFragment extends DialogFragment {
 
     public static final int MESSAGE_OKAY = 1;
 
-    public static final String MESSAGE_DATA_URI = "uri";
-    public static final String MESSAGE_DATA_FILENAME = "filename";
+    public static final String MESSAGE_DATA_FILE = "file";
     public static final String MESSAGE_DATA_CHECKED = "checked";
 
     private Messenger mMessenger;
@@ -63,8 +64,7 @@ public class FileDialogFragment extends DialogFragment {
     private CheckBox mCheckBox;
     private TextView mMessageTextView;
 
-    private String mOutputFilename;
-    private Uri mOutputUri;
+    private File mFile;
 
     private static final int REQUEST_CODE = 0x00007004;
 
@@ -72,14 +72,14 @@ public class FileDialogFragment extends DialogFragment {
      * Creates new instance of this file dialog fragment
      */
     public static FileDialogFragment newInstance(Messenger messenger, String title, String message,
-                                                 String defaultFile, String checkboxText) {
+                                                 File defaultFile, String checkboxText) {
         FileDialogFragment frag = new FileDialogFragment();
         Bundle args = new Bundle();
         args.putParcelable(ARG_MESSENGER, messenger);
 
         args.putString(ARG_TITLE, title);
         args.putString(ARG_MESSAGE, message);
-        args.putString(ARG_DEFAULT_FILE, defaultFile);
+        args.putString(ARG_DEFAULT_FILE, defaultFile.getAbsolutePath());
         args.putString(ARG_CHECKBOX_TEXT, checkboxText);
 
         frag.setArguments(args);
@@ -98,7 +98,11 @@ public class FileDialogFragment extends DialogFragment {
 
         String title = getArguments().getString(ARG_TITLE);
         String message = getArguments().getString(ARG_MESSAGE);
-        mOutputFilename = getArguments().getString(ARG_DEFAULT_FILE);
+        mFile = new File(getArguments().getString(ARG_DEFAULT_FILE));
+        if (!mFile.isAbsolute()) {
+            // We use OK dir by default
+            mFile = new File(Constants.Path.APP_DIR.getAbsolutePath(), mFile.getName());
+        }
         String checkboxText = getArguments().getString(ARG_CHECKBOX_TEXT);
 
         LayoutInflater inflater = (LayoutInflater) activity
@@ -112,18 +116,14 @@ public class FileDialogFragment extends DialogFragment {
         mMessageTextView.setText(message);
 
         mFilename = (EditText) view.findViewById(R.id.input);
-        mFilename.setText(mOutputFilename);
+        mFilename.setText(mFile.getName());
         mBrowse = (ImageButton) view.findViewById(R.id.btn_browse);
         mBrowse.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 // only .asc or .gpg files
                 // setting it to text/plain prevents Cynaogenmod's file manager from selecting asc
                 // or gpg types!
-                if (Constants.KITKAT) {
-                    FileHelper.saveDocument(FileDialogFragment.this, mOutputUri, "*/*", REQUEST_CODE);
-                } else {
-                    FileHelper.openFile(FileDialogFragment.this, mOutputFilename, "*/*", REQUEST_CODE);
-                }
+                FileHelper.openFile(FileDialogFragment.this, Uri.fromFile(mFile), "*/*", REQUEST_CODE);
             }
         });
 
@@ -146,19 +146,23 @@ public class FileDialogFragment extends DialogFragment {
                 dismiss();
 
                 String currentFilename = mFilename.getText().toString();
-                if (mOutputFilename == null || !mOutputFilename.equals(currentFilename)) {
-                    mOutputUri = null;
-                    mOutputFilename = mFilename.getText().toString();
+                if (currentFilename == null || currentFilename.isEmpty()) {
+                    // No file is like pressing cancel, UI: maybe disable positive button in this case?
+                    return;
+                }
+
+                if (mFile == null || currentFilename.startsWith("/")) {
+                    mFile = new File(currentFilename);
+                } else if (!mFile.getName().equals(currentFilename)) {
+                    // We update our File object if user changed name!
+                    mFile = new File(mFile.getParentFile(), currentFilename);
                 }
 
                 boolean checked = mCheckBox.isEnabled() && mCheckBox.isChecked();
 
                 // return resulting data back to activity
                 Bundle data = new Bundle();
-                if (mOutputUri != null) {
-                    data.putParcelable(MESSAGE_DATA_URI, mOutputUri);
-                }
-                data.putString(MESSAGE_DATA_FILENAME, mFilename.getText().toString());
+                data.putString(MESSAGE_DATA_FILE, mFile.getAbsolutePath());
                 data.putBoolean(MESSAGE_DATA_CHECKED, checked);
 
                 sendMessageToHandler(MESSAGE_OKAY, data);
@@ -175,44 +179,17 @@ public class FileDialogFragment extends DialogFragment {
         return alert.show();
     }
 
-    /**
-     * Updates filename in dialog, normally called in onActivityResult in activity using the
-     * FileDialog
-     */
-    private void setFilename(String filename) {
-        AlertDialog dialog = (AlertDialog) getDialog();
-        EditText filenameEditText = (EditText) dialog.findViewById(R.id.input);
-
-        if (filenameEditText != null) {
-            filenameEditText.setText(filename);
-        }
-    }
-
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode & 0xFFFF) {
             case REQUEST_CODE: {
                 if (resultCode == Activity.RESULT_OK && data != null) {
-                    if (Constants.KITKAT) {
-                        mOutputUri = data.getData();
-                        Cursor cursor = getActivity().getContentResolver().query(mOutputUri, new String[]{OpenableColumns.DISPLAY_NAME}, null, null, null);
-                        if (cursor != null) {
-                            if (cursor.moveToNext()) {
-                                mOutputFilename = cursor.getString(0);
-                                mFilename.setText(mOutputFilename);
-                            }
-                            cursor.close();
-                        }
+                    File file = new File(data.getData().getPath());
+                    if (file.getParentFile().exists()) {
+                        mFile = file;
+                        mFilename.setText(mFile.getName());
                     } else {
-                        try {
-                            String path = data.getData().getPath();
-                            Log.d(Constants.TAG, "path=" + path);
-
-                            // set filename used in export/import dialogs
-                            setFilename(path);
-                        } catch (NullPointerException e) {
-                            Log.e(Constants.TAG, "Nullpointer while retrieving path!", e);
-                        }
+                        Notify.showNotify(getActivity(), R.string.no_file_selected, Notify.Style.ERROR);
                     }
                 }
 

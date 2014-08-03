@@ -1,87 +1,72 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:bootstrapbutton="http://schemas.android.com/apk/res-auto"
-    xmlns:custom="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fillViewport="true">
 
     <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingTop="4dp"
-        android:paddingLeft="16dp"
-        android:paddingRight="16dp"
-        android:orientation="vertical">
-
-        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <EditText
-                android:id="@+id/filename"
-                android:layout_width="0dip"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="top|left"
-                android:inputType="textMultiLine|textUri"
-                android:lines="4"
-                android:maxLines="10"
-                android:minLines="2"
-                android:scrollbars="vertical" />
-
-            <ImageButton
-                android:id="@+id/btn_browse"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="4dp"
-                android:layout_gravity="center_vertical"
-                android:src="@drawable/ic_action_collection"
-                android:background="@drawable/button_rounded"/>
-        </LinearLayout>
-
-        <org.sufficientlysecure.keychain.ui.widget.FoldableLinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            custom:foldedLabel="@string/btn_encryption_advanced_settings_show"
-            custom:unFoldedLabel="@string/btn_encryption_advanced_settings_hide"
-            custom:foldedIcon="fa-chevron-right"
-            custom:unFoldedIcon="fa-chevron-down">
-
-            <include layout="@layout/encrypt_content_adv_settings" />
-
-        </org.sufficientlysecure.keychain.ui.widget.FoldableLinearLayout>
-
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-            <TextView
-                android:id="@+id/action_encrypt_file"
-                android:paddingLeft="8dp"
-                android:paddingRight="8dp"
-                android:textAppearance="?android:attr/textAppearanceMedium"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:orientation="vertical">
+        <ListView
+                android:id="@+id/selected_files_list"
+                android:dividerHeight="4dip"
+                android:divider="@android:color/transparent"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                android:layout_marginTop="8dp"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:minHeight="?android:attr/listPreferredItemHeight"
-                android:text="@string/btn_encrypt_file"
-                android:clickable="true"
-                style="@style/SelectableItem"
-                android:drawableRight="@drawable/ic_action_save"
-                android:drawablePadding="8dp"
-                android:gravity="center_vertical"
-                android:layout_alignParentBottom="true"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentStart="true"
-                android:layout_marginBottom="8dp" />
+                android:layout_height="0dip"
+                android:layout_weight="1"/>
 
-            <View
+        <View
                 android:layout_width="match_parent"
                 android:layout_height="1dip"
-                android:background="?android:attr/listDivider"
-                android:layout_above="@+id/action_encrypt_file" />
+                android:background="?android:attr/listDivider"/>
 
-        </RelativeLayout>
+        <!-- Note: The following construct should be a widget, we use it quiet often -->
+
+        <LinearLayout
+                android:id="@+id/action_encrypt_share"
+                android:paddingLeft="8dp"
+                android:layout_width="match_parent"
+                android:layout_height="?android:attr/listPreferredItemHeight"
+                android:layout_marginBottom="8dp"
+                android:clickable="true"
+                style="@style/SelectableItem"
+                android:orientation="horizontal">
+
+            <TextView
+                    android:paddingLeft="8dp"
+                    android:paddingRight="8dp"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:layout_width="0dip"
+                    android:layout_height="match_parent"
+                    android:text="@string/btn_encrypt_share_file"
+                    android:layout_weight="1"
+                    android:drawableRight="@drawable/ic_action_share"
+                    android:drawablePadding="8dp"
+                    android:gravity="center_vertical"/>
+
+            <View
+                    android:layout_width="1dip"
+                    android:layout_height="match_parent"
+                    android:gravity="right"
+                    android:layout_marginBottom="8dp"
+                    android:layout_marginTop="8dp"
+                    android:background="?android:attr/listDivider"/>
+
+            <ImageButton
+                    android:id="@+id/action_encrypt_file"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:padding="8dp"
+                    android:src="@drawable/ic_action_save"
+                    android:layout_gravity="center_vertical"
+                    style="@style/SelectableItem"/>
+
+        </LinearLayout>
     </LinearLayout>
 </ScrollView>

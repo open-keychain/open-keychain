@@ -176,8 +176,8 @@ public class KeyListFragment extends LoaderFragment
                         case R.id.menu_key_list_multi_export: {
                             ids = mAdapter.getCurrentSelectedMasterKeyIds();
                             ExportHelper mExportHelper = new ExportHelper((ActionBarActivity) getActivity());
-                            mExportHelper.showExportKeysDialog(
-                                    ids, Constants.Path.APP_DIR_FILE, mAdapter.isAnySecretSelected());
+                            mExportHelper.showExportKeysDialog(ids, Constants.Path.APP_DIR_FILE,
+                                    mAdapter.isAnySecretSelected());
                             break;
                         }
                         case R.id.menu_key_list_multi_select_all: {
