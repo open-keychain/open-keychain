@@ -32,6 +32,7 @@ import android.provider.OpenableColumns;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.widget.Toast;
+
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.compatibility.DialogFragmentWorkaround;
@@ -136,9 +137,10 @@ public class FileHelper {
 
     /**
      * Opens the storage browser on Android 4.4 or later for opening a file
+     *
      * @param fragment
-     * @param mimeType can be text/plain for example
-     * @param multiple allow file chooser to return multiple files
+     * @param mimeType    can be text/plain for example
+     * @param multiple    allow file chooser to return multiple files
      * @param requestCode used to identify the result coming back from storage browser onActivityResult() in your
      */
     @TargetApi(Build.VERSION_CODES.KITKAT)
@@ -153,10 +155,11 @@ public class FileHelper {
 
     /**
      * Opens the storage browser on Android 4.4 or later for saving a file
+     *
      * @param fragment
-     * @param mimeType can be text/plain for example
+     * @param mimeType      can be text/plain for example
      * @param suggestedName a filename desirable for the file to be saved
-     * @param requestCode used to identify the result coming back from storage browser onActivityResult() in your
+     * @param requestCode   used to identify the result coming back from storage browser onActivityResult() in your
      */
     @TargetApi(Build.VERSION_CODES.KITKAT)
     public static void saveDocument(Fragment fragment, String mimeType, String suggestedName, int requestCode) {
@@ -210,7 +213,7 @@ public class FileHelper {
      * Retrieve thumbnail of file, document api feature and thus KitKat only
      */
     public static Bitmap getThumbnail(Context context, Uri uri, Point size) {
-        if (Constants.KITKAT) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             return DocumentsContract.getDocumentThumbnail(context.getContentResolver(), uri, size, null);
         } else {
             return null;
@@ -218,10 +221,10 @@ public class FileHelper {
     }
 
     public static String readableFileSize(long size) {
-        if(size <= 0) return "0";
-        final String[] units = new String[] { "B", "KB", "MB", "GB", "TB" };
-        int digitGroups = (int) (Math.log10(size)/Math.log10(1024));
-        return new DecimalFormat("#,##0.#").format(size/Math.pow(1024, digitGroups)) + " " + units[digitGroups];
+        if (size <= 0) return "0";
+        final String[] units = new String[]{"B", "KB", "MB", "GB", "TB"};
+        int digitGroups = (int) (Math.log10(size) / Math.log10(1024));
+        return new DecimalFormat("#,##0.#").format(size / Math.pow(1024, digitGroups)) + " " + units[digitGroups];
     }
 
     public static interface FileDialogCallback {

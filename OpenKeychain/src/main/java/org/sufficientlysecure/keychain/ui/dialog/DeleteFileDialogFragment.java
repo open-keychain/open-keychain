@@ -20,6 +20,7 @@ package org.sufficientlysecure.keychain.ui.dialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.DocumentsContract;
 import android.support.v4.app.DialogFragment;
@@ -71,7 +72,7 @@ public class DeleteFileDialogFragment extends DialogFragment {
                 dismiss();
 
                 // We can not securely delete Uris, so just use usual delete on them
-                if (Constants.KITKAT) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
                     if (DocumentsContract.deleteDocument(getActivity().getContentResolver(), deleteUri)) {
                         Toast.makeText(getActivity(), R.string.file_delete_successful, Toast.LENGTH_SHORT).show();
                         return;

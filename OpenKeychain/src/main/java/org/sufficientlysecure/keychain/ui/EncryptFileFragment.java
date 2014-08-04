@@ -27,7 +27,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -39,7 +38,6 @@ import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.helper.FileHelper;
 import org.sufficientlysecure.keychain.helper.OtherHelper;
 import org.sufficientlysecure.keychain.provider.TemporaryStorageProvider;
-import org.sufficientlysecure.keychain.util.Log;
 
 import java.io.File;
 import java.util.HashMap;
@@ -117,7 +115,7 @@ public class EncryptFileFragment extends Fragment implements EncryptActivityInte
     }
 
     private void addInputUri() {
-        if (Constants.KITKAT) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             FileHelper.openDocument(EncryptFileFragment.this, "*/*", true, REQUEST_CODE_INPUT);
         } else {
             FileHelper.openFile(EncryptFileFragment.this, mEncryptInterface.getInputUris().isEmpty() ?
@@ -174,7 +172,7 @@ public class EncryptFileFragment extends Fragment implements EncryptActivityInte
             throw new IllegalStateException();
         }
         Uri inputUri = mEncryptInterface.getInputUris().get(0);
-        if (!Constants.KITKAT) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
             File file = new File(inputUri.getPath());
             File parentDir = file.exists() ? file.getParentFile() : Constants.Path.APP_DIR;
             String targetName = FileHelper.getFilename(getActivity(), inputUri) +
@@ -219,7 +217,7 @@ public class EncryptFileFragment extends Fragment implements EncryptActivityInte
         switch (requestCode) {
             case REQUEST_CODE_INPUT: {
                 if (resultCode == Activity.RESULT_OK && data != null) {
-                    if (!Constants.KITKAT || !handleClipData(data)) {
+                    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT || !handleClipData(data)) {
                         addInputUri(data.getData());
                     }
                 }

@@ -165,8 +165,8 @@ public class KeychainDatabase extends SQLiteOpenHelper {
 
         // make sure this is only done once, on the first instance!
         boolean iAmIt = false;
-        synchronized(KeychainDatabase.class) {
-            if(!KeychainDatabase.apgHack) {
+        synchronized (KeychainDatabase.class) {
+            if (!KeychainDatabase.apgHack) {
                 iAmIt = true;
                 KeychainDatabase.apgHack = true;
             }
@@ -334,9 +334,9 @@ public class KeychainDatabase extends SQLiteOpenHelper {
         File out;
         if (restore) {
             in = context.getDatabasePath("debug_backup.db");
-            out = context.getDatabasePath("openkeychain.db");
+            out = context.getDatabasePath(DATABASE_NAME);
         } else {
-            in = context.getDatabasePath("openkeychain.db");
+            in = context.getDatabasePath(DATABASE_NAME);
             out = context.getDatabasePath("debug_backup.db");
             out.createNewFile();
         }

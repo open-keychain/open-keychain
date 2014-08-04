@@ -51,8 +51,6 @@ public final class Constants {
 
     public static final String CUSTOM_CONTACT_DATA_MIME_TYPE = "vnd.android.cursor.item/vnd.org.sufficientlysecure.keychain.key";
 
-    public static boolean KITKAT = Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT;
-
     public static int TEMPFILE_TTL = 24*60*60*1000; // 1 day
 
     public static final class Path {

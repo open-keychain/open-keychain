@@ -20,16 +20,20 @@ package org.sufficientlysecure.keychain.ui;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.pm.LabeledIntent;
+import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.os.Messenger;
+import android.os.Parcelable;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.PagerTabStrip;
 import android.support.v4.view.ViewPager;
 import android.view.Menu;
 import android.view.MenuItem;
+
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.compatibility.ClipboardReflection;
@@ -45,7 +49,11 @@ import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Notify;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public class EncryptActivity extends DrawerActivity implements EncryptActivityInterface {
@@ -228,7 +236,7 @@ public class EncryptActivity extends DrawerActivity implements EncryptActivityIn
 
                     if (mShareAfterEncrypt) {
                         // Share encrypted file
-                        startActivity(Intent.createChooser(createSendIntent(message), getString(R.string.title_share_file)));
+                        startActivity(sendCreateChooserExcludingOpenKeychain(message));
                     } else if (isContentMessage()) {
                         // Copy to clipboard
                         copyToClipboard(message);
@@ -287,6 +295,69 @@ public class EncryptActivity extends DrawerActivity implements EncryptActivityIn
 
     private void copyToClipboard(Message message) {
         ClipboardReflection.copyToClipboard(this, new String(message.getData().getByteArray(KeychainIntentService.RESULT_BYTES)));
+    }
+
+    /**
+     * Create Intent Chooser but exclude OK's EncryptActivity.
+     * <p/>
+     * Put together from some stackoverflow posts...
+     *
+     * @param message
+     * @return
+     */
+    private Intent sendCreateChooserExcludingOpenKeychain(Message message) {
+        Intent prototype = createSendIntent(message);
+
+        String[] blacklist = new String[]{Constants.PACKAGE_NAME + ".ui.EncryptActivity"};
+
+        List<LabeledIntent> targetedShareIntents = new ArrayList<LabeledIntent>();
+
+        List<ResolveInfo> resInfoList = getPackageManager().queryIntentActivities(prototype, 0);
+        List<ResolveInfo> resInfoListFiltered = new ArrayList<ResolveInfo>();
+        if (!resInfoList.isEmpty()) {
+            for (ResolveInfo resolveInfo : resInfoList) {
+                // do not add blacklisted ones
+                if (resolveInfo.activityInfo == null || Arrays.asList(blacklist).contains(resolveInfo.activityInfo.name))
+                    continue;
+
+                resInfoListFiltered.add(resolveInfo);
+            }
+
+            if (!resInfoListFiltered.isEmpty()) {
+                // sorting for nice readability
+                Collections.sort(resInfoListFiltered, new Comparator<ResolveInfo>() {
+                    @Override
+                    public int compare(ResolveInfo first, ResolveInfo second) {
+                        String firstName = first.loadLabel(getPackageManager()).toString();
+                        String secondName = second.loadLabel(getPackageManager()).toString();
+                        return firstName.compareToIgnoreCase(secondName);
+                    }
+                });
+
+                // create the custom intent list
+                for (ResolveInfo resolveInfo : resInfoListFiltered) {
+                    Intent targetedShareIntent = (Intent) prototype.clone();
+                    targetedShareIntent.setPackage(resolveInfo.activityInfo.packageName);
+                    targetedShareIntent.setClassName(resolveInfo.activityInfo.packageName, resolveInfo.activityInfo.name);
+
+                    LabeledIntent lIntent = new LabeledIntent(targetedShareIntent,
+                            resolveInfo.activityInfo.packageName,
+                            resolveInfo.loadLabel(getPackageManager()),
+                            resolveInfo.activityInfo.icon);
+                    targetedShareIntents.add(lIntent);
+                }
+
+                // Create chooser with only one Intent in it
+                Intent chooserIntent = Intent.createChooser(targetedShareIntents.remove(targetedShareIntents.size() - 1), getString(R.string.title_share_file));
+                // append all other Intents
+                chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, targetedShareIntents.toArray(new Parcelable[]{}));
+                return chooserIntent;
+            }
+
+        }
+
+        // fallback to Android's default chooser
+        return Intent.createChooser(prototype, getString(R.string.title_share_file));
     }
 
     private Intent createSendIntent(Message message) {
@@ -380,7 +451,8 @@ public class EncryptActivity extends DrawerActivity implements EncryptActivityIn
                                     startEncrypt();
                                 }
                             }
-                        });
+                        }
+                );
 
                 return false;
             }

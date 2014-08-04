@@ -21,6 +21,7 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Message;
 import android.os.Messenger;
@@ -72,7 +73,7 @@ public class DecryptFileFragment extends DecryptFragment {
         mDecryptButton = view.findViewById(R.id.decrypt_file_action_decrypt);
         view.findViewById(R.id.decrypt_file_browse).setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                if (Constants.KITKAT) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
                     FileHelper.openDocument(DecryptFileFragment.this, "*/*", REQUEST_CODE_INPUT);
                 } else {
                     FileHelper.openFile(DecryptFileFragment.this, mInputUri, "*/*",
@@ -126,7 +127,7 @@ public class DecryptFileFragment extends DecryptFragment {
 
     private void askForOutputFilename() {
         String targetName = removeEncryptedAppend(FileHelper.getFilename(getActivity(), mInputUri));
-        if (!Constants.KITKAT) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
             File file = new File(mInputUri.getPath());
             File parentDir = file.exists() ? file.getParentFile() : Constants.Path.APP_DIR;
             File targetFile = new File(parentDir, targetName);
