@@ -1,10 +1,7 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <resources>
   <!--title-->
-  <string name="title_select_recipients">Açık Anahtar Seç</string>
-  <string name="title_select_secret_key">Özel Anahtar Seç</string>
   <string name="title_encrypt">Şifrele</string>
-  <string name="title_create_key">Anahtar oluştur</string>
   <string name="title_edit_key">Anahtarı düzenle</string>
   <string name="title_preferences">Seçenekler</string>
   <string name="title_key_server_preference">Anahtar Sunucusu Seçenekleri</string>
@@ -21,36 +18,25 @@
   <string name="section_upload_key">Anahtar Yükle</string>
   <string name="section_key_server">Anahtar Sunucusu</string>
   <!--button-->
-  <string name="btn_decrypt_verify_clipboard">Panodan</string>
   <string name="btn_save">Kaydet</string>
   <string name="btn_do_not_save">İptal</string>
   <string name="btn_delete">Sil</string>
   <string name="btn_okay">Tamam</string>
   <string name="btn_next">İleri</string>
   <string name="btn_back">Geri</string>
-  <string name="btn_clipboard">Pano</string>
   <!--menu-->
   <string name="menu_preferences">Ayarlar</string>
   <string name="menu_help">Yardım</string>
   <string name="menu_export_key">Dosyaya ver</string>
   <string name="menu_delete_key">Anahtar sil</string>
-  <string name="menu_create_key">Anahtar oluştur</string>
-  <string name="menu_create_key_expert">Anahtar oluştur (uzman)</string>
   <string name="menu_search">Ara</string>
-  <string name="menu_share">Paylaş...</string>
-  <string name="menu_share_qr_code">QR Kod ile</string>
-  <string name="menu_share_nfc">NFC ile</string>
-  <string name="menu_copy_to_clipboard">Panoya kopyala</string>
   <string name="menu_key_edit_cancel">İptal</string>
   <string name="menu_select_all">Hepsini seç</string>
   <string name="menu_add_keys">Anahtar ekle</string>
   <!--label-->
-  <string name="label_sign">İmzala</string>
   <string name="label_message">Mesaj</string>
   <string name="label_file">Dosya</string>
-  <string name="label_passphrase_again">Tekrar</string>
   <string name="label_algorithm">Algoritma</string>
-  <string name="label_select_public_keys">Alıcılar</string>
   <string name="label_keyservers">Anahtar Sunucuları</string>
   <string name="label_key_id">Anahtar ID</string>
   <string name="label_creation">Oluşturma</string>
@@ -60,7 +46,6 @@
   <string name="label_name">İsim</string>
   <string name="label_comment">Yorum</string>
   <string name="label_email">Eposta</string>
-  <string name="select_keys_button_default">Seç</string>
   <plurals name="n_keys">
     <item quantity="one">1 anahtar</item>
     <item quantity="other">%d anahtar</item>
@@ -110,7 +95,6 @@
   <string name="progress_importing">alıyor...</string>
   <string name="progress_exporting">veriyor...</string>
   <string name="progress_building_key">anahtar oluşturuluyor...</string>
-  <string name="progress_saving_key_ring">anahtar kaydediliyor...</string>
   <plurals name="progress_exporting_key">
     <item quantity="one">anahtar veriliyor...</item>
     <item quantity="other">anahtarlar veriliyor...</item>
@@ -142,7 +126,6 @@
   <string name="help_about_version">Sürüm:</string>
   <!--Import-->
   <string name="import_import">Seçili anahtarları al</string>
-  <string name="import_nfc_help_button">Yardım</string>
   <!--Import result toast-->
   <!--Intent labels-->
   <!--Remote API-->
@@ -161,17 +144,15 @@
   <!--Key list-->
   <string name="key_list_empty_text3">ya da</string>
   <!--Key view-->
+  <!--Edit key-->
+  <!--Create key-->
+  <!--View key-->
   <!--Navigation Drawer-->
   <string name="nav_keys">Anahtarlar</string>
-  <string name="edit">Düzenle</string>
   <string name="my_keys">Anahtarlarım</string>
-  <string name="label_secret_key">Özel Anahtar</string>
-  <string name="secret_key_yes">mevcut</string>
-  <string name="secret_key_no">mevcut değil</string>
   <!--hints-->
   <!--certs-->
   <string name="cert_default">varsayılan</string>
-  <string name="cert_verify_ok">tamam</string>
   <string name="cert_verify_failed">başarısız!</string>
   <string name="cert_verify_error">hata!</string>
   <string name="cert_verify_unavailable">anahtar mevcut değil</string>
@@ -179,7 +160,10 @@
   <!--Import Secret log entries-->
   <!--Keyring Canonicalization log entries-->
   <!--Keyring merging log entries-->
+  <!--createSecretKeyRing-->
   <!--modifySecretKeyRing-->
+  <!--PassphraseCache-->
   <!--unsorted-->
   <string name="can_sign_not">imzalanamadı</string>
+  <!--First Time-->
 </resources>

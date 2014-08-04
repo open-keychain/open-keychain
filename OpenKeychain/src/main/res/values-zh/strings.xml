@@ -1,16 +1,12 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <resources>
   <!--title-->
-  <string name="title_select_recipients">选择公钥</string>
-  <string name="title_select_secret_key">选择私钥</string>
   <string name="title_encrypt">加密</string>
   <string name="title_decrypt">解密</string>
   <string name="title_authentication">密码短语</string>
-  <string name="title_create_key">创建密钥</string>
   <string name="title_edit_key">编辑密钥</string>
   <string name="title_preferences">参数</string>
   <string name="title_key_server_preference">密钥服务器偏好</string>
-  <string name="title_set_passphrase">设置密码短语</string>
   <string name="title_encrypt_to_file">加密至文件</string>
   <string name="title_decrypt_to_file">解密至文件</string>
   <string name="title_import_keys">导入密钥</string>
@@ -23,33 +19,24 @@
   <string name="section_general">常规</string>
   <string name="section_defaults">缺省</string>
   <string name="section_advanced">高级</string>
-  <string name="section_master_key">主密钥</string>
   <string name="section_key_server">密钥服务器</string>
-  <string name="section_decrypt_verify">解密并验证</string>
   <!--button-->
   <string name="btn_save">保存</string>
   <string name="btn_do_not_save">取消</string>
   <string name="btn_delete">删除</string>
   <string name="btn_no_date">无</string>
-  <string name="btn_clipboard">剪贴板</string>
   <!--menu-->
   <string name="menu_help">帮助</string>
   <string name="menu_delete_key">删除密钥</string>
-  <string name="menu_create_key">创建密钥</string>
-  <string name="menu_create_key_expert">创建密钥(专家)</string>
   <string name="menu_search">搜索</string>
-  <string name="menu_copy_to_clipboard">复制到剪贴板</string>
   <string name="menu_key_edit_cancel">取消</string>
   <string name="menu_encrypt_to">加密到...</string>
   <!--label-->
-  <string name="label_sign">签署</string>
   <string name="label_message">讯息</string>
   <string name="label_file">文件</string>
   <string name="label_no_passphrase">没有密语</string>
   <string name="label_passphrase">密语</string>
   <string name="label_algorithm">算法</string>
-  <string name="label_select_public_keys">收件人</string>
-  <string name="label_delete_after_encryption">加密后删除</string>
   <string name="label_delete_after_decryption">解密后删除</string>
   <string name="label_encryption_algorithm">加密算法</string>
   <string name="label_hash_algorithm">哈希算法</string>
@@ -79,7 +66,6 @@
   <string name="error">错误</string>
   <!--key flags-->
   <!--sentences-->
-  <string name="set_a_passphrase">先设置密钥</string>
   <string name="no_filemanager_installed">安装了不匹配的文件管理器</string>
   <string name="passphrases_do_not_match">密钥不匹配</string>
   <string name="passphrase_for_symmetric_encryption">对称加密</string>
@@ -99,7 +85,6 @@
   <string name="error_external_storage_not_ready">外置存储没有准备好</string>
   <string name="error_key_size_minimum512bit">密钥的大小必须至少512位</string>
   <string name="error_unknown_algorithm_choice">位置的算法选择</string>
-  <string name="error_key_needs_master_key">需要至少一个主密钥</string>
   <string name="error_no_signature_passphrase">没有提供密语</string>
   <string name="error_no_signature_key">没有提供密钥</string>
   <string name="error_invalid_data">不是有效的加密数据</string>
@@ -130,9 +115,6 @@
   <string name="help_tab_about">关于</string>
   <string name="help_about_version">版本:</string>
   <!--Import-->
-  <string name="import_from_clipboard">从剪贴板导入</string>
-  <string name="import_qr_code_finished">二维码扫描完成！</string>
-  <string name="import_nfc_help_button">帮助</string>
   <!--Import result toast-->
   <!--Intent labels-->
   <!--Remote API-->
@@ -147,19 +129,23 @@
   <string name="api_register_error_select_key">请选择一个密钥</string>
   <string name="api_select_pub_keys_text">请重审收件人列表</string>
   <!--Share-->
-  <string name="share_qr_code_dialog_fingerprint_text">指纹:</string>
   <string name="share_nfc_dialog">使用NFC分享</string>
   <!--Key list-->
   <string name="key_list_empty_text3">或者</string>
   <!--Key view-->
+  <!--Edit key-->
+  <!--Create key-->
+  <!--View key-->
   <!--Navigation Drawer-->
-  <string name="nav_import">导入密钥</string>
   <!--hints-->
   <!--certs-->
   <!--Import Public log entries-->
   <!--Import Secret log entries-->
   <!--Keyring Canonicalization log entries-->
   <!--Keyring merging log entries-->
+  <!--createSecretKeyRing-->
   <!--modifySecretKeyRing-->
+  <!--PassphraseCache-->
   <!--unsorted-->
+  <!--First Time-->
 </resources>

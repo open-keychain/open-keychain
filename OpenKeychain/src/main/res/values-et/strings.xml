@@ -1,16 +1,12 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <resources>
   <!--title-->
-  <string name="title_select_recipients">Vali avalik võti</string>
-  <string name="title_select_secret_key">Vali salajane võti</string>
   <string name="title_encrypt">Krüpteeri</string>
   <string name="title_decrypt">Dekrüpteeri</string>
   <string name="title_authentication">Salasõne</string>
-  <string name="title_create_key">Loo võti</string>
   <string name="title_edit_key">Muuda võtit</string>
   <string name="title_preferences">Seaded</string>
   <string name="title_key_server_preference">Võtmeserveri seaded</string>
-  <string name="title_set_passphrase">Määra salasõne</string>
   <string name="title_import_keys">Impordi võtmeid</string>
   <string name="title_export_key">Ekspordi võti</string>
   <string name="title_export_keys">Ekspordi võtmed</string>
@@ -30,22 +26,13 @@
   <!--menu-->
   <string name="menu_preferences">Seaded</string>
   <string name="menu_delete_key">Kustuta võti</string>
-  <string name="menu_create_key">Loo võti</string>
   <string name="menu_search">Otsi</string>
-  <string name="menu_key_server">Võtmeserver...</string>
-  <string name="menu_update_key">Uuenda võtmeserverist</string>
-  <string name="menu_export_key_to_server">Saada võtmeserverisse</string>
-  <string name="menu_share">Jaga...</string>
   <!--label-->
-  <string name="label_sign">Allkirjasta</string>
   <string name="label_message">Sõnum</string>
   <string name="label_file">Fail</string>
   <string name="label_no_passphrase">Salasõnet pole</string>
   <string name="label_passphrase">Salasõne</string>
-  <string name="label_passphrase_again">Uuesti</string>
   <string name="label_algorithm">Algoritm</string>
-  <string name="label_select_public_keys">Saajad</string>
-  <string name="label_delete_after_encryption">Kustuta peale šifreerimist</string>
   <string name="label_hash_algorithm">Räsialgoritm</string>
   <string name="label_passphrase_cache_ttl">Salasõne puhverdus</string>
   <string name="label_creation">Loodud</string>
@@ -79,7 +66,6 @@
   <!--key flags-->
   <!--sentences-->
   <string name="wrong_passphrase">Vale salasõne</string>
-  <string name="set_a_passphrase">Määra enne salasõne.</string>
   <string name="passphrases_do_not_match">Salasõned ei ühti.</string>
   <string name="passphrase_for_symmetric_encryption">Sümmeetriline krüpteering</string>
   <!--errors
@@ -99,6 +85,9 @@
   <!--Share-->
   <!--Key list-->
   <!--Key view-->
+  <!--Edit key-->
+  <!--Create key-->
+  <!--View key-->
   <!--Navigation Drawer-->
   <!--hints-->
   <!--certs-->
@@ -106,6 +95,9 @@
   <!--Import Secret log entries-->
   <!--Keyring Canonicalization log entries-->
   <!--Keyring merging log entries-->
+  <!--createSecretKeyRing-->
   <!--modifySecretKeyRing-->
+  <!--PassphraseCache-->
   <!--unsorted-->
+  <!--First Time-->
 </resources>
