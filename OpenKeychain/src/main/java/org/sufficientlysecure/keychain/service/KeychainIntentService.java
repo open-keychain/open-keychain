@@ -110,9 +110,8 @@ public class KeychainIntentService extends IntentService
     public static final String SOURCE = "source";
     // possible targets:
     public static final int IO_BYTES = 1;
-    public static final int IO_FILE = 2; // This was misleadingly TARGET_URI before!
-    public static final int IO_URI = 3;
-    public static final int IO_URIS = 4;
+    public static final int IO_URI = 2;
+    public static final int IO_URIS = 3;
 
     public static final String SELECTED_URI = "selected_uri";
 
@@ -716,16 +715,6 @@ public class KeychainIntentService extends IntentService
                 byte[] bytes = data.getByteArray(bytesName);
                 return new InputData(new ByteArrayInputStream(bytes), bytes.length);
 
-            case IO_FILE: /* encrypting file */
-                String inputFile = data.getString(ENCRYPT_INPUT_FILE);
-
-                // check if storage is ready
-                if (!FileHelper.isStorageMounted(inputFile)) {
-                    throw new PgpGeneralException(getString(R.string.error_external_storage_not_ready));
-                }
-
-                return new InputData(new FileInputStream(inputFile), new File(inputFile).length());
-
             case IO_URI: /* encrypting content uri */
                 Uri providerUri = data.getParcelable(ENCRYPT_INPUT_URI);
 
@@ -748,18 +737,6 @@ public class KeychainIntentService extends IntentService
         switch (target) {
             case IO_BYTES:
                 return new ByteArrayOutputStream();
-
-            case IO_FILE:
-                String outputFile = data.getString(ENCRYPT_OUTPUT_FILE);
-
-                // check if storage is ready
-                if (!FileHelper.isStorageMounted(outputFile)) {
-                    throw new PgpGeneralException(
-                            getString(R.string.error_external_storage_not_ready));
-                }
-
-                // OutputStream
-                return new FileOutputStream(outputFile);
 
             case IO_URI:
                 Uri providerUri = data.getParcelable(ENCRYPT_OUTPUT_URI);
@@ -790,10 +767,6 @@ public class KeychainIntentService extends IntentService
             case IO_BYTES:
                 byte output[] = ((ByteArrayOutputStream) outStream).toByteArray();
                 resultData.putByteArray(bytesName, output);
-                break;
-            case IO_FILE:
-                // nothing, file was written, just send okay and verification bundle
-
                 break;
             case IO_URI:
             case IO_URIS:
