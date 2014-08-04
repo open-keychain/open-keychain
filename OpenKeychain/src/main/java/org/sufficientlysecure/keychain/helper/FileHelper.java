@@ -193,7 +193,11 @@ public class FileHelper {
     }
 
     public static long getFileSize(Context context, Uri uri) {
-        long size = -1;
+        return getFileSize(context, uri, -1);
+    }
+
+    public static long getFileSize(Context context, Uri uri, long def) {
+        long size = def;
         try {
             Cursor cursor = context.getContentResolver().query(uri, new String[]{OpenableColumns.SIZE}, null, null, null);
 
