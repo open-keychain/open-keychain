@@ -17,13 +17,7 @@
 
 package org.sufficientlysecure.keychain.ui.widget;
 
-import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.DialogInterface;
-import android.content.Intent;
-import android.os.Bundle;
-import android.os.Message;
-import android.os.Messenger;
 import android.support.v7.app.ActionBarActivity;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
@@ -36,10 +30,8 @@ import android.widget.ImageButton;
 
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.UncachedSecretKey;
-import org.sufficientlysecure.keychain.service.KeychainIntentService;
-import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
 import org.sufficientlysecure.keychain.service.PassphraseCacheService;
-import org.sufficientlysecure.keychain.ui.dialog.CreateKeyDialogFragment;
+import org.sufficientlysecure.keychain.ui.dialog.AddSubkeyDialogFragment;
 import org.sufficientlysecure.keychain.ui.dialog.ProgressDialogFragment;
 import org.sufficientlysecure.keychain.ui.widget.Editor.EditorListener;
 import org.sufficientlysecure.keychain.util.Choice;
@@ -280,19 +272,19 @@ public class SectionView extends LinearLayout implements OnClickListener, Editor
                 }
 
                 case TYPE_KEY: {
-                    CreateKeyDialogFragment mCreateKeyDialogFragment =
-                            CreateKeyDialogFragment.newInstance(mEditors.getChildCount());
-                    mCreateKeyDialogFragment
-                            .setOnAlgorithmSelectedListener(
-                                    new CreateKeyDialogFragment.OnAlgorithmSelectedListener() {
-                                        @Override
-                                        public void onAlgorithmSelected(Choice algorithmChoice, int keySize) {
-                                            mNewKeyAlgorithmChoice = algorithmChoice;
-                                            mNewKeySize = keySize;
-                                            createKey();
-                                        }
-                                    });
-                    mCreateKeyDialogFragment.show(mActivity.getSupportFragmentManager(), "createKeyDialog");
+//                    AddSubkeyDialogFragment mCreateKeyDialogFragment =
+//                            AddSubkeyDialogFragment.newInstance(mEditors.getChildCount());
+//                    mCreateKeyDialogFragment
+//                            .setOnAlgorithmSelectedListener(
+//                                    new AddSubkeyDialogFragment.OnAlgorithmSelectedListener() {
+//                                        @Override
+//                                        public void onAlgorithmSelected(Choice algorithmChoice, int keySize) {
+//                                            mNewKeyAlgorithmChoice = algorithmChoice;
+//                                            mNewKeySize = keySize;
+//                                            createKey();
+//                                        }
+//                                    });
+//                    mCreateKeyDialogFragment.show(mActivity.getSupportFragmentManager(), "createKeyDialog");
                     break;
                 }
 

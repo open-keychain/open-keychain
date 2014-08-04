@@ -120,7 +120,7 @@ public class KeyEditor extends LinearLayout implements Editor, OnClickListener {
         setAlwaysDrawnWithCacheEnabled(true);
 
         mAlgorithm = (TextView) findViewById(R.id.algorithm);
-        mKeyId = (TextView) findViewById(R.id.keyId);
+        mKeyId = (TextView) findViewById(R.id.subkey_item_key_id);
         mCreationDate = (TextView) findViewById(R.id.creation);
         mExpiryDateButton = (Button) findViewById(R.id.expiry);
 

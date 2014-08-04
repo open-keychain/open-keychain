@@ -36,20 +36,22 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import org.spongycastle.bcpg.sig.KeyFlags;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
 import org.sufficientlysecure.keychain.util.Choice;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 
-public class CreateKeyDialogFragment extends DialogFragment {
+public class AddSubkeyDialogFragment extends DialogFragment {
 
     public interface OnAlgorithmSelectedListener {
-        public void onAlgorithmSelected(Choice algorithmChoice, int keySize);
+        public void onAlgorithmSelected(SaveKeyringParcel.SubkeyAdd newSubkey);
     }
 
-    private static final String ARG_EDITOR_CHILD_COUNT = "child_count";
+    private static final String ARG_WILL_BE_MASTER_KEY = "will_be_master_key";
 
     private OnAlgorithmSelectedListener mAlgorithmSelectedListener;
     private Spinner mAlgorithmSpinner;
@@ -62,11 +64,11 @@ public class CreateKeyDialogFragment extends DialogFragment {
         mAlgorithmSelectedListener = listener;
     }
 
-    public static CreateKeyDialogFragment newInstance(int mEditorChildCount) {
-        CreateKeyDialogFragment frag = new CreateKeyDialogFragment();
+    public static AddSubkeyDialogFragment newInstance(boolean willBeMasterKey) {
+        AddSubkeyDialogFragment frag = new AddSubkeyDialogFragment();
         Bundle args = new Bundle();
 
-        args.putInt(ARG_EDITOR_CHILD_COUNT, mEditorChildCount);
+        args.putBoolean(ARG_WILL_BE_MASTER_KEY, willBeMasterKey);
 
         frag.setArguments(args);
 
@@ -78,7 +80,7 @@ public class CreateKeyDialogFragment extends DialogFragment {
         final FragmentActivity context = getActivity();
         final LayoutInflater mInflater;
 
-        final int childCount = getArguments().getInt(ARG_EDITOR_CHILD_COUNT);
+        final boolean willBeMasterKey = getArguments().getBoolean(ARG_WILL_BE_MASTER_KEY);
         mInflater = context.getLayoutInflater();
 
         CustomAlertDialogBuilder dialog = new CustomAlertDialogBuilder(context);
@@ -87,13 +89,11 @@ public class CreateKeyDialogFragment extends DialogFragment {
         dialog.setView(view);
         dialog.setTitle(R.string.title_create_key);
 
-        boolean wouldBeMasterKey = (childCount == 0);
-
         mAlgorithmSpinner = (Spinner) view.findViewById(R.id.create_key_algorithm);
         ArrayList<Choice> choices = new ArrayList<Choice>();
         choices.add(new Choice(Constants.choice.algorithm.dsa, getResources().getString(
                 R.string.dsa)));
-        if (!wouldBeMasterKey) {
+        if (!willBeMasterKey) {
             choices.add(new Choice(Constants.choice.algorithm.elgamal, getResources().getString(
                     R.string.elgamal)));
         }
@@ -131,7 +131,13 @@ public class CreateKeyDialogFragment extends DialogFragment {
                         di.dismiss();
                         Choice newKeyAlgorithmChoice = (Choice) mAlgorithmSpinner.getSelectedItem();
                         int newKeySize = getProperKeyLength(newKeyAlgorithmChoice.getId(), getSelectedKeyLength());
-                        mAlgorithmSelectedListener.onAlgorithmSelected(newKeyAlgorithmChoice, newKeySize);
+                        SaveKeyringParcel.SubkeyAdd newSubkey = new SaveKeyringParcel.SubkeyAdd(
+                                newKeyAlgorithmChoice.getId(),
+                                newKeySize,
+                                KeyFlags.SIGN_DATA, //TODO
+                                null
+                        );
+                        mAlgorithmSelectedListener.onAlgorithmSelected(newSubkey);
                     }
                 }
         );

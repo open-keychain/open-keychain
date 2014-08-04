@@ -57,6 +57,7 @@ import org.sufficientlysecure.keychain.ui.adapter.SubkeysAdapter;
 import org.sufficientlysecure.keychain.ui.adapter.SubkeysAddedAdapter;
 import org.sufficientlysecure.keychain.ui.adapter.UserIdsAdapter;
 import org.sufficientlysecure.keychain.ui.adapter.UserIdsAddedAdapter;
+import org.sufficientlysecure.keychain.ui.dialog.AddSubkeyDialogFragment;
 import org.sufficientlysecure.keychain.ui.dialog.AddUserIdDialogFragment;
 import org.sufficientlysecure.keychain.ui.dialog.ChangeExpiryDialogFragment;
 import org.sufficientlysecure.keychain.ui.dialog.EditSubkeyDialogFragment;
@@ -65,7 +66,6 @@ import org.sufficientlysecure.keychain.ui.dialog.PassphraseDialogFragment;
 import org.sufficientlysecure.keychain.ui.dialog.SetPassphraseDialogFragment;
 import org.sufficientlysecure.keychain.util.Log;
 
-import java.util.ArrayList;
 import java.util.Date;
 
 public class EditKeyFragment extends LoaderFragment implements
@@ -453,8 +453,21 @@ public class EditKeyFragment extends LoaderFragment implements
     }
 
     private void addSubkey() {
-        // default values
-        mSubkeysAddedAdapter.add(new SaveKeyringParcel.SubkeyAdd(Constants.choice.algorithm.rsa, 4096, KeyFlags.SIGN_DATA, null));
+        boolean willBeMasterKey = mSubkeysAdapter.getCount() == 0
+                && mSubkeysAddedAdapter.getCount() == 0;
+
+        AddSubkeyDialogFragment addSubkeyDialogFragment =
+                AddSubkeyDialogFragment.newInstance(willBeMasterKey);
+        addSubkeyDialogFragment
+                .setOnAlgorithmSelectedListener(
+                        new AddSubkeyDialogFragment.OnAlgorithmSelectedListener() {
+                            @Override
+                            public void onAlgorithmSelected(SaveKeyringParcel.SubkeyAdd newSubkey) {
+                                mSubkeysAddedAdapter.add(new SaveKeyringParcel.SubkeyAdd(Constants.choice.algorithm.rsa, 4096, KeyFlags.SIGN_DATA, null));
+                            }
+                        }
+                );
+        addSubkeyDialogFragment.show(getActivity().getSupportFragmentManager(), "addSubkeyDialog");
     }
 
     private void cachePassphraseForEdit() {

@@ -20,6 +20,7 @@ package org.sufficientlysecure.keychain.ui.adapter;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.database.Cursor;
+import android.graphics.Typeface;
 import android.support.v4.widget.CursorAdapter;
 import android.text.format.DateFormat;
 import android.view.LayoutInflater;
@@ -106,15 +107,18 @@ public class SubkeysAdapter extends CursorAdapter {
 
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
-        TextView vKeyId = (TextView) view.findViewById(R.id.keyId);
-        TextView vKeyDetails = (TextView) view.findViewById(R.id.keyDetails);
-        TextView vKeyExpiry = (TextView) view.findViewById(R.id.keyExpiry);
-        ImageView vMasterKeyIcon = (ImageView) view.findViewById(R.id.ic_masterKey);
-        ImageView vCertifyIcon = (ImageView) view.findViewById(R.id.ic_certifyKey);
-        ImageView vEncryptIcon = (ImageView) view.findViewById(R.id.ic_encryptKey);
-        ImageView vSignIcon = (ImageView) view.findViewById(R.id.ic_signKey);
-        ImageView vRevokedKeyIcon = (ImageView) view.findViewById(R.id.ic_revokedKey);
-        ImageView vEditImage = (ImageView) view.findViewById(R.id.user_id_item_edit_image);
+        TextView vKeyId = (TextView) view.findViewById(R.id.subkey_item_key_id);
+        TextView vKeyDetails = (TextView) view.findViewById(R.id.subkey_item_details);
+        TextView vKeyExpiry = (TextView) view.findViewById(R.id.subkey_item_expiry);
+        ImageView vCertifyIcon = (ImageView) view.findViewById(R.id.subkey_item_ic_certify);
+        ImageView vEncryptIcon = (ImageView) view.findViewById(R.id.subkey_item_ic_encrypt);
+        ImageView vSignIcon = (ImageView) view.findViewById(R.id.subkey_item_ic_sign);
+        ImageView vRevokedIcon = (ImageView) view.findViewById(R.id.subkey_item_ic_revoked);
+        ImageView vEditImage = (ImageView) view.findViewById(R.id.subkey_item_edit_image);
+
+        // not used:
+        ImageView deleteImage = (ImageView) view.findViewById(R.id.subkey_item_delete_button);
+        deleteImage.setVisibility(View.GONE);
 
         long keyId = cursor.getLong(INDEX_KEY_ID);
         String keyIdStr = PgpKeyHelper.convertKeyIdToHex(keyId);
@@ -133,8 +137,14 @@ public class SubkeysAdapter extends CursorAdapter {
             vKeyDetails.setText(algorithmStr);
         }
 
+        boolean isMasterKey = cursor.getInt(INDEX_RANK) == 0;
+        if (isMasterKey) {
+            vKeyId.setTypeface(null, Typeface.BOLD);
+        } else {
+            vKeyId.setTypeface(null, Typeface.NORMAL);
+        }
+
         // Set icons according to properties
-        vMasterKeyIcon.setVisibility(cursor.getInt(INDEX_RANK) == 0 ? View.VISIBLE : View.INVISIBLE);
         vCertifyIcon.setVisibility(cursor.getInt(INDEX_CAN_CERTIFY) != 0 ? View.VISIBLE : View.GONE);
         vEncryptIcon.setVisibility(cursor.getInt(INDEX_CAN_ENCRYPT) != 0 ? View.VISIBLE : View.GONE);
         vSignIcon.setVisibility(cursor.getInt(INDEX_CAN_SIGN) != 0 ? View.VISIBLE : View.GONE);
@@ -157,13 +167,13 @@ public class SubkeysAdapter extends CursorAdapter {
         }
 
         if (isRevoked) {
-            vRevokedKeyIcon.setVisibility(View.VISIBLE);
+            vRevokedIcon.setVisibility(View.VISIBLE);
         } else {
             vKeyId.setTextColor(mDefaultTextColor);
             vKeyDetails.setTextColor(mDefaultTextColor);
             vKeyExpiry.setTextColor(mDefaultTextColor);
 
-            vRevokedKeyIcon.setVisibility(View.GONE);
+            vRevokedIcon.setVisibility(View.GONE);
         }
 
         boolean isExpired;
@@ -195,7 +205,7 @@ public class SubkeysAdapter extends CursorAdapter {
     public View newView(Context context, Cursor cursor, ViewGroup parent) {
         View view = mInflater.inflate(R.layout.view_key_subkey_item, null);
         if (mDefaultTextColor == null) {
-            TextView keyId = (TextView) view.findViewById(R.id.keyId);
+            TextView keyId = (TextView) view.findViewById(R.id.subkey_item_key_id);
             mDefaultTextColor = keyId.getTextColors();
         }
         return view;

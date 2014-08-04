@@ -152,7 +152,7 @@ abstract public class SelectKeyCursorAdapter extends CursorAdapter {
         holder.view = view;
         holder.mainUserId = (TextView) view.findViewById(R.id.mainUserId);
         holder.mainUserIdRest = (TextView) view.findViewById(R.id.mainUserIdRest);
-        holder.keyId = (TextView) view.findViewById(R.id.keyId);
+        holder.keyId = (TextView) view.findViewById(R.id.subkey_item_key_id);
         holder.status = (TextView) view.findViewById(R.id.status);
         holder.selected = (CheckBox) view.findViewById(R.id.selected);
         view.setTag(holder);

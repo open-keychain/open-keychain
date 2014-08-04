@@ -38,7 +38,7 @@
             android:textAppearance="?android:attr/textAppearanceSmall" />
 
         <TextView
-            android:id="@+id/keyId"
+            android:id="@+id/subkey_item_key_id"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="0xBBBBBBBBBBBBBBB"
