@@ -29,6 +29,7 @@ import org.sufficientlysecure.keychain.service.KeychainIntentService;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 
 public class EmailKeyHelper {
@@ -86,7 +87,7 @@ public class EmailKeyHelper {
             for (ImportKeysListEntry key : keyServer.search(mail)) {
                 if (key.isRevoked() || key.isExpired()) continue;
                 for (String userId : key.getUserIds()) {
-                    if (userId.toLowerCase().contains(mail.toLowerCase())) {
+                    if (userId.toLowerCase().contains(mail.toLowerCase(Locale.ENGLISH))) {
                         keys.add(key);
                     }
                 }

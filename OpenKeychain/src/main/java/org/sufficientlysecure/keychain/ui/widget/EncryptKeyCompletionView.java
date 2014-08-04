@@ -32,6 +32,7 @@ import org.sufficientlysecure.keychain.util.Log;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 
 public class EncryptKeyCompletionView extends TokenCompleteTextView {
     public EncryptKeyCompletionView(Context context) {
@@ -242,8 +243,8 @@ public class EncryptKeyCompletionView extends TokenCompleteTextView {
 
         @Override
         protected boolean keepObject(EncryptionKey obj, String mask) {
-            String m = mask.toLowerCase();
-            return obj.getUserId().toLowerCase().contains(m) ||
+            String m = mask.toLowerCase(Locale.ENGLISH);
+            return obj.getUserId().toLowerCase(Locale.ENGLISH).contains(m) ||
                     obj.getKeyIdHex().contains(m) ||
                     obj.getKeyIdHexShort().startsWith(m);
         }

@@ -251,14 +251,14 @@ public class HkpKeyserver extends Keyserver {
             data = query(request);
         } catch (HttpError e) {
             if (e.getData() != null) {
-                Log.d(Constants.TAG, "returned error data: " + e.getData().toLowerCase(Locale.US));
+                Log.d(Constants.TAG, "returned error data: " + e.getData().toLowerCase(Locale.ENGLISH));
 
-                if (e.getData().toLowerCase(Locale.US).contains("no keys found")) {
+                if (e.getData().toLowerCase(Locale.ENGLISH).contains("no keys found")) {
                     // NOTE: This is also a 404 error for some keyservers!
                     return results;
-                } else if (e.getData().toLowerCase(Locale.US).contains("too many")) {
+                } else if (e.getData().toLowerCase(Locale.ENGLISH).contains("too many")) {
                     throw new TooManyResponsesException();
-                } else if (e.getData().toLowerCase(Locale.US).contains("insufficient")) {
+                } else if (e.getData().toLowerCase(Locale.ENGLISH).contains("insufficient")) {
                     throw new QueryTooShortException();
                 } else if (e.getCode() == 404) {
                     // NOTE: handle this 404 at last, maybe it was a "no keys found" error
@@ -285,7 +285,7 @@ public class HkpKeyserver extends Keyserver {
 
             // group 1 contains the full fingerprint (v4) or the long key id if available
             // see http://bit.ly/1d4bxbk and http://bit.ly/1gD1wwr
-            String fingerprintOrKeyId = matcher.group(1).toLowerCase(Locale.US);
+            String fingerprintOrKeyId = matcher.group(1).toLowerCase(Locale.ENGLISH);
             if (fingerprintOrKeyId.length() > 16) {
                 entry.setFingerprintHex(fingerprintOrKeyId);
                 entry.setKeyIdHex("0x" + fingerprintOrKeyId.substring(fingerprintOrKeyId.length()
