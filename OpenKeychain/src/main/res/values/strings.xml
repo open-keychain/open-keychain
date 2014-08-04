@@ -92,7 +92,7 @@
     <string name="label_conceal_pgp_application">Let others know that you\'re using OpenKeychain</string>
     <string name="label_conceal_pgp_application_summary">Writes \'OpenKeychain v2.7\' to OpenPGP signatures, ciphertext, and exported keys</string>
     <string name="label_asymmetric_from">From:</string>
-    <string name="label_to">To</string>
+    <string name="label_to">To:</string>
     <string name="label_delete_after_encryption">Files: Delete After Encryption</string>
     <string name="label_delete_after_decryption">Delete After Decryption</string>
     <string name="label_encryption_algorithm">Encryption Algorithm</string>

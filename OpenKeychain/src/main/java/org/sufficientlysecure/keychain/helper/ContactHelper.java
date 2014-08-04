@@ -385,7 +385,7 @@ public class ContactHelper {
                                           int rawContactId, long masterKeyId) {
         ops.add(selectByRawContactAndItemType(ContentProviderOperation.newDelete(ContactsContract.Data.CONTENT_URI),
                 rawContactId, ContactsContract.CommonDataKinds.Email.CONTENT_ITEM_TYPE).build());
-        Cursor ids = resolver.query(KeychainContract.UserIds.buildUserIdsUri(Long.toString(masterKeyId)),
+        Cursor ids = resolver.query(KeychainContract.UserIds.buildUserIdsUri(masterKeyId),
                 USER_IDS_PROJECTION, NON_REVOKED_SELECTION, null, null);
         if (ids != null) {
             while (ids.moveToNext()) {

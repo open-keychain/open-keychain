@@ -90,6 +90,16 @@ public class SubkeysAdapter extends CursorAdapter {
         return mCursor.getLong(INDEX_KEY_ID);
     }
 
+    public long getCreationDate(int position) {
+        mCursor.moveToPosition(position);
+        return mCursor.getLong(INDEX_CREATION);
+    }
+
+    public long getExpiryDate(int position) {
+        mCursor.moveToPosition(position);
+        return mCursor.getLong(INDEX_EXPIRY);
+    }
+
     @Override
     public Cursor swapCursor(Cursor newCursor) {
         hasAnySecret = false;

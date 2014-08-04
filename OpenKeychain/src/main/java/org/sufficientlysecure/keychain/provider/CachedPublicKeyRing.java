@@ -218,7 +218,7 @@ public class CachedPublicKeyRing extends KeyRing {
     }
 
     private Cursor getSubkeys() throws PgpGeneralException {
-        Uri keysUri = KeychainContract.Keys.buildKeysUri(Long.toString(extractOrGetMasterKeyId()));
+        Uri keysUri = KeychainContract.Keys.buildKeysUri(extractOrGetMasterKeyId());
         return mProviderHelper.getContentResolver().query(keysUri, null, null, null, null);
     }
 }

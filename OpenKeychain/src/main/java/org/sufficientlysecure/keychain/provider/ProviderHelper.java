@@ -299,7 +299,7 @@ public class ProviderHelper {
                     return SaveKeyringResult.RESULT_ERROR;
                 }
 
-                Uri uri = KeyRingData.buildPublicKeyRingUri(Long.toString(masterKeyId));
+                Uri uri = KeyRingData.buildPublicKeyRingUri(masterKeyId);
                 operations.add(ContentProviderOperation.newInsert(uri).withValues(values).build());
             }
 
@@ -307,7 +307,7 @@ public class ProviderHelper {
             progress.setProgress(LogType.MSG_IP_INSERT_SUBKEYS.getMsgId(), 40, 100);
             mIndent += 1;
             { // insert subkeys
-                Uri uri = Keys.buildKeysUri(Long.toString(masterKeyId));
+                Uri uri = Keys.buildKeysUri(masterKeyId);
                 int rank = 0;
                 for (CanonicalizedPublicKey key : keyRing.publicKeyIterator()) {
                     long keyId = key.getKeyId();
@@ -498,7 +498,7 @@ public class ProviderHelper {
         try {
             // delete old version of this keyRing, which also deletes all keys and userIds on cascade
             int deleted = mContentResolver.delete(
-                    KeyRingData.buildPublicKeyRingUri(Long.toString(masterKeyId)), null, null);
+                    KeyRingData.buildPublicKeyRingUri(masterKeyId), null, null);
             if (deleted > 0) {
                 log(LogLevel.DEBUG, LogType.MSG_IP_DELETE_OLD_OK);
                 result |= SaveKeyringResult.UPDATED;
@@ -567,7 +567,7 @@ public class ProviderHelper {
                 values.put(KeyRingData.MASTER_KEY_ID, masterKeyId);
                 values.put(KeyRingData.KEY_RING_DATA, keyRing.getEncoded());
                 // insert new version of this keyRing
-                Uri uri = KeyRingData.buildSecretKeyRingUri(Long.toString(masterKeyId));
+                Uri uri = KeyRingData.buildSecretKeyRingUri(masterKeyId);
                 if (mContentResolver.insert(uri, values) == null) {
                     log(LogLevel.ERROR, LogType.MSG_IS_DB_EXCEPTION);
                     return SaveKeyringResult.RESULT_ERROR;
@@ -579,7 +579,7 @@ public class ProviderHelper {
             }
 
             {
-                Uri uri = Keys.buildKeysUri(Long.toString(masterKeyId));
+                Uri uri = Keys.buildKeysUri(masterKeyId);
 
                 // first, mark all keys as not available
                 ContentValues values = new ContentValues();
@@ -836,7 +836,7 @@ public class ProviderHelper {
         values.put(Certs.VERIFIED, verified);
         values.put(Certs.DATA, cert.getEncoded());
 
-        Uri uri = Certs.buildCertsUri(Long.toString(masterKeyId));
+        Uri uri = Certs.buildCertsUri(masterKeyId);
 
         return ContentProviderOperation.newInsert(uri).withValues(values).build();
     }
@@ -853,7 +853,7 @@ public class ProviderHelper {
         values.put(UserIds.IS_REVOKED, item.isRevoked);
         values.put(UserIds.RANK, rank);
 
-        Uri uri = UserIds.buildUserIdsUri(Long.toString(masterKeyId));
+        Uri uri = UserIds.buildUserIdsUri(masterKeyId);
 
         return ContentProviderOperation.newInsert(uri).withValues(values).build();
     }
