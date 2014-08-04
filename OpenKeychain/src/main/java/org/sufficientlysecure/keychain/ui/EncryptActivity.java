@@ -23,6 +23,7 @@ import android.content.Intent;
 import android.content.pm.LabeledIntent;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -223,20 +224,22 @@ public class EncryptActivity extends DrawerActivity implements EncryptActivityIn
                 super.handleMessage(message);
 
                 if (message.arg1 == KeychainIntentServiceHandler.MESSAGE_OKAY) {
-                    Notify.showNotify(EncryptActivity.this, R.string.encrypt_sign_successful, Notify.Style.INFO);
+                    if (!isContentMessage()) {
+                        Notify.showNotify(EncryptActivity.this, R.string.encrypt_sign_successful, Notify.Style.INFO);
 
-                    if (!isContentMessage() && mDeleteAfterEncrypt) {
-                        for (Uri inputUri : mInputUris) {
-                            DeleteFileDialogFragment deleteFileDialog = DeleteFileDialogFragment.newInstance(inputUri);
-                            deleteFileDialog.show(getSupportFragmentManager(), "deleteDialog");
+                        if (mDeleteAfterEncrypt) {
+                            for (Uri inputUri : mInputUris) {
+                                DeleteFileDialogFragment deleteFileDialog = DeleteFileDialogFragment.newInstance(inputUri);
+                                deleteFileDialog.show(getSupportFragmentManager(), "deleteDialog");
+                            }
+                            mInputUris.clear();
+                            notifyUpdate();
                         }
-                        mInputUris.clear();
-                        notifyUpdate();
                     }
 
                     if (mShareAfterEncrypt) {
-                        // Share encrypted file
-                        startActivity(sendCreateChooserExcludingOpenKeychain(message));
+                        // Share encrypted message/file
+                        startActivity(sendWithChooserExcludingOpenKeychain(message));
                     } else if (isContentMessage()) {
                         // Copy to clipboard
                         copyToClipboard(message);
@@ -305,8 +308,16 @@ public class EncryptActivity extends DrawerActivity implements EncryptActivityIn
      * @param message
      * @return
      */
-    private Intent sendCreateChooserExcludingOpenKeychain(Message message) {
+    private Intent sendWithChooserExcludingOpenKeychain(Message message) {
         Intent prototype = createSendIntent(message);
+
+        String title = isContentMessage() ? getString(R.string.title_share_message)
+                : getString(R.string.title_share_file);
+
+        // somehow this returns lists with only one entry on Android 2.3
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+            return Intent.createChooser(prototype, title);
+        }
 
         String[] blacklist = new String[]{Constants.PACKAGE_NAME + ".ui.EncryptActivity"};
 
@@ -348,7 +359,7 @@ public class EncryptActivity extends DrawerActivity implements EncryptActivityIn
                 }
 
                 // Create chooser with only one Intent in it
-                Intent chooserIntent = Intent.createChooser(targetedShareIntents.remove(targetedShareIntents.size() - 1), getString(R.string.title_share_file));
+                Intent chooserIntent = Intent.createChooser(targetedShareIntents.remove(targetedShareIntents.size() - 1), title);
                 // append all other Intents
                 chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, targetedShareIntents.toArray(new Parcelable[]{}));
                 return chooserIntent;
@@ -357,7 +368,7 @@ public class EncryptActivity extends DrawerActivity implements EncryptActivityIn
         }
 
         // fallback to Android's default chooser
-        return Intent.createChooser(prototype, getString(R.string.title_share_file));
+        return Intent.createChooser(prototype, title);
     }
 
     private Intent createSendIntent(Message message) {

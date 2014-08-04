@@ -18,6 +18,7 @@
     <string name="title_share_fingerprint_with">Share fingerprint with…</string>
     <string name="title_share_key">Share key with…</string>
     <string name="title_share_file">Share file with…</string>
+    <string name="title_share_message">Share message with…</string>
     <string name="title_encrypt_to_file">Encrypt To File</string>
     <string name="title_decrypt_to_file">Decrypt To File</string>
     <string name="title_import_keys">Import Keys</string>
