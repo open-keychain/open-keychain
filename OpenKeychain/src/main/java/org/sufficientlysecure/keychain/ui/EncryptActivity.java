@@ -239,7 +239,7 @@ public class EncryptActivity extends DrawerActivity implements EncryptActivityIn
 
                     if (mShareAfterEncrypt) {
                         // Share encrypted message/file
-                        startActivity(sendWithChooserExcludingOpenKeychain(message));
+                        startActivity(sendWithChooserExcludingEncrypt(message));
                     } else if (isContentMessage()) {
                         // Copy to clipboard
                         copyToClipboard(message);
@@ -308,17 +308,18 @@ public class EncryptActivity extends DrawerActivity implements EncryptActivityIn
      * @param message
      * @return
      */
-    private Intent sendWithChooserExcludingOpenKeychain(Message message) {
+    private Intent sendWithChooserExcludingEncrypt(Message message) {
         Intent prototype = createSendIntent(message);
 
         String title = isContentMessage() ? getString(R.string.title_share_message)
                 : getString(R.string.title_share_file);
 
-        // somehow this returns lists with only one entry on Android 2.3
+        // fallback on Android 2.3, otherwise we would get weird results
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
             return Intent.createChooser(prototype, title);
         }
 
+        // prevent recursion aka Inception :P
         String[] blacklist = new String[]{Constants.PACKAGE_NAME + ".ui.EncryptActivity"};
 
         List<LabeledIntent> targetedShareIntents = new ArrayList<LabeledIntent>();
