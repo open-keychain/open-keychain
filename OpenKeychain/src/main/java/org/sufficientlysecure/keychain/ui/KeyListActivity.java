@@ -94,22 +94,22 @@ public class KeyListActivity extends DrawerActivity {
 
             case R.id.menu_key_list_debug_read:
                 try {
-                    KeychainDatabase.debugRead(this);
-                    Notify.showNotify(this, "Restored Notify.Style backup", Notify.Style.INFO);
+                    KeychainDatabase.debugBackup(this, true);
+                    Notify.showNotify(this, "Restored debug_backup.db", Notify.Style.INFO);
                     getContentResolver().notifyChange(KeychainContract.KeyRings.CONTENT_URI, null);
                 } catch (IOException e) {
                     Log.e(Constants.TAG, "IO Error", e);
-                    Notify.showNotify(this, "IO Notify.Style: " + e.getMessage(), Notify.Style.ERROR);
+                    Notify.showNotify(this, "IO Error " + e.getMessage(), Notify.Style.ERROR);
                 }
                 return true;
 
             case R.id.menu_key_list_debug_write:
                 try {
-                    KeychainDatabase.debugWrite(this);
-                    Notify.showNotify(this, "Backup Notify.Style", Notify.Style.INFO);
+                    KeychainDatabase.debugBackup(this, false);
+                    Notify.showNotify(this, "Backup to debug_backup.db completed", Notify.Style.INFO);
                 } catch(IOException e) {
                     Log.e(Constants.TAG, "IO Error", e);
-                    Notify.showNotify(this, "IO Notify.Style: " + e.getMessage(), Notify.Style.ERROR);
+                    Notify.showNotify(this, "IO Error: " + e.getMessage(), Notify.Style.ERROR);
                 }
                 return true;
 

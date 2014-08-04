@@ -177,7 +177,7 @@
             android:windowSoftInputMode="stateHidden">
 
             <!-- VIEW with mimeType application/pgp-encrypted  -->
-            <intent-filter android:label="@string/intent_import_key">
+            <intent-filter android:label="@string/intent_send_decrypt">
                 <action android:name="android.intent.action.VIEW" />
 
                 <category android:name="android.intent.category.BROWSABLE" />

@@ -316,42 +316,37 @@ public class KeychainDatabase extends SQLiteOpenHelper {
     }
 
     private static void copy(File in, File out) throws IOException {
-        FileInputStream ss = new FileInputStream(in);
-        FileOutputStream ds = new FileOutputStream(out);
+        FileInputStream is = new FileInputStream(in);
+        FileOutputStream os = new FileOutputStream(out);
         byte[] buf = new byte[512];
-        while (ss.available() > 0) {
-            int count = ss.read(buf, 0, 512);
-            ds.write(buf, 0, count);
+        while (is.available() > 0) {
+            int count = is.read(buf, 0, 512);
+            os.write(buf, 0, count);
         }
     }
 
-    public static void debugRead(Context context) throws IOException {
+    public static void debugBackup(Context context, boolean restore) throws IOException {
         if (!Constants.DEBUG) {
             return;
         }
-        File in = context.getDatabasePath("debug.db");
-        File out = context.getDatabasePath("openkeychain.db");
+
+        File in;
+        File out;
+        if (restore) {
+            in = context.getDatabasePath("debug_backup.db");
+            out = context.getDatabasePath("openkeychain.db");
+        } else {
+            in = context.getDatabasePath("openkeychain.db");
+            out = context.getDatabasePath("debug_backup.db");
+            out.createNewFile();
+        }
         if (!in.canRead()) {
             throw new IOException("Cannot read " +  in.getName());
         }
-        if (!out.canRead()) {
+        if (!out.canWrite()) {
             throw new IOException("Cannot write " + out.getName());
         }
         copy(in, out);
     }
 
-    public static void debugWrite(Context context) throws IOException {
-        if (!Constants.DEBUG) {
-            return;
-        }
-        File in = context.getDatabasePath("openkeychain.db");
-        File out = context.getDatabasePath("debug.db");
-        if (!in.canRead()) {
-            throw new IOException("Cannot read " +  in.getName());
-        }
-        if (!out.canRead()) {
-            throw new IOException("Cannot write " + out.getName());
-        }
-        copy(in, out);
-    }
 }
