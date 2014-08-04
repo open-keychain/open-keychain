@@ -132,6 +132,10 @@ When changing build files or dependencies, respect the following requirements:
 * https://www.timroes.de/2013/09/12/speed-up-gradle/
 * Disable Lint checking if it is enabled in build.gradle
 
+### Error:Configuration with name 'default' not found.
+
+Gradle project dependencies are missing. Do a ``git submodule init && git submodule update``
+
 ### Translations
 
 Translations are hosted on Transifex, which is configured by ".tx/config".
