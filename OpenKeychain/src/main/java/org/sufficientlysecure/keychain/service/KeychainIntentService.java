@@ -719,13 +719,13 @@ public class KeychainIntentService extends IntentService
                 Uri providerUri = data.getParcelable(ENCRYPT_INPUT_URI);
 
                 // InputStream
-                return new InputData(getContentResolver().openInputStream(providerUri), 0);
+                return new InputData(getContentResolver().openInputStream(providerUri), FileHelper.getFileSize(this, providerUri, 0));
 
             case IO_URIS:
                 providerUri = data.<Uri>getParcelableArrayList(ENCRYPT_INPUT_URIS).get(data.getInt(SELECTED_URI));
 
                 // InputStream
-                return new InputData(getContentResolver().openInputStream(providerUri), 0);
+                return new InputData(getContentResolver().openInputStream(providerUri), FileHelper.getFileSize(this, providerUri, 0));
 
             default:
                 throw new PgpGeneralException("No target choosen!");
