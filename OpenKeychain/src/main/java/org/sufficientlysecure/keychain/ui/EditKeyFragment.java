@@ -318,6 +318,8 @@ public class EditKeyFragment extends LoaderFragment implements
 
     private void editUserId(final int position) {
         final String userId = mUserIdsAdapter.getUserId(position);
+        final boolean isRevoked = mUserIdsAdapter.getIsRevoked(position);
+        final boolean isRevokedPending = mUserIdsAdapter.getIsRevokedPending(position);
 
         Handler returnHandler = new Handler() {
             @Override
@@ -351,8 +353,7 @@ public class EditKeyFragment extends LoaderFragment implements
         DialogFragmentWorkaround.INTERFACE.runnableRunDelayed(new Runnable() {
             public void run() {
                 EditUserIdDialogFragment dialogFragment =
-                        EditUserIdDialogFragment.newInstance(messenger);
-
+                        EditUserIdDialogFragment.newInstance(messenger, isRevoked, isRevokedPending);
                 dialogFragment.show(getActivity().getSupportFragmentManager(), "editUserIdDialog");
             }
         });

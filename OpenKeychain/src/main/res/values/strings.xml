@@ -437,11 +437,16 @@
         <item>Change to Primary Identity</item>
         <item>Revoke Identity</item>
     </string-array>
+    <string-array name="edit_key_edit_user_id_revert_revocation">
+        <item>Revert revocation</item>
+    </string-array>
+    <string name="edit_key_edit_user_id_revoked">This identity has been revoked. This cannot be undone.</string>
     <string name="edit_key_edit_subkey_title">Select an action!</string>
     <string-array name="edit_key_edit_subkey">
         <item>Change Expiry</item>
         <item>Revoke Subkey</item>
     </string-array>
+
 
     <!-- Create key -->
     <string name="create_key_upload">Upload key to keyserver</string>
