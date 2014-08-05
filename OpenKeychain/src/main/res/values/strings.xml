@@ -7,7 +7,7 @@
     <string name="title_encrypt">Encrypt</string>
     <string name="title_decrypt">Decrypt</string>
     <string name="title_authentication">Passphrase</string>
-    <string name="title_create_key">Create My Key</string>
+    <string name="title_add_subkey">Add subkey</string>
     <string name="title_edit_key">Edit Key</string>
     <string name="title_preferences">Preferences</string>
     <string name="title_api_registered_apps">Apps</string>

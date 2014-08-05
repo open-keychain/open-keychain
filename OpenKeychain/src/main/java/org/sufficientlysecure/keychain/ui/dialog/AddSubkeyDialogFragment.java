@@ -37,6 +37,7 @@ import android.widget.CompoundButton;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.TableRow;
 import android.widget.TextView;
 
 import org.spongycastle.bcpg.sig.KeyFlags;
@@ -59,6 +60,7 @@ public class AddSubkeyDialogFragment extends DialogFragment {
     private OnAlgorithmSelectedListener mAlgorithmSelectedListener;
 
     private CheckBox mNoExpiryCheckBox;
+    private TableRow mExpiryRow;
     private DatePicker mExpiryDatePicker;
     private Spinner mAlgorithmSpinner;
     private Spinner mKeySizeSpinner;
@@ -97,9 +99,10 @@ public class AddSubkeyDialogFragment extends DialogFragment {
 
         View view = mInflater.inflate(R.layout.add_subkey_dialog, null);
         dialog.setView(view);
-        dialog.setTitle(R.string.title_create_key);
+        dialog.setTitle(R.string.title_add_subkey);
 
         mNoExpiryCheckBox = (CheckBox) view.findViewById(R.id.add_subkey_no_expiry);
+        mExpiryRow = (TableRow) view.findViewById(R.id.add_subkey_expiry_row);
         mExpiryDatePicker = (DatePicker) view.findViewById(R.id.add_subkey_expiry_date_picker);
         mAlgorithmSpinner = (Spinner) view.findViewById(R.id.add_subkey_algorithm);
         mKeySizeSpinner = (Spinner) view.findViewById(R.id.add_subkey_size);
@@ -115,9 +118,9 @@ public class AddSubkeyDialogFragment extends DialogFragment {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
-                    mExpiryDatePicker.setVisibility(View.GONE);
+                    mExpiryRow.setVisibility(View.GONE);
                 } else {
-                    mExpiryDatePicker.setVisibility(View.VISIBLE);
+                    mExpiryRow.setVisibility(View.VISIBLE);
                 }
             }
         });

@@ -7,6 +7,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingTop="8dp"
+        android:paddingBottom="8dp"
         android:paddingLeft="16dp"
         android:paddingRight="16dp"
         android:stretchColumns="1">
@@ -15,6 +16,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
+            android:layout_marginBottom="4dp"
             android:text="@string/key_creation_el_gamal_info" />
 
         <TableRow>
@@ -70,7 +72,9 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical" />
 
-        <TableRow>
+        <TableRow
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp">
 
             <TextView
                 android:id="@+id/label_expiry"
@@ -89,7 +93,9 @@
 
         </TableRow>
 
-        <TableRow>
+        <TableRow
+            android:id="@+id/add_subkey_expiry_row"
+            android:visibility="gone">
 
             <TextView
                 android:layout_width="wrap_content"
@@ -100,7 +106,6 @@
             <DatePicker
                 android:id="@+id/add_subkey_expiry_date_picker"
                 android:layout_gravity="center_horizontal"
-                android:visibility="gone"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:spinnersShown="true"
