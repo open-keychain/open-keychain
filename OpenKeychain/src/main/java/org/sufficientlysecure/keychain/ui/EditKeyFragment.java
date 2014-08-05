@@ -407,7 +407,6 @@ public class EditKeyFragment extends LoaderFragment implements
                     case EditSubkeyExpiryDialogFragment.MESSAGE_NEW_EXPIRY_DATE:
                         Long expiry = (Long) message.getData().
                                 getSerializable(EditSubkeyExpiryDialogFragment.MESSAGE_DATA_EXPIRY_DATE);
-                        Log.d(Constants.TAG, "new expiry: " + expiry);
                         mSaveKeyringParcel.getOrCreateSubkeyChange(keyId).mExpiry = expiry;
                         break;
                 }

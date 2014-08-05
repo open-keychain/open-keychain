@@ -173,16 +173,16 @@ public class AddSubkeyDialogFragment extends DialogFragment {
 
                         int flags = 0;
                         if (mFlagCertify.isChecked()) {
-                            flags += KeyFlags.CERTIFY_OTHER;
+                            flags |= KeyFlags.CERTIFY_OTHER;
                         }
                         if (mFlagSign.isChecked()) {
-                            flags += KeyFlags.SIGN_DATA;
+                            flags |= KeyFlags.SIGN_DATA;
                         }
                         if (mFlagEncrypt.isChecked()) {
-                            flags += KeyFlags.ENCRYPT_COMMS + KeyFlags.ENCRYPT_STORAGE;
+                            flags |= KeyFlags.ENCRYPT_COMMS | KeyFlags.ENCRYPT_STORAGE;
                         }
                         if (mFlagAuthenticate.isChecked()) {
-                            flags += KeyFlags.AUTHENTICATION;
+                            flags |= KeyFlags.AUTHENTICATION;
                         }
 
                         Long expiry;

@@ -769,7 +769,7 @@ public class PgpKeyOperation {
         PGPSignatureSubpacketGenerator unhashedPacketsGen = new PGPSignatureSubpacketGenerator();
 
         // If this key can sign, we need a primary key binding signature
-        if ((flags & KeyFlags.SIGN_DATA) != 0) {
+        if ((flags & KeyFlags.SIGN_DATA) > 0) {
             // cross-certify signing keys
             PGPSignatureSubpacketGenerator subHashedPacketsGen = new PGPSignatureSubpacketGenerator();
             subHashedPacketsGen.setSignatureCreationTime(false, todayDate);

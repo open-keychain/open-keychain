@@ -162,6 +162,7 @@ public class SubkeysAdapter extends CursorAdapter {
         vCertifyIcon.setVisibility(cursor.getInt(INDEX_CAN_CERTIFY) != 0 ? View.VISIBLE : View.GONE);
         vEncryptIcon.setVisibility(cursor.getInt(INDEX_CAN_ENCRYPT) != 0 ? View.VISIBLE : View.GONE);
         vSignIcon.setVisibility(cursor.getInt(INDEX_CAN_SIGN) != 0 ? View.VISIBLE : View.GONE);
+        // TODO: missing icon for authenticate
 
         boolean isRevoked = cursor.getInt(INDEX_IS_REVOKED) > 0;
 
