@@ -51,7 +51,7 @@
     <string name="btn_save">Save</string>
     <string name="btn_do_not_save">Cancel</string>
     <string name="btn_delete">Delete</string>
-    <string name="btn_no_date">None</string>
+    <string name="btn_no_date">No Expiry</string>
     <string name="btn_okay">Okay</string>
     <string name="btn_export_to_server">Upload To Keyserver</string>
     <string name="btn_next">Next</string>

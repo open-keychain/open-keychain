@@ -161,6 +161,11 @@ public class SubkeysAdapter extends CursorAdapter {
 
         boolean isRevoked = cursor.getInt(INDEX_IS_REVOKED) > 0;
 
+        Date expiryDate = null;
+        if (!cursor.isNull(INDEX_EXPIRY)) {
+            expiryDate = new Date(cursor.getLong(INDEX_EXPIRY) * 1000);
+        }
+
         // for edit key
         if (mSaveKeyringParcel != null) {
             boolean revokeThisSubkey = (mSaveKeyringParcel.mRevokeSubKeys.contains(keyId));
@@ -171,9 +176,29 @@ public class SubkeysAdapter extends CursorAdapter {
                 }
             }
 
+            SaveKeyringParcel.SubkeyChange subkeyChange = mSaveKeyringParcel.getSubkeyChange(keyId);
+            if (subkeyChange != null) {
+                // 0 is "no expiry"
+                if (subkeyChange.mExpiry != null && subkeyChange.mExpiry != 0) {
+                    expiryDate = new Date(subkeyChange.mExpiry * 1000);
+                }
+            }
+
             vEditImage.setVisibility(View.VISIBLE);
         } else {
             vEditImage.setVisibility(View.GONE);
+        }
+
+        boolean isExpired;
+        if (expiryDate != null) {
+            isExpired = expiryDate.before(new Date());
+
+            vKeyExpiry.setText(context.getString(R.string.label_expiry) + ": "
+                    + DateFormat.getDateFormat(context).format(expiryDate));
+        } else {
+            isExpired = false;
+
+            vKeyExpiry.setText(context.getString(R.string.label_expiry) + ": " + context.getString(R.string.none));
         }
 
         if (isRevoked) {
@@ -184,19 +209,6 @@ public class SubkeysAdapter extends CursorAdapter {
             vKeyExpiry.setTextColor(mDefaultTextColor);
 
             vRevokedIcon.setVisibility(View.GONE);
-        }
-
-        boolean isExpired;
-        if (!cursor.isNull(INDEX_EXPIRY)) {
-            Date expiryDate = new Date(cursor.getLong(INDEX_EXPIRY) * 1000);
-            isExpired = expiryDate.before(new Date());
-
-            vKeyExpiry.setText(context.getString(R.string.label_expiry) + ": "
-                    + DateFormat.getDateFormat(context).format(expiryDate));
-        } else {
-            isExpired = false;
-
-            vKeyExpiry.setText(context.getString(R.string.label_expiry) + ": " + context.getString(R.string.none));
         }
 
         // if key is expired or revoked, strike through text

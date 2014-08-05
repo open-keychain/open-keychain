@@ -45,7 +45,6 @@ import org.sufficientlysecure.keychain.helper.ActionBarHelper;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKeyRing;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
-import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
@@ -60,14 +59,12 @@ import org.sufficientlysecure.keychain.ui.adapter.UserIdsAdapter;
 import org.sufficientlysecure.keychain.ui.adapter.UserIdsAddedAdapter;
 import org.sufficientlysecure.keychain.ui.dialog.AddSubkeyDialogFragment;
 import org.sufficientlysecure.keychain.ui.dialog.AddUserIdDialogFragment;
-import org.sufficientlysecure.keychain.ui.dialog.ChangeExpiryDialogFragment;
+import org.sufficientlysecure.keychain.ui.dialog.EditSubkeyExpiryDialogFragment;
 import org.sufficientlysecure.keychain.ui.dialog.EditSubkeyDialogFragment;
 import org.sufficientlysecure.keychain.ui.dialog.EditUserIdDialogFragment;
 import org.sufficientlysecure.keychain.ui.dialog.PassphraseDialogFragment;
 import org.sufficientlysecure.keychain.ui.dialog.SetPassphraseDialogFragment;
 import org.sufficientlysecure.keychain.util.Log;
-
-import java.util.Date;
 
 public class EditKeyFragment extends LoaderFragment implements
         LoaderManager.LoaderCallbacks<Cursor> {
@@ -96,8 +93,8 @@ public class EditKeyFragment extends LoaderFragment implements
     private Uri mDataUri;
 
     private SaveKeyringParcel mSaveKeyringParcel;
-    private String mPrimaryUserId;
 
+    private String mPrimaryUserId;
     private String mCurrentPassphrase;
 
     /**
@@ -399,23 +396,17 @@ public class EditKeyFragment extends LoaderFragment implements
 
     private void editSubkeyExpiry(final int position) {
         final long keyId = mSubkeysAdapter.getKeyId(position);
-        final Date creationDate = new Date(mSubkeysAdapter.getCreationDate(position));
-        final Date expiryDate = new Date(mSubkeysAdapter.getExpiryDate(position));
+        final long creationDate = mSubkeysAdapter.getCreationDate(position);
+        final long expiryDate = mSubkeysAdapter.getExpiryDate(position);
 
         Handler returnHandler = new Handler() {
             @Override
             public void handleMessage(Message message) {
                 switch (message.what) {
-                    case ChangeExpiryDialogFragment.MESSAGE_NEW_EXPIRY_DATE:
-//                        SaveKeyringParcel.SubkeyChange subkeyChange = new SaveKeyringParcel.SubkeyChange();
-
-//                        mSaveKeyringParcel.mChangeSubKeys.add()
-//                        if (mSaveKeyringParcel.changePrimaryUserId != null
-//                                && mSaveKeyringParcel.changePrimaryUserId.equals(userId)) {
-//                            mSaveKeyringParcel.changePrimaryUserId = null;
-//                        } else {
-//                            mSaveKeyringParcel.changePrimaryUserId = userId;
-//                        }
+                    case EditSubkeyExpiryDialogFragment.MESSAGE_NEW_EXPIRY_DATE:
+                        long expiry = message.getData().getLong(EditSubkeyExpiryDialogFragment.MESSAGE_DATA_EXPIRY_DATE);
+                        Log.d(Constants.TAG, "new expiry: " + expiry);
+                        mSaveKeyringParcel.getOrCreateSubkeyChange(keyId).mExpiry = expiry;
                         break;
                 }
                 getLoaderManager().getLoader(LOADER_ID_SUBKEYS).forceLoad();
@@ -427,8 +418,8 @@ public class EditKeyFragment extends LoaderFragment implements
 
         DialogFragmentWorkaround.INTERFACE.runnableRunDelayed(new Runnable() {
             public void run() {
-                ChangeExpiryDialogFragment dialogFragment =
-                        ChangeExpiryDialogFragment.newInstance(messenger, creationDate, expiryDate);
+                EditSubkeyExpiryDialogFragment dialogFragment =
+                        EditSubkeyExpiryDialogFragment.newInstance(messenger, creationDate, expiryDate);
 
                 dialogFragment.show(getActivity().getSupportFragmentManager(), "editSubkeyExpiryDialog");
             }
@@ -501,9 +492,7 @@ public class EditKeyFragment extends LoaderFragment implements
     }
 
     private void save(String passphrase) {
-        Log.d(Constants.TAG, "mSaveKeyringParcel.mAddUserIds: " + mSaveKeyringParcel.mAddUserIds);
-        Log.d(Constants.TAG, "mSaveKeyringParcel.mNewPassphrase: " + mSaveKeyringParcel.mNewPassphrase);
-        Log.d(Constants.TAG, "mSaveKeyringParcel.mRevokeUserIds: " + mSaveKeyringParcel.mRevokeUserIds);
+        Log.d(Constants.TAG, "mSaveKeyringParcel:\n" + mSaveKeyringParcel.toString());
 
         // Message is received after importing is done in KeychainIntentService
         KeychainIntentServiceHandler saveHandler = new KeychainIntentServiceHandler(
