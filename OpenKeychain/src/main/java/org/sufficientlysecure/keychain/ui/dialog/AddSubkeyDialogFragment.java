@@ -32,6 +32,9 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -54,11 +57,18 @@ public class AddSubkeyDialogFragment extends DialogFragment {
     private static final String ARG_WILL_BE_MASTER_KEY = "will_be_master_key";
 
     private OnAlgorithmSelectedListener mAlgorithmSelectedListener;
+
+    private CheckBox mNoExpiryCheckBox;
+    private DatePicker mExpiryDatePicker;
     private Spinner mAlgorithmSpinner;
     private Spinner mKeySizeSpinner;
     private TextView mCustomKeyTextView;
     private EditText mCustomKeyEditText;
     private TextView mCustomKeyInfoTextView;
+    private CheckBox mFlagCertify;
+    private CheckBox mFlagSign;
+    private CheckBox mFlagEncrypt;
+    private CheckBox mFlagAuthenticate;
 
     public void setOnAlgorithmSelectedListener(OnAlgorithmSelectedListener listener) {
         mAlgorithmSelectedListener = listener;
@@ -85,11 +95,33 @@ public class AddSubkeyDialogFragment extends DialogFragment {
 
         CustomAlertDialogBuilder dialog = new CustomAlertDialogBuilder(context);
 
-        View view = mInflater.inflate(R.layout.create_key_dialog, null);
+        View view = mInflater.inflate(R.layout.add_subkey_dialog, null);
         dialog.setView(view);
         dialog.setTitle(R.string.title_create_key);
 
-        mAlgorithmSpinner = (Spinner) view.findViewById(R.id.create_key_algorithm);
+        mNoExpiryCheckBox = (CheckBox) view.findViewById(R.id.add_subkey_no_expiry);
+        mExpiryDatePicker = (DatePicker) view.findViewById(R.id.add_subkey_expiry_date_picker);
+        mAlgorithmSpinner = (Spinner) view.findViewById(R.id.add_subkey_algorithm);
+        mKeySizeSpinner = (Spinner) view.findViewById(R.id.add_subkey_size);
+        mCustomKeyTextView = (TextView) view.findViewById(R.id.add_subkey_custom_key_size_label);
+        mCustomKeyEditText = (EditText) view.findViewById(R.id.add_subkey_custom_key_size_input);
+        mCustomKeyInfoTextView = (TextView) view.findViewById(R.id.add_subkey_custom_key_size_info);
+        mFlagCertify = (CheckBox) view.findViewById(R.id.add_subkey_flag_certify);
+        mFlagSign = (CheckBox) view.findViewById(R.id.add_subkey_flag_sign);
+        mFlagEncrypt = (CheckBox) view.findViewById(R.id.add_subkey_flag_encrypt);
+        mFlagAuthenticate = (CheckBox) view.findViewById(R.id.add_subkey_flag_authenticate);
+
+        mNoExpiryCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    mExpiryDatePicker.setVisibility(View.GONE);
+                } else {
+                    mExpiryDatePicker.setVisibility(View.VISIBLE);
+                }
+            }
+        });
+
         ArrayList<Choice> choices = new ArrayList<Choice>();
         choices.add(new Choice(Constants.choice.algorithm.dsa, getResources().getString(
                 R.string.dsa)));
@@ -97,10 +129,8 @@ public class AddSubkeyDialogFragment extends DialogFragment {
             choices.add(new Choice(Constants.choice.algorithm.elgamal, getResources().getString(
                     R.string.elgamal)));
         }
-
         choices.add(new Choice(Constants.choice.algorithm.rsa, getResources().getString(
                 R.string.rsa)));
-
         ArrayAdapter<Choice> adapter = new ArrayAdapter<Choice>(context,
                 android.R.layout.simple_spinner_item, choices);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -113,7 +143,7 @@ public class AddSubkeyDialogFragment extends DialogFragment {
             }
         }
 
-        mKeySizeSpinner = (Spinner) view.findViewById(R.id.create_key_size);
+
         // dynamic ArrayAdapter must be created (instead of ArrayAdapter.getFromResource), because it's content may change
         ArrayAdapter<CharSequence> keySizeAdapter = new ArrayAdapter<CharSequence>(context, android.R.layout.simple_spinner_item,
                 new ArrayList<CharSequence>(Arrays.asList(getResources().getStringArray(R.array.rsa_key_size_spinner_values))));
@@ -121,9 +151,6 @@ public class AddSubkeyDialogFragment extends DialogFragment {
         mKeySizeSpinner.setAdapter(keySizeAdapter);
         mKeySizeSpinner.setSelection(1); // Default to 4096 for the key length
 
-        mCustomKeyTextView = (TextView) view.findViewById(R.id.custom_key_size_label);
-        mCustomKeyEditText = (EditText) view.findViewById(R.id.custom_key_size_input);
-        mCustomKeyInfoTextView = (TextView) view.findViewById(R.id.custom_key_size_info);
 
         dialog.setPositiveButton(android.R.string.ok,
                 new DialogInterface.OnClickListener() {
@@ -148,7 +175,8 @@ public class AddSubkeyDialogFragment extends DialogFragment {
                     public void onClick(DialogInterface di, int id) {
                         di.dismiss();
                     }
-                });
+                }
+        );
 
         final AlertDialog alertDialog = dialog.show();
 

@@ -29,8 +29,6 @@ import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.util.Log;
 
-import java.util.Arrays;
-
 public class EditUserIdDialogFragment extends DialogFragment {
     private static final String ARG_MESSENGER = "messenger";
 

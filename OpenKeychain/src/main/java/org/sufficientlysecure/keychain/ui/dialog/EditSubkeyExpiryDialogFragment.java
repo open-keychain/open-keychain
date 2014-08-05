@@ -92,10 +92,10 @@ public class EditSubkeyExpiryDialogFragment extends DialogFragment {
         alert.setTitle(R.string.expiry_date_dialog_title);
 
         LayoutInflater inflater = activity.getLayoutInflater();
-        View view = inflater.inflate(R.layout.expiry_dialog, null);
+        View view = inflater.inflate(R.layout.edit_subkey_expiry_dialog, null);
         alert.setView(view);
 
-        mDatePicker = (DatePicker) view.findViewById(R.id.datePicker);
+        mDatePicker = (DatePicker) view.findViewById(R.id.edit_subkey_expiry_date_picker);
 
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.HONEYCOMB) {
             // will crash with IllegalArgumentException if we set a min date

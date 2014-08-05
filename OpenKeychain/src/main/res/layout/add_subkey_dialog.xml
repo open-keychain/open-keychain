@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TableLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="8dp"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:stretchColumns="1">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:text="@string/key_creation_el_gamal_info" />
+
+        <TableRow>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:text="@string/label_algorithm" />
+
+            <Spinner
+                android:id="@+id/add_subkey_algorithm"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="4dp" />
+        </TableRow>
+
+        <TableRow>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:text="@string/label_key_size" />
+
+            <Spinner
+                android:id="@+id/add_subkey_size"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="right"
+                android:padding="4dp" />
+        </TableRow>
+
+        <TextView
+            android:id="@+id/add_subkey_custom_key_size_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:text="@string/key_size_custom_info"
+            android:visibility="gone" />
+
+        <EditText
+            android:id="@+id/add_subkey_custom_key_size_input"
+            android:layout_width="0dip"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:inputType="number"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/add_subkey_custom_key_size_info"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical" />
+
+        <TableRow>
+
+            <TextView
+                android:id="@+id/label_expiry"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:paddingRight="10dip"
+                android:text="@string/label_expiry" />
+
+            <CheckBox
+                android:id="@+id/add_subkey_no_expiry"
+                android:checked="true"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/btn_no_date" />
+
+        </TableRow>
+
+        <TableRow>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:paddingRight="10dip" />
+
+            <DatePicker
+                android:id="@+id/add_subkey_expiry_date_picker"
+                android:layout_gravity="center_horizontal"
+                android:visibility="gone"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:spinnersShown="true"
+                android:calendarViewShown="false" />
+
+        </TableRow>
+
+        <TableRow>
+
+            <TextView
+                android:id="@+id/label_usage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:paddingRight="10dip"
+                android:text="@string/label_usage" />
+
+
+            <CheckBox
+                android:id="@+id/add_subkey_flag_certify"
+                android:enabled="false"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/flag_certify" />
+        </TableRow>
+
+        <TableRow>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:paddingRight="10dip" />
+
+            <CheckBox
+                android:id="@+id/add_subkey_flag_sign"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/flag_sign" />
+        </TableRow>
+
+        <TableRow>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:paddingRight="10dip" />
+
+            <CheckBox
+                android:id="@+id/add_subkey_flag_encrypt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/flag_encrypt" />
+        </TableRow>
+
+        <TableRow>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:paddingRight="10dip" />
+
+            <CheckBox
+                android:id="@+id/add_subkey_flag_authenticate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/flag_authenticate" />
+        </TableRow>
+
+    </TableLayout>
+
+</ScrollView>
