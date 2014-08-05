@@ -42,7 +42,6 @@ import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.Window;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -57,9 +56,9 @@ import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.OperationResultParcel;
 import org.sufficientlysecure.keychain.ui.adapter.PagerTabStripAdapter;
+import org.sufficientlysecure.keychain.ui.widget.SlidingTabLayout;
 import org.sufficientlysecure.keychain.ui.widget.SlidingTabLayout.TabColorizer;
 import org.sufficientlysecure.keychain.util.Log;
-import org.sufficientlysecure.keychain.ui.widget.SlidingTabLayout;
 import org.sufficientlysecure.keychain.util.Notify;
 
 import java.util.Date;
@@ -103,7 +102,6 @@ public class ViewKeyActivity extends ActionBarActivity implements
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
         super.onCreate(savedInstanceState);
 
         mExportHelper = new ExportHelper(this);
@@ -296,8 +294,7 @@ public class ViewKeyActivity extends ActionBarActivity implements
 
         exportHelper.showExportKeysDialog(
                 new long[]{(Long) data.get(KeychainContract.KeyRings.MASTER_KEY_ID)},
-                Constants.Path.APP_DIR_FILE,
-                ((Long) data.get(KeychainContract.KeyRings.HAS_SECRET) == 1)
+                Constants.Path.APP_DIR_FILE, ((Long) data.get(KeychainContract.KeyRings.HAS_SECRET) == 1)
         );
     }
 

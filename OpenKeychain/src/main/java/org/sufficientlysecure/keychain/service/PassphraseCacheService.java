@@ -34,9 +34,8 @@ import android.os.IBinder;
 import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
-
-import android.support.v4.util.LongSparseArray;
 import android.support.v4.app.NotificationCompat;
+import android.support.v4.util.LongSparseArray;
 
 import org.spongycastle.bcpg.S2K;
 import org.sufficientlysecure.keychain.Constants;
@@ -396,8 +395,8 @@ public class PassphraseCacheService extends Service {
         } else {
             // Fallback, since expandable notifications weren't available back then
             builder.setSmallIcon(R.drawable.ic_launcher)
-                    .setContentTitle(String.format(getString(R.string.passp_cache_notif_n_keys,
-                            mPassphraseCache.size())))
+                    .setContentTitle(String.format(getString(R.string.passp_cache_notif_n_keys),
+                            mPassphraseCache.size()))
                     .setContentText(getString(R.string.passp_cache_notif_click_to_clear));
 
             Intent intent = new Intent(getApplicationContext(), PassphraseCacheService.class);

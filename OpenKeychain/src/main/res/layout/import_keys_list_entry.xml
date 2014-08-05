@@ -100,7 +100,7 @@
             android:orientation="vertical" />
 
         <TextView
-            android:id="@+id/keyId"
+            android:id="@+id/subkey_item_key_id"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="0xBBBBBBBBBBBBBBBB"

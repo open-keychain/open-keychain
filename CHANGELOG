@@ -1,3 +1,17 @@
+2.8
+* So many bugs have been fixed in this release that we focus on the main new features
+* Key edit: awesome new design, key revocation
+* Key import: awesome new design, secure keyserver connections via hkps, keyserver resolving via DNS SRV records
+* New first time screen
+* New create key screen: autocompletion of name and email based on your personal Android accounts
+* File encryption: awesome new design, support for encrypting multiple files
+* New icons to show status of key (by Brennan Novak)
+* Important bug fix: Importing of large key collections from a file is now possible
+* Notification showing cached passphrases
+
+This release wouldn't be possible without the work of Vincent Breitmoser (GSoC 2014), mar-v-in (GSoC 2014), Daniel Albert, Art O Cathain, Daniel Haß, Tim Bray, Thialfihar
+
+
 2.7
 * Purple! (Dominik, Vincent)
 * New key view design (Dominik, Vincent)
@@ -6,50 +20,50 @@
 * Keybase.io import (Tim Bray)
 
 2.6.1
-* some fixes for regression bugs
+* Some fixes for regression bugs
 
 2.6
-* key certifications (thanks to Vincent Breitmoser)
-* support for GnuPG partial secret keys (thanks to Vincent Breitmoser)
-* new design for signature verification
-* custom key length (thanks to Greg Witczak)
-* fix share-functionality from other apps
+* Key certifications (thanks to Vincent Breitmoser)
+* Support for GnuPG partial secret keys (thanks to Vincent Breitmoser)
+* New design for signature verification
+* Custom key length (thanks to Greg Witczak)
+* Fix share-functionality from other apps
 
 2.5
-* fix decryption of symmetric pgp messages/files
-* refactored edit key screen (thanks to Ash Hughes)
-* new modern design for encrypt/decrypt screens
+* Fix decryption of symmetric pgp messages/files
+* Refactored edit key screen (thanks to Ash Hughes)
+* New modern design for encrypt/decrypt screens
 * OpenPGP API version 3 (multiple api accounts, internal fixes, key lookup)
 
 2.4
 Thanks to all applicants of Google Summer of Code 2014 who made this release feature rich and bug free!
 Besides several small patches, a notable number of patches are made by the following people (in alphabetical order):
 Daniel Hammann, Daniel Haß, Greg Witczak, Miroojin Bakshi, Nikhil Peter Raj, Paul Sarbinowski, Sreeram Boyapati, Vincent Breitmoser.
-* new unified key list
-* colorized key fingerprint
-* support for keyserver ports
-* deactivate possibility to generate weak keys
-* much more internal work on the API
-* certify user ids
-* keyserver query based on machine-readable output
-* lock navigation drawer on tablets
-* suggestions for emails on creation of keys
-* search in public key lists
-* and much more improvements and fixes…
+* New unified key list
+* Colorized key fingerprint
+* Support for keyserver ports
+* Deactivate possibility to generate weak keys
+* Much more internal work on the API
+* Certify user ids
+* Keyserver query based on machine-readable output
+* Lock navigation drawer on tablets
+* Suggestions for emails on creation of keys
+* Search in public key lists
+* And much more improvements and fixes…
 
 2.3.1
-* hotfix for crash when upgrading from old versions
+* Hotfix for crash when upgrading from old versions
 
 2.3
-* remove unnecessary export of public keys when exporting secret key (thanks to Ash Hughes)
-* fix setting expiry dates on keys (thanks to Ash Hughes)
-* more internal fixes when editing keys (thanks to Ash Hughes)
-* querying keyservers directly from the import screen
-* fix layout and dialog style on Android 2.2-3.0
-* fix crash on keys with empty user ids
-* fix crash and empty lists when coming back from signing screen
+* Remove unnecessary export of public keys when exporting secret key (thanks to Ash Hughes)
+* Fix setting expiry dates on keys (thanks to Ash Hughes)
+* More internal fixes when editing keys (thanks to Ash Hughes)
+* Querying keyservers directly from the import screen
+* Fix layout and dialog style on Android 2.2-3.0
+* Fix crash on keys with empty user ids
+* Fix crash and empty lists when coming back from signing screen
 * Bouncy Castle (cryptography library) updated from 1.47 to 1.50 and build from source
-* fix upload of key from signing screen﻿
+* Fix upload of key from signing screen﻿
 
 2.2
 * New design with navigation drawer
@@ -76,110 +90,110 @@ Daniel Hammann, Daniel Haß, Greg Witczak, Miroojin Bakshi, Nikhil Peter Raj, Pa
 * New AIDL API
 
 1.0.8
-* basic keyserver support (HKP, please report bugs :))
-* app2sd (untested, let me know if there are problems)
-* more choices for pass phrase cache: 1, 2, 4, 8, hours
-* translations: Norwegian (thanks, Sander Danielsen), Chinese (thanks, Zhang Fredrick)
-* bugfixes
-* optimizations
+* Basic keyserver support (HKP, please report bugs :))
+* App2sd (untested, let me know if there are problems)
+* More choices for pass phrase cache: 1, 2, 4, 8, hours
+* Translations: Norwegian (thanks, Sander Danielsen), Chinese (thanks, Zhang Fredrick)
+* Bugfixes
+* Optimizations
 
 1.0.7
-* clear sign problem with lacking trailing newline fixed
-* more options for pass phrase cache time to live (20, 40, 60 mins)
+* Clear sign problem with lacking trailing newline fixed
+* More options for pass phrase cache time to live (20, 40, 60 mins)
 
 1.0.6
-* account adding crash on Froyo fixed
-* secure file deletion
-* option to delete key file after import
-* stream encryption/decryption (gallery, etc.)
-* new options (language, force v3 signatures)
-* interface changes
-* bugfixes
+* Account adding crash on Froyo fixed
+* Secure file deletion
+* Option to delete key file after import
+* Stream encryption/decryption (gallery, etc.)
+* New options (language, force v3 signatures)
+* Interface changes
+* Bugfixes
 
 1.0.5
 * German and Italian translation
-* much smaller package, due to reduced BC sources
-* new preferences GUI
-* layout adjustment for localization
-* signature bugfix
+* Much smaller package, due to reduced BC sources
+* New preferences GUI
+* Layout adjustment for localization
+* Signature bugfix
 
 1.0.4
-* fixed another crash caused by some SDK bug with query builder
+* Fixed another crash caused by some SDK bug with query builder
 
 1.0.3
-* fixed crashes during encryption/signing and possibly key export
+* Fixed crashes during encryption/signing and possibly key export
 
 1.0.2
-* filterable key lists
-* smarter preselection of encryption keys
-* new Intent handling for VIEW and SEND, allows files to be encrypted/decrypted out of file managers
-* fixes and additional features (key preselection) for k9, new beta build available
+* Filterable key lists
+* Smarter preselection of encryption keys
+* New Intent handling for VIEW and SEND, allows files to be encrypted/decrypted out of file managers
+* Fixes and additional features (key preselection) for k9, new beta build available
 
 1.0.1
 * GMail account listing was broken in 1.0.0, fixed again
 
 1.0.0
-* k9mail integration, APG supporting beta build of k9mail
-* support of more file managers (including ASTRO)
+* K-9 Mail integration, APG supporting beta build of K-9 Mail
+* Support of more file managers (including ASTRO)
 * Slovenian translation
-* new database, much faster, less memory usage
-* defined Intents and content provider for other apps
-* bugfixes
+* New database, much faster, less memory usage
+* Defined Intents and content provider for other apps
+* Bugfixes
 
 0.9.7
 * 0.9.5 must have introduced a bug that prevented symmetric encryption, this release fixes it
 
 0.9.6
-* finally fixed that bug that prevents the import of keys exported with Enigmail (and others), since this likely affects many users... it gets its own quick release
+* Finally fixed that bug that prevents the import of keys exported with Enigmail (and others), since this likely affects many users... it gets its own quick release
 
 0.9.5
-* k9mail integration: using "More -> Forward (alternate)"
-* pass phrase cache
-* compression preferences added
-* accurate decryption progress bar
-* internationalization prepared, hopefully translations will follow
+* K-9 Mail integration: using "More -> Forward (alternate)"
+* Passphrase cache
+* Compression preferences added
+* Accurate decryption progress bar
+* Internationalization prepared, hopefully translations will follow
 
 0.9.4
 * Android 1.5 support, I *hope*, please report problems with layout and graphics
-* yet another interface change, hopefully this will be it :)
-* symmetric encryption for messages
-* encrypt and decrypt processes all wrapped into ONE activity respectively in preparation for defined Intents to use APG in other apps
+* Yet another interface change, hopefully this will be it :)
+* Symmetric encryption for messages
+* Encrypt and decrypt processes all wrapped into ONE activity respectively in preparation for defined Intents to use APG in other apps
 
 0.9.3
-* handle large files correctly
-* better progress bars (especially for file encryption/decryption)
-* option to delete files after en-/decryption
-* bug fixes, layout tweaks
+* Handle large files correctly
+* Better progress bars (especially for file encryption/decryption)
+* Option to delete files after en-/decryption
+* Bug fixes, layout tweaks
 
 0.9.2
-* settings for default encryption/hash algorithm
-* hushmail key support
+* Settings for default encryption/hash algorithm
+* Hushmail key support
 * GUI improvements (encrypt file layout rewritten)
-* bug fixes
+* Bug fixes
 
 0.9.1
 * ElGamal support for subkeys
-* fixes of some silly 0.9.0 bugs
+* Fixes of some silly 0.9.0 bugs
 
 0.9.0
 * OI File Manager support
-* file encryption/decryption
+* File encryption/decryption
 
 0.8.1
-* display/verify signed-only mails
-* bug fixes, layout fixes
+* Display/verify signed-only mails
+* Bug fixes, layout fixes
 
 0.8.0
-* create/edit keys
-* export keys
+* Create/edit keys
+* Export keys
 * GUI more Android-like
-* a lot of code review, rewriting things
-* tidy up strings and error handling
+* A lot of code review, rewriting things
+* Tidy up strings and error handling
 
 0.7.1
-* minor fixes, some code review
-* recognize ElGamal encryption keys as suitable for encryption
-* allow signing only
+* Minor fixes, some code review
+* Recognize ElGamal encryption keys as suitable for encryption
+* Allow signing only
 
 0.7.0
-* initial public release
+* Initial public release

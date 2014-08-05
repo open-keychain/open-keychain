@@ -28,11 +28,10 @@ import android.os.Environment;
 import org.spongycastle.jce.provider.BouncyCastleProvider;
 import org.sufficientlysecure.keychain.helper.Preferences;
 import org.sufficientlysecure.keychain.helper.TlsHelper;
+import org.sufficientlysecure.keychain.provider.TemporaryStorageProvider;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.PRNGFixes;
 
-import java.io.File;
-import java.security.Provider;
 import java.security.Security;
 
 public class KeychainApplication extends Application {
@@ -73,8 +72,7 @@ public class KeychainApplication extends Application {
 
         // Create APG directory on sdcard if not existing
         if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
-            File dir = new File(Constants.Path.APP_DIR);
-            if (!dir.exists() && !dir.mkdirs()) {
+            if (!Constants.Path.APP_DIR.exists() && !Constants.Path.APP_DIR.mkdirs()) {
                 // ignore this for now, it's not crucial
                 // that the directory doesn't exist at this point
             }
@@ -86,9 +84,11 @@ public class KeychainApplication extends Application {
         setupAccountAsNeeded(this);
 
         // Update keyserver list as needed
-        Preferences.getPreferences(this).updateKeyServers();
+        Preferences.getPreferences(this).updatePreferences();
 
         TlsHelper.addStaticCA("pool.sks-keyservers.net", getAssets(), "sks-keyservers.netCA.cer");
+
+        TemporaryStorageProvider.cleanUp(this);
     }
 
     public static void setupAccountAsNeeded(Context context) {

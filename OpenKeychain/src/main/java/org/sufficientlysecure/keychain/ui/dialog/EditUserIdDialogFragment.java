@@ -32,6 +32,9 @@ import org.sufficientlysecure.keychain.util.Log;
 public class EditUserIdDialogFragment extends DialogFragment {
     private static final String ARG_MESSENGER = "messenger";
 
+    private static final String ARG_IS_REVOKED = "is_revoked";
+    private static final String ARG_IS_REVOKED_PENDING = "is_revoked_pending";
+
     public static final int MESSAGE_CHANGE_PRIMARY_USER_ID = 1;
     public static final int MESSAGE_REVOKE = 2;
 
@@ -40,10 +43,13 @@ public class EditUserIdDialogFragment extends DialogFragment {
     /**
      * Creates new instance of this dialog fragment
      */
-    public static EditUserIdDialogFragment newInstance(Messenger messenger) {
+    public static EditUserIdDialogFragment newInstance(Messenger messenger, boolean isRevoked,
+                                                       boolean isRevokedPending) {
         EditUserIdDialogFragment frag = new EditUserIdDialogFragment();
         Bundle args = new Bundle();
         args.putParcelable(ARG_MESSENGER, messenger);
+        args.putBoolean(ARG_IS_REVOKED, isRevoked);
+        args.putBoolean(ARG_IS_REVOKED_PENDING, isRevokedPending);
 
         frag.setArguments(args);
 
@@ -56,27 +62,49 @@ public class EditUserIdDialogFragment extends DialogFragment {
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         mMessenger = getArguments().getParcelable(ARG_MESSENGER);
+        boolean isRevoked = getArguments().getBoolean(ARG_IS_REVOKED);
+        boolean isRevokedPending = getArguments().getBoolean(ARG_IS_REVOKED_PENDING);
 
         CustomAlertDialogBuilder builder = new CustomAlertDialogBuilder(getActivity());
-        CharSequence[] array = getResources().getStringArray(R.array.edit_key_edit_user_id);
-
         builder.setTitle(R.string.edit_key_edit_user_id_title);
-        builder.setItems(array, new DialogInterface.OnClickListener() {
 
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                switch (which) {
-                    case 0:
-                        sendMessageToHandler(MESSAGE_CHANGE_PRIMARY_USER_ID, null);
-                        break;
-                    case 1:
-                        sendMessageToHandler(MESSAGE_REVOKE, null);
-                        break;
-                    default:
-                        break;
+        if (isRevokedPending) {
+            CharSequence[] array = getResources().getStringArray(R.array.edit_key_edit_user_id_revert_revocation);
+
+            builder.setItems(array, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    switch (which) {
+                        case 0:
+                            sendMessageToHandler(MESSAGE_REVOKE, null);
+                            break;
+                        default:
+                            break;
+                    }
                 }
-            }
-        });
+            });
+        } else if (isRevoked) {
+            builder.setMessage(R.string.edit_key_edit_user_id_revoked);
+        } else {
+            CharSequence[] array = getResources().getStringArray(R.array.edit_key_edit_user_id);
+
+            builder.setItems(array, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    switch (which) {
+                        case 0:
+                            sendMessageToHandler(MESSAGE_CHANGE_PRIMARY_USER_ID, null);
+                            break;
+                        case 1:
+                            sendMessageToHandler(MESSAGE_REVOKE, null);
+                            break;
+                        default:
+                            break;
+                    }
+                }
+            });
+        }
+
         builder.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int id) {

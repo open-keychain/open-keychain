@@ -26,31 +26,40 @@
             android:orientation="vertical">
 
             <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                    android:layout_width="match_parent"
+                    android:layout_height="?android:attr/listPreferredItemHeight"
+                    android:orientation="horizontal"
 
-                <EditText
-                    android:id="@+id/decrypt_file_filename"
-                    android:layout_width="0dip"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:gravity="top|left"
-                    android:inputType="textMultiLine|textUri"
-                    android:lines="4"
-                    android:maxLines="10"
-                    android:minLines="2"
-                    android:scrollbars="vertical" />
-
-                <ImageButton
                     android:id="@+id/decrypt_file_browse"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="4dp"
-                    android:src="@drawable/ic_action_collection"
-                    android:background="@drawable/button_rounded"
-                    android:layout_gravity="center_vertical"/>
+                    android:clickable="true"
+                    style="@style/SelectableItem">
+
+                <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:paddingLeft="8dp"
+                        android:textAppearance="?android:attr/textAppearanceMedium"
+                        android:text="@string/label_file_colon"
+                        android:gravity="center_vertical"/>
+
+                <TextView
+                        android:id="@+id/decrypt_file_filename"
+                        android:paddingLeft="8dp"
+                        android:paddingRight="8dp"
+                        android:textAppearance="?android:attr/textAppearanceMedium"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:hint="@string/filemanager_title_open"
+                        android:drawableRight="@drawable/ic_action_collection"
+                        android:drawablePadding="8dp"
+                        android:gravity="center_vertical"/>
             </LinearLayout>
+
+            <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dip"
+                    android:background="?android:attr/listDivider"
+                    android:layout_marginBottom="8dp"/>
 
             <CheckBox
                 android:id="@+id/decrypt_file_delete_after_decryption"

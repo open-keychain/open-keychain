@@ -37,7 +37,6 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import org.spongycastle.bcpg.sig.KeyFlags;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.compatibility.DialogFragmentWorkaround;
@@ -57,16 +56,14 @@ import org.sufficientlysecure.keychain.ui.adapter.SubkeysAdapter;
 import org.sufficientlysecure.keychain.ui.adapter.SubkeysAddedAdapter;
 import org.sufficientlysecure.keychain.ui.adapter.UserIdsAdapter;
 import org.sufficientlysecure.keychain.ui.adapter.UserIdsAddedAdapter;
+import org.sufficientlysecure.keychain.ui.dialog.AddSubkeyDialogFragment;
 import org.sufficientlysecure.keychain.ui.dialog.AddUserIdDialogFragment;
-import org.sufficientlysecure.keychain.ui.dialog.ChangeExpiryDialogFragment;
 import org.sufficientlysecure.keychain.ui.dialog.EditSubkeyDialogFragment;
+import org.sufficientlysecure.keychain.ui.dialog.EditSubkeyExpiryDialogFragment;
 import org.sufficientlysecure.keychain.ui.dialog.EditUserIdDialogFragment;
 import org.sufficientlysecure.keychain.ui.dialog.PassphraseDialogFragment;
 import org.sufficientlysecure.keychain.ui.dialog.SetPassphraseDialogFragment;
 import org.sufficientlysecure.keychain.util.Log;
-
-import java.util.ArrayList;
-import java.util.Date;
 
 public class EditKeyFragment extends LoaderFragment implements
         LoaderManager.LoaderCallbacks<Cursor> {
@@ -95,8 +92,8 @@ public class EditKeyFragment extends LoaderFragment implements
     private Uri mDataUri;
 
     private SaveKeyringParcel mSaveKeyringParcel;
-    private String mPrimaryUserId;
 
+    private String mPrimaryUserId;
     private String mCurrentPassphrase;
 
     /**
@@ -215,8 +212,7 @@ public class EditKeyFragment extends LoaderFragment implements
         mUserIdsList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                String userId = mUserIdsAdapter.getUserId(position);
-                editUserId(userId);
+                editUserId(position);
             }
         });
 
@@ -230,8 +226,7 @@ public class EditKeyFragment extends LoaderFragment implements
         mSubkeysList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                long keyId = mSubkeysAdapter.getKeyId(position);
-                editSubkey(keyId);
+                editSubkey(position);
             }
         });
 
@@ -320,7 +315,11 @@ public class EditKeyFragment extends LoaderFragment implements
         setPassphraseDialog.show(getActivity().getSupportFragmentManager(), "setPassphraseDialog");
     }
 
-    private void editUserId(final String userId) {
+    private void editUserId(final int position) {
+        final String userId = mUserIdsAdapter.getUserId(position);
+        final boolean isRevoked = mUserIdsAdapter.getIsRevoked(position);
+        final boolean isRevokedPending = mUserIdsAdapter.getIsRevokedPending(position);
+
         Handler returnHandler = new Handler() {
             @Override
             public void handleMessage(Message message) {
@@ -353,20 +352,21 @@ public class EditKeyFragment extends LoaderFragment implements
         DialogFragmentWorkaround.INTERFACE.runnableRunDelayed(new Runnable() {
             public void run() {
                 EditUserIdDialogFragment dialogFragment =
-                        EditUserIdDialogFragment.newInstance(messenger);
-
+                        EditUserIdDialogFragment.newInstance(messenger, isRevoked, isRevokedPending);
                 dialogFragment.show(getActivity().getSupportFragmentManager(), "editUserIdDialog");
             }
         });
     }
 
-    private void editSubkey(final long keyId) {
+    private void editSubkey(final int position) {
+        final long keyId = mSubkeysAdapter.getKeyId(position);
+
         Handler returnHandler = new Handler() {
             @Override
             public void handleMessage(Message message) {
                 switch (message.what) {
                     case EditSubkeyDialogFragment.MESSAGE_CHANGE_EXPIRY:
-                        editSubkeyExpiry(keyId);
+                        editSubkeyExpiry(position);
                         break;
                     case EditSubkeyDialogFragment.MESSAGE_REVOKE:
                         // toggle
@@ -394,19 +394,19 @@ public class EditKeyFragment extends LoaderFragment implements
         });
     }
 
-    private void editSubkeyExpiry(final long keyId) {
+    private void editSubkeyExpiry(final int position) {
+        final long keyId = mSubkeysAdapter.getKeyId(position);
+        final Long creationDate = mSubkeysAdapter.getCreationDate(position);
+        final Long expiryDate = mSubkeysAdapter.getExpiryDate(position);
+
         Handler returnHandler = new Handler() {
             @Override
             public void handleMessage(Message message) {
                 switch (message.what) {
-                    case ChangeExpiryDialogFragment.MESSAGE_NEW_EXPIRY_DATE:
-                        // toggle
-//                        if (mSaveKeyringParcel.changePrimaryUserId != null
-//                                && mSaveKeyringParcel.changePrimaryUserId.equals(userId)) {
-//                            mSaveKeyringParcel.changePrimaryUserId = null;
-//                        } else {
-//                            mSaveKeyringParcel.changePrimaryUserId = userId;
-//                        }
+                    case EditSubkeyExpiryDialogFragment.MESSAGE_NEW_EXPIRY_DATE:
+                        Long expiry = (Long) message.getData().
+                                getSerializable(EditSubkeyExpiryDialogFragment.MESSAGE_DATA_EXPIRY_DATE);
+                        mSaveKeyringParcel.getOrCreateSubkeyChange(keyId).mExpiry = expiry;
                         break;
                 }
                 getLoaderManager().getLoader(LOADER_ID_SUBKEYS).forceLoad();
@@ -418,8 +418,8 @@ public class EditKeyFragment extends LoaderFragment implements
 
         DialogFragmentWorkaround.INTERFACE.runnableRunDelayed(new Runnable() {
             public void run() {
-                ChangeExpiryDialogFragment dialogFragment =
-                        ChangeExpiryDialogFragment.newInstance(messenger, new Date(), new Date());
+                EditSubkeyExpiryDialogFragment dialogFragment =
+                        EditSubkeyExpiryDialogFragment.newInstance(messenger, creationDate, expiryDate);
 
                 dialogFragment.show(getActivity().getSupportFragmentManager(), "editSubkeyExpiryDialog");
             }
@@ -453,8 +453,21 @@ public class EditKeyFragment extends LoaderFragment implements
     }
 
     private void addSubkey() {
-        // default values
-        mSubkeysAddedAdapter.add(new SaveKeyringParcel.SubkeyAdd(Constants.choice.algorithm.rsa, 4096, KeyFlags.SIGN_DATA, null));
+        boolean willBeMasterKey = mSubkeysAdapter.getCount() == 0
+                && mSubkeysAddedAdapter.getCount() == 0;
+
+        AddSubkeyDialogFragment addSubkeyDialogFragment =
+                AddSubkeyDialogFragment.newInstance(willBeMasterKey);
+        addSubkeyDialogFragment
+                .setOnAlgorithmSelectedListener(
+                        new AddSubkeyDialogFragment.OnAlgorithmSelectedListener() {
+                            @Override
+                            public void onAlgorithmSelected(SaveKeyringParcel.SubkeyAdd newSubkey) {
+                                mSubkeysAddedAdapter.add(newSubkey);
+                            }
+                        }
+                );
+        addSubkeyDialogFragment.show(getActivity().getSupportFragmentManager(), "addSubkeyDialog");
     }
 
     private void cachePassphraseForEdit() {
@@ -479,9 +492,7 @@ public class EditKeyFragment extends LoaderFragment implements
     }
 
     private void save(String passphrase) {
-        Log.d(Constants.TAG, "mSaveKeyringParcel.mAddUserIds: " + mSaveKeyringParcel.mAddUserIds);
-        Log.d(Constants.TAG, "mSaveKeyringParcel.mNewPassphrase: " + mSaveKeyringParcel.mNewPassphrase);
-        Log.d(Constants.TAG, "mSaveKeyringParcel.mRevokeUserIds: " + mSaveKeyringParcel.mRevokeUserIds);
+        Log.d(Constants.TAG, "mSaveKeyringParcel:\n" + mSaveKeyringParcel.toString());
 
         // Message is received after importing is done in KeychainIntentService
         KeychainIntentServiceHandler saveHandler = new KeychainIntentServiceHandler(

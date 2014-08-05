@@ -69,7 +69,7 @@
         android:layout_height="match_parent"
         android:src="@drawable/ic_action_edit"
         android:padding="8dp"
-        android:layout_gravity="center_horizontal" />
+        android:layout_gravity="center_vertical" />
 
     <ImageButton
         android:id="@+id/user_id_item_delete_button"

@@ -47,10 +47,10 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.AbsListView.MultiChoiceModeListener;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Button;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
@@ -176,8 +176,8 @@ public class KeyListFragment extends LoaderFragment
                         case R.id.menu_key_list_multi_export: {
                             ids = mAdapter.getCurrentSelectedMasterKeyIds();
                             ExportHelper mExportHelper = new ExportHelper((ActionBarActivity) getActivity());
-                            mExportHelper.showExportKeysDialog(
-                                    ids, Constants.Path.APP_DIR_FILE, mAdapter.isAnySecretSelected());
+                            mExportHelper.showExportKeysDialog(ids, Constants.Path.APP_DIR_FILE,
+                                    mAdapter.isAnySecretSelected());
                             break;
                         }
                         case R.id.menu_key_list_multi_select_all: {

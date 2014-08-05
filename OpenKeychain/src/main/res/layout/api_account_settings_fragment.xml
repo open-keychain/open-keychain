@@ -53,7 +53,7 @@
         android:text="@string/api_settings_create_key"
         android:background="@drawable/button_edgy"
         android:drawableLeft="@drawable/ic_action_accounts"
-        android:textSize="14dip"/>
+        android:textSize="14sp"/>
 
     <org.sufficientlysecure.keychain.ui.widget.FoldableLinearLayout
         android:layout_width="match_parent"

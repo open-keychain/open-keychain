@@ -111,7 +111,7 @@ public class ImportKeysAdapter extends ArrayAdapter<ImportKeysListEntry> {
             convertView = mInflater.inflate(R.layout.import_keys_list_entry, null);
             holder.mainUserId = (TextView) convertView.findViewById(R.id.mainUserId);
             holder.mainUserIdRest = (TextView) convertView.findViewById(R.id.mainUserIdRest);
-            holder.keyId = (TextView) convertView.findViewById(R.id.keyId);
+            holder.keyId = (TextView) convertView.findViewById(R.id.subkey_item_key_id);
             holder.fingerprint = (TextView) convertView.findViewById(R.id.view_key_fingerprint);
             holder.algorithm = (TextView) convertView.findViewById(R.id.algorithm);
             holder.status = (TextView) convertView.findViewById(R.id.status);

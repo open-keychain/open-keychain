@@ -19,8 +19,13 @@ package org.sufficientlysecure.keychain.helper;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
-import android.content.*;
+import android.content.ContentProviderOperation;
+import android.content.ContentResolver;
+import android.content.ContentUris;
+import android.content.Context;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Build;
 import android.provider.ContactsContract;
@@ -33,7 +38,14 @@ import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.util.Log;
 
-import java.util.*;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class ContactHelper {
 
@@ -59,6 +71,8 @@ public class ContactHelper {
     public static final String RAW_CONTACT_AND_MIMETYPE_SELECTION =
             ContactsContract.Data.RAW_CONTACT_ID + "=? AND " + ContactsContract.Data.MIMETYPE + "=?";
     public static final String ID_SELECTION = ContactsContract.RawContacts._ID + "=?";
+
+    private static final Map<String, Bitmap> photoCache = new HashMap<String, Bitmap>();
 
     public static List<String> getPossibleUserEmails(Context context) {
         Set<String> accountMails = getAccountEmails(context);
@@ -232,6 +246,30 @@ public class ContactHelper {
         return null;
     }
 
+    public static Bitmap photoFromFingerprint(ContentResolver contentResolver, String fingerprint) {
+        if (fingerprint == null) return null;
+        if (!photoCache.containsKey(fingerprint)) {
+            photoCache.put(fingerprint, loadPhotoFromFingerprint(contentResolver, fingerprint));
+        }
+        return photoCache.get(fingerprint);
+    }
+
+    private static Bitmap loadPhotoFromFingerprint(ContentResolver contentResolver, String fingerprint) {
+        if (fingerprint == null) return null;
+        try {
+            int rawContactId = findRawContactId(contentResolver, fingerprint);
+            if (rawContactId == -1) return null;
+            Uri rawContactUri = ContentUris.withAppendedId(ContactsContract.RawContacts.CONTENT_URI, rawContactId);
+            Uri contactUri = ContactsContract.RawContacts.getContactLookupUri(contentResolver, rawContactUri);
+            InputStream photoInputStream =
+                    ContactsContract.Contacts.openContactPhotoInputStream(contentResolver, contactUri);
+            if (photoInputStream == null) return null;
+            return BitmapFactory.decodeStream(photoInputStream);
+        } catch (Throwable ignored) {
+            return null;
+        }
+    }
+
     /**
      * Write the current Keychain to the contact db
      */
@@ -356,7 +394,7 @@ public class ContactHelper {
                                           int rawContactId, long masterKeyId) {
         ops.add(selectByRawContactAndItemType(ContentProviderOperation.newDelete(ContactsContract.Data.CONTENT_URI),
                 rawContactId, ContactsContract.CommonDataKinds.Email.CONTENT_ITEM_TYPE).build());
-        Cursor ids = resolver.query(KeychainContract.UserIds.buildUserIdsUri(Long.toString(masterKeyId)),
+        Cursor ids = resolver.query(KeychainContract.UserIds.buildUserIdsUri(masterKeyId),
                 USER_IDS_PROJECTION, NON_REVOKED_SELECTION, null, null);
         if (ids != null) {
             while (ids.moveToNext()) {

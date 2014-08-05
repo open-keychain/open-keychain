@@ -23,11 +23,9 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.view.PagerTabStrip;
 import android.support.v4.view.ViewPager;
-import android.widget.Toast;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.helper.FileHelper;
 import org.sufficientlysecure.keychain.pgp.PgpHelper;
 import org.sufficientlysecure.keychain.ui.adapter.PagerTabStripAdapter;
 import org.sufficientlysecure.keychain.util.Log;
@@ -114,7 +112,7 @@ public class DecryptActivity extends DrawerActivity {
             } else {
                 // Binary via content provider (could also be files)
                 // override uri to get stream from send
-                uri = (Uri) intent.getParcelableExtra(Intent.EXTRA_STREAM);
+                uri = intent.getParcelableExtra(Intent.EXTRA_STREAM);
                 action = ACTION_DECRYPT;
             }
         } else if (Intent.ACTION_VIEW.equals(action)) {
@@ -122,6 +120,7 @@ public class DecryptActivity extends DrawerActivity {
 
             // override action
             action = ACTION_DECRYPT;
+            mFileFragmentBundle.putBoolean(DecryptFileFragment.ARG_FROM_VIEW_INTENT, true);
         }
 
         String textData = extras.getString(EXTRA_TEXT);
@@ -155,21 +154,8 @@ public class DecryptActivity extends DrawerActivity {
                 }
             }
         } else if (ACTION_DECRYPT.equals(action) && uri != null) {
-            // get file path from uri
-            String path = FileHelper.getPath(this, uri);
-
-            if (path != null) {
-                mFileFragmentBundle.putString(DecryptFileFragment.ARG_FILENAME, path);
-                mSwitchToTab = PAGER_TAB_FILE;
-            } else {
-                Log.e(Constants.TAG,
-                        "Direct binary data without actual file in filesystem is not supported. " +
-                        "Please use the Remote Service API!");
-                Toast.makeText(this, R.string.error_only_files_are_supported, Toast.LENGTH_LONG)
-                        .show();
-                // end activity
-                finish();
-            }
+            mFileFragmentBundle.putParcelable(DecryptFileFragment.ARG_URI, uri);
+            mSwitchToTab = PAGER_TAB_FILE;
         } else if (ACTION_DECRYPT.equals(action)) {
             Log.e(Constants.TAG,
                     "Include the extra 'text' or an Uri with setData() in your Intent!");

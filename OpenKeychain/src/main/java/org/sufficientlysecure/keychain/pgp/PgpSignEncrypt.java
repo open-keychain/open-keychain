@@ -20,6 +20,7 @@ package org.sufficientlysecure.keychain.pgp;
 
 import org.spongycastle.bcpg.ArmoredOutputStream;
 import org.spongycastle.bcpg.BCPGOutputStream;
+import org.spongycastle.bcpg.CompressionAlgorithmTags;
 import org.spongycastle.openpgp.PGPCompressedDataGenerator;
 import org.spongycastle.openpgp.PGPEncryptedDataGenerator;
 import org.spongycastle.openpgp.PGPException;
@@ -116,7 +117,7 @@ public class PgpSignEncrypt {
         // optional
         private Progressable mProgressable = null;
         private boolean mEnableAsciiArmorOutput = false;
-        private int mCompressionId = Constants.choice.compression.none;
+        private int mCompressionId = CompressionAlgorithmTags.UNCOMPRESSED;
         private long[] mEncryptionMasterKeyIds = null;
         private String mSymmetricPassphrase = null;
         private int mSymmetricEncryptionAlgorithm = 0;
@@ -264,7 +265,7 @@ public class PgpSignEncrypt {
         boolean enableSignature = mSignatureMasterKeyId != Constants.key.none;
         boolean enableEncryption = ((mEncryptionMasterKeyIds != null && mEncryptionMasterKeyIds.length > 0)
                 || mSymmetricPassphrase != null);
-        boolean enableCompression = (mCompressionId != Constants.choice.compression.none);
+        boolean enableCompression = (mCompressionId != CompressionAlgorithmTags.UNCOMPRESSED);
 
         Log.d(Constants.TAG, "enableSignature:" + enableSignature
                 + "\nenableEncryption:" + enableEncryption

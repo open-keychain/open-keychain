@@ -252,6 +252,26 @@ public class UserIdsAdapter extends CursorAdapter implements AdapterView.OnItemC
         return mCursor.getString(INDEX_USER_ID);
     }
 
+    public boolean getIsRevoked(int position) {
+        mCursor.moveToPosition(position);
+        return mCursor.getInt(INDEX_IS_REVOKED) > 0;
+    }
+
+    public boolean getIsRevokedPending(int position) {
+        mCursor.moveToPosition(position);
+        String userId = mCursor.getString(INDEX_USER_ID);
+
+        boolean isRevokedPending = false;
+        if (mSaveKeyringParcel != null) {
+            if (mSaveKeyringParcel.mRevokeUserIds.contains(userId)) {
+                isRevokedPending = true;
+            }
+
+        }
+
+        return isRevokedPending;
+    }
+
     @Override
     public View newView(Context context, Cursor cursor, ViewGroup parent) {
         View view = mInflater.inflate(R.layout.view_key_user_id_item, null);

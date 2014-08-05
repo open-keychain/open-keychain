@@ -1,20 +1,14 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <resources>
   <!--title-->
-  <string name="title_select_recipients">Выбрать Публичный ключ</string>
-  <string name="title_select_secret_key">Выбрать Секретный ключ</string>
   <string name="title_encrypt">Зашифровать</string>
   <string name="title_decrypt">Расшифровать</string>
   <string name="title_authentication">Пароль</string>
-  <string name="title_create_key">Создать ключ</string>
   <string name="title_edit_key">Изменить ключ</string>
-  <string name="title_wizard">Добро пожаловать в OpenKeychain</string>
   <string name="title_preferences">Настройки</string>
   <string name="title_api_registered_apps">Приложения</string>
   <string name="title_key_server_preference">Настройки сервера ключей</string>
   <string name="title_change_passphrase">Изменить пароль</string>
-  <string name="title_set_passphrase">Задать пароль</string>
-  <string name="title_share_with">Отправить...</string>
   <string name="title_share_fingerprint_with">Отправить отпечаток...</string>
   <string name="title_share_key">Отправить ключ...</string>
   <string name="title_share_file">Отправить файл...</string>
@@ -35,60 +29,33 @@
   <string name="section_general">Приложение</string>
   <string name="section_defaults">Алгоритмы</string>
   <string name="section_advanced">Дополнительно</string>
-  <string name="section_master_key">Основной ключ</string>
-  <string name="section_master_user_id">Основной идентификатор</string>
   <string name="section_actions">Действия</string>
   <string name="section_share_key">Ключ</string>
   <string name="section_certification_key">Ваш ключ для сертификации</string>
   <string name="section_upload_key">Загрузить ключ</string>
   <string name="section_key_server">Сервер ключей</string>
-  <string name="section_encrypt_and_or_sign">Зашифровать и/или Подписать</string>
-  <string name="section_decrypt_verify">Расшифровать и проверить</string>
   <string name="section_fingerprint">Отпечаток ключа</string>
   <string name="section_key_to_certify">Сертифицируемый ключ</string>
   <!--button-->
-  <string name="btn_certify">Сертифицировать</string>
   <string name="btn_decrypt_verify_file">Расшифровать, проверить и сохранить файл</string>
   <string name="btn_decrypt_verify_message">Расшифровать и проверить сообщение</string>
-  <string name="btn_decrypt_verify_clipboard">Из буфера обмена</string>
   <string name="btn_encrypt_file">Зашифровать и сохранить файл</string>
   <string name="btn_save">Сохранить</string>
   <string name="btn_do_not_save">Отмена</string>
   <string name="btn_delete">Удалить</string>
   <string name="btn_no_date">Нет</string>
   <string name="btn_okay">Да</string>
-  <string name="btn_change_passphrase">Изменить новый пароль</string>
-  <string name="btn_set_passphrase">Задать новый пароль</string>
   <string name="btn_export_to_server">Загрузить на сервер ключей</string>
   <string name="btn_next">Далее</string>
   <string name="btn_back">Назад</string>
-  <string name="btn_clipboard">Буфер обмена</string>
-  <string name="btn_share">Поделиться...</string>
   <string name="btn_lookup_key">Найти ключ</string>
-  <string name="btn_encryption_advanced_settings_show">Показать расширенные настройки</string>
-  <string name="btn_encryption_advanced_settings_hide">Скрыть расширенные настройки</string>
-  <string name="btn_share_encrypted_signed">Отправить зашифрованное/подписанное сообщение...</string>
   <string name="btn_view_cert_key">Просмотр ключа</string>
   <!--menu-->
   <string name="menu_preferences">Настройки</string>
   <string name="menu_help">Помощь</string>
   <string name="menu_export_key">Экспорт в файл</string>
   <string name="menu_delete_key">Удалить ключ</string>
-  <string name="menu_create_key">Создать ключ</string>
-  <string name="menu_create_key_expert">Создать ключ (эксперт)</string>
   <string name="menu_search">Поиск</string>
-  <string name="menu_key_server">Сервер ключей...</string>
-  <string name="menu_update_key">Обновить с сервера ключей</string>
-  <string name="menu_export_key_to_server">Загрузить на сервер ключей</string>
-  <string name="menu_share">Отправить...</string>
-  <string name="menu_share_title_fingerprint">Отправить отпечаток...</string>
-  <string name="menu_share_title">Отправить ключ...</string>
-  <string name="menu_share_default_fingerprint">Отправить</string>
-  <string name="menu_share_default">Отправить</string>
-  <string name="menu_share_qr_code">QR код</string>
-  <string name="menu_share_qr_code_fingerprint">QR код</string>
-  <string name="menu_share_nfc">через NFC</string>
-  <string name="menu_copy_to_clipboard">Копировать в буфер</string>
   <string name="menu_beam_preferences">Настройки Beam</string>
   <string name="menu_key_edit_cancel">Отмена</string>
   <string name="menu_encrypt_to">Зашифровать....</string>
@@ -97,22 +64,15 @@
   <string name="menu_export_all_keys">Экспорт всех ключей</string>
   <string name="menu_advanced">Подробные данные</string>
   <!--label-->
-  <string name="label_sign">Подписать</string>
   <string name="label_message">Сообщение</string>
   <string name="label_file">Файл</string>
   <string name="label_no_passphrase">Без пароля</string>
   <string name="label_passphrase">Пароль</string>
-  <string name="label_passphrase_again">Еще раз</string>
   <string name="label_algorithm">Алгоритм</string>
   <string name="label_ascii_armor">ASCII формат</string>
-  <string name="label_select_public_keys">Получатели</string>
-  <string name="label_delete_after_encryption">Удалить после шифрования</string>
   <string name="label_delete_after_decryption">Удалить после расшифровки</string>
-  <string name="label_share_after_encryption">Отправить после шифрования</string>
   <string name="label_encryption_algorithm">Алгоритм шифрования</string>
   <string name="label_hash_algorithm">Hash-алгоритм</string>
-  <string name="label_asymmetric">Публичным ключом</string>
-  <string name="label_symmetric">Паролем</string>
   <string name="label_passphrase_cache_ttl">Помнить пароль</string>
   <string name="label_message_compression">Сжатие сообщения</string>
   <string name="label_file_compression">Сжатие файла</string>
@@ -129,13 +89,7 @@
   <string name="label_email">Email</string>
   <string name="label_send_key">После сертификации загрузить ключ на сервер</string>
   <string name="label_fingerprint">Отпечаток</string>
-  <string name="select_keys_button_default">Выбрать</string>
   <string name="expiry_date_dialog_title">Срок годности</string>
-  <plurals name="select_keys_button">
-    <item quantity="one">%d выбран</item>
-    <item quantity="few">%d выбрано</item>
-    <item quantity="other">%d выбрано</item>
-  </plurals>
   <string name="user_id_no_name">&lt;нет имени&gt;</string>
   <string name="none">&lt;нет&gt;</string>
   <string name="no_key">&lt;нет ключа&gt;</string>
@@ -184,7 +138,6 @@
   <string name="flag_authenticate">Аутентификация</string>
   <!--sentences-->
   <string name="wrong_passphrase">Неправ. пароль</string>
-  <string name="set_a_passphrase">Сначала задайте пароль</string>
   <string name="no_filemanager_installed">Нет совместимого менеджера файлов.</string>
   <string name="passphrases_do_not_match">Пароли не совпадают.</string>
   <string name="passphrase_must_not_be_empty">Пожалуйста, введите пароль.</string>
@@ -203,15 +156,11 @@
   <string name="specify_file_to_export_to">Пожалуйста, выберите файл для экспорта.\nВНИМАНИЕ! Если файл существует, он будет перезаписан.</string>
   <string name="key_deletion_confirmation_multi">Вы уверены, что хотите удалить выбранные ключи?\nЭто действие нельзя отменить!</string>
   <string name="secret_key_deletion_confirmation">Вы уверены, что ходите удалить СЕКРЕТНЫЙ ключ \'%s\'?\nЭто действие нельзя отменить!</string>
-  <string name="ask_save_changed_key">Изменения внесены. Сохранить?</string>
-  <string name="ask_empty_id_ok">Вы добавили пустой идентификатор. Вы уверены, что хотите продолжить?</string>
   <string name="public_key_deletetion_confirmation">Вы правда хотите удалить публичный ключ \'%s\'?\nЭто действие нельзя отменить!</string>
-  <string name="also_export_secret_keys">Экспортировать секретные ключи?</string>
   <string name="key_exported">Успешный экспорт 1 ключа.</string>
   <string name="keys_exported">Экспортировано %d ключей.</string>
   <string name="no_keys_exported">Ключи не были экспортированы.</string>
   <string name="key_creation_el_gamal_info">Прим.: только вторичные ключи поддерживают ElGamal.</string>
-  <string name="key_creation_weak_rsa_info">Внимание: создание ключей RSA длиной 1024 бита и менее признано небезопасным. Данная возможность отключена.</string>
   <string name="key_not_found">Не удается найти ключ %08X.</string>
   <plurals name="bad_keys_encountered">
     <item quantity="one">%d плохой секретный ключ проигнорирован. Возможно, вы экспортируете с параметром\n--export-secret-subkeys\nВместо этого используйте\n--export-secret-keys</item>
@@ -224,7 +173,6 @@
   <string name="nfc_successful">Ключ успешно передан через NFC!</string>
   <string name="key_copied_to_clipboard">Ключ скопирован в буфер обмена!</string>
   <string name="fingerprint_copied_to_clipboard">Отпечаток ключа скопирован в буфер обмена!</string>
-  <string name="key_has_already_been_certified">Ключ уже был сертифицирован ранее!</string>
   <string name="select_key_to_certify">Выберите ключ, используемый для сертификации!</string>
   <string name="key_too_big_for_sharing">Ключ слишком большой для этого способа передачи!</string>
   <!--errors
@@ -235,36 +183,25 @@
   <string name="error_no_secret_key_found">нет подходящего секретного ключа</string>
   <string name="error_external_storage_not_ready">внешняя память не готова</string>
   <string name="error_key_size_minimum512bit">размер ключа должен быть не менее 512бит</string>
-  <string name="error_master_key_must_not_be_el_gamal">ключ ElGamal не может быть основным</string>
   <string name="error_unknown_algorithm_choice">выбран неизвестный алгоритм</string>
   <string name="error_user_id_no_email">email не найден</string>
   <string name="error_key_needs_a_user_id">необходим хотя бы один идентификатор</string>
-  <string name="error_main_user_id_must_not_be_empty">основной идентификатор не может быть пуст</string>
-  <string name="error_key_needs_master_key">необходим основной ключ</string>
   <string name="error_no_signature_passphrase">пароль не задан</string>
   <string name="error_no_signature_key">ключ для подписи не задан</string>
   <string name="error_invalid_data">некорректное шифрование</string>
   <string name="error_integrity_check_failed">Проверка целостности не удалась! Данные изменились!</string>
   <string name="error_wrong_passphrase">неправильный пароль</string>
-  <string name="error_saving_keys">ошибка сохранения ключей</string>
   <string name="error_could_not_extract_private_key">не удалось извлечь личный ключ</string>
-  <string name="error_expiry_must_come_after_creation">срок годности не может быть раньше даты создания</string>
   <!--errors without preceeding Error:-->
-  <string name="error_only_files_are_supported">Прямая передача данных без использования файла в памяти устройства не поддерживается.</string>
   <string name="error_jelly_bean_needed">Для использования NFC Beam требуется Android 4.1+ !</string>
   <string name="error_nfc_needed">Ваше устройство не поддерживает NFC!</string>
   <string name="error_nothing_import">Ключи не найдены!</string>
-  <string name="error_query_too_short">Запрос слишком короткий</string>
-  <string name="error_searching_keys">Ошибка поиска ключей на сервере</string>
-  <string name="error_too_many_responses">Поиск ключа вернул слишком много вариантов; Пожалуйста, уточните запрос</string>
-  <string name="error_import_no_valid_keys">Файл/Буфер пуст</string>
   <string name="error_generic_report_bug">Выявлена ошибка. Пожалуйста, сообщите о ней разработчику.</string>
   <plurals name="error_import_non_pgp_part">
     <item quantity="one">часть загруженного файла содержит данные OpenPGP, но это не ключ</item>
     <item quantity="few">части загруженного файла содержат данные OpenPGP, но это не ключ</item>
     <item quantity="other">части загруженного файла содержат данные OpenPGP, но это не ключ</item>
   </plurals>
-  <string name="error_change_something_first">Перед сохранением внесите изменения</string>
   <!--results shown after decryption/verification-->
   <string name="decrypt_result_invalid_signature">Неверная подпись!</string>
   <string name="decrypt_result_signature_unknown_pub_key">Неизвестный ключ</string>
@@ -281,19 +218,11 @@
   <string name="progress_importing">импорт...</string>
   <string name="progress_exporting">экспорт...</string>
   <string name="progress_building_key">создание ключа...</string>
-  <string name="progress_certifying_master_key">сертификация основного ключа...</string>
   <string name="progress_building_master_key">создание основной связки...</string>
-  <string name="progress_adding_sub_keys">добавление доп. ключей...</string>
-  <string name="progress_saving_key_ring">сохранение ключа...</string>
   <plurals name="progress_exporting_key">
     <item quantity="one">экспорт ключа...</item>
     <item quantity="few">экспорт ключей...</item>
     <item quantity="other">экспорт ключей...</item>
-  </plurals>
-  <plurals name="progress_generating">
-    <item quantity="one">создание ключа. это может занять до 3 минут...</item>
-    <item quantity="few">создание ключей. это может занять до 3 минут...</item>
-    <item quantity="other">создание ключей. это может занять до 3 минут...</item>
   </plurals>
   <string name="progress_extracting_signature_key">извлечение подписи ключа...</string>
   <string name="progress_extracting_key">извлечение ключа...</string>
@@ -312,8 +241,6 @@
   <string name="progress_deleting_securely">безопасное удаление \'%s\'...</string>
   <!--action strings-->
   <string name="hint_public_keys">Имя/Email/ID ключа…</string>
-  <string name="hint_secret_keys">Найти секретные ключи</string>
-  <string name="action_share_key_with">Отправить...</string>
   <!--key bit length selections-->
   <string name="key_size_512">512</string>
   <string name="key_size_768">768</string>
@@ -344,34 +271,15 @@
   <string name="import_tab_qr_code">QR код/NFC</string>
   <string name="import_tab_keybase">Keybase.io</string>
   <string name="import_import">Импорт выбранных ключей</string>
-  <string name="import_from_clipboard">Импорт из буфера обмена</string>
-  <plurals name="import_qr_code_missing">
-    <item quantity="one">Не найдены QR код с ID %s</item>
-    <item quantity="few">Не найдены QR коды с ID %s</item>
-    <item quantity="other">Не найдены QR коды с ID %s</item>
-  </plurals>
-  <string name="import_qr_code_start_with_one">Пожалуйста, начните с QR кода с id 1</string>
   <string name="import_qr_code_wrong">Некорректный QR код. Попробуйте снова!</string>
-  <string name="import_qr_code_finished">Сканирование QR завершено!</string>
   <string name="import_qr_code_too_short_fingerprint">Отпечаток слишком коротнкий (&lt; 16 символов)</string>
-  <string name="import_qr_scan_button">Сканировать QR код с \'Barcode Scanner\'</string>
-  <string name="import_nfc_text">Разблокируйте устройство, что бы получить ключ через NFC.</string>
-  <string name="import_nfc_help_button">Помощь</string>
   <string name="import_qr_code_button">Сканировать QR код...</string>
-  <string name="import_clipboard_button">Получить ключ из буфера</string>
-  <string name="import_keybase_button">Получить ключ с сервера Keybase.io</string>
   <!--Import result toast-->
   <plurals name="import_keys_added_and_updated_1">
     <item quantity="one">Ключ успешно импортирован</item>
     <item quantity="few">Успешно добавлено %1$d ключей</item>
     <item quantity="other">Успешно добавлено %1$d ключей</item>
   </plurals>
-  <plurals name="import_keys_added_and_updated_2">
-    <item quantity="one">и обновлен ключ%2$s.</item>
-    <item quantity="few">и обновлено %1$d ключей%2$s.</item>
-    <item quantity="other">и обновлено %1$d ключей%2$s.</item>
-  </plurals>
-  <string name="view_log">Смотреть журнал</string>
   <string name="import_error_nothing">Нет данных для импорта.</string>
   <string name="import_error">Ошибка импорта ключей!</string>
   <string name="import_with_warnings">, с предупреждениями</string>
@@ -381,7 +289,6 @@
   <string name="intent_send_encrypt">OpenKeychain: Зашифровать</string>
   <string name="intent_send_decrypt">OpenKeychain: Расшифровать</string>
   <!--Remote API-->
-  <string name="api_no_apps">Нет связанных приложений!\n\nСписок приложений, поддерживающих интеграцию, доступен в разделе \'Помощь\'!</string>
   <string name="api_settings_show_info">Показать подробную информацию</string>
   <string name="api_settings_hide_info">Скрыть  подробную информацию</string>
   <string name="api_settings_show_advanced">Показать расширенные настройки</string>
@@ -397,9 +304,6 @@
   <string name="api_settings_package_name">Наименование пакета</string>
   <string name="api_settings_package_signature">SHA-256 подписи пакета</string>
   <string name="api_settings_accounts">Аккаунты</string>
-  <string name="api_settings_accounts_empty">Нет аккаунтов, связанных с этим приложением.</string>
-  <string name="api_create_account_text">Приложение запрашивает создание нового аккаунта. Выберите секретный ключ или создайте новый.\nПриложения ограничены в доступе только к выбраным здесь ключам!</string>
-  <string name="api_register_text">Данное приложение запрашивает доступ к OpenKeychain.\nРазрешить доступ?\n\nВНИМАНИЕ: Если вы не знаете почему возник этот запрос, откажите в доступе!\nПозже вы можете отозвать право доступа в разделе \"Зарегистрированные программы\".</string>
   <string name="api_register_allow">Разрешить доступ</string>
   <string name="api_register_disallow">Запретить доступ</string>
   <string name="api_register_error_select_key">Пожалуйста, выберите ключ!</string>
@@ -409,9 +313,6 @@
   <string name="api_error_wrong_signature">Проверка подписи пакета не удалась! Если  вы установили программу из другого источника, отзовите для неё доступ к этой программе или обновите право доступа.</string>
   <!--Share-->
   <string name="share_qr_code_dialog_title">Отправить как QR код</string>
-  <string name="share_qr_code_dialog_start">Сканируйте несколько QR подряд, нажимая \'Далее\'  после каждого кода.</string>
-  <string name="share_qr_code_dialog_fingerprint_text">Отпечаток:</string>
-  <string name="share_qr_code_dialog_progress">QR код с id %1$d из %2$d</string>
   <string name="share_nfc_dialog">Отправить через NFC</string>
   <!--Key list-->
   <plurals name="key_list_selected_keys">
@@ -423,7 +324,6 @@
   <string name="key_list_empty_text2">Но Вы можете</string>
   <string name="key_list_empty_text3">или</string>
   <string name="key_list_empty_button_create">создать свой ключ</string>
-  <string name="key_list_empty_button_import">Импортировать ключи</string>
   <!--Key view-->
   <string name="key_view_action_edit">Изменить ключ</string>
   <string name="key_view_action_encrypt">Зашифровать этим ключом</string>
@@ -434,27 +334,23 @@
   <string name="key_view_tab_share">Отправить...</string>
   <string name="key_view_tab_keys">Доп. ключи</string>
   <string name="key_view_tab_certs">Сертификация</string>
+  <!--Edit key-->
+  <!--Create key-->
+  <!--View key-->
   <!--Navigation Drawer-->
   <string name="nav_keys">Ключи</string>
   <string name="nav_encrypt">Подписать и зашифровать</string>
   <string name="nav_decrypt">Расшифровать и проверить</string>
-  <string name="nav_import">Импорт ключей</string>
   <string name="nav_apps">Приложения</string>
   <string name="drawer_open">Открыть панель навигации</string>
   <string name="drawer_close">Закрыть панель навигации</string>
-  <string name="edit">Изменить</string>
   <string name="my_keys">Мои ключи</string>
-  <string name="label_secret_key">Секретный ключ</string>
-  <string name="secret_key_yes">доступен</string>
-  <string name="secret_key_no">не доступен</string>
   <!--hints-->
-  <string name="encrypt_content_edit_text_hint">Напишите сообщение здесь, что бы зашифровать и/или подписать...</string>
   <string name="decrypt_content_edit_text_hint">Введите сюда шифр для расшифровки и/или проверки...</string>
   <!--certs-->
   <string name="cert_default">по умолчанию</string>
   <string name="cert_none">нет</string>
   <string name="cert_revoke">отозван</string>
-  <string name="cert_verify_ok">ok</string>
   <string name="cert_verify_failed">сбой!</string>
   <string name="cert_verify_error">ошибка!</string>
   <string name="cert_verify_unavailable">ключ не доступен</string>
@@ -483,9 +379,9 @@
   <!--Keyring Canonicalization log entries-->
   <string name="msg_kc_master">Подготовка основного ключа</string>
   <!--Keyring merging log entries-->
+  <!--createSecretKeyRing-->
   <!--modifySecretKeyRing-->
   <string name="msg_mf_error_encode">Ошибка кодирования!</string>
-  <string name="msg_mf_error_keyid">Нет ID ключа. Это программная ошибка. Пожалуйста, сообщите об этом!</string>
   <string name="msg_mf_error_integrity">Внутренняя ошибка, сбой проверки целостности!</string>
   <string name="msg_mf_error_revoked_primary">Аннулированные идентификаторы не могут быть основными!</string>
   <string name="msg_mf_error_pgp">Внутренняя ошибка PGP!</string>
@@ -498,6 +394,7 @@
   <string name="msg_mf_uid_revoke">Аннулирование id %s</string>
   <string name="msg_mf_unlock_error">Ошибка разблокирования связки!</string>
   <string name="msg_mf_unlock">Разблокирование связки</string>
+  <!--PassphraseCache-->
   <!--unsorted-->
   <string name="section_certifier_id">Кем подписан</string>
   <string name="section_cert">Детали сертификации</string>
@@ -510,13 +407,11 @@
   <string name="label_cert_type">Тип</string>
   <string name="error_key_not_found">Ключ не найден!</string>
   <string name="error_key_processing">Ошибка обработки ключа!</string>
-  <string name="no_subkey">вторичный ключ не доступен</string>
-  <string name="secret_cannot_multiple">Секретные ключи можно удалять только по одному!</string>
   <string name="title_view_cert">Просмотреть детали сертификации</string>
   <string name="unknown_algorithm">неизв.</string>
   <string name="can_sign_not">не для подписания</string>
-  <string name="error_encoding">Ошибка кодировки</string>
   <string name="error_no_encrypt_subkey">Нет доп. ключа для шифрования!</string>
   <string name="info_no_manual_account_creation">Не создавать аккаунт OpenKeychain вручную.\nДля подробной информации, смотрите раздел Помощь.</string>
   <string name="contact_show_key">Показать ключ (%s)</string>
+  <!--First Time-->
 </resources>

@@ -172,8 +172,8 @@ public class KeychainContract {
             return CONTENT_URI.buildUpon().appendPath(PATH_PUBLIC).build();
         }
 
-        public static Uri buildPublicKeyRingUri(String masterKeyId) {
-            return CONTENT_URI.buildUpon().appendPath(masterKeyId).appendPath(PATH_PUBLIC).build();
+        public static Uri buildPublicKeyRingUri(long masterKeyId) {
+            return CONTENT_URI.buildUpon().appendPath(Long.toString(masterKeyId)).appendPath(PATH_PUBLIC).build();
         }
 
         public static Uri buildPublicKeyRingUri(Uri uri) {
@@ -184,8 +184,8 @@ public class KeychainContract {
             return CONTENT_URI.buildUpon().appendPath(PATH_SECRET).build();
         }
 
-        public static Uri buildSecretKeyRingUri(String masterKeyId) {
-            return CONTENT_URI.buildUpon().appendPath(masterKeyId).appendPath(PATH_SECRET).build();
+        public static Uri buildSecretKeyRingUri(long masterKeyId) {
+            return CONTENT_URI.buildUpon().appendPath(Long.toString(masterKeyId)).appendPath(PATH_SECRET).build();
         }
 
         public static Uri buildSecretKeyRingUri(Uri uri) {
@@ -210,8 +210,8 @@ public class KeychainContract {
         public static final String CONTENT_ITEM_TYPE
                 = "vnd.android.cursor.item/vnd.org.sufficientlysecure.keychain.provider.keychain.keys";
 
-        public static Uri buildKeysUri(String masterKeyId) {
-            return CONTENT_URI.buildUpon().appendPath(masterKeyId).appendPath(PATH_KEYS).build();
+        public static Uri buildKeysUri(long masterKeyId) {
+            return CONTENT_URI.buildUpon().appendPath(Long.toString(masterKeyId)).appendPath(PATH_KEYS).build();
         }
 
         public static Uri buildKeysUri(Uri uri) {
@@ -237,8 +237,8 @@ public class KeychainContract {
         public static final String CONTENT_ITEM_TYPE
                 = "vnd.android.cursor.item/vnd.org.sufficientlysecure.keychain.provider.user_ids";
 
-        public static Uri buildUserIdsUri(String masterKeyId) {
-            return CONTENT_URI.buildUpon().appendPath(masterKeyId).appendPath(PATH_USER_IDS).build();
+        public static Uri buildUserIdsUri(long masterKeyId) {
+            return CONTENT_URI.buildUpon().appendPath(Long.toString(masterKeyId)).appendPath(PATH_USER_IDS).build();
         }
 
         public static Uri buildUserIdsUri(Uri uri) {
@@ -304,12 +304,14 @@ public class KeychainContract {
         public static final Uri CONTENT_URI = BASE_CONTENT_URI_INTERNAL.buildUpon()
                 .appendPath(BASE_KEY_RINGS).build();
 
-        public static Uri buildCertsUri(String masterKeyId) {
-            return CONTENT_URI.buildUpon().appendPath(masterKeyId).appendPath(PATH_CERTS).build();
+        public static Uri buildCertsUri(long masterKeyId) {
+            return CONTENT_URI.buildUpon().appendPath(Long.toString(masterKeyId)).appendPath(PATH_CERTS).build();
         }
 
-        public static Uri buildCertsSpecificUri(String masterKeyId, String rank, String certifier) {
-            return CONTENT_URI.buildUpon().appendPath(masterKeyId).appendPath(PATH_CERTS).appendPath(rank).appendPath(certifier).build();
+        public static Uri buildCertsSpecificUri(long masterKeyId, long rank, long certifier) {
+            return CONTENT_URI.buildUpon().appendPath(Long.toString(masterKeyId))
+                    .appendPath(PATH_CERTS).appendPath(Long.toString(rank))
+                    .appendPath(Long.toString(certifier)).build();
         }
 
         public static Uri buildCertsUri(Uri uri) {

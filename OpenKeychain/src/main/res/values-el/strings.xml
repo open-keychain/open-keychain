@@ -1,10 +1,7 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <resources>
   <!--title-->
-  <string name="title_select_recipients">Επιλογή Δημόσιου Κλειδιού</string>
-  <string name="title_select_secret_key">Επιλογή Ιδιωτικού Κλειδιού</string>
   <string name="title_authentication">Κωδικός</string>
-  <string name="title_create_key">Δημιουργία Κλειδιού</string>
   <string name="title_edit_key">Επεξεργασία Κλειδιού</string>
   <string name="title_preferences">Επιλογές</string>
   <!--section-->
@@ -16,13 +13,10 @@
   <string name="btn_okay">ΟΚ</string>
   <!--menu-->
   <string name="menu_delete_key">Διαγραφής κλειδιού</string>
-  <string name="menu_create_key">Δημιουργίας κλειδιού</string>
   <!--label-->
-  <string name="label_sign">Υπόγραψε</string>
   <string name="label_message">Μήνυμα</string>
   <string name="label_file">Αρχείο</string>
   <string name="label_passphrase">Κωδικός</string>
-  <string name="label_passphrase_again">Ξανά</string>
   <string name="label_algorithm">Αλγόριθμος</string>
   <string name="label_encryption_algorithm">Αλγόριθμος κρυπτογράφησης</string>
   <string name="label_key_size">Μέγεθος κλειδιού</string>
@@ -47,6 +41,9 @@
   <!--Share-->
   <!--Key list-->
   <!--Key view-->
+  <!--Edit key-->
+  <!--Create key-->
+  <!--View key-->
   <!--Navigation Drawer-->
   <!--hints-->
   <!--certs-->
@@ -54,6 +51,9 @@
   <!--Import Secret log entries-->
   <!--Keyring Canonicalization log entries-->
   <!--Keyring merging log entries-->
+  <!--createSecretKeyRing-->
   <!--modifySecretKeyRing-->
+  <!--PassphraseCache-->
   <!--unsorted-->
+  <!--First Time-->
 </resources>

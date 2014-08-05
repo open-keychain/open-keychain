@@ -150,7 +150,7 @@ public class ViewKeyCertsFragment extends LoaderFragment
 
             Intent viewIntent = new Intent(getActivity(), ViewCertActivity.class);
             viewIntent.setData(Certs.buildCertsSpecificUri(
-                    Long.toString(masterKeyId), Long.toString(rank), Long.toString(certifierId)));
+                    masterKeyId, rank, certifierId));
             startActivity(viewIntent);
         }
     }

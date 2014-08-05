@@ -25,6 +25,9 @@
   <!--Share-->
   <!--Key list-->
   <!--Key view-->
+  <!--Edit key-->
+  <!--Create key-->
+  <!--View key-->
   <!--Navigation Drawer-->
   <!--hints-->
   <!--certs-->
@@ -32,6 +35,9 @@
   <!--Import Secret log entries-->
   <!--Keyring Canonicalization log entries-->
   <!--Keyring merging log entries-->
+  <!--createSecretKeyRing-->
   <!--modifySecretKeyRing-->
+  <!--PassphraseCache-->
   <!--unsorted-->
+  <!--First Time-->
 </resources>

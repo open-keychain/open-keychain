@@ -132,6 +132,10 @@ When changing build files or dependencies, respect the following requirements:
 * https://www.timroes.de/2013/09/12/speed-up-gradle/
 * Disable Lint checking if it is enabled in build.gradle
 
+### Error:Configuration with name 'default' not found.
+
+Gradle project dependencies are missing. Do a ``git submodule init && git submodule update``
+
 ### Translations
 
 Translations are hosted on Transifex, which is configured by ".tx/config".
@@ -216,10 +220,6 @@ Some parts and some libraries are Apache License v2, MIT X11 License (see below)
 * StickyListHeaders  
   https://github.com/emilsjolander/StickyListHeaders  
   Apache License v2
-  
-* Android-Bootstrap  
-  https://github.com/Bearded-Hen/Android-Bootstrap  
-  MIT License
 
 ### Images
 * icon.svg  
@@ -231,5 +231,8 @@ Some parts and some libraries are Apache License v2, MIT X11 License (see below)
 * QR Code Actionbar icon  
   https://github.com/openintents/openintents/blob/master/extensions/qrcode_ext/icons/ic_menu_qr_code/ic_menu_qr_code_holo_light/ic_menu_qr_code.svg
 
+* Key status icons by the ModernPGP working group  
+  https://github.com/ModernPGP
+  
 * Purple color scheme  
   http://android-holo-colors.com/

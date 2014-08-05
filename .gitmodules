@@ -28,6 +28,9 @@
 [submodule "extern/minidns"]
 	path = extern/minidns
 	url = https://github.com/open-keychain/minidns.git
+[submodule "extern/TokenAutoComplete"]
+	path = extern/TokenAutoComplete
+	url = https://github.com/open-keychain/TokenAutoComplete
 [submodule "extern/openpgp-card-nfc-lib"]
 	path = extern/openpgp-card-nfc-lib
 	url = https://github.com/open-keychain/openpgp-card-nfc-lib.git

@@ -123,7 +123,7 @@ public class DeleteKeyDialogFragment extends DialogFragment {
                 boolean success = false;
                 for (long masterKeyId : masterKeyIds) {
                     int count = activity.getContentResolver().delete(
-                            KeyRingData.buildPublicKeyRingUri(Long.toString(masterKeyId)), null, null
+                            KeyRingData.buildPublicKeyRingUri(masterKeyId), null, null
                     );
                     success = count > 0;
                 }

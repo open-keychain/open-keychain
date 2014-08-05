@@ -1,3 +1,20 @@
+/*
+ * Copyright (C) 2014 Dominik Schürmann <dominik@dominikschuermann.de>
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package org.sufficientlysecure.keychain.service;
 
 import android.os.Parcel;
@@ -6,16 +23,17 @@ import android.os.Parcelable;
 import java.io.Serializable;
 import java.util.ArrayList;
 
-/** This class is a a transferable representation for a collection of changes
+/**
+ * This class is a a transferable representation for a collection of changes
  * to be done on a keyring.
- *
+ * <p/>
  * This class should include all types of operations supported in the backend.
- *
+ * <p/>
  * All changes are done in a differential manner. Besides the two key
  * identification attributes, all attributes may be null, which indicates no
  * change to the keyring. This is also the reason why boxed values are used
  * instead of primitives in the subclasses.
- *
+ * <p/>
  * Application of operations in the backend should be fail-fast, which means an
  * error in any included operation (for example revocation of a non-existent
  * subkey) will cause the operation as a whole to fail.
@@ -65,11 +83,22 @@ public class SaveKeyringParcel implements Parcelable {
         public int mKeysize;
         public int mFlags;
         public Long mExpiry;
+
         public SubkeyAdd(int algorithm, int keysize, int flags, Long expiry) {
             mAlgorithm = algorithm;
             mKeysize = keysize;
             mFlags = flags;
             mExpiry = expiry;
+        }
+
+        @Override
+        public String toString() {
+            String out = "mAlgorithm: " + mAlgorithm + ", ";
+            out += "mKeysize: " + mKeysize + ", ";
+            out += "mFlags: " + mFlags;
+            out += "mExpiry: " + mExpiry;
+
+            return out;
         }
     }
 
@@ -78,10 +107,45 @@ public class SaveKeyringParcel implements Parcelable {
         public Integer mFlags;
         // this is a long unix timestamp, in seconds (NOT MILLISECONDS!)
         public Long mExpiry;
+
+        public SubkeyChange(long keyId) {
+            mKeyId = keyId;
+        }
+
         public SubkeyChange(long keyId, Integer flags, Long expiry) {
             mKeyId = keyId;
             mFlags = flags;
             mExpiry = expiry;
+        }
+
+        @Override
+        public String toString() {
+            String out = "mKeyId: " + mKeyId + ", ";
+            out += "mFlags: " + mFlags + ", ";
+            out += "mExpiry: " + mExpiry;
+
+            return out;
+        }
+    }
+
+    public SubkeyChange getSubkeyChange(long keyId) {
+        for (SubkeyChange subkeyChange : mChangeSubKeys) {
+            if (subkeyChange.mKeyId == keyId) {
+                return subkeyChange;
+            }
+        }
+        return null;
+    }
+
+    public SubkeyChange getOrCreateSubkeyChange(long keyId) {
+        SubkeyChange foundSubkeyChange = getSubkeyChange(keyId);
+        if (foundSubkeyChange != null) {
+            return foundSubkeyChange;
+        } else {
+            // else, create a new one
+            SubkeyChange newSubkeyChange = new SubkeyChange(keyId);
+            mChangeSubKeys.add(newSubkeyChange);
+            return newSubkeyChange;
         }
     }
 
@@ -104,7 +168,7 @@ public class SaveKeyringParcel implements Parcelable {
     @Override
     public void writeToParcel(Parcel destination, int flags) {
         destination.writeInt(mMasterKeyId == null ? 0 : 1);
-        if(mMasterKeyId != null) {
+        if (mMasterKeyId != null) {
             destination.writeLong(mMasterKeyId);
         }
         destination.writeByteArray(mFingerprint);
@@ -136,4 +200,17 @@ public class SaveKeyringParcel implements Parcelable {
         return 0;
     }
 
+    @Override
+    public String toString() {
+        String out = "mMasterKeyId: " + mMasterKeyId + "\n";
+        out += "mNewPassphrase: " + mNewPassphrase + "\n";
+        out += "mAddUserIds: " + mAddUserIds + "\n";
+        out += "mAddSubKeys: " + mAddSubKeys + "\n";
+        out += "mChangeSubKeys: " + mChangeSubKeys + "\n";
+        out += "mChangePrimaryUserId: " + mChangePrimaryUserId + "\n";
+        out += "mRevokeUserIds: " + mRevokeUserIds + "\n";
+        out += "mRevokeSubKeys: " + mRevokeSubKeys;
+
+        return out;
+    }
 }

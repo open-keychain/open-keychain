@@ -1,52 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/modeSymmetric"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
+    android:stretchColumns="1"
     android:paddingTop="4dp"
     android:paddingBottom="4dp"
     android:paddingLeft="16dp"
     android:paddingRight="16dp"
-    android:orientation="vertical">
+    android:layout_centerVertical="true">
 
-    <TableLayout
-        android:id="@+id/modeSymmetric"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:stretchColumns="1"
-        android:layout_centerVertical="true">
+    <TableRow>
 
-        <TableRow>
+        <TextView
+            android:id="@+id/label_passphrase"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingRight="8dp"
+            android:text="@string/label_passphrase"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
 
-            <TextView
-                android:id="@+id/label_passphrase"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:paddingRight="8dp"
-                android:text="@string/label_passphrase"
-                android:textAppearance="?android:attr/textAppearanceMedium" />
+        <EditText
+            android:id="@+id/passphrase"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textPassword" />
+    </TableRow>
 
-            <EditText
-                android:id="@+id/passphrase"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="textPassword" />
-        </TableRow>
+    <TableRow>
 
-        <TableRow>
+        <TextView
+            android:id="@+id/label_passphraseAgain"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingRight="8dp"
+            android:text="@string/label_passphrase_again"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
 
-            <TextView
-                android:id="@+id/label_passphraseAgain"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:paddingRight="8dp"
-                android:text="@string/label_passphrase_again"
-                android:textAppearance="?android:attr/textAppearanceMedium" />
-
-            <EditText
-                android:id="@+id/passphraseAgain"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="textPassword" />
-        </TableRow>
-    </TableLayout>
-</RelativeLayout>
+        <EditText
+            android:id="@+id/passphraseAgain"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textPassword" />
+    </TableRow>
+</TableLayout>

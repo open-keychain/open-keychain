@@ -27,6 +27,7 @@ import android.preference.PreferenceActivity;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceScreen;
 
+import org.spongycastle.bcpg.CompressionAlgorithmTags;
 import org.spongycastle.bcpg.HashAlgorithmTags;
 import org.spongycastle.openpgp.PGPEncryptedData;
 import org.sufficientlysecure.keychain.Constants;
@@ -88,10 +89,10 @@ public class PreferencesActivity extends PreferenceActivity {
                     (IntegerListPreference) findPreference(Constants.Pref.DEFAULT_ENCRYPTION_ALGORITHM));
 
             int[] valueIds = new int[]{
-                    Constants.choice.compression.none,
-                    Constants.choice.compression.zip,
-                    Constants.choice.compression.zlib,
-                    Constants.choice.compression.bzip2,
+                    CompressionAlgorithmTags.UNCOMPRESSED,
+                    CompressionAlgorithmTags.ZIP,
+                    CompressionAlgorithmTags.ZLIB,
+                    CompressionAlgorithmTags.BZIP2,
             };
             String[] entries = new String[]{
                     getString(R.string.choice_none) + " (" + getString(R.string.compression_fast) + ")",
@@ -229,10 +230,10 @@ public class PreferencesActivity extends PreferenceActivity {
                     (IntegerListPreference) findPreference(Constants.Pref.DEFAULT_ENCRYPTION_ALGORITHM));
 
             int[] valueIds = new int[]{
-                    Constants.choice.compression.none,
-                    Constants.choice.compression.zip,
-                    Constants.choice.compression.zlib,
-                    Constants.choice.compression.bzip2,
+                    CompressionAlgorithmTags.UNCOMPRESSED,
+                    CompressionAlgorithmTags.ZIP,
+                    CompressionAlgorithmTags.ZLIB,
+                    CompressionAlgorithmTags.BZIP2,
             };
 
             String[] entries = new String[]{
