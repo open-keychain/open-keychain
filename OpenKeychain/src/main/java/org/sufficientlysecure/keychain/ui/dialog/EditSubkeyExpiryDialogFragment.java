@@ -48,7 +48,6 @@ public class EditSubkeyExpiryDialogFragment extends DialogFragment {
     public static final String MESSAGE_DATA_EXPIRY_DATE = "expiry_date";
 
     private Messenger mMessenger;
-    private Calendar mCreationCal;
     private Calendar mExpiryCal;
 
     private DatePicker mDatePicker;
@@ -79,8 +78,8 @@ public class EditSubkeyExpiryDialogFragment extends DialogFragment {
         Date creationDate = new Date(getArguments().getLong(ARG_CREATION_DATE) * 1000);
         Date expiryDate = new Date(getArguments().getLong(ARG_EXPIRY_DATE) * 1000);
 
-        mCreationCal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
-        mCreationCal.setTime(creationDate);
+        Calendar creationCal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+        creationCal.setTime(creationDate);
         mExpiryCal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
         mExpiryCal.setTime(expiryDate);
 
@@ -101,11 +100,11 @@ public class EditSubkeyExpiryDialogFragment extends DialogFragment {
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.HONEYCOMB) {
             // will crash with IllegalArgumentException if we set a min date
             // that is not before expiry
-            if (mCreationCal != null && mCreationCal.before(mExpiryCal)) {
-                mDatePicker.setMinDate(mCreationCal.getTime().getTime()
+            if (creationCal.before(mExpiryCal)) {
+                mDatePicker.setMinDate(creationCal.getTime().getTime()
                         + DateUtils.DAY_IN_MILLIS);
             } else {
-                // When created date isn't available
+                // when creation date isn't available
                 mDatePicker.setMinDate(mExpiryCal.getTime().getTime()
                         + DateUtils.DAY_IN_MILLIS);
             }

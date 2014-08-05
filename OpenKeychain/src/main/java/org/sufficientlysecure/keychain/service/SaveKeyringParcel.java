@@ -207,6 +207,7 @@ public class SaveKeyringParcel implements Parcelable {
     public String toString() {
         String out = "mMasterKeyId: " + mMasterKeyId + "\n";
         out += "mNewPassphrase: " + mNewPassphrase + "\n";
+        out += "mAddUserIds: " + mAddUserIds + "\n";
         out += "mAddSubKeys: " + mAddSubKeys + "\n";
         out += "mChangeSubKeys: " + mChangeSubKeys + "\n";
         out += "mChangePrimaryUserId: " + mChangePrimaryUserId + "\n";

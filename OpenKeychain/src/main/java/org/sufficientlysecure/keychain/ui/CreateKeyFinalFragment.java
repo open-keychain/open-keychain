@@ -174,6 +174,7 @@ public class CreateKeyFinalFragment extends Fragment {
         parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(Constants.choice.algorithm.rsa, 4096, KeyFlags.ENCRYPT_COMMS | KeyFlags.ENCRYPT_STORAGE, null));
         String userId = KeyRing.createUserId(mName, mEmail, null);
         parcel.mAddUserIds.add(userId);
+        parcel.mChangePrimaryUserId = userId;
         parcel.mNewPassphrase = mPassphrase;
 
         // get selected key entries
