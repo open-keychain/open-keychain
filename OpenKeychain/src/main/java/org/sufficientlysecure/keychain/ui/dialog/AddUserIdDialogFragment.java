@@ -29,7 +29,6 @@ import android.os.Messenger;
 import android.os.RemoteException;
 import android.support.v4.app.DialogFragment;
 import android.text.Editable;
-import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Patterns;
 import android.view.KeyEvent;

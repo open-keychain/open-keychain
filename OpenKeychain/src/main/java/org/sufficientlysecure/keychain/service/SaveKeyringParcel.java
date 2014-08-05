@@ -20,9 +20,6 @@ package org.sufficientlysecure.keychain.service;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import org.sufficientlysecure.keychain.Constants;
-import org.sufficientlysecure.keychain.util.Log;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 

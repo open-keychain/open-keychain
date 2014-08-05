@@ -41,9 +41,7 @@ import org.sufficientlysecure.keychain.service.OperationResultParcel.LogEntryPar
 import org.sufficientlysecure.keychain.service.OperationResultParcel.LogLevel;
 import org.sufficientlysecure.keychain.util.Log;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 public class LogDisplayFragment extends ListFragment implements OnTouchListener {
 

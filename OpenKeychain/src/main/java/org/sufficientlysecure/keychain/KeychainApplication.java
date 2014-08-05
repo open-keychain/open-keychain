@@ -32,7 +32,6 @@ import org.sufficientlysecure.keychain.provider.TemporaryStorageProvider;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.PRNGFixes;
 
-import java.security.Provider;
 import java.security.Security;
 
 public class KeychainApplication extends Application {

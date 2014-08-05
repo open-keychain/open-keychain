@@ -25,9 +25,8 @@ import android.os.Bundle;
 import android.provider.DocumentsContract;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
-
 import android.widget.Toast;
-import org.sufficientlysecure.keychain.Constants;
+
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.helper.FileHelper;
 

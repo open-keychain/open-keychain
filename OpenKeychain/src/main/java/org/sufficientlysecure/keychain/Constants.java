@@ -17,7 +17,6 @@
 
 package org.sufficientlysecure.keychain;
 
-import android.os.Build;
 import android.os.Environment;
 
 import org.spongycastle.bcpg.CompressionAlgorithmTags;

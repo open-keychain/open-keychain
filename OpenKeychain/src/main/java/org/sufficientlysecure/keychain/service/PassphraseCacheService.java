@@ -34,9 +34,8 @@ import android.os.IBinder;
 import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
-
-import android.support.v4.util.LongSparseArray;
 import android.support.v4.app.NotificationCompat;
+import android.support.v4.util.LongSparseArray;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;

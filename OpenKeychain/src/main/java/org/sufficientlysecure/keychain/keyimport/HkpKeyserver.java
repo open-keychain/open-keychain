@@ -18,11 +18,6 @@
 
 package org.sufficientlysecure.keychain.keyimport;
 
-import de.measite.minidns.Client;
-import de.measite.minidns.Question;
-import de.measite.minidns.Record;
-import de.measite.minidns.record.SRV;
-
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.helper.TlsHelper;
 import org.sufficientlysecure.keychain.pgp.PgpHelper;
@@ -44,6 +39,11 @@ import java.util.Locale;
 import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import de.measite.minidns.Client;
+import de.measite.minidns.Question;
+import de.measite.minidns.Record;
+import de.measite.minidns.record.SRV;
 
 public class HkpKeyserver extends Keyserver {
     private static class HttpError extends Exception {
