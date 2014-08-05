@@ -31,7 +31,9 @@ import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.TextView;
 
+import org.spongycastle.bcpg.PublicKeyAlgorithmTags;
 import org.spongycastle.bcpg.sig.KeyFlags;
+import org.spongycastle.openpgp.PGPPublicKey;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.helper.Preferences;
@@ -169,9 +171,9 @@ public class CreateKeyFinalFragment extends Fragment {
         Bundle data = new Bundle();
 
         SaveKeyringParcel parcel = new SaveKeyringParcel();
-        parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(Constants.choice.algorithm.rsa, 4096, KeyFlags.CERTIFY_OTHER, null));
-        parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(Constants.choice.algorithm.rsa, 4096, KeyFlags.SIGN_DATA, null));
-        parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(Constants.choice.algorithm.rsa, 4096, KeyFlags.ENCRYPT_COMMS | KeyFlags.ENCRYPT_STORAGE, null));
+        parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(PublicKeyAlgorithmTags.RSA_GENERAL, 4096, KeyFlags.CERTIFY_OTHER, null));
+        parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(PublicKeyAlgorithmTags.RSA_GENERAL, 4096, KeyFlags.SIGN_DATA, null));
+        parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(PublicKeyAlgorithmTags.RSA_GENERAL, 4096, KeyFlags.ENCRYPT_COMMS | KeyFlags.ENCRYPT_STORAGE, null));
         String userId = KeyRing.createUserId(mName, mEmail, null);
         parcel.mAddUserIds.add(userId);
         parcel.mChangePrimaryUserId = userId;

@@ -27,6 +27,7 @@ import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -40,7 +41,9 @@ import android.widget.Spinner;
 import android.widget.TableRow;
 import android.widget.TextView;
 
+import org.spongycastle.bcpg.PublicKeyAlgorithmTags;
 import org.spongycastle.bcpg.sig.KeyFlags;
+import org.spongycastle.openpgp.PGPPublicKey;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
@@ -48,6 +51,9 @@ import org.sufficientlysecure.keychain.util.Choice;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.TimeZone;
 
 public class AddSubkeyDialogFragment extends DialogFragment {
 
@@ -125,14 +131,18 @@ public class AddSubkeyDialogFragment extends DialogFragment {
             }
         });
 
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.HONEYCOMB) {
+            mExpiryDatePicker.setMinDate(new Date().getTime() + DateUtils.DAY_IN_MILLIS);
+        }
+
         ArrayList<Choice> choices = new ArrayList<Choice>();
-        choices.add(new Choice(Constants.choice.algorithm.dsa, getResources().getString(
+        choices.add(new Choice(PublicKeyAlgorithmTags.DSA, getResources().getString(
                 R.string.dsa)));
         if (!willBeMasterKey) {
-            choices.add(new Choice(Constants.choice.algorithm.elgamal, getResources().getString(
+            choices.add(new Choice(PublicKeyAlgorithmTags.ELGAMAL_ENCRYPT, getResources().getString(
                     R.string.elgamal)));
         }
-        choices.add(new Choice(Constants.choice.algorithm.rsa, getResources().getString(
+        choices.add(new Choice(PublicKeyAlgorithmTags.RSA_GENERAL, getResources().getString(
                 R.string.rsa)));
         ArrayAdapter<Choice> adapter = new ArrayAdapter<Choice>(context,
                 android.R.layout.simple_spinner_item, choices);
@@ -140,12 +150,11 @@ public class AddSubkeyDialogFragment extends DialogFragment {
         mAlgorithmSpinner.setAdapter(adapter);
         // make RSA the default
         for (int i = 0; i < choices.size(); ++i) {
-            if (choices.get(i).getId() == Constants.choice.algorithm.rsa) {
+            if (choices.get(i).getId() == PublicKeyAlgorithmTags.RSA_GENERAL) {
                 mAlgorithmSpinner.setSelection(i);
                 break;
             }
         }
-
 
         // dynamic ArrayAdapter must be created (instead of ArrayAdapter.getFromResource), because it's content may change
         ArrayAdapter<CharSequence> keySizeAdapter = new ArrayAdapter<CharSequence>(context, android.R.layout.simple_spinner_item,
@@ -161,11 +170,37 @@ public class AddSubkeyDialogFragment extends DialogFragment {
                         di.dismiss();
                         Choice newKeyAlgorithmChoice = (Choice) mAlgorithmSpinner.getSelectedItem();
                         int newKeySize = getProperKeyLength(newKeyAlgorithmChoice.getId(), getSelectedKeyLength());
+
+                        int flags = 0;
+                        if (mFlagCertify.isChecked()) {
+                            flags += KeyFlags.CERTIFY_OTHER;
+                        }
+                        if (mFlagSign.isChecked()) {
+                            flags += KeyFlags.SIGN_DATA;
+                        }
+                        if (mFlagEncrypt.isChecked()) {
+                            flags += KeyFlags.ENCRYPT_COMMS + KeyFlags.ENCRYPT_STORAGE;
+                        }
+                        if (mFlagAuthenticate.isChecked()) {
+                            flags += KeyFlags.AUTHENTICATION;
+                        }
+
+                        Long expiry;
+                        if (mNoExpiryCheckBox.isChecked()) {
+                            expiry = null;
+                        } else {
+                            Calendar selectedCal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+                            //noinspection ResourceType
+                            selectedCal.set(mExpiryDatePicker.getYear(),
+                                    mExpiryDatePicker.getMonth(), mExpiryDatePicker.getDayOfMonth());
+                            expiry = selectedCal.getTime().getTime() / 1000;
+                        }
+
                         SaveKeyringParcel.SubkeyAdd newSubkey = new SaveKeyringParcel.SubkeyAdd(
                                 newKeyAlgorithmChoice.getId(),
                                 newKeySize,
-                                KeyFlags.SIGN_DATA, //TODO
-                                null
+                                flags,
+                                expiry
                         );
                         mAlgorithmSelectedListener.onAlgorithmSelected(newSubkey);
                     }
@@ -261,12 +296,12 @@ public class AddSubkeyDialogFragment extends DialogFragment {
         final int[] elGamalSupportedLengths = {1536, 2048, 3072, 4096, 8192};
         int properKeyLength = -1;
         switch (algorithmId) {
-            case Constants.choice.algorithm.rsa:
+            case PublicKeyAlgorithmTags.RSA_GENERAL:
                 if (currentKeyLength > 1024 && currentKeyLength <= 8192) {
                     properKeyLength = currentKeyLength + ((8 - (currentKeyLength % 8)) % 8);
                 }
                 break;
-            case Constants.choice.algorithm.elgamal:
+            case PublicKeyAlgorithmTags.ELGAMAL_ENCRYPT:
                 int[] elGammalKeyDiff = new int[elGamalSupportedLengths.length];
                 for (int i = 0; i < elGamalSupportedLengths.length; i++) {
                     elGammalKeyDiff[i] = Math.abs(elGamalSupportedLengths[i] - currentKeyLength);
@@ -281,7 +316,7 @@ public class AddSubkeyDialogFragment extends DialogFragment {
                 }
                 properKeyLength = elGamalSupportedLengths[minimalIndex];
                 break;
-            case Constants.choice.algorithm.dsa:
+            case PublicKeyAlgorithmTags.DSA:
                 if (currentKeyLength >= 512 && currentKeyLength <= 1024) {
                     properKeyLength = currentKeyLength + ((64 - (currentKeyLength % 64)) % 64);
                 }
@@ -320,15 +355,15 @@ public class AddSubkeyDialogFragment extends DialogFragment {
         final Object selectedItem = mKeySizeSpinner.getSelectedItem();
         keySizeAdapter.clear();
         switch (algorithmId) {
-            case Constants.choice.algorithm.rsa:
+            case PublicKeyAlgorithmTags.RSA_GENERAL:
                 replaceArrayAdapterContent(keySizeAdapter, R.array.rsa_key_size_spinner_values);
                 mCustomKeyInfoTextView.setText(getResources().getString(R.string.key_size_custom_info_rsa));
                 break;
-            case Constants.choice.algorithm.elgamal:
+            case PublicKeyAlgorithmTags.ELGAMAL_ENCRYPT:
                 replaceArrayAdapterContent(keySizeAdapter, R.array.elgamal_key_size_spinner_values);
                 mCustomKeyInfoTextView.setText(""); // ElGamal does not support custom key length
                 break;
-            case Constants.choice.algorithm.dsa:
+            case PublicKeyAlgorithmTags.DSA:
                 replaceArrayAdapterContent(keySizeAdapter, R.array.dsa_key_size_spinner_values);
                 mCustomKeyInfoTextView.setText(getResources().getString(R.string.key_size_custom_info_dsa));
                 break;

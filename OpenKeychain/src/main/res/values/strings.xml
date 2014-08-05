@@ -446,7 +446,7 @@
         <item>Change Expiry</item>
         <item>Revoke Subkey</item>
     </string-array>
-
+    <string name="edit_key_new_subkey">new</string>
 
     <!-- Create key -->
     <string name="create_key_upload">Upload key to keyserver</string>

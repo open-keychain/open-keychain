@@ -20,6 +20,7 @@ package org.sufficientlysecure.keychain.pgp;
 
 import org.spongycastle.bcpg.CompressionAlgorithmTags;
 import org.spongycastle.bcpg.HashAlgorithmTags;
+import org.spongycastle.bcpg.PublicKeyAlgorithmTags;
 import org.spongycastle.bcpg.SymmetricKeyAlgorithmTags;
 import org.spongycastle.bcpg.sig.KeyFlags;
 import org.spongycastle.jce.spec.ElGamalParameterSpec;
@@ -138,7 +139,7 @@ public class PgpKeyOperation {
             KeyPairGenerator keyGen;
 
             switch (algorithmChoice) {
-                case Constants.choice.algorithm.dsa: {
+                case PublicKeyAlgorithmTags.DSA: {
                     progress(R.string.progress_generating_dsa, 30);
                     keyGen = KeyPairGenerator.getInstance("DSA", Constants.BOUNCY_CASTLE_PROVIDER_NAME);
                     keyGen.initialize(keySize, new SecureRandom());
@@ -146,7 +147,7 @@ public class PgpKeyOperation {
                     break;
                 }
 
-                case Constants.choice.algorithm.elgamal: {
+                case PublicKeyAlgorithmTags.ELGAMAL_ENCRYPT: {
                     progress(R.string.progress_generating_elgamal, 30);
                     keyGen = KeyPairGenerator.getInstance("ElGamal", Constants.BOUNCY_CASTLE_PROVIDER_NAME);
                     BigInteger p = Primes.getBestPrime(keySize);
@@ -159,7 +160,7 @@ public class PgpKeyOperation {
                     break;
                 }
 
-                case Constants.choice.algorithm.rsa: {
+                case PublicKeyAlgorithmTags.RSA_GENERAL: {
                     progress(R.string.progress_generating_rsa, 30);
                     keyGen = KeyPairGenerator.getInstance("RSA", Constants.BOUNCY_CASTLE_PROVIDER_NAME);
                     keyGen.initialize(keySize, new SecureRandom());
@@ -217,7 +218,7 @@ public class PgpKeyOperation {
                 return new EditKeyResult(EditKeyResult.RESULT_ERROR, log, null);
             }
 
-            if (add.mAlgorithm == Constants.choice.algorithm.elgamal) {
+            if (add.mAlgorithm == PublicKeyAlgorithmTags.ELGAMAL_ENCRYPT) {
                 log.add(LogLevel.ERROR, LogType.MSG_CR_ERROR_MASTER_ELGAMAL, indent);
                 return new EditKeyResult(EditKeyResult.RESULT_ERROR, log, null);
             }

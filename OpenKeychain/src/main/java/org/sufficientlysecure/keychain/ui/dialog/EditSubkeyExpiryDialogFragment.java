@@ -56,12 +56,12 @@ public class EditSubkeyExpiryDialogFragment extends DialogFragment {
      * Creates new instance of this dialog fragment
      */
     public static EditSubkeyExpiryDialogFragment newInstance(Messenger messenger,
-                                                             long creationDate, long expiryDate) {
+                                                             Long creationDate, Long expiryDate) {
         EditSubkeyExpiryDialogFragment frag = new EditSubkeyExpiryDialogFragment();
         Bundle args = new Bundle();
         args.putParcelable(ARG_MESSENGER, messenger);
-        args.putLong(ARG_CREATION_DATE, creationDate);
-        args.putLong(ARG_EXPIRY_DATE, expiryDate);
+        args.putSerializable(ARG_CREATION_DATE, creationDate);
+        args.putSerializable(ARG_EXPIRY_DATE, expiryDate);
 
         frag.setArguments(args);
 
@@ -124,12 +124,12 @@ public class EditSubkeyExpiryDialogFragment extends DialogFragment {
                             - (mExpiryCal.getTimeInMillis() / 86400000);
                     if (numDays > 0) {
                         Bundle data = new Bundle();
-                        data.putLong(MESSAGE_DATA_EXPIRY_DATE, selectedCal.getTime().getTime() / 1000);
+                        data.putSerializable(MESSAGE_DATA_EXPIRY_DATE, selectedCal.getTime().getTime() / 1000);
                         sendMessageToHandler(MESSAGE_NEW_EXPIRY_DATE, data);
                     }
                 } else {
                     Bundle data = new Bundle();
-                    data.putLong(MESSAGE_DATA_EXPIRY_DATE, selectedCal.getTime().getTime() / 1000);
+                    data.putSerializable(MESSAGE_DATA_EXPIRY_DATE, selectedCal.getTime().getTime() / 1000);
                     sendMessageToHandler(MESSAGE_NEW_EXPIRY_DATE, data);
                 }
             }
@@ -140,9 +140,8 @@ public class EditSubkeyExpiryDialogFragment extends DialogFragment {
             public void onClick(DialogInterface dialog, int id) {
                 dismiss();
 
-                // "no expiry" corresponds to a 0
                 Bundle data = new Bundle();
-                data.putLong(MESSAGE_DATA_EXPIRY_DATE, 0);
+                data.putSerializable(MESSAGE_DATA_EXPIRY_DATE, null);
                 sendMessageToHandler(MESSAGE_NEW_EXPIRY_DATE, data);
             }
         });

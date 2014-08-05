@@ -102,35 +102,27 @@ public class SubkeysAddedAdapter extends ArrayAdapter<SaveKeyringParcel.SubkeyAd
                 holder.mModel.mAlgorithm,
                 holder.mModel.mKeysize
         );
-        holder.vKeyId.setText("new");
+        holder.vKeyId.setText(R.string.edit_key_new_subkey);
         holder.vKeyDetails.setText(algorithmStr);
+
+        if (holder.mModel.mExpiry != null) {
+            Date expiryDate = new Date(holder.mModel.mExpiry * 1000);
+
+            holder.vKeyExpiry.setText(getContext().getString(R.string.label_expiry) + ": "
+                    + DateFormat.getDateFormat(getContext()).format(expiryDate));
+        } else {
+            holder.vKeyExpiry.setText(getContext().getString(R.string.label_expiry) + ": "
+                    + getContext().getString(R.string.none));
+        }
+
+//        holder.mModel.mFlags
 
         // Set icons according to properties
 //        holder.vMasterIcon.setVisibility(cursor.getInt(INDEX_RANK) == 0 ? View.VISIBLE : View.INVISIBLE);
 //        holder.vCertifyIcon.setVisibility(cursor.getInt(INDEX_CAN_CERTIFY) != 0 ? View.VISIBLE : View.GONE);
 //        holder.vEncryptIcon.setVisibility(cursor.getInt(INDEX_CAN_ENCRYPT) != 0 ? View.VISIBLE : View.GONE);
 //        holder.vSignIcon.setVisibility(cursor.getInt(INDEX_CAN_SIGN) != 0 ? View.VISIBLE : View.GONE);
-//        if (!cursor.isNull(INDEX_EXPIRY)) {
-//            Date expiryDate = new Date(cursor.getLong(INDEX_EXPIRY) * 1000);
-//            isExpired = expiryDate.before(new Date());
-//
-//            holder.vKeyExpiry.setText(context.getString(R.string.label_expiry) + ": "
-//                    + DateFormat.getDateFormat(context).format(expiryDate));
-//        } else {
-//            isExpired = false;
-//
-//            holder.vKeyExpiry.setText(context.getString(R.string.label_expiry) + ": " + context.getString(R.string.none));
-//        }
-//
-//        holder.vAddress.setText(holder.mModel.address);
-//        holder.vAddress.setThreshold(1); // Start working from first character
-//        holder.vAddress.setAdapter(mAutoCompleteEmailAdapter);
-//
-//        holder.vName.setText(holder.mModel.name);
-//        holder.vName.setThreshold(1); // Start working from first character
-//        holder.vName.setAdapter(mAutoCompleteNameAdapter);
-//
-//        holder.vComment.setText(holder.mModel.comment);
+
 
         return convertView;
     }

@@ -397,15 +397,16 @@ public class EditKeyFragment extends LoaderFragment implements
 
     private void editSubkeyExpiry(final int position) {
         final long keyId = mSubkeysAdapter.getKeyId(position);
-        final long creationDate = mSubkeysAdapter.getCreationDate(position);
-        final long expiryDate = mSubkeysAdapter.getExpiryDate(position);
+        final Long creationDate = mSubkeysAdapter.getCreationDate(position);
+        final Long expiryDate = mSubkeysAdapter.getExpiryDate(position);
 
         Handler returnHandler = new Handler() {
             @Override
             public void handleMessage(Message message) {
                 switch (message.what) {
                     case EditSubkeyExpiryDialogFragment.MESSAGE_NEW_EXPIRY_DATE:
-                        long expiry = message.getData().getLong(EditSubkeyExpiryDialogFragment.MESSAGE_DATA_EXPIRY_DATE);
+                        Long expiry = (Long) message.getData().
+                                getSerializable(EditSubkeyExpiryDialogFragment.MESSAGE_DATA_EXPIRY_DATE);
                         Log.d(Constants.TAG, "new expiry: " + expiry);
                         mSaveKeyringParcel.getOrCreateSubkeyChange(keyId).mExpiry = expiry;
                         break;
@@ -464,7 +465,7 @@ public class EditKeyFragment extends LoaderFragment implements
                         new AddSubkeyDialogFragment.OnAlgorithmSelectedListener() {
                             @Override
                             public void onAlgorithmSelected(SaveKeyringParcel.SubkeyAdd newSubkey) {
-                                mSubkeysAddedAdapter.add(new SaveKeyringParcel.SubkeyAdd(Constants.choice.algorithm.rsa, 4096, KeyFlags.SIGN_DATA, null));
+                                mSubkeysAddedAdapter.add(newSubkey);
                             }
                         }
                 );

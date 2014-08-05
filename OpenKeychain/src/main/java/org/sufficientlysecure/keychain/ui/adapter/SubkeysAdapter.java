@@ -95,9 +95,13 @@ public class SubkeysAdapter extends CursorAdapter {
         return mCursor.getLong(INDEX_CREATION);
     }
 
-    public long getExpiryDate(int position) {
+    public Long getExpiryDate(int position) {
         mCursor.moveToPosition(position);
-        return mCursor.getLong(INDEX_EXPIRY);
+        if (mCursor.isNull(INDEX_EXPIRY)) {
+            return null;
+        } else {
+            return mCursor.getLong(INDEX_EXPIRY);
+        }
     }
 
     @Override
@@ -178,8 +182,9 @@ public class SubkeysAdapter extends CursorAdapter {
 
             SaveKeyringParcel.SubkeyChange subkeyChange = mSaveKeyringParcel.getSubkeyChange(keyId);
             if (subkeyChange != null) {
-                // 0 is "no expiry"
-                if (subkeyChange.mExpiry != null && subkeyChange.mExpiry != 0) {
+                if (subkeyChange.mExpiry == null) {
+                    expiryDate = null;
+                } else {
                     expiryDate = new Date(subkeyChange.mExpiry * 1000);
                 }
             }

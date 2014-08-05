@@ -24,7 +24,7 @@ import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.style.ForegroundColorSpan;
 
-import org.spongycastle.openpgp.PGPPublicKey;
+import org.spongycastle.bcpg.PublicKeyAlgorithmTags;
 import org.spongycastle.util.encoders.Hex;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
@@ -37,9 +37,6 @@ import java.util.Locale;
 
 public class PgpKeyHelper {
 
-    /**
-     * TODO: Only used in HkpKeyServer. Get rid of this one!
-     */
     public static String getAlgorithmInfo(int algorithm) {
         return getAlgorithmInfo(null, algorithm, 0);
     }
@@ -55,25 +52,25 @@ public class PgpKeyHelper {
         String algorithmStr;
 
         switch (algorithm) {
-            case PGPPublicKey.RSA_ENCRYPT:
-            case PGPPublicKey.RSA_GENERAL:
-            case PGPPublicKey.RSA_SIGN: {
+            case PublicKeyAlgorithmTags.RSA_ENCRYPT:
+            case PublicKeyAlgorithmTags.RSA_GENERAL:
+            case PublicKeyAlgorithmTags.RSA_SIGN: {
                 algorithmStr = "RSA";
                 break;
             }
-            case PGPPublicKey.DSA: {
+            case PublicKeyAlgorithmTags.DSA: {
                 algorithmStr = "DSA";
                 break;
             }
 
-            case PGPPublicKey.ELGAMAL_ENCRYPT:
-            case PGPPublicKey.ELGAMAL_GENERAL: {
+            case PublicKeyAlgorithmTags.ELGAMAL_ENCRYPT:
+            case PublicKeyAlgorithmTags.ELGAMAL_GENERAL: {
                 algorithmStr = "ElGamal";
                 break;
             }
 
-            case PGPPublicKey.ECDSA:
-            case PGPPublicKey.ECDH: {
+            case PublicKeyAlgorithmTags.ECDSA:
+            case PublicKeyAlgorithmTags.ECDH: {
                 algorithmStr = "ECC";
                 break;
             }
@@ -82,7 +79,6 @@ public class PgpKeyHelper {
                 if (context != null) {
                     algorithmStr = context.getResources().getString(R.string.unknown_algorithm);
                 } else {
-                    // TODO
                     algorithmStr = "unknown";
                 }
                 break;
