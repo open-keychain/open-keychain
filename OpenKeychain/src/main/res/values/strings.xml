@@ -317,7 +317,7 @@
     <string name="key_size_8192">8192</string>
     <string name="key_size_custom">Custom key size</string>
     <string name="key_size_custom_info">Type custom key length (in bits):</string>
-    <string name="key_size_custom_info_rsa">RSA key length must be greater than 1024 and at most 8192. Also it must be multiplicity of 8.</string>
+    <string name="key_size_custom_info_rsa">RSA key length must be greater than 1024 and at most 16384. Also it must be multiplicity of 8.</string>
     <string name="key_size_custom_info_dsa">DSA key length must be at least 512 and at most 1024. Also it must be multiplicity of 64.</string>
 
     <!-- compression -->

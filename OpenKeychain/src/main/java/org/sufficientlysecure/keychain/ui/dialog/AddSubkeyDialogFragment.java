@@ -297,7 +297,7 @@ public class AddSubkeyDialogFragment extends DialogFragment {
         int properKeyLength = -1;
         switch (algorithmId) {
             case PublicKeyAlgorithmTags.RSA_GENERAL:
-                if (currentKeyLength > 1024 && currentKeyLength <= 8192) {
+                if (currentKeyLength > 1024 && currentKeyLength <= 16384) {
                     properKeyLength = currentKeyLength + ((8 - (currentKeyLength % 8)) % 8);
                 }
                 break;
