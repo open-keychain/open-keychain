@@ -84,7 +84,7 @@ public class KeychainApplication extends Application {
         setupAccountAsNeeded(this);
 
         // Update keyserver list as needed
-        Preferences.getPreferences(this).updateKeyServers();
+        Preferences.getPreferences(this).updatePreferences();
 
         TlsHelper.addStaticCA("pool.sks-keyservers.net", getAssets(), "sks-keyservers.netCA.cer");
 

@@ -21,6 +21,7 @@ package org.sufficientlysecure.keychain.helper;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import org.spongycastle.bcpg.CompressionAlgorithmTags;
 import org.spongycastle.bcpg.HashAlgorithmTags;
 import org.spongycastle.openpgp.PGPEncryptedData;
 import org.sufficientlysecure.keychain.Constants;
@@ -99,7 +100,7 @@ public class Preferences {
 
     public int getDefaultMessageCompression() {
         return mSharedPreferences.getInt(Constants.Pref.DEFAULT_MESSAGE_COMPRESSION,
-                Constants.choice.compression.zlib);
+                CompressionAlgorithmTags.ZLIB);
     }
 
     public void setDefaultMessageCompression(int value) {
@@ -110,7 +111,7 @@ public class Preferences {
 
     public int getDefaultFileCompression() {
         return mSharedPreferences.getInt(Constants.Pref.DEFAULT_FILE_COMPRESSION,
-                Constants.choice.compression.none);
+                CompressionAlgorithmTags.UNCOMPRESSED);
     }
 
     public void setDefaultFileCompression(int value) {
@@ -180,7 +181,8 @@ public class Preferences {
         editor.commit();
     }
 
-    public void updateKeyServers() {
+    public void updatePreferences() {
+        // migrate keyserver to hkps
         if (mSharedPreferences.getInt(Constants.Pref.KEY_SERVERS_DEFAULT_VERSION, 0) !=
                 Constants.Defaults.KEY_SERVERS_VERSION) {
             String[] servers = getKeyServers();
@@ -195,6 +197,11 @@ public class Preferences {
             mSharedPreferences.edit()
                     .putInt(Constants.Pref.KEY_SERVERS_DEFAULT_VERSION, Constants.Defaults.KEY_SERVERS_VERSION)
                     .commit();
+        }
+
+        // migrate old uncompressed constant to new one
+        if (mSharedPreferences.getInt(Constants.Pref.DEFAULT_FILE_COMPRESSION, 0) == 0x21070001) {
+            setDefaultFileCompression(CompressionAlgorithmTags.UNCOMPRESSED);
         }
     }
 

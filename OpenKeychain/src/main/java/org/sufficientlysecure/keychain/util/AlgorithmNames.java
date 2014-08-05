@@ -20,6 +20,7 @@ package org.sufficientlysecure.keychain.util;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 
+import org.spongycastle.bcpg.CompressionAlgorithmTags;
 import org.spongycastle.bcpg.HashAlgorithmTags;
 import org.spongycastle.openpgp.PGPEncryptedData;
 import org.sufficientlysecure.keychain.Constants;
@@ -57,13 +58,13 @@ public class AlgorithmNames {
         mHashNames.put(HashAlgorithmTags.SHA384, "SHA-384");
         mHashNames.put(HashAlgorithmTags.SHA512, "SHA-512");
 
-        mCompressionNames.put(Constants.choice.compression.none, mActivity.getString(R.string.choice_none)
+        mCompressionNames.put(CompressionAlgorithmTags.UNCOMPRESSED, mActivity.getString(R.string.choice_none)
                 + " (" + mActivity.getString(R.string.compression_fast) + ")");
-        mCompressionNames.put(Constants.choice.compression.zip,
+        mCompressionNames.put(CompressionAlgorithmTags.ZIP,
                 "ZIP (" + mActivity.getString(R.string.compression_fast) + ")");
-        mCompressionNames.put(Constants.choice.compression.zlib,
+        mCompressionNames.put(CompressionAlgorithmTags.ZLIB,
                 "ZLIB (" + mActivity.getString(R.string.compression_fast) + ")");
-        mCompressionNames.put(Constants.choice.compression.bzip2,
+        mCompressionNames.put(CompressionAlgorithmTags.BZIP2,
                 "BZIP2 (" + mActivity.getString(R.string.compression_very_slow) + ")");
     }
 

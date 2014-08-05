@@ -19,7 +19,6 @@ package org.sufficientlysecure.keychain;
 
 import android.os.Environment;
 
-import org.spongycastle.bcpg.CompressionAlgorithmTags;
 import org.spongycastle.jce.provider.BouncyCastleProvider;
 import org.sufficientlysecure.keychain.remote.ui.AppsListActivity;
 import org.sufficientlysecure.keychain.ui.DecryptActivity;
@@ -50,7 +49,7 @@ public final class Constants {
 
     public static final String CUSTOM_CONTACT_DATA_MIME_TYPE = "vnd.android.cursor.item/vnd.org.sufficientlysecure.keychain.key";
 
-    public static int TEMPFILE_TTL = 24*60*60*1000; // 1 day
+    public static int TEMPFILE_TTL = 24 * 60 * 60 * 1000; // 1 day
 
     public static final class Path {
         public static final File APP_DIR = new File(Environment.getExternalStorageDirectory(), "OpenKeychain");
@@ -88,16 +87,6 @@ public final class Constants {
                 DECRYPT,
                 REGISTERED_APPS_LIST
         };
-    }
-
-    public static final class choice {
-        public static final class compression {
-            // TODO: legacy reasons :/ better: CompressionAlgorithmTags.UNCOMPRESSED
-            public static final int none = 0x21070001;
-            public static final int zlib = CompressionAlgorithmTags.ZLIB;
-            public static final int bzip2 = CompressionAlgorithmTags.BZIP2;
-            public static final int zip = CompressionAlgorithmTags.ZIP;
-        }
     }
 
     public static final class key {

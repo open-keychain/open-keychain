@@ -17,6 +17,7 @@
 
 package org.sufficientlysecure.keychain.remote;
 
+import org.spongycastle.bcpg.CompressionAlgorithmTags;
 import org.spongycastle.bcpg.HashAlgorithmTags;
 import org.spongycastle.openpgp.PGPEncryptedData;
 import org.sufficientlysecure.keychain.Constants;
@@ -39,7 +40,7 @@ public class AccountSettings {
         // defaults:
         this.mEncryptionAlgorithm = PGPEncryptedData.AES_256;
         this.mHashAlgorithm = HashAlgorithmTags.SHA512;
-        this.mCompression = Constants.choice.compression.zlib;
+        this.mCompression = CompressionAlgorithmTags.ZLIB;
     }
 
     public String getAccountName() {
