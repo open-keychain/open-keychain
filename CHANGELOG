@@ -5,7 +5,7 @@
 * New first time screen
 * New create key screen: autocompletion of name and email based on your personal Android accounts
 * File encryption: awesome new design, support for encrypting multiple files
-* New icons to show status of key
+* New icons to show status of key (by Brennan Novak)
 * Important bug fix: Importing of large key collections from a file is now possible
 * Notification showing cached passphrases
 
