@@ -43,7 +43,6 @@
   <string name="btn_save">Shrani</string>
   <string name="btn_do_not_save">Prekliči</string>
   <string name="btn_delete">Izbriši</string>
-  <string name="btn_no_date">Brez</string>
   <string name="btn_okay">OK</string>
   <string name="btn_export_to_server">Naloži na strežnik</string>
   <string name="btn_next">Naprej</string>
@@ -69,7 +68,6 @@
   <string name="label_no_passphrase">Brez gesla</string>
   <string name="label_passphrase">Geslo</string>
   <string name="label_algorithm">Algoritem</string>
-  <string name="label_ascii_armor">ASCII Armor</string>
   <string name="label_delete_after_decryption">Po dešifriranju izbriši</string>
   <string name="label_encryption_algorithm">Šifrirni algoritem</string>
   <string name="label_hash_algorithm">Zgostitveni algoritem</string>
@@ -258,7 +256,6 @@
   <string name="key_size_8192">8192</string>
   <string name="key_size_custom">Dolžina ključa po meri</string>
   <string name="key_size_custom_info">Vnesite željeno dolžino ključa (v bitih):</string>
-  <string name="key_size_custom_info_rsa">Ključ RSA mora biti daljši od 1024 bitov, a največ 8192 bitov. Hkrati mora biti deljiv z 8.</string>
   <string name="key_size_custom_info_dsa">Ključ DSA mora biti daljši od 512 bitov, a največ 1024 bitov. Hkrati mora biti deljiv z 64.</string>
   <!--compression-->
   <string name="compression_fast">hitro</string>

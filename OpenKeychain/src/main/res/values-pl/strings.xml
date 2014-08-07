@@ -30,7 +30,6 @@
   <string name="btn_save">Zapisz</string>
   <string name="btn_do_not_save">Anuluj</string>
   <string name="btn_delete">Usuń</string>
-  <string name="btn_no_date">Żaden</string>
   <string name="btn_okay">Ok</string>
   <string name="btn_export_to_server">Wyślij do serwera kluczy</string>
   <string name="btn_next">Dalej</string>
@@ -54,7 +53,6 @@
   <string name="label_no_passphrase">Brak hasła</string>
   <string name="label_passphrase">Hasło</string>
   <string name="label_algorithm">Algorytm</string>
-  <string name="label_ascii_armor">ASCII Armor</string>
   <string name="label_delete_after_decryption">Usuń po odszyfrowaniu</string>
   <string name="label_encryption_algorithm">Algorytm szyfrujący</string>
   <string name="label_hash_algorithm">Algorytm funkcji skrótu</string>
@@ -230,7 +228,6 @@
   <string name="key_size_8192">8192</string>
   <string name="key_size_custom">Własny rozmiar klucza</string>
   <string name="key_size_custom_info">Podaj własną długość klucza (w bitach):</string>
-  <string name="key_size_custom_info_rsa">Długośc klucza RSA musi być większa niż 1024 i równa co najwyżej 8192. Musi być także wielokrotnością 8.</string>
   <string name="key_size_custom_info_dsa">Długośc klucza DSA musi być równa co najmniej 512 i co najwyżej 1024.  Musi być także wielokrotnością 64.</string>
   <!--compression-->
   <string name="compression_fast">szybka</string>

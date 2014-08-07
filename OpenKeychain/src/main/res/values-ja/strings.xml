@@ -6,7 +6,7 @@
   <string name="title_encrypt">暗号化</string>
   <string name="title_decrypt">復号化</string>
   <string name="title_authentication">パスフレーズ</string>
-  <string name="title_create_key">自分の鍵の生成</string>
+  <string name="title_add_subkey">副鍵の追加</string>
   <string name="title_edit_key">鍵の編集</string>
   <string name="title_preferences">設定</string>
   <string name="title_api_registered_apps">アプリ</string>
@@ -15,6 +15,7 @@
   <string name="title_share_fingerprint_with">...で指紋の共有</string>
   <string name="title_share_key">...で鍵の共有</string>
   <string name="title_share_file">...でファイルの共有</string>
+  <string name="title_share_message">...でメッセージを共有</string>
   <string name="title_encrypt_to_file">暗号化してファイルに</string>
   <string name="title_decrypt_to_file">復号化してファイルに</string>
   <string name="title_import_keys">鍵のインポート</string>
@@ -47,7 +48,7 @@
   <string name="btn_save">保存</string>
   <string name="btn_do_not_save">キャンセル</string>
   <string name="btn_delete">削除</string>
-  <string name="btn_no_date">無し</string>
+  <string name="btn_no_date">満了なし</string>
   <string name="btn_okay">OK</string>
   <string name="btn_export_to_server">鍵サーバへアップロード</string>
   <string name="btn_next">次</string>
@@ -81,7 +82,7 @@
   <string name="label_passphrase">パスフレーズ</string>
   <string name="label_passphrase_again">再度パスフレーズを入力</string>
   <string name="label_algorithm">アルゴリズム</string>
-  <string name="label_ascii_armor">アスキー形式</string>
+  <string name="label_ascii_armor">アスキー形式ファイル</string>
   <string name="label_file_ascii_armor">ファイル: アスキー形式</string>
   <string name="label_conceal_pgp_application">他の人にあなたがOpenKeychain使用していることを知ってもらいましょう</string>
   <string name="label_conceal_pgp_application_summary">OpenPGPの 署名、暗号文、そしてエクスポートした鍵に  \'OpenKeychain v2.7\' と書くようになりました</string>
@@ -283,7 +284,7 @@
   <string name="key_size_8192">8192</string>
   <string name="key_size_custom">カスタムの鍵サイズ</string>
   <string name="key_size_custom_info">カスタムの鍵長を入力(ビット数):</string>
-  <string name="key_size_custom_info_rsa">RSA鍵の長さは1024より長い必要があり、最も一般的には8192です。そして8の倍数である必要があります。</string>
+  <string name="key_size_custom_info_rsa">RSA鍵の長さは1024より長い必要があり、最大は16384です。そして8の倍数である必要があります。</string>
   <string name="key_size_custom_info_dsa">DSA鍵の長さは最低512の必要があり、最も一般的には1024です。そして64の倍数である必要があります。</string>
   <!--compression-->
   <string name="compression_fast">早い</string>
@@ -387,11 +388,16 @@
     <item>主IDを変更</item>
     <item>IDを破棄</item>
   </string-array>
+  <string-array name="edit_key_edit_user_id_revert_revocation">
+    <item>破棄処理の差し戻し</item>
+  </string-array>
+  <string name="edit_key_edit_user_id_revoked">このIDは破棄されています。続けることができません。</string>
   <string name="edit_key_edit_subkey_title">アクションを選んでください!</string>
   <string-array name="edit_key_edit_subkey">
     <item>期限を変更</item>
     <item>副鍵を破棄</item>
   </string-array>
+  <string name="edit_key_new_subkey">新規</string>
   <!--Create key-->
   <string name="create_key_upload">鍵サーバへアップロード</string>
   <string name="create_key_empty">このフィールドは必須です</string>

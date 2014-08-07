@@ -1,6 +1,20 @@
 <html>
 <head></head>
 <body>
+<h2>2.8</h2>
+<ul>
+<li>So many bugs have been fixed in this release that we focus on the main new features</li>
+<li>Key edit: awesome new design, key revocation</li>
+<li>Key import: awesome new design, secure keyserver connections via hkps, keyserver resolving via DNS SRV records</li>
+<li>New first time screen</li>
+<li>New create key screen: autocompletion of name and email based on your personal Android accounts</li>
+<li>File encryption: awesome new design, support for encrypting multiple files</li>
+<li>New icons to show status of key (by Brennan Novak)</li>
+<li>Important bug fix: Importing of large key collections from a file is now possible</li>
+<li>Notification showing cached passphrases</li>
+</ul>
+<p>This release wouldn't be possible without the work of Vincent Breitmoser (GSoC 2014), mar-v-in (GSoC 2014), Daniel Albert, Art O Cathain, Daniel Haß, Tim Bray, Thialfihar</p>
+
 <h2>2.7</h2>
 <ul>
 <li>Lila! (Dominik, Vincent)</li>
@@ -11,21 +25,21 @@
 </ul>
 <h2>2.6.1</h2>
 <ul>
-<li>some fixes for regression bugs</li>
+<li>Some fixes for regression bugs</li>
 </ul>
 <h2>2.6</h2>
 <ul>
-<li>Schlüsselzertifikation (Dank an Vincent Breitmoser)</li>
-<li>Unterstützung für GnuPG teilweisegeheime Schlüssel (Dank an Vincent Breitmoser)</li>
-<li>Neues Design für Signaturverifikation</li>
-<li>Nutzerdefinierte Schlüssellänge (Dank an Greg Witczak)</li>
-<li>Fehler behoben bei der Teilen-Funktion von anderen Apps</li>
+<li>Key certifications (thanks to Vincent Breitmoser)</li>
+<li>Support for GnuPG partial secret keys (thanks to Vincent Breitmoser)</li>
+<li>New design for signature verification</li>
+<li>Custom key length (thanks to Greg Witczak)</li>
+<li>Fix share-functionality from other apps</li>
 </ul>
 <h2>2.5</h2>
 <ul>
-<li>behoben: entschlüsseln von symetrischen pgp Nachrichten/Dateien</li>
-<li>umgestalteter Schlüssel bearbeiten Bildschirm (Dank an Ash Hughes)</li>
-<li>neues modernes Design für verschlüsselung/entschlüsselungs Bildschirme</li>
+<li>Fix decryption of symmetric pgp messages/files</li>
+<li>Refactored edit key screen (thanks to Ash Hughes)</li>
+<li>New modern design for encrypt/decrypt screens</li>
 <li>OpenPGP API Version 3 (mehrfache api accounts, interne fehlerbehebungen, schlüssel suche)</li>
 </ul>
 <h2>2.4</h2>
@@ -33,45 +47,45 @@
 Neben mehreren kleinen Updates sind eine beachtliche Anzahl von Updates von den folgenden Personen gemacht worden (in alphabetischer Reihenfolge):
 Daniel Hammann, Daniel Haß, Greg Witczak, Miroojin Bakshi, Nikhil Peter Raj, Paul Sarbinowski, Sreeram Boyapati, Vincent Breitmoser.</p>
 <ul>
-<li>neue vereinheitlichte Schlüssel liste.</li>
-<li>eingefärbte Schlüssel fingerprints</li>
-<li>Unterstützung für Schlüsselserver </li>
-<li>deaktiviert die Möglichkeit schwache Schlüssel zu generieren.</li>
-<li>viel mehr interne Arbeit an der API</li>
-<li>zertifizieren von Benutzer IDs</li>
-<li>Schlüsselserver Anfragen basieren auf Maschinenlesbaren Ausgaben.</li>
-<li>fixiere Navigationsmenu in Tabletcomputers</li>
-<li>suggestions for emails on creation of keys</li>
-<li>suchen in öffentlichen Schlüssellisten</li>
-<li>und viele weitere Verbesserungen und Fehlerbehebungen...</li>
+<li>New unified key list</li>
+<li>Colorized key fingerprint</li>
+<li>Support for keyserver ports</li>
+<li>Deactivate possibility to generate weak keys</li>
+<li>Much more internal work on the API</li>
+<li>Certify user ids</li>
+<li>Keyserver query based on machine-readable output</li>
+<li>Lock navigation drawer on tablets</li>
+<li>Suggestions for emails on creation of keys</li>
+<li>Search in public key lists</li>
+<li>And much more improvements and fixes…</li>
 </ul>
 <h2>2.3.1</h2>
 <ul>
-<li>schnelle Fehlerbehebung für Abstürze sobald man von einer alten Version geupdatet hat.</li>
+<li>Hotfix for crash when upgrading from old versions</li>
 </ul>
 <h2>2.3</h2>
 <ul>
-<li>entfernung von unnötigen exporten von öffentlichen Schlüsseln, wenn man den geheimen Schlüssel exportiert. (Dank an Ash Hughes)</li>
-<li>Fehlerbehebung: Einstellen des Ablaufdatums von Schlüsseln (Dank an Ash Hughes)</li>
-<li>mehr interne Fehlerbehebungen wenn man Schlüssel bearbeitet (Dank an Ash Hughes)</li>
-<li>Suchzugriff auf die Schlüsselserver direkt vom Importieren Bildschirm</li>
-<li>Fehlerbehebung beim Layout und Dialogstil auf Android 2.2-3.0</li>
-<li>Absturz bei leeren Nutzer IDs behoben </li>
-<li>Fehlerbehebung von Abstürzen und leeren Listen, wenn man vom signieren Bildschirm zurückkehrt.</li>
+<li>Remove unnecessary export of public keys when exporting secret key (thanks to Ash Hughes)</li>
+<li>Fix setting expiry dates on keys (thanks to Ash Hughes)</li>
+<li>More internal fixes when editing keys (thanks to Ash Hughes)</li>
+<li>Querying keyservers directly from the import screen</li>
+<li>Fix layout and dialog style on Android 2.2-3.0</li>
+<li>Fix crash on keys with empty user ids</li>
+<li>Fix crash and empty lists when coming back from signing screen</li>
 <li>Bouncy Castle (Kryptographie Bibliothek) upgedatet von 1.47 auf 1.50 und vom Quellcode kompiliert.</li>
-<li>Fehlerbehebung vom hochladen von Schlüsseln vom signieren Bildschirm.</li>
+<li>Fix upload of key from signing screen</li>
 </ul>
 <h2>2.2</h2>
 <ul>
-<li>neues Design mit Naivgationsmenu</li>
-<li>Neus Design für die Liste der öffentlichen Schlüssel</li>
-<li>Neue Ansicht für öffentliche Schlüssel</li>
-<li>Fehler beim Schlüsselimport behoben</li>
-<li>Schlüssel Cross-Zertifizierung (Dank an Ash Hughes)</li>
-<li>richtiges händling von UTF-8 Passwörtern (Danke an Ash Hughes)</li>
-<li>Erste Version mit neuen Sprachen (Danke an die Mitwirkenden bei Transifex)</li>
-<li>teilen von schlüsseln per QR-Codes behoben und verbessert</li>
-<li>paket signatur verifizierung für die API</li>
+<li>New design with navigation drawer</li>
+<li>New public key list design</li>
+<li>New public key view</li>
+<li>Bug fixes for importing of keys</li>
+<li>Key cross-certification (thanks to Ash Hughes)</li>
+<li>Handle UTF-8 passwords properly (thanks to Ash Hughes)</li>
+<li>First version with new languages (thanks to the contributors on Transifex)</li>
+<li>Sharing of keys via QR Codes fixed and improved</li>
+<li>Package signature verification for API</li>
 </ul>
 <h2>2.1.1</h2>
 <ul>
@@ -79,65 +93,65 @@ Daniel Hammann, Daniel Haß, Greg Witczak, Miroojin Bakshi, Nikhil Peter Raj, Pa
 </ul>
 <h2>2.1</h2>
 <ul>
-<li>Viele Fehler behoben</li>
-<li>Neue API für Entwickler</li>
+<li>Lots of bug fixes</li>
+<li>New API for developers</li>
 <li>PRNG Bugfix von Google</li>
 </ul>
 <h2>2.0</h2>
 <ul>
-<li>Komlett neu designd</li>
-<li>Öffentliche Schlüssel teilen via QR Code, NFC Beam</li>
-<li>Schlüssel signieren</li>
-<li>Schlüssel auf den Server hochladen</li>
-<li>Importprobleme behoben</li>
-<li>neue AIDL API</li>
+<li>Complete redesign</li>
+<li>Share public keys via qr codes, nfc beam</li>
+<li>Sign keys</li>
+<li>Upload keys to server</li>
+<li>Fixes import issues</li>
+<li>New AIDL API</li>
 </ul>
 <h2>1.0.8</h2>
 <ul>
-<li>Grundlegende Schlüsselserverunterstützung</li>
-<li>app2sd</li>
-<li>mehr Auswahlmöglichkeiten für den Passwortcache: 1, 2, 4, 8, Stunden</li>
-<li>Übersetzungen: norwegisch (Danke, Sander Danielsen), chinesisch (danke, Zhang Fredrick)</li>
-<li>Fehlerbehebungen</li>
-<li>Optimierungen</li>
+<li>Basic keyserver support</li>
+<li>App2sd</li>
+<li>More choices for pass phrase cache: 1, 2, 4, 8, hours</li>
+<li>Translations: Norwegian (thanks, Sander Danielsen), Chinese (thanks, Zhang Fredrick)</li>
+<li>Bugfixes</li>
+<li>Optimizations</li>
 </ul>
 <h2>1.0.7</h2>
 <ul>
-<li>Fehlerbehebung bei Problemen mit der Signatur verifizierung von Texten mit folgender neuer Zeile.</li>
-<li>weitere Optionen für die Time-to-live des Passphrasencaches (20, 40, 60 mins)</li>
+<li>Fixed problem with signature verification of texts with trailing newline</li>
+<li>More options for pass phrase cache time to live (20, 40, 60 mins)</li>
 </ul>
 <h2>1.0.6</h2>
 <ul>
-<li>crash beim Hinzufügen eines Kontos auf Froyo repariert</li>
-<li>sichere Dateilöschung</li>
-<li>Option, um Schlüsseldatei nach dem Import zu löschen</li>
-<li>Streamverschlüsselung/-entschlüsselung (Galerie, etc.)</li>
-<li>neue Optionen (Sprache, v3-Unterschriften erzwingen)</li>
-<li>Interfaceänderungen</li>
-<li>Fehlerbehebungen</li>
+<li>Account adding crash on Froyo fixed</li>
+<li>Secure file deletion</li>
+<li>Option to delete key file after import</li>
+<li>Stream encryption/decryption (gallery, etc.)</li>
+<li>New options (language, force v3 signatures)</li>
+<li>Interface changes</li>
+<li>Bugfixes</li>
 </ul>
 <h2>1.0.5</h2>
 <ul>
 <li>Deutsche und Italienische Übersetzung</li>
-<li>viel kleineres Paket, dank reduzierter BC Quellen</li>
-<li>Neues Einstellungs-GUI</li>
-<li>Lay-Out-Anpassung für die Lokalisierung</li>
-<li>Fehler bei Signatur behoben</li>
+<li>Much smaller package, due to reduced BC sources</li>
+<li>New preferences GUI</li>
+<li>Layout adjustment for localization</li>
+<li>Signature bugfix</li>
 </ul>
 <h2>1.0.4</h2>
 <ul>
-<li>Einen anderen crash behoben, verursacht von irgendeinen SDK bug mit dem query builder.</li>
+<li>Fixed another crash caused by some SDK bug with query builder</li>
 </ul>
 <h2>1.0.3</h2>
 <ul>
-<li>Absturz während der Verschlüsselung/Signierung und möglicherweise Schlüsselexport behoben.</li>
+<li>Fixed crashes during encryption/signing and possibly key export</li>
 </ul>
 <h2>1.0.2</h2>
 <ul>
-<li>Filterbare Schlüsselliste</li>
-<li>leichtere vorauswahl von Verschlüsselungsschlüsseln</li>
-<li>neues Intent händling für VIEW und SEND, erlaubt es Dateien zu ver-/entschlüsseln außerhalb des Dateimanagers.</li>
-<li>Fehlerbehebungen und Extras (Schlüssel vorauswahl) für K-9 Mail, neue Beta Versionen verfügbar.</li>
+<li>Filterable key lists</li>
+<li>Smarter pre-selection of encryption keys</li>
+<li>New Intent handling for VIEW and SEND, allows files to be encrypted/decrypted out of file managers</li>
+<li>Fixes and additional features (key preselection) for K-9 Mail, new beta build available</li>
 </ul>
 <h2>1.0.1</h2>
 <ul>
@@ -146,11 +160,11 @@ Daniel Hammann, Daniel Haß, Greg Witczak, Miroojin Bakshi, Nikhil Peter Raj, Pa
 <h2>1.0.0</h2>
 <ul>
 <li>K-9 Mail integration, APG unterstützt beta build von K-9 Mail</li>
-<li>Unterstützung von mehr Filemanagern (einschließlich ASTRO)</li>
+<li>Support of more file managers (including ASTRO)</li>
 <li>Slowenische Übersetzung</li>
-<li>Neue Datenbank, viel schneller, weniger Speicherbedarf</li>
-<li>definierte intents und content provider für andere Apps</li>
-<li>Fehlerbehebungen</li>
+<li>New database, much faster, less memory usage</li>
+<li>Defined Intents and content provider for other apps</li>
+<li>Bugfixes</li>
 </ul>
 </body>
 </html>

@@ -34,7 +34,6 @@
   <string name="btn_save">Uložit</string>
   <string name="btn_do_not_save">Zrušit</string>
   <string name="btn_delete">Smazat</string>
-  <string name="btn_no_date">Nic</string>
   <string name="btn_okay">OK</string>
   <string name="btn_export_to_server">Nahrát na keyserver</string>
   <string name="btn_next">Další</string>
@@ -57,7 +56,6 @@
   <string name="label_no_passphrase">Bez hesla</string>
   <string name="label_passphrase">Heslo</string>
   <string name="label_algorithm">Algoritmus</string>
-  <string name="label_ascii_armor">ASCII Armor</string>
   <string name="label_delete_after_decryption">Smazat po rozšifrování</string>
   <string name="label_encryption_algorithm">Šifrovací algoritmus</string>
   <string name="label_hash_algorithm">Hashovací algoritmus</string>
@@ -198,7 +196,6 @@
   <string name="key_size_8192">8192</string>
   <string name="key_size_custom">Vlastní velikost klíče</string>
   <string name="key_size_custom_info">Napište vlastní délku klíče (v bitech):</string>
-  <string name="key_size_custom_info_rsa">délka RSA klíče musí být větší než 1024 a nejvýše 8192. Zároveň musí být dělitelná 8mi.</string>
   <string name="key_size_custom_info_dsa">Délka DSA klíče musí být alespoň 512 a nejvýše 1024. Zároveň musí být dělitelná 64.</string>
   <!--compression-->
   <string name="compression_fast">rychle</string>

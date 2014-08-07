@@ -6,7 +6,7 @@
   <string name="title_encrypt">Chiffrer</string>
   <string name="title_decrypt">Déchiffrer</string>
   <string name="title_authentication">Phrase de passe</string>
-  <string name="title_create_key">Créer ma clef</string>
+  <string name="title_add_subkey">Ajouter une sous-clef</string>
   <string name="title_edit_key">Modifier une clef</string>
   <string name="title_preferences">Préférences</string>
   <string name="title_api_registered_apps">Applis</string>
@@ -15,6 +15,7 @@
   <string name="title_share_fingerprint_with">Partager l\'empreinte avec...</string>
   <string name="title_share_key">Partager la clef avec...</string>
   <string name="title_share_file">Partager le fichier avec...</string>
+  <string name="title_share_message">Partager le message avec...</string>
   <string name="title_encrypt_to_file">Chiffrer vers un fichier</string>
   <string name="title_decrypt_to_file">Déchiffrer vers un fichier</string>
   <string name="title_import_keys">importer des clefs</string>
@@ -43,17 +44,20 @@
   <string name="btn_decrypt_verify_file">Déchiffrer, vérifier et enregistrer le fichier</string>
   <string name="btn_decrypt_verify_message">Déchiffrer et enregistrer le message</string>
   <string name="btn_encrypt_file">Chiffrer et enregistrer le fichier</string>
+  <string name="btn_encrypt_share_file">Chiffrer et partager le fichier</string>
   <string name="btn_save">Enregistrer</string>
   <string name="btn_do_not_save">Annuler</string>
   <string name="btn_delete">Supprimer</string>
-  <string name="btn_no_date">Aucune</string>
+  <string name="btn_no_date">Pas d\'expiration</string>
   <string name="btn_okay">OK</string>
   <string name="btn_export_to_server">Téléverser vers le serveur de clefs</string>
   <string name="btn_next">Suivant</string>
   <string name="btn_back">Retour</string>
   <string name="btn_lookup_key">Rechercher la clef</string>
+  <string name="btn_share_encrypted_signed">Chiffrer et partager le message</string>
   <string name="btn_view_cert_key">Voir la clef de certification</string>
   <string name="btn_create_key">Créer la clef</string>
+  <string name="btn_add_files">Ajouter un/des fichier(s)</string>
   <!--menu-->
   <string name="menu_preferences">Paramètres</string>
   <string name="menu_help">Aide</string>
@@ -72,16 +76,24 @@
   <!--label-->
   <string name="label_message">Message</string>
   <string name="label_file">Fichier</string>
+  <string name="label_files">Fichier(s)</string>
+  <string name="label_file_colon">Fichier :</string>
   <string name="label_no_passphrase">Aucune phrase de passe</string>
   <string name="label_passphrase">Phrase de passe</string>
   <string name="label_passphrase_again">Répéter la phrase de passe</string>
   <string name="label_algorithm">Algorithme</string>
-  <string name="label_ascii_armor">Armure ASCII</string>
+  <string name="label_ascii_armor">Fichier ASCII Armor</string>
+  <string name="label_file_ascii_armor">Fichier : ASCII Armor</string>
   <string name="label_conceal_pgp_application">Informez les autres de votre utilisation d\'OpenKeychain</string>
   <string name="label_conceal_pgp_application_summary">Ajoute « OpenKeychain v2.7 » aux signatures OpenPGP, aux cryptogrammes, et aux clefs exportées</string>
+  <string name="label_asymmetric_from">De :</string>
+  <string name="label_to">À :</string>
+  <string name="label_delete_after_encryption">Fichier : supprimer après chiffrement</string>
   <string name="label_delete_after_decryption">Supprimer après le chiffrement</string>
   <string name="label_encryption_algorithm">Algorithme de chiffrement</string>
   <string name="label_hash_algorithm">Algorithme de hachage</string>
+  <string name="label_asymmetric">Avec une clef publique</string>
+  <string name="label_symmetric">Avec une phrase de passe</string>
   <string name="label_passphrase_cache_ttl">Cache de la phrase de passe</string>
   <string name="label_message_compression">Compression des messages</string>
   <string name="label_file_compression">Compression des fichiers</string>
@@ -277,7 +289,7 @@
   <string name="key_size_8192">8192</string>
   <string name="key_size_custom">Taille de clef personnalisée</string>
   <string name="key_size_custom_info">Taper la longueur de la clef personnalisée (bits)</string>
-  <string name="key_size_custom_info_rsa">La longueur d\'une clef RSA doit être comprise entre 1024 et 8192 inclusivement. Elle doit aussi être un multiple de 8.</string>
+  <string name="key_size_custom_info_rsa">La longueur d\'une clef RSA doit être supérieure à 1024 et au plus 16384. Elle doit aussi être un multiple de 8.</string>
   <string name="key_size_custom_info_dsa">La longueur d\'une clef DSA doit être comprise entre 512 et 1024 inclusivement. Elle doit aussi être un multiple de 64.</string>
   <!--compression-->
   <string name="compression_fast">rapide</string>
@@ -386,11 +398,16 @@
     <item>Changer en identité principale</item>
     <item>Révoquer l\'identité</item>
   </string-array>
+  <string-array name="edit_key_edit_user_id_revert_revocation">
+    <item>Renverser la révocation</item>
+  </string-array>
+  <string name="edit_key_edit_user_id_revoked">Cette identité a été révoquée ! Ceci ne peut pas être annulé.</string>
   <string name="edit_key_edit_subkey_title">Choisissez une action !</string>
   <string-array name="edit_key_edit_subkey">
     <item>Changer l\'expiration</item>
     <item>Révoquer la sous-clef</item>
   </string-array>
+  <string name="edit_key_new_subkey">nouvelle</string>
   <!--Create key-->
   <string name="create_key_upload">Téléverser la clef vers le serveur de clefs</string>
   <string name="create_key_empty">Ce champ est exigé</string>
@@ -411,6 +428,7 @@
   <string name="drawer_close">Fermer le tiroir de navigation</string>
   <string name="my_keys">Mes clefs</string>
   <!--hints-->
+  <string name="encrypt_content_edit_text_hint">Le message saisi ici sera signé en utilisant la clef choisie « De » et chiffré pour tous les destinataires choisies « À ».</string>
   <string name="decrypt_content_edit_text_hint">Saisir le cryptogramme à déchiffrer et/ou à vérifier ici...</string>
   <!--certs-->
   <string name="cert_default">valeur par défaut</string>

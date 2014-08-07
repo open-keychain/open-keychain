@@ -43,7 +43,6 @@
   <string name="btn_save">Salva</string>
   <string name="btn_do_not_save">Annulla</string>
   <string name="btn_delete">Elimina</string>
-  <string name="btn_no_date">Nessuno</string>
   <string name="btn_okay">OK</string>
   <string name="btn_export_to_server">Carica sul Server delle Chiavi</string>
   <string name="btn_next">Prossimo</string>
@@ -70,7 +69,6 @@
   <string name="label_passphrase">Frase di Accesso</string>
   <string name="label_passphrase_again">Ripeti Frase di Accesso</string>
   <string name="label_algorithm">Algortimo</string>
-  <string name="label_ascii_armor">Armatura ASCII</string>
   <string name="label_conceal_pgp_application">Fai sapere agli altri che utilizzi OpenKeychain</string>
   <string name="label_conceal_pgp_application_summary">Scrive \'OpenKeychain v2.7\' nelle firme OpenPGP, testi cifrati e chiavi esportate</string>
   <string name="label_delete_after_decryption">Cancella Dopo Decodifica</string>
@@ -251,7 +249,6 @@
   <string name="key_size_8192">8192</string>
   <string name="key_size_custom">Lunghezza chiave peronalizzata</string>
   <string name="key_size_custom_info">Digita lunghezza chiave personalizzata (in bit):</string>
-  <string name="key_size_custom_info_rsa">La lunghezza della chiave RSA deve essere maggiore di 1024 e al massimo 8192. Inoltre, deve essere multipla di 8.</string>
   <string name="key_size_custom_info_dsa">La lunghezza della chiave DSA deve essere almeno 512 e al massimo 1024. Inoltre, deve essere multipla di 64.</string>
   <!--compression-->
   <string name="compression_fast">veloce</string>

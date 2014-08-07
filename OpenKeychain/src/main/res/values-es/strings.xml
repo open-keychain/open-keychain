@@ -6,7 +6,7 @@
   <string name="title_encrypt">Cifrar</string>
   <string name="title_decrypt">Descifrar</string>
   <string name="title_authentication">Frase de contraseña</string>
-  <string name="title_create_key">Crear mi clave</string>
+  <string name="title_add_subkey">Añadir subclave</string>
   <string name="title_edit_key"> Editar clave</string>
   <string name="title_preferences"> Preferencias</string>
   <string name="title_api_registered_apps">Aplicaciones</string>
@@ -15,6 +15,7 @@
   <string name="title_share_fingerprint_with">Compartir huella de validación de clave con...</string>
   <string name="title_share_key">Compartir clave con...</string>
   <string name="title_share_file">Compartir fichero con...</string>
+  <string name="title_share_message">Compartir mensaje con...</string>
   <string name="title_encrypt_to_file">Cifrar hacia archivo</string>
   <string name="title_decrypt_to_file">Descifrar hacia archivo</string>
   <string name="title_import_keys">Importar claves</string>
@@ -47,7 +48,7 @@
   <string name="btn_save">Guardar</string>
   <string name="btn_do_not_save">Cancelar</string>
   <string name="btn_delete">Eliminar</string>
-  <string name="btn_no_date">Ninguno</string>
+  <string name="btn_no_date">Sin fecha de expiración</string>
   <string name="btn_okay">De acuerdo</string>
   <string name="btn_export_to_server">Cargar al servidor de claves</string>
   <string name="btn_next">Siguiente</string>
@@ -81,12 +82,12 @@
   <string name="label_passphrase">Frase de contraseña</string>
   <string name="label_passphrase_again">Repeat Passphrase</string>
   <string name="label_algorithm">Algoritmo</string>
-  <string name="label_ascii_armor">Armadura ASCII</string>
+  <string name="label_ascii_armor">Armadura ASCII del fichero</string>
   <string name="label_file_ascii_armor">Ficheros: Armadura ASCII</string>
   <string name="label_conceal_pgp_application">Permitir a otros saber que está usando OpenKeychain</string>
   <string name="label_conceal_pgp_application_summary">Escribe \'OpenKeychain v2.7\' en las firmas OpenPGP, el texto cifrado, y las claves exportadas</string>
   <string name="label_asymmetric_from">Desde:</string>
-  <string name="label_to">Hacia: </string>
+  <string name="label_to">Hacia:</string>
   <string name="label_delete_after_encryption">Ficheros: Borrar después del cifrado</string>
   <string name="label_delete_after_decryption">Borrar después del descifrado</string>
   <string name="label_encryption_algorithm">Algoritmo de cifrado</string>
@@ -288,7 +289,7 @@
   <string name="key_size_8192">8192</string>
   <string name="key_size_custom">Tamaño de clave personalizado</string>
   <string name="key_size_custom_info">Escriba el tamaño personalizado de la clave (en bits):</string>
-  <string name="key_size_custom_info_rsa">El tamaño de la clave RSA debe de un mínimo de 1024 y un máximo de 8192. También debe ser múltiplo de 8.</string>
+  <string name="key_size_custom_info_rsa">El tamaño de la clave RSA tiene que ser mayor que 1024 y como mucho de 16384. También debe ser un múltiplo de 8.</string>
   <string name="key_size_custom_info_dsa">El tamaño de la clave DSA debe ser de un mínimo de 512 y un máximo de 1024. También debe ser múltiplo de 64.</string>
   <!--compression-->
   <string name="compression_fast">rápido</string>
@@ -397,11 +398,16 @@
     <item>Cambiar a la identidad primaria</item>
     <item>Revocar identidad</item>
   </string-array>
+  <string-array name="edit_key_edit_user_id_revert_revocation">
+    <item>Revertir revocación</item>
+  </string-array>
+  <string name="edit_key_edit_user_id_revoked">Esta identidad se ha revocado. Esto no puede deshacerse.</string>
   <string name="edit_key_edit_subkey_title">¡Seleccione una acción!</string>
   <string-array name="edit_key_edit_subkey">
     <item>Cambiar periodo hasta la expiración</item>
     <item>Revocar subclave</item>
   </string-array>
+  <string name="edit_key_new_subkey">nueva</string>
   <!--Create key-->
   <string name="create_key_upload">Subir clave al servidor de claves</string>
   <string name="create_key_empty">Este campo es obligatorio</string>

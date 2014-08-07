@@ -6,7 +6,6 @@
   <string name="title_encrypt">Verschlüsseln</string>
   <string name="title_decrypt">Entschlüsseln</string>
   <string name="title_authentication">Passwort</string>
-  <string name="title_create_key">Erzeuge Deinen Schlüssel</string>
   <string name="title_edit_key">Schlüssel bearbeiten</string>
   <string name="title_preferences">Einstellungen</string>
   <string name="title_api_registered_apps">Apps</string>
@@ -15,6 +14,7 @@
   <string name="title_share_fingerprint_with">Teile Fingerabdruck über…</string>
   <string name="title_share_key">Teile Schlüssel über...</string>
   <string name="title_share_file">Datei teilen mit…</string>
+  <string name="title_share_message">Teile Nachricht über…</string>
   <string name="title_encrypt_to_file">In eine Datei verschlüsseln</string>
   <string name="title_decrypt_to_file">In eine Datei entschlüsseln</string>
   <string name="title_import_keys">Schlüssel importieren</string>
@@ -43,17 +43,19 @@
   <string name="btn_decrypt_verify_file">Datei entschlüsseln, verifizieren und speichern</string>
   <string name="btn_decrypt_verify_message">Entschlüsseln und verifizieren</string>
   <string name="btn_encrypt_file">Datei verschlüsseln und speichern</string>
+  <string name="btn_encrypt_share_file">Datei verschlüsseln und teilen</string>
   <string name="btn_save">Speichern</string>
   <string name="btn_do_not_save">Abbrechen</string>
   <string name="btn_delete">Löschen</string>
-  <string name="btn_no_date">Keine</string>
   <string name="btn_okay">Okay</string>
   <string name="btn_export_to_server">Auf Schlüsselserver hochladen</string>
   <string name="btn_next">Weiter</string>
   <string name="btn_back">Zurück</string>
   <string name="btn_lookup_key">Schlüssel nachschlagen</string>
+  <string name="btn_share_encrypted_signed">Entschlüsseln und teilen</string>
   <string name="btn_view_cert_key">Beglaubigungsschlüssel anzeigen</string>
-  <string name="btn_create_key">Erzeuge Schlüssel</string>
+  <string name="btn_create_key">Schlüssel erzeugen</string>
+  <string name="btn_add_files">Datei(en) hinzufügen</string>
   <!--menu-->
   <string name="menu_preferences">Einstellungen</string>
   <string name="menu_help">Hilfe</string>
@@ -72,16 +74,23 @@
   <!--label-->
   <string name="label_message">Nachricht</string>
   <string name="label_file">Datei</string>
+  <string name="label_files">Datei(en)</string>
+  <string name="label_file_colon">Datei:</string>
   <string name="label_no_passphrase">Kein Passwort</string>
   <string name="label_passphrase">Passwort</string>
   <string name="label_passphrase_again">Passwort wiederholen</string>
   <string name="label_algorithm">Algorithmus</string>
-  <string name="label_ascii_armor">ASCII-Armor</string>
+  <string name="label_file_ascii_armor">Datei: ASCII Armor</string>
   <string name="label_conceal_pgp_application">Lass andere wissen dass du OpenKeychain nutzt</string>
   <string name="label_conceal_pgp_application_summary">Fügt \'OpenKeychain v2.7\' zu OpenPGP Signaturen, Daten und exportierten Schlüsseln hinzu</string>
+  <string name="label_asymmetric_from">Von:</string>
+  <string name="label_to">An:</string>
+  <string name="label_delete_after_encryption">Dateien: Nach Verschlüsselung löschen</string>
   <string name="label_delete_after_decryption">Nach Entschlüsselung löschen</string>
   <string name="label_encryption_algorithm">Verschlüsselungsalgorithmus</string>
   <string name="label_hash_algorithm">Hash-Algorithmus</string>
+  <string name="label_asymmetric">Mit Schlüssel</string>
+  <string name="label_symmetric">Mit Passwort</string>
   <string name="label_passphrase_cache_ttl">Passwort-Cache</string>
   <string name="label_message_compression">Nachrichten-Komprimierung</string>
   <string name="label_file_compression">Datei-Komprimierung</string>
@@ -274,7 +283,6 @@
   <string name="key_size_8192">8192</string>
   <string name="key_size_custom">Benutzerdefinierte Schlüssellänge</string>
   <string name="key_size_custom_info">Benutzerdefinierte Schlüssellänge (in Bit):</string>
-  <string name="key_size_custom_info_rsa">Die RSA-Schlüssellänge muss größer als 1024 sein und höchstens 8192 sein. Auch muss sie ein Mehrfaches von 8 sein.</string>
   <string name="key_size_custom_info_dsa">Die DSA-Schlüssellänge muss mindestens 512 und höchstens 1024 sein. Auch muss sie ein Mehrfaches von 64 sein.</string>
   <!--compression-->
   <string name="compression_fast">schnell</string>
@@ -380,6 +388,7 @@
   <string name="drawer_close">Menü schließen</string>
   <string name="my_keys">Meine Schlüssel</string>
   <!--hints-->
+  <string name="encrypt_content_edit_text_hint">Die eingegebene Nachricht wird mit dem in \'Von\' ausgewählten Schlüssel signiert und für alle Empfänger in \'An\' verschlüsselt.</string>
   <string name="decrypt_content_edit_text_hint">Hier die verschlüsselte Nachricht eingeben um sie zu entschlüsseln und/oder zu verifizieren…</string>
   <!--certs-->
   <string name="cert_default">normal</string>
