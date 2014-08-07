@@ -28,6 +28,7 @@
     <string name="title_key_details">Key Details</string>
     <string name="title_help">Help</string>
     <string name="title_log_display">Log</string>
+    <string name="title_create_key">Create Key</string>
 
     <!-- section -->
     <string name="section_user_ids">Identities</string>
