@@ -339,6 +339,10 @@ public class EditKeyFragment extends LoaderFragment implements
                             mSaveKeyringParcel.mRevokeUserIds.remove(userId);
                         } else {
                             mSaveKeyringParcel.mRevokeUserIds.add(userId);
+                            // not possible to revoke and change to primary user id
+                            if (mSaveKeyringParcel.mChangePrimaryUserId.equals(userId)) {
+                                mSaveKeyringParcel.mChangePrimaryUserId = null;
+                            }
                         }
                         break;
                 }
