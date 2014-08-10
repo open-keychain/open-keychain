@@ -229,8 +229,6 @@ public class PgpDecryptVerify {
         InputStream clear;
         PGPEncryptedData encryptedData;
 
-        currentProgress += 5;
-
         PGPPublicKeyEncryptedData encryptedDataAsymmetric = null;
         PGPPBEEncryptedData encryptedDataSymmetric = null;
         CanonicalizedSecretKey secretEncryptionKey = null;
@@ -241,6 +239,7 @@ public class PgpDecryptVerify {
         while (it.hasNext()) {
             Object obj = it.next();
             if (obj instanceof PGPPublicKeyEncryptedData) {
+                currentProgress += 2;
                 updateProgress(R.string.progress_finding_key, currentProgress, 100);
 
                 PGPPublicKeyEncryptedData encData = (PGPPublicKeyEncryptedData) obj;
@@ -327,6 +326,7 @@ public class PgpDecryptVerify {
         }
 
         if (symmetricPacketFound) {
+            currentProgress += 2;
             updateProgress(R.string.progress_preparing_streams, currentProgress, 100);
 
             PGPDigestCalculatorProvider digestCalcProvider = new JcaPGPDigestCalculatorProviderBuilder()
@@ -338,9 +338,8 @@ public class PgpDecryptVerify {
             clear = encryptedDataSymmetric.getDataStream(decryptorFactory);
 
             encryptedData = encryptedDataSymmetric;
-            currentProgress += 5;
         } else if (asymmetricPacketFound) {
-            currentProgress += 5;
+            currentProgress += 2;
             updateProgress(R.string.progress_extracting_key, currentProgress, 100);
             try {
                 if (!secretEncryptionKey.unlock(mPassphrase)) {
@@ -349,15 +348,13 @@ public class PgpDecryptVerify {
             } catch (PgpGeneralException e) {
                 throw new KeyExtractionException();
             }
-            currentProgress += 5;
+
+            currentProgress += 2;
             updateProgress(R.string.progress_preparing_streams, currentProgress, 100);
 
             PublicKeyDataDecryptorFactory decryptorFactory = secretEncryptionKey.getDecryptorFactory();
-
             clear = encryptedDataAsymmetric.getDataStream(decryptorFactory);
-
             encryptedData = encryptedDataAsymmetric;
-            currentProgress += 5;
         } else {
             // no packet has been found where we have the corresponding secret key in our db
             throw new NoSecretKeyException();
@@ -371,6 +368,7 @@ public class PgpDecryptVerify {
         CanonicalizedPublicKey signingKey = null;
 
         if (dataChunk instanceof PGPCompressedData) {
+            currentProgress += 2;
             updateProgress(R.string.progress_decompressing_data, currentProgress, 100);
 
             PGPCompressedData compressedData = (PGPCompressedData) dataChunk;
@@ -378,12 +376,11 @@ public class PgpDecryptVerify {
             PGPObjectFactory fact = new PGPObjectFactory(compressedData.getDataStream());
             dataChunk = fact.nextObject();
             plainFact = fact;
-            currentProgress += 10;
         }
 
         PGPOnePassSignature signature = null;
-
         if (dataChunk instanceof PGPOnePassSignatureList) {
+            currentProgress += 2;
             updateProgress(R.string.progress_processing_signature, currentProgress, 100);
 
             PGPOnePassSignatureList sigList = (PGPOnePassSignatureList) dataChunk;
@@ -399,7 +396,7 @@ public class PgpDecryptVerify {
                     signingKey = signingRing.getPublicKey(sigKeyId);
                     signatureIndex = i;
                 } catch (ProviderHelper.NotFoundException e) {
-                    Log.d(Constants.TAG, "key not found, trying next signature…");
+                    Log.d(Constants.TAG, "key not found, trying next signature...");
                 }
             }
 
@@ -431,7 +428,6 @@ public class PgpDecryptVerify {
             }
 
             dataChunk = plainFact.nextObject();
-            currentProgress += 10;
         }
 
         if (dataChunk instanceof PGPSignatureList) {
@@ -440,6 +436,7 @@ public class PgpDecryptVerify {
         }
 
         if (dataChunk instanceof PGPLiteralData) {
+            currentProgress += 4;
             updateProgress(R.string.progress_decrypting, currentProgress, 100);
 
             PGPLiteralData literalData = (PGPLiteralData) dataChunk;
@@ -473,9 +470,6 @@ public class PgpDecryptVerify {
 
             long alreadyWritten = 0;
             long wholeSize = mData.getSize() - mData.getStreamPosition();
-            Log.d(Constants.TAG, "mData.getStreamPosition(): " + mData.getStreamPosition());
-            Log.d(Constants.TAG, "wholeSize: " + wholeSize);
-
             int length;
             byte[] buffer = new byte[1 << 16];
             while ((length = dataIn.read(buffer)) > 0) {
@@ -611,8 +605,7 @@ public class PgpDecryptVerify {
                 signingKey = signingRing.getPublicKey(sigKeyId);
                 signatureIndex = i;
             } catch (ProviderHelper.NotFoundException e) {
-                Log.d(Constants.TAG, "key not found!");
-                // try next one...
+                Log.d(Constants.TAG, "key not found, trying next signature...");
             }
         }
 
@@ -628,7 +621,7 @@ public class PgpDecryptVerify {
             try {
                 signatureResultBuilder.userId(signingRing.getPrimaryUserIdWithFallback());
             } catch (PgpGeneralException e) {
-                Log.d(Constants.TAG, "No primary user id in key " + signingRing.getMasterKeyId());
+                Log.d(Constants.TAG, "No primary user id in key with master key id " + signingRing.getMasterKeyId());
             }
             signatureResultBuilder.signatureKeyCertified(signingRing.getVerified() > 0);
 
