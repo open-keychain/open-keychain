@@ -471,7 +471,7 @@ public class PgpDecryptVerify {
 
             InputStream dataIn = literalData.getInputStream();
 
-            int alreadyWritten = 0;
+            long alreadyWritten = 0;
             long wholeSize = mData.getSize() - mData.getStreamPosition();
             Log.d(Constants.TAG, "mData.getStreamPosition(): " + mData.getStreamPosition());
             Log.d(Constants.TAG, "wholeSize: " + wholeSize);
@@ -494,14 +494,12 @@ public class PgpDecryptVerify {
 
                 alreadyWritten += length;
                 if (wholeSize > 0) {
-                    int progress = 100 * alreadyWritten / (int) wholeSize;
-                    Log.d(Constants.TAG, "progress: " + progress);
-
-                    // stop at 100 for buggy sizes...
+                    long progress = 100 * alreadyWritten / wholeSize;
+                    // stop at 100% for wrong file sizes...
                     if (progress > 100) {
                         progress = 100;
                     }
-                    progressScaler.setProgress(progress, 100);
+                    progressScaler.setProgress((int) progress, 100);
                 } else {
                     // TODO: slow annealing to fake a progress?
                 }
