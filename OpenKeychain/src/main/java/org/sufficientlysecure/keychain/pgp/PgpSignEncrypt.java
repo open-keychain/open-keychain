@@ -357,6 +357,7 @@ public class PgpSignEncrypt {
         BCPGOutputStream bcpgOut;
         if (enableEncryption) {
             /* actual encryption */
+            updateProgress(R.string.progress_encrypting, 20, 100);
 
             encryptionOut = cPk.open(out, new byte[1 << 16]);
 
@@ -379,27 +380,26 @@ public class PgpSignEncrypt {
             // file name not needed, so empty string
             pOut = literalGen.open(bcpgOut, PGPLiteralData.BINARY, "", new Date(),
                     new byte[1 << 16]);
-            updateProgress(R.string.progress_encrypting, 20, 100);
 
-            long progress = 0;
-            int n;
+            long alreadyWritten = 0;
+            int length;
             byte[] buffer = new byte[1 << 16];
             InputStream in = mData.getInputStream();
-            while ((n = in.read(buffer)) > 0) {
-                pOut.write(buffer, 0, n);
+            while ((length = in.read(buffer)) > 0) {
+                pOut.write(buffer, 0, length);
 
                 // update signature buffer if signature is requested
                 if (enableSignature) {
                     if (mSignatureForceV3) {
-                        signatureV3Generator.update(buffer, 0, n);
+                        signatureV3Generator.update(buffer, 0, length);
                     } else {
-                        signatureGenerator.update(buffer, 0, n);
+                        signatureGenerator.update(buffer, 0, length);
                     }
                 }
 
-                progress += n;
+                alreadyWritten += length;
                 if (mData.getSize() != 0) {
-                    updateProgress((int) (20 + (95 - 20) * progress / mData.getSize()), 100);
+                    updateProgress((int) (20 + (95 - 20) * alreadyWritten / mData.getSize()), 100);
                 }
             }
 

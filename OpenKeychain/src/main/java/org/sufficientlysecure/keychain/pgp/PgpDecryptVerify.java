@@ -18,6 +18,7 @@
 
 package org.sufficientlysecure.keychain.pgp;
 
+import org.openintents.openpgp.OpenPgpDecryptMetadata;
 import org.spongycastle.bcpg.ArmoredInputStream;
 import org.spongycastle.openpgp.PGPCompressedData;
 import org.spongycastle.openpgp.PGPEncryptedData;
@@ -45,6 +46,7 @@ import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.util.InputData;
 import org.sufficientlysecure.keychain.util.Log;
+import org.sufficientlysecure.keychain.util.ProgressScaler;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
@@ -269,8 +271,8 @@ public class PgpDecryptVerify {
 
                 // allow only specific keys for decryption?
                 if (mAllowedKeyIds != null) {
-                    Log.d(Constants.TAG, "encData.getKeyID():" + encData.getKeyID());
-                    Log.d(Constants.TAG, "allowedKeyIds: " + mAllowedKeyIds);
+                    Log.d(Constants.TAG, "encData.getKeyID(): " + encData.getKeyID());
+                    Log.d(Constants.TAG, "mAllowedKeyIds: " + mAllowedKeyIds);
                     Log.d(Constants.TAG, "masterKeyId: " + masterKeyId);
 
                     if (!mAllowedKeyIds.contains(masterKeyId)) {
@@ -344,7 +346,7 @@ public class PgpDecryptVerify {
                 if (!secretEncryptionKey.unlock(mPassphrase)) {
                     throw new WrongPassphraseException();
                 }
-            } catch(PgpGeneralException e) {
+            } catch (PgpGeneralException e) {
                 throw new KeyExtractionException();
             }
             currentProgress += 5;
@@ -371,8 +373,9 @@ public class PgpDecryptVerify {
         if (dataChunk instanceof PGPCompressedData) {
             updateProgress(R.string.progress_decompressing_data, currentProgress, 100);
 
-            PGPObjectFactory fact = new PGPObjectFactory(
-                    ((PGPCompressedData) dataChunk).getDataStream());
+            PGPCompressedData compressedData = (PGPCompressedData) dataChunk;
+
+            PGPObjectFactory fact = new PGPObjectFactory(compressedData.getDataStream());
             dataChunk = fact.nextObject();
             plainFact = fact;
             currentProgress += 10;
@@ -410,8 +413,8 @@ public class PgpDecryptVerify {
                 signatureResultBuilder.keyId(signingRing.getMasterKeyId());
                 try {
                     signatureResultBuilder.userId(signingRing.getPrimaryUserIdWithFallback());
-                } catch(PgpGeneralException e) {
-                    Log.d(Constants.TAG, "No primary user id in key " + signingRing.getMasterKeyId());
+                } catch (PgpGeneralException e) {
+                    Log.d(Constants.TAG, "No primary user id in keyring with master key id " + signingRing.getMasterKeyId());
                 }
                 signatureResultBuilder.signatureKeyCertified(signingRing.getVerified() > 0);
 
@@ -433,6 +436,7 @@ public class PgpDecryptVerify {
         }
 
         if (dataChunk instanceof PGPSignatureList) {
+            // skip
             dataChunk = plainFact.nextObject();
         }
 
@@ -441,44 +445,67 @@ public class PgpDecryptVerify {
 
             PGPLiteralData literalData = (PGPLiteralData) dataChunk;
 
-            byte[] buffer = new byte[1 << 16];
-            InputStream dataIn = literalData.getInputStream();
+            // TODO: how to get the real original size?
+            // this is the encrypted size
+            long originalSize = mData.getSize() - mData.getStreamPosition();
+            if (originalSize < 0) {
+                originalSize = 0;
+            }
 
-            int startProgress = currentProgress;
-            int endProgress = 100;
+            OpenPgpDecryptMetadata metadata = new OpenPgpDecryptMetadata(
+                    literalData.getFileName(),
+                    literalData.getModificationTime().getTime(),
+                    literalData.getFormat(),
+                    originalSize);
+            result.setDecryptMetadata(metadata);
+
+            int endProgress;
             if (signature != null) {
                 endProgress = 90;
             } else if (encryptedData.isIntegrityProtected()) {
                 endProgress = 95;
+            } else {
+                endProgress = 100;
             }
+            ProgressScaler progressScaler =
+                    new ProgressScaler(mProgressable, currentProgress, endProgress, 100);
 
-            int n;
-            // TODO: progress calculation is broken here! Try to rework it based on commented code!
-//            int progress = 0;
-            long startPos = mData.getStreamPosition();
-            while ((n = dataIn.read(buffer)) > 0) {
-                mOutStream.write(buffer, 0, n);
-//                progress += n;
+            InputStream dataIn = literalData.getInputStream();
+
+            int alreadyWritten = 0;
+            long wholeSize = mData.getSize() - mData.getStreamPosition();
+            Log.d(Constants.TAG, "mData.getStreamPosition(): " + mData.getStreamPosition());
+            Log.d(Constants.TAG, "wholeSize: " + wholeSize);
+
+            int length;
+            byte[] buffer = new byte[1 << 16];
+            while ((length = dataIn.read(buffer)) > 0) {
+                mOutStream.write(buffer, 0, length);
+
+                // update signature buffer if signature is also present
                 if (signature != null) {
                     try {
-                        signature.update(buffer, 0, n);
+                        signature.update(buffer, 0, length);
                     } catch (SignatureException e) {
-                        Log.d(Constants.TAG, "SIGNATURE_ERROR");
+                        Log.e(Constants.TAG, "SignatureException -> Not a valid signature!", e);
                         signatureResultBuilder.validSignature(false);
                         signature = null;
                     }
                 }
-                // TODO: dead code?!
-                // unknown size, but try to at least have a moving, slowing down progress bar
-//                currentProgress = startProgress + (endProgress - startProgress) * progress
-//                        / (progress + 100000);
-                if (mData.getSize() - startPos == 0) {
-                    currentProgress = endProgress;
+
+                alreadyWritten += length;
+                if (wholeSize > 0) {
+                    int progress = 100 * alreadyWritten / (int) wholeSize;
+                    Log.d(Constants.TAG, "progress: " + progress);
+
+                    // stop at 100 for buggy sizes...
+                    if (progress > 100) {
+                        progress = 100;
+                    }
+                    progressScaler.setProgress(progress, 100);
                 } else {
-                    currentProgress = (int) (startProgress + (endProgress - startProgress)
-                            * (mData.getStreamPosition() - startPos) / (mData.getSize() - startPos));
+                    // TODO: slow annealing to fake a progress?
                 }
-                updateProgress(currentProgress, 100);
             }
 
             if (signature != null) {
@@ -597,7 +624,7 @@ public class PgpDecryptVerify {
             signatureResultBuilder.keyId(signingRing.getMasterKeyId());
             try {
                 signatureResultBuilder.userId(signingRing.getPrimaryUserIdWithFallback());
-            } catch(PgpGeneralException e) {
+            } catch (PgpGeneralException e) {
                 Log.d(Constants.TAG, "No primary user id in key " + signingRing.getMasterKeyId());
             }
             signatureResultBuilder.signatureKeyCertified(signingRing.getVerified() > 0);
