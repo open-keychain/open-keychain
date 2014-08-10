@@ -65,6 +65,10 @@ public class OpenPgpSignatureResultBuilder {
         this.mSignatureAvailable = signatureAvailable;
     }
 
+    public boolean isValidSignature() {
+        return mValidSignature;
+    }
+
     public OpenPgpSignatureResult build() {
         if (mSignatureAvailable) {
             OpenPgpSignatureResult result = new OpenPgpSignatureResult();

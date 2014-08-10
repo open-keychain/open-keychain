@@ -535,9 +535,13 @@ public class PgpDecryptVerify {
         } else {
             // no integrity check
             Log.d(Constants.TAG, "Encrypted data was not integrity protected! MDC packet is missing!");
+
+            // If no valid signature is present:
             // Handle missing integrity protection like failed integrity protection!
             // The MDC packet can be stripped by an attacker!
-            throw new IntegrityCheckFailedException();
+            if (!signatureResultBuilder.isValidSignature()) {
+                throw new IntegrityCheckFailedException();
+            }
         }
 
         updateProgress(R.string.progress_done, 100, 100);
