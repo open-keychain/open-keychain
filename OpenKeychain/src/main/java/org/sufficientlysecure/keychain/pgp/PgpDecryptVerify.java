@@ -399,8 +399,7 @@ public class PgpDecryptVerify {
                     signingKey = signingRing.getPublicKey(sigKeyId);
                     signatureIndex = i;
                 } catch (ProviderHelper.NotFoundException e) {
-                    Log.d(Constants.TAG, "key not found!");
-                    // try next one...
+                    Log.d(Constants.TAG, "key not found, trying next signature…");
                 }
             }
 
@@ -537,8 +536,10 @@ public class PgpDecryptVerify {
             }
         } else {
             // no integrity check
-            Log.e(Constants.TAG, "Encrypted data was not integrity protected!");
-            // TODO: inform user?
+            Log.d(Constants.TAG, "Encrypted data was not integrity protected! MDC packet is missing!");
+            // Handle missing integrity protection like failed integrity protection!
+            // The MDC packet can be stripped by an attacker!
+            throw new IntegrityCheckFailedException();
         }
 
         updateProgress(R.string.progress_done, 100, 100);
