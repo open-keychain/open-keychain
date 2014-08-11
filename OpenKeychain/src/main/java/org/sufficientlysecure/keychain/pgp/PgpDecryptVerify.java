@@ -18,6 +18,8 @@
 
 package org.sufficientlysecure.keychain.pgp;
 
+import android.webkit.MimeTypeMap;
+
 import org.openintents.openpgp.OpenPgpDecryptMetadata;
 import org.spongycastle.bcpg.ArmoredInputStream;
 import org.spongycastle.openpgp.PGPCompressedData;
@@ -54,6 +56,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.URLConnection;
 import java.security.SignatureException;
 import java.util.Iterator;
 import java.util.Set;
@@ -460,10 +463,32 @@ public class PgpDecryptVerify {
                 originalSize = 0;
             }
 
+            String originalFilename = literalData.getFileName();
+            String mimeType = null;
+            if (literalData.getFormat() == PGPLiteralData.TEXT
+                    || literalData.getFormat() == PGPLiteralData.UTF8) {
+                mimeType = "text/plain";
+            } else {
+                // TODO: better would be: https://github.com/open-keychain/open-keychain/issues/753
+
+                // try to guess from file ending
+                String extension = MimeTypeMap.getFileExtensionFromUrl(originalFilename);
+                if (extension != null) {
+                    MimeTypeMap mime = MimeTypeMap.getSingleton();
+                    mimeType = mime.getMimeTypeFromExtension(extension);
+                }
+                if (mimeType == null) {
+                    mimeType = URLConnection.guessContentTypeFromName(originalFilename);
+                }
+                if (mimeType == null) {
+                    mimeType = "*/*";
+                }
+            }
+
             OpenPgpDecryptMetadata metadata = new OpenPgpDecryptMetadata(
-                    literalData.getFileName(),
+                    originalFilename,
+                    mimeType,
                     literalData.getModificationTime().getTime(),
-                    literalData.getFormat(),
                     originalSize);
             result.setDecryptMetadata(metadata);
 

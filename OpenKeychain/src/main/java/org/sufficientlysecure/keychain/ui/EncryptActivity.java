@@ -281,7 +281,6 @@ public class EncryptActivity extends DrawerActivity implements EncryptActivityIn
                     Preferences.getPreferences(this).getDefaultFileCompression());
         }
 
-
         // Always use armor for messages
         data.putBoolean(KeychainIntentService.ENCRYPT_USE_ASCII_ARMOR, mUseArmor || isContentMessage());
 
