@@ -25,7 +25,7 @@ import android.os.IBinder;
 import android.os.ParcelFileDescriptor;
 
 import org.openintents.openpgp.IOpenPgpService;
-import org.openintents.openpgp.OpenPgpDecryptMetadata;
+import org.openintents.openpgp.OpenPgpMetadata;
 import org.openintents.openpgp.OpenPgpError;
 import org.openintents.openpgp.OpenPgpSignatureResult;
 import org.openintents.openpgp.util.OpenPgpApi;
@@ -406,7 +406,7 @@ public class OpenPgpService extends RemoteService {
                     }
                 }
 
-                OpenPgpDecryptMetadata metadata = decryptVerifyResult.getDecryptMetadata();
+                OpenPgpMetadata metadata = decryptVerifyResult.getDecryptMetadata();
                 if (metadata != null) {
                     result.putExtra(OpenPgpApi.RESULT_METADATA, metadata);
                 }

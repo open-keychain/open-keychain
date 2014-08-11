@@ -20,7 +20,7 @@ package org.sufficientlysecure.keychain.pgp;
 
 import android.webkit.MimeTypeMap;
 
-import org.openintents.openpgp.OpenPgpDecryptMetadata;
+import org.openintents.openpgp.OpenPgpMetadata;
 import org.spongycastle.bcpg.ArmoredInputStream;
 import org.spongycastle.openpgp.PGPCompressedData;
 import org.spongycastle.openpgp.PGPEncryptedData;
@@ -485,7 +485,7 @@ public class PgpDecryptVerify {
                 }
             }
 
-            OpenPgpDecryptMetadata metadata = new OpenPgpDecryptMetadata(
+            OpenPgpMetadata metadata = new OpenPgpMetadata(
                     originalFilename,
                     mimeType,
                     literalData.getModificationTime().getTime(),
