@@ -226,6 +226,10 @@ public class OpenPgpService extends RemoteService {
                                       boolean sign) {
         try {
             boolean asciiArmor = data.getBooleanExtra(OpenPgpApi.EXTRA_REQUEST_ASCII_ARMOR, true);
+            String originalFilename = data.getStringExtra(OpenPgpApi.EXTRA_ORIGINAL_FILENAME);
+            if (originalFilename == null) {
+                originalFilename = "";
+            }
 
             long[] keyIds;
             if (data.hasExtra(OpenPgpApi.EXTRA_KEY_IDS)) {
@@ -271,7 +275,8 @@ public class OpenPgpService extends RemoteService {
                 builder.setEnableAsciiArmorOutput(asciiArmor)
                         .setCompressionId(accSettings.getCompression())
                         .setSymmetricEncryptionAlgorithm(accSettings.getEncryptionAlgorithm())
-                        .setEncryptionMasterKeyIds(keyIds);
+                        .setEncryptionMasterKeyIds(keyIds)
+                        .setOriginalFilename(originalFilename);
 
                 if (sign) {
                     String passphrase;
