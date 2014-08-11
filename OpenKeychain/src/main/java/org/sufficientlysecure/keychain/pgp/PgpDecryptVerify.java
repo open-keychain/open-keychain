@@ -71,6 +71,7 @@ public class PgpDecryptVerify {
     private boolean mAllowSymmetricDecryption;
     private String mPassphrase;
     private Set<Long> mAllowedKeyIds;
+    private boolean mReturnMetadataOnly;
 
     private PgpDecryptVerify(Builder builder) {
         // private Constructor can only be called from Builder
@@ -83,6 +84,7 @@ public class PgpDecryptVerify {
         this.mAllowSymmetricDecryption = builder.mAllowSymmetricDecryption;
         this.mPassphrase = builder.mPassphrase;
         this.mAllowedKeyIds = builder.mAllowedKeyIds;
+        this.mReturnMetadataOnly = builder.mReturnMetadataOnly;
     }
 
     public static class Builder {
@@ -97,6 +99,7 @@ public class PgpDecryptVerify {
         private boolean mAllowSymmetricDecryption = true;
         private String mPassphrase = null;
         private Set<Long> mAllowedKeyIds = null;
+        private boolean mReturnMetadataOnly = false;
 
         public Builder(ProviderHelper providerHelper, PassphraseCache passphraseCache,
                        InputData data, OutputStream outStream) {
@@ -126,7 +129,16 @@ public class PgpDecryptVerify {
          * This means only ciphertexts encrypted for one of these private key can be decrypted.
          */
         public Builder setAllowedKeyIds(Set<Long> allowedKeyIds) {
-            this.mAllowedKeyIds = allowedKeyIds;
+            mAllowedKeyIds = allowedKeyIds;
+            return this;
+        }
+
+        /**
+         * If enabled, the actual decryption/verification of the content will not be executed.
+         * The metadata only will be decrypted and returned.
+         */
+        public Builder setReturnMetadataOnly(boolean returnMetadataOnly) {
+            mReturnMetadataOnly = returnMetadataOnly;
             return this;
         }
 
@@ -442,7 +454,7 @@ public class PgpDecryptVerify {
             PGPLiteralData literalData = (PGPLiteralData) dataChunk;
 
             // TODO: how to get the real original size?
-            // this is the encrypted size
+            // this is the encrypted size so if we enable compression this value is wrong!
             long originalSize = mData.getSize() - mData.getStreamPosition();
             if (originalSize < 0) {
                 originalSize = 0;
@@ -454,6 +466,13 @@ public class PgpDecryptVerify {
                     literalData.getFormat(),
                     originalSize);
             result.setDecryptMetadata(metadata);
+
+            Log.d(Constants.TAG, "metadata: " + metadata);
+
+            // return here if we want to decrypt the metadata only
+            if (mReturnMetadataOnly) {
+                return result;
+            }
 
             int endProgress;
             if (signature != null) {

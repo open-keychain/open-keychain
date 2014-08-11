@@ -264,12 +264,12 @@ public class EncryptActivity extends DrawerActivity implements EncryptActivityIn
         // fill values for this action
         Bundle data = new Bundle();
 
-        int compressionId;
         if (isContentMessage()) {
             data.putInt(KeychainIntentService.TARGET, KeychainIntentService.IO_BYTES);
             data.putByteArray(KeychainIntentService.ENCRYPT_MESSAGE_BYTES, mMessage.getBytes());
 
-            compressionId = Preferences.getPreferences(this).getDefaultMessageCompression();
+            data.putInt(KeychainIntentService.ENCRYPT_COMPRESSION_ID,
+                    Preferences.getPreferences(this).getDefaultMessageCompression());
         } else {
             data.putInt(KeychainIntentService.SOURCE, KeychainIntentService.IO_URIS);
             data.putParcelableArrayList(KeychainIntentService.ENCRYPT_INPUT_URIS, mInputUris);
@@ -277,10 +277,10 @@ public class EncryptActivity extends DrawerActivity implements EncryptActivityIn
             data.putInt(KeychainIntentService.TARGET, KeychainIntentService.IO_URIS);
             data.putParcelableArrayList(KeychainIntentService.ENCRYPT_OUTPUT_URIS, mOutputUris);
 
-            compressionId = Preferences.getPreferences(this).getDefaultFileCompression();
+            data.putInt(KeychainIntentService.ENCRYPT_COMPRESSION_ID,
+                    Preferences.getPreferences(this).getDefaultFileCompression());
         }
 
-        data.putInt(KeychainIntentService.ENCRYPT_COMPRESSION_ID, compressionId);
 
         // Always use armor for messages
         data.putBoolean(KeychainIntentService.ENCRYPT_USE_ASCII_ARMOR, mUseArmor || isContentMessage());
@@ -428,7 +428,6 @@ public class EncryptActivity extends DrawerActivity implements EncryptActivityIn
 
         if (isModeSymmetric()) {
             // symmetric encryption checks
-
 
             if (mPassphrase == null) {
                 Notify.showNotify(this, R.string.passphrases_do_not_match, Notify.Style.ERROR);

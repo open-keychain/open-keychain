@@ -23,8 +23,10 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.Message;
 import android.os.Messenger;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -38,6 +40,7 @@ import org.sufficientlysecure.keychain.pgp.PgpDecryptVerifyResult;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
 import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
 import org.sufficientlysecure.keychain.ui.dialog.DeleteFileDialogFragment;
+import org.sufficientlysecure.keychain.ui.dialog.PassphraseDialogFragment;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Notify;
 
@@ -113,7 +116,8 @@ public class DecryptFileFragment extends DecryptFragment {
             return;
         }
 
-        askForOutputFilename();
+//        askForOutputFilename();
+        decryptOriginalFilename(null);
     }
 
     private String removeEncryptedAppend(String name) {
@@ -123,8 +127,13 @@ public class DecryptFileFragment extends DecryptFragment {
         return name;
     }
 
-    private void askForOutputFilename() {
-        String targetName = removeEncryptedAppend(FileHelper.getFilename(getActivity(), mInputUri));
+    private void askForOutputFilename(String originalFilename) {
+        String targetName;
+        if (!TextUtils.isEmpty(originalFilename)) {
+            targetName = originalFilename;
+        } else {
+            targetName = removeEncryptedAppend(FileHelper.getFilename(getActivity(), mInputUri));
+        }
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
             File file = new File(mInputUri.getPath());
             File parentDir = file.exists() ? file.getParentFile() : Constants.Path.APP_DIR;
@@ -134,6 +143,82 @@ public class DecryptFileFragment extends DecryptFragment {
         } else {
             FileHelper.saveDocument(this, "*/*", targetName, REQUEST_CODE_OUTPUT);
         }
+    }
+
+    private void decryptOriginalFilename(String passphrase) {
+        Log.d(Constants.TAG, "decryptOriginalFilename");
+
+        Intent intent = new Intent(getActivity(), KeychainIntentService.class);
+
+        // fill values for this action
+        Bundle data = new Bundle();
+        intent.setAction(KeychainIntentService.ACTION_DECRYPT_METADATA);
+
+        // data
+        Log.d(Constants.TAG, "mInputUri=" + mInputUri + ", mOutputUri=" + mOutputUri);
+
+        data.putInt(KeychainIntentService.SOURCE, KeychainIntentService.IO_URI);
+        data.putParcelable(KeychainIntentService.ENCRYPT_INPUT_URI, mInputUri);
+
+        data.putInt(KeychainIntentService.TARGET, KeychainIntentService.IO_URI);
+        data.putParcelable(KeychainIntentService.ENCRYPT_OUTPUT_URI, mOutputUri);
+
+        data.putString(KeychainIntentService.DECRYPT_PASSPHRASE, passphrase);
+
+        intent.putExtra(KeychainIntentService.EXTRA_DATA, data);
+
+        // Message is received after decrypting is done in KeychainIntentService
+        KeychainIntentServiceHandler saveHandler = new KeychainIntentServiceHandler(getActivity(),
+                getString(R.string.progress_decrypting), ProgressDialog.STYLE_HORIZONTAL) {
+            public void handleMessage(Message message) {
+                // handle messages by standard KeychainIntentServiceHandler first
+                super.handleMessage(message);
+
+                if (message.arg1 == KeychainIntentServiceHandler.MESSAGE_OKAY) {
+                    // get returned data bundle
+                    Bundle returnData = message.getData();
+
+                    PgpDecryptVerifyResult decryptVerifyResult =
+                            returnData.getParcelable(KeychainIntentService.RESULT_DECRYPT_VERIFY_RESULT);
+
+                    if (PgpDecryptVerifyResult.KEY_PASSHRASE_NEEDED == decryptVerifyResult.getStatus()) {
+                        showPassphraseDialogForFilename(decryptVerifyResult.getKeyIdPassphraseNeeded());
+                    } else if (PgpDecryptVerifyResult.SYMMETRIC_PASSHRASE_NEEDED ==
+                            decryptVerifyResult.getStatus()) {
+                        showPassphraseDialogForFilename(Constants.key.symmetric);
+                    } else {
+
+                        // go on...
+                        askForOutputFilename(decryptVerifyResult.getDecryptMetadata().getFilename());
+                    }
+                }
+            }
+        };
+
+        // Create a new Messenger for the communication back
+        Messenger messenger = new Messenger(saveHandler);
+        intent.putExtra(KeychainIntentService.EXTRA_MESSENGER, messenger);
+
+        // show progress dialog
+        saveHandler.showProgressDialog(getActivity());
+
+        // start service with intent
+        getActivity().startService(intent);
+    }
+
+    protected void showPassphraseDialogForFilename(long keyId) {
+        PassphraseDialogFragment.show(getActivity(), keyId,
+                new Handler() {
+                    @Override
+                    public void handleMessage(Message message) {
+                        if (message.what == PassphraseDialogFragment.MESSAGE_OKAY) {
+                            String passphrase =
+                                    message.getData().getString(PassphraseDialogFragment.MESSAGE_DATA_PASSPHRASE);
+                            decryptOriginalFilename(passphrase);
+                        }
+                    }
+                }
+        );
     }
 
     @Override
@@ -161,7 +246,7 @@ public class DecryptFileFragment extends DecryptFragment {
 
         intent.putExtra(KeychainIntentService.EXTRA_DATA, data);
 
-        // Message is received after encrypting is done in KeychainIntentService
+        // Message is received after decrypting is done in KeychainIntentService
         KeychainIntentServiceHandler saveHandler = new KeychainIntentServiceHandler(getActivity(),
                 getString(R.string.progress_decrypting), ProgressDialog.STYLE_HORIZONTAL) {
             public void handleMessage(Message message) {
@@ -178,7 +263,7 @@ public class DecryptFileFragment extends DecryptFragment {
                     if (PgpDecryptVerifyResult.KEY_PASSHRASE_NEEDED == decryptVerifyResult.getStatus()) {
                         showPassphraseDialog(decryptVerifyResult.getKeyIdPassphraseNeeded());
                     } else if (PgpDecryptVerifyResult.SYMMETRIC_PASSHRASE_NEEDED ==
-                                    decryptVerifyResult.getStatus()) {
+                            decryptVerifyResult.getStatus()) {
                         showPassphraseDialog(Constants.key.symmetric);
                     } else {
                         // display signature result in activity
