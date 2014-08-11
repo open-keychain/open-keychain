@@ -507,7 +507,10 @@ public class OpenPgpService extends RemoteService {
         }
 
         // version code is required and needs to correspond to version code of service!
-        if (data.getIntExtra(OpenPgpApi.EXTRA_API_VERSION, -1) != OpenPgpApi.API_VERSION) {
+        // History of versions in org.openintents.openpgp.util.OpenPgpApi
+        // we support 3 and 4
+        if (data.getIntExtra(OpenPgpApi.EXTRA_API_VERSION, -1) != 3
+                || data.getIntExtra(OpenPgpApi.EXTRA_API_VERSION, -1) != 4) {
             Intent result = new Intent();
             OpenPgpError error = new OpenPgpError
                     (OpenPgpError.INCOMPATIBLE_API_VERSIONS, "Incompatible API versions!");
