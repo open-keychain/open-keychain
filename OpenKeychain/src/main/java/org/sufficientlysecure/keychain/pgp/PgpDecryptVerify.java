@@ -71,7 +71,7 @@ public class PgpDecryptVerify {
     private boolean mAllowSymmetricDecryption;
     private String mPassphrase;
     private Set<Long> mAllowedKeyIds;
-    private boolean mReturnMetadataOnly;
+    private boolean mDecryptMetadataOnly;
 
     private PgpDecryptVerify(Builder builder) {
         // private Constructor can only be called from Builder
@@ -84,7 +84,7 @@ public class PgpDecryptVerify {
         this.mAllowSymmetricDecryption = builder.mAllowSymmetricDecryption;
         this.mPassphrase = builder.mPassphrase;
         this.mAllowedKeyIds = builder.mAllowedKeyIds;
-        this.mReturnMetadataOnly = builder.mReturnMetadataOnly;
+        this.mDecryptMetadataOnly = builder.mDecryptMetadataOnly;
     }
 
     public static class Builder {
@@ -99,7 +99,7 @@ public class PgpDecryptVerify {
         private boolean mAllowSymmetricDecryption = true;
         private String mPassphrase = null;
         private Set<Long> mAllowedKeyIds = null;
-        private boolean mReturnMetadataOnly = false;
+        private boolean mDecryptMetadataOnly = false;
 
         public Builder(ProviderHelper providerHelper, PassphraseCache passphraseCache,
                        InputData data, OutputStream outStream) {
@@ -137,8 +137,8 @@ public class PgpDecryptVerify {
          * If enabled, the actual decryption/verification of the content will not be executed.
          * The metadata only will be decrypted and returned.
          */
-        public Builder setReturnMetadataOnly(boolean returnMetadataOnly) {
-            mReturnMetadataOnly = returnMetadataOnly;
+        public Builder setDecryptMetadataOnly(boolean decryptMetadataOnly) {
+            mDecryptMetadataOnly = decryptMetadataOnly;
             return this;
         }
 
@@ -470,7 +470,7 @@ public class PgpDecryptVerify {
             Log.d(Constants.TAG, "metadata: " + metadata);
 
             // return here if we want to decrypt the metadata only
-            if (mReturnMetadataOnly) {
+            if (mDecryptMetadataOnly) {
                 return result;
             }
 
