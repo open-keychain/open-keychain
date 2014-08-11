@@ -72,6 +72,7 @@ public class PgpSignEncrypt {
     private String mSignaturePassphrase;
     private boolean mEncryptToSigner;
     private boolean mCleartextInput;
+    private String mOriginalFilename;
 
     private static byte[] NEW_LINE;
 
@@ -102,6 +103,7 @@ public class PgpSignEncrypt {
         this.mSignaturePassphrase = builder.mSignaturePassphrase;
         this.mEncryptToSigner = builder.mEncryptToSigner;
         this.mCleartextInput = builder.mCleartextInput;
+        this.mOriginalFilename = builder.mOriginalFilename;
     }
 
     public static class Builder {
@@ -124,12 +126,13 @@ public class PgpSignEncrypt {
         private String mSignaturePassphrase = null;
         private boolean mEncryptToSigner = false;
         private boolean mCleartextInput = false;
+        private String mOriginalFilename = "";
 
         public Builder(ProviderHelper providerHelper, String versionHeader, InputData data, OutputStream outStream) {
-            this.mProviderHelper = providerHelper;
-            this.mVersionHeader = versionHeader;
-            this.mData = data;
-            this.mOutStream = outStream;
+            mProviderHelper = providerHelper;
+            mVersionHeader = versionHeader;
+            mData = data;
+            mOutStream = outStream;
         }
 
         public Builder setProgressable(Progressable progressable) {
@@ -148,12 +151,12 @@ public class PgpSignEncrypt {
         }
 
         public Builder setEncryptionMasterKeyIds(long[] encryptionMasterKeyIds) {
-            this.mEncryptionMasterKeyIds = encryptionMasterKeyIds;
+            mEncryptionMasterKeyIds = encryptionMasterKeyIds;
             return this;
         }
 
         public Builder setSymmetricPassphrase(String symmetricPassphrase) {
-            this.mSymmetricPassphrase = symmetricPassphrase;
+            mSymmetricPassphrase = symmetricPassphrase;
             return this;
         }
 
@@ -183,11 +186,13 @@ public class PgpSignEncrypt {
         }
 
         /**
+         * Also encrypt with the signing keyring
+         *
          * @param encryptToSigner
          * @return
          */
         public Builder setEncryptToSigner(boolean encryptToSigner) {
-            this.mEncryptToSigner = encryptToSigner;
+            mEncryptToSigner = encryptToSigner;
             return this;
         }
 
@@ -198,7 +203,12 @@ public class PgpSignEncrypt {
          * @return
          */
         public Builder setCleartextInput(boolean cleartextInput) {
-            this.mCleartextInput = cleartextInput;
+            mCleartextInput = cleartextInput;
+            return this;
+        }
+
+        public Builder setOriginalFilename(String originalFilename) {
+            mOriginalFilename = originalFilename;
             return this;
         }
 
@@ -380,8 +390,7 @@ public class PgpSignEncrypt {
             }
 
             PGPLiteralDataGenerator literalGen = new PGPLiteralDataGenerator();
-            // file name not needed, so empty string
-            pOut = literalGen.open(bcpgOut, PGPLiteralData.BINARY, "", new Date(),
+            pOut = literalGen.open(bcpgOut, PGPLiteralData.BINARY, mOriginalFilename, new Date(),
                     new byte[1 << 16]);
 
             long alreadyWritten = 0;
@@ -472,8 +481,7 @@ public class PgpSignEncrypt {
             }
 
             PGPLiteralDataGenerator literalGen = new PGPLiteralDataGenerator();
-            // file name not needed, so empty string
-            pOut = literalGen.open(bcpgOut, PGPLiteralData.BINARY, "", new Date(),
+            pOut = literalGen.open(bcpgOut, PGPLiteralData.BINARY, mOriginalFilename, new Date(),
                     new byte[1 << 16]);
 
             long alreadyWritten = 0;
