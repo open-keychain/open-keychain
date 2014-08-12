@@ -145,24 +145,17 @@ public class EncryptAsymmetricFragment extends Fragment implements EncryptActivi
                         KeyRings.MASTER_KEY_ID,
                         KeyRings.KEY_ID,
                         KeyRings.USER_ID,
-                        KeyRings.EXPIRY,
-                        KeyRings.IS_REVOKED,
-                        // can certify info only related to master key
-                        KeyRings.CAN_CERTIFY,
-                        // has sign may be any subkey
+                        KeyRings.IS_EXPIRED,
                         KeyRings.HAS_SIGN,
-                        KeyRings.HAS_ANY_SECRET,
-                        KeyRings.HAS_SECRET
+                        KeyRings.HAS_ANY_SECRET
                 };
 
-                String where = KeyRings.HAS_ANY_SECRET + " = 1";
+                String where = KeyRings.HAS_ANY_SECRET + " = 1 AND " + KeyRings.HAS_SIGN + " NOT NULL AND "
+                        + KeyRings.IS_REVOKED + " = 0 AND " + KeyRings.IS_EXPIRED + " = 0";
 
                 // Now create and return a CursorLoader that will take care of
                 // creating a Cursor for the data being displayed.
                 return new CursorLoader(getActivity(), baseUri, projection, where, null, null);
-                /*return new CursorLoader(getActivity(), KeyRings.buildUnifiedKeyRingsUri(),
-                        new String[]{KeyRings.USER_ID, KeyRings.KEY_ID, KeyRings.MASTER_KEY_ID, KeyRings.HAS_ANY_SECRET}, SIGN_KEY_SELECTION,
-                        null, null);*/
             }
 
             @Override
