@@ -22,6 +22,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Rect;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.LoaderManager;
@@ -45,7 +46,7 @@ import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
-import org.sufficientlysecure.keychain.provider.KeychainContract;
+import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.util.Log;
 
 import java.util.ArrayList;
@@ -113,9 +114,23 @@ public class EncryptKeyCompletionView extends TokenCompleteTextView {
             ((FragmentActivity) getContext()).getSupportLoaderManager().initLoader(0, null, new LoaderManager.LoaderCallbacks<Cursor>() {
                 @Override
                 public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-                    return new CursorLoader(getContext(), KeychainContract.KeyRings.buildUnifiedKeyRingsUri(),
-                            new String[]{KeychainContract.KeyRings.HAS_ENCRYPT, KeychainContract.KeyRings.KEY_ID, KeychainContract.KeyRings.USER_ID, KeychainContract.KeyRings.FINGERPRINT},
-                            null, null, null);
+                    // These are the rows that we will retrieve.
+                    Uri baseUri = KeyRings.buildUnifiedKeyRingsUri();
+
+                    String[] projection = new String[]{
+                            KeyRings._ID,
+                            KeyRings.MASTER_KEY_ID,
+                            KeyRings.KEY_ID,
+                            KeyRings.USER_ID,
+                            KeyRings.FINGERPRINT,
+                            KeyRings.IS_EXPIRED,
+                            KeyRings.HAS_ENCRYPT
+                    };
+
+                    String where = KeyRings.HAS_ENCRYPT + " NOT NULL AND " + KeyRings.IS_EXPIRED + " = 0 AND "
+                            + KeyRings.IS_REVOKED + " = 0";
+
+                    return new CursorLoader(getContext(), baseUri, projection, where, null, null);
                 }
 
                 @Override
@@ -148,10 +163,8 @@ public class EncryptKeyCompletionView extends TokenCompleteTextView {
         ArrayList<EncryptionKey> keys = new ArrayList<EncryptionKey>();
         while (cursor.moveToNext()) {
             try {
-                if (cursor.getInt(cursor.getColumnIndexOrThrow(KeychainContract.KeyRings.HAS_ENCRYPT)) != 0) {
-                    EncryptionKey key = new EncryptionKey(cursor);
-                    keys.add(key);
-                }
+                EncryptionKey key = new EncryptionKey(cursor);
+                keys.add(key);
             } catch (Exception e) {
                 Log.w(Constants.TAG, e);
                 return;
@@ -174,10 +187,10 @@ public class EncryptKeyCompletionView extends TokenCompleteTextView {
         }
 
         public EncryptionKey(Cursor cursor) {
-            this(cursor.getString(cursor.getColumnIndexOrThrow(KeychainContract.KeyRings.USER_ID)),
-                    cursor.getLong(cursor.getColumnIndexOrThrow(KeychainContract.KeyRings.KEY_ID)),
+            this(cursor.getString(cursor.getColumnIndexOrThrow(KeyRings.USER_ID)),
+                    cursor.getLong(cursor.getColumnIndexOrThrow(KeyRings.KEY_ID)),
                     PgpKeyHelper.convertFingerprintToHex(
-                            cursor.getBlob(cursor.getColumnIndexOrThrow(KeychainContract.KeyRings.FINGERPRINT))));
+                            cursor.getBlob(cursor.getColumnIndexOrThrow(KeyRings.FINGERPRINT))));
 
         }
 

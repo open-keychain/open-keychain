@@ -145,12 +145,13 @@ public class EncryptAsymmetricFragment extends Fragment implements EncryptActivi
                         KeyRings.MASTER_KEY_ID,
                         KeyRings.KEY_ID,
                         KeyRings.USER_ID,
-                        // has sign may be any subkey
+                        KeyRings.IS_EXPIRED,
                         KeyRings.HAS_SIGN,
                         KeyRings.HAS_ANY_SECRET
                 };
 
-                String where = KeyRings.HAS_ANY_SECRET + " = 1 AND " + KeyRings.HAS_SIGN + " NOT NULL";
+                String where = KeyRings.HAS_ANY_SECRET + " = 1 AND " + KeyRings.HAS_SIGN + " NOT NULL AND "
+                        + KeyRings.IS_REVOKED + " = 0 AND " + KeyRings.IS_EXPIRED + " = 0";
 
                 // Now create and return a CursorLoader that will take care of
                 // creating a Cursor for the data being displayed.
