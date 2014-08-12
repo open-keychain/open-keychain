@@ -213,6 +213,7 @@ public class OpenPgpService extends RemoteService {
             result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_SUCCESS);
             return result;
         } catch (Exception e) {
+            Log.d(Constants.TAG, "signImpl", e);
             Intent result = new Intent();
             result.putExtra(OpenPgpApi.RESULT_ERROR,
                     new OpenPgpError(OpenPgpError.GENERIC_ERROR, e.getMessage()));
@@ -323,6 +324,7 @@ public class OpenPgpService extends RemoteService {
             result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_SUCCESS);
             return result;
         } catch (Exception e) {
+            Log.d(Constants.TAG, "encryptAndSignImpl", e);
             Intent result = new Intent();
             result.putExtra(OpenPgpApi.RESULT_ERROR,
                     new OpenPgpError(OpenPgpError.GENERIC_ERROR, e.getMessage()));
@@ -337,7 +339,13 @@ public class OpenPgpService extends RemoteService {
         try {
             // Get Input- and OutputStream from ParcelFileDescriptor
             InputStream is = new ParcelFileDescriptor.AutoCloseInputStream(input);
-            OutputStream os = new ParcelFileDescriptor.AutoCloseOutputStream(output);
+
+            OutputStream os;
+            if (decryptMetadataOnly) {
+                os = null;
+            } else {
+                os = new ParcelFileDescriptor.AutoCloseOutputStream(output);
+            }
 
             Intent result = new Intent();
             try {
@@ -357,10 +365,12 @@ public class OpenPgpService extends RemoteService {
                         },
                         inputData, os
                 );
-                builder.setAllowSymmetricDecryption(false) // no support for symmetric encryption
-                        .setAllowedKeyIds(allowedKeyIds) // allow only private keys associated with
-                                // accounts of this app
-                        .setPassphrase(passphrase)
+
+                // allow only private keys associated with accounts of this app
+                // no support for symmetric encryption
+                builder.setPassphrase(passphrase)
+                        .setAllowSymmetricDecryption(false)
+                        .setAllowedKeyIds(allowedKeyIds)
                         .setDecryptMetadataOnly(decryptMetadataOnly);
 
                 PgpDecryptVerifyResult decryptVerifyResult;
@@ -386,8 +396,7 @@ public class OpenPgpService extends RemoteService {
                     Intent passphraseBundle =
                             getPassphraseBundleIntent(data, decryptVerifyResult.getKeyIdPassphraseNeeded());
                     return passphraseBundle;
-                } else if (PgpDecryptVerifyResult.SYMMETRIC_PASSHRASE_NEEDED ==
-                        decryptVerifyResult.getStatus()) {
+                } else if (PgpDecryptVerifyResult.SYMMETRIC_PASSHRASE_NEEDED == decryptVerifyResult.getStatus()) {
                     throw new PgpGeneralException("Decryption of symmetric content not supported by API!");
                 }
 
@@ -418,12 +427,15 @@ public class OpenPgpService extends RemoteService {
 
             } finally {
                 is.close();
-                os.close();
+                if (os != null) {
+                    os.close();
+                }
             }
 
             result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_SUCCESS);
             return result;
         } catch (Exception e) {
+            Log.d(Constants.TAG, "decryptAndVerifyImpl", e);
             Intent result = new Intent();
             result.putExtra(OpenPgpApi.RESULT_ERROR,
                     new OpenPgpError(OpenPgpError.GENERIC_ERROR, e.getMessage()));
@@ -473,6 +485,7 @@ public class OpenPgpService extends RemoteService {
                 return result;
             }
         } catch (Exception e) {
+            Log.d(Constants.TAG, "getKeyImpl", e);
             Intent result = new Intent();
             result.putExtra(OpenPgpApi.RESULT_ERROR,
                     new OpenPgpError(OpenPgpError.GENERIC_ERROR, e.getMessage()));
@@ -493,7 +506,6 @@ public class OpenPgpService extends RemoteService {
             return result;
         } else {
             // get key ids based on given user ids
-
             String[] userIds = data.getStringArrayExtra(OpenPgpApi.EXTRA_USER_IDS);
             Intent result = getKeyIdsFromEmails(data, userIds);
             return result;
