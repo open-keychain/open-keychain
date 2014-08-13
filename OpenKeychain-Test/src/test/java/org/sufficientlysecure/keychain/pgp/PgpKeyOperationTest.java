@@ -17,8 +17,8 @@ import org.spongycastle.bcpg.SignaturePacket;
 import org.spongycastle.bcpg.UserIDPacket;
 import org.spongycastle.bcpg.sig.KeyFlags;
 import org.spongycastle.openpgp.PGPSignature;
+import org.spongycastle.bcpg.PublicKeyAlgorithmTags;
 import org.sufficientlysecure.keychain.Constants;
-import org.sufficientlysecure.keychain.Constants.choice.algorithm;
 import org.sufficientlysecure.keychain.service.OperationResultParcel.OperationLog;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel.SubkeyAdd;
@@ -67,11 +67,11 @@ public class PgpKeyOperationTest {
 
         SaveKeyringParcel parcel = new SaveKeyringParcel();
         parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
-                Constants.choice.algorithm.rsa, 1024, KeyFlags.CERTIFY_OTHER, null));
+                , 1024, KeyFlags.CERTIFY_OTHER, null));
         parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
-                Constants.choice.algorithm.rsa, 1024, KeyFlags.SIGN_DATA, null));
+                PublicKeyAlgorithmTags.RSA_GENERAL, 1024, KeyFlags.SIGN_DATA, null));
         parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
-                Constants.choice.algorithm.rsa, 1024, KeyFlags.ENCRYPT_COMMS, null));
+                PublicKeyAlgorithmTags.RSA_GENERAL, 1024, KeyFlags.ENCRYPT_COMMS, null));
 
         parcel.mAddUserIds.add("twi");
         parcel.mAddUserIds.add("pink");
@@ -107,7 +107,7 @@ public class PgpKeyOperationTest {
         {
             parcel.reset();
             parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
-                    Constants.choice.algorithm.rsa, new Random().nextInt(256)+255, KeyFlags.CERTIFY_OTHER, null));
+                    PublicKeyAlgorithmTags.RSA_GENERAL, new Random().nextInt(256)+255, KeyFlags.CERTIFY_OTHER, null));
             parcel.mAddUserIds.add("shy");
             parcel.mNewPassphrase = passphrase;
 
@@ -119,7 +119,7 @@ public class PgpKeyOperationTest {
         {
             parcel.reset();
             parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
-                    Constants.choice.algorithm.elgamal, 1024, KeyFlags.CERTIFY_OTHER, null));
+                    PublicKeyAlgorithmTags.ELGAMAL_ENCRYPT, 1024, KeyFlags.CERTIFY_OTHER, null));
             parcel.mAddUserIds.add("shy");
             parcel.mNewPassphrase = passphrase;
 
@@ -142,7 +142,7 @@ public class PgpKeyOperationTest {
         {
             parcel.reset();
             parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
-                    Constants.choice.algorithm.rsa, 1024, KeyFlags.SIGN_DATA, null));
+                    PublicKeyAlgorithmTags.RSA_GENERAL, 1024, KeyFlags.SIGN_DATA, null));
             parcel.mAddUserIds.add("shy");
             parcel.mNewPassphrase = passphrase;
 
@@ -153,7 +153,7 @@ public class PgpKeyOperationTest {
         {
             parcel.reset();
             parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
-                    Constants.choice.algorithm.rsa, 1024, KeyFlags.CERTIFY_OTHER, null));
+                    PublicKeyAlgorithmTags.RSA_GENERAL, 1024, KeyFlags.CERTIFY_OTHER, null));
             parcel.mNewPassphrase = passphrase;
 
             UncachedKeyRing ring = op.createSecretKeyRing(parcel).getRing();
@@ -177,7 +177,7 @@ public class PgpKeyOperationTest {
     public void testMasterFlags() throws Exception {
         SaveKeyringParcel parcel = new SaveKeyringParcel();
         parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
-                Constants.choice.algorithm.rsa, 1024, KeyFlags.CERTIFY_OTHER | KeyFlags.SIGN_DATA, null));
+                PublicKeyAlgorithmTags.RSA_GENERAL, 1024, KeyFlags.CERTIFY_OTHER | KeyFlags.SIGN_DATA, null));
         parcel.mAddUserIds.add("luna");
         ring = op.createSecretKeyRing(parcel).getRing();
 

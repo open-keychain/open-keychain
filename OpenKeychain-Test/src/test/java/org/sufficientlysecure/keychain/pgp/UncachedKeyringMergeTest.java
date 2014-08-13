@@ -9,6 +9,7 @@ import org.robolectric.RobolectricTestRunner;
 import org.robolectric.shadows.ShadowLog;
 import org.spongycastle.bcpg.PacketTags;
 import org.spongycastle.bcpg.sig.KeyFlags;
+import org.spongycastle.bcpg.PublicKeyAlgorithmTags;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.service.OperationResultParcel;
 import org.sufficientlysecure.keychain.service.OperationResults.EditKeyResult;
@@ -63,9 +64,9 @@ public class UncachedKeyringMergeTest {
         {
             SaveKeyringParcel parcel = new SaveKeyringParcel();
             parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
-                    Constants.choice.algorithm.rsa, 1024, KeyFlags.CERTIFY_OTHER, null));
+                    PublicKeyAlgorithmTags.RSA_GENERAL, 1024, KeyFlags.CERTIFY_OTHER, null));
             parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
-                    Constants.choice.algorithm.rsa, 1024, KeyFlags.SIGN_DATA, null));
+                    PublicKeyAlgorithmTags.RSA_GENERAL, 1024, KeyFlags.SIGN_DATA, null));
 
             parcel.mAddUserIds.add("twi");
             parcel.mAddUserIds.add("pink");
@@ -82,7 +83,7 @@ public class UncachedKeyringMergeTest {
         {
             SaveKeyringParcel parcel = new SaveKeyringParcel();
             parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
-                    Constants.choice.algorithm.rsa, 1024, KeyFlags.CERTIFY_OTHER, null));
+                    PublicKeyAlgorithmTags.RSA_GENERAL, 1024, KeyFlags.CERTIFY_OTHER, null));
 
             parcel.mAddUserIds.add("shy");
             // passphrase is tested in PgpKeyOperationTest, just use empty here
@@ -188,7 +189,7 @@ public class UncachedKeyringMergeTest {
 
             parcel.reset();
             parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
-                    Constants.choice.algorithm.rsa, 1024, KeyFlags.SIGN_DATA, null));
+                    PublicKeyAlgorithmTags.RSA_GENERAL, 1024, KeyFlags.SIGN_DATA, null));
             modifiedA = op.modifySecretKeyRing(secretRing, parcel, "").getRing();
             modifiedB = op.modifySecretKeyRing(secretRing, parcel, "").getRing();
 
