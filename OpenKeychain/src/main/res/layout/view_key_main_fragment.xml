@@ -28,11 +28,13 @@
             android:layout_marginBottom="4dp"
             android:layout_weight="1" />
 
-        <View
-            android:id="@+id/view_key_action_certify_divider"
-            android:layout_width="match_parent"
-            android:layout_height="1dip"
-            android:background="?android:attr/listDivider" />
+        <TextView
+            style="@style/SectionHeader"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:layout_marginTop="14dp"
+            android:text="@string/section_actions"
+            android:layout_weight="1" />
 
         <LinearLayout
             android:id="@+id/view_key_action_certify"
@@ -63,13 +65,11 @@
 
         </LinearLayout>
 
-        <TextView
-            style="@style/SectionHeader"
-            android:layout_width="wrap_content"
-            android:layout_height="0dp"
-            android:layout_marginTop="14dp"
-            android:text="@string/section_actions"
-            android:layout_weight="1" />
+        <View
+            android:id="@+id/view_key_action_certify_divider"
+            android:layout_width="match_parent"
+            android:layout_height="1dip"
+            android:background="?android:attr/listDivider" />
 
         <TextView
             android:id="@+id/view_key_action_edit"
