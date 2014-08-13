@@ -67,7 +67,7 @@ public class PgpKeyOperationTest {
 
         SaveKeyringParcel parcel = new SaveKeyringParcel();
         parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
-                , 1024, KeyFlags.CERTIFY_OTHER, null));
+                PublicKeyAlgorithmTags.RSA_GENERAL, 1024, KeyFlags.CERTIFY_OTHER, null));
         parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
                 PublicKeyAlgorithmTags.RSA_GENERAL, 1024, KeyFlags.SIGN_DATA, null));
         parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
