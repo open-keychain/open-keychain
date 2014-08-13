@@ -300,7 +300,7 @@ public class PgpKeyOperationTest {
         long expiry = new Date().getTime() / 1000 + 159;
         int flags = KeyFlags.SIGN_DATA;
         int bits = 1024 + new Random().nextInt(8);
-        parcel.mAddSubKeys.add(new SubkeyAdd(algorithm.rsa, bits, flags, expiry));
+        parcel.mAddSubKeys.add(new SubkeyAdd(PublicKeyAlgorithmTags.RSA_GENERAL, bits, flags, expiry));
 
         UncachedKeyRing modified = applyModificationWithChecks(parcel, ring, onlyA, onlyB);
 
@@ -341,7 +341,7 @@ public class PgpKeyOperationTest {
         { // bad keysize should fail
             parcel.reset();
             parcel.mAddSubKeys.add(new SubkeyAdd(
-                    algorithm.rsa, new Random().nextInt(512), KeyFlags.SIGN_DATA, null));
+                    PublicKeyAlgorithmTags.RSA_GENERAL, new Random().nextInt(512), KeyFlags.SIGN_DATA, null));
 
             CanonicalizedSecretKeyRing secretRing = new CanonicalizedSecretKeyRing(ring.getEncoded(), false, 0);
             modified = op.modifySecretKeyRing(secretRing, parcel, passphrase).getRing();
@@ -351,7 +351,7 @@ public class PgpKeyOperationTest {
 
         { // a past expiry should fail
             parcel.reset();
-            parcel.mAddSubKeys.add(new SubkeyAdd(algorithm.rsa, 1024, KeyFlags.SIGN_DATA,
+            parcel.mAddSubKeys.add(new SubkeyAdd(PublicKeyAlgorithmTags.RSA_GENERAL, 1024, KeyFlags.SIGN_DATA,
                     new Date().getTime()/1000-10));
 
             CanonicalizedSecretKeyRing secretRing = new CanonicalizedSecretKeyRing(ring.getEncoded(), false, 0);
