@@ -83,8 +83,6 @@ public class EncryptActivity extends DrawerActivity implements EncryptActivityIn
     // tabs
     Bundle mAsymmetricFragmentBundle = new Bundle();
     Bundle mSymmetricFragmentBundle = new Bundle();
-    Bundle mMessageFragmentBundle = new Bundle();
-    Bundle mFileFragmentBundle = new Bundle();
     int mSwitchToMode = PAGER_MODE_ASYMMETRIC;
     int mSwitchToContent = PAGER_CONTENT_MESSAGE;
 
@@ -509,10 +507,8 @@ public class EncryptActivity extends DrawerActivity implements EncryptActivityIn
                 mSymmetricFragmentBundle, getString(R.string.label_symmetric));
         mViewPagerMode.setCurrentItem(mSwitchToMode);
 
-        mTabsAdapterContent.addTab(EncryptMessageFragment.class,
-                mMessageFragmentBundle, getString(R.string.label_message));
-        mTabsAdapterContent.addTab(EncryptFileFragment.class,
-                mFileFragmentBundle, getString(R.string.label_files));
+        mTabsAdapterContent.addTab(EncryptMessageFragment.class, null, getString(R.string.label_message));
+        mTabsAdapterContent.addTab(EncryptFileFragment.class, null, getString(R.string.label_files));
         mViewPagerContent.setCurrentItem(mSwitchToContent);
 
         mUseArmor = Preferences.getPreferences(this).getDefaultAsciiArmor();
@@ -619,11 +615,11 @@ public class EncryptActivity extends DrawerActivity implements EncryptActivityIn
          */
         if (ACTION_ENCRYPT.equals(action) && textData != null) {
             // encrypt text based on given extra
-            mMessageFragmentBundle.putString(EncryptMessageFragment.ARG_TEXT, textData);
+            mMessage = textData;
             mSwitchToContent = PAGER_CONTENT_MESSAGE;
         } else if (ACTION_ENCRYPT.equals(action) && uris != null && !uris.isEmpty()) {
             // encrypt file based on Uri
-            mFileFragmentBundle.putParcelableArrayList(EncryptFileFragment.ARG_URIS, uris);
+            mInputUris = uris;
             mSwitchToContent = PAGER_CONTENT_FILE;
         } else if (ACTION_ENCRYPT.equals(action)) {
             Log.e(Constants.TAG,
