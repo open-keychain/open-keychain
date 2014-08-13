@@ -46,6 +46,7 @@ import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
+import org.sufficientlysecure.keychain.service.PassphraseCacheService;
 import org.sufficientlysecure.keychain.util.InputData;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.ProgressScaler;
@@ -163,7 +164,8 @@ public class PgpDecryptVerify {
     }
 
     public interface PassphraseCache {
-        public String getCachedPassphrase(long masterKeyId);
+        public String getCachedPassphrase(long masterKeyId)
+                throws NoSecretKeyException;
     }
 
     public static class InvalidDataException extends Exception {

@@ -168,8 +168,7 @@ public class OpenPgpService extends RemoteService {
             }
             if (passphrase == null) {
                 // get PendingIntent for passphrase input, add it to given params and return to client
-                Intent passphraseBundle = getPassphraseBundleIntent(data, accSettings.getKeyId());
-                return passphraseBundle;
+                return getPassphraseBundleIntent(data, accSettings.getKeyId());
             }
 
             // Get Input- and OutputStream from ParcelFileDescriptor
@@ -289,8 +288,7 @@ public class OpenPgpService extends RemoteService {
                     }
                     if (passphrase == null) {
                         // get PendingIntent for passphrase input, add it to given params and return to client
-                        Intent passphraseBundle = getPassphraseBundleIntent(data, accSettings.getKeyId());
-                        return passphraseBundle;
+                        return getPassphraseBundleIntent(data, accSettings.getKeyId());
                     }
 
                     // sign and encrypt
@@ -358,9 +356,13 @@ public class OpenPgpService extends RemoteService {
                         new ProviderHelper(this),
                         new PgpDecryptVerify.PassphraseCache() {
                             @Override
-                            public String getCachedPassphrase(long masterKeyId) {
-                                return PassphraseCacheService.getCachedPassphrase(
-                                        OpenPgpService.this, masterKeyId);
+                            public String getCachedPassphrase(long masterKeyId) throws PgpDecryptVerify.NoSecretKeyException {
+                                try {
+                                    return PassphraseCacheService.getCachedPassphrase(
+                                            OpenPgpService.this, masterKeyId);
+                                } catch (PassphraseCacheService.KeyNotFoundException e) {
+                                    throw new PgpDecryptVerify.NoSecretKeyException();
+                                }
                             }
                         },
                         inputData, os

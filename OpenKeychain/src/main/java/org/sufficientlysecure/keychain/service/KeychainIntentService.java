@@ -307,9 +307,13 @@ public class KeychainIntentService extends IntentService
                         new ProviderHelper(this),
                         new PgpDecryptVerify.PassphraseCache() {
                             @Override
-                            public String getCachedPassphrase(long masterKeyId) {
-                                return PassphraseCacheService.getCachedPassphrase(
-                                        KeychainIntentService.this, masterKeyId);
+                            public String getCachedPassphrase(long masterKeyId) throws PgpDecryptVerify.NoSecretKeyException {
+                                try {
+                                    return PassphraseCacheService.getCachedPassphrase(
+                                            KeychainIntentService.this, masterKeyId);
+                                } catch (PassphraseCacheService.KeyNotFoundException e) {
+                                    throw new PgpDecryptVerify.NoSecretKeyException();
+                                }
                             }
                         },
                         inputData, outStream
@@ -351,9 +355,13 @@ public class KeychainIntentService extends IntentService
                         new ProviderHelper(this),
                         new PgpDecryptVerify.PassphraseCache() {
                             @Override
-                            public String getCachedPassphrase(long masterKeyId) {
-                                return PassphraseCacheService.getCachedPassphrase(
-                                        KeychainIntentService.this, masterKeyId);
+                            public String getCachedPassphrase(long masterKeyId) throws PgpDecryptVerify.NoSecretKeyException {
+                                try {
+                                    return PassphraseCacheService.getCachedPassphrase(
+                                            KeychainIntentService.this, masterKeyId);
+                                } catch (PassphraseCacheService.KeyNotFoundException e) {
+                                    throw new PgpDecryptVerify.NoSecretKeyException();
+                                }
                             }
                         },
                         inputData, null

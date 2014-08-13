@@ -76,11 +76,23 @@ public class PassphraseCacheService extends Service {
 
     private static final int NOTIFICATION_ID = 1;
 
+    private static final int MSG_PASSPHRASE_CACHE_GET_OKAY = 1;
+    private static final int MSG_PASSPHRASE_CACHE_GET_KEY_NO_FOUND = 2;
+
     private BroadcastReceiver mIntentReceiver;
 
     private LongSparseArray<CachedPassphrase> mPassphraseCache = new LongSparseArray<CachedPassphrase>();
 
     Context mContext;
+
+    public static class KeyNotFoundException extends Exception {
+        public KeyNotFoundException() {
+        }
+
+        public KeyNotFoundException(String name) {
+            super(name);
+        }
+    }
 
     /**
      * This caches a new passphrase in memory by sending a new command to the service. An android
@@ -114,24 +126,23 @@ public class PassphraseCacheService extends Service {
      * @param keyId
      * @return passphrase or null (if no passphrase is cached for this keyId)
      */
-    public static String getCachedPassphrase(Context context, long keyId) {
+    public static String getCachedPassphrase(Context context, long keyId) throws KeyNotFoundException {
         Log.d(Constants.TAG, "PassphraseCacheService.getCachedPassphrase() get masterKeyId for " + keyId);
 
         Intent intent = new Intent(context, PassphraseCacheService.class);
         intent.setAction(ACTION_PASSPHRASE_CACHE_GET);
 
         final Object mutex = new Object();
-        final Bundle returnBundle = new Bundle();
+        final Message returnMessage = Message.obtain();
 
         HandlerThread handlerThread = new HandlerThread("getPassphraseThread");
         handlerThread.start();
         Handler returnHandler = new Handler(handlerThread.getLooper()) {
             @Override
             public void handleMessage(Message message) {
-                if (message.obj != null) {
-                    String passphrase = ((Bundle) message.obj).getString(EXTRA_PASSPHRASE);
-                    returnBundle.putString(EXTRA_PASSPHRASE, passphrase);
-                }
+                // copy over result to handle after mutex.wait
+                returnMessage.what = message.what;
+                returnMessage.copyFrom(message);
                 synchronized (mutex) {
                     mutex.notify();
                 }
@@ -155,10 +166,13 @@ public class PassphraseCacheService extends Service {
             }
         }
 
-        if (returnBundle.containsKey(EXTRA_PASSPHRASE)) {
-            return returnBundle.getString(EXTRA_PASSPHRASE);
-        } else {
-            return null;
+        switch (returnMessage.what) {
+            case MSG_PASSPHRASE_CACHE_GET_OKAY:
+                return returnMessage.getData().getString(EXTRA_PASSPHRASE);
+            case MSG_PASSPHRASE_CACHE_GET_KEY_NO_FOUND:
+                throw new KeyNotFoundException();
+            default:
+                throw new KeyNotFoundException("should not happen!");
         }
     }
 
@@ -168,7 +182,7 @@ public class PassphraseCacheService extends Service {
      * @param keyId
      * @return
      */
-    private String getCachedPassphraseImpl(long keyId) {
+    private String getCachedPassphraseImpl(long keyId) throws ProviderHelper.NotFoundException {
         // passphrase for symmetric encryption?
         if (keyId == Constants.key.symmetric) {
             Log.d(Constants.TAG, "PassphraseCacheService.getCachedPassphraseImpl() for symmetric encryption");
@@ -181,39 +195,33 @@ public class PassphraseCacheService extends Service {
         }
 
         // try to get master key id which is used as an identifier for cached passphrases
-        try {
-            Log.d(Constants.TAG, "PassphraseCacheService.getCachedPassphraseImpl() for masterKeyId " + keyId);
-            CanonicalizedSecretKeyRing key = new ProviderHelper(this).getCanonicalizedSecretKeyRing(
-                    KeychainContract.KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(keyId));
-            // no passphrase needed? just add empty string and return it, then
-            if (!key.hasPassphrase()) {
-                Log.d(Constants.TAG, "Key has no passphrase! Caches and returns empty passphrase!");
+        Log.d(Constants.TAG, "PassphraseCacheService.getCachedPassphraseImpl() for masterKeyId " + keyId);
+        CanonicalizedSecretKeyRing key = new ProviderHelper(this).getCanonicalizedSecretKeyRing(
+                KeychainContract.KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(keyId));
+        // no passphrase needed? just add empty string and return it, then
+        if (!key.hasPassphrase()) {
+            Log.d(Constants.TAG, "Key has no passphrase! Caches and returns empty passphrase!");
 
-                try {
-                    addCachedPassphrase(this, keyId, "", key.getPrimaryUserIdWithFallback());
-                } catch (PgpGeneralException e) {
-                    Log.d(Constants.TAG, "PgpGeneralException occured");
-                }
-                return "";
+            try {
+                addCachedPassphrase(this, keyId, "", key.getPrimaryUserIdWithFallback());
+            } catch (PgpGeneralException e) {
+                Log.d(Constants.TAG, "PgpGeneralException occured");
             }
+            return "";
+        }
 
-            // get cached passphrase
-            CachedPassphrase cachedPassphrase = mPassphraseCache.get(keyId);
-            if (cachedPassphrase == null) {
-                Log.d(Constants.TAG, "PassphraseCacheService: Passphrase not (yet) cached, returning null");
-                // not really an error, just means the passphrase is not cached but not empty either
-                return null;
-            }
-
-            // set it again to reset the cache life cycle
-            Log.d(Constants.TAG, "PassphraseCacheService: Cache passphrase again when getting it!");
-            addCachedPassphrase(this, keyId, cachedPassphrase.getPassphrase(), cachedPassphrase.getPrimaryUserID());
-            return cachedPassphrase.getPassphrase();
-
-        } catch (ProviderHelper.NotFoundException e) {
-            Log.e(Constants.TAG, "PassphraseCacheService: Passphrase for unknown key was requested!");
+        // get cached passphrase
+        CachedPassphrase cachedPassphrase = mPassphraseCache.get(keyId);
+        if (cachedPassphrase == null) {
+            Log.d(Constants.TAG, "PassphraseCacheService: Passphrase not (yet) cached, returning null");
+            // not really an error, just means the passphrase is not cached but not empty either
             return null;
         }
+
+        // set it again to reset the cache life cycle
+        Log.d(Constants.TAG, "PassphraseCacheService: Cache passphrase again when getting it!");
+        addCachedPassphrase(this, keyId, cachedPassphrase.getPassphrase(), cachedPassphrase.getPrimaryUserID());
+        return cachedPassphrase.getPassphrase();
     }
 
     /**
@@ -295,12 +303,19 @@ public class PassphraseCacheService extends Service {
                 long keyId = intent.getLongExtra(EXTRA_KEY_ID, -1);
                 Messenger messenger = intent.getParcelableExtra(EXTRA_MESSENGER);
 
-                String passphrase = getCachedPassphraseImpl(keyId);
 
                 Message msg = Message.obtain();
-                Bundle bundle = new Bundle();
-                bundle.putString(EXTRA_PASSPHRASE, passphrase);
-                msg.obj = bundle;
+                try {
+                    String passphrase = getCachedPassphraseImpl(keyId);
+                    msg.what = MSG_PASSPHRASE_CACHE_GET_OKAY;
+                    Bundle bundle = new Bundle();
+                    bundle.putString(EXTRA_PASSPHRASE, passphrase);
+                    msg.setData(bundle);
+                } catch (ProviderHelper.NotFoundException e) {
+                    Log.e(Constants.TAG, "PassphraseCacheService: Passphrase for unknown key was requested!");
+                    msg.what = MSG_PASSPHRASE_CACHE_GET_KEY_NO_FOUND;
+                }
+
                 try {
                     messenger.send(msg);
                 } catch (RemoteException e) {

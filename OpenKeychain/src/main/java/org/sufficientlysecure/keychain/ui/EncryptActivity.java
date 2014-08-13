@@ -450,20 +450,24 @@ public class EncryptActivity extends DrawerActivity implements EncryptActivityIn
                 return false;
             }
 
-            if (mSigningKeyId != 0 && PassphraseCacheService.getCachedPassphrase(this, mSigningKeyId) == null) {
-                PassphraseDialogFragment.show(this, mSigningKeyId,
-                        new Handler() {
-                            @Override
-                            public void handleMessage(Message message) {
-                                if (message.what == PassphraseDialogFragment.MESSAGE_OKAY) {
-                                    // restart
-                                    startEncrypt();
+            try {
+                if (mSigningKeyId != 0 && PassphraseCacheService.getCachedPassphrase(this, mSigningKeyId) == null) {
+                    PassphraseDialogFragment.show(this, mSigningKeyId,
+                            new Handler() {
+                                @Override
+                                public void handleMessage(Message message) {
+                                    if (message.what == PassphraseDialogFragment.MESSAGE_OKAY) {
+                                        // restart
+                                        startEncrypt();
+                                    }
                                 }
                             }
-                        }
-                );
+                    );
 
-                return false;
+                    return false;
+                }
+            } catch (PassphraseCacheService.KeyNotFoundException e) {
+                Log.e(Constants.TAG, "Key not found!", e);
             }
         }
         return true;
