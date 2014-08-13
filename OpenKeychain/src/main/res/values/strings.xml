@@ -429,6 +429,14 @@
     <string name="key_view_tab_share">Share</string>
     <string name="key_view_tab_keys">Subkeys</string>
     <string name="key_view_tab_certs">Certificates</string>
+    <string name="user_id_info_revoked_title">Revoked</string>
+    <string name="user_id_info_revoked_text">This identity has been revoked by the key owner. It is no longer valid.</string>
+    <string name="user_id_info_verified_title">Verified</string>
+    <string name="user_id_info_verified_text">This identity has been verified.</string>
+    <string name="user_id_info_not_verified_title">Not verified</string>
+    <string name="user_id_info_not_verified_text">This identity has not been verified yet. You can not be sure if the identity really corresponds to a specific person.</string>
+    <string name="user_id_info_invalid_title">Invalid</string>
+    <string name="user_id_info_invalid_text">Something is wrong with this identity!</string>
 
     <!-- Edit key -->
     <string name="edit_key_action_change_passphrase">Change Passphrase</string>
