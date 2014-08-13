@@ -81,8 +81,6 @@ public class EncryptActivity extends DrawerActivity implements EncryptActivityIn
     PagerTabStripAdapter mTabsAdapterContent;
 
     // tabs
-    Bundle mAsymmetricFragmentBundle = new Bundle();
-    Bundle mSymmetricFragmentBundle = new Bundle();
     int mSwitchToMode = PAGER_MODE_ASYMMETRIC;
     int mSwitchToContent = PAGER_CONTENT_MESSAGE;
 
@@ -91,7 +89,7 @@ public class EncryptActivity extends DrawerActivity implements EncryptActivityIn
     private static final int PAGER_CONTENT_MESSAGE = 0;
     private static final int PAGER_CONTENT_FILE = 1;
 
-    // model used by message and file fragments
+    // model used by fragments
     private long mEncryptionKeyIds[] = null;
     private String mEncryptionUserIds[] = null;
     private long mSigningKeyId = Constants.key.none;
@@ -501,10 +499,8 @@ public class EncryptActivity extends DrawerActivity implements EncryptActivityIn
         // Handle intent actions
         handleActions(getIntent());
 
-        mTabsAdapterMode.addTab(EncryptAsymmetricFragment.class,
-                mAsymmetricFragmentBundle, getString(R.string.label_asymmetric));
-        mTabsAdapterMode.addTab(EncryptSymmetricFragment.class,
-                mSymmetricFragmentBundle, getString(R.string.label_symmetric));
+        mTabsAdapterMode.addTab(EncryptAsymmetricFragment.class, null, getString(R.string.label_asymmetric));
+        mTabsAdapterMode.addTab(EncryptSymmetricFragment.class, null, getString(R.string.label_symmetric));
         mViewPagerMode.setCurrentItem(mSwitchToMode);
 
         mTabsAdapterContent.addTab(EncryptMessageFragment.class, null, getString(R.string.label_message));
@@ -600,14 +596,10 @@ public class EncryptActivity extends DrawerActivity implements EncryptActivityIn
 
         String textData = extras.getString(EXTRA_TEXT);
 
-        long signatureKeyId = extras.getLong(EXTRA_SIGNATURE_KEY_ID);
-        long[] encryptionKeyIds = extras.getLongArray(EXTRA_ENCRYPTION_KEY_IDS);
+        mSigningKeyId = extras.getLong(EXTRA_SIGNATURE_KEY_ID);
+        mEncryptionKeyIds = extras.getLongArray(EXTRA_ENCRYPTION_KEY_IDS);
 
         // preselect keys given by intent
-        mAsymmetricFragmentBundle.putLongArray(EncryptAsymmetricFragment.ARG_ENCRYPTION_KEY_IDS,
-                encryptionKeyIds);
-        mAsymmetricFragmentBundle.putLong(EncryptAsymmetricFragment.ARG_SIGNATURE_KEY_ID,
-                signatureKeyId);
         mSwitchToMode = PAGER_MODE_ASYMMETRIC;
 
         /**
