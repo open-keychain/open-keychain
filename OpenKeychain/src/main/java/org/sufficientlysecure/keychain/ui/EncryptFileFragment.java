@@ -111,8 +111,6 @@ public class EncryptFileFragment extends Fragment implements EncryptActivityInte
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-
-        addInputUris(getArguments().<Uri>getParcelableArrayList(ARG_URIS));
     }
 
     private void addInputUri() {
@@ -122,14 +120,6 @@ public class EncryptFileFragment extends Fragment implements EncryptActivityInte
             FileHelper.openFile(EncryptFileFragment.this, mEncryptInterface.getInputUris().isEmpty() ?
                             null : mEncryptInterface.getInputUris().get(mEncryptInterface.getInputUris().size() - 1),
                     "*/*", REQUEST_CODE_INPUT);
-        }
-    }
-
-    private void addInputUris(List<Uri> uris) {
-        if (uris != null) {
-            for (Uri uri : uris) {
-                addInputUri(uri);
-            }
         }
     }
 
