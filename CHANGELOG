@@ -3,7 +3,7 @@
 * Key edit: awesome new design, key revocation
 * Key import: awesome new design, secure keyserver connections via hkps, keyserver resolving via DNS SRV records
 * New first time screen
-* New create key screen: autocompletion of name and email based on your personal Android accounts
+* New key creation screen: autocompletion of name and email based on your personal Android accounts
 * File encryption: awesome new design, support for encrypting multiple files
 * New icons to show status of key (by Brennan Novak)
 * Important bug fix: Importing of large key collections from a file is now possible
@@ -31,7 +31,7 @@ This release wouldn't be possible without the work of Vincent Breitmoser (GSoC 2
 
 2.5
 * Fix decryption of symmetric pgp messages/files
-* Refactored edit key screen (thanks to Ash Hughes)
+* Refactored key edit screen (thanks to Ash Hughes)
 * New modern design for encrypt/decrypt screens
 * OpenPGP API version 3 (multiple api accounts, internal fixes, key lookup)
 

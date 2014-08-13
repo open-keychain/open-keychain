@@ -164,7 +164,13 @@ public class OpenPgpService extends RemoteService {
             if (data.hasExtra(OpenPgpApi.EXTRA_PASSPHRASE)) {
                 passphrase = data.getStringExtra(OpenPgpApi.EXTRA_PASSPHRASE);
             } else {
-                passphrase = PassphraseCacheService.getCachedPassphrase(getContext(), accSettings.getKeyId());
+                try {
+                    passphrase = PassphraseCacheService.getCachedPassphrase(getContext(), accSettings.getKeyId());
+                } catch (PassphraseCacheService.KeyNotFoundException e) {
+                    // secret key that is set for this account is deleted?
+                    // show account config again!
+                    return getCreateAccountIntent(data, data.getStringExtra(OpenPgpApi.EXTRA_ACCOUNT_NAME));
+                }
             }
             if (passphrase == null) {
                 // get PendingIntent for passphrase input, add it to given params and return to client

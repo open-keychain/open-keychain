@@ -925,7 +925,7 @@ public class ProviderHelper {
         mContentResolver.insert(uri, contentValueForApiAccounts(accSettings));
     }
 
-    public void updateApiAccount(AccountSettings accSettings, Uri uri) {
+    public void updateApiAccount(Uri uri, AccountSettings accSettings) {
         if (mContentResolver.update(uri, contentValueForApiAccounts(accSettings), null,
                 null) <= 0) {
             throw new RuntimeException();

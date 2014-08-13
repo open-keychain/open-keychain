@@ -391,6 +391,7 @@
     <string name="api_settings_accounts">Accounts</string>
     <string name="api_settings_accounts_empty">No accounts attached to this app.</string>
     <string name="api_create_account_text">The app requests the creation of a new account. Please select one of your existing keys or create a new one.\nApps are restricted to the usage of keys you select here!</string>
+    <string name="api_update_account_text">The key saved for this account has been deleted. Please select a different one!\nApps are restricted to the usage of keys you select here!</string>
     <string name="api_register_text">The displayed app wants to encrypt/decrypt messages and sign them in your name.\nAllow access?\n\nWARNING: If you do not know why this screen appeared, disallow access! You can revoke access later using the \'Apps\' screen.</string>
     <string name="api_register_allow">Allow access</string>
     <string name="api_register_disallow">Disallow access</string>
