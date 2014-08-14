@@ -141,7 +141,7 @@ public class EditSubkeyExpiryDialogFragment extends DialogFragment {
                 dismiss();
 
                 Bundle data = new Bundle();
-                data.putSerializable(MESSAGE_DATA_EXPIRY_DATE, null);
+                data.putSerializable(MESSAGE_DATA_EXPIRY_DATE, 0L);
                 sendMessageToHandler(MESSAGE_NEW_EXPIRY_DATE, data);
             }
         });
