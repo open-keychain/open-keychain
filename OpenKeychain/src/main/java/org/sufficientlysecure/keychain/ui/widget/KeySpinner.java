@@ -133,7 +133,12 @@ public abstract class KeySpinner extends Spinner {
 
                 @Override
                 public long getItemId(int position) {
-                    return ((Cursor) getItem(position)).getLong(mIndexMasterKeyId);
+                    try {
+                        return ((Cursor) getItem(position)).getLong(mIndexMasterKeyId);
+                    } catch (Exception e) {
+                        // This can happen on concurrent modification :(
+                        return Constants.key.none;
+                    }
                 }
             };
         }
