@@ -10,6 +10,7 @@ import android.support.v4.widget.CursorAdapter;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.Spinner;
 import android.widget.SpinnerAdapter;
@@ -23,27 +24,62 @@ import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.util.Log;
 
 public abstract class KeySpinner extends Spinner {
+    public interface OnKeyChangedListener {
+        public void onKeyChanged(long masterKeyId);
+    }
+
     private long mSelectedKeyId;
     private SelectKeyAdapter mAdapter = new SelectKeyAdapter();
+    private OnKeyChangedListener mListener;
 
     public KeySpinner(Context context) {
         super(context);
+        initView();
     }
 
     public KeySpinner(Context context, AttributeSet attrs) {
         super(context, attrs);
+        initView();
     }
 
     public KeySpinner(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
+        initView();
+    }
+
+    private void initView() {
+        setAdapter(mAdapter);
+        super.setOnItemSelectedListener(new OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                if (mListener != null) {
+                    mListener.onKeyChanged(id);
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                if (mListener != null) {
+                    mListener.onKeyChanged(Constants.key.none);
+                }
+            }
+        });
     }
 
     public abstract Loader<Cursor> onCreateLoader();
 
     @Override
+    public void setOnItemSelectedListener(OnItemSelectedListener listener) {
+        throw new UnsupportedOperationException();
+    }
+
+    public void setOnKeyChangedListener(OnKeyChangedListener listener) {
+        mListener = listener;
+    }
+
+    @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
-        setAdapter(mAdapter);
         if (getContext() instanceof FragmentActivity) {
             ((FragmentActivity) getContext()).getSupportLoaderManager().initLoader(hashCode(), null, new LoaderManager.LoaderCallbacks<Cursor>() {
                 @Override
@@ -97,8 +133,7 @@ public abstract class KeySpinner extends Spinner {
 
                 @Override
                 public long getItemId(int position) {
-                    mCursor.moveToPosition(position);
-                    return mCursor.getLong(mIndexMasterKeyId);
+                    return ((Cursor) getItem(position)).getLong(mIndexMasterKeyId);
                 }
             };
         }

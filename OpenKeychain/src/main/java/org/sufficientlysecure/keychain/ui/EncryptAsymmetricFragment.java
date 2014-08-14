@@ -101,15 +101,10 @@ public class EncryptAsymmetricFragment extends Fragment implements EncryptActivi
         View view = inflater.inflate(R.layout.encrypt_asymmetric_fragment, container, false);
 
         mSign = (KeySpinner) view.findViewById(R.id.sign);
-        mSign.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        mSign.setOnKeyChangedListener(new KeySpinner.OnKeyChangedListener() {
             @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                setSignatureKeyId(parent.getAdapter().getItemId(position));
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-                setSignatureKeyId(Constants.key.none);
+            public void onKeyChanged(long masterKeyId) {
+                setSignatureKeyId(masterKeyId);
             }
         });
         mEncryptKeyView = (EncryptKeyCompletionView) view.findViewById(R.id.recipient_list);
