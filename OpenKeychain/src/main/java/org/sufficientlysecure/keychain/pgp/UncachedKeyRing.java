@@ -593,7 +593,7 @@ public class UncachedKeyRing {
                     }
 
                     // if we already have a cert, and this one is not newer: skip it
-                    if (selfCert != null && selfCert.getCreationTime().before(cert.getCreationTime())) {
+                    if (selfCert != null && cert.getCreationTime().before(selfCert.getCreationTime())) {
                         log.add(LogLevel.DEBUG, LogType.MSG_KC_SUB_DUP, indent);
                         redundantCerts += 1;
                         continue;
