@@ -16,6 +16,7 @@ import org.spongycastle.bcpg.SecretSubkeyPacket;
 import org.spongycastle.bcpg.SignaturePacket;
 import org.spongycastle.bcpg.UserIDPacket;
 import org.spongycastle.bcpg.sig.KeyFlags;
+import org.spongycastle.jce.provider.BouncyCastleProvider;
 import org.spongycastle.openpgp.PGPSignature;
 import org.spongycastle.bcpg.PublicKeyAlgorithmTags;
 import org.sufficientlysecure.keychain.service.OperationResultParcel.OperationLog;
@@ -31,6 +32,7 @@ import org.sufficientlysecure.keychain.util.ProgressScaler;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.security.Security;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
@@ -51,6 +53,8 @@ public class PgpKeyOperationTest {
     ArrayList<RawPacket> onlyB = new ArrayList<RawPacket>();
 
     @BeforeClass public static void setUpOnce() throws Exception {
+        Security.insertProviderAt(new BouncyCastleProvider(), 1);
+
         ShadowLog.stream = System.out;
 
         {
