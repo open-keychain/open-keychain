@@ -231,6 +231,7 @@ public class OperationResultParcel implements Parcelable {
         MSG_IP(R.string.msg_ip),
         MSG_IP_APPLY_BATCH (R.string.msg_ip_apply_batch),
         MSG_IP_BAD_TYPE_SECRET (R.string.msg_ip_bad_type_secret),
+        MSG_IP_V3_KEY (R.string.msg_ip_v3_key),
         MSG_IP_DELETE_OLD_FAIL (R.string.msg_ip_delete_old_fail),
         MSG_IP_DELETE_OLD_OK (R.string.msg_ip_delete_old_ok),
         MSG_IP_ENCODE_FAIL (R.string.msg_ip_encode_fail),

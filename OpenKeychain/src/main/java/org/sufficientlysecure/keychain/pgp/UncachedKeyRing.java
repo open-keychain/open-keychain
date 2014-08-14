@@ -118,6 +118,10 @@ public class UncachedKeyRing {
         return mRing.getPublicKey().getFingerprint();
     }
 
+    public int getVersion() {
+        return mRing.getPublicKey().getVersion();
+    }
+
     public static UncachedKeyRing decodeFromData(byte[] data)
             throws PgpGeneralException, IOException {
 

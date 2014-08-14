@@ -642,6 +642,11 @@ public class ProviderHelper {
             log(LogLevel.START, LogType.MSG_IP, PgpKeyHelper.convertKeyIdToHex(masterKeyId));
             mIndent += 1;
 
+            if (publicRing.getVersion() <= 3) {
+                log(LogLevel.ERROR, LogType.MSG_IP_V3_KEY);
+                return new SaveKeyringResult(SaveKeyringResult.RESULT_ERROR, mLog);
+            }
+
             if (publicRing.isSecret()) {
                 log(LogLevel.ERROR, LogType.MSG_IP_BAD_TYPE_SECRET);
                 return new SaveKeyringResult(SaveKeyringResult.RESULT_ERROR, mLog);
@@ -733,6 +738,11 @@ public class ProviderHelper {
             long masterKeyId = secretRing.getMasterKeyId();
             log(LogLevel.START, LogType.MSG_IS, PgpKeyHelper.convertKeyIdToHex(masterKeyId));
             mIndent += 1;
+
+            if (secretRing.getVersion() <= 3) {
+                log(LogLevel.ERROR, LogType.MSG_IP_V3_KEY);
+                return new SaveKeyringResult(SaveKeyringResult.RESULT_ERROR, mLog);
+            }
 
             if ( ! secretRing.isSecret()) {
                 log(LogLevel.ERROR, LogType.MSG_IS_BAD_TYPE_PUBLIC);

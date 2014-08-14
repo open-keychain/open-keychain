@@ -433,7 +433,7 @@
     <string name="user_id_info_verified_title">Verified</string>
     <string name="user_id_info_verified_text">This identity has been verified.</string>
     <string name="user_id_info_not_verified_title">Not verified</string>
-    <string name="user_id_info_not_verified_text">This identity has not been verified yet. You can not be sure if the identity really corresponds to a specific person.</string>
+    <string name="user_id_info_not_verified_text">This identity has not been verified yet. You cannot be sure if the identity really corresponds to a specific person.</string>
     <string name="user_id_info_invalid_title">Invalid</string>
     <string name="user_id_info_invalid_text">Something is wrong with this identity!</string>
 
@@ -497,6 +497,7 @@
     <!-- Import Public log entries -->
     <string name="msg_ip_apply_batch">Applying insert batch operation.</string>
     <string name="msg_ip_bad_type_secret">Tried to import secret keyring as public. This is a bug, please file a report!</string>
+    <string name="msg_ip_v3_key">This key is an OpenPGP version 3 key and thus insecure. It has not been imported.</string>
     <string name="msg_ip_delete_old_fail">No old key deleted (creating a new one?)</string>
     <string name="msg_ip_delete_old_ok">Deleted old key from database</string>
     <string name="msg_ip_encode_fail">Operation failed due to encoding error</string>
