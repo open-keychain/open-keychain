@@ -616,7 +616,7 @@
     <string name="msg_mg_public">Merging into public keyring %s</string>
     <string name="msg_mg_secret">Merging into secret keyring %s</string>
     <string name="msg_mg_fatal_encode">Fatal error encoding signature</string>
-    <string name="msg_mg_heterogeneous">Tried to consolidate heterogeneous keyrings</string>
+    <string name="msg_mg_heterogeneous">Tried to merge keyrings with differing fingerprints!</string>
     <string name="msg_mg_new_subkey">Adding new subkey %s</string>
     <string name="msg_mg_found_new">Found %s new certificates in keyring</string>
     <string name="msg_mg_unchanged">No new certificates</string>

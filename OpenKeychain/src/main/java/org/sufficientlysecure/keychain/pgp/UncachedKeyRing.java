@@ -45,6 +45,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.Iterator;
@@ -692,7 +693,8 @@ public class UncachedKeyRing {
 
         long masterKeyId = other.getMasterKeyId();
 
-        if (getMasterKeyId() != masterKeyId) {
+        if (getMasterKeyId() != masterKeyId
+                || Arrays.equals(getFingerprint(), other.getFingerprint())) {
             log.add(LogLevel.ERROR, LogType.MSG_MG_HETEROGENEOUS, indent);
             return null;
         }
