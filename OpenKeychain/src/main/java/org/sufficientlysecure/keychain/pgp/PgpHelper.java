@@ -60,11 +60,11 @@ public class PgpHelper {
         }
     }
 
-    public static String getFullVersion(Context context) {
-        if(Preferences.getPreferences(context).getConcealPgpApplication()){
-            return "";
-        } else {
+    public static String getVersionForHeader(Context context) {
+        if(Preferences.getPreferences(context).getWriteVersionHeader()){
             return "OpenKeychain v" + getVersion(context);
+        } else {
+            return null;
         }
     }
 

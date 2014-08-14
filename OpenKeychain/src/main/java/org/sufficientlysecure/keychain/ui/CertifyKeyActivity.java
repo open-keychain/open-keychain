@@ -231,7 +231,14 @@ public class CertifyKeyActivity extends ActionBarActivity implements
      */
     private void initiateCertifying() {
         // get the user's passphrase for this key (if required)
-        String passphrase = PassphraseCacheService.getCachedPassphrase(this, mMasterKeyId);
+        String passphrase = null;
+        try {
+            passphrase = PassphraseCacheService.getCachedPassphrase(this, mMasterKeyId);
+        } catch (PassphraseCacheService.KeyNotFoundException e) {
+            Log.e(Constants.TAG, "Key not found!", e);
+            finish();
+            return;
+        }
         if (passphrase == null) {
             PassphraseDialogFragment.show(this, mMasterKeyId,
                     new Handler() {

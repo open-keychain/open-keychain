@@ -24,7 +24,6 @@
   <string name="btn_save">保存</string>
   <string name="btn_do_not_save">取消</string>
   <string name="btn_delete">删除</string>
-  <string name="btn_no_date">无</string>
   <!--menu-->
   <string name="menu_help">帮助</string>
   <string name="menu_delete_key">删除密钥</string>

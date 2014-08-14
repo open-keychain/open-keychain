@@ -123,14 +123,10 @@ public class EncryptAsymmetricFragment extends Fragment implements EncryptActivi
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-
-        long signatureKeyId = getArguments().getLong(ARG_SIGNATURE_KEY_ID);
-        long[] encryptionKeyIds = getArguments().getLongArray(ARG_ENCRYPTION_KEY_IDS);
-
         mProviderHelper = new ProviderHelper(getActivity());
 
-        // preselect keys given by arguments (given by Intent to EncryptActivity)
-        preselectKeys(signatureKeyId, encryptionKeyIds, mProviderHelper);
+        // preselect keys given
+        preselectKeys();
 
         getLoaderManager().initLoader(1, null, new LoaderManager.LoaderCallbacks<Cursor>() {
             @Override
@@ -145,24 +141,17 @@ public class EncryptAsymmetricFragment extends Fragment implements EncryptActivi
                         KeyRings.MASTER_KEY_ID,
                         KeyRings.KEY_ID,
                         KeyRings.USER_ID,
-                        KeyRings.EXPIRY,
-                        KeyRings.IS_REVOKED,
-                        // can certify info only related to master key
-                        KeyRings.CAN_CERTIFY,
-                        // has sign may be any subkey
+                        KeyRings.IS_EXPIRED,
                         KeyRings.HAS_SIGN,
-                        KeyRings.HAS_ANY_SECRET,
-                        KeyRings.HAS_SECRET
+                        KeyRings.HAS_ANY_SECRET
                 };
 
-                String where = KeyRings.HAS_ANY_SECRET + " = 1";
+                String where = KeyRings.HAS_ANY_SECRET + " = 1 AND " + KeyRings.HAS_SIGN + " NOT NULL AND "
+                        + KeyRings.IS_REVOKED + " = 0 AND " + KeyRings.IS_EXPIRED + " = 0";
 
                 // Now create and return a CursorLoader that will take care of
                 // creating a Cursor for the data being displayed.
                 return new CursorLoader(getActivity(), baseUri, projection, where, null, null);
-                /*return new CursorLoader(getActivity(), KeyRings.buildUnifiedKeyRingsUri(),
-                        new String[]{KeyRings.USER_ID, KeyRings.KEY_ID, KeyRings.MASTER_KEY_ID, KeyRings.HAS_ANY_SECRET}, SIGN_KEY_SELECTION,
-                        null, null);*/
             }
 
             @Override
@@ -194,19 +183,15 @@ public class EncryptAsymmetricFragment extends Fragment implements EncryptActivi
 
     /**
      * If an Intent gives a signatureMasterKeyId and/or encryptionMasterKeyIds, preselect those!
-     *
-     * @param preselectedSignatureKeyId
-     * @param preselectedEncryptionKeyIds
      */
-    private void preselectKeys(long preselectedSignatureKeyId, long[] preselectedEncryptionKeyIds,
-                               ProviderHelper providerHelper) {
+    private void preselectKeys() {
         // TODO all of this works under the assumption that the first suitable subkey is always used!
         // not sure if we need to distinguish between different subkeys here?
-        if (preselectedSignatureKeyId != 0) {
+        long signatureKey = mEncryptInterface.getSignatureKey();
+        if (signatureKey != Constants.key.none) {
             try {
-                CachedPublicKeyRing keyring =
-                        providerHelper.getCachedPublicKeyRing(
-                                KeyRings.buildUnifiedKeyRingUri(preselectedSignatureKeyId));
+                CachedPublicKeyRing keyring = mProviderHelper.getCachedPublicKeyRing(
+                        KeyRings.buildUnifiedKeyRingUri(signatureKey));
                 if(keyring.hasAnySecret()) {
                     setSignatureKeyId(keyring.getMasterKeyId());
                 }
@@ -215,10 +200,11 @@ public class EncryptAsymmetricFragment extends Fragment implements EncryptActivi
             }
         }
 
-        if (preselectedEncryptionKeyIds != null) {
-            for (long preselectedId : preselectedEncryptionKeyIds) {
+        long[] encryptionKeyIds = mEncryptInterface.getEncryptionKeys();
+        if (encryptionKeyIds != null) {
+            for (long preselectedId : encryptionKeyIds) {
                 try {
-                    CachedPublicKeyRing ring = providerHelper.getCachedPublicKeyRing(
+                    CachedPublicKeyRing ring = mProviderHelper.getCachedPublicKeyRing(
                             KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(preselectedId));
                     mEncryptKeyView.addObject(mEncryptKeyView.new EncryptionKey(ring));
                 } catch (PgpGeneralException e) {

@@ -41,7 +41,6 @@
   <string name="btn_save">Opslaan</string>
   <string name="btn_do_not_save">Annuleren</string>
   <string name="btn_delete">Verwijderen</string>
-  <string name="btn_no_date">Geen</string>
   <string name="btn_okay">OK</string>
   <string name="btn_export_to_server">Upload Naar Sleutelserver</string>
   <string name="btn_next">Volgende</string>
@@ -66,7 +65,6 @@
   <string name="label_no_passphrase">Geen wachtwoord</string>
   <string name="label_passphrase">Wachtwoord</string>
   <string name="label_algorithm">Algoritme</string>
-  <string name="label_ascii_armor">ASCII-armor</string>
   <string name="label_delete_after_decryption">Verwijderen na ontsleuteling</string>
   <string name="label_encryption_algorithm">Versleutelingsalgoritme</string>
   <string name="label_hash_algorithm">Verificatie-algoritme</string>
@@ -242,7 +240,6 @@
   <string name="key_size_8192">8192</string>
   <string name="key_size_custom">Aangepaste sleutelgrootte</string>
   <string name="key_size_custom_info">Typ aangepaste sleutellengte (in bits):</string>
-  <string name="key_size_custom_info_rsa">RSA sleutel lengte moet groter zijn dan 1024 en maximaal 8192. Het moet ook deelbaar zijn door 8.</string>
   <string name="key_size_custom_info_dsa">DSA sleutellengte moet minstens 512 zijn en maximaal 1024. Het moet ook deelbaar zijn door 64.</string>
   <!--compression-->
   <string name="compression_fast">snel</string>

@@ -43,7 +43,6 @@
   <string name="btn_save">Зберегти</string>
   <string name="btn_do_not_save">Скасувати</string>
   <string name="btn_delete">Вилучити</string>
-  <string name="btn_no_date">Жоден</string>
   <string name="btn_okay">Гаразд</string>
   <string name="btn_export_to_server">Завантажити на сервер ключів</string>
   <string name="btn_next">Далі</string>
@@ -69,7 +68,6 @@
   <string name="label_no_passphrase">Без парольної фрази</string>
   <string name="label_passphrase">Парольна фраза</string>
   <string name="label_algorithm">Алгоритм</string>
-  <string name="label_ascii_armor">ASCII Броня</string>
   <string name="label_delete_after_decryption">Вилучити після розшифрування</string>
   <string name="label_encryption_algorithm">Алгоритм шифрування</string>
   <string name="label_hash_algorithm">Хеш алгоритм</string>
@@ -252,7 +250,6 @@
   <string name="key_size_8192">8192</string>
   <string name="key_size_custom">Особливий розмір ключа</string>
   <string name="key_size_custom_info">Введіть інший розмір ключа (у бітах):</string>
-  <string name="key_size_custom_info_rsa">Довжина ключа RSA має бути більша за 1024 та менша за 8192. Також він має мати кратність 8.</string>
   <string name="key_size_custom_info_dsa">Довжина ключа DSA має бути більша за 512 та менша за 1024. Також він має мати кратність 64.</string>
   <!--compression-->
   <string name="compression_fast">швидке</string>

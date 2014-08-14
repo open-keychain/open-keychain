@@ -20,6 +20,7 @@ package org.sufficientlysecure.keychain.pgp;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import org.openintents.openpgp.OpenPgpMetadata;
 import org.openintents.openpgp.OpenPgpSignatureResult;
 
 public class PgpDecryptVerifyResult implements Parcelable {
@@ -31,21 +32,22 @@ public class PgpDecryptVerifyResult implements Parcelable {
     long mKeyIdPassphraseNeeded;
 
     OpenPgpSignatureResult mSignatureResult;
+    OpenPgpMetadata mDecryptMetadata;
 
     public int getStatus() {
         return mStatus;
     }
 
-    public void setStatus(int mStatus) {
-        this.mStatus = mStatus;
+    public void setStatus(int status) {
+        mStatus = status;
     }
 
     public long getKeyIdPassphraseNeeded() {
         return mKeyIdPassphraseNeeded;
     }
 
-    public void setKeyIdPassphraseNeeded(long mKeyIdPassphraseNeeded) {
-        this.mKeyIdPassphraseNeeded = mKeyIdPassphraseNeeded;
+    public void setKeyIdPassphraseNeeded(long keyIdPassphraseNeeded) {
+        mKeyIdPassphraseNeeded = keyIdPassphraseNeeded;
     }
 
     public OpenPgpSignatureResult getSignatureResult() {
@@ -53,7 +55,15 @@ public class PgpDecryptVerifyResult implements Parcelable {
     }
 
     public void setSignatureResult(OpenPgpSignatureResult signatureResult) {
-        this.mSignatureResult = signatureResult;
+        mSignatureResult = signatureResult;
+    }
+
+    public OpenPgpMetadata getDecryptMetadata() {
+        return mDecryptMetadata;
+    }
+
+    public void setDecryptMetadata(OpenPgpMetadata decryptMetadata) {
+        mDecryptMetadata = decryptMetadata;
     }
 
     public PgpDecryptVerifyResult() {
@@ -64,6 +74,7 @@ public class PgpDecryptVerifyResult implements Parcelable {
         this.mStatus = b.mStatus;
         this.mKeyIdPassphraseNeeded = b.mKeyIdPassphraseNeeded;
         this.mSignatureResult = b.mSignatureResult;
+        this.mDecryptMetadata = b.mDecryptMetadata;
     }
 
 
@@ -75,6 +86,7 @@ public class PgpDecryptVerifyResult implements Parcelable {
         dest.writeInt(mStatus);
         dest.writeLong(mKeyIdPassphraseNeeded);
         dest.writeParcelable(mSignatureResult, 0);
+        dest.writeParcelable(mDecryptMetadata, 0);
     }
 
     public static final Creator<PgpDecryptVerifyResult> CREATOR = new Creator<PgpDecryptVerifyResult>() {
@@ -83,6 +95,7 @@ public class PgpDecryptVerifyResult implements Parcelable {
             vr.mStatus = source.readInt();
             vr.mKeyIdPassphraseNeeded = source.readLong();
             vr.mSignatureResult = source.readParcelable(OpenPgpSignatureResult.class.getClassLoader());
+            vr.mDecryptMetadata = source.readParcelable(OpenPgpMetadata.class.getClassLoader());
             return vr;
         }
 

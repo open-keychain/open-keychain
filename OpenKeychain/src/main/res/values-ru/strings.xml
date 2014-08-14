@@ -43,7 +43,6 @@
   <string name="btn_save">Сохранить</string>
   <string name="btn_do_not_save">Отмена</string>
   <string name="btn_delete">Удалить</string>
-  <string name="btn_no_date">Нет</string>
   <string name="btn_okay">Да</string>
   <string name="btn_export_to_server">Загрузить на сервер ключей</string>
   <string name="btn_next">Далее</string>
@@ -69,7 +68,6 @@
   <string name="label_no_passphrase">Без пароля</string>
   <string name="label_passphrase">Пароль</string>
   <string name="label_algorithm">Алгоритм</string>
-  <string name="label_ascii_armor">ASCII формат</string>
   <string name="label_delete_after_decryption">Удалить после расшифровки</string>
   <string name="label_encryption_algorithm">Алгоритм шифрования</string>
   <string name="label_hash_algorithm">Hash-алгоритм</string>
@@ -252,7 +250,6 @@
   <string name="key_size_8192">8192</string>
   <string name="key_size_custom">Произвольная длина ключа</string>
   <string name="key_size_custom_info">Введите длину ключа (бит):</string>
-  <string name="key_size_custom_info_rsa">Длина RSA ключа должна быть в пределах между 1024 и 8192 бит и должна быть кратна 8.</string>
   <string name="key_size_custom_info_dsa">Длина DSA ключа должна быть в пределах между 512 и 1024 бит и должна быть кратна 64.</string>
   <!--compression-->
   <string name="compression_fast">быстро</string>

@@ -119,8 +119,8 @@ public class PreferencesActivity extends PreferenceActivity {
             initializeAsciiArmor(
                     (CheckBoxPreference) findPreference(Constants.Pref.DEFAULT_ASCII_ARMOR));
 
-            initializeConcealPgpApplication(
-                    (CheckBoxPreference) findPreference(Constants.Pref.CONCEAL_PGP_APPLICATION));
+            initializeWriteVersionHeader(
+                    (CheckBoxPreference) findPreference(Constants.Pref.WRITE_VERSION_HEADER));
 
         } else if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
             // Load the legacy preferences headers
@@ -263,8 +263,8 @@ public class PreferencesActivity extends PreferenceActivity {
             initializeAsciiArmor(
                     (CheckBoxPreference) findPreference(Constants.Pref.DEFAULT_ASCII_ARMOR));
 
-            initializeConcealPgpApplication(
-                    (CheckBoxPreference) findPreference(Constants.Pref.CONCEAL_PGP_APPLICATION));
+            initializeWriteVersionHeader(
+                    (CheckBoxPreference) findPreference(Constants.Pref.WRITE_VERSION_HEADER));
         }
     }
 
@@ -386,12 +386,12 @@ public class PreferencesActivity extends PreferenceActivity {
         });
     }
 
-    private static void initializeConcealPgpApplication(final CheckBoxPreference mConcealPgpApplication) {
-        mConcealPgpApplication.setChecked(sPreferences.getConcealPgpApplication());
-        mConcealPgpApplication.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+    private static void initializeWriteVersionHeader(final CheckBoxPreference mWriteVersionHeader) {
+        mWriteVersionHeader.setChecked(sPreferences.getWriteVersionHeader());
+        mWriteVersionHeader.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
             public boolean onPreferenceChange(Preference preference, Object newValue) {
-                mConcealPgpApplication.setChecked((Boolean) newValue);
-                sPreferences.setConcealPgpApplication((Boolean) newValue);
+                mWriteVersionHeader.setChecked((Boolean) newValue);
+                sPreferences.setWriteVersionHeader((Boolean) newValue);
                 return false;
             }
         });

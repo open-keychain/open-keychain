@@ -18,6 +18,9 @@
 
 package org.sufficientlysecure.keychain.pgp;
 
+import android.webkit.MimeTypeMap;
+
+import org.openintents.openpgp.OpenPgpMetadata;
 import org.spongycastle.bcpg.ArmoredInputStream;
 import org.spongycastle.openpgp.PGPCompressedData;
 import org.spongycastle.openpgp.PGPEncryptedData;
@@ -43,8 +46,10 @@ import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
+import org.sufficientlysecure.keychain.service.PassphraseCacheService;
 import org.sufficientlysecure.keychain.util.InputData;
 import org.sufficientlysecure.keychain.util.Log;
+import org.sufficientlysecure.keychain.util.ProgressScaler;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
@@ -52,6 +57,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.URLConnection;
 import java.security.SignatureException;
 import java.util.Iterator;
 import java.util.Set;
@@ -69,6 +75,7 @@ public class PgpDecryptVerify {
     private boolean mAllowSymmetricDecryption;
     private String mPassphrase;
     private Set<Long> mAllowedKeyIds;
+    private boolean mDecryptMetadataOnly;
 
     private PgpDecryptVerify(Builder builder) {
         // private Constructor can only be called from Builder
@@ -81,6 +88,7 @@ public class PgpDecryptVerify {
         this.mAllowSymmetricDecryption = builder.mAllowSymmetricDecryption;
         this.mPassphrase = builder.mPassphrase;
         this.mAllowedKeyIds = builder.mAllowedKeyIds;
+        this.mDecryptMetadataOnly = builder.mDecryptMetadataOnly;
     }
 
     public static class Builder {
@@ -95,6 +103,7 @@ public class PgpDecryptVerify {
         private boolean mAllowSymmetricDecryption = true;
         private String mPassphrase = null;
         private Set<Long> mAllowedKeyIds = null;
+        private boolean mDecryptMetadataOnly = false;
 
         public Builder(ProviderHelper providerHelper, PassphraseCache passphraseCache,
                        InputData data, OutputStream outStream) {
@@ -124,7 +133,16 @@ public class PgpDecryptVerify {
          * This means only ciphertexts encrypted for one of these private key can be decrypted.
          */
         public Builder setAllowedKeyIds(Set<Long> allowedKeyIds) {
-            this.mAllowedKeyIds = allowedKeyIds;
+            mAllowedKeyIds = allowedKeyIds;
+            return this;
+        }
+
+        /**
+         * If enabled, the actual decryption/verification of the content will not be executed.
+         * The metadata only will be decrypted and returned.
+         */
+        public Builder setDecryptMetadataOnly(boolean decryptMetadataOnly) {
+            mDecryptMetadataOnly = decryptMetadataOnly;
             return this;
         }
 
@@ -146,7 +164,8 @@ public class PgpDecryptVerify {
     }
 
     public interface PassphraseCache {
-        public String getCachedPassphrase(long masterKeyId);
+        public String getCachedPassphrase(long masterKeyId)
+                throws NoSecretKeyException;
     }
 
     public static class InvalidDataException extends Exception {
@@ -227,8 +246,6 @@ public class PgpDecryptVerify {
         InputStream clear;
         PGPEncryptedData encryptedData;
 
-        currentProgress += 5;
-
         PGPPublicKeyEncryptedData encryptedDataAsymmetric = null;
         PGPPBEEncryptedData encryptedDataSymmetric = null;
         CanonicalizedSecretKey secretEncryptionKey = null;
@@ -239,6 +256,7 @@ public class PgpDecryptVerify {
         while (it.hasNext()) {
             Object obj = it.next();
             if (obj instanceof PGPPublicKeyEncryptedData) {
+                currentProgress += 2;
                 updateProgress(R.string.progress_finding_key, currentProgress, 100);
 
                 PGPPublicKeyEncryptedData encData = (PGPPublicKeyEncryptedData) obj;
@@ -269,8 +287,8 @@ public class PgpDecryptVerify {
 
                 // allow only specific keys for decryption?
                 if (mAllowedKeyIds != null) {
-                    Log.d(Constants.TAG, "encData.getKeyID():" + encData.getKeyID());
-                    Log.d(Constants.TAG, "allowedKeyIds: " + mAllowedKeyIds);
+                    Log.d(Constants.TAG, "encData.getKeyID(): " + encData.getKeyID());
+                    Log.d(Constants.TAG, "mAllowedKeyIds: " + mAllowedKeyIds);
                     Log.d(Constants.TAG, "masterKeyId: " + masterKeyId);
 
                     if (!mAllowedKeyIds.contains(masterKeyId)) {
@@ -325,6 +343,7 @@ public class PgpDecryptVerify {
         }
 
         if (symmetricPacketFound) {
+            currentProgress += 2;
             updateProgress(R.string.progress_preparing_streams, currentProgress, 100);
 
             PGPDigestCalculatorProvider digestCalcProvider = new JcaPGPDigestCalculatorProviderBuilder()
@@ -336,26 +355,23 @@ public class PgpDecryptVerify {
             clear = encryptedDataSymmetric.getDataStream(decryptorFactory);
 
             encryptedData = encryptedDataSymmetric;
-            currentProgress += 5;
         } else if (asymmetricPacketFound) {
-            currentProgress += 5;
+            currentProgress += 2;
             updateProgress(R.string.progress_extracting_key, currentProgress, 100);
             try {
                 if (!secretEncryptionKey.unlock(mPassphrase)) {
                     throw new WrongPassphraseException();
                 }
-            } catch(PgpGeneralException e) {
+            } catch (PgpGeneralException e) {
                 throw new KeyExtractionException();
             }
-            currentProgress += 5;
+
+            currentProgress += 2;
             updateProgress(R.string.progress_preparing_streams, currentProgress, 100);
 
             PublicKeyDataDecryptorFactory decryptorFactory = secretEncryptionKey.getDecryptorFactory();
-
             clear = encryptedDataAsymmetric.getDataStream(decryptorFactory);
-
             encryptedData = encryptedDataAsymmetric;
-            currentProgress += 5;
         } else {
             // no packet has been found where we have the corresponding secret key in our db
             throw new NoSecretKeyException();
@@ -369,18 +385,19 @@ public class PgpDecryptVerify {
         CanonicalizedPublicKey signingKey = null;
 
         if (dataChunk instanceof PGPCompressedData) {
+            currentProgress += 2;
             updateProgress(R.string.progress_decompressing_data, currentProgress, 100);
 
-            PGPObjectFactory fact = new PGPObjectFactory(
-                    ((PGPCompressedData) dataChunk).getDataStream());
+            PGPCompressedData compressedData = (PGPCompressedData) dataChunk;
+
+            PGPObjectFactory fact = new PGPObjectFactory(compressedData.getDataStream());
             dataChunk = fact.nextObject();
             plainFact = fact;
-            currentProgress += 10;
         }
 
         PGPOnePassSignature signature = null;
-
         if (dataChunk instanceof PGPOnePassSignatureList) {
+            currentProgress += 2;
             updateProgress(R.string.progress_processing_signature, currentProgress, 100);
 
             PGPOnePassSignatureList sigList = (PGPOnePassSignatureList) dataChunk;
@@ -396,8 +413,7 @@ public class PgpDecryptVerify {
                     signingKey = signingRing.getPublicKey(sigKeyId);
                     signatureIndex = i;
                 } catch (ProviderHelper.NotFoundException e) {
-                    Log.d(Constants.TAG, "key not found!");
-                    // try next one...
+                    Log.d(Constants.TAG, "key not found, trying next signature...");
                 }
             }
 
@@ -410,8 +426,8 @@ public class PgpDecryptVerify {
                 signatureResultBuilder.keyId(signingRing.getMasterKeyId());
                 try {
                     signatureResultBuilder.userId(signingRing.getPrimaryUserIdWithFallback());
-                } catch(PgpGeneralException e) {
-                    Log.d(Constants.TAG, "No primary user id in key " + signingRing.getMasterKeyId());
+                } catch (PgpGeneralException e) {
+                    Log.d(Constants.TAG, "No primary user id in keyring with master key id " + signingRing.getMasterKeyId());
                 }
                 signatureResultBuilder.signatureKeyCertified(signingRing.getVerified() > 0);
 
@@ -429,56 +445,104 @@ public class PgpDecryptVerify {
             }
 
             dataChunk = plainFact.nextObject();
-            currentProgress += 10;
         }
 
         if (dataChunk instanceof PGPSignatureList) {
+            // skip
             dataChunk = plainFact.nextObject();
         }
 
         if (dataChunk instanceof PGPLiteralData) {
+            currentProgress += 4;
             updateProgress(R.string.progress_decrypting, currentProgress, 100);
 
             PGPLiteralData literalData = (PGPLiteralData) dataChunk;
 
-            byte[] buffer = new byte[1 << 16];
-            InputStream dataIn = literalData.getInputStream();
+            // TODO: how to get the real original size?
+            // this is the encrypted size so if we enable compression this value is wrong!
+            long originalSize = mData.getSize() - mData.getStreamPosition();
+            if (originalSize < 0) {
+                originalSize = 0;
+            }
 
-            int startProgress = currentProgress;
-            int endProgress = 100;
+            String originalFilename = literalData.getFileName();
+            String mimeType = null;
+            if (literalData.getFormat() == PGPLiteralData.TEXT
+                    || literalData.getFormat() == PGPLiteralData.UTF8) {
+                mimeType = "text/plain";
+            } else {
+                // TODO: better would be: https://github.com/open-keychain/open-keychain/issues/753
+
+                // try to guess from file ending
+                String extension = MimeTypeMap.getFileExtensionFromUrl(originalFilename);
+                if (extension != null) {
+                    MimeTypeMap mime = MimeTypeMap.getSingleton();
+                    mimeType = mime.getMimeTypeFromExtension(extension);
+                }
+                if (mimeType == null) {
+                    mimeType = URLConnection.guessContentTypeFromName(originalFilename);
+                }
+                if (mimeType == null) {
+                    mimeType = "*/*";
+                }
+            }
+
+            OpenPgpMetadata metadata = new OpenPgpMetadata(
+                    originalFilename,
+                    mimeType,
+                    literalData.getModificationTime().getTime(),
+                    originalSize);
+            result.setDecryptMetadata(metadata);
+
+            Log.d(Constants.TAG, "metadata: " + metadata);
+
+            // return here if we want to decrypt the metadata only
+            if (mDecryptMetadataOnly) {
+                return result;
+            }
+
+            int endProgress;
             if (signature != null) {
                 endProgress = 90;
             } else if (encryptedData.isIntegrityProtected()) {
                 endProgress = 95;
+            } else {
+                endProgress = 100;
             }
+            ProgressScaler progressScaler =
+                    new ProgressScaler(mProgressable, currentProgress, endProgress, 100);
 
-            int n;
-            // TODO: progress calculation is broken here! Try to rework it based on commented code!
-//            int progress = 0;
-            long startPos = mData.getStreamPosition();
-            while ((n = dataIn.read(buffer)) > 0) {
-                mOutStream.write(buffer, 0, n);
-//                progress += n;
+            InputStream dataIn = literalData.getInputStream();
+
+            long alreadyWritten = 0;
+            long wholeSize = mData.getSize() - mData.getStreamPosition();
+            int length;
+            byte[] buffer = new byte[1 << 16];
+            while ((length = dataIn.read(buffer)) > 0) {
+                mOutStream.write(buffer, 0, length);
+
+                // update signature buffer if signature is also present
                 if (signature != null) {
                     try {
-                        signature.update(buffer, 0, n);
+                        signature.update(buffer, 0, length);
                     } catch (SignatureException e) {
-                        Log.d(Constants.TAG, "SIGNATURE_ERROR");
+                        Log.e(Constants.TAG, "SignatureException -> Not a valid signature!", e);
                         signatureResultBuilder.validSignature(false);
                         signature = null;
                     }
                 }
-                // TODO: dead code?!
-                // unknown size, but try to at least have a moving, slowing down progress bar
-//                currentProgress = startProgress + (endProgress - startProgress) * progress
-//                        / (progress + 100000);
-                if (mData.getSize() - startPos == 0) {
-                    currentProgress = endProgress;
+
+                alreadyWritten += length;
+                if (wholeSize > 0) {
+                    long progress = 100 * alreadyWritten / wholeSize;
+                    // stop at 100% for wrong file sizes...
+                    if (progress > 100) {
+                        progress = 100;
+                    }
+                    progressScaler.setProgress((int) progress, 100);
                 } else {
-                    currentProgress = (int) (startProgress + (endProgress - startProgress)
-                            * (mData.getStreamPosition() - startPos) / (mData.getSize() - startPos));
+                    // TODO: slow annealing to fake a progress?
                 }
-                updateProgress(currentProgress, 100);
             }
 
             if (signature != null) {
@@ -510,8 +574,14 @@ public class PgpDecryptVerify {
             }
         } else {
             // no integrity check
-            Log.e(Constants.TAG, "Encrypted data was not integrity protected!");
-            // TODO: inform user?
+            Log.d(Constants.TAG, "Encrypted data was not integrity protected! MDC packet is missing!");
+
+            // If no valid signature is present:
+            // Handle missing integrity protection like failed integrity protection!
+            // The MDC packet can be stripped by an attacker!
+            if (!signatureResultBuilder.isValidSignature()) {
+                throw new IntegrityCheckFailedException();
+            }
         }
 
         updateProgress(R.string.progress_done, 100, 100);
@@ -581,8 +651,7 @@ public class PgpDecryptVerify {
                 signingKey = signingRing.getPublicKey(sigKeyId);
                 signatureIndex = i;
             } catch (ProviderHelper.NotFoundException e) {
-                Log.d(Constants.TAG, "key not found!");
-                // try next one...
+                Log.d(Constants.TAG, "key not found, trying next signature...");
             }
         }
 
@@ -597,8 +666,8 @@ public class PgpDecryptVerify {
             signatureResultBuilder.keyId(signingRing.getMasterKeyId());
             try {
                 signatureResultBuilder.userId(signingRing.getPrimaryUserIdWithFallback());
-            } catch(PgpGeneralException e) {
-                Log.d(Constants.TAG, "No primary user id in key " + signingRing.getMasterKeyId());
+            } catch (PgpGeneralException e) {
+                Log.d(Constants.TAG, "No primary user id in key with master key id " + signingRing.getMasterKeyId());
             }
             signatureResultBuilder.signatureKeyCertified(signingRing.getVerified() > 0);
 

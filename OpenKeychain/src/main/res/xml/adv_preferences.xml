@@ -40,9 +40,9 @@
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/section_advanced">
         <CheckBoxPreference
-            android:key="concealPgpApplication"
+            android:key="writeVersionHeader"
             android:persistent="false"
-            android:title="@string/label_conceal_pgp_application"
-            android:summary="@string/label_conceal_pgp_application_summary" />
+            android:title="@string/label_write_version_header"
+            android:summary="@string/label_write_version_header_summary" />
     </PreferenceCategory>
 </PreferenceScreen>

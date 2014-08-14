@@ -28,6 +28,7 @@
     <string name="title_key_details">Key Details</string>
     <string name="title_help">Help</string>
     <string name="title_log_display">Log</string>
+    <string name="title_create_key">Create Key</string>
 
     <!-- section -->
     <string name="section_user_ids">Identities</string>
@@ -89,8 +90,8 @@
     <string name="label_algorithm">Algorithm</string>
     <string name="label_ascii_armor">File ASCII Armor</string>
     <string name="label_file_ascii_armor">Files: ASCII Armor</string>
-    <string name="label_conceal_pgp_application">Let others know that you\'re using OpenKeychain</string>
-    <string name="label_conceal_pgp_application_summary">Writes \'OpenKeychain v2.7\' to OpenPGP signatures, ciphertext, and exported keys</string>
+    <string name="label_write_version_header">Let others know that you\'re using OpenKeychain</string>
+    <string name="label_write_version_header_summary">Writes \'OpenKeychain v2.7\' to OpenPGP signatures, ciphertext, and exported keys</string>
     <string name="label_asymmetric_from">From:</string>
     <string name="label_to">To:</string>
     <string name="label_delete_after_encryption">Files: Delete After Encryption</string>
@@ -389,6 +390,7 @@
     <string name="api_settings_accounts">Accounts</string>
     <string name="api_settings_accounts_empty">No accounts attached to this app.</string>
     <string name="api_create_account_text">The app requests the creation of a new account. Please select one of your existing keys or create a new one.\nApps are restricted to the usage of keys you select here!</string>
+    <string name="api_update_account_text">The key saved for this account has been deleted. Please select a different one!\nApps are restricted to the usage of keys you select here!</string>
     <string name="api_register_text">The displayed app wants to encrypt/decrypt messages and sign them in your name.\nAllow access?\n\nWARNING: If you do not know why this screen appeared, disallow access! You can revoke access later using the \'Apps\' screen.</string>
     <string name="api_register_allow">Allow access</string>
     <string name="api_register_disallow">Disallow access</string>
@@ -426,6 +428,14 @@
     <string name="key_view_tab_share">Share</string>
     <string name="key_view_tab_keys">Subkeys</string>
     <string name="key_view_tab_certs">Certificates</string>
+    <string name="user_id_info_revoked_title">Revoked</string>
+    <string name="user_id_info_revoked_text">This identity has been revoked by the key owner. It is no longer valid.</string>
+    <string name="user_id_info_verified_title">Verified</string>
+    <string name="user_id_info_verified_text">This identity has been verified.</string>
+    <string name="user_id_info_not_verified_title">Not verified</string>
+    <string name="user_id_info_not_verified_text">This identity has not been verified yet. You can not be sure if the identity really corresponds to a specific person.</string>
+    <string name="user_id_info_invalid_title">Invalid</string>
+    <string name="user_id_info_invalid_text">Something is wrong with this identity!</string>
 
     <!-- Edit key -->
     <string name="edit_key_action_change_passphrase">Change Passphrase</string>

@@ -339,6 +339,10 @@ public class EditKeyFragment extends LoaderFragment implements
                             mSaveKeyringParcel.mRevokeUserIds.remove(userId);
                         } else {
                             mSaveKeyringParcel.mRevokeUserIds.add(userId);
+                            // not possible to revoke and change to primary user id
+                            if (mSaveKeyringParcel.mChangePrimaryUserId.equals(userId)) {
+                                mSaveKeyringParcel.mChangePrimaryUserId = null;
+                            }
                         }
                         break;
                 }
@@ -471,8 +475,14 @@ public class EditKeyFragment extends LoaderFragment implements
     }
 
     private void cachePassphraseForEdit() {
-        mCurrentPassphrase = PassphraseCacheService.getCachedPassphrase(getActivity(),
-                mSaveKeyringParcel.mMasterKeyId);
+        try {
+            mCurrentPassphrase = PassphraseCacheService.getCachedPassphrase(getActivity(),
+                    mSaveKeyringParcel.mMasterKeyId);
+        } catch (PassphraseCacheService.KeyNotFoundException e) {
+            Log.e(Constants.TAG, "Key not found!", e);
+            getActivity().finish();
+            return;
+        }
         if (mCurrentPassphrase == null) {
             PassphraseDialogFragment.show(getActivity(), mSaveKeyringParcel.mMasterKeyId,
                     new Handler() {

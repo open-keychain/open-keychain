@@ -230,7 +230,10 @@ public class PgpImportExport {
             progress++;
             // Create an output stream
             ArmoredOutputStream arOutStream = new ArmoredOutputStream(outStream);
-            arOutStream.setHeader("Version", PgpHelper.getFullVersion(mContext));
+            String version = PgpHelper.getVersionForHeader(mContext);
+            if (version != null) {
+                arOutStream.setHeader("Version", version);
+            }
 
             updateProgress(progress * 100 / masterKeyIdsSize, 100);
 
@@ -258,7 +261,10 @@ public class PgpImportExport {
             progress++;
             // Create an output stream
             ArmoredOutputStream arOutStream = new ArmoredOutputStream(outStream);
-            arOutStream.setHeader("Version", PgpHelper.getFullVersion(mContext));
+            String version = PgpHelper.getVersionForHeader(mContext);
+            if (version != null) {
+                arOutStream.setHeader("Version", version);
+            }
 
             updateProgress(progress * 100 / masterKeyIdsSize, 100);
 

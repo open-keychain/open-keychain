@@ -18,11 +18,13 @@
 package org.sufficientlysecure.keychain.remote.ui;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v7.app.ActionBarActivity;
 import android.view.View;
+import android.widget.TextView;
 
 import org.openintents.openpgp.util.OpenPgpApi;
 import org.sufficientlysecure.htmltextview.HtmlTextView;
@@ -37,6 +39,7 @@ import org.sufficientlysecure.keychain.ui.SelectPublicKeyFragment;
 import org.sufficientlysecure.keychain.ui.dialog.PassphraseDialogFragment;
 import org.sufficientlysecure.keychain.util.Log;
 
+import java.security.Provider;
 import java.util.ArrayList;
 
 public class RemoteServiceActivity extends ActionBarActivity {
@@ -76,9 +79,16 @@ public class RemoteServiceActivity extends ActionBarActivity {
     // select pub keys view
     private SelectPublicKeyFragment mSelectFragment;
 
+    private ProviderHelper mProviderHelper;
+
+    // for ACTION_CREATE_ACCOUNT
+    boolean mUpdateExistingAccount;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        mProviderHelper = new ProviderHelper(this);
 
         handleActions(getIntent(), savedInstanceState);
     }
@@ -94,6 +104,14 @@ public class RemoteServiceActivity extends ActionBarActivity {
             final byte[] packageSignature = extras.getByteArray(EXTRA_PACKAGE_SIGNATURE);
             Log.d(Constants.TAG, "ACTION_REGISTER packageName: " + packageName);
 
+            setContentView(R.layout.api_remote_register_app);
+
+            mAppSettingsFragment = (AppSettingsFragment) getSupportFragmentManager().findFragmentById(
+                    R.id.api_app_settings_fragment);
+
+            AppSettings settings = new AppSettings(packageName, packageSignature);
+            mAppSettingsFragment.setAppSettings(settings);
+
             // Inflate a "Done"/"Cancel" custom action bar view
             ActionBarHelper.setTwoButtonView(getSupportActionBar(),
                     R.string.api_register_allow, R.drawable.ic_action_done,
@@ -102,8 +120,7 @@ public class RemoteServiceActivity extends ActionBarActivity {
                         public void onClick(View v) {
                             // Allow
 
-                            new ProviderHelper(RemoteServiceActivity.this).insertApiApp(
-                                    mAppSettingsFragment.getAppSettings());
+                            mProviderHelper.insertApiApp(mAppSettingsFragment.getAppSettings());
 
                             // give data through for new service call
                             Intent resultData = extras.getParcelable(EXTRA_DATA);
@@ -120,17 +137,33 @@ public class RemoteServiceActivity extends ActionBarActivity {
                         }
                     }
             );
-
-            setContentView(R.layout.api_remote_register_app);
-
-            mAppSettingsFragment = (AppSettingsFragment) getSupportFragmentManager().findFragmentById(
-                    R.id.api_app_settings_fragment);
-
-            AppSettings settings = new AppSettings(packageName, packageSignature);
-            mAppSettingsFragment.setAppSettings(settings);
         } else if (ACTION_CREATE_ACCOUNT.equals(action)) {
             final String packageName = extras.getString(EXTRA_PACKAGE_NAME);
             final String accName = extras.getString(EXTRA_ACC_NAME);
+
+            setContentView(R.layout.api_remote_create_account);
+
+            mAccSettingsFragment = (AccountSettingsFragment) getSupportFragmentManager().findFragmentById(
+                    R.id.api_account_settings_fragment);
+
+            TextView text = (TextView) findViewById(R.id.api_remote_create_account_text);
+
+            // update existing?
+            Uri uri = KeychainContract.ApiAccounts.buildByPackageAndAccountUri(packageName, accName);
+            AccountSettings settings = mProviderHelper.getApiAccountSettings(uri);
+            if (settings == null) {
+                // create new account
+                settings = new AccountSettings(accName);
+                mUpdateExistingAccount = false;
+
+                text.setText(R.string.api_create_account_text);
+            } else {
+                // update existing account
+                mUpdateExistingAccount = true;
+
+                text.setText(R.string.api_update_account_text);
+            }
+            mAccSettingsFragment.setAccSettings(settings);
 
             // Inflate a "Done"/"Cancel" custom action bar view
             ActionBarHelper.setTwoButtonView(getSupportActionBar(),
@@ -145,9 +178,17 @@ public class RemoteServiceActivity extends ActionBarActivity {
                                 mAccSettingsFragment.setErrorOnSelectKeyFragment(
                                         getString(R.string.api_register_error_select_key));
                             } else {
-                                new ProviderHelper(RemoteServiceActivity.this).insertApiAccount(
-                                        KeychainContract.ApiAccounts.buildBaseUri(packageName),
-                                        mAccSettingsFragment.getAccSettings());
+                                if (mUpdateExistingAccount) {
+                                    Uri baseUri = KeychainContract.ApiAccounts.buildBaseUri(packageName);
+                                    Uri accountUri = baseUri.buildUpon().appendEncodedPath(accName).build();
+                                    mProviderHelper.updateApiAccount(
+                                            accountUri,
+                                            mAccSettingsFragment.getAccSettings());
+                                } else {
+                                    mProviderHelper.insertApiAccount(
+                                            KeychainContract.ApiAccounts.buildBaseUri(packageName),
+                                            mAccSettingsFragment.getAccSettings());
+                                }
 
                                 // give data through for new service call
                                 Intent resultData = extras.getParcelable(EXTRA_DATA);
@@ -166,13 +207,6 @@ public class RemoteServiceActivity extends ActionBarActivity {
                     }
             );
 
-            setContentView(R.layout.api_remote_create_account);
-
-            mAccSettingsFragment = (AccountSettingsFragment) getSupportFragmentManager().findFragmentById(
-                    R.id.api_account_settings_fragment);
-
-            AccountSettings settings = new AccountSettings(accName);
-            mAccSettingsFragment.setAccSettings(settings);
         } else if (ACTION_CACHE_PASSPHRASE.equals(action)) {
             long secretKeyId = extras.getLong(EXTRA_SECRET_KEY_ID);
             final Intent resultData = extras.getParcelable(EXTRA_DATA);
@@ -190,7 +224,8 @@ public class RemoteServiceActivity extends ActionBarActivity {
 
                             RemoteServiceActivity.this.finish();
                         }
-                    });
+                    }
+            );
 
         } else if (ACTION_SELECT_PUB_KEYS.equals(action)) {
             long[] selectedMasterKeyIds = intent.getLongArrayExtra(EXTRA_SELECTED_MASTER_KEY_IDS);
@@ -286,7 +321,8 @@ public class RemoteServiceActivity extends ActionBarActivity {
                             RemoteServiceActivity.this.setResult(RESULT_CANCELED);
                             RemoteServiceActivity.this.finish();
                         }
-                    });
+                    }
+            );
 
             setContentView(R.layout.api_remote_error_message);
 

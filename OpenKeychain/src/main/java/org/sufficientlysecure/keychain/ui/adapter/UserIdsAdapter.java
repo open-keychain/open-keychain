@@ -257,6 +257,11 @@ public class UserIdsAdapter extends CursorAdapter implements AdapterView.OnItemC
         return mCursor.getInt(INDEX_IS_REVOKED) > 0;
     }
 
+    public int getIsVerified(int position) {
+        mCursor.moveToPosition(position);
+        return mCursor.getInt(INDEX_VERIFIED);
+    }
+
     public boolean getIsRevokedPending(int position) {
         mCursor.moveToPosition(position);
         String userId = mCursor.getString(INDEX_USER_ID);
@@ -278,26 +283,6 @@ public class UserIdsAdapter extends CursorAdapter implements AdapterView.OnItemC
         // only need to do this once ever, since mShowCheckBoxes is final
         view.findViewById(R.id.user_id_item_check_box).setVisibility(mCheckStates != null ? View.VISIBLE : View.GONE);
         return view;
-    }
-
-    // Disable selection of items for lists without checkboxes, http://stackoverflow.com/a/4075045
-    @Override
-    public boolean areAllItemsEnabled() {
-        if (mCheckStates == null && mSaveKeyringParcel == null) {
-            return false;
-        } else {
-            return super.areAllItemsEnabled();
-        }
-    }
-
-    // Disable selection of items for lists without checkboxes, http://stackoverflow.com/a/4075045
-    @Override
-    public boolean isEnabled(int position) {
-        if (mCheckStates == null && mSaveKeyringParcel == null) {
-            return false;
-        } else {
-            return super.isEnabled(position);
-        }
     }
 
 }

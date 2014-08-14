@@ -3,7 +3,7 @@
 * Key edit: awesome new design, key revocation
 * Key import: awesome new design, secure keyserver connections via hkps, keyserver resolving via DNS SRV records
 * New first time screen
-* New create key screen: autocompletion of name and email based on your personal Android accounts
+* New key creation screen: autocompletion of name and email based on your personal Android accounts
 * File encryption: awesome new design, support for encrypting multiple files
 * New icons to show status of key (by Brennan Novak)
 * Important bug fix: Importing of large key collections from a file is now possible
@@ -31,7 +31,7 @@ This release wouldn't be possible without the work of Vincent Breitmoser (GSoC 2
 
 2.5
 * Fix decryption of symmetric pgp messages/files
-* Refactored edit key screen (thanks to Ash Hughes)
+* Refactored key edit screen (thanks to Ash Hughes)
 * New modern design for encrypt/decrypt screens
 * OpenPGP API version 3 (multiple api accounts, internal fixes, key lookup)
 
@@ -92,14 +92,14 @@ Daniel Hammann, Daniel Haß, Greg Witczak, Miroojin Bakshi, Nikhil Peter Raj, Pa
 1.0.8
 * Basic keyserver support (HKP, please report bugs :))
 * App2sd (untested, let me know if there are problems)
-* More choices for pass phrase cache: 1, 2, 4, 8, hours
+* More choices for passphrase cache: 1, 2, 4, 8, hours
 * Translations: Norwegian (thanks, Sander Danielsen), Chinese (thanks, Zhang Fredrick)
 * Bugfixes
 * Optimizations
 
 1.0.7
 * Clear sign problem with lacking trailing newline fixed
-* More options for pass phrase cache time to live (20, 40, 60 mins)
+* More options for passphrase cache time to live (20, 40, 60 mins)
 
 1.0.6
 * Account adding crash on Froyo fixed

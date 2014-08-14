@@ -204,7 +204,9 @@ public class UncachedKeyRing {
 
     public void encodeArmored(OutputStream out, String version) throws IOException {
         ArmoredOutputStream aos = new ArmoredOutputStream(out);
-        aos.setHeader("Version", version);
+        if (version != null) {
+            aos.setHeader("Version", version);
+        }
         aos.write(mRing.getEncoded());
         aos.close();
     }

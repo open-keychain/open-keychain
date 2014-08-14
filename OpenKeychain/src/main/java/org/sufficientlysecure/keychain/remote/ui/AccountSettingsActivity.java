@@ -102,7 +102,7 @@ public class AccountSettingsActivity extends ActionBarActivity {
     }
 
     private void save() {
-        new ProviderHelper(this).updateApiAccount(mAccountSettingsFragment.getAccSettings(), mAccountUri);
+        new ProviderHelper(this).updateApiAccount(mAccountUri, mAccountSettingsFragment.getAccSettings());
         finish();
     }
 

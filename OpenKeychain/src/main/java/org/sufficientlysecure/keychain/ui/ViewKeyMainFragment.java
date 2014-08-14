@@ -22,17 +22,22 @@ import android.database.Cursor;
 import android.graphics.PorterDuff;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.os.Messenger;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.ListView;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.compatibility.DialogFragmentWorkaround;
 import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
@@ -41,6 +46,8 @@ import org.sufficientlysecure.keychain.provider.KeychainContract.UserIds;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.provider.ProviderHelper.NotFoundException;
 import org.sufficientlysecure.keychain.ui.adapter.UserIdsAdapter;
+import org.sufficientlysecure.keychain.ui.dialog.EditSubkeyDialogFragment;
+import org.sufficientlysecure.keychain.ui.dialog.UserIdInfoDialogFragment;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Notify;
 
@@ -88,7 +95,28 @@ public class ViewKeyMainFragment extends LoaderFragment implements
                 PorterDuff.Mode.SRC_IN);
         mActionUpdate = view.findViewById(R.id.view_key_action_update);
 
+        mUserIds.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                showUserIdInfo(position);
+            }
+        });
+
         return root;
+    }
+
+    private void showUserIdInfo(final int position) {
+        final boolean isRevoked = mUserIdsAdapter.getIsRevoked(position);
+        final int isVerified = mUserIdsAdapter.getIsVerified(position);
+
+        DialogFragmentWorkaround.INTERFACE.runnableRunDelayed(new Runnable() {
+            public void run() {
+                UserIdInfoDialogFragment dialogFragment =
+                        UserIdInfoDialogFragment.newInstance(isRevoked, isVerified);
+
+                dialogFragment.show(getActivity().getSupportFragmentManager(), "userIdInfoDialog");
+            }
+        });
     }
 
     @Override

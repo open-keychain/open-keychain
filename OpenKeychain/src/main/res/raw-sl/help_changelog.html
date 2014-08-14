@@ -1,6 +1,20 @@
 <html>
 <head></head>
 <body>
+<h2>2.8</h2>
+<ul>
+<li>So many bugs have been fixed in this release that we focus on the main new features</li>
+<li>Key edit: awesome new design, key revocation</li>
+<li>Key import: awesome new design, secure keyserver connections via hkps, keyserver resolving via DNS SRV records</li>
+<li>New first time screen</li>
+<li>New create key screen: autocompletion of name and email based on your personal Android accounts</li>
+<li>File encryption: awesome new design, support for encrypting multiple files</li>
+<li>New icons to show status of key (by Brennan Novak)</li>
+<li>Important bug fix: Importing of large key collections from a file is now possible</li>
+<li>Notification showing cached passphrases</li>
+</ul>
+<p>This release wouldn't be possible without the work of Vincent Breitmoser (GSoC 2014), mar-v-in (GSoC 2014), Daniel Albert, Art O Cathain, Daniel Haß, Tim Bray, Thialfihar</p>
+
 <h2>2.7</h2>
 <ul>
 <li>Vijolična! (Dominik, Vincent)</li>
@@ -11,21 +25,21 @@
 </ul>
 <h2>2.6.1</h2>
 <ul>
-<li>popravki hroščev ob posodobitvi iz prejšnjih različic</li>
+<li>Some fixes for regression bugs</li>
 </ul>
 <h2>2.6</h2>
 <ul>
-<li>overjanje ključev (hvala, Vincent Breitmoser)</li>
-<li>podpora delnim zasebnim ključem GnuPG (hvala, Vincent Breitmoser)</li>
-<li>nova podoba za preverjanje podpisov</li>
-<li>izbirna dolžina ključev (hvala, Greg Witczak)</li>
-<li>popravek za deljenje iz drugih aplikacij</li>
+<li>Key certifications (thanks to Vincent Breitmoser)</li>
+<li>Support for GnuPG partial secret keys (thanks to Vincent Breitmoser)</li>
+<li>New design for signature verification</li>
+<li>Custom key length (thanks to Greg Witczak)</li>
+<li>Fix share-functionality from other apps</li>
 </ul>
 <h2>2.5</h2>
 <ul>
-<li>popravek pri dešifriranju simetrično šifriranih sporočil pgp</li>
-<li>popravki kode za okno 'uredi ključ' (hvala, Ash Hughes)</li>
-<li>nova, sodobnejša podoba za okna 'šifriraj/dešifriraj'</li>
+<li>Fix decryption of symmetric pgp messages/files</li>
+<li>Refactored edit key screen (thanks to Ash Hughes)</li>
+<li>New modern design for encrypt/decrypt screens</li>
 <li>API OpenPGP, verzija 3 (podpora za več API računov, interni popravki, iskanje ključev)</li>
 </ul>
 <h2>2.4</h2>
@@ -33,45 +47,45 @@
 Največje število popravkov je bilo s strani naslednjih ljudi (po abecednem vrstnem redu):
 Daniel Hammann, Daniel Haß, Greg Witczak, Miroojin Bakshi, Nikhil Peter Raj, Paul Sarbinowski, Sreeram Boyapati, Vincent Breitmoser.</p>
 <ul>
-<li>nov enoten seznam ključev</li>
-<li>obarvanje prstnih odtisov ključev</li>
-<li>podpora za vrata strežnikov</li>
-<li>odstranitev možnosti generiranja šibkih ključev</li>
-<li>veliko internega dela na API-ju</li>
-<li>overjanje uporabniških ID-jev</li>
-<li>iskanje po strežnikih na osnovi strojno berljivih izpisov</li>
-<li>zaklep navigacijskega poteznika na tabličnih računalnikih</li>
-<li>namigi za izbiro e-poštnih naslovov pri ustvarjanju ključev</li>
-<li>iskanje po seznamu javnih ključev</li>
-<li>in še veliko drugih izboljšav in popravkov...</li>
+<li>New unified key list</li>
+<li>Colorized key fingerprint</li>
+<li>Support for keyserver ports</li>
+<li>Deactivate possibility to generate weak keys</li>
+<li>Much more internal work on the API</li>
+<li>Certify user ids</li>
+<li>Keyserver query based on machine-readable output</li>
+<li>Lock navigation drawer on tablets</li>
+<li>Suggestions for emails on creation of keys</li>
+<li>Search in public key lists</li>
+<li>And much more improvements and fixes…</li>
 </ul>
 <h2>2.3.1</h2>
 <ul>
-<li>sesutje pri nadgraditvi iz starejših različic, hitri popravek</li>
+<li>Hotfix for crash when upgrading from old versions</li>
 </ul>
 <h2>2.3</h2>
 <ul>
-<li>odprava nepotrebnega hkratnega izvoza javnih ključev ob izvozu zasebnih (hvala, Ash Hughes)</li>
-<li>popravek nastavitev datumov poteka ključev (hvala, Ash Hughes)</li>
-<li>več internih popravkov pri urejanju ključev (hvala, Ash Hughes)</li>
-<li>iskanje strežnikov naravnost iz uvoznega okna</li>
-<li>popravki za razporeditev in pogovorna okna na Androidu 2.2-3.0</li>
-<li>sesutje pri ključih s praznim uporabniškim ID-jem, popravek</li>
-<li>sesutje in prazen seznam ob povratku iz podpisovalnega okna, popravek</li>
+<li>Remove unnecessary export of public keys when exporting secret key (thanks to Ash Hughes)</li>
+<li>Fix setting expiry dates on keys (thanks to Ash Hughes)</li>
+<li>More internal fixes when editing keys (thanks to Ash Hughes)</li>
+<li>Querying keyservers directly from the import screen</li>
+<li>Fix layout and dialog style on Android 2.2-3.0</li>
+<li>Fix crash on keys with empty user ids</li>
+<li>Fix crash and empty lists when coming back from signing screen</li>
 <li>Bouncy Castle (kriptografska knjižnica) nadgrajen iz 1.47 na 1.50 in izgrajen iz izvorne kode</li>
-<li>nalaganje ključev iz podpisovalnega okna, popravek</li>
+<li>Fix upload of key from signing screen</li>
 </ul>
 <h2>2.2</h2>
 <ul>
-<li>nova podoba za navigacijski poteznik</li>
-<li>nova podoba za seznam javnih ključev</li>
-<li>nova podoba okna za ogled posameznih javnih ključev</li>
-<li>odprava hroščev pri uvozu ključev</li>
-<li>navzkrižno overjanje ključev (hvala, Ash Hughes)</li>
-<li>pravilno upravljanje gesel v formatu UTF-8 (hvala, Ash Hughes)</li>
-<li>prva različica z novimi jeziki (hvala prevajalcem iz portala Transifex)</li>
-<li>izbojšave in popravki za deljenje ključev preko kod QR</li>
-<li>preverjanje podpisov paketov za API</li>
+<li>New design with navigation drawer</li>
+<li>New public key list design</li>
+<li>New public key view</li>
+<li>Bug fixes for importing of keys</li>
+<li>Key cross-certification (thanks to Ash Hughes)</li>
+<li>Handle UTF-8 passwords properly (thanks to Ash Hughes)</li>
+<li>First version with new languages (thanks to the contributors on Transifex)</li>
+<li>Sharing of keys via QR Codes fixed and improved</li>
+<li>Package signature verification for API</li>
 </ul>
 <h2>2.1.1</h2>
 <ul>
@@ -79,65 +93,65 @@ Daniel Hammann, Daniel Haß, Greg Witczak, Miroojin Bakshi, Nikhil Peter Raj, Pa
 </ul>
 <h2>2.1</h2>
 <ul>
-<li>veliko število popravkov hroščev</li>
-<li>nov API za razvijalce</li>
+<li>Lots of bug fixes</li>
+<li>New API for developers</li>
 <li>popravek za hrošč PRNG, prispeval Google</li>
 </ul>
 <h2>2.0</h2>
 <ul>
-<li>kompletna prenova izgleda</li>
-<li>deljenje javnih ključev preko kod QR in 'NFC Beam-a'</li>
-<li>podpisovanje ključev</li>
-<li>nalaganje ključev na strežnik</li>
-<li>popravki problemov z uvozom</li>
-<li>nov API za AIDL</li>
+<li>Complete redesign</li>
+<li>Share public keys via qr codes, nfc beam</li>
+<li>Sign keys</li>
+<li>Upload keys to server</li>
+<li>Fixes import issues</li>
+<li>New AIDL API</li>
 </ul>
 <h2>1.0.8</h2>
 <ul>
-<li>osnovna podpora za strežnike javnih ključev</li>
-<li>podpora app2sd</li>
-<li>več možnosti pomnjenja gesla: 1, 2, 4, 8 ur</li>
-<li>prevodi: Norveško (hvala, Sander Danielsen), Kitajsko (hvala, Zhang Fredrick)</li>
-<li>popravki hroščev</li>
-<li>optimizacije</li>
+<li>Basic keyserver support</li>
+<li>App2sd</li>
+<li>More choices for pass phrase cache: 1, 2, 4, 8, hours</li>
+<li>Translations: Norwegian (thanks, Sander Danielsen), Chinese (thanks, Zhang Fredrick)</li>
+<li>Bugfixes</li>
+<li>Optimizations</li>
 </ul>
 <h2>1.0.7</h2>
 <ul>
-<li>odpravljen problem pri preverjanju podpisov besedil</li>
-<li>več možnosti za pomnjenje gesla v spominu (20, 40, 60 min) </li>
+<li>Fixed problem with signature verification of texts with trailing newline</li>
+<li>More options for pass phrase cache time to live (20, 40, 60 mins)</li>
 </ul>
 <h2>1.0.6</h2>
 <ul>
-<li>sesutje ob dodajanju računa na napravah Froyo, popravek</li>
-<li>varno brisanje datotek</li>
-<li>možnost izbrisa datoteke s ključem po uvozu v aplikacijo</li>
-<li>šifriranje/dešifriranje toka (galerija, itd.)</li>
-<li>nove opcije (jezik, vsili podpis v3)</li>
-<li>spremembe vmesnika</li>
-<li>popravki hroščev</li>
+<li>Account adding crash on Froyo fixed</li>
+<li>Secure file deletion</li>
+<li>Option to delete key file after import</li>
+<li>Stream encryption/decryption (gallery, etc.)</li>
+<li>New options (language, force v3 signatures)</li>
+<li>Interface changes</li>
+<li>Bugfixes</li>
 </ul>
 <h2>1.0.5</h2>
 <ul>
 <li>Nemški in Italijanski prevod</li>
-<li>veliko manjša velikost paketa</li>
-<li>nove nastavitve grafičnega vmesnika</li>
-<li>prilagoditev vmesnika za lokalizacije</li>
-<li>popravki pri podpisovanju</li>
+<li>Much smaller package, due to reduced BC sources</li>
+<li>New preferences GUI</li>
+<li>Layout adjustment for localization</li>
+<li>Signature bugfix</li>
 </ul>
 <h2>1.0.4</h2>
 <ul>
-<li>sesutje zaradi hrošča v SDK, popravek</li>
+<li>Fixed another crash caused by some SDK bug with query builder</li>
 </ul>
 <h2>1.0.3</h2>
 <ul>
-<li>sesutja ob šifriranju/podpisovanju in verjetno tudi izvozu ključev, popravek</li>
+<li>Fixed crashes during encryption/signing and possibly key export</li>
 </ul>
 <h2>1.0.2</h2>
 <ul>
-<li>filtriranje seznama ključev</li>
-<li>pametnejši predizbor šifrirnih ključev</li>
-<li>nov način upravljanja z 'nameni' za 'ODPRI' in 'POŠLJI', omogoča šifriranje/dešifriranje datotek izven upravljalnikov datotek.</li>
-<li>popravki in dodatne funkcije (predizbira ključev) za aplikacijo 'K-9 Mail', nova beta različica</li>
+<li>Filterable key lists</li>
+<li>Smarter pre-selection of encryption keys</li>
+<li>New Intent handling for VIEW and SEND, allows files to be encrypted/decrypted out of file managers</li>
+<li>Fixes and additional features (key preselection) for K-9 Mail, new beta build available</li>
 </ul>
 <h2>1.0.1</h2>
 <ul>
@@ -146,11 +160,11 @@ Daniel Hammann, Daniel Haß, Greg Witczak, Miroojin Bakshi, Nikhil Peter Raj, Pa
 <h2>1.0.0</h2>
 <ul>
 <li>integracija z aplikacijo 'K-9 Mail', APG podpira različico beta te aplikacije</li>
-<li>podpora za več upravljalnikov datotek (mdr. Astro)</li>
+<li>Support of more file managers (including ASTRO)</li>
 <li>Slovenski prevod</li>
-<li>nova baza podatkov, hitrejše delovanje, manjša raba pomnilnika</li>
-<li>definirani 'nameni' in vsebina ponudnikov za druge aplikacije</li>
-<li>popravki hroščev</li>
+<li>New database, much faster, less memory usage</li>
+<li>Defined Intents and content provider for other apps</li>
+<li>Bugfixes</li>
 </ul>
 </body>
 </html>

@@ -86,6 +86,8 @@ public class KeychainIntentService extends IntentService
 
     public static final String ACTION_DECRYPT_VERIFY = Constants.INTENT_PREFIX + "DECRYPT_VERIFY";
 
+    public static final String ACTION_DECRYPT_METADATA = Constants.INTENT_PREFIX + "DECRYPT_METADATA";
+
     public static final String ACTION_SAVE_KEYRING = Constants.INTENT_PREFIX + "SAVE_KEYRING";
 
     public static final String ACTION_DELETE_FILE_SECURELY = Constants.INTENT_PREFIX
@@ -241,16 +243,17 @@ public class KeychainIntentService extends IntentService
                     data.putInt(SELECTED_URI, i);
                     InputData inputData = createEncryptInputData(data);
                     OutputStream outStream = createCryptOutputStream(data);
+                    String originalFilename = getOriginalFilename(data);
 
                     /* Operation */
                     PgpSignEncrypt.Builder builder =
                             new PgpSignEncrypt.Builder(
                                     new ProviderHelper(this),
-                                    PgpHelper.getFullVersion(this),
                                     inputData, outStream);
                     builder.setProgressable(this);
 
                     builder.setEnableAsciiArmorOutput(useAsciiArmor)
+                            .setVersionHeader(PgpHelper.getVersionForHeader(this))
                             .setCompressionId(compressionId)
                             .setSymmetricEncryptionAlgorithm(
                                     Preferences.getPreferences(this).getDefaultEncryptionAlgorithm())
@@ -261,7 +264,8 @@ public class KeychainIntentService extends IntentService
                             .setSignatureHashAlgorithm(
                                     Preferences.getPreferences(this).getDefaultHashAlgorithm())
                             .setSignaturePassphrase(
-                                    PassphraseCacheService.getCachedPassphrase(this, signatureKeyId));
+                                    PassphraseCacheService.getCachedPassphrase(this, signatureKeyId))
+                            .setOriginalFilename(originalFilename);
 
                     // this assumes that the bytes are cleartext (valid for current implementation!)
                     if (source == IO_BYTES) {
@@ -302,15 +306,19 @@ public class KeychainIntentService extends IntentService
                         new ProviderHelper(this),
                         new PgpDecryptVerify.PassphraseCache() {
                             @Override
-                            public String getCachedPassphrase(long masterKeyId) {
-                                return PassphraseCacheService.getCachedPassphrase(
-                                        KeychainIntentService.this, masterKeyId);
+                            public String getCachedPassphrase(long masterKeyId) throws PgpDecryptVerify.NoSecretKeyException {
+                                try {
+                                    return PassphraseCacheService.getCachedPassphrase(
+                                            KeychainIntentService.this, masterKeyId);
+                                } catch (PassphraseCacheService.KeyNotFoundException e) {
+                                    throw new PgpDecryptVerify.NoSecretKeyException();
+                                }
                             }
                         },
-                        inputData, outStream);
-                builder.setProgressable(this);
-
-                builder.setAllowSymmetricDecryption(true)
+                        inputData, outStream
+                );
+                builder.setProgressable(this)
+                        .setAllowSymmetricDecryption(true)
                         .setPassphrase(passphrase);
 
                 PgpDecryptVerifyResult decryptVerifyResult = builder.build().execute();
@@ -323,6 +331,50 @@ public class KeychainIntentService extends IntentService
 
                 finalizeDecryptOutputStream(data, resultData, outStream);
 
+                OtherHelper.logDebugBundle(resultData, "resultData");
+
+                sendMessageToHandler(KeychainIntentServiceHandler.MESSAGE_OKAY, resultData);
+            } catch (Exception e) {
+                sendErrorToHandler(e);
+            }
+        } else if (ACTION_DECRYPT_METADATA.equals(action)) {
+            try {
+                /* Input */
+                String passphrase = data.getString(DECRYPT_PASSPHRASE);
+
+                InputData inputData = createDecryptInputData(data);
+
+                /* Operation */
+
+                Bundle resultData = new Bundle();
+
+                // verifyText and decrypt returning additional resultData values for the
+                // verification of signatures
+                PgpDecryptVerify.Builder builder = new PgpDecryptVerify.Builder(
+                        new ProviderHelper(this),
+                        new PgpDecryptVerify.PassphraseCache() {
+                            @Override
+                            public String getCachedPassphrase(long masterKeyId) throws PgpDecryptVerify.NoSecretKeyException {
+                                try {
+                                    return PassphraseCacheService.getCachedPassphrase(
+                                            KeychainIntentService.this, masterKeyId);
+                                } catch (PassphraseCacheService.KeyNotFoundException e) {
+                                    throw new PgpDecryptVerify.NoSecretKeyException();
+                                }
+                            }
+                        },
+                        inputData, null
+                );
+                builder.setProgressable(this)
+                        .setAllowSymmetricDecryption(true)
+                        .setPassphrase(passphrase)
+                        .setDecryptMetadataOnly(true);
+
+                PgpDecryptVerifyResult decryptVerifyResult = builder.build().execute();
+
+                resultData.putParcelable(RESULT_DECRYPT_VERIFY_RESULT, decryptVerifyResult);
+
+                /* Output */
                 OtherHelper.logDebugBundle(resultData, "resultData");
 
                 sendMessageToHandler(KeychainIntentServiceHandler.MESSAGE_OKAY, resultData);
@@ -355,7 +407,7 @@ public class KeychainIntentService extends IntentService
 
                 UncachedKeyRing ring = result.getRing();
 
-                providerHelper.saveSecretKeyRing(ring,  new ProgressScaler(this, 60, 95, 100));
+                providerHelper.saveSecretKeyRing(ring, new ProgressScaler(this, 60, 95, 100));
 
                 // cache new passphrase
                 if (saveParcel.mNewPassphrase != null) {
@@ -402,7 +454,7 @@ public class KeychainIntentService extends IntentService
                 } else {
                     // get entries from cached file
                     FileImportCache<ParcelableKeyRing> cache =
-                        new FileImportCache<ParcelableKeyRing>(this);
+                            new FileImportCache<ParcelableKeyRing>(this);
                     entries = cache.readCacheIntoList();
                 }
 
@@ -575,7 +627,7 @@ public class KeychainIntentService extends IntentService
                 CanonicalizedPublicKeyRing publicRing = providerHelper.getCanonicalizedPublicKeyRing(pubKeyId);
                 CanonicalizedSecretKeyRing secretKeyRing = providerHelper.getCanonicalizedSecretKeyRing(masterKeyId);
                 CanonicalizedSecretKey certificationKey = secretKeyRing.getSecretKey();
-                if(!certificationKey.unlock(signaturePassphrase)) {
+                if (!certificationKey.unlock(signaturePassphrase)) {
                     throw new PgpGeneralException("Error extracting key (bad passphrase?)");
                 }
                 UncachedKeyRing newRing = certificationKey.certifyUserIds(publicRing, userIds);
@@ -722,6 +774,27 @@ public class KeychainIntentService extends IntentService
 
                 // InputStream
                 return new InputData(getContentResolver().openInputStream(providerUri), FileHelper.getFileSize(this, providerUri, 0));
+
+            default:
+                throw new PgpGeneralException("No target choosen!");
+        }
+    }
+
+    private String getOriginalFilename(Bundle data) throws PgpGeneralException, FileNotFoundException {
+        int target = data.getInt(TARGET);
+        switch (target) {
+            case IO_BYTES:
+                return "";
+
+            case IO_URI:
+                Uri providerUri = data.getParcelable(ENCRYPT_INPUT_URI);
+
+                return FileHelper.getFilename(this, providerUri);
+
+            case IO_URIS:
+                providerUri = data.<Uri>getParcelableArrayList(ENCRYPT_INPUT_URIS).get(data.getInt(SELECTED_URI));
+
+                return FileHelper.getFilename(this, providerUri);
 
             default:
                 throw new PgpGeneralException("No target choosen!");

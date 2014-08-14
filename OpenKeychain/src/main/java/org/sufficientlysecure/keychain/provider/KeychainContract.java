@@ -105,8 +105,9 @@ public class KeychainContract {
 
     public static class KeyRings implements BaseColumns, KeysColumns, UserIdsColumns {
         public static final String MASTER_KEY_ID = KeysColumns.MASTER_KEY_ID;
-        public static final String IS_REVOKED = KeysColumns.IS_REVOKED;
+        public static final String IS_REVOKED = KeychainDatabase.Tables.KEYS + "." + KeysColumns.IS_REVOKED;
         public static final String VERIFIED = CertsColumns.VERIFIED;
+        public static final String IS_EXPIRED = "is_expired";
         public static final String HAS_ANY_SECRET = "has_any_secret";
         public static final String HAS_ENCRYPT = "has_encrypt";
         public static final String HAS_SIGN = "has_sign";

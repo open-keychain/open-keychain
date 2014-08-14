@@ -271,6 +271,9 @@ public class KeychainProvider extends ContentProvider {
                         "kE." + Keys.KEY_ID + " AS " + KeyRings.HAS_ENCRYPT);
                 projectionMap.put(KeyRings.HAS_SIGN,
                         "kS." + Keys.KEY_ID + " AS " + KeyRings.HAS_SIGN);
+                projectionMap.put(KeyRings.IS_EXPIRED,
+                        "(" + Tables.KEYS + "." + Keys.EXPIRY + " IS NOT NULL AND " + Tables.KEYS + "." + Keys.EXPIRY
+                                + " < " + new Date().getTime() / 1000 + ") AS " + KeyRings.IS_EXPIRED);
                 qb.setProjectionMap(projectionMap);
 
                 // Need this as list so we can search in it
