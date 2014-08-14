@@ -36,6 +36,7 @@ import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.service.OperationResultParcel.LogLevel;
 import org.sufficientlysecure.keychain.service.OperationResultParcel.LogType;
 import org.sufficientlysecure.keychain.service.OperationResultParcel.OperationLog;
+import org.sufficientlysecure.keychain.service.OperationResults;
 import org.sufficientlysecure.keychain.util.IterableIterator;
 import org.sufficientlysecure.keychain.util.Log;
 
@@ -244,6 +245,12 @@ public class UncachedKeyRing {
         log.add(LogLevel.START, isSecret() ? LogType.MSG_KC_SECRET : LogType.MSG_KC_PUBLIC,
                 indent, PgpKeyHelper.convertKeyIdToHex(getMasterKeyId()));
         indent += 1;
+
+        // do not accept v3 keys
+        if (getVersion() <= 3) {
+            log.add(LogLevel.ERROR, LogType.MSG_KC_V3_KEY, indent);
+            return null;
+        }
 
         final Date now = new Date();
 
