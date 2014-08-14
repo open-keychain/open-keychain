@@ -694,7 +694,7 @@ public class UncachedKeyRing {
         long masterKeyId = other.getMasterKeyId();
 
         if (getMasterKeyId() != masterKeyId
-                || Arrays.equals(getFingerprint(), other.getFingerprint())) {
+                || !Arrays.equals(getFingerprint(), other.getFingerprint())) {
             log.add(LogLevel.ERROR, LogType.MSG_MG_HETEROGENEOUS, indent);
             return null;
         }
