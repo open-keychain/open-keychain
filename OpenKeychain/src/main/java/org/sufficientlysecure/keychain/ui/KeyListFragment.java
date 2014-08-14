@@ -330,12 +330,12 @@ public class KeyListFragment extends LoaderFragment
      * Show dialog to delete key
      *
      * @param masterKeyIds
-     * @param hasSecret must contain whether the list of masterKeyIds contains a secret key or not
+     * @param hasSecret    must contain whether the list of masterKeyIds contains a secret key or not
      */
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     public void showDeleteKeyDialog(final ActionMode mode, long[] masterKeyIds, boolean hasSecret) {
         // Can only work on singular secret keys
-        if(hasSecret && masterKeyIds.length > 1) {
+        if (hasSecret && masterKeyIds.length > 1) {
             Notify.showNotify(getActivity(), R.string.secret_cannot_multiple,
                     Notify.Style.ERROR);
             return;
@@ -365,6 +365,7 @@ public class KeyListFragment extends LoaderFragment
     public void onCreateOptionsMenu(final Menu menu, final MenuInflater inflater) {
         // Get the searchview
         MenuItem searchItem = menu.findItem(R.id.menu_key_list_search);
+
         mSearchView = (SearchView) MenuItemCompat.getActionView(searchItem);
 
         // Execute this when searching
@@ -383,7 +384,6 @@ public class KeyListFragment extends LoaderFragment
             @Override
             public boolean onMenuItemActionCollapse(MenuItem item) {
                 mQuery = null;
-                mSearchView.setQuery("", true);
                 getLoaderManager().restartLoader(0, null, KeyListFragment.this);
                 return true;
             }
@@ -399,11 +399,18 @@ public class KeyListFragment extends LoaderFragment
 
     @Override
     public boolean onQueryTextChange(String s) {
+        Log.d(Constants.TAG, "onQueryTextChange s:" + s);
         // Called when the action bar search text has changed.  Update
         // the search filter, and restart the loader to do a new query
         // with this filter.
-        mQuery = !TextUtils.isEmpty(s) ? s : null;
-        getLoaderManager().restartLoader(0, null, this);
+        // If the nav drawer is opened, onQueryTextChange("") is executed.
+        // This hack prevents restarting the loader.
+        // TODO: better way to fix this?
+        String tmp = (mQuery == null) ? "" : mQuery;
+        if (!s.equals(tmp)) {
+            mQuery = s;
+            getLoaderManager().restartLoader(0, null, this);
+        }
         return true;
     }
 
@@ -479,7 +486,7 @@ public class KeyListFragment extends LoaderFragment
 
                 boolean isRevoked = cursor.getInt(INDEX_IS_REVOKED) > 0;
                 boolean isExpired = !cursor.isNull(INDEX_EXPIRY)
-                        && new Date(cursor.getLong(INDEX_EXPIRY)*1000).before(new Date());
+                        && new Date(cursor.getLong(INDEX_EXPIRY) * 1000).before(new Date());
                 boolean isVerified = cursor.getInt(INDEX_VERIFIED) > 0;
 
                 // Note: order is important!
@@ -521,6 +528,7 @@ public class KeyListFragment extends LoaderFragment
 
             return mCursor.getInt(INDEX_HAS_ANY_SECRET) != 0;
         }
+
         public long getMasterKeyId(int id) {
             if (!mCursor.moveToPosition(id)) {
                 throw new IllegalStateException("couldn't move cursor to position " + id);
@@ -625,7 +633,7 @@ public class KeyListFragment extends LoaderFragment
 
         public boolean isAnySecretSelected() {
             for (int pos : mSelection.keySet()) {
-                if(mAdapter.isSecretAvailable(pos))
+                if (mAdapter.isSecretAvailable(pos))
                     return true;
             }
             return false;
