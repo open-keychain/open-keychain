@@ -111,6 +111,7 @@ public class KeychainContract {
         public static final String HAS_ANY_SECRET = "has_any_secret";
         public static final String HAS_ENCRYPT = "has_encrypt";
         public static final String HAS_SIGN = "has_sign";
+        public static final String HAS_CERTIFY = "has_certify";
         public static final String PUBKEY_DATA = "pubkey_data";
         public static final String PRIVKEY_DATA = "privkey_data";
 
