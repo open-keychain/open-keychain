@@ -27,7 +27,6 @@ import org.spongycastle.openpgp.PGPException;
 import org.spongycastle.openpgp.PGPLiteralData;
 import org.spongycastle.openpgp.PGPLiteralDataGenerator;
 import org.spongycastle.openpgp.PGPSignatureGenerator;
-import org.spongycastle.openpgp.PGPV3SignatureGenerator;
 import org.spongycastle.openpgp.operator.jcajce.JcePBEKeyEncryptionMethodGenerator;
 import org.spongycastle.openpgp.operator.jcajce.JcePGPDataEncryptorBuilder;
 import org.sufficientlysecure.keychain.Constants;
@@ -68,7 +67,6 @@ public class PgpSignEncrypt {
     private int mSymmetricEncryptionAlgorithm;
     private long mSignatureMasterKeyId;
     private int mSignatureHashAlgorithm;
-    private boolean mSignatureForceV3;
     private String mSignaturePassphrase;
     private boolean mEncryptToSigner;
     private boolean mCleartextInput;
@@ -99,7 +97,6 @@ public class PgpSignEncrypt {
         this.mSymmetricEncryptionAlgorithm = builder.mSymmetricEncryptionAlgorithm;
         this.mSignatureMasterKeyId = builder.mSignatureMasterKeyId;
         this.mSignatureHashAlgorithm = builder.mSignatureHashAlgorithm;
-        this.mSignatureForceV3 = builder.mSignatureForceV3;
         this.mSignaturePassphrase = builder.mSignaturePassphrase;
         this.mEncryptToSigner = builder.mEncryptToSigner;
         this.mCleartextInput = builder.mCleartextInput;
@@ -122,7 +119,6 @@ public class PgpSignEncrypt {
         private int mSymmetricEncryptionAlgorithm = 0;
         private long mSignatureMasterKeyId = Constants.key.none;
         private int mSignatureHashAlgorithm = 0;
-        private boolean mSignatureForceV3 = false;
         private String mSignaturePassphrase = null;
         private boolean mEncryptToSigner = false;
         private boolean mCleartextInput = false;
@@ -176,11 +172,6 @@ public class PgpSignEncrypt {
 
         public Builder setSignatureHashAlgorithm(int signatureHashAlgorithm) {
             mSignatureHashAlgorithm = signatureHashAlgorithm;
-            return this;
-        }
-
-        public Builder setSignatureForceV3(boolean signatureForceV3) {
-            mSignatureForceV3 = signatureForceV3;
             return this;
         }
 
@@ -349,19 +340,13 @@ public class PgpSignEncrypt {
 
         /* Initialize signature generator object for later usage */
         PGPSignatureGenerator signatureGenerator = null;
-        PGPV3SignatureGenerator signatureV3Generator = null;
         if (enableSignature) {
             updateProgress(R.string.progress_preparing_signature, 4, 100);
 
             try {
                 boolean cleartext = mCleartextInput && mEnableAsciiArmorOutput && !enableEncryption;
-                if (mSignatureForceV3) {
-                    signatureV3Generator = signingKey.getV3SignatureGenerator(
-                            mSignatureHashAlgorithm, cleartext);
-                } else {
-                    signatureGenerator = signingKey.getSignatureGenerator(
-                            mSignatureHashAlgorithm, cleartext);
-                }
+                signatureGenerator = signingKey.getSignatureGenerator(
+                        mSignatureHashAlgorithm, cleartext);
             } catch (PgpGeneralException e) {
                 // TODO throw correct type of exception (which shouldn't be PGPException)
                 throw new KeyExtractionException();
@@ -388,11 +373,7 @@ public class PgpSignEncrypt {
             }
 
             if (enableSignature) {
-                if (mSignatureForceV3) {
-                    signatureV3Generator.generateOnePassVersion(false).encode(bcpgOut);
-                } else {
-                    signatureGenerator.generateOnePassVersion(false).encode(bcpgOut);
-                }
+                signatureGenerator.generateOnePassVersion(false).encode(bcpgOut);
             }
 
             PGPLiteralDataGenerator literalGen = new PGPLiteralDataGenerator();
@@ -408,11 +389,7 @@ public class PgpSignEncrypt {
 
                 // update signature buffer if signature is requested
                 if (enableSignature) {
-                    if (mSignatureForceV3) {
-                        signatureV3Generator.update(buffer, 0, length);
-                    } else {
-                        signatureGenerator.update(buffer, 0, length);
-                    }
+                    signatureGenerator.update(buffer, 0, length);
                 }
 
                 alreadyWritten += length;
@@ -435,11 +412,7 @@ public class PgpSignEncrypt {
             final BufferedReader reader = new BufferedReader(new InputStreamReader(in));
 
             // update signature buffer with first line
-            if (mSignatureForceV3) {
-                processLineV3(reader.readLine(), armorOut, signatureV3Generator);
-            } else {
-                processLine(reader.readLine(), armorOut, signatureGenerator);
-            }
+            processLine(reader.readLine(), armorOut, signatureGenerator);
 
             // TODO: progress: fake annealing?
             while (true) {
@@ -454,13 +427,8 @@ public class PgpSignEncrypt {
                 armorOut.write(NEW_LINE);
 
                 // update signature buffer with input line
-                if (mSignatureForceV3) {
-                    signatureV3Generator.update(NEW_LINE);
-                    processLineV3(line, armorOut, signatureV3Generator);
-                } else {
-                    signatureGenerator.update(NEW_LINE);
-                    processLine(line, armorOut, signatureGenerator);
-                }
+                signatureGenerator.update(NEW_LINE);
+                processLine(line, armorOut, signatureGenerator);
             }
 
             armorOut.endClearText();
@@ -480,11 +448,7 @@ public class PgpSignEncrypt {
                 bcpgOut = new BCPGOutputStream(out);
             }
 
-            if (mSignatureForceV3) {
-                signatureV3Generator.generateOnePassVersion(false).encode(bcpgOut);
-            } else {
-                signatureGenerator.generateOnePassVersion(false).encode(bcpgOut);
-            }
+            signatureGenerator.generateOnePassVersion(false).encode(bcpgOut);
 
             PGPLiteralDataGenerator literalGen = new PGPLiteralDataGenerator();
             pOut = literalGen.open(bcpgOut, PGPLiteralData.BINARY, mOriginalFilename, new Date(),
@@ -496,11 +460,7 @@ public class PgpSignEncrypt {
             while ((length = in.read(buffer)) > 0) {
                 pOut.write(buffer, 0, length);
 
-                if (mSignatureForceV3) {
-                    signatureV3Generator.update(buffer, 0, length);
-                } else {
-                    signatureGenerator.update(buffer, 0, length);
-                }
+                signatureGenerator.update(buffer, 0, length);
 
                 alreadyWritten += length;
                 if (mData.getSize() > 0) {
@@ -517,11 +477,7 @@ public class PgpSignEncrypt {
 
         if (enableSignature) {
             updateProgress(R.string.progress_generating_signature, 95, 100);
-            if (mSignatureForceV3) {
-                signatureV3Generator.generate().encode(pOut);
-            } else {
-                signatureGenerator.generate().encode(pOut);
-            }
+            signatureGenerator.generate().encode(pOut);
         }
 
         // closing outputs
@@ -546,32 +502,6 @@ public class PgpSignEncrypt {
 
     private static void processLine(final String pLine, final ArmoredOutputStream pArmoredOutput,
                                     final PGPSignatureGenerator pSignatureGenerator)
-            throws IOException, SignatureException {
-
-        if (pLine == null) {
-            return;
-        }
-
-        final char[] chars = pLine.toCharArray();
-        int len = chars.length;
-
-        while (len > 0) {
-            if (!Character.isWhitespace(chars[len - 1])) {
-                break;
-            }
-            len--;
-        }
-
-        final byte[] data = pLine.substring(0, len).getBytes("UTF-8");
-
-        if (pArmoredOutput != null) {
-            pArmoredOutput.write(data);
-        }
-        pSignatureGenerator.update(data);
-    }
-
-    private static void processLineV3(final String pLine, final ArmoredOutputStream pArmoredOutput,
-                                      final PGPV3SignatureGenerator pSignatureGenerator)
             throws IOException, SignatureException {
 
         if (pLine == null) {

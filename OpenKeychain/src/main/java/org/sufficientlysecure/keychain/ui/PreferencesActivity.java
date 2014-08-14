@@ -119,9 +119,6 @@ public class PreferencesActivity extends PreferenceActivity {
             initializeAsciiArmor(
                     (CheckBoxPreference) findPreference(Constants.Pref.DEFAULT_ASCII_ARMOR));
 
-            initializeForceV3Signatures(
-                    (CheckBoxPreference) findPreference(Constants.Pref.FORCE_V3_SIGNATURES));
-
             initializeWriteVersionHeader(
                     (CheckBoxPreference) findPreference(Constants.Pref.WRITE_VERSION_HEADER));
 
@@ -266,9 +263,6 @@ public class PreferencesActivity extends PreferenceActivity {
             initializeAsciiArmor(
                     (CheckBoxPreference) findPreference(Constants.Pref.DEFAULT_ASCII_ARMOR));
 
-            initializeForceV3Signatures(
-                    (CheckBoxPreference) findPreference(Constants.Pref.FORCE_V3_SIGNATURES));
-
             initializeWriteVersionHeader(
                     (CheckBoxPreference) findPreference(Constants.Pref.WRITE_VERSION_HEADER));
         }
@@ -390,18 +384,6 @@ public class PreferencesActivity extends PreferenceActivity {
                 return false;
             }
         });
-    }
-
-    private static void initializeForceV3Signatures(final CheckBoxPreference mForceV3Signatures) {
-        mForceV3Signatures.setChecked(sPreferences.getForceV3Signatures());
-        mForceV3Signatures
-                .setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-                    public boolean onPreferenceChange(Preference preference, Object newValue) {
-                        mForceV3Signatures.setChecked((Boolean) newValue);
-                        sPreferences.setForceV3Signatures((Boolean) newValue);
-                        return false;
-                    }
-                });
     }
 
     private static void initializeWriteVersionHeader(final CheckBoxPreference mWriteVersionHeader) {

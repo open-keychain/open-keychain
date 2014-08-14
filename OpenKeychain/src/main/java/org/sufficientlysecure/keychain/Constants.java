@@ -64,7 +64,6 @@ public final class Constants {
         public static final String DEFAULT_FILE_COMPRESSION = "defaultFileCompression";
         public static final String PASSPHRASE_CACHE_TTL = "passphraseCacheTtl";
         public static final String LANGUAGE = "language";
-        public static final String FORCE_V3_SIGNATURES = "forceV3Signatures";
         public static final String KEY_SERVERS = "keyServers";
         public static final String KEY_SERVERS_DEFAULT_VERSION = "keyServersDefaultVersion";
         public static final String WRITE_VERSION_HEADER = "writeVersionHeader";
