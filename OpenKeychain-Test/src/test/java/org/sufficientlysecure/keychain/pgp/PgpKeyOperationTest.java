@@ -409,6 +409,24 @@ public class PgpKeyOperationTest {
                     expiry, modified.getPublicKey(keyId).getExpiryTime().getTime()/1000);
         }
 
+        { // expiry of 0 should be "no expiry"
+            parcel.reset();
+            parcel.mChangeSubKeys.add(new SubkeyChange(keyId, null, 0L));
+            modified = applyModificationWithChecks(parcel, modified, onlyA, onlyB);
+
+            Assert.assertEquals("old packet must be signature",
+                    PacketTags.SIGNATURE, onlyA.get(0).tag);
+
+            Packet p = new BCPGInputStream(new ByteArrayInputStream(onlyB.get(0).buf)).readPacket();
+            Assert.assertTrue("first new packet must be signature", p instanceof SignaturePacket);
+            Assert.assertEquals("signature type must be subkey binding certificate",
+                    PGPSignature.SUBKEY_BINDING, ((SignaturePacket) p).getSignatureType());
+            Assert.assertEquals("signature must have been created by master key",
+                    ring.getMasterKeyId(), ((SignaturePacket) p).getKeyID());
+
+            Assert.assertNull("key must not expire anymore", modified.getPublicKey(keyId).getExpiryTime());
+        }
+
         { // a past expiry should fail
             parcel.reset();
             parcel.mChangeSubKeys.add(new SubkeyChange(keyId, null, new Date().getTime()/1000-10));
