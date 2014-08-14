@@ -648,7 +648,7 @@ public class ProviderHelper {
 
             if (publicRing.isSecret()) {
                 log(LogLevel.ERROR, LogType.MSG_IP_BAD_TYPE_SECRET);
-                return new SaveKeyringResult(SaveKeyringResult.RESULT_ERROR, mLog);
+                return new SaveKeyringResult(SaveKeyringResult.RESULT_ERROR, mLog, null);
             }
 
             CanonicalizedPublicKeyRing canPublicRing;
@@ -662,20 +662,20 @@ public class ProviderHelper {
 
                 // If this is null, there is an error in the log so we can just return
                 if (publicRing == null) {
-                    return new SaveKeyringResult(SaveKeyringResult.RESULT_ERROR, mLog);
+                    return new SaveKeyringResult(SaveKeyringResult.RESULT_ERROR, mLog, null);
                 }
 
                 // Canonicalize this keyring, to assert a number of assumptions made about it.
                 canPublicRing = (CanonicalizedPublicKeyRing) publicRing.canonicalize(mLog, mIndent);
                 if (canPublicRing == null) {
-                    return new SaveKeyringResult(SaveKeyringResult.RESULT_ERROR, mLog);
+                    return new SaveKeyringResult(SaveKeyringResult.RESULT_ERROR, mLog, null);
                 }
 
                 // Early breakout if nothing changed
                 if (Arrays.hashCode(publicRing.getEncoded())
                         == Arrays.hashCode(oldPublicRing.getEncoded())) {
                     log(LogLevel.OK, LogType.MSG_IP_SUCCESS_IDENTICAL);
-                    return new SaveKeyringResult(SaveKeyringResult.UPDATED, mLog);
+                    return new SaveKeyringResult(SaveKeyringResult.UPDATED, mLog, null);
                 }
             } catch (NotFoundException e) {
                 // Not an issue, just means we are dealing with a new keyring.
@@ -683,7 +683,7 @@ public class ProviderHelper {
                 // Canonicalize this keyring, to assert a number of assumptions made about it.
                 canPublicRing = (CanonicalizedPublicKeyRing) publicRing.canonicalize(mLog, mIndent);
                 if (canPublicRing == null) {
-                    return new SaveKeyringResult(SaveKeyringResult.RESULT_ERROR, mLog);
+                    return new SaveKeyringResult(SaveKeyringResult.RESULT_ERROR, mLog, null);
                 }
 
             }
@@ -696,12 +696,12 @@ public class ProviderHelper {
                 // Merge data from new public ring into secret one
                 secretRing = secretRing.merge(publicRing, mLog, mIndent);
                 if (secretRing == null) {
-                    return new SaveKeyringResult(SaveKeyringResult.RESULT_ERROR, mLog);
+                    return new SaveKeyringResult(SaveKeyringResult.RESULT_ERROR, mLog, null);
                 }
                 // This has always been a secret key ring, this is a safe cast
                 canSecretRing = (CanonicalizedSecretKeyRing) secretRing.canonicalize(mLog, mIndent);
                 if (canSecretRing == null) {
-                    return new SaveKeyringResult(SaveKeyringResult.RESULT_ERROR, mLog);
+                    return new SaveKeyringResult(SaveKeyringResult.RESULT_ERROR, mLog, null);
                 }
 
             } catch (NotFoundException e) {
@@ -720,11 +720,11 @@ public class ProviderHelper {
                 }
             }
 
-            return new SaveKeyringResult(result, mLog);
+            return new SaveKeyringResult(result, mLog, canSecretRing);
 
         } catch (IOException e) {
             log(LogLevel.ERROR, LogType.MSG_IP_FAIL_IO_EXC);
-            return new SaveKeyringResult(SaveKeyringResult.RESULT_ERROR, mLog);
+            return new SaveKeyringResult(SaveKeyringResult.RESULT_ERROR, mLog, null);
         } finally {
             mIndent -= 1;
         }
@@ -740,7 +740,7 @@ public class ProviderHelper {
 
             if ( ! secretRing.isSecret()) {
                 log(LogLevel.ERROR, LogType.MSG_IS_BAD_TYPE_PUBLIC);
-                return new SaveKeyringResult(SaveKeyringResult.RESULT_ERROR, mLog);
+                return new SaveKeyringResult(SaveKeyringResult.RESULT_ERROR, mLog, null);
             }
 
             CanonicalizedSecretKeyRing canSecretRing;
@@ -754,14 +754,14 @@ public class ProviderHelper {
 
                 // If this is null, there is an error in the log so we can just return
                 if (secretRing == null) {
-                    return new SaveKeyringResult(SaveKeyringResult.RESULT_ERROR, mLog);
+                    return new SaveKeyringResult(SaveKeyringResult.RESULT_ERROR, mLog, null);
                 }
 
                 // Canonicalize this keyring, to assert a number of assumptions made about it.
                 // This is a safe cast, because we made sure this is a secret ring above
                 canSecretRing = (CanonicalizedSecretKeyRing) secretRing.canonicalize(mLog, mIndent);
                 if (canSecretRing == null) {
-                    return new SaveKeyringResult(SaveKeyringResult.RESULT_ERROR, mLog);
+                    return new SaveKeyringResult(SaveKeyringResult.RESULT_ERROR, mLog, null);
                 }
 
                 // Early breakout if nothing changed
@@ -769,7 +769,7 @@ public class ProviderHelper {
                         == Arrays.hashCode(oldSecretRing.getEncoded())) {
                     log(LogLevel.OK, LogType.MSG_IS_SUCCESS_IDENTICAL,
                             PgpKeyHelper.convertKeyIdToHex(masterKeyId) );
-                    return new SaveKeyringResult(SaveKeyringResult.UPDATED, mLog);
+                    return new SaveKeyringResult(SaveKeyringResult.UPDATED, mLog, null);
                 }
             } catch (NotFoundException e) {
                 // Not an issue, just means we are dealing with a new keyring
@@ -778,7 +778,7 @@ public class ProviderHelper {
                 // This is a safe cast, because we made sure this is a secret ring above
                 canSecretRing = (CanonicalizedSecretKeyRing) secretRing.canonicalize(mLog, mIndent);
                 if (canSecretRing == null) {
-                    return new SaveKeyringResult(SaveKeyringResult.RESULT_ERROR, mLog);
+                    return new SaveKeyringResult(SaveKeyringResult.RESULT_ERROR, mLog, null);
                 }
 
             }
@@ -791,7 +791,7 @@ public class ProviderHelper {
                 // Merge data from new secret ring into public one
                 publicRing = oldPublicRing.merge(secretRing, mLog, mIndent);
                 if (publicRing == null) {
-                    return new SaveKeyringResult(SaveKeyringResult.RESULT_ERROR, mLog);
+                    return new SaveKeyringResult(SaveKeyringResult.RESULT_ERROR, mLog, null);
                 }
 
             } catch (NotFoundException e) {
@@ -801,24 +801,24 @@ public class ProviderHelper {
 
             CanonicalizedPublicKeyRing canPublicRing = (CanonicalizedPublicKeyRing) publicRing.canonicalize(mLog, mIndent);
             if (canPublicRing == null) {
-                return new SaveKeyringResult(SaveKeyringResult.RESULT_ERROR, mLog);
+                return new SaveKeyringResult(SaveKeyringResult.RESULT_ERROR, mLog, null);
             }
 
             int result;
 
             result = saveCanonicalizedPublicKeyRing(canPublicRing, progress, true);
             if ((result & SaveKeyringResult.RESULT_ERROR) == SaveKeyringResult.RESULT_ERROR) {
-                return new SaveKeyringResult(SaveKeyringResult.RESULT_ERROR, mLog);
+                return new SaveKeyringResult(SaveKeyringResult.RESULT_ERROR, mLog, null);
             }
 
             progress.setProgress(LogType.MSG_IP_REINSERT_SECRET.getMsgId(), 90, 100);
             result = saveCanonicalizedSecretKeyRing(canSecretRing);
 
-            return new SaveKeyringResult(result, mLog);
+            return new SaveKeyringResult(result, mLog, canSecretRing);
 
         } catch (IOException e) {
             log(LogLevel.ERROR, LogType.MSG_IS_FAIL_IO_EXC);
-            return new SaveKeyringResult(SaveKeyringResult.RESULT_ERROR, mLog);
+            return new SaveKeyringResult(SaveKeyringResult.RESULT_ERROR, mLog, null);
         } finally {
             mIndent -= 1;
         }

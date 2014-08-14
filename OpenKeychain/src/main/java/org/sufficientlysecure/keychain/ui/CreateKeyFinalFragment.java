@@ -140,7 +140,7 @@ public class CreateKeyFinalFragment extends Fragment {
                     if (returnData == null) {
                         return;
                     }
-                    final OperationResults.EditKeyResult result =
+                    final OperationResults.SaveKeyringResult result =
                             returnData.getParcelable(OperationResultParcel.EXTRA_RESULT);
                     if (result == null) {
                         return;
@@ -191,7 +191,7 @@ public class CreateKeyFinalFragment extends Fragment {
         getActivity().startService(intent);
     }
 
-    private void uploadKey(final OperationResults.EditKeyResult editKeyResult) {
+    private void uploadKey(final OperationResults.SaveKeyringResult editKeyResult) {
         // Send all information needed to service to upload key in other thread
         final Intent intent = new Intent(getActivity(), KeychainIntentService.class);
 
