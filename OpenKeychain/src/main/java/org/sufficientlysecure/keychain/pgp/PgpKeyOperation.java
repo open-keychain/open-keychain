@@ -543,7 +543,8 @@ public class PgpKeyOperation {
                 PGPPublicKey pKey = sKey.getPublicKey();
 
                 // expiry must not be in the past
-                if (change.mExpiry != null && new Date(change.mExpiry*1000).before(new Date())) {
+                if (change.mExpiry != null && change.mExpiry != 0 &&
+                        new Date(change.mExpiry*1000).before(new Date())) {
                     log.add(LogLevel.ERROR, LogType.MSG_MF_SUBKEY_PAST_EXPIRY,
                             indent + 1, PgpKeyHelper.convertKeyIdToHex(change.mKeyId));
                     return new EditKeyResult(EditKeyResult.RESULT_ERROR, log, null);

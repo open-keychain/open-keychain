@@ -16,6 +16,7 @@ import org.spongycastle.bcpg.SecretSubkeyPacket;
 import org.spongycastle.bcpg.SignaturePacket;
 import org.spongycastle.bcpg.UserIDPacket;
 import org.spongycastle.bcpg.sig.KeyFlags;
+import org.spongycastle.jce.provider.BouncyCastleProvider;
 import org.spongycastle.openpgp.PGPSignature;
 import org.spongycastle.bcpg.PublicKeyAlgorithmTags;
 import org.sufficientlysecure.keychain.service.OperationResultParcel.OperationLog;
@@ -31,6 +32,7 @@ import org.sufficientlysecure.keychain.util.ProgressScaler;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.security.Security;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
@@ -51,6 +53,8 @@ public class PgpKeyOperationTest {
     ArrayList<RawPacket> onlyB = new ArrayList<RawPacket>();
 
     @BeforeClass public static void setUpOnce() throws Exception {
+        Security.insertProviderAt(new BouncyCastleProvider(), 1);
+
         ShadowLog.stream = System.out;
 
         {
@@ -407,6 +411,24 @@ public class PgpKeyOperationTest {
                     modified.getPublicKey(keyId).getExpiryTime());
             Assert.assertEquals("key expiry must be unchanged",
                     expiry, modified.getPublicKey(keyId).getExpiryTime().getTime()/1000);
+        }
+
+        { // expiry of 0 should be "no expiry"
+            parcel.reset();
+            parcel.mChangeSubKeys.add(new SubkeyChange(keyId, null, 0L));
+            modified = applyModificationWithChecks(parcel, modified, onlyA, onlyB);
+
+            Assert.assertEquals("old packet must be signature",
+                    PacketTags.SIGNATURE, onlyA.get(0).tag);
+
+            Packet p = new BCPGInputStream(new ByteArrayInputStream(onlyB.get(0).buf)).readPacket();
+            Assert.assertTrue("first new packet must be signature", p instanceof SignaturePacket);
+            Assert.assertEquals("signature type must be subkey binding certificate",
+                    PGPSignature.SUBKEY_BINDING, ((SignaturePacket) p).getSignatureType());
+            Assert.assertEquals("signature must have been created by master key",
+                    ring.getMasterKeyId(), ((SignaturePacket) p).getKeyID());
+
+            Assert.assertNull("key must not expire anymore", modified.getPublicKey(keyId).getExpiryTime());
         }
 
         { // a past expiry should fail
