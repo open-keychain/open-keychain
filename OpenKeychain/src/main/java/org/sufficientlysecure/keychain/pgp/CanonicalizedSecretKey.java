@@ -49,16 +49,16 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
-/** Wrapper for a PGPSecretKey.
- *
+/**
+ * Wrapper for a PGPSecretKey.
+ * <p/>
  * This object can only be obtained from a WrappedSecretKeyRing, and stores a
  * back reference to its parent.
- *
+ * <p/>
  * This class represents known secret keys which are stored in the database.
  * All "crypto operations using a known secret key" should be implemented in
  * this class, to ensure on type level that these operations are performed on
  * properly imported secret keys only.
- *
  */
 public class CanonicalizedSecretKey extends CanonicalizedPublicKey {
 
@@ -99,19 +99,29 @@ public class CanonicalizedSecretKey extends CanonicalizedPublicKey {
         } catch (PGPException e) {
             return false;
         }
-        if(mPrivateKey == null) {
+        if (mPrivateKey == null) {
             throw new PgpGeneralException("error extracting key");
         }
         return true;
     }
 
-    // TODO: just a hack currently
+    /**
+     * Returns a list of all supported hash algorithms. This list is currently hardcoded to return
+     * a limited set of algorithms supported by Yubikeys.
+     *
+     * @return
+     */
     public LinkedList<Integer> getSupportedHashAlgorithms() {
         LinkedList<Integer> supported = new LinkedList<Integer>();
 
         if (mPrivateKeyState == PRIVATE_KEY_STATE_DIVERT_TO_CARD) {
-            // TODO: only works with SHA256 ?!
+            // TODO: no support for MD5
+            supported.add(HashAlgorithmTags.RIPEMD160);
+            supported.add(HashAlgorithmTags.SHA1);
+            supported.add(HashAlgorithmTags.SHA224);
             supported.add(HashAlgorithmTags.SHA256);
+            supported.add(HashAlgorithmTags.SHA384);
+            supported.add(HashAlgorithmTags.SHA512); // preferred is latest
         } else {
             supported.add(HashAlgorithmTags.MD5);
             supported.add(HashAlgorithmTags.RIPEMD160);
@@ -148,7 +158,7 @@ public class CanonicalizedSecretKey extends CanonicalizedPublicKey {
                     mSecretKey.getKeyID(), nfcSignedHash, nfcCreationTimestamp)
                     .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME);
 
-            Log.d(Constants.TAG, "mSecretKey.getKeyID() "+ PgpKeyHelper.convertKeyIdToHex(mSecretKey.getKeyID()));
+            Log.d(Constants.TAG, "mSecretKey.getKeyID() " + PgpKeyHelper.convertKeyIdToHex(mSecretKey.getKeyID()));
         } else {
             // content signer based on signing key algorithm and chosen hash algorithm
             contentSignerBuilder = new JcaPGPContentSignerBuilder(
@@ -176,7 +186,7 @@ public class CanonicalizedSecretKey extends CanonicalizedPublicKey {
             }
             signatureGenerator.setHashedSubpackets(spGen.generate());
             return signatureGenerator;
-        } catch(PGPException e) {
+        } catch (PGPException e) {
             // TODO: simply throw PGPException!
             throw new PgpGeneralException("Error initializing signature!", e);
         }
@@ -194,8 +204,8 @@ public class CanonicalizedSecretKey extends CanonicalizedPublicKey {
     /**
      * Certify the given pubkeyid with the given masterkeyid.
      *
-     * @param publicKeyRing    Keyring to add certification to.
-     * @param userIds          User IDs to certify, must not be null or empty
+     * @param publicKeyRing Keyring to add certification to.
+     * @param userIds       User IDs to certify, must not be null or empty
      * @return A keyring with added certifications
      */
     public UncachedKeyRing certifyUserIds(CanonicalizedPublicKeyRing publicKeyRing, List<String> userIds)

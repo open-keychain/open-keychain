@@ -138,11 +138,12 @@ public class OpenPgpService extends RemoteService {
         return result;
     }
 
-    private Intent getNfcIntent(Intent data, byte[] hashToSign) {
+    private Intent getNfcIntent(Intent data, byte[] hashToSign, int hashAlgo) {
         // build PendingIntent for Yubikey NFC operations
         Intent intent = new Intent(getBaseContext(), NfcActivity.class);
         intent.setAction(NfcActivity.ACTION_SIGN_HASH);
         intent.putExtra(NfcActivity.EXTRA_NFC_HASH_TO_SIGN, hashToSign);
+        intent.putExtra(NfcActivity.EXTRA_NFC_HASH_ALGO, hashAlgo);
         intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
         // pass params through to activity that it can be returned again later to repeat pgp operation
         intent.putExtra(NfcActivity.EXTRA_DATA, data);
@@ -239,7 +240,7 @@ public class OpenPgpService extends RemoteService {
                     // pass through the signature creation timestamp to be used again on second execution
                     // of PgpSignEncrypt when we have the signed hash!
                     data.putExtra(OpenPgpApi.EXTRA_NFC_SIG_CREATION_TIMESTAMP, e.mCreationTimestamp.getTime());
-                    return getNfcIntent(data, e.mHashToSign);
+                    return getNfcIntent(data, e.mHashToSign, e.mHashAlgo);
                 }
             } finally {
                 is.close();

@@ -261,10 +261,12 @@ public class PgpSignEncrypt {
 
     public static class NeedNfcDataException extends Exception {
         public byte[] mHashToSign;
+        public int mHashAlgo;
         public Date mCreationTimestamp;
 
-        public NeedNfcDataException(byte[] hashToSign, Date creationTimestamp) {
+        public NeedNfcDataException(byte[] hashToSign, int hashAlgo, Date creationTimestamp) {
             mHashToSign = hashToSign;
+            mHashAlgo = hashAlgo;
             mCreationTimestamp = creationTimestamp;
         }
     }
@@ -521,7 +523,7 @@ public class PgpSignEncrypt {
                 signatureGenerator.generate().encode(pOut);
             } catch (NfcSyncPGPContentSignerBuilder.NfcInteractionNeeded e) {
                 // this secret key diverts to a OpenPGP card, throw exception with hash that will be signed
-                throw new NeedNfcDataException(e.hashToSign, e.creationTimestamp);
+                throw new NeedNfcDataException(e.hashToSign, e.hashAlgo, e.creationTimestamp);
             }
         }
 
