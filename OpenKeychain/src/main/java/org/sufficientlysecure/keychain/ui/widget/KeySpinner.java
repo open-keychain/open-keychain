@@ -80,8 +80,12 @@ public abstract class KeySpinner extends Spinner {
     @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
+        reload();
+    }
+
+    public void reload() {
         if (getContext() instanceof FragmentActivity) {
-            ((FragmentActivity) getContext()).getSupportLoaderManager().initLoader(hashCode(), null, new LoaderManager.LoaderCallbacks<Cursor>() {
+            ((FragmentActivity) getContext()).getSupportLoaderManager().restartLoader(hashCode(), null, new LoaderManager.LoaderCallbacks<Cursor>() {
                 @Override
                 public Loader<Cursor> onCreateLoader(int id, Bundle args) {
                     return KeySpinner.this.onCreateLoader();

@@ -34,7 +34,6 @@ import android.support.v7.app.ActionBarActivity;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
@@ -203,6 +202,7 @@ public class CertifyKeyActivity extends ActionBarActivity implements LoaderManag
                 if (data.moveToFirst()) {
                     // TODO: put findViewById in onCreate!
                     mPubKeyId = data.getLong(INDEX_MASTER_KEY_ID);
+                    mCertifyKeySpinner.setHiddenMasterKeyId(mPubKeyId);
                     String keyIdStr = PgpKeyHelper.convertKeyIdToHex(mPubKeyId);
                     ((TextView) findViewById(R.id.key_id)).setText(keyIdStr);
 
