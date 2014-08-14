@@ -86,6 +86,10 @@ public class ProviderHelper {
         this(context, new OperationLog(), 0);
     }
 
+    public ProviderHelper(Context context, OperationLog log) {
+        this(context, log, 0);
+    }
+
     public ProviderHelper(Context context, OperationLog log, int indent) {
         mContext = context;
         mContentResolver = context.getContentResolver();
