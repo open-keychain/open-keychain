@@ -428,7 +428,7 @@ public class OpenPgpService extends RemoteService {
                     }
                 }
 
-                if (data.getIntExtra(OpenPgpApi.EXTRA_API_VERSION, -1) == 4) {
+                if (data.getIntExtra(OpenPgpApi.EXTRA_API_VERSION, -1) >= 4) {
                     OpenPgpMetadata metadata = decryptVerifyResult.getDecryptMetadata();
                     if (metadata != null) {
                         result.putExtra(OpenPgpApi.RESULT_METADATA, metadata);
