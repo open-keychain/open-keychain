@@ -271,8 +271,8 @@
   <string name="progress_verifying_integrity">完全性の検証中...</string>
   <string name="progress_deleting_securely">\'%s\' を完全に削除中…</string>
   <!--action strings-->
-  <string name="hint_public_keys">名前/メール/鍵ID...</string>
-  <string name="hint_keybase_search">名前/Keybase.io名...</string>
+  <string name="hint_keyserver_search_hint">名前/メール/鍵ID...</string>
+  <string name="hint_keybase_search_hint">名前/Keybase.io名...</string>
   <!--key bit length selections-->
   <string name="key_size_512">512</string>
   <string name="key_size_768">768</string>

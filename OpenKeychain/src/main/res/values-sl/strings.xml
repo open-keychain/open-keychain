@@ -243,8 +243,8 @@
   <string name="progress_verifying_integrity">preverjam neokrnjenost...</string>
   <string name="progress_deleting_securely">varno brišem \'%s\'…</string>
   <!--action strings-->
-  <string name="hint_public_keys">Ime/e-pošta/ID ključa</string>
-  <string name="hint_keybase_search">Ime/Keybase.io uporabniško ime...</string>
+  <string name="hint_keyserver_search_hint">Ime/e-pošta/ID ključa</string>
+  <string name="hint_keybase_search_hint">Ime/Keybase.io uporabniško ime...</string>
   <!--key bit length selections-->
   <string name="key_size_512">512</string>
   <string name="key_size_768">768</string>

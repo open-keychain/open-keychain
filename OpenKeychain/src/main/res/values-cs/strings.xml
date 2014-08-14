@@ -184,7 +184,7 @@
   <string name="progress_verifying_integrity">verifikuji integritu...</string>
   <string name="progress_deleting_securely">mažu \'%s\' bezpečně...</string>
   <!--action strings-->
-  <string name="hint_public_keys">Jméno/Email/ID klíče</string>
+  <string name="hint_keyserver_search_hint">Jméno/Email/ID klíče</string>
   <!--key bit length selections-->
   <string name="key_size_512">512</string>
   <string name="key_size_768">768</string>

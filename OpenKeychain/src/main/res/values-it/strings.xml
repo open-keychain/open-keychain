@@ -236,8 +236,8 @@
   <string name="progress_verifying_integrity">verifica integrita\'...</string>
   <string name="progress_deleting_securely">eliminazione sicura di \'%s\'...</string>
   <!--action strings-->
-  <string name="hint_public_keys">Nome/Email/ID Chiave...</string>
-  <string name="hint_keybase_search">Nome/Keybase.io nome utente...</string>
+  <string name="hint_keyserver_search_hint">Nome/Email/ID Chiave...</string>
+  <string name="hint_keybase_search_hint">Nome/Keybase.io nome utente...</string>
   <!--key bit length selections-->
   <string name="key_size_512">512</string>
   <string name="key_size_768">768</string>

@@ -238,7 +238,7 @@
   <string name="progress_verifying_integrity">перевірка цілісності…</string>
   <string name="progress_deleting_securely">вилучення безпечно \'%s\'…</string>
   <!--action strings-->
-  <string name="hint_public_keys">Назва/Ел. пошта/ІД ключа…</string>
+  <string name="hint_keyserver_search_hint">Назва/Ел. пошта/ІД ключа…</string>
   <!--key bit length selections-->
   <string name="key_size_512">512</string>
   <string name="key_size_768">768</string>

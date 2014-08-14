@@ -303,8 +303,8 @@
     <string name="progress_deleting_securely">deleting \'%s\' securely…</string>
 
     <!-- action strings -->
-    <string name="hint_public_keys">Name/Email/Key ID…</string>
-    <string name="hint_keybase_search">Name/Keybase.io username…</string>
+    <string name="hint_keyserver_search_hint">Name/Email/Key ID…</string>
+    <string name="hint_keybase_search_hint">Name/Email/Proof/Key…</string>
 
     <!-- key bit length selections -->
     <string name="key_size_512">512</string>
