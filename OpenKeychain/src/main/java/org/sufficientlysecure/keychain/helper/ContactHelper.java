@@ -234,6 +234,24 @@ public class ContactHelper {
         return new ArrayList<String>(mails);
     }
 
+    public static List<String> getContactNames(Context context) {
+        ContentResolver resolver = context.getContentResolver();
+        Cursor cursor = resolver.query(ContactsContract.Contacts.CONTENT_URI,
+                new String[]{ContactsContract.Contacts.DISPLAY_NAME},
+                null, null, null);
+        if (cursor == null) return null;
+
+        Set<String> names = new HashSet<String>();
+        while (cursor.moveToNext()) {
+            String name = cursor.getString(0);
+            if (name != null) {
+                names.add(name);
+            }
+        }
+        cursor.close();
+        return new ArrayList<String>(names);
+    }
+
     public static Uri dataUriFromContactUri(Context context, Uri contactUri) {
         Cursor contactMasterKey = context.getContentResolver().query(contactUri,
                 new String[]{ContactsContract.Data.DATA2}, null, null, null, null);

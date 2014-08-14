@@ -10,7 +10,7 @@
         android:layout_height="?android:attr/listPreferredItemHeight"
         android:orientation="horizontal">
 
-        <EditText
+        <AutoCompleteTextView
             android:id="@+id/import_server_query"
             android:layout_width="0dip"
             android:layout_height="wrap_content"
