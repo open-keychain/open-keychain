@@ -26,14 +26,10 @@
                 android:layout_marginTop="14dp"
                 android:text="@string/section_certification_key" />
 
-            <fragment
-                android:id="@+id/sign_key_select_key_fragment"
-                android:name="org.sufficientlysecure.keychain.ui.SelectSecretKeyLayoutFragment"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="4dp"
-                android:layout_marginTop="4dp"
-                tools:layout="@layout/select_secret_key_layout_fragment" />
+            <org.sufficientlysecure.keychain.ui.widget.CertifyKeySpinner
+                    android:id="@+id/certify_key_spinner"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
 
             <TextView
                 style="@style/SectionHeader"

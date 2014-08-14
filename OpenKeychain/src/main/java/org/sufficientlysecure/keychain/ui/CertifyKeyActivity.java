@@ -34,6 +34,7 @@ import android.support.v7.app.ActionBarActivity;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
@@ -56,6 +57,8 @@ import org.sufficientlysecure.keychain.service.OperationResultParcel;
 import org.sufficientlysecure.keychain.service.PassphraseCacheService;
 import org.sufficientlysecure.keychain.ui.adapter.UserIdsAdapter;
 import org.sufficientlysecure.keychain.ui.dialog.PassphraseDialogFragment;
+import org.sufficientlysecure.keychain.ui.widget.CertifyKeySpinner;
+import org.sufficientlysecure.keychain.ui.widget.KeySpinner;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Notify;
 
@@ -64,18 +67,17 @@ import java.util.ArrayList;
 /**
  * Signs the specified public key with the specified secret master key
  */
-public class CertifyKeyActivity extends ActionBarActivity implements
-        SelectSecretKeyLayoutFragment.SelectSecretKeyCallback, LoaderManager.LoaderCallbacks<Cursor> {
+public class CertifyKeyActivity extends ActionBarActivity implements LoaderManager.LoaderCallbacks<Cursor> {
     private View mCertifyButton;
     private ImageView mActionCertifyImage;
     private CheckBox mUploadKeyCheckbox;
     private Spinner mSelectKeyserverSpinner;
 
-    private SelectSecretKeyLayoutFragment mSelectKeyFragment;
+    private CertifyKeySpinner mCertifyKeySpinner;
 
     private Uri mDataUri;
-    private long mPubKeyId = 0;
-    private long mMasterKeyId = 0;
+    private long mPubKeyId = Constants.key.none;
+    private long mMasterKeyId = Constants.key.none;
 
     private ListView mUserIds;
     private UserIdsAdapter mUserIdsAdapter;
@@ -89,8 +91,7 @@ public class CertifyKeyActivity extends ActionBarActivity implements
 
         setContentView(R.layout.certify_key_activity);
 
-        mSelectKeyFragment = (SelectSecretKeyLayoutFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.sign_key_select_key_fragment);
+        mCertifyKeySpinner = (CertifyKeySpinner) findViewById(R.id.certify_key_spinner);
         mSelectKeyserverSpinner = (Spinner) findViewById(R.id.upload_key_keyserver);
         mUploadKeyCheckbox = (CheckBox) findViewById(R.id.sign_key_upload_checkbox);
         mCertifyButton = findViewById(R.id.certify_key_certify_button);
@@ -101,8 +102,12 @@ public class CertifyKeyActivity extends ActionBarActivity implements
         mActionCertifyImage.setColorFilter(getResources().getColor(R.color.tertiary_text_light),
                 PorterDuff.Mode.SRC_IN);
 
-        mSelectKeyFragment.setCallback(this);
-        mSelectKeyFragment.setFilterCertify(true);
+        mCertifyKeySpinner.setOnKeyChangedListener(new KeySpinner.OnKeyChangedListener() {
+            @Override
+            public void onKeyChanged(long masterKeyId) {
+                mMasterKeyId = masterKeyId;
+            }
+        });
 
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
                 android.R.layout.simple_spinner_item, Preferences.getPreferences(this)
@@ -135,7 +140,6 @@ public class CertifyKeyActivity extends ActionBarActivity implements
             public void onClick(View v) {
                 if (mPubKeyId != 0) {
                     if (mMasterKeyId == 0) {
-                        mSelectKeyFragment.setError(getString(R.string.select_key_to_certify));
                         Notify.showNotify(CertifyKeyActivity.this, getString(R.string.select_key_to_certify),
                                 Notify.Style.ERROR);
                     } else {
@@ -365,14 +369,6 @@ public class CertifyKeyActivity extends ActionBarActivity implements
 
         // start service with intent
         startService(intent);
-    }
-
-    /**
-     * callback from select key fragment
-     */
-    @Override
-    public void onKeySelected(long secretKeyId) {
-        mMasterKeyId = secretKeyId;
     }
 
     @Override
