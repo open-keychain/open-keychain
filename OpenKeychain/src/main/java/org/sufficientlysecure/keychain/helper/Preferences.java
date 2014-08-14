@@ -193,6 +193,11 @@ public class Preferences {
         if (mSharedPreferences.getInt(Constants.Pref.DEFAULT_FILE_COMPRESSION, 0) == 0x21070001) {
             setDefaultFileCompression(CompressionAlgorithmTags.UNCOMPRESSED);
         }
+
+        // migrate away from MD5
+        if (mSharedPreferences.getInt(Constants.Pref.DEFAULT_HASH_ALGORITHM, 0) == HashAlgorithmTags.MD5) {
+            setDefaultHashAlgorithm(HashAlgorithmTags.SHA512);
+        }
     }
 
     public void setWriteVersionHeader(boolean conceal) {

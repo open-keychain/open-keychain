@@ -50,7 +50,6 @@ public class AlgorithmNames {
         mEncryptionNames.put(PGPEncryptedData.TRIPLE_DES, "Triple DES");
         mEncryptionNames.put(PGPEncryptedData.IDEA, "IDEA");
 
-        mHashNames.put(HashAlgorithmTags.MD5, "MD5");
         mHashNames.put(HashAlgorithmTags.RIPEMD160, "RIPEMD-160");
         mHashNames.put(HashAlgorithmTags.SHA1, "SHA-1");
         mHashNames.put(HashAlgorithmTags.SHA224, "SHA-224");
