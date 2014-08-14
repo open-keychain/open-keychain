@@ -84,8 +84,8 @@
   <string name="label_algorithm">アルゴリズム</string>
   <string name="label_ascii_armor">アスキー形式ファイル</string>
   <string name="label_file_ascii_armor">ファイル: アスキー形式</string>
-  <string name="label_conceal_pgp_application">他の人にあなたがOpenKeychain使用していることを知ってもらいましょう</string>
-  <string name="label_conceal_pgp_application_summary">OpenPGPの 署名、暗号文、そしてエクスポートした鍵に  \'OpenKeychain v2.7\' と書くようになりました</string>
+  <string name="label_write_version_header">他の人にあなたがOpenKeychain使用していることを知ってもらいましょう</string>
+  <string name="label_write_version_header_summary">OpenPGPの 署名、暗号文、そしてエクスポートした鍵に  \'OpenKeychain v2.7\' と書くようになりました</string>
   <string name="label_asymmetric_from">差出人:</string>
   <string name="label_to">宛先</string>
   <string name="label_delete_after_encryption">ファイル: 暗号化後に削除</string>

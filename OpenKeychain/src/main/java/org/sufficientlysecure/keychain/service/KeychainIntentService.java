@@ -249,11 +249,11 @@ public class KeychainIntentService extends IntentService
                     PgpSignEncrypt.Builder builder =
                             new PgpSignEncrypt.Builder(
                                     new ProviderHelper(this),
-                                    PgpHelper.getFullVersion(this),
                                     inputData, outStream);
                     builder.setProgressable(this);
 
                     builder.setEnableAsciiArmorOutput(useAsciiArmor)
+                            .setVersionHeader(PgpHelper.getVersionForHeader(this))
                             .setCompressionId(compressionId)
                             .setSymmetricEncryptionAlgorithm(
                                     Preferences.getPreferences(this).getDefaultEncryptionAlgorithm())

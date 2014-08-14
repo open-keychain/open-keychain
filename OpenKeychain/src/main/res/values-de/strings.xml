@@ -81,8 +81,8 @@
   <string name="label_passphrase_again">Passwort wiederholen</string>
   <string name="label_algorithm">Algorithmus</string>
   <string name="label_file_ascii_armor">Datei: ASCII Armor</string>
-  <string name="label_conceal_pgp_application">Lass andere wissen dass du OpenKeychain nutzt</string>
-  <string name="label_conceal_pgp_application_summary">Fügt \'OpenKeychain v2.7\' zu OpenPGP Signaturen, Daten und exportierten Schlüsseln hinzu</string>
+  <string name="label_write_version_header">Lass andere wissen dass du OpenKeychain nutzt</string>
+  <string name="label_write_version_header_summary">Fügt \'OpenKeychain v2.7\' zu OpenPGP Signaturen, Daten und exportierten Schlüsseln hinzu</string>
   <string name="label_asymmetric_from">Von:</string>
   <string name="label_to">An:</string>
   <string name="label_delete_after_encryption">Dateien: Nach Verschlüsselung löschen</string>

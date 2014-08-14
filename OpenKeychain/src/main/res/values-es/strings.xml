@@ -84,8 +84,8 @@
   <string name="label_algorithm">Algoritmo</string>
   <string name="label_ascii_armor">Armadura ASCII del fichero</string>
   <string name="label_file_ascii_armor">Ficheros: Armadura ASCII</string>
-  <string name="label_conceal_pgp_application">Permitir a otros saber que está usando OpenKeychain</string>
-  <string name="label_conceal_pgp_application_summary">Escribe \'OpenKeychain v2.7\' en las firmas OpenPGP, el texto cifrado, y las claves exportadas</string>
+  <string name="label_write_version_header">Permitir a otros saber que está usando OpenKeychain</string>
+  <string name="label_write_version_header_summary">Escribe \'OpenKeychain v2.7\' en las firmas OpenPGP, el texto cifrado, y las claves exportadas</string>
   <string name="label_asymmetric_from">Desde:</string>
   <string name="label_to">Hacia:</string>
   <string name="label_delete_after_encryption">Ficheros: Borrar después del cifrado</string>

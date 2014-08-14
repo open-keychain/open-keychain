@@ -90,8 +90,8 @@
     <string name="label_algorithm">Algorithm</string>
     <string name="label_ascii_armor">File ASCII Armor</string>
     <string name="label_file_ascii_armor">Files: ASCII Armor</string>
-    <string name="label_conceal_pgp_application">Let others know that you\'re using OpenKeychain</string>
-    <string name="label_conceal_pgp_application_summary">Writes \'OpenKeychain v2.7\' to OpenPGP signatures, ciphertext, and exported keys</string>
+    <string name="label_write_version_header">Let others know that you\'re using OpenKeychain</string>
+    <string name="label_write_version_header_summary">Writes \'OpenKeychain v2.7\' to OpenPGP signatures, ciphertext, and exported keys</string>
     <string name="label_asymmetric_from">From:</string>
     <string name="label_to">To:</string>
     <string name="label_delete_after_encryption">Files: Delete After Encryption</string>

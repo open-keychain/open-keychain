@@ -69,8 +69,8 @@
   <string name="label_passphrase">Frase di Accesso</string>
   <string name="label_passphrase_again">Ripeti Frase di Accesso</string>
   <string name="label_algorithm">Algortimo</string>
-  <string name="label_conceal_pgp_application">Fai sapere agli altri che utilizzi OpenKeychain</string>
-  <string name="label_conceal_pgp_application_summary">Scrive \'OpenKeychain v2.7\' nelle firme OpenPGP, testi cifrati e chiavi esportate</string>
+  <string name="label_write_version_header">Fai sapere agli altri che utilizzi OpenKeychain</string>
+  <string name="label_write_version_header_summary">Scrive \'OpenKeychain v2.7\' nelle firme OpenPGP, testi cifrati e chiavi esportate</string>
   <string name="label_delete_after_decryption">Cancella Dopo Decodifica</string>
   <string name="label_encryption_algorithm">Algoritmo di Codifica</string>
   <string name="label_hash_algorithm">Algoritmo di Hash</string>

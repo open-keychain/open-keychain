@@ -109,11 +109,11 @@ public class PgpSignEncrypt {
     public static class Builder {
         // mandatory parameter
         private ProviderHelper mProviderHelper;
-        private String mVersionHeader;
         private InputData mData;
         private OutputStream mOutStream;
 
         // optional
+        private String mVersionHeader = null;
         private Progressable mProgressable = null;
         private boolean mEnableAsciiArmorOutput = false;
         private int mCompressionId = CompressionAlgorithmTags.UNCOMPRESSED;
@@ -128,11 +128,15 @@ public class PgpSignEncrypt {
         private boolean mCleartextInput = false;
         private String mOriginalFilename = "";
 
-        public Builder(ProviderHelper providerHelper, String versionHeader, InputData data, OutputStream outStream) {
+        public Builder(ProviderHelper providerHelper, InputData data, OutputStream outStream) {
             mProviderHelper = providerHelper;
-            mVersionHeader = versionHeader;
             mData = data;
             mOutStream = outStream;
+        }
+
+        public Builder setVersionHeader(String versionHeader) {
+            mVersionHeader = versionHeader;
+            return this;
         }
 
         public Builder setProgressable(Progressable progressable) {
@@ -271,7 +275,9 @@ public class PgpSignEncrypt {
         OutputStream out;
         if (mEnableAsciiArmorOutput) {
             armorOut = new ArmoredOutputStream(mOutStream);
-            armorOut.setHeader("Version", mVersionHeader);
+            if (mVersionHeader != null) {
+                armorOut.setHeader("Version", mVersionHeader);
+            }
             out = armorOut;
         } else {
             out = mOutStream;

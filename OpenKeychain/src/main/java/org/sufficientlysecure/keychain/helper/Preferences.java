@@ -205,13 +205,13 @@ public class Preferences {
         }
     }
 
-    public void setConcealPgpApplication(boolean conceal) {
+    public void setWriteVersionHeader(boolean conceal) {
         SharedPreferences.Editor editor = mSharedPreferences.edit();
-        editor.putBoolean(Constants.Pref.CONCEAL_PGP_APPLICATION, conceal);
+        editor.putBoolean(Constants.Pref.WRITE_VERSION_HEADER, conceal);
         editor.commit();
     }
 
-    public boolean getConcealPgpApplication() {
-        return mSharedPreferences.getBoolean(Constants.Pref.CONCEAL_PGP_APPLICATION, false);
+    public boolean getWriteVersionHeader() {
+        return mSharedPreferences.getBoolean(Constants.Pref.WRITE_VERSION_HEADER, false);
     }
 }
