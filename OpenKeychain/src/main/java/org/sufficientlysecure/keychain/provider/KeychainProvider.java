@@ -271,6 +271,8 @@ public class KeychainProvider extends ContentProvider {
                         "kE." + Keys.KEY_ID + " AS " + KeyRings.HAS_ENCRYPT);
                 projectionMap.put(KeyRings.HAS_SIGN,
                         "kS." + Keys.KEY_ID + " AS " + KeyRings.HAS_SIGN);
+                projectionMap.put(KeyRings.HAS_CERTIFY,
+                        "kC." + Keys.KEY_ID + " AS " + KeyRings.HAS_CERTIFY);
                 projectionMap.put(KeyRings.IS_EXPIRED,
                         "(" + Tables.KEYS + "." + Keys.EXPIRY + " IS NOT NULL AND " + Tables.KEYS + "." + Keys.EXPIRY
                                 + " < " + new Date().getTime() / 1000 + ") AS " + KeyRings.IS_EXPIRED);
@@ -324,6 +326,15 @@ public class KeychainProvider extends ContentProvider {
                                 + " AND ( kS." + Keys.EXPIRY + " IS NULL OR kS." + Keys.EXPIRY
                                     + " >= " + new Date().getTime() / 1000 + " )"
                             + ")" : "")
+                        + (plist.contains(KeyRings.HAS_CERTIFY) ?
+                            " LEFT JOIN " + Tables.KEYS + " AS kC ON ("
+                                +"kC." + Keys.MASTER_KEY_ID
+                                + " = " + Tables.KEYS + "." + Keys.MASTER_KEY_ID
+                                + " AND kC." + Keys.IS_REVOKED + " = 0"
+                                + " AND kC." + Keys.CAN_CERTIFY + " = 1"
+                                + " AND ( kC." + Keys.EXPIRY + " IS NULL OR kC." + Keys.EXPIRY
+                                + " >= " + new Date().getTime() / 1000 + " )"
+                                + ")" : "")
                     );
                 qb.appendWhere(Tables.KEYS + "." + Keys.RANK + " = 0");
                 // in case there are multiple verifying certificates

@@ -111,7 +111,7 @@ public class EncryptKeyCompletionView extends TokenCompleteTextView {
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
         if (getContext() instanceof FragmentActivity) {
-            ((FragmentActivity) getContext()).getSupportLoaderManager().initLoader(0, null, new LoaderManager.LoaderCallbacks<Cursor>() {
+            ((FragmentActivity) getContext()).getSupportLoaderManager().initLoader(hashCode(), null, new LoaderManager.LoaderCallbacks<Cursor>() {
                 @Override
                 public Loader<Cursor> onCreateLoader(int id, Bundle args) {
                     // These are the rows that we will retrieve.
@@ -143,6 +143,8 @@ public class EncryptKeyCompletionView extends TokenCompleteTextView {
                     swapCursor(null);
                 }
             });
+        } else {
+            Log.e(Constants.TAG, "EncryptKeyCompletionView must be attached to a FragmentActivity, this is " + getContext().getClass());
         }
     }
 
