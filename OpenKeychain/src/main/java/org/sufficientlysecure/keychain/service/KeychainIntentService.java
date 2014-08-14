@@ -54,6 +54,7 @@ import org.sufficientlysecure.keychain.provider.KeychainDatabase;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.OperationResults.EditKeyResult;
 import org.sufficientlysecure.keychain.service.OperationResults.ImportKeyResult;
+import org.sufficientlysecure.keychain.service.OperationResults.SaveKeyringResult;
 import org.sufficientlysecure.keychain.util.FileImportCache;
 import org.sufficientlysecure.keychain.util.InputData;
 import org.sufficientlysecure.keychain.util.Log;
@@ -391,23 +392,36 @@ public class KeychainIntentService extends IntentService
                 }
 
                 /* Operation */
-                ProviderHelper providerHelper = new ProviderHelper(this);
                 PgpKeyOperation keyOperations = new PgpKeyOperation(new ProgressScaler(this, 10, 60, 100));
-                EditKeyResult result;
+                EditKeyResult modifyResult;
 
                 if (saveParcel.mMasterKeyId != null) {
                     String passphrase = data.getString(SAVE_KEYRING_PASSPHRASE);
                     CanonicalizedSecretKeyRing secRing =
-                            providerHelper.getCanonicalizedSecretKeyRing(saveParcel.mMasterKeyId);
+                            new ProviderHelper(this).getCanonicalizedSecretKeyRing(saveParcel.mMasterKeyId);
 
-                    result = keyOperations.modifySecretKeyRing(secRing, saveParcel, passphrase);
+                    modifyResult = keyOperations.modifySecretKeyRing(secRing, saveParcel, passphrase);
                 } else {
-                    result = keyOperations.createSecretKeyRing(saveParcel);
+                    modifyResult = keyOperations.createSecretKeyRing(saveParcel);
                 }
 
-                UncachedKeyRing ring = result.getRing();
+                // If the edit operation didn't succeed, exit here
+                if ( ! modifyResult.success()) {
+                    sendMessageToHandler(KeychainIntentServiceHandler.MESSAGE_OKAY, modifyResult);
+                    return;
+                }
 
-                providerHelper.saveSecretKeyRing(ring, new ProgressScaler(this, 60, 95, 100));
+                UncachedKeyRing ring = modifyResult.getRing();
+
+                // Save the keyring. The ProviderHelper is initialized with the previous log
+                SaveKeyringResult saveResult = new ProviderHelper(this, modifyResult.getLog())
+                        .saveSecretKeyRing(ring, new ProgressScaler(this, 60, 95, 100));
+
+                // If the edit operation didn't succeed, exit here
+                if ( ! saveResult.success()) {
+                    sendMessageToHandler(KeychainIntentServiceHandler.MESSAGE_OKAY, saveResult);
+                    return;
+                }
 
                 // cache new passphrase
                 if (saveParcel.mNewPassphrase != null) {
@@ -418,7 +432,7 @@ public class KeychainIntentService extends IntentService
                 setProgress(R.string.progress_done, 100, 100);
 
                 /* Output */
-                sendMessageToHandler(KeychainIntentServiceHandler.MESSAGE_OKAY, result);
+                sendMessageToHandler(KeychainIntentServiceHandler.MESSAGE_OKAY, saveResult);
             } catch (Exception e) {
                 sendErrorToHandler(e);
             }
