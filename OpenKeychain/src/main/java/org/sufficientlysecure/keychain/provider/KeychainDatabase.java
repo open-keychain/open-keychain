@@ -227,7 +227,8 @@ public class KeychainDatabase extends SQLiteOpenHelper {
                 if (db.equals("apg.db")) {
                     hasApgDb = true;
                 } else if (db.equals("apg_old.db")) {
-                    Log.d(Constants.TAG, "Found apg_old.db");
+                    Log.d(Constants.TAG, "Found apg_old.db, delete it!");
+                    context.getDatabasePath("apg_old.db").delete();
                 }
             }
         }
@@ -310,9 +311,8 @@ public class KeychainDatabase extends SQLiteOpenHelper {
             }
         }
 
-        // Move to a different file (but don't delete, just to be safe)
-        Log.d(Constants.TAG, "All done - moving apg.db to apg_old.db");
-        context.getDatabasePath("apg.db").renameTo(context.getDatabasePath("apg_old.db"));
+        // delete old database
+        context.getDatabasePath("apg.db").delete();
     }
 
     private static void copy(File in, File out) throws IOException {
