@@ -205,13 +205,18 @@ public abstract class OperationResults {
 
         public EditKeyResult(Parcel source) {
             super(source);
-            mRingMasterKeyId = source.readLong();
+            mRingMasterKeyId = source.readInt() != 0 ? source.readLong() : null;
         }
 
         @Override
         public void writeToParcel(Parcel dest, int flags) {
             super.writeToParcel(dest, flags);
-            dest.writeLong(mRingMasterKeyId);
+            if (mRingMasterKeyId == null) {
+                dest.writeInt(0);
+            } else {
+                dest.writeInt(1);
+                dest.writeLong(mRingMasterKeyId);
+            }
         }
 
         public static Creator<EditKeyResult> CREATOR = new Creator<EditKeyResult>() {

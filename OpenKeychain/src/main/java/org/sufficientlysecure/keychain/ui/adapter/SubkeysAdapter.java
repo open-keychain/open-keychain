@@ -183,7 +183,7 @@ public class SubkeysAdapter extends CursorAdapter {
 
             SaveKeyringParcel.SubkeyChange subkeyChange = mSaveKeyringParcel.getSubkeyChange(keyId);
             if (subkeyChange != null) {
-                if (subkeyChange.mExpiry == null) {
+                if (subkeyChange.mExpiry == null || subkeyChange.mExpiry == 0L) {
                     expiryDate = null;
                 } else {
                     expiryDate = new Date(subkeyChange.mExpiry * 1000);
