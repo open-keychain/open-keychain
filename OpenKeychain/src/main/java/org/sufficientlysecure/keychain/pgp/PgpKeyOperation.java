@@ -658,7 +658,8 @@ public class PgpKeyOperation {
 
                 progress(R.string.progress_modify_subkeyadd, (i-1) * (100 / saveParcel.mAddSubKeys.size()));
                 SaveKeyringParcel.SubkeyAdd add = saveParcel.mAddSubKeys.get(i);
-                log.add(LogLevel.INFO, LogType.MSG_MF_SUBKEY_NEW, indent);
+                log.add(LogLevel.INFO, LogType.MSG_MF_SUBKEY_NEW, indent, add.mKeysize,
+                        PgpKeyHelper.getAlgorithmInfo(add.mAlgorithm) );
 
                 if (add.mExpiry == null) {
                     log.add(LogLevel.ERROR, LogType.MSG_MF_ERROR_NULL_EXPIRY, indent +1);
