@@ -97,7 +97,6 @@
   <string name="label_passphrase_cache_ttl">Cache de la phrase de passe</string>
   <string name="label_message_compression">Compression des messages</string>
   <string name="label_file_compression">Compression des fichiers</string>
-  <string name="label_force_v3_signature">Forcer les anciennes signatures OpenPGP v3</string>
   <string name="label_keyservers">Serveurs de clefs</string>
   <string name="label_key_id">ID de le clef</string>
   <string name="label_creation">Création</string>
@@ -585,7 +584,7 @@
   <string name="msg_mf_primary_replace_old">Remplacement du certificat de l\'ID d\'utilisateur principal précédent</string>
   <string name="msg_mf_primary_new">Génération d\'un nouveau certificat pour le nouvel ID d\'utilisateur principal</string>
   <string name="msg_mf_subkey_change">Modification de la sous-clef %s</string>
-  <string name="msg_mf_subkey_missing">Une action a été tentée sur la sous-clef manquante %s !</string>
+  <string name="msg_mf_error_subkey_missing">Une action a été tentée sur la sous-clef manquante %s !</string>
   <string name="msg_mf_subkey_new">Génération d\'une nouvelle sous-clef %2$s de %1$s bit</string>
   <string name="msg_mf_subkey_new_id">ID de la nouvelle sous-clef : %s</string>
   <string name="msg_mf_error_past_expiry">La date d\'expiration ne peut pas être dans le passé !</string>

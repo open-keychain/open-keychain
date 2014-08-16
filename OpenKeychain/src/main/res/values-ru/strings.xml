@@ -74,7 +74,6 @@
   <string name="label_passphrase_cache_ttl">Помнить пароль</string>
   <string name="label_message_compression">Сжатие сообщения</string>
   <string name="label_file_compression">Сжатие файла</string>
-  <string name="label_force_v3_signature">Использовать OpenPGPv3 подписи (устар.)</string>
   <string name="label_keyservers">Серверы ключей</string>
   <string name="label_key_id">ID ключа</string>
   <string name="label_creation">Создан</string>

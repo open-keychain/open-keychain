@@ -62,7 +62,6 @@
   <string name="label_passphrase_cache_ttl">Cache hesel</string>
   <string name="label_message_compression">Komprimovat zprávu</string>
   <string name="label_file_compression">Komprimovat soubor</string>
-  <string name="label_force_v3_signature">Vynutit staré OpenPGPv3 podpisy</string>
   <string name="label_key_id">ID klíče</string>
   <string name="label_creation">Vytvořeno</string>
   <string name="label_expiry">Expirace</string>

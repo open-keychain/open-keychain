@@ -557,7 +557,7 @@ public class PgpKeyOperation {
 
                 PGPSecretKey sKey = sKR.getSecretKey(change.mKeyId);
                 if (sKey == null) {
-                    log.add(LogLevel.ERROR, LogType.MSG_MF_SUBKEY_MISSING,
+                    log.add(LogLevel.ERROR, LogType.MSG_MF_ERROR_SUBKEY_MISSING,
                             indent + 1, PgpKeyHelper.convertKeyIdToHex(change.mKeyId));
                     return new EditKeyResult(EditKeyResult.RESULT_ERROR, log, null);
                 }
@@ -638,7 +638,7 @@ public class PgpKeyOperation {
 
                 PGPSecretKey sKey = sKR.getSecretKey(revocation);
                 if (sKey == null) {
-                    log.add(LogLevel.ERROR, LogType.MSG_MF_SUBKEY_MISSING,
+                    log.add(LogLevel.ERROR, LogType.MSG_MF_ERROR_SUBKEY_MISSING,
                             indent+1, PgpKeyHelper.convertKeyIdToHex(revocation));
                     return new EditKeyResult(EditKeyResult.RESULT_ERROR, log, null);
                 }
@@ -813,7 +813,7 @@ public class PgpKeyOperation {
 
         if (!ok) {
             // might happen, theoretically, if there is a key with no uid..
-            log.add(LogLevel.ERROR, LogType.MSG_MF_ERROR_INTEGRITY, indent);
+            log.add(LogLevel.ERROR, LogType.MSG_MF_ERROR_MASTER_NONE, indent);
             return null;
         }
 

@@ -71,7 +71,6 @@
   <string name="label_passphrase_cache_ttl">Wachtwoordcache</string>
   <string name="label_message_compression">Berichtcompressie</string>
   <string name="label_file_compression">Bestandscompressie</string>
-  <string name="label_force_v3_signature">Forceer oude OpenPGPv3 Handtekeningen</string>
   <string name="label_keyservers">Sleutelservers</string>
   <string name="label_key_id">Sleutel-id</string>
   <string name="label_creation">Aanmaak</string>

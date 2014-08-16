@@ -94,7 +94,6 @@
   <string name="label_passphrase_cache_ttl">Passwort-Cache</string>
   <string name="label_message_compression">Nachrichten-Komprimierung</string>
   <string name="label_file_compression">Datei-Komprimierung</string>
-  <string name="label_force_v3_signature">Erzwinge alte OpenPGPv3-Signaturen</string>
   <string name="label_keyservers">Schlüsselserver</string>
   <string name="label_key_id">Schlüssel-ID</string>
   <string name="label_creation">Erstellungsdatum</string>

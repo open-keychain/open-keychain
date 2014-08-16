@@ -97,7 +97,6 @@
   <string name="label_passphrase_cache_ttl">パスフレーズキャッシュ</string>
   <string name="label_message_compression">メッセージの圧縮</string>
   <string name="label_file_compression">ファイルの圧縮</string>
-  <string name="label_force_v3_signature">強制的に古いOpenPGPV3形式の署名にする</string>
   <string name="label_keyservers">鍵サーバ</string>
   <string name="label_key_id">鍵ID</string>
   <string name="label_creation">生成</string>
@@ -571,7 +570,7 @@
   <string name="msg_mf_primary_replace_old">以前の主ユーザIDで証明を入れ替え中</string>
   <string name="msg_mf_primary_new">新しい主ユーザIDで新しい証明を生成中</string>
   <string name="msg_mf_subkey_change">副鍵 %s を変更中</string>
-  <string name="msg_mf_subkey_missing">遺失した副鍵 %s の操作をしようとした!</string>
+  <string name="msg_mf_error_subkey_missing">遺失した副鍵 %s の操作をしようとした!</string>
   <string name="msg_mf_subkey_new">新しい %1$s ビットの %2$s 副鍵の生成中</string>
   <string name="msg_mf_subkey_new_id">新しい副鍵 ID: %s</string>
   <string name="msg_mf_error_past_expiry">期限切れ日を過去にはできません!</string>

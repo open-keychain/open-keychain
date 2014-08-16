@@ -639,7 +639,7 @@
     <string name="msg_mf_error_fingerprint">Actual key fingerprint does not match the expected one!</string>
     <string name="msg_mf_error_keyid">No key ID. This is an internal error, please file a bug report!</string>
     <string name="msg_mf_error_integrity">Internal error, integrity check failed!</string>
-    <string name="msg_mf_error_noexist_master">No master certificate found to modify!</string>
+    <string name="msg_mf_error_master_none">No master certificate found to operate on! (All revoked?)</string>
     <string name="msg_mf_error_noexist_primary">Bad primary user id specified!</string>
     <string name="msg_mf_error_noexist_revoke">Bad user id for revocation specified!</string>
     <string name="msg_mf_error_revoked_primary">Revoked user ids cannot be primary!</string>
@@ -651,7 +651,7 @@
     <string name="msg_mf_primary_replace_old">Replacing certificate of previous primary user id</string>
     <string name="msg_mf_primary_new">Generating new certificate for new primary user id</string>
     <string name="msg_mf_subkey_change">Modifying subkey %s</string>
-    <string name="msg_mf_subkey_missing">Tried to operate on missing subkey %s!</string>
+    <string name="msg_mf_error_subkey_missing">Tried to operate on missing subkey %s!</string>
     <string name="msg_mf_subkey_new">Generating new %1$s bit %2$s subkey</string>
     <string name="msg_mf_subkey_new_id">New subkey ID: %s</string>
     <string name="msg_mf_error_past_expiry">Expiry date cannot be in the past!</string>

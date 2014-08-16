@@ -97,7 +97,6 @@
   <string name="label_passphrase_cache_ttl">Caché de frase de contraseña</string>
   <string name="label_message_compression">Compresión de mensaje</string>
   <string name="label_file_compression">Compresión de archivo</string>
-  <string name="label_force_v3_signature">Forzar firmas OpenPGPv3 antiguas</string>
   <string name="label_keyservers">Servidores de claves</string>
   <string name="label_key_id">ID de clave</string>
   <string name="label_creation">Creación</string>
@@ -585,7 +584,7 @@
   <string name="msg_mf_primary_replace_old">Reemplazando certificado de la anterior identidad de usuario primaria </string>
   <string name="msg_mf_primary_new">Generando nuevo certificado para nueva identidad de usuario primaria</string>
   <string name="msg_mf_subkey_change">Modificando subclave %s</string>
-  <string name="msg_mf_subkey_missing">¡Intentó operar sobre una subclave ausente %s!</string>
+  <string name="msg_mf_error_subkey_missing">¡Intentó operar sobre una subclave ausente %s!</string>
   <string name="msg_mf_subkey_new">Generando nueva subclave %2$s de %1$s bits</string>
   <string name="msg_mf_subkey_new_id">Nueva identidad de subclave: %s</string>
   <string name="msg_mf_error_past_expiry">¡La fecha de expiración no puede ser del pasado!</string>

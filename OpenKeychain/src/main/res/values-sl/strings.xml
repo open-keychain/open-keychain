@@ -74,7 +74,6 @@
   <string name="label_passphrase_cache_ttl">Hranjenje gesla v spominu</string>
   <string name="label_message_compression">Stiskanje sporočil</string>
   <string name="label_file_compression">Stiskanje datotek</string>
-  <string name="label_force_v3_signature">Vsili stare podpise OpenPGPv3</string>
   <string name="label_keyservers">Strežniki</string>
   <string name="label_key_id">ID ključa</string>
   <string name="label_creation">Ustvarjanje</string>
