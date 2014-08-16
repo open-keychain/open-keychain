@@ -503,7 +503,6 @@ public class EditKeyFragment extends LoaderFragment implements
     private void save(String passphrase) {
         Log.d(Constants.TAG, "mSaveKeyringParcel:\n" + mSaveKeyringParcel.toString());
 
-        // Message is received after importing is done in KeychainIntentService
         KeychainIntentServiceHandler saveHandler = new KeychainIntentServiceHandler(
                 getActivity(),
                 getString(R.string.progress_saving),

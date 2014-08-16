@@ -168,9 +168,9 @@ public class CreateKeyFinalFragment extends Fragment {
         Bundle data = new Bundle();
 
         SaveKeyringParcel parcel = new SaveKeyringParcel();
-        parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(PublicKeyAlgorithmTags.RSA_GENERAL, 4096, KeyFlags.CERTIFY_OTHER, null));
-        parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(PublicKeyAlgorithmTags.RSA_GENERAL, 4096, KeyFlags.SIGN_DATA, null));
-        parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(PublicKeyAlgorithmTags.RSA_GENERAL, 4096, KeyFlags.ENCRYPT_COMMS | KeyFlags.ENCRYPT_STORAGE, null));
+        parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(PublicKeyAlgorithmTags.RSA_GENERAL, 4096, KeyFlags.CERTIFY_OTHER, 0L));
+        parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(PublicKeyAlgorithmTags.RSA_GENERAL, 4096, KeyFlags.SIGN_DATA, 0L));
+        parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(PublicKeyAlgorithmTags.RSA_GENERAL, 4096, KeyFlags.ENCRYPT_COMMS | KeyFlags.ENCRYPT_STORAGE, 0L));
         String userId = KeyRing.createUserId(mName, mEmail, null);
         parcel.mAddUserIds.add(userId);
         parcel.mChangePrimaryUserId = userId;

@@ -183,9 +183,9 @@ public class AddSubkeyDialogFragment extends DialogFragment {
                             flags |= KeyFlags.AUTHENTICATION;
                         }
 
-                        Long expiry;
+                        long expiry;
                         if (mNoExpiryCheckBox.isChecked()) {
-                            expiry = null;
+                            expiry = 0L;
                         } else {
                             Calendar selectedCal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
                             //noinspection ResourceType
