@@ -28,6 +28,7 @@ import com.github.johnpersano.supertoasts.SuperToast;
 import com.github.johnpersano.supertoasts.util.OnClickWrapper;
 import com.github.johnpersano.supertoasts.util.Style;
 
+import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedKeyRing;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
@@ -190,13 +191,13 @@ public abstract class OperationResults {
     public static class EditKeyResult extends OperationResultParcel {
 
         private transient UncachedKeyRing mRing;
-        public final Long mRingMasterKeyId;
+        public final long mRingMasterKeyId;
 
         public EditKeyResult(int result, OperationLog log,
                              UncachedKeyRing ring) {
             super(result, log);
             mRing = ring;
-            mRingMasterKeyId = ring != null ? ring.getMasterKeyId() : null;
+            mRingMasterKeyId = ring != null ? ring.getMasterKeyId() : Constants.key.none;
         }
 
         public UncachedKeyRing getRing() {
@@ -205,18 +206,13 @@ public abstract class OperationResults {
 
         public EditKeyResult(Parcel source) {
             super(source);
-            mRingMasterKeyId = source.readInt() != 0 ? source.readLong() : null;
+            mRingMasterKeyId = source.readLong();
         }
 
         @Override
         public void writeToParcel(Parcel dest, int flags) {
             super.writeToParcel(dest, flags);
-            if (mRingMasterKeyId == null) {
-                dest.writeInt(0);
-            } else {
-                dest.writeInt(1);
-                dest.writeLong(mRingMasterKeyId);
-            }
+            dest.writeLong(mRingMasterKeyId);
         }
 
         public static Creator<EditKeyResult> CREATOR = new Creator<EditKeyResult>() {
@@ -234,12 +230,12 @@ public abstract class OperationResults {
 
     public static class SaveKeyringResult extends OperationResultParcel {
 
-        public final Long mRingMasterKeyId;
+        public final long mRingMasterKeyId;
 
         public SaveKeyringResult(int result, OperationLog log,
                                  CanonicalizedKeyRing ring) {
             super(result, log);
-            mRingMasterKeyId = ring != null ? ring.getMasterKeyId() : null;
+            mRingMasterKeyId = ring != null ? ring.getMasterKeyId() : Constants.key.none;
         }
 
         // Some old key was updated
