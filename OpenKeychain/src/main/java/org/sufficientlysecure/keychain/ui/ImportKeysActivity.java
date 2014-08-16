@@ -503,7 +503,8 @@ public class ImportKeysActivity extends ActionBarActivity {
             // to prevent Java Binder problems on heavy imports
             // read FileImportCache for more info.
             try {
-                FileImportCache<ParcelableKeyRing> cache = new FileImportCache<ParcelableKeyRing>(this);
+                FileImportCache<ParcelableKeyRing> cache =
+                        new FileImportCache<ParcelableKeyRing>(this, "key_import.pcl");
                 cache.writeCache(selectedEntries);
 
                 intent.putExtra(KeychainIntentService.EXTRA_DATA, data);

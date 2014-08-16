@@ -477,7 +477,7 @@ public class KeychainIntentService extends IntentService
                 } else {
                     // get entries from cached file
                     FileImportCache<ParcelableKeyRing> cache =
-                            new FileImportCache<ParcelableKeyRing>(this);
+                            new FileImportCache<ParcelableKeyRing>(this, "key_import.pcl");
                     entries = cache.readCacheIntoList();
                 }
 

@@ -25,7 +25,7 @@ public class FileImportCacheTest {
     @Test
     public void testInputOutput() throws Exception {
 
-        FileImportCache<Bundle> cache = new FileImportCache<Bundle>(Robolectric.application);
+        FileImportCache<Bundle> cache = new FileImportCache<Bundle>(Robolectric.application, "test.pcl");
 
         ArrayList<Bundle> list = new ArrayList<Bundle>();
 
