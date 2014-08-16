@@ -36,6 +36,7 @@ import org.sufficientlysecure.keychain.pgp.PgpDecryptVerifyResult;
 import org.sufficientlysecure.keychain.pgp.PgpHelper;
 import org.sufficientlysecure.keychain.pgp.PgpSignEncrypt;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
+import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainContract.ApiAccounts;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
@@ -53,11 +54,16 @@ import java.util.Set;
 
 public class OpenPgpService extends RemoteService {
 
-    static final String[] KEYRING_PROJECTION =
-            new String[]{
-                    KeyRings._ID,
-                    KeyRings.MASTER_KEY_ID,
-            };
+    static final String[] EMAIL_SEARCH_PROJECTION = new String[]{
+            KeyRings._ID,
+            KeyRings.MASTER_KEY_ID,
+            KeyRings.IS_EXPIRED,
+            KeyRings.IS_REVOKED,
+    };
+
+    // do not pre-select revoked or expired keys
+    static final String EMAIL_SEARCH_WHERE = KeychainContract.KeyRings.IS_REVOKED + " = 0 AND "
+            + KeychainContract.KeyRings.IS_EXPIRED + " = 0";
 
     /**
      * Search database for key ids based on emails.
@@ -76,7 +82,7 @@ public class OpenPgpService extends RemoteService {
 
         for (String email : encryptionUserIds) {
             Uri uri = KeyRings.buildUnifiedKeyRingsFindByEmailUri(email);
-            Cursor cursor = getContentResolver().query(uri, KEYRING_PROJECTION, null, null, null);
+            Cursor cursor = getContentResolver().query(uri, EMAIL_SEARCH_PROJECTION, EMAIL_SEARCH_WHERE, null, null);
             try {
                 if (cursor != null && cursor.moveToFirst()) {
                     long id = cursor.getLong(cursor.getColumnIndex(KeyRings.MASTER_KEY_ID));
