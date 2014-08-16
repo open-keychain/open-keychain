@@ -218,6 +218,11 @@ public class PgpKeyOperation {
                 return new EditKeyResult(EditKeyResult.RESULT_ERROR, log, null);
             }
 
+            if (add.mExpiry == null) {
+                log.add(LogLevel.ERROR, LogType.MSG_CR_ERROR_NULL_EXPIRY, indent);
+                return new EditKeyResult(EditKeyResult.RESULT_ERROR, log, null);
+            }
+
             if (add.mAlgorithm == PublicKeyAlgorithmTags.ELGAMAL_ENCRYPT) {
                 log.add(LogLevel.ERROR, LogType.MSG_CR_ERROR_MASTER_ELGAMAL, indent);
                 return new EditKeyResult(EditKeyResult.RESULT_ERROR, log, null);
@@ -638,7 +643,8 @@ public class PgpKeyOperation {
                 );
                 PGPKeyPair keyPair = createKey(add.mAlgorithm, add.mKeysize, log, indent);
                 subProgressPop();
-                if(keyPair == null) {
+                if (keyPair == null) {
+                    log.add(LogLevel.ERROR, LogType.MSG_MF_ERROR_PGP, indent +1);
                     return new EditKeyResult(EditKeyResult.RESULT_ERROR, log, null);
                 }
 

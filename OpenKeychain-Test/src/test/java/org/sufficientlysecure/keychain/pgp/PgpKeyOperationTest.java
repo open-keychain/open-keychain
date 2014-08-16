@@ -71,11 +71,11 @@ public class PgpKeyOperationTest {
 
         SaveKeyringParcel parcel = new SaveKeyringParcel();
         parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
-                PublicKeyAlgorithmTags.RSA_GENERAL, 1024, KeyFlags.CERTIFY_OTHER, null));
+                PublicKeyAlgorithmTags.RSA_GENERAL, 1024, KeyFlags.CERTIFY_OTHER, 0L));
         parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
-                PublicKeyAlgorithmTags.RSA_GENERAL, 1024, KeyFlags.SIGN_DATA, null));
+                PublicKeyAlgorithmTags.RSA_GENERAL, 1024, KeyFlags.SIGN_DATA, 0L));
         parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
-                PublicKeyAlgorithmTags.RSA_GENERAL, 1024, KeyFlags.ENCRYPT_COMMS, null));
+                PublicKeyAlgorithmTags.RSA_GENERAL, 1024, KeyFlags.ENCRYPT_COMMS, 0L));
 
         parcel.mAddUserIds.add("twi");
         parcel.mAddUserIds.add("pink");
@@ -113,7 +113,7 @@ public class PgpKeyOperationTest {
         {
             parcel.reset();
             parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
-                    PublicKeyAlgorithmTags.RSA_GENERAL, new Random().nextInt(256)+255, KeyFlags.CERTIFY_OTHER, null));
+                    PublicKeyAlgorithmTags.RSA_GENERAL, new Random().nextInt(256)+255, KeyFlags.CERTIFY_OTHER, 0L));
             parcel.mAddUserIds.add("shy");
             parcel.mNewPassphrase = passphrase;
 
@@ -123,7 +123,7 @@ public class PgpKeyOperationTest {
         {
             parcel.reset();
             parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
-                    PublicKeyAlgorithmTags.ELGAMAL_ENCRYPT, 1024, KeyFlags.CERTIFY_OTHER, null));
+                    PublicKeyAlgorithmTags.ELGAMAL_ENCRYPT, 1024, KeyFlags.CERTIFY_OTHER, 0L));
             parcel.mAddUserIds.add("shy");
             parcel.mNewPassphrase = passphrase;
 
@@ -133,7 +133,7 @@ public class PgpKeyOperationTest {
         {
             parcel.reset();
             parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
-                    12345, 1024, KeyFlags.CERTIFY_OTHER, null));
+                    12345, 1024, KeyFlags.CERTIFY_OTHER, 0L));
             parcel.mAddUserIds.add("shy");
             parcel.mNewPassphrase = passphrase;
 
@@ -143,7 +143,7 @@ public class PgpKeyOperationTest {
         {
             parcel.reset();
             parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
-                    PublicKeyAlgorithmTags.RSA_GENERAL, 1024, KeyFlags.SIGN_DATA, null));
+                    PublicKeyAlgorithmTags.RSA_GENERAL, 1024, KeyFlags.SIGN_DATA, 0L));
             parcel.mAddUserIds.add("shy");
             parcel.mNewPassphrase = passphrase;
 
@@ -153,7 +153,7 @@ public class PgpKeyOperationTest {
         {
             parcel.reset();
             parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
-                    PublicKeyAlgorithmTags.RSA_GENERAL, 1024, KeyFlags.CERTIFY_OTHER, null));
+                    PublicKeyAlgorithmTags.RSA_GENERAL, 1024, KeyFlags.CERTIFY_OTHER, 0L));
             parcel.mNewPassphrase = passphrase;
 
             assertFailure("creating ring without user ids should fail", parcel);
@@ -175,7 +175,7 @@ public class PgpKeyOperationTest {
     public void testMasterFlags() throws Exception {
         SaveKeyringParcel parcel = new SaveKeyringParcel();
         parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
-                PublicKeyAlgorithmTags.RSA_GENERAL, 1024, KeyFlags.CERTIFY_OTHER | KeyFlags.SIGN_DATA, null));
+                PublicKeyAlgorithmTags.RSA_GENERAL, 1024, KeyFlags.CERTIFY_OTHER | KeyFlags.SIGN_DATA, 0L));
         parcel.mAddUserIds.add("luna");
         ring = assertCreateSuccess("creating ring with master key flags must succeed", parcel);
 
@@ -330,7 +330,7 @@ public class PgpKeyOperationTest {
         { // bad keysize should fail
             parcel.reset();
             parcel.mAddSubKeys.add(new SubkeyAdd(
-                    PublicKeyAlgorithmTags.RSA_GENERAL, new Random().nextInt(512), KeyFlags.SIGN_DATA, null));
+                    PublicKeyAlgorithmTags.RSA_GENERAL, new Random().nextInt(512), KeyFlags.SIGN_DATA, 0L));
             assertModifyFailure("creating a subkey with keysize < 512 should fail", ring, parcel);
 
         }
