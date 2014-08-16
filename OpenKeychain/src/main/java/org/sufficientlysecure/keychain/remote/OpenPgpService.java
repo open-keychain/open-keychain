@@ -29,7 +29,6 @@ import org.openintents.openpgp.OpenPgpMetadata;
 import org.openintents.openpgp.OpenPgpError;
 import org.openintents.openpgp.OpenPgpSignatureResult;
 import org.openintents.openpgp.util.OpenPgpApi;
-import org.spongycastle.util.Arrays;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.PgpDecryptVerify;
@@ -261,10 +260,6 @@ public class OpenPgpService extends RemoteService {
                 return result;
             }
 
-            // add own key for encryption
-            keyIds = Arrays.copyOf(keyIds, keyIds.length + 1);
-            keyIds[keyIds.length - 1] = accSettings.getKeyId();
-
             // build InputData and write into OutputStream
             // Get Input- and OutputStream from ParcelFileDescriptor
             InputStream is = new ParcelFileDescriptor.AutoCloseInputStream(input);
@@ -281,7 +276,8 @@ public class OpenPgpService extends RemoteService {
                         .setCompressionId(accSettings.getCompression())
                         .setSymmetricEncryptionAlgorithm(accSettings.getEncryptionAlgorithm())
                         .setEncryptionMasterKeyIds(keyIds)
-                        .setOriginalFilename(originalFilename);
+                        .setOriginalFilename(originalFilename)
+                        .setAdditionalEncryptId(accSettings.getKeyId()); // add acc key for encryption
 
                 if (sign) {
                     String passphrase;
@@ -300,9 +296,6 @@ public class OpenPgpService extends RemoteService {
                     builder.setSignatureHashAlgorithm(accSettings.getHashAlgorithm())
                             .setSignatureMasterKeyId(accSettings.getKeyId())
                             .setSignaturePassphrase(passphrase);
-                } else {
-                    // encrypt only
-                    builder.setSignatureMasterKeyId(Constants.key.none);
                 }
 
                 try {

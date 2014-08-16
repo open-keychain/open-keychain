@@ -247,26 +247,30 @@ public class KeychainIntentService extends IntentService
                     String originalFilename = getOriginalFilename(data);
 
                     /* Operation */
-                    PgpSignEncrypt.Builder builder =
-                            new PgpSignEncrypt.Builder(
-                                    new ProviderHelper(this),
-                                    inputData, outStream);
-                    builder.setProgressable(this);
-
-                    builder.setEnableAsciiArmorOutput(useAsciiArmor)
+                    PgpSignEncrypt.Builder builder = new PgpSignEncrypt.Builder(
+                            new ProviderHelper(this),
+                            inputData, outStream
+                    );
+                    builder.setProgressable(this)
+                            .setEnableAsciiArmorOutput(useAsciiArmor)
                             .setVersionHeader(PgpHelper.getVersionForHeader(this))
                             .setCompressionId(compressionId)
                             .setSymmetricEncryptionAlgorithm(
                                     Preferences.getPreferences(this).getDefaultEncryptionAlgorithm())
                             .setEncryptionMasterKeyIds(encryptionKeyIds)
                             .setSymmetricPassphrase(symmetricPassphrase)
-                            .setSignatureMasterKeyId(signatureKeyId)
-                            .setEncryptToSigner(true)
-                            .setSignatureHashAlgorithm(
-                                    Preferences.getPreferences(this).getDefaultHashAlgorithm())
-                            .setSignaturePassphrase(
-                                    PassphraseCacheService.getCachedPassphrase(this, signatureKeyId))
                             .setOriginalFilename(originalFilename);
+
+                    try {
+                        builder.setSignatureMasterKeyId(signatureKeyId)
+                                .setSignaturePassphrase(
+                                        PassphraseCacheService.getCachedPassphrase(this, signatureKeyId))
+                                .setSignatureHashAlgorithm(
+                                        Preferences.getPreferences(this).getDefaultHashAlgorithm())
+                                .setAdditionalEncryptId(signatureKeyId);
+                    } catch (PassphraseCacheService.KeyNotFoundException e) {
+                        // encrypt-only
+                    }
 
                     // this assumes that the bytes are cleartext (valid for current implementation!)
                     if (source == IO_BYTES) {
@@ -406,7 +410,7 @@ public class KeychainIntentService extends IntentService
                 }
 
                 // If the edit operation didn't succeed, exit here
-                if ( ! modifyResult.success()) {
+                if (!modifyResult.success()) {
                     sendMessageToHandler(KeychainIntentServiceHandler.MESSAGE_OKAY, modifyResult);
                     return;
                 }
@@ -418,7 +422,7 @@ public class KeychainIntentService extends IntentService
                         .saveSecretKeyRing(ring, new ProgressScaler(this, 60, 95, 100));
 
                 // If the edit operation didn't succeed, exit here
-                if ( ! saveResult.success()) {
+                if (!saveResult.success()) {
                     sendMessageToHandler(KeychainIntentServiceHandler.MESSAGE_OKAY, saveResult);
                     return;
                 }

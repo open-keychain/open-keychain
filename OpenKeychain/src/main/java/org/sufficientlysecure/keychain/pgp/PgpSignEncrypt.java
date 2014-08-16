@@ -68,7 +68,7 @@ public class PgpSignEncrypt {
     private long mSignatureMasterKeyId;
     private int mSignatureHashAlgorithm;
     private String mSignaturePassphrase;
-    private boolean mEncryptToSigner;
+    private long mAdditionalEncryptId;
     private boolean mCleartextInput;
     private String mOriginalFilename;
 
@@ -98,7 +98,7 @@ public class PgpSignEncrypt {
         this.mSignatureMasterKeyId = builder.mSignatureMasterKeyId;
         this.mSignatureHashAlgorithm = builder.mSignatureHashAlgorithm;
         this.mSignaturePassphrase = builder.mSignaturePassphrase;
-        this.mEncryptToSigner = builder.mEncryptToSigner;
+        this.mAdditionalEncryptId = builder.mAdditionalEncryptId;
         this.mCleartextInput = builder.mCleartextInput;
         this.mOriginalFilename = builder.mOriginalFilename;
     }
@@ -120,7 +120,7 @@ public class PgpSignEncrypt {
         private long mSignatureMasterKeyId = Constants.key.none;
         private int mSignatureHashAlgorithm = 0;
         private String mSignaturePassphrase = null;
-        private boolean mEncryptToSigner = false;
+        private long mAdditionalEncryptId = Constants.key.none;
         private boolean mCleartextInput = false;
         private String mOriginalFilename = "";
 
@@ -166,7 +166,7 @@ public class PgpSignEncrypt {
         }
 
         public Builder setSignatureMasterKeyId(long signatureMasterKeyId) {
-            this.mSignatureMasterKeyId = signatureMasterKeyId;
+            mSignatureMasterKeyId = signatureMasterKeyId;
             return this;
         }
 
@@ -183,11 +183,11 @@ public class PgpSignEncrypt {
         /**
          * Also encrypt with the signing keyring
          *
-         * @param encryptToSigner
+         * @param additionalEncryptId
          * @return
          */
-        public Builder setEncryptToSigner(boolean encryptToSigner) {
-            mEncryptToSigner = encryptToSigner;
+        public Builder setAdditionalEncryptId(long additionalEncryptId) {
+            mAdditionalEncryptId = additionalEncryptId;
             return this;
         }
 
@@ -256,10 +256,10 @@ public class PgpSignEncrypt {
                 + "\nenableCompression:" + enableCompression
                 + "\nenableAsciiArmorOutput:" + mEnableAsciiArmorOutput);
 
-        // add signature key id to encryption ids (self-encrypt)
-        if (enableEncryption && enableSignature && mEncryptToSigner) {
+        // add additional key id to encryption ids (mostly to do self-encryption)
+        if (enableEncryption && mAdditionalEncryptId != Constants.key.none) {
             mEncryptionMasterKeyIds = Arrays.copyOf(mEncryptionMasterKeyIds, mEncryptionMasterKeyIds.length + 1);
-            mEncryptionMasterKeyIds[mEncryptionMasterKeyIds.length - 1] = mSignatureMasterKeyId;
+            mEncryptionMasterKeyIds[mEncryptionMasterKeyIds.length - 1] = mAdditionalEncryptId;
         }
 
         ArmoredOutputStream armorOut = null;
