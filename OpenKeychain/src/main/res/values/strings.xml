@@ -395,9 +395,10 @@
     <string name="api_register_allow">Allow access</string>
     <string name="api_register_disallow">Disallow access</string>
     <string name="api_register_error_select_key">Please select a key!</string>
-    <string name="api_select_pub_keys_missing_text">No public keys were found for these identities:</string>
-    <string name="api_select_pub_keys_dublicates_text">More than one public key exist for these identities:</string>
+    <string name="api_select_pub_keys_missing_text">No keys were found for these identities:</string>
+    <string name="api_select_pub_keys_dublicates_text">More than one key exist for these identities:</string>
     <string name="api_select_pub_keys_text">Please review the list of recipients!</string>
+    <string name="api_select_pub_keys_text_no_user_ids">Please select the recipients!</string>
     <string name="api_error_wrong_signature">Signature check failed! Have you installed this app from a different source? If you are sure that this is not an attack, revoke this app\'s registration in OpenKeychain and then register the app again.</string>
 
     <!-- Share -->
