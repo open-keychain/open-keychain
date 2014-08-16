@@ -728,8 +728,8 @@ public class PgpKeyOperation {
                 sKR = PGPSecretKeyRing.copyWithNewPassword(sKR, keyDecryptor, keyEncryptorNew);
             }
 
-            // This one must only be thrown by
         } catch (IOException e) {
+            Log.e(Constants.TAG, "encountered IOException while modifying key", e);
             log.add(LogLevel.ERROR, LogType.MSG_MF_ERROR_ENCODE, indent+1);
             return new EditKeyResult(EditKeyResult.RESULT_ERROR, log, null);
         } catch (PGPException e) {
@@ -737,6 +737,7 @@ public class PgpKeyOperation {
             log.add(LogLevel.ERROR, LogType.MSG_MF_ERROR_PGP, indent+1);
             return new EditKeyResult(EditKeyResult.RESULT_ERROR, log, null);
         } catch (SignatureException e) {
+            Log.e(Constants.TAG, "encountered SignatureException while modifying key", e);
             log.add(LogLevel.ERROR, LogType.MSG_MF_ERROR_SIG, indent+1);
             return new EditKeyResult(EditKeyResult.RESULT_ERROR, log, null);
         }

@@ -118,7 +118,8 @@ public class PgpKeyOperationTest {
             parcel.mAddUserIds.add("shy");
             parcel.mNewPassphrase = passphrase;
 
-            assertFailure("creating ring with < 512 bytes keysize should fail", parcel);
+            assertFailure("creating ring with < 512 bytes keysize should fail", parcel,
+                    LogType.MSG_CR_ERROR_KEYSIZE_512);
         }
 
         {
@@ -128,7 +129,19 @@ public class PgpKeyOperationTest {
             parcel.mAddUserIds.add("shy");
             parcel.mNewPassphrase = passphrase;
 
-            assertFailure("creating ring with ElGamal master key should fail", parcel);
+            assertFailure("creating ring with ElGamal master key should fail", parcel,
+                    LogType.MSG_CR_ERROR_MASTER_ELGAMAL);
+        }
+
+        {
+            parcel.reset();
+            parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
+                    PublicKeyAlgorithmTags.RSA_GENERAL, 1024, KeyFlags.CERTIFY_OTHER, null));
+            parcel.mAddUserIds.add("lotus");
+            parcel.mNewPassphrase = passphrase;
+
+            assertFailure("creating master key with null expiry should fail", parcel,
+                    LogType.MSG_CR_ERROR_NULL_EXPIRY);
         }
 
         {
@@ -138,7 +151,8 @@ public class PgpKeyOperationTest {
             parcel.mAddUserIds.add("shy");
             parcel.mNewPassphrase = passphrase;
 
-            assertFailure("creating ring with bad algorithm choice should fail", parcel);
+            assertFailure("creating ring with bad algorithm choice should fail", parcel,
+                    LogType.MSG_CR_ERROR_UNKNOWN_ALGO);
         }
 
         {
@@ -148,7 +162,8 @@ public class PgpKeyOperationTest {
             parcel.mAddUserIds.add("shy");
             parcel.mNewPassphrase = passphrase;
 
-            assertFailure("creating ring with non-certifying master key should fail", parcel);
+            assertFailure("creating ring with non-certifying master key should fail", parcel,
+                    LogType.MSG_CR_ERROR_NO_CERTIFY);
         }
 
         {
@@ -157,7 +172,8 @@ public class PgpKeyOperationTest {
                     PublicKeyAlgorithmTags.RSA_GENERAL, 1024, KeyFlags.CERTIFY_OTHER, 0L));
             parcel.mNewPassphrase = passphrase;
 
-            assertFailure("creating ring without user ids should fail", parcel);
+            assertFailure("creating ring without user ids should fail", parcel,
+                    LogType.MSG_CR_ERROR_NO_USER_ID);
         }
 
         {
@@ -165,7 +181,8 @@ public class PgpKeyOperationTest {
             parcel.mAddUserIds.add("shy");
             parcel.mNewPassphrase = passphrase;
 
-            assertFailure("creating ring without subkeys should fail", parcel);
+            assertFailure("creating ring with no master key should fail", parcel,
+                    LogType.MSG_CR_ERROR_NO_MASTER);
         }
 
     }
@@ -335,6 +352,15 @@ public class PgpKeyOperationTest {
             assertModifyFailure("creating a subkey with keysize < 512 should fail", ring, parcel,
                     LogType.MSG_CR_ERROR_KEYSIZE_512);
 
+        }
+
+        {
+            parcel.reset();
+            parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
+                    PublicKeyAlgorithmTags.RSA_GENERAL, 1024, KeyFlags.SIGN_DATA, null));
+
+            assertModifyFailure("creating master key with null expiry should fail", ring, parcel,
+                    LogType.MSG_MF_ERROR_NULL_EXPIRY);
         }
 
         { // a past expiry should fail
@@ -879,12 +905,14 @@ public class PgpKeyOperationTest {
         Assert.assertEquals(java.util.Arrays.toString(expected), java.util.Arrays.toString(actual));
     }
 
-    private void assertFailure(String reason, SaveKeyringParcel parcel) {
+    private void assertFailure(String reason, SaveKeyringParcel parcel, LogType expected) {
 
         EditKeyResult result = op.createSecretKeyRing(parcel);
 
         Assert.assertFalse(reason, result.success());
         Assert.assertNull(reason, result.getRing());
+        Assert.assertTrue(reason + "(with correct error)",
+                result.getLog().containsType(expected));
 
     }
 
