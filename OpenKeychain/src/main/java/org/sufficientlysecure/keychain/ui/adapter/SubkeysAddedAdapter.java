@@ -106,7 +106,7 @@ public class SubkeysAddedAdapter extends ArrayAdapter<SaveKeyringParcel.SubkeyAd
         holder.vKeyId.setText(R.string.edit_key_new_subkey);
         holder.vKeyDetails.setText(algorithmStr);
 
-        if (holder.mModel.mExpiry != null) {
+        if (holder.mModel.mExpiry != 0L) {
             Date expiryDate = new Date(holder.mModel.mExpiry * 1000);
 
             holder.vKeyExpiry.setText(getContext().getString(R.string.label_expiry) + ": "
