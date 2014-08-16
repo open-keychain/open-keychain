@@ -588,7 +588,7 @@
   <string name="msg_mf_subkey_missing">Une action a été tentée sur la sous-clef manquante %s !</string>
   <string name="msg_mf_subkey_new">Génération d\'une nouvelle sous-clef %2$s de %1$s bit</string>
   <string name="msg_mf_subkey_new_id">ID de la nouvelle sous-clef : %s</string>
-  <string name="msg_mf_subkey_past_expiry">La date d\'expiration ne peut pas être dans le passé !</string>
+  <string name="msg_mf_error_past_expiry">La date d\'expiration ne peut pas être dans le passé !</string>
   <string name="msg_mf_subkey_revoke">Révocation de la sous-clef %s</string>
   <string name="msg_mf_success">Trousseau modifié avec succès</string>
   <string name="msg_mf_uid_add">Ajout de l\'ID d\'utilisateur %s</string>

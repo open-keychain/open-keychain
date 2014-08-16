@@ -574,7 +574,7 @@
   <string name="msg_mf_subkey_missing">遺失した副鍵 %s の操作をしようとした!</string>
   <string name="msg_mf_subkey_new">新しい %1$s ビットの %2$s 副鍵の生成中</string>
   <string name="msg_mf_subkey_new_id">新しい副鍵 ID: %s</string>
-  <string name="msg_mf_subkey_past_expiry">期限切れ日を過去にはできません!</string>
+  <string name="msg_mf_error_past_expiry">期限切れ日を過去にはできません!</string>
   <string name="msg_mf_subkey_revoke">副鍵 %s を破棄中</string>
   <string name="msg_mf_success">鍵輪の変更に成功</string>
   <string name="msg_mf_uid_add">ユーザID %s を追加中</string>

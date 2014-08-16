@@ -588,7 +588,7 @@
   <string name="msg_mf_subkey_missing">¡Intentó operar sobre una subclave ausente %s!</string>
   <string name="msg_mf_subkey_new">Generando nueva subclave %2$s de %1$s bits</string>
   <string name="msg_mf_subkey_new_id">Nueva identidad de subclave: %s</string>
-  <string name="msg_mf_subkey_past_expiry">¡La fecha de expiración no puede ser del pasado!</string>
+  <string name="msg_mf_error_past_expiry">¡La fecha de expiración no puede ser del pasado!</string>
   <string name="msg_mf_subkey_revoke">Revocando subclave %s</string>
   <string name="msg_mf_success">Juego de claves modificado con éxito</string>
   <string name="msg_mf_uid_add">Añadiendo identidad de usuario %s</string>

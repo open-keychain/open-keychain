@@ -528,7 +528,7 @@
   <string name="msg_mf_subkey_missing">Tentativo di operare su sottochiave mancante %s!</string>
   <string name="msg_mf_subkey_new">Generazione nuovi %1$s bit %2$s sottochiave</string>
   <string name="msg_mf_subkey_new_id">Nuovo ID sottochiave: %s</string>
-  <string name="msg_mf_subkey_past_expiry">La data di scadenza non può essere passata!</string>
+  <string name="msg_mf_error_past_expiry">La data di scadenza non può essere passata!</string>
   <string name="msg_mf_subkey_revoke">Revoca sottochiave %s</string>
   <string name="msg_mf_success">Portachiavi modificato con successo</string>
   <string name="msg_mf_uid_add">Aggiunta id utente %s</string>

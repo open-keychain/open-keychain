@@ -639,12 +639,14 @@
     <string name="msg_mf_error_fingerprint">Actual key fingerprint does not match the expected one!</string>
     <string name="msg_mf_error_keyid">No key ID. This is an internal error, please file a bug report!</string>
     <string name="msg_mf_error_integrity">Internal error, integrity check failed!</string>
+    <string name="msg_mf_error_noexist_master">No master certificate found to modify!</string>
     <string name="msg_mf_error_noexist_primary">Bad primary user id specified!</string>
     <string name="msg_mf_error_noexist_revoke">Bad user id for revocation specified!</string>
     <string name="msg_mf_error_revoked_primary">Revoked user ids cannot be primary!</string>
     <string name="msg_mf_error_null_expiry">Expiry time cannot be "same as before" on subkey creation. This is a programming error, please file a bug report!</string>
     <string name="msg_mf_error_pgp">PGP internal exception!</string>
     <string name="msg_mf_error_sig">Signature exception!</string>
+    <string name="msg_mf_master">Modifying master certifications</string>
     <string name="msg_mf_passphrase">Changing passphrase</string>
     <string name="msg_mf_primary_replace_old">Replacing certificate of previous primary user id</string>
     <string name="msg_mf_primary_new">Generating new certificate for new primary user id</string>
@@ -652,7 +654,7 @@
     <string name="msg_mf_subkey_missing">Tried to operate on missing subkey %s!</string>
     <string name="msg_mf_subkey_new">Generating new %1$s bit %2$s subkey</string>
     <string name="msg_mf_subkey_new_id">New subkey ID: %s</string>
-    <string name="msg_mf_subkey_past_expiry">Expiry date cannot be in the past!</string>
+    <string name="msg_mf_error_past_expiry">Expiry date cannot be in the past!</string>
     <string name="msg_mf_subkey_revoke">Revoking subkey %s</string>
     <string name="msg_mf_success">Keyring successfully modified</string>
     <string name="msg_mf_uid_add">Adding user id %s</string>

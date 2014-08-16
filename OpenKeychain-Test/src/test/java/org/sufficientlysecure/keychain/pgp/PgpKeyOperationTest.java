@@ -376,6 +376,20 @@ public class PgpKeyOperationTest {
                     ring.getPublicKey(keyId).getKeyUsage(), modified.getPublicKey(keyId).getKeyUsage());
         }
 
+        { // change expiry
+            expiry += 60*60*24;
+
+            parcel.mChangeSubKeys.add(new SubkeyChange(keyId, null, expiry));
+            modified = applyModificationWithChecks(parcel, modified, onlyA, onlyB);
+
+            Assert.assertNotNull("modified key must have an expiry date",
+                    modified.getPublicKey(keyId).getExpiryTime());
+            Assert.assertEquals("modified key must have expected expiry date",
+                    expiry, modified.getPublicKey(keyId).getExpiryTime().getTime()/1000);
+            Assert.assertEquals("modified key must have same flags as before",
+                    ring.getPublicKey(keyId).getKeyUsage(), modified.getPublicKey(keyId).getKeyUsage());
+        }
+
         {
             int flags = KeyFlags.SIGN_DATA | KeyFlags.ENCRYPT_COMMS;
             parcel.reset();
@@ -422,16 +436,114 @@ public class PgpKeyOperationTest {
             parcel.reset();
             parcel.mChangeSubKeys.add(new SubkeyChange(keyId, null, new Date().getTime()/1000-10));
 
-            CanonicalizedSecretKeyRing secretRing = new CanonicalizedSecretKeyRing(ring.getEncoded(), false, 0);
-            assertModifyFailure("setting subkey expiry to a past date should fail", secretRing, parcel);
+            assertModifyFailure("setting subkey expiry to a past date should fail", ring, parcel);
         }
 
-        { // modifying nonexistent keyring should fail
+        { // modifying nonexistent subkey should fail
             parcel.reset();
             parcel.mChangeSubKeys.add(new SubkeyChange(123, null, null));
 
-            CanonicalizedSecretKeyRing secretRing = new CanonicalizedSecretKeyRing(ring.getEncoded(), false, 0);
-            assertModifyFailure("modifying non-existent subkey should fail", secretRing, parcel);
+            assertModifyFailure("modifying non-existent subkey should fail", ring, parcel);
+        }
+
+    }
+
+    @Test
+    public void testMasterModify() throws Exception {
+
+        long expiry = new Date().getTime()/1000 + 1024;
+        long keyId = ring.getMasterKeyId();
+
+        UncachedKeyRing modified = ring;
+
+        // to make this check less trivial, we add a user id, change the primary one and revoke one
+        parcel.mAddUserIds.add("aloe");
+        parcel.mChangePrimaryUserId = "aloe";
+        parcel.mRevokeUserIds.add("pink");
+        modified = applyModificationWithChecks(parcel, modified, onlyA, onlyB);
+
+        {
+            parcel.mChangeSubKeys.add(new SubkeyChange(keyId, null, expiry));
+            modified = applyModificationWithChecks(parcel, modified, onlyA, onlyB);
+
+            // this implies that only the two non-revoked signatures were changed!
+            Assert.assertEquals("two extra packets in original", 2, onlyA.size());
+            Assert.assertEquals("two extra packets in modified", 2, onlyB.size());
+
+            Assert.assertEquals("first original packet must be a signature",
+                    PacketTags.SIGNATURE, onlyA.get(0).tag);
+            Assert.assertEquals("second original packet must be a signature",
+                    PacketTags.SIGNATURE, onlyA.get(1).tag);
+            Assert.assertEquals("first new packet must be signature",
+                    PacketTags.SIGNATURE, onlyB.get(0).tag);
+            Assert.assertEquals("first new packet must be signature",
+                    PacketTags.SIGNATURE, onlyB.get(1).tag);
+
+            Assert.assertNotNull("modified key must have an expiry date",
+                    modified.getPublicKey().getExpiryTime());
+            Assert.assertEquals("modified key must have expected expiry date",
+                    expiry, modified.getPublicKey().getExpiryTime().getTime() / 1000);
+            Assert.assertEquals("modified key must have same flags as before",
+                    ring.getPublicKey().getKeyUsage(), modified.getPublicKey().getKeyUsage());
+        }
+
+        { // change expiry
+            expiry += 60*60*24;
+
+            parcel.mChangeSubKeys.add(new SubkeyChange(keyId, null, expiry));
+            modified = applyModificationWithChecks(parcel, modified, onlyA, onlyB);
+
+            Assert.assertNotNull("modified key must have an expiry date",
+                    modified.getPublicKey(keyId).getExpiryTime());
+            Assert.assertEquals("modified key must have expected expiry date",
+                    expiry, modified.getPublicKey(keyId).getExpiryTime().getTime()/1000);
+            Assert.assertEquals("modified key must have same flags as before",
+                    ring.getPublicKey(keyId).getKeyUsage(), modified.getPublicKey(keyId).getKeyUsage());
+        }
+
+        {
+            int flags = KeyFlags.CERTIFY_OTHER | KeyFlags.SIGN_DATA;
+            parcel.reset();
+            parcel.mChangeSubKeys.add(new SubkeyChange(keyId, flags, null));
+            modified = applyModificationWithChecks(parcel, modified, onlyA, onlyB);
+
+            Assert.assertEquals("modified key must have expected flags",
+                    flags, modified.getPublicKey(keyId).getKeyUsage());
+            Assert.assertNotNull("key must retain its expiry",
+                    modified.getPublicKey(keyId).getExpiryTime());
+            Assert.assertEquals("key expiry must be unchanged",
+                    expiry, modified.getPublicKey(keyId).getExpiryTime().getTime()/1000);
+        }
+
+        { // expiry of 0 should be "no expiry"
+            parcel.reset();
+            parcel.mChangeSubKeys.add(new SubkeyChange(keyId, null, 0L));
+            modified = applyModificationWithChecks(parcel, modified, onlyA, onlyB);
+
+            Assert.assertNull("key must not expire anymore", modified.getPublicKey(keyId).getExpiryTime());
+        }
+
+        { // if we revoke everything, nothing is left to properly sign...
+            parcel.reset();
+            parcel.mRevokeUserIds.add("twi");
+            parcel.mRevokeUserIds.add("pink");
+            parcel.mChangeSubKeys.add(new SubkeyChange(keyId, KeyFlags.CERTIFY_OTHER, null));
+
+            assertModifyFailure("master key modification with all user ids revoked should fail", ring, parcel);
+        }
+
+        { // any flag not including CERTIFY_OTHER should fail
+            parcel.reset();
+            parcel.mChangeSubKeys.add(new SubkeyChange(keyId, KeyFlags.SIGN_DATA, null));
+
+            assertModifyFailure("setting master key flags without certify should fail", ring, parcel);
+        }
+
+        { // a past expiry should fail
+            parcel.reset();
+            parcel.mChangeSubKeys.add(new SubkeyChange(keyId, null, new Date().getTime()/1000-10));
+
+            assertModifyFailure("setting subkey expiry to a past date should fail", ring, parcel);
         }
 
     }
