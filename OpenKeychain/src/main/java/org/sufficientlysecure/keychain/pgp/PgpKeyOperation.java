@@ -403,6 +403,18 @@ public class PgpKeyOperation {
                 progress(R.string.progress_modify_revokeuid, (i-1) * (100 / saveParcel.mRevokeUserIds.size()));
                 String userId = saveParcel.mRevokeUserIds.get(i);
                 log.add(LogLevel.INFO, LogType.MSG_MF_UID_REVOKE, indent, userId);
+                // Make sure the user id exists (yes these are 10 LoC in Java!)
+                boolean exists = false;
+                for (String uid : new IterableIterator<String>(modifiedPublicKey.getUserIDs())) {
+                    if (userId.equals(uid)) {
+                        exists = true;
+                        break;
+                    }
+                }
+                if (!exists) {
+                    log.add(LogLevel.ERROR, LogType.MSG_MF_ERROR_NOEXIST_REVOKE, indent);
+                    return new EditKeyResult(EditKeyResult.RESULT_ERROR, log, null);
+                }
 
                 // a duplicate revocation will be removed during canonicalization, so no need to
                 // take care of that here.

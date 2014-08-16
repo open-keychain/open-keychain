@@ -589,6 +589,13 @@ public class PgpKeyOperationTest {
                     ring.getMasterKeyId(), ((SignaturePacket) p).getKeyID());
         }
 
+        { // revocation of non-existent user id should fail
+            parcel.reset();
+            parcel.mRevokeUserIds.add("nonexistent");
+
+            assertModifyFailure("revocation of nonexistent user id should fail", modified, parcel);
+        }
+
     }
 
     @Test
