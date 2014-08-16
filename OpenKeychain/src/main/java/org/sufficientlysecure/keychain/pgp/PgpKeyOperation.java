@@ -828,7 +828,7 @@ public class PgpKeyOperation {
             int flags, long expiry)
             throws IOException, PGPException, SignatureException {
         PGPContentSignerBuilder signerBuilder = new JcaPGPContentSignerBuilder(
-                pKey.getAlgorithm(), PGPUtil.SHA1)
+                masterPrivateKey.getPublicKeyPacket().getAlgorithm(), PGPUtil.SHA1)
                 .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME);
         PGPSignatureGenerator sGen = new PGPSignatureGenerator(signerBuilder);
 
@@ -855,7 +855,7 @@ public class PgpKeyOperation {
             PGPPrivateKey masterPrivateKey, PGPPublicKey pKey, String userId)
         throws IOException, PGPException, SignatureException {
         PGPContentSignerBuilder signerBuilder = new JcaPGPContentSignerBuilder(
-                pKey.getAlgorithm(), PGPUtil.SHA1)
+                masterPrivateKey.getPublicKeyPacket().getAlgorithm(), PGPUtil.SHA1)
                 .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME);
         PGPSignatureGenerator sGen = new PGPSignatureGenerator(signerBuilder);
         PGPSignatureSubpacketGenerator subHashedPacketsGen = new PGPSignatureSubpacketGenerator();
@@ -869,7 +869,7 @@ public class PgpKeyOperation {
             PGPPublicKey masterPublicKey, PGPPrivateKey masterPrivateKey, PGPPublicKey pKey)
             throws IOException, PGPException, SignatureException {
         PGPContentSignerBuilder signerBuilder = new JcaPGPContentSignerBuilder(
-                pKey.getAlgorithm(), PGPUtil.SHA1)
+                masterPublicKey.getAlgorithm(), PGPUtil.SHA1)
                 .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME);
         PGPSignatureGenerator sGen = new PGPSignatureGenerator(signerBuilder);
         PGPSignatureSubpacketGenerator subHashedPacketsGen = new PGPSignatureSubpacketGenerator();
@@ -934,7 +934,7 @@ public class PgpKeyOperation {
         }
 
         PGPContentSignerBuilder signerBuilder = new JcaPGPContentSignerBuilder(
-                masterPrivateKey.getPublicKeyPacket().getAlgorithm(), PGPUtil.SHA1)
+                masterPublicKey.getAlgorithm(), PGPUtil.SHA1)
                 .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME);
         PGPSignatureGenerator sGen = new PGPSignatureGenerator(signerBuilder);
         sGen.init(PGPSignature.SUBKEY_BINDING, masterPrivateKey);
