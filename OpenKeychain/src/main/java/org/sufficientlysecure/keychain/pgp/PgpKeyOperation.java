@@ -933,7 +933,7 @@ public class PgpKeyOperation {
         }
 
         PGPContentSignerBuilder signerBuilder = new JcaPGPContentSignerBuilder(
-                pKey.getAlgorithm(), PGPUtil.SHA1)
+                masterPrivateKey.getPublicKeyPacket().getAlgorithm(), PGPUtil.SHA1)
                 .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME);
         PGPSignatureGenerator sGen = new PGPSignatureGenerator(signerBuilder);
         sGen.init(PGPSignature.SUBKEY_BINDING, masterPrivateKey);
