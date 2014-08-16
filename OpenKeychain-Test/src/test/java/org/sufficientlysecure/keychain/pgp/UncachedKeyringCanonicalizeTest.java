@@ -13,6 +13,7 @@ import org.spongycastle.bcpg.PacketTags;
 import org.spongycastle.bcpg.UserIDPacket;
 import org.spongycastle.bcpg.sig.KeyFlags;
 import org.spongycastle.bcpg.PublicKeyAlgorithmTags;
+import org.spongycastle.jce.provider.BouncyCastleProvider;
 import org.spongycastle.openpgp.PGPPrivateKey;
 import org.spongycastle.openpgp.PGPPublicKey;
 import org.spongycastle.openpgp.PGPSecretKey;
@@ -34,6 +35,7 @@ import org.sufficientlysecure.keychain.support.KeyringTestingHelper;
 import org.sufficientlysecure.keychain.support.KeyringTestingHelper.RawPacket;
 
 import java.io.ByteArrayInputStream;
+import java.security.Security;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
@@ -60,6 +62,7 @@ public class UncachedKeyringCanonicalizeTest {
 
     @BeforeClass
     public static void setUpOnce() throws Exception {
+        Security.insertProviderAt(new BouncyCastleProvider(), 1);
         ShadowLog.stream = System.out;
 
         SaveKeyringParcel parcel = new SaveKeyringParcel();

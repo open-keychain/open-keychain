@@ -217,8 +217,7 @@ public class UncachedKeyRing {
         aos.close();
     }
 
-    /** "Canonicalizes" a public key, removing inconsistencies in the process. This variant can be
-     * applied to public keyrings only.
+    /** "Canonicalizes" a public key, removing inconsistencies in the process.
      *
      * More specifically:
      *  - Remove all non-verifying self-certificates
@@ -235,9 +234,9 @@ public class UncachedKeyRing {
      *  - If the key is a secret key, remove all certificates by foreign keys
      *  - If no valid user id remains, log an error and return null
      *
-     * This operation writes an OperationLog which can be used as part of a OperationResultParcel.
+     * This operation writes an OperationLog which can be used as part of an OperationResultParcel.
      *
-     * @return A canonicalized key, or null on fatal error
+     * @return A canonicalized key, or null on fatal error (log will include a message in this case)
      *
      */
     @SuppressWarnings("ConstantConditions")

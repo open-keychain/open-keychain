@@ -10,6 +10,7 @@ import org.robolectric.shadows.ShadowLog;
 import org.spongycastle.bcpg.PacketTags;
 import org.spongycastle.bcpg.sig.KeyFlags;
 import org.spongycastle.bcpg.PublicKeyAlgorithmTags;
+import org.spongycastle.jce.provider.BouncyCastleProvider;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.service.OperationResultParcel;
 import org.sufficientlysecure.keychain.service.OperationResults.EditKeyResult;
@@ -18,6 +19,7 @@ import org.sufficientlysecure.keychain.support.KeyringTestingHelper;
 import org.sufficientlysecure.keychain.support.KeyringTestingHelper.RawPacket;
 import org.sufficientlysecure.keychain.util.ProgressScaler;
 
+import java.security.Security;
 import java.util.ArrayList;
 import java.util.Iterator;
 
@@ -59,6 +61,7 @@ public class UncachedKeyringMergeTest {
 
     @BeforeClass
     public static void setUpOnce() throws Exception {
+        Security.insertProviderAt(new BouncyCastleProvider(), 1);
         ShadowLog.stream = System.out;
 
         {

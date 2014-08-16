@@ -53,9 +53,9 @@ public class PgpKeyOperationTest {
     ArrayList<RawPacket> onlyA = new ArrayList<RawPacket>();
     ArrayList<RawPacket> onlyB = new ArrayList<RawPacket>();
 
-    @BeforeClass public static void setUpOnce() throws Exception {
+    @BeforeClass
+    public static void setUpOnce() throws Exception {
         Security.insertProviderAt(new BouncyCastleProvider(), 1);
-
         ShadowLog.stream = System.out;
 
         {
