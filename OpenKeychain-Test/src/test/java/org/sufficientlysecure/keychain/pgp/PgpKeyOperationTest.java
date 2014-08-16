@@ -237,10 +237,8 @@ public class PgpKeyOperationTest {
             parcel.mMasterKeyId = ring.getMasterKeyId() -1;
             parcel.mFingerprint = ring.getFingerprint();
 
-            CanonicalizedSecretKeyRing secretRing = new CanonicalizedSecretKeyRing(ring.getEncoded(), false, 0);
-
             assertModifyFailure("keyring modification with bad master key id should fail",
-                    secretRing, parcel);
+                    ring, parcel);
         }
 
         {
@@ -249,10 +247,8 @@ public class PgpKeyOperationTest {
             parcel.mMasterKeyId = null;
             parcel.mFingerprint = ring.getFingerprint();
 
-            CanonicalizedSecretKeyRing secretRing = new CanonicalizedSecretKeyRing(ring.getEncoded(), false, 0);
-
             assertModifyFailure("keyring modification with null master key id should fail",
-                    secretRing, parcel);
+                    ring, parcel);
         }
 
         {
@@ -262,10 +258,8 @@ public class PgpKeyOperationTest {
             // some byte, off by one
             parcel.mFingerprint[5] += 1;
 
-            CanonicalizedSecretKeyRing secretRing = new CanonicalizedSecretKeyRing(ring.getEncoded(), false, 0);
-
             assertModifyFailure("keyring modification with bad fingerprint should fail",
-                    secretRing, parcel);
+                    ring, parcel);
         }
 
         {
@@ -273,10 +267,8 @@ public class PgpKeyOperationTest {
             parcel.mMasterKeyId = ring.getMasterKeyId();
             parcel.mFingerprint = null;
 
-            CanonicalizedSecretKeyRing secretRing = new CanonicalizedSecretKeyRing(ring.getEncoded(), false, 0);
-
             assertModifyFailure("keyring modification with null fingerprint should fail",
-                    secretRing, parcel);
+                    ring, parcel);
         }
 
         {
@@ -284,10 +276,9 @@ public class PgpKeyOperationTest {
             if (badphrase.equals(passphrase)) {
                 badphrase = "a";
             }
-            CanonicalizedSecretKeyRing secretRing = new CanonicalizedSecretKeyRing(ring.getEncoded(), false, 0);
 
             assertModifyFailure("keyring modification with bad passphrase should fail",
-                    secretRing, parcel, badphrase);
+                    ring, parcel, badphrase);
         }
 
     }
@@ -340,9 +331,7 @@ public class PgpKeyOperationTest {
             parcel.reset();
             parcel.mAddSubKeys.add(new SubkeyAdd(
                     PublicKeyAlgorithmTags.RSA_GENERAL, new Random().nextInt(512), KeyFlags.SIGN_DATA, null));
-
-            CanonicalizedSecretKeyRing secretRing = new CanonicalizedSecretKeyRing(ring.getEncoded(), false, 0);
-            assertModifyFailure("creating a subkey with keysize < 512 should fail", secretRing, parcel);
+            assertModifyFailure("creating a subkey with keysize < 512 should fail", ring, parcel);
 
         }
 
@@ -350,9 +339,7 @@ public class PgpKeyOperationTest {
             parcel.reset();
             parcel.mAddSubKeys.add(new SubkeyAdd(PublicKeyAlgorithmTags.RSA_GENERAL, 1024, KeyFlags.SIGN_DATA,
                     new Date().getTime()/1000-10));
-
-            CanonicalizedSecretKeyRing secretRing = new CanonicalizedSecretKeyRing(ring.getEncoded(), false, 0);
-            assertModifyFailure("creating subkey with past expiry date should fail", secretRing, parcel);
+            assertModifyFailure("creating subkey with past expiry date should fail", ring, parcel);
         }
 
     }
@@ -564,8 +551,7 @@ public class PgpKeyOperationTest {
             parcel.reset();
             parcel.mChangePrimaryUserId = uid;
 
-            CanonicalizedSecretKeyRing secretRing = new CanonicalizedSecretKeyRing(modified.getEncoded(), false, 0);
-            assertModifyFailure("setting primary user id to a revoked user id should fail", secretRing, parcel);
+            assertModifyFailure("setting primary user id to a revoked user id should fail", modified, parcel);
 
         }
 
@@ -610,8 +596,7 @@ public class PgpKeyOperationTest {
 
         {
             parcel.mAddUserIds.add("");
-            CanonicalizedSecretKeyRing secretRing = new CanonicalizedSecretKeyRing(ring.getEncoded(), false, 0);
-            assertModifyFailure("adding an empty user id should fail", secretRing, parcel);
+            assertModifyFailure("adding an empty user id should fail", ring, parcel);
         }
 
         parcel.reset();
@@ -679,9 +664,8 @@ public class PgpKeyOperationTest {
                 parcel.mChangePrimaryUserId += "A";
             }
 
-            CanonicalizedSecretKeyRing secretRing = new CanonicalizedSecretKeyRing(ring.getEncoded(), false, 0);
             assertModifyFailure("changing primary user id to a non-existent one should fail",
-                    secretRing, parcel);
+                    ring, parcel);
         }
 
         // check for revoked primary user id already done in revoke test
@@ -774,9 +758,10 @@ public class PgpKeyOperationTest {
 
     }
 
-    private void assertModifyFailure(String reason, CanonicalizedSecretKeyRing secretRing,
-                                     SaveKeyringParcel parcel, String passphrase) {
+    private void assertModifyFailure(String reason, UncachedKeyRing ring,
+                                     SaveKeyringParcel parcel, String passphrase) throws Exception {
 
+        CanonicalizedSecretKeyRing secretRing = new CanonicalizedSecretKeyRing(ring.getEncoded(), false, 0);
         EditKeyResult result = op.modifySecretKeyRing(secretRing, parcel, passphrase);
 
         Assert.assertFalse(reason, result.success());
@@ -784,8 +769,10 @@ public class PgpKeyOperationTest {
 
     }
 
-    private void assertModifyFailure(String reason, CanonicalizedSecretKeyRing secretRing, SaveKeyringParcel parcel) {
+    private void assertModifyFailure(String reason, UncachedKeyRing ring, SaveKeyringParcel parcel)
+            throws Exception {
 
+        CanonicalizedSecretKeyRing secretRing = new CanonicalizedSecretKeyRing(ring.getEncoded(), false, 0);
         EditKeyResult result = op.modifySecretKeyRing(secretRing, parcel, passphrase);
 
         Assert.assertFalse(reason, result.success());
