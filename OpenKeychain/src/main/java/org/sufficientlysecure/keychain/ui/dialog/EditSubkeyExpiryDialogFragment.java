@@ -48,7 +48,6 @@ public class EditSubkeyExpiryDialogFragment extends DialogFragment {
     public static final String MESSAGE_DATA_EXPIRY_DATE = "expiry_date";
 
     private Messenger mMessenger;
-    private Calendar mExpiryCal;
 
     private DatePicker mDatePicker;
 
@@ -75,15 +74,17 @@ public class EditSubkeyExpiryDialogFragment extends DialogFragment {
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         final Activity activity = getActivity();
         mMessenger = getArguments().getParcelable(ARG_MESSENGER);
-        Date creationDate = new Date(getArguments().getLong(ARG_CREATION_DATE) * 1000);
-        Date expiryDate = new Date(getArguments().getLong(ARG_EXPIRY_DATE) * 1000);
+        long creationDate = getArguments().getLong(ARG_CREATION_DATE);
+        long expiryDate = getArguments().getLong(ARG_EXPIRY_DATE);
 
         Calendar creationCal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
-        creationCal.setTime(creationDate);
-        mExpiryCal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
-        mExpiryCal.setTime(expiryDate);
+        creationCal.setTime(new Date(creationDate * 1000));
+        final Calendar expiryCal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+        expiryCal.setTime(new Date(expiryDate * 1000));
 
-        Log.d(Constants.TAG, "onCreateDialog");
+        // date picker works with default time zone, we need to convert from UTC to default timezone
+        creationCal.setTimeZone(TimeZone.getDefault());
+        expiryCal.setTimeZone(TimeZone.getDefault());
 
         // Explicitly not using DatePickerDialog here!
         // DatePickerDialog is difficult to customize and has many problems (see old git versions)
@@ -97,15 +98,40 @@ public class EditSubkeyExpiryDialogFragment extends DialogFragment {
 
         mDatePicker = (DatePicker) view.findViewById(R.id.edit_subkey_expiry_date_picker);
 
+        // set default date
+        if (expiryDate == 0L) {
+            // if key has no expiry, set it to creation date +1 day
+
+            Calendar creationCalPlusOne = (Calendar) creationCal.clone();
+            creationCalPlusOne.add(Calendar.DAY_OF_MONTH, 1);
+            mDatePicker.init(
+                    creationCalPlusOne.get(Calendar.YEAR),
+                    creationCalPlusOne.get(Calendar.MONTH),
+                    creationCalPlusOne.get(Calendar.DAY_OF_MONTH),
+                    null
+            );
+        } else {
+            // set date picker to current expiry date +1 day
+
+            Calendar expiryCalPlusOne = (Calendar) expiryCal.clone();
+            expiryCalPlusOne.add(Calendar.DAY_OF_MONTH, 1);
+            mDatePicker.init(
+                    expiryCalPlusOne.get(Calendar.YEAR),
+                    expiryCalPlusOne.get(Calendar.MONTH),
+                    expiryCalPlusOne.get(Calendar.DAY_OF_MONTH),
+                    null
+            );
+        }
+
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.HONEYCOMB) {
             // will crash with IllegalArgumentException if we set a min date
-            // that is not before expiry
-            if (creationCal.before(mExpiryCal)) {
+            // that is before creation date
+            if (expiryDate == 0L || creationCal.before(expiryCal)) {
                 mDatePicker.setMinDate(creationCal.getTime().getTime()
                         + DateUtils.DAY_IN_MILLIS);
             } else {
-                // when creation date isn't available
-                mDatePicker.setMinDate(mExpiryCal.getTime().getTime()
+                // set min to expiry date
+                mDatePicker.setMinDate(expiryCal.getTime().getTime()
                         + DateUtils.DAY_IN_MILLIS);
             }
         }
@@ -115,19 +141,15 @@ public class EditSubkeyExpiryDialogFragment extends DialogFragment {
             public void onClick(DialogInterface dialog, int id) {
                 dismiss();
 
-                Calendar selectedCal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+                Calendar selectedCal = Calendar.getInstance(TimeZone.getDefault());
                 //noinspection ResourceType
                 selectedCal.set(mDatePicker.getYear(), mDatePicker.getMonth(), mDatePicker.getDayOfMonth());
+                // date picker uses default time zone, we need to convert to UTC
+                selectedCal.setTimeZone(TimeZone.getTimeZone("UTC"));
 
-                if (mExpiryCal != null) {
-                    long numDays = (selectedCal.getTimeInMillis() / 86400000)
-                            - (mExpiryCal.getTimeInMillis() / 86400000);
-                    if (numDays > 0) {
-                        Bundle data = new Bundle();
-                        data.putSerializable(MESSAGE_DATA_EXPIRY_DATE, selectedCal.getTime().getTime() / 1000);
-                        sendMessageToHandler(MESSAGE_NEW_EXPIRY_DATE, data);
-                    }
-                } else {
+                long numDays = (selectedCal.getTimeInMillis() / 86400000)
+                        - (expiryCal.getTimeInMillis() / 86400000);
+                if (numDays > 0) {
                     Bundle data = new Bundle();
                     data.putSerializable(MESSAGE_DATA_EXPIRY_DATE, selectedCal.getTime().getTime() / 1000);
                     sendMessageToHandler(MESSAGE_NEW_EXPIRY_DATE, data);

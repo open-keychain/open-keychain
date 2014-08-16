@@ -189,10 +189,13 @@ public class AddSubkeyDialogFragment extends DialogFragment {
                         if (mNoExpiryCheckBox.isChecked()) {
                             expiry = 0L;
                         } else {
-                            Calendar selectedCal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+                            Calendar selectedCal = Calendar.getInstance(TimeZone.getDefault());
                             //noinspection ResourceType
                             selectedCal.set(mExpiryDatePicker.getYear(),
                                     mExpiryDatePicker.getMonth(), mExpiryDatePicker.getDayOfMonth());
+                            // date picker uses default time zone, we need to convert to UTC
+                            selectedCal.setTimeZone(TimeZone.getTimeZone("UTC"));
+                            
                             expiry = selectedCal.getTime().getTime() / 1000;
                         }
 
