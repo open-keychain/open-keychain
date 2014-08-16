@@ -271,13 +271,12 @@ public class UncachedKeyRing {
             for (PGPSignature zert : new IterableIterator<PGPSignature>(masterKey.getKeySignatures())) {
                 int type = zert.getSignatureType();
 
-                // Disregard certifications on user ids, we will deal with those later
+                // These should most definitely not be here...
                 if (type == PGPSignature.NO_CERTIFICATION
                         || type == PGPSignature.DEFAULT_CERTIFICATION
                         || type == PGPSignature.CASUAL_CERTIFICATION
                         || type == PGPSignature.POSITIVE_CERTIFICATION
                         || type == PGPSignature.CERTIFICATION_REVOCATION) {
-                    // These should not be here...
                     log.add(LogLevel.WARN, LogType.MSG_KC_REVOKE_BAD_TYPE_UID, indent);
                     modified = PGPPublicKey.removeCertification(modified, zert);
                     badCerts += 1;

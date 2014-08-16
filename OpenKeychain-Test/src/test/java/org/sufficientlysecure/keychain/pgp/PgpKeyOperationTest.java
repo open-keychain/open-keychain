@@ -583,6 +583,31 @@ public class PgpKeyOperationTest {
     }
 
     @Test
+    public void testMasterRevoke() throws Exception {
+
+        parcel.reset();
+        parcel.mRevokeSubKeys.add(ring.getMasterKeyId());
+
+        UncachedKeyRing modified = applyModificationWithChecks(parcel, ring, onlyA, onlyB);
+
+        Assert.assertEquals("no extra packets in original", 0, onlyA.size());
+        Assert.assertEquals("exactly one extra packet in modified", 1, onlyB.size());
+
+        Packet p;
+
+        p = new BCPGInputStream(new ByteArrayInputStream(onlyB.get(0).buf)).readPacket();
+        Assert.assertTrue("first new packet must be secret subkey", p instanceof SignaturePacket);
+        Assert.assertEquals("signature type must be subkey binding certificate",
+                PGPSignature.KEY_REVOCATION, ((SignaturePacket) p).getSignatureType());
+        Assert.assertEquals("signature must have been created by master key",
+                ring.getMasterKeyId(), ((SignaturePacket) p).getKeyID());
+
+        Assert.assertTrue("subkey must actually be revoked",
+                modified.getPublicKey().isRevoked());
+
+    }
+
+    @Test
     public void testSubkeyRevoke() throws Exception {
 
         long keyId = KeyringTestingHelper.getSubkeyId(ring, 1);
