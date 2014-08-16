@@ -125,10 +125,9 @@ public class CreateKeyFinalFragment extends Fragment {
         Intent intent = new Intent(getActivity(), KeychainIntentService.class);
         intent.setAction(KeychainIntentService.ACTION_SAVE_KEYRING);
 
-        // Message is received after importing is done in KeychainIntentService
         KeychainIntentServiceHandler saveHandler = new KeychainIntentServiceHandler(
                 getActivity(),
-                getString(R.string.progress_importing),
+                getString(R.string.progress_building_key),
                 ProgressDialog.STYLE_HORIZONTAL) {
             public void handleMessage(Message message) {
                 // handle messages by standard KeychainIntentServiceHandler first
@@ -211,7 +210,6 @@ public class CreateKeyFinalFragment extends Fragment {
 
         intent.putExtra(KeychainIntentService.EXTRA_DATA, data);
 
-        // Message is received after uploading is done in KeychainIntentService
         KeychainIntentServiceHandler saveHandler = new KeychainIntentServiceHandler(getActivity(),
                 getString(R.string.progress_uploading), ProgressDialog.STYLE_HORIZONTAL) {
             public void handleMessage(Message message) {

@@ -411,7 +411,12 @@ public class KeychainIntentService extends IntentService
 
                 // If the edit operation didn't succeed, exit here
                 if (!modifyResult.success()) {
-                    sendMessageToHandler(KeychainIntentServiceHandler.MESSAGE_OKAY, modifyResult);
+                    // always return SaveKeyringResult, so create one out of the EditKeyResult
+                    SaveKeyringResult saveResult = new SaveKeyringResult(
+                            SaveKeyringResult.RESULT_ERROR,
+                            modifyResult.getLog(),
+                            null);
+                    sendMessageToHandler(KeychainIntentServiceHandler.MESSAGE_OKAY, saveResult);
                     return;
                 }
 
