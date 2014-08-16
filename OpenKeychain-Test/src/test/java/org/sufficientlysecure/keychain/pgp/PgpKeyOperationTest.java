@@ -45,7 +45,7 @@ import java.util.Random;
 public class PgpKeyOperationTest {
 
     static UncachedKeyRing staticRing;
-    static String passphrase;
+    final static String passphrase = genPassphrase();
 
     UncachedKeyRing ring;
     PgpKeyOperation op;
@@ -57,18 +57,6 @@ public class PgpKeyOperationTest {
     public static void setUpOnce() throws Exception {
         Security.insertProviderAt(new BouncyCastleProvider(), 1);
         ShadowLog.stream = System.out;
-
-        {
-            String chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ123456789!@#$%^&*()-_=";
-            Random r = new Random();
-            StringBuilder passbuilder = new StringBuilder();
-            // 20% chance for an empty passphrase
-            for(int i = 0, j = r.nextInt(10) > 2 ? r.nextInt(20) : 0; i < j; i++) {
-                passbuilder.append(chars.charAt(r.nextInt(chars.length())));
-            }
-            passphrase = passbuilder.toString();
-            System.out.println("Passphrase is '" + passphrase + "'");
-        }
 
         SaveKeyringParcel parcel = new SaveKeyringParcel();
         parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
@@ -853,12 +841,79 @@ public class PgpKeyOperationTest {
 
     }
 
+    @Test
+    public void testPassphraseChange() throws Exception {
+
+        // change passphrase to empty
+        parcel.mNewPassphrase = "";
+        UncachedKeyRing modified = applyModificationWithChecks(parcel, ring, onlyA, onlyB);
+
+        Assert.assertEquals("exactly three packets should have been modified (the secret keys)",
+                3, onlyB.size());
+
+        // remember secret key packet with no passphrase for later
+        RawPacket sKeyNoPassphrase = onlyB.get(1);
+        Assert.assertEquals("extracted packet should be a secret subkey",
+                PacketTags.SECRET_SUBKEY, sKeyNoPassphrase.tag);
+
+        // modify keyring, change to non-empty passphrase
+        String otherPassphrase = genPassphrase(true);
+        parcel.mNewPassphrase = otherPassphrase;
+        modified = applyModificationWithChecks(parcel, modified, onlyA, onlyB, "");
+
+        RawPacket sKeyWithPassphrase = onlyB.get(1);
+        Assert.assertEquals("extracted packet should be a secret subkey",
+                PacketTags.SECRET_SUBKEY, sKeyNoPassphrase.tag);
+
+        String otherPassphrase2 = genPassphrase(true);
+        parcel.mNewPassphrase = otherPassphrase2;
+        {
+            // if we replace a secret key with one without passphrase
+            modified = KeyringTestingHelper.removePacket(modified, sKeyNoPassphrase.position);
+            modified = KeyringTestingHelper.injectPacket(modified, sKeyNoPassphrase.buf, sKeyNoPassphrase.position);
+
+            // we should still be able to modify it (and change its passphrase) without errors
+            PgpKeyOperation op = new PgpKeyOperation(null);
+            CanonicalizedSecretKeyRing secretRing = new CanonicalizedSecretKeyRing(modified.getEncoded(), false, 0);
+            EditKeyResult result = op.modifySecretKeyRing(secretRing, parcel, otherPassphrase);
+            Assert.assertTrue("key modification must succeed", result.success());
+            Assert.assertFalse("log must not contain a warning",
+                    result.getLog().containsWarnings());
+            Assert.assertTrue("log must contain an empty passphrase retry notice",
+                result.getLog().containsType(LogType.MSG_MF_PASSPHRASE_EMPTY_RETRY));
+            modified = result.getRing();
+        }
+
+        {
+            // if we add one subkey with a different passphrase, that should produce a warning but also work
+            modified = KeyringTestingHelper.removePacket(modified, sKeyWithPassphrase.position);
+            modified = KeyringTestingHelper.injectPacket(modified, sKeyWithPassphrase.buf, sKeyWithPassphrase.position);
+
+            PgpKeyOperation op = new PgpKeyOperation(null);
+            CanonicalizedSecretKeyRing secretRing = new CanonicalizedSecretKeyRing(modified.getEncoded(), false, 0);
+            EditKeyResult result = op.modifySecretKeyRing(secretRing, parcel, otherPassphrase2);
+            Assert.assertTrue("key modification must succeed", result.success());
+            Assert.assertTrue("log must contain a warning",
+                    result.getLog().containsWarnings());
+            Assert.assertTrue("log must contain a failed passphrase change warning",
+                    result.getLog().containsType(LogType.MSG_MF_PASSPHRASE_FAIL));
+        }
+
+    }
 
     private static UncachedKeyRing applyModificationWithChecks(SaveKeyringParcel parcel,
                                                                UncachedKeyRing ring,
                                                                ArrayList<RawPacket> onlyA,
                                                                ArrayList<RawPacket> onlyB) {
-        return applyModificationWithChecks(parcel, ring, onlyA, onlyB, true, true);
+        return applyModificationWithChecks(parcel, ring, onlyA, onlyB, passphrase, true, true);
+    }
+
+    private static UncachedKeyRing applyModificationWithChecks(SaveKeyringParcel parcel,
+                                                               UncachedKeyRing ring,
+                                                               ArrayList<RawPacket> onlyA,
+                                                               ArrayList<RawPacket> onlyB,
+                                                               String passphrase) {
+        return applyModificationWithChecks(parcel, ring, onlyA, onlyB, passphrase, true, true);
     }
 
     // applies a parcel modification while running some integrity checks
@@ -866,6 +921,7 @@ public class PgpKeyOperationTest {
                                                                UncachedKeyRing ring,
                                                                ArrayList<RawPacket> onlyA,
                                                                ArrayList<RawPacket> onlyB,
+                                                               String passphrase,
                                                                boolean canonicalize,
                                                                boolean constantCanonicalize) {
 
@@ -978,6 +1034,22 @@ public class PgpKeyOperationTest {
 
         return result.getRing();
 
+    }
+
+    private static String genPassphrase() {
+        return genPassphrase(false);
+    }
+
+    private static String genPassphrase(boolean noEmpty) {
+        String chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ123456789!@#$%^&*()-_=";
+        Random r = new Random();
+        StringBuilder passbuilder = new StringBuilder();
+        // 20% chance for an empty passphrase
+        for(int i = 0, j = noEmpty || r.nextInt(10) > 2 ? r.nextInt(20)+1 : 0; i < j; i++) {
+            passbuilder.append(chars.charAt(r.nextInt(chars.length())));
+        }
+        System.out.println("Generated passphrase: '" + passbuilder.toString() + "'");
+        return passbuilder.toString();
     }
 
 }
