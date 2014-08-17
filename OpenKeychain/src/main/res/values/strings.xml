@@ -668,6 +668,21 @@
     <string name="msg_mf_unlock_error">Error unlocking keyring!</string>
     <string name="msg_mf_unlock">Unlocking keyring</string>
 
+    <!-- Consolidate -->
+    <string name="msg_con">Consolidating database</string>
+    <string name="msg_con_save_secret">Saving secret keyrings</string>
+    <string name="msg_con_save_public">Saving public keyrings</string>
+    <string name="msg_con_db_clear">Clearing database</string>
+    <plurals name="msg_con_reimport_secret">
+        <item quantity="one">Reimporting one secret key</item>
+        <item quantity="other">Reimporting %d secret keys</item>
+    </plurals>
+    <plurals name="msg_con_reimport_public">
+        <item quantity="one">Reimporting one public key</item>
+        <item quantity="other">Reimporting %d public keys</item>
+    </plurals>
+    <string name="msg_con_success">Successfully consolidated database</string>
+
     <!-- PassphraseCache -->
     <string name="passp_cache_notif_click_to_clear">Click to clear cached passphrases</string>
     <string name="passp_cache_notif_n_keys">OpenKeychain has cached %d passphrases</string>

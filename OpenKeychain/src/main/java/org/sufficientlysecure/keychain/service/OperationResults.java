@@ -272,4 +272,12 @@ public abstract class OperationResults {
         };
     }
 
+    public static class ConsolidateResult extends OperationResultParcel {
+
+        public ConsolidateResult(int result, OperationLog log) {
+            super(result, log);
+        }
+
+    }
+
 }

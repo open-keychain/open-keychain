@@ -388,6 +388,15 @@ public class OperationResultParcel implements Parcelable {
         MSG_MF_UID_ERROR_EMPTY (R.string.msg_mf_uid_error_empty),
         MSG_MF_UNLOCK_ERROR (R.string.msg_mf_unlock_error),
         MSG_MF_UNLOCK (R.string.msg_mf_unlock),
+
+        // consolidate
+        MSG_CON (R.string.msg_con),
+        MSG_CON_SAVE_SECRET (R.string.msg_con_save_secret),
+        MSG_CON_SAVE_PUBLIC (R.string.msg_con_save_public),
+        MSG_CON_DB_CLEAR (R.string.msg_con_db_clear),
+        MSG_CON_REIMPORT_SECRET (R.plurals.msg_con_reimport_secret),
+        MSG_CON_REIMPORT_PUBLIC (R.plurals.msg_con_reimport_public),
+        MSG_CON_SUCCESS (R.string.msg_con_success),
         ;
 
         private final int mMsgId;

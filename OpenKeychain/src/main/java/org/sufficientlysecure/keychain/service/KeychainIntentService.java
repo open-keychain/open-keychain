@@ -52,6 +52,7 @@ import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralMsgIdException;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.KeychainDatabase;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
+import org.sufficientlysecure.keychain.service.OperationResults.ConsolidateResult;
 import org.sufficientlysecure.keychain.service.OperationResults.EditKeyResult;
 import org.sufficientlysecure.keychain.service.OperationResults.ImportKeyResult;
 import org.sufficientlysecure.keychain.service.OperationResults.SaveKeyringResult;
@@ -103,6 +104,8 @@ public class KeychainIntentService extends IntentService
 
     public static final String ACTION_CERTIFY_KEYRING = Constants.INTENT_PREFIX + "SIGN_KEYRING";
 
+    public static final String ACTION_CONSOLIDATE = Constants.INTENT_PREFIX + "CONSOLIDATE";
+
     /* keys for data bundle */
 
     // encrypt, decrypt, import export
@@ -142,6 +145,7 @@ public class KeychainIntentService extends IntentService
 
     // import key
     public static final String IMPORT_KEY_LIST = "import_key_list";
+    public static final String IMPORT_KEY_FILE = "import_key_file";
 
     // export key
     public static final String EXPORT_OUTPUT_STREAM = "export_output_stream";
@@ -178,6 +182,8 @@ public class KeychainIntentService extends IntentService
     public static final String RESULT_EXPORT = "exported";
 
     public static final String RESULT_IMPORT = "result";
+
+    public static final String RESULT_CONSOLIDATE = "consolidate_result";
 
     Messenger mMessenger;
 
@@ -662,7 +668,16 @@ public class KeychainIntentService extends IntentService
             } catch (Exception e) {
                 sendErrorToHandler(e);
             }
+
+        } else if (ACTION_CONSOLIDATE.equals(action)) {
+            ConsolidateResult result = new ProviderHelper(this).consolidateDatabase(this);
+
+            Bundle resultData = new Bundle();
+            resultData.putParcelable(RESULT_CONSOLIDATE, result);
+
+            sendMessageToHandler(KeychainIntentServiceHandler.MESSAGE_OKAY, resultData);
         }
+
     }
 
     private void sendErrorToHandler(Exception e) {

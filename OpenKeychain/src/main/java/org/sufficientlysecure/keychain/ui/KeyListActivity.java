@@ -17,8 +17,11 @@
 
 package org.sufficientlysecure.keychain.ui;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Message;
+import android.os.Messenger;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -28,6 +31,9 @@ import org.sufficientlysecure.keychain.helper.ExportHelper;
 import org.sufficientlysecure.keychain.helper.Preferences;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainDatabase;
+import org.sufficientlysecure.keychain.service.KeychainIntentService;
+import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
+import org.sufficientlysecure.keychain.service.OperationResults.ConsolidateResult;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Notify;
 
@@ -63,6 +69,7 @@ public class KeyListActivity extends DrawerActivity {
         getMenuInflater().inflate(R.menu.key_list, menu);
 
         if (Constants.DEBUG) {
+            menu.findItem(R.id.menu_key_list_debug_cons).setVisible(true);
             menu.findItem(R.id.menu_key_list_debug_read).setVisible(true);
             menu.findItem(R.id.menu_key_list_debug_write).setVisible(true);
             menu.findItem(R.id.menu_key_list_debug_first_time).setVisible(true);
@@ -90,6 +97,10 @@ public class KeyListActivity extends DrawerActivity {
 
             case R.id.menu_key_list_export:
                 mExportHelper.showExportKeysDialog(null, Constants.Path.APP_DIR_FILE, true);
+                return true;
+
+            case R.id.menu_key_list_debug_cons:
+                consolidate();
                 return true;
 
             case R.id.menu_key_list_debug_read:
@@ -134,6 +145,55 @@ public class KeyListActivity extends DrawerActivity {
     private void createKey() {
         Intent intent = new Intent(this, CreateKeyActivity.class);
         startActivity(intent);
+    }
+
+    private void consolidate() {
+        // Message is received after importing is done in KeychainIntentService
+        KeychainIntentServiceHandler saveHandler = new KeychainIntentServiceHandler(
+                this,
+                getString(R.string.progress_importing),
+                ProgressDialog.STYLE_HORIZONTAL) {
+            public void handleMessage(Message message) {
+                // handle messages by standard KeychainIntentServiceHandler first
+                super.handleMessage(message);
+
+                if (message.arg1 == KeychainIntentServiceHandler.MESSAGE_OKAY) {
+                    // get returned data bundle
+                    Bundle returnData = message.getData();
+                    if (returnData == null) {
+                        return;
+                    }
+                    final ConsolidateResult result =
+                            returnData.getParcelable(KeychainIntentService.RESULT_CONSOLIDATE);
+                    if (result == null) {
+                        return;
+                    }
+
+                    result.createNotify(KeyListActivity.this).show();
+                }
+            }
+        };
+
+        // Send all information needed to service to import key in other thread
+        Intent intent = new Intent(this, KeychainIntentService.class);
+
+        intent.setAction(KeychainIntentService.ACTION_CONSOLIDATE);
+
+        // fill values for this action
+        Bundle data = new Bundle();
+
+        intent.putExtra(KeychainIntentService.EXTRA_DATA, data);
+
+        // Create a new Messenger for the communication back
+        Messenger messenger = new Messenger(saveHandler);
+        intent.putExtra(KeychainIntentService.EXTRA_MESSENGER, messenger);
+
+        // show progress dialog
+        saveHandler.showProgressDialog(this);
+
+        // start service with intent
+        startService(intent);
+
     }
 
 }

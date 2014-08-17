@@ -28,12 +28,14 @@ import android.os.RemoteException;
 import android.support.v4.util.LongSparseArray;
 
 import org.sufficientlysecure.keychain.Constants;
+import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedPublicKey;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedPublicKeyRing;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKeyRing;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.pgp.NullProgressable;
 import org.sufficientlysecure.keychain.pgp.PgpHelper;
+import org.sufficientlysecure.keychain.pgp.PgpImportExport;
 import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
 import org.sufficientlysecure.keychain.pgp.Progressable;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
@@ -51,9 +53,12 @@ import org.sufficientlysecure.keychain.remote.AppSettings;
 import org.sufficientlysecure.keychain.service.OperationResultParcel.LogLevel;
 import org.sufficientlysecure.keychain.service.OperationResultParcel.LogType;
 import org.sufficientlysecure.keychain.service.OperationResultParcel.OperationLog;
+import org.sufficientlysecure.keychain.service.OperationResults.ConsolidateResult;
 import org.sufficientlysecure.keychain.service.OperationResults.SaveKeyringResult;
+import org.sufficientlysecure.keychain.util.FileImportCache;
 import org.sufficientlysecure.keychain.util.IterableIterator;
 import org.sufficientlysecure.keychain.util.Log;
+import org.sufficientlysecure.keychain.util.ProgressScaler;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -63,6 +68,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -95,14 +101,6 @@ public class ProviderHelper {
         mContentResolver = context.getContentResolver();
         mLog = log;
         mIndent = indent;
-    }
-
-    public void resetLog() {
-        if(mLog != null) {
-            // Start a new log (leaving the old one intact)
-            mLog = new OperationLog();
-            mIndent = 0;
-        }
     }
 
     public OperationLog getLog() {
@@ -822,6 +820,173 @@ public class ProviderHelper {
         } finally {
             mIndent -= 1;
         }
+
+    }
+
+    public ConsolidateResult consolidateDatabase(Progressable progress) {
+
+        // 1a. fetch all secret keyrings into a cache file
+        int numSecrets, numPublics;
+
+        log(LogLevel.START, LogType.MSG_CON, mIndent);
+        mIndent += 1;
+
+        try {
+
+            log(LogLevel.DEBUG, LogType.MSG_CON_SAVE_SECRET, mIndent);
+            mIndent += 1;
+
+            final Cursor cursor = mContentResolver.query(KeyRings.buildUnifiedKeyRingsUri(), new String[] {
+                    KeyRings.PRIVKEY_DATA, KeyRings.FINGERPRINT, KeyRings.HAS_ANY_SECRET
+            }, KeyRings.HAS_ANY_SECRET + " = 1", null, null);
+
+            if (cursor == null || !cursor.moveToFirst()) {
+                return new ConsolidateResult(ConsolidateResult.RESULT_ERROR, mLog);
+            }
+
+            numSecrets = cursor.getCount();
+
+            FileImportCache<ParcelableKeyRing> cache =
+                    new FileImportCache<ParcelableKeyRing>(mContext, "consolidate_secret.pcl");
+            cache.writeCache(new Iterator<ParcelableKeyRing>() {
+                ParcelableKeyRing ring;
+
+                @Override
+                public boolean hasNext() {
+                    if (ring != null) {
+                        return true;
+                    }
+                    if (cursor.isAfterLast()) {
+                        return false;
+                    }
+                    ring = new ParcelableKeyRing(cursor.getBlob(0),
+                            PgpKeyHelper.convertFingerprintToHex(cursor.getBlob(1)));
+                    cursor.moveToNext();
+                    return true;
+                }
+
+                @Override
+                public ParcelableKeyRing next() {
+                    try {
+                        return ring;
+                    } finally {
+                        ring = null;
+                    }
+                }
+
+                @Override
+                public void remove() {
+                    throw new UnsupportedOperationException();
+                }
+
+            });
+
+        } catch (IOException e) {
+            Log.e(Constants.TAG, "error saving secret");
+            return new ConsolidateResult(ConsolidateResult.RESULT_ERROR, mLog);
+        } finally {
+            mIndent -= 1;
+        }
+
+        // 1b. fetch all public keyrings into a cache file
+        try {
+
+            log(LogLevel.DEBUG, LogType.MSG_CON_SAVE_PUBLIC, mIndent);
+            mIndent += 1;
+
+            final Cursor cursor = mContentResolver.query(KeyRings.buildUnifiedKeyRingsUri(), new String[] {
+                    KeyRings.PUBKEY_DATA, KeyRings.FINGERPRINT
+            }, null, null, null);
+
+            if (cursor == null || !cursor.moveToFirst()) {
+                return new ConsolidateResult(ConsolidateResult.RESULT_ERROR, mLog);
+            }
+
+            numPublics = cursor.getCount();
+
+            FileImportCache<ParcelableKeyRing> cache =
+                    new FileImportCache<ParcelableKeyRing>(mContext, "consolidate_public.pcl");
+            cache.writeCache(new Iterator<ParcelableKeyRing>() {
+                ParcelableKeyRing ring;
+
+                @Override
+                public boolean hasNext() {
+                    if (ring != null) {
+                        return true;
+                    }
+                    if (cursor.isAfterLast()) {
+                        return false;
+                    }
+                    ring = new ParcelableKeyRing(cursor.getBlob(0),
+                            PgpKeyHelper.convertFingerprintToHex(cursor.getBlob(1)));
+                    cursor.moveToNext();
+                    return true;
+                }
+
+                @Override
+                public ParcelableKeyRing next() {
+                    try {
+                        return ring;
+                    } finally {
+                        ring = null;
+                    }
+                }
+
+                @Override
+                public void remove() {
+                    throw new UnsupportedOperationException();
+                }
+
+            });
+
+        } catch (IOException e) {
+            Log.e(Constants.TAG, "error saving public");
+            return new ConsolidateResult(ConsolidateResult.RESULT_ERROR, mLog);
+        } finally {
+            mIndent -= 1;
+        }
+
+        // 2. wipe database (IT'S DANGEROUS)
+        log(LogLevel.DEBUG, LogType.MSG_CON_DB_CLEAR, mIndent);
+        new KeychainDatabase(mContext).clearDatabase();
+
+        // 3. Re-Import secret keyrings from cache
+        try {
+            log(LogLevel.DEBUG, LogType.MSG_CON_REIMPORT_SECRET, mIndent, numSecrets);
+            mIndent += 1;
+
+            FileImportCache<ParcelableKeyRing> cache =
+                    new FileImportCache<ParcelableKeyRing>(mContext, "consolidate_secret.pcl");
+            new PgpImportExport(mContext, this, new ProgressScaler(progress, 10, 25, 100))
+                    .importKeyRings(cache.readCache(), numSecrets);
+        } catch (IOException e) {
+            Log.e(Constants.TAG, "error importing secret");
+            return new ConsolidateResult(ConsolidateResult.RESULT_ERROR, mLog);
+        } finally {
+            mIndent -= 1;
+        }
+
+        // 3. Re-Import public keyrings from cache
+        try {
+            log(LogLevel.DEBUG, LogType.MSG_CON_REIMPORT_PUBLIC, mIndent, numPublics);
+            mIndent += 1;
+
+            FileImportCache<ParcelableKeyRing> cache =
+                    new FileImportCache<ParcelableKeyRing>(mContext, "consolidate_public.pcl");
+            new PgpImportExport(mContext, this, new ProgressScaler(progress, 25, 99, 100))
+                    .importKeyRings(cache.readCache(), numPublics);
+        } catch (IOException e) {
+            Log.e(Constants.TAG, "error importing public");
+            return new ConsolidateResult(ConsolidateResult.RESULT_ERROR, mLog);
+        } finally {
+            mIndent -= 1;
+        }
+
+        progress.setProgress(100, 100);
+        log(LogLevel.OK, LogType.MSG_CON_SUCCESS, mIndent);
+        mIndent -= 1;
+
+        return new ConsolidateResult(ConsolidateResult.RESULT_OK, mLog);
 
     }
 
