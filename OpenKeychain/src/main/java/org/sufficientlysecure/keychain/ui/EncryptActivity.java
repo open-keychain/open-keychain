@@ -73,16 +73,13 @@ public class EncryptActivity extends DrawerActivity implements EncryptActivityIn
     public static final String EXTRA_ENCRYPTION_KEY_IDS = "encryption_key_ids";
 
     // view
-    ViewPager mViewPagerMode;
-    //PagerTabStrip mPagerTabStripMode;
-    PagerTabStripAdapter mTabsAdapterMode;
-    ViewPager mViewPagerContent;
-    PagerTabStrip mPagerTabStripContent;
-    PagerTabStripAdapter mTabsAdapterContent;
+    private int mCurrentMode = PAGER_MODE_ASYMMETRIC;
+    private ViewPager mViewPagerContent;
+    private PagerTabStrip mPagerTabStripContent;
+    private PagerTabStripAdapter mTabsAdapterContent;
 
     // tabs
-    int mSwitchToMode = PAGER_MODE_ASYMMETRIC;
-    int mSwitchToContent = PAGER_CONTENT_MESSAGE;
+    private int mSwitchToContent = PAGER_CONTENT_MESSAGE;
 
     private static final int PAGER_MODE_ASYMMETRIC = 0;
     private static final int PAGER_MODE_SYMMETRIC = 1;
@@ -102,7 +99,7 @@ public class EncryptActivity extends DrawerActivity implements EncryptActivityIn
     private String mMessage = "";
 
     public boolean isModeSymmetric() {
-        return PAGER_MODE_SYMMETRIC == mViewPagerMode.getCurrentItem();
+        return PAGER_MODE_SYMMETRIC == mCurrentMode;
     }
 
     public boolean isContentMessage() {
@@ -474,13 +471,9 @@ public class EncryptActivity extends DrawerActivity implements EncryptActivityIn
     }
 
     private void initView() {
-        mViewPagerMode = (ViewPager) findViewById(R.id.encrypt_pager_mode);
-        //mPagerTabStripMode = (PagerTabStrip) findViewById(R.id.encrypt_pager_tab_strip_mode);
         mViewPagerContent = (ViewPager) findViewById(R.id.encrypt_pager_content);
         mPagerTabStripContent = (PagerTabStrip) findViewById(R.id.encrypt_pager_tab_strip_content);
 
-        mTabsAdapterMode = new PagerTabStripAdapter(this);
-        mViewPagerMode.setAdapter(mTabsAdapterMode);
         mTabsAdapterContent = new PagerTabStripAdapter(this);
         mViewPagerContent.setAdapter(mTabsAdapterContent);
     }
@@ -502,10 +495,7 @@ public class EncryptActivity extends DrawerActivity implements EncryptActivityIn
 
         // Handle intent actions
         handleActions(getIntent());
-
-        mTabsAdapterMode.addTab(EncryptAsymmetricFragment.class, null, getString(R.string.label_asymmetric));
-        mTabsAdapterMode.addTab(EncryptSymmetricFragment.class, null, getString(R.string.label_symmetric));
-        mViewPagerMode.setCurrentItem(mSwitchToMode);
+        updateModeFragment();
 
         mTabsAdapterContent.addTab(EncryptMessageFragment.class, null, getString(R.string.label_message));
         mTabsAdapterContent.addTab(EncryptFileFragment.class, null, getString(R.string.label_files));
@@ -521,6 +511,16 @@ public class EncryptActivity extends DrawerActivity implements EncryptActivityIn
         return super.onCreateOptionsMenu(menu);
     }
 
+    private void updateModeFragment() {
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.encrypt_pager_mode,
+                        mCurrentMode == PAGER_MODE_SYMMETRIC
+                                ? new EncryptSymmetricFragment()
+                                : new EncryptAsymmetricFragment())
+                .commitAllowingStateLoss();
+        getSupportFragmentManager().executePendingTransactions();
+    }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.isCheckable()) {
@@ -528,9 +528,8 @@ public class EncryptActivity extends DrawerActivity implements EncryptActivityIn
         }
         switch (item.getItemId()) {
             case R.id.check_use_symmetric:
-                mSwitchToMode = item.isChecked() ? PAGER_MODE_SYMMETRIC : PAGER_MODE_ASYMMETRIC;
-
-                mViewPagerMode.setCurrentItem(mSwitchToMode);
+                mCurrentMode = item.isChecked() ? PAGER_MODE_SYMMETRIC : PAGER_MODE_ASYMMETRIC;
+                updateModeFragment();
                 notifyUpdate();
                 break;
             case R.id.check_use_armor:
@@ -604,7 +603,7 @@ public class EncryptActivity extends DrawerActivity implements EncryptActivityIn
         mEncryptionKeyIds = extras.getLongArray(EXTRA_ENCRYPTION_KEY_IDS);
 
         // preselect keys given by intent
-        mSwitchToMode = PAGER_MODE_ASYMMETRIC;
+        mCurrentMode = PAGER_MODE_ASYMMETRIC;
 
         /**
          * Main Actions
