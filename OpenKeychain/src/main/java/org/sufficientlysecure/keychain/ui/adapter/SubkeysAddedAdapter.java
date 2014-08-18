@@ -33,8 +33,10 @@ import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 public class SubkeysAddedAdapter extends ArrayAdapter<SaveKeyringParcel.SubkeyAdd> {
     private LayoutInflater mInflater;
@@ -108,9 +110,13 @@ public class SubkeysAddedAdapter extends ArrayAdapter<SaveKeyringParcel.SubkeyAd
 
         if (holder.mModel.mExpiry != 0L) {
             Date expiryDate = new Date(holder.mModel.mExpiry * 1000);
+            Calendar expiryCal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+            expiryCal.setTime(expiryDate);
+            // convert from UTC to time zone of device
+            expiryCal.setTimeZone(TimeZone.getDefault());
 
             holder.vKeyExpiry.setText(getContext().getString(R.string.label_expiry) + ": "
-                    + DateFormat.getDateFormat(getContext()).format(expiryDate));
+                    + DateFormat.getDateFormat(getContext()).format(expiryCal.getTime()));
         } else {
             holder.vKeyExpiry.setText(getContext().getString(R.string.label_expiry) + ": "
                     + getContext().getString(R.string.none));

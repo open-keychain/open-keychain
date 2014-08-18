@@ -35,7 +35,9 @@ import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
 import org.sufficientlysecure.keychain.provider.KeychainContract.Keys;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
 
+import java.util.Calendar;
 import java.util.Date;
+import java.util.TimeZone;
 
 public class SubkeysAdapter extends CursorAdapter {
     private LayoutInflater mInflater;
@@ -198,9 +200,13 @@ public class SubkeysAdapter extends CursorAdapter {
         boolean isExpired;
         if (expiryDate != null) {
             isExpired = expiryDate.before(new Date());
+            Calendar expiryCal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+            expiryCal.setTime(expiryDate);
+            // convert from UTC to time zone of device
+            expiryCal.setTimeZone(TimeZone.getDefault());
 
             vKeyExpiry.setText(context.getString(R.string.label_expiry) + ": "
-                    + DateFormat.getDateFormat(context).format(expiryDate));
+                    + DateFormat.getDateFormat(context).format(expiryCal.getTime()));
         } else {
             isExpired = false;
 

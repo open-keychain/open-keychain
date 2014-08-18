@@ -132,7 +132,10 @@ public class AddSubkeyDialogFragment extends DialogFragment {
         });
 
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.HONEYCOMB) {
-            mExpiryDatePicker.setMinDate(new Date().getTime() + DateUtils.DAY_IN_MILLIS);
+            // date picker works based on default time zone
+            Calendar minDateCal = Calendar.getInstance(TimeZone.getDefault());
+            minDateCal.add(Calendar.DAY_OF_YEAR, 1); // at least one day after creation (today)
+            mExpiryDatePicker.setMinDate(minDateCal.getTime().getTime());
         }
 
         ArrayList<Choice> choices = new ArrayList<Choice>();

@@ -406,10 +406,10 @@ public class EditKeyFragment extends LoaderFragment implements
             @Override
             public void handleMessage(Message message) {
                 switch (message.what) {
-                    case EditSubkeyExpiryDialogFragment.MESSAGE_NEW_EXPIRY_DATE:
+                    case EditSubkeyExpiryDialogFragment.MESSAGE_NEW_EXPIRY:
                         mSaveKeyringParcel.getOrCreateSubkeyChange(keyId).mExpiry =
                                 (Long) message.getData().getSerializable(
-                                        EditSubkeyExpiryDialogFragment.MESSAGE_DATA_EXPIRY_DATE);
+                                        EditSubkeyExpiryDialogFragment.MESSAGE_DATA_EXPIRY);
                         break;
                 }
                 getLoaderManager().getLoader(LOADER_ID_SUBKEYS).forceLoad();
