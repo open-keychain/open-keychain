@@ -457,6 +457,7 @@
         <item>Revoke Subkey</item>
     </string-array>
     <string name="edit_key_new_subkey">new</string>
+    <string name="edit_key_select_flag">Please select at least one flag!</string>
 
     <!-- Create key -->
     <string name="create_key_upload">Upload key to keyserver</string>
