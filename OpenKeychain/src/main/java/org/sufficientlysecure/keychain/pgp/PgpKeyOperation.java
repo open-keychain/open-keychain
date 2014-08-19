@@ -881,10 +881,12 @@ public class PgpKeyOperation {
             }
 
             // add shiny new user id certificate
+            boolean isPrimary = currentCert.getHashedSubPackets() != null &&
+                    currentCert.getHashedSubPackets().isPrimaryUserID();
             modifiedPublicKey = PGPPublicKey.removeCertification(
                     modifiedPublicKey, userId, currentCert);
             PGPSignature newCert = generateUserIdSignature(
-                    masterPrivateKey, masterPublicKey, userId, true, flags, expiry);
+                    masterPrivateKey, masterPublicKey, userId, isPrimary, flags, expiry);
             modifiedPublicKey = PGPPublicKey.addCertification(
                     modifiedPublicKey, userId, newCert);
             ok = true;
