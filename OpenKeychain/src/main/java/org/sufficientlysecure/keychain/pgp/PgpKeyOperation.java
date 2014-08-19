@@ -121,7 +121,7 @@ public class PgpKeyOperation {
      */
     private static final int SECRET_KEY_ENCRYPTOR_HASH_ALGO = HashAlgorithmTags.SHA512;
     private static final int SECRET_KEY_ENCRYPTOR_SYMMETRIC_ALGO = SymmetricKeyAlgorithmTags.AES_256;
-    private static final int SECRET_KEY_ENCRYPTOR_S2K_COUNT = 0xc0;
+    private static final int SECRET_KEY_ENCRYPTOR_S2K_COUNT = 0x60;
 
     public PgpKeyOperation(Progressable progress) {
         super();
