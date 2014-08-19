@@ -914,13 +914,26 @@ public class PgpKeyOperation {
 
         PGPSignatureSubpacketGenerator hashedPacketsGen = new PGPSignatureSubpacketGenerator();
         {
-            hashedPacketsGen.setSignatureCreationTime(true, new Date());
+            /*
+             * From RFC about critical subpackets:
+             * If a subpacket is encountered that is
+             * marked critical but is unknown to the evaluating software, the
+             * evaluator SHOULD consider the signature to be in error.
+             * An evaluator may "recognize" a subpacket, but not implement it.  The
+             * purpose of the critical bit is to allow the signer to tell an
+             * evaluator that it would prefer a new, unknown feature to generate an
+             * error than be ignored.
+             */
+            /* non-critical subpackets: */
             hashedPacketsGen.setPreferredSymmetricAlgorithms(false, PREFERRED_SYMMETRIC_ALGORITHMS);
             hashedPacketsGen.setPreferredHashAlgorithms(false, PREFERRED_HASH_ALGORITHMS);
             hashedPacketsGen.setPreferredCompressionAlgorithms(false, PREFERRED_COMPRESSION_ALGORITHMS);
+            hashedPacketsGen.setPrimaryUserID(false, primary);
+
+            /* critical subpackets: */
+            hashedPacketsGen.setSignatureCreationTime(true, new Date());
             // Request that senders add the MDC to the message (authenticate unsigned messages)
             hashedPacketsGen.setFeature(true, Features.FEATURE_MODIFICATION_DETECTION);
-            hashedPacketsGen.setPrimaryUserID(false, primary);
             hashedPacketsGen.setKeyFlags(true, flags);
             if (expiry > 0) {
                 hashedPacketsGen.setKeyExpirationTime(
