@@ -22,6 +22,7 @@ import org.spongycastle.bcpg.CompressionAlgorithmTags;
 import org.spongycastle.bcpg.HashAlgorithmTags;
 import org.spongycastle.bcpg.PublicKeyAlgorithmTags;
 import org.spongycastle.bcpg.SymmetricKeyAlgorithmTags;
+import org.spongycastle.bcpg.sig.Features;
 import org.spongycastle.bcpg.sig.KeyFlags;
 import org.spongycastle.jce.spec.ElGamalParameterSpec;
 import org.spongycastle.openpgp.PGPEncryptedData;
@@ -894,6 +895,8 @@ public class PgpKeyOperation {
             hashedPacketsGen.setPreferredSymmetricAlgorithms(true, PREFERRED_SYMMETRIC_ALGORITHMS);
             hashedPacketsGen.setPreferredHashAlgorithms(true, PREFERRED_HASH_ALGORITHMS);
             hashedPacketsGen.setPreferredCompressionAlgorithms(true, PREFERRED_COMPRESSION_ALGORITHMS);
+            // Request senders add additional checksums to the message (useful when verifying unsigned messages.)
+            hashedPacketsGen.setFeature(true, Features.FEATURE_MODIFICATION_DETECTION);
             hashedPacketsGen.setPrimaryUserID(false, primary);
             hashedPacketsGen.setKeyFlags(false, flags);
             if (expiry > 0) {
