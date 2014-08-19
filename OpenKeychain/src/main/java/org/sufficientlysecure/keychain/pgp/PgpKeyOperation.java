@@ -35,7 +35,6 @@ import org.spongycastle.openpgp.PGPSecretKeyRing;
 import org.spongycastle.openpgp.PGPSignature;
 import org.spongycastle.openpgp.PGPSignatureGenerator;
 import org.spongycastle.openpgp.PGPSignatureSubpacketGenerator;
-import org.spongycastle.openpgp.PGPUtil;
 import org.spongycastle.openpgp.operator.PBESecretKeyDecryptor;
 import org.spongycastle.openpgp.operator.PBESecretKeyEncryptor;
 import org.spongycastle.openpgp.operator.PGPContentSignerBuilder;
@@ -250,13 +249,16 @@ public class PgpKeyOperation {
 
             progress(R.string.progress_building_master_key, 40);
 
-            // define hashing and signing algos
+            // Build key encrypter and decrypter based on passphrase
+            PGPDigestCalculator sha512Calc = new JcaPGPDigestCalculatorProviderBuilder()
+                    .build().get(HashAlgorithmTags.SHA512);
+            PBESecretKeyEncryptor keyEncryptor = new JcePBESecretKeyEncryptorBuilder(
+                    PGPEncryptedData.AES_256, sha512Calc)
+                    .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME).build("".toCharArray());
+
+            // NOTE: only SHA1 is supported for key checksum calculations.
             PGPDigestCalculator sha1Calc = new JcaPGPDigestCalculatorProviderBuilder()
                     .build().get(HashAlgorithmTags.SHA1);
-            // Build key encrypter and decrypter based on passphrase
-            PBESecretKeyEncryptor keyEncryptor = new JcePBESecretKeyEncryptorBuilder(
-                    PGPEncryptedData.CAST5, sha1Calc)
-                    .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME).build("".toCharArray());
             PGPSecretKey masterSecretKey = new PGPSecretKey(keyPair.getPrivateKey(), keyPair.getPublicKey(),
                     sha1Calc, true, keyEncryptor);
 
@@ -702,17 +704,17 @@ public class PgpKeyOperation {
                 pKey = PGPPublicKey.addSubkeyBindingCertification(pKey, cert);
 
                 PGPSecretKey sKey; {
-                    // define hashing and signing algos
-                    PGPDigestCalculator sha1Calc = new JcaPGPDigestCalculatorProviderBuilder()
-                            .build().get(HashAlgorithmTags.SHA1);
-
                     // Build key encrypter and decrypter based on passphrase
+                    PGPDigestCalculator sha512Calc = new JcaPGPDigestCalculatorProviderBuilder()
+                            .build().get(HashAlgorithmTags.SHA512);
                     PBESecretKeyEncryptor keyEncryptor = new JcePBESecretKeyEncryptorBuilder(
-                            PGPEncryptedData.CAST5, sha1Calc)
+                            PGPEncryptedData.AES_256, sha512Calc)
                             .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME).build(passphrase.toCharArray());
 
-                    sKey = new PGPSecretKey(keyPair.getPrivateKey(), pKey,
-                            sha1Calc, false, keyEncryptor);
+                    // NOTE: only SHA1 is supported for key checksum calculations.
+                    PGPDigestCalculator sha1Calc = new JcaPGPDigestCalculatorProviderBuilder()
+                            .build().get(HashAlgorithmTags.SHA1);
+                    sKey = new PGPSecretKey(keyPair.getPrivateKey(), pKey, sha1Calc, false, keyEncryptor);
                 }
 
                 log.add(LogLevel.DEBUG, LogType.MSG_MF_SUBKEY_NEW_ID,
@@ -729,13 +731,13 @@ public class PgpKeyOperation {
                 log.add(LogLevel.INFO, LogType.MSG_MF_PASSPHRASE, indent);
                 indent += 1;
 
-                PGPDigestCalculator sha1Calc = new JcaPGPDigestCalculatorProviderBuilder().build()
-                        .get(HashAlgorithmTags.SHA1);
+                PGPDigestCalculator sha512Calc = new JcaPGPDigestCalculatorProviderBuilder().build()
+                        .get(HashAlgorithmTags.SHA512);
                 PBESecretKeyDecryptor keyDecryptor = new JcePBESecretKeyDecryptorBuilder().setProvider(
                         Constants.BOUNCY_CASTLE_PROVIDER_NAME).build(passphrase.toCharArray());
                 // Build key encryptor based on new passphrase
                 PBESecretKeyEncryptor keyEncryptorNew = new JcePBESecretKeyEncryptorBuilder(
-                        PGPEncryptedData.CAST5, sha1Calc)
+                        PGPEncryptedData.AES_256, sha512Calc)
                         .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME).build(
                                 saveParcel.mNewPassphrase.toCharArray());
 
@@ -885,7 +887,7 @@ public class PgpKeyOperation {
             int flags, long expiry)
             throws IOException, PGPException, SignatureException {
         PGPContentSignerBuilder signerBuilder = new JcaPGPContentSignerBuilder(
-                masterPrivateKey.getPublicKeyPacket().getAlgorithm(), PGPUtil.SHA1)
+                masterPrivateKey.getPublicKeyPacket().getAlgorithm(), HashAlgorithmTags.SHA512)
                 .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME);
         PGPSignatureGenerator sGen = new PGPSignatureGenerator(signerBuilder);
 
@@ -914,7 +916,7 @@ public class PgpKeyOperation {
             PGPPrivateKey masterPrivateKey, PGPPublicKey pKey, String userId)
         throws IOException, PGPException, SignatureException {
         PGPContentSignerBuilder signerBuilder = new JcaPGPContentSignerBuilder(
-                masterPrivateKey.getPublicKeyPacket().getAlgorithm(), PGPUtil.SHA1)
+                masterPrivateKey.getPublicKeyPacket().getAlgorithm(), HashAlgorithmTags.SHA512)
                 .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME);
         PGPSignatureGenerator sGen = new PGPSignatureGenerator(signerBuilder);
         PGPSignatureSubpacketGenerator subHashedPacketsGen = new PGPSignatureSubpacketGenerator();
@@ -928,7 +930,7 @@ public class PgpKeyOperation {
             PGPPublicKey masterPublicKey, PGPPrivateKey masterPrivateKey, PGPPublicKey pKey)
             throws IOException, PGPException, SignatureException {
         PGPContentSignerBuilder signerBuilder = new JcaPGPContentSignerBuilder(
-                masterPublicKey.getAlgorithm(), PGPUtil.SHA1)
+                masterPublicKey.getAlgorithm(), HashAlgorithmTags.SHA512)
                 .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME);
         PGPSignatureGenerator sGen = new PGPSignatureGenerator(signerBuilder);
         PGPSignatureSubpacketGenerator subHashedPacketsGen = new PGPSignatureSubpacketGenerator();
@@ -972,7 +974,7 @@ public class PgpKeyOperation {
             PGPSignatureSubpacketGenerator subHashedPacketsGen = new PGPSignatureSubpacketGenerator();
             subHashedPacketsGen.setSignatureCreationTime(false, creationTime);
             PGPContentSignerBuilder signerBuilder = new JcaPGPContentSignerBuilder(
-                    pKey.getAlgorithm(), PGPUtil.SHA1)
+                    pKey.getAlgorithm(), HashAlgorithmTags.SHA512)
                     .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME);
             PGPSignatureGenerator sGen = new PGPSignatureGenerator(signerBuilder);
             sGen.init(PGPSignature.PRIMARYKEY_BINDING, subPrivateKey);
@@ -993,7 +995,7 @@ public class PgpKeyOperation {
         }
 
         PGPContentSignerBuilder signerBuilder = new JcaPGPContentSignerBuilder(
-                masterPublicKey.getAlgorithm(), PGPUtil.SHA1)
+                masterPublicKey.getAlgorithm(), HashAlgorithmTags.SHA512)
                 .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME);
         PGPSignatureGenerator sGen = new PGPSignatureGenerator(signerBuilder);
         sGen.init(PGPSignature.SUBKEY_BINDING, masterPrivateKey);
