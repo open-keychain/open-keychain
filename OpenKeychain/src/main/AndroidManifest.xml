@@ -176,7 +176,7 @@
             android:label="@string/title_decrypt"
             android:windowSoftInputMode="stateHidden">
 
-            <!-- VIEW with mimeType application/pgp-encrypted  -->
+            <!-- VIEW with mimeType application/octet-stream, application/pgp and text/pgp  -->
             <intent-filter android:label="@string/intent_send_decrypt">
                 <action android:name="android.intent.action.VIEW" />
 
@@ -184,7 +184,9 @@
                 <category android:name="android.intent.category.DEFAULT" />
 
                 <!-- mime type as defined in http://tools.ietf.org/html/rfc3156 -->
-                <data android:mimeType="application/pgp-encrypted" />
+                <data android:mimeType="application/octet-stream" />
+                <data android:mimeType="application/pgp" />
+                <data android:mimeType="text/pgp" />
             </intent-filter>
             <!-- Keychain's own Actions -->
             <!-- DECRYPT with text as extra -->
