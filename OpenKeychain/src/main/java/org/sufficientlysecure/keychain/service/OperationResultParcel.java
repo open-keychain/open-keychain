@@ -391,6 +391,7 @@ public class OperationResultParcel implements Parcelable {
 
         // consolidate
         MSG_CON (R.string.msg_con),
+        MSG_CON_ERROR_BAD_STATE (R.string.msg_con_error_bad_state),
         MSG_CON_SAVE_SECRET (R.string.msg_con_save_secret),
         MSG_CON_SAVE_PUBLIC (R.string.msg_con_save_public),
         MSG_CON_DB_CLEAR (R.string.msg_con_db_clear),

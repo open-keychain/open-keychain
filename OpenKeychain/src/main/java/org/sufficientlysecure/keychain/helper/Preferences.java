@@ -25,6 +25,7 @@ import org.spongycastle.bcpg.CompressionAlgorithmTags;
 import org.spongycastle.bcpg.HashAlgorithmTags;
 import org.spongycastle.openpgp.PGPEncryptedData;
 import org.sufficientlysecure.keychain.Constants;
+import org.sufficientlysecure.keychain.Constants.Pref;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -131,6 +132,36 @@ public class Preferences {
     public void setDefaultAsciiArmor(boolean value) {
         SharedPreferences.Editor editor = mSharedPreferences.edit();
         editor.putBoolean(Constants.Pref.DEFAULT_ASCII_ARMOR, value);
+        editor.commit();
+    }
+
+    public boolean getCachedConsolidate() {
+        return mSharedPreferences.getBoolean(Pref.CACHED_CONSOLIDATE, false);
+    }
+
+    public void setCachedConsolidate(boolean value) {
+        SharedPreferences.Editor editor = mSharedPreferences.edit();
+        editor.putBoolean(Pref.CACHED_CONSOLIDATE, value);
+        editor.commit();
+    }
+
+    public int getCachedConsolidateNumPublics() {
+        return mSharedPreferences.getInt(Pref.CACHED_CONSOLIDATE_PUBLICS, 100);
+    }
+
+    public void setCachedConsolidateNumPublics(int value) {
+        SharedPreferences.Editor editor = mSharedPreferences.edit();
+        editor.putInt(Pref.CACHED_CONSOLIDATE_PUBLICS, value);
+        editor.commit();
+    }
+
+    public int getCachedConsolidateNumSecrets() {
+        return mSharedPreferences.getInt(Pref.CACHED_CONSOLIDATE_SECRETS, 100);
+    }
+
+    public void setCachedConsolidateNumSecrets(int value) {
+        SharedPreferences.Editor editor = mSharedPreferences.edit();
+        editor.putInt(Pref.CACHED_CONSOLIDATE_SECRETS, value);
         editor.commit();
     }
 

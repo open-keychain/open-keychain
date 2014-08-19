@@ -302,6 +302,8 @@
     <string name="progress_verifying_integrity">verifying integrity…</string>
     <string name="progress_deleting_securely">deleting \'%s\' securely…</string>
 
+    <string name="progress_con_reimport">reimporting database…</string>
+
     <!-- action strings -->
     <string name="hint_keyserver_search_hint">Name/Email/Key ID…</string>
     <string name="hint_keybase_search_hint">Name/Email/Proof/Key…</string>
@@ -671,6 +673,7 @@
 
     <!-- Consolidate -->
     <string name="msg_con">Consolidating database</string>
+    <string name="msg_con_error_bad_state">Consolidation started while no database was cached! This is probably a programming error, please file a bug report.</string>
     <string name="msg_con_save_secret">Saving secret keyrings</string>
     <string name="msg_con_save_public">Saving public keyrings</string>
     <string name="msg_con_db_clear">Clearing database</string>

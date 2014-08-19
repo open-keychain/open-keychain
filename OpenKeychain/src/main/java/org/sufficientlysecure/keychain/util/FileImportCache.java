@@ -92,6 +92,10 @@ public class FileImportCache<E extends Parcelable> {
     }
 
     public Iterator<E> readCache() throws IOException {
+        return readCache(true);
+    }
+
+    public Iterator<E> readCache(final boolean deleteAfterRead) throws IOException {
 
         File cacheDir = mContext.getCacheDir();
         if (cacheDir == null) {
@@ -166,7 +170,10 @@ public class FileImportCache<E extends Parcelable> {
                 if (!closed) {
                     try {
                         ois.close();
-                        tempFile.delete();
+                        if (deleteAfterRead) {
+                            //noinspection ResultOfMethodCallIgnored
+                            tempFile.delete();
+                        }
                     } catch (IOException e) {
                         // nvm
                     }
@@ -177,4 +184,17 @@ public class FileImportCache<E extends Parcelable> {
 
         };
     }
+
+    public boolean delete() throws IOException {
+
+        File cacheDir = mContext.getCacheDir();
+        if (cacheDir == null) {
+            // https://groups.google.com/forum/#!topic/android-developers/-694j87eXVU
+            throw new IOException("cache dir is null!");
+        }
+
+        final File tempFile = new File(cacheDir, mFilename);
+        return tempFile.delete();
+    }
+
 }
