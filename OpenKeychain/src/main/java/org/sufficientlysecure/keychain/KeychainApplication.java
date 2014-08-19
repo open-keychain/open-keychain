@@ -21,6 +21,7 @@ import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.app.Application;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Environment;
@@ -29,6 +30,7 @@ import org.spongycastle.jce.provider.BouncyCastleProvider;
 import org.sufficientlysecure.keychain.helper.Preferences;
 import org.sufficientlysecure.keychain.helper.TlsHelper;
 import org.sufficientlysecure.keychain.provider.TemporaryStorageProvider;
+import org.sufficientlysecure.keychain.ui.ConsolidateDialogActivity;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.PRNGFixes;
 
@@ -92,11 +94,16 @@ public class KeychainApplication extends Application {
 
         TemporaryStorageProvider.cleanUp(this);
 
+        // restart consolidate process if it has been interruped before
         if (prefs.getCachedConsolidate()) {
             // do something which calls ProviderHelper.consolidateDatabaseStep2 with a progressable
+            Intent consolidateIntent = new Intent(this, ConsolidateDialogActivity.class);
+            consolidateIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(consolidateIntent);
         }
-
     }
+
+
 
     public static void setupAccountAsNeeded(Context context) {
         AccountManager manager = AccountManager.get(context);
