@@ -913,12 +913,12 @@ public class PgpKeyOperation {
         PGPSignatureSubpacketGenerator hashedPacketsGen = new PGPSignatureSubpacketGenerator();
         {
             hashedPacketsGen.setSignatureCreationTime(true, new Date());
-            hashedPacketsGen.setPreferredSymmetricAlgorithms(true, PREFERRED_SYMMETRIC_ALGORITHMS);
-            hashedPacketsGen.setPreferredHashAlgorithms(true, PREFERRED_HASH_ALGORITHMS);
-            hashedPacketsGen.setPreferredCompressionAlgorithms(true, PREFERRED_COMPRESSION_ALGORITHMS);
-            // Request that senders add the MDC to the message (useful when verifying unsigned messages.)
+            hashedPacketsGen.setPreferredSymmetricAlgorithms(false, PREFERRED_SYMMETRIC_ALGORITHMS);
+            hashedPacketsGen.setPreferredHashAlgorithms(false, PREFERRED_HASH_ALGORITHMS);
+            hashedPacketsGen.setPreferredCompressionAlgorithms(false, PREFERRED_COMPRESSION_ALGORITHMS);
+            // Request that senders add the MDC to the message (authenticate unsigned messages)
             hashedPacketsGen.setFeature(true, Features.FEATURE_MODIFICATION_DETECTION);
-            hashedPacketsGen.setPrimaryUserID(true, primary);
+            hashedPacketsGen.setPrimaryUserID(false, primary);
             hashedPacketsGen.setKeyFlags(true, flags);
             if (expiry > 0) {
                 hashedPacketsGen.setKeyExpirationTime(
