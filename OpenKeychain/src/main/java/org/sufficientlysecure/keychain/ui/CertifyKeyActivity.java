@@ -40,6 +40,7 @@ import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.ScrollView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -71,6 +72,7 @@ public class CertifyKeyActivity extends ActionBarActivity implements LoaderManag
     private ImageView mActionCertifyImage;
     private CheckBox mUploadKeyCheckbox;
     private Spinner mSelectKeyserverSpinner;
+    private ScrollView mScrollView;
 
     private CertifyKeySpinner mCertifyKeySpinner;
 
@@ -96,6 +98,7 @@ public class CertifyKeyActivity extends ActionBarActivity implements LoaderManag
         mCertifyButton = findViewById(R.id.certify_key_certify_button);
         mActionCertifyImage = (ImageView) findViewById(R.id.certify_key_action_certify_image);
         mUserIds = (ListView) findViewById(R.id.view_key_user_ids);
+        mScrollView = (ScrollView) findViewById(R.id.certify_scroll_view);
 
         // make certify image gray, like action icons
         mActionCertifyImage.setColorFilter(getResources().getColor(R.color.tertiary_text_light),
@@ -141,6 +144,7 @@ public class CertifyKeyActivity extends ActionBarActivity implements LoaderManag
                     if (mMasterKeyId == 0) {
                         Notify.showNotify(CertifyKeyActivity.this, getString(R.string.select_key_to_certify),
                                 Notify.Style.ERROR);
+                        scrollUp();
                     } else {
                         initiateCertifying();
                     }
@@ -163,6 +167,14 @@ public class CertifyKeyActivity extends ActionBarActivity implements LoaderManag
 
         getSupportLoaderManager().initLoader(LOADER_ID_KEYRING, null, this);
         getSupportLoaderManager().initLoader(LOADER_ID_USER_IDS, null, this);
+    }
+
+    private void scrollUp() {
+        mScrollView.post(new Runnable() {
+            public void run() {
+                mScrollView.fullScroll(ScrollView.FOCUS_UP);
+            }
+        });
     }
 
     static final String USER_IDS_SELECTION = UserIds.IS_REVOKED + " = 0";
@@ -217,6 +229,9 @@ public class CertifyKeyActivity extends ActionBarActivity implements LoaderManag
                 break;
             case LOADER_ID_USER_IDS:
                 mUserIdsAdapter.swapCursor(data);
+                // when some user ids are pre-checked, the focus is requested and the scroll view goes
+                // down. This fixes it.
+                scrollUp();
                 break;
         }
     }

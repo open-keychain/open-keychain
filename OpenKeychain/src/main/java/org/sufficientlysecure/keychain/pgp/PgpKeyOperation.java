@@ -930,7 +930,7 @@ public class PgpKeyOperation {
             hashedPacketsGen.setPreferredCompressionAlgorithms(false, PREFERRED_COMPRESSION_ALGORITHMS);
             hashedPacketsGen.setPrimaryUserID(false, primary);
 
-            /* critical subpackets: */
+            /* critical subpackets: we consider those important for a modern pgp implementation */
             hashedPacketsGen.setSignatureCreationTime(true, new Date());
             // Request that senders add the MDC to the message (authenticate unsigned messages)
             hashedPacketsGen.setFeature(true, Features.FEATURE_MODIFICATION_DETECTION);
