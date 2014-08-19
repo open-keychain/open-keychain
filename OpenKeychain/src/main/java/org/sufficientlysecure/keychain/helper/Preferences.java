@@ -146,7 +146,7 @@ public class Preferences {
     }
 
     public int getCachedConsolidateNumPublics() {
-        return mSharedPreferences.getInt(Pref.CACHED_CONSOLIDATE_PUBLICS, 100);
+        return mSharedPreferences.getInt(Pref.CACHED_CONSOLIDATE_PUBLICS, -1);
     }
 
     public void setCachedConsolidateNumPublics(int value) {
@@ -156,7 +156,7 @@ public class Preferences {
     }
 
     public int getCachedConsolidateNumSecrets() {
-        return mSharedPreferences.getInt(Pref.CACHED_CONSOLIDATE_SECRETS, 100);
+        return mSharedPreferences.getInt(Pref.CACHED_CONSOLIDATE_SECRETS, -1);
     }
 
     public void setCachedConsolidateNumSecrets(int value) {

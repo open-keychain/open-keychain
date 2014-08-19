@@ -677,15 +677,33 @@
     <string name="msg_con_save_secret">Saving secret keyrings</string>
     <string name="msg_con_save_public">Saving public keyrings</string>
     <string name="msg_con_db_clear">Clearing database</string>
-    <plurals name="msg_con_reimport_secret">
-        <item quantity="one">Reimporting one secret key</item>
-        <item quantity="other">Reimporting %d secret keys</item>
+    <string name="msg_con_success">Successfully consolidated database</string>
+    <string name="msg_con_critical_in">Entering critical phase</string>
+    <string name="msg_con_critical_out">Leaving critical phase</string>
+    <string name="msg_con_delete_public">Deleting public keyring cache file</string>
+    <string name="msg_con_delete_secret">Deleting secret keyring cache file</string>
+    <string name="msg_con_error_db">Error opening database!</string>
+    <string name="msg_con_error_io_public">IO error writing public keys to cache!</string>
+    <string name="msg_con_error_io_secret">IO error writing secret keys to cache!</string>
+    <string name="msg_con_error_public">Error reimporting public keys!</string>
+    <string name="msg_con_error_secret">Error reimporting secret keys!</string>
+    <plurals name="msg_con_recover">
+        <item quantity="one">Recovering consolidation with one secret and %s public keys</item>
+        <item quantity="many">Recovering consolidation with %d secret and %s public keys</item>
     </plurals>
+    <string name="msg_con_recover_unknown">Recovering from unknown state</string>
     <plurals name="msg_con_reimport_public">
         <item quantity="one">Reimporting one public key</item>
-        <item quantity="other">Reimporting %d public keys</item>
+        <item quantity="many">Reimporting %d public keys</item>
     </plurals>
-    <string name="msg_con_success">Successfully consolidated database</string>
+    <string name="msg_con_reimport_public_skip">No public keys to reimport, skipping…</string>
+    <plurals name="msg_con_reimport_secret">
+        <item quantity="one">Reimporting one secret key</item>
+        <item quantity="many">Reimporting %d secret keys</item>
+    </plurals>
+    <string name="msg_con_reimport_secret_skip">No secret keys to reimport, skipping…</string>
+    <string name="msg_con_warn_delete_public">Exception deleting public cache file</string>
+    <string name="msg_con_warn_delete_secret">Exception deleting public cache file</string>
 
     <!-- PassphraseCache -->
     <string name="passp_cache_notif_click_to_clear">Click to clear cached passphrases</string>
