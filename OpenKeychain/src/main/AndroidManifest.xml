@@ -557,6 +557,10 @@
                 android:value=".ui.KeyListActivity" />
         </activity>
         <activity
+            android:name=".ui.ConsolidateDialogActivity"
+            android:theme="@android:style/Theme.NoDisplay"
+            android:label="@string/app_name" />
+        <activity
             android:name=".ui.HelpActivity"
             android:label="@string/title_help" />
 

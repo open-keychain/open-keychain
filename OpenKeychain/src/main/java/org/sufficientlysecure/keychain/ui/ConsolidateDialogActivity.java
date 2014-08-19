@@ -18,31 +18,23 @@
 package org.sufficientlysecure.keychain.ui;
 
 import android.app.Dialog;
-import android.app.DialogFragment;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.os.Message;
-import android.os.Messenger;
-import android.os.RemoteException;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.ContextThemeWrapper;
+import android.view.KeyEvent;
 
 import org.sufficientlysecure.keychain.Constants;
+import org.sufficientlysecure.keychain.R;
 
 /**
- * We can not directly create a dialog on the context provided inside the content provider.
+ * We can not directly create a dialog on the application context.
  * This activity encapsulates a DialogFragment to emulate a dialog.
  */
-public class OpenDialogActivity extends FragmentActivity {
-
-    public static final String EXTRA_MESSENGER = "messenger";
-    public static final String EXTRA_FILENAME = "filename";
-
-    public static final int MSG_CANCEL = 1;
-    public static final int MSG_DECRYPT_OPEN = 2;
-    public static final int MSG_GET_ENCRYPTED = 3;
+public class ConsolidateDialogActivity extends FragmentActivity {
 
     MyDialogFragment mDialogFragment;
 
@@ -56,26 +48,38 @@ public class OpenDialogActivity extends FragmentActivity {
         // give all extras through to the fragment
         mDialogFragment.setArguments(getIntent().getExtras());
 
-        mDialogFragment.show(getFragmentManager(), "dialog");
+        mDialogFragment.show(getSupportFragmentManager(), "dialog");
     }
 
     public static class MyDialogFragment extends DialogFragment {
-
-        private Messenger mMessenger;
 
         /**
          * Creates dialog
          */
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
-            mMessenger = getArguments().getParcelable(EXTRA_MESSENGER);
-            String filename = getArguments().getString(EXTRA_FILENAME);
-
             // hack to get holo design (which is not automatically applied due to activity's Theme.NoDisplay
             ContextThemeWrapper context = new ContextThemeWrapper(getActivity(),
-                    android.R.style.Theme_DeviceDefault_Light_Dialog);
-            ProgressDialog.Builder progress = new ProgressDialog.Builder(context);
-            return progress.show();
+                    R.style.Theme_AppCompat_Light);
+            ProgressDialog dialog = new ProgressDialog(context);
+            dialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+            dialog.setCancelable(false);
+            dialog.setCanceledOnTouchOutside(false);
+
+            // Disable the back button
+            DialogInterface.OnKeyListener keyListener = new DialogInterface.OnKeyListener() {
+                @Override
+                public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
+                    if (keyCode == KeyEvent.KEYCODE_BACK) {
+                        return true;
+                    }
+                    return false;
+                }
+
+            };
+            dialog.setOnKeyListener(keyListener);
+
+            return dialog;
         }
 
         @Override
@@ -83,7 +87,6 @@ public class OpenDialogActivity extends FragmentActivity {
             super.onCancel(dialog);
 
             dismiss();
-            sendMessageToHandler(MSG_CANCEL);
         }
 
         @Override
@@ -92,24 +95,6 @@ public class OpenDialogActivity extends FragmentActivity {
             Log.d(Constants.TAG, "onDismiss");
 
             getActivity().finish();
-        }
-
-        /**
-         * Send message back to handler which is initialized in a activity
-         *
-         * @param what Message integer you want to send
-         */
-        private void sendMessageToHandler(Integer what) {
-            Message msg = Message.obtain();
-            msg.what = what;
-
-            try {
-                mMessenger.send(msg);
-            } catch (RemoteException e) {
-                Log.w(Constants.TAG, "Exception sending message, Is handler present?", e);
-            } catch (NullPointerException e) {
-                Log.w(Constants.TAG, "Messenger is null!", e);
-            }
         }
 
     }
