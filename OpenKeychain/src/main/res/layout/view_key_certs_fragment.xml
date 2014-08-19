@@ -4,11 +4,19 @@
     android:orientation="vertical">
 
     <TextView
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:background="@color/holo_gray_bright"
         android:padding="8dp"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="@string/certs_text" />
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="@string/certs_text"
+        android:gravity="center_horizontal" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dip"
+        android:background="?android:attr/listDivider"
+        android:id="@+id/view_key_status_divider" />
 
     <FrameLayout
         android:layout_width="match_parent"
