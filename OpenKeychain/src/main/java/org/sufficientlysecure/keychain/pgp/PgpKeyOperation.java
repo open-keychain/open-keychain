@@ -25,7 +25,6 @@ import org.spongycastle.bcpg.SymmetricKeyAlgorithmTags;
 import org.spongycastle.bcpg.sig.Features;
 import org.spongycastle.bcpg.sig.KeyFlags;
 import org.spongycastle.jce.spec.ElGamalParameterSpec;
-import org.spongycastle.openpgp.PGPEncryptedData;
 import org.spongycastle.openpgp.PGPException;
 import org.spongycastle.openpgp.PGPKeyPair;
 import org.spongycastle.openpgp.PGPPrivateKey;
@@ -103,6 +102,26 @@ public class PgpKeyOperation {
             CompressionAlgorithmTags.BZIP2,
             CompressionAlgorithmTags.ZIP
     };
+
+    /*
+     * Note: s2kcount is a number between 0 and 0xff that controls the
+     * number of times to iterate the password hash before use. More
+     * iterations are useful against offline attacks, as it takes more
+     * time to check each password. The actual number of iterations is
+     * rather complex, and also depends on the hash function in use.
+     * Refer to Section 3.7.1.3 in rfc4880.txt. Bigger numbers give
+     * you more iterations.  As a rough rule of thumb, when using
+     * SHA256 as the hashing function, 0x10 gives you about 64
+     * iterations, 0x20 about 128, 0x30 about 256 and so on till 0xf0,
+     * or about 1 million iterations. The maximum you can go to is
+     * 0xff, or about 2 million iterations.  I'll use 0xc0 as a
+     * default -- about 130,000 iterations.
+     *
+     * http://kbsriram.com/2013/01/generating-rsa-keys-with-bouncycastle.html
+     */
+    private static final int SECRET_KEY_ENCRYPTOR_HASH_ALGO = HashAlgorithmTags.SHA512;
+    private static final int SECRET_KEY_ENCRYPTOR_SYMMETRIC_ALGO = SymmetricKeyAlgorithmTags.AES_256;
+    private static final int SECRET_KEY_ENCRYPTOR_S2K_COUNT = 0xc0;
 
     public PgpKeyOperation(Progressable progress) {
         super();
@@ -250,10 +269,10 @@ public class PgpKeyOperation {
             progress(R.string.progress_building_master_key, 40);
 
             // Build key encrypter and decrypter based on passphrase
-            PGPDigestCalculator sha512Calc = new JcaPGPDigestCalculatorProviderBuilder()
-                    .build().get(HashAlgorithmTags.SHA512);
+            PGPDigestCalculator encryptorHashCalc = new JcaPGPDigestCalculatorProviderBuilder()
+                    .build().get(SECRET_KEY_ENCRYPTOR_HASH_ALGO);
             PBESecretKeyEncryptor keyEncryptor = new JcePBESecretKeyEncryptorBuilder(
-                    PGPEncryptedData.AES_256, sha512Calc)
+                    SECRET_KEY_ENCRYPTOR_SYMMETRIC_ALGO, encryptorHashCalc, SECRET_KEY_ENCRYPTOR_S2K_COUNT)
                     .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME).build("".toCharArray());
 
             // NOTE: only SHA1 is supported for key checksum calculations.
@@ -705,10 +724,10 @@ public class PgpKeyOperation {
 
                 PGPSecretKey sKey; {
                     // Build key encrypter and decrypter based on passphrase
-                    PGPDigestCalculator sha512Calc = new JcaPGPDigestCalculatorProviderBuilder()
-                            .build().get(HashAlgorithmTags.SHA512);
+                    PGPDigestCalculator encryptorHashCalc = new JcaPGPDigestCalculatorProviderBuilder()
+                            .build().get(SECRET_KEY_ENCRYPTOR_HASH_ALGO);
                     PBESecretKeyEncryptor keyEncryptor = new JcePBESecretKeyEncryptorBuilder(
-                            PGPEncryptedData.AES_256, sha512Calc)
+                            SECRET_KEY_ENCRYPTOR_SYMMETRIC_ALGO, encryptorHashCalc, SECRET_KEY_ENCRYPTOR_S2K_COUNT)
                             .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME).build(passphrase.toCharArray());
 
                     // NOTE: only SHA1 is supported for key checksum calculations.
@@ -731,13 +750,13 @@ public class PgpKeyOperation {
                 log.add(LogLevel.INFO, LogType.MSG_MF_PASSPHRASE, indent);
                 indent += 1;
 
-                PGPDigestCalculator sha512Calc = new JcaPGPDigestCalculatorProviderBuilder().build()
-                        .get(HashAlgorithmTags.SHA512);
+                PGPDigestCalculator encryptorHashCalc = new JcaPGPDigestCalculatorProviderBuilder().build()
+                        .get(SECRET_KEY_ENCRYPTOR_HASH_ALGO);
                 PBESecretKeyDecryptor keyDecryptor = new JcePBESecretKeyDecryptorBuilder().setProvider(
                         Constants.BOUNCY_CASTLE_PROVIDER_NAME).build(passphrase.toCharArray());
                 // Build key encryptor based on new passphrase
                 PBESecretKeyEncryptor keyEncryptorNew = new JcePBESecretKeyEncryptorBuilder(
-                        PGPEncryptedData.AES_256, sha512Calc)
+                        SECRET_KEY_ENCRYPTOR_SYMMETRIC_ALGO, encryptorHashCalc, SECRET_KEY_ENCRYPTOR_S2K_COUNT)
                         .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME).build(
                                 saveParcel.mNewPassphrase.toCharArray());
 
