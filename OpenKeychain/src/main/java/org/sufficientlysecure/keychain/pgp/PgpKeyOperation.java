@@ -891,17 +891,17 @@ public class PgpKeyOperation {
 
         PGPSignatureSubpacketGenerator hashedPacketsGen = new PGPSignatureSubpacketGenerator();
         {
-            hashedPacketsGen.setSignatureCreationTime(false, new Date());
+            hashedPacketsGen.setSignatureCreationTime(true, new Date());
             hashedPacketsGen.setPreferredSymmetricAlgorithms(true, PREFERRED_SYMMETRIC_ALGORITHMS);
             hashedPacketsGen.setPreferredHashAlgorithms(true, PREFERRED_HASH_ALGORITHMS);
             hashedPacketsGen.setPreferredCompressionAlgorithms(true, PREFERRED_COMPRESSION_ALGORITHMS);
-            // Request senders add additional checksums to the message (useful when verifying unsigned messages.)
+            // Request that senders add the MDC to the message (useful when verifying unsigned messages.)
             hashedPacketsGen.setFeature(true, Features.FEATURE_MODIFICATION_DETECTION);
-            hashedPacketsGen.setPrimaryUserID(false, primary);
-            hashedPacketsGen.setKeyFlags(false, flags);
+            hashedPacketsGen.setPrimaryUserID(true, primary);
+            hashedPacketsGen.setKeyFlags(true, flags);
             if (expiry > 0) {
                 hashedPacketsGen.setKeyExpirationTime(
-                        false, expiry - pKey.getCreationTime().getTime() / 1000);
+                        true, expiry - pKey.getCreationTime().getTime() / 1000);
             }
         }
 
@@ -918,7 +918,7 @@ public class PgpKeyOperation {
                 .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME);
         PGPSignatureGenerator sGen = new PGPSignatureGenerator(signerBuilder);
         PGPSignatureSubpacketGenerator subHashedPacketsGen = new PGPSignatureSubpacketGenerator();
-        subHashedPacketsGen.setSignatureCreationTime(false, new Date());
+        subHashedPacketsGen.setSignatureCreationTime(true, new Date());
         sGen.setHashedSubpackets(subHashedPacketsGen.generate());
         sGen.init(PGPSignature.CERTIFICATION_REVOCATION, masterPrivateKey);
         return sGen.generateCertification(userId, pKey);
@@ -932,7 +932,7 @@ public class PgpKeyOperation {
                 .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME);
         PGPSignatureGenerator sGen = new PGPSignatureGenerator(signerBuilder);
         PGPSignatureSubpacketGenerator subHashedPacketsGen = new PGPSignatureSubpacketGenerator();
-        subHashedPacketsGen.setSignatureCreationTime(false, new Date());
+        subHashedPacketsGen.setSignatureCreationTime(true, new Date());
         sGen.setHashedSubpackets(subHashedPacketsGen.generate());
         // Generate key revocation or subkey revocation, depending on master/subkey-ness
         if (masterPublicKey.getKeyID() == pKey.getKeyID()) {
@@ -978,16 +978,16 @@ public class PgpKeyOperation {
             sGen.init(PGPSignature.PRIMARYKEY_BINDING, subPrivateKey);
             sGen.setHashedSubpackets(subHashedPacketsGen.generate());
             PGPSignature certification = sGen.generateCertification(masterPublicKey, pKey);
-            unhashedPacketsGen.setEmbeddedSignature(false, certification);
+            unhashedPacketsGen.setEmbeddedSignature(true, certification);
         }
 
         PGPSignatureSubpacketGenerator hashedPacketsGen;
         {
             hashedPacketsGen = new PGPSignatureSubpacketGenerator();
-            hashedPacketsGen.setSignatureCreationTime(false, creationTime);
-            hashedPacketsGen.setKeyFlags(false, flags);
+            hashedPacketsGen.setSignatureCreationTime(true, creationTime);
+            hashedPacketsGen.setKeyFlags(true, flags);
             if (expiry > 0) {
-                hashedPacketsGen.setKeyExpirationTime(false,
+                hashedPacketsGen.setKeyExpirationTime(true,
                         expiry - pKey.getCreationTime().getTime() / 1000);
             }
         }
