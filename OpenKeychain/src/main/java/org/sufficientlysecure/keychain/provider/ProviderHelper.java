@@ -28,6 +28,8 @@ import android.os.RemoteException;
 import android.support.v4.util.LongSparseArray;
 
 import org.sufficientlysecure.keychain.Constants;
+import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.helper.Preferences;
 import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedPublicKey;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedPublicKeyRing;
@@ -58,6 +60,7 @@ import org.sufficientlysecure.keychain.service.OperationResults.SaveKeyringResul
 import org.sufficientlysecure.keychain.util.FileImportCache;
 import org.sufficientlysecure.keychain.util.IterableIterator;
 import org.sufficientlysecure.keychain.util.Log;
+import org.sufficientlysecure.keychain.util.ProgressFixedScaler;
 import org.sufficientlysecure.keychain.util.ProgressScaler;
 
 import java.io.ByteArrayOutputStream;
@@ -823,11 +826,9 @@ public class ProviderHelper {
 
     }
 
-    public ConsolidateResult consolidateDatabase(Progressable progress) {
+    public ConsolidateResult consolidateDatabaseStep1(Progressable progress) {
 
         // 1a. fetch all secret keyrings into a cache file
-        int numSecrets, numPublics;
-
         log(LogLevel.START, LogType.MSG_CON, mIndent);
         mIndent += 1;
 
@@ -836,7 +837,7 @@ public class ProviderHelper {
             log(LogLevel.DEBUG, LogType.MSG_CON_SAVE_SECRET, mIndent);
             mIndent += 1;
 
-            final Cursor cursor = mContentResolver.query(KeyRings.buildUnifiedKeyRingsUri(), new String[] {
+            final Cursor cursor = mContentResolver.query(KeyRings.buildUnifiedKeyRingsUri(), new String[]{
                     KeyRings.PRIVKEY_DATA, KeyRings.FINGERPRINT, KeyRings.HAS_ANY_SECRET
             }, KeyRings.HAS_ANY_SECRET + " = 1", null, null);
 
@@ -844,7 +845,7 @@ public class ProviderHelper {
                 return new ConsolidateResult(ConsolidateResult.RESULT_ERROR, mLog);
             }
 
-            numSecrets = cursor.getCount();
+            Preferences.getPreferences(mContext).setCachedConsolidateNumSecrets(cursor.getCount());
 
             FileImportCache<ParcelableKeyRing> cache =
                     new FileImportCache<ParcelableKeyRing>(mContext, "consolidate_secret.pcl");
@@ -894,7 +895,7 @@ public class ProviderHelper {
             log(LogLevel.DEBUG, LogType.MSG_CON_SAVE_PUBLIC, mIndent);
             mIndent += 1;
 
-            final Cursor cursor = mContentResolver.query(KeyRings.buildUnifiedKeyRingsUri(), new String[] {
+            final Cursor cursor = mContentResolver.query(KeyRings.buildUnifiedKeyRingsUri(), new String[]{
                     KeyRings.PUBKEY_DATA, KeyRings.FINGERPRINT
             }, null, null, null);
 
@@ -902,7 +903,7 @@ public class ProviderHelper {
                 return new ConsolidateResult(ConsolidateResult.RESULT_ERROR, mLog);
             }
 
-            numPublics = cursor.getCount();
+            Preferences.getPreferences(mContext).setCachedConsolidateNumSecrets(cursor.getCount());
 
             FileImportCache<ParcelableKeyRing> cache =
                     new FileImportCache<ParcelableKeyRing>(mContext, "consolidate_public.pcl");
@@ -946,19 +947,39 @@ public class ProviderHelper {
             mIndent -= 1;
         }
 
+        Preferences.getPreferences(mContext).setCachedConsolidate(true);
+
+        return consolidateDatabaseStep2(progress);
+    }
+
+    public ConsolidateResult consolidateDatabaseStep2(Progressable progress) {
+
+        Preferences prefs = Preferences.getPreferences(mContext);
+        if ( ! prefs.getCachedConsolidate()) {
+            log(LogLevel.ERROR, LogType.MSG_CON_ERROR_BAD_STATE);
+            return new ConsolidateResult(ConsolidateResult.RESULT_ERROR, mLog);
+        }
+
+        // Set flag that we have a cached consolidation here
+        int numSecrets = prefs.getCachedConsolidateNumSecrets();
+        int numPublics = prefs.getCachedConsolidateNumPublics();
+
         // 2. wipe database (IT'S DANGEROUS)
         log(LogLevel.DEBUG, LogType.MSG_CON_DB_CLEAR, mIndent);
         new KeychainDatabase(mContext).clearDatabase();
+
+        FileImportCache<ParcelableKeyRing> cacheSecret =
+                new FileImportCache<ParcelableKeyRing>(mContext, "consolidate_secret.pcl");
+        FileImportCache<ParcelableKeyRing> cachePublic =
+                new FileImportCache<ParcelableKeyRing>(mContext, "consolidate_public.pcl");
 
         // 3. Re-Import secret keyrings from cache
         try {
             log(LogLevel.DEBUG, LogType.MSG_CON_REIMPORT_SECRET, mIndent, numSecrets);
             mIndent += 1;
 
-            FileImportCache<ParcelableKeyRing> cache =
-                    new FileImportCache<ParcelableKeyRing>(mContext, "consolidate_secret.pcl");
-            new PgpImportExport(mContext, this, new ProgressScaler(progress, 10, 25, 100))
-                    .importKeyRings(cache.readCache(), numSecrets);
+            new PgpImportExport(mContext, this, new ProgressFixedScaler(progress, 10, 25, 100, R.string.progress_con_reimport))
+                    .importKeyRings(cacheSecret.readCache(false), numSecrets);
         } catch (IOException e) {
             Log.e(Constants.TAG, "error importing secret");
             return new ConsolidateResult(ConsolidateResult.RESULT_ERROR, mLog);
@@ -966,20 +987,34 @@ public class ProviderHelper {
             mIndent -= 1;
         }
 
-        // 3. Re-Import public keyrings from cache
+        // 4. Re-Import public keyrings from cache
         try {
             log(LogLevel.DEBUG, LogType.MSG_CON_REIMPORT_PUBLIC, mIndent, numPublics);
             mIndent += 1;
 
-            FileImportCache<ParcelableKeyRing> cache =
-                    new FileImportCache<ParcelableKeyRing>(mContext, "consolidate_public.pcl");
             new PgpImportExport(mContext, this, new ProgressScaler(progress, 25, 99, 100))
-                    .importKeyRings(cache.readCache(), numPublics);
+                    .importKeyRings(cachePublic.readCache(false), numPublics);
         } catch (IOException e) {
             Log.e(Constants.TAG, "error importing public");
             return new ConsolidateResult(ConsolidateResult.RESULT_ERROR, mLog);
         } finally {
             mIndent -= 1;
+        }
+
+        Preferences.getPreferences(mContext).setCachedConsolidate(false);
+
+        // 5. Delete caches
+        try {
+            cacheSecret.delete();
+        } catch (IOException e) {
+            // doesn't really matter
+            Log.e(Constants.TAG, "IOException during delete of secret cache", e);
+        }
+        try {
+            cachePublic.delete();
+        } catch (IOException e) {
+            // doesn't really matter
+            Log.e(Constants.TAG, "IOException during deletion of public cache", e);
         }
 
         progress.setProgress(100, 100);

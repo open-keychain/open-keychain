@@ -84,11 +84,18 @@ public class KeychainApplication extends Application {
         setupAccountAsNeeded(this);
 
         // Update keyserver list as needed
-        Preferences.getPreferences(this).updatePreferences();
+        Preferences prefs = Preferences.getPreferences(this);
+
+        prefs.updatePreferences();
 
         TlsHelper.addStaticCA("pool.sks-keyservers.net", getAssets(), "sks-keyservers.netCA.cer");
 
         TemporaryStorageProvider.cleanUp(this);
+
+        if (prefs.getCachedConsolidate()) {
+            // do something which calls ProviderHelper.consolidateDatabaseStep2 with a progressable
+        }
+
     }
 
     public static void setupAccountAsNeeded(Context context) {

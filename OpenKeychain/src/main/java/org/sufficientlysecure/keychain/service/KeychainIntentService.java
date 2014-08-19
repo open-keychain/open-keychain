@@ -490,10 +490,7 @@ public class KeychainIntentService extends IntentService
                 PgpImportExport pgpImportExport = new PgpImportExport(this, this);
                 ImportKeyResult result = pgpImportExport.importKeyRings(entries);
 
-                Bundle resultData = new Bundle();
-                resultData.putParcelable(RESULT_IMPORT, result);
-
-                sendMessageToHandler(KeychainIntentServiceHandler.MESSAGE_OKAY, resultData);
+                sendMessageToHandler(KeychainIntentServiceHandler.MESSAGE_OKAY, result);
             } catch (Exception e) {
                 sendErrorToHandler(e);
             }
@@ -670,12 +667,8 @@ public class KeychainIntentService extends IntentService
             }
 
         } else if (ACTION_CONSOLIDATE.equals(action)) {
-            ConsolidateResult result = new ProviderHelper(this).consolidateDatabase(this);
-
-            Bundle resultData = new Bundle();
-            resultData.putParcelable(RESULT_CONSOLIDATE, result);
-
-            sendMessageToHandler(KeychainIntentServiceHandler.MESSAGE_OKAY, resultData);
+            ConsolidateResult result = new ProviderHelper(this).consolidateDatabaseStep1(this);
+            sendMessageToHandler(KeychainIntentServiceHandler.MESSAGE_OKAY, result);
         }
 
     }
