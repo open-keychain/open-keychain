@@ -972,7 +972,7 @@ public class ProviderHelper {
 
         if (recovery) {
             if (numSecrets >= 0 && numPublics >= 0) {
-                log(LogLevel.START, LogType.MSG_CON_RECOVER, numSecrets, Integer.toString(numPublics));
+                log(LogLevel.START, LogType.MSG_CON_RECOVER, numSecrets, numPublics);
             } else {
                 log(LogLevel.START, LogType.MSG_CON_RECOVER_UNKNOWN);
             }

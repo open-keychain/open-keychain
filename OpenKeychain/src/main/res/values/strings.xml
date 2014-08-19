@@ -688,18 +688,18 @@
     <string name="msg_con_error_public">Error reimporting public keys!</string>
     <string name="msg_con_error_secret">Error reimporting secret keys!</string>
     <plurals name="msg_con_recover">
-        <item quantity="one">Recovering consolidation with one secret and %s public keys</item>
-        <item quantity="many">Recovering consolidation with %d secret and %s public keys</item>
+        <item quantity="one">Recovering consolidation with %1$d secret and %2$d public keys</item>
+        <item quantity="other">Recovering consolidation with %1$d secret and %2$d public keys</item>
     </plurals>
     <string name="msg_con_recover_unknown">Recovering from unknown state</string>
     <plurals name="msg_con_reimport_public">
         <item quantity="one">Reimporting one public key</item>
-        <item quantity="many">Reimporting %d public keys</item>
+        <item quantity="other">Reimporting %d public keys</item>
     </plurals>
     <string name="msg_con_reimport_public_skip">No public keys to reimport, skipping…</string>
     <plurals name="msg_con_reimport_secret">
         <item quantity="one">Reimporting one secret key</item>
-        <item quantity="many">Reimporting %d secret keys</item>
+        <item quantity="other">Reimporting %d secret keys</item>
     </plurals>
     <string name="msg_con_reimport_secret_skip">No secret keys to reimport, skipping…</string>
     <string name="msg_con_warn_delete_public">Exception deleting public cache file</string>
