@@ -84,15 +84,25 @@ import java.util.Stack;
 public class PgpKeyOperation {
     private Stack<Progressable> mProgress;
 
+    // most preferred is first
     private static final int[] PREFERRED_SYMMETRIC_ALGORITHMS = new int[]{
-            SymmetricKeyAlgorithmTags.AES_256, SymmetricKeyAlgorithmTags.AES_192,
-            SymmetricKeyAlgorithmTags.AES_128, SymmetricKeyAlgorithmTags.CAST5,
-            SymmetricKeyAlgorithmTags.TRIPLE_DES};
-    private static final int[] PREFERRED_HASH_ALGORITHMS = new int[]{HashAlgorithmTags.SHA1,
-            HashAlgorithmTags.SHA256, HashAlgorithmTags.RIPEMD160};
+            SymmetricKeyAlgorithmTags.AES_256,
+            SymmetricKeyAlgorithmTags.AES_192,
+            SymmetricKeyAlgorithmTags.AES_128,
+            SymmetricKeyAlgorithmTags.CAST5
+    };
+    private static final int[] PREFERRED_HASH_ALGORITHMS = new int[]{
+            HashAlgorithmTags.SHA512,
+            HashAlgorithmTags.SHA384,
+            HashAlgorithmTags.SHA224,
+            HashAlgorithmTags.SHA256,
+            HashAlgorithmTags.RIPEMD160
+    };
     private static final int[] PREFERRED_COMPRESSION_ALGORITHMS = new int[]{
-            CompressionAlgorithmTags.ZLIB, CompressionAlgorithmTags.BZIP2,
-            CompressionAlgorithmTags.ZIP};
+            CompressionAlgorithmTags.ZLIB,
+            CompressionAlgorithmTags.BZIP2,
+            CompressionAlgorithmTags.ZIP
+    };
 
     public PgpKeyOperation(Progressable progress) {
         super();
