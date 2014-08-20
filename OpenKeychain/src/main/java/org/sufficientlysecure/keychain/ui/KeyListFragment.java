@@ -292,8 +292,10 @@ public class KeyListFragment extends LoaderFragment
         mStickyList.setEmptyView(getActivity().findViewById(R.id.key_list_empty));
 
         // end action mode, if any
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB && mActionMode != null) {
-            mActionMode.finish();
+        if (mActionMode != null) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+                mActionMode.finish();
+            }
         }
 
         // The list should now be shown.
