@@ -963,7 +963,6 @@ public class ProviderHelper {
 
     private ConsolidateResult consolidateDatabaseStep2(Progressable progress, boolean recovery) {
 
-
         Preferences prefs = Preferences.getPreferences(mContext);
 
         // Set flag that we have a cached consolidation here
@@ -986,7 +985,7 @@ public class ProviderHelper {
 
         // 2. wipe database (IT'S DANGEROUS)
         log(LogLevel.DEBUG, LogType.MSG_CON_DB_CLEAR);
-        new KeychainDatabase(mContext).clearDatabase();
+        mContentResolver.delete(KeyRings.buildUnifiedKeyRingsUri(), null, null);
 
         FileImportCache<ParcelableKeyRing> cacheSecret =
                 new FileImportCache<ParcelableKeyRing>(mContext, "consolidate_secret.pcl");

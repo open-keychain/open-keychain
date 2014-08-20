@@ -685,6 +685,11 @@ public class KeychainProvider extends ContentProvider {
         final int match = mUriMatcher.match(uri);
 
         switch (match) {
+            // dangerous
+            case KEY_RINGS_UNIFIED: {
+                count = db.delete(Tables.KEY_RINGS_PUBLIC, null, null);
+                break;
+            }
             case KEY_RING_PUBLIC: {
                 @SuppressWarnings("ConstantConditions") // ensured by uriMatcher above
                 String selection = KeyRings.MASTER_KEY_ID + " = " + uri.getPathSegments().get(1);
