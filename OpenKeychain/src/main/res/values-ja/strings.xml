@@ -270,6 +270,7 @@
   <string name="progress_decompressing_data">データの展開中...</string>
   <string name="progress_verifying_integrity">完全性の検証中...</string>
   <string name="progress_deleting_securely">\'%s\' を完全に削除中…</string>
+  <string name="progress_con_reimport">データベースの再インポート中...</string>
   <!--action strings-->
   <string name="hint_keyserver_search_hint">名前/メール/鍵ID...</string>
   <string name="hint_keybase_search_hint">名前/メール/証明/鍵...</string>
@@ -606,16 +607,34 @@
   <string name="msg_mf_unlock">鍵輪のロック解除中</string>
   <!--Consolidate-->
   <string name="msg_con">データベースの統合中</string>
+  <string name="msg_con_error_bad_state">データベースでキャッシュせずに統合を開始します! これはおそらくプログラミングのエラーなので、バグレポートの提出をお願いします!</string>
   <string name="msg_con_save_secret">秘密鍵の鍵輪を保存中</string>
   <string name="msg_con_save_public">公開鍵の鍵輪を保存中</string>
   <string name="msg_con_db_clear">データベースの消去中</string>
-  <plurals name="msg_con_reimport_secret">
-    <item quantity="other">%d の秘密鍵を再インポート中</item>
+  <string name="msg_con_success">データベースの統合が成功しました</string>
+  <string name="msg_con_critical_in">クリティカルなフェーズに入りました</string>
+  <string name="msg_con_critical_out">クリティカルなフェーズを抜けました</string>
+  <string name="msg_con_delete_public">公開鍵輪のキャッシュファイルを削除中</string>
+  <string name="msg_con_delete_secret">秘密鍵輪のキャッシュファイルを削除中</string>
+  <string name="msg_con_error_db">データベースオープン中のエラー!</string>
+  <string name="msg_con_error_io_public">キャッシュに公開鍵を書く際にI/Oエラー!</string>
+  <string name="msg_con_error_io_secret">キャッシュに秘密鍵を書く際にI/Oエラー!</string>
+  <string name="msg_con_error_public">公開鍵の再インポートのエラー!</string>
+  <string name="msg_con_error_secret">秘密鍵の再インポートのエラー!</string>
+  <plurals name="msg_con_recover">
+    <item quantity="other">%1$d の秘密鍵と %2$d の公開鍵の統合のリカバリー中</item>
   </plurals>
+  <string name="msg_con_recover_unknown">不明な状態からリカバリー中</string>
   <plurals name="msg_con_reimport_public">
     <item quantity="other">%d の公開鍵を再インポート中</item>
   </plurals>
-  <string name="msg_con_success">データベースの統合が成功しました</string>
+  <string name="msg_con_reimport_public_skip">再インポートで公開鍵がありません、スキップします...</string>
+  <plurals name="msg_con_reimport_secret">
+    <item quantity="other">%d の秘密鍵を再インポート中</item>
+  </plurals>
+  <string name="msg_con_reimport_secret_skip">再インポートで秘密鍵がありません、スキップします...</string>
+  <string name="msg_con_warn_delete_public">公開鍵キャッシュファイルの削除例外</string>
+  <string name="msg_con_warn_delete_secret">公開鍵キャッシュファイルの削除例外</string>
   <!--PassphraseCache-->
   <string name="passp_cache_notif_click_to_clear">クリックしてパスフレーズのキャッシュをクリア</string>
   <string name="passp_cache_notif_n_keys">OpenKeychainは %d のパスフレーズをキャッシュしています</string>
