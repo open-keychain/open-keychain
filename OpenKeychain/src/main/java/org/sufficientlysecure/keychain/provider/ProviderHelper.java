@@ -961,111 +961,128 @@ public class ProviderHelper {
         return consolidateDatabaseStep2(progress, true);
     }
 
+    private static boolean mConsolidateCritical = false;
+
     private ConsolidateResult consolidateDatabaseStep2(Progressable progress, boolean recovery) {
 
-        Preferences prefs = Preferences.getPreferences(mContext);
-
-        // Set flag that we have a cached consolidation here
-        int numSecrets = prefs.getCachedConsolidateNumSecrets();
-        int numPublics = prefs.getCachedConsolidateNumPublics();
-
-        if (recovery) {
-            if (numSecrets >= 0 && numPublics >= 0) {
-                log(LogLevel.START, LogType.MSG_CON_RECOVER, numSecrets, numPublics);
-            } else {
-                log(LogLevel.START, LogType.MSG_CON_RECOVER_UNKNOWN);
+        synchronized (ProviderHelper.class) {
+            if (mConsolidateCritical) {
+                log(LogLevel.ERROR, LogType.MSG_CON_ERROR_CONCURRENT);
+                return new ConsolidateResult(ConsolidateResult.RESULT_ERROR, mLog);
             }
-            mIndent += 1;
-        }
-
-        if ( ! prefs.getCachedConsolidate()) {
-            log(LogLevel.ERROR, LogType.MSG_CON_ERROR_BAD_STATE);
-            return new ConsolidateResult(ConsolidateResult.RESULT_ERROR, mLog);
-        }
-
-        // 2. wipe database (IT'S DANGEROUS)
-        log(LogLevel.DEBUG, LogType.MSG_CON_DB_CLEAR);
-        mContentResolver.delete(KeyRings.buildUnifiedKeyRingsUri(), null, null);
-
-        // debug: break if this isn't recovery
-        if (!recovery) {
-            return new ConsolidateResult(ConsolidateResult.RESULT_ERROR, mLog);
-        }
-
-        FileImportCache<ParcelableKeyRing> cacheSecret =
-                new FileImportCache<ParcelableKeyRing>(mContext, "consolidate_secret.pcl");
-        FileImportCache<ParcelableKeyRing> cachePublic =
-                new FileImportCache<ParcelableKeyRing>(mContext, "consolidate_public.pcl");
-
-        // 3. Re-Import secret keyrings from cache
-        if (numSecrets > 0) try {
-            log(LogLevel.DEBUG, LogType.MSG_CON_REIMPORT_SECRET, numSecrets);
-            mIndent += 1;
-
-            new PgpImportExport(mContext, this,
-                new ProgressFixedScaler(progress, 10, 25, 100, R.string.progress_con_reimport))
-                    .importKeyRings(cacheSecret.readCache(false), numSecrets);
-        } catch (IOException e) {
-            Log.e(Constants.TAG, "error importing secret", e);
-            log(LogLevel.ERROR, LogType.MSG_CON_ERROR_SECRET);
-            return new ConsolidateResult(ConsolidateResult.RESULT_ERROR, mLog);
-        } finally {
-            mIndent -= 1;
-        } else {
-            log(LogLevel.DEBUG, LogType.MSG_CON_REIMPORT_SECRET_SKIP);
-        }
-
-        // 4. Re-Import public keyrings from cache
-        if (numPublics > 0) try {
-            log(LogLevel.DEBUG, LogType.MSG_CON_REIMPORT_PUBLIC, numPublics);
-            mIndent += 1;
-
-            new PgpImportExport(mContext, this,
-                new ProgressFixedScaler(progress, 25, 99, 100, R.string.progress_con_reimport))
-                    .importKeyRings(cachePublic.readCache(false), numPublics);
-        } catch (IOException e) {
-            Log.e(Constants.TAG, "error importing public", e);
-            log(LogLevel.ERROR, LogType.MSG_CON_ERROR_PUBLIC);
-            return new ConsolidateResult(ConsolidateResult.RESULT_ERROR, mLog);
-        } finally {
-            mIndent -= 1;
-        } else {
-            log(LogLevel.DEBUG, LogType.MSG_CON_REIMPORT_PUBLIC_SKIP);
-        }
-
-        log(LogLevel.INFO, LogType.MSG_CON_CRITICAL_OUT);
-        Preferences.getPreferences(mContext).setCachedConsolidate(false);
-
-        // 5. Delete caches
-        try {
-            log(LogLevel.DEBUG, LogType.MSG_CON_DELETE_SECRET);
-            mIndent += 1;
-            cacheSecret.delete();
-        } catch (IOException e) {
-            // doesn't /really/ matter
-            Log.e(Constants.TAG, "IOException during delete of secret cache", e);
-            log(LogLevel.WARN, LogType.MSG_CON_WARN_DELETE_SECRET);
-        } finally {
-            mIndent -= 1;
+            mConsolidateCritical = true;
         }
 
         try {
-            log(LogLevel.DEBUG, LogType.MSG_CON_DELETE_PUBLIC);
-            mIndent += 1;
-            cachePublic.delete();
-        } catch (IOException e) {
-            // doesn't /really/ matter
-            Log.e(Constants.TAG, "IOException during deletion of public cache", e);
-            log(LogLevel.WARN, LogType.MSG_CON_WARN_DELETE_PUBLIC);
-        } finally {
+            Preferences prefs = Preferences.getPreferences(mContext);
+
+            // Set flag that we have a cached consolidation here
+            int numSecrets = prefs.getCachedConsolidateNumSecrets();
+            int numPublics = prefs.getCachedConsolidateNumPublics();
+
+            if (recovery) {
+                if (numSecrets >= 0 && numPublics >= 0) {
+                    log(LogLevel.START, LogType.MSG_CON_RECOVER, numSecrets, numPublics);
+                } else {
+                    log(LogLevel.START, LogType.MSG_CON_RECOVER_UNKNOWN);
+                }
+                mIndent += 1;
+            }
+
+            if (!prefs.getCachedConsolidate()) {
+                log(LogLevel.ERROR, LogType.MSG_CON_ERROR_BAD_STATE);
+                return new ConsolidateResult(ConsolidateResult.RESULT_ERROR, mLog);
+            }
+
+            // 2. wipe database (IT'S DANGEROUS)
+            log(LogLevel.DEBUG, LogType.MSG_CON_DB_CLEAR);
+            mContentResolver.delete(KeyRings.buildUnifiedKeyRingsUri(), null, null);
+
+            // debug: break if this isn't recovery
+            if (!recovery) {
+                return new ConsolidateResult(ConsolidateResult.RESULT_ERROR, mLog);
+            }
+
+            FileImportCache<ParcelableKeyRing> cacheSecret =
+                    new FileImportCache<ParcelableKeyRing>(mContext, "consolidate_secret.pcl");
+            FileImportCache<ParcelableKeyRing> cachePublic =
+                    new FileImportCache<ParcelableKeyRing>(mContext, "consolidate_public.pcl");
+
+            // 3. Re-Import secret keyrings from cache
+            if (numSecrets > 0) try {
+                log(LogLevel.DEBUG, LogType.MSG_CON_REIMPORT_SECRET, numSecrets);
+                mIndent += 1;
+
+                new PgpImportExport(mContext, this,
+                        new ProgressFixedScaler(progress, 10, 25, 100, R.string.progress_con_reimport))
+                        .importKeyRings(cacheSecret.readCache(false), numSecrets);
+            } catch (IOException e) {
+                Log.e(Constants.TAG, "error importing secret", e);
+                log(LogLevel.ERROR, LogType.MSG_CON_ERROR_SECRET);
+                return new ConsolidateResult(ConsolidateResult.RESULT_ERROR, mLog);
+            } finally {
+                mIndent -= 1;
+            }
+            else {
+                log(LogLevel.DEBUG, LogType.MSG_CON_REIMPORT_SECRET_SKIP);
+            }
+
+            // 4. Re-Import public keyrings from cache
+            if (numPublics > 0) try {
+                log(LogLevel.DEBUG, LogType.MSG_CON_REIMPORT_PUBLIC, numPublics);
+                mIndent += 1;
+
+                new PgpImportExport(mContext, this,
+                        new ProgressFixedScaler(progress, 25, 99, 100, R.string.progress_con_reimport))
+                        .importKeyRings(cachePublic.readCache(false), numPublics);
+            } catch (IOException e) {
+                Log.e(Constants.TAG, "error importing public", e);
+                log(LogLevel.ERROR, LogType.MSG_CON_ERROR_PUBLIC);
+                return new ConsolidateResult(ConsolidateResult.RESULT_ERROR, mLog);
+            } finally {
+                mIndent -= 1;
+            }
+            else {
+                log(LogLevel.DEBUG, LogType.MSG_CON_REIMPORT_PUBLIC_SKIP);
+            }
+
+            log(LogLevel.INFO, LogType.MSG_CON_CRITICAL_OUT);
+            Preferences.getPreferences(mContext).setCachedConsolidate(false);
+
+            // 5. Delete caches
+            try {
+                log(LogLevel.DEBUG, LogType.MSG_CON_DELETE_SECRET);
+                mIndent += 1;
+                cacheSecret.delete();
+            } catch (IOException e) {
+                // doesn't /really/ matter
+                Log.e(Constants.TAG, "IOException during delete of secret cache", e);
+                log(LogLevel.WARN, LogType.MSG_CON_WARN_DELETE_SECRET);
+            } finally {
+                mIndent -= 1;
+            }
+
+            try {
+                log(LogLevel.DEBUG, LogType.MSG_CON_DELETE_PUBLIC);
+                mIndent += 1;
+                cachePublic.delete();
+            } catch (IOException e) {
+                // doesn't /really/ matter
+                Log.e(Constants.TAG, "IOException during deletion of public cache", e);
+                log(LogLevel.WARN, LogType.MSG_CON_WARN_DELETE_PUBLIC);
+            } finally {
+                mIndent -= 1;
+            }
+
+            progress.setProgress(100, 100);
+            log(LogLevel.OK, LogType.MSG_CON_SUCCESS);
             mIndent -= 1;
+
+            return new ConsolidateResult(ConsolidateResult.RESULT_OK, mLog);
+
+        } finally {
+            mConsolidateCritical = false;
         }
-
-        progress.setProgress(100, 100);
-        log(LogLevel.OK, LogType.MSG_CON_SUCCESS);
-        mIndent -= 1;
-
-        return new ConsolidateResult(ConsolidateResult.RESULT_OK, mLog);
 
     }
 

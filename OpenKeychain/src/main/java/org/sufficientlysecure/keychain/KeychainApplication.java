@@ -86,21 +86,26 @@ public class KeychainApplication extends Application {
         setupAccountAsNeeded(this);
 
         // Update keyserver list as needed
-        Preferences prefs = Preferences.getPreferences(this);
-
-        prefs.updatePreferences();
+        Preferences.getPreferences(this).updatePreferences();
 
         TlsHelper.addStaticCA("pool.sks-keyservers.net", getAssets(), "sks-keyservers.netCA.cer");
 
         TemporaryStorageProvider.cleanUp(this);
 
+        checkConsolidateRecovery();
+
+    }
+
+    public void checkConsolidateRecovery() {
+
         // restart consolidate process if it has been interruped before
-        if (prefs.getCachedConsolidate()) {
+        if (Preferences.getPreferences(this).getCachedConsolidate()) {
             // do something which calls ProviderHelper.consolidateDatabaseStep2 with a progressable
             Intent consolidateIntent = new Intent(this, ConsolidateDialogActivity.class);
             consolidateIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(consolidateIntent);
         }
+
     }
 
     public static void setupAccountAsNeeded(Context context) {

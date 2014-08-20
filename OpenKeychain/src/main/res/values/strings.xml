@@ -673,7 +673,8 @@
 
     <!-- Consolidate -->
     <string name="msg_con">Consolidating database</string>
-    <string name="msg_con_error_bad_state">Consolidation started while no database was cached! This is probably a programming error, please file a bug report.</string>
+    <string name="msg_con_error_bad_state">Consolidation was started while no database was cached! This is probably a programming error, please file a bug report.</string>
+    <string name="msg_con_error_concurrent">Consolidation aborted, already running on other thread!</string>
     <string name="msg_con_save_secret">Saving secret keyrings</string>
     <string name="msg_con_save_public">Saving public keyrings</string>
     <string name="msg_con_db_clear">Clearing database</string>
