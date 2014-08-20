@@ -155,10 +155,8 @@ public class OperationResultParcel implements Parcelable {
         if ((resultType & OperationResultParcel.RESULT_ERROR) == 0) {
 
             if (getLog().containsWarnings()) {
-                duration = 0;
                 color = Style.ORANGE;
             } else {
-                duration = SuperToast.Duration.LONG;
                 color = Style.GREEN;
             }
 
@@ -167,7 +165,6 @@ public class OperationResultParcel implements Parcelable {
 
         } else {
 
-            duration = 0;
             color = Style.RED;
 
             str = "operation failed";
@@ -180,8 +177,8 @@ public class OperationResultParcel implements Parcelable {
                 button ? SuperToast.Type.BUTTON : SuperToast.Type.STANDARD,
                 Style.getStyle(color, SuperToast.Animations.POPUP));
         toast.setText(str);
-        toast.setDuration(duration);
-        toast.setIndeterminate(duration == 0);
+        toast.setDuration(SuperToast.Duration.EXTRA_LONG);
+        toast.setIndeterminate(false);
         toast.setSwipeToDismiss(true);
         // If we have a log and it's non-empty, show a View Log button
         if (button) {
