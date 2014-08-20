@@ -167,6 +167,10 @@ public class KeychainIntentService extends IntentService
     public static final String CERTIFY_KEY_PUB_KEY_ID = "sign_key_pub_key_id";
     public static final String CERTIFY_KEY_UIDS = "sign_key_uids";
 
+    // consolidate
+    public static final String CONSOLIDATE_RECOVERY = "consolidate_recovery";
+
+
     /*
      * possible data keys as result send over messenger
      */
@@ -182,8 +186,6 @@ public class KeychainIntentService extends IntentService
     public static final String RESULT_EXPORT = "exported";
 
     public static final String RESULT_IMPORT = "result";
-
-    public static final String RESULT_CONSOLIDATE = "consolidate_result";
 
     Messenger mMessenger;
 
@@ -667,7 +669,12 @@ public class KeychainIntentService extends IntentService
             }
 
         } else if (ACTION_CONSOLIDATE.equals(action)) {
-            ConsolidateResult result = new ProviderHelper(this).consolidateDatabaseStep1(this);
+            ConsolidateResult result;
+            if (data.containsKey(CONSOLIDATE_RECOVERY) && data.getBoolean(CONSOLIDATE_RECOVERY)) {
+                result = new ProviderHelper(this).consolidateDatabaseStep2(this);
+            } else {
+                result = new ProviderHelper(this).consolidateDatabaseStep1(this);
+            }
             sendMessageToHandler(KeychainIntentServiceHandler.MESSAGE_OKAY, result);
         }
 

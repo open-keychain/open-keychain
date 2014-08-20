@@ -987,6 +987,11 @@ public class ProviderHelper {
         log(LogLevel.DEBUG, LogType.MSG_CON_DB_CLEAR);
         mContentResolver.delete(KeyRings.buildUnifiedKeyRingsUri(), null, null);
 
+        // debug: break if this isn't recovery
+        if (!recovery) {
+            return new ConsolidateResult(ConsolidateResult.RESULT_ERROR, mLog);
+        }
+
         FileImportCache<ParcelableKeyRing> cacheSecret =
                 new FileImportCache<ParcelableKeyRing>(mContext, "consolidate_secret.pcl");
         FileImportCache<ParcelableKeyRing> cachePublic =
