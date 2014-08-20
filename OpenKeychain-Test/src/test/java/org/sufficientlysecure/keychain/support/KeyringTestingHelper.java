@@ -1,5 +1,6 @@
 /*
- * Copyright (C) Art O Cathain, Vincent Breitmoser
+ * Copyright (C) Art O Cathain
+ * Copyright (C) 2014 Vincent Breitmoser <v.breitmoser@mugenguild.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by

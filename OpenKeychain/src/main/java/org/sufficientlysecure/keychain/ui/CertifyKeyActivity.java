@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2014 Dominik Schürmann <dominik@dominikschuermann.de>
+ * Copyright (C) 2014 Vincent Breitmoser <v.breitmoser@mugenguild.com>
  * Copyright (C) 2011 Senecaso
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
