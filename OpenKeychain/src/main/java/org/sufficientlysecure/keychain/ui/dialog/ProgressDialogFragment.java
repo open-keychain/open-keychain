@@ -25,6 +25,7 @@ import android.content.DialogInterface.OnCancelListener;
 import android.content.DialogInterface.OnKeyListener;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
+import android.view.ContextThemeWrapper;
 import android.view.KeyEvent;
 
 import org.sufficientlysecure.keychain.R;
@@ -113,7 +114,12 @@ public class ProgressDialogFragment extends DialogFragment {
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         final Activity activity = getActivity();
 
-        ProgressDialog dialog = new ProgressDialog(activity);
+        // if the progress dialog is displayed from the application class, design is missing
+        // hack to get holo design (which is not automatically applied due to activity's Theme.NoDisplay
+        ContextThemeWrapper context = new ContextThemeWrapper(activity,
+                R.style.Theme_AppCompat_Light);
+
+        ProgressDialog dialog = new ProgressDialog(context);
         dialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
         dialog.setCancelable(false);
         dialog.setCanceledOnTouchOutside(false);
