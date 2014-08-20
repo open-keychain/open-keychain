@@ -92,7 +92,9 @@ public class FirstTimeActivity extends ActionBarActivity {
         prefs.setFirstTime(false);
         Intent intent = new Intent(this, KeyListActivity.class);
         // give intent through to display notify
-        intent.putExtras(srcData);
+        if (srcData != null) {
+            intent.putExtras(srcData);
+        }
         startActivityForResult(intent, 0);
         finish();
     }
