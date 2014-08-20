@@ -463,7 +463,8 @@ public class ImportKeysActivity extends ActionBarActivity {
                         return;
                     }
 
-                    if (ACTION_IMPORT_KEY_FROM_KEYSERVER_AND_RETURN_RESULT.equals(getIntent().getAction())) {
+                    if (ACTION_IMPORT_KEY_FROM_KEYSERVER_AND_RETURN_RESULT.equals(getIntent().getAction())
+                            || ACTION_IMPORT_KEY_FROM_FILE_AND_RETURN.equals(getIntent().getAction())) {
                         Intent intent = new Intent();
                         intent.putExtra(ImportKeyResult.EXTRA_RESULT, result);
                         ImportKeysActivity.this.setResult(RESULT_OK, intent);
@@ -472,11 +473,6 @@ public class ImportKeysActivity extends ActionBarActivity {
                     }
                     if (ACTION_IMPORT_KEY_FROM_KEYSERVER_AND_RETURN_TO_SERVICE.equals(getIntent().getAction())) {
                         ImportKeysActivity.this.setResult(RESULT_OK, mPendingIntentData);
-                        ImportKeysActivity.this.finish();
-                        return;
-                    }
-                    if (ACTION_IMPORT_KEY_FROM_FILE_AND_RETURN.equals(getIntent().getAction())) {
-                        ImportKeysActivity.this.setResult(RESULT_OK);
                         ImportKeysActivity.this.finish();
                         return;
                     }

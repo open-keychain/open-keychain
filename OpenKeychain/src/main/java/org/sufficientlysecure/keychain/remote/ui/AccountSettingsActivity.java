@@ -30,6 +30,7 @@ import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.helper.ActionBarHelper;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.remote.AccountSettings;
+import org.sufficientlysecure.keychain.service.OperationResultParcel;
 import org.sufficientlysecure.keychain.util.Log;
 
 public class AccountSettingsActivity extends ActionBarActivity {
@@ -104,6 +105,17 @@ public class AccountSettingsActivity extends ActionBarActivity {
     private void save() {
         new ProviderHelper(this).updateApiAccount(mAccountUri, mAccountSettingsFragment.getAccSettings());
         finish();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        // if a result has been returned, display a notify
+        if (data != null && data.hasExtra(OperationResultParcel.EXTRA_RESULT)) {
+            OperationResultParcel result = data.getParcelableExtra(OperationResultParcel.EXTRA_RESULT);
+            result.createNotify(this).show();
+        } else {
+            super.onActivityResult(requestCode, resultCode, data);
+        }
     }
 
 }
