@@ -349,7 +349,7 @@ public class KeychainDatabase extends SQLiteOpenHelper {
         copy(in, out);
     }
 
-    // DANGEROUS
+    // DANGEROUS, use in test code ONLY!
     public void clearDatabase() {
         getWritableDatabase().execSQL("delete from " + Tables.KEY_RINGS_PUBLIC);
     }

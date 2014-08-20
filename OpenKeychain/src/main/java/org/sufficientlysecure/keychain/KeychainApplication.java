@@ -103,8 +103,6 @@ public class KeychainApplication extends Application {
         }
     }
 
-
-
     public static void setupAccountAsNeeded(Context context) {
         AccountManager manager = AccountManager.get(context);
         Account[] accounts = manager.getAccountsByType(Constants.PACKAGE_NAME);

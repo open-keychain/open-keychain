@@ -20,7 +20,10 @@ package org.sufficientlysecure.keychain.ui;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
+import android.os.Message;
+import android.os.Messenger;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
@@ -29,6 +32,9 @@ import android.view.KeyEvent;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.service.KeychainIntentService;
+import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
+import org.sufficientlysecure.keychain.service.OperationResults.ConsolidateResult;
 
 /**
  * We can not directly create a dialog on the application context.
@@ -36,66 +42,65 @@ import org.sufficientlysecure.keychain.R;
  */
 public class ConsolidateDialogActivity extends FragmentActivity {
 
-    MyDialogFragment mDialogFragment;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         // this activity itself has no content view (see manifest)
 
-        mDialogFragment = new MyDialogFragment();
-        // give all extras through to the fragment
-        mDialogFragment.setArguments(getIntent().getExtras());
+        consolidateRecovery();
 
-        mDialogFragment.show(getSupportFragmentManager(), "dialog");
     }
 
-    public static class MyDialogFragment extends DialogFragment {
+    private void consolidateRecovery() {
+        // Message is received after importing is done in KeychainIntentService
+        KeychainIntentServiceHandler saveHandler = new KeychainIntentServiceHandler(
+                this,
+                getString(R.string.progress_importing),
+                ProgressDialog.STYLE_HORIZONTAL) {
+            public void handleMessage(Message message) {
+                // handle messages by standard KeychainIntentServiceHandler first
+                super.handleMessage(message);
 
-        /**
-         * Creates dialog
-         */
-        @Override
-        public Dialog onCreateDialog(Bundle savedInstanceState) {
-            // hack to get holo design (which is not automatically applied due to activity's Theme.NoDisplay
-            ContextThemeWrapper context = new ContextThemeWrapper(getActivity(),
-                    R.style.Theme_AppCompat_Light);
-            ProgressDialog dialog = new ProgressDialog(context);
-            dialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-            dialog.setCancelable(false);
-            dialog.setCanceledOnTouchOutside(false);
+                if (message.arg1 == KeychainIntentServiceHandler.MESSAGE_OKAY) {
+                    /* don't care about the results (for now?)
 
-            // Disable the back button
-            DialogInterface.OnKeyListener keyListener = new DialogInterface.OnKeyListener() {
-                @Override
-                public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
-                    if (keyCode == KeyEvent.KEYCODE_BACK) {
-                        return true;
+                    // get returned data bundle
+                    Bundle returnData = message.getData();
+                    if (returnData == null) {
+                        return;
                     }
-                    return false;
+                    final ConsolidateResult result =
+                            returnData.getParcelable(KeychainIntentService.RESULT_CONSOLIDATE);
+                    if (result == null) {
+                        return;
+                    }
+                    result.createNotify(ConsolidateDialogActivity.this).show();
+                    */
+
+                    ConsolidateDialogActivity.this.finish();
                 }
+            }
+        };
 
-            };
-            dialog.setOnKeyListener(keyListener);
+        // Send all information needed to service to import key in other thread
+        Intent intent = new Intent(this, KeychainIntentService.class);
+        intent.setAction(KeychainIntentService.ACTION_CONSOLIDATE);
 
-            return dialog;
-        }
+        // fill values for this action
+        Bundle data = new Bundle();
+        data.putBoolean(KeychainIntentService.CONSOLIDATE_RECOVERY, true);
+        intent.putExtra(KeychainIntentService.EXTRA_DATA, data);
 
-        @Override
-        public void onCancel(DialogInterface dialog) {
-            super.onCancel(dialog);
+        // Create a new Messenger for the communication back
+        Messenger messenger = new Messenger(saveHandler);
+        intent.putExtra(KeychainIntentService.EXTRA_MESSENGER, messenger);
 
-            dismiss();
-        }
+        // show progress dialog
+        saveHandler.showProgressDialog(this);
 
-        @Override
-        public void onDismiss(DialogInterface dialog) {
-            super.onDismiss(dialog);
-            Log.d(Constants.TAG, "onDismiss");
-
-            getActivity().finish();
-        }
+        // start service with intent
+        startService(intent);
 
     }
 

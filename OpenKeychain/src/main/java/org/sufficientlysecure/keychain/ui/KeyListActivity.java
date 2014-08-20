@@ -33,6 +33,7 @@ import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainDatabase;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
 import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
+import org.sufficientlysecure.keychain.service.OperationResultParcel;
 import org.sufficientlysecure.keychain.service.OperationResults.ConsolidateResult;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Notify;
@@ -164,7 +165,7 @@ public class KeyListActivity extends DrawerActivity {
                         return;
                     }
                     final ConsolidateResult result =
-                            returnData.getParcelable(KeychainIntentService.RESULT_CONSOLIDATE);
+                            returnData.getParcelable(OperationResultParcel.EXTRA_RESULT);
                     if (result == null) {
                         return;
                     }
