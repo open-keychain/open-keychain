@@ -275,7 +275,6 @@
   <string name="progress_decompressing_data">décompression des données...</string>
   <string name="progress_verifying_integrity">vérification de l\'intégrité...</string>
   <string name="progress_deleting_securely">suppression sûre de « %s »...</string>
-  <string name="progress_con_reimport">réimportation de la base de données...</string>
   <!--action strings-->
   <string name="hint_keyserver_search_hint">Nom/courriel/ID de clef...</string>
   <string name="hint_keybase_search_hint">Nom/courriel/preuve/clef...</string>
@@ -601,14 +600,12 @@
   <string name="msg_mf_error_sig">Exception de signature !</string>
   <string name="msg_mf_master">Modification des certifications maîtresses</string>
   <string name="msg_mf_passphrase">Changement de la phrase de passe pour le trousseau...</string>
-  <string name="msg_mf_passphrase_key">Changement de la phrase de passe pour la sous-clef %s</string>
   <string name="msg_mf_passphrase_empty_retry">Échec lors de la définition de la nouvelle phrase de passe, nouvel essai avec une ancienne phrase de passe vide</string>
   <string name="msg_mf_passphrase_fail">La phrase de passe de la sous-clef n\'a pas pu être changée ! (Est-elle différente des autres clefs ?)</string>
   <string name="msg_mf_primary_replace_old">Remplacement du certificat de l\'ID d\'utilisateur principal précédent</string>
   <string name="msg_mf_primary_new">Génération d\'un nouveau certificat pour le nouvel ID d\'utilisateur principal</string>
   <string name="msg_mf_subkey_change">Modification de la sous-clef %s</string>
   <string name="msg_mf_error_subkey_missing">Une action a été tentée sur la sous-clef manquante %s !</string>
-  <string name="msg_mf_subkey_new">Génération d\'une nouvelle sous-clef %2$s de %1$s bit</string>
   <string name="msg_mf_subkey_new_id">Nouvelle ID de sous-clef : %s</string>
   <string name="msg_mf_error_past_expiry">La date d\'expiration ne peut pas être dans le passé !</string>
   <string name="msg_mf_subkey_revoke">Révocation de la sous-clef %s</string>
@@ -621,7 +618,6 @@
   <string name="msg_mf_unlock">Déverrouillage du trousseau</string>
   <!--Consolidate-->
   <string name="msg_con">Consolidation de la base de données</string>
-  <string name="msg_con_error_bad_state">La consolidation a commencé alors qu\'aucune base de données n\'était en cache ! Ceci est probablement une erreur de programmation, veuillez remplir un rapport de bogue !</string>
   <string name="msg_con_save_secret">Enregistrement des trousseaux secrets</string>
   <string name="msg_con_save_public">Enregistrement des trousseaux publiques</string>
   <string name="msg_con_db_clear">Nettoyage de la base de données</string>
@@ -651,7 +647,6 @@
   </plurals>
   <string name="msg_con_reimport_secret_skip">Aucune clef secrète à réimporter, étape ignorée...</string>
   <string name="msg_con_warn_delete_public">Une exception a eu lieu lors de la suppression du fichier de cache publique</string>
-  <string name="msg_con_warn_delete_secret">Une exception a eu lieu lors de la suppression du fichier de cache publique</string>
   <!--PassphraseCache-->
   <string name="passp_cache_notif_click_to_clear">Cliquer ici pour effacer les phrases de passe mises en cache</string>
   <string name="passp_cache_notif_n_keys">OpenKeychain a mis en cache %d phrases de passe</string>
@@ -665,7 +660,6 @@
   <string name="label_user_id">identité</string>
   <string name="unknown_uid">&lt;inconnu&gt;</string>
   <string name="empty_certs">Aucun certificat pour cette clef</string>
-  <string name="certs_text">Seuls les certificats créés avec vos clefs et les auto-certificats sont affichés ici.</string>
   <string name="section_uids_to_certify">Identités à certifier</string>
   <string name="label_revocation">Raison de la révocation</string>
   <string name="label_verify_status">État de vérification</string>

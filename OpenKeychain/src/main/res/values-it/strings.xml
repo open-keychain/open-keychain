@@ -592,7 +592,6 @@
   <string name="msg_mf_primary_replace_old">Sostituzione certificato del ID utente primario precedente</string>
   <string name="msg_mf_primary_new">Generazione di un nuovo certificato per il nuovo ID utente primario</string>
   <string name="msg_mf_subkey_change">Modifica sottochiave %s</string>
-  <string name="msg_mf_subkey_new">Generazione nuovi %1$s bit %2$s sottochiave</string>
   <string name="msg_mf_subkey_new_id">Nuovo ID sottochiave: %s</string>
   <string name="msg_mf_subkey_revoke">Revoca sottochiave %s</string>
   <string name="msg_mf_success">Portachiavi modificato con successo</string>

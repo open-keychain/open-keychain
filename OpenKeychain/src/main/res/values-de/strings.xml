@@ -237,24 +237,24 @@
   <!--progress dialogs, usually ending in '…'-->
   <string name="progress_done">Fertig.</string>
   <string name="progress_cancel">Abbrechen</string>
-  <string name="progress_saving">wird gespeichert…</string>
-  <string name="progress_importing">wird importiert…</string>
-  <string name="progress_exporting">wird exportiert…</string>
-  <string name="progress_uploading">hochladen...</string>
+  <string name="progress_saving">Wird gespeichert…</string>
+  <string name="progress_importing">Wird importiert…</string>
+  <string name="progress_exporting">Wird exportiert…</string>
+  <string name="progress_uploading">Wird hochgeladen...</string>
   <string name="progress_building_key">Schlüssel wird erstellt…</string>
   <string name="progress_building_master_key">Hauptschlüssel wird erstellt…</string>
-  <string name="progress_generating_rsa">erzeuge neuen RSA Schlüssel...</string>
-  <string name="progress_generating_dsa">erzeuge neuen DSA Schlüssel...</string>
-  <string name="progress_generating_elgamal">erzeuge neuen ElGamal Schlüssel...</string>
-  <string name="progress_modify">verändere Schlüsselbund...</string>
-  <string name="progress_modify_unlock">entsperre Schlüsselbund...</string>
-  <string name="progress_modify_adduid">füge User ID hinzu...</string>
-  <string name="progress_modify_revokeuid">Wiederrufe Benutzerkennungen...</string>
-  <string name="progress_modify_primaryuid">ändere Haupt User ID...</string>
-  <string name="progress_modify_subkeychange">verändere Unterschlüssel...</string>
-  <string name="progress_modify_subkeyrevoke">Widerrufe Unterschlüssel...</string>
-  <string name="progress_modify_subkeyadd">füge Unterschlüssel hinzu...</string>
-  <string name="progress_modify_passphrase">ändere Passwort...</string>
+  <string name="progress_generating_rsa">Erzeuge neuen RSA-Schlüssel...</string>
+  <string name="progress_generating_dsa">Erzeuge neuen DSA-Schlüssel...</string>
+  <string name="progress_generating_elgamal">Erzeuge neuen ElGamal-Schlüssel...</string>
+  <string name="progress_modify">Schlüsselbund wird verändert...</string>
+  <string name="progress_modify_unlock">Schlüsselbund wird entsperrt...</string>
+  <string name="progress_modify_adduid">User-ID wird hinzugefügt...</string>
+  <string name="progress_modify_revokeuid">User-IDs werden widerrufen...</string>
+  <string name="progress_modify_primaryuid">Primäre User-ID wird geändert...</string>
+  <string name="progress_modify_subkeychange">Unterschlüssel werden verändert...</string>
+  <string name="progress_modify_subkeyrevoke">Unterschlüssel wird widerrufen...</string>
+  <string name="progress_modify_subkeyadd">Unterschlüssel wird hinzugefügt...</string>
+  <string name="progress_modify_passphrase">Passwort wird geändert...</string>
   <plurals name="progress_exporting_key">
     <item quantity="one">Schlüssel wird exportiert…</item>
     <item quantity="other">Schlüssel werden exportiert…</item>
@@ -268,8 +268,8 @@
   <string name="progress_generating_signature">Signatur wird erstellt…</string>
   <string name="progress_processing_signature">Signatur wird verarbeitet…</string>
   <string name="progress_verifying_signature">Signatur wird verifiziert…</string>
-  <string name="progress_signing">wird signiert…</string>
-  <string name="progress_certifying">beglaubige...</string>
+  <string name="progress_signing">Wird signiert…</string>
+  <string name="progress_certifying">Wird beglaubige...</string>
   <string name="progress_reading_data">Daten werden gelesen…</string>
   <string name="progress_finding_key">Schlüssel wird gesucht…</string>
   <string name="progress_decompressing_data">Daten werden entpackt…</string>
@@ -303,12 +303,12 @@
   <!--Import-->
   <string name="import_tab_keyserver">Schlüsselserver</string>
   <string name="import_tab_direct">Datei/Zwischenablage</string>
-  <string name="import_tab_qr_code">QR Kode/NFC</string>
+  <string name="import_tab_qr_code">QR-Code/NFC</string>
   <string name="import_tab_keybase">Keybase.io</string>
   <string name="import_import">Ausgewählte Schlüssel importieren</string>
   <string name="import_qr_code_wrong">Falsch formatierter QR-Code! Bitte erneut versuchen!</string>
   <string name="import_qr_code_too_short_fingerprint">Der Fingerabdruck ist zu kurz (&lt; 16 Zeichen)</string>
-  <string name="import_qr_code_button">QR Kode Einlesen...</string>
+  <string name="import_qr_code_button">QR-Code Einlesen...</string>
   <!--Import result toast-->
   <plurals name="import_keys_added_and_updated_1">
     <item quantity="one">1 Schlüssel erfolgreich importiert</item>
@@ -349,8 +349,8 @@
   <string name="api_settings_package_signature">SHA-256 der Paketsignatur</string>
   <string name="api_settings_accounts">Konten</string>
   <string name="api_settings_accounts_empty">Keine Konten mit dieser Anwendung verknüpft.</string>
-  <string name="api_create_account_text">Die Anwendung verlangt die Erstellung eines neuen Accounts. Bitte wähle einen deiner existierenden Schlüssel aus oder erstelle einen Neuen.\nAnwendugen sind auf die Nutzung der Schlüssel beschränkt die du hier auswählst!</string>
-  <string name="api_register_text">Folgende Anwendung möchte Nachrichten ver-/entschlüsseln und in Ihrem Namen signieren\nZugriff erlauben?\n\nVORSICHT: Sollten Sie nicht wissen warum dieses Fenster erscheint, sollten Sie den Zugriff nicht gewähren! Sie können Zugriffe später über das Menü \'Anwendungen\' widerrufen.</string>
+  <string name="api_create_account_text">Die App verlangt die Erstellung eines neuen Accounts. Bitte wähle einen deiner existierenden Schlüssel aus oder erstelle einen neuen.\nApps können nur hier ausgewählte Schlüssel nutzen.</string>
+  <string name="api_register_text">Folgende Anwendung möchte Nachrichten ver-/entschlüsseln und in Ihrem Namen signieren.\nZugriff erlauben?\n\nVORSICHT: Sollten Sie nicht wissen warum dieses Fenster erscheint, sollten Sie den Zugriff verbieten! Sie können Zugriffe später über das Menü \'Apps\' widerrufen.</string>
   <string name="api_register_allow">Zugriff erlauben</string>
   <string name="api_register_disallow">Zugriff verbieten</string>
   <string name="api_register_error_select_key">Bitte einen Schlüssel auswählen!</string>

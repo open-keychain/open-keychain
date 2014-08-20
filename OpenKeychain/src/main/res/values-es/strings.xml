@@ -275,7 +275,6 @@
   <string name="progress_decompressing_data">descomprimiendo los datos...</string>
   <string name="progress_verifying_integrity">verificando la integridad...</string>
   <string name="progress_deleting_securely">borrando \'%s\' de forma segura…</string>
-  <string name="progress_con_reimport">reimportando base de datos...</string>
   <!--action strings-->
   <string name="hint_keyserver_search_hint">Nombre/Correo electrónico/Identidad de clave...</string>
   <string name="hint_keybase_search_hint">Nombre/Correo electrónico/Prueba/Clave...</string>
@@ -601,14 +600,12 @@
   <string name="msg_mf_error_sig">¡Excepción con la firma!</string>
   <string name="msg_mf_master">Modificando certificaciones maestras</string>
   <string name="msg_mf_passphrase">Cambiando frase contraseña para el juego de claves (keyring)...</string>
-  <string name="msg_mf_passphrase_key">Cambiando frase contraseña para la subclave %s</string>
   <string name="msg_mf_passphrase_empty_retry">Fallo al establecer nueva frase contraseña, intentándolo de nuevo con una antigua frase contraseña vacía</string>
   <string name="msg_mf_passphrase_fail">¡La frase contraseña para la subclave no pudo cambiarse! (¿Tiene la subclave una diferente de la de las otras claves?)</string>
   <string name="msg_mf_primary_replace_old">Reemplazando certificado de la anterior identidad de usuario primaria </string>
   <string name="msg_mf_primary_new">Generando nuevo certificado para nueva identidad de usuario primaria</string>
   <string name="msg_mf_subkey_change">Modificando subclave %s</string>
   <string name="msg_mf_error_subkey_missing">¡Se intentó operar sobre una subclave desaparecida %s!</string>
-  <string name="msg_mf_subkey_new">Generando nueva subclave %2$s de %1$s bits</string>
   <string name="msg_mf_subkey_new_id">Nueva identidad de subclave: %s</string>
   <string name="msg_mf_error_past_expiry">¡La fecha de expiración no puede ser del pasado!</string>
   <string name="msg_mf_subkey_revoke">Revocando subclave %s</string>
@@ -621,7 +618,6 @@
   <string name="msg_mf_unlock">Desbloqueando juego de claves</string>
   <!--Consolidate-->
   <string name="msg_con">Consolidando base de datos</string>
-  <string name="msg_con_error_bad_state">¡La consolidación se inició cuando no había una base de datos cacheada! Probablemente esto es un error de programación, por favor consigne un informe de fallos.</string>
   <string name="msg_con_save_secret">Guardando juegos de claves secretas (privadas)</string>
   <string name="msg_con_save_public">Guardando juegos de claves públicas</string>
   <string name="msg_con_db_clear">Limpiando base de datos</string>
@@ -651,7 +647,6 @@
   </plurals>
   <string name="msg_con_reimport_secret_skip">No hay claves públicas a reimportar, omitiendo...</string>
   <string name="msg_con_warn_delete_public">Excepción borrando fichero de caché público</string>
-  <string name="msg_con_warn_delete_secret">Excepción borrando fichero de caché público</string>
   <!--PassphraseCache-->
   <string name="passp_cache_notif_click_to_clear">Haga clic para limpiar las frases contraseña almacenadas en caché</string>
   <string name="passp_cache_notif_n_keys">OpenKeychain ha almacenado en caché %d frases contraseña</string>
@@ -665,7 +660,6 @@
   <string name="label_user_id">Identidad</string>
   <string name="unknown_uid">&lt;desconocido&gt;</string>
   <string name="empty_certs">No hay certificados para esta clave</string>
-  <string name="certs_text">Sólo los certificados creados con sus claves y auto-certificados son mostrados aquí.</string>
   <string name="section_uids_to_certify">Identidades a certificar</string>
   <string name="label_revocation">Razón de la revocación</string>
   <string name="label_verify_status">Estado de la verificación</string>

@@ -270,7 +270,6 @@
   <string name="progress_decompressing_data">データの展開中...</string>
   <string name="progress_verifying_integrity">完全性の検証中...</string>
   <string name="progress_deleting_securely">\'%s\' を完全に削除中…</string>
-  <string name="progress_con_reimport">データベースの再インポート中...</string>
   <!--action strings-->
   <string name="hint_keyserver_search_hint">名前/メール/鍵ID...</string>
   <string name="hint_keybase_search_hint">名前/メール/証明/鍵...</string>
@@ -587,14 +586,12 @@
   <string name="msg_mf_error_sig">署名例外!</string>
   <string name="msg_mf_master">マスター認証を変更</string>
   <string name="msg_mf_passphrase">鍵輪のパスフレーズの変更中...</string>
-  <string name="msg_mf_passphrase_key">副鍵 %s のパスフレーズの変更中</string>
   <string name="msg_mf_passphrase_empty_retry">新しいパスフレーズの設定に失敗しました、空の古いパスフレーズで再度試してください</string>
   <string name="msg_mf_passphrase_fail">副鍵のパスフレーズは変更されていません! (他の鍵とは異なるになっていませんか?)</string>
   <string name="msg_mf_primary_replace_old">以前の主ユーザIDで証明を入れ替え中</string>
   <string name="msg_mf_primary_new">新しい主ユーザIDで新しい証明を生成中</string>
   <string name="msg_mf_subkey_change">副鍵 %s を変更中</string>
   <string name="msg_mf_error_subkey_missing">見付からない副鍵 %s の操作をしようとした!</string>
-  <string name="msg_mf_subkey_new">新しい %1$s ビットの %2$s 副鍵の生成中</string>
   <string name="msg_mf_subkey_new_id">新しい副鍵 ID: %s</string>
   <string name="msg_mf_error_past_expiry">期限切れ日を過去にはできません!</string>
   <string name="msg_mf_subkey_revoke">副鍵 %s を破棄中</string>
@@ -607,7 +604,6 @@
   <string name="msg_mf_unlock">鍵輪のロック解除中</string>
   <!--Consolidate-->
   <string name="msg_con">データベースの統合中</string>
-  <string name="msg_con_error_bad_state">データベースでキャッシュせずに統合を開始します! これはおそらくプログラミングのエラーなので、バグレポートの提出をお願いします!</string>
   <string name="msg_con_save_secret">秘密鍵の鍵輪を保存中</string>
   <string name="msg_con_save_public">公開鍵の鍵輪を保存中</string>
   <string name="msg_con_db_clear">データベースの消去中</string>
@@ -634,7 +630,6 @@
   </plurals>
   <string name="msg_con_reimport_secret_skip">再インポートで秘密鍵がありません、スキップします...</string>
   <string name="msg_con_warn_delete_public">公開鍵キャッシュファイルの削除例外</string>
-  <string name="msg_con_warn_delete_secret">公開鍵キャッシュファイルの削除例外</string>
   <!--PassphraseCache-->
   <string name="passp_cache_notif_click_to_clear">クリックしてパスフレーズのキャッシュをクリア</string>
   <string name="passp_cache_notif_n_keys">OpenKeychainは %d のパスフレーズをキャッシュしています</string>
@@ -648,7 +643,6 @@
   <string name="label_user_id">ユーザID</string>
   <string name="unknown_uid">&lt;不明&gt;</string>
   <string name="empty_certs">この鍵に証明がない</string>
-  <string name="certs_text">あなたの鍵でだけ生成された証明と自己証明がここに表示されます</string>
   <string name="section_uids_to_certify">ユーザIDを検証</string>
   <string name="label_revocation">破棄の理由</string>
   <string name="label_verify_status">検証ステータス</string>

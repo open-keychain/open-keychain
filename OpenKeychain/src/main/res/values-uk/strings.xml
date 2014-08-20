@@ -583,7 +583,6 @@
   <string name="msg_mf_primary_new">Генерується новий сертифікат для ІД нового первинного користувача</string>
   <string name="msg_mf_subkey_change">Змінюється підключ %s</string>
   <string name="msg_mf_error_subkey_missing">Спробували працювати із втраченим підключем %s!</string>
-  <string name="msg_mf_subkey_new">Генерується новий %1$s біт %2$s підключа</string>
   <string name="msg_mf_subkey_new_id">Новий ід підключа: %s</string>
   <string name="msg_mf_error_past_expiry">Дата завершення дії не може бути у минулому!</string>
   <string name="msg_mf_subkey_revoke">Відкликається підключ %s</string>
