@@ -45,6 +45,7 @@ import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
 import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
 import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
+import org.sufficientlysecure.keychain.service.OperationResultParcel;
 import org.sufficientlysecure.keychain.service.OperationResults.ImportKeyResult;
 import org.sufficientlysecure.keychain.ui.adapter.PagerTabStripAdapter;
 import org.sufficientlysecure.keychain.ui.widget.SlidingTabLayout;
@@ -64,7 +65,7 @@ public class ImportKeysActivity extends ActionBarActivity {
             + "IMPORT_KEY_FROM_KEYSERVER";
     public static final String ACTION_IMPORT_KEY_FROM_KEYSERVER_AND_RETURN_RESULT =
             Constants.INTENT_PREFIX + "IMPORT_KEY_FROM_KEY_SERVER_AND_RETURN_RESULT";
-    public static final String ACTION_IMPORT_KEY_FROM_KEYSERVER_AND_RETURN = Constants.INTENT_PREFIX
+    public static final String ACTION_IMPORT_KEY_FROM_KEYSERVER_AND_RETURN_TO_SERVICE = Constants.INTENT_PREFIX
             + "IMPORT_KEY_FROM_KEY_SERVER_AND_RETURN";
     public static final String ACTION_IMPORT_KEY_FROM_FILE_AND_RETURN = Constants.INTENT_PREFIX
             + "IMPORT_KEY_FROM_FILE_AND_RETURN";
@@ -87,7 +88,7 @@ public class ImportKeysActivity extends ActionBarActivity {
     public static final String EXTRA_KEY_ID = "key_id";
     public static final String EXTRA_FINGERPRINT = "fingerprint";
 
-    // only used by ACTION_IMPORT_KEY_FROM_KEYSERVER_AND_RETURN when used from OpenPgpService
+    // only used by ACTION_IMPORT_KEY_FROM_KEYSERVER_AND_RETURN_TO_SERVICE when used from OpenPgpService
     public static final String EXTRA_PENDING_INTENT_DATA = "data";
     private Intent mPendingIntentData;
 
@@ -170,7 +171,7 @@ public class ImportKeysActivity extends ActionBarActivity {
                 startListFragment(savedInstanceState, importData, null, null);
             }
         } else if (ACTION_IMPORT_KEY_FROM_KEYSERVER.equals(action)
-                || ACTION_IMPORT_KEY_FROM_KEYSERVER_AND_RETURN.equals(action)
+                || ACTION_IMPORT_KEY_FROM_KEYSERVER_AND_RETURN_TO_SERVICE.equals(action)
                 || ACTION_IMPORT_KEY_FROM_KEYSERVER_AND_RETURN_RESULT.equals(action)) {
 
             // only used for OpenPgpService
@@ -456,8 +457,9 @@ public class ImportKeysActivity extends ActionBarActivity {
                         return;
                     }
                     final ImportKeyResult result =
-                            returnData.getParcelable(KeychainIntentService.RESULT_IMPORT);
+                            returnData.getParcelable(OperationResultParcel.EXTRA_RESULT);
                     if (result == null) {
+                        Log.e(Constants.TAG, "result == null");
                         return;
                     }
 
@@ -468,7 +470,7 @@ public class ImportKeysActivity extends ActionBarActivity {
                         ImportKeysActivity.this.finish();
                         return;
                     }
-                    if (ACTION_IMPORT_KEY_FROM_KEYSERVER_AND_RETURN.equals(getIntent().getAction())) {
+                    if (ACTION_IMPORT_KEY_FROM_KEYSERVER_AND_RETURN_TO_SERVICE.equals(getIntent().getAction())) {
                         ImportKeysActivity.this.setResult(RESULT_OK, mPendingIntentData);
                         ImportKeysActivity.this.finish();
                         return;

@@ -415,7 +415,7 @@ public class OpenPgpService extends RemoteService {
                         // If signature is unknown we return an _additional_ PendingIntent
                         // to retrieve the missing key
                         Intent intent = new Intent(getBaseContext(), ImportKeysActivity.class);
-                        intent.setAction(ImportKeysActivity.ACTION_IMPORT_KEY_FROM_KEYSERVER_AND_RETURN);
+                        intent.setAction(ImportKeysActivity.ACTION_IMPORT_KEY_FROM_KEYSERVER_AND_RETURN_TO_SERVICE);
                         intent.putExtra(ImportKeysActivity.EXTRA_KEY_ID, signatureResult.getKeyId());
                         intent.putExtra(ImportKeysActivity.EXTRA_PENDING_INTENT_DATA, data);
 
@@ -481,7 +481,7 @@ public class OpenPgpService extends RemoteService {
                 // If keys are not in db we return an additional PendingIntent
                 // to retrieve the missing key
                 Intent intent = new Intent(getBaseContext(), ImportKeysActivity.class);
-                intent.setAction(ImportKeysActivity.ACTION_IMPORT_KEY_FROM_KEYSERVER_AND_RETURN);
+                intent.setAction(ImportKeysActivity.ACTION_IMPORT_KEY_FROM_KEYSERVER_AND_RETURN_TO_SERVICE);
                 intent.putExtra(ImportKeysActivity.EXTRA_KEY_ID, masterKeyId);
                 intent.putExtra(ImportKeysActivity.EXTRA_PENDING_INTENT_DATA, data);
 

@@ -185,8 +185,6 @@ public class KeychainIntentService extends IntentService
     // export
     public static final String RESULT_EXPORT = "exported";
 
-    public static final String RESULT_IMPORT = "result";
-
     Messenger mMessenger;
 
     private boolean mIsCanceled;

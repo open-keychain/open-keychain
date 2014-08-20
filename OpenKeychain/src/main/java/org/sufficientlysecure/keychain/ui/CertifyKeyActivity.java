@@ -54,6 +54,7 @@ import org.sufficientlysecure.keychain.provider.KeychainContract.UserIds;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
 import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
 import org.sufficientlysecure.keychain.service.OperationResultParcel;
+import org.sufficientlysecure.keychain.service.OperationResults;
 import org.sufficientlysecure.keychain.service.PassphraseCacheService;
 import org.sufficientlysecure.keychain.ui.adapter.UserIdsAdapter;
 import org.sufficientlysecure.keychain.ui.dialog.PassphraseDialogFragment;
@@ -311,8 +312,14 @@ public class CertifyKeyActivity extends ActionBarActivity implements LoaderManag
 
                 if (message.arg1 == KeychainIntentServiceHandler.MESSAGE_OKAY) {
 
-                    Notify.showNotify(CertifyKeyActivity.this, R.string.key_certify_success,
-                            Notify.Style.INFO);
+//                    Notify.showNotify(CertifyKeyActivity.this, R.string.key_certify_success,
+//                            Notify.Style.INFO);
+
+                    OperationResultParcel result = new OperationResultParcel(OperationResultParcel.RESULT_OK, null);
+                    Intent intent = new Intent();
+                    intent.putExtra(OperationResults.ImportKeyResult.EXTRA_RESULT, result);
+                    CertifyKeyActivity.this.setResult(RESULT_OK, intent);
+                    CertifyKeyActivity.this.finish();
 
                     // check if we need to send the key to the server or not
                     if (mUploadKeyCheckbox.isChecked()) {
@@ -364,13 +371,14 @@ public class CertifyKeyActivity extends ActionBarActivity implements LoaderManag
                 super.handleMessage(message);
 
                 if (message.arg1 == KeychainIntentServiceHandler.MESSAGE_OKAY) {
-                    Intent intent = new Intent();
-                    intent.putExtra(OperationResultParcel.EXTRA_RESULT, message.getData());
-                    Notify.showNotify(CertifyKeyActivity.this, R.string.key_send_success,
-                            Notify.Style.INFO);
+                    //Notify.showNotify(CertifyKeyActivity.this, R.string.key_send_success,
+                    //Notify.Style.INFO);
 
-                    setResult(RESULT_OK);
-                    finish();
+                    OperationResultParcel result = new OperationResultParcel(OperationResultParcel.RESULT_OK, null);
+                    Intent intent = new Intent();
+                    intent.putExtra(OperationResults.ImportKeyResult.EXTRA_RESULT, result);
+                    CertifyKeyActivity.this.setResult(RESULT_OK, intent);
+                    CertifyKeyActivity.this.finish();
                 }
             }
         };
