@@ -139,10 +139,10 @@ public class PgpImportExport {
         // If there aren't even any keys, do nothing here.
         if (entries == null || !entries.hasNext()) {
             return new ImportKeyResult(
-                    ImportKeyResult.RESULT_FAIL_NOTHING, mProviderHelper.getLog(), 0, 0, 0);
+                    ImportKeyResult.RESULT_FAIL_NOTHING, mProviderHelper.getLog(), 0, 0, 0, 0);
         }
 
-        int newKeys = 0, oldKeys = 0, badKeys = 0;
+        int newKeys = 0, oldKeys = 0, badKeys = 0, secret = 0;
 
         int position = 0;
         double progSteps = 100.0 / num;
@@ -177,6 +177,9 @@ public class PgpImportExport {
                     oldKeys += 1;
                 } else {
                     newKeys += 1;
+                    if (key.isSecret()) {
+                        secret += 1;
+                    }
                 }
 
             } catch (IOException e) {
@@ -213,7 +216,7 @@ public class PgpImportExport {
             }
         }
 
-        return new ImportKeyResult(resultType, log, newKeys, oldKeys, badKeys);
+        return new ImportKeyResult(resultType, log, newKeys, oldKeys, badKeys, secret);
 
     }
 
