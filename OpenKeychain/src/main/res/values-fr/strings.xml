@@ -275,6 +275,7 @@
   <string name="progress_decompressing_data">décompression des données...</string>
   <string name="progress_verifying_integrity">vérification de l\'intégrité...</string>
   <string name="progress_deleting_securely">suppression sûre de « %s »...</string>
+  <string name="progress_con_reimport">réimportation de la base de données...</string>
   <!--action strings-->
   <string name="hint_keyserver_search_hint">Nom/courriel/ID de clef...</string>
   <string name="hint_keybase_search_hint">Nom/courriel/preuve/clef...</string>
@@ -620,18 +621,37 @@
   <string name="msg_mf_unlock">Déverrouillage du trousseau</string>
   <!--Consolidate-->
   <string name="msg_con">Consolidation de la base de données</string>
+  <string name="msg_con_error_bad_state">La consolidation a commencé alors qu\'aucune base de données n\'était en cache ! Ceci est probablement une erreur de programmation, veuillez remplir un rapport de bogue !</string>
   <string name="msg_con_save_secret">Enregistrement des trousseaux secrets</string>
   <string name="msg_con_save_public">Enregistrement des trousseaux publiques</string>
   <string name="msg_con_db_clear">Nettoyage de la base de données</string>
-  <plurals name="msg_con_reimport_secret">
-    <item quantity="one">Réimportation d\'une clef secrète</item>
-    <item quantity="other">Réimportation de %d clefs secrètes</item>
+  <string name="msg_con_success">Base de données consolidée avec succès</string>
+  <string name="msg_con_critical_in">Début de la phase critique</string>
+  <string name="msg_con_critical_out">Fin de la phase critique</string>
+  <string name="msg_con_delete_public">Suppression du fichier de cache du trousseau public</string>
+  <string name="msg_con_delete_secret">Suppression du fichier de cache du trousseau secret</string>
+  <string name="msg_con_error_db">Erreur lors de l\'ouverture de la base de données !</string>
+  <string name="msg_con_error_io_public">Erreur E/S lors de l\'écriture des clefs publiques vers le cache !</string>
+  <string name="msg_con_error_io_secret">Erreur E/S lors de l\'écriture des clefs secrètes vers le cache !</string>
+  <string name="msg_con_error_public">Erreur lors de la réimportation des clefs publiques !</string>
+  <string name="msg_con_error_secret">Erreur lors de la réimportation des clefs secrètes !</string>
+  <plurals name="msg_con_recover">
+    <item quantity="one">Consolidation de récupération avec %1$d clef secrète et %2$d publique</item>
+    <item quantity="other">Consolidation de récupération avec %1$d clefs secrètes et %2$d publiques</item>
   </plurals>
+  <string name="msg_con_recover_unknown">Récupération à partir d\'un état inconnu</string>
   <plurals name="msg_con_reimport_public">
     <item quantity="one">Réimportation d\'une clef publique</item>
     <item quantity="other">Réimportation de %d clefs publiques</item>
   </plurals>
-  <string name="msg_con_success">Base de données consolidée avec succès</string>
+  <string name="msg_con_reimport_public_skip">Aucune clef publique à réimporter, étape ignorée...</string>
+  <plurals name="msg_con_reimport_secret">
+    <item quantity="one">Réimportation d\'une clef secrète</item>
+    <item quantity="other">Réimportation de %d clefs secrètes</item>
+  </plurals>
+  <string name="msg_con_reimport_secret_skip">Aucune clef secrète à réimporter, étape ignorée...</string>
+  <string name="msg_con_warn_delete_public">Une exception a eu lieu lors de la suppression du fichier de cache publique</string>
+  <string name="msg_con_warn_delete_secret">Une exception a eu lieu lors de la suppression du fichier de cache publique</string>
   <!--PassphraseCache-->
   <string name="passp_cache_notif_click_to_clear">Cliquer ici pour effacer les phrases de passe mises en cache</string>
   <string name="passp_cache_notif_n_keys">OpenKeychain a mis en cache %d phrases de passe</string>

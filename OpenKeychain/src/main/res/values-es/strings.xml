@@ -275,6 +275,7 @@
   <string name="progress_decompressing_data">descomprimiendo los datos...</string>
   <string name="progress_verifying_integrity">verificando la integridad...</string>
   <string name="progress_deleting_securely">borrando \'%s\' de forma segura…</string>
+  <string name="progress_con_reimport">reimportando base de datos...</string>
   <!--action strings-->
   <string name="hint_keyserver_search_hint">Nombre/Correo electrónico/Identidad de clave...</string>
   <string name="hint_keybase_search_hint">Nombre/Correo electrónico/Prueba/Clave...</string>
@@ -620,18 +621,37 @@
   <string name="msg_mf_unlock">Desbloqueando juego de claves</string>
   <!--Consolidate-->
   <string name="msg_con">Consolidando base de datos</string>
+  <string name="msg_con_error_bad_state">¡La consolidación se inició cuando no había una base de datos cacheada! Probablemente esto es un error de programación, por favor consigne un informe de fallos.</string>
   <string name="msg_con_save_secret">Guardando juegos de claves secretas (privadas)</string>
   <string name="msg_con_save_public">Guardando juegos de claves públicas</string>
   <string name="msg_con_db_clear">Limpiando base de datos</string>
-  <plurals name="msg_con_reimport_secret">
-    <item quantity="one">Reimportando una clave secreta (privada)</item>
-    <item quantity="other">Reimportando %d claves secretas (privadas)</item>
+  <string name="msg_con_success">Base de datos consolidada con éxito</string>
+  <string name="msg_con_critical_in">Entrando en fase crítica</string>
+  <string name="msg_con_critical_out">Abandonando fase crítica</string>
+  <string name="msg_con_delete_public">Borrando fichero de caché de juego de claves públicas</string>
+  <string name="msg_con_delete_secret">Borrando fichero de caché de juego de claves secretas (privadas)</string>
+  <string name="msg_con_error_db">¡Error al abrir la base de datos!</string>
+  <string name="msg_con_error_io_public">¡Error de E/S al escribir claves públicas en caché!</string>
+  <string name="msg_con_error_io_secret">¡Error de E/S al escribir claves secretas (privadas) en caché!</string>
+  <string name="msg_con_error_public">¡Error al reimportar claves públicas!</string>
+  <string name="msg_con_error_secret">¡Error reimportando claves secretas (privadas)!</string>
+  <plurals name="msg_con_recover">
+    <item quantity="one">Recuperando consolidación con %1$d clave secreta (privada) y %2$d pública</item>
+    <item quantity="other">Recuperando consolidación con %1$d claves secretas (privadas) y %2$d públicas</item>
   </plurals>
+  <string name="msg_con_recover_unknown">Recuperando desde un estado desconocido</string>
   <plurals name="msg_con_reimport_public">
     <item quantity="one">Reimportando una clave pública</item>
     <item quantity="other">Reimportando %d claves públicas</item>
   </plurals>
-  <string name="msg_con_success">Base de datos consolidada con éxito</string>
+  <string name="msg_con_reimport_public_skip">No hay claves públicas a reimportar, omitiendo...</string>
+  <plurals name="msg_con_reimport_secret">
+    <item quantity="one">Reimportando una clave secreta (privada)</item>
+    <item quantity="other">Reimportando %d claves secretas (privadas)</item>
+  </plurals>
+  <string name="msg_con_reimport_secret_skip">No hay claves públicas a reimportar, omitiendo...</string>
+  <string name="msg_con_warn_delete_public">Excepción borrando fichero de caché público</string>
+  <string name="msg_con_warn_delete_secret">Excepción borrando fichero de caché público</string>
   <!--PassphraseCache-->
   <string name="passp_cache_notif_click_to_clear">Haga clic para limpiar las frases contraseña almacenadas en caché</string>
   <string name="passp_cache_notif_n_keys">OpenKeychain ha almacenado en caché %d frases contraseña</string>
