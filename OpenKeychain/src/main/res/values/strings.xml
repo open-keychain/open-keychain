@@ -722,7 +722,7 @@
     <string name="label_user_id">Identity</string>
     <string name="unknown_uid">&lt;unknown&gt;</string>
     <string name="empty_certs">No certificates for this key</string>
-    <string name="certs_text">Only certificates created with your keys and self-certificates are displayed here.</string>
+    <string name="certs_text">Only self-certificates and certificates created with your keys are displayed here.</string>
     <string name="section_uids_to_certify">Identities to certify</string>
     <string name="label_revocation">Revocation Reason</string>
     <string name="label_verify_status">Verification Status</string>
