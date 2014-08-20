@@ -364,6 +364,7 @@ public class HkpKeyserver extends Keyserver {
             URL url = new URL(getUrlPrefix() + mHost + ":" + mPort + request);
 
             Log.d(Constants.TAG, "hkp keyserver add: " + url.toString());
+            Log.d(Constants.TAG, "params: " + params);
 
             HttpURLConnection conn = openConnection(url);
             conn.setRequestMethod("POST");
@@ -384,6 +385,7 @@ public class HkpKeyserver extends Keyserver {
             Log.d(Constants.TAG, "response code: " + conn.getResponseCode());
             Log.d(Constants.TAG, "answer: " + readAll(conn.getInputStream(), conn.getContentEncoding()));
         } catch (IOException e) {
+            Log.e(Constants.TAG, "IOException", e);
             throw new AddKeyException();
         }
     }

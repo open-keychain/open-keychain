@@ -99,7 +99,7 @@ public class PgpImportExport {
         }
     }
 
-    public boolean uploadKeyRingToServer(HkpKeyserver server, CanonicalizedPublicKeyRing keyring) {
+    public void uploadKeyRingToServer(HkpKeyserver server, CanonicalizedPublicKeyRing keyring) throws AddKeyException {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         ArmoredOutputStream aos = null;
         try {
@@ -109,13 +109,9 @@ public class PgpImportExport {
 
             String armoredKey = bos.toString("UTF-8");
             server.add(armoredKey);
-
-            return true;
         } catch (IOException e) {
-            return false;
-        } catch (AddKeyException e) {
-            // TODO: tell the user?
-            return false;
+            Log.e(Constants.TAG, "IOException", e);
+            throw new AddKeyException();
         } finally {
             try {
                 if (aos != null) {
