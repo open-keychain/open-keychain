@@ -396,6 +396,7 @@ public class OperationResultParcel implements Parcelable {
         MSG_CON_DELETE_PUBLIC (R.string.msg_con_delete_public),
         MSG_CON_DELETE_SECRET (R.string.msg_con_delete_secret),
         MSG_CON_ERROR_BAD_STATE (R.string.msg_con_error_bad_state),
+        MSG_CON_ERROR_CONCURRENT(R.string.msg_con_error_concurrent),
         MSG_CON_ERROR_DB (R.string.msg_con_error_db),
         MSG_CON_ERROR_IO_PUBLIC (R.string.msg_con_error_io_public),
         MSG_CON_ERROR_IO_SECRET (R.string.msg_con_error_io_secret),
