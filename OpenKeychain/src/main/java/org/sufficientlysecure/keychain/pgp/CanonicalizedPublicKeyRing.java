@@ -60,10 +60,6 @@ public class CanonicalizedPublicKeyRing extends CanonicalizedKeyRing {
         return mRing;
     }
 
-    public void encode(ArmoredOutputStream stream) throws IOException {
-        getRing().encode(stream);
-    }
-
     /** Getter that returns the subkey that should be used for signing. */
     CanonicalizedPublicKey getEncryptionSubKey() throws PgpGeneralException {
         PGPPublicKey key = getRing().getPublicKey(getEncryptId());

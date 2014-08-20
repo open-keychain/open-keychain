@@ -575,8 +575,9 @@ public class KeychainIntentService extends IntentService
                 CanonicalizedPublicKeyRing keyring = providerHelper.getCanonicalizedPublicKeyRing(dataUri);
                 PgpImportExport pgpImportExport = new PgpImportExport(this, null);
 
-                boolean uploaded = pgpImportExport.uploadKeyRingToServer(server, keyring);
-                if (!uploaded) {
+                try {
+                    pgpImportExport.uploadKeyRingToServer(server, keyring);
+                } catch (Keyserver.AddKeyException e) {
                     throw new PgpGeneralException("Unable to export key to selected server");
                 }
 
