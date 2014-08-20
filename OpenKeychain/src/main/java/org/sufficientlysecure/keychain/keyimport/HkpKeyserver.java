@@ -380,6 +380,9 @@ public class HkpKeyserver extends Keyserver {
             os.close();
 
             conn.connect();
+
+            Log.d(Constants.TAG, "response code: " + conn.getResponseCode());
+            Log.d(Constants.TAG, "answer: " + readAll(conn.getInputStream(), conn.getContentEncoding()));
         } catch (IOException e) {
             throw new AddKeyException();
         }
