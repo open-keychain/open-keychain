@@ -1127,9 +1127,7 @@ public class ProviderHelper {
 
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         String version = PgpHelper.getVersionForHeader(mContext);
-        if (version != null) {
-            keyRing.encodeArmored(bos, version);
-        }
+        keyRing.encodeArmored(bos, version);
         String armoredKey = bos.toString("UTF-8");
 
         Log.d(Constants.TAG, "armoredKey:" + armoredKey);
