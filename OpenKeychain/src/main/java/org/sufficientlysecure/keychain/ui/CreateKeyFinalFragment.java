@@ -187,7 +187,7 @@ public class CreateKeyFinalFragment extends Fragment {
         getActivity().startService(intent);
     }
 
-    private void uploadKey(final OperationResults.SaveKeyringResult editKeyResult) {
+    private void uploadKey(final OperationResults.SaveKeyringResult saveKeyResult) {
         // Send all information needed to service to upload key in other thread
         final Intent intent = new Intent(getActivity(), KeychainIntentService.class);
 
@@ -195,7 +195,7 @@ public class CreateKeyFinalFragment extends Fragment {
 
         // set data uri as path to keyring
         Uri blobUri = KeychainContract.KeyRings.buildUnifiedKeyRingUri(
-                editKeyResult.mRingMasterKeyId);
+                saveKeyResult.mRingMasterKeyId);
         intent.setData(blobUri);
 
         // fill values for this action
@@ -221,7 +221,7 @@ public class CreateKeyFinalFragment extends Fragment {
                     //Notify.Style.INFO);
 
                     Intent data = new Intent();
-                    data.putExtra(OperationResultParcel.EXTRA_RESULT, editKeyResult);
+                    data.putExtra(OperationResultParcel.EXTRA_RESULT, saveKeyResult);
                     getActivity().setResult(Activity.RESULT_OK, data);
                     getActivity().finish();
                 }
