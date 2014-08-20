@@ -317,7 +317,7 @@ public class CertifyKeyActivity extends ActionBarActivity implements LoaderManag
 
                     OperationResultParcel result = new OperationResultParcel(OperationResultParcel.RESULT_OK, null);
                     Intent intent = new Intent();
-                    intent.putExtra(OperationResults.ImportKeyResult.EXTRA_RESULT, result);
+                    intent.putExtra(OperationResultParcel.EXTRA_RESULT, result);
                     CertifyKeyActivity.this.setResult(RESULT_OK, intent);
                     CertifyKeyActivity.this.finish();
 
@@ -376,7 +376,7 @@ public class CertifyKeyActivity extends ActionBarActivity implements LoaderManag
 
                     OperationResultParcel result = new OperationResultParcel(OperationResultParcel.RESULT_OK, null);
                     Intent intent = new Intent();
-                    intent.putExtra(OperationResults.ImportKeyResult.EXTRA_RESULT, result);
+                    intent.putExtra(OperationResultParcel.EXTRA_RESULT, result);
                     CertifyKeyActivity.this.setResult(RESULT_OK, intent);
                     CertifyKeyActivity.this.finish();
                 }

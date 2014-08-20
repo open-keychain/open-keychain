@@ -33,6 +33,7 @@ import android.widget.TextView;
 
 import org.spongycastle.bcpg.PublicKeyAlgorithmTags;
 import org.spongycastle.bcpg.sig.KeyFlags;
+import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.helper.Preferences;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
@@ -42,6 +43,7 @@ import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
 import org.sufficientlysecure.keychain.service.OperationResultParcel;
 import org.sufficientlysecure.keychain.service.OperationResults;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
+import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Notify;
 
 public class CreateKeyFinalFragment extends Fragment {
@@ -142,23 +144,18 @@ public class CreateKeyFinalFragment extends Fragment {
                     final OperationResults.SaveKeyringResult result =
                             returnData.getParcelable(OperationResultParcel.EXTRA_RESULT);
                     if (result == null) {
+                        Log.e(Constants.TAG, "result == null");
                         return;
                     }
 
-                    if (result.getResult() == OperationResultParcel.RESULT_OK) {
-                        if (mUploadCheckbox.isChecked()) {
-                            // result will be displayed after upload
-                            uploadKey(result);
-                        } else {
-                            // TODO: return result
-                            result.createNotify(getActivity());
-
-                            getActivity().setResult(Activity.RESULT_OK);
-                            getActivity().finish();
-                        }
+                    if (mUploadCheckbox.isChecked()) {
+                        // result will be displayed after upload
+                        uploadKey(result);
                     } else {
-                        // display result on error without finishing activity
-                        result.createNotify(getActivity());
+                        Intent data = new Intent();
+                        data.putExtra(OperationResultParcel.EXTRA_RESULT, result);
+                        getActivity().setResult(Activity.RESULT_OK, data);
+                        getActivity().finish();
                     }
                 }
             }
@@ -217,20 +214,16 @@ public class CreateKeyFinalFragment extends Fragment {
                 super.handleMessage(message);
 
                 if (message.arg1 == KeychainIntentServiceHandler.MESSAGE_OKAY) {
-                    // TODO: not supported by upload?
-//                    if (result.getResult() == OperationResultParcel.RESULT_OK) {
-                    // TODO: return result
-                    editKeyResult.createNotify(getActivity());
+                    // TODO: upload operation needs a result!
+                    // TODO: then combine these results
+                    //if (result.getResult() == OperationResultParcel.RESULT_OK) {
+                    //Notify.showNotify(getActivity(), R.string.key_send_success,
+                    //Notify.Style.INFO);
 
-                    Notify.showNotify(getActivity(), R.string.key_send_success,
-                            Notify.Style.INFO);
-
-                    getActivity().setResult(Activity.RESULT_OK);
+                    Intent data = new Intent();
+                    data.putExtra(OperationResultParcel.EXTRA_RESULT, editKeyResult);
+                    getActivity().setResult(Activity.RESULT_OK, data);
                     getActivity().finish();
-//                    } else {
-//                        // display result on error without finishing activity
-//                        editKeyResult.createNotify(getActivity());
-//                    }
                 }
             }
         };

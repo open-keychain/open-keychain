@@ -313,6 +313,7 @@ public class ViewKeyActivity extends ActionBarActivity implements
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        // if a result has been returned, display a notify
         if (data != null && data.hasExtra(OperationResultParcel.EXTRA_RESULT)) {
             OperationResultParcel result = data.getParcelableExtra(OperationResultParcel.EXTRA_RESULT);
             result.createNotify(this).show();

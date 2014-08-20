@@ -145,7 +145,7 @@ public class KeyListActivity extends DrawerActivity {
 
     private void createKey() {
         Intent intent = new Intent(this, CreateKeyActivity.class);
-        startActivity(intent);
+        startActivityForResult(intent, 0);
     }
 
     private void consolidate() {
@@ -195,6 +195,17 @@ public class KeyListActivity extends DrawerActivity {
         // start service with intent
         startService(intent);
 
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        // if a result has been returned, display a notify
+        if (data != null && data.hasExtra(OperationResultParcel.EXTRA_RESULT)) {
+            OperationResultParcel result = data.getParcelableExtra(OperationResultParcel.EXTRA_RESULT);
+            result.createNotify(this).show();
+        } else {
+            super.onActivityResult(requestCode, resultCode, data);
+        }
     }
 
 }

@@ -179,7 +179,6 @@ public class LogDisplayFragment extends ListFragment implements OnTouchListener 
                         (Integer) entry.mParameters[0],
                         entry.mParameters));
             } else {
-                Log.d(Constants.TAG, "entry.mType.getMsgId() "+entry.mType.name());
                 ih.mText.setText(getResources().getString(entry.mType.getMsgId(),
                         entry.mParameters));
             }
