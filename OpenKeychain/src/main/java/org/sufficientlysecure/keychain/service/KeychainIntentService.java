@@ -49,6 +49,7 @@ import org.sufficientlysecure.keychain.pgp.Progressable;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralMsgIdException;
+import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRingData;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.KeychainDatabase;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
@@ -104,6 +105,8 @@ public class KeychainIntentService extends IntentService
 
     public static final String ACTION_CERTIFY_KEYRING = Constants.INTENT_PREFIX + "SIGN_KEYRING";
 
+    public static final String ACTION_DELETE = Constants.INTENT_PREFIX + "DELETE";
+
     public static final String ACTION_CONSOLIDATE = Constants.INTENT_PREFIX + "CONSOLIDATE";
 
     /* keys for data bundle */
@@ -142,6 +145,10 @@ public class KeychainIntentService extends IntentService
 
     // delete file securely
     public static final String DELETE_FILE = "deleteFile";
+
+    // delete keyring(s)
+    public static final String DELETE_KEY_LIST = "delete_list";
+    public static final String DELETE_IS_SECRET = "delete_is_secret";
 
     // import key
     public static final String IMPORT_KEY_LIST = "import_key_list";
@@ -487,8 +494,13 @@ public class KeychainIntentService extends IntentService
                     entries = cache.readCacheIntoList();
                 }
 
-                PgpImportExport pgpImportExport = new PgpImportExport(this, this);
+                ProviderHelper providerHelper = new ProviderHelper(this);
+                PgpImportExport pgpImportExport = new PgpImportExport(this, providerHelper, this);
                 ImportKeyResult result = pgpImportExport.importKeyRings(entries);
+
+                if (result.mSecret > 0) {
+                    providerHelper.consolidateDatabaseStep1(this);
+                }
 
                 sendMessageToHandler(KeychainIntentServiceHandler.MESSAGE_OKAY, result);
             } catch (Exception e) {
@@ -661,6 +673,42 @@ public class KeychainIntentService extends IntentService
                 // store the signed key in our local cache
                 providerHelper.savePublicKeyRing(newRing);
                 sendMessageToHandler(KeychainIntentServiceHandler.MESSAGE_OKAY);
+
+            } catch (Exception e) {
+                sendErrorToHandler(e);
+            }
+
+        } else if (ACTION_DELETE.equals(action)) {
+
+            try {
+
+                long[] masterKeyIds = data.getLongArray(DELETE_KEY_LIST);
+                boolean isSecret = data.getBoolean(DELETE_IS_SECRET);
+
+                if (masterKeyIds.length == 0) {
+                    throw new PgpGeneralException("List of keys to delete is empty");
+                }
+
+                if (isSecret && masterKeyIds.length > 1) {
+                    throw new PgpGeneralException("Secret keys can only be deleted individually!");
+                }
+
+                boolean success = false;
+                for (long masterKeyId : masterKeyIds) {
+                    int count = getContentResolver().delete(
+                            KeyRingData.buildPublicKeyRingUri(masterKeyId), null, null
+                    );
+                    success |= count > 0;
+                }
+
+                if (isSecret && success) {
+                    ConsolidateResult result =
+                            new ProviderHelper(this).consolidateDatabaseStep1(this);
+                }
+
+                if (success) {
+                    sendMessageToHandler(KeychainIntentServiceHandler.MESSAGE_OKAY);
+                }
 
             } catch (Exception e) {
                 sendErrorToHandler(e);

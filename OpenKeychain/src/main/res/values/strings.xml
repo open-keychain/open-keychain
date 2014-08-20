@@ -301,6 +301,7 @@
     <string name="progress_decompressing_data">decompressing data…</string>
     <string name="progress_verifying_integrity">verifying integrity…</string>
     <string name="progress_deleting_securely">deleting \'%s\' securely…</string>
+    <string name="progress_deleting">deleting keys…</string>
 
     <string name="progress_con_saving">consolidate: saving to cache…</string>
     <string name="progress_con_reimport">consolidate: reimporting…</string>
