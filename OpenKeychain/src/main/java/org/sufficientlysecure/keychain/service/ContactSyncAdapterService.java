@@ -21,6 +21,8 @@ import android.accounts.Account;
 import android.app.Service;
 import android.content.AbstractThreadedSyncAdapter;
 import android.content.ContentProviderClient;
+import android.content.ContentResolver;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SyncResult;
 import android.os.Bundle;
@@ -29,9 +31,11 @@ import android.os.IBinder;
 import android.os.Looper;
 import android.os.Message;
 import android.os.Messenger;
+import android.provider.ContactsContract;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.KeychainApplication;
+import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.helper.ContactHelper;
 import org.sufficientlysecure.keychain.helper.EmailKeyHelper;
 import org.sufficientlysecure.keychain.util.Log;
@@ -92,6 +96,15 @@ public class ContactSyncAdapterService extends Service {
 //            }
             ContactHelper.writeKeysToContacts(ContactSyncAdapterService.this);
         }
+    }
+
+    public static void requestSync(Context context) {
+        Bundle extras = new Bundle();
+        extras.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
+        ContentResolver.requestSync(
+                new Account(context.getString(R.string.app_name), Constants.PACKAGE_NAME),
+                ContactsContract.AUTHORITY,
+                extras);
     }
 
     @Override
