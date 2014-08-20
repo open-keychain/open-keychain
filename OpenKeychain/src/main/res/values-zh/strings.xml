@@ -144,6 +144,7 @@
   <!--Keyring merging log entries-->
   <!--createSecretKeyRing-->
   <!--modifySecretKeyRing-->
+  <!--Consolidate-->
   <!--PassphraseCache-->
   <!--unsorted-->
   <!--First Time-->

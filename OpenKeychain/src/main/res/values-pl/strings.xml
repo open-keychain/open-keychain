@@ -310,6 +310,7 @@
   <!--Keyring merging log entries-->
   <!--createSecretKeyRing-->
   <!--modifySecretKeyRing-->
+  <!--Consolidate-->
   <!--PassphraseCache-->
   <!--unsorted-->
   <string name="section_cert">Szczegóły certyfikatu</string>

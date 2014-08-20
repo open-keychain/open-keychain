@@ -27,6 +27,7 @@
   <string name="title_key_details">Detalles de la clave</string>
   <string name="title_help">Ayuda</string>
   <string name="title_log_display">Registro (log)</string>
+  <string name="title_create_key">Crear clave</string>
   <!--section-->
   <string name="section_user_ids">Identidades</string>
   <string name="section_keys">Subclaves</string>
@@ -84,8 +85,8 @@
   <string name="label_algorithm">Algoritmo</string>
   <string name="label_ascii_armor">Armadura ASCII del fichero</string>
   <string name="label_file_ascii_armor">Ficheros: Armadura ASCII</string>
-  <string name="label_write_version_header">Permitir a otros saber que está usando OpenKeychain</string>
-  <string name="label_write_version_header_summary">Escribe \'OpenKeychain v2.7\' en las firmas OpenPGP, el texto cifrado, y las claves exportadas</string>
+  <string name="label_write_version_header">Permitir conocer a otros que usted está usando OpenKeychain</string>
+  <string name="label_write_version_header_summary">Escribe \'OpenKeychain v2.7\' en las firmas OpenPGP, texto cifrado, y claves exportadas</string>
   <string name="label_asymmetric_from">Desde:</string>
   <string name="label_to">Hacia:</string>
   <string name="label_delete_after_encryption">Ficheros: Borrar después del cifrado</string>
@@ -275,8 +276,8 @@
   <string name="progress_verifying_integrity">verificando la integridad...</string>
   <string name="progress_deleting_securely">borrando \'%s\' de forma segura…</string>
   <!--action strings-->
-  <string name="hint_keyserver_search_hint">Identidad de Nombre/Correo/Clave...</string>
-  <string name="hint_keybase_search_hint">Nombre de usuario de Nombre/Keybase.io...</string>
+  <string name="hint_keyserver_search_hint">Nombre/Correo electrónico/Identidad de clave...</string>
+  <string name="hint_keybase_search_hint">Nombre/Correo electrónico/Prueba/Clave...</string>
   <!--key bit length selections-->
   <string name="key_size_512">512</string>
   <string name="key_size_768">768</string>
@@ -355,13 +356,15 @@
   <string name="api_settings_accounts">Cuentas</string>
   <string name="api_settings_accounts_empty">No hay cuentas adjuntas a esta aplicación</string>
   <string name="api_create_account_text">La aplicación solicita la creación de una nueva cuenta. Por favor, seleccione una de sus claves existentes o cree una nueva.\n¡Las aplicaciones están restringidas al uso de las claves que usted seleccione aquí!</string>
+  <string name="api_update_account_text">La clave guardada para esta cuenta ha sido borrada. ¡Por favor seleccione una diferente!\n¡Las aplicaciones están restringidas al uso de las claves que seleccione aquí!</string>
   <string name="api_register_text">La aplicación mostrada quiere cifrar, descrifrar y firmar mensajes en su nombre.\n¿Permitir acceso?\n\nADVERTENCIA: Si no sabe por qué apareció esta pantalla, ¡no permita el acceso! Puede revocar el acceso más tarde usando la pantalla de \'Aplicaciones\'.</string>
   <string name="api_register_allow">Permitir el acceso</string>
   <string name="api_register_disallow">Denegar el acceso</string>
   <string name="api_register_error_select_key">¡Por favor, selecciona una clave!</string>
-  <string name="api_select_pub_keys_missing_text">No se encontraron claves públicas para estas identidades:</string>
-  <string name="api_select_pub_keys_dublicates_text">Existe más de una clave pública para estas identidades:</string>
+  <string name="api_select_pub_keys_missing_text">No se encontraron claves para estas identidades:</string>
+  <string name="api_select_pub_keys_dublicates_text">Existe más de una clave para estas identidades:</string>
   <string name="api_select_pub_keys_text">¡Por favor, revisa la lista de destinatarios!</string>
+  <string name="api_select_pub_keys_text_no_user_ids">¡Por favor seleccione los receptores!</string>
   <string name="api_error_wrong_signature">¡La comprobación de la firma ha fallado! ¿Has instalado esta app desde una fuente distinta? Si estás seguro de que esto no es un ataque, revoca el registro de esta app en OpenKeychain y regístrala de nuevo.</string>
   <!--Share-->
   <string name="share_qr_code_dialog_title">Compartir con código QR</string>
@@ -388,6 +391,14 @@
   <string name="key_view_tab_share">Compartir</string>
   <string name="key_view_tab_keys">Subclaves</string>
   <string name="key_view_tab_certs">Certificados</string>
+  <string name="user_id_info_revoked_title">Revocada</string>
+  <string name="user_id_info_revoked_text">Esta identidad ha sido revocada por el propietario de la clave. En adelante no es válida.</string>
+  <string name="user_id_info_verified_title">Verificada</string>
+  <string name="user_id_info_verified_text">Esta identidad ha sido verificada</string>
+  <string name="user_id_info_not_verified_title">No verificada</string>
+  <string name="user_id_info_not_verified_text">Esta identidad no se ha verificado aún. No puede estar seguro de si la identidad realmente corresponde a una persona en concreto.</string>
+  <string name="user_id_info_invalid_title">No válido</string>
+  <string name="user_id_info_invalid_text">¡Algo está mal con esta identidad!</string>
   <!--Edit key-->
   <string name="edit_key_action_change_passphrase">Cambiar frase contraseña</string>
   <string name="edit_key_action_add_identity">Añadir identidad</string>
@@ -407,6 +418,7 @@
     <item>Revocar subclave</item>
   </string-array>
   <string name="edit_key_new_subkey">nueva</string>
+  <string name="edit_key_select_flag">¡Por favor, seleccione al menos un indicador!</string>
   <!--Create key-->
   <string name="create_key_upload">Subir clave al servidor de claves</string>
   <string name="create_key_empty">Este campo es obligatorio</string>
@@ -442,6 +454,7 @@
   <!--Import Public log entries-->
   <string name="msg_ip_apply_batch">Aplicando operación de inserción por lote.</string>
   <string name="msg_ip_bad_type_secret">Se intentó importar un juego de claves (keyring) secreto como público. Esto es un fallo, por favor ¡consigne un informe!</string>
+  <string name="msg_kc_v3_key">Esta clave es una clave OpenPGP versión 3 y por tanto insegura. No ha sido importada.</string>
   <string name="msg_ip_delete_old_fail">No se borró ninguna clave antigua (¿crear una nueva?)</string>
   <string name="msg_ip_delete_old_ok">Clave antigua borrada de la base de datos</string>
   <string name="msg_ip_encode_fail">La operación falló debido a un error de codificación</string>
@@ -557,7 +570,7 @@
   <string name="msg_mg_public">Incorporándolas en el juego de claves públicas %s</string>
   <string name="msg_mg_secret">Incorporándolas en el juego de claves secretas (privadas) %s</string>
   <string name="msg_mg_fatal_encode">Error fatal codificando la firma</string>
-  <string name="msg_mg_heterogeneous">Se intentaron consolidar juegos de claves heterogéneos</string>
+  <string name="msg_mg_heterogeneous">¡Se intentaron fusionar juegos de claves con diferentes huellas de validación de claves!</string>
   <string name="msg_mg_new_subkey">Añadiendo nueva subclave %s</string>
   <string name="msg_mg_found_new">Se encontraron %s nuevos certificados en el juego de claves</string>
   <string name="msg_mg_unchanged">No hay nuevos certificados</string>
@@ -566,6 +579,7 @@
   <string name="msg_cr_error_no_master">¡No se especificaron opciones de clave!</string>
   <string name="msg_cr_error_no_user_id">¡Los juegos de claves tienen que estar creados con al menos una identidad de usuario!</string>
   <string name="msg_cr_error_no_certify">¡La clave maestra debe tener el indicador de certificado!</string>
+  <string name="msg_cr_error_null_expiry">El periodo hasta la expiración no puede ser \"el mismo que antes\" al crear la clave. Esto es un error de programación, por favor ¡rellene un informe de fallo!</string>
   <string name="msg_cr_error_keysize_512">¡El tamaño de la clave debe ser mayor o igual de 512!</string>
   <string name="msg_cr_error_internal_pgp">¡Error PGP interno!</string>
   <string name="msg_cr_error_unknown_algo">¡Seleccionado algoritmo defectuoso!</string>
@@ -576,15 +590,23 @@
   <string name="msg_mf_error_fingerprint">¡La actual huella de validación de clave no coincide con la esperada!</string>
   <string name="msg_mf_error_keyid">No hay identidad de clave. Esto es un error interno, por favor ¡consigne un informe de error!</string>
   <string name="msg_mf_error_integrity">Error interno, ¡fallo en la comprobación de integridad!</string>
+  <string name="msg_mf_error_master_none">¡No se encontró certificado maestro sobre el que operar! (¿Todos revocados?)</string>
   <string name="msg_mf_error_noexist_primary">¡Especificada identidad de usuario primaria defectuosa!</string>
+  <string name="msg_mf_error_noexist_revoke">¡Se especificó una mala identidad de usuario para revocación!</string>
   <string name="msg_mf_error_revoked_primary">¡Las identidades de usuario revocadas no pueden ser primarias!</string>
+  <string name="msg_mf_error_null_expiry">El periodo hasta la expiración no puede ser \"el mismo que antes\" al crear subclave. Esto es un error de programación, por favor ¡rellene un informe de fallo!</string>
+  <string name="msg_mf_error_passphrase_master">¡Error fatal descrifrando la clave maestra! Probablemente esto se daba a un error de programación, por favor ¡rellene un informe de fallo!</string>
   <string name="msg_mf_error_pgp">¡Excepción interna de PGP!</string>
   <string name="msg_mf_error_sig">¡Excepción con la firma!</string>
-  <string name="msg_mf_passphrase">Cambiando frase contraseña</string>
+  <string name="msg_mf_master">Modificando certificaciones maestras</string>
+  <string name="msg_mf_passphrase">Cambiando frase contraseña para el juego de claves (keyring)...</string>
+  <string name="msg_mf_passphrase_key">Cambiando frase contraseña para la subclave %s</string>
+  <string name="msg_mf_passphrase_empty_retry">Fallo al establecer nueva frase contraseña, intentándolo de nuevo con una antigua frase contraseña vacía</string>
+  <string name="msg_mf_passphrase_fail">¡La frase contraseña para la subclave no pudo cambiarse! (¿Tiene la subclave una diferente de la de las otras claves?)</string>
   <string name="msg_mf_primary_replace_old">Reemplazando certificado de la anterior identidad de usuario primaria </string>
   <string name="msg_mf_primary_new">Generando nuevo certificado para nueva identidad de usuario primaria</string>
   <string name="msg_mf_subkey_change">Modificando subclave %s</string>
-  <string name="msg_mf_error_subkey_missing">¡Intentó operar sobre una subclave ausente %s!</string>
+  <string name="msg_mf_error_subkey_missing">¡Se intentó operar sobre una subclave desaparecida %s!</string>
   <string name="msg_mf_subkey_new">Generando nueva subclave %2$s de %1$s bits</string>
   <string name="msg_mf_subkey_new_id">Nueva identidad de subclave: %s</string>
   <string name="msg_mf_error_past_expiry">¡La fecha de expiración no puede ser del pasado!</string>
@@ -596,6 +618,20 @@
   <string name="msg_mf_uid_error_empty">¡La identidad de usuario no debe estar vacía!</string>
   <string name="msg_mf_unlock_error">¡Error desbloqueando juego de claves!</string>
   <string name="msg_mf_unlock">Desbloqueando juego de claves</string>
+  <!--Consolidate-->
+  <string name="msg_con">Consolidando base de datos</string>
+  <string name="msg_con_save_secret">Guardando juegos de claves secretas (privadas)</string>
+  <string name="msg_con_save_public">Guardando juegos de claves públicas</string>
+  <string name="msg_con_db_clear">Limpiando base de datos</string>
+  <plurals name="msg_con_reimport_secret">
+    <item quantity="one">Reimportando una clave secreta (privada)</item>
+    <item quantity="other">Reimportando %d claves secretas (privadas)</item>
+  </plurals>
+  <plurals name="msg_con_reimport_public">
+    <item quantity="one">Reimportando una clave pública</item>
+    <item quantity="other">Reimportando %d claves públicas</item>
+  </plurals>
+  <string name="msg_con_success">Base de datos consolidada con éxito</string>
   <!--PassphraseCache-->
   <string name="passp_cache_notif_click_to_clear">Haga clic para limpiar las frases contraseña almacenadas en caché</string>
   <string name="passp_cache_notif_n_keys">OpenKeychain ha almacenado en caché %d frases contraseña</string>
@@ -609,6 +645,7 @@
   <string name="label_user_id">Identidad</string>
   <string name="unknown_uid">&lt;desconocido&gt;</string>
   <string name="empty_certs">No hay certificados para esta clave</string>
+  <string name="certs_text">Sólo los certificados creados con sus claves y auto-certificados son mostrados aquí.</string>
   <string name="section_uids_to_certify">Identidades a certificar</string>
   <string name="label_revocation">Razón de la revocación</string>
   <string name="label_verify_status">Estado de la verificación</string>

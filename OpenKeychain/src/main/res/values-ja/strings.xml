@@ -27,6 +27,7 @@
   <string name="title_key_details">鍵の概要</string>
   <string name="title_help">ヘルプ</string>
   <string name="title_log_display">ログ</string>
+  <string name="title_create_key">鍵の生成</string>
   <!--section-->
   <string name="section_user_ids">ユーザID</string>
   <string name="section_keys">副鍵</string>
@@ -271,7 +272,7 @@
   <string name="progress_deleting_securely">\'%s\' を完全に削除中…</string>
   <!--action strings-->
   <string name="hint_keyserver_search_hint">名前/メール/鍵ID...</string>
-  <string name="hint_keybase_search_hint">名前/Keybase.io名...</string>
+  <string name="hint_keybase_search_hint">名前/メール/証明/鍵...</string>
   <!--key bit length selections-->
   <string name="key_size_512">512</string>
   <string name="key_size_768">768</string>
@@ -346,13 +347,15 @@
   <string name="api_settings_accounts">アカウント</string>
   <string name="api_settings_accounts_empty">このアプリに接続されてるアカウントはありません。</string>
   <string name="api_create_account_text">このアプリは新しいアカウントの生成を要求しています。すでにある鍵1つを選択するか、新たに生成してください。\nここであなたが選択する鍵の使い道についてアプリケーションには制約があります!</string>
+  <string name="api_update_account_text">このアカウントの削除された鍵を保存しました。異るものを選択してください!\nここであなたが選択する鍵の使い道についてはアプリには制約があります!</string>
   <string name="api_register_text">表示されているアプリはメッセージの暗号/復号化とあなたの名前での署名付けを要求しています。\nアクセスを許可しますか?\n\n注意: もしなぜスクリーンに表れたかわからないなら、アクセスを許可しないでください! あなたは後で\'アプリ\'スクリーンを使い、アクセスを破棄するこもできます。</string>
   <string name="api_register_allow">許可されたアクセス</string>
   <string name="api_register_disallow">許可されないアクセス</string>
   <string name="api_register_error_select_key">鍵を選択してください!</string>
-  <string name="api_select_pub_keys_missing_text">このユーザIDについて公開鍵が見付かりません:</string>
-  <string name="api_select_pub_keys_dublicates_text">このユーザIDについて1つ以上の公開鍵が存在します:</string>
+  <string name="api_select_pub_keys_missing_text">このユーザIDについて鍵が見付かりません:</string>
+  <string name="api_select_pub_keys_dublicates_text">このユーザIDについて1つ以上の鍵が存在します:</string>
   <string name="api_select_pub_keys_text">受信者リストを確認してください!</string>
+  <string name="api_select_pub_keys_text_no_user_ids">受信者を選択してください!</string>
   <string name="api_error_wrong_signature">署名チェックが失敗! 違うところからこのアプリをインストールしましたか? もし攻撃されてでなくそうであるなら、OpenKeychainにあるこのアプリの登録を破棄し、再度アプリを登録してください。</string>
   <!--Share-->
   <string name="share_qr_code_dialog_title">QRコードで共有</string>
@@ -378,6 +381,14 @@
   <string name="key_view_tab_share">共有</string>
   <string name="key_view_tab_keys">副鍵</string>
   <string name="key_view_tab_certs">証明</string>
+  <string name="user_id_info_revoked_title">破棄</string>
+  <string name="user_id_info_revoked_text">このIDは鍵の所有者により破棄されています。もう適正ではありません。</string>
+  <string name="user_id_info_verified_title">検証</string>
+  <string name="user_id_info_verified_text">このIDは検証されています。</string>
+  <string name="user_id_info_not_verified_title">未検証</string>
+  <string name="user_id_info_not_verified_text">このIDはまだ検証されていません。IDが本当に特定の人に対応している場合を、あなたは確認することができません。</string>
+  <string name="user_id_info_invalid_title">不適正</string>
+  <string name="user_id_info_invalid_text">このIDではなにかしら問題があります!</string>
   <!--Edit key-->
   <string name="edit_key_action_change_passphrase">パスフレーズの変更</string>
   <string name="edit_key_action_add_identity">ユーザIDの追加</string>
@@ -397,6 +408,7 @@
     <item>副鍵を破棄</item>
   </string-array>
   <string name="edit_key_new_subkey">新規</string>
+  <string name="edit_key_select_flag">最低1つフラグを選択してください!</string>
   <!--Create key-->
   <string name="create_key_upload">鍵サーバへアップロード</string>
   <string name="create_key_empty">このフィールドは必須です</string>
@@ -432,6 +444,7 @@
   <!--Import Public log entries-->
   <string name="msg_ip_apply_batch">連続挿入処理を適用する。</string>
   <string name="msg_ip_bad_type_secret">秘密鍵の鍵輪を公開鍵としてインポートを試行しました。これはバグで、ファイルをレポートしてください!</string>
+  <string name="msg_kc_v3_key">この鍵はOpenPGP v3形式の鍵で安全ではありません。そのためインポートできません。</string>
   <string name="msg_ip_delete_old_fail">削除された古い鍵はありません (新しく作りますか?)</string>
   <string name="msg_ip_delete_old_ok">データベースから古い鍵を削除しました</string>
   <string name="msg_ip_encode_fail">エンコードエラーにより操作が失敗しました</string>
@@ -543,7 +556,7 @@
   <string name="msg_mg_public">公開鍵の鍵輪 %s にマージ中</string>
   <string name="msg_mg_secret">秘密鍵の鍵輪 %s にマージ中</string>
   <string name="msg_mg_fatal_encode">署名のエンコードでの致命的なエラー</string>
-  <string name="msg_mg_heterogeneous">種類の異なる鍵輪を統合しようとした</string>
+  <string name="msg_mg_heterogeneous">指紋が異なる鍵輪をマージしようとしています!</string>
   <string name="msg_mg_new_subkey">新しい副鍵 %s を追加中</string>
   <string name="msg_mg_found_new">鍵輪に新しい検証を %s 発見</string>
   <string name="msg_mg_unchanged">新しい証明がない</string>
@@ -552,6 +565,7 @@
   <string name="msg_cr_error_no_master">主鍵オプション特有ではありません!</string>
   <string name="msg_cr_error_no_user_id">鍵輪は最低でも1つのユーザIDの生成が必要です!</string>
   <string name="msg_cr_error_no_certify">主鍵は検証フラグが必須です!</string>
+  <string name="msg_cr_error_null_expiry">鍵の生成時に期限を\"過去\"とすることはできません。これはプログラムエラーで、バグレポートとしてファイルを送ってください!</string>
   <string name="msg_cr_error_keysize_512">鍵サイズは512かそれ以上が必須です!</string>
   <string name="msg_cr_error_internal_pgp">PGP内部エラー!</string>
   <string name="msg_cr_error_unknown_algo">悪いアルゴリズムを選択しています!</string>
@@ -562,15 +576,23 @@
   <string name="msg_mf_error_fingerprint">現実の鍵指紋が想定の1つと合致しませんでした!</string>
   <string name="msg_mf_error_keyid">鍵IDがない。 これは内部エラーで、バグレポートの提出をお願いします!</string>
   <string name="msg_mf_error_integrity">内部エラー、完全性チェックが失敗!</string>
+  <string name="msg_mf_error_master_none">マスター認証が操作で見付かりませんでした(すべて破棄しましたか?)</string>
   <string name="msg_mf_error_noexist_primary">問題のある主ユーザIDが指定された!</string>
+  <string name="msg_mf_error_noexist_revoke">破棄において問題のあるユーザIDが指定された!</string>
   <string name="msg_mf_error_revoked_primary">主ユーザIDの破棄はできません!</string>
+  <string name="msg_mf_error_null_expiry">副鍵の生成時に期限を\"過去\"とすることはできません。これはプログラムエラーで、バグレポートとしてファイルを送ってください!</string>
+  <string name="msg_mf_error_passphrase_master">主鍵の復号で致命的な失敗! これはプログラミングのエラーの場合がありますので、バグレポートの提出をお願いします!</string>
   <string name="msg_mf_error_pgp">PGP内部例外!</string>
   <string name="msg_mf_error_sig">署名例外!</string>
-  <string name="msg_mf_passphrase">パスフレーズの変更中</string>
+  <string name="msg_mf_master">マスター認証を変更</string>
+  <string name="msg_mf_passphrase">鍵輪のパスフレーズの変更中...</string>
+  <string name="msg_mf_passphrase_key">副鍵 %s のパスフレーズの変更中</string>
+  <string name="msg_mf_passphrase_empty_retry">新しいパスフレーズの設定に失敗しました、空の古いパスフレーズで再度試してください</string>
+  <string name="msg_mf_passphrase_fail">副鍵のパスフレーズは変更されていません! (他の鍵とは異なるになっていませんか?)</string>
   <string name="msg_mf_primary_replace_old">以前の主ユーザIDで証明を入れ替え中</string>
   <string name="msg_mf_primary_new">新しい主ユーザIDで新しい証明を生成中</string>
   <string name="msg_mf_subkey_change">副鍵 %s を変更中</string>
-  <string name="msg_mf_error_subkey_missing">遺失した副鍵 %s の操作をしようとした!</string>
+  <string name="msg_mf_error_subkey_missing">見付からない副鍵 %s の操作をしようとした!</string>
   <string name="msg_mf_subkey_new">新しい %1$s ビットの %2$s 副鍵の生成中</string>
   <string name="msg_mf_subkey_new_id">新しい副鍵 ID: %s</string>
   <string name="msg_mf_error_past_expiry">期限切れ日を過去にはできません!</string>
@@ -582,6 +604,18 @@
   <string name="msg_mf_uid_error_empty">ユーザIDは空にすることはできません!</string>
   <string name="msg_mf_unlock_error">鍵輪のロック解除エラー!</string>
   <string name="msg_mf_unlock">鍵輪のロック解除中</string>
+  <!--Consolidate-->
+  <string name="msg_con">データベースの統合中</string>
+  <string name="msg_con_save_secret">秘密鍵の鍵輪を保存中</string>
+  <string name="msg_con_save_public">公開鍵の鍵輪を保存中</string>
+  <string name="msg_con_db_clear">データベースの消去中</string>
+  <plurals name="msg_con_reimport_secret">
+    <item quantity="other">%d の秘密鍵を再インポート中</item>
+  </plurals>
+  <plurals name="msg_con_reimport_public">
+    <item quantity="other">%d の公開鍵を再インポート中</item>
+  </plurals>
+  <string name="msg_con_success">データベースの統合が成功しました</string>
   <!--PassphraseCache-->
   <string name="passp_cache_notif_click_to_clear">クリックしてパスフレーズのキャッシュをクリア</string>
   <string name="passp_cache_notif_n_keys">OpenKeychainは %d のパスフレーズをキャッシュしています</string>
@@ -595,6 +629,7 @@
   <string name="label_user_id">ユーザID</string>
   <string name="unknown_uid">&lt;不明&gt;</string>
   <string name="empty_certs">この鍵に証明がない</string>
+  <string name="certs_text">あなたの鍵でだけ生成された証明と自己証明がここに表示されます</string>
   <string name="section_uids_to_certify">ユーザIDを検証</string>
   <string name="label_revocation">破棄の理由</string>
   <string name="label_verify_status">検証ステータス</string>

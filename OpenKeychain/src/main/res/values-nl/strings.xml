@@ -280,8 +280,6 @@
   <string name="api_register_allow">Toegang toestaan</string>
   <string name="api_register_disallow">Toegang weigeren</string>
   <string name="api_register_error_select_key">Selecteert u a.u.b. een sleutel</string>
-  <string name="api_select_pub_keys_missing_text">Geen publieke sleutels zijn gevonden voor deze identiteiten:</string>
-  <string name="api_select_pub_keys_dublicates_text">Meer dan een publieke sleutel bestaat voor deze identiteiten:</string>
   <string name="api_select_pub_keys_text">Bekijkt u a.u.b. de ontvangers</string>
   <string name="api_error_wrong_signature">Handtekening check mislukt! Hebt u deze app van een andere bron geïnstalleerd? Als u zeker weet dat dit geen aanval is, haal dan de registratie van deze app in OpenKeychain weg en registreer de app opnieuw.</string>
   <!--Share-->
@@ -333,6 +331,7 @@
   <!--Keyring merging log entries-->
   <!--createSecretKeyRing-->
   <!--modifySecretKeyRing-->
+  <!--Consolidate-->
   <!--PassphraseCache-->
   <!--unsorted-->
   <string name="section_certifier_id">Certificeer</string>
