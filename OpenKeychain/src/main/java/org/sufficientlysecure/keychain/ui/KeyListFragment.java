@@ -79,6 +79,9 @@ public class KeyListFragment extends LoaderFragment
     private KeyListAdapter mAdapter;
     private StickyListHeadersListView mStickyList;
 
+    // saves the mode object for multiselect, needed for reset at some point
+    private ActionMode mActionMode = null;
+
     private String mQuery;
     private SearchView mSearchView;
     // empty list layout
@@ -146,6 +149,7 @@ public class KeyListFragment extends LoaderFragment
                 public boolean onCreateActionMode(ActionMode mode, Menu menu) {
                     android.view.MenuInflater inflater = getActivity().getMenuInflater();
                     inflater.inflate(R.menu.key_list_multi, menu);
+                    mActionMode = mode;
                     return true;
                 }
 
@@ -191,6 +195,7 @@ public class KeyListFragment extends LoaderFragment
 
                 @Override
                 public void onDestroyActionMode(ActionMode mode) {
+                    mActionMode = null;
                     mAdapter.clearSelection();
                 }
 
@@ -285,6 +290,13 @@ public class KeyListFragment extends LoaderFragment
 
         // this view is made visible if no data is available
         mStickyList.setEmptyView(getActivity().findViewById(R.id.key_list_empty));
+
+        // end action mode, if any
+        if (mActionMode != null) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+                mActionMode.finish();
+            }
+        }
 
         // The list should now be shown.
         if (isResumed()) {

@@ -40,7 +40,7 @@ public abstract class OperationResults {
 
     public static class ImportKeyResult extends OperationResultParcel {
 
-        public final int mNewKeys, mUpdatedKeys, mBadKeys;
+        public final int mNewKeys, mUpdatedKeys, mBadKeys, mSecret;
 
         // At least one new key
         public static final int RESULT_OK_NEWKEYS = 2;
@@ -76,14 +76,16 @@ public abstract class OperationResults {
             mNewKeys = source.readInt();
             mUpdatedKeys = source.readInt();
             mBadKeys = source.readInt();
+            mSecret = source.readInt();
         }
 
         public ImportKeyResult(int result, OperationLog log,
-                               int newKeys, int updatedKeys, int badKeys) {
+                               int newKeys, int updatedKeys, int badKeys, int secret) {
             super(result, log);
             mNewKeys = newKeys;
             mUpdatedKeys = updatedKeys;
             mBadKeys = badKeys;
+            mSecret = secret;
         }
 
         @Override
@@ -92,6 +94,7 @@ public abstract class OperationResults {
             dest.writeInt(mNewKeys);
             dest.writeInt(mUpdatedKeys);
             dest.writeInt(mBadKeys);
+            dest.writeInt(mSecret);
         }
 
         public static Creator<ImportKeyResult> CREATOR = new Creator<ImportKeyResult>() {
