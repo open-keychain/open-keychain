@@ -51,6 +51,7 @@ public class ContactSyncAdapterService extends Service {
         @Override
         public void onPerformSync(Account account, Bundle extras, String authority, ContentProviderClient provider,
                                   final SyncResult syncResult) {
+            Log.d(Constants.TAG, "Performing a sync!");
             // TODO: Import is currently disabled for 2.8, until we implement proper origin management
 //            importDone.set(false);
 //            KeychainApplication.setupAccountAsNeeded(ContactSyncAdapterService.this);

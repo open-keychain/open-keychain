@@ -20,11 +20,13 @@ package org.sufficientlysecure.keychain;
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.app.Application;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Environment;
+import android.provider.ContactsContract;
 
 import org.spongycastle.jce.provider.BouncyCastleProvider;
 import org.sufficientlysecure.keychain.helper.Preferences;
@@ -112,8 +114,10 @@ public class KeychainApplication extends Application {
         AccountManager manager = AccountManager.get(context);
         Account[] accounts = manager.getAccountsByType(Constants.PACKAGE_NAME);
         if (accounts == null || accounts.length == 0) {
-            Account dummy = new Account(context.getString(R.string.app_name), Constants.PACKAGE_NAME);
-            manager.addAccountExplicitly(dummy, null, null);
+            Account account = new Account(context.getString(R.string.app_name), Constants.PACKAGE_NAME);
+            manager.addAccountExplicitly(account, null, null);
+            ContentResolver.setIsSyncable(account, ContactsContract.AUTHORITY, 1);
+            ContentResolver.setSyncAutomatically(account, ContactsContract.AUTHORITY, true);
         }
     }
 
