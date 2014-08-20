@@ -5,8 +5,6 @@ For a more detailed description and installation instructions go to http://www.o
 
 ### Travis CI Build Status
 
-Currently, some tests could fail even when everything is okay!
-
 [![Build Status](https://travis-ci.org/open-keychain/open-keychain.png?branch=master)](https://travis-ci.org/open-keychain/open-keychain)
 
 ## How to help the project?
