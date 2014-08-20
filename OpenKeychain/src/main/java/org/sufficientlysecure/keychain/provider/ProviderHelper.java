@@ -832,6 +832,8 @@ public class ProviderHelper {
         log(LogLevel.START, LogType.MSG_CON);
         mIndent += 1;
 
+        progress.setProgress(R.string.progress_con_saving, 0, 100);
+
         try {
 
             log(LogLevel.DEBUG, LogType.MSG_CON_SAVE_SECRET);
@@ -890,6 +892,8 @@ public class ProviderHelper {
         } finally {
             mIndent -= 1;
         }
+
+        progress.setProgress(R.string.progress_con_saving, 3, 100);
 
         // 1b. fetch all public keyrings into a cache file
         try {

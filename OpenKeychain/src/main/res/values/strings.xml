@@ -302,7 +302,8 @@
     <string name="progress_verifying_integrity">verifying integrity…</string>
     <string name="progress_deleting_securely">deleting \'%s\' securely…</string>
 
-    <string name="progress_con_reimport">reimporting database…</string>
+    <string name="progress_con_saving">consolidate: saving to cache…</string>
+    <string name="progress_con_reimport">consolidate: reimporting…</string>
 
     <!-- action strings -->
     <string name="hint_keyserver_search_hint">Name/Email/Key ID…</string>
