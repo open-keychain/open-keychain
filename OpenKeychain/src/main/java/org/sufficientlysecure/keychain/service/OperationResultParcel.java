@@ -442,7 +442,9 @@ public class OperationResultParcel implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeInt(mResult);
-        dest.writeTypedList(mLog.toList());
+        if (mLog != null) {
+            dest.writeTypedList(mLog.toList());
+        }
     }
 
     public static final Creator<OperationResultParcel> CREATOR = new Creator<OperationResultParcel>() {

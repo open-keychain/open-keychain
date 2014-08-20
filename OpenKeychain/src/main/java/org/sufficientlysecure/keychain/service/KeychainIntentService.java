@@ -181,8 +181,6 @@ public class KeychainIntentService extends IntentService
     // export
     public static final String RESULT_EXPORT = "exported";
 
-    public static final String RESULT_IMPORT = "result";
-
     public static final String RESULT_CONSOLIDATE = "consolidate_result";
 
     Messenger mMessenger;
