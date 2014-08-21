@@ -149,6 +149,10 @@ public class AddSubkeyDialogFragment extends DialogFragment {
         }
         choices.add(new Choice(PublicKeyAlgorithmTags.RSA_GENERAL, getResources().getString(
                 R.string.rsa)));
+        choices.add(new Choice(PublicKeyAlgorithmTags.ECDH, getResources().getString(
+                R.string.ecdh)));
+        choices.add(new Choice(PublicKeyAlgorithmTags.ECDSA, getResources().getString(
+                R.string.ecdsa)));
         ArrayAdapter<Choice> adapter = new ArrayAdapter<Choice>(context,
                 android.R.layout.simple_spinner_item, choices);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);

@@ -156,6 +156,8 @@
     <string name="dsa">DSA</string>
     <string name="elgamal">ElGamal</string>
     <string name="rsa">RSA</string>
+    <string name="ecdh">ECDH</string>
+    <string name="ecdsa">ECDSA</string>
     <string name="filemanager_title_open">Open…</string>
     <string name="warning">Warning</string>
     <string name="error">Error</string>
