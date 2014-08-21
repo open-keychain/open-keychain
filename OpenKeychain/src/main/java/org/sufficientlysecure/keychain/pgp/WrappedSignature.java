@@ -96,9 +96,6 @@ public class WrappedSignature {
         } catch (PGPException e) {
             // no matter
             Log.e(Constants.TAG, "exception reading embedded signatures", e);
-        } catch (IOException e) {
-            // no matter
-            Log.e(Constants.TAG, "exception reading embedded signatures", e);
         }
         return sigs;
     }
@@ -150,27 +147,17 @@ public class WrappedSignature {
         }
     }
 
-    public void update(byte[] data, int offset, int length) throws PgpGeneralException {
-        try {
-            mSig.update(data, offset, length);
-        } catch(SignatureException e) {
-            throw new PgpGeneralException(e);
-        }
+    public void update(byte[] data, int offset, int length) {
+        mSig.update(data, offset, length);
     }
 
-    public void update(byte data) throws PgpGeneralException {
-        try {
-            mSig.update(data);
-        } catch(SignatureException e) {
-            throw new PgpGeneralException(e);
-        }
+    public void update(byte data) {
+        mSig.update(data);
     }
 
     public boolean verify() throws PgpGeneralException {
         try {
             return mSig.verify();
-        } catch(SignatureException e) {
-            throw new PgpGeneralException(e);
         } catch(PGPException e) {
             throw new PgpGeneralException(e);
         }
@@ -179,8 +166,6 @@ public class WrappedSignature {
     boolean verifySignature(PGPPublicKey key) throws PgpGeneralException {
         try {
             return mSig.verifyCertification(key);
-        } catch (SignatureException e) {
-            throw new PgpGeneralException("Sign!", e);
         } catch (PGPException e) {
             throw new PgpGeneralException("Error!", e);
         }
@@ -189,8 +174,6 @@ public class WrappedSignature {
     boolean verifySignature(PGPPublicKey masterKey, PGPPublicKey subKey) throws PgpGeneralException {
         try {
             return mSig.verifyCertification(masterKey, subKey);
-        } catch (SignatureException e) {
-            throw new PgpGeneralException("Sign!", e);
         } catch (PGPException e) {
             throw new PgpGeneralException("Error!", e);
         }
@@ -199,8 +182,6 @@ public class WrappedSignature {
     boolean verifySignature(PGPPublicKey key, String uid) throws PgpGeneralException {
         try {
             return mSig.verifyCertification(uid, key);
-        } catch (SignatureException e) {
-            throw new PgpGeneralException("Error!", e);
         } catch (PGPException e) {
             throw new PgpGeneralException("Error!", e);
         }
