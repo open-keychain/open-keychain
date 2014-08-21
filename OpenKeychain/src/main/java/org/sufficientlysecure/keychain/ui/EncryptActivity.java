@@ -309,7 +309,7 @@ public class EncryptActivity extends DrawerActivity implements EncryptActivityIn
         String title = isContentMessage() ? getString(R.string.title_share_message)
                 : getString(R.string.title_share_file);
 
-        // Disabled, produced an empty list on Sony (model will be inserted here)
+        // Disabled, produced an empty list on Huawei U8860 with Android Version 4.0.3
 //        // fallback on Android 2.3, otherwise we would get weird results
 //        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
 //            return Intent.createChooser(prototype, title);
