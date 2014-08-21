@@ -115,9 +115,11 @@ public class KeychainApplication extends Application {
         Account[] accounts = manager.getAccountsByType(Constants.ACCOUNT_TYPE);
         if (accounts == null || accounts.length == 0) {
             Account account = new Account(Constants.ACCOUNT_NAME, Constants.ACCOUNT_TYPE);
-            manager.addAccountExplicitly(account, null, null);
-            ContentResolver.setIsSyncable(account, ContactsContract.AUTHORITY, 1);
-            ContentResolver.setSyncAutomatically(account, ContactsContract.AUTHORITY, true);
+            if (manager.addAccountExplicitly(account, null, null)) {
+                ContentResolver.setIsSyncable(account, ContactsContract.AUTHORITY, 1);
+            } else {
+                Log.e(Constants.TAG, "Adding account failed!");
+            }
         }
     }
 
