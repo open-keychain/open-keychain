@@ -3,4 +3,6 @@
     android:contentAuthority="com.android.contacts"
     android:accountType="org.sufficientlysecure.keychain.account"
     android:supportsUploading="false"
-    android:userVisible="true" />
+    android:userVisible="true"
+    android:allowParallelSyncs="false"
+    android:isAlwaysSyncable="true" />
