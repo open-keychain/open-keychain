@@ -98,12 +98,12 @@ public class ContactSyncAdapterService extends Service {
         }
     }
 
-    public static void requestSync(Context context) {
+    public static void requestSync() {
         Bundle extras = new Bundle();
         // no need to wait for internet connection!
         extras.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
         ContentResolver.requestSync(
-                new Account(context.getString(R.string.app_name), Constants.PACKAGE_NAME),
+                new Account(Constants.ACCOUNT_NAME, Constants.ACCOUNT_TYPE),
                 ContactsContract.AUTHORITY,
                 extras);
     }

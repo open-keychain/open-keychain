@@ -35,6 +35,9 @@ public final class Constants {
 
     public static final String PACKAGE_NAME = "org.sufficientlysecure.keychain";
 
+    public static final String ACCOUNT_NAME = "OpenKeychain";
+    public static final String ACCOUNT_TYPE = PACKAGE_NAME + ".account";
+
     // as defined in http://tools.ietf.org/html/rfc3156, section 7
     public static final String NFC_MIME = "application/pgp-keys";
 

@@ -455,7 +455,7 @@ public class KeychainIntentService extends IntentService
                 setProgress(R.string.progress_done, 100, 100);
 
                 // make sure new data is synced into contacts
-                ContactSyncAdapterService.requestSync(this);
+                ContactSyncAdapterService.requestSync();
 
                 /* Output */
                 sendMessageToHandler(KeychainIntentServiceHandler.MESSAGE_OKAY, saveResult);
@@ -506,7 +506,7 @@ public class KeychainIntentService extends IntentService
                     providerHelper.consolidateDatabaseStep1(this);
                 }
                 // make sure new data is synced into contacts
-                ContactSyncAdapterService.requestSync(this);
+                ContactSyncAdapterService.requestSync();
 
                 sendMessageToHandler(KeychainIntentServiceHandler.MESSAGE_OKAY, result);
             } catch (Exception e) {
@@ -715,7 +715,7 @@ public class KeychainIntentService extends IntentService
 
                 if (success) {
                     // make sure new data is synced into contacts
-                    ContactSyncAdapterService.requestSync(this);
+                    ContactSyncAdapterService.requestSync();
 
                     sendMessageToHandler(KeychainIntentServiceHandler.MESSAGE_OKAY);
                 }

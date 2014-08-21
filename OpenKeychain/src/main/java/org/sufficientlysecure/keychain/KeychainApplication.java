@@ -112,9 +112,9 @@ public class KeychainApplication extends Application {
 
     public static void setupAccountAsNeeded(Context context) {
         AccountManager manager = AccountManager.get(context);
-        Account[] accounts = manager.getAccountsByType(Constants.PACKAGE_NAME);
+        Account[] accounts = manager.getAccountsByType(Constants.ACCOUNT_TYPE);
         if (accounts == null || accounts.length == 0) {
-            Account account = new Account(context.getString(R.string.app_name), Constants.PACKAGE_NAME);
+            Account account = new Account(Constants.ACCOUNT_NAME, Constants.ACCOUNT_TYPE);
             manager.addAccountExplicitly(account, null, null);
             ContentResolver.setIsSyncable(account, ContactsContract.AUTHORITY, 1);
             ContentResolver.setSyncAutomatically(account, ContactsContract.AUTHORITY, true);
