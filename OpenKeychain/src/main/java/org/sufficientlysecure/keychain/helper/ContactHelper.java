@@ -19,6 +19,7 @@ package org.sufficientlysecure.keychain.helper;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
+import android.annotation.TargetApi;
 import android.content.ContentProviderOperation;
 import android.content.ContentResolver;
 import android.content.ContentUris;
@@ -252,6 +253,7 @@ public class ContactHelper {
         return new ArrayList<String>(names);
     }
 
+    @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
     public static Uri dataUriFromContactUri(Context context, Uri contactUri) {
         Cursor contactMasterKey = context.getContentResolver().query(contactUri,
                 new String[]{ContactsContract.Data.DATA2}, null, null, null, null);
@@ -367,6 +369,7 @@ public class ContactHelper {
      *
      * @return raw contact id or -1 if not found
      */
+    @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
     private static int findRawContactId(ContentResolver resolver, String fingerprint) {
         int rawContactId = -1;
         Cursor raw = resolver.query(ContactsContract.RawContacts.CONTENT_URI, ID_PROJECTION,

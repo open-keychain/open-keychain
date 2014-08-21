@@ -25,6 +25,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Environment;
 import android.provider.ContactsContract;
 
@@ -111,14 +112,17 @@ public class KeychainApplication extends Application {
     }
 
     public static void setupAccountAsNeeded(Context context) {
-        AccountManager manager = AccountManager.get(context);
-        Account[] accounts = manager.getAccountsByType(Constants.ACCOUNT_TYPE);
-        if (accounts == null || accounts.length == 0) {
-            Account account = new Account(Constants.ACCOUNT_NAME, Constants.ACCOUNT_TYPE);
-            if (manager.addAccountExplicitly(account, null, null)) {
-                ContentResolver.setIsSyncable(account, ContactsContract.AUTHORITY, 1);
-            } else {
-                Log.e(Constants.TAG, "Adding account failed!");
+        // only enabled for Jelly Bean because we need some newer methods in our sync adapter
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+            AccountManager manager = AccountManager.get(context);
+            Account[] accounts = manager.getAccountsByType(Constants.ACCOUNT_TYPE);
+            if (accounts == null || accounts.length == 0) {
+                Account account = new Account(Constants.ACCOUNT_NAME, Constants.ACCOUNT_TYPE);
+                if (manager.addAccountExplicitly(account, null, null)) {
+                    ContentResolver.setIsSyncable(account, ContactsContract.AUTHORITY, 1);
+                } else {
+                    Log.e(Constants.TAG, "Adding account failed!");
+                }
             }
         }
     }
