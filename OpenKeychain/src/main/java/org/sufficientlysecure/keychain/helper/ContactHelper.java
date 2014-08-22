@@ -343,7 +343,7 @@ public class ContactHelper {
         // Delete fingerprints that are no longer present in OK
         for (String fingerprint : contactFingerprints) {
             resolver.delete(ContactsContract.RawContacts.CONTENT_URI, ACCOUNT_TYPE_AND_SOURCE_ID_SELECTION,
-                    new String[]{Constants.PACKAGE_NAME, fingerprint});
+                    new String[]{Constants.ACCOUNT_TYPE, fingerprint});
         }
 
     }
@@ -354,7 +354,7 @@ public class ContactHelper {
     private static Set<String> getRawContactFingerprints(ContentResolver resolver) {
         HashSet<String> result = new HashSet<String>();
         Cursor fingerprints = resolver.query(ContactsContract.RawContacts.CONTENT_URI, SOURCE_ID_PROJECTION,
-                ACCOUNT_TYPE_SELECTION, new String[]{Constants.PACKAGE_NAME}, null);
+                ACCOUNT_TYPE_SELECTION, new String[]{Constants.ACCOUNT_TYPE}, null);
         if (fingerprints != null) {
             while (fingerprints.moveToNext()) {
                 result.add(fingerprints.getString(0));
@@ -373,7 +373,7 @@ public class ContactHelper {
     private static int findRawContactId(ContentResolver resolver, String fingerprint) {
         int rawContactId = -1;
         Cursor raw = resolver.query(ContactsContract.RawContacts.CONTENT_URI, ID_PROJECTION,
-                ACCOUNT_TYPE_AND_SOURCE_ID_SELECTION, new String[]{Constants.PACKAGE_NAME, fingerprint}, null, null);
+                ACCOUNT_TYPE_AND_SOURCE_ID_SELECTION, new String[]{Constants.ACCOUNT_TYPE, fingerprint}, null, null);
         if (raw != null) {
             if (raw.moveToNext()) {
                 rawContactId = raw.getInt(0);
@@ -388,8 +388,8 @@ public class ContactHelper {
      */
     private static void insertContact(ArrayList<ContentProviderOperation> ops, Context context, String fingerprint) {
         ops.add(ContentProviderOperation.newInsert(ContactsContract.RawContacts.CONTENT_URI)
-                .withValue(ContactsContract.RawContacts.ACCOUNT_NAME, context.getString(R.string.app_name))
-                .withValue(ContactsContract.RawContacts.ACCOUNT_TYPE, Constants.PACKAGE_NAME)
+                .withValue(ContactsContract.RawContacts.ACCOUNT_NAME, Constants.ACCOUNT_NAME)
+                .withValue(ContactsContract.RawContacts.ACCOUNT_TYPE, Constants.ACCOUNT_TYPE)
                 .withValue(ContactsContract.RawContacts.SOURCE_ID, fingerprint)
                 .build());
     }
