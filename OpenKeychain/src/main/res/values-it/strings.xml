@@ -275,6 +275,9 @@
   <string name="progress_decompressing_data">decompressione dati...</string>
   <string name="progress_verifying_integrity">verifica integrita\'...</string>
   <string name="progress_deleting_securely">eliminazione sicura di \'%s\'...</string>
+  <string name="progress_deleting">cancellazione chiavi...</string>
+  <string name="progress_con_saving">consolidazione: salvataggio della cache...</string>
+  <string name="progress_con_reimport">consolidazione: reimportazione...</string>
   <!--action strings-->
   <string name="hint_keyserver_search_hint">Nome/Email/ID Chiave...</string>
   <string name="hint_keybase_search_hint">Nome/Email/Certificato/Chiave...</string>
@@ -361,7 +364,10 @@
   <string name="api_register_allow">Permetti accesso</string>
   <string name="api_register_disallow">Nega accesso</string>
   <string name="api_register_error_select_key">Per favore selezionare una chiave!</string>
+  <string name="api_select_pub_keys_missing_text">Nessuna chiave trovata per queste identità:</string>
+  <string name="api_select_pub_keys_dublicates_text">Esistono piu\' di una chiave per queste identità:</string>
   <string name="api_select_pub_keys_text">Per favore ricontrolla la lista destinatari!</string>
+  <string name="api_select_pub_keys_text_no_user_ids">Per favore seleziona i destinatari!</string>
   <string name="api_error_wrong_signature">Controllo della firma fallito! Hai installato questa app da una fonte diversa? Se sei sicuro che non sia un attacco, revoca la registrazione di questa app in OpenKeychain e dopo registra di nuovo l\'app.</string>
   <!--Share-->
   <string name="share_qr_code_dialog_title">Condividi tramite Codice QR</string>
@@ -415,6 +421,7 @@
     <item>Revoca Sottochiave</item>
   </string-array>
   <string name="edit_key_new_subkey">nuovo</string>
+  <string name="edit_key_select_flag">Per favore seleziona almeno una spunta!</string>
   <!--Create key-->
   <string name="create_key_upload">Carica chiave nel server delle chiavi</string>
   <string name="create_key_empty">Questo campo è necessario</string>
@@ -575,6 +582,7 @@
   <string name="msg_cr_error_no_master">Nessuna opzione della chiave principale specificata!</string>
   <string name="msg_cr_error_no_user_id">I portachiavi devono essere creati con almeno un ID utente!</string>
   <string name="msg_cr_error_no_certify">La chiave principale deve avere la caratteristica di certificazione!</string>
+  <string name="msg_cr_error_null_expiry">La data di scadenza non può essere \"come prima\" sulla creazione di chiavi. Questo è un errore di programmazione, si prega di inviare una segnalazione di bug!</string>
   <string name="msg_cr_error_keysize_512">La grandezza della chiave deve essere di 512bit o maggiore</string>
   <string name="msg_cr_error_internal_pgp">Errore PGP interno!</string>
   <string name="msg_cr_error_unknown_algo">Pessima opzione di algortimo!</string>
@@ -585,14 +593,26 @@
   <string name="msg_mf_error_fingerprint">Impronta chiave attuale non corrispondente!</string>
   <string name="msg_mf_error_keyid">Nessun ID chiave. Questo è un errore di programmazione, per favore invia una segnalazione!</string>
   <string name="msg_mf_error_integrity">Errore interno, controllo di integrità fallito!</string>
+  <string name="msg_mf_error_master_none">Nessun certificato principale trovato su cui operare! (Tutti revocati?)</string>
   <string name="msg_mf_error_noexist_primary">ID utente primario specificato non valido!</string>
+  <string name="msg_mf_error_noexist_revoke">ID utente specificato non valido per la revoca!</string>
   <string name="msg_mf_error_revoked_primary">ID utente revocato non può essere primario!</string>
+  <string name="msg_mf_error_null_expiry">La data di scadenza non può essere \"come prima\" sulla creazione di sottochiavi. Questo è un errore di programmazione, si prega di inviare una segnalazione di bug!</string>
+  <string name="msg_mf_error_passphrase_master">Errore irreversibile nella decodifica della chiave principale! Questo è probabilmente un errore di programmazione, si prega di inviare una segnalazione di bug!</string>
   <string name="msg_mf_error_pgp">Eccezione interna di PGP!</string>
   <string name="msg_mf_error_sig">Eccezione di firma!</string>
+  <string name="msg_mf_master">Modifica delle certificazioni principali</string>
+  <string name="msg_mf_passphrase">Cambio frase di accesso del portachiavi...</string>
+  <string name="msg_mf_passphrase_key">Ri-codifica sottochiave %s con nuova frase di accesso</string>
+  <string name="msg_mf_passphrase_empty_retry">Impostazione nuova frase di accesso fallita, provo di nuovo con frase precedente di accesso vuota</string>
+  <string name="msg_mf_passphrase_fail">La frase di accesso per la sottochiave non può essere modificata! (Ne ha una diversa dalle altre chiavi?)</string>
   <string name="msg_mf_primary_replace_old">Sostituzione certificato del ID utente primario precedente</string>
   <string name="msg_mf_primary_new">Generazione di un nuovo certificato per il nuovo ID utente primario</string>
   <string name="msg_mf_subkey_change">Modifica sottochiave %s</string>
+  <string name="msg_mf_error_subkey_missing">Tentativo di operare su sottochiave %s mancante!</string>
+  <string name="msg_mf_subkey_new">Aggiunta nuova sottochiave di tipo %2$s (%1$s bit)</string>
   <string name="msg_mf_subkey_new_id">Nuovo ID sottochiave: %s</string>
+  <string name="msg_mf_error_past_expiry">La data di scadenza non può essere nel passato!</string>
   <string name="msg_mf_subkey_revoke">Revoca sottochiave %s</string>
   <string name="msg_mf_success">Portachiavi modificato con successo</string>
   <string name="msg_mf_uid_add">Aggiunta id utente %s</string>
@@ -602,6 +622,39 @@
   <string name="msg_mf_unlock_error">Errore di apertura portachiavi!</string>
   <string name="msg_mf_unlock">Apertura portachiavi</string>
   <!--Consolidate-->
+  <string name="msg_con">Consolidazione database</string>
+  <string name="msg_con_error_bad_state">Il consolidamento è stato avviato mentre nessun database è stato memorizzato nella cache! Questo è probabilmente un errore di programmazione, si prega di aprire un bug report.</string>
+  <string name="msg_con_error_concurrent">Consolidamento interrotto, già in esecuzione su un altro processo!</string>
+  <string name="msg_con_save_secret">Salvataggio portachiavi privati</string>
+  <string name="msg_con_save_public">Salvataggio portachiavi pubblico</string>
+  <string name="msg_con_db_clear">Pulizia database</string>
+  <string name="msg_con_success">Consolidamento database con successo</string>
+  <string name="msg_con_critical_in">Ingresso fase critica</string>
+  <string name="msg_con_critical_out">Uscita fase critica</string>
+  <string name="msg_con_delete_public">Eliminazione del file di cache del portachiavi pubblico</string>
+  <string name="msg_con_delete_secret">Eliminazione del file di cache del portachiavi privato</string>
+  <string name="msg_con_error_db">Errore nell\'apertura del database</string>
+  <string name="msg_con_error_io_public">Errore di IO durante la scrittura delle chiavi pubbliche nella cache!</string>
+  <string name="msg_con_error_io_secret">Errore di IO durante la scrittura delle chiavi private nella cache!</string>
+  <string name="msg_con_error_public">Errore nella re-importazione delle chiavi pubbliche!</string>
+  <string name="msg_con_error_secret">Errore nella re-importazione delle chiavi private!</string>
+  <plurals name="msg_con_recover">
+    <item quantity="one">Recupero consolidamento con %1$d chiavi segrete e %2$d chiavi pubbliche</item>
+    <item quantity="other">Recupero consolidamento con %1$d chiavi segrete e %2$d chiavi pubbliche</item>
+  </plurals>
+  <string name="msg_con_recover_unknown">Recupero da situazione ignota</string>
+  <plurals name="msg_con_reimport_public">
+    <item quantity="one">Reimportazione di una chiave pubblica</item>
+    <item quantity="other">Reimportazione di %d chiavi pubbliche</item>
+  </plurals>
+  <string name="msg_con_reimport_public_skip">Nessuna chiave pubblica da reimportare, proseguo...</string>
+  <plurals name="msg_con_reimport_secret">
+    <item quantity="one">Reimportazione di una chiave privata</item>
+    <item quantity="other">Reimportazione di %d chiavi private</item>
+  </plurals>
+  <string name="msg_con_reimport_secret_skip">Nessuna chiave privata da reimportare, proseguo...</string>
+  <string name="msg_con_warn_delete_public">Eccezione durante la eliminazione del file di cache pubblico</string>
+  <string name="msg_con_warn_delete_secret">Eccezione durante la eliminazione del file di cache privato</string>
   <!--PassphraseCache-->
   <string name="passp_cache_notif_click_to_clear">Clicca per rimuovere la frase di accesso nella cache</string>
   <string name="passp_cache_notif_n_keys">OpenKeychain ha memorizzato nella cache %d frasi di accesso</string>
@@ -615,6 +668,7 @@
   <string name="label_user_id">Identit</string>
   <string name="unknown_uid">&lt;sconosciuto&gt;</string>
   <string name="empty_certs">Nessun certificato per questa chiave</string>
+  <string name="certs_text">Solo le autocertificazioni e i certificati creati con le tue chiavi vengono visualizzati qui.</string>
   <string name="section_uids_to_certify">Identità da certificare</string>
   <string name="label_revocation">Ragione della Revoca</string>
   <string name="label_verify_status">Stato Verifica</string>

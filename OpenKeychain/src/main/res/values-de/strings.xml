@@ -10,7 +10,7 @@
   <string name="title_edit_key">Schlüssel bearbeiten</string>
   <string name="title_preferences">Einstellungen</string>
   <string name="title_api_registered_apps">Apps</string>
-  <string name="title_key_server_preference">Schlüsselserver Einstellungen</string>
+  <string name="title_key_server_preference">Schlüsselserver</string>
   <string name="title_change_passphrase">Passwort ändern</string>
   <string name="title_share_fingerprint_with">Teile Fingerabdruck über…</string>
   <string name="title_share_key">Teile Schlüssel über...</string>
@@ -49,13 +49,13 @@
   <string name="btn_save">Speichern</string>
   <string name="btn_do_not_save">Abbrechen</string>
   <string name="btn_delete">Löschen</string>
-  <string name="btn_no_date">verfällt nie</string>
+  <string name="btn_no_date">Kein Ablaufdatum</string>
   <string name="btn_okay">Okay</string>
   <string name="btn_export_to_server">Auf Schlüsselserver hochladen</string>
   <string name="btn_next">Weiter</string>
   <string name="btn_back">Zurück</string>
   <string name="btn_lookup_key">Schlüssel nachschlagen</string>
-  <string name="btn_share_encrypted_signed">Entschlüsseln und teilen</string>
+  <string name="btn_share_encrypted_signed">Verschlüsseln und teilen</string>
   <string name="btn_view_cert_key">Beglaubigungsschlüssel anzeigen</string>
   <string name="btn_create_key">Schlüssel erzeugen</string>
   <string name="btn_add_files">Datei(en) hinzufügen</string>
@@ -73,7 +73,7 @@
   <string name="menu_select_all">Alles auswählen</string>
   <string name="menu_add_keys">Schlüssel hinzufügen</string>
   <string name="menu_export_all_keys">Alle Schlüssel exportieren</string>
-  <string name="menu_advanced">Erweiterte Info anzeigen</string>
+  <string name="menu_advanced">Erweiterte Infos anzeigen</string>
   <!--label-->
   <string name="label_message">Nachricht</string>
   <string name="label_file">Datei</string>
@@ -83,7 +83,7 @@
   <string name="label_passphrase">Passwort</string>
   <string name="label_passphrase_again">Passwort wiederholen</string>
   <string name="label_algorithm">Algorithmus</string>
-  <string name="label_ascii_armor">ASCII Armor Datei</string>
+  <string name="label_ascii_armor">Datei: ASCII Armor</string>
   <string name="label_file_ascii_armor">Datei: ASCII Armor</string>
   <string name="label_write_version_header">Lass andere wissen dass du OpenKeychain nutzt</string>
   <string name="label_write_version_header_summary">Fügt \'OpenKeychain v2.7\' zu OpenPGP Signaturen, DAten und exportierten Schlüsseln hinzu</string>
@@ -116,8 +116,8 @@
   <string name="no_key">&lt;kein Schlüssel&gt;</string>
   <string name="can_encrypt">kann verschlüsseln</string>
   <string name="can_sign">kann signieren</string>
-  <string name="can_certify">kann bestätigen</string>
-  <string name="can_certify_not">kann nicht bestätigen</string>
+  <string name="can_certify">kann beglaubigen</string>
+  <string name="can_certify_not">kann nicht beglaubigen</string>
   <string name="expired">abgelaufen</string>
   <string name="revoked">widerrufen</string>
   <plurals name="n_keys">
@@ -170,9 +170,9 @@
   <string name="enter_passphrase_twice">Das Passwort bitte zweimal eingeben.</string>
   <string name="select_encryption_key">Mindestens einen Schlüssel zum Verschlüsseln auswählen.</string>
   <string name="select_encryption_or_signature_key">Mindestens einen Schlüssel zum Verschlüsseln oder einen zum Signieren auswählen.</string>
-  <string name="specify_file_to_encrypt_to">Bitte angeben, in welche Datei verschlüsselt werden soll.\nWARNUNG: Datei wird überschrieben, wenn sie bereits existiert. </string>
-  <string name="specify_file_to_decrypt_to">Bitte angeben, in welche Datei entschlüsselt werden soll.\nWARNUNG: Datei wird überschrieben, wenn sie bereits existiert. </string>
-  <string name="specify_file_to_export_to">Bitte angeben, in welche Datei exportiert werden soll.\nWARNUNG: Datei wird überschrieben, wenn sie bereits existiert. </string>
+  <string name="specify_file_to_encrypt_to">Bitte angeben in welche Datei verschlüsselt werden soll.\nWARNUNG: Datei wird überschrieben, wenn sie bereits existiert. </string>
+  <string name="specify_file_to_decrypt_to">Bitte angeben,in welche Datei entschlüsselt werden soll.\nWARNUNG: Datei wird überschrieben, wenn sie bereits existiert. </string>
+  <string name="specify_file_to_export_to">Bitte angeben in welche Datei exportiert werden soll.\nWARNUNG: Datei wird überschrieben, wenn sie bereits existiert. </string>
   <string name="key_deletion_confirmation_multi">Möchtest du wirklich alle ausgewählten öffentlichen Schlüssel löschen?\nDies kann nicht rückgängig gemacht werden!</string>
   <string name="secret_key_deletion_confirmation">Soll der PRIVATE Schlüssel \'%s\' wirklich gelöscht werden?\nDies kann nicht rückgängig gemacht werden!</string>
   <string name="public_key_deletetion_confirmation">Soll der öffentliche Schlüssel \'%s\' wirklich gelöscht werden?\nDies kann nicht rückgängig gemacht werden! </string>
