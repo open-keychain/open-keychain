@@ -23,6 +23,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.IBinder;
 import android.os.ParcelFileDescriptor;
+import android.text.TextUtils;
 
 import org.openintents.openpgp.IOpenPgpService;
 import org.openintents.openpgp.OpenPgpMetadata;
@@ -185,7 +186,7 @@ public class OpenPgpService extends RemoteService {
                 } catch (PassphraseCacheService.KeyNotFoundException e) {
                     // secret key that is set for this account is deleted?
                     // show account config again!
-                    return getCreateAccountIntent(data, data.getStringExtra(OpenPgpApi.EXTRA_ACCOUNT_NAME));
+                    return getCreateAccountIntent(data, getAccountName(data));
                 }
             }
             if (passphrase == null) {
@@ -564,6 +565,16 @@ public class OpenPgpService extends RemoteService {
         return null;
     }
 
+    private String getAccountName(Intent data) {
+        String accName = data.getStringExtra(OpenPgpApi.EXTRA_ACCOUNT_NAME);
+        // if no account name is given use name "default"
+        if (TextUtils.isEmpty(accName)) {
+            accName = "default";
+        }
+        Log.d(Constants.TAG, "accName: " + accName);
+        return accName;
+    }
+
     // TODO: multi-threading
     private final IOpenPgpService.Stub mBinder = new IOpenPgpService.Stub() {
 
@@ -574,12 +585,7 @@ public class OpenPgpService extends RemoteService {
                 return errorResult;
             }
 
-            String accName;
-            if (data.getStringExtra(OpenPgpApi.EXTRA_ACCOUNT_NAME) != null) {
-                accName = data.getStringExtra(OpenPgpApi.EXTRA_ACCOUNT_NAME);
-            } else {
-                accName = "default";
-            }
+            String accName = getAccountName(data);
             final AccountSettings accSettings = getAccSettings(accName);
             if (accSettings == null) {
                 return getCreateAccountIntent(data, accName);

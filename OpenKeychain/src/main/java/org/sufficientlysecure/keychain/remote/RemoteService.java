@@ -27,6 +27,7 @@ import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.pm.Signature;
 import android.net.Uri;
 import android.os.Binder;
+import android.text.TextUtils;
 
 import org.openintents.openpgp.OpenPgpError;
 import org.openintents.openpgp.util.OpenPgpApi;
@@ -160,7 +161,7 @@ public abstract class RemoteService extends Service {
      */
     protected AccountSettings getAccSettings(String accountName) {
         String currentPkg = getCurrentCallingPackage();
-        Log.d(Constants.TAG, "accountName: " + accountName);
+        Log.d(Constants.TAG, "getAccSettings accountName: "+ accountName);
 
         Uri uri = KeychainContract.ApiAccounts.buildByPackageAndAccountUri(currentPkg, accountName);
 
@@ -171,7 +172,7 @@ public abstract class RemoteService extends Service {
 
     protected Intent getCreateAccountIntent(Intent data, String accountName) {
         String packageName = getCurrentCallingPackage();
-        Log.d(Constants.TAG, "accountName: " + accountName);
+        Log.d(Constants.TAG, "getCreateAccountIntent accountName: " + accountName);
 
         Intent intent = new Intent(getBaseContext(), RemoteServiceActivity.class);
         intent.setAction(RemoteServiceActivity.ACTION_CREATE_ACCOUNT);
