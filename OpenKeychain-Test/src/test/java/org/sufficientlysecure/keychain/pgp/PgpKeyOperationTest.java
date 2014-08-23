@@ -500,6 +500,7 @@ public class PgpKeyOperationTest {
         modified = applyModificationWithChecks(parcel, modified, onlyA, onlyB);
 
         {
+            parcel.reset();
             parcel.mChangeSubKeys.add(new SubkeyChange(keyId, null, expiry));
             modified = applyModificationWithChecks(parcel, modified, onlyA, onlyB);
 
