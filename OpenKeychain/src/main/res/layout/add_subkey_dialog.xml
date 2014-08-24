@@ -34,7 +34,7 @@
                 android:padding="4dp" />
         </TableRow>
 
-        <TableRow>
+        <TableRow android:id="@+id/add_subkey_row_size">
 
             <TextView
                 android:layout_width="wrap_content"
@@ -48,6 +48,24 @@
                 android:layout_height="wrap_content"
                 android:gravity="right"
                 android:padding="4dp" />
+        </TableRow>
+
+        <TableRow
+            android:id="@+id/add_subkey_row_curve"
+            android:visibility="gone">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:text="@string/label_ecc_curve"/>
+
+            <Spinner
+                android:id="@+id/add_subkey_curve"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="right"
+                android:padding="4dp"/>
         </TableRow>
 
         <TextView

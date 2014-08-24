@@ -52,7 +52,7 @@ import java.io.IOException;
  */
 public class KeychainDatabase extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "openkeychain.db";
-    private static final int DATABASE_VERSION = 2;
+    private static final int DATABASE_VERSION = 3;
     static Boolean apgHack = false;
 
     public interface Tables {
@@ -86,6 +86,7 @@ public class KeychainDatabase extends SQLiteOpenHelper {
 
                 + KeysColumns.KEY_ID + " INTEGER, "
                 + KeysColumns.KEY_SIZE + " INTEGER, "
+                + KeysColumns.KEY_CURVE_OID + " TEXT, "
                 + KeysColumns.ALGORITHM + " INTEGER, "
                 + KeysColumns.FINGERPRINT + " BLOB, "
 
@@ -202,13 +203,20 @@ public class KeychainDatabase extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        if (oldVersion == 1) {
-            // add has_secret for all who are upgrading from a beta version
-            try {
-                db.execSQL("ALTER TABLE keys ADD COLUMN has_secret BOOLEAN");
-            } catch (Exception e) {
-                // never mind, the column probably already existed
-            }
+        // add has_secret for all who are upgrading from a beta version
+        switch (oldVersion) {
+            case 1:
+                try {
+                    db.execSQL("ALTER TABLE keys ADD COLUMN has_secret BOOLEAN");
+                } catch(Exception e){
+                    // never mind, the column probably already existed
+                }
+            case 2:
+                try {
+                    db.execSQL("ALTER TABLE keys ADD COLUMN " + KeysColumns.KEY_CURVE_OID + " TEXT");
+                } catch(Exception e){
+                    // never mind, the column probably already existed
+                }
         }
     }
 

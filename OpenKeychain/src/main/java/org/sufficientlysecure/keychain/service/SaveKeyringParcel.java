@@ -80,14 +80,16 @@ public class SaveKeyringParcel implements Parcelable {
     // performance gain for using Parcelable here would probably be negligible,
     // use Serializable instead.
     public static class SubkeyAdd implements Serializable {
-        public int mAlgorithm;
-        public int mKeysize;
+        public Algorithm mAlgorithm;
+        public Integer mKeySize;
+        public Curve mCurve;
         public int mFlags;
         public Long mExpiry;
 
-        public SubkeyAdd(int algorithm, int keysize, int flags, Long expiry) {
+        public SubkeyAdd(Algorithm algorithm, Integer keySize, Curve curve, int flags, Long expiry) {
             mAlgorithm = algorithm;
-            mKeysize = keysize;
+            mKeySize = keySize;
+            mCurve = curve;
             mFlags = flags;
             mExpiry = expiry;
         }
@@ -95,7 +97,8 @@ public class SaveKeyringParcel implements Parcelable {
         @Override
         public String toString() {
             String out = "mAlgorithm: " + mAlgorithm + ", ";
-            out += "mKeysize: " + mKeysize + ", ";
+            out += "mKeySize: " + mKeySize + ", ";
+            out += "mCurve: " + mCurve + ", ";
             out += "mFlags: " + mFlags;
             out += "mExpiry: " + mExpiry;
 
@@ -214,4 +217,20 @@ public class SaveKeyringParcel implements Parcelable {
 
         return out;
     }
+
+    // All supported algorithms
+    public enum Algorithm {
+        RSA, DSA, ELGAMAL, ECDSA, ECDH
+    }
+
+    // All curves defined in the standard
+    // http://www.bouncycastle.org/wiki/pages/viewpage.action?pageId=362269
+    public enum Curve {
+        NIST_P256, NIST_P384, NIST_P521,
+
+        // these are supported by gpg, but they are not in rfc6637 and not supported by BouncyCastle yet
+        // (adding support would be trivial though -> JcaPGPKeyConverter.java:190)
+        // BRAINPOOL_P256, BRAINPOOL_P384, BRAINPOOL_P512
+    }
+
 }

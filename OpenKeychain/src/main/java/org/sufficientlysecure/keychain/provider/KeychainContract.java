@@ -39,6 +39,7 @@ public class KeychainContract {
         String FINGERPRINT = "fingerprint";
 
         String KEY_SIZE = "key_size";
+        String KEY_CURVE_OID = "key_curve_oid";
         String CAN_SIGN = "can_sign";
         String CAN_ENCRYPT = "can_encrypt";
         String CAN_CERTIFY = "can_certify";

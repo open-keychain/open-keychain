@@ -43,6 +43,7 @@ import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
 import org.sufficientlysecure.keychain.service.OperationResultParcel;
 import org.sufficientlysecure.keychain.service.OperationResults;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
+import org.sufficientlysecure.keychain.service.SaveKeyringParcel.Algorithm;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Notify;
 
@@ -165,9 +166,12 @@ public class CreateKeyFinalFragment extends Fragment {
         Bundle data = new Bundle();
 
         SaveKeyringParcel parcel = new SaveKeyringParcel();
-        parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(PublicKeyAlgorithmTags.RSA_GENERAL, 4096, KeyFlags.CERTIFY_OTHER, 0L));
-        parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(PublicKeyAlgorithmTags.RSA_GENERAL, 4096, KeyFlags.SIGN_DATA, 0L));
-        parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(PublicKeyAlgorithmTags.RSA_GENERAL, 4096, KeyFlags.ENCRYPT_COMMS | KeyFlags.ENCRYPT_STORAGE, 0L));
+        parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
+                Algorithm.RSA, 4096, null, KeyFlags.CERTIFY_OTHER, 0L));
+        parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
+                Algorithm.RSA, 4096, null, KeyFlags.SIGN_DATA, 0L));
+        parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
+                Algorithm.RSA, 4096, null, KeyFlags.ENCRYPT_COMMS | KeyFlags.ENCRYPT_STORAGE, 0L));
         String userId = KeyRing.createUserId(mName, mEmail, null);
         parcel.mAddUserIds.add(userId);
         parcel.mChangePrimaryUserId = userId;

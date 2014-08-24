@@ -62,7 +62,6 @@ import org.sufficientlysecure.keychain.util.FileImportCache;
 import org.sufficientlysecure.keychain.util.IterableIterator;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.ProgressFixedScaler;
-import org.sufficientlysecure.keychain.util.ProgressScaler;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -328,6 +327,7 @@ public class ProviderHelper {
 
                     values.put(Keys.KEY_ID, key.getKeyId());
                     values.put(Keys.KEY_SIZE, key.getBitStrength());
+                    values.put(Keys.KEY_CURVE_OID, key.getCurveOid());
                     values.put(Keys.ALGORITHM, key.getAlgorithm());
                     values.put(Keys.FINGERPRINT, key.getFingerprint());
 

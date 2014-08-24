@@ -20,14 +20,12 @@ package org.sufficientlysecure.keychain.ui.dialog;
 import android.annotation.TargetApi;
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.content.DialogInterface;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -43,16 +41,16 @@ import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import org.spongycastle.bcpg.PublicKeyAlgorithmTags;
 import org.spongycastle.bcpg.sig.KeyFlags;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
+import org.sufficientlysecure.keychain.service.SaveKeyringParcel.Algorithm;
+import org.sufficientlysecure.keychain.service.SaveKeyringParcel.Curve;
 import org.sufficientlysecure.keychain.util.Choice;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.TimeZone;
 
 public class AddSubkeyDialogFragment extends DialogFragment {
@@ -69,7 +67,10 @@ public class AddSubkeyDialogFragment extends DialogFragment {
     private TableRow mExpiryRow;
     private DatePicker mExpiryDatePicker;
     private Spinner mAlgorithmSpinner;
+    private View mKeySizeRow;
     private Spinner mKeySizeSpinner;
+    private View mCurveRow;
+    private Spinner mCurveSpinner;
     private TextView mCustomKeyTextView;
     private EditText mCustomKeyEditText;
     private TextView mCustomKeyInfoTextView;
@@ -114,6 +115,9 @@ public class AddSubkeyDialogFragment extends DialogFragment {
         mExpiryDatePicker = (DatePicker) view.findViewById(R.id.add_subkey_expiry_date_picker);
         mAlgorithmSpinner = (Spinner) view.findViewById(R.id.add_subkey_algorithm);
         mKeySizeSpinner = (Spinner) view.findViewById(R.id.add_subkey_size);
+        mCurveSpinner = (Spinner) view.findViewById(R.id.add_subkey_curve);
+        mKeySizeRow = view.findViewById(R.id.add_subkey_row_size);
+        mCurveRow = view.findViewById(R.id.add_subkey_row_curve);
         mCustomKeyTextView = (TextView) view.findViewById(R.id.add_subkey_custom_key_size_label);
         mCustomKeyEditText = (EditText) view.findViewById(R.id.add_subkey_custom_key_size_input);
         mCustomKeyInfoTextView = (TextView) view.findViewById(R.id.add_subkey_custom_key_size_info);
@@ -140,28 +144,30 @@ public class AddSubkeyDialogFragment extends DialogFragment {
             mExpiryDatePicker.setMinDate(minDateCal.getTime().getTime());
         }
 
-        ArrayList<Choice> choices = new ArrayList<Choice>();
-        choices.add(new Choice(PublicKeyAlgorithmTags.DSA, getResources().getString(
-                R.string.dsa)));
-        if (!mWillBeMasterKey) {
-            choices.add(new Choice(PublicKeyAlgorithmTags.ELGAMAL_ENCRYPT, getResources().getString(
-                    R.string.elgamal)));
-        }
-        choices.add(new Choice(PublicKeyAlgorithmTags.RSA_GENERAL, getResources().getString(
-                R.string.rsa)));
-        choices.add(new Choice(PublicKeyAlgorithmTags.ECDH, getResources().getString(
-                R.string.ecdh)));
-        choices.add(new Choice(PublicKeyAlgorithmTags.ECDSA, getResources().getString(
-                R.string.ecdsa)));
-        ArrayAdapter<Choice> adapter = new ArrayAdapter<Choice>(context,
-                android.R.layout.simple_spinner_item, choices);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        mAlgorithmSpinner.setAdapter(adapter);
-        // make RSA the default
-        for (int i = 0; i < choices.size(); ++i) {
-            if (choices.get(i).getId() == PublicKeyAlgorithmTags.RSA_GENERAL) {
-                mAlgorithmSpinner.setSelection(i);
-                break;
+        {
+            ArrayList<Choice<Algorithm>> choices = new ArrayList<Choice<Algorithm>>();
+            choices.add(new Choice<Algorithm>(Algorithm.DSA, getResources().getString(
+                    R.string.dsa)));
+            if (!mWillBeMasterKey) {
+                choices.add(new Choice<Algorithm>(Algorithm.ELGAMAL, getResources().getString(
+                        R.string.elgamal)));
+            }
+            choices.add(new Choice<Algorithm>(Algorithm.RSA, getResources().getString(
+                    R.string.rsa)));
+            choices.add(new Choice<Algorithm>(Algorithm.ECDSA, getResources().getString(
+                    R.string.ecdsa)));
+            choices.add(new Choice<Algorithm>(Algorithm.ECDH, getResources().getString(
+                    R.string.ecdh)));
+            ArrayAdapter<Choice<Algorithm>> adapter = new ArrayAdapter<Choice<Algorithm>>(context,
+                    android.R.layout.simple_spinner_item, choices);
+            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            mAlgorithmSpinner.setAdapter(adapter);
+            // make RSA the default
+            for (int i = 0; i < choices.size(); ++i) {
+                if (choices.get(i).getId() == Algorithm.RSA) {
+                    mAlgorithmSpinner.setSelection(i);
+                    break;
+                }
             }
         }
 
@@ -172,6 +178,36 @@ public class AddSubkeyDialogFragment extends DialogFragment {
         mKeySizeSpinner.setAdapter(keySizeAdapter);
         mKeySizeSpinner.setSelection(1); // Default to 4096 for the key length
 
+        {
+            ArrayList<Choice<Curve>> choices = new ArrayList<Choice<Curve>>();
+
+            choices.add(new Choice<Curve>(Curve.NIST_P256, getResources().getString(
+                    R.string.key_curve_nist_p256)));
+            choices.add(new Choice<Curve>(Curve.NIST_P384, getResources().getString(
+                    R.string.key_curve_nist_p384)));
+            choices.add(new Choice<Curve>(Curve.NIST_P521, getResources().getString(
+                    R.string.key_curve_nist_p521)));
+
+            /* @see SaveKeyringParcel
+            choices.add(new Choice<Curve>(Curve.BRAINPOOL_P256, getResources().getString(
+                    R.string.key_curve_bp_p256)));
+            choices.add(new Choice<Curve>(Curve.BRAINPOOL_P384, getResources().getString(
+                    R.string.key_curve_bp_p384)));
+            choices.add(new Choice<Curve>(Curve.BRAINPOOL_P512, getResources().getString(
+                    R.string.key_curve_bp_p512)));
+            */
+
+            ArrayAdapter<Choice<Curve>> adapter = new ArrayAdapter<Choice<Curve>>(context,
+                    android.R.layout.simple_spinner_item, choices);
+            mCurveSpinner.setAdapter(adapter);
+            // make NIST P-256 the default
+            for (int i = 0; i < choices.size(); ++i) {
+                if (choices.get(i).getId() == Curve.NIST_P256) {
+                    mCurveSpinner.setSelection(i);
+                    break;
+                }
+            }
+        }
 
         dialog.setCancelable(true);
 
@@ -211,7 +247,7 @@ public class AddSubkeyDialogFragment extends DialogFragment {
         mAlgorithmSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                updateUiForAlgorithm(((Choice) parent.getSelectedItem()).getId());
+                updateUiForAlgorithm(((Choice<Algorithm>) parent.getSelectedItem()).getId());
 
                 setCustomKeyVisibility();
                 setOkButtonAvailability(alertDialog);
@@ -241,11 +277,16 @@ public class AddSubkeyDialogFragment extends DialogFragment {
                         return;
                     }
 
-                    // dismiss only if at least one flag is selected
-                    dismiss();
-
-                    Choice newKeyAlgorithmChoice = (Choice) mAlgorithmSpinner.getSelectedItem();
-                    int newKeySize = getProperKeyLength(newKeyAlgorithmChoice.getId(), getSelectedKeyLength());
+                    Algorithm algorithm = ((Choice<Algorithm>) mAlgorithmSpinner.getSelectedItem()).getId();
+                    Curve curve = null;
+                    Integer keySize = null;
+                    // For EC keys, add a curve
+                    if (algorithm == Algorithm.ECDH || algorithm == Algorithm.ECDSA) {
+                        curve = ((Choice<Curve>) mCurveSpinner.getSelectedItem()).getId();
+                    // Otherwise, get a keysize
+                    } else {
+                        keySize = getProperKeyLength(algorithm, getSelectedKeyLength());
+                    }
 
                     int flags = 0;
                     if (mFlagCertify.isChecked()) {
@@ -276,12 +317,12 @@ public class AddSubkeyDialogFragment extends DialogFragment {
                     }
 
                     SaveKeyringParcel.SubkeyAdd newSubkey = new SaveKeyringParcel.SubkeyAdd(
-                            newKeyAlgorithmChoice.getId(),
-                            newKeySize,
-                            flags,
-                            expiry
+                            algorithm, keySize, curve, flags, expiry
                     );
                     mAlgorithmSelectedListener.onAlgorithmSelected(newSubkey);
+
+                    // finally, dismiss the dialogue
+                    dismiss();
                 }
             });
             negativeButton.setOnClickListener(new View.OnClickListener() {
@@ -323,16 +364,16 @@ public class AddSubkeyDialogFragment extends DialogFragment {
      * @return correct key length, according to SpongyCastle specification. Returns <code>-1</code>, if key length is
      * inappropriate.
      */
-    private int getProperKeyLength(int algorithmId, int currentKeyLength) {
+    private int getProperKeyLength(Algorithm algorithm, int currentKeyLength) {
         final int[] elGamalSupportedLengths = {1536, 2048, 3072, 4096, 8192};
         int properKeyLength = -1;
-        switch (algorithmId) {
-            case PublicKeyAlgorithmTags.RSA_GENERAL:
+        switch (algorithm) {
+            case RSA:
                 if (currentKeyLength > 1024 && currentKeyLength <= 16384) {
                     properKeyLength = currentKeyLength + ((8 - (currentKeyLength % 8)) % 8);
                 }
                 break;
-            case PublicKeyAlgorithmTags.ELGAMAL_ENCRYPT:
+            case ELGAMAL:
                 int[] elGammalKeyDiff = new int[elGamalSupportedLengths.length];
                 for (int i = 0; i < elGamalSupportedLengths.length; i++) {
                     elGammalKeyDiff[i] = Math.abs(elGamalSupportedLengths[i] - currentKeyLength);
@@ -347,7 +388,7 @@ public class AddSubkeyDialogFragment extends DialogFragment {
                 }
                 properKeyLength = elGamalSupportedLengths[minimalIndex];
                 break;
-            case PublicKeyAlgorithmTags.DSA:
+            case DSA:
                 if (currentKeyLength >= 512 && currentKeyLength <= 1024) {
                     properKeyLength = currentKeyLength + ((64 - (currentKeyLength % 64)) % 64);
                 }
@@ -357,10 +398,10 @@ public class AddSubkeyDialogFragment extends DialogFragment {
     }
 
     private void setOkButtonAvailability(AlertDialog alertDialog) {
-        final Choice selectedAlgorithm = (Choice) mAlgorithmSpinner.getSelectedItem();
-        final int selectedKeySize = getSelectedKeyLength(); //Integer.parseInt((String) mKeySizeSpinner.getSelectedItem());
-        final int properKeyLength = getProperKeyLength(selectedAlgorithm.getId(), selectedKeySize);
-        alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(properKeyLength > 0);
+        Algorithm algorithm = ((Choice<Algorithm>) mAlgorithmSpinner.getSelectedItem()).getId();
+        boolean enabled = algorithm == Algorithm.ECDSA || algorithm == Algorithm.ECDH
+                || getProperKeyLength(algorithm, getSelectedKeyLength()) > 0;
+        alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(enabled);
     }
 
     private void setCustomKeyVisibility() {
@@ -376,18 +417,20 @@ public class AddSubkeyDialogFragment extends DialogFragment {
         // hide keyboard after setting visibility to gone
         if (visibility == View.GONE) {
             InputMethodManager imm = (InputMethodManager)
-                    getActivity().getSystemService(getActivity().INPUT_METHOD_SERVICE);
+                    getActivity().getSystemService(FragmentActivity.INPUT_METHOD_SERVICE);
             imm.hideSoftInputFromWindow(mCustomKeyEditText.getWindowToken(), 0);
         }
     }
 
-    private void updateUiForAlgorithm(int algorithmId) {
+    private void updateUiForAlgorithm(Algorithm algorithm) {
         final ArrayAdapter<CharSequence> keySizeAdapter = (ArrayAdapter<CharSequence>) mKeySizeSpinner.getAdapter();
-        final Object selectedItem = mKeySizeSpinner.getSelectedItem();
         keySizeAdapter.clear();
-        switch (algorithmId) {
-            case PublicKeyAlgorithmTags.RSA_GENERAL:
+        switch (algorithm) {
+            case RSA:
                 replaceArrayAdapterContent(keySizeAdapter, R.array.rsa_key_size_spinner_values);
+                mKeySizeSpinner.setSelection(1);
+                mKeySizeRow.setVisibility(View.VISIBLE);
+                mCurveRow.setVisibility(View.GONE);
                 mCustomKeyInfoTextView.setText(getResources().getString(R.string.key_size_custom_info_rsa));
                 // allowed flags:
                 mFlagSign.setEnabled(true);
@@ -409,8 +452,11 @@ public class AddSubkeyDialogFragment extends DialogFragment {
                 }
                 mFlagAuthenticate.setChecked(false);
                 break;
-            case PublicKeyAlgorithmTags.ELGAMAL_ENCRYPT:
+            case ELGAMAL:
                 replaceArrayAdapterContent(keySizeAdapter, R.array.elgamal_key_size_spinner_values);
+                mKeySizeSpinner.setSelection(3);
+                mKeySizeRow.setVisibility(View.VISIBLE);
+                mCurveRow.setVisibility(View.GONE);
                 mCustomKeyInfoTextView.setText(""); // ElGamal does not support custom key length
                 // allowed flags:
                 mFlagCertify.setChecked(false);
@@ -422,8 +468,11 @@ public class AddSubkeyDialogFragment extends DialogFragment {
                 mFlagAuthenticate.setChecked(false);
                 mFlagAuthenticate.setEnabled(false);
                 break;
-            case PublicKeyAlgorithmTags.DSA:
+            case DSA:
                 replaceArrayAdapterContent(keySizeAdapter, R.array.dsa_key_size_spinner_values);
+                mKeySizeSpinner.setSelection(2);
+                mKeySizeRow.setVisibility(View.VISIBLE);
+                mCurveRow.setVisibility(View.GONE);
                 mCustomKeyInfoTextView.setText(getResources().getString(R.string.key_size_custom_info_dsa));
                 // allowed flags:
                 mFlagCertify.setChecked(false);
@@ -435,16 +484,37 @@ public class AddSubkeyDialogFragment extends DialogFragment {
                 mFlagAuthenticate.setChecked(false);
                 mFlagAuthenticate.setEnabled(false);
                 break;
+            case ECDSA:
+                mKeySizeRow.setVisibility(View.GONE);
+                mCurveRow.setVisibility(View.VISIBLE);
+                mCustomKeyInfoTextView.setText("");
+                // allowed flags:
+                mFlagCertify.setEnabled(mWillBeMasterKey);
+                mFlagCertify.setChecked(mWillBeMasterKey);
+                mFlagSign.setEnabled(true);
+                mFlagSign.setChecked(!mWillBeMasterKey);
+                mFlagEncrypt.setEnabled(false);
+                mFlagEncrypt.setChecked(false);
+                mFlagAuthenticate.setEnabled(true);
+                mFlagAuthenticate.setChecked(false);
+                break;
+            case ECDH:
+                mKeySizeRow.setVisibility(View.GONE);
+                mCurveRow.setVisibility(View.VISIBLE);
+                mCustomKeyInfoTextView.setText("");
+                // allowed flags:
+                mFlagCertify.setChecked(false);
+                mFlagCertify.setEnabled(false);
+                mFlagSign.setChecked(false);
+                mFlagSign.setEnabled(false);
+                mFlagEncrypt.setChecked(true);
+                mFlagEncrypt.setEnabled(true);
+                mFlagAuthenticate.setChecked(false);
+                mFlagAuthenticate.setEnabled(false);
+                break;
         }
         keySizeAdapter.notifyDataSetChanged();
 
-        // when switching algorithm, try to select same key length as before
-        for (int i = 0; i < keySizeAdapter.getCount(); i++) {
-            if (selectedItem.equals(keySizeAdapter.getItem(i))) {
-                mKeySizeSpinner.setSelection(i);
-                break;
-            }
-        }
     }
 
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)

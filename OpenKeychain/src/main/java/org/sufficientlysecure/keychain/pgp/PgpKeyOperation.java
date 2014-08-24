@@ -20,12 +20,12 @@ package org.sufficientlysecure.keychain.pgp;
 
 import org.spongycastle.bcpg.CompressionAlgorithmTags;
 import org.spongycastle.bcpg.HashAlgorithmTags;
-import org.spongycastle.bcpg.PublicKeyAlgorithmTags;
 import org.spongycastle.bcpg.SymmetricKeyAlgorithmTags;
 import org.spongycastle.bcpg.sig.Features;
 import org.spongycastle.bcpg.sig.KeyFlags;
 import org.spongycastle.jce.spec.ElGamalParameterSpec;
 import org.spongycastle.openpgp.PGPException;
+import org.spongycastle.openpgp.PGPKeyFlags;
 import org.spongycastle.openpgp.PGPKeyPair;
 import org.spongycastle.openpgp.PGPPrivateKey;
 import org.spongycastle.openpgp.PGPPublicKey;
@@ -52,6 +52,8 @@ import org.sufficientlysecure.keychain.service.OperationResultParcel.LogType;
 import org.sufficientlysecure.keychain.service.OperationResultParcel.OperationLog;
 import org.sufficientlysecure.keychain.service.OperationResults.EditKeyResult;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
+import org.sufficientlysecure.keychain.service.SaveKeyringParcel.Algorithm;
+import org.sufficientlysecure.keychain.service.SaveKeyringParcel.Curve;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel.SubkeyAdd;
 import org.sufficientlysecure.keychain.util.IterableIterator;
 import org.sufficientlysecure.keychain.util.Log;
@@ -66,6 +68,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.security.SecureRandom;
 import java.security.SignatureException;
+import java.security.spec.ECGenParameterSpec;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.Iterator;
@@ -155,31 +158,65 @@ public class PgpKeyOperation {
         mProgress.peek().setProgress(message, current, 100);
     }
 
+    private ECGenParameterSpec getEccParameterSpec(Curve curve) {
+        switch (curve) {
+            case NIST_P256: return new ECGenParameterSpec("P-256");
+            case NIST_P384: return new ECGenParameterSpec("P-384");
+            case NIST_P521: return new ECGenParameterSpec("P-521");
+
+            // @see SaveKeyringParcel
+            // case BRAINPOOL_P256: return new ECGenParameterSpec("brainpoolp256r1");
+            // case BRAINPOOL_P384: return new ECGenParameterSpec("brainpoolp384r1");
+            // case BRAINPOOL_P512: return new ECGenParameterSpec("brainpoolp512r1");
+        }
+        throw new RuntimeException("Invalid choice! (can't happen)");
+    }
+
     /** Creates new secret key. */
-    private PGPKeyPair createKey(int algorithmChoice, int keySize, OperationLog log, int indent) {
+    private PGPKeyPair createKey(SubkeyAdd add, OperationLog log, int indent) {
 
         try {
-            if (keySize < 512) {
-                log.add(LogLevel.ERROR, LogType.MSG_CR_ERROR_KEYSIZE_512, indent);
-                return null;
+            // Some safety checks
+            if (add.mAlgorithm == Algorithm.ECDH || add.mAlgorithm == Algorithm.ECDSA) {
+                if (add.mCurve == null) {
+                    log.add(LogLevel.ERROR, LogType.MSG_CR_ERROR_NO_CURVE, indent);
+                    return null;
+                }
+            } else {
+                if (add.mKeySize == null) {
+                    log.add(LogLevel.ERROR, LogType.MSG_CR_ERROR_NO_KEYSIZE, indent);
+                    return null;
+                }
+                if (add.mKeySize < 512) {
+                    log.add(LogLevel.ERROR, LogType.MSG_CR_ERROR_KEYSIZE_512, indent);
+                    return null;
+                }
             }
 
             int algorithm;
             KeyPairGenerator keyGen;
 
-            switch (algorithmChoice) {
-                case PublicKeyAlgorithmTags.DSA: {
+            switch (add.mAlgorithm) {
+                case DSA: {
+                    if ((add.mFlags & (PGPKeyFlags.CAN_ENCRYPT_COMMS | PGPKeyFlags.CAN_ENCRYPT_STORAGE)) > 0) {
+                        log.add(LogLevel.ERROR, LogType.MSG_CR_ERROR_FLAGS_DSA, indent);
+                        return null;
+                    }
                     progress(R.string.progress_generating_dsa, 30);
                     keyGen = KeyPairGenerator.getInstance("DSA", Constants.BOUNCY_CASTLE_PROVIDER_NAME);
-                    keyGen.initialize(keySize, new SecureRandom());
+                    keyGen.initialize(add.mKeySize, new SecureRandom());
                     algorithm = PGPPublicKey.DSA;
                     break;
                 }
 
-                case PublicKeyAlgorithmTags.ELGAMAL_ENCRYPT: {
+                case ELGAMAL: {
+                    if ((add.mFlags & (PGPKeyFlags.CAN_SIGN | PGPKeyFlags.CAN_CERTIFY)) > 0) {
+                        log.add(LogLevel.ERROR, LogType.MSG_CR_ERROR_FLAGS_ELGAMAL, indent);
+                        return null;
+                    }
                     progress(R.string.progress_generating_elgamal, 30);
                     keyGen = KeyPairGenerator.getInstance("ElGamal", Constants.BOUNCY_CASTLE_PROVIDER_NAME);
-                    BigInteger p = Primes.getBestPrime(keySize);
+                    BigInteger p = Primes.getBestPrime(add.mKeySize);
                     BigInteger g = new BigInteger("2");
 
                     ElGamalParameterSpec elParams = new ElGamalParameterSpec(p, g);
@@ -189,12 +226,41 @@ public class PgpKeyOperation {
                     break;
                 }
 
-                case PublicKeyAlgorithmTags.RSA_GENERAL: {
+                case RSA: {
                     progress(R.string.progress_generating_rsa, 30);
                     keyGen = KeyPairGenerator.getInstance("RSA", Constants.BOUNCY_CASTLE_PROVIDER_NAME);
-                    keyGen.initialize(keySize, new SecureRandom());
+                    keyGen.initialize(add.mKeySize, new SecureRandom());
 
                     algorithm = PGPPublicKey.RSA_GENERAL;
+                    break;
+                }
+
+                case ECDSA: {
+                    if ((add.mFlags & (PGPKeyFlags.CAN_ENCRYPT_COMMS | PGPKeyFlags.CAN_ENCRYPT_STORAGE)) > 0) {
+                        log.add(LogLevel.ERROR, LogType.MSG_CR_ERROR_FLAGS_ECDSA, indent);
+                        return null;
+                    }
+                    progress(R.string.progress_generating_ecdsa, 30);
+                    ECGenParameterSpec ecParamSpec = getEccParameterSpec(add.mCurve);
+                    keyGen = KeyPairGenerator.getInstance("ECDSA", Constants.BOUNCY_CASTLE_PROVIDER_NAME);
+                    keyGen.initialize(ecParamSpec, new SecureRandom());
+
+                    algorithm = PGPPublicKey.ECDSA;
+                    break;
+                }
+
+                case ECDH: {
+                    // make sure there are no sign or certify flags set
+                    if ((add.mFlags & (PGPKeyFlags.CAN_SIGN | PGPKeyFlags.CAN_CERTIFY)) > 0) {
+                        log.add(LogLevel.ERROR, LogType.MSG_CR_ERROR_FLAGS_ECDH, indent);
+                        return null;
+                    }
+                    progress(R.string.progress_generating_ecdh, 30);
+                    ECGenParameterSpec ecParamSpec = getEccParameterSpec(add.mCurve);
+                    keyGen = KeyPairGenerator.getInstance("ECDH", Constants.BOUNCY_CASTLE_PROVIDER_NAME);
+                    keyGen.initialize(ecParamSpec, new SecureRandom());
+
+                    algorithm = PGPPublicKey.ECDH;
                     break;
                 }
 
@@ -210,7 +276,8 @@ public class PgpKeyOperation {
         } catch(NoSuchProviderException e) {
             throw new RuntimeException(e);
         } catch(NoSuchAlgorithmException e) {
-            throw new RuntimeException(e);
+            log.add(LogLevel.ERROR, LogType.MSG_CR_ERROR_UNKNOWN_ALGO, indent);
+            return null;
         } catch(InvalidAlgorithmParameterException e) {
             throw new RuntimeException(e);
         } catch(PGPException e) {
@@ -252,13 +319,8 @@ public class PgpKeyOperation {
                 return new EditKeyResult(EditKeyResult.RESULT_ERROR, log, null);
             }
 
-            if (add.mAlgorithm == PublicKeyAlgorithmTags.ELGAMAL_ENCRYPT) {
-                log.add(LogLevel.ERROR, LogType.MSG_CR_ERROR_MASTER_ELGAMAL, indent);
-                return new EditKeyResult(EditKeyResult.RESULT_ERROR, log, null);
-            }
-
             subProgressPush(10, 30);
-            PGPKeyPair keyPair = createKey(add.mAlgorithm, add.mKeysize, log, indent);
+            PGPKeyPair keyPair = createKey(add, log, indent);
             subProgressPop();
 
             // return null if this failed (an error will already have been logged by createKey)
@@ -690,8 +752,8 @@ public class PgpKeyOperation {
 
                 progress(R.string.progress_modify_subkeyadd, (i-1) * (100 / saveParcel.mAddSubKeys.size()));
                 SaveKeyringParcel.SubkeyAdd add = saveParcel.mAddSubKeys.get(i);
-                log.add(LogLevel.INFO, LogType.MSG_MF_SUBKEY_NEW, indent, Integer.toString(add.mKeysize),
-                        PgpKeyHelper.getAlgorithmInfo(add.mAlgorithm) );
+                log.add(LogLevel.INFO, LogType.MSG_MF_SUBKEY_NEW, indent,
+                        PgpKeyHelper.getAlgorithmInfo(add.mAlgorithm, add.mKeySize, add.mCurve) );
 
                 if (add.mExpiry == null) {
                     log.add(LogLevel.ERROR, LogType.MSG_MF_ERROR_NULL_EXPIRY, indent +1);
@@ -708,7 +770,7 @@ public class PgpKeyOperation {
                     (i-1) * (100 / saveParcel.mAddSubKeys.size()),
                     i * (100 / saveParcel.mAddSubKeys.size())
                 );
-                PGPKeyPair keyPair = createKey(add.mAlgorithm, add.mKeysize, log, indent);
+                PGPKeyPair keyPair = createKey(add, log, indent);
                 subProgressPop();
                 if (keyPair == null) {
                     log.add(LogLevel.ERROR, LogType.MSG_MF_ERROR_PGP, indent +1);

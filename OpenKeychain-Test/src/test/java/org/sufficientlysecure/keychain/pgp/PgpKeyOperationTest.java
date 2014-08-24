@@ -36,11 +36,11 @@ import org.spongycastle.bcpg.UserIDPacket;
 import org.spongycastle.bcpg.sig.KeyFlags;
 import org.spongycastle.jce.provider.BouncyCastleProvider;
 import org.spongycastle.openpgp.PGPSignature;
-import org.spongycastle.bcpg.PublicKeyAlgorithmTags;
 import org.sufficientlysecure.keychain.service.OperationResultParcel.LogType;
 import org.sufficientlysecure.keychain.service.OperationResultParcel.OperationLog;
 import org.sufficientlysecure.keychain.service.OperationResults.EditKeyResult;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
+import org.sufficientlysecure.keychain.service.SaveKeyringParcel.Algorithm;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel.SubkeyAdd;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel.SubkeyChange;
 import org.sufficientlysecure.keychain.support.KeyringBuilder;
@@ -78,11 +78,11 @@ public class PgpKeyOperationTest {
 
         SaveKeyringParcel parcel = new SaveKeyringParcel();
         parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
-                PublicKeyAlgorithmTags.RSA_GENERAL, 1024, KeyFlags.CERTIFY_OTHER, 0L));
+                Algorithm.RSA, 1024, null, KeyFlags.CERTIFY_OTHER, 0L));
         parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
-                PublicKeyAlgorithmTags.DSA, 1024, KeyFlags.SIGN_DATA, 0L));
+                Algorithm.DSA, 1024, null, KeyFlags.SIGN_DATA, 0L));
         parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
-                PublicKeyAlgorithmTags.ELGAMAL_ENCRYPT, 1024, KeyFlags.ENCRYPT_COMMS, 0L));
+                Algorithm.ELGAMAL, 1024, null, KeyFlags.ENCRYPT_COMMS, 0L));
 
         parcel.mAddUserIds.add("twi");
         parcel.mAddUserIds.add("pink");
@@ -120,7 +120,7 @@ public class PgpKeyOperationTest {
         {
             parcel.reset();
             parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
-                    PublicKeyAlgorithmTags.RSA_GENERAL, new Random().nextInt(256)+255, KeyFlags.CERTIFY_OTHER, 0L));
+                    Algorithm.RSA, new Random().nextInt(256)+255, null, KeyFlags.CERTIFY_OTHER, 0L));
             parcel.mAddUserIds.add("shy");
             parcel.mNewPassphrase = passphrase;
 
@@ -131,18 +131,18 @@ public class PgpKeyOperationTest {
         {
             parcel.reset();
             parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
-                    PublicKeyAlgorithmTags.ELGAMAL_ENCRYPT, 1024, KeyFlags.CERTIFY_OTHER, 0L));
+                    Algorithm.ELGAMAL, 1024, null, KeyFlags.CERTIFY_OTHER, 0L));
             parcel.mAddUserIds.add("shy");
             parcel.mNewPassphrase = passphrase;
 
             assertFailure("creating ring with ElGamal master key should fail", parcel,
-                    LogType.MSG_CR_ERROR_MASTER_ELGAMAL);
+                    LogType.MSG_CR_ERROR_FLAGS_ELGAMAL);
         }
 
         {
             parcel.reset();
             parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
-                    PublicKeyAlgorithmTags.RSA_GENERAL, 1024, KeyFlags.CERTIFY_OTHER, null));
+                    Algorithm.RSA, 1024, null, KeyFlags.CERTIFY_OTHER, null));
             parcel.mAddUserIds.add("lotus");
             parcel.mNewPassphrase = passphrase;
 
@@ -153,18 +153,7 @@ public class PgpKeyOperationTest {
         {
             parcel.reset();
             parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
-                    12345, 1024, KeyFlags.CERTIFY_OTHER, 0L));
-            parcel.mAddUserIds.add("shy");
-            parcel.mNewPassphrase = passphrase;
-
-            assertFailure("creating ring with bad algorithm choice should fail", parcel,
-                    LogType.MSG_CR_ERROR_UNKNOWN_ALGO);
-        }
-
-        {
-            parcel.reset();
-            parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
-                    PublicKeyAlgorithmTags.RSA_GENERAL, 1024, KeyFlags.SIGN_DATA, 0L));
+                    Algorithm.RSA, 1024, null, KeyFlags.SIGN_DATA, 0L));
             parcel.mAddUserIds.add("shy");
             parcel.mNewPassphrase = passphrase;
 
@@ -175,7 +164,7 @@ public class PgpKeyOperationTest {
         {
             parcel.reset();
             parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
-                    PublicKeyAlgorithmTags.RSA_GENERAL, 1024, KeyFlags.CERTIFY_OTHER, 0L));
+                    Algorithm.RSA, 1024, null, KeyFlags.CERTIFY_OTHER, 0L));
             parcel.mNewPassphrase = passphrase;
 
             assertFailure("creating ring without user ids should fail", parcel,
@@ -199,7 +188,7 @@ public class PgpKeyOperationTest {
     public void testMasterFlags() throws Exception {
         SaveKeyringParcel parcel = new SaveKeyringParcel();
         parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
-                PublicKeyAlgorithmTags.RSA_GENERAL, 1024, KeyFlags.CERTIFY_OTHER | KeyFlags.SIGN_DATA, 0L));
+                Algorithm.RSA, 1024, null, KeyFlags.CERTIFY_OTHER | KeyFlags.SIGN_DATA, 0L));
         parcel.mAddUserIds.add("luna");
         ring = assertCreateSuccess("creating ring with master key flags must succeed", parcel);
 
@@ -313,7 +302,7 @@ public class PgpKeyOperationTest {
         long expiry = new Date().getTime() / 1000 + 159;
         int flags = KeyFlags.SIGN_DATA;
         int bits = 1024 + new Random().nextInt(8);
-        parcel.mAddSubKeys.add(new SubkeyAdd(PublicKeyAlgorithmTags.RSA_GENERAL, bits, flags, expiry));
+        parcel.mAddSubKeys.add(new SubkeyAdd(Algorithm.RSA, bits, null, flags, expiry));
 
         UncachedKeyRing modified = applyModificationWithChecks(parcel, ring, onlyA, onlyB);
 
@@ -349,12 +338,12 @@ public class PgpKeyOperationTest {
         Assert.assertEquals("added key must have expected flags",
                 flags, newKey.getKeyUsage());
         Assert.assertEquals("added key must have expected bitsize",
-                bits, newKey.getBitStrength());
+                bits, (int) newKey.getBitStrength());
 
         { // bad keysize should fail
             parcel.reset();
             parcel.mAddSubKeys.add(new SubkeyAdd(
-                    PublicKeyAlgorithmTags.RSA_GENERAL, new Random().nextInt(512), KeyFlags.SIGN_DATA, 0L));
+                    Algorithm.RSA, new Random().nextInt(512), null, KeyFlags.SIGN_DATA, 0L));
             assertModifyFailure("creating a subkey with keysize < 512 should fail", ring, parcel,
                     LogType.MSG_CR_ERROR_KEYSIZE_512);
 
@@ -363,7 +352,7 @@ public class PgpKeyOperationTest {
         {
             parcel.reset();
             parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
-                    PublicKeyAlgorithmTags.RSA_GENERAL, 1024, KeyFlags.SIGN_DATA, null));
+                    Algorithm.RSA, 1024, null, KeyFlags.SIGN_DATA, null));
 
             assertModifyFailure("creating master key with null expiry should fail", ring, parcel,
                     LogType.MSG_MF_ERROR_NULL_EXPIRY);
@@ -371,7 +360,7 @@ public class PgpKeyOperationTest {
 
         { // a past expiry should fail
             parcel.reset();
-            parcel.mAddSubKeys.add(new SubkeyAdd(PublicKeyAlgorithmTags.RSA_GENERAL, 1024, KeyFlags.SIGN_DATA,
+            parcel.mAddSubKeys.add(new SubkeyAdd(Algorithm.RSA, 1024, null, KeyFlags.SIGN_DATA,
                     new Date().getTime()/1000-10));
             assertModifyFailure("creating subkey with past expiry date should fail", ring, parcel,
                     LogType.MSG_MF_ERROR_PAST_EXPIRY);

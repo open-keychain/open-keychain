@@ -42,14 +42,10 @@ public class SubkeysAddedAdapter extends ArrayAdapter<SaveKeyringParcel.SubkeyAd
     private LayoutInflater mInflater;
     private Activity mActivity;
 
-    // hold a private reference to the underlying data List
-    private List<SaveKeyringParcel.SubkeyAdd> mData;
-
     public SubkeysAddedAdapter(Activity activity, List<SaveKeyringParcel.SubkeyAdd> data) {
         super(activity, -1, data);
         mActivity = activity;
         mInflater = (LayoutInflater) activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        mData = data;
     }
 
     static class ViewHolder {
@@ -103,7 +99,8 @@ public class SubkeysAddedAdapter extends ArrayAdapter<SaveKeyringParcel.SubkeyAd
         String algorithmStr = PgpKeyHelper.getAlgorithmInfo(
                 mActivity,
                 holder.mModel.mAlgorithm,
-                holder.mModel.mKeysize
+                holder.mModel.mKeySize,
+                holder.mModel.mCurve
         );
         holder.vKeyId.setText(R.string.edit_key_new_subkey);
         holder.vKeyDetails.setText(algorithmStr);
