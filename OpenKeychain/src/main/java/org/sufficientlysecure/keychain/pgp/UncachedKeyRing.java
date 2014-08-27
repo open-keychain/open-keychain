@@ -485,6 +485,10 @@ public class UncachedKeyRing {
 
             // Replace modified key in the keyring
             ring = replacePublicKey(ring, modified);
+            if (ring == null) {
+                log.add(LogLevel.ERROR, LogType.MSG_MG_NO_SECRET_KEYRING, indent);
+                return null;
+            }
             indent -= 1;
 
         }
@@ -652,6 +656,10 @@ public class UncachedKeyRing {
             }
             // replace pubkey in keyring
             ring = replacePublicKey(ring, modified);
+            if (ring == null) {
+                log.add(LogLevel.ERROR, LogType.MSG_MG_NO_SECRET_KEYRING, indent);
+                return null;
+            }
             indent -= 1;
         }
 
@@ -741,6 +749,10 @@ public class UncachedKeyRing {
                     } else {
                         // otherwise, just insert the public key
                         result = replacePublicKey(result, key);
+                        if (result == null) {
+                            log.add(LogLevel.ERROR, LogType.MSG_MG_NO_SECRET_KEYRING, indent);
+                            return null;
+                        }
                     }
                     continue;
                 }
@@ -769,6 +781,10 @@ public class UncachedKeyRing {
                 if (!key.isMasterKey()) {
                     if (modified != resultKey) {
                         result = replacePublicKey(result, modified);
+                        if (result == null) {
+                            log.add(LogLevel.ERROR, LogType.MSG_MG_NO_SECRET_KEYRING, indent);
+                            return null;
+                        }
                     }
                     continue;
                 }
@@ -793,6 +809,10 @@ public class UncachedKeyRing {
                 // If anything changed, save the updated (sub)key
                 if (modified != resultKey) {
                     result = replacePublicKey(result, modified);
+                    if (result == null) {
+                        log.add(LogLevel.ERROR, LogType.MSG_MG_NO_SECRET_KEYRING, indent);
+                        return null;
+                    }
                 }
 
             }
@@ -838,16 +858,19 @@ public class UncachedKeyRing {
      */
     private static PGPKeyRing replacePublicKey(PGPKeyRing ring, PGPPublicKey key) {
         if (ring instanceof PGPPublicKeyRing) {
-            return PGPPublicKeyRing.insertPublicKey((PGPPublicKeyRing) ring, key);
+            PGPPublicKeyRing pubRing = (PGPPublicKeyRing) ring;
+            return PGPPublicKeyRing.insertPublicKey(pubRing, key);
+        } else {
+            PGPSecretKeyRing secRing = (PGPSecretKeyRing) ring;
+            PGPSecretKey sKey = secRing.getSecretKey(key.getKeyID());
+            // TODO generate secret key with S2K dummy, if none exists!
+            if (sKey == null) {
+                Log.e(Constants.TAG, "dummy secret key generation not yet implemented");
+                return null;
+            }
+            sKey = PGPSecretKey.replacePublicKey(sKey, key);
+            return PGPSecretKeyRing.insertSecretKey(secRing, sKey);
         }
-        PGPSecretKeyRing secRing = (PGPSecretKeyRing) ring;
-        PGPSecretKey sKey = secRing.getSecretKey(key.getKeyID());
-        // TODO generate secret key with S2K dummy, if none exists! for now, just die.
-        if (sKey == null) {
-            throw new RuntimeException("dummy secret key generation not yet implemented");
-        }
-        sKey = PGPSecretKey.replacePublicKey(sKey, key);
-        return PGPSecretKeyRing.insertSecretKey(secRing, sKey);
     }
 
     /** This method removes a subkey in a keyring.
