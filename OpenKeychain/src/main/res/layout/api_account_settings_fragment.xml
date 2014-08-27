@@ -59,9 +59,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         custom:foldedLabel="@string/api_settings_show_advanced"
-        custom:unFoldedLabel="@string/api_settings_hide_advanced"
-        custom:foldedIcon="fa-chevron-right"
-        custom:unFoldedIcon="fa-chevron-down">
+        custom:unFoldedLabel="@string/api_settings_hide_advanced">
 
         <TextView
             android:layout_width="match_parent"
