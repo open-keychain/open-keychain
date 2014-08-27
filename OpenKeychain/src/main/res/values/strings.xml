@@ -500,6 +500,8 @@
     <string name="cert_verify_error">error!</string>
     <string name="cert_verify_unavailable">key unavailable</string>
 
+    <!-- LogType log messages. Errors should have _ERROR_ in their name and end with a ! -->
+
     <!-- Import Public log entries -->
     <string name="msg_ip_apply_batch">Applying insert batch operation.</string>
     <string name="msg_ip_bad_type_secret">Tried to import secret keyring as public. This is a bug, please file a report!</string>
@@ -619,14 +621,14 @@
     <string name="msg_kc_uid_remove">Removing invalid user id %s</string>
 
     <!-- Keyring merging log entries -->
+    <string name="msg_mg_error_secret_dummy">New public subkey found, but secret subkey dummy generation is not supported!</string>
+    <string name="msg_mg_error_heterogeneous">Tried to merge keyrings with differing fingerprints!</string>
+    <string name="msg_mg_error_encode">Fatal error encoding signature!</string>
     <string name="msg_mg_public">Merging into public keyring %s</string>
     <string name="msg_mg_secret">Merging into secret keyring %s</string>
-    <string name="msg_mg_fatal_encode">Fatal error encoding signature</string>
-    <string name="msg_mg_heterogeneous">Tried to merge keyrings with differing fingerprints!</string>
     <string name="msg_mg_new_subkey">Adding new subkey %s</string>
     <string name="msg_mg_found_new">Found %s new certificates in keyring</string>
     <string name="msg_mg_unchanged">No new certificates</string>
-    <string name="msg_mg_no_secret_keyring">No secret keyring to add subkey to</string>
 
     <!-- createSecretKeyRing -->
     <string name="msg_cr">Generating new master key</string>

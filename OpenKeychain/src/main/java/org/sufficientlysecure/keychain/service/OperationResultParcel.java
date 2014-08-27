@@ -332,14 +332,14 @@ public class OperationResultParcel implements Parcelable {
 
 
         // keyring consolidation
+        MSG_MG_ERROR_SECRET_DUMMY(R.string.msg_mg_error_secret_dummy),
+        MSG_MG_ERROR_ENCODE(R.string.msg_mg_error_encode),
+        MSG_MG_ERROR_HETEROGENEOUS(R.string.msg_mg_error_heterogeneous),
         MSG_MG_PUBLIC (R.string.msg_mg_public),
         MSG_MG_SECRET (R.string.msg_mg_secret),
-        MSG_MG_FATAL_ENCODE (R.string.msg_mg_fatal_encode),
-        MSG_MG_HETEROGENEOUS (R.string.msg_mg_heterogeneous),
         MSG_MG_NEW_SUBKEY (R.string.msg_mg_new_subkey),
         MSG_MG_FOUND_NEW (R.string.msg_mg_found_new),
         MSG_MG_UNCHANGED (R.string.msg_mg_unchanged),
-        MSG_MG_NO_SECRET_KEYRING (R.string.msg_mg_no_secret_keyring),
 
         // secret key create
         MSG_CR (R.string.msg_cr),

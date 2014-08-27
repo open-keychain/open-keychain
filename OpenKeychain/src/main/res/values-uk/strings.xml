@@ -552,8 +552,8 @@
   <!--Keyring merging log entries-->
   <string name="msg_mg_public">Злиття у публічну в\'язку %s</string>
   <string name="msg_mg_secret">Злиття у секретну в\'язку %s</string>
-  <string name="msg_mg_fatal_encode">Фатальна помилка шифрування підпису</string>
-  <string name="msg_mg_heterogeneous">Спробували злити в\'язки із різними відбитками!</string>
+  <string name="msg_mg_error_encode">Фатальна помилка шифрування підпису</string>
+  <string name="msg_mg_error_heterogeneous">Спробували злити в\'язки із різними відбитками!</string>
   <string name="msg_mg_new_subkey">Додається новий підключ %s</string>
   <string name="msg_mg_found_new">Знайдено %s нових сертифікатів у в\'язці</string>
   <string name="msg_mg_unchanged">Немає нових сертифікатів</string>

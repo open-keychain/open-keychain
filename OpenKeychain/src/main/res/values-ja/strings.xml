@@ -555,8 +555,8 @@
   <!--Keyring merging log entries-->
   <string name="msg_mg_public">公開鍵の鍵輪 %s にマージ中</string>
   <string name="msg_mg_secret">秘密鍵の鍵輪 %s にマージ中</string>
-  <string name="msg_mg_fatal_encode">署名のエンコードでの致命的なエラー</string>
-  <string name="msg_mg_heterogeneous">指紋が異なる鍵輪をマージしようとしています!</string>
+  <string name="msg_mg_error_encode">署名のエンコードでの致命的なエラー</string>
+  <string name="msg_mg_error_heterogeneous">指紋が異なる鍵輪をマージしようとしています!</string>
   <string name="msg_mg_new_subkey">新しい副鍵 %s を追加中</string>
   <string name="msg_mg_found_new">鍵輪に新しい検証を %s 発見</string>
   <string name="msg_mg_unchanged">新しい証明がない</string>
