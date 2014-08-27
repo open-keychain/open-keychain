@@ -572,8 +572,8 @@
   <!--Keyring merging log entries-->
   <string name="msg_mg_public">Fusione nel portachiavi pubblico %s</string>
   <string name="msg_mg_secret">Fusione nel portachiavi privato %s</string>
-  <string name="msg_mg_fatal_encode">Errore fatale nella codifica della firma</string>
-  <string name="msg_mg_heterogeneous">Tentativo di unire portachiavi con impronte digitali diverse!</string>
+  <string name="msg_mg_error_encode">Errore fatale nella codifica della firma</string>
+  <string name="msg_mg_error_heterogeneous">Tentativo di unire portachiavi con impronte digitali diverse!</string>
   <string name="msg_mg_new_subkey">Aggiunta nuova sottochiave %s</string>
   <string name="msg_mg_found_new">Trovati %s nuovi certificati nel portachiavi</string>
   <string name="msg_mg_unchanged">Nessun nuovo certificato</string>

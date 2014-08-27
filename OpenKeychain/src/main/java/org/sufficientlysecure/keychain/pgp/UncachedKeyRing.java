@@ -496,7 +496,7 @@ public class UncachedKeyRing {
             // Replace modified key in the keyring
             ring = replacePublicKey(ring, modified);
             if (ring == null) {
-                log.add(LogLevel.ERROR, LogType.MSG_MG_NO_SECRET_KEYRING, indent);
+                log.add(LogLevel.ERROR, LogType.MSG_MG_ERROR_SECRET_DUMMY, indent);
                 return null;
             }
             indent -= 1;
@@ -667,7 +667,7 @@ public class UncachedKeyRing {
             // replace pubkey in keyring
             ring = replacePublicKey(ring, modified);
             if (ring == null) {
-                log.add(LogLevel.ERROR, LogType.MSG_MG_NO_SECRET_KEYRING, indent);
+                log.add(LogLevel.ERROR, LogType.MSG_MG_ERROR_SECRET_DUMMY, indent);
                 return null;
             }
             indent -= 1;
@@ -712,7 +712,7 @@ public class UncachedKeyRing {
 
         if (getMasterKeyId() != masterKeyId
                 || !Arrays.equals(getFingerprint(), other.getFingerprint())) {
-            log.add(LogLevel.ERROR, LogType.MSG_MG_HETEROGENEOUS, indent);
+            log.add(LogLevel.ERROR, LogType.MSG_MG_ERROR_HETEROGENEOUS, indent);
             return null;
         }
 
@@ -760,7 +760,7 @@ public class UncachedKeyRing {
                         // otherwise, just insert the public key
                         result = replacePublicKey(result, key);
                         if (result == null) {
-                            log.add(LogLevel.ERROR, LogType.MSG_MG_NO_SECRET_KEYRING, indent);
+                            log.add(LogLevel.ERROR, LogType.MSG_MG_ERROR_SECRET_DUMMY, indent);
                             return null;
                         }
                     }
@@ -792,7 +792,7 @@ public class UncachedKeyRing {
                     if (modified != resultKey) {
                         result = replacePublicKey(result, modified);
                         if (result == null) {
-                            log.add(LogLevel.ERROR, LogType.MSG_MG_NO_SECRET_KEYRING, indent);
+                            log.add(LogLevel.ERROR, LogType.MSG_MG_ERROR_SECRET_DUMMY, indent);
                             return null;
                         }
                     }
@@ -820,7 +820,7 @@ public class UncachedKeyRing {
                 if (modified != resultKey) {
                     result = replacePublicKey(result, modified);
                     if (result == null) {
-                        log.add(LogLevel.ERROR, LogType.MSG_MG_NO_SECRET_KEYRING, indent);
+                        log.add(LogLevel.ERROR, LogType.MSG_MG_ERROR_SECRET_DUMMY, indent);
                         return null;
                     }
                 }
@@ -837,7 +837,7 @@ public class UncachedKeyRing {
             return new UncachedKeyRing(result);
 
         } catch (IOException e) {
-            log.add(LogLevel.ERROR, LogType.MSG_MG_FATAL_ENCODE, indent);
+            log.add(LogLevel.ERROR, LogType.MSG_MG_ERROR_ENCODE, indent);
             return null;
         }
 

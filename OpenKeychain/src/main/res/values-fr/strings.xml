@@ -572,8 +572,8 @@
   <!--Keyring merging log entries-->
   <string name="msg_mg_public">Fusion vers le trousseau public %s</string>
   <string name="msg_mg_secret">Fusion vers le trousseau secret %s</string>
-  <string name="msg_mg_fatal_encode">Erreur fatale lors de l\'encodage de la signature</string>
-  <string name="msg_mg_heterogeneous">Il a été tenté de fusionner des trousseaux avec des empreintes différentes !</string>
+  <string name="msg_mg_error_encode">Erreur fatale lors de l\'encodage de la signature</string>
+  <string name="msg_mg_error_heterogeneous">Il a été tenté de fusionner des trousseaux avec des empreintes différentes !</string>
   <string name="msg_mg_new_subkey">Ajout de la nouvelle sous-clef %s</string>
   <string name="msg_mg_found_new">%s nouveaux certificats trouvés dans le trousseau</string>
   <string name="msg_mg_unchanged">Aucun nouveau certificat</string>

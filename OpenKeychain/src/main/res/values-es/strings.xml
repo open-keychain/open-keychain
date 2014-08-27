@@ -572,8 +572,8 @@
   <!--Keyring merging log entries-->
   <string name="msg_mg_public">Incorporándolas en el juego de claves públicas %s</string>
   <string name="msg_mg_secret">Incorporándolas en el juego de claves secretas (privadas) %s</string>
-  <string name="msg_mg_fatal_encode">Error fatal codificando la firma</string>
-  <string name="msg_mg_heterogeneous">¡Se intentaron fusionar juegos de claves con diferentes huellas de validación de claves!</string>
+  <string name="msg_mg_error_encode">Error fatal codificando la firma</string>
+  <string name="msg_mg_error_heterogeneous">¡Se intentaron fusionar juegos de claves con diferentes huellas de validación de claves!</string>
   <string name="msg_mg_new_subkey">Añadiendo nueva subclave %s</string>
   <string name="msg_mg_found_new">Se encontraron %s nuevos certificados en el juego de claves</string>
   <string name="msg_mg_unchanged">No hay nuevos certificados</string>
