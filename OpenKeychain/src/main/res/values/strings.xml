@@ -611,12 +611,13 @@
     <string name="msg_kc_uid_bad_time">Removing user id with future timestamp</string>
     <string name="msg_kc_uid_bad_type">Removing user id certificate of unknown type (%s)</string>
     <string name="msg_kc_uid_bad">Removing bad self certificate for user id "%s"</string>
-    <string name="msg_kc_uid_dup">Removing outdated self certificate for user id "%s"</string>
+    <string name="msg_kc_uid_cert_dup">Removing outdated self certificate for user id "%s"</string>
     <string name="msg_kc_uid_foreign">Removing foreign user id certificate by %s</string>
     <string name="msg_kc_uid_revoke_dup">Removing redundant revocation certificate for user id "%s"</string>
     <string name="msg_kc_uid_revoke_old">Removing outdated revocation certificate for user id "%s"</string>
     <string name="msg_kc_uid_no_cert">No valid self-certificate found for user id %s, removing from ring</string>
     <string name="msg_kc_uid_remove">Removing invalid user id %s</string>
+    <string name="msg_kc_uid_dup">Removing duplicate user id "%s". The secret key contained two of them. This may result in missing certifications!</string>
 
     <!-- Keyring merging log entries -->
     <string name="msg_mg_public">Merging into public keyring %s</string>

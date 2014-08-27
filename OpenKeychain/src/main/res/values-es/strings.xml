@@ -563,7 +563,7 @@
   <string name="msg_kc_uid_bad_time">Eliminando identidad de usuario con marca de tiempo futura</string>
   <string name="msg_kc_uid_bad_type">Eliminando certificado de identidad de usuario, de tipo desconocido (%s)</string>
   <string name="msg_kc_uid_bad">Eliminando auto-certificado defectuoso para la identidad de usuario \"%s\"</string>
-  <string name="msg_kc_uid_dup">Eliminando auto-certificado desactualizado para el identificador de usuario \"%s\"</string>
+  <string name="msg_kc_uid_cert_dup">Eliminando auto-certificado desactualizado para el identificador de usuario \"%s\"</string>
   <string name="msg_kc_uid_foreign">Eliminando certificado ajeno de identidad de usuario por %s</string>
   <string name="msg_kc_uid_revoke_dup">Eliminando certificado redundate de revocación para la identidad de usuario \"%s\"</string>
   <string name="msg_kc_uid_revoke_old">Eliminando certificado desactualizado de revocación para la identidad de usuario \"%s\"</string>

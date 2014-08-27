@@ -563,7 +563,7 @@
   <string name="msg_kc_uid_bad_time">Rimozione ID utente con marca temporale futura</string>
   <string name="msg_kc_uid_bad_type">Rimozione certificato ID utente di tipo sconosciuto (%s)</string>
   <string name="msg_kc_uid_bad">Rimozione autocertificazione corrotta per ID utente \"%s\"</string>
-  <string name="msg_kc_uid_dup">Rimozione autocertificazione scaduta per ID utente \"%s\"</string>
+  <string name="msg_kc_uid_cert_dup">Rimozione autocertificazione scaduta per ID utente \"%s\"</string>
   <string name="msg_kc_uid_foreign">Rimozione certificato ID utente estraneo di %s</string>
   <string name="msg_kc_uid_revoke_dup">Rimozione certificato di revoca ridondante per ID utente \"%s\"</string>
   <string name="msg_kc_uid_revoke_old">Rimozione certificato di revoca scaduto per ID utente \"%s\"</string>

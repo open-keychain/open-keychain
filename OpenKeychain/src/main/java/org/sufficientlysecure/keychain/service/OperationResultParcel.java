@@ -323,6 +323,7 @@ public class OperationResultParcel implements Parcelable {
         MSG_KC_UID_BAD_TIME (R.string.msg_kc_uid_bad_time),
         MSG_KC_UID_BAD_TYPE (R.string.msg_kc_uid_bad_type),
         MSG_KC_UID_BAD (R.string.msg_kc_uid_bad),
+        MSG_KC_UID_CERT_DUP (R.string.msg_kc_uid_cert_dup),
         MSG_KC_UID_DUP (R.string.msg_kc_uid_dup),
         MSG_KC_UID_FOREIGN (R.string.msg_kc_uid_foreign),
         MSG_KC_UID_NO_CERT (R.string.msg_kc_uid_no_cert),

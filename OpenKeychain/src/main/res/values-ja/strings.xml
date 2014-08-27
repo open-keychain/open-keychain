@@ -546,7 +546,7 @@
   <string name="msg_kc_uid_bad_time">未来にタイムスタンプがあるユーザIDを破棄中</string>
   <string name="msg_kc_uid_bad_type">不明な型 (%s) でのユーザID検証を破棄中</string>
   <string name="msg_kc_uid_bad">ユーザID \"%s\" による問題のある自己検証を破棄中</string>
-  <string name="msg_kc_uid_dup">期限の切れたユーザID \"%s\" による自己検証を破棄中</string>
+  <string name="msg_kc_uid_cert_dup">期限の切れたユーザID \"%s\" による自己検証を破棄中</string>
   <string name="msg_kc_uid_foreign">%s によって検証されている外部ユーザIDを破棄中</string>
   <string name="msg_kc_uid_revoke_dup">ユーザID \"%s\" による重複した破棄証明を破棄中</string>
   <string name="msg_kc_uid_revoke_old">ユーザID \"%s\" による期限切れ破棄証明を破棄中</string>

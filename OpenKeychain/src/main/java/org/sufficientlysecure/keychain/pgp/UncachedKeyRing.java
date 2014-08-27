@@ -37,7 +37,6 @@ import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.service.OperationResultParcel.LogLevel;
 import org.sufficientlysecure.keychain.service.OperationResultParcel.LogType;
 import org.sufficientlysecure.keychain.service.OperationResultParcel.OperationLog;
-import org.sufficientlysecure.keychain.service.OperationResults;
 import org.sufficientlysecure.keychain.util.IterableIterator;
 import org.sufficientlysecure.keychain.util.Log;
 
@@ -46,6 +45,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Date;
@@ -339,7 +339,17 @@ public class UncachedKeyRing {
                 }
             }
 
+            ArrayList<String> processedUserIds = new ArrayList<String>();
             for (String userId : new IterableIterator<String>(masterKey.getUserIDs())) {
+                // check for duplicate user ids
+                if (processedUserIds.contains(userId)) {
+                    log.add(LogLevel.WARN, LogType.MSG_KC_UID_DUP,
+                            indent, userId);
+                    // strip out the first found user id with this name
+                    modified = PGPPublicKey.removeCertification(modified, userId);
+                }
+                processedUserIds.add(userId);
+
                 PGPSignature selfCert = null;
                 revocation = null;
 
@@ -416,13 +426,13 @@ public class UncachedKeyRing {
                             if (selfCert == null) {
                                 selfCert = zert;
                             } else if (selfCert.getCreationTime().before(cert.getCreationTime())) {
-                                log.add(LogLevel.DEBUG, LogType.MSG_KC_UID_DUP,
+                                log.add(LogLevel.DEBUG, LogType.MSG_KC_UID_CERT_DUP,
                                         indent, userId);
                                 modified = PGPPublicKey.removeCertification(modified, userId, selfCert);
                                 redundantCerts += 1;
                                 selfCert = zert;
                             } else {
-                                log.add(LogLevel.DEBUG, LogType.MSG_KC_UID_DUP,
+                                log.add(LogLevel.DEBUG, LogType.MSG_KC_UID_CERT_DUP,
                                         indent, userId);
                                 modified = PGPPublicKey.removeCertification(modified, userId, zert);
                                 redundantCerts += 1;
