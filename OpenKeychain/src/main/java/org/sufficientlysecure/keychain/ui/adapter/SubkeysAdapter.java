@@ -52,6 +52,7 @@ public class SubkeysAdapter extends CursorAdapter {
             Keys.RANK,
             Keys.ALGORITHM,
             Keys.KEY_SIZE,
+            Keys.KEY_CURVE_OID,
             Keys.HAS_SECRET,
             Keys.CAN_CERTIFY,
             Keys.CAN_ENCRYPT,
@@ -66,14 +67,15 @@ public class SubkeysAdapter extends CursorAdapter {
     private static final int INDEX_RANK = 2;
     private static final int INDEX_ALGORITHM = 3;
     private static final int INDEX_KEY_SIZE = 4;
-    private static final int INDEX_HAS_SECRET = 5;
-    private static final int INDEX_CAN_CERTIFY = 6;
-    private static final int INDEX_CAN_ENCRYPT = 7;
-    private static final int INDEX_CAN_SIGN = 8;
-    private static final int INDEX_IS_REVOKED = 9;
-    private static final int INDEX_CREATION = 10;
-    private static final int INDEX_EXPIRY = 11;
-    private static final int INDEX_FINGERPRINT = 12;
+    private static final int INDEX_KEY_CURVE_OID = 5;
+    private static final int INDEX_HAS_SECRET = 6;
+    private static final int INDEX_CAN_CERTIFY = 7;
+    private static final int INDEX_CAN_ENCRYPT = 8;
+    private static final int INDEX_CAN_SIGN = 9;
+    private static final int INDEX_IS_REVOKED = 10;
+    private static final int INDEX_CREATION = 11;
+    private static final int INDEX_EXPIRY = 12;
+    private static final int INDEX_FINGERPRINT = 13;
 
     public SubkeysAdapter(Context context, Cursor c, int flags,
                           SaveKeyringParcel saveKeyringParcel) {
@@ -141,7 +143,8 @@ public class SubkeysAdapter extends CursorAdapter {
         String algorithmStr = PgpKeyHelper.getAlgorithmInfo(
                 context,
                 cursor.getInt(INDEX_ALGORITHM),
-                cursor.getInt(INDEX_KEY_SIZE)
+                cursor.getInt(INDEX_KEY_SIZE),
+                cursor.getString(INDEX_KEY_CURVE_OID)
         );
 
         vKeyId.setText(keyIdStr);

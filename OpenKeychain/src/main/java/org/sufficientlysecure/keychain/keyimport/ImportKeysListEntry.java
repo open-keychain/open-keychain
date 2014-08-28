@@ -39,7 +39,8 @@ public class ImportKeysListEntry implements Serializable, Parcelable {
     private boolean mExpired;
     private Date mDate; // TODO: not displayed
     private String mFingerprintHex;
-    private int mBitStrength;
+    private Integer mBitStrength;
+    private String mCurveOid;
     private String mAlgorithm;
     private boolean mSecretKey;
     private String mPrimaryUserId;
@@ -162,8 +163,12 @@ public class ImportKeysListEntry implements Serializable, Parcelable {
         this.mFingerprintHex = fingerprintHex;
     }
 
-    public int getBitStrength() {
+    public Integer getBitStrength() {
         return mBitStrength;
+    }
+
+    public String getCurveOid() {
+        return mCurveOid;
     }
 
     public void setBitStrength(int bitStrength) {
@@ -258,13 +263,15 @@ public class ImportKeysListEntry implements Serializable, Parcelable {
             mPrimaryUserId = mUserIds.get(0);
         }
 
-        this.mKeyId = key.getKeyId();
-        this.mKeyIdHex = PgpKeyHelper.convertKeyIdToHex(mKeyId);
+        mKeyId = key.getKeyId();
+        mKeyIdHex = PgpKeyHelper.convertKeyIdToHex(mKeyId);
 
-        this.mRevoked = key.isRevoked();
-        this.mFingerprintHex = PgpKeyHelper.convertFingerprintToHex(key.getFingerprint());
-        this.mBitStrength = key.getBitStrength();
+        mRevoked = key.isRevoked();
+        mFingerprintHex = PgpKeyHelper.convertFingerprintToHex(key.getFingerprint());
+        mBitStrength = key.getBitStrength();
+        mCurveOid = key.getCurveOid();
         final int algorithm = key.getAlgorithm();
-        this.mAlgorithm = PgpKeyHelper.getAlgorithmInfo(context, algorithm);
+        mAlgorithm = PgpKeyHelper.getAlgorithmInfo(context, algorithm, mBitStrength, mCurveOid);
     }
+
 }

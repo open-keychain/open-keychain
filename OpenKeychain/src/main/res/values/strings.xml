@@ -109,6 +109,7 @@
     <string name="label_expiry">Expiry</string>
     <string name="label_usage">Usage</string>
     <string name="label_key_size">Key Size</string>
+    <string name="label_ecc_curve">Elliptic Curve</string>
     <string name="label_main_user_id">Primary identity</string>
     <string name="label_name">Name</string>
     <string name="label_comment">Comment</string>
@@ -156,6 +157,8 @@
     <string name="dsa">DSA</string>
     <string name="elgamal">ElGamal</string>
     <string name="rsa">RSA</string>
+    <string name="ecdh">ECDH</string>
+    <string name="ecdsa">ECDSA</string>
     <string name="filemanager_title_open">Open…</string>
     <string name="warning">Warning</string>
     <string name="error">Error</string>
@@ -268,6 +271,8 @@
     <string name="progress_generating_rsa">generating new RSA key…</string>
     <string name="progress_generating_dsa">generating new DSA key…</string>
     <string name="progress_generating_elgamal">generating new ElGamal key…</string>
+    <string name="progress_generating_ecdsa">generating new ECDSA key…</string>
+    <string name="progress_generating_ecdh">generating new ECDH key…</string>
 
     <string name="progress_modify">modifying keyring…</string>
 
@@ -323,6 +328,16 @@
     <string name="key_size_custom_info">Type custom key length (in bits):</string>
     <string name="key_size_custom_info_rsa">RSA key length must be greater than 1024 and at most 16384. Also it must be multiplicity of 8.</string>
     <string name="key_size_custom_info_dsa">DSA key length must be at least 512 and at most 1024. Also it must be multiplicity of 64.</string>
+
+    <!-- elliptic curve names -->
+    <string name="key_curve_nist_p256">NIST P-256</string>
+    <string name="key_curve_nist_p384">NIST P-384</string>
+    <string name="key_curve_nist_p521">NIST P-521</string>
+    <!-- not in for now, see SaveKeyringParcel
+    <string name="key_curve_bp_p256">Brainpool P-256</string>
+    <string name="key_curve_bp_p384">Brainpool P-384</string>
+    <string name="key_curve_bp_p512">Brainpool P-512</string>
+    -->
 
     <!-- compression -->
     <string name="compression_fast">fast</string>
@@ -638,9 +653,14 @@
     <string name="msg_cr_error_no_certify">Master key must have certify flag!</string>
     <string name="msg_cr_error_null_expiry">Expiry time cannot be "same as before" on key creation. This is a programming error, please file a bug report!</string>
     <string name="msg_cr_error_keysize_512">Key size must be greater or equal 512!</string>
+    <string name="msg_cr_error_no_curve">No key size specified! This is a programming error, please file a bug report!</string>
+    <string name="msg_cr_error_no_keysize">No elliptic curve specified! This is a programming error, please file a bug report!</string>
     <string name="msg_cr_error_internal_pgp">Internal PGP error!</string>
-    <string name="msg_cr_error_unknown_algo">Bad algorithm choice!</string>
-    <string name="msg_cr_error_master_elgamal">Master key must not be of type ElGamal!</string>
+    <string name="msg_cr_error_unknown_algo">Unknown algorithm selected! This is a programming error, please file a bug report!</string>
+    <string name="msg_cr_error_flags_dsa">Bad key flags selected, DSA cannot be used for encryption!</string>
+    <string name="msg_cr_error_flags_elgamal">Bad key flags selected, ElGamal cannot be used for signing!</string>
+    <string name="msg_cr_error_flags_ecdsa">Bad key flags selected, ECDSA cannot be used for encryption!</string>
+    <string name="msg_cr_error_flags_ecdh">Bad key flags selected, ECDH cannot be used for signing!</string>
 
     <!-- modifySecretKeyRing -->
     <string name="msg_mr">Modifying keyring %s</string>
@@ -665,7 +685,7 @@
     <string name="msg_mf_primary_new">Generating new certificate for new primary user id</string>
     <string name="msg_mf_subkey_change">Modifying subkey %s</string>
     <string name="msg_mf_error_subkey_missing">Tried to operate on missing subkey %s!</string>
-    <string name="msg_mf_subkey_new">Adding new subkey of type %2$s (%1$s bit)</string>
+    <string name="msg_mf_subkey_new">Adding new subkey of type %s</string>
     <string name="msg_mf_subkey_new_id">New subkey ID: %s</string>
     <string name="msg_mf_error_past_expiry">Expiry date cannot be in the past!</string>
     <string name="msg_mf_subkey_revoke">Revoking subkey %s</string>

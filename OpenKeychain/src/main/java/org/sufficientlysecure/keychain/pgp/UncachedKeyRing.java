@@ -58,7 +58,8 @@ import java.util.TreeSet;
  * This class and its relatives UncachedPublicKey and UncachedSecretKey are
  * used to move around pgp key rings in non crypto related (UI, mostly) code.
  * It should be used for simple inspection only until it saved in the database,
- * all actual crypto operations should work with WrappedKeyRings exclusively.
+ * all actual crypto operations should work with CanonicalizedKeyRings
+ * exclusively.
  *
  * This class is also special in that it can hold either the PGPPublicKeyRing
  * or PGPSecretKeyRing derivate of the PGPKeyRing class, since these are
@@ -605,7 +606,7 @@ public class UncachedKeyRing {
 
                     }
 
-                    // if we already have a cert, and this one is not newer: skip it
+                    // if we already have a cert, and this one is older: skip it
                     if (selfCert != null && cert.getCreationTime().before(selfCert.getCreationTime())) {
                         log.add(LogLevel.DEBUG, LogType.MSG_KC_SUB_DUP, indent);
                         redundantCerts += 1;

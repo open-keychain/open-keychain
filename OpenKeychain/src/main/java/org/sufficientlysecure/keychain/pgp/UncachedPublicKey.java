@@ -18,6 +18,10 @@
 
 package org.sufficientlysecure.keychain.pgp;
 
+import org.spongycastle.asn1.ASN1ObjectIdentifier;
+import org.spongycastle.asn1.nist.NISTNamedCurves;
+import org.spongycastle.asn1.teletrust.TeleTrusTNamedCurves;
+import org.spongycastle.bcpg.ECPublicBCPGKey;
 import org.spongycastle.bcpg.sig.KeyFlags;
 import org.spongycastle.openpgp.PGPPublicKey;
 import org.spongycastle.openpgp.PGPSignature;
@@ -94,8 +98,21 @@ public class UncachedPublicKey {
         return mPublicKey.getAlgorithm();
     }
 
-    public int getBitStrength() {
+    public Integer getBitStrength() {
+        if (isEC()) {
+            return null;
+        }
         return mPublicKey.getBitStrength();
+    }
+
+    public String getCurveOid() {
+        if ( ! isEC()) {
+            return null;
+        }
+        if ( ! (mPublicKey.getPublicKeyPacket().getKey() instanceof ECPublicBCPGKey)) {
+            return null;
+        }
+        return ((ECPublicBCPGKey) mPublicKey.getPublicKeyPacket().getKey()).getCurveOID().getId();
     }
 
     /** Returns the primary user id, as indicated by the public key's self certificates.
@@ -184,6 +201,10 @@ public class UncachedPublicKey {
 
     public boolean isDSA() {
         return getAlgorithm() == PGPPublicKey.DSA;
+    }
+
+    public boolean isEC() {
+        return getAlgorithm() == PGPPublicKey.ECDH || getAlgorithm() == PGPPublicKey.ECDSA;
     }
 
     @SuppressWarnings("unchecked")

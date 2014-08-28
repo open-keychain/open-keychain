@@ -155,8 +155,8 @@ public class ImportKeysAdapter extends ArrayAdapter<ImportKeysListEntry> {
         // don't show full fingerprint on key import
         holder.fingerprint.setVisibility(View.GONE);
 
-        if (entry.getBitStrength() != 0 && entry.getAlgorithm() != null) {
-            holder.algorithm.setText("" + entry.getBitStrength() + "/" + entry.getAlgorithm());
+        if (entry.getAlgorithm() != null) {
+            holder.algorithm.setText(entry.getAlgorithm());
             holder.algorithm.setVisibility(View.VISIBLE);
         } else {
             holder.algorithm.setVisibility(View.INVISIBLE);

@@ -49,6 +49,7 @@ import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.service.OperationResultParcel;
 import org.sufficientlysecure.keychain.service.OperationResults.EditKeyResult;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
+import org.sufficientlysecure.keychain.service.SaveKeyringParcel.Algorithm;
 import org.sufficientlysecure.keychain.support.KeyringTestingHelper;
 import org.sufficientlysecure.keychain.support.KeyringTestingHelper.RawPacket;
 
@@ -85,11 +86,11 @@ public class UncachedKeyringCanonicalizeTest {
 
         SaveKeyringParcel parcel = new SaveKeyringParcel();
         parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
-                PublicKeyAlgorithmTags.RSA_GENERAL, 1024, KeyFlags.CERTIFY_OTHER, 0L));
+                Algorithm.RSA, 1024, null, KeyFlags.CERTIFY_OTHER, 0L));
         parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
-                PublicKeyAlgorithmTags.RSA_GENERAL, 1024, KeyFlags.SIGN_DATA, 0L));
+                Algorithm.RSA, 1024, null, KeyFlags.SIGN_DATA, 0L));
         parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
-                PublicKeyAlgorithmTags.RSA_GENERAL, 1024, KeyFlags.ENCRYPT_COMMS, 0L));
+                Algorithm.RSA, 1024, null, KeyFlags.ENCRYPT_COMMS, 0L));
 
         parcel.mAddUserIds.add("twi");
         parcel.mAddUserIds.add("pink");
@@ -298,7 +299,7 @@ public class UncachedKeyringCanonicalizeTest {
 
         SaveKeyringParcel parcel = new SaveKeyringParcel();
         parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
-                PublicKeyAlgorithmTags.RSA_GENERAL, 1024, KeyFlags.CERTIFY_OTHER, 0L));
+                Algorithm.RSA, 1024, null, KeyFlags.CERTIFY_OTHER, 0L));
         parcel.mAddUserIds.add("trix");
         PgpKeyOperation op = new PgpKeyOperation(null);
 
