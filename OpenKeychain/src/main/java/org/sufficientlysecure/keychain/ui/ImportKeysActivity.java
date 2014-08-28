@@ -288,7 +288,9 @@ public class ImportKeysActivity extends ActionBarActivity {
             @Override
             public void onPageSelected(int position) {
                 // cancel loader and clear list
-                mListFragment.destroyLoader();
+                if (mListFragment != null) {
+                    mListFragment.destroyLoader();
+                }
             }
 
             @Override
