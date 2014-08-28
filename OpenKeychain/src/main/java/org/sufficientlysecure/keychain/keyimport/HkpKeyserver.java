@@ -24,8 +24,10 @@ import org.sufficientlysecure.keychain.pgp.PgpHelper;
 import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
 import org.sufficientlysecure.keychain.util.Log;
 
-import java.io.DataOutputStream;
+import java.io.BufferedWriter;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -281,7 +283,7 @@ public class HkpKeyserver extends Keyserver {
             entry.setBitStrength(Integer.parseInt(matcher.group(3)));
 
             final int algorithmId = Integer.decode(matcher.group(2));
-            entry.setAlgorithm(PgpKeyHelper.getAlgorithmInfo(algorithmId));
+            entry.setAlgorithm(PgpKeyHelper.getAlgorithmInfo(algorithmId, null, null));
 
             // group 1 contains the full fingerprint (v4) or the long key id if available
             // see http://bit.ly/1d4bxbk and http://bit.ly/1gD1wwr
@@ -352,25 +354,38 @@ public class HkpKeyserver extends Keyserver {
     @Override
     public void add(String armoredKey) throws AddKeyException {
         try {
-            String query = getUrlPrefix() + mHost + ":" + mPort + "/pks/add";
+            String request = "/pks/add";
             String params;
             try {
-                params = "keytext=" + URLEncoder.encode(armoredKey, "utf8");
+                params = "keytext=" + URLEncoder.encode(armoredKey, "UTF-8");
             } catch (UnsupportedEncodingException e) {
                 throw new AddKeyException();
             }
-            Log.d(Constants.TAG, "hkp keyserver add: " + query);
+            URL url = new URL(getUrlPrefix() + mHost + ":" + mPort + request);
 
-            HttpURLConnection connection = openConnection(new URL(query));
-            connection.setRequestMethod("POST");
-            connection.addRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-            connection.setRequestProperty("Content-Length", Integer.toString(params.getBytes().length));
-            connection.setDoOutput(true);
-            DataOutputStream wr = new DataOutputStream(connection.getOutputStream());
-            wr.writeBytes(params);
-            wr.flush();
-            wr.close();
+            Log.d(Constants.TAG, "hkp keyserver add: " + url.toString());
+            Log.d(Constants.TAG, "params: " + params);
+
+            HttpURLConnection conn = openConnection(url);
+            conn.setRequestMethod("POST");
+            conn.addRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+            conn.setRequestProperty("Content-Length", Integer.toString(params.getBytes().length));
+            conn.setDoInput(true);
+            conn.setDoOutput(true);
+
+            OutputStream os = conn.getOutputStream();
+            BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
+            writer.write(params);
+            writer.flush();
+            writer.close();
+            os.close();
+
+            conn.connect();
+
+            Log.d(Constants.TAG, "response code: " + conn.getResponseCode());
+            Log.d(Constants.TAG, "answer: " + readAll(conn.getInputStream(), conn.getContentEncoding()));
         } catch (IOException e) {
+            Log.e(Constants.TAG, "IOException", e);
             throw new AddKeyException();
         }
     }

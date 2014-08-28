@@ -35,6 +35,9 @@ public final class Constants {
 
     public static final String PACKAGE_NAME = "org.sufficientlysecure.keychain";
 
+    public static final String ACCOUNT_NAME = "OpenKeychain";
+    public static final String ACCOUNT_TYPE = PACKAGE_NAME + ".account";
+
     // as defined in http://tools.ietf.org/html/rfc3156, section 7
     public static final String NFC_MIME = "application/pgp-keys";
 
@@ -68,11 +71,14 @@ public final class Constants {
         public static final String KEY_SERVERS_DEFAULT_VERSION = "keyServersDefaultVersion";
         public static final String WRITE_VERSION_HEADER = "writeVersionHeader";
         public static final String FIRST_TIME = "firstTime";
+        public static final String CACHED_CONSOLIDATE = "cachedConsolidate";
+        public static final String CACHED_CONSOLIDATE_SECRETS = "cachedConsolidateSecrets";
+        public static final String CACHED_CONSOLIDATE_PUBLICS = "cachedConsolidatePublics";
     }
 
     public static final class Defaults {
-        public static final String KEY_SERVERS = "hkps://hkps.pool.sks-keyservers.net, subkeys.pgp.net, hkps://pgp.mit.edu";
-        public static final int KEY_SERVERS_VERSION = 2;
+        public static final String KEY_SERVERS = "hkps://hkps.pool.sks-keyservers.net, hkps://pgp.mit.edu";
+        public static final int KEY_SERVERS_VERSION = 3;
     }
 
     public static final class DrawerItems {

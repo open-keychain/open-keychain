@@ -25,7 +25,12 @@ import org.spongycastle.bcpg.CompressionAlgorithmTags;
 import org.spongycastle.bcpg.HashAlgorithmTags;
 import org.spongycastle.openpgp.PGPEncryptedData;
 import org.sufficientlysecure.keychain.Constants;
+import org.sufficientlysecure.keychain.Constants.Pref;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.ListIterator;
 import java.util.Vector;
 
 /**
@@ -130,6 +135,36 @@ public class Preferences {
         editor.commit();
     }
 
+    public boolean getCachedConsolidate() {
+        return mSharedPreferences.getBoolean(Pref.CACHED_CONSOLIDATE, false);
+    }
+
+    public void setCachedConsolidate(boolean value) {
+        SharedPreferences.Editor editor = mSharedPreferences.edit();
+        editor.putBoolean(Pref.CACHED_CONSOLIDATE, value);
+        editor.commit();
+    }
+
+    public int getCachedConsolidateNumPublics() {
+        return mSharedPreferences.getInt(Pref.CACHED_CONSOLIDATE_PUBLICS, -1);
+    }
+
+    public void setCachedConsolidateNumPublics(int value) {
+        SharedPreferences.Editor editor = mSharedPreferences.edit();
+        editor.putInt(Pref.CACHED_CONSOLIDATE_PUBLICS, value);
+        editor.commit();
+    }
+
+    public int getCachedConsolidateNumSecrets() {
+        return mSharedPreferences.getInt(Pref.CACHED_CONSOLIDATE_SECRETS, -1);
+    }
+
+    public void setCachedConsolidateNumSecrets(int value) {
+        SharedPreferences.Editor editor = mSharedPreferences.edit();
+        editor.putInt(Pref.CACHED_CONSOLIDATE_SECRETS, value);
+        editor.commit();
+    }
+
     public boolean isFirstTime() {
         return mSharedPreferences.getBoolean(Constants.Pref.FIRST_TIME, true);
     }
@@ -175,15 +210,24 @@ public class Preferences {
         // migrate keyserver to hkps
         if (mSharedPreferences.getInt(Constants.Pref.KEY_SERVERS_DEFAULT_VERSION, 0) !=
                 Constants.Defaults.KEY_SERVERS_VERSION) {
-            String[] servers = getKeyServers();
-            for (int i = 0; i < servers.length; i++) {
-                if (servers[i].equals("pool.sks-keyservers.net")) {
-                    servers[i] = "hkps://hkps.pool.sks-keyservers.net";
-                } else if (servers[i].equals("pgp.mit.edu")) {
-                    servers[i] = "hkps://pgp.mit.edu";
+            String[] serversArray = getKeyServers();
+            ArrayList<String> servers = new ArrayList<String>(Arrays.asList(serversArray));
+            ListIterator<String> it = servers.listIterator();
+            while (it.hasNext()) {
+                String server = it.next();
+                if (server.equals("pool.sks-keyservers.net")) {
+                    // use HKPS!
+                    it.set("hkps://hkps.pool.sks-keyservers.net");
+                } else if (server.equals("pgp.mit.edu")) {
+                    // use HKPS!
+                    it.set("hkps://pgp.mit.edu");
+                } else if (server.equals("subkeys.pgp.net")) {
+                    // remove, because often down and no HKPS!
+                    it.remove();
                 }
+
             }
-            setKeyServers(servers);
+            setKeyServers(servers.toArray(new String[servers.size()]));
             mSharedPreferences.edit()
                     .putInt(Constants.Pref.KEY_SERVERS_DEFAULT_VERSION, Constants.Defaults.KEY_SERVERS_VERSION)
                     .commit();
@@ -192,6 +236,11 @@ public class Preferences {
         // migrate old uncompressed constant to new one
         if (mSharedPreferences.getInt(Constants.Pref.DEFAULT_FILE_COMPRESSION, 0) == 0x21070001) {
             setDefaultFileCompression(CompressionAlgorithmTags.UNCOMPRESSED);
+        }
+
+        // migrate away from MD5
+        if (mSharedPreferences.getInt(Constants.Pref.DEFAULT_HASH_ALGORITHM, 0) == HashAlgorithmTags.MD5) {
+            setDefaultHashAlgorithm(HashAlgorithmTags.SHA512);
         }
     }
 

@@ -18,11 +18,20 @@
 package org.sufficientlysecure.keychain.remote.ui;
 
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v7.app.ActionBarActivity;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.SpannableStringBuilder;
+import android.text.SpannedString;
+import android.text.TextUtils;
+import android.text.style.BulletSpan;
+import android.text.style.StyleSpan;
 import android.view.View;
 import android.widget.TextView;
 
@@ -39,7 +48,6 @@ import org.sufficientlysecure.keychain.ui.SelectPublicKeyFragment;
 import org.sufficientlysecure.keychain.ui.dialog.PassphraseDialogFragment;
 import org.sufficientlysecure.keychain.util.Log;
 
-import java.security.Provider;
 import java.util.ArrayList;
 
 public class RemoteServiceActivity extends ActionBarActivity {
@@ -68,7 +76,8 @@ public class RemoteServiceActivity extends ActionBarActivity {
     // select pub keys action
     public static final String EXTRA_SELECTED_MASTER_KEY_IDS = "master_key_ids";
     public static final String EXTRA_MISSING_USER_IDS = "missing_user_ids";
-    public static final String EXTRA_DUBLICATE_USER_IDS = "dublicate_user_ids";
+    public static final String EXTRA_DUPLICATE_USER_IDS = "dublicate_user_ids";
+    public static final String EXTRA_NO_USER_IDS_CHECK = "no_user_ids";
     // error message
     public static final String EXTRA_ERROR_MESSAGE = "error_message";
 
@@ -229,32 +238,41 @@ public class RemoteServiceActivity extends ActionBarActivity {
 
         } else if (ACTION_SELECT_PUB_KEYS.equals(action)) {
             long[] selectedMasterKeyIds = intent.getLongArrayExtra(EXTRA_SELECTED_MASTER_KEY_IDS);
+            boolean noUserIdsCheck = intent.getBooleanExtra(EXTRA_NO_USER_IDS_CHECK, true);
             ArrayList<String> missingUserIds = intent
                     .getStringArrayListExtra(EXTRA_MISSING_USER_IDS);
             ArrayList<String> dublicateUserIds = intent
-                    .getStringArrayListExtra(EXTRA_DUBLICATE_USER_IDS);
+                    .getStringArrayListExtra(EXTRA_DUPLICATE_USER_IDS);
 
-            // TODO: do this with spannable instead of HTML to prevent parsing failures with weird user ids
-            String text = "<b>" + getString(R.string.api_select_pub_keys_text) + "</b>";
-            text += "<br/><br/>";
+            SpannableStringBuilder ssb = new SpannableStringBuilder();
+            final SpannableString textIntro = new SpannableString(
+                    noUserIdsCheck ? getString(R.string.api_select_pub_keys_text_no_user_ids)
+                            : getString(R.string.api_select_pub_keys_text)
+            );
+            textIntro.setSpan(new StyleSpan(Typeface.BOLD), 0, textIntro.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            ssb.append(textIntro);
+
             if (missingUserIds != null && missingUserIds.size() > 0) {
-                text += getString(R.string.api_select_pub_keys_missing_text);
-                text += "<br/>";
-                text += "<ul>";
+                ssb.append("\n\n");
+                ssb.append(getString(R.string.api_select_pub_keys_missing_text));
+                ssb.append("\n");
                 for (String userId : missingUserIds) {
-                    text += "<li>" + userId + "</li>";
+                    SpannableString ss = new SpannableString(userId + "\n");
+                    ss.setSpan(new BulletSpan(15, Color.BLACK), 0, ss.length(),
+                            Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                    ssb.append(ss);
                 }
-                text += "</ul>";
-                text += "<br/>";
             }
             if (dublicateUserIds != null && dublicateUserIds.size() > 0) {
-                text += getString(R.string.api_select_pub_keys_dublicates_text);
-                text += "<br/>";
-                text += "<ul>";
+                ssb.append("\n\n");
+                ssb.append(getString(R.string.api_select_pub_keys_dublicates_text));
+                ssb.append("\n");
                 for (String userId : dublicateUserIds) {
-                    text += "<li>" + userId + "</li>";
+                    SpannableString ss = new SpannableString(userId + "\n");
+                    ss.setSpan(new BulletSpan(15, Color.BLACK), 0, ss.length(),
+                            Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                    ssb.append(ss);
                 }
-                text += "</ul>";
             }
 
             // Inflate a "Done"/"Cancel" custom action bar view
@@ -284,8 +302,8 @@ public class RemoteServiceActivity extends ActionBarActivity {
             setContentView(R.layout.api_remote_select_pub_keys);
 
             // set text on view
-            HtmlTextView textView = (HtmlTextView) findViewById(R.id.api_select_pub_keys_text);
-            textView.setHtmlFromString(text, true);
+            TextView textView = (TextView) findViewById(R.id.api_select_pub_keys_text);
+            textView.setText(ssb, TextView.BufferType.SPANNABLE);
 
             /* Load select pub keys fragment */
             // Check that the activity is using the layout version with

@@ -36,6 +36,7 @@ import org.sufficientlysecure.keychain.service.KeychainIntentService;
 import org.sufficientlysecure.keychain.service.OperationResultParcel.OperationLog;
 import org.sufficientlysecure.keychain.service.OperationResults.ImportKeyResult;
 import org.sufficientlysecure.keychain.service.OperationResults.SaveKeyringResult;
+import org.sufficientlysecure.keychain.util.IterableIterator;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.ProgressScaler;
 
@@ -43,6 +44,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 public class PgpImportExport {
@@ -60,10 +62,14 @@ public class PgpImportExport {
     private ProviderHelper mProviderHelper;
 
     public PgpImportExport(Context context, Progressable progressable) {
+        this(context, new ProviderHelper(context), progressable);
+    }
+
+    public PgpImportExport(Context context, ProviderHelper providerHelper, Progressable progressable) {
         super();
         this.mContext = context;
         this.mProgressable = progressable;
-        this.mProviderHelper = new ProviderHelper(context);
+        this.mProviderHelper = providerHelper;
     }
 
     public PgpImportExport(Context context,
@@ -93,7 +99,7 @@ public class PgpImportExport {
         }
     }
 
-    public boolean uploadKeyRingToServer(HkpKeyserver server, CanonicalizedPublicKeyRing keyring) {
+    public void uploadKeyRingToServer(HkpKeyserver server, CanonicalizedPublicKeyRing keyring) throws AddKeyException {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         ArmoredOutputStream aos = null;
         try {
@@ -103,13 +109,9 @@ public class PgpImportExport {
 
             String armoredKey = bos.toString("UTF-8");
             server.add(armoredKey);
-
-            return true;
         } catch (IOException e) {
-            return false;
-        } catch (AddKeyException e) {
-            // TODO: tell the user?
-            return false;
+            Log.e(Constants.TAG, "IOException", e);
+            throw new AddKeyException();
         } finally {
             try {
                 if (aos != null) {
@@ -124,20 +126,23 @@ public class PgpImportExport {
 
     /** Imports keys from given data. If keyIds is given only those are imported */
     public ImportKeyResult importKeyRings(List<ParcelableKeyRing> entries) {
+        return importKeyRings(entries.iterator(), entries.size());
+    }
 
+    public ImportKeyResult importKeyRings(Iterator<ParcelableKeyRing> entries, int num) {
         updateProgress(R.string.progress_importing, 0, 100);
 
         // If there aren't even any keys, do nothing here.
-        if (entries == null || entries.size() == 0) {
+        if (entries == null || !entries.hasNext()) {
             return new ImportKeyResult(
-                    ImportKeyResult.RESULT_FAIL_NOTHING, mProviderHelper.getLog(), 0, 0, 0);
+                    ImportKeyResult.RESULT_FAIL_NOTHING, mProviderHelper.getLog(), 0, 0, 0, 0);
         }
 
-        int newKeys = 0, oldKeys = 0, badKeys = 0;
+        int newKeys = 0, oldKeys = 0, badKeys = 0, secret = 0;
 
         int position = 0;
-        int progSteps = 100 / entries.size();
-        for (ParcelableKeyRing entry : entries) {
+        double progSteps = 100.0 / num;
+        for (ParcelableKeyRing entry : new IterableIterator<ParcelableKeyRing>(entries)) {
             try {
                 UncachedKeyRing key = UncachedKeyRing.decodeFromData(entry.getBytes());
 
@@ -157,10 +162,10 @@ public class PgpImportExport {
                 SaveKeyringResult result;
                 if (key.isSecret()) {
                     result = mProviderHelper.saveSecretKeyRing(key,
-                            new ProgressScaler(mProgressable, position, (position+1)*progSteps, 100));
+                            new ProgressScaler(mProgressable, (int)(position*progSteps), (int)((position+1)*progSteps), 100));
                 } else {
                     result = mProviderHelper.savePublicKeyRing(key,
-                            new ProgressScaler(mProgressable, position, (position+1)*progSteps, 100));
+                            new ProgressScaler(mProgressable, (int)(position*progSteps), (int)((position+1)*progSteps), 100));
                 }
                 if (!result.success()) {
                     badKeys += 1;
@@ -168,6 +173,9 @@ public class PgpImportExport {
                     oldKeys += 1;
                 } else {
                     newKeys += 1;
+                    if (key.isSecret()) {
+                        secret += 1;
+                    }
                 }
 
             } catch (IOException e) {
@@ -204,7 +212,7 @@ public class PgpImportExport {
             }
         }
 
-        return new ImportKeyResult(resultType, log, newKeys, oldKeys, badKeys);
+        return new ImportKeyResult(resultType, log, newKeys, oldKeys, badKeys, secret);
 
     }
 

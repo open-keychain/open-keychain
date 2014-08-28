@@ -18,7 +18,9 @@
 package org.sufficientlysecure.keychain.ui.dialog;
 
 import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Message;
 import android.os.Messenger;
@@ -31,9 +33,10 @@ import android.widget.TextView;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRingData;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
+import org.sufficientlysecure.keychain.service.KeychainIntentService;
+import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
 import org.sufficientlysecure.keychain.util.Log;
 
 import java.util.HashMap;
@@ -47,8 +50,6 @@ public class DeleteKeyDialogFragment extends DialogFragment {
 
     private TextView mMainMessage;
     private View mInflateView;
-
-    private Messenger mMessenger;
 
     /**
      * Creates new instance of this delete file dialog fragment
@@ -68,7 +69,7 @@ public class DeleteKeyDialogFragment extends DialogFragment {
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         final FragmentActivity activity = getActivity();
-        mMessenger = getArguments().getParcelable(ARG_MESSENGER);
+        final Messenger messenger = getArguments().getParcelable(ARG_MESSENGER);
 
         final long[] masterKeyIds = getArguments().getLongArray(ARG_DELETE_MASTER_KEY_IDS);
 
@@ -82,6 +83,8 @@ public class DeleteKeyDialogFragment extends DialogFragment {
         mMainMessage = (TextView) mInflateView.findViewById(R.id.mainMessage);
 
         builder.setTitle(R.string.warning);
+
+        final boolean hasSecret;
 
         // If only a single key has been selected
         if (masterKeyIds.length == 1) {
@@ -98,7 +101,7 @@ public class DeleteKeyDialogFragment extends DialogFragment {
                         }
                 );
                 String userId = (String) data.get(KeyRings.USER_ID);
-                boolean hasSecret = ((Long) data.get(KeyRings.HAS_ANY_SECRET)) == 1;
+                hasSecret = ((Long) data.get(KeyRings.HAS_ANY_SECRET)) == 1;
 
                 // Set message depending on which key it is.
                 mMainMessage.setText(getString(
@@ -107,12 +110,12 @@ public class DeleteKeyDialogFragment extends DialogFragment {
                         userId
                 ));
             } catch (ProviderHelper.NotFoundException e) {
-                sendMessageToHandler(MESSAGE_ERROR, null);
                 dismiss();
                 return null;
             }
         } else {
             mMainMessage.setText(R.string.key_deletion_confirmation_multi);
+            hasSecret = false;
         }
 
         builder.setIcon(R.drawable.ic_dialog_alert_holo_light);
@@ -120,18 +123,45 @@ public class DeleteKeyDialogFragment extends DialogFragment {
             @Override
             public void onClick(DialogInterface dialog, int which) {
 
-                boolean success = false;
-                for (long masterKeyId : masterKeyIds) {
-                    int count = activity.getContentResolver().delete(
-                            KeyRingData.buildPublicKeyRingUri(masterKeyId), null, null
-                    );
-                    success = count > 0;
-                }
-                if (success) {
-                    sendMessageToHandler(MESSAGE_OKAY, null);
-                } else {
-                    sendMessageToHandler(MESSAGE_ERROR, null);
-                }
+                // Send all information needed to service to import key in other thread
+                Intent intent = new Intent(getActivity(), KeychainIntentService.class);
+
+                intent.setAction(KeychainIntentService.ACTION_DELETE);
+
+                // Message is received after importing is done in KeychainIntentService
+                KeychainIntentServiceHandler saveHandler = new KeychainIntentServiceHandler(
+                        getActivity(),
+                        getString(R.string.progress_deleting),
+                        ProgressDialog.STYLE_HORIZONTAL) {
+                    public void handleMessage(Message message) {
+                        // handle messages by standard KeychainIntentServiceHandler first
+                        super.handleMessage(message);
+                        try {
+                            Message msg = Message.obtain();
+                            msg.copyFrom(message);
+                            messenger.send(msg);
+                        } catch (RemoteException e) {
+                            Log.e(Constants.TAG, "messenger error", e);
+                        }
+                    }
+                };
+
+                // fill values for this action
+                Bundle data = new Bundle();
+                data.putLongArray(KeychainIntentService.DELETE_KEY_LIST, masterKeyIds);
+                data.putBoolean(KeychainIntentService.DELETE_IS_SECRET, hasSecret);
+                intent.putExtra(KeychainIntentService.EXTRA_DATA, data);
+
+                // Create a new Messenger for the communication back
+                Messenger messenger = new Messenger(saveHandler);
+                intent.putExtra(KeychainIntentService.EXTRA_MESSENGER, messenger);
+
+                // show progress dialog
+                saveHandler.showProgressDialog(getActivity());
+
+                // start service with intent
+                getActivity().startService(intent);
+
                 dismiss();
             }
         });
@@ -146,23 +176,4 @@ public class DeleteKeyDialogFragment extends DialogFragment {
         return builder.show();
     }
 
-    /**
-     * Send message back to handler which is initialized in a activity
-     *
-     * @param what Message integer you want to send
-     */
-    private void sendMessageToHandler(Integer what, Bundle data) {
-        Message msg = Message.obtain();
-        msg.what = what;
-        if (data != null) {
-            msg.setData(data);
-        }
-        try {
-            mMessenger.send(msg);
-        } catch (RemoteException e) {
-            Log.w(Constants.TAG, "Exception sending message, Is handler present?", e);
-        } catch (NullPointerException e) {
-            Log.w(Constants.TAG, "Messenger is null!", e);
-        }
-    }
 }

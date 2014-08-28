@@ -23,6 +23,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.IBinder;
 import android.os.ParcelFileDescriptor;
+import android.text.TextUtils;
 
 import org.openintents.openpgp.IOpenPgpService;
 import org.openintents.openpgp.OpenPgpMetadata;
@@ -38,6 +39,7 @@ import org.sufficientlysecure.keychain.pgp.PgpDecryptVerifyResult;
 import org.sufficientlysecure.keychain.pgp.PgpHelper;
 import org.sufficientlysecure.keychain.pgp.PgpSignEncrypt;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
+import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainContract.ApiAccounts;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
@@ -56,11 +58,16 @@ import java.util.Set;
 
 public class OpenPgpService extends RemoteService {
 
-    static final String[] KEYRING_PROJECTION =
-            new String[]{
-                    KeyRings._ID,
-                    KeyRings.MASTER_KEY_ID,
-            };
+    static final String[] EMAIL_SEARCH_PROJECTION = new String[]{
+            KeyRings._ID,
+            KeyRings.MASTER_KEY_ID,
+            KeyRings.IS_EXPIRED,
+            KeyRings.IS_REVOKED,
+    };
+
+    // do not pre-select revoked or expired keys
+    static final String EMAIL_SEARCH_WHERE = KeychainContract.KeyRings.IS_REVOKED + " = 0 AND "
+            + KeychainContract.KeyRings.IS_EXPIRED + " = 0";
 
     /**
      * Search database for key ids based on emails.
@@ -69,52 +76,61 @@ public class OpenPgpService extends RemoteService {
      * @return
      */
     private Intent getKeyIdsFromEmails(Intent data, String[] encryptionUserIds) {
-        // find key ids to given emails in database
-        ArrayList<Long> keyIds = new ArrayList<Long>();
-
+        boolean noUserIdsCheck = (encryptionUserIds == null || encryptionUserIds.length == 0);
         boolean missingUserIdsCheck = false;
         boolean duplicateUserIdsCheck = false;
+
+        ArrayList<Long> keyIds = new ArrayList<Long>();
         ArrayList<String> missingUserIds = new ArrayList<String>();
         ArrayList<String> duplicateUserIds = new ArrayList<String>();
+        if (!noUserIdsCheck) {
+            for (String email : encryptionUserIds) {
+                // try to find the key for this specific email
+                Uri uri = KeyRings.buildUnifiedKeyRingsFindByEmailUri(email);
+                Cursor cursor = getContentResolver().query(uri, EMAIL_SEARCH_PROJECTION, EMAIL_SEARCH_WHERE, null, null);
+                try {
+                    // result should be one entry containing the key id
+                    if (cursor != null && cursor.moveToFirst()) {
+                        long id = cursor.getLong(cursor.getColumnIndex(KeyRings.MASTER_KEY_ID));
+                        keyIds.add(id);
+                    } else {
+                        missingUserIdsCheck = true;
+                        missingUserIds.add(email);
+                        Log.d(Constants.TAG, "user id missing");
+                    }
+                    // another entry for this email -> too keys with the same email inside user id
+                    if (cursor != null && cursor.moveToNext()) {
+                        duplicateUserIdsCheck = true;
+                        duplicateUserIds.add(email);
 
-        for (String email : encryptionUserIds) {
-            Uri uri = KeyRings.buildUnifiedKeyRingsFindByEmailUri(email);
-            Cursor cursor = getContentResolver().query(uri, KEYRING_PROJECTION, null, null, null);
-            try {
-                if (cursor != null && cursor.moveToFirst()) {
-                    long id = cursor.getLong(cursor.getColumnIndex(KeyRings.MASTER_KEY_ID));
-                    keyIds.add(id);
-                } else {
-                    missingUserIdsCheck = true;
-                    missingUserIds.add(email);
-                    Log.d(Constants.TAG, "user id missing");
-                }
-                if (cursor != null && cursor.moveToNext()) {
-                    duplicateUserIdsCheck = true;
-                    duplicateUserIds.add(email);
-                    Log.d(Constants.TAG, "more than one user id with the same email");
-                }
-            } finally {
-                if (cursor != null) {
-                    cursor.close();
+                        // also pre-select
+                        long id = cursor.getLong(cursor.getColumnIndex(KeyRings.MASTER_KEY_ID));
+                        keyIds.add(id);
+                        Log.d(Constants.TAG, "more than one user id with the same email");
+                    }
+                } finally {
+                    if (cursor != null) {
+                        cursor.close();
+                    }
                 }
             }
         }
 
-        // convert to long[]
+        // convert ArrayList<Long> to long[]
         long[] keyIdsArray = new long[keyIds.size()];
         for (int i = 0; i < keyIdsArray.length; i++) {
             keyIdsArray[i] = keyIds.get(i);
         }
 
-        // allow the user to verify pub key selection
-        if (missingUserIdsCheck || duplicateUserIdsCheck) {
-            // build PendingIntent
+        if (noUserIdsCheck || missingUserIdsCheck || duplicateUserIdsCheck) {
+            // allow the user to verify pub key selection
+
             Intent intent = new Intent(getBaseContext(), RemoteServiceActivity.class);
             intent.setAction(RemoteServiceActivity.ACTION_SELECT_PUB_KEYS);
             intent.putExtra(RemoteServiceActivity.EXTRA_SELECTED_MASTER_KEY_IDS, keyIdsArray);
+            intent.putExtra(RemoteServiceActivity.EXTRA_NO_USER_IDS_CHECK, noUserIdsCheck);
             intent.putExtra(RemoteServiceActivity.EXTRA_MISSING_USER_IDS, missingUserIds);
-            intent.putExtra(RemoteServiceActivity.EXTRA_DUBLICATE_USER_IDS, duplicateUserIds);
+            intent.putExtra(RemoteServiceActivity.EXTRA_DUPLICATE_USER_IDS, duplicateUserIds);
             intent.putExtra(RemoteServiceActivity.EXTRA_DATA, data);
 
             PendingIntent pi = PendingIntent.getActivity(getBaseContext(), 0,
@@ -126,16 +142,18 @@ public class OpenPgpService extends RemoteService {
             result.putExtra(OpenPgpApi.RESULT_INTENT, pi);
             result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_USER_INTERACTION_REQUIRED);
             return result;
-        }
+        } else {
+            // everything was easy, we have exactly one key for every email
 
-        if (keyIdsArray.length == 0) {
-            return null;
-        }
+            if (keyIdsArray.length == 0) {
+                Log.e(Constants.TAG, "keyIdsArray.length == 0, should never happen!");
+            }
 
-        Intent result = new Intent();
-        result.putExtra(OpenPgpApi.RESULT_KEY_IDS, keyIdsArray);
-        result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_SUCCESS);
-        return result;
+            Intent result = new Intent();
+            result.putExtra(OpenPgpApi.RESULT_KEY_IDS, keyIdsArray);
+            result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_SUCCESS);
+            return result;
+        }
     }
 
     private Intent getNfcIntent(Intent data, byte[] hashToSign, int hashAlgo) {
@@ -191,7 +209,7 @@ public class OpenPgpService extends RemoteService {
                 } catch (PassphraseCacheService.KeyNotFoundException e) {
                     // secret key that is set for this account is deleted?
                     // show account config again!
-                    return getCreateAccountIntent(data, data.getStringExtra(OpenPgpApi.EXTRA_ACCOUNT_NAME));
+                    return getCreateAccountIntent(data, getAccountName(data));
                 }
             }
             if (passphrase == null) {
@@ -270,10 +288,9 @@ public class OpenPgpService extends RemoteService {
                 originalFilename = "";
             }
 
-            long[] keyIds;
-            if (data.hasExtra(OpenPgpApi.EXTRA_KEY_IDS)) {
-                keyIds = data.getLongArrayExtra(OpenPgpApi.EXTRA_KEY_IDS);
-            } else if (data.hasExtra(OpenPgpApi.EXTRA_USER_IDS)) {
+            // first try to get key ids from non-ambiguous key id extra
+            long[] keyIds = data.getLongArrayExtra(OpenPgpApi.EXTRA_KEY_IDS);
+            if (keyIds == null) {
                 // get key ids based on given user ids
                 String[] userIds = data.getStringArrayExtra(OpenPgpApi.EXTRA_USER_IDS);
                 // give params through to activity...
@@ -285,19 +302,7 @@ public class OpenPgpService extends RemoteService {
                     // if not success -> result contains a PendingIntent for user interaction
                     return result;
                 }
-            } else {
-                Intent result = new Intent();
-                result.putExtra(OpenPgpApi.RESULT_ERROR,
-                        new OpenPgpError(OpenPgpError.GENERIC_ERROR,
-                                "Missing parameter user_ids or key_ids!")
-                );
-                result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_ERROR);
-                return result;
             }
-
-            // add own key for encryption
-            keyIds = Arrays.copyOf(keyIds, keyIds.length + 1);
-            keyIds[keyIds.length - 1] = accSettings.getKeyId();
 
             // build InputData and write into OutputStream
             // Get Input- and OutputStream from ParcelFileDescriptor
@@ -315,7 +320,8 @@ public class OpenPgpService extends RemoteService {
                         .setCompressionId(accSettings.getCompression())
                         .setSymmetricEncryptionAlgorithm(accSettings.getEncryptionAlgorithm())
                         .setEncryptionMasterKeyIds(keyIds)
-                        .setOriginalFilename(originalFilename);
+                        .setOriginalFilename(originalFilename)
+                        .setAdditionalEncryptId(accSettings.getKeyId()); // add acc key for encryption
 
                 if (sign) {
                     String passphrase;
@@ -334,9 +340,6 @@ public class OpenPgpService extends RemoteService {
                     builder.setSignatureHashAlgorithm(accSettings.getHashAlgorithm())
                             .setSignatureMasterKeyId(accSettings.getKeyId())
                             .setSignaturePassphrase(passphrase);
-                } else {
-                    // encrypt only
-                    builder.setSignatureMasterKeyId(Constants.key.none);
                 }
 
                 try {
@@ -448,7 +451,7 @@ public class OpenPgpService extends RemoteService {
                         // If signature is unknown we return an _additional_ PendingIntent
                         // to retrieve the missing key
                         Intent intent = new Intent(getBaseContext(), ImportKeysActivity.class);
-                        intent.setAction(ImportKeysActivity.ACTION_IMPORT_KEY_FROM_KEYSERVER_AND_RETURN);
+                        intent.setAction(ImportKeysActivity.ACTION_IMPORT_KEY_FROM_KEYSERVER_AND_RETURN_TO_SERVICE);
                         intent.putExtra(ImportKeysActivity.EXTRA_KEY_ID, signatureResult.getKeyId());
                         intent.putExtra(ImportKeysActivity.EXTRA_PENDING_INTENT_DATA, data);
 
@@ -514,7 +517,7 @@ public class OpenPgpService extends RemoteService {
                 // If keys are not in db we return an additional PendingIntent
                 // to retrieve the missing key
                 Intent intent = new Intent(getBaseContext(), ImportKeysActivity.class);
-                intent.setAction(ImportKeysActivity.ACTION_IMPORT_KEY_FROM_KEYSERVER_AND_RETURN);
+                intent.setAction(ImportKeysActivity.ACTION_IMPORT_KEY_FROM_KEYSERVER_AND_RETURN_TO_SERVICE);
                 intent.putExtra(ImportKeysActivity.EXTRA_KEY_ID, masterKeyId);
                 intent.putExtra(ImportKeysActivity.EXTRA_PENDING_INTENT_DATA, data);
 
@@ -596,6 +599,16 @@ public class OpenPgpService extends RemoteService {
         return null;
     }
 
+    private String getAccountName(Intent data) {
+        String accName = data.getStringExtra(OpenPgpApi.EXTRA_ACCOUNT_NAME);
+        // if no account name is given use name "default"
+        if (TextUtils.isEmpty(accName)) {
+            accName = "default";
+        }
+        Log.d(Constants.TAG, "accName: " + accName);
+        return accName;
+    }
+
     // TODO: multi-threading
     private final IOpenPgpService.Stub mBinder = new IOpenPgpService.Stub() {
 
@@ -606,12 +619,7 @@ public class OpenPgpService extends RemoteService {
                 return errorResult;
             }
 
-            String accName;
-            if (data.getStringExtra(OpenPgpApi.EXTRA_ACCOUNT_NAME) != null) {
-                accName = data.getStringExtra(OpenPgpApi.EXTRA_ACCOUNT_NAME);
-            } else {
-                accName = "default";
-            }
+            String accName = getAccountName(data);
             final AccountSettings accSettings = getAccSettings(accName);
             if (accSettings == null) {
                 return getCreateAccountIntent(data, accName);

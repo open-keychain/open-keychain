@@ -24,10 +24,16 @@ import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.style.ForegroundColorSpan;
 
+import org.spongycastle.asn1.ASN1ObjectIdentifier;
+import org.spongycastle.asn1.nist.NISTNamedCurves;
+import org.spongycastle.asn1.teletrust.TeleTrusTNamedCurves;
+import org.spongycastle.bcpg.ECPublicBCPGKey;
 import org.spongycastle.bcpg.PublicKeyAlgorithmTags;
 import org.spongycastle.util.encoders.Hex;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.service.SaveKeyringParcel.Algorithm;
+import org.sufficientlysecure.keychain.service.SaveKeyringParcel.Curve;
 import org.sufficientlysecure.keychain.util.Log;
 
 import java.security.DigestException;
@@ -37,18 +43,14 @@ import java.util.Locale;
 
 public class PgpKeyHelper {
 
-    public static String getAlgorithmInfo(int algorithm) {
-        return getAlgorithmInfo(null, algorithm, 0);
-    }
-
-    public static String getAlgorithmInfo(Context context, int algorithm) {
-        return getAlgorithmInfo(context, algorithm, 0);
+    public static String getAlgorithmInfo(int algorithm, Integer keySize, String oid) {
+        return getAlgorithmInfo(null, algorithm, keySize, oid);
     }
 
     /**
      * Based on <a href="http://tools.ietf.org/html/rfc2440#section-9.1">OpenPGP Message Format</a>
      */
-    public static String getAlgorithmInfo(Context context, int algorithm, int keySize) {
+    public static String getAlgorithmInfo(Context context, int algorithm, Integer keySize, String oid) {
         String algorithmStr;
 
         switch (algorithm) {
@@ -69,10 +71,19 @@ public class PgpKeyHelper {
                 break;
             }
 
-            case PublicKeyAlgorithmTags.ECDSA:
+            case PublicKeyAlgorithmTags.ECDSA: {
+                if (oid == null) {
+                    return "ECDSA";
+                }
+                String oidName = PgpKeyHelper.getCurveInfo(context, oid);
+                return "ECDSA (" + oidName + ")";
+            }
             case PublicKeyAlgorithmTags.ECDH: {
-                algorithmStr = "ECC";
-                break;
+                if (oid == null) {
+                    return "ECDH";
+                }
+                String oidName = PgpKeyHelper.getCurveInfo(context, oid);
+                return "ECDH (" + oidName + ")";
             }
 
             default: {
@@ -88,6 +99,106 @@ public class PgpKeyHelper {
             return algorithmStr + ", " + keySize + " bit";
         else
             return algorithmStr;
+    }
+
+    public static String getAlgorithmInfo(Algorithm algorithm, Integer keySize, Curve curve) {
+        return getAlgorithmInfo(null, algorithm, keySize, curve);
+    }
+
+    /**
+     * Based on <a href="http://tools.ietf.org/html/rfc2440#section-9.1">OpenPGP Message Format</a>
+     */
+    public static String getAlgorithmInfo(Context context, Algorithm algorithm, Integer keySize, Curve curve) {
+        String algorithmStr;
+
+        switch (algorithm) {
+            case RSA: {
+                algorithmStr = "RSA";
+                break;
+            }
+            case DSA: {
+                algorithmStr = "DSA";
+                break;
+            }
+
+            case ELGAMAL: {
+                algorithmStr = "ElGamal";
+                break;
+            }
+
+            case ECDSA: {
+                algorithmStr = "ECDSA";
+                if (curve != null) {
+                    algorithmStr += " (" + getCurveInfo(context, curve) + ")";
+                }
+                return algorithmStr;
+            }
+            case ECDH: {
+                algorithmStr = "ECDH";
+                if (curve != null) {
+                    algorithmStr += " (" + getCurveInfo(context, curve) + ")";
+                }
+                return algorithmStr;
+            }
+
+            default: {
+                if (context != null) {
+                    algorithmStr = context.getResources().getString(R.string.unknown_algorithm);
+                } else {
+                    algorithmStr = "unknown";
+                }
+                break;
+            }
+        }
+        if (keySize != null && keySize > 0)
+            return algorithmStr + ", " + keySize + " bit";
+        else
+            return algorithmStr;
+    }
+
+    // Return name of a curve. These are names, no need for translation
+    public static String getCurveInfo(Context context, Curve curve) {
+        switch(curve) {
+            case NIST_P256:
+                return "NIST P-256";
+            case NIST_P384:
+                return "NIST P-384";
+            case NIST_P521:
+                return "NIST P-521";
+
+            /* see SaveKeyringParcel
+            case BRAINPOOL_P256:
+                return "Brainpool P-256";
+            case BRAINPOOL_P384:
+                return "Brainpool P-384";
+            case BRAINPOOL_P512:
+                return "Brainpool P-512";
+            */
+        }
+        if (context != null) {
+            return context.getResources().getString(R.string.unknown_algorithm);
+        } else {
+            return "unknown";
+        }
+    }
+
+    public static String getCurveInfo(Context context, String oidStr) {
+        ASN1ObjectIdentifier oid = new ASN1ObjectIdentifier(oidStr);
+
+        String name;
+        name = NISTNamedCurves.getName(oid);
+        if (name != null) {
+            return name;
+        }
+        name = TeleTrusTNamedCurves.getName(oid);
+        if (name != null) {
+            return name;
+        }
+        if (context != null) {
+            return context.getResources().getString(R.string.unknown_algorithm);
+        } else {
+            return "unknown";
+        }
     }
 
     /**

@@ -5,8 +5,6 @@ For a more detailed description and installation instructions go to http://www.o
 
 ### Travis CI Build Status
 
-Currently, some tests could fail even when everything is okay!
-
 [![Build Status](https://travis-ci.org/open-keychain/open-keychain.png?branch=master)](https://travis-ci.org/open-keychain/open-keychain)
 
 ## How to help the project?
@@ -107,6 +105,7 @@ see
 * Tests in https://github.com/bcgit/bc-java/tree/master/pg/src/test/java/org/bouncycastle/openpgp/test
 * Examples in https://github.com/bcgit/bc-java/tree/master/pg/src/main/java/org/bouncycastle/openpgp/examples
 * Mailinglist Archive at http://bouncy-castle.1462172.n4.nabble.com/Bouncy-Castle-Dev-f1462173.html
+* Commit changelog of pg subpackage: https://github.com/bcgit/bc-java/commits/master/pg
 
 
 ## Notes

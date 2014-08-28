@@ -10,13 +10,13 @@
         android:layout_height="?android:attr/listPreferredItemHeight"
         android:orientation="horizontal">
 
-        <EditText
+        <AutoCompleteTextView
             android:id="@+id/import_server_query"
             android:layout_width="0dip"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:gravity="top|left"
-            android:hint="@string/hint_public_keys"
+            android:hint="@string/hint_keyserver_search_hint"
             android:imeOptions="actionSearch"
             android:inputType="textNoSuggestions"
             android:singleLine="true"

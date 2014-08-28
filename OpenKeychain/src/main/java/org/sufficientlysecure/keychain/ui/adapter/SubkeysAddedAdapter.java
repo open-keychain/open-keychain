@@ -33,21 +33,19 @@ import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 public class SubkeysAddedAdapter extends ArrayAdapter<SaveKeyringParcel.SubkeyAdd> {
     private LayoutInflater mInflater;
     private Activity mActivity;
 
-    // hold a private reference to the underlying data List
-    private List<SaveKeyringParcel.SubkeyAdd> mData;
-
     public SubkeysAddedAdapter(Activity activity, List<SaveKeyringParcel.SubkeyAdd> data) {
         super(activity, -1, data);
         mActivity = activity;
         mInflater = (LayoutInflater) activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        mData = data;
     }
 
     static class ViewHolder {
@@ -101,16 +99,21 @@ public class SubkeysAddedAdapter extends ArrayAdapter<SaveKeyringParcel.SubkeyAd
         String algorithmStr = PgpKeyHelper.getAlgorithmInfo(
                 mActivity,
                 holder.mModel.mAlgorithm,
-                holder.mModel.mKeysize
+                holder.mModel.mKeySize,
+                holder.mModel.mCurve
         );
         holder.vKeyId.setText(R.string.edit_key_new_subkey);
         holder.vKeyDetails.setText(algorithmStr);
 
-        if (holder.mModel.mExpiry != null) {
+        if (holder.mModel.mExpiry != 0L) {
             Date expiryDate = new Date(holder.mModel.mExpiry * 1000);
+            Calendar expiryCal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+            expiryCal.setTime(expiryDate);
+            // convert from UTC to time zone of device
+            expiryCal.setTimeZone(TimeZone.getDefault());
 
             holder.vKeyExpiry.setText(getContext().getString(R.string.label_expiry) + ": "
-                    + DateFormat.getDateFormat(getContext()).format(expiryDate));
+                    + DateFormat.getDateFormat(getContext()).format(expiryCal.getTime()));
         } else {
             holder.vKeyExpiry.setText(getContext().getString(R.string.label_expiry) + ": "
                     + getContext().getString(R.string.none));

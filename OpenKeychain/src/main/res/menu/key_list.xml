@@ -32,6 +32,12 @@
         android:title="@string/menu_import_existing_key" />
 
     <item
+        android:id="@+id/menu_key_list_debug_cons"
+        app:showAsAction="never"
+        android:title="Debug / Consolidate"
+        android:visible="false" />
+
+    <item
         android:id="@+id/menu_key_list_debug_read"
         app:showAsAction="never"
         android:title="Debug / DB restore"

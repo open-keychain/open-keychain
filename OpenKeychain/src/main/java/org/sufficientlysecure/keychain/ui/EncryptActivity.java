@@ -73,16 +73,13 @@ public class EncryptActivity extends DrawerActivity implements EncryptActivityIn
     public static final String EXTRA_ENCRYPTION_KEY_IDS = "encryption_key_ids";
 
     // view
-    ViewPager mViewPagerMode;
-    //PagerTabStrip mPagerTabStripMode;
-    PagerTabStripAdapter mTabsAdapterMode;
-    ViewPager mViewPagerContent;
-    PagerTabStrip mPagerTabStripContent;
-    PagerTabStripAdapter mTabsAdapterContent;
+    private int mCurrentMode = PAGER_MODE_ASYMMETRIC;
+    private ViewPager mViewPagerContent;
+    private PagerTabStrip mPagerTabStripContent;
+    private PagerTabStripAdapter mTabsAdapterContent;
 
     // tabs
-    int mSwitchToMode = PAGER_MODE_ASYMMETRIC;
-    int mSwitchToContent = PAGER_CONTENT_MESSAGE;
+    private int mSwitchToContent = PAGER_CONTENT_MESSAGE;
 
     private static final int PAGER_MODE_ASYMMETRIC = 0;
     private static final int PAGER_MODE_SYMMETRIC = 1;
@@ -102,7 +99,7 @@ public class EncryptActivity extends DrawerActivity implements EncryptActivityIn
     private String mMessage = "";
 
     public boolean isModeSymmetric() {
-        return PAGER_MODE_SYMMETRIC == mViewPagerMode.getCurrentItem();
+        return PAGER_MODE_SYMMETRIC == mCurrentMode;
     }
 
     public boolean isContentMessage() {
@@ -312,59 +309,60 @@ public class EncryptActivity extends DrawerActivity implements EncryptActivityIn
         String title = isContentMessage() ? getString(R.string.title_share_message)
                 : getString(R.string.title_share_file);
 
-        // fallback on Android 2.3, otherwise we would get weird results
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
-            return Intent.createChooser(prototype, title);
-        }
-
-        // prevent recursion aka Inception :P
-        String[] blacklist = new String[]{Constants.PACKAGE_NAME + ".ui.EncryptActivity"};
-
-        List<LabeledIntent> targetedShareIntents = new ArrayList<LabeledIntent>();
-
-        List<ResolveInfo> resInfoList = getPackageManager().queryIntentActivities(prototype, 0);
-        List<ResolveInfo> resInfoListFiltered = new ArrayList<ResolveInfo>();
-        if (!resInfoList.isEmpty()) {
-            for (ResolveInfo resolveInfo : resInfoList) {
-                // do not add blacklisted ones
-                if (resolveInfo.activityInfo == null || Arrays.asList(blacklist).contains(resolveInfo.activityInfo.name))
-                    continue;
-
-                resInfoListFiltered.add(resolveInfo);
-            }
-
-            if (!resInfoListFiltered.isEmpty()) {
-                // sorting for nice readability
-                Collections.sort(resInfoListFiltered, new Comparator<ResolveInfo>() {
-                    @Override
-                    public int compare(ResolveInfo first, ResolveInfo second) {
-                        String firstName = first.loadLabel(getPackageManager()).toString();
-                        String secondName = second.loadLabel(getPackageManager()).toString();
-                        return firstName.compareToIgnoreCase(secondName);
-                    }
-                });
-
-                // create the custom intent list
-                for (ResolveInfo resolveInfo : resInfoListFiltered) {
-                    Intent targetedShareIntent = (Intent) prototype.clone();
-                    targetedShareIntent.setPackage(resolveInfo.activityInfo.packageName);
-                    targetedShareIntent.setClassName(resolveInfo.activityInfo.packageName, resolveInfo.activityInfo.name);
-
-                    LabeledIntent lIntent = new LabeledIntent(targetedShareIntent,
-                            resolveInfo.activityInfo.packageName,
-                            resolveInfo.loadLabel(getPackageManager()),
-                            resolveInfo.activityInfo.icon);
-                    targetedShareIntents.add(lIntent);
-                }
-
-                // Create chooser with only one Intent in it
-                Intent chooserIntent = Intent.createChooser(targetedShareIntents.remove(targetedShareIntents.size() - 1), title);
-                // append all other Intents
-                chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, targetedShareIntents.toArray(new Parcelable[]{}));
-                return chooserIntent;
-            }
-
-        }
+        // Disabled, produced an empty list on Huawei U8860 with Android Version 4.0.3
+//        // fallback on Android 2.3, otherwise we would get weird results
+//        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+//            return Intent.createChooser(prototype, title);
+//        }
+//
+//        // prevent recursion aka Inception :P
+//        String[] blacklist = new String[]{Constants.PACKAGE_NAME + ".ui.EncryptActivity"};
+//
+//        List<LabeledIntent> targetedShareIntents = new ArrayList<LabeledIntent>();
+//
+//        List<ResolveInfo> resInfoList = getPackageManager().queryIntentActivities(prototype, 0);
+//        List<ResolveInfo> resInfoListFiltered = new ArrayList<ResolveInfo>();
+//        if (!resInfoList.isEmpty()) {
+//            for (ResolveInfo resolveInfo : resInfoList) {
+//                // do not add blacklisted ones
+//                if (resolveInfo.activityInfo == null || Arrays.asList(blacklist).contains(resolveInfo.activityInfo.name))
+//                    continue;
+//
+//                resInfoListFiltered.add(resolveInfo);
+//            }
+//
+//            if (!resInfoListFiltered.isEmpty()) {
+//                // sorting for nice readability
+//                Collections.sort(resInfoListFiltered, new Comparator<ResolveInfo>() {
+//                    @Override
+//                    public int compare(ResolveInfo first, ResolveInfo second) {
+//                        String firstName = first.loadLabel(getPackageManager()).toString();
+//                        String secondName = second.loadLabel(getPackageManager()).toString();
+//                        return firstName.compareToIgnoreCase(secondName);
+//                    }
+//                });
+//
+//                // create the custom intent list
+//                for (ResolveInfo resolveInfo : resInfoListFiltered) {
+//                    Intent targetedShareIntent = (Intent) prototype.clone();
+//                    targetedShareIntent.setPackage(resolveInfo.activityInfo.packageName);
+//                    targetedShareIntent.setClassName(resolveInfo.activityInfo.packageName, resolveInfo.activityInfo.name);
+//
+//                    LabeledIntent lIntent = new LabeledIntent(targetedShareIntent,
+//                            resolveInfo.activityInfo.packageName,
+//                            resolveInfo.loadLabel(getPackageManager()),
+//                            resolveInfo.activityInfo.icon);
+//                    targetedShareIntents.add(lIntent);
+//                }
+//
+//                // Create chooser with only one Intent in it
+//                Intent chooserIntent = Intent.createChooser(targetedShareIntents.remove(targetedShareIntents.size() - 1), title);
+//                // append all other Intents
+//                chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, targetedShareIntents.toArray(new Parcelable[]{}));
+//                return chooserIntent;
+//            }
+//
+//        }
 
         // fallback to Android's default chooser
         return Intent.createChooser(prototype, title);
@@ -385,7 +383,7 @@ public class EncryptActivity extends DrawerActivity implements EncryptActivityIn
                 sendIntent = new Intent(Intent.ACTION_SEND_MULTIPLE);
                 sendIntent.putExtra(Intent.EXTRA_STREAM, mOutputUris);
             }
-            sendIntent.setType("application/pgp-encrypted");
+            sendIntent.setType("application/octet-stream");
         }
         if (!isModeSymmetric() && mEncryptionUserIds != null) {
             Set<String> users = new HashSet<String>();
@@ -474,13 +472,9 @@ public class EncryptActivity extends DrawerActivity implements EncryptActivityIn
     }
 
     private void initView() {
-        mViewPagerMode = (ViewPager) findViewById(R.id.encrypt_pager_mode);
-        //mPagerTabStripMode = (PagerTabStrip) findViewById(R.id.encrypt_pager_tab_strip_mode);
         mViewPagerContent = (ViewPager) findViewById(R.id.encrypt_pager_content);
         mPagerTabStripContent = (PagerTabStrip) findViewById(R.id.encrypt_pager_tab_strip_content);
 
-        mTabsAdapterMode = new PagerTabStripAdapter(this);
-        mViewPagerMode.setAdapter(mTabsAdapterMode);
         mTabsAdapterContent = new PagerTabStripAdapter(this);
         mViewPagerContent.setAdapter(mTabsAdapterContent);
     }
@@ -502,10 +496,7 @@ public class EncryptActivity extends DrawerActivity implements EncryptActivityIn
 
         // Handle intent actions
         handleActions(getIntent());
-
-        mTabsAdapterMode.addTab(EncryptAsymmetricFragment.class, null, getString(R.string.label_asymmetric));
-        mTabsAdapterMode.addTab(EncryptSymmetricFragment.class, null, getString(R.string.label_symmetric));
-        mViewPagerMode.setCurrentItem(mSwitchToMode);
+        updateModeFragment();
 
         mTabsAdapterContent.addTab(EncryptMessageFragment.class, null, getString(R.string.label_message));
         mTabsAdapterContent.addTab(EncryptFileFragment.class, null, getString(R.string.label_files));
@@ -521,6 +512,16 @@ public class EncryptActivity extends DrawerActivity implements EncryptActivityIn
         return super.onCreateOptionsMenu(menu);
     }
 
+    private void updateModeFragment() {
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.encrypt_pager_mode,
+                        mCurrentMode == PAGER_MODE_SYMMETRIC
+                                ? new EncryptSymmetricFragment()
+                                : new EncryptAsymmetricFragment())
+                .commitAllowingStateLoss();
+        getSupportFragmentManager().executePendingTransactions();
+    }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.isCheckable()) {
@@ -528,9 +529,8 @@ public class EncryptActivity extends DrawerActivity implements EncryptActivityIn
         }
         switch (item.getItemId()) {
             case R.id.check_use_symmetric:
-                mSwitchToMode = item.isChecked() ? PAGER_MODE_SYMMETRIC : PAGER_MODE_ASYMMETRIC;
-
-                mViewPagerMode.setCurrentItem(mSwitchToMode);
+                mCurrentMode = item.isChecked() ? PAGER_MODE_SYMMETRIC : PAGER_MODE_ASYMMETRIC;
+                updateModeFragment();
                 notifyUpdate();
                 break;
             case R.id.check_use_armor:
@@ -604,7 +604,7 @@ public class EncryptActivity extends DrawerActivity implements EncryptActivityIn
         mEncryptionKeyIds = extras.getLongArray(EXTRA_ENCRYPTION_KEY_IDS);
 
         // preselect keys given by intent
-        mSwitchToMode = PAGER_MODE_ASYMMETRIC;
+        mCurrentMode = PAGER_MODE_ASYMMETRIC;
 
         /**
          * Main Actions

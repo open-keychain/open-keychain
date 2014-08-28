@@ -33,6 +33,7 @@ import android.widget.TextView;
 
 import org.spongycastle.bcpg.PublicKeyAlgorithmTags;
 import org.spongycastle.bcpg.sig.KeyFlags;
+import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.helper.Preferences;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
@@ -42,6 +43,8 @@ import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
 import org.sufficientlysecure.keychain.service.OperationResultParcel;
 import org.sufficientlysecure.keychain.service.OperationResults;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
+import org.sufficientlysecure.keychain.service.SaveKeyringParcel.Algorithm;
+import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Notify;
 
 public class CreateKeyFinalFragment extends Fragment {
@@ -125,10 +128,9 @@ public class CreateKeyFinalFragment extends Fragment {
         Intent intent = new Intent(getActivity(), KeychainIntentService.class);
         intent.setAction(KeychainIntentService.ACTION_SAVE_KEYRING);
 
-        // Message is received after importing is done in KeychainIntentService
         KeychainIntentServiceHandler saveHandler = new KeychainIntentServiceHandler(
                 getActivity(),
-                getString(R.string.progress_importing),
+                getString(R.string.progress_building_key),
                 ProgressDialog.STYLE_HORIZONTAL) {
             public void handleMessage(Message message) {
                 // handle messages by standard KeychainIntentServiceHandler first
@@ -140,26 +142,21 @@ public class CreateKeyFinalFragment extends Fragment {
                     if (returnData == null) {
                         return;
                     }
-                    final OperationResults.EditKeyResult result =
+                    final OperationResults.SaveKeyringResult result =
                             returnData.getParcelable(OperationResultParcel.EXTRA_RESULT);
                     if (result == null) {
+                        Log.e(Constants.TAG, "result == null");
                         return;
                     }
 
-                    if (result.getResult() == OperationResultParcel.RESULT_OK) {
-                        if (mUploadCheckbox.isChecked()) {
-                            // result will be displayed after upload
-                            uploadKey(result);
-                        } else {
-                            // TODO: return result
-                            result.createNotify(getActivity());
-
-                            getActivity().setResult(Activity.RESULT_OK);
-                            getActivity().finish();
-                        }
+                    if (mUploadCheckbox.isChecked()) {
+                        // result will be displayed after upload
+                        uploadKey(result);
                     } else {
-                        // display result on error without finishing activity
-                        result.createNotify(getActivity());
+                        Intent data = new Intent();
+                        data.putExtra(OperationResultParcel.EXTRA_RESULT, result);
+                        getActivity().setResult(Activity.RESULT_OK, data);
+                        getActivity().finish();
                     }
                 }
             }
@@ -169,9 +166,12 @@ public class CreateKeyFinalFragment extends Fragment {
         Bundle data = new Bundle();
 
         SaveKeyringParcel parcel = new SaveKeyringParcel();
-        parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(PublicKeyAlgorithmTags.RSA_GENERAL, 4096, KeyFlags.CERTIFY_OTHER, null));
-        parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(PublicKeyAlgorithmTags.RSA_GENERAL, 4096, KeyFlags.SIGN_DATA, null));
-        parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(PublicKeyAlgorithmTags.RSA_GENERAL, 4096, KeyFlags.ENCRYPT_COMMS | KeyFlags.ENCRYPT_STORAGE, null));
+        parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
+                Algorithm.RSA, 4096, null, KeyFlags.CERTIFY_OTHER, 0L));
+        parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
+                Algorithm.RSA, 4096, null, KeyFlags.SIGN_DATA, 0L));
+        parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
+                Algorithm.RSA, 4096, null, KeyFlags.ENCRYPT_COMMS | KeyFlags.ENCRYPT_STORAGE, 0L));
         String userId = KeyRing.createUserId(mName, mEmail, null);
         parcel.mAddUserIds.add(userId);
         parcel.mChangePrimaryUserId = userId;
@@ -191,7 +191,7 @@ public class CreateKeyFinalFragment extends Fragment {
         getActivity().startService(intent);
     }
 
-    private void uploadKey(final OperationResults.EditKeyResult editKeyResult) {
+    private void uploadKey(final OperationResults.SaveKeyringResult saveKeyResult) {
         // Send all information needed to service to upload key in other thread
         final Intent intent = new Intent(getActivity(), KeychainIntentService.class);
 
@@ -199,7 +199,7 @@ public class CreateKeyFinalFragment extends Fragment {
 
         // set data uri as path to keyring
         Uri blobUri = KeychainContract.KeyRings.buildUnifiedKeyRingUri(
-                editKeyResult.mRingMasterKeyId);
+                saveKeyResult.mRingMasterKeyId);
         intent.setData(blobUri);
 
         // fill values for this action
@@ -211,7 +211,6 @@ public class CreateKeyFinalFragment extends Fragment {
 
         intent.putExtra(KeychainIntentService.EXTRA_DATA, data);
 
-        // Message is received after uploading is done in KeychainIntentService
         KeychainIntentServiceHandler saveHandler = new KeychainIntentServiceHandler(getActivity(),
                 getString(R.string.progress_uploading), ProgressDialog.STYLE_HORIZONTAL) {
             public void handleMessage(Message message) {
@@ -219,20 +218,16 @@ public class CreateKeyFinalFragment extends Fragment {
                 super.handleMessage(message);
 
                 if (message.arg1 == KeychainIntentServiceHandler.MESSAGE_OKAY) {
-                    // TODO: not supported by upload?
-//                    if (result.getResult() == OperationResultParcel.RESULT_OK) {
-                    // TODO: return result
-                    editKeyResult.createNotify(getActivity());
+                    // TODO: upload operation needs a result!
+                    // TODO: then combine these results
+                    //if (result.getResult() == OperationResultParcel.RESULT_OK) {
+                    //Notify.showNotify(getActivity(), R.string.key_send_success,
+                    //Notify.Style.INFO);
 
-                    Notify.showNotify(getActivity(), R.string.key_send_success,
-                            Notify.Style.INFO);
-
-                    getActivity().setResult(Activity.RESULT_OK);
+                    Intent data = new Intent();
+                    data.putExtra(OperationResultParcel.EXTRA_RESULT, saveKeyResult);
+                    getActivity().setResult(Activity.RESULT_OK, data);
                     getActivity().finish();
-//                    } else {
-//                        // display result on error without finishing activity
-//                        editKeyResult.createNotify(getActivity());
-//                    }
                 }
             }
         };

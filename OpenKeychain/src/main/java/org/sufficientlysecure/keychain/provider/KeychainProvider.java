@@ -1,6 +1,7 @@
 /*
  * Copyright (C) 2012-2014 Dominik Schürmann <dominik@dominikschuermann.de>
  * Copyright (C) 2010-2014 Thialfihar <thi@thialfihar.org>
+ * Copyright (C) 2014 Vincent Breitmoser <v.breitmoser@mugenguild.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -245,6 +246,7 @@ public class KeychainProvider extends ContentProvider {
                 projectionMap.put(KeyRings.MASTER_KEY_ID, Tables.KEYS + "." + Keys.MASTER_KEY_ID);
                 projectionMap.put(KeyRings.KEY_ID, Tables.KEYS + "." + Keys.KEY_ID);
                 projectionMap.put(KeyRings.KEY_SIZE, Tables.KEYS + "." + Keys.KEY_SIZE);
+                projectionMap.put(KeyRings.KEY_CURVE_OID, Tables.KEYS + "." + Keys.KEY_CURVE_OID);
                 projectionMap.put(KeyRings.IS_REVOKED, Tables.KEYS + "." + Keys.IS_REVOKED);
                 projectionMap.put(KeyRings.CAN_CERTIFY, Tables.KEYS + "." + Keys.CAN_CERTIFY);
                 projectionMap.put(KeyRings.CAN_ENCRYPT, Tables.KEYS + "." + Keys.CAN_ENCRYPT);
@@ -271,6 +273,8 @@ public class KeychainProvider extends ContentProvider {
                         "kE." + Keys.KEY_ID + " AS " + KeyRings.HAS_ENCRYPT);
                 projectionMap.put(KeyRings.HAS_SIGN,
                         "kS." + Keys.KEY_ID + " AS " + KeyRings.HAS_SIGN);
+                projectionMap.put(KeyRings.HAS_CERTIFY,
+                        "kC." + Keys.KEY_ID + " AS " + KeyRings.HAS_CERTIFY);
                 projectionMap.put(KeyRings.IS_EXPIRED,
                         "(" + Tables.KEYS + "." + Keys.EXPIRY + " IS NOT NULL AND " + Tables.KEYS + "." + Keys.EXPIRY
                                 + " < " + new Date().getTime() / 1000 + ") AS " + KeyRings.IS_EXPIRED);
@@ -324,6 +328,15 @@ public class KeychainProvider extends ContentProvider {
                                 + " AND ( kS." + Keys.EXPIRY + " IS NULL OR kS." + Keys.EXPIRY
                                     + " >= " + new Date().getTime() / 1000 + " )"
                             + ")" : "")
+                        + (plist.contains(KeyRings.HAS_CERTIFY) ?
+                            " LEFT JOIN " + Tables.KEYS + " AS kC ON ("
+                                +"kC." + Keys.MASTER_KEY_ID
+                                + " = " + Tables.KEYS + "." + Keys.MASTER_KEY_ID
+                                + " AND kC." + Keys.IS_REVOKED + " = 0"
+                                + " AND kC." + Keys.CAN_CERTIFY + " = 1"
+                                + " AND ( kC." + Keys.EXPIRY + " IS NULL OR kC." + Keys.EXPIRY
+                                + " >= " + new Date().getTime() / 1000 + " )"
+                                + ")" : "")
                     );
                 qb.appendWhere(Tables.KEYS + "." + Keys.RANK + " = 0");
                 // in case there are multiple verifying certificates
@@ -400,6 +413,7 @@ public class KeychainProvider extends ContentProvider {
                 projectionMap.put(Keys.RANK, Tables.KEYS + "." + Keys.RANK);
                 projectionMap.put(Keys.KEY_ID, Keys.KEY_ID);
                 projectionMap.put(Keys.KEY_SIZE, Keys.KEY_SIZE);
+                projectionMap.put(Keys.KEY_CURVE_OID, Keys.KEY_CURVE_OID);
                 projectionMap.put(Keys.IS_REVOKED, Keys.IS_REVOKED);
                 projectionMap.put(Keys.CAN_CERTIFY, Keys.CAN_CERTIFY);
                 projectionMap.put(Keys.CAN_ENCRYPT, Keys.CAN_ENCRYPT);
@@ -674,6 +688,11 @@ public class KeychainProvider extends ContentProvider {
         final int match = mUriMatcher.match(uri);
 
         switch (match) {
+            // dangerous
+            case KEY_RINGS_UNIFIED: {
+                count = db.delete(Tables.KEY_RINGS_PUBLIC, null, null);
+                break;
+            }
             case KEY_RING_PUBLIC: {
                 @SuppressWarnings("ConstantConditions") // ensured by uriMatcher above
                 String selection = KeyRings.MASTER_KEY_ID + " = " + uri.getPathSegments().get(1);

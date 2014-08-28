@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
@@ -8,6 +7,7 @@
     <include layout="@layout/notify_area" />
 
     <ScrollView
+        android:id="@+id/certify_scroll_view"
         android:layout_width="wrap_content"
         android:layout_height="match_parent">
 
@@ -26,14 +26,10 @@
                 android:layout_marginTop="14dp"
                 android:text="@string/section_certification_key" />
 
-            <fragment
-                android:id="@+id/sign_key_select_key_fragment"
-                android:name="org.sufficientlysecure.keychain.ui.SelectSecretKeyLayoutFragment"
+            <org.sufficientlysecure.keychain.ui.widget.CertifyKeySpinner
+                android:id="@+id/certify_key_spinner"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="4dp"
-                android:layout_marginTop="4dp"
-                tools:layout="@layout/select_secret_key_layout_fragment" />
+                android:layout_height="wrap_content" />
 
             <TextView
                 style="@style/SectionHeader"
@@ -119,8 +115,7 @@
             <org.sufficientlysecure.keychain.ui.widget.FixedListView
                 android:id="@+id/view_key_user_ids"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:descendantFocusability="blocksDescendants" />
+                android:layout_height="wrap_content" />
 
             <TextView
                 style="@style/SectionHeader"
@@ -183,7 +178,6 @@
                     android:layout_gravity="center_vertical" />
 
             </LinearLayout>
-
 
         </LinearLayout>
 

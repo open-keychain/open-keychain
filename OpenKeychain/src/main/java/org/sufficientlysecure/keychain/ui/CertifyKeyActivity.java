@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2014 Dominik Schürmann <dominik@dominikschuermann.de>
+ * Copyright (C) 2014 Vincent Breitmoser <v.breitmoser@mugenguild.com>
  * Copyright (C) 2011 Senecaso
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -40,6 +41,7 @@ import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.ScrollView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -53,9 +55,12 @@ import org.sufficientlysecure.keychain.provider.KeychainContract.UserIds;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
 import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
 import org.sufficientlysecure.keychain.service.OperationResultParcel;
+import org.sufficientlysecure.keychain.service.OperationResults;
 import org.sufficientlysecure.keychain.service.PassphraseCacheService;
 import org.sufficientlysecure.keychain.ui.adapter.UserIdsAdapter;
 import org.sufficientlysecure.keychain.ui.dialog.PassphraseDialogFragment;
+import org.sufficientlysecure.keychain.ui.widget.CertifyKeySpinner;
+import org.sufficientlysecure.keychain.ui.widget.KeySpinner;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Notify;
 
@@ -64,18 +69,18 @@ import java.util.ArrayList;
 /**
  * Signs the specified public key with the specified secret master key
  */
-public class CertifyKeyActivity extends ActionBarActivity implements
-        SelectSecretKeyLayoutFragment.SelectSecretKeyCallback, LoaderManager.LoaderCallbacks<Cursor> {
+public class CertifyKeyActivity extends ActionBarActivity implements LoaderManager.LoaderCallbacks<Cursor> {
     private View mCertifyButton;
     private ImageView mActionCertifyImage;
     private CheckBox mUploadKeyCheckbox;
     private Spinner mSelectKeyserverSpinner;
+    private ScrollView mScrollView;
 
-    private SelectSecretKeyLayoutFragment mSelectKeyFragment;
+    private CertifyKeySpinner mCertifyKeySpinner;
 
     private Uri mDataUri;
-    private long mPubKeyId = 0;
-    private long mMasterKeyId = 0;
+    private long mPubKeyId = Constants.key.none;
+    private long mMasterKeyId = Constants.key.none;
 
     private ListView mUserIds;
     private UserIdsAdapter mUserIdsAdapter;
@@ -89,20 +94,24 @@ public class CertifyKeyActivity extends ActionBarActivity implements
 
         setContentView(R.layout.certify_key_activity);
 
-        mSelectKeyFragment = (SelectSecretKeyLayoutFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.sign_key_select_key_fragment);
+        mCertifyKeySpinner = (CertifyKeySpinner) findViewById(R.id.certify_key_spinner);
         mSelectKeyserverSpinner = (Spinner) findViewById(R.id.upload_key_keyserver);
         mUploadKeyCheckbox = (CheckBox) findViewById(R.id.sign_key_upload_checkbox);
         mCertifyButton = findViewById(R.id.certify_key_certify_button);
         mActionCertifyImage = (ImageView) findViewById(R.id.certify_key_action_certify_image);
         mUserIds = (ListView) findViewById(R.id.view_key_user_ids);
+        mScrollView = (ScrollView) findViewById(R.id.certify_scroll_view);
 
         // make certify image gray, like action icons
         mActionCertifyImage.setColorFilter(getResources().getColor(R.color.tertiary_text_light),
                 PorterDuff.Mode.SRC_IN);
 
-        mSelectKeyFragment.setCallback(this);
-        mSelectKeyFragment.setFilterCertify(true);
+        mCertifyKeySpinner.setOnKeyChangedListener(new KeySpinner.OnKeyChangedListener() {
+            @Override
+            public void onKeyChanged(long masterKeyId) {
+                mMasterKeyId = masterKeyId;
+            }
+        });
 
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
                 android.R.layout.simple_spinner_item, Preferences.getPreferences(this)
@@ -135,9 +144,9 @@ public class CertifyKeyActivity extends ActionBarActivity implements
             public void onClick(View v) {
                 if (mPubKeyId != 0) {
                     if (mMasterKeyId == 0) {
-                        mSelectKeyFragment.setError(getString(R.string.select_key_to_certify));
                         Notify.showNotify(CertifyKeyActivity.this, getString(R.string.select_key_to_certify),
                                 Notify.Style.ERROR);
+                        scrollUp();
                     } else {
                         initiateCertifying();
                     }
@@ -160,6 +169,14 @@ public class CertifyKeyActivity extends ActionBarActivity implements
 
         getSupportLoaderManager().initLoader(LOADER_ID_KEYRING, null, this);
         getSupportLoaderManager().initLoader(LOADER_ID_USER_IDS, null, this);
+    }
+
+    private void scrollUp() {
+        mScrollView.post(new Runnable() {
+            public void run() {
+                mScrollView.fullScroll(ScrollView.FOCUS_UP);
+            }
+        });
     }
 
     static final String USER_IDS_SELECTION = UserIds.IS_REVOKED + " = 0";
@@ -199,6 +216,7 @@ public class CertifyKeyActivity extends ActionBarActivity implements
                 if (data.moveToFirst()) {
                     // TODO: put findViewById in onCreate!
                     mPubKeyId = data.getLong(INDEX_MASTER_KEY_ID);
+                    mCertifyKeySpinner.setHiddenMasterKeyId(mPubKeyId);
                     String keyIdStr = PgpKeyHelper.convertKeyIdToHex(mPubKeyId);
                     ((TextView) findViewById(R.id.key_id)).setText(keyIdStr);
 
@@ -213,6 +231,9 @@ public class CertifyKeyActivity extends ActionBarActivity implements
                 break;
             case LOADER_ID_USER_IDS:
                 mUserIdsAdapter.swapCursor(data);
+                // when some user ids are pre-checked, the focus is requested and the scroll view goes
+                // down. This fixes it.
+                scrollUp();
                 break;
         }
     }
@@ -292,8 +313,14 @@ public class CertifyKeyActivity extends ActionBarActivity implements
 
                 if (message.arg1 == KeychainIntentServiceHandler.MESSAGE_OKAY) {
 
-                    Notify.showNotify(CertifyKeyActivity.this, R.string.key_certify_success,
-                            Notify.Style.INFO);
+//                    Notify.showNotify(CertifyKeyActivity.this, R.string.key_certify_success,
+//                            Notify.Style.INFO);
+
+                    OperationResultParcel result = new OperationResultParcel(OperationResultParcel.RESULT_OK, null);
+                    Intent intent = new Intent();
+                    intent.putExtra(OperationResultParcel.EXTRA_RESULT, result);
+                    CertifyKeyActivity.this.setResult(RESULT_OK, intent);
+                    CertifyKeyActivity.this.finish();
 
                     // check if we need to send the key to the server or not
                     if (mUploadKeyCheckbox.isChecked()) {
@@ -345,13 +372,14 @@ public class CertifyKeyActivity extends ActionBarActivity implements
                 super.handleMessage(message);
 
                 if (message.arg1 == KeychainIntentServiceHandler.MESSAGE_OKAY) {
-                    Intent intent = new Intent();
-                    intent.putExtra(OperationResultParcel.EXTRA_RESULT, message.getData());
-                    Notify.showNotify(CertifyKeyActivity.this, R.string.key_send_success,
-                            Notify.Style.INFO);
+                    //Notify.showNotify(CertifyKeyActivity.this, R.string.key_send_success,
+                    //Notify.Style.INFO);
 
-                    setResult(RESULT_OK);
-                    finish();
+                    OperationResultParcel result = new OperationResultParcel(OperationResultParcel.RESULT_OK, null);
+                    Intent intent = new Intent();
+                    intent.putExtra(OperationResultParcel.EXTRA_RESULT, result);
+                    CertifyKeyActivity.this.setResult(RESULT_OK, intent);
+                    CertifyKeyActivity.this.finish();
                 }
             }
         };
@@ -365,14 +393,6 @@ public class CertifyKeyActivity extends ActionBarActivity implements
 
         // start service with intent
         startService(intent);
-    }
-
-    /**
-     * callback from select key fragment
-     */
-    @Override
-    public void onKeySelected(long secretKeyId) {
-        mMasterKeyId = secretKeyId;
     }
 
     @Override

@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2012-2014 Dominik Schürmann <dominik@dominikschuermann.de>
+ * Copyright (C) 2014 Vincent Breitmoser <v.breitmoser@mugenguild.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,12 +29,16 @@ import android.os.RemoteException;
 import android.support.v4.util.LongSparseArray;
 
 import org.sufficientlysecure.keychain.Constants;
+import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.helper.Preferences;
+import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedPublicKey;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedPublicKeyRing;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKeyRing;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.pgp.NullProgressable;
 import org.sufficientlysecure.keychain.pgp.PgpHelper;
+import org.sufficientlysecure.keychain.pgp.PgpImportExport;
 import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
 import org.sufficientlysecure.keychain.pgp.Progressable;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
@@ -51,9 +56,12 @@ import org.sufficientlysecure.keychain.remote.AppSettings;
 import org.sufficientlysecure.keychain.service.OperationResultParcel.LogLevel;
 import org.sufficientlysecure.keychain.service.OperationResultParcel.LogType;
 import org.sufficientlysecure.keychain.service.OperationResultParcel.OperationLog;
+import org.sufficientlysecure.keychain.service.OperationResults.ConsolidateResult;
 import org.sufficientlysecure.keychain.service.OperationResults.SaveKeyringResult;
+import org.sufficientlysecure.keychain.util.FileImportCache;
 import org.sufficientlysecure.keychain.util.IterableIterator;
 import org.sufficientlysecure.keychain.util.Log;
+import org.sufficientlysecure.keychain.util.ProgressFixedScaler;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -63,6 +71,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -86,19 +95,15 @@ public class ProviderHelper {
         this(context, new OperationLog(), 0);
     }
 
+    public ProviderHelper(Context context, OperationLog log) {
+        this(context, log, 0);
+    }
+
     public ProviderHelper(Context context, OperationLog log, int indent) {
         mContext = context;
         mContentResolver = context.getContentResolver();
         mLog = log;
         mIndent = indent;
-    }
-
-    public void resetLog() {
-        if(mLog != null) {
-            // Start a new log (leaving the old one intact)
-            mLog = new OperationLog();
-            mIndent = 0;
-        }
     }
 
     public OperationLog getLog() {
@@ -322,6 +327,7 @@ public class ProviderHelper {
 
                     values.put(Keys.KEY_ID, key.getKeyId());
                     values.put(Keys.KEY_SIZE, key.getBitStrength());
+                    values.put(Keys.KEY_CURVE_OID, key.getCurveOid());
                     values.put(Keys.ALGORITHM, key.getAlgorithm());
                     values.put(Keys.FINGERPRINT, key.getFingerprint());
 
@@ -644,7 +650,7 @@ public class ProviderHelper {
 
             if (publicRing.isSecret()) {
                 log(LogLevel.ERROR, LogType.MSG_IP_BAD_TYPE_SECRET);
-                return new SaveKeyringResult(SaveKeyringResult.RESULT_ERROR, mLog);
+                return new SaveKeyringResult(SaveKeyringResult.RESULT_ERROR, mLog, null);
             }
 
             CanonicalizedPublicKeyRing canPublicRing;
@@ -658,20 +664,20 @@ public class ProviderHelper {
 
                 // If this is null, there is an error in the log so we can just return
                 if (publicRing == null) {
-                    return new SaveKeyringResult(SaveKeyringResult.RESULT_ERROR, mLog);
+                    return new SaveKeyringResult(SaveKeyringResult.RESULT_ERROR, mLog, null);
                 }
 
                 // Canonicalize this keyring, to assert a number of assumptions made about it.
                 canPublicRing = (CanonicalizedPublicKeyRing) publicRing.canonicalize(mLog, mIndent);
                 if (canPublicRing == null) {
-                    return new SaveKeyringResult(SaveKeyringResult.RESULT_ERROR, mLog);
+                    return new SaveKeyringResult(SaveKeyringResult.RESULT_ERROR, mLog, null);
                 }
 
                 // Early breakout if nothing changed
                 if (Arrays.hashCode(publicRing.getEncoded())
                         == Arrays.hashCode(oldPublicRing.getEncoded())) {
                     log(LogLevel.OK, LogType.MSG_IP_SUCCESS_IDENTICAL);
-                    return new SaveKeyringResult(SaveKeyringResult.UPDATED, mLog);
+                    return new SaveKeyringResult(SaveKeyringResult.UPDATED, mLog, null);
                 }
             } catch (NotFoundException e) {
                 // Not an issue, just means we are dealing with a new keyring.
@@ -679,7 +685,7 @@ public class ProviderHelper {
                 // Canonicalize this keyring, to assert a number of assumptions made about it.
                 canPublicRing = (CanonicalizedPublicKeyRing) publicRing.canonicalize(mLog, mIndent);
                 if (canPublicRing == null) {
-                    return new SaveKeyringResult(SaveKeyringResult.RESULT_ERROR, mLog);
+                    return new SaveKeyringResult(SaveKeyringResult.RESULT_ERROR, mLog, null);
                 }
 
             }
@@ -692,12 +698,12 @@ public class ProviderHelper {
                 // Merge data from new public ring into secret one
                 secretRing = secretRing.merge(publicRing, mLog, mIndent);
                 if (secretRing == null) {
-                    return new SaveKeyringResult(SaveKeyringResult.RESULT_ERROR, mLog);
+                    return new SaveKeyringResult(SaveKeyringResult.RESULT_ERROR, mLog, null);
                 }
                 // This has always been a secret key ring, this is a safe cast
                 canSecretRing = (CanonicalizedSecretKeyRing) secretRing.canonicalize(mLog, mIndent);
                 if (canSecretRing == null) {
-                    return new SaveKeyringResult(SaveKeyringResult.RESULT_ERROR, mLog);
+                    return new SaveKeyringResult(SaveKeyringResult.RESULT_ERROR, mLog, null);
                 }
 
             } catch (NotFoundException e) {
@@ -716,11 +722,11 @@ public class ProviderHelper {
                 }
             }
 
-            return new SaveKeyringResult(result, mLog);
+            return new SaveKeyringResult(result, mLog, canSecretRing);
 
         } catch (IOException e) {
             log(LogLevel.ERROR, LogType.MSG_IP_FAIL_IO_EXC);
-            return new SaveKeyringResult(SaveKeyringResult.RESULT_ERROR, mLog);
+            return new SaveKeyringResult(SaveKeyringResult.RESULT_ERROR, mLog, null);
         } finally {
             mIndent -= 1;
         }
@@ -736,7 +742,7 @@ public class ProviderHelper {
 
             if ( ! secretRing.isSecret()) {
                 log(LogLevel.ERROR, LogType.MSG_IS_BAD_TYPE_PUBLIC);
-                return new SaveKeyringResult(SaveKeyringResult.RESULT_ERROR, mLog);
+                return new SaveKeyringResult(SaveKeyringResult.RESULT_ERROR, mLog, null);
             }
 
             CanonicalizedSecretKeyRing canSecretRing;
@@ -750,14 +756,14 @@ public class ProviderHelper {
 
                 // If this is null, there is an error in the log so we can just return
                 if (secretRing == null) {
-                    return new SaveKeyringResult(SaveKeyringResult.RESULT_ERROR, mLog);
+                    return new SaveKeyringResult(SaveKeyringResult.RESULT_ERROR, mLog, null);
                 }
 
                 // Canonicalize this keyring, to assert a number of assumptions made about it.
                 // This is a safe cast, because we made sure this is a secret ring above
                 canSecretRing = (CanonicalizedSecretKeyRing) secretRing.canonicalize(mLog, mIndent);
                 if (canSecretRing == null) {
-                    return new SaveKeyringResult(SaveKeyringResult.RESULT_ERROR, mLog);
+                    return new SaveKeyringResult(SaveKeyringResult.RESULT_ERROR, mLog, null);
                 }
 
                 // Early breakout if nothing changed
@@ -765,7 +771,7 @@ public class ProviderHelper {
                         == Arrays.hashCode(oldSecretRing.getEncoded())) {
                     log(LogLevel.OK, LogType.MSG_IS_SUCCESS_IDENTICAL,
                             PgpKeyHelper.convertKeyIdToHex(masterKeyId) );
-                    return new SaveKeyringResult(SaveKeyringResult.UPDATED, mLog);
+                    return new SaveKeyringResult(SaveKeyringResult.UPDATED, mLog, null);
                 }
             } catch (NotFoundException e) {
                 // Not an issue, just means we are dealing with a new keyring
@@ -774,7 +780,7 @@ public class ProviderHelper {
                 // This is a safe cast, because we made sure this is a secret ring above
                 canSecretRing = (CanonicalizedSecretKeyRing) secretRing.canonicalize(mLog, mIndent);
                 if (canSecretRing == null) {
-                    return new SaveKeyringResult(SaveKeyringResult.RESULT_ERROR, mLog);
+                    return new SaveKeyringResult(SaveKeyringResult.RESULT_ERROR, mLog, null);
                 }
 
             }
@@ -787,7 +793,7 @@ public class ProviderHelper {
                 // Merge data from new secret ring into public one
                 publicRing = oldPublicRing.merge(secretRing, mLog, mIndent);
                 if (publicRing == null) {
-                    return new SaveKeyringResult(SaveKeyringResult.RESULT_ERROR, mLog);
+                    return new SaveKeyringResult(SaveKeyringResult.RESULT_ERROR, mLog, null);
                 }
 
             } catch (NotFoundException e) {
@@ -797,26 +803,285 @@ public class ProviderHelper {
 
             CanonicalizedPublicKeyRing canPublicRing = (CanonicalizedPublicKeyRing) publicRing.canonicalize(mLog, mIndent);
             if (canPublicRing == null) {
-                return new SaveKeyringResult(SaveKeyringResult.RESULT_ERROR, mLog);
+                return new SaveKeyringResult(SaveKeyringResult.RESULT_ERROR, mLog, null);
             }
 
             int result;
 
             result = saveCanonicalizedPublicKeyRing(canPublicRing, progress, true);
             if ((result & SaveKeyringResult.RESULT_ERROR) == SaveKeyringResult.RESULT_ERROR) {
-                return new SaveKeyringResult(SaveKeyringResult.RESULT_ERROR, mLog);
+                return new SaveKeyringResult(SaveKeyringResult.RESULT_ERROR, mLog, null);
             }
 
             progress.setProgress(LogType.MSG_IP_REINSERT_SECRET.getMsgId(), 90, 100);
             result = saveCanonicalizedSecretKeyRing(canSecretRing);
 
-            return new SaveKeyringResult(result, mLog);
+            return new SaveKeyringResult(result, mLog, canSecretRing);
 
         } catch (IOException e) {
             log(LogLevel.ERROR, LogType.MSG_IS_FAIL_IO_EXC);
-            return new SaveKeyringResult(SaveKeyringResult.RESULT_ERROR, mLog);
+            return new SaveKeyringResult(SaveKeyringResult.RESULT_ERROR, mLog, null);
         } finally {
             mIndent -= 1;
+        }
+
+    }
+
+    public ConsolidateResult consolidateDatabaseStep1(Progressable progress) {
+
+        // 1a. fetch all secret keyrings into a cache file
+        log(LogLevel.START, LogType.MSG_CON);
+        mIndent += 1;
+
+        progress.setProgress(R.string.progress_con_saving, 0, 100);
+
+        try {
+
+            log(LogLevel.DEBUG, LogType.MSG_CON_SAVE_SECRET);
+            mIndent += 1;
+
+            final Cursor cursor = mContentResolver.query(KeyRings.buildUnifiedKeyRingsUri(), new String[]{
+                    KeyRings.PRIVKEY_DATA, KeyRings.FINGERPRINT, KeyRings.HAS_ANY_SECRET
+            }, KeyRings.HAS_ANY_SECRET + " = 1", null, null);
+
+            if (cursor == null || !cursor.moveToFirst()) {
+                log(LogLevel.ERROR, LogType.MSG_CON_ERROR_DB);
+                return new ConsolidateResult(ConsolidateResult.RESULT_ERROR, mLog);
+            }
+
+            Preferences.getPreferences(mContext).setCachedConsolidateNumSecrets(cursor.getCount());
+
+            FileImportCache<ParcelableKeyRing> cache =
+                    new FileImportCache<ParcelableKeyRing>(mContext, "consolidate_secret.pcl");
+            cache.writeCache(new Iterator<ParcelableKeyRing>() {
+                ParcelableKeyRing ring;
+
+                @Override
+                public boolean hasNext() {
+                    if (ring != null) {
+                        return true;
+                    }
+                    if (cursor.isAfterLast()) {
+                        return false;
+                    }
+                    ring = new ParcelableKeyRing(cursor.getBlob(0),
+                            PgpKeyHelper.convertFingerprintToHex(cursor.getBlob(1)));
+                    cursor.moveToNext();
+                    return true;
+                }
+
+                @Override
+                public ParcelableKeyRing next() {
+                    try {
+                        return ring;
+                    } finally {
+                        ring = null;
+                    }
+                }
+
+                @Override
+                public void remove() {
+                    throw new UnsupportedOperationException();
+                }
+
+            });
+
+        } catch (IOException e) {
+            Log.e(Constants.TAG, "error saving secret", e);
+            log(LogLevel.ERROR, LogType.MSG_CON_ERROR_IO_SECRET);
+            return new ConsolidateResult(ConsolidateResult.RESULT_ERROR, mLog);
+        } finally {
+            mIndent -= 1;
+        }
+
+        progress.setProgress(R.string.progress_con_saving, 3, 100);
+
+        // 1b. fetch all public keyrings into a cache file
+        try {
+
+            log(LogLevel.DEBUG, LogType.MSG_CON_SAVE_PUBLIC);
+            mIndent += 1;
+
+            final Cursor cursor = mContentResolver.query(KeyRings.buildUnifiedKeyRingsUri(), new String[]{
+                    KeyRings.PUBKEY_DATA, KeyRings.FINGERPRINT
+            }, null, null, null);
+
+            if (cursor == null || !cursor.moveToFirst()) {
+                log(LogLevel.ERROR, LogType.MSG_CON_ERROR_DB);
+                return new ConsolidateResult(ConsolidateResult.RESULT_ERROR, mLog);
+            }
+
+            Preferences.getPreferences(mContext).setCachedConsolidateNumPublics(cursor.getCount());
+
+            FileImportCache<ParcelableKeyRing> cache =
+                    new FileImportCache<ParcelableKeyRing>(mContext, "consolidate_public.pcl");
+            cache.writeCache(new Iterator<ParcelableKeyRing>() {
+                ParcelableKeyRing ring;
+
+                @Override
+                public boolean hasNext() {
+                    if (ring != null) {
+                        return true;
+                    }
+                    if (cursor.isAfterLast()) {
+                        return false;
+                    }
+                    ring = new ParcelableKeyRing(cursor.getBlob(0),
+                            PgpKeyHelper.convertFingerprintToHex(cursor.getBlob(1)));
+                    cursor.moveToNext();
+                    return true;
+                }
+
+                @Override
+                public ParcelableKeyRing next() {
+                    try {
+                        return ring;
+                    } finally {
+                        ring = null;
+                    }
+                }
+
+                @Override
+                public void remove() {
+                    throw new UnsupportedOperationException();
+                }
+
+            });
+
+        } catch (IOException e) {
+            Log.e(Constants.TAG, "error saving public", e);
+            log(LogLevel.ERROR, LogType.MSG_CON_ERROR_IO_PUBLIC);
+            return new ConsolidateResult(ConsolidateResult.RESULT_ERROR, mLog);
+        } finally {
+            mIndent -= 1;
+        }
+
+        log(LogLevel.INFO, LogType.MSG_CON_CRITICAL_IN);
+        Preferences.getPreferences(mContext).setCachedConsolidate(true);
+
+        return consolidateDatabaseStep2(progress, false);
+    }
+
+    public ConsolidateResult consolidateDatabaseStep2(Progressable progress) {
+        return consolidateDatabaseStep2(progress, true);
+    }
+
+    private static boolean mConsolidateCritical = false;
+
+    private ConsolidateResult consolidateDatabaseStep2(Progressable progress, boolean recovery) {
+
+        synchronized (ProviderHelper.class) {
+            if (mConsolidateCritical) {
+                log(LogLevel.ERROR, LogType.MSG_CON_ERROR_CONCURRENT);
+                return new ConsolidateResult(ConsolidateResult.RESULT_ERROR, mLog);
+            }
+            mConsolidateCritical = true;
+        }
+
+        try {
+            Preferences prefs = Preferences.getPreferences(mContext);
+
+            // Set flag that we have a cached consolidation here
+            int numSecrets = prefs.getCachedConsolidateNumSecrets();
+            int numPublics = prefs.getCachedConsolidateNumPublics();
+
+            if (recovery) {
+                if (numSecrets >= 0 && numPublics >= 0) {
+                    log(LogLevel.START, LogType.MSG_CON_RECOVER, numSecrets, numPublics);
+                } else {
+                    log(LogLevel.START, LogType.MSG_CON_RECOVER_UNKNOWN);
+                }
+                mIndent += 1;
+            }
+
+            if (!prefs.getCachedConsolidate()) {
+                log(LogLevel.ERROR, LogType.MSG_CON_ERROR_BAD_STATE);
+                return new ConsolidateResult(ConsolidateResult.RESULT_ERROR, mLog);
+            }
+
+            // 2. wipe database (IT'S DANGEROUS)
+            log(LogLevel.DEBUG, LogType.MSG_CON_DB_CLEAR);
+            mContentResolver.delete(KeyRings.buildUnifiedKeyRingsUri(), null, null);
+
+            FileImportCache<ParcelableKeyRing> cacheSecret =
+                    new FileImportCache<ParcelableKeyRing>(mContext, "consolidate_secret.pcl");
+            FileImportCache<ParcelableKeyRing> cachePublic =
+                    new FileImportCache<ParcelableKeyRing>(mContext, "consolidate_public.pcl");
+
+            // 3. Re-Import secret keyrings from cache
+            if (numSecrets > 0) try {
+                log(LogLevel.DEBUG, LogType.MSG_CON_REIMPORT_SECRET, numSecrets);
+                mIndent += 1;
+
+                new PgpImportExport(mContext, this,
+                        new ProgressFixedScaler(progress, 10, 25, 100, R.string.progress_con_reimport))
+                        .importKeyRings(cacheSecret.readCache(false), numSecrets);
+            } catch (IOException e) {
+                Log.e(Constants.TAG, "error importing secret", e);
+                log(LogLevel.ERROR, LogType.MSG_CON_ERROR_SECRET);
+                return new ConsolidateResult(ConsolidateResult.RESULT_ERROR, mLog);
+            } finally {
+                mIndent -= 1;
+            }
+            else {
+                log(LogLevel.DEBUG, LogType.MSG_CON_REIMPORT_SECRET_SKIP);
+            }
+
+            // 4. Re-Import public keyrings from cache
+            if (numPublics > 0) try {
+                log(LogLevel.DEBUG, LogType.MSG_CON_REIMPORT_PUBLIC, numPublics);
+                mIndent += 1;
+
+                new PgpImportExport(mContext, this,
+                        new ProgressFixedScaler(progress, 25, 99, 100, R.string.progress_con_reimport))
+                        .importKeyRings(cachePublic.readCache(false), numPublics);
+            } catch (IOException e) {
+                Log.e(Constants.TAG, "error importing public", e);
+                log(LogLevel.ERROR, LogType.MSG_CON_ERROR_PUBLIC);
+                return new ConsolidateResult(ConsolidateResult.RESULT_ERROR, mLog);
+            } finally {
+                mIndent -= 1;
+            }
+            else {
+                log(LogLevel.DEBUG, LogType.MSG_CON_REIMPORT_PUBLIC_SKIP);
+            }
+
+            log(LogLevel.INFO, LogType.MSG_CON_CRITICAL_OUT);
+            Preferences.getPreferences(mContext).setCachedConsolidate(false);
+
+            // 5. Delete caches
+            try {
+                log(LogLevel.DEBUG, LogType.MSG_CON_DELETE_SECRET);
+                mIndent += 1;
+                cacheSecret.delete();
+            } catch (IOException e) {
+                // doesn't /really/ matter
+                Log.e(Constants.TAG, "IOException during delete of secret cache", e);
+                log(LogLevel.WARN, LogType.MSG_CON_WARN_DELETE_SECRET);
+            } finally {
+                mIndent -= 1;
+            }
+
+            try {
+                log(LogLevel.DEBUG, LogType.MSG_CON_DELETE_PUBLIC);
+                mIndent += 1;
+                cachePublic.delete();
+            } catch (IOException e) {
+                // doesn't /really/ matter
+                Log.e(Constants.TAG, "IOException during deletion of public cache", e);
+                log(LogLevel.WARN, LogType.MSG_CON_WARN_DELETE_PUBLIC);
+            } finally {
+                mIndent -= 1;
+            }
+
+            progress.setProgress(100, 100);
+            log(LogLevel.OK, LogType.MSG_CON_SUCCESS);
+            mIndent -= 1;
+
+            return new ConsolidateResult(ConsolidateResult.RESULT_OK, mLog);
+
+        } finally {
+            mConsolidateCritical = false;
         }
 
     }
@@ -863,9 +1128,7 @@ public class ProviderHelper {
 
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         String version = PgpHelper.getVersionForHeader(mContext);
-        if (version != null) {
-            keyRing.encodeArmored(bos, version);
-        }
+        keyRing.encodeArmored(bos, version);
         String armoredKey = bos.toString("UTF-8");
 
         Log.d(Constants.TAG, "armoredKey:" + armoredKey);

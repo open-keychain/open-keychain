@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2014 Dominik Schürmann <dominik@dominikschuermann.de>
+ * Copyright (C) 2014 Vincent Breitmoser <v.breitmoser@mugenguild.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -44,6 +45,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.Iterator;
@@ -55,7 +58,8 @@ import java.util.TreeSet;
  * This class and its relatives UncachedPublicKey and UncachedSecretKey are
  * used to move around pgp key rings in non crypto related (UI, mostly) code.
  * It should be used for simple inspection only until it saved in the database,
- * all actual crypto operations should work with WrappedKeyRings exclusively.
+ * all actual crypto operations should work with CanonicalizedKeyRings
+ * exclusively.
  *
  * This class is also special in that it can hold either the PGPPublicKeyRing
  * or PGPSecretKeyRing derivate of the PGPKeyRing class, since these are
@@ -116,6 +120,10 @@ public class UncachedKeyRing {
 
     public byte[] getFingerprint() {
         return mRing.getPublicKey().getFingerprint();
+    }
+
+    public int getVersion() {
+        return mRing.getPublicKey().getVersion();
     }
 
     public static UncachedKeyRing decodeFromData(byte[] data)
@@ -211,8 +219,7 @@ public class UncachedKeyRing {
         aos.close();
     }
 
-    /** "Canonicalizes" a public key, removing inconsistencies in the process. This variant can be
-     * applied to public keyrings only.
+    /** "Canonicalizes" a public key, removing inconsistencies in the process.
      *
      * More specifically:
      *  - Remove all non-verifying self-certificates
@@ -229,9 +236,9 @@ public class UncachedKeyRing {
      *  - If the key is a secret key, remove all certificates by foreign keys
      *  - If no valid user id remains, log an error and return null
      *
-     * This operation writes an OperationLog which can be used as part of a OperationResultParcel.
+     * This operation writes an OperationLog which can be used as part of an OperationResultParcel.
      *
-     * @return A canonicalized key, or null on fatal error
+     * @return A canonicalized key, or null on fatal error (log will include a message in this case)
      *
      */
     @SuppressWarnings("ConstantConditions")
@@ -240,6 +247,12 @@ public class UncachedKeyRing {
         log.add(LogLevel.START, isSecret() ? LogType.MSG_KC_SECRET : LogType.MSG_KC_PUBLIC,
                 indent, PgpKeyHelper.convertKeyIdToHex(getMasterKeyId()));
         indent += 1;
+
+        // do not accept v3 keys
+        if (getVersion() <= 3) {
+            log.add(LogLevel.ERROR, LogType.MSG_KC_V3_KEY, indent);
+            return null;
+        }
 
         final Date now = new Date();
 
@@ -259,13 +272,12 @@ public class UncachedKeyRing {
             for (PGPSignature zert : new IterableIterator<PGPSignature>(masterKey.getKeySignatures())) {
                 int type = zert.getSignatureType();
 
-                // Disregard certifications on user ids, we will deal with those later
+                // These should most definitely not be here...
                 if (type == PGPSignature.NO_CERTIFICATION
                         || type == PGPSignature.DEFAULT_CERTIFICATION
                         || type == PGPSignature.CASUAL_CERTIFICATION
                         || type == PGPSignature.POSITIVE_CERTIFICATION
                         || type == PGPSignature.CERTIFICATION_REVOCATION) {
-                    // These should not be here...
                     log.add(LogLevel.WARN, LogType.MSG_KC_REVOKE_BAD_TYPE_UID, indent);
                     modified = PGPPublicKey.removeCertification(modified, zert);
                     badCerts += 1;
@@ -328,7 +340,17 @@ public class UncachedKeyRing {
                 }
             }
 
+            ArrayList<String> processedUserIds = new ArrayList<String>();
             for (String userId : new IterableIterator<String>(masterKey.getUserIDs())) {
+                // check for duplicate user ids
+                if (processedUserIds.contains(userId)) {
+                    log.add(LogLevel.WARN, LogType.MSG_KC_UID_DUP,
+                            indent, userId);
+                    // strip out the first found user id with this name
+                    modified = PGPPublicKey.removeCertification(modified, userId);
+                }
+                processedUserIds.add(userId);
+
                 PGPSignature selfCert = null;
                 revocation = null;
 
@@ -405,13 +427,13 @@ public class UncachedKeyRing {
                             if (selfCert == null) {
                                 selfCert = zert;
                             } else if (selfCert.getCreationTime().before(cert.getCreationTime())) {
-                                log.add(LogLevel.DEBUG, LogType.MSG_KC_UID_DUP,
+                                log.add(LogLevel.DEBUG, LogType.MSG_KC_UID_CERT_DUP,
                                         indent, userId);
                                 modified = PGPPublicKey.removeCertification(modified, userId, selfCert);
                                 redundantCerts += 1;
                                 selfCert = zert;
                             } else {
-                                log.add(LogLevel.DEBUG, LogType.MSG_KC_UID_DUP,
+                                log.add(LogLevel.DEBUG, LogType.MSG_KC_UID_CERT_DUP,
                                         indent, userId);
                                 modified = PGPPublicKey.removeCertification(modified, userId, zert);
                                 redundantCerts += 1;
@@ -474,6 +496,10 @@ public class UncachedKeyRing {
 
             // Replace modified key in the keyring
             ring = replacePublicKey(ring, modified);
+            if (ring == null) {
+                log.add(LogLevel.ERROR, LogType.MSG_MG_ERROR_SECRET_DUMMY, indent);
+                return null;
+            }
             indent -= 1;
 
         }
@@ -580,8 +606,8 @@ public class UncachedKeyRing {
 
                     }
 
-                    // if we already have a cert, and this one is not newer: skip it
-                    if (selfCert != null && selfCert.getCreationTime().before(cert.getCreationTime())) {
+                    // if we already have a cert, and this one is older: skip it
+                    if (selfCert != null && cert.getCreationTime().before(selfCert.getCreationTime())) {
                         log.add(LogLevel.DEBUG, LogType.MSG_KC_SUB_DUP, indent);
                         redundantCerts += 1;
                         continue;
@@ -641,6 +667,10 @@ public class UncachedKeyRing {
             }
             // replace pubkey in keyring
             ring = replacePublicKey(ring, modified);
+            if (ring == null) {
+                log.add(LogLevel.ERROR, LogType.MSG_MG_ERROR_SECRET_DUMMY, indent);
+                return null;
+            }
             indent -= 1;
         }
 
@@ -681,8 +711,9 @@ public class UncachedKeyRing {
 
         long masterKeyId = other.getMasterKeyId();
 
-        if (getMasterKeyId() != masterKeyId) {
-            log.add(LogLevel.ERROR, LogType.MSG_MG_HETEROGENEOUS, indent);
+        if (getMasterKeyId() != masterKeyId
+                || !Arrays.equals(getFingerprint(), other.getFingerprint())) {
+            log.add(LogLevel.ERROR, LogType.MSG_MG_ERROR_HETEROGENEOUS, indent);
             return null;
         }
 
@@ -729,6 +760,10 @@ public class UncachedKeyRing {
                     } else {
                         // otherwise, just insert the public key
                         result = replacePublicKey(result, key);
+                        if (result == null) {
+                            log.add(LogLevel.ERROR, LogType.MSG_MG_ERROR_SECRET_DUMMY, indent);
+                            return null;
+                        }
                     }
                     continue;
                 }
@@ -757,6 +792,10 @@ public class UncachedKeyRing {
                 if (!key.isMasterKey()) {
                     if (modified != resultKey) {
                         result = replacePublicKey(result, modified);
+                        if (result == null) {
+                            log.add(LogLevel.ERROR, LogType.MSG_MG_ERROR_SECRET_DUMMY, indent);
+                            return null;
+                        }
                     }
                     continue;
                 }
@@ -781,6 +820,10 @@ public class UncachedKeyRing {
                 // If anything changed, save the updated (sub)key
                 if (modified != resultKey) {
                     result = replacePublicKey(result, modified);
+                    if (result == null) {
+                        log.add(LogLevel.ERROR, LogType.MSG_MG_ERROR_SECRET_DUMMY, indent);
+                        return null;
+                    }
                 }
 
             }
@@ -795,7 +838,7 @@ public class UncachedKeyRing {
             return new UncachedKeyRing(result);
 
         } catch (IOException e) {
-            log.add(LogLevel.ERROR, LogType.MSG_MG_FATAL_ENCODE, indent);
+            log.add(LogLevel.ERROR, LogType.MSG_MG_ERROR_ENCODE, indent);
             return null;
         }
 
@@ -826,16 +869,19 @@ public class UncachedKeyRing {
      */
     private static PGPKeyRing replacePublicKey(PGPKeyRing ring, PGPPublicKey key) {
         if (ring instanceof PGPPublicKeyRing) {
-            return PGPPublicKeyRing.insertPublicKey((PGPPublicKeyRing) ring, key);
+            PGPPublicKeyRing pubRing = (PGPPublicKeyRing) ring;
+            return PGPPublicKeyRing.insertPublicKey(pubRing, key);
+        } else {
+            PGPSecretKeyRing secRing = (PGPSecretKeyRing) ring;
+            PGPSecretKey sKey = secRing.getSecretKey(key.getKeyID());
+            // TODO generate secret key with S2K dummy, if none exists!
+            if (sKey == null) {
+                Log.e(Constants.TAG, "dummy secret key generation not yet implemented");
+                return null;
+            }
+            sKey = PGPSecretKey.replacePublicKey(sKey, key);
+            return PGPSecretKeyRing.insertSecretKey(secRing, sKey);
         }
-        PGPSecretKeyRing secRing = (PGPSecretKeyRing) ring;
-        PGPSecretKey sKey = secRing.getSecretKey(key.getKeyID());
-        // TODO generate secret key with S2K dummy, if none exists! for now, just die.
-        if (sKey == null) {
-            throw new RuntimeException("dummy secret key generation not yet implemented");
-        }
-        sKey = PGPSecretKey.replacePublicKey(sKey, key);
-        return PGPSecretKeyRing.insertSecretKey(secRing, sKey);
     }
 
     /** This method removes a subkey in a keyring.

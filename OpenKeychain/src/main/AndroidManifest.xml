@@ -3,8 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="org.sufficientlysecure.keychain"
     android:installLocation="auto"
-    android:versionCode="27000"
-    android:versionName="2.7">
+    android:versionCode="28000"
+    android:versionName="2.8">
 
     <!--
         General remarks
@@ -176,7 +176,7 @@
             android:label="@string/title_decrypt"
             android:windowSoftInputMode="stateHidden">
 
-            <!-- VIEW with mimeType application/pgp-encrypted  -->
+            <!-- VIEW with mimeType application/octet-stream, application/pgp and text/pgp  -->
             <intent-filter android:label="@string/intent_send_decrypt">
                 <action android:name="android.intent.action.VIEW" />
 
@@ -184,7 +184,9 @@
                 <category android:name="android.intent.category.DEFAULT" />
 
                 <!-- mime type as defined in http://tools.ietf.org/html/rfc3156 -->
-                <data android:mimeType="application/pgp-encrypted" />
+                <data android:mimeType="application/octet-stream" />
+                <data android:mimeType="application/pgp" />
+                <data android:mimeType="text/pgp" />
             </intent-filter>
             <!-- Keychain's own Actions -->
             <!-- DECRYPT with text as extra -->
@@ -557,6 +559,10 @@
                 android:value=".ui.KeyListActivity" />
         </activity>
         <activity
+            android:name=".ui.ConsolidateDialogActivity"
+            android:theme="@android:style/Theme.NoDisplay"
+            android:label="@string/app_name" />
+        <activity
             android:name=".ui.HelpActivity"
             android:label="@string/title_help" />
 
@@ -628,7 +634,10 @@
                 android:resource="@xml/account_desc" />
         </service>
 
-        <service android:name=".service.ContactSyncAdapterService">
+        <service
+            android:name=".service.ContactSyncAdapterService"
+            android:exported="true"
+            android:process=":sync">
             <intent-filter>
                 <action android:name="android.content.SyncAdapter" />
             </intent-filter>

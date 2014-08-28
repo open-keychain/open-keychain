@@ -523,13 +523,7 @@ public class PgpDecryptVerify {
 
                 // update signature buffer if signature is also present
                 if (signature != null) {
-                    try {
-                        signature.update(buffer, 0, length);
-                    } catch (SignatureException e) {
-                        Log.e(Constants.TAG, "SignatureException -> Not a valid signature!", e);
-                        signatureResultBuilder.validSignature(false);
-                        signature = null;
-                    }
+                    signature.update(buffer, 0, length);
                 }
 
                 alreadyWritten += length;

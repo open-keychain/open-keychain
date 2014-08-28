@@ -4,13 +4,13 @@
     android:layout_height="fill_parent"
     android:orientation="vertical" >
 
-    <org.sufficientlysecure.htmltextview.HtmlTextView
+    <TextView
         android:id="@+id/api_select_pub_keys_text"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="8dp"
-        android:paddingBottom="0dip"
-        android:text="Set in-code!"
+        android:paddingTop="8dp"
+        android:paddingLeft="8dp"
+        android:paddingRight="8dp"
         android:textAppearance="?android:attr/textAppearanceSmall" />
 
     <FrameLayout

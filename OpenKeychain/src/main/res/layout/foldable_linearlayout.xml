@@ -11,14 +11,13 @@
             android:orientation="horizontal"
             android:clickable="true">
 
-        <ImageButton
+        <ImageView
                 android:id="@+id/foldableIcon"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:layout_marginRight="10dp"
-                android:src="@drawable/ic_action_expand"
-                android:background="@drawable/button_no_style"/>
+                android:src="@drawable/ic_action_expand"/>
 
         <TextView
                 android:id="@+id/foldableText"

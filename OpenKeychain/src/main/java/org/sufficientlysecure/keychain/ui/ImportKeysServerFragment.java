@@ -29,14 +29,18 @@ import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.helper.ContactHelper;
 import org.sufficientlysecure.keychain.helper.Preferences;
 import org.sufficientlysecure.keychain.util.Log;
+
+import java.util.List;
 
 public class ImportKeysServerFragment extends Fragment {
     public static final String ARG_QUERY = "query";
@@ -46,7 +50,7 @@ public class ImportKeysServerFragment extends Fragment {
     private ImportKeysActivity mImportActivity;
 
     private View mSearchButton;
-    private EditText mQueryEditText;
+    private AutoCompleteTextView mQueryEditText;
     private View mConfigButton;
     private View mConfigLayout;
     private Spinner mServerSpinner;
@@ -75,7 +79,7 @@ public class ImportKeysServerFragment extends Fragment {
         View view = inflater.inflate(R.layout.import_keys_server_fragment, container, false);
 
         mSearchButton = view.findViewById(R.id.import_server_search);
-        mQueryEditText = (EditText) view.findViewById(R.id.import_server_query);
+        mQueryEditText = (AutoCompleteTextView) view.findViewById(R.id.import_server_query);
         mConfigButton = view.findViewById(R.id.import_server_config_button);
         mConfigLayout = view.findViewById(R.id.import_server_config);
         mServerSpinner = (Spinner) view.findViewById(R.id.import_server_spinner);
@@ -92,6 +96,16 @@ public class ImportKeysServerFragment extends Fragment {
         } else {
             mSearchButton.setEnabled(false);
         }
+
+        List<String> namesAndEmails = ContactHelper.getContactNames(getActivity());
+        namesAndEmails.addAll(ContactHelper.getContactMails(getActivity()));
+        mQueryEditText.setThreshold(3);
+        mQueryEditText.setAdapter(
+                new ArrayAdapter<String>
+                        (getActivity(), android.R.layout.simple_spinner_dropdown_item,
+                                namesAndEmails
+                        )
+        );
 
         mSearchButton.setOnClickListener(new OnClickListener() {
             @Override

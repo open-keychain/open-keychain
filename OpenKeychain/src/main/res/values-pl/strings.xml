@@ -59,7 +59,6 @@
   <string name="label_passphrase_cache_ttl">Bufor haseł</string>
   <string name="label_message_compression">Kompresja wiadomości</string>
   <string name="label_file_compression">Kompresja plików</string>
-  <string name="label_force_v3_signature">Wymuś stare podpisy OpenPGPv3</string>
   <string name="label_keyservers">Serwery kluczy</string>
   <string name="label_key_id">Identyfikator klucza</string>
   <string name="label_creation">Utworzenia</string>
@@ -311,6 +310,7 @@
   <!--Keyring merging log entries-->
   <!--createSecretKeyRing-->
   <!--modifySecretKeyRing-->
+  <!--Consolidate-->
   <!--PassphraseCache-->
   <!--unsorted-->
   <string name="section_cert">Szczegóły certyfikatu</string>

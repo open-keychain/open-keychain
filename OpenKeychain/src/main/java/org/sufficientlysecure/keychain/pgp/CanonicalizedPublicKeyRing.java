@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2014 Dominik Schürmann <dominik@dominikschuermann.de>
+ * Copyright (C) 2014 Vincent Breitmoser <v.breitmoser@mugenguild.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -58,10 +59,6 @@ public class CanonicalizedPublicKeyRing extends CanonicalizedKeyRing {
 
     PGPPublicKeyRing getRing() {
         return mRing;
-    }
-
-    public void encode(ArmoredOutputStream stream) throws IOException {
-        getRing().encode(stream);
     }
 
     /** Getter that returns the subkey that should be used for signing. */

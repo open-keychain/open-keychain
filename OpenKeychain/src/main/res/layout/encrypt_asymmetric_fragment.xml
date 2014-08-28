@@ -24,7 +24,7 @@
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:text="@string/label_asymmetric_from" />
 
-        <Spinner
+        <org.sufficientlysecure.keychain.ui.widget.SignKeySpinner
             android:id="@+id/sign"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

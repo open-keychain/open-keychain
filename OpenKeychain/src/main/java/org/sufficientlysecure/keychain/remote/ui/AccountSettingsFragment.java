@@ -36,6 +36,8 @@ import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.remote.AccountSettings;
+import org.sufficientlysecure.keychain.service.OperationResultParcel;
+import org.sufficientlysecure.keychain.service.OperationResults;
 import org.sufficientlysecure.keychain.ui.CreateKeyActivity;
 import org.sufficientlysecure.keychain.ui.SelectSecretKeyLayoutFragment;
 import org.sufficientlysecure.keychain.ui.adapter.KeyValueSpinnerAdapter;
@@ -177,24 +179,19 @@ public class AccountSettingsFragment extends Fragment implements
         switch (requestCode) {
             case REQUEST_CODE_CREATE_KEY: {
                 if (resultCode == Activity.RESULT_OK) {
-                    // select newly created key
-                    try {
-                        long masterKeyId = new ProviderHelper(getActivity())
-                                .getCachedPublicKeyRing(data.getData())
-                                .extractOrGetMasterKeyId();
-                        mSelectKeyFragment.selectKey(masterKeyId);
-                    } catch (PgpGeneralException e) {
-                        Log.e(Constants.TAG, "key not found!", e);
+                    if (data != null && data.hasExtra(OperationResultParcel.EXTRA_RESULT)) {
+                        OperationResults.SaveKeyringResult result = data.getParcelableExtra(OperationResultParcel.EXTRA_RESULT);
+                        mSelectKeyFragment.selectKey(result.mRingMasterKeyId);
+                    } else {
+                        Log.e(Constants.TAG, "missing result!");
                     }
                 }
                 break;
             }
-
-            default:
-                super.onActivityResult(requestCode, resultCode, data);
-
-                break;
         }
+
+        // execute activity's onActivityResult to show log notify
+        super.onActivityResult(requestCode, resultCode, data);
     }
 
     /**

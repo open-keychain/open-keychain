@@ -74,7 +74,6 @@
   <string name="label_passphrase_cache_ttl">Помнить пароль</string>
   <string name="label_message_compression">Сжатие сообщения</string>
   <string name="label_file_compression">Сжатие файла</string>
-  <string name="label_force_v3_signature">Использовать OpenPGPv3 подписи (устар.)</string>
   <string name="label_keyservers">Серверы ключей</string>
   <string name="label_key_id">ID ключа</string>
   <string name="label_creation">Создан</string>
@@ -238,7 +237,6 @@
   <string name="progress_verifying_integrity">проверка целостности...</string>
   <string name="progress_deleting_securely">безопасное удаление \'%s\'...</string>
   <!--action strings-->
-  <string name="hint_public_keys">Имя/Email/ID ключа…</string>
   <!--key bit length selections-->
   <string name="key_size_512">512</string>
   <string name="key_size_768">768</string>
@@ -304,8 +302,6 @@
   <string name="api_register_allow">Разрешить доступ</string>
   <string name="api_register_disallow">Запретить доступ</string>
   <string name="api_register_error_select_key">Пожалуйста, выберите ключ!</string>
-  <string name="api_select_pub_keys_missing_text">Для этих идентификаторов не найдены публичные ключи:</string>
-  <string name="api_select_pub_keys_dublicates_text">Для этих идентификаторов найдено более одного публичного ключа: </string>
   <string name="api_select_pub_keys_text">Пожалуйста, проверьте получателей!</string>
   <string name="api_error_wrong_signature">Проверка подписи пакета не удалась! Если  вы установили программу из другого источника, отзовите для неё доступ к этой программе или обновите право доступа.</string>
   <!--Share-->
@@ -383,14 +379,13 @@
   <string name="msg_mf_error_revoked_primary">Аннулированные идентификаторы не могут быть основными!</string>
   <string name="msg_mf_error_pgp">Внутренняя ошибка PGP!</string>
   <string name="msg_mf_error_sig">Ошибка подписи!</string>
-  <string name="msg_mf_passphrase">Изменение пароля</string>
-  <string name="msg_mf_subkey_past_expiry">Срок годности не может быть в прошлом!</string>
   <string name="msg_mf_success">Связка успешно изменена</string>
   <string name="msg_mf_uid_add">Добавление id %s</string>
   <string name="msg_mf_uid_primary">Изменение основного uid на %s</string>
   <string name="msg_mf_uid_revoke">Аннулирование id %s</string>
   <string name="msg_mf_unlock_error">Ошибка разблокирования связки!</string>
   <string name="msg_mf_unlock">Разблокирование связки</string>
+  <!--Consolidate-->
   <!--PassphraseCache-->
   <!--unsorted-->
   <string name="section_certifier_id">Кем подписан</string>

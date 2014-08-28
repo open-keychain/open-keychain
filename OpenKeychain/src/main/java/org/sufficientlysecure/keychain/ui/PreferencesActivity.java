@@ -317,10 +317,10 @@ public class PreferencesActivity extends PreferenceActivity {
 
     private static void initializeHashAlgorithm
             (final IntegerListPreference mHashAlgorithm, int[] valueIds, String[] entries, String[] values) {
-        valueIds = new int[]{HashAlgorithmTags.MD5, HashAlgorithmTags.RIPEMD160,
+        valueIds = new int[]{HashAlgorithmTags.RIPEMD160,
                 HashAlgorithmTags.SHA1, HashAlgorithmTags.SHA224, HashAlgorithmTags.SHA256,
                 HashAlgorithmTags.SHA384, HashAlgorithmTags.SHA512,};
-        entries = new String[]{"MD5", "RIPEMD-160", "SHA-1", "SHA-224", "SHA-256", "SHA-384",
+        entries = new String[]{"RIPEMD-160", "SHA-1", "SHA-224", "SHA-256", "SHA-384",
                 "SHA-512",};
         values = new String[valueIds.length];
         for (int i = 0; i < values.length; ++i) {

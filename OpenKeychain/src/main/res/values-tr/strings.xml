@@ -162,6 +162,7 @@
   <!--Keyring merging log entries-->
   <!--createSecretKeyRing-->
   <!--modifySecretKeyRing-->
+  <!--Consolidate-->
   <!--PassphraseCache-->
   <!--unsorted-->
   <string name="can_sign_not">imzalanamadı</string>

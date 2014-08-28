@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2014 Dominik Schürmann <dominik@dominikschuermann.de>
+ * Copyright (C) 2014 Vincent Breitmoser <v.breitmoser@mugenguild.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -155,10 +156,8 @@ public class OperationResultParcel implements Parcelable {
         if ((resultType & OperationResultParcel.RESULT_ERROR) == 0) {
 
             if (getLog().containsWarnings()) {
-                duration = 0;
                 color = Style.ORANGE;
             } else {
-                duration = SuperToast.Duration.LONG;
                 color = Style.GREEN;
             }
 
@@ -167,7 +166,6 @@ public class OperationResultParcel implements Parcelable {
 
         } else {
 
-            duration = 0;
             color = Style.RED;
 
             str = "operation failed";
@@ -180,8 +178,8 @@ public class OperationResultParcel implements Parcelable {
                 button ? SuperToast.Type.BUTTON : SuperToast.Type.STANDARD,
                 Style.getStyle(color, SuperToast.Animations.POPUP));
         toast.setText(str);
-        toast.setDuration(duration);
-        toast.setIndeterminate(duration == 0);
+        toast.setDuration(SuperToast.Duration.EXTRA_LONG);
+        toast.setIndeterminate(false);
         toast.setSwipeToDismiss(true);
         // If we have a log and it's non-empty, show a View Log button
         if (button) {
@@ -289,6 +287,7 @@ public class OperationResultParcel implements Parcelable {
         MSG_IS_SUCCESS (R.string.msg_is_success),
 
         // keyring canonicalization
+        MSG_KC_V3_KEY (R.string.msg_kc_v3_key),
         MSG_KC_PUBLIC (R.string.msg_kc_public),
         MSG_KC_SECRET (R.string.msg_kc_secret),
         MSG_KC_FATAL_NO_UID (R.string.msg_kc_fatal_no_uid),
@@ -324,6 +323,7 @@ public class OperationResultParcel implements Parcelable {
         MSG_KC_UID_BAD_TIME (R.string.msg_kc_uid_bad_time),
         MSG_KC_UID_BAD_TYPE (R.string.msg_kc_uid_bad_type),
         MSG_KC_UID_BAD (R.string.msg_kc_uid_bad),
+        MSG_KC_UID_CERT_DUP (R.string.msg_kc_uid_cert_dup),
         MSG_KC_UID_DUP (R.string.msg_kc_uid_dup),
         MSG_KC_UID_FOREIGN (R.string.msg_kc_uid_foreign),
         MSG_KC_UID_NO_CERT (R.string.msg_kc_uid_no_cert),
@@ -333,10 +333,11 @@ public class OperationResultParcel implements Parcelable {
 
 
         // keyring consolidation
+        MSG_MG_ERROR_SECRET_DUMMY(R.string.msg_mg_error_secret_dummy),
+        MSG_MG_ERROR_ENCODE(R.string.msg_mg_error_encode),
+        MSG_MG_ERROR_HETEROGENEOUS(R.string.msg_mg_error_heterogeneous),
         MSG_MG_PUBLIC (R.string.msg_mg_public),
         MSG_MG_SECRET (R.string.msg_mg_secret),
-        MSG_MG_FATAL_ENCODE (R.string.msg_mg_fatal_encode),
-        MSG_MG_HETEROGENEOUS (R.string.msg_mg_heterogeneous),
         MSG_MG_NEW_SUBKEY (R.string.msg_mg_new_subkey),
         MSG_MG_FOUND_NEW (R.string.msg_mg_found_new),
         MSG_MG_UNCHANGED (R.string.msg_mg_unchanged),
@@ -346,10 +347,16 @@ public class OperationResultParcel implements Parcelable {
         MSG_CR_ERROR_NO_MASTER (R.string.msg_cr_error_no_master),
         MSG_CR_ERROR_NO_USER_ID (R.string.msg_cr_error_no_user_id),
         MSG_CR_ERROR_NO_CERTIFY (R.string.msg_cr_error_no_certify),
+        MSG_CR_ERROR_NULL_EXPIRY(R.string.msg_cr_error_null_expiry),
         MSG_CR_ERROR_KEYSIZE_512 (R.string.msg_cr_error_keysize_512),
+        MSG_CR_ERROR_NO_KEYSIZE (R.string.msg_cr_error_no_keysize),
+        MSG_CR_ERROR_NO_CURVE (R.string.msg_cr_error_no_curve),
         MSG_CR_ERROR_UNKNOWN_ALGO (R.string.msg_cr_error_unknown_algo),
         MSG_CR_ERROR_INTERNAL_PGP (R.string.msg_cr_error_internal_pgp),
-        MSG_CR_ERROR_MASTER_ELGAMAL (R.string.msg_cr_error_master_elgamal),
+        MSG_CR_ERROR_FLAGS_DSA (R.string.msg_cr_error_flags_dsa),
+        MSG_CR_ERROR_FLAGS_ELGAMAL (R.string.msg_cr_error_flags_elgamal),
+        MSG_CR_ERROR_FLAGS_ECDSA (R.string.msg_cr_error_flags_ecdsa),
+        MSG_CR_ERROR_FLAGS_ECDH (R.string.msg_cr_error_flags_ecdh),
 
         // secret key modify
         MSG_MF (R.string.msg_mr),
@@ -357,18 +364,27 @@ public class OperationResultParcel implements Parcelable {
         MSG_MF_ERROR_FINGERPRINT (R.string.msg_mf_error_fingerprint),
         MSG_MF_ERROR_KEYID (R.string.msg_mf_error_keyid),
         MSG_MF_ERROR_INTEGRITY (R.string.msg_mf_error_integrity),
+        MSG_MF_ERROR_MASTER_NONE(R.string.msg_mf_error_master_none),
+        MSG_MF_ERROR_NO_CERTIFY (R.string.msg_cr_error_no_certify),
         MSG_MF_ERROR_NOEXIST_PRIMARY (R.string.msg_mf_error_noexist_primary),
-        MSG_MF_ERROR_REVOKED_PRIMARY (R.string.msg_mf_error_revoked_primary),
+        MSG_MF_ERROR_NOEXIST_REVOKE (R.string.msg_mf_error_noexist_revoke),
+        MSG_MF_ERROR_NULL_EXPIRY (R.string.msg_mf_error_null_expiry),
+        MSG_MF_ERROR_PASSPHRASE_MASTER(R.string.msg_mf_error_passphrase_master),
+        MSG_MF_ERROR_PAST_EXPIRY(R.string.msg_mf_error_past_expiry),
         MSG_MF_ERROR_PGP (R.string.msg_mf_error_pgp),
+        MSG_MF_ERROR_REVOKED_PRIMARY (R.string.msg_mf_error_revoked_primary),
         MSG_MF_ERROR_SIG (R.string.msg_mf_error_sig),
+        MSG_MF_ERROR_SUBKEY_MISSING(R.string.msg_mf_error_subkey_missing),
+        MSG_MF_MASTER (R.string.msg_mf_master),
         MSG_MF_PASSPHRASE (R.string.msg_mf_passphrase),
+        MSG_MF_PASSPHRASE_KEY (R.string.msg_mf_passphrase_key),
+        MSG_MF_PASSPHRASE_EMPTY_RETRY (R.string.msg_mf_passphrase_empty_retry),
+        MSG_MF_PASSPHRASE_FAIL (R.string.msg_mf_passphrase_fail),
         MSG_MF_PRIMARY_REPLACE_OLD (R.string.msg_mf_primary_replace_old),
         MSG_MF_PRIMARY_NEW (R.string.msg_mf_primary_new),
         MSG_MF_SUBKEY_CHANGE (R.string.msg_mf_subkey_change),
-        MSG_MF_SUBKEY_MISSING (R.string.msg_mf_subkey_missing),
         MSG_MF_SUBKEY_NEW_ID (R.string.msg_mf_subkey_new_id),
         MSG_MF_SUBKEY_NEW (R.string.msg_mf_subkey_new),
-        MSG_MF_SUBKEY_PAST_EXPIRY (R.string.msg_mf_subkey_past_expiry),
         MSG_MF_SUBKEY_REVOKE (R.string.msg_mf_subkey_revoke),
         MSG_MF_SUCCESS (R.string.msg_mf_success),
         MSG_MF_UID_ADD (R.string.msg_mf_uid_add),
@@ -377,6 +393,32 @@ public class OperationResultParcel implements Parcelable {
         MSG_MF_UID_ERROR_EMPTY (R.string.msg_mf_uid_error_empty),
         MSG_MF_UNLOCK_ERROR (R.string.msg_mf_unlock_error),
         MSG_MF_UNLOCK (R.string.msg_mf_unlock),
+
+        // consolidate
+        MSG_CON_CRITICAL_IN (R.string.msg_con_critical_in),
+        MSG_CON_CRITICAL_OUT (R.string.msg_con_critical_out),
+        MSG_CON_DB_CLEAR (R.string.msg_con_db_clear),
+        MSG_CON_DELETE_PUBLIC (R.string.msg_con_delete_public),
+        MSG_CON_DELETE_SECRET (R.string.msg_con_delete_secret),
+        MSG_CON_ERROR_BAD_STATE (R.string.msg_con_error_bad_state),
+        MSG_CON_ERROR_CONCURRENT(R.string.msg_con_error_concurrent),
+        MSG_CON_ERROR_DB (R.string.msg_con_error_db),
+        MSG_CON_ERROR_IO_PUBLIC (R.string.msg_con_error_io_public),
+        MSG_CON_ERROR_IO_SECRET (R.string.msg_con_error_io_secret),
+        MSG_CON_ERROR_PUBLIC (R.string.msg_con_error_public),
+        MSG_CON_ERROR_SECRET (R.string.msg_con_error_secret),
+        MSG_CON_RECOVER (R.plurals.msg_con_recover),
+        MSG_CON_RECOVER_UNKNOWN (R.string.msg_con_recover_unknown),
+        MSG_CON_REIMPORT_PUBLIC (R.plurals.msg_con_reimport_public),
+        MSG_CON_REIMPORT_PUBLIC_SKIP (R.string.msg_con_reimport_public_skip),
+        MSG_CON_REIMPORT_SECRET (R.plurals.msg_con_reimport_secret),
+        MSG_CON_REIMPORT_SECRET_SKIP (R.string.msg_con_reimport_secret_skip),
+        MSG_CON (R.string.msg_con),
+        MSG_CON_SAVE_PUBLIC (R.string.msg_con_save_public),
+        MSG_CON_SAVE_SECRET (R.string.msg_con_save_secret),
+        MSG_CON_SUCCESS (R.string.msg_con_success),
+        MSG_CON_WARN_DELETE_PUBLIC (R.string.msg_con_warn_delete_public),
+        MSG_CON_WARN_DELETE_SECRET (R.string.msg_con_warn_delete_secret),
         ;
 
         private final int mMsgId;
@@ -406,7 +448,9 @@ public class OperationResultParcel implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeInt(mResult);
-        dest.writeTypedList(mLog.toList());
+        if (mLog != null) {
+            dest.writeTypedList(mLog.toList());
+        }
     }
 
     public static final Creator<OperationResultParcel> CREATOR = new Creator<OperationResultParcel>() {
@@ -430,6 +474,15 @@ public class OperationResultParcel implements Parcelable {
 
         public void add(LogLevel level, LogType type, int indent) {
             mParcels.add(new OperationResultParcel.LogEntryParcel(level, type, indent, (Object[]) null));
+        }
+
+        public boolean containsType(LogType type) {
+            for(LogEntryParcel entry : new IterableIterator<LogEntryParcel>(mParcels.iterator())) {
+                if (entry.mType == type) {
+                    return true;
+                }
+            }
+            return false;
         }
 
         public boolean containsWarnings() {

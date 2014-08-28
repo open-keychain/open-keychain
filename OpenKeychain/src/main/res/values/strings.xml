@@ -109,6 +109,7 @@
     <string name="label_expiry">Expiry</string>
     <string name="label_usage">Usage</string>
     <string name="label_key_size">Key Size</string>
+    <string name="label_ecc_curve">Elliptic Curve</string>
     <string name="label_main_user_id">Primary identity</string>
     <string name="label_name">Name</string>
     <string name="label_comment">Comment</string>
@@ -156,6 +157,8 @@
     <string name="dsa">DSA</string>
     <string name="elgamal">ElGamal</string>
     <string name="rsa">RSA</string>
+    <string name="ecdh">ECDH</string>
+    <string name="ecdsa">ECDSA</string>
     <string name="filemanager_title_open">Open…</string>
     <string name="warning">Warning</string>
     <string name="error">Error</string>
@@ -268,6 +271,8 @@
     <string name="progress_generating_rsa">generating new RSA key…</string>
     <string name="progress_generating_dsa">generating new DSA key…</string>
     <string name="progress_generating_elgamal">generating new ElGamal key…</string>
+    <string name="progress_generating_ecdsa">generating new ECDSA key…</string>
+    <string name="progress_generating_ecdh">generating new ECDH key…</string>
 
     <string name="progress_modify">modifying keyring…</string>
 
@@ -301,10 +306,14 @@
     <string name="progress_decompressing_data">decompressing data…</string>
     <string name="progress_verifying_integrity">verifying integrity…</string>
     <string name="progress_deleting_securely">deleting \'%s\' securely…</string>
+    <string name="progress_deleting">deleting keys…</string>
+
+    <string name="progress_con_saving">consolidate: saving to cache…</string>
+    <string name="progress_con_reimport">consolidate: reimporting…</string>
 
     <!-- action strings -->
-    <string name="hint_public_keys">Name/Email/Key ID…</string>
-    <string name="hint_keybase_search">Name/Keybase.io username…</string>
+    <string name="hint_keyserver_search_hint">Name/Email/Key ID…</string>
+    <string name="hint_keybase_search_hint">Name/Email/Proof/Key…</string>
 
     <!-- key bit length selections -->
     <string name="key_size_512">512</string>
@@ -319,6 +328,16 @@
     <string name="key_size_custom_info">Type custom key length (in bits):</string>
     <string name="key_size_custom_info_rsa">RSA key length must be greater than 1024 and at most 16384. Also it must be multiplicity of 8.</string>
     <string name="key_size_custom_info_dsa">DSA key length must be at least 512 and at most 1024. Also it must be multiplicity of 64.</string>
+
+    <!-- elliptic curve names -->
+    <string name="key_curve_nist_p256">NIST P-256</string>
+    <string name="key_curve_nist_p384">NIST P-384</string>
+    <string name="key_curve_nist_p521">NIST P-521</string>
+    <!-- not in for now, see SaveKeyringParcel
+    <string name="key_curve_bp_p256">Brainpool P-256</string>
+    <string name="key_curve_bp_p384">Brainpool P-384</string>
+    <string name="key_curve_bp_p512">Brainpool P-512</string>
+    -->
 
     <!-- compression -->
     <string name="compression_fast">fast</string>
@@ -395,9 +414,10 @@
     <string name="api_register_allow">Allow access</string>
     <string name="api_register_disallow">Disallow access</string>
     <string name="api_register_error_select_key">Please select a key!</string>
-    <string name="api_select_pub_keys_missing_text">No public keys were found for these identities:</string>
-    <string name="api_select_pub_keys_dublicates_text">More than one public key exist for these identities:</string>
+    <string name="api_select_pub_keys_missing_text">No keys were found for these identities:</string>
+    <string name="api_select_pub_keys_dublicates_text">More than one key exist for these identities:</string>
     <string name="api_select_pub_keys_text">Please review the list of recipients!</string>
+    <string name="api_select_pub_keys_text_no_user_ids">Please select the recipients!</string>
     <string name="api_error_wrong_signature">Signature check failed! Have you installed this app from a different source? If you are sure that this is not an attack, revoke this app\'s registration in OpenKeychain and then register the app again.</string>
 
     <!-- Share -->
@@ -433,7 +453,7 @@
     <string name="user_id_info_verified_title">Verified</string>
     <string name="user_id_info_verified_text">This identity has been verified.</string>
     <string name="user_id_info_not_verified_title">Not verified</string>
-    <string name="user_id_info_not_verified_text">This identity has not been verified yet. You can not be sure if the identity really corresponds to a specific person.</string>
+    <string name="user_id_info_not_verified_text">This identity has not been verified yet. You cannot be sure if the identity really corresponds to a specific person.</string>
     <string name="user_id_info_invalid_title">Invalid</string>
     <string name="user_id_info_invalid_text">Something is wrong with this identity!</string>
 
@@ -456,6 +476,7 @@
         <item>Revoke Subkey</item>
     </string-array>
     <string name="edit_key_new_subkey">new</string>
+    <string name="edit_key_select_flag">Please select at least one flag!</string>
 
     <!-- Create key -->
     <string name="create_key_upload">Upload key to keyserver</string>
@@ -494,9 +515,12 @@
     <string name="cert_verify_error">error!</string>
     <string name="cert_verify_unavailable">key unavailable</string>
 
+    <!-- LogType log messages. Errors should have _ERROR_ in their name and end with a ! -->
+
     <!-- Import Public log entries -->
     <string name="msg_ip_apply_batch">Applying insert batch operation.</string>
     <string name="msg_ip_bad_type_secret">Tried to import secret keyring as public. This is a bug, please file a report!</string>
+    <string name="msg_kc_v3_key">This key is an OpenPGP version 3 key and thus insecure. It has not been imported.</string>
     <string name="msg_ip_delete_old_fail">No old key deleted (creating a new one?)</string>
     <string name="msg_ip_delete_old_ok">Deleted old key from database</string>
     <string name="msg_ip_encode_fail">Operation failed due to encoding error</string>
@@ -604,18 +628,20 @@
     <string name="msg_kc_uid_bad_time">Removing user id with future timestamp</string>
     <string name="msg_kc_uid_bad_type">Removing user id certificate of unknown type (%s)</string>
     <string name="msg_kc_uid_bad">Removing bad self certificate for user id "%s"</string>
-    <string name="msg_kc_uid_dup">Removing outdated self certificate for user id "%s"</string>
+    <string name="msg_kc_uid_cert_dup">Removing outdated self certificate for user id "%s"</string>
     <string name="msg_kc_uid_foreign">Removing foreign user id certificate by %s</string>
     <string name="msg_kc_uid_revoke_dup">Removing redundant revocation certificate for user id "%s"</string>
     <string name="msg_kc_uid_revoke_old">Removing outdated revocation certificate for user id "%s"</string>
     <string name="msg_kc_uid_no_cert">No valid self-certificate found for user id %s, removing from ring</string>
     <string name="msg_kc_uid_remove">Removing invalid user id %s</string>
+    <string name="msg_kc_uid_dup">Removing duplicate user id "%s". The secret key contained two of them. This may result in missing certifications!</string>
 
     <!-- Keyring merging log entries -->
+    <string name="msg_mg_error_secret_dummy">New public subkey found, but secret subkey dummy generation is not supported!</string>
+    <string name="msg_mg_error_heterogeneous">Tried to merge keyrings with differing fingerprints!</string>
+    <string name="msg_mg_error_encode">Fatal error encoding signature!</string>
     <string name="msg_mg_public">Merging into public keyring %s</string>
     <string name="msg_mg_secret">Merging into secret keyring %s</string>
-    <string name="msg_mg_fatal_encode">Fatal error encoding signature</string>
-    <string name="msg_mg_heterogeneous">Tried to consolidate heterogeneous keyrings</string>
     <string name="msg_mg_new_subkey">Adding new subkey %s</string>
     <string name="msg_mg_found_new">Found %s new certificates in keyring</string>
     <string name="msg_mg_unchanged">No new certificates</string>
@@ -625,10 +651,16 @@
     <string name="msg_cr_error_no_master">No master key options specified!</string>
     <string name="msg_cr_error_no_user_id">Keyrings must be created with at least one user id!</string>
     <string name="msg_cr_error_no_certify">Master key must have certify flag!</string>
+    <string name="msg_cr_error_null_expiry">Expiry time cannot be "same as before" on key creation. This is a programming error, please file a bug report!</string>
     <string name="msg_cr_error_keysize_512">Key size must be greater or equal 512!</string>
+    <string name="msg_cr_error_no_curve">No key size specified! This is a programming error, please file a bug report!</string>
+    <string name="msg_cr_error_no_keysize">No elliptic curve specified! This is a programming error, please file a bug report!</string>
     <string name="msg_cr_error_internal_pgp">Internal PGP error!</string>
-    <string name="msg_cr_error_unknown_algo">Bad algorithm choice!</string>
-    <string name="msg_cr_error_master_elgamal">Master key must not be of type ElGamal!</string>
+    <string name="msg_cr_error_unknown_algo">Unknown algorithm selected! This is a programming error, please file a bug report!</string>
+    <string name="msg_cr_error_flags_dsa">Bad key flags selected, DSA cannot be used for encryption!</string>
+    <string name="msg_cr_error_flags_elgamal">Bad key flags selected, ElGamal cannot be used for signing!</string>
+    <string name="msg_cr_error_flags_ecdsa">Bad key flags selected, ECDSA cannot be used for encryption!</string>
+    <string name="msg_cr_error_flags_ecdh">Bad key flags selected, ECDH cannot be used for signing!</string>
 
     <!-- modifySecretKeyRing -->
     <string name="msg_mr">Modifying keyring %s</string>
@@ -636,18 +668,26 @@
     <string name="msg_mf_error_fingerprint">Actual key fingerprint does not match the expected one!</string>
     <string name="msg_mf_error_keyid">No key ID. This is an internal error, please file a bug report!</string>
     <string name="msg_mf_error_integrity">Internal error, integrity check failed!</string>
+    <string name="msg_mf_error_master_none">No master certificate found to operate on! (All revoked?)</string>
     <string name="msg_mf_error_noexist_primary">Bad primary user id specified!</string>
+    <string name="msg_mf_error_noexist_revoke">Bad user id for revocation specified!</string>
     <string name="msg_mf_error_revoked_primary">Revoked user ids cannot be primary!</string>
+    <string name="msg_mf_error_null_expiry">Expiry time cannot be "same as before" on subkey creation. This is a programming error, please file a bug report!</string>
+    <string name="msg_mf_error_passphrase_master">Fatal error decrypting master key! This is likely a programming error, please file a bug report!</string>
     <string name="msg_mf_error_pgp">PGP internal exception!</string>
     <string name="msg_mf_error_sig">Signature exception!</string>
-    <string name="msg_mf_passphrase">Changing passphrase</string>
+    <string name="msg_mf_master">Modifying master certifications</string>
+    <string name="msg_mf_passphrase">Changing passphrase for keyring…</string>
+    <string name="msg_mf_passphrase_key">Re-encrypting subkey %s with new passphrase</string>
+    <string name="msg_mf_passphrase_empty_retry">Setting new passphrase failed, trying again with empty old passphrase</string>
+    <string name="msg_mf_passphrase_fail">Passphrase for subkey could not be changed! (Does it have a different one from the other keys?)</string>
     <string name="msg_mf_primary_replace_old">Replacing certificate of previous primary user id</string>
     <string name="msg_mf_primary_new">Generating new certificate for new primary user id</string>
     <string name="msg_mf_subkey_change">Modifying subkey %s</string>
-    <string name="msg_mf_subkey_missing">Tried to operate on missing subkey %s!</string>
-    <string name="msg_mf_subkey_new">Generating new %1$s bit %2$s subkey</string>
+    <string name="msg_mf_error_subkey_missing">Tried to operate on missing subkey %s!</string>
+    <string name="msg_mf_subkey_new">Adding new subkey of type %s</string>
     <string name="msg_mf_subkey_new_id">New subkey ID: %s</string>
-    <string name="msg_mf_subkey_past_expiry">Expiry date cannot be in the past!</string>
+    <string name="msg_mf_error_past_expiry">Expiry date cannot be in the past!</string>
     <string name="msg_mf_subkey_revoke">Revoking subkey %s</string>
     <string name="msg_mf_success">Keyring successfully modified</string>
     <string name="msg_mf_uid_add">Adding user id %s</string>
@@ -656,6 +696,41 @@
     <string name="msg_mf_uid_error_empty">User ID must not be empty!</string>
     <string name="msg_mf_unlock_error">Error unlocking keyring!</string>
     <string name="msg_mf_unlock">Unlocking keyring</string>
+
+    <!-- Consolidate -->
+    <string name="msg_con">Consolidating database</string>
+    <string name="msg_con_error_bad_state">Consolidation was started while no database was cached! This is probably a programming error, please file a bug report.</string>
+    <string name="msg_con_error_concurrent">Consolidation aborted, already running on other thread!</string>
+    <string name="msg_con_save_secret">Saving secret keyrings</string>
+    <string name="msg_con_save_public">Saving public keyrings</string>
+    <string name="msg_con_db_clear">Clearing database</string>
+    <string name="msg_con_success">Successfully consolidated database</string>
+    <string name="msg_con_critical_in">Entering critical phase</string>
+    <string name="msg_con_critical_out">Leaving critical phase</string>
+    <string name="msg_con_delete_public">Deleting public keyring cache file</string>
+    <string name="msg_con_delete_secret">Deleting secret keyring cache file</string>
+    <string name="msg_con_error_db">Error opening database!</string>
+    <string name="msg_con_error_io_public">IO error writing public keys to cache!</string>
+    <string name="msg_con_error_io_secret">IO error writing secret keys to cache!</string>
+    <string name="msg_con_error_public">Error reimporting public keys!</string>
+    <string name="msg_con_error_secret">Error reimporting secret keys!</string>
+    <plurals name="msg_con_recover">
+        <item quantity="one">Recovering consolidation with %1$d secret and %2$d public keys</item>
+        <item quantity="other">Recovering consolidation with %1$d secret and %2$d public keys</item>
+    </plurals>
+    <string name="msg_con_recover_unknown">Recovering from unknown state</string>
+    <plurals name="msg_con_reimport_public">
+        <item quantity="one">Reimporting one public key</item>
+        <item quantity="other">Reimporting %d public keys</item>
+    </plurals>
+    <string name="msg_con_reimport_public_skip">No public keys to reimport, skipping…</string>
+    <plurals name="msg_con_reimport_secret">
+        <item quantity="one">Reimporting one secret key</item>
+        <item quantity="other">Reimporting %d secret keys</item>
+    </plurals>
+    <string name="msg_con_reimport_secret_skip">No secret keys to reimport, skipping…</string>
+    <string name="msg_con_warn_delete_public">Exception deleting public cache file</string>
+    <string name="msg_con_warn_delete_secret">Exception deleting secret cache file</string>
 
     <!-- PassphraseCache -->
     <string name="passp_cache_notif_click_to_clear">Click to clear cached passphrases</string>
@@ -671,6 +746,7 @@
     <string name="label_user_id">Identity</string>
     <string name="unknown_uid">&lt;unknown&gt;</string>
     <string name="empty_certs">No certificates for this key</string>
+    <string name="certs_text">Only self-certificates and certificates created with your keys are displayed here.</string>
     <string name="section_uids_to_certify">Identities to certify</string>
     <string name="label_revocation">Revocation Reason</string>
     <string name="label_verify_status">Verification Status</string>

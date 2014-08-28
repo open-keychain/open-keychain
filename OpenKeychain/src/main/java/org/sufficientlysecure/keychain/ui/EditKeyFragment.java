@@ -48,8 +48,7 @@ import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
 import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
-import org.sufficientlysecure.keychain.service.OperationResults;
-import org.sufficientlysecure.keychain.service.OperationResults.EditKeyResult;
+import org.sufficientlysecure.keychain.service.OperationResultParcel;
 import org.sufficientlysecure.keychain.service.PassphraseCacheService;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
 import org.sufficientlysecure.keychain.ui.adapter.SubkeysAdapter;
@@ -340,7 +339,8 @@ public class EditKeyFragment extends LoaderFragment implements
                         } else {
                             mSaveKeyringParcel.mRevokeUserIds.add(userId);
                             // not possible to revoke and change to primary user id
-                            if (mSaveKeyringParcel.mChangePrimaryUserId.equals(userId)) {
+                            if (mSaveKeyringParcel.mChangePrimaryUserId != null
+                                    && mSaveKeyringParcel.mChangePrimaryUserId.equals(userId)) {
                                 mSaveKeyringParcel.mChangePrimaryUserId = null;
                             }
                         }
@@ -407,10 +407,10 @@ public class EditKeyFragment extends LoaderFragment implements
             @Override
             public void handleMessage(Message message) {
                 switch (message.what) {
-                    case EditSubkeyExpiryDialogFragment.MESSAGE_NEW_EXPIRY_DATE:
-                        Long expiry = (Long) message.getData().
-                                getSerializable(EditSubkeyExpiryDialogFragment.MESSAGE_DATA_EXPIRY_DATE);
-                        mSaveKeyringParcel.getOrCreateSubkeyChange(keyId).mExpiry = expiry;
+                    case EditSubkeyExpiryDialogFragment.MESSAGE_NEW_EXPIRY:
+                        mSaveKeyringParcel.getOrCreateSubkeyChange(keyId).mExpiry =
+                                (Long) message.getData().getSerializable(
+                                        EditSubkeyExpiryDialogFragment.MESSAGE_DATA_EXPIRY);
                         break;
                 }
                 getLoaderManager().getLoader(LOADER_ID_SUBKEYS).forceLoad();
@@ -504,7 +504,6 @@ public class EditKeyFragment extends LoaderFragment implements
     private void save(String passphrase) {
         Log.d(Constants.TAG, "mSaveKeyringParcel:\n" + mSaveKeyringParcel.toString());
 
-        // Message is received after importing is done in KeychainIntentService
         KeychainIntentServiceHandler saveHandler = new KeychainIntentServiceHandler(
                 getActivity(),
                 getString(R.string.progress_saving),
@@ -520,8 +519,8 @@ public class EditKeyFragment extends LoaderFragment implements
                     if (returnData == null) {
                         return;
                     }
-                    final OperationResults.EditKeyResult result =
-                            returnData.getParcelable(EditKeyResult.EXTRA_RESULT);
+                    final OperationResultParcel result =
+                            returnData.getParcelable(OperationResultParcel.EXTRA_RESULT);
                     if (result == null) {
                         return;
                     }
@@ -534,7 +533,7 @@ public class EditKeyFragment extends LoaderFragment implements
 
                     // if good -> finish, return result to showkey and display there!
                     Intent intent = new Intent();
-                    intent.putExtra(EditKeyResult.EXTRA_RESULT, result);
+                    intent.putExtra(OperationResultParcel.EXTRA_RESULT, result);
                     getActivity().setResult(EditKeyActivity.RESULT_OK, intent);
                     getActivity().finish();
 

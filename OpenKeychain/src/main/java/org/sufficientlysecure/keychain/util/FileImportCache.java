@@ -46,10 +46,11 @@ public class FileImportCache<E extends Parcelable> {
 
     private Context mContext;
 
-    private static final String FILENAME = "key_import.pcl";
+    private final String mFilename;
 
-    public FileImportCache(Context context) {
-        this.mContext = context;
+    public FileImportCache(Context context, String filename) {
+        mContext = context;
+        mFilename = filename;
     }
 
     public void writeCache(ArrayList<E> selectedEntries) throws IOException {
@@ -64,7 +65,7 @@ public class FileImportCache<E extends Parcelable> {
             throw new IOException("cache dir is null!");
         }
 
-        File tempFile = new File(mContext.getCacheDir(), FILENAME);
+        File tempFile = new File(mContext.getCacheDir(), mFilename);
 
         DataOutputStream oos = new DataOutputStream(new FileOutputStream(tempFile));
 
@@ -91,6 +92,10 @@ public class FileImportCache<E extends Parcelable> {
     }
 
     public Iterator<E> readCache() throws IOException {
+        return readCache(true);
+    }
+
+    public Iterator<E> readCache(final boolean deleteAfterRead) throws IOException {
 
         File cacheDir = mContext.getCacheDir();
         if (cacheDir == null) {
@@ -98,7 +103,7 @@ public class FileImportCache<E extends Parcelable> {
             throw new IOException("cache dir is null!");
         }
 
-        final File tempFile = new File(cacheDir, FILENAME);
+        final File tempFile = new File(cacheDir, mFilename);
         final DataInputStream ois = new DataInputStream(new FileInputStream(tempFile));
 
         return new Iterator<E>() {
@@ -165,7 +170,10 @@ public class FileImportCache<E extends Parcelable> {
                 if (!closed) {
                     try {
                         ois.close();
-                        tempFile.delete();
+                        if (deleteAfterRead) {
+                            //noinspection ResultOfMethodCallIgnored
+                            tempFile.delete();
+                        }
                     } catch (IOException e) {
                         // nvm
                     }
@@ -176,4 +184,17 @@ public class FileImportCache<E extends Parcelable> {
 
         };
     }
+
+    public boolean delete() throws IOException {
+
+        File cacheDir = mContext.getCacheDir();
+        if (cacheDir == null) {
+            // https://groups.google.com/forum/#!topic/android-developers/-694j87eXVU
+            throw new IOException("cache dir is null!");
+        }
+
+        final File tempFile = new File(cacheDir, mFilename);
+        return tempFile.delete();
+    }
+
 }

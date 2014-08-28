@@ -54,6 +54,8 @@ import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
+import org.sufficientlysecure.keychain.service.KeychainIntentService;
+import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
 import org.sufficientlysecure.keychain.service.OperationResultParcel;
 import org.sufficientlysecure.keychain.ui.adapter.PagerTabStripAdapter;
 import org.sufficientlysecure.keychain.ui.widget.SlidingTabLayout;
@@ -303,8 +305,10 @@ public class ViewKeyActivity extends ActionBarActivity implements
         Handler returnHandler = new Handler() {
             @Override
             public void handleMessage(Message message) {
-                setResult(RESULT_CANCELED);
-                finish();
+                if (message.arg1 == KeychainIntentServiceHandler.MESSAGE_OKAY) {
+                    setResult(RESULT_CANCELED);
+                    finish();
+                }
             }
         };
 
@@ -313,6 +317,7 @@ public class ViewKeyActivity extends ActionBarActivity implements
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        // if a result has been returned, display a notify
         if (data != null && data.hasExtra(OperationResultParcel.EXTRA_RESULT)) {
             OperationResultParcel result = data.getParcelableExtra(OperationResultParcel.EXTRA_RESULT);
             result.createNotify(this).show();

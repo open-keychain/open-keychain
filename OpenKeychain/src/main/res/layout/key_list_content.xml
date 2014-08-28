@@ -1,14 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <include layout="@layout/notify_area" />
+
+    <FrameLayout
         android:id="@+id/content_frame"
         android:layout_marginLeft="@dimen/drawer_content_padding"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-    <fragment
+        <fragment
             android:id="@+id/key_list_fragment"
             android:name="org.sufficientlysecure.keychain.ui.KeyListFragment"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
-</FrameLayout>
+            android:layout_height="match_parent" />
+    </FrameLayout>
+
+</LinearLayout>

@@ -51,7 +51,7 @@ public class FirstTimeActivity extends ActionBarActivity {
         mSkipSetup.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                finishSetup();
+                finishSetup(null);
             }
         });
 
@@ -80,18 +80,22 @@ public class FirstTimeActivity extends ActionBarActivity {
 
         if (requestCode == REQUEST_CODE_CREATE_OR_IMPORT_KEY) {
             if (resultCode == RESULT_OK) {
-                finishSetup();
+                finishSetup(data);
             }
         } else {
             Log.e(Constants.TAG, "No valid request code!");
         }
     }
 
-    private void finishSetup() {
+    private void finishSetup(Intent srcData) {
         Preferences prefs = Preferences.getPreferences(this);
         prefs.setFirstTime(false);
-        Intent intent = new Intent(FirstTimeActivity.this, KeyListActivity.class);
-        startActivity(intent);
+        Intent intent = new Intent(this, KeyListActivity.class);
+        // give intent through to display notify
+        if (srcData != null) {
+            intent.putExtras(srcData);
+        }
+        startActivityForResult(intent, 0);
         finish();
     }
 }

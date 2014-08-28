@@ -74,7 +74,6 @@
   <string name="label_passphrase_cache_ttl">Hranjenje gesla v spominu</string>
   <string name="label_message_compression">Stiskanje sporočil</string>
   <string name="label_file_compression">Stiskanje datotek</string>
-  <string name="label_force_v3_signature">Vsili stare podpise OpenPGPv3</string>
   <string name="label_keyservers">Strežniki</string>
   <string name="label_key_id">ID ključa</string>
   <string name="label_creation">Ustvarjanje</string>
@@ -243,8 +242,6 @@
   <string name="progress_verifying_integrity">preverjam neokrnjenost...</string>
   <string name="progress_deleting_securely">varno brišem \'%s\'…</string>
   <!--action strings-->
-  <string name="hint_public_keys">Ime/e-pošta/ID ključa</string>
-  <string name="hint_keybase_search">Ime/Keybase.io uporabniško ime...</string>
   <!--key bit length selections-->
   <string name="key_size_512">512</string>
   <string name="key_size_768">768</string>
@@ -303,8 +300,6 @@
   <string name="api_register_allow">Dovoli dostop</string>
   <string name="api_register_disallow">Zavrni dostop</string>
   <string name="api_register_error_select_key">Izberite ključ!</string>
-  <string name="api_select_pub_keys_missing_text">Za te identitete ni bil najden noben javni ključ:</string>
-  <string name="api_select_pub_keys_dublicates_text">Za te identitete obstaja več ključev:</string>
   <string name="api_select_pub_keys_text">Preverite seznam prejemnikov!</string>
   <string name="api_error_wrong_signature">Preverjanje podpisa ni uspelo! Ste namestili to aplikacijo iz drugega vira? Če ste prepričani, da to ni napad, prekličite registracijo te aplikacije v OpenKeychain in jo izvedite znova.</string>
   <!--Share-->
@@ -406,6 +401,7 @@
   <!--Keyring merging log entries-->
   <!--createSecretKeyRing-->
   <!--modifySecretKeyRing-->
+  <!--Consolidate-->
   <!--PassphraseCache-->
   <!--unsorted-->
   <string name="section_certifier_id">Overovitelj</string>

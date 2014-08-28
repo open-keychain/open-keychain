@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2012-2014 Dominik Schürmann <dominik@dominikschuermann.de>
+ * Copyright (C) 2014 Vincent Breitmoser <v.breitmoser@mugenguild.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,6 +39,7 @@ public class KeychainContract {
         String FINGERPRINT = "fingerprint";
 
         String KEY_SIZE = "key_size";
+        String KEY_CURVE_OID = "key_curve_oid";
         String CAN_SIGN = "can_sign";
         String CAN_ENCRYPT = "can_encrypt";
         String CAN_CERTIFY = "can_certify";
@@ -111,6 +113,7 @@ public class KeychainContract {
         public static final String HAS_ANY_SECRET = "has_any_secret";
         public static final String HAS_ENCRYPT = "has_encrypt";
         public static final String HAS_SIGN = "has_sign";
+        public static final String HAS_CERTIFY = "has_certify";
         public static final String PUBKEY_DATA = "pubkey_data";
         public static final String PRIVKEY_DATA = "privkey_data";
 

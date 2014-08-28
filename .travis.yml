@@ -15,6 +15,6 @@ before_install:
     - ./prepare-tests.sh
 install: echo "Installation done"
 script:
-    - gradle assemble -S -q
-    - gradle --info OpenKeychain-Test:testDebug
+    - ./gradlew assemble -S -q
+    - ./gradlew --info OpenKeychain-Test:testDebug
 

@@ -20,15 +20,20 @@ package org.sufficientlysecure.keychain;
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.app.Application;
+import android.content.ContentResolver;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Environment;
+import android.provider.ContactsContract;
 
 import org.spongycastle.jce.provider.BouncyCastleProvider;
 import org.sufficientlysecure.keychain.helper.Preferences;
 import org.sufficientlysecure.keychain.helper.TlsHelper;
 import org.sufficientlysecure.keychain.provider.TemporaryStorageProvider;
+import org.sufficientlysecure.keychain.ui.ConsolidateDialogActivity;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.PRNGFixes;
 
@@ -89,14 +94,37 @@ public class KeychainApplication extends Application {
         TlsHelper.addStaticCA("pool.sks-keyservers.net", getAssets(), "sks-keyservers.netCA.cer");
 
         TemporaryStorageProvider.cleanUp(this);
+
+        checkConsolidateRecovery();
+
+    }
+
+    public void checkConsolidateRecovery() {
+
+        // restart consolidate process if it has been interruped before
+        if (Preferences.getPreferences(this).getCachedConsolidate()) {
+            // do something which calls ProviderHelper.consolidateDatabaseStep2 with a progressable
+            Intent consolidateIntent = new Intent(this, ConsolidateDialogActivity.class);
+            consolidateIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(consolidateIntent);
+        }
+
     }
 
     public static void setupAccountAsNeeded(Context context) {
-        AccountManager manager = AccountManager.get(context);
-        Account[] accounts = manager.getAccountsByType(Constants.PACKAGE_NAME);
-        if (accounts == null || accounts.length == 0) {
-            Account dummy = new Account(context.getString(R.string.app_name), Constants.PACKAGE_NAME);
-            manager.addAccountExplicitly(dummy, null, null);
+        // only enabled for Jelly Bean because we need some newer methods in our sync adapter
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+            AccountManager manager = AccountManager.get(context);
+            Account[] accounts = manager.getAccountsByType(Constants.ACCOUNT_TYPE);
+            if (accounts == null || accounts.length == 0) {
+                Account account = new Account(Constants.ACCOUNT_NAME, Constants.ACCOUNT_TYPE);
+                if (manager.addAccountExplicitly(account, null, null)) {
+                    ContentResolver.setIsSyncable(account, ContactsContract.AUTHORITY, 1);
+		    ContentResolver.setSyncAutomatically(account, ContactsContract.AUTHORITY, true);
+                } else {
+                    Log.e(Constants.TAG, "Adding account failed!");
+                }
+            }
         }
     }
 

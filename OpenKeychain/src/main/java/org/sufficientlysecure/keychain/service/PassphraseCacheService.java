@@ -78,7 +78,7 @@ public class PassphraseCacheService extends Service {
     private static final int NOTIFICATION_ID = 1;
 
     private static final int MSG_PASSPHRASE_CACHE_GET_OKAY = 1;
-    private static final int MSG_PASSPHRASE_CACHE_GET_KEY_NO_FOUND = 2;
+    private static final int MSG_PASSPHRASE_CACHE_GET_KEY_NOT_FOUND = 2;
 
     private BroadcastReceiver mIntentReceiver;
 
@@ -170,7 +170,7 @@ public class PassphraseCacheService extends Service {
         switch (returnMessage.what) {
             case MSG_PASSPHRASE_CACHE_GET_OKAY:
                 return returnMessage.getData().getString(EXTRA_PASSPHRASE);
-            case MSG_PASSPHRASE_CACHE_GET_KEY_NO_FOUND:
+            case MSG_PASSPHRASE_CACHE_GET_KEY_NOT_FOUND:
                 throw new KeyNotFoundException();
             default:
                 throw new KeyNotFoundException("should not happen!");
@@ -322,7 +322,7 @@ public class PassphraseCacheService extends Service {
                     msg.setData(bundle);
                 } catch (ProviderHelper.NotFoundException e) {
                     Log.e(Constants.TAG, "PassphraseCacheService: Passphrase for unknown key was requested!");
-                    msg.what = MSG_PASSPHRASE_CACHE_GET_KEY_NO_FOUND;
+                    msg.what = MSG_PASSPHRASE_CACHE_GET_KEY_NOT_FOUND;
                 }
 
                 try {

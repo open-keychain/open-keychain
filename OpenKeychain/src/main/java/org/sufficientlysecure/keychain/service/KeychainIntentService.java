@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2012-2014 Dominik Schürmann <dominik@dominikschuermann.de>
+ * Copyright (C) 2014 Vincent Breitmoser <v.breitmoser@mugenguild.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -49,11 +50,14 @@ import org.sufficientlysecure.keychain.pgp.Progressable;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralMsgIdException;
+import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRingData;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.KeychainDatabase;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
+import org.sufficientlysecure.keychain.service.OperationResults.ConsolidateResult;
 import org.sufficientlysecure.keychain.service.OperationResults.EditKeyResult;
 import org.sufficientlysecure.keychain.service.OperationResults.ImportKeyResult;
+import org.sufficientlysecure.keychain.service.OperationResults.SaveKeyringResult;
 import org.sufficientlysecure.keychain.util.FileImportCache;
 import org.sufficientlysecure.keychain.util.InputData;
 import org.sufficientlysecure.keychain.util.Log;
@@ -102,6 +106,10 @@ public class KeychainIntentService extends IntentService
 
     public static final String ACTION_CERTIFY_KEYRING = Constants.INTENT_PREFIX + "SIGN_KEYRING";
 
+    public static final String ACTION_DELETE = Constants.INTENT_PREFIX + "DELETE";
+
+    public static final String ACTION_CONSOLIDATE = Constants.INTENT_PREFIX + "CONSOLIDATE";
+
     /* keys for data bundle */
 
     // encrypt, decrypt, import export
@@ -139,8 +147,13 @@ public class KeychainIntentService extends IntentService
     // delete file securely
     public static final String DELETE_FILE = "deleteFile";
 
+    // delete keyring(s)
+    public static final String DELETE_KEY_LIST = "delete_list";
+    public static final String DELETE_IS_SECRET = "delete_is_secret";
+
     // import key
     public static final String IMPORT_KEY_LIST = "import_key_list";
+    public static final String IMPORT_KEY_FILE = "import_key_file";
 
     // export key
     public static final String EXPORT_OUTPUT_STREAM = "export_output_stream";
@@ -162,6 +175,10 @@ public class KeychainIntentService extends IntentService
     public static final String CERTIFY_KEY_PUB_KEY_ID = "sign_key_pub_key_id";
     public static final String CERTIFY_KEY_UIDS = "sign_key_uids";
 
+    // consolidate
+    public static final String CONSOLIDATE_RECOVERY = "consolidate_recovery";
+
+
     /*
      * possible data keys as result send over messenger
      */
@@ -175,8 +192,6 @@ public class KeychainIntentService extends IntentService
 
     // export
     public static final String RESULT_EXPORT = "exported";
-
-    public static final String RESULT_IMPORT = "result";
 
     Messenger mMessenger;
 
@@ -246,26 +261,30 @@ public class KeychainIntentService extends IntentService
                     String originalFilename = getOriginalFilename(data);
 
                     /* Operation */
-                    PgpSignEncrypt.Builder builder =
-                            new PgpSignEncrypt.Builder(
-                                    new ProviderHelper(this),
-                                    inputData, outStream);
-                    builder.setProgressable(this);
-
-                    builder.setEnableAsciiArmorOutput(useAsciiArmor)
+                    PgpSignEncrypt.Builder builder = new PgpSignEncrypt.Builder(
+                            new ProviderHelper(this),
+                            inputData, outStream
+                    );
+                    builder.setProgressable(this)
+                            .setEnableAsciiArmorOutput(useAsciiArmor)
                             .setVersionHeader(PgpHelper.getVersionForHeader(this))
                             .setCompressionId(compressionId)
                             .setSymmetricEncryptionAlgorithm(
                                     Preferences.getPreferences(this).getDefaultEncryptionAlgorithm())
                             .setEncryptionMasterKeyIds(encryptionKeyIds)
                             .setSymmetricPassphrase(symmetricPassphrase)
-                            .setSignatureMasterKeyId(signatureKeyId)
-                            .setEncryptToSigner(true)
-                            .setSignatureHashAlgorithm(
-                                    Preferences.getPreferences(this).getDefaultHashAlgorithm())
-                            .setSignaturePassphrase(
-                                    PassphraseCacheService.getCachedPassphrase(this, signatureKeyId))
                             .setOriginalFilename(originalFilename);
+
+                    try {
+                        builder.setSignatureMasterKeyId(signatureKeyId)
+                                .setSignaturePassphrase(
+                                        PassphraseCacheService.getCachedPassphrase(this, signatureKeyId))
+                                .setSignatureHashAlgorithm(
+                                        Preferences.getPreferences(this).getDefaultHashAlgorithm())
+                                .setAdditionalEncryptId(signatureKeyId);
+                    } catch (PassphraseCacheService.KeyNotFoundException e) {
+                        // encrypt-only
+                    }
 
                     // this assumes that the bytes are cleartext (valid for current implementation!)
                     if (source == IO_BYTES) {
@@ -391,23 +410,41 @@ public class KeychainIntentService extends IntentService
                 }
 
                 /* Operation */
-                ProviderHelper providerHelper = new ProviderHelper(this);
                 PgpKeyOperation keyOperations = new PgpKeyOperation(new ProgressScaler(this, 10, 60, 100));
-                EditKeyResult result;
+                EditKeyResult modifyResult;
 
                 if (saveParcel.mMasterKeyId != null) {
                     String passphrase = data.getString(SAVE_KEYRING_PASSPHRASE);
                     CanonicalizedSecretKeyRing secRing =
-                            providerHelper.getCanonicalizedSecretKeyRing(saveParcel.mMasterKeyId);
+                            new ProviderHelper(this).getCanonicalizedSecretKeyRing(saveParcel.mMasterKeyId);
 
-                    result = keyOperations.modifySecretKeyRing(secRing, saveParcel, passphrase);
+                    modifyResult = keyOperations.modifySecretKeyRing(secRing, saveParcel, passphrase);
                 } else {
-                    result = keyOperations.createSecretKeyRing(saveParcel);
+                    modifyResult = keyOperations.createSecretKeyRing(saveParcel);
                 }
 
-                UncachedKeyRing ring = result.getRing();
+                // If the edit operation didn't succeed, exit here
+                if (!modifyResult.success()) {
+                    // always return SaveKeyringResult, so create one out of the EditKeyResult
+                    SaveKeyringResult saveResult = new SaveKeyringResult(
+                            SaveKeyringResult.RESULT_ERROR,
+                            modifyResult.getLog(),
+                            null);
+                    sendMessageToHandler(KeychainIntentServiceHandler.MESSAGE_OKAY, saveResult);
+                    return;
+                }
 
-                providerHelper.saveSecretKeyRing(ring, new ProgressScaler(this, 60, 95, 100));
+                UncachedKeyRing ring = modifyResult.getRing();
+
+                // Save the keyring. The ProviderHelper is initialized with the previous log
+                SaveKeyringResult saveResult = new ProviderHelper(this, modifyResult.getLog())
+                        .saveSecretKeyRing(ring, new ProgressScaler(this, 60, 95, 100));
+
+                // If the edit operation didn't succeed, exit here
+                if (!saveResult.success()) {
+                    sendMessageToHandler(KeychainIntentServiceHandler.MESSAGE_OKAY, saveResult);
+                    return;
+                }
 
                 // cache new passphrase
                 if (saveParcel.mNewPassphrase != null) {
@@ -417,8 +454,11 @@ public class KeychainIntentService extends IntentService
 
                 setProgress(R.string.progress_done, 100, 100);
 
+                // make sure new data is synced into contacts
+                ContactSyncAdapterService.requestSync();
+
                 /* Output */
-                sendMessageToHandler(KeychainIntentServiceHandler.MESSAGE_OKAY, result);
+                sendMessageToHandler(KeychainIntentServiceHandler.MESSAGE_OKAY, saveResult);
             } catch (Exception e) {
                 sendErrorToHandler(e);
             }
@@ -454,17 +494,21 @@ public class KeychainIntentService extends IntentService
                 } else {
                     // get entries from cached file
                     FileImportCache<ParcelableKeyRing> cache =
-                            new FileImportCache<ParcelableKeyRing>(this);
+                            new FileImportCache<ParcelableKeyRing>(this, "key_import.pcl");
                     entries = cache.readCacheIntoList();
                 }
 
-                PgpImportExport pgpImportExport = new PgpImportExport(this, this);
+                ProviderHelper providerHelper = new ProviderHelper(this);
+                PgpImportExport pgpImportExport = new PgpImportExport(this, providerHelper, this);
                 ImportKeyResult result = pgpImportExport.importKeyRings(entries);
 
-                Bundle resultData = new Bundle();
-                resultData.putParcelable(RESULT_IMPORT, result);
+                if (result.mSecret > 0) {
+                    providerHelper.consolidateDatabaseStep1(this);
+                }
+                // make sure new data is synced into contacts
+                ContactSyncAdapterService.requestSync();
 
-                sendMessageToHandler(KeychainIntentServiceHandler.MESSAGE_OKAY, resultData);
+                sendMessageToHandler(KeychainIntentServiceHandler.MESSAGE_OKAY, result);
             } catch (Exception e) {
                 sendErrorToHandler(e);
             }
@@ -549,8 +593,9 @@ public class KeychainIntentService extends IntentService
                 CanonicalizedPublicKeyRing keyring = providerHelper.getCanonicalizedPublicKeyRing(dataUri);
                 PgpImportExport pgpImportExport = new PgpImportExport(this, null);
 
-                boolean uploaded = pgpImportExport.uploadKeyRingToServer(server, keyring);
-                if (!uploaded) {
+                try {
+                    pgpImportExport.uploadKeyRingToServer(server, keyring);
+                } catch (Keyserver.AddKeyException e) {
                     throw new PgpGeneralException("Unable to export key to selected server");
                 }
 
@@ -639,7 +684,56 @@ public class KeychainIntentService extends IntentService
             } catch (Exception e) {
                 sendErrorToHandler(e);
             }
+
+        } else if (ACTION_DELETE.equals(action)) {
+
+            try {
+
+                long[] masterKeyIds = data.getLongArray(DELETE_KEY_LIST);
+                boolean isSecret = data.getBoolean(DELETE_IS_SECRET);
+
+                if (masterKeyIds.length == 0) {
+                    throw new PgpGeneralException("List of keys to delete is empty");
+                }
+
+                if (isSecret && masterKeyIds.length > 1) {
+                    throw new PgpGeneralException("Secret keys can only be deleted individually!");
+                }
+
+                boolean success = false;
+                for (long masterKeyId : masterKeyIds) {
+                    int count = getContentResolver().delete(
+                            KeyRingData.buildPublicKeyRingUri(masterKeyId), null, null
+                    );
+                    success |= count > 0;
+                }
+
+                if (isSecret && success) {
+                    ConsolidateResult result =
+                            new ProviderHelper(this).consolidateDatabaseStep1(this);
+                }
+
+                if (success) {
+                    // make sure new data is synced into contacts
+                    ContactSyncAdapterService.requestSync();
+
+                    sendMessageToHandler(KeychainIntentServiceHandler.MESSAGE_OKAY);
+                }
+
+            } catch (Exception e) {
+                sendErrorToHandler(e);
+            }
+
+        } else if (ACTION_CONSOLIDATE.equals(action)) {
+            ConsolidateResult result;
+            if (data.containsKey(CONSOLIDATE_RECOVERY) && data.getBoolean(CONSOLIDATE_RECOVERY)) {
+                result = new ProviderHelper(this).consolidateDatabaseStep2(this);
+            } else {
+                result = new ProviderHelper(this).consolidateDatabaseStep1(this);
+            }
+            sendMessageToHandler(KeychainIntentServiceHandler.MESSAGE_OKAY, result);
         }
+
     }
 
     private void sendErrorToHandler(Exception e) {

@@ -40,9 +40,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         custom:foldedLabel="@string/api_settings_show_info"
-        custom:unFoldedLabel="@string/api_settings_hide_info"
-        custom:foldedIcon="fa-chevron-right"
-        custom:unFoldedIcon="fa-chevron-down">
+        custom:unFoldedLabel="@string/api_settings_hide_info">
 
         <TextView
             android:layout_width="match_parent"
@@ -67,7 +65,7 @@
             android:id="@+id/api_app_settings_package_signature"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Base64 encoded signature"
+            android:text="Base64 encoded hash of signature"
             android:textAppearance="?android:attr/textAppearanceSmall" />
 
     </org.sufficientlysecure.keychain.ui.widget.FoldableLinearLayout>

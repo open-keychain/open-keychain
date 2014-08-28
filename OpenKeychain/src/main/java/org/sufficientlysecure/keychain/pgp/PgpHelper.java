@@ -29,7 +29,6 @@ import org.sufficientlysecure.keychain.util.Log;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.RandomAccessFile;
 import java.security.SecureRandom;
 import java.util.regex.Pattern;
@@ -66,76 +65,6 @@ public class PgpHelper {
         } else {
             return null;
         }
-    }
-
-//    public static final class content {
-//        public static final int unknown = 0;
-//        public static final int encrypted_data = 1;
-//        public static final int keys = 2;
-//    }
-//
-//    public static int getStreamContent(Context context, InputStream inStream) throws IOException {
-//
-//        InputStream in = PGPUtil.getDecoderStream(inStream);
-//        PGPObjectFactory pgpF = new PGPObjectFactory(in);
-//        Object object = pgpF.nextObject();
-//        while (object != null) {
-//            if (object instanceof PGPPublicKeyRing || object instanceof PGPSecretKeyRing) {
-//                return Id.content.keys;
-//            } else if (object instanceof PGPEncryptedDataList) {
-//                return Id.content.encrypted_data;
-//            }
-//            object = pgpF.nextObject();
-//        }
-//
-//        return Id.content.unknown;
-//    }
-
-    /**
-     * Generate a random filename
-     *
-     * @param length
-     * @return
-     */
-    public static String generateRandomFilename(int length) {
-        SecureRandom random = new SecureRandom();
-
-        byte bytes[] = new byte[length];
-        random.nextBytes(bytes);
-        String result = "";
-        for (int i = 0; i < length; ++i) {
-            int v = (bytes[i] + 256) % 64;
-            if (v < 10) {
-                result += (char) ('0' + v);
-            } else if (v < 36) {
-                result += (char) ('A' + v - 10);
-            } else if (v < 62) {
-                result += (char) ('a' + v - 36);
-            } else if (v == 62) {
-                result += '_';
-            } else if (v == 63) {
-                result += '.';
-            }
-        }
-        return result;
-    }
-
-    /**
-     * Go once through stream to get length of stream. The length is later used to display progress
-     * when encrypting/decrypting
-     *
-     * @param in
-     * @return
-     * @throws IOException
-     */
-    public static long getLengthOfStream(InputStream in) throws IOException {
-        long size = 0;
-        long n = 0;
-        byte dummy[] = new byte[0x10000];
-        while ((n = in.read(dummy)) > 0) {
-            size += n;
-        }
-        return size;
     }
 
     /**

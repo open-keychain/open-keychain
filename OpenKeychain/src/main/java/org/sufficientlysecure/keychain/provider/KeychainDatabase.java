@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2012-2014 Dominik Schürmann <dominik@dominikschuermann.de>
+ * Copyright (C) 2014 Vincent Breitmoser <v.breitmoser@mugenguild.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -51,7 +52,7 @@ import java.io.IOException;
  */
 public class KeychainDatabase extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "openkeychain.db";
-    private static final int DATABASE_VERSION = 2;
+    private static final int DATABASE_VERSION = 3;
     static Boolean apgHack = false;
 
     public interface Tables {
@@ -85,6 +86,7 @@ public class KeychainDatabase extends SQLiteOpenHelper {
 
                 + KeysColumns.KEY_ID + " INTEGER, "
                 + KeysColumns.KEY_SIZE + " INTEGER, "
+                + KeysColumns.KEY_CURVE_OID + " TEXT, "
                 + KeysColumns.ALGORITHM + " INTEGER, "
                 + KeysColumns.FINGERPRINT + " BLOB, "
 
@@ -201,13 +203,20 @@ public class KeychainDatabase extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        if (oldVersion == 1) {
-            // add has_secret for all who are upgrading from a beta version
-            try {
-                db.execSQL("ALTER TABLE keys ADD COLUMN has_secret BOOLEAN");
-            } catch (Exception e) {
-                // never mind, the column probably already existed
-            }
+        // add has_secret for all who are upgrading from a beta version
+        switch (oldVersion) {
+            case 1:
+                try {
+                    db.execSQL("ALTER TABLE keys ADD COLUMN has_secret BOOLEAN");
+                } catch(Exception e){
+                    // never mind, the column probably already existed
+                }
+            case 2:
+                try {
+                    db.execSQL("ALTER TABLE keys ADD COLUMN " + KeysColumns.KEY_CURVE_OID + " TEXT");
+                } catch(Exception e){
+                    // never mind, the column probably already existed
+                }
         }
     }
 
@@ -227,7 +236,8 @@ public class KeychainDatabase extends SQLiteOpenHelper {
                 if (db.equals("apg.db")) {
                     hasApgDb = true;
                 } else if (db.equals("apg_old.db")) {
-                    Log.d(Constants.TAG, "Found apg_old.db");
+                    Log.d(Constants.TAG, "Found apg_old.db, delete it!");
+                    context.getDatabasePath("apg_old.db").delete();
                 }
             }
         }
@@ -310,9 +320,8 @@ public class KeychainDatabase extends SQLiteOpenHelper {
             }
         }
 
-        // Move to a different file (but don't delete, just to be safe)
-        Log.d(Constants.TAG, "All done - moving apg.db to apg_old.db");
-        context.getDatabasePath("apg.db").renameTo(context.getDatabasePath("apg_old.db"));
+        // delete old database
+        context.getDatabasePath("apg.db").delete();
     }
 
     private static void copy(File in, File out) throws IOException {
@@ -347,6 +356,11 @@ public class KeychainDatabase extends SQLiteOpenHelper {
             throw new IOException("Cannot write " + out.getName());
         }
         copy(in, out);
+    }
+
+    // DANGEROUS, use in test code ONLY!
+    public void clearDatabase() {
+        getWritableDatabase().execSQL("delete from " + Tables.KEY_RINGS_PUBLIC);
     }
 
 }

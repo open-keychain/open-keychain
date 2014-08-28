@@ -27,6 +27,7 @@
   <string name="title_key_details">Détails sur la clef</string>
   <string name="title_help">Aide</string>
   <string name="title_log_display">Journal</string>
+  <string name="title_create_key">Créer une clef</string>
   <!--section-->
   <string name="section_user_ids">identités</string>
   <string name="section_keys">Sous-clefs</string>
@@ -84,8 +85,8 @@
   <string name="label_algorithm">Algorithme</string>
   <string name="label_ascii_armor">Fichier ASCII Armor</string>
   <string name="label_file_ascii_armor">Fichier : ASCII Armor</string>
-  <string name="label_write_version_header">Informez les autres de votre utilisation d\'OpenKeychain</string>
-  <string name="label_write_version_header_summary">Ajoute « OpenKeychain v2.7 » aux signatures OpenPGP, aux cryptogrammes, et aux clefs exportées</string>
+  <string name="label_write_version_header">Faire savoir aux autres que vous utilisez OpenKeychain</string>
+  <string name="label_write_version_header_summary">Ajoute « OpenKeychain v2.7 » aux signatures OpenPGP, aux cryptogrammes et aux clefs exportées</string>
   <string name="label_asymmetric_from">De :</string>
   <string name="label_to">À :</string>
   <string name="label_delete_after_encryption">Fichier : supprimer après chiffrement</string>
@@ -97,9 +98,8 @@
   <string name="label_passphrase_cache_ttl">Cache de la phrase de passe</string>
   <string name="label_message_compression">Compression des messages</string>
   <string name="label_file_compression">Compression des fichiers</string>
-  <string name="label_force_v3_signature">Forcer les anciennes signatures OpenPGP v3</string>
   <string name="label_keyservers">Serveurs de clefs</string>
-  <string name="label_key_id">ID de le clef</string>
+  <string name="label_key_id">ID de clef</string>
   <string name="label_creation">Création</string>
   <string name="label_expiry">Expiration</string>
   <string name="label_usage">Utilisation</string>
@@ -248,8 +248,8 @@
   <string name="progress_generating_elgamal">génération d\'une nouvelle clef ElGamal...</string>
   <string name="progress_modify">modification du trousseau...</string>
   <string name="progress_modify_unlock">déverrouillage du trousseau...</string>
-  <string name="progress_modify_adduid">ajout des IDs d\'utilisateur...</string>
-  <string name="progress_modify_revokeuid">révocation des IDs d\'utilisateur...</string>
+  <string name="progress_modify_adduid">ajout des ID d\'utilisateur...</string>
+  <string name="progress_modify_revokeuid">révocation des ID d\'utilisateur...</string>
   <string name="progress_modify_primaryuid">changement de l\'ID d\'utilisateur principale...</string>
   <string name="progress_modify_subkeychange">modification des sous-clefs...</string>
   <string name="progress_modify_subkeyrevoke">révocation des sous-clefs...</string>
@@ -275,9 +275,12 @@
   <string name="progress_decompressing_data">décompression des données...</string>
   <string name="progress_verifying_integrity">vérification de l\'intégrité...</string>
   <string name="progress_deleting_securely">suppression sûre de « %s »...</string>
+  <string name="progress_deleting">suppression des clefs...</string>
+  <string name="progress_con_saving">consolider : enregistrement dans le cache...</string>
+  <string name="progress_con_reimport">consolider : réimportation...</string>
   <!--action strings-->
-  <string name="hint_public_keys">Nom/courriel/ ID clef...</string>
-  <string name="hint_keybase_search">Nom/nom d\'utilisateur keybase.io...</string>
+  <string name="hint_keyserver_search_hint">Nom/courriel/ID de clef...</string>
+  <string name="hint_keybase_search_hint">Nom/courriel/preuve/clef...</string>
   <!--key bit length selections-->
   <string name="key_size_512">512</string>
   <string name="key_size_768">768</string>
@@ -356,13 +359,15 @@
   <string name="api_settings_accounts">Comptes</string>
   <string name="api_settings_accounts_empty">Aucun compte n\'est attaché à cette appli.</string>
   <string name="api_create_account_text">L\'appli demande la création d\'un nouveau compte. Veuillez choisir une de vos clefs existantes ou en créer une nouvelle.\nLes applis ne peuvent utiliser que les clefs que vous choisissez ici !</string>
+  <string name="api_update_account_text">La clef enregistrée pour ce compte a été supprimée. Veuillez en choisir une autre !\nLes applis sont restreintes à l\'utilisation de clefs choisies ici.</string>
   <string name="api_register_text">L\'application affichée veut chiffrer/déchiffrer des messages et les signer en votre nom.\nPermettre l\'accès ?\n\nAVERTISSEMENT : si vous ne savez pas pourquoi cet écran est apparu, refusez l\'accès ! Vous pourrez révoquer l\'accès plus tard en utilisant l\'écran « Applis ».</string>
   <string name="api_register_allow">Permettre l\'accès</string>
   <string name="api_register_disallow">Enlever l\'accès</string>
   <string name="api_register_error_select_key">Veuillez choisir une clef !</string>
-  <string name="api_select_pub_keys_missing_text">Aucune clef publique n\'a été trouvée pour ces identités :</string>
-  <string name="api_select_pub_keys_dublicates_text">Plus d\'une clef publique existe pour ces identités :</string>
+  <string name="api_select_pub_keys_missing_text">Aucune clef n\'a été trouvée pour ces identités :</string>
+  <string name="api_select_pub_keys_dublicates_text">Plus d\'une clef existe pour ces identités :</string>
   <string name="api_select_pub_keys_text">Veuillez revoir la liste des destinataires !</string>
+  <string name="api_select_pub_keys_text_no_user_ids">Veuillez choisir les destinataires !</string>
   <string name="api_error_wrong_signature">La vérification de la signature a échoué ! Avez-vous installé cette appli à partir d\'une source différente ? Si vous êtes sûr que ce n\'est pas une attaque, révoquez l\'enregistrement de cette appli dans OpenKeychain et enregistrez-la à nouveau.</string>
   <!--Share-->
   <string name="share_qr_code_dialog_title">Partager par un code QR</string>
@@ -389,6 +394,14 @@
   <string name="key_view_tab_share">Partager</string>
   <string name="key_view_tab_keys">Sous-clefs</string>
   <string name="key_view_tab_certs">Certificats</string>
+  <string name="user_id_info_revoked_title">Révoquée</string>
+  <string name="user_id_info_revoked_text">Cette identité a été révoquée par le propriétaire de la clef. Elle n\'est plus valide.</string>
+  <string name="user_id_info_verified_title">Vérifiée</string>
+  <string name="user_id_info_verified_text">Cette identité a été vérifiée.</string>
+  <string name="user_id_info_not_verified_title">Non vérifiée</string>
+  <string name="user_id_info_not_verified_text">Cette identité n\'a pas encore été vérifiée. Vous ne pouvez pas être certain si l\'identité corresponds vraiment à une personne spécifique.</string>
+  <string name="user_id_info_invalid_title">Invalide</string>
+  <string name="user_id_info_invalid_text">Quelque chose ne va pas avec cette identité !</string>
   <!--Edit key-->
   <string name="edit_key_action_change_passphrase">Changer la phrase de passe</string>
   <string name="edit_key_action_add_identity">Ajouter une identité</string>
@@ -408,6 +421,7 @@
     <item>Révoquer la sous-clef</item>
   </string-array>
   <string name="edit_key_new_subkey">nouvelle</string>
+  <string name="edit_key_select_flag">Veuillez sélectionner au moins un drapeau !</string>
   <!--Create key-->
   <string name="create_key_upload">Téléverser la clef vers le serveur de clefs</string>
   <string name="create_key_empty">Ce champ est exigé</string>
@@ -443,6 +457,7 @@
   <!--Import Public log entries-->
   <string name="msg_ip_apply_batch">Application de l\'opération d\'insertion par lot.</string>
   <string name="msg_ip_bad_type_secret">Tentative d\'importer le trousseau secret comme public. Ceci est un bogue, veuillez remplir un rapport !</string>
+  <string name="msg_kc_v3_key">Cette clef est une clef d\'OpenPGP version 3 et n\'est, par conséquent, pas sécuritaire. Elle n\'a pas été importée. </string>
   <string name="msg_ip_delete_old_fail">Aucune ancienne clef de supprimée (création d\'une nouvelle ?)</string>
   <string name="msg_ip_delete_old_ok">L\'ancienne clef a été supprimée de la base de données</string>
   <string name="msg_ip_encode_fail">Échec de l\'opération causé par une erreur d\'encodage</string>
@@ -548,7 +563,7 @@
   <string name="msg_kc_uid_bad_time">Suppression de l\'ID d\'utilisateur ayant une estampille temporelle dans le futur</string>
   <string name="msg_kc_uid_bad_type">Suppression du certificat d\'ID d\'utilisateur de type inconnu (%s)</string>
   <string name="msg_kc_uid_bad">Suppression du mauvais auto-certificat pour l\'ID d\'utilisateur « %s »</string>
-  <string name="msg_kc_uid_dup">Suppression de l\'auto-certificat périmé pour l\'ID d\'utilisateur « %s »</string>
+  <string name="msg_kc_uid_cert_dup">Suppression de l\'auto-certificat périmé pour l\'ID d\'utilisateur « %s »</string>
   <string name="msg_kc_uid_foreign">Suppression du certificat étranger d\'ID d\'utilisateur par %s</string>
   <string name="msg_kc_uid_revoke_dup">Suppression du certificat de révocation redondant pour l\'ID d\'utilisateur « %s »</string>
   <string name="msg_kc_uid_revoke_old">Suppression du certificat de révocation périmé pour l\'ID d\'utilisateur « %s »</string>
@@ -557,8 +572,8 @@
   <!--Keyring merging log entries-->
   <string name="msg_mg_public">Fusion vers le trousseau public %s</string>
   <string name="msg_mg_secret">Fusion vers le trousseau secret %s</string>
-  <string name="msg_mg_fatal_encode">Erreur fatale lors de l\'encodage de la signature</string>
-  <string name="msg_mg_heterogeneous">Il a été tenté de consolider les trousseaux hétérogènes</string>
+  <string name="msg_mg_error_encode">Erreur fatale lors de l\'encodage de la signature</string>
+  <string name="msg_mg_error_heterogeneous">Il a été tenté de fusionner des trousseaux avec des empreintes différentes !</string>
   <string name="msg_mg_new_subkey">Ajout de la nouvelle sous-clef %s</string>
   <string name="msg_mg_found_new">%s nouveaux certificats trouvés dans le trousseau</string>
   <string name="msg_mg_unchanged">Aucun nouveau certificat</string>
@@ -567,6 +582,7 @@
   <string name="msg_cr_error_no_master">Aucune option de clef maîtresse n\'a été spécifiée !</string>
   <string name="msg_cr_error_no_user_id">Les trousseaux doivent être créés avec au moins un ID d\'utilisateur !</string>
   <string name="msg_cr_error_no_certify">La clef maîtresse doit avoir le drapeau « certifié » !</string>
+  <string name="msg_cr_error_null_expiry">L\'expiration ne peut pas être « pareille qu\'avant » lors de la création de clefs. Ceci est une erreur de programmation, veuillez remplir un rapport de bogue !</string>
   <string name="msg_cr_error_keysize_512">La taille de la clef doit être supérieure ou égale à 512 !</string>
   <string name="msg_cr_error_internal_pgp">Erreur interne PGP !</string>
   <string name="msg_cr_error_unknown_algo">Mauvais choix d’algorithme !</string>
@@ -577,18 +593,26 @@
   <string name="msg_mf_error_fingerprint">L\'empreinte de clef effective ne correspond pas à celle attendue !</string>
   <string name="msg_mf_error_keyid">Aucune ID de clef. Ceci est une erreur interne, veuillez remplir un rapport de bogue !</string>
   <string name="msg_mf_error_integrity">Erreur interne, le contrôle d\'intégrité a échoué !</string>
-  <string name="msg_mf_error_noexist_primary">Mauvais ID principal spécifié !</string>
-  <string name="msg_mf_error_revoked_primary">Les IDs d\'utilisateurs révoqués ne peuvent pas être principaux !</string>
+  <string name="msg_mf_error_master_none">Aucun certificat maître sur lequel se basé n\'a été trouvé ! (Tous révoqués ?)</string>
+  <string name="msg_mf_error_noexist_primary">Mauvais ID d\'utilisateur principal spécifié !</string>
+  <string name="msg_mf_error_noexist_revoke">Mauvais ID d\'utilisateur spécifié pour la révocation !</string>
+  <string name="msg_mf_error_revoked_primary">Les ID d\'utilisateurs révoqués ne peuvent pas être principaux !</string>
+  <string name="msg_mf_error_null_expiry">L\'expiration ne peut pas être « pareille qu\'avant » lors de la création de sous-clefs. Ceci est une erreur de programmation, veuillez remplir un rapport de bogue !</string>
+  <string name="msg_mf_error_passphrase_master">Erreur fatale lors du déchiffrement de la clef maîtresse ! Ceci est probablement une erreur de programmation, veuillez remplir un rapport de bogue !</string>
   <string name="msg_mf_error_pgp">Exception interne PGP !</string>
   <string name="msg_mf_error_sig">Exception de signature !</string>
-  <string name="msg_mf_passphrase">Changement de la phrase de passe</string>
+  <string name="msg_mf_master">Modification des certifications maîtresses</string>
+  <string name="msg_mf_passphrase">Changement de la phrase de passe pour le trousseau...</string>
+  <string name="msg_mf_passphrase_key">Rechiffrement de la sous-clef %s avec la nouvelle phrase de passe</string>
+  <string name="msg_mf_passphrase_empty_retry">Échec lors de la définition de la nouvelle phrase de passe, nouvel essai avec une ancienne phrase de passe vide</string>
+  <string name="msg_mf_passphrase_fail">La phrase de passe de la sous-clef n\'a pas pu être changée ! (Est-elle différente des autres clefs ?)</string>
   <string name="msg_mf_primary_replace_old">Remplacement du certificat de l\'ID d\'utilisateur principal précédent</string>
   <string name="msg_mf_primary_new">Génération d\'un nouveau certificat pour le nouvel ID d\'utilisateur principal</string>
   <string name="msg_mf_subkey_change">Modification de la sous-clef %s</string>
-  <string name="msg_mf_subkey_missing">Une action a été tentée sur la sous-clef manquante %s !</string>
-  <string name="msg_mf_subkey_new">Génération d\'une nouvelle sous-clef %2$s de %1$s bit</string>
-  <string name="msg_mf_subkey_new_id">ID de la nouvelle sous-clef : %s</string>
-  <string name="msg_mf_subkey_past_expiry">La date d\'expiration ne peut pas être dans le passé !</string>
+  <string name="msg_mf_error_subkey_missing">Une action a été tentée sur la sous-clef manquante %s !</string>
+  <string name="msg_mf_subkey_new">Ajout de la nouvelle sous-clef de type %2$s (%1$s bit)</string>
+  <string name="msg_mf_subkey_new_id">Nouvelle ID de sous-clef : %s</string>
+  <string name="msg_mf_error_past_expiry">La date d\'expiration ne peut pas être dans le passé !</string>
   <string name="msg_mf_subkey_revoke">Révocation de la sous-clef %s</string>
   <string name="msg_mf_success">Trousseau modifié avec succès</string>
   <string name="msg_mf_uid_add">Ajout de l\'ID d\'utilisateur %s</string>
@@ -597,6 +621,40 @@
   <string name="msg_mf_uid_error_empty">L\'ID d\'utilisateur ne peut pas être vide !</string>
   <string name="msg_mf_unlock_error">Erreur lors du déverrouillage du trousseau !</string>
   <string name="msg_mf_unlock">Déverrouillage du trousseau</string>
+  <!--Consolidate-->
+  <string name="msg_con">Consolidation de la base de données</string>
+  <string name="msg_con_error_bad_state">La consolidation a été commencée alors qu\'aucune base de données n\'était en cache ! Ceci est probablement une erreur de programmation, veuillez remplir un rapport de bogue !</string>
+  <string name="msg_con_error_concurrent">La consolidation a été abandonnée, elle est déjà en cours sur un autre exétron !</string>
+  <string name="msg_con_save_secret">Enregistrement des trousseaux secrets</string>
+  <string name="msg_con_save_public">Enregistrement des trousseaux publiques</string>
+  <string name="msg_con_db_clear">Nettoyage de la base de données</string>
+  <string name="msg_con_success">Base de données consolidée avec succès</string>
+  <string name="msg_con_critical_in">Début de la phase critique</string>
+  <string name="msg_con_critical_out">Fin de la phase critique</string>
+  <string name="msg_con_delete_public">Suppression du fichier de cache du trousseau public</string>
+  <string name="msg_con_delete_secret">Suppression du fichier de cache du trousseau secret</string>
+  <string name="msg_con_error_db">Erreur lors de l\'ouverture de la base de données !</string>
+  <string name="msg_con_error_io_public">Erreur E/S lors de l\'écriture des clefs publiques vers le cache !</string>
+  <string name="msg_con_error_io_secret">Erreur E/S lors de l\'écriture des clefs secrètes vers le cache !</string>
+  <string name="msg_con_error_public">Erreur lors de la réimportation des clefs publiques !</string>
+  <string name="msg_con_error_secret">Erreur lors de la réimportation des clefs secrètes !</string>
+  <plurals name="msg_con_recover">
+    <item quantity="one">Consolidation de récupération avec %1$d clef secrète et %2$d publique</item>
+    <item quantity="other">Consolidation de récupération avec %1$d clefs secrètes et %2$d publiques</item>
+  </plurals>
+  <string name="msg_con_recover_unknown">Récupération à partir d\'un état inconnu</string>
+  <plurals name="msg_con_reimport_public">
+    <item quantity="one">Réimportation d\'une clef publique</item>
+    <item quantity="other">Réimportation de %d clefs publiques</item>
+  </plurals>
+  <string name="msg_con_reimport_public_skip">Aucune clef publique à réimporter, étape ignorée...</string>
+  <plurals name="msg_con_reimport_secret">
+    <item quantity="one">Réimportation d\'une clef secrète</item>
+    <item quantity="other">Réimportation de %d clefs secrètes</item>
+  </plurals>
+  <string name="msg_con_reimport_secret_skip">Aucune clef secrète à réimporter, étape ignorée...</string>
+  <string name="msg_con_warn_delete_public">Une exception a eu lieu lors de la suppression du fichier de cache public</string>
+  <string name="msg_con_warn_delete_secret">Une exception a eu lieu lors de la suppression du fichier de cache secret</string>
   <!--PassphraseCache-->
   <string name="passp_cache_notif_click_to_clear">Cliquer ici pour effacer les phrases de passe mises en cache</string>
   <string name="passp_cache_notif_n_keys">OpenKeychain a mis en cache %d phrases de passe</string>
@@ -610,6 +668,7 @@
   <string name="label_user_id">identité</string>
   <string name="unknown_uid">&lt;inconnu&gt;</string>
   <string name="empty_certs">Aucun certificat pour cette clef</string>
+  <string name="certs_text">Seuls les auto-certificats et les certificats créés avec vos clefs sont affichés ici.</string>
   <string name="section_uids_to_certify">Identités à certifier</string>
   <string name="label_revocation">Raison de la révocation</string>
   <string name="label_verify_status">État de vérification</string>

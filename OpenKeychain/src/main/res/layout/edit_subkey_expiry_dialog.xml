@@ -4,6 +4,16 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <CheckBox
+        android:id="@+id/edit_subkey_expiry_no_expiry"
+        android:layout_marginTop="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:checked="true"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/btn_no_date" />
+
     <DatePicker
         android:id="@+id/edit_subkey_expiry_date_picker"
         android:layout_gravity="center_horizontal"

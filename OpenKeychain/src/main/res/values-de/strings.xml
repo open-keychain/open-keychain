@@ -6,10 +6,11 @@
   <string name="title_encrypt">Verschlüsseln</string>
   <string name="title_decrypt">Entschlüsseln</string>
   <string name="title_authentication">Passwort</string>
+  <string name="title_add_subkey">Unterschlüssel hinzufügen</string>
   <string name="title_edit_key">Schlüssel bearbeiten</string>
   <string name="title_preferences">Einstellungen</string>
   <string name="title_api_registered_apps">Apps</string>
-  <string name="title_key_server_preference">Schlüsselserver Einstellungen</string>
+  <string name="title_key_server_preference">Schlüsselserver</string>
   <string name="title_change_passphrase">Passwort ändern</string>
   <string name="title_share_fingerprint_with">Teile Fingerabdruck über…</string>
   <string name="title_share_key">Teile Schlüssel über...</string>
@@ -26,6 +27,7 @@
   <string name="title_key_details">Schlüsseldetails</string>
   <string name="title_help">Hilfe</string>
   <string name="title_log_display">Log</string>
+  <string name="title_create_key">Schlüssel erzeugen</string>
   <!--section-->
   <string name="section_user_ids">Identitäten</string>
   <string name="section_keys">Unterschlüssel</string>
@@ -47,12 +49,13 @@
   <string name="btn_save">Speichern</string>
   <string name="btn_do_not_save">Abbrechen</string>
   <string name="btn_delete">Löschen</string>
+  <string name="btn_no_date">Kein Ablaufdatum</string>
   <string name="btn_okay">Okay</string>
   <string name="btn_export_to_server">Auf Schlüsselserver hochladen</string>
   <string name="btn_next">Weiter</string>
   <string name="btn_back">Zurück</string>
   <string name="btn_lookup_key">Schlüssel nachschlagen</string>
-  <string name="btn_share_encrypted_signed">Entschlüsseln und teilen</string>
+  <string name="btn_share_encrypted_signed">Verschlüsseln und teilen</string>
   <string name="btn_view_cert_key">Beglaubigungsschlüssel anzeigen</string>
   <string name="btn_create_key">Schlüssel erzeugen</string>
   <string name="btn_add_files">Datei(en) hinzufügen</string>
@@ -70,7 +73,7 @@
   <string name="menu_select_all">Alles auswählen</string>
   <string name="menu_add_keys">Schlüssel hinzufügen</string>
   <string name="menu_export_all_keys">Alle Schlüssel exportieren</string>
-  <string name="menu_advanced">Erweiterte Info anzeigen</string>
+  <string name="menu_advanced">Erweiterte Infos anzeigen</string>
   <!--label-->
   <string name="label_message">Nachricht</string>
   <string name="label_file">Datei</string>
@@ -80,9 +83,10 @@
   <string name="label_passphrase">Passwort</string>
   <string name="label_passphrase_again">Passwort wiederholen</string>
   <string name="label_algorithm">Algorithmus</string>
+  <string name="label_ascii_armor">Datei: ASCII Armor</string>
   <string name="label_file_ascii_armor">Datei: ASCII Armor</string>
   <string name="label_write_version_header">Lass andere wissen dass du OpenKeychain nutzt</string>
-  <string name="label_write_version_header_summary">Fügt \'OpenKeychain v2.7\' zu OpenPGP Signaturen, Daten und exportierten Schlüsseln hinzu</string>
+  <string name="label_write_version_header_summary">Fügt \'OpenKeychain v2.7\' zu OpenPGP Signaturen, DAten und exportierten Schlüsseln hinzu</string>
   <string name="label_asymmetric_from">Von:</string>
   <string name="label_to">An:</string>
   <string name="label_delete_after_encryption">Dateien: Nach Verschlüsselung löschen</string>
@@ -94,7 +98,6 @@
   <string name="label_passphrase_cache_ttl">Passwort-Cache</string>
   <string name="label_message_compression">Nachrichten-Komprimierung</string>
   <string name="label_file_compression">Datei-Komprimierung</string>
-  <string name="label_force_v3_signature">Erzwinge alte OpenPGPv3-Signaturen</string>
   <string name="label_keyservers">Schlüsselserver</string>
   <string name="label_key_id">Schlüssel-ID</string>
   <string name="label_creation">Erstellungsdatum</string>
@@ -113,8 +116,8 @@
   <string name="no_key">&lt;kein Schlüssel&gt;</string>
   <string name="can_encrypt">kann verschlüsseln</string>
   <string name="can_sign">kann signieren</string>
-  <string name="can_certify">kann bestätigen</string>
-  <string name="can_certify_not">kann nicht bestätigen</string>
+  <string name="can_certify">kann beglaubigen</string>
+  <string name="can_certify_not">kann nicht beglaubigen</string>
   <string name="expired">abgelaufen</string>
   <string name="revoked">widerrufen</string>
   <plurals name="n_keys">
@@ -167,9 +170,9 @@
   <string name="enter_passphrase_twice">Das Passwort bitte zweimal eingeben.</string>
   <string name="select_encryption_key">Mindestens einen Schlüssel zum Verschlüsseln auswählen.</string>
   <string name="select_encryption_or_signature_key">Mindestens einen Schlüssel zum Verschlüsseln oder einen zum Signieren auswählen.</string>
-  <string name="specify_file_to_encrypt_to">Bitte angeben, in welche Datei verschlüsselt werden soll.\nWARNUNG: Datei wird überschrieben, wenn sie bereits existiert. </string>
-  <string name="specify_file_to_decrypt_to">Bitte angeben, in welche Datei entschlüsselt werden soll.\nWARNUNG: Datei wird überschrieben, wenn sie bereits existiert. </string>
-  <string name="specify_file_to_export_to">Bitte angeben, in welche Datei exportiert werden soll.\nWARNUNG: Datei wird überschrieben, wenn sie bereits existiert. </string>
+  <string name="specify_file_to_encrypt_to">Bitte angeben in welche Datei verschlüsselt werden soll.\nWARNUNG: Datei wird überschrieben, wenn sie bereits existiert. </string>
+  <string name="specify_file_to_decrypt_to">Bitte angeben,in welche Datei entschlüsselt werden soll.\nWARNUNG: Datei wird überschrieben, wenn sie bereits existiert. </string>
+  <string name="specify_file_to_export_to">Bitte angeben in welche Datei exportiert werden soll.\nWARNUNG: Datei wird überschrieben, wenn sie bereits existiert. </string>
   <string name="key_deletion_confirmation_multi">Möchtest du wirklich alle ausgewählten öffentlichen Schlüssel löschen?\nDies kann nicht rückgängig gemacht werden!</string>
   <string name="secret_key_deletion_confirmation">Soll der PRIVATE Schlüssel \'%s\' wirklich gelöscht werden?\nDies kann nicht rückgängig gemacht werden!</string>
   <string name="public_key_deletetion_confirmation">Soll der öffentliche Schlüssel \'%s\' wirklich gelöscht werden?\nDies kann nicht rückgängig gemacht werden! </string>
@@ -234,22 +237,24 @@
   <!--progress dialogs, usually ending in '…'-->
   <string name="progress_done">Fertig.</string>
   <string name="progress_cancel">Abbrechen</string>
-  <string name="progress_saving">wird gespeichert…</string>
-  <string name="progress_importing">wird importiert…</string>
-  <string name="progress_exporting">wird exportiert…</string>
-  <string name="progress_uploading">hochladen...</string>
+  <string name="progress_saving">Wird gespeichert…</string>
+  <string name="progress_importing">Wird importiert…</string>
+  <string name="progress_exporting">Wird exportiert…</string>
+  <string name="progress_uploading">Wird hochgeladen...</string>
   <string name="progress_building_key">Schlüssel wird erstellt…</string>
   <string name="progress_building_master_key">Hauptschlüssel wird erstellt…</string>
-  <string name="progress_generating_rsa">erzeuge neuen RSA Schlüssel...</string>
-  <string name="progress_generating_dsa">erzeuge neuen DSA Schlüssel...</string>
-  <string name="progress_generating_elgamal">erzeuge neuen ElGamal Schlüssel...</string>
-  <string name="progress_modify">verändere Schlüsselbund...</string>
-  <string name="progress_modify_unlock">entsperre Schlüsselbund...</string>
-  <string name="progress_modify_adduid">füge User ID hinzu...</string>
-  <string name="progress_modify_primaryuid">ändere Haupt User ID...</string>
-  <string name="progress_modify_subkeychange">verändere Unterschlüssel...</string>
-  <string name="progress_modify_subkeyadd">füge Unterschlüssel hinzu...</string>
-  <string name="progress_modify_passphrase">ändere Passwort...</string>
+  <string name="progress_generating_rsa">Erzeuge neuen RSA-Schlüssel...</string>
+  <string name="progress_generating_dsa">Erzeuge neuen DSA-Schlüssel...</string>
+  <string name="progress_generating_elgamal">Erzeuge neuen ElGamal-Schlüssel...</string>
+  <string name="progress_modify">Schlüsselbund wird verändert...</string>
+  <string name="progress_modify_unlock">Schlüsselbund wird entsperrt...</string>
+  <string name="progress_modify_adduid">User-ID wird hinzugefügt...</string>
+  <string name="progress_modify_revokeuid">User-IDs werden widerrufen...</string>
+  <string name="progress_modify_primaryuid">Primäre User-ID wird geändert...</string>
+  <string name="progress_modify_subkeychange">Unterschlüssel werden verändert...</string>
+  <string name="progress_modify_subkeyrevoke">Unterschlüssel wird widerrufen...</string>
+  <string name="progress_modify_subkeyadd">Unterschlüssel wird hinzugefügt...</string>
+  <string name="progress_modify_passphrase">Passwort wird geändert...</string>
   <plurals name="progress_exporting_key">
     <item quantity="one">Schlüssel wird exportiert…</item>
     <item quantity="other">Schlüssel werden exportiert…</item>
@@ -263,15 +268,14 @@
   <string name="progress_generating_signature">Signatur wird erstellt…</string>
   <string name="progress_processing_signature">Signatur wird verarbeitet…</string>
   <string name="progress_verifying_signature">Signatur wird verifiziert…</string>
-  <string name="progress_signing">wird signiert…</string>
+  <string name="progress_signing">Wird signiert…</string>
+  <string name="progress_certifying">Wird beglaubige...</string>
   <string name="progress_reading_data">Daten werden gelesen…</string>
   <string name="progress_finding_key">Schlüssel wird gesucht…</string>
   <string name="progress_decompressing_data">Daten werden entpackt…</string>
   <string name="progress_verifying_integrity">Integrität wird überprüft…</string>
   <string name="progress_deleting_securely">\'%s\' wird sicher gelöscht…</string>
   <!--action strings-->
-  <string name="hint_public_keys">Name/Email/Schlüssel ID...</string>
-  <string name="hint_keybase_search">Name/Keybase.io Benutzername...</string>
   <!--key bit length selections-->
   <string name="key_size_512">512</string>
   <string name="key_size_768">768</string>
@@ -283,6 +287,7 @@
   <string name="key_size_8192">8192</string>
   <string name="key_size_custom">Benutzerdefinierte Schlüssellänge</string>
   <string name="key_size_custom_info">Benutzerdefinierte Schlüssellänge (in Bit):</string>
+  <string name="key_size_custom_info_rsa">Die RSA-Schlüssellänge muss grösser als 1024 und höchstens 16384 sein. Sie muss auch ein Mehrfaches von 8 sein.</string>
   <string name="key_size_custom_info_dsa">Die DSA-Schlüssellänge muss mindestens 512 und höchstens 1024 sein. Auch muss sie ein Mehrfaches von 64 sein.</string>
   <!--compression-->
   <string name="compression_fast">schnell</string>
@@ -298,12 +303,12 @@
   <!--Import-->
   <string name="import_tab_keyserver">Schlüsselserver</string>
   <string name="import_tab_direct">Datei/Zwischenablage</string>
-  <string name="import_tab_qr_code">QR Kode/NFC</string>
+  <string name="import_tab_qr_code">QR-Code/NFC</string>
   <string name="import_tab_keybase">Keybase.io</string>
   <string name="import_import">Ausgewählte Schlüssel importieren</string>
   <string name="import_qr_code_wrong">Falsch formatierter QR-Code! Bitte erneut versuchen!</string>
   <string name="import_qr_code_too_short_fingerprint">Der Fingerabdruck ist zu kurz (&lt; 16 Zeichen)</string>
-  <string name="import_qr_code_button">QR Kode Einlesen...</string>
+  <string name="import_qr_code_button">QR-Code Einlesen...</string>
   <!--Import result toast-->
   <plurals name="import_keys_added_and_updated_1">
     <item quantity="one">1 Schlüssel erfolgreich importiert</item>
@@ -344,12 +349,11 @@
   <string name="api_settings_package_signature">SHA-256 der Paketsignatur</string>
   <string name="api_settings_accounts">Konten</string>
   <string name="api_settings_accounts_empty">Keine Konten mit dieser Anwendung verknüpft.</string>
-  <string name="api_register_text">Folgende Anwendung möchte Nachrichten ver-/entschlüsseln und in Ihrem Namen signieren\nZugriff erlauben?\n\nVORSICHT: Sollten Sie nicht wissen warum dieses Fenster erscheint, sollten Sie den Zugriff nicht gewähren! Sie können Zugriffe später über das Menü \'Anwendungen\' widerrufen.</string>
+  <string name="api_create_account_text">Die App verlangt die Erstellung eines neuen Accounts. Bitte wähle einen deiner existierenden Schlüssel aus oder erstelle einen neuen.\nApps können nur hier ausgewählte Schlüssel nutzen.</string>
+  <string name="api_register_text">Folgende Anwendung möchte Nachrichten ver-/entschlüsseln und in Ihrem Namen signieren.\nZugriff erlauben?\n\nVORSICHT: Sollten Sie nicht wissen warum dieses Fenster erscheint, sollten Sie den Zugriff verbieten! Sie können Zugriffe später über das Menü \'Apps\' widerrufen.</string>
   <string name="api_register_allow">Zugriff erlauben</string>
   <string name="api_register_disallow">Zugriff verbieten</string>
   <string name="api_register_error_select_key">Bitte einen Schlüssel auswählen!</string>
-  <string name="api_select_pub_keys_missing_text">Für diese Identität wurden keine öffentlichen Schlüssel gefunden:</string>
-  <string name="api_select_pub_keys_dublicates_text">Für diese Identität existieren mehrere öffentliche Schlüssel:</string>
   <string name="api_select_pub_keys_text">Bitte die Liste der Empfänger überprüfen!</string>
   <string name="api_error_wrong_signature">Signaturüberprüfung fehlgeschlagen! Haben Sie diese Anwendung aus einer anderen Quelle installiert? Wenn Sie eine Attacke ausschliessen können, sollten Sie die Registrierung der App in OpenKeychain widerrufen und die Anwendung erneut registrieren.</string>
   <!--Share-->
@@ -364,21 +368,33 @@
   <string name="key_list_empty_text2">Du kannst anfangen OpenKeychain zu benutzen indem du</string>
   <string name="key_list_empty_text3">oder</string>
   <string name="key_list_empty_button_create">deinen eigenen Schlüssel erstellst</string>
+  <string name="key_list_empty_button_import">Importiere einen existierenden Schlüssel.</string>
   <!--Key view-->
   <string name="key_view_action_edit">Schlüssel bearbeiten</string>
   <string name="key_view_action_encrypt">Mit diesem Schlüssel verschlüsseln</string>
   <string name="key_view_action_certify">Identitäten beglaubigen</string>
+  <string name="key_view_action_update">Von Schlüsselserver aktualisieren</string>
   <string name="key_view_action_share_with">Teilen über...</string>
   <string name="key_view_action_share_nfc">Teilen über NFC (Geräte Rückseite an Rückseite halten)</string>
+  <string name="key_view_action_upload">Auf Schlüsselserver hochladen</string>
   <string name="key_view_tab_main">Informationen</string>
   <string name="key_view_tab_share">Teilen</string>
   <string name="key_view_tab_keys">Unterschlüssel</string>
   <string name="key_view_tab_certs">Beglaubigungen</string>
+  <string name="user_id_info_revoked_title">Wiederrufen</string>
+  <string name="user_id_info_invalid_title">Ungültig</string>
   <!--Edit key-->
+  <string name="edit_key_action_change_passphrase">Passwort ändern</string>
   <string name="edit_key_action_add_identity">Identität hinzufügen</string>
   <string name="edit_key_action_add_subkey">Unterschlüssel hinzufügen</string>
+  <string name="edit_key_new_subkey">neu</string>
   <!--Create key-->
+  <string name="create_key_upload">Schlüssel auf Schlüsselserver hochladen</string>
+  <string name="create_key_passphrases_not_equal">Passwörter stimmen nicht überein</string>
+  <string name="create_key_hint_full_name">Vollständiger Name, z.B. Max Mustermann</string>
   <!--View key-->
+  <string name="view_key_revoked">Dieser Schlüssel wurde widerrufen!</string>
+  <string name="view_key_expired">Dieser Schlüssel ist nicht mehr gültig!</string>
   <!--Navigation Drawer-->
   <string name="nav_keys">Schlüssel</string>
   <string name="nav_encrypt">Signieren und Verschlüsseln</string>
@@ -396,25 +412,38 @@
   <string name="cert_casual">einfach überprüft</string>
   <string name="cert_positive">positiv</string>
   <string name="cert_revoke">widerrufen</string>
+  <string name="cert_verify_ok">OK</string>
   <string name="cert_verify_failed">fehlgeschlagen!</string>
   <string name="cert_verify_error">Fehler!</string>
   <string name="cert_verify_unavailable">Schlüssel nicht verfügbar</string>
   <!--Import Public log entries-->
   <string name="msg_ip_delete_old_ok">Alte Schlüssel aus der Datenbank löschen</string>
   <string name="msg_ip_encode_fail">Die Anwendung ist wegen Kodierungsfehler fehlgeschlagen</string>
-  <string name="msg_ip_fail_io_exc">Die Anwendung is wegen Eingabe/Ausgabe-Fehler fehlgeschlagen</string>
+  <string name="msg_ip_fail_io_exc">Die Anwendung ist wegen eines Eingabe/Ausgabe-Fehlers fehlgeschlagen</string>
   <string name="msg_ip_fail_remote_ex">Die Anwendung ist wegen internen Fehler fehlgeschlagen</string>
+  <string name="msg_ip">Importiere öffentlichen Schlüsselbund %s</string>
   <string name="msg_ip_insert_keyring">Schlüsselbund-daten werden kodiert</string>
   <string name="msg_ip_prepare">Datenbank-Transaktionen werden vorbereitet</string>
+  <string name="msg_ip_master">Hauptschlüssel %s wird verarbeitet</string>
   <string name="msg_ip_subkey">Unterschlüssel %s wird bearbeitet</string>
+  <string name="msg_ip_uid_revoked">Benutzerkennung wurde widerrufen</string>
   <!--Import Secret log entries-->
+  <string name="msg_is_db_exception">Datenbankfehler!</string>
   <string name="msg_is_importing_subkeys">Geheime Unterschlüssel werden bearbeitet</string>
+  <string name="msg_is_success_identical">Schlüsselbund enthält keine neuen Daten, es gibt nichts zu tun.</string>
+  <string name="msg_is_success">Geheimer Schlüsselbund erfolgreich importiert</string>
   <!--Keyring Canonicalization log entries-->
+  <string name="msg_kc_sub">Verarbeite Unterschlüssel %s</string>
   <!--Keyring merging log entries-->
   <!--createSecretKeyRing-->
   <!--modifySecretKeyRing-->
+  <string name="msg_mf_uid_primary">Ändere primäre Benutzerkenung auf %s</string>
+  <string name="msg_mf_uid_revoke">Widerrufe Benutzerkennung %s</string>
+  <string name="msg_mf_uid_error_empty">Benutzerkennung darf nicht leer sein!</string>
+  <!--Consolidate-->
   <!--PassphraseCache-->
   <!--unsorted-->
+  <string name="internal_error">Interner Fehler!</string>
   <string name="section_certifier_id">Beglaubiger</string>
   <string name="section_cert">Zertifikatdetails</string>
   <string name="label_user_id">Identität</string>

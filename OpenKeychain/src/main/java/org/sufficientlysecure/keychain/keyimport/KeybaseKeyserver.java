@@ -75,7 +75,7 @@ public class KeybaseKeyserver extends Keyserver {
         entry.setExtraData(username);
 
         final int algorithmId = match.getAlgorithmId();
-        entry.setAlgorithm(PgpKeyHelper.getAlgorithmInfo(algorithmId));
+        entry.setAlgorithm(PgpKeyHelper.getAlgorithmInfo(algorithmId, null, null));
         final int bitStrength = match.getBitStrength();
         entry.setBitStrength(bitStrength);
 
