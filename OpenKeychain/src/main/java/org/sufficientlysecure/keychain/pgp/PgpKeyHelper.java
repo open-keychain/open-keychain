@@ -95,7 +95,7 @@ public class PgpKeyHelper {
                 break;
             }
         }
-        if (keySize > 0)
+        if (keySize != null && keySize > 0)
             return algorithmStr + ", " + keySize + " bit";
         else
             return algorithmStr;
