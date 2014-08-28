@@ -1,200 +1,200 @@
-2.8
-* So many bugs have been fixed in this release that we focus on the main new features
-* Key edit: awesome new design, key revocation
-* Key import: awesome new design, secure keyserver connections via hkps, keyserver resolving via DNS SRV records
-* New first time screen
-* New key creation screen: autocompletion of name and email based on your personal Android accounts
-* File encryption: awesome new design, support for encrypting multiple files
-* New icons to show status of key (by Brennan Novak)
-* Important bug fix: Importing of large key collections from a file is now possible
-* Notification showing cached passphrases
-* Keys are connected to Android's contacts
+## 2.8
+  * So many bugs have been fixed in this release that we focus on the main new features
+  * Key edit: awesome new design, key revocation
+  * Key import: awesome new design, secure keyserver connections via hkps, keyserver resolving via DNS SRV records
+  * New first time screen
+  * New key creation screen: autocompletion of name and email based on your personal Android accounts
+  * File encryption: awesome new design, support for encrypting multiple files
+  * New icons to show status of key (by Brennan Novak)
+  * Important bug fix: Importing of large key collections from a file is now possible
+  * Notification showing cached passphrases
+  * Keys are connected to Android's contacts
 
 This release wouldn't be possible without the work of Vincent Breitmoser (GSoC 2014), mar-v-in (GSoC 2014), Daniel Albert, Art O Cathain, Daniel Haß, Tim Bray, Thialfihar
 
 
-2.7
-* Purple! (Dominik, Vincent)
-* New key view design (Dominik, Vincent)
-* New flat Android buttons (Dominik, Vincent)
-* API fixes (Dominik)
-* Keybase.io import (Tim Bray)
+## 2.7
+  * Purple! (Dominik, Vincent)
+  * New key view design (Dominik, Vincent)
+  * New flat Android buttons (Dominik, Vincent)
+  * API fixes (Dominik)
+  * Keybase.io import (Tim Bray)
 
-2.6.1
-* Some fixes for regression bugs
+## 2.6.1
+  * Some fixes for regression bugs
 
-2.6
-* Key certifications (thanks to Vincent Breitmoser)
-* Support for GnuPG partial secret keys (thanks to Vincent Breitmoser)
-* New design for signature verification
-* Custom key length (thanks to Greg Witczak)
-* Fix share-functionality from other apps
+## 2.6
+  * Key certifications (thanks to Vincent Breitmoser)
+  * Support for GnuPG partial secret keys (thanks to Vincent Breitmoser)
+  * New design for signature verification
+  * Custom key length (thanks to Greg Witczak)
+  * Fix share-functionality from other apps
 
-2.5
-* Fix decryption of symmetric pgp messages/files
-* Refactored key edit screen (thanks to Ash Hughes)
-* New modern design for encrypt/decrypt screens
-* OpenPGP API version 3 (multiple api accounts, internal fixes, key lookup)
+## 2.5
+  * Fix decryption of symmetric pgp messages/files
+  * Refactored key edit screen (thanks to Ash Hughes)
+  * New modern design for encrypt/decrypt screens
+  * OpenPGP API version 3 (multiple api accounts, internal fixes, key lookup)
 
-2.4
+## 2.4
 Thanks to all applicants of Google Summer of Code 2014 who made this release feature rich and bug free!
 Besides several small patches, a notable number of patches are made by the following people (in alphabetical order):
 Daniel Hammann, Daniel Haß, Greg Witczak, Miroojin Bakshi, Nikhil Peter Raj, Paul Sarbinowski, Sreeram Boyapati, Vincent Breitmoser.
-* New unified key list
-* Colorized key fingerprint
-* Support for keyserver ports
-* Deactivate possibility to generate weak keys
-* Much more internal work on the API
-* Certify user ids
-* Keyserver query based on machine-readable output
-* Lock navigation drawer on tablets
-* Suggestions for emails on creation of keys
-* Search in public key lists
-* And much more improvements and fixes…
+  * New unified key list
+  * Colorized key fingerprint
+  * Support for keyserver ports
+  * Deactivate possibility to generate weak keys
+  * Much more internal work on the API
+  * Certify user ids
+  * Keyserver query based on machine-readable output
+  * Lock navigation drawer on tablets
+  * Suggestions for emails on creation of keys
+  * Search in public key lists
+  * And much more improvements and fixes…
 
-2.3.1
-* Hotfix for crash when upgrading from old versions
+## 2.3.1
+  * Hotfix for crash when upgrading from old versions
 
-2.3
-* Remove unnecessary export of public keys when exporting secret key (thanks to Ash Hughes)
-* Fix setting expiry dates on keys (thanks to Ash Hughes)
-* More internal fixes when editing keys (thanks to Ash Hughes)
-* Querying keyservers directly from the import screen
-* Fix layout and dialog style on Android 2.2-3.0
-* Fix crash on keys with empty user ids
-* Fix crash and empty lists when coming back from signing screen
-* Bouncy Castle (cryptography library) updated from 1.47 to 1.50 and build from source
-* Fix upload of key from signing screen﻿
+## 2.3
+  * Remove unnecessary export of public keys when exporting secret key (thanks to Ash Hughes)
+  * Fix setting expiry dates on keys (thanks to Ash Hughes)
+  * More internal fixes when editing keys (thanks to Ash Hughes)
+  * Querying keyservers directly from the import screen
+  * Fix layout and dialog style on Android 2.2-3.0
+  * Fix crash on keys with empty user ids
+  * Fix crash and empty lists when coming back from signing screen
+  * Bouncy Castle (cryptography library) updated from 1.47 to 1.50 and build from source
+  * Fix upload of key from signing screen﻿
 
-2.2
-* New design with navigation drawer
-* New public key list design
-* New public key view
-* Bug fixes for importing of keys
-* Key cross-certification (thanks to Ash Hughes)
-* Handle UTF-8 passwords properly (thanks to Ash Hughes)
-* First version with new languages (thanks to the contributors on Transifex)
-* Sharing of keys via QR Codes fixed and improved
-* Package signature verification for API
+## 2.2
+  * New design with navigation drawer
+  * New public key list design
+  * New public key view
+  * Bug fixes for importing of keys
+  * Key cross-certification (thanks to Ash Hughes)
+  * Handle UTF-8 passwords properly (thanks to Ash Hughes)
+  * First version with new languages (thanks to the contributors on Transifex)
+  * Sharing of keys via QR Codes fixed and improved
+  * Package signature verification for API
 
-2.1
-* Lots of bug fixes
-* New API for developers
-* PRNG bug fix by Google
+## 2.1
+  * Lots of bug fixes
+  * New API for developers
+  * PRNG bug fix by Google
 
-2.0
-* Complete redesign
-* Share public keys via qr codes, nfc beam
-* Sign keys
-* Upload keys to server
-* Fixes import issues
-* New AIDL API
+## 2.0
+  * Complete redesign
+  * Share public keys via qr codes, nfc beam
+  * Sign keys
+  * Upload keys to server
+  * Fixes import issues
+  * New AIDL API
 
-1.0.8
-* Basic keyserver support (HKP, please report bugs :))
-* App2sd (untested, let me know if there are problems)
-* More choices for passphrase cache: 1, 2, 4, 8, hours
-* Translations: Norwegian (thanks, Sander Danielsen), Chinese (thanks, Zhang Fredrick)
-* Bugfixes
-* Optimizations
+## 1.0.8
+  * Basic keyserver support (HKP, please report bugs :))
+  * App2sd (untested, let me know if there are problems)
+  * More choices for passphrase cache: 1, 2, 4, 8, hours
+  * Translations: Norwegian (thanks, Sander Danielsen), Chinese (thanks, Zhang Fredrick)
+  * Bugfixes
+  * Optimizations
 
-1.0.7
-* Clear sign problem with lacking trailing newline fixed
-* More options for passphrase cache time to live (20, 40, 60 mins)
+## 1.0.7
+  * Clear sign problem with lacking trailing newline fixed
+  * More options for passphrase cache time to live (20, 40, 60 mins)
 
-1.0.6
-* Account adding crash on Froyo fixed
-* Secure file deletion
-* Option to delete key file after import
-* Stream encryption/decryption (gallery, etc.)
-* New options (language, force v3 signatures)
-* Interface changes
-* Bugfixes
+## 1.0.6
+  * Account adding crash on Froyo fixed
+  * Secure file deletion
+  * Option to delete key file after import
+  * Stream encryption/decryption (gallery, etc.)
+  * New options (language, force v3 signatures)
+  * Interface changes
+  * Bugfixes
 
-1.0.5
-* German and Italian translation
-* Much smaller package, due to reduced BC sources
-* New preferences GUI
-* Layout adjustment for localization
-* Signature bugfix
+## 1.0.5
+  * German and Italian translation
+  * Much smaller package, due to reduced BC sources
+  * New preferences GUI
+  * Layout adjustment for localization
+  * Signature bugfix
 
-1.0.4
-* Fixed another crash caused by some SDK bug with query builder
+## 1.0.4
+  * Fixed another crash caused by some SDK bug with query builder
 
-1.0.3
-* Fixed crashes during encryption/signing and possibly key export
+## 1.0.3
+  * Fixed crashes during encryption/signing and possibly key export
 
-1.0.2
-* Filterable key lists
-* Smarter preselection of encryption keys
-* New Intent handling for VIEW and SEND, allows files to be encrypted/decrypted out of file managers
-* Fixes and additional features (key preselection) for k9, new beta build available
+## 1.0.2
+  * Filterable key lists
+  * Smarter preselection of encryption keys
+  * New Intent handling for VIEW and SEND, allows files to be encrypted/decrypted out of file managers
+  * Fixes and additional features (key preselection) for k9, new beta build available
 
-1.0.1
-* GMail account listing was broken in 1.0.0, fixed again
+## 1.0.1
+  * GMail account listing was broken in 1.0.0, fixed again
 
-1.0.0
-* K-9 Mail integration, APG supporting beta build of K-9 Mail
-* Support of more file managers (including ASTRO)
-* Slovenian translation
-* New database, much faster, less memory usage
-* Defined Intents and content provider for other apps
-* Bugfixes
+## 1.0.0
+  * K-9 Mail integration, APG supporting beta build of K-9 Mail
+  * Support of more file managers (including ASTRO)
+  * Slovenian translation
+  * New database, much faster, less memory usage
+  * Defined Intents and content provider for other apps
+  * Bugfixes
 
-0.9.7
-* 0.9.5 must have introduced a bug that prevented symmetric encryption, this release fixes it
+## 0.9.7
+  * 0.9.5 must have introduced a bug that prevented symmetric encryption, this release fixes it
 
-0.9.6
-* Finally fixed that bug that prevents the import of keys exported with Enigmail (and others), since this likely affects many users... it gets its own quick release
+## 0.9.6
+  * Finally fixed that bug that prevents the import of keys exported with Enigmail (and others), since this likely affects many users... it gets its own quick release
 
-0.9.5
-* K-9 Mail integration: using "More -> Forward (alternate)"
-* Passphrase cache
-* Compression preferences added
-* Accurate decryption progress bar
-* Internationalization prepared, hopefully translations will follow
+## 0.9.5
+  * K-9 Mail integration: using "More -> Forward (alternate)"
+  * Passphrase cache
+  * Compression preferences added
+  * Accurate decryption progress bar
+  * Internationalization prepared, hopefully translations will follow
 
-0.9.4
-* Android 1.5 support, I *hope*, please report problems with layout and graphics
-* Yet another interface change, hopefully this will be it :)
-* Symmetric encryption for messages
-* Encrypt and decrypt processes all wrapped into ONE activity respectively in preparation for defined Intents to use APG in other apps
+## 0.9.4
+  * Android 1.5 support, I *hope*, please report problems with layout and graphics
+  * Yet another interface change, hopefully this will be it :)
+  * Symmetric encryption for messages
+  * Encrypt and decrypt processes all wrapped into ONE activity respectively in preparation for defined Intents to use APG in other apps
 
-0.9.3
-* Handle large files correctly
-* Better progress bars (especially for file encryption/decryption)
-* Option to delete files after en-/decryption
-* Bug fixes, layout tweaks
+## 0.9.3
+  * Handle large files correctly
+  * Better progress bars (especially for file encryption/decryption)
+  * Option to delete files after en-/decryption
+  * Bug fixes, layout tweaks
 
-0.9.2
-* Settings for default encryption/hash algorithm
-* Hushmail key support
-* GUI improvements (encrypt file layout rewritten)
-* Bug fixes
+## 0.9.2
+  * Settings for default encryption/hash algorithm
+  * Hushmail key support
+  * GUI improvements (encrypt file layout rewritten)
+  * Bug fixes
 
-0.9.1
-* ElGamal support for subkeys
-* Fixes of some silly 0.9.0 bugs
+## 0.9.1
+  * ElGamal support for subkeys
+  * Fixes of some silly 0.9.0 bugs
 
-0.9.0
-* OI File Manager support
-* File encryption/decryption
+## 0.9.0
+  * OI File Manager support
+  * File encryption/decryption
 
-0.8.1
-* Display/verify signed-only mails
-* Bug fixes, layout fixes
+## 0.8.1
+  * Display/verify signed-only mails
+  * Bug fixes, layout fixes
 
-0.8.0
-* Create/edit keys
-* Export keys
-* GUI more Android-like
-* A lot of code review, rewriting things
-* Tidy up strings and error handling
+## 0.8.0
+  * Create/edit keys
+  * Export keys
+  * GUI more Android-like
+  * A lot of code review, rewriting things
+  * Tidy up strings and error handling
 
-0.7.1
-* Minor fixes, some code review
-* Recognize ElGamal encryption keys as suitable for encryption
-* Allow signing only
+## 0.7.1
+  * Minor fixes, some code review
+  * Recognize ElGamal encryption keys as suitable for encryption
+  * Allow signing only
 
-0.7.0
-* Initial public release
+## 0.7.0
+  * Initial public release
