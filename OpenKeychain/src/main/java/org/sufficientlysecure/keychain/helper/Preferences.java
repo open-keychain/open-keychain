@@ -215,6 +215,9 @@ public class Preferences {
             ListIterator<String> it = servers.listIterator();
             while (it.hasNext()) {
                 String server = it.next();
+                if (server == null) {
+                    continue;
+                }
                 if (server.equals("pool.sks-keyservers.net")) {
                     // use HKPS!
                     it.set("hkps://hkps.pool.sks-keyservers.net");
