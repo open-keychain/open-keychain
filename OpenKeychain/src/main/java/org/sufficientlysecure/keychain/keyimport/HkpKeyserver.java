@@ -280,10 +280,10 @@ public class HkpKeyserver extends Keyserver {
             entry.setQuery(query);
             entry.setOrigin(getUrlPrefix() + mHost + ":" + mPort);
 
-            entry.setBitStrength(Integer.parseInt(matcher.group(3)));
-
-            final int algorithmId = Integer.decode(matcher.group(2));
-            entry.setAlgorithm(PgpKeyHelper.getAlgorithmInfo(algorithmId, null, null));
+            int bitSize = Integer.parseInt(matcher.group(3));
+            entry.setBitStrength(bitSize);
+            int algorithmId = Integer.decode(matcher.group(2));
+            entry.setAlgorithm(PgpKeyHelper.getAlgorithmInfo(algorithmId, bitSize, null));
 
             // group 1 contains the full fingerprint (v4) or the long key id if available
             // see http://bit.ly/1d4bxbk and http://bit.ly/1gD1wwr
