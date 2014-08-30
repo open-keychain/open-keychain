@@ -162,7 +162,8 @@ public class UncachedKeyRing {
                     while(stream.available() > 0) {
                         // if there are no objects left from the last factory, create a new one
                         if (mObjectFactory == null) {
-                            mObjectFactory = new PGPObjectFactory(PGPUtil.getDecoderStream(stream));
+                            mObjectFactory = new PGPObjectFactory(PGPUtil.getDecoderStream(stream),
+                                    new JcaKeyFingerprintCalculator());
                         }
 
                         // go through all objects in this block
