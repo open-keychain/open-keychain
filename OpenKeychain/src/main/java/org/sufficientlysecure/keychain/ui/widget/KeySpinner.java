@@ -40,14 +40,14 @@ import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.util.Log;
 
-public abstract class KeySpinner extends Spinner {
+public abstract class KeySpinner extends Spinner implements LoaderManager.LoaderCallbacks<Cursor> {
     public interface OnKeyChangedListener {
         public void onKeyChanged(long masterKeyId);
     }
 
-    private long mSelectedKeyId;
-    private SelectKeyAdapter mAdapter = new SelectKeyAdapter();
-    private OnKeyChangedListener mListener;
+    protected long mSelectedKeyId;
+    protected SelectKeyAdapter mAdapter = new SelectKeyAdapter();
+    protected OnKeyChangedListener mListener;
 
     public KeySpinner(Context context) {
         super(context);
@@ -83,8 +83,6 @@ public abstract class KeySpinner extends Spinner {
         });
     }
 
-    public abstract Loader<Cursor> onCreateLoader();
-
     @Override
     public void setOnItemSelectedListener(OnItemSelectedListener listener) {
         throw new UnsupportedOperationException();
@@ -102,25 +100,20 @@ public abstract class KeySpinner extends Spinner {
 
     public void reload() {
         if (getContext() instanceof FragmentActivity) {
-            ((FragmentActivity) getContext()).getSupportLoaderManager().restartLoader(hashCode(), null, new LoaderManager.LoaderCallbacks<Cursor>() {
-                @Override
-                public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-                    return KeySpinner.this.onCreateLoader();
-                }
-
-                @Override
-                public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-                    mAdapter.swapCursor(data);
-                }
-
-                @Override
-                public void onLoaderReset(Loader<Cursor> loader) {
-                    mAdapter.swapCursor(null);
-                }
-            });
+            ((FragmentActivity) getContext()).getSupportLoaderManager().restartLoader(0, null, this);
         } else {
             Log.e(Constants.TAG, "KeySpinner must be attached to FragmentActivity, this is " + getContext().getClass());
         }
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+        mAdapter.swapCursor(data);
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+        mAdapter.swapCursor(null);
     }
 
     public long getSelectedKeyId() {
@@ -131,7 +124,7 @@ public abstract class KeySpinner extends Spinner {
         this.mSelectedKeyId = selectedKeyId;
     }
 
-    private class SelectKeyAdapter extends BaseAdapter implements SpinnerAdapter {
+    protected class SelectKeyAdapter extends BaseAdapter implements SpinnerAdapter {
         private CursorAdapter inner;
         private int mIndexUserId;
         private int mIndexKeyId;

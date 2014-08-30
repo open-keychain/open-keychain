@@ -20,6 +20,7 @@ package org.sufficientlysecure.keychain.ui.widget;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Bundle;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.util.AttributeSet;
@@ -39,7 +40,7 @@ public class SignKeySpinner extends KeySpinner {
     }
 
     @Override
-    public Loader<Cursor> onCreateLoader() {
+    public Loader<Cursor> onCreateLoader(int loaderId, Bundle data) {
         // This is called when a new Loader needs to be created. This
         // sample only has one Loader, so we don't care about the ID.
         Uri baseUri = KeychainContract.KeyRings.buildUnifiedKeyRingsUri();

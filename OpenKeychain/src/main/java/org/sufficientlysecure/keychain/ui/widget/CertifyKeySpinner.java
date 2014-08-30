@@ -20,6 +20,7 @@ package org.sufficientlysecure.keychain.ui.widget;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Bundle;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.util.AttributeSet;
@@ -48,7 +49,7 @@ public class CertifyKeySpinner extends KeySpinner {
     }
 
     @Override
-    public Loader<Cursor> onCreateLoader() {
+    public Loader<Cursor> onCreateLoader(int loaderId, Bundle data) {
         // This is called when a new Loader needs to be created. This
         // sample only has one Loader, so we don't care about the ID.
         Uri baseUri = KeychainContract.KeyRings.buildUnifiedKeyRingsUri();
@@ -74,4 +75,14 @@ public class CertifyKeySpinner extends KeySpinner {
         // creating a Cursor for the data being displayed.
         return new CursorLoader(getContext(), baseUri, projection, where, null, null);
     }
+
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+        super.onLoadFinished(loader, data);
+        // If there is only one choice, pick it by default
+        if (mAdapter.getCount() == 2) {
+            setSelection(1);
+        }
+    }
+
 }
