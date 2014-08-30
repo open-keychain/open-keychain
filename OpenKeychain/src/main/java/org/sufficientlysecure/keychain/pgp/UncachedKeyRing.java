@@ -538,7 +538,7 @@ public class UncachedKeyRing {
             if (Arrays.binarySearch(KNOWN_ALGORITHMS, key.getAlgorithm()) < 0) {
                 ring = removeSubKey(ring, key);
 
-                log.add(LogLevel.ERROR, LogType.MSG_KC_SUB_UNKNOWN_ALGO, indent,
+                log.add(LogLevel.WARN, LogType.MSG_KC_SUB_UNKNOWN_ALGO, indent,
                         Integer.toString(key.getAlgorithm()));
                 indent -= 1;
                 continue;
