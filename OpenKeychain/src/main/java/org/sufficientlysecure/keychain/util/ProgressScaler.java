@@ -28,6 +28,10 @@ public class ProgressScaler implements Progressable {
     final Progressable mWrapped;
     final int mFrom, mTo, mMax;
 
+    public ProgressScaler() {
+        mWrapped = null;
+        mFrom = mTo = mMax = 0;
+    }
     public ProgressScaler(Progressable wrapped, int from, int to, int max) {
         this.mWrapped = wrapped;
         this.mFrom = from;

@@ -36,7 +36,6 @@ import org.sufficientlysecure.keychain.pgp.CanonicalizedPublicKey;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedPublicKeyRing;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKeyRing;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
-import org.sufficientlysecure.keychain.pgp.NullProgressable;
 import org.sufficientlysecure.keychain.pgp.PgpHelper;
 import org.sufficientlysecure.keychain.pgp.PgpImportExport;
 import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
@@ -62,6 +61,7 @@ import org.sufficientlysecure.keychain.util.FileImportCache;
 import org.sufficientlysecure.keychain.util.IterableIterator;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.ProgressFixedScaler;
+import org.sufficientlysecure.keychain.util.ProgressScaler;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -633,7 +633,7 @@ public class ProviderHelper {
     }
 
     public SaveKeyringResult savePublicKeyRing(UncachedKeyRing keyRing) {
-        return savePublicKeyRing(keyRing, new NullProgressable());
+        return savePublicKeyRing(keyRing, new ProgressScaler());
     }
 
     /** Save a public keyring into the database.
