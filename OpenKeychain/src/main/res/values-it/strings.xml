@@ -457,7 +457,7 @@
   <!--Import Public log entries-->
   <string name="msg_ip_apply_batch">Applicazione inserimento operazioni in batch.</string>
   <string name="msg_ip_bad_type_secret">Ho cercato di importare portachiavi privato come pubblico. Questo è un bug, per cortesia inviateci un rapporto!</string>
-  <string name="msg_kc_v3_key">Questa chiave è una chiave OpenPGP versione 3 e quindi non sicura. Non è stata importata.</string>
+  <string name="msg_kc_error_v3">Questa chiave è una chiave OpenPGP versione 3 e quindi non sicura. Non è stata importata.</string>
   <string name="msg_ip_delete_old_fail">Nessuna vecchia chiave cancellata (stai creando una nuova?)</string>
   <string name="msg_ip_delete_old_ok">Cancellate vecchie chiavi dal database</string>
   <string name="msg_ip_encode_fail">Operazione fallita a causa di un errore di codifica</string>
@@ -524,7 +524,7 @@
   <!--Keyring Canonicalization log entries-->
   <string name="msg_kc_public">Canonicalizzazione portachiavi pubblico %s</string>
   <string name="msg_kc_secret">Canonicalizzazione portachiavi segreto %s</string>
-  <string name="msg_kc_fatal_no_uid">Canonicalizzazione portachiavi fallita: il portachiavi non ha ID utenti validi</string>
+  <string name="msg_kc_error_no_uid">Canonicalizzazione portachiavi fallita: il portachiavi non ha ID utenti validi</string>
   <string name="msg_kc_master">Elaborazione chiave principale</string>
   <string name="msg_kc_revoke_bad_err">Rimozione di certificato di revoca del portachiavi corrotto</string>
   <string name="msg_kc_revoke_bad_local">Rimozione certificato di revoca del portachiavi con caratteristica \"locale\"</string>

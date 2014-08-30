@@ -457,7 +457,7 @@
   <!--Import Public log entries-->
   <string name="msg_ip_apply_batch">Aplicando operación de inserción por lote.</string>
   <string name="msg_ip_bad_type_secret">Se intentó importar un juego de claves (keyring) secreto como público. Esto es un fallo, por favor ¡consigne un informe!</string>
-  <string name="msg_kc_v3_key">Esta clave es una clave OpenPGP versión 3 y por tanto insegura. No ha sido importada.</string>
+  <string name="msg_kc_error_v3">Esta clave es una clave OpenPGP versión 3 y por tanto insegura. No ha sido importada.</string>
   <string name="msg_ip_delete_old_fail">No se borró ninguna clave antigua (¿crear una nueva?)</string>
   <string name="msg_ip_delete_old_ok">Clave antigua borrada de la base de datos</string>
   <string name="msg_ip_encode_fail">La operación falló debido a un error de codificación</string>
@@ -524,7 +524,7 @@
   <!--Keyring Canonicalization log entries-->
   <string name="msg_kc_public">Canonicalizando juego de claves público %s</string>
   <string name="msg_kc_secret">Canonicalizando juego de claves secreto %s</string>
-  <string name="msg_kc_fatal_no_uid">Fallo en la canonicalización de juego de claves: El juego de claves no tiene identificaciones de usuario válidas</string>
+  <string name="msg_kc_error_no_uid">Fallo en la canonicalización de juego de claves: El juego de claves no tiene identificaciones de usuario válidas</string>
   <string name="msg_kc_master">Procesando clave maestra</string>
   <string name="msg_kc_revoke_bad_err">Eliminando certificado defectuoso de revocación de juego de claves</string>
   <string name="msg_kc_revoke_bad_local">Eliminando certificado de revocación de juego de claves, con distintivo \"local\"</string>

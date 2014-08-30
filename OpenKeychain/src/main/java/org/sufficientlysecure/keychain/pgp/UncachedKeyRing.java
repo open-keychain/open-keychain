@@ -19,6 +19,7 @@
 package org.sufficientlysecure.keychain.pgp;
 
 import org.spongycastle.bcpg.ArmoredOutputStream;
+import org.spongycastle.bcpg.PublicKeyAlgorithmTags;
 import org.spongycastle.bcpg.SignatureSubpacketTags;
 import org.spongycastle.bcpg.sig.KeyFlags;
 import org.spongycastle.openpgp.PGPKeyFlags;
@@ -219,6 +220,19 @@ public class UncachedKeyRing {
         aos.close();
     }
 
+    // An array of known algorithms. Note this must be numerically sorted for binarySearch() to work!
+    static final int[] KNOWN_ALGORITHMS = new int[] {
+        PublicKeyAlgorithmTags.RSA_GENERAL, // 1
+        PublicKeyAlgorithmTags.RSA_ENCRYPT, // 2
+        PublicKeyAlgorithmTags.RSA_SIGN, // 3
+        PublicKeyAlgorithmTags.ELGAMAL_ENCRYPT, // 16
+        PublicKeyAlgorithmTags.DSA, // 17
+        PublicKeyAlgorithmTags.ECDH, // 18
+        PublicKeyAlgorithmTags.ECDSA, // 19
+        PublicKeyAlgorithmTags.ELGAMAL_GENERAL, // 20
+        // PublicKeyAlgorithmTags.DIFFIE_HELLMAN, // 21
+    };
+
     /** "Canonicalizes" a public key, removing inconsistencies in the process.
      *
      * More specifically:
@@ -250,7 +264,7 @@ public class UncachedKeyRing {
 
         // do not accept v3 keys
         if (getVersion() <= 3) {
-            log.add(LogLevel.ERROR, LogType.MSG_KC_V3_KEY, indent);
+            log.add(LogLevel.ERROR, LogType.MSG_KC_ERROR_V3, indent);
             return null;
         }
 
@@ -261,6 +275,12 @@ public class UncachedKeyRing {
         PGPKeyRing ring = mRing;
         PGPPublicKey masterKey = mRing.getPublicKey();
         final long masterKeyId = masterKey.getKeyID();
+
+        if (Arrays.binarySearch(KNOWN_ALGORITHMS, masterKey.getAlgorithm()) < 0) {
+            log.add(LogLevel.ERROR, LogType.MSG_KC_ERROR_MASTER_ALGO, indent,
+                    Integer.toString(masterKey.getAlgorithm()));
+            return null;
+        }
 
         {
             log.add(LogLevel.DEBUG, LogType.MSG_KC_MASTER,
@@ -490,7 +510,7 @@ public class UncachedKeyRing {
 
             // If NO user ids remain, error out!
             if (!modified.getUserIDs().hasNext()) {
-                log.add(LogLevel.ERROR, LogType.MSG_KC_FATAL_NO_UID, indent);
+                log.add(LogLevel.ERROR, LogType.MSG_KC_ERROR_NO_UID, indent);
                 return null;
             }
 
@@ -513,6 +533,16 @@ public class UncachedKeyRing {
             log.add(LogLevel.DEBUG, LogType.MSG_KC_SUB,
                     indent, PgpKeyHelper.convertKeyIdToHex(key.getKeyID()));
             indent += 1;
+
+            if (Arrays.binarySearch(KNOWN_ALGORITHMS, key.getAlgorithm()) < 0) {
+                ring = removeSubKey(ring, key);
+
+                log.add(LogLevel.ERROR, LogType.MSG_KC_SUB_UNKNOWN_ALGO, indent,
+                        Integer.toString(key.getAlgorithm()));
+                indent -= 1;
+                continue;
+            }
+
             // A subkey needs exactly one subkey binding certificate, and optionally one revocation
             // certificate.
             PGPPublicKey modified = key;

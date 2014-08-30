@@ -520,7 +520,6 @@
     <!-- Import Public log entries -->
     <string name="msg_ip_apply_batch">Applying insert batch operation.</string>
     <string name="msg_ip_bad_type_secret">Tried to import secret keyring as public. This is a bug, please file a report!</string>
-    <string name="msg_kc_v3_key">This key is an OpenPGP version 3 key and thus insecure. It has not been imported.</string>
     <string name="msg_ip_delete_old_fail">No old key deleted (creating a new one?)</string>
     <string name="msg_ip_delete_old_ok">Deleted old key from database</string>
     <string name="msg_ip_encode_fail">Operation failed due to encoding error</string>
@@ -589,7 +588,9 @@
     <!-- Keyring Canonicalization log entries -->
     <string name="msg_kc_public">Canonicalizing public keyring %s</string>
     <string name="msg_kc_secret">Canonicalizing secret keyring %s</string>
-    <string name="msg_kc_fatal_no_uid">Keyring canonicalization failed: Keyring has no valid user ids</string>
+    <string name="msg_kc_error_v3">This is an OpenPGP version 3 key, which have been deprecated and are no longer supported!</string>
+    <string name="msg_kc_error_no_uid">Keyring has no valid user ids!</string>
+    <string name="msg_kc_error_master_algo">The master key uses an unknown (%s) algorithm!</string>
     <string name="msg_kc_master">Processing master key</string>
     <string name="msg_kc_revoke_bad_err">Removing bad keyring revocation certificate</string>
     <string name="msg_kc_revoke_bad_local">Removing keyring revocation certificate with "local" flag</string>
@@ -613,6 +614,7 @@
     <string name="msg_kc_sub_revoke_bad_err">Removing bad subkey revocation certificate</string>
     <string name="msg_kc_sub_revoke_bad">Removing bad subkey revocation certificate</string>
     <string name="msg_kc_sub_revoke_dup">Removing redundant subkey revocation certificate</string>
+    <string name="msg_kc_sub_unknown_algo">Subkey uses an unknown algorithm, not importing…</string>
     <string name="msg_kc_success">Keyring canonicalization successful, no changes</string>
     <plurals name="msg_kc_success_bad">
         <item quantity="one">Keyring canonicalization successful, removed one erroneous certificate</item>

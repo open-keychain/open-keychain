@@ -457,7 +457,7 @@
   <!--Import Public log entries-->
   <string name="msg_ip_apply_batch">Application de l\'opération d\'insertion par lot.</string>
   <string name="msg_ip_bad_type_secret">Tentative d\'importer le trousseau secret comme public. Ceci est un bogue, veuillez remplir un rapport !</string>
-  <string name="msg_kc_v3_key">Cette clef est une clef d\'OpenPGP version 3 et n\'est, par conséquent, pas sécuritaire. Elle n\'a pas été importée. </string>
+  <string name="msg_kc_error_v3">Cette clef est une clef d\'OpenPGP version 3 et n\'est, par conséquent, pas sécuritaire. Elle n\'a pas été importée. </string>
   <string name="msg_ip_delete_old_fail">Aucune ancienne clef de supprimée (création d\'une nouvelle ?)</string>
   <string name="msg_ip_delete_old_ok">L\'ancienne clef a été supprimée de la base de données</string>
   <string name="msg_ip_encode_fail">Échec de l\'opération causé par une erreur d\'encodage</string>
@@ -524,7 +524,7 @@
   <!--Keyring Canonicalization log entries-->
   <string name="msg_kc_public">Canonicalisation du trousseau public %s</string>
   <string name="msg_kc_secret">Canonicalisation du trousseau secret %s</string>
-  <string name="msg_kc_fatal_no_uid">La canonicalisation du trousseau a échoué : le trousseau n\'a pas d\'ID d\'utilisateur valides</string>
+  <string name="msg_kc_error_no_uid">La canonicalisation du trousseau a échoué : le trousseau n\'a pas d\'ID d\'utilisateur valides</string>
   <string name="msg_kc_master">Traitement de la clef maîtresse</string>
   <string name="msg_kc_revoke_bad_err">Suppression du mauvais certificat de révocation du trousseau</string>
   <string name="msg_kc_revoke_bad_local">Suppression du certificat de révocation du trousseau ayant le drapeau « local »</string>

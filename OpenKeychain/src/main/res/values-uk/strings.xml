@@ -463,7 +463,7 @@
   <!--Import Public log entries-->
   <string name="msg_ip_apply_batch">Застосовується пакетна операція вставки.</string>
   <string name="msg_ip_bad_type_secret">Спробували імпортувати секретну в\'язку як публічну. Це вада. Будь ласка, відправте звіт!</string>
-  <string name="msg_kc_v3_key">Цей ключ зроблений OpenPGP версії 3, а тому небезпечний. Його не можна імпортувати.</string>
+  <string name="msg_kc_error_v3">Цей ключ зроблений OpenPGP версії 3, а тому небезпечний. Його не можна імпортувати.</string>
   <string name="msg_ip_delete_old_fail">Нема вилученого старого ключа (створюється новий?)</string>
   <string name="msg_ip_delete_old_ok">Вилучений старий ключ з бази даних</string>
   <string name="msg_ip_encode_fail">Операція не вдалася через помилку кодування</string>
@@ -531,7 +531,7 @@
   <!--Keyring Canonicalization log entries-->
   <string name="msg_kc_public">Канонізація публічної в\'язки %s</string>
   <string name="msg_kc_secret">Канонізація секретної в\'язки %s</string>
-  <string name="msg_kc_fatal_no_uid">Невдала канонізація в\'язки: в\'язка не має дійсних ІД користувача</string>
+  <string name="msg_kc_error_no_uid">Невдала канонізація в\'язки: в\'язка не має дійсних ІД користувача</string>
   <string name="msg_kc_master">Обробляється основний ключ…</string>
   <string name="msg_kc_sub">Опрацьовується підключ %s</string>
   <string name="msg_kc_sub_bad_type">Тип сертифікату невідомого ключа: %s</string>

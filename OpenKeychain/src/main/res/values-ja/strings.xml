@@ -444,7 +444,7 @@
   <!--Import Public log entries-->
   <string name="msg_ip_apply_batch">連続挿入処理を適用する。</string>
   <string name="msg_ip_bad_type_secret">秘密鍵の鍵輪を公開鍵としてインポートを試行しました。これはバグで、ファイルをレポートしてください!</string>
-  <string name="msg_kc_v3_key">この鍵はOpenPGP v3形式の鍵で安全ではありません。そのためインポートできません。</string>
+  <string name="msg_kc_error_v3">この鍵はOpenPGP v3形式の鍵で安全ではありません。そのためインポートできません。</string>
   <string name="msg_ip_delete_old_fail">削除された古い鍵はありません (新しく作りますか?)</string>
   <string name="msg_ip_delete_old_ok">データベースから古い鍵を削除しました</string>
   <string name="msg_ip_encode_fail">エンコードエラーにより操作が失敗しました</string>
@@ -509,7 +509,7 @@
   <!--Keyring Canonicalization log entries-->
   <string name="msg_kc_public">公開鍵の鍵輪 %s の正規化中</string>
   <string name="msg_kc_secret">秘密鍵の鍵輪 %s の正規化中</string>
-  <string name="msg_kc_fatal_no_uid">鍵輪の正規化に失敗: 鍵輪が正しいユーザIDを含んでいませんでした</string>
+  <string name="msg_kc_error_no_uid">鍵輪の正規化に失敗: 鍵輪が正しいユーザIDを含んでいませんでした</string>
   <string name="msg_kc_master">主鍵処理中</string>
   <string name="msg_kc_revoke_bad_err">問題のある鍵輪の破棄証明を破棄中</string>
   <string name="msg_kc_revoke_bad_local">鍵輪のローカルフラグ付き破棄証明を破棄中</string>

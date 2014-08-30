@@ -287,10 +287,11 @@ public class OperationResultParcel implements Parcelable {
         MSG_IS_SUCCESS (R.string.msg_is_success),
 
         // keyring canonicalization
-        MSG_KC_V3_KEY (R.string.msg_kc_v3_key),
         MSG_KC_PUBLIC (R.string.msg_kc_public),
         MSG_KC_SECRET (R.string.msg_kc_secret),
-        MSG_KC_FATAL_NO_UID (R.string.msg_kc_fatal_no_uid),
+        MSG_KC_ERROR_V3 (R.string.msg_kc_error_v3),
+        MSG_KC_ERROR_NO_UID (R.string.msg_kc_error_no_uid),
+        MSG_KC_ERROR_MASTER_ALGO (R.string.msg_kc_error_master_algo),
         MSG_KC_MASTER (R.string.msg_kc_master),
         MSG_KC_REVOKE_BAD_ERR (R.string.msg_kc_revoke_bad_err),
         MSG_KC_REVOKE_BAD_LOCAL (R.string.msg_kc_revoke_bad_local),
@@ -314,6 +315,7 @@ public class OperationResultParcel implements Parcelable {
         MSG_KC_SUB_REVOKE_BAD_ERR (R.string.msg_kc_sub_revoke_bad_err),
         MSG_KC_SUB_REVOKE_BAD (R.string.msg_kc_sub_revoke_bad),
         MSG_KC_SUB_REVOKE_DUP (R.string.msg_kc_sub_revoke_dup),
+        MSG_KC_SUB_UNKNOWN_ALGO (R.string.msg_kc_sub_unknown_algo),
         MSG_KC_SUCCESS_BAD (R.plurals.msg_kc_success_bad),
         MSG_KC_SUCCESS_BAD_AND_RED (R.string.msg_kc_success_bad_and_red),
         MSG_KC_SUCCESS_REDUNDANT (R.plurals.msg_kc_success_redundant),
