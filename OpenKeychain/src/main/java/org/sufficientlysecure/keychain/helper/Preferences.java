@@ -135,6 +135,16 @@ public class Preferences {
         editor.commit();
     }
 
+    public boolean getShowAdvancedTabs() {
+        return mSharedPreferences.getBoolean(Pref.SHOW_ADVANCED_TABS, false);
+    }
+
+    public void setShowAdvancedTabs(boolean value) {
+        SharedPreferences.Editor editor = mSharedPreferences.edit();
+        editor.putBoolean(Pref.SHOW_ADVANCED_TABS, value);
+        editor.commit();
+    }
+
     public boolean getCachedConsolidate() {
         return mSharedPreferences.getBoolean(Pref.CACHED_CONSOLIDATE, false);
     }

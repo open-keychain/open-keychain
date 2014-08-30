@@ -50,11 +50,11 @@ import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.helper.ContactHelper;
 import org.sufficientlysecure.keychain.helper.ExportHelper;
+import org.sufficientlysecure.keychain.helper.Preferences;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
-import org.sufficientlysecure.keychain.service.KeychainIntentService;
 import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
 import org.sufficientlysecure.keychain.service.OperationResultParcel;
 import org.sufficientlysecure.keychain.ui.adapter.PagerTabStripAdapter;
@@ -161,9 +161,12 @@ public class ViewKeyActivity extends ActionBarActivity implements
 
         initNfc(mDataUri);
 
-        mShowAdvancedTabs = false;
+        mShowAdvancedTabs = Preferences.getPreferences(this).getShowAdvancedTabs();
 
         initTabs(mDataUri);
+        if (mShowAdvancedTabs) {
+            addAdvancedTabs(mDataUri);
+        }
 
         // switch to tab selected by extra
         mViewPager.setCurrentItem(switchToTab);
@@ -270,6 +273,7 @@ public class ViewKeyActivity extends ActionBarActivity implements
                 }
                 case R.id.menu_key_view_advanced: {
                     mShowAdvancedTabs = !mShowAdvancedTabs;
+                    Preferences.getPreferences(this).setShowAdvancedTabs(mShowAdvancedTabs);
                     item.setChecked(mShowAdvancedTabs);
                     if (mShowAdvancedTabs) {
                         addAdvancedTabs(mDataUri);
@@ -344,9 +348,8 @@ public class ViewKeyActivity extends ActionBarActivity implements
                      * guarantee that this activity starts when receiving a beamed message. For now, this code
                      * uses the tag dispatch system.
                      */
-                    NdefMessage msg = new NdefMessage(NdefRecord.createMime(Constants.NFC_MIME,
+                    return new NdefMessage(NdefRecord.createMime(Constants.NFC_MIME,
                             mNfcKeyringBytes), NdefRecord.createApplicationRecord(Constants.PACKAGE_NAME));
-                    return msg;
                 }
             };
 

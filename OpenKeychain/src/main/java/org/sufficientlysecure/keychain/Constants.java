@@ -71,6 +71,7 @@ public final class Constants {
         public static final String KEY_SERVERS_DEFAULT_VERSION = "keyServersDefaultVersion";
         public static final String WRITE_VERSION_HEADER = "writeVersionHeader";
         public static final String FIRST_TIME = "firstTime";
+        public static final String SHOW_ADVANCED_TABS = "showAdvancedTabs";
         public static final String CACHED_CONSOLIDATE = "cachedConsolidate";
         public static final String CACHED_CONSOLIDATE_SECRETS = "cachedConsolidateSecrets";
         public static final String CACHED_CONSOLIDATE_PUBLICS = "cachedConsolidatePublics";
