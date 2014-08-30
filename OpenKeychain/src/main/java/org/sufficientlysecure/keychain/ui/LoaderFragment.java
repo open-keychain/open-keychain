@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2014 Dominik Schürmann <dominik@dominikschuermann.de>
+ * Copyright (C) 2014 Vincent Breitmoser <v.breitmoser@mugenguild.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,7 +36,7 @@ import org.sufficientlysecure.keychain.R;
  * The layout shows a progress bar by default, and can be switched to the
  * actual contents by calling setContentShown().
  */
-public class LoaderFragment extends Fragment {
+public abstract class LoaderFragment extends Fragment {
     private boolean mContentShown;
     private View mProgressContainer;
     private ViewGroup mContainer;
