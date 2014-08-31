@@ -116,7 +116,7 @@ public class CanonicalizedSecretKey extends CanonicalizedPublicKey {
         LinkedList<Integer> supported = new LinkedList<Integer>();
 
         if (mPrivateKeyState == PRIVATE_KEY_STATE_DIVERT_TO_CARD) {
-            // TODO: no support for MD5
+            // No support for MD5
             supported.add(HashAlgorithmTags.RIPEMD160);
             supported.add(HashAlgorithmTags.SHA1);
             supported.add(HashAlgorithmTags.SHA224);

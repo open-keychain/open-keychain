@@ -1,3 +1,8 @@
+## 2.9
+  * Fixing crashes introduced in v2.8
+  * Experimental ECC support
+  * Experimental Yubikey support (signing-only with imported keys)
+
 ## 2.8
   * So many bugs have been fixed in this release that we focus on the main new features
   * Key edit: awesome new design, key revocation
