@@ -52,22 +52,11 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class PgpImportExport {
 
-    // TODO: is this really used?
-    public interface KeychainServiceListener {
-        boolean hasServiceStopped();
-    }
-
     private Context mContext;
     private Progressable mProgressable;
     private AtomicBoolean mCancelled;
 
-    private KeychainServiceListener mKeychainServiceListener;
-
     private ProviderHelper mProviderHelper;
-
-    public PgpImportExport(Context context, Progressable progressable) {
-        this(context, new ProviderHelper(context), progressable);
-    }
 
     public PgpImportExport(Context context, ProviderHelper providerHelper, Progressable progressable) {
         super();
@@ -82,15 +71,6 @@ public class PgpImportExport {
         mProgressable = progressable;
         mProviderHelper = providerHelper;
         mCancelled = cancelled;
-    }
-
-    public PgpImportExport(Context context,
-                           Progressable progressable, KeychainServiceListener keychainListener) {
-        super();
-        this.mContext = context;
-        this.mProgressable = progressable;
-        this.mProviderHelper = new ProviderHelper(context);
-        this.mKeychainServiceListener = keychainListener;
     }
 
     public void updateProgress(int message, int current, int total) {
@@ -277,11 +257,6 @@ public class PgpImportExport {
                 // TODO: inform user?
             }
 
-            if (mKeychainServiceListener.hasServiceStopped()) {
-                arOutStream.close();
-                return null;
-            }
-
             arOutStream.close();
         }
 
@@ -304,11 +279,6 @@ public class PgpImportExport {
             } catch (ProviderHelper.NotFoundException e) {
                 Log.e(Constants.TAG, "key not found!", e);
                 // TODO: inform user?
-            }
-
-            if (mKeychainServiceListener.hasServiceStopped()) {
-                arOutStream.close();
-                return null;
             }
 
             arOutStream.close();

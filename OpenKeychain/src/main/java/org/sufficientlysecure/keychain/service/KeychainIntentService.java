@@ -82,8 +82,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * data from the activities or other apps, queues these intents, executes them, and stops itself
  * after doing them.
  */
-public class KeychainIntentService extends IntentService
-        implements Progressable, PgpImportExport.KeychainServiceListener {
+public class KeychainIntentService extends IntentService implements Progressable {
 
     /* extras that can be given by intent */
     public static final String EXTRA_MESSENGER = "messenger";
@@ -201,18 +200,11 @@ public class KeychainIntentService extends IntentService
 
     Messenger mMessenger;
 
-    private boolean mIsCanceled;
     // this attribute can possibly merged with the one above? not sure...
     private AtomicBoolean mActionCanceled = new AtomicBoolean(false);
 
     public KeychainIntentService() {
         super("KeychainIntentService");
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        this.mIsCanceled = true;
     }
 
     /**
@@ -598,12 +590,11 @@ public class KeychainIntentService extends IntentService
                     outStream = getContentResolver().openOutputStream(outputUri);
                 }
 
-                PgpImportExport pgpImportExport = new PgpImportExport(this, this, this);
+                PgpImportExport pgpImportExport = new PgpImportExport(this, new ProviderHelper(this), this);
                 Bundle resultData = pgpImportExport
-                        .exportKeyRings(publicMasterKeyIds, secretMasterKeyIds,
-                                outStream);
+                        .exportKeyRings(publicMasterKeyIds, secretMasterKeyIds, outStream);
 
-                if (mIsCanceled && outputFile != null) {
+                if (mActionCanceled.get() && outputFile != null) {
                     new File(outputFile).delete();
                 }
 
@@ -623,7 +614,7 @@ public class KeychainIntentService extends IntentService
 
                 ProviderHelper providerHelper = new ProviderHelper(this);
                 CanonicalizedPublicKeyRing keyring = providerHelper.getCanonicalizedPublicKeyRing(dataUri);
-                PgpImportExport pgpImportExport = new PgpImportExport(this, null);
+                PgpImportExport pgpImportExport = new PgpImportExport(this, new ProviderHelper(this), this);
 
                 try {
                     pgpImportExport.uploadKeyRingToServer(server, keyring);
@@ -740,8 +731,7 @@ public class KeychainIntentService extends IntentService
                 }
 
                 if (isSecret && success) {
-                    ConsolidateResult result =
-                            new ProviderHelper(this).consolidateDatabaseStep1(this);
+                    new ProviderHelper(this).consolidateDatabaseStep1(this);
                 }
 
                 if (success) {
@@ -768,10 +758,6 @@ public class KeychainIntentService extends IntentService
     }
 
     private void sendErrorToHandler(Exception e) {
-        // Service was canceled. Do not send error to handler.
-        if (this.mIsCanceled) {
-            return;
-        }
         // TODO: Implement a better exception handling here
         // contextualize the exception, if necessary
         String message;
@@ -806,10 +792,7 @@ public class KeychainIntentService extends IntentService
     }
 
     private void sendMessageToHandler(Integer arg1, Integer arg2, Bundle data) {
-        // Service was canceled. Do not send message to handler.
-        if (this.mIsCanceled) {
-            return;
-        }
+
         Message msg = Message.obtain();
         assert msg != null;
         msg.arg1 = arg1;
@@ -866,11 +849,6 @@ public class KeychainIntentService extends IntentService
 
     public void setProgress(int progress, int max) {
         setProgress(null, progress, max);
-    }
-
-    @Override
-    public boolean hasServiceStopped() {
-        return mIsCanceled;
     }
 
     private InputData createDecryptInputData(Bundle data) throws IOException, PgpGeneralException {
