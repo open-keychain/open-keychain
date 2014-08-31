@@ -222,7 +222,7 @@ public class ContactHelper {
         Cursor mailCursor = resolver.query(ContactsContract.CommonDataKinds.Email.CONTENT_URI,
                 new String[]{ContactsContract.CommonDataKinds.Email.DATA},
                 null, null, null);
-        if (mailCursor == null) return null;
+        if (mailCursor == null) return new ArrayList<String>();
 
         Set<String> mails = new HashSet<String>();
         while (mailCursor.moveToNext()) {
@@ -240,7 +240,7 @@ public class ContactHelper {
         Cursor cursor = resolver.query(ContactsContract.Contacts.CONTENT_URI,
                 new String[]{ContactsContract.Contacts.DISPLAY_NAME},
                 null, null, null);
-        if (cursor == null) return null;
+        if (cursor == null) return new ArrayList<String>();
 
         Set<String> names = new HashSet<String>();
         while (cursor.moveToNext()) {
