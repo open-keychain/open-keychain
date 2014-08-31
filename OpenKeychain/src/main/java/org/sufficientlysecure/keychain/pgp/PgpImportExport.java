@@ -46,6 +46,7 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class PgpImportExport {
 
@@ -125,11 +126,20 @@ public class PgpImportExport {
     }
 
     /** Imports keys from given data. If keyIds is given only those are imported */
+    public ImportKeyResult importKeyRings(List<ParcelableKeyRing> entries,
+                                          AtomicBoolean cancelled) {
+        return importKeyRings(entries.iterator(), entries.size(), cancelled);
+    }
+
     public ImportKeyResult importKeyRings(List<ParcelableKeyRing> entries) {
-        return importKeyRings(entries.iterator(), entries.size());
+        return importKeyRings(entries.iterator(), entries.size(), null);
     }
 
     public ImportKeyResult importKeyRings(Iterator<ParcelableKeyRing> entries, int num) {
+        return importKeyRings(entries, num, null);
+    }
+    public ImportKeyResult importKeyRings(Iterator<ParcelableKeyRing> entries, int num,
+                                          AtomicBoolean cancelled) {
         updateProgress(R.string.progress_importing, 0, 100);
 
         // If there aren't even any keys, do nothing here.
@@ -143,6 +153,12 @@ public class PgpImportExport {
         int position = 0;
         double progSteps = 100.0 / num;
         for (ParcelableKeyRing entry : new IterableIterator<ParcelableKeyRing>(entries)) {
+            // Has this action been cancelled? If so, don't proceed any further
+            if (cancelled != null && cancelled.get()) {
+                Log.d(Constants.TAG, "CANCELLED!");
+                break;
+            }
+
             try {
                 UncachedKeyRing key = UncachedKeyRing.decodeFromData(entry.getBytes());
 
@@ -208,8 +224,11 @@ public class PgpImportExport {
                 }
             }
             if (log.containsWarnings()) {
-                resultType |= ImportKeyResult.RESULT_WITH_WARNINGS;
+                resultType |= ImportKeyResult.RESULT_WARNINGS;
             }
+        }
+        if (cancelled != null && cancelled.get()) {
+            resultType |= ImportKeyResult.RESULT_CANCELLED;
         }
 
         return new ImportKeyResult(resultType, log, newKeys, oldKeys, badKeys, secret);

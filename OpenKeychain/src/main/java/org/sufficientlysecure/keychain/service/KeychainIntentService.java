@@ -72,6 +72,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * This Service contains all important long lasting operations for APG. It receives Intents with
@@ -109,6 +110,8 @@ public class KeychainIntentService extends IntentService
     public static final String ACTION_DELETE = Constants.INTENT_PREFIX + "DELETE";
 
     public static final String ACTION_CONSOLIDATE = Constants.INTENT_PREFIX + "CONSOLIDATE";
+
+    public static final String ACTION_CANCEL = Constants.INTENT_PREFIX + "CANCEL";
 
     /* keys for data bundle */
 
@@ -196,6 +199,8 @@ public class KeychainIntentService extends IntentService
     Messenger mMessenger;
 
     private boolean mIsCanceled;
+    // this attribute can possibly merged with the one above? not sure...
+    private AtomicBoolean mActionCanceled = new AtomicBoolean(false);
 
     public KeychainIntentService() {
         super("KeychainIntentService");
@@ -214,6 +219,10 @@ public class KeychainIntentService extends IntentService
      */
     @Override
     protected void onHandleIntent(Intent intent) {
+
+        // We have not been cancelled! (yet)
+        mActionCanceled.set(false);
+
         Bundle extras = intent.getExtras();
         if (extras == null) {
             Log.e(Constants.TAG, "Extras bundle is null!");
@@ -500,7 +509,7 @@ public class KeychainIntentService extends IntentService
 
                 ProviderHelper providerHelper = new ProviderHelper(this);
                 PgpImportExport pgpImportExport = new PgpImportExport(this, providerHelper, this);
-                ImportKeyResult result = pgpImportExport.importKeyRings(entries);
+                ImportKeyResult result = pgpImportExport.importKeyRings(entries, mActionCanceled);
 
                 if (result.mSecret > 0) {
                     providerHelper.consolidateDatabaseStep1(this);
@@ -612,7 +621,6 @@ public class KeychainIntentService extends IntentService
 
                 ArrayList<ParcelableKeyRing> keyRings = new ArrayList<ParcelableKeyRing>(entries.size());
                 for (ImportKeysListEntry entry : entries) {
-
                     Keyserver server;
                     if (entry.getOrigin() == null) {
                         server = new HkpKeyserver(keyServer);
@@ -872,6 +880,15 @@ public class KeychainIntentService extends IntentService
             default:
                 throw new PgpGeneralException("No target choosen!");
         }
+    }
+
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        if (ACTION_CANCEL.equals(intent.getAction())) {
+            mActionCanceled.set(true);
+            return START_STICKY;
+        }
+        return super.onStartCommand(intent, flags, startId);
     }
 
     private String getOriginalFilename(Bundle data) throws PgpGeneralException, FileNotFoundException {

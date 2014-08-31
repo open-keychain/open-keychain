@@ -21,32 +21,26 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
-import android.content.DialogInterface.OnCancelListener;
 import android.content.DialogInterface.OnKeyListener;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.view.ContextThemeWrapper;
 import android.view.KeyEvent;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.Button;
 
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.service.KeychainIntentService;
 
 public class ProgressDialogFragment extends DialogFragment {
     private static final String ARG_MESSAGE = "message";
     private static final String ARG_STYLE = "style";
     private static final String ARG_CANCELABLE = "cancelable";
 
-    private OnCancelListener mOnCancelListener;
-
-    /**
-     * Creates new instance of this fragment
-     *
-     * @param message
-     * @param style
-     * @param cancelable
-     * @return
-     */
-    public static ProgressDialogFragment newInstance(String message, int style, boolean cancelable,
-                                                     OnCancelListener onCancelListener) {
+    /** Creates new instance of this fragment */
+    public static ProgressDialogFragment newInstance(String message, int style, boolean cancelable) {
         ProgressDialogFragment frag = new ProgressDialogFragment();
         Bundle args = new Bundle();
         args.putString(ARG_MESSAGE, message);
@@ -54,28 +48,16 @@ public class ProgressDialogFragment extends DialogFragment {
         args.putBoolean(ARG_CANCELABLE, cancelable);
 
         frag.setArguments(args);
-        frag.mOnCancelListener = onCancelListener;
 
         return frag;
     }
 
-    /**
-     * Updates progress of dialog
-     *
-     * @param messageId
-     * @param progress
-     * @param max
-     */
+    /** Updates progress of dialog */
     public void setProgress(int messageId, int progress, int max) {
         setProgress(getString(messageId), progress, max);
     }
 
-    /**
-     * Updates progress of dialog
-     *
-     * @param progress
-     * @param max
-     */
+    /** Updates progress of dialog */
     public void setProgress(int progress, int max) {
         ProgressDialog dialog = (ProgressDialog) getDialog();
 
@@ -83,28 +65,13 @@ public class ProgressDialogFragment extends DialogFragment {
         dialog.setMax(max);
     }
 
-    /**
-     * Updates progress of dialog
-     *
-     * @param message
-     * @param progress
-     * @param max
-     */
+    /** Updates progress of dialog */
     public void setProgress(String message, int progress, int max) {
         ProgressDialog dialog = (ProgressDialog) getDialog();
 
         dialog.setMessage(message);
         dialog.setProgress(progress);
         dialog.setMax(max);
-    }
-
-    @Override
-    public void onCancel(DialogInterface dialog) {
-        super.onCancel(dialog);
-
-        if (this.mOnCancelListener != null) {
-            this.mOnCancelListener.onCancel(dialog);
-        }
     }
 
     /**
@@ -121,41 +88,62 @@ public class ProgressDialogFragment extends DialogFragment {
 
         ProgressDialog dialog = new ProgressDialog(context);
         dialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+        // We never use the builtin cancel method
         dialog.setCancelable(false);
         dialog.setCanceledOnTouchOutside(false);
 
         String message = getArguments().getString(ARG_MESSAGE);
         int style = getArguments().getInt(ARG_STYLE);
-        boolean cancelable = getArguments().getBoolean(ARG_CANCELABLE);
+        final boolean cancelable = getArguments().getBoolean(ARG_CANCELABLE);
 
         dialog.setMessage(message);
         dialog.setProgressStyle(style);
 
+        // If this is supposed to be cancelable, add our (custom) cancel mechanic
         if (cancelable) {
+            // Just show the button, take care of the onClickListener afterwards (in onStart)
             dialog.setButton(DialogInterface.BUTTON_NEGATIVE,
-                    activity.getString(R.string.progress_cancel),
-                    new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.cancel();
-                        }
-                    });
+                    activity.getString(R.string.progress_cancel), (DialogInterface.OnClickListener) null);
         }
 
-        // Disable the back button
+        // Disable the back button regardless
         OnKeyListener keyListener = new OnKeyListener() {
-
             @Override
             public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
                 if (keyCode == KeyEvent.KEYCODE_BACK) {
+                    if (cancelable) {
+                        ((ProgressDialog) dialog).getButton(
+                                DialogInterface.BUTTON_NEGATIVE).performClick();
+                    }
+                    // return true, indicating we handled this
                     return true;
                 }
                 return false;
             }
-
         };
         dialog.setOnKeyListener(keyListener);
 
         return dialog;
     }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+
+        // Override the default behavior so the dialog is NOT dismissed on click
+        Button negative = ((ProgressDialog) getDialog()).getButton(DialogInterface.BUTTON_NEGATIVE);
+        negative.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // send a cancel message. note that this message will be handled by
+                // KeychainIntentService.onStartCommand, which runs in this thread,
+                // not the service one, and will not queue up a command.
+                Intent intent = new Intent(getActivity(), KeychainIntentService.class);
+                intent.setAction(KeychainIntentService.ACTION_CANCEL);
+                getActivity().startService(intent);
+            }
+        });
+
+    }
+
 }

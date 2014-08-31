@@ -381,8 +381,10 @@
     </plurals>
     <string name="view_log">View Log</string>
     <string name="import_error_nothing">Nothing to import.</string>
+    <string name="import_error_nothing_cancelled">Import cancelled.</string>
     <string name="import_error">Error importing keys!</string>
     <string name="import_with_warnings">, with warnings</string>
+    <string name="import_with_cancelled">, until cancelled</string>
 
     <!-- Intent labels -->
     <string name="intent_decrypt_file">Decrypt File with OpenKeychain</string>

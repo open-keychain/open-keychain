@@ -19,6 +19,8 @@ package org.sufficientlysecure.keychain.ui;
 
 import android.annotation.TargetApi;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnCancelListener;
 import android.content.Intent;
 import android.net.Uri;
 import android.nfc.NdefMessage;
@@ -447,7 +449,8 @@ public class ImportKeysActivity extends ActionBarActivity {
         KeychainIntentServiceHandler saveHandler = new KeychainIntentServiceHandler(
                 this,
                 getString(R.string.progress_importing),
-                ProgressDialog.STYLE_HORIZONTAL) {
+                ProgressDialog.STYLE_HORIZONTAL,
+                true) {
             public void handleMessage(Message message) {
                 // handle messages by standard KeychainIntentServiceHandler first
                 super.handleMessage(message);

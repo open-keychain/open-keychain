@@ -55,13 +55,17 @@ public class OperationResultParcel implements Parcelable {
 
     public static final String EXTRA_RESULT = "operation_result";
 
-    /** Holds the overall result, the number specifying varying degrees of success. The first bit
-     * is 0 on overall success, 1 on overall failure. All other bits may be used for more specific
-     * conditions. */
+    /** Holds the overall result, the number specifying varying degrees of success:
+     *  - The first bit is 0 on overall success, 1 on overall failure
+     *  - The second bit indicates if the action was cancelled - may still be an error or success!
+     *  - The third bit should be set if the operation succeeded with warnings
+     * All other bits may be used for more specific conditions. */
     final int mResult;
 
     public static final int RESULT_OK = 0;
     public static final int RESULT_ERROR = 1;
+    public static final int RESULT_CANCELLED = 2;
+    public static final int RESULT_WARNINGS = 4;
 
     /// A list of log entries tied to the operation result.
     final OperationLog mLog;

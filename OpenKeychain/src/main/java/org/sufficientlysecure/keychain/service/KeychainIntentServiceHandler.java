@@ -60,18 +60,16 @@ public class KeychainIntentServiceHandler extends Handler {
 
     public KeychainIntentServiceHandler(Activity activity, String progressDialogMessage,
                                         int progressDialogStyle) {
-        this(activity, progressDialogMessage, progressDialogStyle, false, null);
+        this(activity, progressDialogMessage, progressDialogStyle, false);
     }
 
     public KeychainIntentServiceHandler(Activity activity, String progressDialogMessage,
-                                        int progressDialogStyle, boolean cancelable,
-                                        OnCancelListener onCancelListener) {
+                                        int progressDialogStyle, boolean cancelable) {
         this.mActivity = activity;
         this.mProgressDialogFragment = ProgressDialogFragment.newInstance(
                 progressDialogMessage,
                 progressDialogStyle,
-                cancelable,
-                onCancelListener);
+                cancelable);
     }
 
     public void showProgressDialog(FragmentActivity activity) {
