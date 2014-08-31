@@ -904,7 +904,7 @@ public class KeychainIntentService extends IntentService
     public int onStartCommand(Intent intent, int flags, int startId) {
         if (ACTION_CANCEL.equals(intent.getAction())) {
             mActionCanceled.set(true);
-            return START_STICKY;
+            return START_NOT_STICKY;
         }
         return super.onStartCommand(intent, flags, startId);
     }
