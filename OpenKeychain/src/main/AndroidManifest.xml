@@ -3,8 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="org.sufficientlysecure.keychain"
     android:installLocation="auto"
-    android:versionCode="28000"
-    android:versionName="2.8">
+    android:versionCode="29000"
+    android:versionName="2.9">
 
     <!--
         General remarks
