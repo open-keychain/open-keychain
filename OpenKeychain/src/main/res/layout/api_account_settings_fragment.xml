@@ -35,29 +35,55 @@
             android:textAppearance="?android:attr/textAppearanceMedium" />
     </RelativeLayout>
 
-    <fragment
-        android:id="@+id/api_account_settings_select_key_fragment"
-        android:name="org.sufficientlysecure.keychain.ui.SelectSecretKeyLayoutFragment"
+    <TextView
+        style="@style/SectionHeader"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        tools:layout="@layout/select_secret_key_layout_fragment" />
+        android:text="@string/api_settings_settings" />
 
-    <Button
-        android:id="@+id/api_account_settings_create_key"
-        android:layout_width="wrap_content"
+    <TextView
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical"
-        android:layout_marginBottom="4dp"
-        android:layout_marginRight="4dp"
-        android:layout_marginTop="4dp"
+        android:layout_marginTop="8dp"
+        android:text="@string/api_settings_key"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    <org.sufficientlysecure.keychain.ui.widget.SignKeySpinner
+        android:id="@+id/api_account_settings_key_spinner"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:layout_gravity="center_vertical" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dip"
+        android:background="?android:attr/listDivider" />
+
+    <TextView
+        android:id="@+id/api_account_settings_create_key"
+        style="@style/SelectableItem"
+        android:paddingLeft="8dp"
+        android:paddingRight="8dp"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:text="@string/api_settings_create_key"
-        android:background="@drawable/button_edgy"
-        android:drawableLeft="@drawable/ic_action_accounts"
-        android:textSize="14sp"/>
+        android:minHeight="48dp"
+        android:drawableRight="@drawable/ic_action_new_account"
+        android:drawablePadding="8dp"
+        android:gravity="center_vertical"
+        android:clickable="true" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dip"
+        android:background="?android:attr/listDivider" />
 
     <org.sufficientlysecure.keychain.ui.widget.FoldableLinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_marginTop="16dp"
         custom:foldedLabel="@string/api_settings_show_advanced"
         custom:unFoldedLabel="@string/api_settings_hide_advanced">
 

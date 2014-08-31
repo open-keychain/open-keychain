@@ -25,10 +25,10 @@
                 tools:layout="@layout/api_app_settings_fragment" />
 
             <TextView
+                style="@style/SectionHeader"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/api_settings_accounts"
-                android:textAppearance="?android:attr/textAppearanceMedium" />
+                android:text="@string/api_settings_accounts" />
 
             <FrameLayout
                 android:id="@+id/api_accounts_list_fragment"

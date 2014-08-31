@@ -34,6 +34,7 @@ import android.text.style.BulletSpan;
 import android.text.style.StyleSpan;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.openintents.openpgp.util.OpenPgpApi;
 import org.sufficientlysecure.htmltextview.HtmlTextView;
@@ -184,8 +185,8 @@ public class RemoteServiceActivity extends ActionBarActivity {
 
                             // user needs to select a key!
                             if (mAccSettingsFragment.getAccSettings().getKeyId() == Constants.key.none) {
-                                mAccSettingsFragment.setErrorOnSelectKeyFragment(
-                                        getString(R.string.api_register_error_select_key));
+                                // TODO
+                                Toast.makeText(RemoteServiceActivity.this, getString(R.string.api_register_error_select_key), Toast.LENGTH_LONG).show();
                             } else {
                                 if (mUpdateExistingAccount) {
                                     Uri baseUri = KeychainContract.ApiAccounts.buildBaseUri(packageName);

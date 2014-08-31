@@ -407,6 +407,8 @@
     <string name="api_settings_package_name">Package Name</string>
     <string name="api_settings_package_signature">SHA-256 of Package Signature</string>
     <string name="api_settings_accounts">Accounts</string>
+    <string name="api_settings_settings">Settings</string>
+    <string name="api_settings_key">My key for this account</string>
     <string name="api_settings_accounts_empty">No accounts attached to this app.</string>
     <string name="api_create_account_text">The app requests the creation of a new account. Please select one of your existing keys or create a new one.\nApps are restricted to the usage of keys you select here!</string>
     <string name="api_update_account_text">The key saved for this account has been deleted. Please select a different one!\nApps are restricted to the usage of keys you select here!</string>
