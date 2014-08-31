@@ -507,7 +507,8 @@ public class EditKeyFragment extends LoaderFragment implements
         KeychainIntentServiceHandler saveHandler = new KeychainIntentServiceHandler(
                 getActivity(),
                 getString(R.string.progress_saving),
-                ProgressDialog.STYLE_HORIZONTAL) {
+                ProgressDialog.STYLE_HORIZONTAL,
+                true) {
             public void handleMessage(Message message) {
                 // handle messages by standard KeychainIntentServiceHandler first
                 super.handleMessage(message);
@@ -543,12 +544,12 @@ public class EditKeyFragment extends LoaderFragment implements
 
         // Send all information needed to service to import key in other thread
         Intent intent = new Intent(getActivity(), KeychainIntentService.class);
-        intent.setAction(KeychainIntentService.ACTION_SAVE_KEYRING);
+        intent.setAction(KeychainIntentService.ACTION_EDIT_KEYRING);
 
         // fill values for this action
         Bundle data = new Bundle();
-        data.putString(KeychainIntentService.SAVE_KEYRING_PASSPHRASE, passphrase);
-        data.putParcelable(KeychainIntentService.SAVE_KEYRING_PARCEL, mSaveKeyringParcel);
+        data.putString(KeychainIntentService.EDIT_KEYRING_PASSPHRASE, passphrase);
+        data.putParcelable(KeychainIntentService.EDIT_KEYRING_PARCEL, mSaveKeyringParcel);
         intent.putExtra(KeychainIntentService.EXTRA_DATA, data);
 
         // Create a new Messenger for the communication back
@@ -560,5 +561,6 @@ public class EditKeyFragment extends LoaderFragment implements
 
         // start service with intent
         getActivity().startService(intent);
+
     }
 }

@@ -121,14 +121,7 @@ public class ExportHelper {
         // Message is received after exporting is done in KeychainIntentService
         KeychainIntentServiceHandler exportHandler = new KeychainIntentServiceHandler(mActivity,
                 mActivity.getString(R.string.progress_exporting),
-                ProgressDialog.STYLE_HORIZONTAL,
-                true,
-                new DialogInterface.OnCancelListener() {
-                                @Override
-                                public void onCancel(DialogInterface dialogInterface) {
-                                    mActivity.stopService(intent);
-                                }
-        }) {
+                ProgressDialog.STYLE_HORIZONTAL) {
             public void handleMessage(Message message) {
                 // handle messages by standard KeychainIntentServiceHandler first
                 super.handleMessage(message);

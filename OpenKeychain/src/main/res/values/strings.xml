@@ -262,6 +262,7 @@
     <!-- progress dialogs, usually ending in '…' -->
     <string name="progress_done">Done.</string>
     <string name="progress_cancel">Cancel</string>
+    <string name="progress_cancelling">cancelling…</string>
     <string name="progress_saving">saving…</string>
     <string name="progress_importing">importing…</string>
     <string name="progress_exporting">exporting…</string>
@@ -381,8 +382,10 @@
     </plurals>
     <string name="view_log">View Log</string>
     <string name="import_error_nothing">Nothing to import.</string>
+    <string name="import_error_nothing_cancelled">Import cancelled.</string>
     <string name="import_error">Error importing keys!</string>
     <string name="import_with_warnings">, with warnings</string>
+    <string name="import_with_cancelled">, until cancelled</string>
 
     <!-- Intent labels -->
     <string name="intent_decrypt_file">Decrypt File with OpenKeychain</string>
@@ -518,6 +521,9 @@
     <string name="cert_verify_unavailable">key unavailable</string>
 
     <!-- LogType log messages. Errors should have _ERROR_ in their name and end with a ! -->
+
+    <string name="msg_internal_error">Internal error!</string>
+    <string name="msg_cancelled">Operation cancelled.</string>
 
     <!-- Import Public log entries -->
     <string name="msg_ip_apply_batch">Applying insert batch operation.</string>
@@ -744,7 +750,6 @@
     <string name="passp_cache_notif_pwd">Password</string>
 
     <!-- unsorted -->
-    <string name="internal_error">Internal error!</string>
     <string name="section_certifier_id">Certifier</string>
     <string name="section_cert">Certificate Details</string>
     <string name="label_user_id">Identity</string>

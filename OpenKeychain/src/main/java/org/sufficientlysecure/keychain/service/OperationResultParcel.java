@@ -55,13 +55,17 @@ public class OperationResultParcel implements Parcelable {
 
     public static final String EXTRA_RESULT = "operation_result";
 
-    /** Holds the overall result, the number specifying varying degrees of success. The first bit
-     * is 0 on overall success, 1 on overall failure. All other bits may be used for more specific
-     * conditions. */
+    /** Holds the overall result, the number specifying varying degrees of success:
+     *  - The first bit is 0 on overall success, 1 on overall failure
+     *  - The second bit indicates if the action was cancelled - may still be an error or success!
+     *  - The third bit should be set if the operation succeeded with warnings
+     * All other bits may be used for more specific conditions. */
     final int mResult;
 
     public static final int RESULT_OK = 0;
     public static final int RESULT_ERROR = 1;
+    public static final int RESULT_CANCELLED = 2;
+    public static final int RESULT_WARNINGS = 4;
 
     /// A list of log entries tied to the operation result.
     final OperationLog mLog;
@@ -82,7 +86,11 @@ public class OperationResultParcel implements Parcelable {
     }
 
     public boolean success() {
-        return (mResult & 1) == 0;
+        return (mResult & RESULT_ERROR) == 0;
+    }
+
+    public boolean cancelled() {
+        return (mResult & RESULT_CANCELLED) == RESULT_CANCELLED;
     }
 
     public OperationLog getLog() {
@@ -147,30 +155,25 @@ public class OperationResultParcel implements Parcelable {
 
     public SuperCardToast createNotify(final Activity activity) {
 
-        int resultType = getResult();
-
         String str;
-        int duration, color;
+        int color;
 
         // Not an overall failure
-        if ((resultType & OperationResultParcel.RESULT_ERROR) == 0) {
-
+        if (cancelled()) {
+            color = Style.RED;
+            str = "operation cancelled!";
+        } else if (success()) {
             if (getLog().containsWarnings()) {
                 color = Style.ORANGE;
             } else {
                 color = Style.GREEN;
             }
-
             str = "operation succeeded!";
             // str = activity.getString(R.string.import_error);
-
         } else {
-
             color = Style.RED;
-
             str = "operation failed";
             // str = activity.getString(R.string.import_error);
-
         }
 
         boolean button = getLog() != null && !getLog().isEmpty();
@@ -223,7 +226,8 @@ public class OperationResultParcel implements Parcelable {
      */
     public static enum LogType {
 
-        INTERNAL_ERROR (R.string.internal_error),
+        MSG_INTERNAL_ERROR (R.string.msg_internal_error),
+        MSG_OPERATION_CANCELLED (R.string.msg_cancelled),
 
         // import public
         MSG_IP(R.string.msg_ip),
@@ -440,6 +444,7 @@ public class OperationResultParcel implements Parcelable {
         ERROR, // should occur once at the end of a failed operation
         START, // should occur once at the start of each independent operation
         OK, // should occur once at the end of a successful operation
+        CANCELLED, // should occur once at the end of a cancelled operation
     }
 
     @Override

@@ -33,6 +33,8 @@ import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
+import org.sufficientlysecure.keychain.service.OperationResultParcel.LogLevel;
+import org.sufficientlysecure.keychain.service.OperationResultParcel.LogType;
 import org.sufficientlysecure.keychain.service.OperationResultParcel.OperationLog;
 import org.sufficientlysecure.keychain.service.OperationResults.ImportKeyResult;
 import org.sufficientlysecure.keychain.service.OperationResults.SaveKeyringResult;
@@ -46,6 +48,7 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class PgpImportExport {
 
@@ -56,6 +59,7 @@ public class PgpImportExport {
 
     private Context mContext;
     private Progressable mProgressable;
+    private AtomicBoolean mCancelled;
 
     private KeychainServiceListener mKeychainServiceListener;
 
@@ -70,6 +74,14 @@ public class PgpImportExport {
         this.mContext = context;
         this.mProgressable = progressable;
         this.mProviderHelper = providerHelper;
+    }
+
+    public PgpImportExport(Context context, ProviderHelper providerHelper, Progressable progressable, AtomicBoolean cancelled) {
+        super();
+        mContext = context;
+        mProgressable = progressable;
+        mProviderHelper = providerHelper;
+        mCancelled = cancelled;
     }
 
     public PgpImportExport(Context context,
@@ -143,6 +155,11 @@ public class PgpImportExport {
         int position = 0;
         double progSteps = 100.0 / num;
         for (ParcelableKeyRing entry : new IterableIterator<ParcelableKeyRing>(entries)) {
+            // Has this action been cancelled? If so, don't proceed any further
+            if (mCancelled != null && mCancelled.get()) {
+                break;
+            }
+
             try {
                 UncachedKeyRing key = UncachedKeyRing.decodeFromData(entry.getBytes());
 
@@ -208,8 +225,12 @@ public class PgpImportExport {
                 }
             }
             if (log.containsWarnings()) {
-                resultType |= ImportKeyResult.RESULT_WITH_WARNINGS;
+                resultType |= ImportKeyResult.RESULT_WARNINGS;
             }
+        }
+        if (mCancelled != null && mCancelled.get()) {
+            log.add(LogLevel.CANCELLED, LogType.MSG_OPERATION_CANCELLED, 0);
+            resultType |= ImportKeyResult.RESULT_CANCELLED;
         }
 
         return new ImportKeyResult(resultType, log, newKeys, oldKeys, badKeys, secret);

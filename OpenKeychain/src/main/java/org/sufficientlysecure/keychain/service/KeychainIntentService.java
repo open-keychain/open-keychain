@@ -54,6 +54,9 @@ import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRingData;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.KeychainDatabase;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
+import org.sufficientlysecure.keychain.service.OperationResultParcel.LogLevel;
+import org.sufficientlysecure.keychain.service.OperationResultParcel.LogType;
+import org.sufficientlysecure.keychain.service.OperationResultParcel.OperationLog;
 import org.sufficientlysecure.keychain.service.OperationResults.ConsolidateResult;
 import org.sufficientlysecure.keychain.service.OperationResults.EditKeyResult;
 import org.sufficientlysecure.keychain.service.OperationResults.ImportKeyResult;
@@ -72,6 +75,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * This Service contains all important long lasting operations for APG. It receives Intents with
@@ -92,7 +96,7 @@ public class KeychainIntentService extends IntentService
 
     public static final String ACTION_DECRYPT_METADATA = Constants.INTENT_PREFIX + "DECRYPT_METADATA";
 
-    public static final String ACTION_SAVE_KEYRING = Constants.INTENT_PREFIX + "SAVE_KEYRING";
+    public static final String ACTION_EDIT_KEYRING = Constants.INTENT_PREFIX + "EDIT_KEYRING";
 
     public static final String ACTION_DELETE_FILE_SECURELY = Constants.INTENT_PREFIX
             + "DELETE_FILE_SECURELY";
@@ -109,6 +113,8 @@ public class KeychainIntentService extends IntentService
     public static final String ACTION_DELETE = Constants.INTENT_PREFIX + "DELETE";
 
     public static final String ACTION_CONSOLIDATE = Constants.INTENT_PREFIX + "CONSOLIDATE";
+
+    public static final String ACTION_CANCEL = Constants.INTENT_PREFIX + "CANCEL";
 
     /* keys for data bundle */
 
@@ -141,8 +147,8 @@ public class KeychainIntentService extends IntentService
     public static final String DECRYPT_PASSPHRASE = "passphrase";
 
     // save keyring
-    public static final String SAVE_KEYRING_PARCEL = "save_parcel";
-    public static final String SAVE_KEYRING_PASSPHRASE = "passphrase";
+    public static final String EDIT_KEYRING_PARCEL = "save_parcel";
+    public static final String EDIT_KEYRING_PASSPHRASE = "passphrase";
 
     // delete file securely
     public static final String DELETE_FILE = "deleteFile";
@@ -196,6 +202,8 @@ public class KeychainIntentService extends IntentService
     Messenger mMessenger;
 
     private boolean mIsCanceled;
+    // this attribute can possibly merged with the one above? not sure...
+    private AtomicBoolean mActionCanceled = new AtomicBoolean(false);
 
     public KeychainIntentService() {
         super("KeychainIntentService");
@@ -214,6 +222,10 @@ public class KeychainIntentService extends IntentService
      */
     @Override
     protected void onHandleIntent(Intent intent) {
+
+        // We have not been cancelled! (yet)
+        mActionCanceled.set(false);
+
         Bundle extras = intent.getExtras();
         if (extras == null) {
             Log.e(Constants.TAG, "Extras bundle is null!");
@@ -400,21 +412,22 @@ public class KeychainIntentService extends IntentService
             } catch (Exception e) {
                 sendErrorToHandler(e);
             }
-        } else if (ACTION_SAVE_KEYRING.equals(action)) {
+        } else if (ACTION_EDIT_KEYRING.equals(action)) {
             try {
                 /* Input */
-                SaveKeyringParcel saveParcel = data.getParcelable(SAVE_KEYRING_PARCEL);
+                SaveKeyringParcel saveParcel = data.getParcelable(EDIT_KEYRING_PARCEL);
                 if (saveParcel == null) {
                     Log.e(Constants.TAG, "bug: missing save_keyring_parcel in data!");
                     return;
                 }
 
                 /* Operation */
-                PgpKeyOperation keyOperations = new PgpKeyOperation(new ProgressScaler(this, 10, 60, 100));
+                PgpKeyOperation keyOperations =
+                        new PgpKeyOperation(new ProgressScaler(this, 10, 60, 100), mActionCanceled);
                 EditKeyResult modifyResult;
 
                 if (saveParcel.mMasterKeyId != null) {
-                    String passphrase = data.getString(SAVE_KEYRING_PASSPHRASE);
+                    String passphrase = data.getString(EDIT_KEYRING_PASSPHRASE);
                     CanonicalizedSecretKeyRing secRing =
                             new ProviderHelper(this).getCanonicalizedSecretKeyRing(saveParcel.mMasterKeyId);
 
@@ -435,6 +448,20 @@ public class KeychainIntentService extends IntentService
                 }
 
                 UncachedKeyRing ring = modifyResult.getRing();
+
+                // Check if the action was cancelled
+                if (mActionCanceled.get()) {
+                    OperationLog log = modifyResult.getLog();
+                    // If it wasn't added before, add log entry
+                    if (!modifyResult.cancelled()) {
+                        log.add(LogLevel.CANCELLED, LogType.MSG_OPERATION_CANCELLED, 0);
+                    }
+                    // If so, just stop without saving
+                    SaveKeyringResult saveResult = new SaveKeyringResult(
+                            SaveKeyringResult.RESULT_CANCELLED, log, null);
+                    sendMessageToHandler(KeychainIntentServiceHandler.MESSAGE_OKAY, saveResult);
+                    return;
+                }
 
                 // Save the keyring. The ProviderHelper is initialized with the previous log
                 SaveKeyringResult saveResult = new ProviderHelper(this, modifyResult.getLog())
@@ -499,12 +526,17 @@ public class KeychainIntentService extends IntentService
                 }
 
                 ProviderHelper providerHelper = new ProviderHelper(this);
-                PgpImportExport pgpImportExport = new PgpImportExport(this, providerHelper, this);
+                PgpImportExport pgpImportExport = new PgpImportExport(
+                        this, providerHelper, this, mActionCanceled);
                 ImportKeyResult result = pgpImportExport.importKeyRings(entries);
 
+                // we do this even on failure or cancellation!
                 if (result.mSecret > 0) {
+                    // cannot cancel from here on out!
+                    sendMessageToHandler(KeychainIntentServiceHandler.MESSAGE_PREVENT_CANCEL);
                     providerHelper.consolidateDatabaseStep1(this);
                 }
+
                 // make sure new data is synced into contacts
                 ContactSyncAdapterService.requestSync();
 
@@ -612,7 +644,6 @@ public class KeychainIntentService extends IntentService
 
                 ArrayList<ParcelableKeyRing> keyRings = new ArrayList<ParcelableKeyRing>(entries.size());
                 for (ImportKeysListEntry entry : entries) {
-
                     Keyserver server;
                     if (entry.getOrigin() == null) {
                         server = new HkpKeyserver(keyServer);
@@ -872,6 +903,15 @@ public class KeychainIntentService extends IntentService
             default:
                 throw new PgpGeneralException("No target choosen!");
         }
+    }
+
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        if (ACTION_CANCEL.equals(intent.getAction())) {
+            mActionCanceled.set(true);
+            return START_NOT_STICKY;
+        }
+        return super.onStartCommand(intent, flags, startId);
     }
 
     private String getOriginalFilename(Bundle data) throws PgpGeneralException, FileNotFoundException {

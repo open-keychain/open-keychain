@@ -26,6 +26,7 @@ import android.view.View;
 
 import com.github.johnpersano.supertoasts.SuperCardToast;
 import com.github.johnpersano.supertoasts.SuperToast;
+import com.github.johnpersano.supertoasts.SuperToast.Duration;
 import com.github.johnpersano.supertoasts.util.OnClickWrapper;
 import com.github.johnpersano.supertoasts.util.Style;
 
@@ -44,16 +45,14 @@ public abstract class OperationResults {
         public final int mNewKeys, mUpdatedKeys, mBadKeys, mSecret;
 
         // At least one new key
-        public static final int RESULT_OK_NEWKEYS = 2;
+        public static final int RESULT_OK_NEWKEYS = 8;
         // At least one updated key
-        public static final int RESULT_OK_UPDATED = 4;
+        public static final int RESULT_OK_UPDATED = 16;
         // At least one key failed (might still be an overall success)
-        public static final int RESULT_WITH_ERRORS = 8;
-        // There are warnings in the log
-        public static final int RESULT_WITH_WARNINGS = 16;
+        public static final int RESULT_WITH_ERRORS = 32;
 
         // No keys to import...
-        public static final int RESULT_FAIL_NOTHING = 32 + 1;
+        public static final int RESULT_FAIL_NOTHING = 64 + 1;
 
         public boolean isOkBoth() {
             return (mResult & (RESULT_OK_NEWKEYS | RESULT_OK_UPDATED))
@@ -119,15 +118,20 @@ public abstract class OperationResults {
             if ((resultType & OperationResultParcel.RESULT_ERROR) == 0) {
                 String withWarnings;
 
+                duration = Duration.EXTRA_LONG;
+                color = Style.GREEN;
+                withWarnings = "";
+
                 // Any warnings?
-                if ((resultType & ImportKeyResult.RESULT_WITH_WARNINGS) > 0) {
+                if ((resultType & ImportKeyResult.RESULT_WARNINGS) > 0) {
                     duration = 0;
                     color = Style.ORANGE;
-                    withWarnings = activity.getResources().getString(R.string.import_with_warnings);
-                } else {
-                    duration = SuperToast.Duration.LONG;
-                    color = Style.GREEN;
-                    withWarnings = "";
+                    withWarnings += activity.getString(R.string.import_with_warnings);
+                }
+                if ((resultType & ImportKeyResult.RESULT_CANCELLED) > 0) {
+                    duration = 0;
+                    color = Style.ORANGE;
+                    withWarnings += activity.getString(R.string.import_with_cancelled);
                 }
 
                 // New and updated keys
@@ -152,13 +156,14 @@ public abstract class OperationResults {
                 duration = 0;
                 color = Style.RED;
                 if (isFailNothing()) {
-                    str = activity.getString(R.string.import_error_nothing);
+                    str = activity.getString((resultType & ImportKeyResult.RESULT_CANCELLED) > 0
+                                    ? R.string.import_error_nothing_cancelled
+                                    : R.string.import_error_nothing);
                 } else {
                     str = activity.getString(R.string.import_error);
                 }
             }
 
-            // TODO: externalize into Notify class?
             boolean button = getLog() != null && !getLog().isEmpty();
             SuperCardToast toast = new SuperCardToast(activity,
                     button ? SuperToast.Type.BUTTON : SuperToast.Type.STANDARD,
@@ -243,7 +248,7 @@ public abstract class OperationResults {
         }
 
         // Some old key was updated
-        public static final int UPDATED = 2;
+        public static final int UPDATED = 4;
 
         // Public key was saved
         public static final int SAVED_PUBLIC = 8;
