@@ -38,6 +38,7 @@ import org.spongycastle.openpgp.PGPUtil;
 import org.spongycastle.openpgp.operator.PBEDataDecryptorFactory;
 import org.spongycastle.openpgp.operator.PGPDigestCalculatorProvider;
 import org.spongycastle.openpgp.operator.PublicKeyDataDecryptorFactory;
+import org.spongycastle.openpgp.operator.jcajce.JcaKeyFingerprintCalculator;
 import org.spongycastle.openpgp.operator.jcajce.JcaPGPContentVerifierBuilderProvider;
 import org.spongycastle.openpgp.operator.jcajce.JcaPGPDigestCalculatorProviderBuilder;
 import org.spongycastle.openpgp.operator.jcajce.JcePBEDataDecryptorFactoryBuilder;
@@ -46,7 +47,6 @@ import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
-import org.sufficientlysecure.keychain.service.PassphraseCacheService;
 import org.sufficientlysecure.keychain.util.InputData;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.ProgressScaler;
@@ -226,7 +226,7 @@ public class PgpDecryptVerify {
             InvalidDataException, IntegrityCheckFailedException {
         PgpDecryptVerifyResult result = new PgpDecryptVerifyResult();
 
-        PGPObjectFactory pgpF = new PGPObjectFactory(in);
+        PGPObjectFactory pgpF = new PGPObjectFactory(in, new JcaKeyFingerprintCalculator());
         PGPEncryptedDataList enc;
         Object o = pgpF.nextObject();
 
@@ -377,7 +377,7 @@ public class PgpDecryptVerify {
             throw new NoSecretKeyException();
         }
 
-        PGPObjectFactory plainFact = new PGPObjectFactory(clear);
+        PGPObjectFactory plainFact = new PGPObjectFactory(clear, new JcaKeyFingerprintCalculator());
         Object dataChunk = plainFact.nextObject();
         OpenPgpSignatureResultBuilder signatureResultBuilder = new OpenPgpSignatureResultBuilder();
         int signatureIndex = -1;
@@ -390,7 +390,7 @@ public class PgpDecryptVerify {
 
             PGPCompressedData compressedData = (PGPCompressedData) dataChunk;
 
-            PGPObjectFactory fact = new PGPObjectFactory(compressedData.getDataStream());
+            PGPObjectFactory fact = new PGPObjectFactory(compressedData.getDataStream(), new JcaKeyFingerprintCalculator());
             dataChunk = fact.nextObject();
             plainFact = fact;
         }
@@ -421,15 +421,18 @@ public class PgpDecryptVerify {
                 // key found in our database!
                 signature = sigList.get(signatureIndex);
 
-                signatureResultBuilder.signatureAvailable(true);
-                signatureResultBuilder.knownKey(true);
-                signatureResultBuilder.keyId(signingRing.getMasterKeyId());
+                signatureResultBuilder.setSignatureAvailable(true);
+                signatureResultBuilder.setKnownKey(true);
+                signatureResultBuilder.setKeyId(signingRing.getMasterKeyId());
                 try {
-                    signatureResultBuilder.userId(signingRing.getPrimaryUserIdWithFallback());
+                    signatureResultBuilder.setPrimaryUserId(signingRing.getPrimaryUserIdWithFallback());
                 } catch (PgpGeneralException e) {
                     Log.d(Constants.TAG, "No primary user id in keyring with master key id " + signingRing.getMasterKeyId());
                 }
-                signatureResultBuilder.signatureKeyCertified(signingRing.getVerified() > 0);
+                signatureResultBuilder.setSignatureKeyCertified(signingRing.getVerified() > 0);
+                signatureResultBuilder.setKeyExpired(signingKey.isExpired());
+                signatureResultBuilder.setKeyRevoked(signingKey.isRevoked());
+                signatureResultBuilder.setUserIds(signingKey.getUnorderedUserIds());
 
                 JcaPGPContentVerifierBuilderProvider contentVerifierBuilderProvider =
                         new JcaPGPContentVerifierBuilderProvider()
@@ -438,9 +441,9 @@ public class PgpDecryptVerify {
             } else {
                 // no key in our database -> return "unknown pub key" status including the first key id
                 if (!sigList.isEmpty()) {
-                    signatureResultBuilder.signatureAvailable(true);
-                    signatureResultBuilder.knownKey(false);
-                    signatureResultBuilder.keyId(sigList.get(0).getKeyID());
+                    signatureResultBuilder.setSignatureAvailable(true);
+                    signatureResultBuilder.setKnownKey(false);
+                    signatureResultBuilder.setKeyId(sigList.get(0).getKeyID());
                 }
             }
 
@@ -547,11 +550,11 @@ public class PgpDecryptVerify {
 
                 // these are not cleartext signatures!
                 // TODO: what about binary signatures?
-                signatureResultBuilder.signatureOnly(false);
+                signatureResultBuilder.setSignatureOnly(false);
 
                 // Verify signature and check binding signatures
                 boolean validSignature = signature.verify(messageSignature);
-                signatureResultBuilder.validSignature(validSignature);
+                signatureResultBuilder.setValidSignature(validSignature);
             }
         }
 
@@ -596,7 +599,7 @@ public class PgpDecryptVerify {
         PgpDecryptVerifyResult result = new PgpDecryptVerifyResult();
         OpenPgpSignatureResultBuilder signatureResultBuilder = new OpenPgpSignatureResultBuilder();
         // cleartext signatures are never encrypted ;)
-        signatureResultBuilder.signatureOnly(true);
+        signatureResultBuilder.setSignatureOnly(true);
 
         ByteArrayOutputStream out = new ByteArrayOutputStream();
 
@@ -623,7 +626,7 @@ public class PgpDecryptVerify {
         mOutStream.write(clearText);
 
         updateProgress(R.string.progress_processing_signature, 60, 100);
-        PGPObjectFactory pgpFact = new PGPObjectFactory(aIn);
+        PGPObjectFactory pgpFact = new PGPObjectFactory(aIn, new JcaKeyFingerprintCalculator());
 
         PGPSignatureList sigList = (PGPSignatureList) pgpFact.nextObject();
         if (sigList == null) {
@@ -655,15 +658,18 @@ public class PgpDecryptVerify {
             // key found in our database!
             signature = sigList.get(signatureIndex);
 
-            signatureResultBuilder.signatureAvailable(true);
-            signatureResultBuilder.knownKey(true);
-            signatureResultBuilder.keyId(signingRing.getMasterKeyId());
+            signatureResultBuilder.setSignatureAvailable(true);
+            signatureResultBuilder.setKnownKey(true);
+            signatureResultBuilder.setKeyId(signingRing.getMasterKeyId());
             try {
-                signatureResultBuilder.userId(signingRing.getPrimaryUserIdWithFallback());
+                signatureResultBuilder.setPrimaryUserId(signingRing.getPrimaryUserIdWithFallback());
             } catch (PgpGeneralException e) {
                 Log.d(Constants.TAG, "No primary user id in key with master key id " + signingRing.getMasterKeyId());
             }
-            signatureResultBuilder.signatureKeyCertified(signingRing.getVerified() > 0);
+            signatureResultBuilder.setSignatureKeyCertified(signingRing.getVerified() > 0);
+            signatureResultBuilder.setKeyExpired(signingKey.isExpired());
+            signatureResultBuilder.setKeyRevoked(signingKey.isRevoked());
+            signatureResultBuilder.setUserIds(signingKey.getUnorderedUserIds());
 
             JcaPGPContentVerifierBuilderProvider contentVerifierBuilderProvider =
                     new JcaPGPContentVerifierBuilderProvider()
@@ -672,9 +678,9 @@ public class PgpDecryptVerify {
         } else {
             // no key in our database -> return "unknown pub key" status including the first key id
             if (!sigList.isEmpty()) {
-                signatureResultBuilder.signatureAvailable(true);
-                signatureResultBuilder.knownKey(false);
-                signatureResultBuilder.keyId(sigList.get(0).getKeyID());
+                signatureResultBuilder.setSignatureAvailable(true);
+                signatureResultBuilder.setKnownKey(false);
+                signatureResultBuilder.setKeyId(sigList.get(0).getKeyID());
             }
         }
 
@@ -701,7 +707,7 @@ public class PgpDecryptVerify {
             // Verify signature and check binding signatures
             boolean validSignature = signature.verify();
 
-            signatureResultBuilder.validSignature(validSignature);
+            signatureResultBuilder.setValidSignature(validSignature);
         }
 
         result.setSignatureResult(signatureResultBuilder.build());

@@ -21,6 +21,8 @@ import org.openintents.openpgp.OpenPgpSignatureResult;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.util.Log;
 
+import java.util.ArrayList;
+
 /**
  * This class can be used to build OpenPgpSignatureResult objects based on several checks.
  * It serves as a constraint which information are returned inside an OpenPgpSignatureResult object.
@@ -28,7 +30,8 @@ import org.sufficientlysecure.keychain.util.Log;
 public class OpenPgpSignatureResultBuilder {
     // OpenPgpSignatureResult
     private boolean mSignatureOnly = false;
-    private String mUserId;
+    private String mPrimaryUserId;
+    private ArrayList<String> mUserIds = new ArrayList<String>();
     private long mKeyId;
 
     // builder
@@ -36,33 +39,47 @@ public class OpenPgpSignatureResultBuilder {
     private boolean mKnownKey = false;
     private boolean mValidSignature = false;
     private boolean mIsSignatureKeyCertified = false;
+    private boolean mIsKeyRevoked = false;
+    private boolean mIsKeyExpired = false;
 
-    public void signatureOnly(boolean signatureOnly) {
+    public void setSignatureOnly(boolean signatureOnly) {
         this.mSignatureOnly = signatureOnly;
     }
 
-    public void userId(String userId) {
-        this.mUserId = userId;
+    public void setPrimaryUserId(String userId) {
+        this.mPrimaryUserId = userId;
     }
 
-    public void keyId(long keyId) {
+    public void setKeyId(long keyId) {
         this.mKeyId = keyId;
     }
 
-    public void knownKey(boolean knownKey) {
+    public void setKnownKey(boolean knownKey) {
         this.mKnownKey = knownKey;
     }
 
-    public void validSignature(boolean validSignature) {
+    public void setValidSignature(boolean validSignature) {
         this.mValidSignature = validSignature;
     }
 
-    public void signatureKeyCertified(boolean isSignatureKeyCertified) {
+    public void setSignatureKeyCertified(boolean isSignatureKeyCertified) {
         this.mIsSignatureKeyCertified = isSignatureKeyCertified;
     }
 
-    public void signatureAvailable(boolean signatureAvailable) {
+    public void setSignatureAvailable(boolean signatureAvailable) {
         this.mSignatureAvailable = signatureAvailable;
+    }
+
+    public void setKeyRevoked(boolean keyRevoked) {
+        this.mIsKeyRevoked = keyRevoked;
+    }
+
+    public void setKeyExpired(boolean keyExpired) {
+        this.mIsKeyExpired = keyExpired;
+    }
+
+    public void setUserIds(ArrayList<String> userIds) {
+        this.mUserIds = userIds;
     }
 
     public boolean isValidSignature() {
@@ -78,9 +95,16 @@ public class OpenPgpSignatureResultBuilder {
             if (mKnownKey) {
                 if (mValidSignature) {
                     result.setKeyId(mKeyId);
-                    result.setPrimaryUserId(mUserId);
+                    result.setPrimaryUserId(mPrimaryUserId);
+                    result.setUserIds(mUserIds);
 
-                    if (mIsSignatureKeyCertified) {
+                    if (mIsKeyRevoked) {
+                        Log.d(Constants.TAG, "SIGNATURE_KEY_REVOKED");
+                        result.setStatus(OpenPgpSignatureResult.SIGNATURE_KEY_REVOKED);
+                    } else if (mIsKeyExpired) {
+                        Log.d(Constants.TAG, "SIGNATURE_KEY_EXPIRED");
+                        result.setStatus(OpenPgpSignatureResult.SIGNATURE_KEY_EXPIRED);
+                    } else if (mIsSignatureKeyCertified) {
                         Log.d(Constants.TAG, "SIGNATURE_SUCCESS_CERTIFIED");
                         result.setStatus(OpenPgpSignatureResult.SIGNATURE_SUCCESS_CERTIFIED);
                     } else {
