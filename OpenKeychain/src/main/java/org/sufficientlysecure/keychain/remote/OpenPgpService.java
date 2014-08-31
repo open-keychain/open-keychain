@@ -31,7 +31,6 @@ import org.openintents.openpgp.OpenPgpError;
 import org.openintents.openpgp.OpenPgpSignatureResult;
 import org.openintents.openpgp.util.OpenPgpApi;
 import org.openkeychain.nfc.NfcActivity;
-import org.spongycastle.util.Arrays;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.PgpDecryptVerify;
@@ -447,7 +446,15 @@ public class OpenPgpService extends RemoteService {
                 if (signatureResult != null) {
                     result.putExtra(OpenPgpApi.RESULT_SIGNATURE, signatureResult);
 
-                    if (signatureResult.getStatus() == OpenPgpSignatureResult.SIGNATURE_UNKNOWN_PUB_KEY) {
+                    if (data.getIntExtra(OpenPgpApi.EXTRA_API_VERSION, -1) < 5) {
+                        // SIGNATURE_KEY_REVOKED and SIGNATURE_KEY_EXPIRED have been added in version 5
+                        if (signatureResult.getStatus() == OpenPgpSignatureResult.SIGNATURE_KEY_REVOKED
+                                || signatureResult.getStatus() == OpenPgpSignatureResult.SIGNATURE_KEY_EXPIRED) {
+                            signatureResult.setStatus(OpenPgpSignatureResult.SIGNATURE_ERROR);
+                        }
+                    }
+
+                    if (signatureResult.getStatus() == OpenPgpSignatureResult.SIGNATURE_KEY_MISSING) {
                         // If signature is unknown we return an _additional_ PendingIntent
                         // to retrieve the missing key
                         Intent intent = new Intent(getBaseContext(), ImportKeysActivity.class);
@@ -577,9 +584,10 @@ public class OpenPgpService extends RemoteService {
 
         // version code is required and needs to correspond to version code of service!
         // History of versions in org.openintents.openpgp.util.OpenPgpApi
-        // we support 3 and 4
+        // we support 3, 4, 5
         if (data.getIntExtra(OpenPgpApi.EXTRA_API_VERSION, -1) != 3
-                && data.getIntExtra(OpenPgpApi.EXTRA_API_VERSION, -1) != 4) {
+                && data.getIntExtra(OpenPgpApi.EXTRA_API_VERSION, -1) != 4
+                && data.getIntExtra(OpenPgpApi.EXTRA_API_VERSION, -1) != 5) {
             Intent result = new Intent();
             OpenPgpError error = new OpenPgpError
                     (OpenPgpError.INCOMPATIBLE_API_VERSIONS, "Incompatible API versions!\n"

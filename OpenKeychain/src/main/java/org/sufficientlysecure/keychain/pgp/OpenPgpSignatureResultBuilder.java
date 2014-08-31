@@ -78,7 +78,7 @@ public class OpenPgpSignatureResultBuilder {
             if (mKnownKey) {
                 if (mValidSignature) {
                     result.setKeyId(mKeyId);
-                    result.setUserId(mUserId);
+                    result.setPrimaryUserId(mUserId);
 
                     if (mIsSignatureKeyCertified) {
                         Log.d(Constants.TAG, "SIGNATURE_SUCCESS_CERTIFIED");
@@ -94,8 +94,8 @@ public class OpenPgpSignatureResultBuilder {
             } else {
                 result.setKeyId(mKeyId);
 
-                Log.d(Constants.TAG, "SIGNATURE_UNKNOWN_PUB_KEY");
-                result.setStatus(OpenPgpSignatureResult.SIGNATURE_UNKNOWN_PUB_KEY);
+                Log.d(Constants.TAG, "SIGNATURE_KEY_MISSING");
+                result.setStatus(OpenPgpSignatureResult.SIGNATURE_KEY_MISSING);
             }
 
             return result;

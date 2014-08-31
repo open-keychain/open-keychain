@@ -596,7 +596,7 @@
     <!-- Keyring Canonicalization log entries -->
     <string name="msg_kc_public">Canonicalizing public keyring %s</string>
     <string name="msg_kc_secret">Canonicalizing secret keyring %s</string>
-    <string name="msg_kc_error_v3">This is an OpenPGP version 3 key, which have been deprecated and are no longer supported!</string>
+    <string name="msg_kc_error_v3">This is an OpenPGP version 3 key, which has been deprecated and is no longer supported!</string>
     <string name="msg_kc_error_no_uid">Keyring has no valid user ids!</string>
     <string name="msg_kc_error_master_algo">The master key uses an unknown (%s) algorithm!</string>
     <string name="msg_kc_master">Processing master key</string>
@@ -604,7 +604,7 @@
     <string name="msg_kc_revoke_bad_local">Removing keyring revocation certificate with "local" flag</string>
     <string name="msg_kc_revoke_bad_time">Removing keyring revocation certificate with future timestamp</string>
     <string name="msg_kc_revoke_bad_type">Removing master key certificate of unknown type (%s)</string>
-    <string name="msg_kc_revoke_bad_type_uid">Removing user id certification in bad position</string>
+    <string name="msg_kc_revoke_bad_type_uid">Removing user id certificate in bad position</string>
     <string name="msg_kc_revoke_bad">Removing bad keyring revocation certificate</string>
     <string name="msg_kc_revoke_dup">Removing redundant keyring revocation certificate</string>
     <string name="msg_kc_sub">Processing subkey %s</string>
@@ -644,7 +644,7 @@
     <string name="msg_kc_uid_revoke_old">Removing outdated revocation certificate for user id "%s"</string>
     <string name="msg_kc_uid_no_cert">No valid self-certificate found for user id %s, removing from ring</string>
     <string name="msg_kc_uid_remove">Removing invalid user id %s</string>
-    <string name="msg_kc_uid_dup">Removing duplicate user id "%s". The secret key contained two of them. This may result in missing certifications!</string>
+    <string name="msg_kc_uid_dup">Removing duplicate user id "%s". The secret key contained two of them. This may result in missing certificates!</string>
 
     <!-- Keyring merging log entries -->
     <string name="msg_mg_error_secret_dummy">New public subkey found, but secret subkey dummy generation is not supported!</string>

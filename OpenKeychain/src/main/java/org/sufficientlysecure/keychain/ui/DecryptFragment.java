@@ -110,7 +110,7 @@ public abstract class DecryptFragment extends Fragment {
 
             mSignatureKeyId = signatureResult.getKeyId();
 
-            String userId = signatureResult.getUserId();
+            String userId = signatureResult.getPrimaryUserId();
             String[] userIdSplit = KeyRing.splitUserId(userId);
             if (userIdSplit[0] != null) {
                 mUserId.setText(userIdSplit[0]);
@@ -153,7 +153,7 @@ public abstract class DecryptFragment extends Fragment {
                     break;
                 }
 
-                case OpenPgpSignatureResult.SIGNATURE_UNKNOWN_PUB_KEY: {
+                case OpenPgpSignatureResult.SIGNATURE_KEY_MISSING: {
                     if (signatureResult.isSignatureOnly()) {
                         mResultText.setText(R.string.decrypt_result_signature_unknown_pub_key);
                     } else {
