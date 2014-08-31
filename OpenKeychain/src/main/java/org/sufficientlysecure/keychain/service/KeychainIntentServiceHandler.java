@@ -18,7 +18,6 @@
 package org.sufficientlysecure.keychain.service;
 
 import android.app.Activity;
-import android.content.DialogInterface.OnCancelListener;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -37,6 +36,7 @@ public class KeychainIntentServiceHandler extends Handler {
     public static final int MESSAGE_OKAY = 1;
     public static final int MESSAGE_EXCEPTION = 2;
     public static final int MESSAGE_UPDATE_PROGRESS = 3;
+    public static final int MESSAGE_PREVENT_CANCEL = 4;
 
     // possible data keys for messages
     public static final String DATA_ERROR = "error";
@@ -123,6 +123,9 @@ public class KeychainIntentServiceHandler extends Handler {
                 }
 
                 break;
+
+            case MESSAGE_PREVENT_CANCEL:
+                mProgressDialogFragment.setPreventCancel(true);
 
             default:
                 Log.e(Constants.TAG, "unknown handler message!");

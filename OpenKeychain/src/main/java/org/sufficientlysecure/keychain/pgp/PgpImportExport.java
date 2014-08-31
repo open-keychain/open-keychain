@@ -33,6 +33,8 @@ import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
+import org.sufficientlysecure.keychain.service.OperationResultParcel.LogLevel;
+import org.sufficientlysecure.keychain.service.OperationResultParcel.LogType;
 import org.sufficientlysecure.keychain.service.OperationResultParcel.OperationLog;
 import org.sufficientlysecure.keychain.service.OperationResults.ImportKeyResult;
 import org.sufficientlysecure.keychain.service.OperationResults.SaveKeyringResult;
@@ -57,6 +59,7 @@ public class PgpImportExport {
 
     private Context mContext;
     private Progressable mProgressable;
+    private AtomicBoolean mCancelled;
 
     private KeychainServiceListener mKeychainServiceListener;
 
@@ -71,6 +74,14 @@ public class PgpImportExport {
         this.mContext = context;
         this.mProgressable = progressable;
         this.mProviderHelper = providerHelper;
+    }
+
+    public PgpImportExport(Context context, ProviderHelper providerHelper, Progressable progressable, AtomicBoolean cancelled) {
+        super();
+        mContext = context;
+        mProgressable = progressable;
+        mProviderHelper = providerHelper;
+        mCancelled = cancelled;
     }
 
     public PgpImportExport(Context context,
@@ -126,20 +137,11 @@ public class PgpImportExport {
     }
 
     /** Imports keys from given data. If keyIds is given only those are imported */
-    public ImportKeyResult importKeyRings(List<ParcelableKeyRing> entries,
-                                          AtomicBoolean cancelled) {
-        return importKeyRings(entries.iterator(), entries.size(), cancelled);
-    }
-
     public ImportKeyResult importKeyRings(List<ParcelableKeyRing> entries) {
-        return importKeyRings(entries.iterator(), entries.size(), null);
+        return importKeyRings(entries.iterator(), entries.size());
     }
 
     public ImportKeyResult importKeyRings(Iterator<ParcelableKeyRing> entries, int num) {
-        return importKeyRings(entries, num, null);
-    }
-    public ImportKeyResult importKeyRings(Iterator<ParcelableKeyRing> entries, int num,
-                                          AtomicBoolean cancelled) {
         updateProgress(R.string.progress_importing, 0, 100);
 
         // If there aren't even any keys, do nothing here.
@@ -154,8 +156,7 @@ public class PgpImportExport {
         double progSteps = 100.0 / num;
         for (ParcelableKeyRing entry : new IterableIterator<ParcelableKeyRing>(entries)) {
             // Has this action been cancelled? If so, don't proceed any further
-            if (cancelled != null && cancelled.get()) {
-                Log.d(Constants.TAG, "CANCELLED!");
+            if (mCancelled != null && mCancelled.get()) {
                 break;
             }
 
@@ -227,7 +228,8 @@ public class PgpImportExport {
                 resultType |= ImportKeyResult.RESULT_WARNINGS;
             }
         }
-        if (cancelled != null && cancelled.get()) {
+        if (mCancelled != null && mCancelled.get()) {
+            log.add(LogLevel.CANCELLED, LogType.MSG_OPERATION_CANCELLED, 0);
             resultType |= ImportKeyResult.RESULT_CANCELLED;
         }
 

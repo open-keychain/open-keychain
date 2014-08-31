@@ -44,7 +44,6 @@ import org.sufficientlysecure.keychain.service.OperationResults;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel.Algorithm;
 import org.sufficientlysecure.keychain.util.Log;
-import org.sufficientlysecure.keychain.util.Notify;
 
 public class CreateKeyFinalFragment extends Fragment {
 

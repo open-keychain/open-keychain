@@ -23,6 +23,7 @@ import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnKeyListener;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.view.ContextThemeWrapper;
@@ -38,6 +39,8 @@ public class ProgressDialogFragment extends DialogFragment {
     private static final String ARG_MESSAGE = "message";
     private static final String ARG_STYLE = "style";
     private static final String ARG_CANCELABLE = "cancelable";
+
+    boolean mCanCancel = false, mPreventCancel = false, mIsCancelled = false;
 
     /** Creates new instance of this fragment */
     public static ProgressDialogFragment newInstance(String message, int style, boolean cancelable) {
@@ -59,6 +62,10 @@ public class ProgressDialogFragment extends DialogFragment {
 
     /** Updates progress of dialog */
     public void setProgress(int progress, int max) {
+        if (mIsCancelled) {
+            return;
+        }
+
         ProgressDialog dialog = (ProgressDialog) getDialog();
 
         dialog.setProgress(progress);
@@ -67,6 +74,10 @@ public class ProgressDialogFragment extends DialogFragment {
 
     /** Updates progress of dialog */
     public void setProgress(String message, int progress, int max) {
+        if (mIsCancelled) {
+            return;
+        }
+
         ProgressDialog dialog = (ProgressDialog) getDialog();
 
         dialog.setMessage(message);
@@ -94,13 +105,13 @@ public class ProgressDialogFragment extends DialogFragment {
 
         String message = getArguments().getString(ARG_MESSAGE);
         int style = getArguments().getInt(ARG_STYLE);
-        final boolean cancelable = getArguments().getBoolean(ARG_CANCELABLE);
+        mCanCancel = getArguments().getBoolean(ARG_CANCELABLE);
 
         dialog.setMessage(message);
         dialog.setProgressStyle(style);
 
         // If this is supposed to be cancelable, add our (custom) cancel mechanic
-        if (cancelable) {
+        if (mCanCancel) {
             // Just show the button, take care of the onClickListener afterwards (in onStart)
             dialog.setButton(DialogInterface.BUTTON_NEGATIVE,
                     activity.getString(R.string.progress_cancel), (DialogInterface.OnClickListener) null);
@@ -111,7 +122,7 @@ public class ProgressDialogFragment extends DialogFragment {
             @Override
             public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
                 if (keyCode == KeyEvent.KEYCODE_BACK) {
-                    if (cancelable) {
+                    if (mCanCancel) {
                         ((ProgressDialog) dialog).getButton(
                                 DialogInterface.BUTTON_NEGATIVE).performClick();
                     }
@@ -126,15 +137,41 @@ public class ProgressDialogFragment extends DialogFragment {
         return dialog;
     }
 
+    public void setPreventCancel(boolean preventCancel) {
+        // Don't care if we can't cancel anymore either way!
+        if (mIsCancelled || ! mCanCancel) {
+            return;
+        }
+
+        mPreventCancel = preventCancel;
+        final Button negative = ((ProgressDialog) getDialog()).getButton(DialogInterface.BUTTON_NEGATIVE);
+        negative.setVisibility(preventCancel ? View.GONE : View.VISIBLE);
+    }
+
     @Override
     public void onStart() {
         super.onStart();
 
         // Override the default behavior so the dialog is NOT dismissed on click
-        Button negative = ((ProgressDialog) getDialog()).getButton(DialogInterface.BUTTON_NEGATIVE);
+        final Button negative = ((ProgressDialog) getDialog()).getButton(DialogInterface.BUTTON_NEGATIVE);
         negative.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
+                // nvm if we are already cancelled, or weren't able to begin with
+                if (mIsCancelled || ! mCanCancel) {
+                    return;
+                }
+
+                // Remember this, and don't allow another click
+                mIsCancelled = true;
+                negative.setClickable(false);
+                negative.setTextColor(Color.GRAY);
+
+                // Set the progress bar accordingly
+                ProgressDialog dialog = (ProgressDialog) getDialog();
+                dialog.setIndeterminate(true);
+                dialog.setMessage(getString(R.string.progress_cancelling));
+
                 // send a cancel message. note that this message will be handled by
                 // KeychainIntentService.onStartCommand, which runs in this thread,
                 // not the service one, and will not queue up a command.
