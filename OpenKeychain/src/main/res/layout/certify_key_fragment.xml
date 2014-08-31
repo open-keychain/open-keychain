@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:custom="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
@@ -132,13 +133,21 @@
                 android:checked="false"
                 android:text="@string/label_send_key" />
 
-            <Spinner
-                android:id="@+id/upload_key_keyserver"
+            <org.sufficientlysecure.keychain.ui.widget.FoldableLinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="4dp"
-                android:layout_marginTop="4dp"
-                android:enabled="false" />
+                android:layout_height="match_parent"
+                custom:foldedLabel="@string/api_settings_show_advanced"
+                custom:unFoldedLabel="@string/api_settings_hide_advanced">
+
+                <Spinner
+                    android:id="@+id/upload_key_keyserver"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="4dp"
+                    android:layout_marginTop="4dp"
+                    android:enabled="false" />
+
+            </org.sufficientlysecure.keychain.ui.widget.FoldableLinearLayout>
 
             <TextView
                 style="@style/SectionHeader"
