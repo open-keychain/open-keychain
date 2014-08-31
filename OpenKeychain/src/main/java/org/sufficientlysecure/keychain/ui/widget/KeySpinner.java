@@ -19,7 +19,6 @@ package org.sufficientlysecure.keychain.ui.widget;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
@@ -140,9 +139,9 @@ public abstract class KeySpinner extends Spinner implements LoaderManager.Loader
                 @Override
                 public void bindView(View view, Context context, Cursor cursor) {
                     String[] userId = KeyRing.splitUserId(cursor.getString(mIndexUserId));
-                    ((TextView) view.findViewById(android.R.id.title)).setText(userId[2] == null ? userId[0] : (userId[0] + " (" + userId[2] + ")"));
-                    ((TextView) view.findViewById(android.R.id.text1)).setText(userId[1]);
-                    ((TextView) view.findViewById(android.R.id.text2)).setText(PgpKeyHelper.convertKeyIdToHex(cursor.getLong(mIndexKeyId)));
+                    ((TextView) view.findViewById(R.id.keyspinner_key_name)).setText(userId[2] == null ? userId[0] : (userId[0] + " (" + userId[2] + ")"));
+                    ((TextView) view.findViewById(R.id.keyspinner_key_email)).setText(userId[1]);
+                    ((TextView) view.findViewById(R.id.keyspinner_key_id)).setText(PgpKeyHelper.convertKeyIdToHex(cursor.getLong(mIndexKeyId)));
                 }
 
                 @Override
@@ -194,7 +193,7 @@ public abstract class KeySpinner extends Spinner implements LoaderManager.Loader
         public View getView(int position, View convertView, ViewGroup parent) {
             try {
                 View v = getDropDownView(position, convertView, parent);
-                v.findViewById(android.R.id.text1).setVisibility(View.GONE);
+                v.findViewById(R.id.keyspinner_key_email).setVisibility(View.GONE);
                 return v;
             } catch (NullPointerException e) {
                 // This is for the preview...
@@ -211,13 +210,13 @@ public abstract class KeySpinner extends Spinner implements LoaderManager.Loader
                 } else {
                     v = convertView;
                 }
-                ((TextView) v.findViewById(android.R.id.title)).setText("None");
-                v.findViewById(android.R.id.text1).setVisibility(View.GONE);
-                v.findViewById(android.R.id.text2).setVisibility(View.GONE);
+                ((TextView) v.findViewById(R.id.keyspinner_key_name)).setText("None");
+                v.findViewById(R.id.keyspinner_key_email).setVisibility(View.GONE);
+                v.findViewById(R.id.keyspinner_key_id).setVisibility(View.GONE);
             } else {
                 v = inner.getView(position - 1, convertView, parent);
-                v.findViewById(android.R.id.text1).setVisibility(View.VISIBLE);
-                v.findViewById(android.R.id.text2).setVisibility(View.VISIBLE);
+                v.findViewById(R.id.keyspinner_key_email).setVisibility(View.VISIBLE);
+                v.findViewById(R.id.keyspinner_key_id).setVisibility(View.VISIBLE);
             }
             return v;
         }
