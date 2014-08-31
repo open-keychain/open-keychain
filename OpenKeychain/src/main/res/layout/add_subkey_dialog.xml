@@ -115,14 +115,9 @@
             android:id="@+id/add_subkey_expiry_row"
             android:visibility="gone">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:paddingRight="10dip" />
-
             <DatePicker
                 android:id="@+id/add_subkey_expiry_date_picker"
+                android:layout_span="2"
                 android:layout_gravity="center_horizontal"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
