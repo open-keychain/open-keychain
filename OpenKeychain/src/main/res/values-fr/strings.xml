@@ -662,7 +662,7 @@
   <string name="passp_cache_notif_clear">Effacer le cache</string>
   <string name="passp_cache_notif_pwd">Mot de passe</string>
   <!--unsorted-->
-  <string name="internal_error">Erreur interne !</string>
+  <string name="msg_internal_error">Erreur interne !</string>
   <string name="section_certifier_id">Certificateur</string>
   <string name="section_cert">Détails du certificat</string>
   <string name="label_user_id">identité</string>

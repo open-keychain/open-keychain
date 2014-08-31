@@ -601,7 +601,7 @@
   <string name="passp_cache_notif_clear">Очистити кеш</string>
   <string name="passp_cache_notif_pwd">Пароль</string>
   <!--unsorted-->
-  <string name="internal_error">Внутрішня помилка!</string>
+  <string name="msg_internal_error">Внутрішня помилка!</string>
   <string name="section_certifier_id">Ким підписаний</string>
   <string name="section_cert">Дані сертифікату</string>
   <string name="label_user_id">Сутність</string>

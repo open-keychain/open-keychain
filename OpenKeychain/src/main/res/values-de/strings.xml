@@ -443,7 +443,7 @@
   <!--Consolidate-->
   <!--PassphraseCache-->
   <!--unsorted-->
-  <string name="internal_error">Interner Fehler!</string>
+  <string name="msg_internal_error">Interner Fehler!</string>
   <string name="section_certifier_id">Beglaubiger</string>
   <string name="section_cert">Zertifikatdetails</string>
   <string name="label_user_id">Identität</string>

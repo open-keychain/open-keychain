@@ -192,6 +192,7 @@ public class LogDisplayFragment extends ListFragment implements OnTouchListener 
                 case ERROR: ih.mImg.setBackgroundColor(Color.RED); break;
                 case START: ih.mImg.setBackgroundColor(Color.GREEN); break;
                 case OK: ih.mImg.setBackgroundColor(Color.GREEN); break;
+                case CANCELLED: ih.mImg.setBackgroundColor(Color.RED); break;
             }
 
             return convertView;

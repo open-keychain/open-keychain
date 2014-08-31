@@ -31,7 +31,6 @@ import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.TextView;
 
-import org.spongycastle.bcpg.PublicKeyAlgorithmTags;
 import org.spongycastle.bcpg.sig.KeyFlags;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
@@ -126,7 +125,7 @@ public class CreateKeyFinalFragment extends Fragment {
 
     private void createKey() {
         Intent intent = new Intent(getActivity(), KeychainIntentService.class);
-        intent.setAction(KeychainIntentService.ACTION_SAVE_KEYRING);
+        intent.setAction(KeychainIntentService.ACTION_EDIT_KEYRING);
 
         KeychainIntentServiceHandler saveHandler = new KeychainIntentServiceHandler(
                 getActivity(),
@@ -178,7 +177,7 @@ public class CreateKeyFinalFragment extends Fragment {
         parcel.mNewPassphrase = mPassphrase;
 
         // get selected key entries
-        data.putParcelable(KeychainIntentService.SAVE_KEYRING_PARCEL, parcel);
+        data.putParcelable(KeychainIntentService.EDIT_KEYRING_PARCEL, parcel);
 
         intent.putExtra(KeychainIntentService.EXTRA_DATA, data);
 

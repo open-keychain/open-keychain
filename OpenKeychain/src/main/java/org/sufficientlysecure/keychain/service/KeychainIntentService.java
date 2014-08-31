@@ -54,6 +54,9 @@ import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRingData;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.KeychainDatabase;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
+import org.sufficientlysecure.keychain.service.OperationResultParcel.LogLevel;
+import org.sufficientlysecure.keychain.service.OperationResultParcel.LogType;
+import org.sufficientlysecure.keychain.service.OperationResultParcel.OperationLog;
 import org.sufficientlysecure.keychain.service.OperationResults.ConsolidateResult;
 import org.sufficientlysecure.keychain.service.OperationResults.EditKeyResult;
 import org.sufficientlysecure.keychain.service.OperationResults.ImportKeyResult;
@@ -93,7 +96,7 @@ public class KeychainIntentService extends IntentService
 
     public static final String ACTION_DECRYPT_METADATA = Constants.INTENT_PREFIX + "DECRYPT_METADATA";
 
-    public static final String ACTION_SAVE_KEYRING = Constants.INTENT_PREFIX + "SAVE_KEYRING";
+    public static final String ACTION_EDIT_KEYRING = Constants.INTENT_PREFIX + "EDIT_KEYRING";
 
     public static final String ACTION_DELETE_FILE_SECURELY = Constants.INTENT_PREFIX
             + "DELETE_FILE_SECURELY";
@@ -144,8 +147,8 @@ public class KeychainIntentService extends IntentService
     public static final String DECRYPT_PASSPHRASE = "passphrase";
 
     // save keyring
-    public static final String SAVE_KEYRING_PARCEL = "save_parcel";
-    public static final String SAVE_KEYRING_PASSPHRASE = "passphrase";
+    public static final String EDIT_KEYRING_PARCEL = "save_parcel";
+    public static final String EDIT_KEYRING_PASSPHRASE = "passphrase";
 
     // delete file securely
     public static final String DELETE_FILE = "deleteFile";
@@ -409,21 +412,22 @@ public class KeychainIntentService extends IntentService
             } catch (Exception e) {
                 sendErrorToHandler(e);
             }
-        } else if (ACTION_SAVE_KEYRING.equals(action)) {
+        } else if (ACTION_EDIT_KEYRING.equals(action)) {
             try {
                 /* Input */
-                SaveKeyringParcel saveParcel = data.getParcelable(SAVE_KEYRING_PARCEL);
+                SaveKeyringParcel saveParcel = data.getParcelable(EDIT_KEYRING_PARCEL);
                 if (saveParcel == null) {
                     Log.e(Constants.TAG, "bug: missing save_keyring_parcel in data!");
                     return;
                 }
 
                 /* Operation */
-                PgpKeyOperation keyOperations = new PgpKeyOperation(new ProgressScaler(this, 10, 60, 100));
+                PgpKeyOperation keyOperations =
+                        new PgpKeyOperation(new ProgressScaler(this, 10, 60, 100), mActionCanceled);
                 EditKeyResult modifyResult;
 
                 if (saveParcel.mMasterKeyId != null) {
-                    String passphrase = data.getString(SAVE_KEYRING_PASSPHRASE);
+                    String passphrase = data.getString(EDIT_KEYRING_PASSPHRASE);
                     CanonicalizedSecretKeyRing secRing =
                             new ProviderHelper(this).getCanonicalizedSecretKeyRing(saveParcel.mMasterKeyId);
 
@@ -444,6 +448,20 @@ public class KeychainIntentService extends IntentService
                 }
 
                 UncachedKeyRing ring = modifyResult.getRing();
+
+                // Check if the action was cancelled
+                if (mActionCanceled.get()) {
+                    OperationLog log = modifyResult.getLog();
+                    // If it wasn't added before, add log entry
+                    if (!modifyResult.cancelled()) {
+                        log.add(LogLevel.CANCELLED, LogType.MSG_OPERATION_CANCELLED, 0);
+                    }
+                    // If so, just stop without saving
+                    SaveKeyringResult saveResult = new SaveKeyringResult(
+                            SaveKeyringResult.RESULT_CANCELLED, log, null);
+                    sendMessageToHandler(KeychainIntentServiceHandler.MESSAGE_OKAY, saveResult);
+                    return;
+                }
 
                 // Save the keyring. The ProviderHelper is initialized with the previous log
                 SaveKeyringResult saveResult = new ProviderHelper(this, modifyResult.getLog())

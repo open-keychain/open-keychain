@@ -86,7 +86,11 @@ public class OperationResultParcel implements Parcelable {
     }
 
     public boolean success() {
-        return (mResult & 1) == 0;
+        return (mResult & RESULT_ERROR) == 0;
+    }
+
+    public boolean cancelled() {
+        return (mResult & RESULT_CANCELLED) == RESULT_CANCELLED;
     }
 
     public OperationLog getLog() {
@@ -151,30 +155,25 @@ public class OperationResultParcel implements Parcelable {
 
     public SuperCardToast createNotify(final Activity activity) {
 
-        int resultType = getResult();
-
         String str;
-        int duration, color;
+        int color;
 
         // Not an overall failure
-        if ((resultType & OperationResultParcel.RESULT_ERROR) == 0) {
-
+        if (cancelled()) {
+            color = Style.RED;
+            str = "operation cancelled!";
+        } else if (success()) {
             if (getLog().containsWarnings()) {
                 color = Style.ORANGE;
             } else {
                 color = Style.GREEN;
             }
-
             str = "operation succeeded!";
             // str = activity.getString(R.string.import_error);
-
         } else {
-
             color = Style.RED;
-
             str = "operation failed";
             // str = activity.getString(R.string.import_error);
-
         }
 
         boolean button = getLog() != null && !getLog().isEmpty();
@@ -227,7 +226,8 @@ public class OperationResultParcel implements Parcelable {
      */
     public static enum LogType {
 
-        INTERNAL_ERROR (R.string.internal_error),
+        MSG_INTERNAL_ERROR (R.string.msg_internal_error),
+        MSG_OPERATION_CANCELLED (R.string.msg_cancelled),
 
         // import public
         MSG_IP(R.string.msg_ip),
@@ -444,6 +444,7 @@ public class OperationResultParcel implements Parcelable {
         ERROR, // should occur once at the end of a failed operation
         START, // should occur once at the start of each independent operation
         OK, // should occur once at the end of a successful operation
+        CANCELLED, // should occur once at the end of a cancelled operation
     }
 
     @Override

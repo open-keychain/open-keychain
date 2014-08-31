@@ -73,6 +73,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.Stack;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * This class is the single place where ALL operations that actually modify a PGP public or secret
@@ -85,6 +86,7 @@ import java.util.Stack;
  */
 public class PgpKeyOperation {
     private Stack<Progressable> mProgress;
+    private AtomicBoolean mCancelled;
 
     // most preferred is first
     private static final int[] PREFERRED_SYMMETRIC_ALGORITHMS = new int[]{
@@ -132,6 +134,15 @@ public class PgpKeyOperation {
             mProgress = new Stack<Progressable>();
             mProgress.push(progress);
         }
+    }
+
+    public PgpKeyOperation(Progressable progress, AtomicBoolean cancelled) {
+        this(progress);
+        mCancelled = cancelled;
+    }
+
+    private boolean checkCancelled() {
+        return mCancelled != null && mCancelled.get();
     }
 
     private void subProgressPush(int from, int to) {
@@ -450,6 +461,12 @@ public class PgpKeyOperation {
 
         try {
 
+            // Check if we were cancelled
+            if (checkCancelled()) {
+                log.add(LogLevel.CANCELLED, LogType.MSG_OPERATION_CANCELLED, indent);
+                return new EditKeyResult(EditKeyResult.RESULT_CANCELLED, log, null);
+            }
+
             { // work on master secret key
 
                 PGPPublicKey modifiedPublicKey = masterPublicKey;
@@ -640,6 +657,12 @@ public class PgpKeyOperation {
 
             }
 
+            // Check if we were cancelled - again
+            if (checkCancelled()) {
+                log.add(LogLevel.CANCELLED, LogType.MSG_OPERATION_CANCELLED, indent);
+                return new EditKeyResult(EditKeyResult.RESULT_CANCELLED, log, null);
+            }
+
             // 4a. For each subkey change, generate new subkey binding certificate
             subProgressPush(50, 60);
             for (int i = 0; i < saveParcel.mChangeSubKeys.size(); i++) {
@@ -750,6 +773,12 @@ public class PgpKeyOperation {
             subProgressPush(70, 90);
             for (int i = 0; i < saveParcel.mAddSubKeys.size(); i++) {
 
+                // Check if we were cancelled - again. This operation is expensive so we do it each loop.
+                if (checkCancelled()) {
+                    log.add(LogLevel.CANCELLED, LogType.MSG_OPERATION_CANCELLED, indent);
+                    return new EditKeyResult(EditKeyResult.RESULT_CANCELLED, log, null);
+                }
+
                 progress(R.string.progress_modify_subkeyadd, (i-1) * (100 / saveParcel.mAddSubKeys.size()));
                 SaveKeyringParcel.SubkeyAdd add = saveParcel.mAddSubKeys.get(i);
                 log.add(LogLevel.INFO, LogType.MSG_MF_SUBKEY_NEW, indent,
@@ -805,6 +834,12 @@ public class PgpKeyOperation {
 
             }
             subProgressPop();
+
+            // Check if we were cancelled - again. This operation is expensive so we do it each loop.
+            if (checkCancelled()) {
+                log.add(LogLevel.CANCELLED, LogType.MSG_OPERATION_CANCELLED, indent);
+                return new EditKeyResult(EditKeyResult.RESULT_CANCELLED, log, null);
+            }
 
             // 6. If requested, change passphrase
             if (saveParcel.mNewPassphrase != null) {

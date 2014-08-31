@@ -637,7 +637,7 @@
   <string name="passp_cache_notif_clear">キャッシュクリア</string>
   <string name="passp_cache_notif_pwd">パスワード</string>
   <!--unsorted-->
-  <string name="internal_error">内部エラー!</string>
+  <string name="msg_internal_error">内部エラー!</string>
   <string name="section_certifier_id">検証者</string>
   <string name="section_cert">証明の詳細</string>
   <string name="label_user_id">ユーザID</string>
