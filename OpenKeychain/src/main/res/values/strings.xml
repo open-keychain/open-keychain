@@ -177,7 +177,7 @@
     <string name="passphrase_must_not_be_empty">Please enter a passphrase.</string>
     <string name="passphrase_for_symmetric_encryption">Symmetric encryption.</string>
     <string name="passphrase_for">Enter passphrase for \'%s\'</string>
-    <string name="file_delete_confirmation">Are you sure you want to delete\n%s?</string>
+    <string name="file_delete_confirmation">"Are you sure you want to delete\n%s?"</string>
     <string name="file_delete_successful">Successfully deleted.</string>
     <string name="no_file_selected">Select a file first.</string>
     <string name="encrypt_sign_successful">Successfully signed and/or encrypted.</string>
@@ -185,12 +185,12 @@
     <string name="enter_passphrase_twice">Enter the passphrase twice.</string>
     <string name="select_encryption_key">Select at least one encryption key.</string>
     <string name="select_encryption_or_signature_key">Select at least one encryption key or a signature key.</string>
-    <string name="specify_file_to_encrypt_to">Please specify which file to encrypt to.\nWARNING: File will be overwritten if it exists.</string>
-    <string name="specify_file_to_decrypt_to">Please specify which file to decrypt to.\nWARNING: File will be overwritten if it exists.</string>
-    <string name="specify_file_to_export_to">Please specify which file to export to.\nWARNING: File will be overwritten if it exists.</string>
-    <string name="key_deletion_confirmation_multi">Do you really want to delete all selected public keys?\nYou can\'t undo this!</string>
-    <string name="secret_key_deletion_confirmation">Do you really want to delete the SECRET key \'%s\'?\nYou can\'t undo this!</string>
-    <string name="public_key_deletetion_confirmation">Do you really want to delete the public key \'%s\'?\nYou can\'t undo this!</string>
+    <string name="specify_file_to_encrypt_to">"Please specify which file to encrypt to.\nWARNING: File will be overwritten if it exists."</string>
+    <string name="specify_file_to_decrypt_to">"Please specify which file to decrypt to.\nWARNING: File will be overwritten if it exists."</string>
+    <string name="specify_file_to_export_to">"Please specify which file to export to.\nWARNING: File will be overwritten if it exists."</string>
+    <string name="key_deletion_confirmation_multi">"Do you really want to delete all selected public keys?\nYou can\'t undo this!"</string>
+    <string name="secret_key_deletion_confirmation">"Do you really want to delete the SECRET key \'%s\'?\nYou can\'t undo this!"</string>
+    <string name="public_key_deletetion_confirmation">"Do you really want to delete the public key \'%s\'?\nYou can\'t undo this!"</string>
     <string name="also_export_secret_keys">Also export secret keys</string>
 
     <string name="key_exported">Successfully exported 1 key.</string>
@@ -200,8 +200,8 @@
     <string name="key_not_found">Couldn\'t find key %08X.</string>
 
     <plurals name="bad_keys_encountered">
-        <item quantity="one">%d bad secret key ignored. Perhaps you exported with the option\n --export-secret-subkeys\nMake sure you export with\n --export-secret-keys\ninstead.</item>
-        <item quantity="other">%d bad secret keys ignored. Perhaps you exported with the option\n --export-secret-subkeys\nMake sure you export with\n --export-secret-keys\ninstead.</item>
+        <item quantity="one">"%d bad secret key ignored. Perhaps you exported with the option\n --export-secret-subkeys\nMake sure you export with\n --export-secret-keys\ninstead."</item>
+        <item quantity="other">"%d bad secret keys ignored. Perhaps you exported with the option\n --export-secret-subkeys\nMake sure you export with\n --export-secret-keys\ninstead."</item>
     </plurals>
 
     <string name="key_send_success">Successfully uploaded key to server</string>
@@ -394,7 +394,7 @@
     <string name="intent_send_decrypt">Decrypt with OpenKeychain</string>
 
     <!-- Remote API -->
-    <string name="api_no_apps">No registered apps!\n\nA list of supported third-party applications can be found in \'Help\'!</string>
+    <string name="api_no_apps">"No registered apps!\n\nA list of supported third-party applications can be found in \'Help\'!"</string>
     <string name="api_settings_show_info">Show advanced information</string>
     <string name="api_settings_hide_info">Hide advanced information</string>
     <string name="api_settings_show_advanced">Show advanced settings</string>
@@ -413,9 +413,9 @@
     <string name="api_settings_settings">Settings</string>
     <string name="api_settings_key">My key for this account</string>
     <string name="api_settings_accounts_empty">No accounts attached to this app.</string>
-    <string name="api_create_account_text">The app requests the creation of a new account. Please select one of your existing keys or create a new one.\nApps are restricted to the usage of keys you select here!</string>
-    <string name="api_update_account_text">The key saved for this account has been deleted. Please select a different one!\nApps are restricted to the usage of keys you select here!</string>
-    <string name="api_register_text">The displayed app wants to encrypt/decrypt messages and sign them in your name.\nAllow access?\n\nWARNING: If you do not know why this screen appeared, disallow access! You can revoke access later using the \'Apps\' screen.</string>
+    <string name="api_create_account_text">"The app requests the creation of a new account. Please select one of your existing keys or create a new one.\nApps are restricted to the usage of keys you select here!"</string>
+    <string name="api_update_account_text">"The key saved for this account has been deleted. Please select a different one!\nApps are restricted to the usage of keys you select here!"</string>
+    <string name="api_register_text">"The displayed app wants to encrypt/decrypt messages and sign them in your name.\nAllow access?\n\nWARNING: If you do not know why this screen appeared, disallow access! You can revoke access later using the \'Apps\' screen."</string>
     <string name="api_register_allow">Allow access</string>
     <string name="api_register_disallow">Disallow access</string>
     <string name="api_register_error_select_key">Please select a key!</string>
@@ -488,7 +488,7 @@
     <string name="create_key_empty">This field is required</string>
     <string name="create_key_passphrases_not_equal">Passphrases do not match</string>
     <string name="create_key_final_text">You entered the following identity:</string>
-    <string name="create_key_final_robot_text">Creating a key may take a while, have a cup of coffee in the meantime…\n(3 subkeys, RSA, 4096 bit)</string>
+    <string name="create_key_final_robot_text">"Creating a key may take a while, have a cup of coffee in the meantime…\n(3 subkeys, RSA, 4096 bit)"</string>
     <string name="create_key_text">Enter your full name, email address, and choose a passhrase.</string>
     <string name="create_key_hint_full_name">Full Name, e.g. Max Mustermann</string>
 
@@ -768,7 +768,7 @@
     <string name="unknown_algorithm">unknown</string>
     <string name="can_sign_not">cannot sign</string>
     <string name="error_no_encrypt_subkey">No encryption subkey available!</string>
-    <string name="info_no_manual_account_creation">Do not create OpenKeychain-Accounts manually.\nFor more information, see Help.</string>
+    <string name="info_no_manual_account_creation">"Do not create OpenKeychain-Accounts manually.\nFor more information, see Help."</string>
     <string name="contact_show_key">Show key (%s)</string>
 
     <!-- First Time -->
