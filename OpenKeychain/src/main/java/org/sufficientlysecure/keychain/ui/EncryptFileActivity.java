@@ -395,11 +395,6 @@ public class EncryptFileActivity extends DrawerActivity implements EncryptActivi
                 return false;
             }
 
-            if (!gotEncryptionKeys && mSigningKeyId == 0) {
-                Notify.showNotify(this, R.string.select_encryption_or_signature_key, Notify.Style.ERROR);
-                return false;
-            }
-
             try {
                 if (mSigningKeyId != 0 && PassphraseCacheService.getCachedPassphrase(this, mSigningKeyId) == null) {
                     PassphraseDialogFragment.show(this, mSigningKeyId,
