@@ -447,7 +447,7 @@
     <string name="key_view_action_certify">Certify identities</string>
     <string name="key_view_action_update">Update from keyserver</string>
     <string name="key_view_action_share_with">Share with…</string>
-    <string name="key_view_action_share_nfc">Share over NFC by holding the devices back to back</string>
+    <string name="key_view_action_share_nfc">Share over NFC</string>
     <string name="key_view_action_upload">Upload to key server</string>
     <string name="key_view_tab_main">Main Info</string>
     <string name="key_view_tab_share">Share</string>
