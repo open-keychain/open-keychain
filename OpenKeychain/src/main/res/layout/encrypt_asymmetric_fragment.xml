@@ -8,6 +8,11 @@
     android:paddingRight="16dp"
     android:paddingLeft="16dp">
 
+    <org.sufficientlysecure.keychain.ui.widget.EncryptKeyCompletionView
+        android:id="@+id/recipient_list"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -22,7 +27,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceMedium"
-            android:text="@string/label_asymmetric_from" />
+            android:text="@string/label_asymmetric_from"
+            android:paddingRight="8dp"/>
 
         <org.sufficientlysecure.keychain.ui.widget.SignKeySpinner
             android:id="@+id/sign"
@@ -31,9 +37,4 @@
             android:layout_gravity="center_vertical" />
 
     </LinearLayout>
-
-    <org.sufficientlysecure.keychain.ui.widget.EncryptKeyCompletionView
-        android:id="@+id/recipient_list"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
 </LinearLayout>

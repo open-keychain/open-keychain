@@ -72,7 +72,7 @@ public class EncryptKeyCompletionView extends TokenCompleteTextView {
 
     private void initView() {
         swapCursor(null);
-        setPrefix(getContext().getString(R.string.label_to));
+        setPrefix(getContext().getString(R.string.label_to) + " ");
         allowDuplicates(false);
     }
 

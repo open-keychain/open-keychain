@@ -9,9 +9,9 @@
     <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:padding="4dip"
             android:id="@android:id/text1"
-            android:layout_gravity="center_vertical"/>
+            android:layout_gravity="center_vertical"
+            android:padding="4dp"/>
 
     <ImageView
             android:id="@android:id/icon"
