@@ -498,8 +498,8 @@
 
     <!-- Navigation Drawer -->
     <string name="nav_keys">Keys</string>
-    <string name="nav_encrypt">Sign and Encrypt</string>
-    <string name="nav_decrypt">Decrypt and Verify</string>
+    <string name="nav_encrypt">Encrypt</string>
+    <string name="nav_decrypt">Decrypt</string>
     <string name="nav_apps">Apps</string>
     <string name="drawer_open">Open navigation drawer</string>
     <string name="drawer_close">Close navigation drawer</string>
