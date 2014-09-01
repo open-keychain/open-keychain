@@ -13,5 +13,5 @@
 
     </android.support.v4.widget.FixedDrawerLayout>
 
-    <include layout="@layout/encrypt_content" />
+    <include layout="@layout/encrypt_text_content" />
 </FrameLayout>

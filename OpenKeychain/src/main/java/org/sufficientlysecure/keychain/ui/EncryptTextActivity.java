@@ -20,18 +20,12 @@ package org.sufficientlysecure.keychain.ui;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
-import android.content.pm.LabeledIntent;
-import android.content.pm.ResolveInfo;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.os.Messenger;
-import android.os.Parcelable;
 import android.support.v4.app.Fragment;
-import android.support.v4.view.PagerTabStrip;
-import android.support.v4.view.ViewPager;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -43,72 +37,50 @@ import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
 import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
 import org.sufficientlysecure.keychain.service.PassphraseCacheService;
-import org.sufficientlysecure.keychain.ui.adapter.PagerTabStripAdapter;
-import org.sufficientlysecure.keychain.ui.dialog.DeleteFileDialogFragment;
 import org.sufficientlysecure.keychain.ui.dialog.PassphraseDialogFragment;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Notify;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
-public class EncryptActivity extends DrawerActivity implements EncryptActivityInterface {
+public class EncryptTextActivity extends DrawerActivity implements EncryptActivityInterface {
 
     /* Intents */
-    public static final String ACTION_ENCRYPT = Constants.INTENT_PREFIX + "ENCRYPT";
+    public static final String ACTION_ENCRYPT_TEXT = Constants.INTENT_PREFIX + "ENCRYPT_TEXT";
 
     /* EXTRA keys for input */
     public static final String EXTRA_TEXT = "text";
-
-    // enables ASCII Armor for file encryption when uri is given
-    public static final String EXTRA_ASCII_ARMOR = "ascii_armor";
 
     // preselect ids, for internal use
     public static final String EXTRA_SIGNATURE_KEY_ID = "signature_key_id";
     public static final String EXTRA_ENCRYPTION_KEY_IDS = "encryption_key_ids";
 
     // view
-    private int mCurrentMode = PAGER_MODE_ASYMMETRIC;
-    private ViewPager mViewPagerContent;
-    private PagerTabStrip mPagerTabStripContent;
-    private PagerTabStripAdapter mTabsAdapterContent;
+    private int mCurrentMode = MODE_ASYMMETRIC;
 
     // tabs
-    private int mSwitchToContent = PAGER_CONTENT_MESSAGE;
-
-    private static final int PAGER_MODE_ASYMMETRIC = 0;
-    private static final int PAGER_MODE_SYMMETRIC = 1;
-    private static final int PAGER_CONTENT_MESSAGE = 0;
-    private static final int PAGER_CONTENT_FILE = 1;
+    private static final int MODE_ASYMMETRIC = 0;
+    private static final int MODE_SYMMETRIC = 1;
 
     // model used by fragments
     private long mEncryptionKeyIds[] = null;
     private String mEncryptionUserIds[] = null;
     private long mSigningKeyId = Constants.key.none;
     private String mPassphrase = "";
-    private boolean mUseArmor;
-    private boolean mDeleteAfterEncrypt = false;
     private boolean mShareAfterEncrypt = false;
     private ArrayList<Uri> mInputUris;
     private ArrayList<Uri> mOutputUris;
     private String mMessage = "";
 
     public boolean isModeSymmetric() {
-        return PAGER_MODE_SYMMETRIC == mCurrentMode;
-    }
-
-    public boolean isContentMessage() {
-        return PAGER_CONTENT_MESSAGE == mViewPagerContent.getCurrentItem();
+        return MODE_SYMMETRIC == mCurrentMode;
     }
 
     @Override
     public boolean isUseArmor() {
-        return mUseArmor;
+        return true;
     }
 
     @Override
@@ -186,7 +158,7 @@ public class EncryptActivity extends DrawerActivity implements EncryptActivityIn
     @Override
     public void notifyUpdate() {
         for (Fragment fragment : getSupportFragmentManager().getFragments()) {
-            if (fragment instanceof EncryptActivityInterface.UpdateListener) {
+            if (fragment instanceof UpdateListener) {
                 ((UpdateListener) fragment).onNotifyUpdate();
             }
         }
@@ -217,26 +189,13 @@ public class EncryptActivity extends DrawerActivity implements EncryptActivityIn
                 super.handleMessage(message);
 
                 if (message.arg1 == KeychainIntentServiceHandler.MESSAGE_OKAY) {
-                    if (!isContentMessage()) {
-                        Notify.showNotify(EncryptActivity.this, R.string.encrypt_sign_successful, Notify.Style.INFO);
-
-                        if (mDeleteAfterEncrypt) {
-                            for (Uri inputUri : mInputUris) {
-                                DeleteFileDialogFragment deleteFileDialog = DeleteFileDialogFragment.newInstance(inputUri);
-                                deleteFileDialog.show(getSupportFragmentManager(), "deleteDialog");
-                            }
-                            mInputUris.clear();
-                            notifyUpdate();
-                        }
-                    }
-
                     if (mShareAfterEncrypt) {
                         // Share encrypted message/file
                         startActivity(sendWithChooserExcludingEncrypt(message));
-                    } else if (isContentMessage()) {
+                    } else {
                         // Copy to clipboard
                         copyToClipboard(message);
-                        Notify.showNotify(EncryptActivity.this,
+                        Notify.showNotify(EncryptTextActivity.this,
                                 R.string.encrypt_sign_clipboard_successful, Notify.Style.INFO);
                     }
                 }
@@ -257,25 +216,14 @@ public class EncryptActivity extends DrawerActivity implements EncryptActivityIn
         // fill values for this action
         Bundle data = new Bundle();
 
-        if (isContentMessage()) {
-            data.putInt(KeychainIntentService.TARGET, KeychainIntentService.IO_BYTES);
-            data.putByteArray(KeychainIntentService.ENCRYPT_MESSAGE_BYTES, mMessage.getBytes());
+        data.putInt(KeychainIntentService.TARGET, KeychainIntentService.IO_BYTES);
+        data.putByteArray(KeychainIntentService.ENCRYPT_MESSAGE_BYTES, mMessage.getBytes());
 
-            data.putInt(KeychainIntentService.ENCRYPT_COMPRESSION_ID,
-                    Preferences.getPreferences(this).getDefaultMessageCompression());
-        } else {
-            data.putInt(KeychainIntentService.SOURCE, KeychainIntentService.IO_URIS);
-            data.putParcelableArrayList(KeychainIntentService.ENCRYPT_INPUT_URIS, mInputUris);
-
-            data.putInt(KeychainIntentService.TARGET, KeychainIntentService.IO_URIS);
-            data.putParcelableArrayList(KeychainIntentService.ENCRYPT_OUTPUT_URIS, mOutputUris);
-
-            data.putInt(KeychainIntentService.ENCRYPT_COMPRESSION_ID,
-                    Preferences.getPreferences(this).getDefaultFileCompression());
-        }
+        data.putInt(KeychainIntentService.ENCRYPT_COMPRESSION_ID,
+                Preferences.getPreferences(this).getDefaultMessageCompression());
 
         // Always use armor for messages
-        data.putBoolean(KeychainIntentService.ENCRYPT_USE_ASCII_ARMOR, mUseArmor || isContentMessage());
+        data.putBoolean(KeychainIntentService.ENCRYPT_USE_ASCII_ARMOR, true);
 
         if (isModeSymmetric()) {
             Log.d(Constants.TAG, "Symmetric encryption enabled!");
@@ -306,8 +254,7 @@ public class EncryptActivity extends DrawerActivity implements EncryptActivityIn
     private Intent sendWithChooserExcludingEncrypt(Message message) {
         Intent prototype = createSendIntent(message);
 
-        String title = isContentMessage() ? getString(R.string.title_share_message)
-                : getString(R.string.title_share_file);
+        String title = getString(R.string.title_share_message);
 
         // Disabled, produced an empty list on Huawei U8860 with Android Version 4.0.3
 //        // fallback on Android 2.3, otherwise we would get weird results
@@ -370,21 +317,10 @@ public class EncryptActivity extends DrawerActivity implements EncryptActivityIn
 
     private Intent createSendIntent(Message message) {
         Intent sendIntent;
-        if (isContentMessage()) {
-            sendIntent = new Intent(Intent.ACTION_SEND);
-            sendIntent.setType("text/plain");
-            sendIntent.putExtra(Intent.EXTRA_TEXT, new String(message.getData().getByteArray(KeychainIntentService.RESULT_BYTES)));
-        } else {
-            // file
-            if (mOutputUris.size() == 1) {
-                sendIntent = new Intent(Intent.ACTION_SEND);
-                sendIntent.putExtra(Intent.EXTRA_STREAM, mOutputUris.get(0));
-            } else {
-                sendIntent = new Intent(Intent.ACTION_SEND_MULTIPLE);
-                sendIntent.putExtra(Intent.EXTRA_STREAM, mOutputUris);
-            }
-            sendIntent.setType("application/octet-stream");
-        }
+        sendIntent = new Intent(Intent.ACTION_SEND);
+        sendIntent.setType("text/plain");
+        sendIntent.putExtra(Intent.EXTRA_TEXT, new String(message.getData().getByteArray(KeychainIntentService.RESULT_BYTES)));
+
         if (!isModeSymmetric() && mEncryptionUserIds != null) {
             Set<String> users = new HashSet<String>();
             for (String user : mEncryptionUserIds) {
@@ -399,24 +335,9 @@ public class EncryptActivity extends DrawerActivity implements EncryptActivityIn
     }
 
     private boolean inputIsValid() {
-        if (isContentMessage()) {
-            if (mMessage == null) {
-                Notify.showNotify(this, R.string.error_message, Notify.Style.ERROR);
-                return false;
-            }
-        } else {
-            // file checks
-
-            if (mInputUris.isEmpty()) {
-                Notify.showNotify(this, R.string.no_file_selected, Notify.Style.ERROR);
-                return false;
-            } else if (mInputUris.size() > 1 && !mShareAfterEncrypt) {
-                // This should be impossible...
-                return false;
-            } else if (mInputUris.size() != mOutputUris.size()) {
-                // This as well
-                return false;
-            }
+        if (mMessage == null) {
+            Notify.showNotify(this, R.string.error_message, Notify.Style.ERROR);
+            return false;
         }
 
         if (isModeSymmetric()) {
@@ -436,12 +357,6 @@ public class EncryptActivity extends DrawerActivity implements EncryptActivityIn
 
             boolean gotEncryptionKeys = (mEncryptionKeyIds != null
                     && mEncryptionKeyIds.length > 0);
-
-            // Files must be encrypted, only text can be signed-only right now
-            if (!gotEncryptionKeys && !isContentMessage()) {
-                Notify.showNotify(this, R.string.select_encryption_key, Notify.Style.ERROR);
-                return false;
-            }
 
             if (!gotEncryptionKeys && mSigningKeyId == 0) {
                 Notify.showNotify(this, R.string.select_encryption_or_signature_key, Notify.Style.ERROR);
@@ -471,24 +386,14 @@ public class EncryptActivity extends DrawerActivity implements EncryptActivityIn
         return true;
     }
 
-    private void initView() {
-        mViewPagerContent = (ViewPager) findViewById(R.id.encrypt_pager_content);
-        mPagerTabStripContent = (PagerTabStrip) findViewById(R.id.encrypt_pager_tab_strip_content);
-
-        mTabsAdapterContent = new PagerTabStripAdapter(this);
-        mViewPagerContent.setAdapter(mTabsAdapterContent);
-    }
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.encrypt_activity);
-
-        initView();
+        setContentView(R.layout.encrypt_text_activity);
 
         // if called with an intent action, do not init drawer navigation
-        if (ACTION_ENCRYPT.equals(getIntent().getAction())) {
+        if (ACTION_ENCRYPT_TEXT.equals(getIntent().getAction())) {
             // TODO: back button to key?
         } else {
             setupDrawerNavigation(savedInstanceState);
@@ -498,24 +403,18 @@ public class EncryptActivity extends DrawerActivity implements EncryptActivityIn
         handleActions(getIntent());
         updateModeFragment();
 
-        mTabsAdapterContent.addTab(EncryptMessageFragment.class, null, getString(R.string.label_message));
-        mTabsAdapterContent.addTab(EncryptFileFragment.class, null, getString(R.string.label_files));
-        mViewPagerContent.setCurrentItem(mSwitchToContent);
-
-        mUseArmor = Preferences.getPreferences(this).getDefaultAsciiArmor();
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.encrypt_activity, menu);
-        menu.findItem(R.id.check_use_armor).setChecked(mUseArmor);
+        getMenuInflater().inflate(R.menu.encrypt_file_activity, menu);
         return super.onCreateOptionsMenu(menu);
     }
 
     private void updateModeFragment() {
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.encrypt_pager_mode,
-                        mCurrentMode == PAGER_MODE_SYMMETRIC
+                        mCurrentMode == MODE_SYMMETRIC
                                 ? new EncryptSymmetricFragment()
                                 : new EncryptAsymmetricFragment())
                 .commitAllowingStateLoss();
@@ -529,16 +428,8 @@ public class EncryptActivity extends DrawerActivity implements EncryptActivityIn
         }
         switch (item.getItemId()) {
             case R.id.check_use_symmetric:
-                mCurrentMode = item.isChecked() ? PAGER_MODE_SYMMETRIC : PAGER_MODE_ASYMMETRIC;
+                mCurrentMode = item.isChecked() ? MODE_SYMMETRIC : MODE_ASYMMETRIC;
                 updateModeFragment();
-                notifyUpdate();
-                break;
-            case R.id.check_use_armor:
-                mUseArmor = item.isChecked();
-                notifyUpdate();
-                break;
-            case R.id.check_delete_after_encrypt:
-                mDeleteAfterEncrypt = item.isChecked();
                 notifyUpdate();
                 break;
             default:
@@ -555,7 +446,8 @@ public class EncryptActivity extends DrawerActivity implements EncryptActivityIn
     private void handleActions(Intent intent) {
         String action = intent.getAction();
         Bundle extras = intent.getExtras();
-        String type = intent.getType();
+        // Should always be text/plain
+        // String type = intent.getType();
         ArrayList<Uri> uris = new ArrayList<Uri>();
 
         if (extras == null) {
@@ -566,60 +458,19 @@ public class EncryptActivity extends DrawerActivity implements EncryptActivityIn
             uris.add(intent.getData());
         }
 
-        /*
-         * Android's Action
-         */
-        if (Intent.ACTION_SEND.equals(action) && type != null) {
-            // When sending to OpenKeychain Encrypt via share menu
-            if ("text/plain".equals(type)) {
-                // Plain text
-                String sharedText = intent.getStringExtra(Intent.EXTRA_TEXT);
-                if (sharedText != null) {
-                    // handle like normal text encryption, override action and extras to later
-                    // executeServiceMethod ACTION_ENCRYPT in main actions
-                    extras.putString(EXTRA_TEXT, sharedText);
-                    extras.putBoolean(EXTRA_ASCII_ARMOR, true);
-                    action = ACTION_ENCRYPT;
-                }
-            } else {
-                // Files via content provider, override uri and action
-                uris.clear();
-                uris.add(intent.<Uri>getParcelableExtra(Intent.EXTRA_STREAM));
-                action = ACTION_ENCRYPT;
-            }
-        }
-
-        if (Intent.ACTION_SEND_MULTIPLE.equals(action) && type != null) {
-            uris = intent.getParcelableArrayListExtra(Intent.EXTRA_STREAM);
-            action = ACTION_ENCRYPT;
-        }
-
-        if (extras.containsKey(EXTRA_ASCII_ARMOR)) {
-            mUseArmor = extras.getBoolean(EXTRA_ASCII_ARMOR, true);
-        }
-
         String textData = extras.getString(EXTRA_TEXT);
 
+        // preselect keys given by intent
         mSigningKeyId = extras.getLong(EXTRA_SIGNATURE_KEY_ID);
         mEncryptionKeyIds = extras.getLongArray(EXTRA_ENCRYPTION_KEY_IDS);
-
-        // preselect keys given by intent
-        mCurrentMode = PAGER_MODE_ASYMMETRIC;
 
         /**
          * Main Actions
          */
-        if (ACTION_ENCRYPT.equals(action) && textData != null) {
-            // encrypt text based on given extra
+        if (ACTION_ENCRYPT_TEXT.equals(action) && textData != null) {
             mMessage = textData;
-            mSwitchToContent = PAGER_CONTENT_MESSAGE;
-        } else if (ACTION_ENCRYPT.equals(action) && uris != null && !uris.isEmpty()) {
-            // encrypt file based on Uri
-            mInputUris = uris;
-            mSwitchToContent = PAGER_CONTENT_FILE;
-        } else if (ACTION_ENCRYPT.equals(action)) {
-            Log.e(Constants.TAG,
-                    "Include the extra 'text' or an Uri with setData() in your Intent!");
+        } else if (ACTION_ENCRYPT_TEXT.equals(action)) {
+            Log.e(Constants.TAG, "Include the extra 'text' in your Intent!");
         }
     }
 

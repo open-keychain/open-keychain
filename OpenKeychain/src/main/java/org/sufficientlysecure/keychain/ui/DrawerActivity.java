@@ -79,7 +79,8 @@ public class DrawerActivity extends ActionBarActivity {
 
         NavItem mItemIconTexts[] = new NavItem[]{
                 new NavItem(R.drawable.ic_action_person, getString(R.string.nav_keys)),
-                new NavItem(R.drawable.ic_action_secure, getString(R.string.nav_encrypt)),
+                new NavItem(R.drawable.ic_action_secure, getString(R.string.nav_encrypt_files)),
+                new NavItem(R.drawable.ic_action_secure, getString(R.string.nav_encrypt_text)),
                 new NavItem(R.drawable.ic_action_not_secure, getString(R.string.nav_decrypt)),
                 new NavItem(R.drawable.ic_action_view_as_list, getString(R.string.nav_apps))};
 

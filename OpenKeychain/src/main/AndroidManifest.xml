@@ -139,18 +139,12 @@
             android:label="@string/title_select_secret_key"
             android:launchMode="singleTop" />
         <activity
-            android:name=".ui.EncryptActivity"
+            android:name=".ui.EncryptFileActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
-            android:label="@string/title_encrypt"
+            android:label="@string/title_encrypt_files"
             android:windowSoftInputMode="stateHidden">
 
             <!-- Keychain's own Actions -->
-            <!-- ENCRYPT with text as extra -->
-            <intent-filter>
-                <action android:name="org.sufficientlysecure.keychain.action.ENCRYPT" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
             <!-- ENCRYPT with data Uri -->
             <intent-filter>
                 <action android:name="org.sufficientlysecure.keychain.action.ENCRYPT" />
@@ -168,6 +162,20 @@
                 <category android:name="android.intent.category.DEFAULT" />
 
                 <data android:mimeType="*/*" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".ui.EncryptTextActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
+            android:label="@string/title_encrypt_text"
+            android:windowSoftInputMode="stateHidden">
+
+            <!-- Keychain's own Actions -->
+            <!-- ENCRYPT with text as extra -->
+            <intent-filter>
+                <action android:name="org.sufficientlysecure.keychain.action.ENCRYPT" />
+
+                <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
         <activity

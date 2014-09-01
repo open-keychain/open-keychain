@@ -5,9 +5,9 @@
         android:id="@+id/drawer_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".ui.EncryptActivity">
+        tools:context=".ui.EncryptFileActivity">
 
-    <include layout="@layout/encrypt_content"/>
+    <include layout="@layout/encrypt_file_content"/>
 
     <include layout="@layout/drawer_list" />
 

@@ -4,7 +4,8 @@
     <!-- title -->
     <string name="title_select_recipients">Select Keys</string>
     <string name="title_select_secret_key">Select Your Key</string>
-    <string name="title_encrypt">Encrypt</string>
+    <string name="title_encrypt_text">Encrypt Text</string>
+    <string name="title_encrypt_files">Encrypt Files</string>
     <string name="title_decrypt">Decrypt</string>
     <string name="title_authentication">Passphrase</string>
     <string name="title_add_subkey">Add subkey</string>
@@ -498,7 +499,8 @@
 
     <!-- Navigation Drawer -->
     <string name="nav_keys">Keys</string>
-    <string name="nav_encrypt">Encrypt</string>
+    <string name="nav_encrypt_text">Encrypt Text</string>
+    <string name="nav_encrypt_files">Encrypt Files</string>
     <string name="nav_decrypt">Decrypt</string>
     <string name="nav_apps">Apps</string>
     <string name="drawer_open">Open navigation drawer</string>

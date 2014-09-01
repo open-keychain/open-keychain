@@ -22,7 +22,8 @@ import android.os.Environment;
 import org.spongycastle.jce.provider.BouncyCastleProvider;
 import org.sufficientlysecure.keychain.remote.ui.AppsListActivity;
 import org.sufficientlysecure.keychain.ui.DecryptActivity;
-import org.sufficientlysecure.keychain.ui.EncryptActivity;
+import org.sufficientlysecure.keychain.ui.EncryptFileActivity;
+import org.sufficientlysecure.keychain.ui.EncryptTextActivity;
 import org.sufficientlysecure.keychain.ui.KeyListActivity;
 
 import java.io.File;
@@ -84,12 +85,14 @@ public final class Constants {
 
     public static final class DrawerItems {
         public static final Class KEY_LIST = KeyListActivity.class;
-        public static final Class ENCRYPT = EncryptActivity.class;
+        public static final Class ENCRYPT_FILE = EncryptFileActivity.class;
+        public static final Class ENCRYPT_TEXT = EncryptTextActivity.class;
         public static final Class DECRYPT = DecryptActivity.class;
         public static final Class REGISTERED_APPS_LIST = AppsListActivity.class;
         public static final Class[] ARRAY = new Class[]{
                 KEY_LIST,
-                ENCRYPT,
+                ENCRYPT_FILE,
+                ENCRYPT_TEXT,
                 DECRYPT,
                 REGISTERED_APPS_LIST
         };

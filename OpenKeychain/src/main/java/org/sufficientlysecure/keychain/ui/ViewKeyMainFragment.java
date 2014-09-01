@@ -23,9 +23,6 @@ import android.database.Cursor;
 import android.graphics.PorterDuff;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
-import android.os.Messenger;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
@@ -47,7 +44,6 @@ import org.sufficientlysecure.keychain.provider.KeychainContract.UserIds;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.provider.ProviderHelper.NotFoundException;
 import org.sufficientlysecure.keychain.ui.adapter.UserIdsAdapter;
-import org.sufficientlysecure.keychain.ui.dialog.EditSubkeyDialogFragment;
 import org.sufficientlysecure.keychain.ui.dialog.UserIdInfoDialogFragment;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Notify;
@@ -284,9 +280,9 @@ public class ViewKeyMainFragment extends LoaderFragment implements
                     .getCachedPublicKeyRing(dataUri)
                     .extractOrGetMasterKeyId();
             long[] encryptionKeyIds = new long[]{keyId};
-            Intent intent = new Intent(getActivity(), EncryptActivity.class);
-            intent.setAction(EncryptActivity.ACTION_ENCRYPT);
-            intent.putExtra(EncryptActivity.EXTRA_ENCRYPTION_KEY_IDS, encryptionKeyIds);
+            Intent intent = new Intent(getActivity(), EncryptFileActivity.class);
+            intent.setAction(EncryptFileActivity.ACTION_ENCRYPT_FILE);
+            intent.putExtra(EncryptFileActivity.EXTRA_ENCRYPTION_KEY_IDS, encryptionKeyIds);
             // used instead of startActivity set actionbar based on callingPackage
             startActivityForResult(intent, 0);
         } catch (PgpGeneralException e) {

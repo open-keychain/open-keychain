@@ -15,17 +15,10 @@
             android:layout_height="wrap_content"
             android:orientation="vertical" />
 
-    <android.support.v4.view.ViewPager
-        android:id="@+id/encrypt_pager_content"
+    <fragment
+        android:id="@+id/certify_key_fragment"
+        android:name="org.sufficientlysecure.keychain.ui.EncryptFileFragment"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-        <android.support.v4.view.PagerTabStrip
-            android:id="@+id/encrypt_pager_tab_strip_content"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="top"
-            android:textColor="@color/emphasis" />
-    </android.support.v4.view.ViewPager>
+        android:layout_height="match_parent" />
 
 </LinearLayout>
