@@ -32,6 +32,7 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey.SecretKeyType;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.ui.adapter.SelectKeyCursorAdapter;
 
@@ -190,7 +191,7 @@ public class SelectSecretKeyFragment extends ListFragment implements
                 if(mFilterCertify) {
                     // Only enable if can certify
                     if (cursor.getInt(mIndexCanCertify) == 0
-                            || cursor.getInt(mIndexHasSecret) == 0) {
+                            || !SecretKeyType.fromNum(cursor.getInt(mIndexHasSecret)).isUsable()) {
                         h.status.setText(R.string.can_certify_not);
                     } else {
                         h.status.setText(R.string.can_certify);

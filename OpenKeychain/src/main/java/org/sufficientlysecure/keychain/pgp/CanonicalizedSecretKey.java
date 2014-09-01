@@ -80,6 +80,59 @@ public class CanonicalizedSecretKey extends CanonicalizedPublicKey {
         return (CanonicalizedSecretKeyRing) mRing;
     }
 
+    public enum SecretKeyType {
+        UNAVAILABLE(0), GNU_DUMMY (1), PASSPHRASE (2), PASSPHRASE_EMPTY (3), DIVERT_TO_CARD (4);
+
+        final int mNum;
+        SecretKeyType(int num) {
+            mNum = num;
+        }
+
+        public static SecretKeyType fromNum(int num) {
+            switch (num) {
+                case 1: return GNU_DUMMY;
+                case 2: return PASSPHRASE;
+                case 3: return PASSPHRASE_EMPTY;
+                case 4: return DIVERT_TO_CARD;
+                // if this case happens, it's probably a check from a database value
+                default: return UNAVAILABLE;
+            }
+        }
+
+        public int getNum() {
+            return mNum;
+        }
+
+        public boolean isUsable() {
+            return this != UNAVAILABLE && this != GNU_DUMMY;
+        }
+
+    }
+
+    public SecretKeyType getSecretKeyType() {
+        if (mSecretKey.getS2K().getType() == S2K.GNU_DUMMY_S2K) {
+            // divert to card is special
+            if (mSecretKey.getS2K().getProtectionMode() == S2K.GNU_PROTECTION_MODE_DIVERT_TO_CARD) {
+                return SecretKeyType.DIVERT_TO_CARD;
+            }
+            // no matter the exact protection mode, it's some kind of dummy key
+            return SecretKeyType.GNU_DUMMY;
+        }
+
+        try {
+            PBESecretKeyDecryptor keyDecryptor = new JcePBESecretKeyDecryptorBuilder().setProvider(
+                    Constants.BOUNCY_CASTLE_PROVIDER_NAME).build("".toCharArray());
+            // If this doesn't throw
+            mSecretKey.extractPrivateKey(keyDecryptor);
+            // It means the passphrase is empty
+            return SecretKeyType.PASSPHRASE_EMPTY;
+        } catch (PGPException e) {
+            // Otherwise, it's just a regular ol' passphrase
+            return SecretKeyType.PASSPHRASE;
+        }
+
+    }
+
     /**
      * Returns true on right passphrase
      */

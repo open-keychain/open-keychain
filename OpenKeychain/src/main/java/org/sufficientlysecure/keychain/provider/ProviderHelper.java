@@ -34,6 +34,8 @@ import org.sufficientlysecure.keychain.helper.Preferences;
 import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedPublicKey;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedPublicKeyRing;
+import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey;
+import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey.SecretKeyType;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKeyRing;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.pgp.PgpHelper;
@@ -592,27 +594,40 @@ public class ProviderHelper {
                 values.put(Keys.HAS_SECRET, 0);
                 mContentResolver.update(uri, values, null, null);
 
-                values.put(Keys.HAS_SECRET, 1);
                 // then, mark exactly the keys we have available
                 log(LogLevel.INFO, LogType.MSG_IS_IMPORTING_SUBKEYS);
                 mIndent += 1;
-                Set<Long> available = keyRing.getAvailableSubkeys();
-                for (UncachedPublicKey sub : keyRing.publicKeyIterator()) {
+                for (CanonicalizedSecretKey sub : keyRing.secretKeyIterator()) {
                     long id = sub.getKeyId();
-                    if (available.contains(id)) {
-                        int upd = mContentResolver.update(uri, values, Keys.KEY_ID + " = ?",
-                                new String[]{Long.toString(id)});
-                        if (upd == 1) {
-                            log(LogLevel.DEBUG, LogType.MSG_IS_SUBKEY_OK,
-                                    PgpKeyHelper.convertKeyIdToHex(id)
-                            );
-                        } else {
-                            log(LogLevel.WARN, LogType.MSG_IS_SUBKEY_NONEXISTENT,
-                                    PgpKeyHelper.convertKeyIdToHex(id)
-                            );
+                    SecretKeyType mode = sub.getSecretKeyType();
+                    values.put(Keys.HAS_SECRET, mode.getNum());
+                    int upd = mContentResolver.update(uri, values, Keys.KEY_ID + " = ?",
+                            new String[]{ Long.toString(id) });
+                    if (upd == 1) {
+                        switch (mode) {
+                            case PASSPHRASE:
+                                log(LogLevel.DEBUG, LogType.MSG_IS_SUBKEY_OK,
+                                        PgpKeyHelper.convertKeyIdToHex(id)
+                                );
+                                break;
+                            case PASSPHRASE_EMPTY:
+                                log(LogLevel.DEBUG, LogType.MSG_IS_SUBKEY_EMPTY,
+                                        PgpKeyHelper.convertKeyIdToHex(id)
+                                );
+                                break;
+                            case GNU_DUMMY:
+                                log(LogLevel.DEBUG, LogType.MSG_IS_SUBKEY_STRIPPED,
+                                        PgpKeyHelper.convertKeyIdToHex(id)
+                                );
+                                break;
+                            case DIVERT_TO_CARD:
+                                log(LogLevel.DEBUG, LogType.MSG_IS_SUBKEY_DIVERT,
+                                        PgpKeyHelper.convertKeyIdToHex(id)
+                                );
+                                break;
                         }
                     } else {
-                        log(LogLevel.INFO, LogType.MSG_IS_SUBKEY_STRIPPED,
+                        log(LogLevel.WARN, LogType.MSG_IS_SUBKEY_NONEXISTENT,
                                 PgpKeyHelper.convertKeyIdToHex(id)
                         );
                     }

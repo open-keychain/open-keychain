@@ -589,9 +589,11 @@
     <string name="msg_is_importing_subkeys">Processing secret subkeys</string>
     <string name="msg_is_io_exc">Error encoding keyring</string>
     <string name="msg_is_pubring_generate">Generating public keyring from secret keyring</string>
-    <string name="msg_is_subkey_nonexistent">Subkey %s unavailable in public key</string>
-    <string name="msg_is_subkey_ok">Marked %s as available</string>
-    <string name="msg_is_subkey_stripped">Marked %s as stripped</string>
+    <string name="msg_is_subkey_nonexistent">Subkey %s unavailable in secret key</string>
+    <string name="msg_is_subkey_ok">Marked secret subkey %s as available</string>
+    <string name="msg_is_subkey_empty">Marked secret subkey %s as available, with empty passphrase</string>
+    <string name="msg_is_subkey_stripped">Marked secret subkey %s as stripped</string>
+    <string name="msg_is_subkey_divert">Marked secret subkey %s as "divert to smartcard/nfc"</string>
     <string name="msg_is_success_identical">Keyring contains no new data, nothing to do</string>
     <string name="msg_is_success">Successfully imported secret keyring</string>
 
@@ -765,6 +767,9 @@
     <string name="error_key_not_found">Key not found!</string>
     <string name="error_key_processing">Error processing key!</string>
     <string name="key_stripped">stripped</string>
+    <string name="key_divert">divert to card</string>
+    <string name="key_no_passphrase">no passphrase</string>
+    <string name="key_unavailable">unavailable</string>
     <string name="secret_cannot_multiple">Your own keys can only be deleted individually!</string>
     <string name="title_view_cert">View Certificate Details</string>
     <string name="unknown_algorithm">unknown</string>

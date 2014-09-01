@@ -31,6 +31,7 @@ import android.widget.TextView;
 
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.helper.OtherHelper;
+import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey.SecretKeyType;
 import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
 import org.sufficientlysecure.keychain.provider.KeychainContract.Keys;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
@@ -113,7 +114,8 @@ public class SubkeysAdapter extends CursorAdapter {
         hasAnySecret = false;
         if (newCursor != null && newCursor.moveToFirst()) {
             do {
-                if (newCursor.getInt(INDEX_HAS_SECRET) != 0) {
+                SecretKeyType hasSecret = SecretKeyType.fromNum(newCursor.getInt(INDEX_HAS_SECRET));
+                if (hasSecret.isUsable()) {
                     hasAnySecret = true;
                     break;
                 }
@@ -149,12 +151,21 @@ public class SubkeysAdapter extends CursorAdapter {
 
         vKeyId.setText(keyIdStr);
         // may be set with additional "stripped" later on
-        if (hasAnySecret && cursor.getInt(INDEX_HAS_SECRET) == 0) {
-            vKeyDetails.setText(algorithmStr + ", " +
-                    context.getString(R.string.key_stripped));
-        } else {
-            vKeyDetails.setText(algorithmStr);
+        switch (SecretKeyType.fromNum(cursor.getInt(INDEX_HAS_SECRET))) {
+            case GNU_DUMMY:
+                algorithmStr += ", " + context.getString(R.string.key_stripped);
+                break;
+            case DIVERT_TO_CARD:
+                algorithmStr += ", " + context.getString(R.string.key_divert);
+                break;
+            case PASSPHRASE_EMPTY:
+                algorithmStr += ", " + context.getString(R.string.key_no_passphrase);
+                break;
+            case UNAVAILABLE:
+                algorithmStr += ", " + context.getString(R.string.key_unavailable);
+                break;
         }
+        vKeyDetails.setText(algorithmStr);
 
         boolean isMasterKey = cursor.getInt(INDEX_RANK) == 0;
         if (isMasterKey) {

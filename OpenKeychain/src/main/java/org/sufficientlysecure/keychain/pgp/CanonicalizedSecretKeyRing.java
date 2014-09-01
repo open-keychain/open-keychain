@@ -74,19 +74,6 @@ public class CanonicalizedSecretKeyRing extends CanonicalizedKeyRing {
         return new CanonicalizedSecretKey(this, mRing.getSecretKey(id));
     }
 
-    public HashSet<Long> getAvailableSubkeys() {
-        HashSet<Long> result = new HashSet<Long>();
-        // then, mark exactly the keys we have available
-        for (PGPSecretKey sub : new IterableIterator<PGPSecretKey>(getRing().getSecretKeys())) {
-            S2K s2k = sub.getS2K();
-            // add key, except if the private key has been stripped (GNU extension)
-            if(s2k == null || (s2k.getProtectionMode() != S2K.GNU_PROTECTION_MODE_NO_PRIVATE_KEY)) {
-                result.add(sub.getKeyID());
-            }
-        }
-        return result;
-    }
-
     /** Getter that returns the subkey that should be used for signing. */
     CanonicalizedSecretKey getSigningSubKey() throws PgpGeneralException {
         PGPSecretKey key = mRing.getSecretKey(getSignId());

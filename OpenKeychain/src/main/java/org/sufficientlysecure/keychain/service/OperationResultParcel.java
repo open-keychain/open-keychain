@@ -287,6 +287,8 @@ public class OperationResultParcel implements Parcelable {
         MSG_IS_SUBKEY_NONEXISTENT (R.string.msg_is_subkey_nonexistent),
         MSG_IS_SUBKEY_OK (R.string.msg_is_subkey_ok),
         MSG_IS_SUBKEY_STRIPPED (R.string.msg_is_subkey_stripped),
+        MSG_IS_SUBKEY_DIVERT (R.string.msg_is_subkey_divert),
+        MSG_IS_SUBKEY_EMPTY (R.string.msg_is_subkey_empty),
         MSG_IS_SUCCESS_IDENTICAL (R.string.msg_is_success_identical),
         MSG_IS_SUCCESS (R.string.msg_is_success),
 
