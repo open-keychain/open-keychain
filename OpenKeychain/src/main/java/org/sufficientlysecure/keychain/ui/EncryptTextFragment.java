@@ -29,7 +29,7 @@ import android.widget.TextView;
 
 import org.sufficientlysecure.keychain.R;
 
-public class EncryptMessageFragment extends Fragment {
+public class EncryptTextFragment extends Fragment {
     public static final String ARG_TEXT = "text";
 
     private TextView mMessage = null;

@@ -17,7 +17,7 @@
 
     <fragment
         android:id="@+id/certify_key_fragment"
-        android:name="org.sufficientlysecure.keychain.ui.EncryptMessageFragment"
+        android:name="org.sufficientlysecure.keychain.ui.EncryptTextFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
