@@ -124,9 +124,9 @@ public class PgpKeyOperation {
      *
      * http://kbsriram.com/2013/01/generating-rsa-keys-with-bouncycastle.html
      */
+    private static final int SECRET_KEY_ENCRYPTOR_S2K_COUNT = 0x60;
     private static final int SECRET_KEY_ENCRYPTOR_HASH_ALGO = HashAlgorithmTags.SHA512;
     private static final int SECRET_KEY_ENCRYPTOR_SYMMETRIC_ALGO = SymmetricKeyAlgorithmTags.AES_256;
-    private static final int SECRET_KEY_ENCRYPTOR_S2K_COUNT = 0x60;
 
     public PgpKeyOperation(Progressable progress) {
         super();
@@ -415,8 +415,7 @@ public class PgpKeyOperation {
         PGPSecretKey masterSecretKey = sKR.getSecretKey();
 
         // Make sure the fingerprint matches
-        if (saveParcel.mFingerprint == null
-                || !Arrays.equals(saveParcel.mFingerprint,
+        if (saveParcel.mFingerprint == null || !Arrays.equals(saveParcel.mFingerprint,
                                     masterSecretKey.getPublicKey().getFingerprint())) {
             log.add(LogLevel.ERROR, LogType.MSG_MF_ERROR_FINGERPRINT, indent);
             return new EditKeyResult(EditKeyResult.RESULT_ERROR, log, null);

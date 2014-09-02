@@ -27,7 +27,6 @@ import android.text.style.ForegroundColorSpan;
 import org.spongycastle.asn1.ASN1ObjectIdentifier;
 import org.spongycastle.asn1.nist.NISTNamedCurves;
 import org.spongycastle.asn1.teletrust.TeleTrusTNamedCurves;
-import org.spongycastle.bcpg.ECPublicBCPGKey;
 import org.spongycastle.bcpg.PublicKeyAlgorithmTags;
 import org.spongycastle.util.encoders.Hex;
 import org.sufficientlysecure.keychain.Constants;
@@ -156,9 +155,11 @@ public class PgpKeyHelper {
             return algorithmStr;
     }
 
-    // Return name of a curve. These are names, no need for translation
+    /**
+     * Return name of a curve. These are names, no need for translation
+     */
     public static String getCurveInfo(Context context, Curve curve) {
-        switch(curve) {
+        switch (curve) {
             case NIST_P256:
                 return "NIST P-256";
             case NIST_P384:
@@ -211,9 +212,7 @@ public class PgpKeyHelper {
      * @return
      */
     public static String convertFingerprintToHex(byte[] fingerprint) {
-        String hexString = Hex.toHexString(fingerprint).toLowerCase(Locale.ENGLISH);
-
-        return hexString;
+        return Hex.toHexString(fingerprint).toLowerCase(Locale.ENGLISH);
     }
 
     /**
@@ -327,10 +326,9 @@ public class PgpKeyHelper {
         md.update(bytes);
         byte[] digest = md.digest();
 
-        int[] result = {((int) digest[0] + 256) % 256,
+        return new int[]{((int) digest[0] + 256) % 256,
                 ((int) digest[1] + 256) % 256,
                 ((int) digest[2] + 256) % 256};
-        return result;
     }
 
 }

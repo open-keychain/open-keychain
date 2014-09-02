@@ -207,21 +207,23 @@ public class UncachedPublicKey {
         return getAlgorithm() == PGPPublicKey.ECDH || getAlgorithm() == PGPPublicKey.ECDSA;
     }
 
+    /**
+     * Get all key usage flags
+     *
+     * TODO make this safe
+     */
     @SuppressWarnings("unchecked")
-    // TODO make this safe
     public int getKeyUsage() {
         if(mCacheUsage == null) {
             mCacheUsage = 0;
-            if (mPublicKey.getVersion() >= 4) {
-                for (PGPSignature sig : new IterableIterator<PGPSignature>(mPublicKey.getSignatures())) {
-                    if (mPublicKey.isMasterKey() && sig.getKeyID() != mPublicKey.getKeyID()) {
-                        continue;
-                    }
+            for (PGPSignature sig : new IterableIterator<PGPSignature>(mPublicKey.getSignatures())) {
+                if (mPublicKey.isMasterKey() && sig.getKeyID() != mPublicKey.getKeyID()) {
+                    continue;
+                }
 
-                    PGPSignatureSubpacketVector hashed = sig.getHashedSubPackets();
-                    if (hashed != null) {
-                        mCacheUsage |= hashed.getKeyFlags();
-                    }
+                PGPSignatureSubpacketVector hashed = sig.getHashedSubPackets();
+                if (hashed != null) {
+                    mCacheUsage |= hashed.getKeyFlags();
                 }
             }
         }
@@ -229,11 +231,11 @@ public class UncachedPublicKey {
     }
 
     public boolean canAuthenticate() {
-        return mPublicKey.getVersion() <= 3 || (getKeyUsage() & KeyFlags.AUTHENTICATION) != 0;
+        return (getKeyUsage() & KeyFlags.AUTHENTICATION) != 0;
     }
 
     public boolean canCertify() {
-        return mPublicKey.getVersion() <= 3 || (getKeyUsage() & KeyFlags.CERTIFY_OTHER) != 0;
+        return (getKeyUsage() & KeyFlags.CERTIFY_OTHER) != 0;
     }
 
     public boolean canEncrypt() {
@@ -250,9 +252,7 @@ public class UncachedPublicKey {
             return true;
         }
 
-        return mPublicKey.getVersion() <= 3 ||
-                (getKeyUsage() & (KeyFlags.ENCRYPT_COMMS | KeyFlags.ENCRYPT_STORAGE)) != 0;
-
+        return (getKeyUsage() & (KeyFlags.ENCRYPT_COMMS | KeyFlags.ENCRYPT_STORAGE)) != 0;
     }
 
     public boolean canSign() {
@@ -261,7 +261,7 @@ public class UncachedPublicKey {
             return true;
         }
 
-        return mPublicKey.getVersion() <= 3 || (getKeyUsage() & KeyFlags.SIGN_DATA) != 0;
+        return (getKeyUsage() & KeyFlags.SIGN_DATA) != 0;
     }
 
     public byte[] getFingerprint() {
