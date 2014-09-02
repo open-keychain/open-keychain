@@ -1,7 +1,6 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <resources>
   <!--title-->
-  <string name="title_encrypt">Şifrele</string>
   <string name="title_edit_key">Anahtarı düzenle</string>
   <string name="title_preferences">Seçenekler</string>
   <string name="title_key_server_preference">Anahtar Sunucusu Seçenekleri</string>
@@ -116,6 +115,11 @@
   <string name="key_size_3072">3072</string>
   <string name="key_size_4096">4096</string>
   <string name="key_size_8192">8192</string>
+  <!--elliptic curve names-->
+  <!--not in for now, see SaveKeyringParcel
+    <string name="key_curve_bp_p256">Brainpool P-256</string>
+    <string name="key_curve_bp_p384">Brainpool P-384</string>
+    <string name="key_curve_bp_p512">Brainpool P-512</string>-->
   <!--compression-->
   <string name="compression_fast">hızlı</string>
   <string name="compression_very_slow">çok yavaş</string>
@@ -156,6 +160,7 @@
   <string name="cert_verify_failed">başarısız!</string>
   <string name="cert_verify_error">hata!</string>
   <string name="cert_verify_unavailable">anahtar mevcut değil</string>
+  <!--LogType log messages. Errors should have _ERROR_ in their name and end with a !-->
   <!--Import Public log entries-->
   <!--Import Secret log entries-->
   <!--Keyring Canonicalization log entries-->

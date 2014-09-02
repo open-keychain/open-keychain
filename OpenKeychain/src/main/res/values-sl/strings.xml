@@ -1,9 +1,13 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <resources>
   <!--title-->
-  <string name="title_encrypt">Šifriraj</string>
+  <string name="title_select_recipients">Izberi ključe</string>
+  <string name="title_select_secret_key">Izberi zasebni ključ</string>
+  <string name="title_encrypt_text">Šifriraj besedilo</string>
+  <string name="title_encrypt_files">Šifriraj datoteko</string>
   <string name="title_decrypt">Dešifriraj</string>
   <string name="title_authentication">Geslo</string>
+  <string name="title_add_subkey">Dodaj podključ</string>
   <string name="title_edit_key">Uredi ključ</string>
   <string name="title_preferences">Nastavitve</string>
   <string name="title_api_registered_apps">Aplikacije</string>
@@ -12,6 +16,7 @@
   <string name="title_share_fingerprint_with">Deli prstni odtis z...</string>
   <string name="title_share_key">Deli ključ z...</string>
   <string name="title_share_file">Deli datoteko z...</string>
+  <string name="title_share_message">Deli sporočilo z...</string>
   <string name="title_encrypt_to_file">Šifriraj v datoteko</string>
   <string name="title_decrypt_to_file">Dešifriraj v datoteko</string>
   <string name="title_import_keys">Uvozi ključe</string>
@@ -23,6 +28,7 @@
   <string name="title_key_details">Podrobnosti o ključu</string>
   <string name="title_help">Pomoč</string>
   <string name="title_log_display">Dnevnik</string>
+  <string name="title_create_key">Ustvari kluč</string>
   <!--section-->
   <string name="section_user_ids">Identitete</string>
   <string name="section_keys">Podključi</string>
@@ -34,26 +40,33 @@
   <string name="section_certification_key">Vaš ključ, uporabljan za overitev</string>
   <string name="section_upload_key">Naloži ključ</string>
   <string name="section_key_server">Strežnik</string>
-  <string name="section_fingerprint">Prstnim odtisom</string>
+  <string name="section_fingerprint">Prstni odtis</string>
   <string name="section_key_to_certify">Ključi za overjanje</string>
   <!--button-->
   <string name="btn_decrypt_verify_file">Dešifriraj, preveri in shrani</string>
   <string name="btn_decrypt_verify_message">Dešifriraj in preveri sporočilo</string>
   <string name="btn_encrypt_file">Šifriraj in shrani datoteko</string>
+  <string name="btn_encrypt_share_file">Šifriraj in deli datoteko</string>
   <string name="btn_save">Shrani</string>
   <string name="btn_do_not_save">Prekliči</string>
   <string name="btn_delete">Izbriši</string>
+  <string name="btn_no_date">Ne preteče</string>
   <string name="btn_okay">OK</string>
   <string name="btn_export_to_server">Naloži na strežnik</string>
   <string name="btn_next">Naprej</string>
   <string name="btn_back">Nazaj</string>
   <string name="btn_lookup_key">Išči ključ</string>
+  <string name="btn_share_encrypted_signed">Šifriraj in deli sporočilo</string>
   <string name="btn_view_cert_key">Poglej ključ za overjanje</string>
+  <string name="btn_create_key">Ustvari ključ</string>
+  <string name="btn_add_files">Dodaj datoteke</string>
   <!--menu-->
   <string name="menu_preferences">Nastavitve</string>
   <string name="menu_help">Pomoč</string>
   <string name="menu_export_key">Izvozi v datoteko</string>
   <string name="menu_delete_key">Izbriši ključ</string>
+  <string name="menu_create_key">Ustvari zasebni ključ</string>
+  <string name="menu_import_existing_key">Uvoz obstoječega ključa</string>
   <string name="menu_search">Išči</string>
   <string name="menu_beam_preferences">Nastavitve Beam</string>
   <string name="menu_key_edit_cancel">Prekliči</string>
@@ -65,12 +78,20 @@
   <!--label-->
   <string name="label_message">Sporočilo</string>
   <string name="label_file">Datoteka</string>
+  <string name="label_files">Datoteke</string>
+  <string name="label_file_colon">Datoteka:</string>
   <string name="label_no_passphrase">Brez gesla</string>
   <string name="label_passphrase">Geslo</string>
+  <string name="label_passphrase_again">Ponovi geslo</string>
   <string name="label_algorithm">Algoritem</string>
+  <string name="label_asymmetric_from">Podpisal:</string>
+  <string name="label_to">Šifriraj za:</string>
+  <string name="label_delete_after_encryption">Datoteke: Izbriši po šifriranju</string>
   <string name="label_delete_after_decryption">Po dešifriranju izbriši</string>
   <string name="label_encryption_algorithm">Šifrirni algoritem</string>
   <string name="label_hash_algorithm">Zgostitveni algoritem</string>
+  <string name="label_asymmetric">Z javnim ključem</string>
+  <string name="label_symmetric">Z geslom</string>
   <string name="label_passphrase_cache_ttl">Hranjenje gesla v spominu</string>
   <string name="label_message_compression">Stiskanje sporočil</string>
   <string name="label_file_compression">Stiskanje datotek</string>
@@ -80,6 +101,7 @@
   <string name="label_expiry">Pretek</string>
   <string name="label_usage">Uporaba</string>
   <string name="label_key_size">Velikost ključa</string>
+  <string name="label_ecc_curve">Eliptična krivulja</string>
   <string name="label_main_user_id">Glavna identiteta</string>
   <string name="label_name">Ime</string>
   <string name="label_comment">Komentar</string>
@@ -126,6 +148,8 @@
   <string name="dsa">DSA</string>
   <string name="elgamal">ElGamal</string>
   <string name="rsa">RSA</string>
+  <string name="ecdh">ECDH</string>
+  <string name="ecdsa">ECDSA</string>
   <string name="filemanager_title_open">Odpri...</string>
   <string name="warning">Opozorilo</string>
   <string name="error">Napaka</string>
@@ -142,7 +166,6 @@
   <string name="passphrase_must_not_be_empty">Vnesite geslo.</string>
   <string name="passphrase_for_symmetric_encryption">Simetrično šifriranje.</string>
   <string name="passphrase_for">Vnesite geslo za \'%s\'</string>
-  <string name="file_delete_confirmation">Ste prepričani, da želite izbrisati\n%s?</string>
   <string name="file_delete_successful">Uspešno izbrisano.</string>
   <string name="no_file_selected">Najprej izberite datoteko.</string>
   <string name="encrypt_sign_successful">Uspešno podpisano in/ali šifrirano.</string>
@@ -150,23 +173,12 @@
   <string name="enter_passphrase_twice">Dvakrat vnesite geslo.</string>
   <string name="select_encryption_key">Izberite vsaj en šifrirni ključ.</string>
   <string name="select_encryption_or_signature_key">Vnesite vsaj en šifrirni ključ ali ključ za podpisovanje.</string>
-  <string name="specify_file_to_encrypt_to">Določite datoteko, kamor želite šifrirati vsebino.\nPOZOR: če datoteka že obstaja, bo prepisana.</string>
-  <string name="specify_file_to_decrypt_to">Določite datoteko, kamor želite dešifrirati vsebino.\nPOZOR: če datoteka že obstaja, bo prepisana.</string>
-  <string name="specify_file_to_export_to">Določite datoteko, kamor želite izvoziti vsebino.\nPOZOR: če datoteka že obstaja, bo prepisana.</string>
-  <string name="key_deletion_confirmation_multi">Ali res želite izbrisati vse izbrane javne ključe?\nTega koraka ne boste mogli preklicati!</string>
-  <string name="secret_key_deletion_confirmation">Ali res želite izbrisati ZASEBNI ključ \'%s\'?\nTega koraka ne boste mogli preklicati!</string>
-  <string name="public_key_deletetion_confirmation">Ali res želite izbrisati javni ključ \'%s\'?\nTega koraka ne boste mogli preklicati!</string>
+  <string name="also_export_secret_keys">Izvozi tudi zasebne ključe</string>
   <string name="key_exported">Uspešno izvožen 1 ključ.</string>
   <string name="keys_exported">Uspešno izvoženih ključev: %d</string>
   <string name="no_keys_exported">Noben ključ ni bil izvožen.</string>
   <string name="key_creation_el_gamal_info">Pozor: ELGamal podpirajo samo podključi.</string>
   <string name="key_not_found">Ne najdem ključa %08X.</string>
-  <plurals name="bad_keys_encountered">
-    <item quantity="one">Neupoštevan %d slab zasebni ključ. Morda je bil izvožen na način\n --export-secret-subkeys\nPoskrbite, da bo izvožen z\n --export-secret-keys</item>
-    <item quantity="two">Neupoštevana %d slaba zasebna ključa. Morda sta bila izvožena na način\n --export-secret-subkeys\nPoskrbite, da bosta izvožena z\n --export-secret-keys</item>
-    <item quantity="few">Neupoštevani %d slabi zasebni ključi. Morda so bili izvoženi na način\n --export-secret-subkeys\nPoskrbite, da bodo izvoženi z\n --export-secret-keys</item>
-    <item quantity="other">Neupoštevanih %d slabih zasebnih ključev. Morda so bili izvoženi na način\n --export-secret-subkeys\nPoskrbite, da bodo izvoženi z\n --export-secret-keys</item>
-  </plurals>
   <string name="key_send_success">Ključ je bil uspešno naložen na strežnik.</string>
   <string name="key_certify_success">Uspešno overjene identitete</string>
   <string name="list_empty">Lista je prazna!</string>
@@ -196,6 +208,7 @@
   <string name="error_jelly_bean_needed">Za uporabo storitve NFC Beam potrebujete najmanj Android 4.1!</string>
   <string name="error_nfc_needed">NFC ni na voljo na vaši napravi!</string>
   <string name="error_nothing_import">Najden ni bil noben ključ!</string>
+  <string name="error_import_no_valid_keys">V datoteki/odložišču ni veljavnih ključev!</string>
   <string name="error_generic_report_bug">Pripetila se je splošna napaka, prosimo ustvarite poročilo o \'hrošču\'.</string>
   <plurals name="error_import_non_pgp_part">
     <item quantity="one">Del naložene datoteke je veljavnen objekt OpenPGP a ni ključ.</item>
@@ -218,8 +231,10 @@
   <string name="progress_saving">shranjujem...</string>
   <string name="progress_importing">uvažam...</string>
   <string name="progress_exporting">izvažam...</string>
+  <string name="progress_uploading">pošiljanje...</string>
   <string name="progress_building_key">ustvarjam ključ...</string>
   <string name="progress_building_master_key">ustvarjam glavni prstan...</string>
+  <string name="progress_modify_passphrase">menjava gesla...</string>
   <plurals name="progress_exporting_key">
     <item quantity="one">izvažam ključ...</item>
     <item quantity="two">izvažam ključa...</item>
@@ -254,6 +269,14 @@
   <string name="key_size_custom">Dolžina ključa po meri</string>
   <string name="key_size_custom_info">Vnesite željeno dolžino ključa (v bitih):</string>
   <string name="key_size_custom_info_dsa">Ključ DSA mora biti daljši od 512 bitov, a največ 1024 bitov. Hkrati mora biti deljiv z 64.</string>
+  <!--elliptic curve names-->
+  <string name="key_curve_nist_p256">NIST P-256</string>
+  <string name="key_curve_nist_p384">NIST P-384</string>
+  <string name="key_curve_nist_p521">NIST P-521</string>
+  <!--not in for now, see SaveKeyringParcel
+    <string name="key_curve_bp_p256">Brainpool P-256</string>
+    <string name="key_curve_bp_p384">Brainpool P-384</string>
+    <string name="key_curve_bp_p512">Brainpool P-512</string>-->
   <!--compression-->
   <string name="compression_fast">hitro</string>
   <string name="compression_very_slow">zelo počasi</string>
@@ -266,6 +289,8 @@
   <string name="help_tab_about">O aplikaciji</string>
   <string name="help_about_version">Različica:</string>
   <!--Import-->
+  <string name="import_tab_direct">Datoteka/odložišče</string>
+  <string name="import_tab_keybase">Keybase.io</string>
   <string name="import_import">Uvozi izbrane ključe</string>
   <string name="import_qr_code_wrong">Koda QR je deformirana! Poskusite znova!</string>
   <string name="import_qr_code_too_short_fingerprint">Prstni odtis je prekratek (&lt; 16 znakov)</string>
@@ -279,7 +304,6 @@
   <string name="intent_send_encrypt">Šifriraj z OpenKeychain</string>
   <string name="intent_send_decrypt">Dešifriraj z OpenKeychain</string>
   <!--Remote API-->
-  <string name="api_no_apps">Ni nobene registrirane aplikacije!\n\nSeznam podprtih aplikacij najdete v poglavju \'Pomoč\'!</string>
   <string name="api_settings_show_info">Pokaži dodatne informacije</string>
   <string name="api_settings_hide_info">Skrij dodatne informacije</string>
   <string name="api_settings_show_advanced">Pokaži napredne nastavitve</string>
@@ -296,11 +320,11 @@
   <string name="api_settings_package_signature">SHA-256 podpisa paketa</string>
   <string name="api_settings_accounts">Računi</string>
   <string name="api_settings_accounts_empty">S to aplikacijo ni povezan noben račun</string>
-  <string name="api_register_text">Prikazane aplikacije želijo šifrirati/dešifrirati sporočila ter jih podpisovati v vašem imenu.\nDovolim dostop?\n\nPOZOR: Če ne veste zakaj se je pojavilo to obvestilo, ne dovolite dostopa! Dostop lahko prekličete tudi kasneje, v oknu \'Aplikacije\'.</string>
   <string name="api_register_allow">Dovoli dostop</string>
   <string name="api_register_disallow">Zavrni dostop</string>
   <string name="api_register_error_select_key">Izberite ključ!</string>
   <string name="api_select_pub_keys_text">Preverite seznam prejemnikov!</string>
+  <string name="api_select_pub_keys_text_no_user_ids">Prosim, izberite prejemnike!</string>
   <string name="api_error_wrong_signature">Preverjanje podpisa ni uspelo! Ste namestili to aplikacijo iz drugega vira? Če ste prepričani, da to ni napad, prekličite registracijo te aplikacije v OpenKeychain in jo izvedite znova.</string>
   <!--Share-->
   <string name="share_qr_code_dialog_title">Deli s kodo QR</string>
@@ -316,23 +340,37 @@
   <string name="key_list_empty_text2">Lahko začnete z</string>
   <string name="key_list_empty_text3">ali</string>
   <string name="key_list_empty_button_create">stvaritvijo lastnega ključa</string>
+  <string name="key_list_empty_button_import">uvažanje obstoječega ključa.</string>
   <!--Key view-->
   <string name="key_view_action_edit">Uredi ključ</string>
   <string name="key_view_action_encrypt">Šifriraj s tem ključem</string>
   <string name="key_view_action_certify">Overi identitete</string>
+  <string name="key_view_action_update">Posodobi s strežnika</string>
   <string name="key_view_action_share_with">Deli z...</string>
-  <string name="key_view_action_share_nfc">Deli preko NFC z držanjem hrbtov dveh telefonov skupaj</string>
+  <string name="key_view_action_upload">Naloži na strežnik ključev</string>
   <string name="key_view_tab_main">Glavne informacije</string>
   <string name="key_view_tab_share">Deli</string>
   <string name="key_view_tab_keys">Podključi</string>
   <string name="key_view_tab_certs">Certifikati</string>
+  <string name="user_id_info_revoked_title">Preklican</string>
+  <string name="user_id_info_revoked_text">Lastnik ključa je preklical to identiteto. Ta ni več veljavna.</string>
+  <string name="user_id_info_verified_title">Preverjen</string>
+  <string name="user_id_info_verified_text">Identiteta je bila preverjena</string>
+  <string name="user_id_info_not_verified_title">Nepreverjen</string>
+  <string name="user_id_info_invalid_title">Neveljaven</string>
   <!--Edit key-->
+  <string name="edit_key_action_change_passphrase">Zamenjaj geslo</string>
+  <string name="edit_key_action_add_identity">Dodaj identiteto</string>
+  <string name="edit_key_action_add_subkey">Dodaj podključ</string>
+  <string name="edit_key_edit_user_id_title">Izberite dejanje!</string>
+  <string name="edit_key_edit_subkey_title">Izberite dejanje!</string>
+  <string name="edit_key_new_subkey">nov</string>
   <!--Create key-->
+  <string name="create_key_passphrases_not_equal">Gesli se ne ujemata</string>
+  <string name="create_key_hint_full_name">Polno ime, npr. Janez Vzorec</string>
   <!--View key-->
   <!--Navigation Drawer-->
   <string name="nav_keys">Ključi</string>
-  <string name="nav_encrypt">Podpiši in šifriraj</string>
-  <string name="nav_decrypt">Dešifriraj in preveri</string>
   <string name="nav_apps">Aplikacije</string>
   <string name="drawer_open">Odprite navigacijski poteznik</string>
   <string name="drawer_close">Zaprite navigacijski poteznik</string>
@@ -345,9 +383,11 @@
   <string name="cert_casual">navadno</string>
   <string name="cert_positive">pozitivno</string>
   <string name="cert_revoke">preklicano</string>
+  <string name="cert_verify_ok">OK</string>
   <string name="cert_verify_failed">neuspešno!</string>
   <string name="cert_verify_error">napaka!</string>
   <string name="cert_verify_unavailable">ključ ni na voljo</string>
+  <!--LogType log messages. Errors should have _ERROR_ in their name and end with a !-->
   <!--Import Public log entries-->
   <string name="msg_ip_apply_batch">Uveljavljam serijsko dodajanje.</string>
   <string name="msg_ip_bad_type_secret">Poskus uvoza zasebne zbirke ključev kot javne. Prosimo prijavite dogodek kot \"hrošč\" (napako).</string>
@@ -381,9 +421,6 @@
   <!--Import Secret log entries-->
   <string name="msg_is">Uvažam zasebni ključ %s</string>
   <string name="msg_is_importing_subkeys">Procesiram zasebne podključe</string>
-  <string name="msg_is_subkey_nonexistent">Podključ %s ni na voljo v javnem ključu</string>
-  <string name="msg_is_subkey_ok">%s označen kot razpoložljiv</string>
-  <string name="msg_is_subkey_stripped">%s označen kot slečen</string>
   <string name="msg_is_success">Zasebna zbirka ključev uspešno uvožena</string>
   <!--Keyring Canonicalization log entries-->
   <string name="msg_kc_master">Obdelujem glavni ključ...</string>
@@ -403,6 +440,9 @@
   <!--modifySecretKeyRing-->
   <!--Consolidate-->
   <!--PassphraseCache-->
+  <string name="passp_cache_notif_click_to_clear">Kliknite za izbris zapomnjenih gesel</string>
+  <string name="passp_cache_notif_n_keys">OpenKeychain pomni gesla: %d</string>
+  <string name="passp_cache_notif_keys">Zapomnjena gesla:</string>
   <!--unsorted-->
   <string name="section_certifier_id">Overovitelj</string>
   <string name="section_cert">Podrobnosti potrdil</string>
@@ -420,7 +460,10 @@
   <string name="unknown_algorithm">neznan</string>
   <string name="can_sign_not">ne more podpisati</string>
   <string name="error_no_encrypt_subkey">Ni nobenega podključa za šifriranje!</string>
-  <string name="info_no_manual_account_creation">Ne ustvari računov OpenKeychain ročno.\nZa več informacij poglej poglavje Pomoč.</string>
   <string name="contact_show_key">Prikaži ključ (%s)</string>
   <!--First Time-->
+  <string name="first_time_text1">Vzemite si svojo zasebnost nazaj v svoje roke z OpenKeychain!</string>
+  <string name="first_time_create_key">Ustvari zasebni ključ</string>
+  <string name="first_time_import_key">Uvoz obstoječega ključa</string>
+  <string name="first_time_skip">Preskoči nastavitev</string>
 </resources>

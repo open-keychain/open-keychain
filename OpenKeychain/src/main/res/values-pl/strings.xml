@@ -1,7 +1,6 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <resources>
   <!--title-->
-  <string name="title_encrypt">Zaszyfruj</string>
   <string name="title_decrypt">Odszyfruj</string>
   <string name="title_authentication">Hasło</string>
   <string name="title_edit_key">Edytuj Klucz</string>
@@ -124,7 +123,6 @@
   <string name="passphrase_must_not_be_empty">Podaj hasło.</string>
   <string name="passphrase_for_symmetric_encryption">Szyfrowanie symetryczne.</string>
   <string name="passphrase_for">Podaj hasło dla \'%s\'</string>
-  <string name="file_delete_confirmation">Czy jesteś pewien że chcesz usunąć\n%s?</string>
   <string name="file_delete_successful">Usunięto pomyślnie.</string>
   <string name="no_file_selected">Najpierw wskaż plik.</string>
   <string name="encrypt_sign_successful">Pomyślnie podpisano i/lub zaszyfrowano.</string>
@@ -132,22 +130,11 @@
   <string name="enter_passphrase_twice">Podaj hasło dwukrotnie.</string>
   <string name="select_encryption_key">Wybierz co najmniej jeden klucz szyfrujący.</string>
   <string name="select_encryption_or_signature_key">Wybierz co najmniej jeden klucz szyfrujący lub klucz podpisujący.</string>
-  <string name="specify_file_to_encrypt_to">Wskaż, do którego pliku zapisać zaszyfrowane dane.\nOSTRZEŻENIE: Plik zostanie nadpisany, jeżeli istnieje.</string>
-  <string name="specify_file_to_decrypt_to">Wskaż, do którego pliku zapisać odszyfrowane dane.\nOSTRZEŻENIE: Plik zostanie nadpisany, jeżeli istnieje.</string>
-  <string name="specify_file_to_export_to">Wskaż, do którego pliku wyeksportować dane.\nOSTRZEŻENIE: Plik zostanie nadpisany, jeżeli istnieje.</string>
-  <string name="key_deletion_confirmation_multi">Czy na pewno chcesz usunąć wszystkie zaznaczone klucze publiczne?\nTej operacji nie można cofnąć!</string>
-  <string name="secret_key_deletion_confirmation">Czy na pewno chcesz usunąć klucz prywatny \'%s\'?\nNie można cofnąć tej operacji!</string>
-  <string name="public_key_deletetion_confirmation">Czy na pewno chcesz usunąć klucz publiczny \'%s\'?\nNie można cofnąć tej operacji!</string>
   <string name="key_exported">Pomyślnie wyeksportowano 1 klucz.</string>
   <string name="keys_exported">Pomyślnie wyeksportowano %d kluczy.</string>
   <string name="no_keys_exported">Nie wyeksportowano żadnych kluczy.</string>
   <string name="key_creation_el_gamal_info">Informacja: tylko podklucze mogą być tworzone przy użyciu algorytmu ElGamal.</string>
   <string name="key_not_found">Nie można znaleźć klucza %08X.</string>
-  <plurals name="bad_keys_encountered">
-    <item quantity="one">Zignorowano %d niepoprawny klucz prywatny. Prawdopodobnie został wyeksportowany przy uzyciu opcji\n --export-secret-subkeys\nUpewnij się że eksportujesz go z opcją\n --export-secret-keys\nktóra jest poprawna.</item>
-    <item quantity="few">Zignorowano %d niepoprawnych kluczy prywatnych. Prawdopodobnie zostały wyeksportowane przy uzyciu opcji\n --export-secret-subkeys\nUpewnij się że eksportujesz je z opcją\n --export-secret-keys\nktóra jest poprawna.</item>
-    <item quantity="other">zignorowano %d niepoprawnych kluczy prywatnych. Prawdopodobnie zostały wyeksportowane przy uzyciu opcji\n --export-secret-subkeys\nUpewnij się że eksportujesz je z opcją\n --export-secret-keys\nktóra jest poprawna.</item>
-  </plurals>
   <string name="key_send_success">Pomyślnie wysłano klucz na serwer</string>
   <string name="list_empty">Lista jest pusta!</string>
   <string name="nfc_successful">Pomyślnie wysłano klucz przez NFC Beam!</string>
@@ -228,6 +215,11 @@
   <string name="key_size_custom">Własny rozmiar klucza</string>
   <string name="key_size_custom_info">Podaj własną długość klucza (w bitach):</string>
   <string name="key_size_custom_info_dsa">Długośc klucza DSA musi być równa co najmniej 512 i co najwyżej 1024.  Musi być także wielokrotnością 64.</string>
+  <!--elliptic curve names-->
+  <!--not in for now, see SaveKeyringParcel
+    <string name="key_curve_bp_p256">Brainpool P-256</string>
+    <string name="key_curve_bp_p384">Brainpool P-384</string>
+    <string name="key_curve_bp_p512">Brainpool P-512</string>-->
   <!--compression-->
   <string name="compression_fast">szybka</string>
   <string name="compression_very_slow">bardzo wolna</string>
@@ -289,8 +281,6 @@
   <!--View key-->
   <!--Navigation Drawer-->
   <string name="nav_keys">Klucze</string>
-  <string name="nav_encrypt">Podpisz i zaszyfruj</string>
-  <string name="nav_decrypt">Deszyfruj i weryfikuj</string>
   <string name="drawer_open">Otwórz panel nawigacji</string>
   <string name="drawer_close">Zamknij panel nawigacji</string>
   <string name="my_keys">Moje klucze</string>
@@ -304,6 +294,7 @@
   <string name="cert_verify_failed">niepowodzenie!</string>
   <string name="cert_verify_error">błąd!</string>
   <string name="cert_verify_unavailable">klucz niedostępny</string>
+  <!--LogType log messages. Errors should have _ERROR_ in their name and end with a !-->
   <!--Import Public log entries-->
   <!--Import Secret log entries-->
   <!--Keyring Canonicalization log entries-->

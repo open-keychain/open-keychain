@@ -3,7 +3,8 @@
   <!--title-->
   <string name="title_select_recipients">Wähle Schlüssel</string>
   <string name="title_select_secret_key">Wähle Deinen Schlüssel</string>
-  <string name="title_encrypt">Verschlüsseln</string>
+  <string name="title_encrypt_text">Text Verschlüsseln</string>
+  <string name="title_encrypt_files">Dateien verschlüsseln</string>
   <string name="title_decrypt">Entschlüsseln</string>
   <string name="title_authentication">Passwort</string>
   <string name="title_add_subkey">Unterschlüssel hinzufügen</string>
@@ -87,8 +88,8 @@
   <string name="label_file_ascii_armor">Datei: ASCII Armor</string>
   <string name="label_write_version_header">Lass andere wissen dass du OpenKeychain nutzt</string>
   <string name="label_write_version_header_summary">Fügt \'OpenKeychain v2.7\' zu OpenPGP Signaturen, DAten und exportierten Schlüsseln hinzu</string>
-  <string name="label_asymmetric_from">Von:</string>
-  <string name="label_to">An:</string>
+  <string name="label_asymmetric_from">Signiert von:</string>
+  <string name="label_to">Verschlüsselt an:</string>
   <string name="label_delete_after_encryption">Dateien: Nach Verschlüsselung löschen</string>
   <string name="label_delete_after_decryption">Nach Entschlüsselung löschen</string>
   <string name="label_encryption_algorithm">Verschlüsselungsalgorithmus</string>
@@ -104,6 +105,7 @@
   <string name="label_expiry">Ablaufdatum</string>
   <string name="label_usage">Verwendungszweck</string>
   <string name="label_key_size">Schlüssellänge</string>
+  <string name="label_ecc_curve">Eliptische Kurve</string>
   <string name="label_main_user_id">Hauptidentität</string>
   <string name="label_name">Name</string>
   <string name="label_comment">Kommentar</string>
@@ -146,6 +148,8 @@
   <string name="dsa">DSA</string>
   <string name="elgamal">ElGamal</string>
   <string name="rsa">RSA</string>
+  <string name="ecdh">ECDH</string>
+  <string name="ecdsa">ECDSA</string>
   <string name="filemanager_title_open">Öffnen...</string>
   <string name="warning">Warnung</string>
   <string name="error">Fehler</string>
@@ -162,7 +166,7 @@
   <string name="passphrase_must_not_be_empty">Bitte ein Passwort eingeben.</string>
   <string name="passphrase_for_symmetric_encryption">Symmetrische Verschlüsselung.</string>
   <string name="passphrase_for">Passwort für \'%s\' eingeben</string>
-  <string name="file_delete_confirmation">%s\nwirklich löschen?</string>
+  <string name="file_delete_confirmation">%s wirklich löschen?</string>
   <string name="file_delete_successful">Erfolgreich gelöscht.</string>
   <string name="no_file_selected">Zuerst eine Datei auswählen.</string>
   <string name="encrypt_sign_successful">Erfolgreich signiert und/oder verschlüsselt.</string>
@@ -170,8 +174,8 @@
   <string name="enter_passphrase_twice">Das Passwort bitte zweimal eingeben.</string>
   <string name="select_encryption_key">Mindestens einen Schlüssel zum Verschlüsseln auswählen.</string>
   <string name="select_encryption_or_signature_key">Mindestens einen Schlüssel zum Verschlüsseln oder einen zum Signieren auswählen.</string>
-  <string name="specify_file_to_encrypt_to">Bitte angeben in welche Datei verschlüsselt werden soll.\nWARNUNG: Datei wird überschrieben, wenn sie bereits existiert. </string>
-  <string name="specify_file_to_decrypt_to">Bitte angeben,in welche Datei entschlüsselt werden soll.\nWARNUNG: Datei wird überschrieben, wenn sie bereits existiert. </string>
+  <string name="specify_file_to_encrypt_to">Bitte angeben in welche Datei verschlüsselt werden soll.\nWARNUNG: Datei wird überschrieben, wenn sie bereits existiert.</string>
+  <string name="specify_file_to_decrypt_to">Bitte angeben in welche Datei entschlüsselt werden soll.\nWARNUNG: Datei wird überschrieben, wenn sie bereits existiert. </string>
   <string name="specify_file_to_export_to">Bitte angeben in welche Datei exportiert werden soll.\nWARNUNG: Datei wird überschrieben, wenn sie bereits existiert. </string>
   <string name="key_deletion_confirmation_multi">Möchtest du wirklich alle ausgewählten öffentlichen Schlüssel löschen?\nDies kann nicht rückgängig gemacht werden!</string>
   <string name="secret_key_deletion_confirmation">Soll der PRIVATE Schlüssel \'%s\' wirklich gelöscht werden?\nDies kann nicht rückgängig gemacht werden!</string>
@@ -183,8 +187,8 @@
   <string name="key_creation_el_gamal_info">Beachte: Nur Unterschlüssel unterstützen ElGamal.</string>
   <string name="key_not_found">Schlüssel %08X konnte nicht gefunden werden.</string>
   <plurals name="bad_keys_encountered">
-    <item quantity="one">%d schlechter privater Schlüssel ignoriert. Evtl. wurde er mit folgender Option exportiert:\n --export-secret-subkeys\nUnbedingt mit der Option \n --export-secret-keys\nexportieren.</item>
-    <item quantity="other">%d schlechte private Schlüssel ignoriert. Evtl. wurden sie mit folgender Option exportiert:\n --export-secret-subkeys\nUnbedingt mit der Option \n --export-secret-keys\nexportieren.</item>
+    <item quantity="one">%d kaputter privater Schlüssel wurde ignoriert. Evtl. wurden er mit folgender Option exportiert: --export-secret-subkeys Unbedingt mit der Option --export-secret-keys exportieren.</item>
+    <item quantity="other">%d kaputte private Schlüssel ignoriert. Evtl. wurden sie mit folgender Option exportiert: --export-secret-subkeys Unbedingt mit der Option --export-secret-keys exportieren.</item>
   </plurals>
   <string name="key_send_success">Schlüssel wurde erfolgreich hochgeladen.</string>
   <string name="key_certify_success">Identitäten erfolgreich beglaubigt</string>
@@ -289,6 +293,11 @@
   <string name="key_size_custom_info">Benutzerdefinierte Schlüssellänge (in Bit):</string>
   <string name="key_size_custom_info_rsa">Die RSA-Schlüssellänge muss grösser als 1024 und höchstens 16384 sein. Sie muss auch ein Mehrfaches von 8 sein.</string>
   <string name="key_size_custom_info_dsa">Die DSA-Schlüssellänge muss mindestens 512 und höchstens 1024 sein. Auch muss sie ein Mehrfaches von 64 sein.</string>
+  <!--elliptic curve names-->
+  <!--not in for now, see SaveKeyringParcel
+    <string name="key_curve_bp_p256">Brainpool P-256</string>
+    <string name="key_curve_bp_p384">Brainpool P-384</string>
+    <string name="key_curve_bp_p512">Brainpool P-512</string>-->
   <!--compression-->
   <string name="compression_fast">schnell</string>
   <string name="compression_very_slow">sehr langsam</string>
@@ -332,7 +341,6 @@
   <string name="intent_send_encrypt">Verschlüsseln mit OpenKeychain </string>
   <string name="intent_send_decrypt">Entschlüsseln mit OpenKeychain </string>
   <!--Remote API-->
-  <string name="api_no_apps">Keine registrierten Apps!\n\nEine Liste der unterstützten Anwendungen ist in der \'Hilfe\' verfügbar.</string>
   <string name="api_settings_show_info">Erweiterte Informationen anzeigen</string>
   <string name="api_settings_hide_info">Erweiterte Informationen ausblenden</string>
   <string name="api_settings_show_advanced">Erweiterte Einstellungen anzeigen</string>
@@ -350,7 +358,7 @@
   <string name="api_settings_accounts">Konten</string>
   <string name="api_settings_accounts_empty">Keine Konten mit dieser Anwendung verknüpft.</string>
   <string name="api_create_account_text">Die App verlangt die Erstellung eines neuen Accounts. Bitte wähle einen deiner existierenden Schlüssel aus oder erstelle einen neuen.\nApps können nur hier ausgewählte Schlüssel nutzen.</string>
-  <string name="api_register_text">Folgende Anwendung möchte Nachrichten ver-/entschlüsseln und in Ihrem Namen signieren.\nZugriff erlauben?\n\nVORSICHT: Sollten Sie nicht wissen warum dieses Fenster erscheint, sollten Sie den Zugriff verbieten! Sie können Zugriffe später über das Menü \'Apps\' widerrufen.</string>
+  <string name="api_register_text">Folgende Anwendung möchte Nachrichten ver-/entschlüsseln und in Ihrem Namen signieren. Zugriff erlauben?\n\nVORSICHT: Sollten Sie nicht wissen warum dieses Fenster erscheint, sollten Sie den Zugriff verbieten! Sie können Zugriffe später über das Menü \'Apps\' widerrufen.</string>
   <string name="api_register_allow">Zugriff erlauben</string>
   <string name="api_register_disallow">Zugriff verbieten</string>
   <string name="api_register_error_select_key">Bitte einen Schlüssel auswählen!</string>
@@ -375,7 +383,6 @@
   <string name="key_view_action_certify">Identitäten beglaubigen</string>
   <string name="key_view_action_update">Von Schlüsselserver aktualisieren</string>
   <string name="key_view_action_share_with">Teilen über...</string>
-  <string name="key_view_action_share_nfc">Teilen über NFC (Geräte Rückseite an Rückseite halten)</string>
   <string name="key_view_action_upload">Auf Schlüsselserver hochladen</string>
   <string name="key_view_tab_main">Informationen</string>
   <string name="key_view_tab_share">Teilen</string>
@@ -397,14 +404,11 @@
   <string name="view_key_expired">Dieser Schlüssel ist nicht mehr gültig!</string>
   <!--Navigation Drawer-->
   <string name="nav_keys">Schlüssel</string>
-  <string name="nav_encrypt">Signieren und Verschlüsseln</string>
-  <string name="nav_decrypt">Entschlüsseln und Verifizieren</string>
   <string name="nav_apps">Apps</string>
   <string name="drawer_open">Menü öffnen</string>
   <string name="drawer_close">Menü schließen</string>
   <string name="my_keys">Meine Schlüssel</string>
   <!--hints-->
-  <string name="encrypt_content_edit_text_hint">Die eingegebene Nachricht wird mit dem in \'Von\' ausgewählten Schlüssel signiert und für alle Empfänger in \'An\' verschlüsselt.</string>
   <string name="decrypt_content_edit_text_hint">Hier die verschlüsselte Nachricht eingeben um sie zu entschlüsseln und/oder zu verifizieren…</string>
   <!--certs-->
   <string name="cert_default">normal</string>
@@ -416,6 +420,7 @@
   <string name="cert_verify_failed">fehlgeschlagen!</string>
   <string name="cert_verify_error">Fehler!</string>
   <string name="cert_verify_unavailable">Schlüssel nicht verfügbar</string>
+  <!--LogType log messages. Errors should have _ERROR_ in their name and end with a !-->
   <!--Import Public log entries-->
   <string name="msg_ip_delete_old_ok">Alte Schlüssel aus der Datenbank löschen</string>
   <string name="msg_ip_encode_fail">Die Anwendung ist wegen Kodierungsfehler fehlgeschlagen</string>
@@ -443,7 +448,6 @@
   <!--Consolidate-->
   <!--PassphraseCache-->
   <!--unsorted-->
-  <string name="msg_internal_error">Interner Fehler!</string>
   <string name="section_certifier_id">Beglaubiger</string>
   <string name="section_cert">Zertifikatdetails</string>
   <string name="label_user_id">Identität</string>

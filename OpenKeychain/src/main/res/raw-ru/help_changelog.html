@@ -1,20 +1,26 @@
 <html>
 <head></head>
 <body>
+<h2>2.9</h2>
+<ul>
+<li>Исправление падений, выявленных в 2.8</li>
+<li>Экспериментальная поддержка ECC</li>
+<li>Экспериментальная поддержка Yubikey (вход по импортированному ключу)</li>
+</ul>
 <h2>2.8</h2>
 <ul>
-<li>So many bugs have been fixed in this release that we focus on the main new features</li>
-<li>Key edit: awesome new design, key revocation</li>
-<li>Key import: awesome new design, secure keyserver connections via hkps, keyserver resolving via DNS SRV records</li>
-<li>New first time screen</li>
-<li>New key creation screen: autocompletion of name and email based on your personal Android accounts</li>
-<li>File encryption: awesome new design, support for encrypting multiple files</li>
-<li>New icons to show status of key (by Brennan Novak)</li>
-<li>Important bug fix: Importing of large key collections from a file is now possible</li>
-<li>Notification showing cached passphrases</li>
-<li>Keys are connected to Android's contacts</li>
+<li>Так много небольших исправлений, что лучше сообщить о существенных изменениях</li>
+<li>Изменение ключа: новый дизайн, аннулирование клуча</li>
+<li>Импорт ключа: усовершенствованный дизайн, безопасное соединение с серверами ключей по протоколу hkps, определение серверов по записям DNS SRV</li>
+<li>Новый диалог при первом запуске</li>
+<li>Экран создания ключа: автодополнение имени и адреса почты из учетной записи Android</li>
+<li>Шифрование файла: усовершенствованный дизайн, возможность шифрования нескольких файлов</li>
+<li>Новые иконки статуса ключа (Brennan Novak)</li>
+<li>Важное исправление: Теперь возможен импорт большого количества ключей из одного файла</li>
+<li>Уведомление о запомненных паролях</li>
+<li>Ключи соединяются с контактами Android</li>
 </ul>
-<p>This release wouldn't be possible without the work of Vincent Breitmoser (GSoC 2014), mar-v-in (GSoC 2014), Daniel Albert, Art O Cathain, Daniel Haß, Tim Bray, Thialfihar</p>
+<p>Этот релиз стал возможен благодаря работе Vincent Breitmoser (GSoC 2014), mar-v-in (GSoC 2014), Daniel Albert, Art O Cathain, Daniel Haß, Tim Bray, Thialfihar</p>
 
 <h2>2.7</h2>
 <ul>
@@ -26,21 +32,21 @@
 </ul>
 <h2>2.6.1</h2>
 <ul>
-<li>Some fixes for regression bugs</li>
+<li>Исправления найденных ошибок</li>
 </ul>
 <h2>2.6</h2>
 <ul>
-<li>Key certifications (thanks to Vincent Breitmoser)</li>
-<li>Support for GnuPG partial secret keys (thanks to Vincent Breitmoser)</li>
-<li>New design for signature verification</li>
-<li>Custom key length (thanks to Greg Witczak)</li>
-<li>Fix share-functionality from other apps</li>
+<li>Сертификация ключей (благодаря Vincent Breitmoser)</li>
+<li>Поддержка частично-секретных ключей GnuPG (благодаря  Vincent Breitmoser)</li>
+<li>Новый дизайн проверки подписи</li>
+<li>Произвольная длина ключей (благодаря Greg Witczak)</li>
+<li>Исправление ошибки получения данных от других приложений</li>
 </ul>
 <h2>2.5</h2>
 <ul>
-<li>Fix decryption of symmetric pgp messages/files</li>
-<li>Refactored key edit screen (thanks to Ash Hughes)</li>
-<li>New modern design for encrypt/decrypt screens</li>
+<li>Исправлено симметричное шифрование сообщений/файлов</li>
+<li>Переработано окно изменения ключа (благодаря Ash Hughes)</li>
+<li>Новый дизайн для окон шифрования/расшифровки</li>
 <li>OpenPGP API версии 3 (множественные аккаунты, внутренние исправления, поиск ключей)</li>
 </ul>
 <h2>2.4</h2>
@@ -48,45 +54,45 @@
 Из общего числа патчей, особенный вклад внесли следующие люди (в алфавитном порядке):
 Daniel Hammann, Daniel Haß, Greg Witczak, Miroojin Bakshi, Nikhil Peter Raj, Paul Sarbinowski, Sreeram Boyapati, Vincent Breitmoser.</p>
 <ul>
-<li>New unified key list</li>
-<li>Colorized key fingerprint</li>
-<li>Support for keyserver ports</li>
-<li>Deactivate possibility to generate weak keys</li>
-<li>Much more internal work on the API</li>
-<li>Certify user ids</li>
-<li>Keyserver query based on machine-readable output</li>
-<li>Lock navigation drawer on tablets</li>
-<li>Suggestions for emails on creation of keys</li>
-<li>Search in public key lists</li>
-<li>And much more improvements and fixes…</li>
+<li>Новый объединенный список ключей</li>
+<li>Цветовая индикация отпечатков ключей</li>
+<li>Поддержка портов серверов ключей</li>
+<li>Отключена возможность создавать слабые ключи</li>
+<li>Ещё больше улучшений работы API</li>
+<li>Сертификация пользовательских данных</li>
+<li>Запрос к серверу ключей основывается на машинном формате вывода</li>
+<li>Фиксация панели на планшетах</li>
+<li>Подсказки email при создании ключей</li>
+<li>Поиск в списках публичных ключей</li>
+<li>И множество других исправлений и улучшений...</li>
 </ul>
 <h2>2.3.1</h2>
 <ul>
-<li>Hotfix for crash when upgrading from old versions</li>
+<li>Исправление ошибки при обновлении со старых версий</li>
 </ul>
 <h2>2.3</h2>
 <ul>
-<li>Remove unnecessary export of public keys when exporting secret key (thanks to Ash Hughes)</li>
-<li>Fix setting expiry dates on keys (thanks to Ash Hughes)</li>
-<li>More internal fixes when editing keys (thanks to Ash Hughes)</li>
-<li>Querying keyservers directly from the import screen</li>
-<li>Fix layout and dialog style on Android 2.2-3.0</li>
-<li>Fix crash on keys with empty user ids</li>
-<li>Fix crash and empty lists when coming back from signing screen</li>
+<li>Удален не требующийся экспорт публичного ключа при экспорте секретного ключа (спасибо, Ash Hughes)</li>
+<li>Исправлена ошибка срока годности ключей (спасибо, Ash Hughes)</li>
+<li>Исправления ошибок при изменении ключей (спасибо, Ash Hughes)</li>
+<li>Запрос ключа с сервера прямо из окна импорта ключей</li>
+<li>Исправление внешнего вида для Android 2.2-3.0</li>
+<li>Исправлено падение когда ключ не содержал имя пользователя</li>
+<li>Исправлено падение и пустой список при возвращении из окна подписания</li>
 <li>криптографическая библиотека Bouncy Castle обновлена до версии 1.50</li>
-<li>Fix upload of key from signing screen</li>
+<li>Исправлена загрузка ключа из окна подписания</li>
 </ul>
 <h2>2.2</h2>
 <ul>
-<li>New design with navigation drawer</li>
-<li>New public key list design</li>
-<li>New public key view</li>
-<li>Bug fixes for importing of keys</li>
-<li>Key cross-certification (thanks to Ash Hughes)</li>
-<li>Handle UTF-8 passwords properly (thanks to Ash Hughes)</li>
-<li>First version with new languages (thanks to the contributors on Transifex)</li>
-<li>Sharing of keys via QR Codes fixed and improved</li>
-<li>Package signature verification for API</li>
+<li>Новый дизайн с боковой панелью</li>
+<li>Новый дизайн списка ключей</li>
+<li>Новый вид просмотра ключа</li>
+<li>Исправление ошибок импорта ключей</li>
+<li>Кросс-сертификация ключей (спасибо, Ash Hughes)</li>
+<li>Правильная обработка паролей в UTF-8 (спасибо, Ash Hughes)</li>
+<li>Первая версия с новыми языками (спасибо переводчикам с Transifex)</li>
+<li>Исправление и улучшение передачи ключей через QR коды</li>
+<li>Проверка подписей пакетов для API</li>
 </ul>
 <h2>2.1.1</h2>
 <ul>
@@ -94,65 +100,65 @@ Daniel Hammann, Daniel Haß, Greg Witczak, Miroojin Bakshi, Nikhil Peter Raj, Pa
 </ul>
 <h2>2.1</h2>
 <ul>
-<li>Lots of bug fixes</li>
-<li>New API for developers</li>
+<li>Множество исправлений ошибок</li>
+<li>Новый API для разработчиков</li>
 <li>исправление ошибки генератора случайных чисел</li>
 </ul>
 <h2>2.0</h2>
 <ul>
-<li>Complete redesign</li>
-<li>Share public keys via qr codes, nfc beam</li>
-<li>Sign keys</li>
-<li>Upload keys to server</li>
-<li>Fixes import issues</li>
-<li>New AIDL API</li>
+<li>Переработка дизайна</li>
+<li>Передача ключей через QR коды и NFC</li>
+<li>Подписание ключей</li>
+<li>Загрузка ключей на сервер</li>
+<li>Исправление проблем импорта</li>
+<li>Новый AIDL API</li>
 </ul>
 <h2>1.0.8</h2>
 <ul>
-<li>Basic keyserver support</li>
-<li>App2sd</li>
-<li>More choices for passphrase cache: 1, 2, 4, 8, hours</li>
-<li>Translations: Norwegian (thanks, Sander Danielsen), Chinese (thanks, Zhang Fredrick)</li>
-<li>Bugfixes</li>
-<li>Optimizations</li>
+<li>Поддержка серверов ключей</li>
+<li>App2SD</li>
+<li>Больше вариантов сохранения кэша пароля: 1, 2, 4, 8 часов</li>
+<li>Переводы: Норвежский (спасибо, Sander Danielsen), Китайский (спасибо, Zhang Fredrick)</li>
+<li>Исправления ошибок</li>
+<li>Оптимизация</li>
 </ul>
 <h2>1.0.7</h2>
 <ul>
-<li>Fixed problem with signature verification of texts with trailing newline</li>
-<li>More options for passphrase cache time to live (20, 40, 60 mins)</li>
+<li>Исправление ошибки при проверке подписи текста с переводом строки</li>
+<li>Больше вариантов сохранения кэша пароля (20, 40, 60 минут)</li>
 </ul>
 <h2>1.0.6</h2>
 <ul>
-<li>Account adding crash on Froyo fixed</li>
-<li>Secure file deletion</li>
-<li>Option to delete key file after import</li>
-<li>Stream encryption/decryption (gallery, etc.)</li>
-<li>New options (language, force v3 signatures)</li>
-<li>Interface changes</li>
-<li>Bugfixes</li>
+<li>Исправление ошибки создания записи на Froyo</li>
+<li>Безопасное удаление файлов</li>
+<li>Опция удаления файла ключа после импорта</li>
+<li>Передача шифрования (галерея и т.д.)</li>
+<li>Новые возможности (язык, v3 подписи)</li>
+<li>Изменения интерфейса</li>
+<li>Исправления ошибок</li>
 </ul>
 <h2>1.0.5</h2>
 <ul>
 <li>новые языки: немецкий, итальянский</li>
-<li>Much smaller package, due to reduced BC sources</li>
-<li>New preferences GUI</li>
-<li>Layout adjustment for localization</li>
-<li>Signature bugfix</li>
+<li>Значительное уменьшение размера программы</li>
+<li>Новый интерфейс настроек</li>
+<li>Изменение вида для локализации</li>
+<li>Исправление ошибки подписи</li>
 </ul>
 <h2>1.0.4</h2>
 <ul>
-<li>Fixed another crash caused by some SDK bug with query builder</li>
+<li>Исправление еще одной ошибки, возникающей в SDK</li>
 </ul>
 <h2>1.0.3</h2>
 <ul>
-<li>Fixed crashes during encryption/signing and possibly key export</li>
+<li>Исправление ошибок при шифровании/подписании и экспорте ключей</li>
 </ul>
 <h2>1.0.2</h2>
 <ul>
-<li>Filterable key lists</li>
-<li>Smarter pre-selection of encryption keys</li>
-<li>New Intent handling for VIEW and SEND, allows files to be encrypted/decrypted out of file managers</li>
-<li>Fixes and additional features (key preselection) for K-9 Mail, new beta build available</li>
+<li>Фильтр списка ключей</li>
+<li>Улучшение выбора ключей шифрования</li>
+<li>Добавлена возможность шифровать файлы прямо из файлового менеджера</li>
+<li>Исправления ошибок и новые возможности для интеграции с K-9 Mail</li>
 </ul>
 <h2>1.0.1</h2>
 <ul>
@@ -161,11 +167,11 @@ Daniel Hammann, Daniel Haß, Greg Witczak, Miroojin Bakshi, Nikhil Peter Raj, Pa
 <h2>1.0.0</h2>
 <ul>
 <li>интеграция с K-9 Mail, APG поддерживает beta-версию K-9 Mail</li>
-<li>Support of more file managers (including ASTRO)</li>
+<li>Поддержка сторонних файловых менеджеров (в т.ч. ASTRO)</li>
 <li>Словенский перевод</li>
-<li>New database, much faster, less memory usage</li>
-<li>Defined Intents and content provider for other apps</li>
-<li>Bugfixes</li>
+<li>Новая база данных, еще быстрее и компактнее</li>
+<li>Добавлены обработчики для взаимодействия с другими приложениями</li>
+<li>Исправления ошибок</li>
 </ul>
 </body>
 </html>

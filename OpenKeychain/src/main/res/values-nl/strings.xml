@@ -1,7 +1,6 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <resources>
   <!--title-->
-  <string name="title_encrypt">Versleutelen</string>
   <string name="title_decrypt">Ontsleutelen</string>
   <string name="title_authentication">Wachtwoord</string>
   <string name="title_edit_key">Sleutel bewerken</string>
@@ -135,7 +134,6 @@
   <string name="passphrase_must_not_be_empty">Vul een wachtwoord in.</string>
   <string name="passphrase_for_symmetric_encryption">Symmetrische versleuteling.</string>
   <string name="passphrase_for">Voer het wachtwoord in voor \'%s\'</string>
-  <string name="file_delete_confirmation">Weer u zeker dat u het volgende wilt verwijderen:\n%s?</string>
   <string name="file_delete_successful">Succesvol verwijderd.</string>
   <string name="no_file_selected">Selecteer eerst een bestand.</string>
   <string name="encrypt_sign_successful">Succesvol gesigneerd en/of gecodeerd.</string>
@@ -143,21 +141,11 @@
   <string name="enter_passphrase_twice">Voer het wachtwoord tweemaal in.</string>
   <string name="select_encryption_key">Selecteer ten minste één versleutelingssleutel.</string>
   <string name="select_encryption_or_signature_key">Selecter ten minste één versleutelings-/ondertekeningssleutel.</string>
-  <string name="specify_file_to_encrypt_to">Specifieer naar welk bestand er gecodeerd moet worden.\nWAARSCHUWING: Bestand zal vervangen worden als het bestaat.</string>
-  <string name="specify_file_to_decrypt_to">Specifieer naar welk bestand gedecodeerd moet worden.\nWAARSCHUWING: Bestand zal vervangen worden als het bestaat.</string>
-  <string name="specify_file_to_export_to">Specifieer naar welk bestand er geëxporteerd moet worden.\nWAARSCHUWING: Bestand zal vervangen worden als het bestaat.</string>
-  <string name="key_deletion_confirmation_multi">Weet u zeker dat u alle weergegeven publieke sleutels wilt verwijderen?\nU kunt dit niet ongedaan maken!</string>
-  <string name="secret_key_deletion_confirmation">Weet u zeker dat u de privésleutel \'%s\' wilt verwijderen?\nDit kan niet ongedaan worden gemaakt.</string>
-  <string name="public_key_deletetion_confirmation">Wilt u echt de publieke sleutel \'%s\' verwijderen?\nDit kunt u niet ongedaan maken!</string>
   <string name="key_exported">1 sleutel succesvol geëxporteerd.</string>
   <string name="keys_exported">Succesvol %d sleutels geëxporteerd.</string>
   <string name="no_keys_exported">Geen sleutels geëxporteerd.</string>
   <string name="key_creation_el_gamal_info">Opmerking: alleen subsleutels ondersteunen ElGamal.</string>
   <string name="key_not_found">Kan de sleutel %08X niet vinden.</string>
-  <plurals name="bad_keys_encountered">
-    <item quantity="one">%d slechte geheime sleutel genegeerd. Misschien heeft u geëxporteerd met de optie\n --export-secret-subkeys\nZorg ervoor dat u in plaats daarvan met\n --export-secret-keys\nexporteert.</item>
-    <item quantity="other">%d slechte geheime sleutels genegeerd. Misschien heeft u geëxporteerd met de optie\n --export-secret-subkeys\nZorg ervoor dat u in plaats daarvan met\n --export-secret-keys\nexporteert.</item>
-  </plurals>
   <string name="key_send_success">Succesvol sleutel naar server geüpload</string>
   <string name="key_certify_success">Succesvol identiteiten gecertificeerd</string>
   <string name="list_empty">Lijst is leeg</string>
@@ -240,6 +228,11 @@
   <string name="key_size_custom">Aangepaste sleutelgrootte</string>
   <string name="key_size_custom_info">Typ aangepaste sleutellengte (in bits):</string>
   <string name="key_size_custom_info_dsa">DSA sleutellengte moet minstens 512 zijn en maximaal 1024. Het moet ook deelbaar zijn door 64.</string>
+  <!--elliptic curve names-->
+  <!--not in for now, see SaveKeyringParcel
+    <string name="key_curve_bp_p256">Brainpool P-256</string>
+    <string name="key_curve_bp_p384">Brainpool P-384</string>
+    <string name="key_curve_bp_p512">Brainpool P-512</string>-->
   <!--compression-->
   <string name="compression_fast">snel</string>
   <string name="compression_very_slow">zeer langzaam</string>
@@ -299,7 +292,6 @@
   <string name="key_view_action_encrypt">Codeer met deze sleutel</string>
   <string name="key_view_action_certify">Certifiëer identiteiten</string>
   <string name="key_view_action_share_with">Delen met...</string>
-  <string name="key_view_action_share_nfc">Delen via NFC door de apparaten met de achterkant tegen elkaar te houden</string>
   <string name="key_view_tab_main">Hoofd Info</string>
   <string name="key_view_tab_share">Delen</string>
   <string name="key_view_tab_keys">Subsleutels</string>
@@ -309,8 +301,6 @@
   <!--View key-->
   <!--Navigation Drawer-->
   <string name="nav_keys">Sleutels</string>
-  <string name="nav_encrypt">Ondertekenen en Versleutelen</string>
-  <string name="nav_decrypt">Decoderen en Verifiëren</string>
   <string name="drawer_open">Open navigatiemenu</string>
   <string name="drawer_close">Sluit navigatiemenu</string>
   <string name="my_keys">Mijn Sleutels</string>
@@ -325,6 +315,7 @@
   <string name="cert_verify_failed">mislukt!</string>
   <string name="cert_verify_error">fout!</string>
   <string name="cert_verify_unavailable">sleutel onbeschikbaar</string>
+  <!--LogType log messages. Errors should have _ERROR_ in their name and end with a !-->
   <!--Import Public log entries-->
   <!--Import Secret log entries-->
   <!--Keyring Canonicalization log entries-->

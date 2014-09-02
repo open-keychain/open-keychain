@@ -3,7 +3,6 @@
   <!--title-->
   <string name="title_select_recipients">Vybrat klíče</string>
   <string name="title_select_secret_key">Vybrat svůj klíč</string>
-  <string name="title_encrypt">Zašifrovat</string>
   <string name="title_decrypt">Rozšifrovat</string>
   <string name="title_authentication">Heslo</string>
   <string name="title_add_subkey">Přidat podklíč</string>
@@ -85,8 +84,6 @@
   <string name="label_algorithm">Algoritmus</string>
   <string name="label_ascii_armor">Soubor ASCII armor</string>
   <string name="label_file_ascii_armor">Soubory: ASCII armor</string>
-  <string name="label_asymmetric_from">Od:</string>
-  <string name="label_to">Komu:</string>
   <string name="label_delete_after_encryption">Soubory: smazat po zašifrování</string>
   <string name="label_delete_after_decryption">Smazat po rozšifrování</string>
   <string name="label_encryption_algorithm">Šifrovací algoritmus</string>
@@ -152,7 +149,6 @@
   <string name="passphrase_must_not_be_empty">Prosím zadejte heslo.</string>
   <string name="passphrase_for_symmetric_encryption">Symetrická šifra.</string>
   <string name="passphrase_for">Zadejte heslo pro \'%s\'</string>
-  <string name="file_delete_confirmation">Určitě smazat\n%s?</string>
   <string name="file_delete_successful">Úspěšně smazáno.</string>
   <string name="no_file_selected">Nejprve vyberte soubor.</string>
   <string name="encrypt_sign_successful">Úspěšně podepsáno a/nebo zašifrováno.</string>
@@ -160,12 +156,6 @@
   <string name="enter_passphrase_twice">Heslo zadejte dvakrát.</string>
   <string name="select_encryption_key">Vyberte alespoň jeden šifrovací klíč.</string>
   <string name="select_encryption_or_signature_key">Vyberte alespoň jeden šifrovací nebo podpisový klíč.</string>
-  <string name="specify_file_to_encrypt_to">Prosím specifikujte do kterého souboru zašifrovat.\nVAROVÁNÍ: Pokud soubor již existuje, bude přepsán.</string>
-  <string name="specify_file_to_decrypt_to">Prosím specifikujte do kterého souboru rozšifrovat.\nVAROVÁNÍ: Pokud soubor již existuje, bude přepsán.</string>
-  <string name="specify_file_to_export_to">Prosím specifikujte do kterého souboru exportovat.\nVAROVÁNÍ: Pokud soubor již existuje, bude přepsán.</string>
-  <string name="key_deletion_confirmation_multi">Opravdu si přejete smazat všechny vybrané veřejné klíče?\nToto nebude možné vzít zpět!</string>
-  <string name="secret_key_deletion_confirmation">Opravdu chcete smazat TAJNÝ klíč \'%s\'?\nToto je nevratná operace!</string>
-  <string name="public_key_deletetion_confirmation">Opravdu chcete smazat veřejný klíč \'%s\'?\nToto nebude možné vrátit zpět!</string>
   <string name="also_export_secret_keys">Zárověň exportovat tajný klíč</string>
   <string name="key_exported">Úspěšně exportován 1 klíč.</string>
   <string name="keys_exported">Úspěšně exportován %d klíč.</string>
@@ -267,6 +257,11 @@
   <string name="key_size_custom_info">Napište vlastní délku klíče (v bitech):</string>
   <string name="key_size_custom_info_rsa">Délka RSA klíče musí být větší než 1024 a alespoň 16384. Zároveň musí být dělitelná 8mi.</string>
   <string name="key_size_custom_info_dsa">Délka DSA klíče musí být alespoň 512 a nejvýše 1024. Zároveň musí být dělitelná 64.</string>
+  <!--elliptic curve names-->
+  <!--not in for now, see SaveKeyringParcel
+    <string name="key_curve_bp_p256">Brainpool P-256</string>
+    <string name="key_curve_bp_p384">Brainpool P-384</string>
+    <string name="key_curve_bp_p512">Brainpool P-512</string>-->
   <!--compression-->
   <string name="compression_fast">rychle</string>
   <string name="compression_very_slow">velmi pomalu</string>
@@ -298,7 +293,6 @@
   <string name="intent_send_encrypt">Zašifrovat pomocí OpenKeychain</string>
   <string name="intent_send_decrypt">Dešifrovat pomocí OpenKeychain</string>
   <!--Remote API-->
-  <string name="api_no_apps">Neregistrovaná appka!\n\nSeznam podporovaných aplikací třetích stran je možo nalézt v \'Nápovědě\'!</string>
   <string name="api_settings_show_info">Zobrazit pokročilé informace</string>
   <string name="api_settings_hide_info">Schovat pokročilé informace</string>
   <string name="api_settings_show_advanced">Zobrazit pokročilá nastavení</string>
@@ -315,8 +309,6 @@
   <string name="api_settings_package_signature">SHA-256 z podpisu balíčku</string>
   <string name="api_settings_accounts">Účty</string>
   <string name="api_settings_accounts_empty">Žádné účty nejsou specifikovány pro tuto appku.</string>
-  <string name="api_create_account_text">Appka žádá o vytvoření nového účtu. Prosím vyberte nějaký existující klíč nebo vytvořte nový.\nAppky jsou omezeny na použití klíčů, které zde vyberete!</string>
-  <string name="api_register_text">Zobrazená appka chce zašifrovat/rozšifrovat zprávy a podepsat je vačím jménem.\nPovolit přístup?\n\nVAROVÁNÍ: Pokud nevíte proč se tato obrazovka objevila, zamítněte přístup! Také můžete zneplatnit přístup jindy v obrazovce \'Appky\'.</string>
   <string name="api_register_allow">Povolit přístup</string>
   <string name="api_register_disallow">Zamítnout přístup</string>
   <string name="api_register_error_select_key">Prosím vyberte klíč!</string>
@@ -337,7 +329,6 @@
   <string name="key_view_action_certify">Certifikovat identity</string>
   <string name="key_view_action_update">Aktualizuji z keyserveru</string>
   <string name="key_view_action_share_with">Sdílet pomocí...</string>
-  <string name="key_view_action_share_nfc">Sdílet přes NFC tak, že podržíte zařízení zády k sobě</string>
   <string name="key_view_action_upload">Aktualizovat na keyserver</string>
   <string name="key_view_tab_main">Hlavní info</string>
   <string name="key_view_tab_share">Sdílet</string>
@@ -367,7 +358,6 @@
   <string name="create_key_empty">Toto pole je vyžadováno</string>
   <string name="create_key_passphrases_not_equal">Heslo nesouhlasí</string>
   <string name="create_key_final_text">Zadali jste následující identitu:</string>
-  <string name="create_key_final_robot_text">Vytvoření identity může chvíli tvrvat. Mezitím si dejte šálek kávy.\n(3 podklíče, RSA, 4096 bit)</string>
   <string name="create_key_text">Zadejte své celé jméno, emailovou adresu a zvolte heslo.</string>
   <string name="create_key_hint_full_name">Celé jméno, např. Jan Novák</string>
   <!--View key-->
@@ -375,14 +365,11 @@
   <string name="view_key_expired">Tento klíč vyexpiroval!</string>
   <!--Navigation Drawer-->
   <string name="nav_keys">Klíče</string>
-  <string name="nav_encrypt">Podepisuji a šifruji</string>
-  <string name="nav_decrypt">Dešifruji a kontroluji</string>
   <string name="nav_apps">Appky</string>
   <string name="drawer_open">Otevřít navigační panel</string>
   <string name="drawer_close">Zavří navigační panel</string>
   <string name="my_keys">Moje Klíče</string>
   <!--hints-->
-  <string name="encrypt_content_edit_text_hint">Zpráva zadaná sem bude podepsána za použití klíče vybraného v poli \'Od\' a zašifrovaná pro všecny příjemce vybrané v \'Pro\'.</string>
   <string name="decrypt_content_edit_text_hint">Vložte zašifrovaný text pro jeho rozšifrování a/nebo ověření...</string>
   <!--certs-->
   <string name="cert_default">výchozí</string>
@@ -394,6 +381,7 @@
   <string name="cert_verify_failed">selhalo!</string>
   <string name="cert_verify_error">chyba!</string>
   <string name="cert_verify_unavailable">klíč není k dispozici</string>
+  <!--LogType log messages. Errors should have _ERROR_ in their name and end with a !-->
   <!--Import Public log entries-->
   <!--Import Secret log entries-->
   <!--Keyring Canonicalization log entries-->

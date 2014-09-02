@@ -1,7 +1,6 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <resources>
   <!--title-->
-  <string name="title_encrypt">Krüpteeri</string>
   <string name="title_decrypt">Dekrüpteeri</string>
   <string name="title_authentication">Salasõne</string>
   <string name="title_edit_key">Muuda võtit</string>
@@ -76,6 +75,11 @@
   <!--progress dialogs, usually ending in '…'-->
   <!--action strings-->
   <!--key bit length selections-->
+  <!--elliptic curve names-->
+  <!--not in for now, see SaveKeyringParcel
+    <string name="key_curve_bp_p256">Brainpool P-256</string>
+    <string name="key_curve_bp_p384">Brainpool P-384</string>
+    <string name="key_curve_bp_p512">Brainpool P-512</string>-->
   <!--compression-->
   <!--Help-->
   <!--Import-->
@@ -91,6 +95,7 @@
   <!--Navigation Drawer-->
   <!--hints-->
   <!--certs-->
+  <!--LogType log messages. Errors should have _ERROR_ in their name and end with a !-->
   <!--Import Public log entries-->
   <!--Import Secret log entries-->
   <!--Keyring Canonicalization log entries-->

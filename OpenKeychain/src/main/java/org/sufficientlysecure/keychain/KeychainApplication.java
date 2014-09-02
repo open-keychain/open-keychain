@@ -132,7 +132,7 @@ public class KeychainApplication extends Application {
                     }
                 }
             } catch (SecurityException e) {
-                Log.e(Constants.TAG, "SecurityException when adding the  account", e);
+                Log.e(Constants.TAG, "SecurityException when adding the account", e);
                 Toast.makeText(context, R.string.reinstall_openkeychain, Toast.LENGTH_LONG).show();
             }
         }
