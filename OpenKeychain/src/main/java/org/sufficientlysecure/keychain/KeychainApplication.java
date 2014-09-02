@@ -28,6 +28,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Environment;
 import android.provider.ContactsContract;
+import android.widget.Toast;
 
 import org.spongycastle.jce.provider.BouncyCastleProvider;
 import org.sufficientlysecure.keychain.helper.Preferences;
@@ -96,34 +97,43 @@ public class KeychainApplication extends Application {
         TemporaryStorageProvider.cleanUp(this);
 
         checkConsolidateRecovery();
-
     }
 
+    /**
+     * Restart consolidate process if it has been interruped before
+     */
     public void checkConsolidateRecovery() {
-
-        // restart consolidate process if it has been interruped before
         if (Preferences.getPreferences(this).getCachedConsolidate()) {
             // do something which calls ProviderHelper.consolidateDatabaseStep2 with a progressable
             Intent consolidateIntent = new Intent(this, ConsolidateDialogActivity.class);
             consolidateIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(consolidateIntent);
         }
-
     }
 
+    /**
+     * Add OpenKeychain account to Android to link contacts with keys
+     *
+     * @param context
+     */
     public static void setupAccountAsNeeded(Context context) {
         // only enabled for Jelly Bean because we need some newer methods in our sync adapter
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-            AccountManager manager = AccountManager.get(context);
-            Account[] accounts = manager.getAccountsByType(Constants.ACCOUNT_TYPE);
-            if (accounts == null || accounts.length == 0) {
-                Account account = new Account(Constants.ACCOUNT_NAME, Constants.ACCOUNT_TYPE);
-                if (manager.addAccountExplicitly(account, null, null)) {
-                    ContentResolver.setIsSyncable(account, ContactsContract.AUTHORITY, 1);
-		    ContentResolver.setSyncAutomatically(account, ContactsContract.AUTHORITY, true);
-                } else {
-                    Log.e(Constants.TAG, "Adding account failed!");
+            try {
+                AccountManager manager = AccountManager.get(context);
+                Account[] accounts = manager.getAccountsByType(Constants.ACCOUNT_TYPE);
+                if (accounts == null || accounts.length == 0) {
+                    Account account = new Account(Constants.ACCOUNT_NAME, Constants.ACCOUNT_TYPE);
+                    if (manager.addAccountExplicitly(account, null, null)) {
+                        ContentResolver.setIsSyncable(account, ContactsContract.AUTHORITY, 1);
+                        ContentResolver.setSyncAutomatically(account, ContactsContract.AUTHORITY, true);
+                    } else {
+                        Log.e(Constants.TAG, "Adding account failed!");
+                    }
                 }
+            } catch (SecurityException e) {
+                Log.e(Constants.TAG, "SecurityException when adding the  account", e);
+                Toast.makeText(context, R.string.reinstall_openkeychain, Toast.LENGTH_LONG).show();
             }
         }
     }
