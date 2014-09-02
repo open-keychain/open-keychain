@@ -25,8 +25,12 @@ import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.shadows.ShadowLog;
+import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey;
+import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey.SecretKeyType;
+import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKeyRing;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
 import org.sufficientlysecure.keychain.service.OperationResults.SaveKeyringResult;
+import org.sufficientlysecure.keychain.util.ProgressScaler;
 
 import java.io.IOException;
 import java.util.Iterator;
@@ -40,13 +44,13 @@ public class ProviderHelperSaveTest {
         ShadowLog.stream = System.out;
     }
 
-    @Test
-    public void testLongKeyIdCollision() throws Exception {
+    @Test public void testImportCooperPair() throws Exception {
 
+        // insert two keys with same long key id, make sure the second one gets rejected either way!
         UncachedKeyRing first =
-                readRingFromResource("/cooperpair/9E669861368BCA0BE42DAF7DDDA252EBB8EBE1AF.asc");
+                readRingFromResource("/test-keys/cooperpair/9E669861368BCA0BE42DAF7DDDA252EBB8EBE1AF.asc");
         UncachedKeyRing second =
-                readRingFromResource("/cooperpair/A55120427374F3F7AA5F1166DDA252EBB8EBE1AF.asc");
+                readRingFromResource("/test-keys/cooperpair/A55120427374F3F7AA5F1166DDA252EBB8EBE1AF.asc");
 
         SaveKeyringResult result;
 
@@ -63,6 +67,41 @@ public class ProviderHelperSaveTest {
         Assert.assertTrue("first keyring import should succeed", result.success());
         result = new ProviderHelper(Robolectric.application).savePublicKeyRing(first);
         Assert.assertFalse("second keyring import should fail", result.success());
+
+    }
+
+    @Test public void testImportDivertToCard() throws Exception {
+
+        UncachedKeyRing pub =
+                readRingFromResource("/test-keys/divert_to_card_pub.asc");
+        UncachedKeyRing sec =
+                readRingFromResource("/test-keys/divert_to_card_sec.asc");
+        long keyId = sec.getMasterKeyId();
+
+        SaveKeyringResult result;
+
+        // insert both keys, second should fail
+        result = new ProviderHelper(Robolectric.application).savePublicKeyRing(pub);
+        Assert.assertTrue("import of public keyring should succeed", result.success());
+        result = new ProviderHelper(Robolectric.application).saveSecretKeyRing(sec,
+                new ProgressScaler());
+        Assert.assertTrue("import of secret keyring should succeed", result.success());
+
+        CanonicalizedSecretKeyRing secRing =
+                new ProviderHelper(Robolectric.application).getCanonicalizedSecretKeyRing(keyId);
+        for (CanonicalizedSecretKey key : secRing.secretKeyIterator()) {
+            Assert.assertEquals("all subkeys should be divert-to-key",
+                    SecretKeyType.DIVERT_TO_CARD, key.getSecretKeyType());
+        }
+
+        /*
+        CachedPublicKeyRing cachedRing =
+                new ProviderHelper(Robolectric.application).getCachedPublicKeyRing(keyId);
+        for (CanonicalizedSecretKey key : cachedRing.()) {
+            Assert.assertEquals("all subkeys should be divert-to-key",
+                    SecretKeyType.DIVERT_TO_CARD, key.getSecretKeyType());
+        }
+        */
 
     }
 
