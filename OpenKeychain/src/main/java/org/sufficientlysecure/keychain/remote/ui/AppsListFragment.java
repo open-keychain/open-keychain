@@ -160,9 +160,8 @@ public class AppsListFragment extends ListFragment implements
                 }
             } else {
                 // fallback
-                text.setText(packageName);
+                text.setText("No Name");
             }
-
         }
 
         @Override
