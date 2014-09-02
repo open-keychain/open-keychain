@@ -141,12 +141,22 @@ public class ProviderHelper {
     public static final int FIELD_TYPE_BLOB = 5;
 
     public Object getGenericData(Uri uri, String column, int type) throws NotFoundException {
-        return getGenericData(uri, new String[]{column}, new int[]{type}).get(column);
+        return getGenericData(uri, new String[]{column}, new int[]{type}, null).get(column);
+    }
+
+    public Object getGenericData(Uri uri, String column, int type, String selection)
+            throws NotFoundException {
+        return getGenericData(uri, new String[]{column}, new int[]{type}, selection).get(column);
     }
 
     public HashMap<String, Object> getGenericData(Uri uri, String[] proj, int[] types)
+        throws NotFoundException {
+        return getGenericData(uri, proj, types, null);
+    }
+
+    public HashMap<String, Object> getGenericData(Uri uri, String[] proj, int[] types, String selection)
             throws NotFoundException {
-        Cursor cursor = mContentResolver.query(uri, proj, null, null, null);
+        Cursor cursor = mContentResolver.query(uri, proj, selection, null, null);
 
         try {
             HashMap<String, Object> result = new HashMap<String, Object>(proj.length);
@@ -221,6 +231,10 @@ public class ProviderHelper {
 
     public CachedPublicKeyRing getCachedPublicKeyRing(Uri queryUri) {
         return new CachedPublicKeyRing(this, queryUri);
+    }
+
+    public CachedPublicKeyRing getCachedPublicKeyRing(long id) {
+        return new CachedPublicKeyRing(this, KeyRings.buildUnifiedKeyRingUri(id));
     }
 
     public CanonicalizedPublicKeyRing getCanonicalizedPublicKeyRing(long id) throws NotFoundException {

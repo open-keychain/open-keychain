@@ -22,8 +22,11 @@ import android.database.Cursor;
 import android.net.Uri;
 
 import org.sufficientlysecure.keychain.Constants;
+import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey.SecretKeyType;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
+import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
+import org.sufficientlysecure.keychain.provider.KeychainContract.Keys;
 import org.sufficientlysecure.keychain.util.Log;
 
 /** This implementation of KeyRing provides a cached view of PublicKeyRing
@@ -222,4 +225,17 @@ public class CachedPublicKeyRing extends KeyRing {
         Uri keysUri = KeychainContract.Keys.buildKeysUri(extractOrGetMasterKeyId());
         return mProviderHelper.getContentResolver().query(keysUri, null, null, null, null);
     }
+
+    public SecretKeyType getSecretKeyType(long keyId) throws PgpGeneralException {
+        try {
+            Object data = mProviderHelper.getGenericData(Keys.buildKeysUri(mUri),
+                    KeyRings.HAS_SECRET,
+                    ProviderHelper.FIELD_TYPE_INTEGER,
+                    KeyRings.KEY_ID + " = " + Long.toString(keyId));
+            return SecretKeyType.fromNum(((Long) data).intValue());
+        } catch(ProviderHelper.NotFoundException e) {
+            throw new PgpGeneralException(e);
+        }
+    }
+
 }
