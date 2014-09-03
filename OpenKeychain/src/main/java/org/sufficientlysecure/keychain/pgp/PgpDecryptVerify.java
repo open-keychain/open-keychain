@@ -261,6 +261,8 @@ public class PgpDecryptVerify {
 
                 PGPPublicKeyEncryptedData encData = (PGPPublicKeyEncryptedData) obj;
 
+                long subKeyId = encData.getKeyID();
+
                 CanonicalizedSecretKeyRing secretKeyRing;
                 try {
                     // get actual keyring object based on master key id
@@ -276,22 +278,20 @@ public class PgpDecryptVerify {
                     continue;
                 }
                 // get subkey which has been used for this encryption packet
-                secretEncryptionKey = secretKeyRing.getSecretKey(encData.getKeyID());
+                secretEncryptionKey = secretKeyRing.getSecretKey(subKeyId);
                 if (secretEncryptionKey == null) {
                     // continue with the next packet in the while loop
                     continue;
                 }
 
-                /* secret key exists in database! */
-                long masterKeyId = secretEncryptionKey.getRing().getMasterKeyId();
-
                 // allow only specific keys for decryption?
                 if (mAllowedKeyIds != null) {
-                    Log.d(Constants.TAG, "encData.getKeyID(): " + encData.getKeyID());
+                    Log.d(Constants.TAG, "encData.getKeyID(): " + subKeyId);
                     Log.d(Constants.TAG, "mAllowedKeyIds: " + mAllowedKeyIds);
-                    Log.d(Constants.TAG, "masterKeyId: " + masterKeyId);
+                    Log.d(Constants.TAG, "masterKeyId: "
+                            + secretEncryptionKey.getRing().getMasterKeyId());
 
-                    if (!mAllowedKeyIds.contains(masterKeyId)) {
+                    if (!mAllowedKeyIds.contains(subKeyId)) {
                         // this key is in our db, but NOT allowed!
                         // continue with the next packet in the while loop
                         continue;
@@ -306,12 +306,12 @@ public class PgpDecryptVerify {
                 // if no passphrase was explicitly set try to get it from the cache service
                 if (mPassphrase == null) {
                     // returns "" if key has no passphrase
-                    mPassphrase = mPassphraseCache.getCachedPassphrase(masterKeyId);
+                    mPassphrase = mPassphraseCache.getCachedPassphrase(subKeyId);
 
                     // if passphrase was not cached, return here
                     // indicating that a passphrase is missing!
                     if (mPassphrase == null) {
-                        result.setKeyIdPassphraseNeeded(masterKeyId);
+                        result.setKeyIdPassphraseNeeded(subKeyId);
                         result.setStatus(PgpDecryptVerifyResult.KEY_PASSHRASE_NEEDED);
                         return result;
                     }

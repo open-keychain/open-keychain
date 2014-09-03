@@ -141,7 +141,11 @@ public class ProviderHelper {
     public static final int FIELD_TYPE_BLOB = 5;
 
     public Object getGenericData(Uri uri, String column, int type) throws NotFoundException {
-        return getGenericData(uri, new String[]{column}, new int[]{type}, null).get(column);
+        Object result = getGenericData(uri, new String[]{column}, new int[]{type}, null).get(column);
+        if (result == null) {
+            throw new NotFoundException();
+        }
+        return result;
     }
 
     public Object getGenericData(Uri uri, String column, int type, String selection)
@@ -227,6 +231,11 @@ public class ProviderHelper {
             }
         }
 
+    }
+
+    public long getMasterKeyId(long subKeyId) throws NotFoundException {
+        return (Long) getGenericData(KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(subKeyId),
+                KeyRings.MASTER_KEY_ID, FIELD_TYPE_INTEGER);
     }
 
     public CachedPublicKeyRing getCachedPublicKeyRing(Uri queryUri) {

@@ -47,6 +47,7 @@ import org.sufficientlysecure.keychain.compatibility.DialogFragmentWorkaround;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKeyRing;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
+import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.PassphraseCacheService;
 import org.sufficientlysecure.keychain.util.Log;
@@ -98,17 +99,7 @@ public class PassphraseDialogFragment extends DialogFragment implements OnEditor
      */
     public static PassphraseDialogFragment newInstance(Context context, Messenger messenger,
                                                        long secretKeyId) throws PgpGeneralException {
-        // check if secret key has a passphrase
-        if (!(secretKeyId == Constants.key.symmetric || secretKeyId == Constants.key.none)) {
-            try {
-                if (!new ProviderHelper(context).getCanonicalizedSecretKeyRing(secretKeyId).hasPassphrase()) {
-                    throw new PgpGeneralException("No passphrase! No passphrase dialog needed!");
-                }
-            } catch (ProviderHelper.NotFoundException e) {
-                throw new PgpGeneralException("Error: Key not found!", e);
-            }
-        }
-
+        // do NOT check if the key even needs a passphrase. that's not our job here.
         PassphraseDialogFragment frag = new PassphraseDialogFragment();
         Bundle args = new Bundle();
         args.putLong(ARG_SECRET_KEY_ID, secretKeyId);
@@ -141,7 +132,8 @@ public class PassphraseDialogFragment extends DialogFragment implements OnEditor
         } else {
             try {
                 ProviderHelper helper = new ProviderHelper(activity);
-                secretRing = helper.getCanonicalizedSecretKeyRing(secretKeyId);
+                secretRing = helper.getCanonicalizedSecretKeyRing(
+                        KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(secretKeyId));
                 // yes the inner try/catch block is necessary, otherwise the final variable
                 // above can't be statically verified to have been set in all cases because
                 // the catch clause doesn't return.
@@ -191,49 +183,26 @@ public class PassphraseDialogFragment extends DialogFragment implements OnEditor
                     return;
                 }
 
-                CanonicalizedSecretKey unlockedSecretKey = null;
-
-                for (CanonicalizedSecretKey clickSecretKey : secretRing.secretKeyIterator()) {
-                    try {
-                        boolean unlocked = clickSecretKey.unlock(passphrase);
-                        if (unlocked) {
-                            unlockedSecretKey = clickSecretKey;
-                            break;
-                        }
-                    } catch (PgpGeneralException e) {
-                        Toast.makeText(activity, R.string.error_could_not_extract_private_key,
-                                Toast.LENGTH_SHORT).show();
-
-                        sendMessageToHandler(MESSAGE_CANCEL);
-                        return; // ran out of keys to try
-                    }
-                }
-
-                // Means we got an exception every time
-                if (unlockedSecretKey == null) {
-                    Toast.makeText(activity, R.string.wrong_passphrase,
+                try {
+                    // make sure this unlocks
+                    // TODO this is a very costly operation, we should not be doing this here!
+                    secretRing.getSecretKey(secretKeyId).unlock(passphrase);
+                } catch (PgpGeneralException e) {
+                    Toast.makeText(activity, R.string.error_could_not_extract_private_key,
                             Toast.LENGTH_SHORT).show();
 
                     sendMessageToHandler(MESSAGE_CANCEL);
-                    return;
+                    return; // ran out of keys to try
                 }
-
-                long masterKeyId = secretRing.getMasterKeyId();
 
                 // cache the new passphrase
                 Log.d(Constants.TAG, "Everything okay! Caching entered passphrase");
 
                 try {
-                    PassphraseCacheService.addCachedPassphrase(activity, masterKeyId, passphrase,
+                    PassphraseCacheService.addCachedPassphrase(activity, secretKeyId, passphrase,
                             secretRing.getPrimaryUserIdWithFallback());
                 } catch (PgpGeneralException e) {
                     Log.e(Constants.TAG, "adding of a passphrase failed", e);
-                }
-
-                if (unlockedSecretKey.getKeyId() != masterKeyId) {
-                    PassphraseCacheService.addCachedPassphrase(
-                            activity, unlockedSecretKey.getKeyId(), passphrase,
-                            unlockedSecretKey.getPrimaryUserIdWithFallback());
                 }
 
                 // also return passphrase back to activity

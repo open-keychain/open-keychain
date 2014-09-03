@@ -41,10 +41,13 @@ import org.spongycastle.bcpg.S2K;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.helper.Preferences;
+import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey.SecretKeyType;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKeyRing;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
+import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
+import org.sufficientlysecure.keychain.provider.ProviderHelper.NotFoundException;
 import org.sufficientlysecure.keychain.util.Log;
 
 import java.util.Date;
@@ -180,12 +183,12 @@ public class PassphraseCacheService extends Service {
     /**
      * Internal implementation to get cached passphrase.
      *
-     * @param keyId
+     * @param subKeyId
      * @return
      */
-    private String getCachedPassphraseImpl(long keyId) throws ProviderHelper.NotFoundException {
+    private String getCachedPassphraseImpl(long subKeyId) throws ProviderHelper.NotFoundException {
         // passphrase for symmetric encryption?
-        if (keyId == Constants.key.symmetric) {
+        if (subKeyId == Constants.key.symmetric) {
             Log.d(Constants.TAG, "PassphraseCacheService.getCachedPassphraseImpl() for symmetric encryption");
             String cachedPassphrase = mPassphraseCache.get(Constants.key.symmetric).getPassphrase();
             if (cachedPassphrase == null) {
@@ -195,32 +198,39 @@ public class PassphraseCacheService extends Service {
             return cachedPassphrase;
         }
 
+        // on "none" key, just do nothing
+        if(subKeyId == Constants.key.none) {
+            return null;
+        }
+
         // try to get master key id which is used as an identifier for cached passphrases
-        Log.d(Constants.TAG, "PassphraseCacheService.getCachedPassphraseImpl() for masterKeyId " + keyId);
-        CanonicalizedSecretKeyRing key = new ProviderHelper(this).getCanonicalizedSecretKeyRing(
-                KeychainContract.KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(keyId));
+        Log.d(Constants.TAG, "PassphraseCacheService.getCachedPassphraseImpl() for masterKeyId " + subKeyId);
+        // find a master key id for our key
+        long masterKeyId = new ProviderHelper(this).getMasterKeyId(subKeyId);
+        CachedPublicKeyRing keyRing = new ProviderHelper(this).getCachedPublicKeyRing(masterKeyId);
 
-        // no passphrase needed? just add empty string and return it, then
-        if (!key.hasPassphrase()) {
-            Log.d(Constants.TAG, "Key has no passphrase! Caches and returns empty passphrase!");
+        // get the type of key (from the database)
+        SecretKeyType keyType = keyRing.getSecretKeyType(subKeyId);
 
+        switch (keyType) {
             // TODO: HACK for yubikeys
-            if (key.getSecretKey().getSecretKey().getS2K().getType() == S2K.GNU_DUMMY_S2K
-                    && key.getSecretKey().getSecretKey().getS2K().getProtectionMode() == 2) {
-                // NFC!
+            case DIVERT_TO_CARD:
                 return "123456";
-            }
-
-            try {
-                addCachedPassphrase(this, keyId, "", key.getPrimaryUserIdWithFallback());
-            } catch (PgpGeneralException e) {
-                Log.d(Constants.TAG, "PgpGeneralException occured");
-            }
-            return "";
+            case PASSPHRASE_EMPTY:
+                try {
+                    addCachedPassphrase(this, subKeyId, "", keyRing.getPrimaryUserIdWithFallback());
+                } catch (PgpGeneralException e) {
+                    Log.d(Constants.TAG, "PgpGeneralException occured");
+                }
+                return "";
+            case UNAVAILABLE:
+                throw new NotFoundException("secret key for this subkey is not available");
+            case GNU_DUMMY:
+                throw new NotFoundException("secret key for stripped subkey is not available");
         }
 
         // get cached passphrase
-        CachedPassphrase cachedPassphrase = mPassphraseCache.get(keyId);
+        CachedPassphrase cachedPassphrase = mPassphraseCache.get(subKeyId);
         if (cachedPassphrase == null) {
             Log.d(Constants.TAG, "PassphraseCacheService: Passphrase not (yet) cached, returning null");
             // not really an error, just means the passphrase is not cached but not empty either
@@ -229,7 +239,7 @@ public class PassphraseCacheService extends Service {
 
         // set it again to reset the cache life cycle
         Log.d(Constants.TAG, "PassphraseCacheService: Cache passphrase again when getting it!");
-        addCachedPassphrase(this, keyId, cachedPassphrase.getPassphrase(), cachedPassphrase.getPrimaryUserID());
+        addCachedPassphrase(this, subKeyId, cachedPassphrase.getPassphrase(), cachedPassphrase.getPrimaryUserID());
         return cachedPassphrase.getPassphrase();
     }
 
@@ -311,7 +321,6 @@ public class PassphraseCacheService extends Service {
             } else if (ACTION_PASSPHRASE_CACHE_GET.equals(intent.getAction())) {
                 long keyId = intent.getLongExtra(EXTRA_KEY_ID, -1);
                 Messenger messenger = intent.getParcelableExtra(EXTRA_MESSENGER);
-
 
                 Message msg = Message.obtain();
                 try {
