@@ -25,6 +25,7 @@ import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.shadows.ShadowLog;
+import org.sufficientlysecure.keychain.pgp.CanonicalizedPublicKeyRing;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey.SecretKeyType;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKeyRing;
@@ -72,6 +73,30 @@ public class ProviderHelperSaveTest {
         Assert.assertTrue("first keyring import should succeed", result.success());
         result = new ProviderHelper(Robolectric.application).savePublicKeyRing(first);
         Assert.assertFalse("second keyring import should fail", result.success());
+
+    }
+
+    @Test public void testImportNoFlagKey() throws Exception {
+
+        UncachedKeyRing pub =
+                readRingFromResource("/test-keys/mailvelope_07_no_key_flags.asc");
+        long keyId = pub.getMasterKeyId();
+        Assert.assertNull("key flags should be null", pub.getPublicKey().getKeyUsage());
+
+        mProviderHelper.savePublicKeyRing(pub);
+
+        CachedPublicKeyRing cachedRing = mProviderHelper.getCachedPublicKeyRing(keyId);
+        CanonicalizedPublicKeyRing pubRing = mProviderHelper.getCanonicalizedPublicKeyRing(keyId);
+
+        Assert.assertEquals("master key should be signing key", pubRing.getSignId(), keyId);
+        Assert.assertEquals("master key should be signing key (cached)", cachedRing.getSignId(), keyId);
+        Assert.assertEquals("master key should be encryption key", pubRing.getEncryptId(), keyId);
+        Assert.assertEquals("master key should be signing key (cached)", cachedRing.getEncryptId(), keyId);
+
+        Assert.assertNull("canonicalized key flags should be null", pubRing.getPublicKey().getKeyUsage());
+        Assert.assertTrue("master key should be able to certify", pubRing.getPublicKey().canCertify());
+        Assert.assertTrue("master key should be able to sign", pubRing.getPublicKey().canSign());
+        Assert.assertTrue("master key should be able to encrypt", pubRing.getPublicKey().canEncrypt());
 
     }
 
