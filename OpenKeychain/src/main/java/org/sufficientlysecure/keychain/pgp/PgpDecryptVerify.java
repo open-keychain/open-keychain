@@ -286,12 +286,12 @@ public class PgpDecryptVerify {
 
                 // allow only specific keys for decryption?
                 if (mAllowedKeyIds != null) {
+                    long masterKeyId = secretEncryptionKey.getRing().getMasterKeyId();
                     Log.d(Constants.TAG, "encData.getKeyID(): " + subKeyId);
                     Log.d(Constants.TAG, "mAllowedKeyIds: " + mAllowedKeyIds);
-                    Log.d(Constants.TAG, "masterKeyId: "
-                            + secretEncryptionKey.getRing().getMasterKeyId());
+                    Log.d(Constants.TAG, "masterKeyId: " + masterKeyId);
 
-                    if (!mAllowedKeyIds.contains(subKeyId)) {
+                    if (!mAllowedKeyIds.contains(masterKeyId)) {
                         // this key is in our db, but NOT allowed!
                         // continue with the next packet in the while loop
                         continue;
