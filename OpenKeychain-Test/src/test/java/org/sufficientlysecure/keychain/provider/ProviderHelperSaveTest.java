@@ -102,8 +102,6 @@ public class ProviderHelperSaveTest {
 
     @Test public void testImportDivertToCard() throws Exception {
 
-        UncachedKeyRing pub =
-                readRingFromResource("/test-keys/divert_to_card_pub.asc");
         UncachedKeyRing sec =
                 readRingFromResource("/test-keys/divert_to_card_sec.asc");
         long keyId = sec.getMasterKeyId();
@@ -111,8 +109,6 @@ public class ProviderHelperSaveTest {
         SaveKeyringResult result;
 
         // insert both keys, second should fail
-        result = mProviderHelper.savePublicKeyRing(pub);
-        Assert.assertTrue("import of public keyring should succeed", result.success());
         result = mProviderHelper.saveSecretKeyRing(sec, new ProgressScaler());
         Assert.assertTrue("import of secret keyring should succeed", result.success());
 
