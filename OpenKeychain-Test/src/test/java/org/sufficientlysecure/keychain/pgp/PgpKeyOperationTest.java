@@ -195,7 +195,7 @@ public class PgpKeyOperationTest {
         Assert.assertEquals("the keyring should contain only the master key",
                 1, KeyringTestingHelper.itToList(ring.getPublicKeys()).size());
         Assert.assertEquals("first (master) key must have both flags",
-                KeyFlags.CERTIFY_OTHER | KeyFlags.SIGN_DATA, ring.getPublicKey().getKeyUsage());
+                KeyFlags.CERTIFY_OTHER | KeyFlags.SIGN_DATA, (long) ring.getPublicKey().getKeyUsage());
 
     }
 
@@ -224,10 +224,10 @@ public class PgpKeyOperationTest {
                 ring.getPublicKey().getExpiryTime());
 
         Assert.assertEquals("first (master) key can certify",
-                KeyFlags.CERTIFY_OTHER, subkeys.get(0).getKeyUsage());
+                KeyFlags.CERTIFY_OTHER, (long) subkeys.get(0).getKeyUsage());
 
         Assert.assertEquals("second key can sign",
-                KeyFlags.SIGN_DATA, subkeys.get(1).getKeyUsage());
+                KeyFlags.SIGN_DATA, (long) subkeys.get(1).getKeyUsage());
         ArrayList<WrappedSignature> sigs = subkeys.get(1).getSignatures().next().getEmbeddedSignatures();
         Assert.assertEquals("signing key signature should have one embedded signature",
                 1, sigs.size());
@@ -237,7 +237,7 @@ public class PgpKeyOperationTest {
                 subkeys.get(1).getKeyId(), sigs.get(0).getKeyId());
 
         Assert.assertEquals("third key can encrypt",
-                KeyFlags.ENCRYPT_COMMS, subkeys.get(2).getKeyUsage());
+                KeyFlags.ENCRYPT_COMMS, (long) subkeys.get(2).getKeyUsage());
 
     }
 
@@ -336,7 +336,7 @@ public class PgpKeyOperationTest {
         Assert.assertEquals("added key must have expected expiry date",
                 expiry, newKey.getExpiryTime().getTime()/1000);
         Assert.assertEquals("added key must have expected flags",
-                flags, newKey.getKeyUsage());
+                flags, (long) newKey.getKeyUsage());
         Assert.assertEquals("added key must have expected bitsize",
                 bits, (int) newKey.getBitStrength());
 
@@ -431,7 +431,7 @@ public class PgpKeyOperationTest {
                     ring.getMasterKeyId(), ((SignaturePacket) p).getKeyID());
 
             Assert.assertEquals("modified key must have expected flags",
-                    flags, modified.getPublicKey(keyId).getKeyUsage());
+                    flags, (long) modified.getPublicKey(keyId).getKeyUsage());
             Assert.assertNotNull("key must retain its expiry",
                     modified.getPublicKey(keyId).getExpiryTime());
             Assert.assertEquals("key expiry must be unchanged",
@@ -535,7 +535,7 @@ public class PgpKeyOperationTest {
             modified = applyModificationWithChecks(parcel, modified, onlyA, onlyB);
 
             Assert.assertEquals("modified key must have expected flags",
-                    flags, modified.getPublicKey(keyId).getKeyUsage());
+                    flags, (long) modified.getPublicKey(keyId).getKeyUsage());
             Assert.assertNotNull("key must retain its expiry",
                     modified.getPublicKey(keyId).getExpiryTime());
             Assert.assertEquals("key expiry must be unchanged",
@@ -682,7 +682,7 @@ public class PgpKeyOperationTest {
             Assert.assertFalse("subkey must no longer be revoked",
                     modified.getPublicKey(keyId).isRevoked());
             Assert.assertEquals("subkey must have the same usage flags as before",
-                    flags, modified.getPublicKey(keyId).getKeyUsage());
+                    flags, (long) modified.getPublicKey(keyId).getKeyUsage());
 
         }
     }
