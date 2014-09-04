@@ -267,7 +267,8 @@ public class ViewKeyShareFragment extends LoaderFragment implements
     }
 
     private static byte[] getSlingedKeys(Intent data) {
-        ArrayList<byte[]> theirSecrets = new ArrayList<byte[]>();
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+
         Bundle extras = data.getExtras();
         if (extras != null) {
             byte[] d;
@@ -275,21 +276,16 @@ public class ViewKeyShareFragment extends LoaderFragment implements
             do {
                 d = extras.getByteArray(ExchangeConfig.extra.MEMBER_DATA + i);
                 if (d != null) {
-                    theirSecrets.add(d);
+                    try {
+                        out.write(d);
+                    } catch (IOException e) {
+                        Log.e(Constants.TAG, "IOException", e);
+                    }
                     i++;
                 }
             } while (d != null);
         }
 
-        // concatenate keys
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        for (byte[] t : theirSecrets) {
-            try {
-                out.write(t);
-            } catch (IOException e) {
-                Log.e(Constants.TAG, "IOException", e);
-            }
-        }
         return out.toByteArray();
     }
 
