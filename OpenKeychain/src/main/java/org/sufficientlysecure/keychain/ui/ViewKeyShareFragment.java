@@ -55,6 +55,7 @@ import org.sufficientlysecure.keychain.util.Notify;
 import org.sufficientlysecure.keychain.util.QrCodeUtils;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 import edu.cmu.cylab.starslinger.exchange.ExchangeActivity;
 import edu.cmu.cylab.starslinger.exchange.ExchangeConfig;
@@ -81,6 +82,8 @@ public class ViewKeyShareFragment extends LoaderFragment implements
     private static final int QR_CODE_SIZE = 1000;
 
     private static final int LOADER_ID_UNIFIED = 0;
+
+    private static final int REQUEST_CODE_SAFESLINGER = 1;
 
     private Uri mDataUri;
 
@@ -170,7 +173,8 @@ public class ViewKeyShareFragment extends LoaderFragment implements
     private void share(Uri dataUri, ProviderHelper providerHelper, boolean fingerprintOnly,
                        boolean toClipboard, boolean toSafeSlinger) {
         try {
-            String content;
+            String content = null;
+            byte[] keyBlob = null;
             if (fingerprintOnly) {
                 byte[] data = (byte[]) providerHelper.getGenericData(
                         KeyRings.buildUnifiedKeyRingUri(dataUri),
@@ -182,9 +186,14 @@ public class ViewKeyShareFragment extends LoaderFragment implements
                     content = fingerprint;
                 }
             } else {
-                // get public keyring as ascii armored string
                 Uri uri = KeychainContract.KeyRingData.buildPublicKeyRingUri(dataUri);
-                content = providerHelper.getKeyRingAsArmoredString(uri);
+                if (toSafeSlinger) {
+                    keyBlob = (byte[]) providerHelper.getGenericData(
+                            uri, KeychainContract.KeyRingData.KEY_RING_DATA, ProviderHelper.FIELD_TYPE_BLOB);
+                } else {
+                    // get public keyring as ascii armored string
+                    content = providerHelper.getKeyRingAsArmoredString(uri);
+                }
             }
 
             if (toClipboard) {
@@ -198,9 +207,9 @@ public class ViewKeyShareFragment extends LoaderFragment implements
                 Notify.showNotify(getActivity(), message, Notify.Style.OK);
             } else if (toSafeSlinger) {
                 Intent slingerIntent = new Intent(getActivity(), ExchangeActivity.class);
-                slingerIntent.putExtra(ExchangeConfig.extra.USER_DATA, content.getBytes("UTF-8"));
+                slingerIntent.putExtra(ExchangeConfig.extra.USER_DATA, keyBlob);
                 slingerIntent.putExtra(ExchangeConfig.extra.HOST_NAME, Constants.SAFESLINGER_SERVER);
-                startActivity(slingerIntent);
+                startActivityForResult(slingerIntent, REQUEST_CODE_SAFESLINGER);
             } else {
                 // Android will fail with android.os.TransactionTooLargeException if key is too big
                 // see http://www.lonestarprod.com/?p=34
@@ -233,6 +242,48 @@ public class ViewKeyShareFragment extends LoaderFragment implements
             Notify.showNotify(getActivity(), R.string.error_key_not_found, Notify.Style.ERROR);
         }
     }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode) {
+            case REQUEST_CODE_SAFESLINGER:
+                switch (resultCode) {
+                    case ExchangeActivity.RESULT_EXCHANGE_OK:
+                        // use newly exchanged data from 'theirSecrets'
+                        ArrayList<byte[]> theirSecrets = endExchange(data);
+                        Intent importIntent = new Intent(getActivity(), ImportKeysActivity.class);
+                        importIntent.setAction(ImportKeysActivity.ACTION_IMPORT_KEY);
+                        // TODO
+                        importIntent.putExtra(ImportKeysActivity.EXTRA_KEY_BYTES, theirSecrets.get(0));
+                        startActivity(importIntent);
+                        break;
+                    case ExchangeActivity.RESULT_EXCHANGE_CANCELED:
+                        // handle canceled result
+                        // ...
+                        break;
+                }
+                break;
+        }
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    private static ArrayList<byte[]> endExchange(Intent data) {
+        ArrayList<byte[]> theirSecrets = new ArrayList<byte[]>();
+        Bundle extras = data.getExtras();
+        if (extras != null) {
+            byte[] d = null;
+            int i = 0;
+            do {
+                d = extras.getByteArray(ExchangeConfig.extra.MEMBER_DATA + i);
+                if (d != null) {
+                    theirSecrets.add(d);
+                    i++;
+                }
+            } while (d != null);
+        }
+        return theirSecrets;
+    }
+
 
     private void showQrCodeDialog() {
         Intent qrCodeIntent = new Intent(getActivity(), QrCodeActivity.class);
