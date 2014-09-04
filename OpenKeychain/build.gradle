@@ -20,11 +20,12 @@ dependencies {
     compile project(':extern:KeybaseLib:Lib')
     compile project(':extern:TokenAutoComplete:library')
     compile project(':extern:openpgp-card-nfc-lib:library')
+    compile project(':extern:safeslinger-exchange')
 }
 
 android {
     compileSdkVersion 19
-    buildToolsVersion "19.1"
+    buildToolsVersion '19.1'
 
     defaultConfig {
         minSdkVersion 9
@@ -67,7 +68,7 @@ android {
 
         checkAllWarnings true
         htmlReport true
-        htmlOutput file("lint-report.html")
+        htmlOutput file('lint-report.html')
     }
     
     // Disable preDexing, causes com.android.dx.cf.iface.ParseException: bad class file magic (cafebabe) or version (0034.0000) on some systems
@@ -78,7 +79,7 @@ android {
 
 // NOTE: This disables Lint!
 tasks.whenTaskAdded { task ->
-    if (task.name.contains("lint")) {
+    if (task.name.contains('lint')) {
         task.enabled = false
     }
 }
