@@ -56,9 +56,7 @@ import org.sufficientlysecure.keychain.util.QrCodeUtils;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.nio.ByteBuffer;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 import edu.cmu.cylab.starslinger.exchange.ExchangeActivity;
 import edu.cmu.cylab.starslinger.exchange.ExchangeConfig;
@@ -252,19 +250,10 @@ public class ViewKeyShareFragment extends LoaderFragment implements
             case REQUEST_CODE_SAFESLINGER:
                 switch (resultCode) {
                     case ExchangeActivity.RESULT_EXCHANGE_OK:
-                        // use newly exchanged data from 'theirSecrets'
-                        ArrayList<byte[]> theirSecrets = endExchange(data);
+                        // import exchanged keys
                         Intent importIntent = new Intent(getActivity(), ImportKeysActivity.class);
                         importIntent.setAction(ImportKeysActivity.ACTION_IMPORT_KEY);
-                        ByteArrayOutputStream out = new ByteArrayOutputStream();
-                        for (byte[] t : theirSecrets) {
-                            try {
-                                out.write(t);
-                            } catch (IOException e) {
-                                Log.e(Constants.TAG, "IOException", e);
-                            }
-                        }
-                        importIntent.putExtra(ImportKeysActivity.EXTRA_KEY_BYTES, out.toByteArray());
+                        importIntent.putExtra(ImportKeysActivity.EXTRA_KEY_BYTES, getSlingedKeys(data));
                         startActivity(importIntent);
                         break;
                     case ExchangeActivity.RESULT_EXCHANGE_CANCELED:
@@ -277,11 +266,11 @@ public class ViewKeyShareFragment extends LoaderFragment implements
         super.onActivityResult(requestCode, resultCode, data);
     }
 
-    private static ArrayList<byte[]> endExchange(Intent data) {
+    private static byte[] getSlingedKeys(Intent data) {
         ArrayList<byte[]> theirSecrets = new ArrayList<byte[]>();
         Bundle extras = data.getExtras();
         if (extras != null) {
-            byte[] d = null;
+            byte[] d;
             int i = 0;
             do {
                 d = extras.getByteArray(ExchangeConfig.extra.MEMBER_DATA + i);
@@ -291,7 +280,17 @@ public class ViewKeyShareFragment extends LoaderFragment implements
                 }
             } while (d != null);
         }
-        return theirSecrets;
+
+        // concatenate keys
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        for (byte[] t : theirSecrets) {
+            try {
+                out.write(t);
+            } catch (IOException e) {
+                Log.e(Constants.TAG, "IOException", e);
+            }
+        }
+        return out.toByteArray();
     }
 
 
