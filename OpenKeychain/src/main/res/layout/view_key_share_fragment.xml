@@ -135,7 +135,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:padding="8dp"
-                android:src="@drawable/ic_action_secure"
+                android:src="@drawable/ic_action_safeslinger"
                 android:layout_gravity="center_vertical"
                 style="@style/SelectableItem" />
 

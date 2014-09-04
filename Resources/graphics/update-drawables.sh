@@ -37,7 +37,7 @@ inkscape -w 512 -h 512 -e "$PLAY_DIR/$NAME.png" $NAME.svg
 # xhdpi: 64x64
 # xxhdpi: 96x96
 
-for NAME in "ic_action_nfc" "ic_action_qr_code"
+for NAME in "ic_action_nfc" "ic_action_qr_code" "ic_action_safeslinger"
 do
 echo $NAME
 inkscape -w 32 -h 32 -e "$MDPI_DIR/$NAME.png" $NAME.svg
