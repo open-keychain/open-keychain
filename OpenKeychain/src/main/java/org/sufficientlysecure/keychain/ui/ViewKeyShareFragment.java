@@ -54,8 +54,11 @@ import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Notify;
 import org.sufficientlysecure.keychain.util.QrCodeUtils;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import edu.cmu.cylab.starslinger.exchange.ExchangeActivity;
 import edu.cmu.cylab.starslinger.exchange.ExchangeConfig;
@@ -253,8 +256,15 @@ public class ViewKeyShareFragment extends LoaderFragment implements
                         ArrayList<byte[]> theirSecrets = endExchange(data);
                         Intent importIntent = new Intent(getActivity(), ImportKeysActivity.class);
                         importIntent.setAction(ImportKeysActivity.ACTION_IMPORT_KEY);
-                        // TODO
-                        importIntent.putExtra(ImportKeysActivity.EXTRA_KEY_BYTES, theirSecrets.get(0));
+                        ByteArrayOutputStream out = new ByteArrayOutputStream();
+                        for (byte[] t : theirSecrets) {
+                            try {
+                                out.write(t);
+                            } catch (IOException e) {
+                                Log.e(Constants.TAG, "IOException", e);
+                            }
+                        }
+                        importIntent.putExtra(ImportKeysActivity.EXTRA_KEY_BYTES, out.toByteArray());
                         startActivity(importIntent);
                         break;
                     case ExchangeActivity.RESULT_EXCHANGE_CANCELED:
