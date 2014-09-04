@@ -122,6 +122,23 @@
                 android:layout_gravity="center_vertical"
                 style="@style/SelectableItem" />
 
+            <View
+                android:layout_width="1dip"
+                android:layout_height="match_parent"
+                android:gravity="right"
+                android:layout_marginBottom="8dp"
+                android:layout_marginTop="8dp"
+                android:background="?android:attr/listDivider" />
+
+            <ImageButton
+                android:id="@+id/view_key_action_key_safeslinger"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:padding="8dp"
+                android:src="@drawable/ic_action_secure"
+                android:layout_gravity="center_vertical"
+                style="@style/SelectableItem" />
+
         </LinearLayout>
 
         <View

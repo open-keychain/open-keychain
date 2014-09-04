@@ -56,6 +56,9 @@ import org.sufficientlysecure.keychain.util.QrCodeUtils;
 
 import java.io.IOException;
 
+import edu.cmu.cylab.starslinger.exchange.ExchangeActivity;
+import edu.cmu.cylab.starslinger.exchange.ExchangeConfig;
+
 
 public class ViewKeyShareFragment extends LoaderFragment implements
         LoaderManager.LoaderCallbacks<Cursor> {
@@ -68,6 +71,7 @@ public class ViewKeyShareFragment extends LoaderFragment implements
     private View mFingerprintClipboardButton;
     private View mKeyShareButton;
     private View mKeyClipboardButton;
+    private View mKeySafeSlingerButton;
     private View mNfcHelpButton;
     private View mNfcPrefsButton;
     private View mKeyUploadButton;
@@ -93,6 +97,7 @@ public class ViewKeyShareFragment extends LoaderFragment implements
         mFingerprintClipboardButton = view.findViewById(R.id.view_key_action_fingerprint_clipboard);
         mKeyShareButton = view.findViewById(R.id.view_key_action_key_share);
         mKeyClipboardButton = view.findViewById(R.id.view_key_action_key_clipboard);
+        mKeySafeSlingerButton = view.findViewById(R.id.view_key_action_key_safeslinger);
         mNfcHelpButton = view.findViewById(R.id.view_key_action_nfc_help);
         mNfcPrefsButton = view.findViewById(R.id.view_key_action_nfc_prefs);
         mKeyUploadButton = view.findViewById(R.id.view_key_action_upload);
@@ -113,25 +118,31 @@ public class ViewKeyShareFragment extends LoaderFragment implements
         mFingerprintShareButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                share(mDataUri, mProviderHelper, true, false);
+                share(mDataUri, mProviderHelper, true, false, false);
             }
         });
         mFingerprintClipboardButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                share(mDataUri, mProviderHelper, true, true);
+                share(mDataUri, mProviderHelper, true, true, false);
             }
         });
         mKeyShareButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                share(mDataUri, mProviderHelper, false, false);
+                share(mDataUri, mProviderHelper, false, false, false);
             }
         });
         mKeyClipboardButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                share(mDataUri, mProviderHelper, false, true);
+                share(mDataUri, mProviderHelper, false, true, false);
+            }
+        });
+        mKeySafeSlingerButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                share(mDataUri, mProviderHelper, false, false, true);
             }
         });
         mNfcHelpButton.setOnClickListener(new View.OnClickListener() {
@@ -157,7 +168,7 @@ public class ViewKeyShareFragment extends LoaderFragment implements
     }
 
     private void share(Uri dataUri, ProviderHelper providerHelper, boolean fingerprintOnly,
-                       boolean toClipboard) {
+                       boolean toClipboard, boolean toSafeSlinger) {
         try {
             String content;
             if (fingerprintOnly) {
@@ -185,6 +196,11 @@ public class ViewKeyShareFragment extends LoaderFragment implements
                     message = getResources().getString(R.string.key_copied_to_clipboard);
                 }
                 Notify.showNotify(getActivity(), message, Notify.Style.OK);
+            } else if (toSafeSlinger) {
+                Intent slingerIntent = new Intent(getActivity(), ExchangeActivity.class);
+                slingerIntent.putExtra(ExchangeConfig.extra.USER_DATA, content.getBytes("UTF-8"));
+                slingerIntent.putExtra(ExchangeConfig.extra.HOST_NAME, Constants.SAFESLINGER_SERVER);
+                startActivity(slingerIntent);
             } else {
                 // Android will fail with android.os.TransactionTooLargeException if key is too big
                 // see http://www.lonestarprod.com/?p=34

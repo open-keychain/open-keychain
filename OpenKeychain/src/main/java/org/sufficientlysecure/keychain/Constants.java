@@ -53,7 +53,9 @@ public final class Constants {
 
     public static final String CUSTOM_CONTACT_DATA_MIME_TYPE = "vnd.android.cursor.item/vnd.org.sufficientlysecure.keychain.key";
 
-    public static int TEMPFILE_TTL = 24 * 60 * 60 * 1000; // 1 day
+    public static final int TEMPFILE_TTL = 24 * 60 * 60 * 1000; // 1 day
+
+    public static final String SAFESLINGER_SERVER = "safeslinger-openpgp.appspot.com";
 
     public static final class Path {
         public static final File APP_DIR = new File(Environment.getExternalStorageDirectory(), "OpenKeychain");
