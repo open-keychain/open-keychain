@@ -34,3 +34,6 @@
 [submodule "extern/openpgp-card-nfc-lib"]
 	path = extern/openpgp-card-nfc-lib
 	url = https://github.com/open-keychain/openpgp-card-nfc-lib.git
+[submodule "extern/safeslinger-exchange"]
+	path = extern/safeslinger-exchange
+	url = https://github.com/open-keychain/exchange-android
