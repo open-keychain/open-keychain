@@ -179,6 +179,16 @@ public class Preferences {
         return mSharedPreferences.getBoolean(Constants.Pref.FIRST_TIME, true);
     }
 
+    public boolean useDefaultYubikeyPin() {
+        return mSharedPreferences.getBoolean(Pref.USE_DEFAULT_YUBIKEY_PIN, true);
+    }
+
+    public void setUseDefaultYubikeyPin(boolean useDefaultYubikeyPin) {
+        SharedPreferences.Editor editor = mSharedPreferences.edit();
+        editor.putBoolean(Pref.USE_DEFAULT_YUBIKEY_PIN, useDefaultYubikeyPin);
+        editor.commit();
+    }
+
     public void setFirstTime(boolean value) {
         SharedPreferences.Editor editor = mSharedPreferences.edit();
         editor.putBoolean(Constants.Pref.FIRST_TIME, value);
@@ -214,6 +224,16 @@ public class Preferences {
         }
         editor.putString(Constants.Pref.KEY_SERVERS, rawData);
         editor.commit();
+    }
+
+    public void setWriteVersionHeader(boolean conceal) {
+        SharedPreferences.Editor editor = mSharedPreferences.edit();
+        editor.putBoolean(Constants.Pref.WRITE_VERSION_HEADER, conceal);
+        editor.commit();
+    }
+
+    public boolean getWriteVersionHeader() {
+        return mSharedPreferences.getBoolean(Constants.Pref.WRITE_VERSION_HEADER, false);
     }
 
     public void updatePreferences() {
@@ -255,15 +275,5 @@ public class Preferences {
         if (mSharedPreferences.getInt(Constants.Pref.DEFAULT_HASH_ALGORITHM, 0) == HashAlgorithmTags.MD5) {
             setDefaultHashAlgorithm(HashAlgorithmTags.SHA512);
         }
-    }
-
-    public void setWriteVersionHeader(boolean conceal) {
-        SharedPreferences.Editor editor = mSharedPreferences.edit();
-        editor.putBoolean(Constants.Pref.WRITE_VERSION_HEADER, conceal);
-        editor.commit();
-    }
-
-    public boolean getWriteVersionHeader() {
-        return mSharedPreferences.getBoolean(Constants.Pref.WRITE_VERSION_HEADER, false);
     }
 }

@@ -78,6 +78,7 @@ public final class Constants {
         public static final String CACHED_CONSOLIDATE = "cachedConsolidate";
         public static final String CACHED_CONSOLIDATE_SECRETS = "cachedConsolidateSecrets";
         public static final String CACHED_CONSOLIDATE_PUBLICS = "cachedConsolidatePublics";
+        public static final String USE_DEFAULT_YUBIKEY_PIN = "useDefaultYubikeyPin";
     }
 
     public static final class Defaults {

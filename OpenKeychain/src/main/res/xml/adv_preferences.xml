@@ -28,4 +28,11 @@
             android:title="@string/label_write_version_header"
             android:summary="@string/label_write_version_header_summary" />
     </PreferenceCategory>
+    <CheckBoxPreference
+        android:key="useDefaultYubikeyPin"
+        android:persistent="false"
+        android:defaultValue="true"
+        android:title="@string/label_use_default_yubikey_pin"
+        android:summary="@string/label_label_use_default_yubikey_pin_summary" />
+
 </PreferenceScreen>
