@@ -47,6 +47,7 @@ import org.sufficientlysecure.keychain.compatibility.DialogFragmentWorkaround;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKeyRing;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
+import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.PassphraseCacheService;
@@ -116,7 +117,7 @@ public class PassphraseDialogFragment extends DialogFragment implements OnEditor
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         final Activity activity = getActivity();
-        final long secretKeyId = getArguments().getLong(ARG_SECRET_KEY_ID);
+        final long subKeyId = getArguments().getLong(ARG_SECRET_KEY_ID);
         mMessenger = getArguments().getParcelable(ARG_MESSENGER);
 
         CustomAlertDialogBuilder alert = new CustomAlertDialogBuilder(activity);
@@ -126,14 +127,15 @@ public class PassphraseDialogFragment extends DialogFragment implements OnEditor
         final CanonicalizedSecretKeyRing secretRing;
         String userId;
 
-        if (secretKeyId == Constants.key.symmetric || secretKeyId == Constants.key.none) {
+        if (subKeyId == Constants.key.symmetric || subKeyId == Constants.key.none) {
             alert.setMessage(R.string.passphrase_for_symmetric_encryption);
             secretRing = null;
         } else {
+            String message;
             try {
                 ProviderHelper helper = new ProviderHelper(activity);
                 secretRing = helper.getCanonicalizedSecretKeyRing(
-                        KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(secretKeyId));
+                        KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(subKeyId));
                 // yes the inner try/catch block is necessary, otherwise the final variable
                 // above can't be statically verified to have been set in all cases because
                 // the catch clause doesn't return.
@@ -142,9 +144,28 @@ public class PassphraseDialogFragment extends DialogFragment implements OnEditor
                 } catch (PgpGeneralException e) {
                     userId = null;
                 }
+
+                /* Get key type for message */
+                // find a master key id for our key
+                long masterKeyId = new ProviderHelper(getActivity()).getMasterKeyId(subKeyId);
+                CachedPublicKeyRing keyRing = new ProviderHelper(getActivity()).getCachedPublicKeyRing(masterKeyId);
+                // get the type of key (from the database)
+                CanonicalizedSecretKey.SecretKeyType keyType = keyRing.getSecretKeyType(subKeyId);
+                switch (keyType) {
+                    case PASSPHRASE:
+                        message = getString(R.string.passphrase_for, userId);
+                        break;
+                    case DIVERT_TO_CARD:
+                        message = getString(R.string.yubikey_pin);
+                        break;
+                    default:
+                        message = "This should not happen!";
+                        break;
+                }
+
             } catch (ProviderHelper.NotFoundException e) {
                 alert.setTitle(R.string.title_key_not_found);
-                alert.setMessage(getString(R.string.key_not_found, secretKeyId));
+                alert.setMessage(getString(R.string.key_not_found, subKeyId));
                 alert.setPositiveButton(android.R.string.ok, new OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         dismiss();
@@ -154,8 +175,7 @@ public class PassphraseDialogFragment extends DialogFragment implements OnEditor
                 return alert.create();
             }
 
-            Log.d(Constants.TAG, "User id: '" + userId + "'");
-            alert.setMessage(getString(R.string.passphrase_for, userId));
+            alert.setMessage(message);
         }
 
         LayoutInflater inflater = activity.getLayoutInflater();
@@ -186,7 +206,7 @@ public class PassphraseDialogFragment extends DialogFragment implements OnEditor
                 try {
                     // make sure this unlocks
                     // TODO this is a very costly operation, we should not be doing this here!
-                    secretRing.getSecretKey(secretKeyId).unlock(passphrase);
+                    secretRing.getSecretKey(subKeyId).unlock(passphrase);
                 } catch (PgpGeneralException e) {
                     Toast.makeText(activity, R.string.error_could_not_extract_private_key,
                             Toast.LENGTH_SHORT).show();
@@ -199,7 +219,7 @@ public class PassphraseDialogFragment extends DialogFragment implements OnEditor
                 Log.d(Constants.TAG, "Everything okay! Caching entered passphrase");
 
                 try {
-                    PassphraseCacheService.addCachedPassphrase(activity, secretKeyId, passphrase,
+                    PassphraseCacheService.addCachedPassphrase(activity, subKeyId, passphrase,
                             secretRing.getPrimaryUserIdWithFallback());
                 } catch (PgpGeneralException e) {
                     Log.e(Constants.TAG, "adding of a passphrase failed", e);

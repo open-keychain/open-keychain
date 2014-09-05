@@ -180,6 +180,7 @@
     <string name="passphrase_must_not_be_empty">Please enter a passphrase.</string>
     <string name="passphrase_for_symmetric_encryption">Symmetric encryption.</string>
     <string name="passphrase_for">Enter passphrase for \'%s\'</string>
+    <string name="yubikey_pin">Enter PIN to access Yubikey for \'%s\'</string>
     <string name="file_delete_confirmation">"Are you sure you want to delete\n%s?"</string>
     <string name="file_delete_successful">Successfully deleted.</string>
     <string name="no_file_selected">Select a file first.</string>

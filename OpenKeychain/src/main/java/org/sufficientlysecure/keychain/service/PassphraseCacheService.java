@@ -213,15 +213,13 @@ public class PassphraseCacheService extends Service {
         SecretKeyType keyType = keyRing.getSecretKeyType(subKeyId);
 
         switch (keyType) {
-            // TODO: HACK for yubikeys
             case DIVERT_TO_CARD:
-                return "123456";
-            case PASSPHRASE_EMPTY:
-                try {
-                    addCachedPassphrase(this, subKeyId, "", keyRing.getPrimaryUserIdWithFallback());
-                } catch (PgpGeneralException e) {
-                    Log.d(Constants.TAG, "PgpGeneralException occured");
+                if (Preferences.getPreferences(this).useDefaultYubikeyPin()) {
+                    return "123456"; // default Yubikey PIN, see http://www.yubico.com/2012/12/yubikey-neo-openpgp/
+                } else {
+                    break;
                 }
+            case PASSPHRASE_EMPTY:
                 return "";
             case UNAVAILABLE:
                 throw new NotFoundException("secret key for this subkey is not available");
