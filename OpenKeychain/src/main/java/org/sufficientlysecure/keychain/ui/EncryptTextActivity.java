@@ -250,7 +250,12 @@ public class EncryptTextActivity extends DrawerActivity implements EncryptActivi
     private Intent sendWithChooserExcludingEncrypt(Message message) {
         Intent prototype = createSendIntent(message);
         String title = getString(R.string.title_share_message);
-        String[] blacklist = new String[]{Constants.PACKAGE_NAME + ".ui.EncryptTextActivity"};
+
+        // we don't want to encrypt the encrypted, no inception ;)
+        String[] blacklist = new String[]{
+                Constants.PACKAGE_NAME + ".ui.EncryptTextActivity",
+                "org.thialfihar.android.apg.ui.EncryptActivity"
+        };
 
         return new ShareHelper(this).createChooserExcluding(prototype, title, blacklist);
     }
