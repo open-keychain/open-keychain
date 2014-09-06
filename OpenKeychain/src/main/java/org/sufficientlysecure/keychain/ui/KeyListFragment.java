@@ -35,6 +35,7 @@ import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.CursorAdapter;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.SearchView;
 import android.view.ActionMode;
@@ -74,7 +75,7 @@ import se.emilsjolander.stickylistheaders.StickyListHeadersListView;
  */
 public class KeyListFragment extends LoaderFragment
         implements SearchView.OnQueryTextListener, AdapterView.OnItemClickListener,
-        LoaderManager.LoaderCallbacks<Cursor> {
+        LoaderManager.LoaderCallbacks<Cursor>, SwipeRefreshLayout.OnRefreshListener {
 
     private KeyListAdapter mAdapter;
     private StickyListHeadersListView mStickyList;
@@ -87,6 +88,8 @@ public class KeyListFragment extends LoaderFragment
     // empty list layout
     private Button mButtonEmptyCreate;
     private Button mButtonEmptyImport;
+
+    private SwipeRefreshLayout mSwipeRefreshLayout;
 
     /**
      * Load custom layout with StickyListView from library
@@ -119,6 +122,14 @@ public class KeyListFragment extends LoaderFragment
                 startActivityForResult(intent, 0);
             }
         });
+
+        mSwipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.key_list_swipe_container);
+        mSwipeRefreshLayout.setOnRefreshListener(this);
+        mSwipeRefreshLayout.setColorScheme(
+                R.color.android_purple_dark,
+                R.color.android_purple_light,
+                R.color.android_purple_dark,
+                R.color.android_purple_light);
 
         return root;
     }
@@ -688,6 +699,17 @@ public class KeyListFragment extends LoaderFragment
             return v;
         }
 
+    }
+
+    /**
+     * Implements OnRefreshListener for drag-to-refresh
+     */
+    public void onRefresh() {
+        new Handler().postDelayed(new Runnable() {
+            @Override public void run() {
+                mSwipeRefreshLayout.setRefreshing(false);
+            }
+        }, 5000);
     }
 
 }
