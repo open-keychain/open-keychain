@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v4.widget.SwipeRefreshLayout
+<org.sufficientlysecure.keychain.ui.widget.ListAwareSwipeRefreshLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/key_list_swipe_container"
     android:layout_width="match_parent"
@@ -84,4 +84,4 @@
         </LinearLayout>
     </FrameLayout>
 
-</android.support.v4.widget.SwipeRefreshLayout>
+</org.sufficientlysecure.keychain.ui.widget.ListAwareSwipeRefreshLayout>

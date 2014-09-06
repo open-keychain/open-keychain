@@ -59,6 +59,7 @@ import org.sufficientlysecure.keychain.helper.ExportHelper;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.ui.dialog.DeleteKeyDialogFragment;
+import org.sufficientlysecure.keychain.ui.widget.ListAwareSwipeRefreshLayout;
 import org.sufficientlysecure.keychain.util.Highlighter;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Notify;
@@ -89,7 +90,7 @@ public class KeyListFragment extends LoaderFragment
     private Button mButtonEmptyCreate;
     private Button mButtonEmptyImport;
 
-    private SwipeRefreshLayout mSwipeRefreshLayout;
+    private ListAwareSwipeRefreshLayout mSwipeRefreshLayout;
 
     /**
      * Load custom layout with StickyListView from library
@@ -123,13 +124,14 @@ public class KeyListFragment extends LoaderFragment
             }
         });
 
-        mSwipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.key_list_swipe_container);
+        mSwipeRefreshLayout = (ListAwareSwipeRefreshLayout) view.findViewById(R.id.key_list_swipe_container);
         mSwipeRefreshLayout.setOnRefreshListener(this);
         mSwipeRefreshLayout.setColorScheme(
                 R.color.android_purple_dark,
                 R.color.android_purple_light,
                 R.color.android_purple_dark,
                 R.color.android_purple_light);
+        mSwipeRefreshLayout.setStickyListHeadersListView(mStickyList);
 
         return root;
     }
