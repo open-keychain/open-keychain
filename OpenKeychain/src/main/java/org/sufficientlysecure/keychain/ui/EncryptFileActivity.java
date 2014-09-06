@@ -33,6 +33,7 @@ import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.compatibility.ClipboardReflection;
 import org.sufficientlysecure.keychain.helper.Preferences;
+import org.sufficientlysecure.keychain.helper.ShareHelper;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
 import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
@@ -262,74 +263,13 @@ public class EncryptFileActivity extends DrawerActivity implements EncryptActivi
 
     /**
      * Create Intent Chooser but exclude OK's EncryptActivity.
-     * <p/>
-     * Put together from some stackoverflow posts...
-     *
-     * @param message
-     * @return
      */
     private Intent sendWithChooserExcludingEncrypt(Message message) {
         Intent prototype = createSendIntent(message);
-
         String title = getString(R.string.title_share_file);
+        String[] blacklist = new String[]{Constants.PACKAGE_NAME + ".ui.EncryptActivity"};
 
-        // Disabled, produced an empty list on Huawei U8860 with Android Version 4.0.3
-//        // fallback on Android 2.3, otherwise we would get weird results
-//        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
-//            return Intent.createChooser(prototype, title);
-//        }
-//
-//        // prevent recursion aka Inception :P
-//        String[] blacklist = new String[]{Constants.PACKAGE_NAME + ".ui.EncryptActivity"};
-//
-//        List<LabeledIntent> targetedShareIntents = new ArrayList<LabeledIntent>();
-//
-//        List<ResolveInfo> resInfoList = getPackageManager().queryIntentActivities(prototype, 0);
-//        List<ResolveInfo> resInfoListFiltered = new ArrayList<ResolveInfo>();
-//        if (!resInfoList.isEmpty()) {
-//            for (ResolveInfo resolveInfo : resInfoList) {
-//                // do not add blacklisted ones
-//                if (resolveInfo.activityInfo == null || Arrays.asList(blacklist).contains(resolveInfo.activityInfo.name))
-//                    continue;
-//
-//                resInfoListFiltered.add(resolveInfo);
-//            }
-//
-//            if (!resInfoListFiltered.isEmpty()) {
-//                // sorting for nice readability
-//                Collections.sort(resInfoListFiltered, new Comparator<ResolveInfo>() {
-//                    @Override
-//                    public int compare(ResolveInfo first, ResolveInfo second) {
-//                        String firstName = first.loadLabel(getPackageManager()).toString();
-//                        String secondName = second.loadLabel(getPackageManager()).toString();
-//                        return firstName.compareToIgnoreCase(secondName);
-//                    }
-//                });
-//
-//                // create the custom intent list
-//                for (ResolveInfo resolveInfo : resInfoListFiltered) {
-//                    Intent targetedShareIntent = (Intent) prototype.clone();
-//                    targetedShareIntent.setPackage(resolveInfo.activityInfo.packageName);
-//                    targetedShareIntent.setClassName(resolveInfo.activityInfo.packageName, resolveInfo.activityInfo.name);
-//
-//                    LabeledIntent lIntent = new LabeledIntent(targetedShareIntent,
-//                            resolveInfo.activityInfo.packageName,
-//                            resolveInfo.loadLabel(getPackageManager()),
-//                            resolveInfo.activityInfo.icon);
-//                    targetedShareIntents.add(lIntent);
-//                }
-//
-//                // Create chooser with only one Intent in it
-//                Intent chooserIntent = Intent.createChooser(targetedShareIntents.remove(targetedShareIntents.size() - 1), title);
-//                // append all other Intents
-//                chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, targetedShareIntents.toArray(new Parcelable[]{}));
-//                return chooserIntent;
-//            }
-//
-//        }
-
-        // fallback to Android's default chooser
-        return Intent.createChooser(prototype, title);
+        return new ShareHelper(this).createChooserExcluding(prototype, title, blacklist);
     }
 
     private Intent createSendIntent(Message message) {
@@ -452,7 +392,8 @@ public class EncryptFileActivity extends DrawerActivity implements EncryptActivi
                 .replace(R.id.encrypt_pager_mode,
                         mCurrentMode == MODE_SYMMETRIC
                                 ? new EncryptSymmetricFragment()
-                                : new EncryptAsymmetricFragment())
+                                : new EncryptAsymmetricFragment()
+                )
                 .commitAllowingStateLoss();
         getSupportFragmentManager().executePendingTransactions();
     }
@@ -520,7 +461,8 @@ public class EncryptFileActivity extends DrawerActivity implements EncryptActivi
                     action = ACTION_ENCRYPT_FILE;
                 }
 
-            } else */ {
+            } else */
+            {
                 // Files via content provider, override uri and action
                 uris.clear();
                 uris.add(intent.<Uri>getParcelableExtra(Intent.EXTRA_STREAM));
