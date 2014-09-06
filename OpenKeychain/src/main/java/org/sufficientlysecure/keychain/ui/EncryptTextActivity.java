@@ -354,7 +354,7 @@ public class EncryptTextActivity extends DrawerActivity implements EncryptActivi
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.encrypt_file_activity, menu);
+        getMenuInflater().inflate(R.menu.encrypt_text_activity, menu);
         return super.onCreateOptionsMenu(menu);
     }
 
