@@ -267,7 +267,7 @@ public class EncryptFileActivity extends DrawerActivity implements EncryptActivi
     private Intent sendWithChooserExcludingEncrypt(Message message) {
         Intent prototype = createSendIntent(message);
         String title = getString(R.string.title_share_file);
-        String[] blacklist = new String[]{Constants.PACKAGE_NAME + ".ui.EncryptActivity"};
+        String[] blacklist = new String[]{Constants.PACKAGE_NAME + ".ui.EncryptFileActivity"};
 
         return new ShareHelper(this).createChooserExcluding(prototype, title, blacklist);
     }
