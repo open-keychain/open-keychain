@@ -19,15 +19,12 @@
 package org.sufficientlysecure.keychain.ui;
 
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Message;
 import android.os.Messenger;
-import android.util.AttributeSet;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
@@ -65,7 +62,7 @@ public class KeyListActivity extends DrawerActivity {
         setContentView(R.layout.key_list_activity);
 
         // now setup navigation drawer in DrawerActivity...
-        setupDrawerNavigation(savedInstanceState);
+        activateDrawerNavigation(savedInstanceState);
     }
 
     @Override

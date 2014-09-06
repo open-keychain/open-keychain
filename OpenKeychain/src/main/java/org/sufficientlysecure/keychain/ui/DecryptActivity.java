@@ -67,7 +67,7 @@ public class DecryptActivity extends DrawerActivity {
 
         initView();
 
-        setupDrawerNavigation(savedInstanceState);
+        activateDrawerNavigation(savedInstanceState);
 
         // Handle intent actions, maybe changes the bundles
         handleActions(getIntent());

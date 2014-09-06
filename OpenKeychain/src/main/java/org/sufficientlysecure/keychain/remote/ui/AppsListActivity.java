@@ -30,7 +30,7 @@ public class AppsListActivity extends DrawerActivity {
 
         setContentView(R.layout.api_apps_list_activity);
 
-        setupDrawerNavigation(savedInstanceState);
+        activateDrawerNavigation(savedInstanceState);
     }
 
 }

@@ -26,7 +26,6 @@ import android.os.Handler;
 import android.os.Message;
 import android.os.Messenger;
 import android.support.v4.app.Fragment;
-import android.support.v4.widget.DrawerLayout;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -396,10 +395,10 @@ public class EncryptTextActivity extends DrawerActivity implements EncryptActivi
         // if called with an intent action, do not init drawer navigation
         if (ACTION_ENCRYPT_TEXT.equals(getIntent().getAction())) {
             // lock drawer
-            ((DrawerLayout) findViewById(R.id.drawer_layout)).setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+            deactivateDrawerNavigation();
             // TODO: back button to key?
         } else {
-            setupDrawerNavigation(savedInstanceState);
+            activateDrawerNavigation(savedInstanceState);
         }
 
         // Handle intent actions
