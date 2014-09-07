@@ -20,6 +20,7 @@ package org.sufficientlysecure.keychain.helper;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.os.Build;
 
 import org.spongycastle.bcpg.CompressionAlgorithmTags;
 import org.spongycastle.bcpg.HashAlgorithmTags;
@@ -51,7 +52,12 @@ public class Preferences {
     }
 
     private Preferences(Context context) {
-        mSharedPreferences = context.getSharedPreferences("APG.main", Context.MODE_PRIVATE);
+        // multi-process preferences
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+            mSharedPreferences = context.getSharedPreferences("APG.main", Context.MODE_MULTI_PROCESS);
+        } else {
+            mSharedPreferences = context.getSharedPreferences("APG.main", Context.MODE_PRIVATE);
+        }
     }
 
     public String getLanguage() {

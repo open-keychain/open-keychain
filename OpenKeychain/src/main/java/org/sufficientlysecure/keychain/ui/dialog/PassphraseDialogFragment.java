@@ -160,7 +160,7 @@ public class PassphraseDialogFragment extends DialogFragment implements OnEditor
                         message = getString(R.string.passphrase_for, userId);
                         break;
                     case DIVERT_TO_CARD:
-                        message = getString(R.string.yubikey_pin);
+                        message = getString(R.string.yubikey_pin, userId);
                         break;
                     default:
                         message = "This should not happen!";

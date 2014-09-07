@@ -215,8 +215,10 @@ public class PassphraseCacheService extends Service {
         switch (keyType) {
             case DIVERT_TO_CARD:
                 if (Preferences.getPreferences(this).useDefaultYubikeyPin()) {
+                    Log.d(Constants.TAG, "PassphraseCacheService: Using default Yubikey PIN: 123456");
                     return "123456"; // default Yubikey PIN, see http://www.yubico.com/2012/12/yubikey-neo-openpgp/
                 } else {
+                    Log.d(Constants.TAG, "PassphraseCacheService: NOT using default Yubikey PIN");
                     break;
                 }
             case PASSPHRASE_EMPTY:
