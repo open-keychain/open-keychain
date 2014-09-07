@@ -184,7 +184,6 @@
             <!-- Android's Send Action -->
             <intent-filter android:label="@string/intent_send_encrypt">
                 <action android:name="android.intent.action.SEND" />
-                <action android:name="android.intent.action.SEND_MULTIPLE" />
 
                 <category android:name="android.intent.category.DEFAULT" />
 
