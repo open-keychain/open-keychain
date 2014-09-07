@@ -41,9 +41,9 @@ import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.compatibility.DialogFragmentWorkaround;
 import org.sufficientlysecure.keychain.helper.ActionBarHelper;
-import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKeyRing;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
+import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
@@ -164,25 +164,56 @@ public class EditKeyFragment extends LoaderFragment implements
 
         Log.i(Constants.TAG, "mDataUri: " + mDataUri.toString());
 
+        // load the secret key ring. we do verify here that the passphrase is correct, so cached won't do
         try {
             Uri secretUri = KeychainContract.KeyRings.buildUnifiedKeyRingUri(mDataUri);
-            CanonicalizedSecretKeyRing keyRing =
-                    new ProviderHelper(getActivity()).getCanonicalizedSecretKeyRing(secretUri);
+            CachedPublicKeyRing keyRing =
+                    new ProviderHelper(getActivity()).getCachedPublicKeyRing(secretUri);
 
             mSaveKeyringParcel = new SaveKeyringParcel(keyRing.getMasterKeyId(),
-                    keyRing.getUncachedKeyRing().getFingerprint());
+                    keyRing.getFingerprint());
             mPrimaryUserId = keyRing.getPrimaryUserIdWithFallback();
-        } catch (ProviderHelper.NotFoundException e) {
-            Log.e(Constants.TAG, "Keyring not found", e);
-            Toast.makeText(getActivity(), R.string.error_no_secret_key_found, Toast.LENGTH_SHORT).show();
-            getActivity().finish();
+
         } catch (PgpGeneralException e) {
             Log.e(Constants.TAG, "PgpGeneralException", e);
             Toast.makeText(getActivity(), R.string.error_no_secret_key_found, Toast.LENGTH_SHORT).show();
             getActivity().finish();
+            return;
         }
 
-        cachePassphraseForEdit();
+        try {
+            mCurrentPassphrase = PassphraseCacheService.getCachedPassphrase(getActivity(),
+                    mSaveKeyringParcel.mMasterKeyId);
+        } catch (PassphraseCacheService.KeyNotFoundException e) {
+            Log.e(Constants.TAG, "Key not found!", e);
+            getActivity().finish();
+            return;
+        }
+
+        if (mCurrentPassphrase == null) {
+            PassphraseDialogFragment.show(getActivity(), mSaveKeyringParcel.mMasterKeyId,
+                    new Handler() {
+                        @Override
+                        public void handleMessage(Message message) {
+                            if (message.what == PassphraseDialogFragment.MESSAGE_OKAY) {
+                                mCurrentPassphrase = message.getData().getString(
+                                        PassphraseDialogFragment.MESSAGE_DATA_PASSPHRASE);
+                                // Prepare the loaders. Either re-connect with an existing ones,
+                                // or start new ones.
+                                getLoaderManager().initLoader(LOADER_ID_USER_IDS, null, EditKeyFragment.this);
+                                getLoaderManager().initLoader(LOADER_ID_SUBKEYS, null, EditKeyFragment.this);
+                            } else {
+                                EditKeyFragment.this.getActivity().finish();
+                            }
+                        }
+                    }
+            );
+        } else {
+            // Prepare the loaders. Either re-connect with an existing ones,
+            // or start new ones.
+            getLoaderManager().initLoader(LOADER_ID_USER_IDS, null, EditKeyFragment.this);
+            getLoaderManager().initLoader(LOADER_ID_SUBKEYS, null, EditKeyFragment.this);
+        }
 
         mChangePassphrase.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -232,10 +263,6 @@ public class EditKeyFragment extends LoaderFragment implements
         mSubkeysAddedAdapter = new SubkeysAddedAdapter(getActivity(), mSaveKeyringParcel.mAddSubKeys);
         mSubkeysAddedList.setAdapter(mSubkeysAddedAdapter);
 
-        // Prepare the loaders. Either re-connect with an existing ones,
-        // or start new ones.
-        getLoaderManager().initLoader(LOADER_ID_USER_IDS, null, this);
-        getLoaderManager().initLoader(LOADER_ID_SUBKEYS, null, this);
     }
 
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
@@ -472,33 +499,6 @@ public class EditKeyFragment extends LoaderFragment implements
                         }
                 );
         addSubkeyDialogFragment.show(getActivity().getSupportFragmentManager(), "addSubkeyDialog");
-    }
-
-    private void cachePassphraseForEdit() {
-        try {
-            mCurrentPassphrase = PassphraseCacheService.getCachedPassphrase(getActivity(),
-                    mSaveKeyringParcel.mMasterKeyId);
-        } catch (PassphraseCacheService.KeyNotFoundException e) {
-            Log.e(Constants.TAG, "Key not found!", e);
-            getActivity().finish();
-            return;
-        }
-        if (mCurrentPassphrase == null) {
-            PassphraseDialogFragment.show(getActivity(), mSaveKeyringParcel.mMasterKeyId,
-                    new Handler() {
-                        @Override
-                        public void handleMessage(Message message) {
-                            if (message.what == PassphraseDialogFragment.MESSAGE_OKAY) {
-                                mCurrentPassphrase =
-                                        message.getData().getString(PassphraseDialogFragment.MESSAGE_DATA_PASSPHRASE);
-                                Log.d(Constants.TAG, "after caching passphrase");
-                            } else {
-                                EditKeyFragment.this.getActivity().finish();
-                            }
-                        }
-                    }
-            );
-        }
     }
 
     private void save(String passphrase) {
