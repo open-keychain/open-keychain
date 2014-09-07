@@ -289,8 +289,8 @@ public class PassphraseDialogFragment extends DialogFragment implements OnEditor
 
                         // if the passphrase was wrong, reset and re-enable the dialogue
                         if (!result) {
-                            // TODO add a "bad passphrase" dialogue?
                             mPassphraseEditText.setText("");
+                            mPassphraseEditText.setError(getString(R.string.wrong_passphrase));
                             mInput.setVisibility(View.VISIBLE);
                             mProgress.setVisibility(View.GONE);
                             positive.setEnabled(true);
