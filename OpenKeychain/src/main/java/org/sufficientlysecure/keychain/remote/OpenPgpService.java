@@ -240,7 +240,12 @@ public class OpenPgpService extends RemoteService {
             }
 
             byte[] nfcSignedHash = data.getByteArrayExtra(OpenPgpApi.EXTRA_NFC_SIGNED_HASH);
-            Date nfcCreationTimestamp = new Date(data.getLongExtra(OpenPgpApi.EXTRA_NFC_SIG_CREATION_TIMESTAMP, 0));
+            // carefully: only set if timestamp exists
+            Date nfcCreationDate = null;
+            long nfcCreationTimestamp = data.getLongExtra(OpenPgpApi.EXTRA_NFC_SIG_CREATION_TIMESTAMP, 0);
+            if (nfcCreationTimestamp > 0) {
+                nfcCreationDate = new Date(nfcCreationTimestamp);
+            }
 
             // Get Input- and OutputStream from ParcelFileDescriptor
             InputStream is = new ParcelFileDescriptor.AutoCloseInputStream(input);
@@ -258,7 +263,7 @@ public class OpenPgpService extends RemoteService {
                         .setSignatureHashAlgorithm(accSettings.getHashAlgorithm())
                         .setSignatureMasterKeyId(accSettings.getKeyId())
                         .setSignaturePassphrase(passphrase)
-                        .setNfcState(nfcSignedHash, nfcCreationTimestamp);
+                        .setNfcState(nfcSignedHash, nfcCreationDate);
 
                 // TODO: currently always assume cleartext input, no sign-only of binary currently!
                 builder.setCleartextInput(true);
@@ -358,10 +363,19 @@ public class OpenPgpService extends RemoteService {
                         return getPassphraseIntent(data, accSettings.getKeyId());
                     }
 
+                    byte[] nfcSignedHash = data.getByteArrayExtra(OpenPgpApi.EXTRA_NFC_SIGNED_HASH);
+                    // carefully: only set if timestamp exists
+                    Date nfcCreationDate = null;
+                    long nfcCreationTimestamp = data.getLongExtra(OpenPgpApi.EXTRA_NFC_SIG_CREATION_TIMESTAMP, 0);
+                    if (nfcCreationTimestamp > 0) {
+                        nfcCreationDate = new Date(nfcCreationTimestamp);
+                    }
+
                     // sign and encrypt
                     builder.setSignatureHashAlgorithm(accSettings.getHashAlgorithm())
                             .setSignatureMasterKeyId(accSettings.getKeyId())
-                            .setSignaturePassphrase(passphrase);
+                            .setSignaturePassphrase(passphrase)
+                            .setNfcState(nfcSignedHash, nfcCreationDate);
                 }
 
                 try {
