@@ -36,6 +36,7 @@ import org.spongycastle.openpgp.operator.PublicKeyDataDecryptorFactory;
 import org.spongycastle.openpgp.operator.jcajce.JcaPGPContentSignerBuilder;
 import org.spongycastle.openpgp.operator.jcajce.JcePBESecretKeyDecryptorBuilder;
 import org.spongycastle.openpgp.operator.jcajce.JcePublicKeyDataDecryptorFactoryBuilder;
+import org.spongycastle.openpgp.operator.jcajce.NfcPublicKeyDataDecryptorFactoryBuilder;
 import org.spongycastle.openpgp.operator.jcajce.NfcSyncPGPContentSignerBuilder;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
@@ -189,14 +190,8 @@ public class CanonicalizedSecretKey extends CanonicalizedPublicKey {
         return supported;
     }
 
-    public PGPSignatureGenerator getSignatureGenerator(int hashAlgo, boolean cleartext,
-                                                       byte[] nfcSignedHash, Date nfcCreationTimestamp)
-            throws PgpGeneralException {
-        if (mPrivateKeyState == PRIVATE_KEY_STATE_LOCKED) {
-            throw new PrivateKeyNotUnlockedException();
-        }
-
-        PGPContentSignerBuilder contentSignerBuilder;
+    private PGPContentSignerBuilder getContentSignerBuilder(int hashAlgo, byte[] nfcSignedHash,
+                                                            Date nfcCreationTimestamp) {
         if (mPrivateKeyState == PRIVATE_KEY_STATE_DIVERT_TO_CARD) {
             // to sign using nfc PgpSignEncrypt is executed two times.
             // the first time it stops to return the PendingIntent for nfc connection and signing the hash
@@ -207,18 +202,27 @@ public class CanonicalizedSecretKey extends CanonicalizedPublicKey {
             }
 
             // use synchronous "NFC based" SignerBuilder
-            contentSignerBuilder = new NfcSyncPGPContentSignerBuilder(
+            return new NfcSyncPGPContentSignerBuilder(
                     mSecretKey.getPublicKey().getAlgorithm(), hashAlgo,
                     mSecretKey.getKeyID(), nfcSignedHash, nfcCreationTimestamp)
                     .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME);
-
-            Log.d(Constants.TAG, "mSecretKey.getKeyID() " + PgpKeyHelper.convertKeyIdToHex(mSecretKey.getKeyID()));
         } else {
             // content signer based on signing key algorithm and chosen hash algorithm
-            contentSignerBuilder = new JcaPGPContentSignerBuilder(
+            return new JcaPGPContentSignerBuilder(
                     mSecretKey.getPublicKey().getAlgorithm(), hashAlgo)
                     .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME);
         }
+    }
+
+    public PGPSignatureGenerator getSignatureGenerator(int hashAlgo, boolean cleartext,
+                                                       byte[] nfcSignedHash, Date nfcCreationTimestamp)
+            throws PgpGeneralException {
+        if (mPrivateKeyState == PRIVATE_KEY_STATE_LOCKED) {
+            throw new PrivateKeyNotUnlockedException();
+        }
+
+        PGPContentSignerBuilder contentSignerBuilder = getContentSignerBuilder(hashAlgo,
+                nfcSignedHash, nfcCreationTimestamp);
 
         int signatureType;
         if (cleartext) {
@@ -247,12 +251,17 @@ public class CanonicalizedSecretKey extends CanonicalizedPublicKey {
     }
 
     public PublicKeyDataDecryptorFactory getDecryptorFactory() {
-        // TODO: divert to card missing
-        if (mPrivateKeyState != PRIVATE_KEY_STATE_UNLOCKED) {
+        if (mPrivateKeyState == PRIVATE_KEY_STATE_LOCKED) {
             throw new PrivateKeyNotUnlockedException();
         }
-        return new JcePublicKeyDataDecryptorFactoryBuilder()
-                .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME).build(mPrivateKey);
+
+        if (mPrivateKeyState == PRIVATE_KEY_STATE_DIVERT_TO_CARD) {
+            return new NfcPublicKeyDataDecryptorFactoryBuilder()
+                    .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME).build(mPrivateKey);
+        } else {
+            return new JcePublicKeyDataDecryptorFactoryBuilder()
+                    .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME).build(mPrivateKey);
+        }
     }
 
     /**
@@ -262,12 +271,11 @@ public class CanonicalizedSecretKey extends CanonicalizedPublicKey {
      * @param userIds       User IDs to certify, must not be null or empty
      * @return A keyring with added certifications
      */
-    public UncachedKeyRing certifyUserIds(CanonicalizedPublicKeyRing publicKeyRing, List<String> userIds)
+    public UncachedKeyRing certifyUserIds(CanonicalizedPublicKeyRing publicKeyRing, List<String> userIds,
+                                          byte[] nfcSignedHash, Date nfcCreationTimestamp)
             throws PgpGeneralMsgIdException, NoSuchAlgorithmException, NoSuchProviderException,
             PGPException, SignatureException {
-
-        // TODO: divert to card missing
-        if (mPrivateKeyState != PRIVATE_KEY_STATE_UNLOCKED) {
+        if (mPrivateKeyState == PRIVATE_KEY_STATE_LOCKED) {
             throw new PrivateKeyNotUnlockedException();
         }
 
@@ -275,9 +283,8 @@ public class CanonicalizedSecretKey extends CanonicalizedPublicKey {
         PGPSignatureGenerator signatureGenerator;
         {
             // TODO: SHA256 fixed?
-            JcaPGPContentSignerBuilder contentSignerBuilder = new JcaPGPContentSignerBuilder(
-                    mSecretKey.getPublicKey().getAlgorithm(), PGPUtil.SHA256)
-                    .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME);
+            PGPContentSignerBuilder contentSignerBuilder = getContentSignerBuilder(PGPUtil.SHA256,
+                    nfcSignedHash, nfcCreationTimestamp);
 
             signatureGenerator = new PGPSignatureGenerator(contentSignerBuilder);
             signatureGenerator.init(PGPSignature.DEFAULT_CERTIFICATION, mPrivateKey);
@@ -285,6 +292,10 @@ public class CanonicalizedSecretKey extends CanonicalizedPublicKey {
 
         { // supply signatureGenerator with a SubpacketVector
             PGPSignatureSubpacketGenerator spGen = new PGPSignatureSubpacketGenerator();
+            if (nfcCreationTimestamp != null) {
+                spGen.setSignatureCreationTime(false, nfcCreationTimestamp);
+                Log.d(Constants.TAG, "For NFC: set sig creation time to " + nfcCreationTimestamp);
+            }
             PGPSignatureSubpacketVector packetVector = spGen.generate();
             signatureGenerator.setHashedSubpackets(packetVector);
         }

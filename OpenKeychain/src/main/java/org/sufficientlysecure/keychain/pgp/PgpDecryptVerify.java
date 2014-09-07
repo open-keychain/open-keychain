@@ -42,6 +42,7 @@ import org.spongycastle.openpgp.operator.jcajce.JcaKeyFingerprintCalculator;
 import org.spongycastle.openpgp.operator.jcajce.JcaPGPContentVerifierBuilderProvider;
 import org.spongycastle.openpgp.operator.jcajce.JcaPGPDigestCalculatorProviderBuilder;
 import org.spongycastle.openpgp.operator.jcajce.JcePBEDataDecryptorFactoryBuilder;
+import org.spongycastle.openpgp.operator.jcajce.NfcPublicKeyDataDecryptorFactoryBuilder;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
@@ -59,6 +60,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URLConnection;
 import java.security.SignatureException;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.Set;
 
@@ -193,13 +195,21 @@ public class PgpDecryptVerify {
         }
     }
 
+    public static class NeedNfcDataException extends Exception {
+        public byte[] mDec;
+
+        public NeedNfcDataException(byte[] dec) {
+            mDec = dec;
+        }
+    }
+
     /**
      * Decrypts and/or verifies data based on parameters of class
      */
     public PgpDecryptVerifyResult execute()
             throws IOException, PGPException, SignatureException,
             WrongPassphraseException, NoSecretKeyException, KeyExtractionException,
-            InvalidDataException, IntegrityCheckFailedException {
+            InvalidDataException, IntegrityCheckFailedException, NeedNfcDataException {
         // automatically works with ascii armor input and binary
         InputStream in = PGPUtil.getDecoderStream(mData.getInputStream());
         if (in instanceof ArmoredInputStream) {
@@ -223,7 +233,7 @@ public class PgpDecryptVerify {
     private PgpDecryptVerifyResult decryptVerify(InputStream in)
             throws IOException, PGPException, SignatureException,
             WrongPassphraseException, KeyExtractionException, NoSecretKeyException,
-            InvalidDataException, IntegrityCheckFailedException {
+            InvalidDataException, IntegrityCheckFailedException, NeedNfcDataException {
         PgpDecryptVerifyResult result = new PgpDecryptVerifyResult();
 
         PGPObjectFactory pgpF = new PGPObjectFactory(in, new JcaKeyFingerprintCalculator());
@@ -370,7 +380,11 @@ public class PgpDecryptVerify {
             updateProgress(R.string.progress_preparing_streams, currentProgress, 100);
 
             PublicKeyDataDecryptorFactory decryptorFactory = secretEncryptionKey.getDecryptorFactory();
-            clear = encryptedDataAsymmetric.getDataStream(decryptorFactory);
+            try {
+                clear = encryptedDataAsymmetric.getDataStream(decryptorFactory);
+            } catch (NfcPublicKeyDataDecryptorFactoryBuilder.NfcInteractionNeeded e) {
+                throw new NeedNfcDataException(e.dec);
+            }
             encryptedData = encryptedDataAsymmetric;
         } else {
             // no packet has been found where we have the corresponding secret key in our db

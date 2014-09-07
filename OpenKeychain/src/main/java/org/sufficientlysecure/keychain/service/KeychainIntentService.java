@@ -697,7 +697,8 @@ public class KeychainIntentService extends IntentService implements Progressable
                 if (!certificationKey.unlock(signaturePassphrase)) {
                     throw new PgpGeneralException("Error extracting key (bad passphrase?)");
                 }
-                UncachedKeyRing newRing = certificationKey.certifyUserIds(publicRing, userIds);
+                // TODO: supply nfc stuff
+                UncachedKeyRing newRing = certificationKey.certifyUserIds(publicRing, userIds, null, null);
 
                 // store the signed key in our local cache
                 providerHelper.savePublicKeyRing(newRing);
