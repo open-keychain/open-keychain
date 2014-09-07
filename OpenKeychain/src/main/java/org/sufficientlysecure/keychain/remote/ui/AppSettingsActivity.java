@@ -17,12 +17,9 @@
 
 package org.sufficientlysecure.keychain.remote.ui;
 
-import android.content.ComponentName;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
-import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
@@ -35,9 +32,8 @@ import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.remote.AppSettings;
+import org.sufficientlysecure.keychain.service.OperationResultParcel;
 import org.sufficientlysecure.keychain.util.Log;
-
-import java.util.List;
 
 public class AppSettingsActivity extends ActionBarActivity {
     private Uri mAppUri;
@@ -95,7 +91,7 @@ public class AppSettingsActivity extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    // disabled: breaks Yubikey NFC Foreground dispatching
+    // TODO: breaks Yubikey NFC Foreground dispatching
     private void startApp() {
         Intent i;
         PackageManager manager = getPackageManager();
@@ -157,6 +153,17 @@ public class AppSettingsActivity extends ActionBarActivity {
             throw new RuntimeException();
         }
         finish();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        // if a result has been returned, display a notify
+        if (data != null && data.hasExtra(OperationResultParcel.EXTRA_RESULT)) {
+            OperationResultParcel result = data.getParcelableExtra(OperationResultParcel.EXTRA_RESULT);
+            result.createNotify(this).show();
+        } else {
+            super.onActivityResult(requestCode, resultCode, data);
+        }
     }
 
 }
