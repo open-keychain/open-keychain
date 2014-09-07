@@ -71,7 +71,7 @@ public final class Constants {
         public static final String PASSPHRASE_CACHE_TTL = "passphraseCacheTtl";
         public static final String LANGUAGE = "language";
         public static final String KEY_SERVERS = "keyServers";
-        public static final String KEY_SERVERS_DEFAULT_VERSION = "keyServersDefaultVersion";
+        public static final String PREF_DEFAULT_VERSION = "keyServersDefaultVersion";
         public static final String WRITE_VERSION_HEADER = "writeVersionHeader";
         public static final String FIRST_TIME = "firstTime";
         public static final String SHOW_ADVANCED_TABS = "showAdvancedTabs";
@@ -83,7 +83,7 @@ public final class Constants {
 
     public static final class Defaults {
         public static final String KEY_SERVERS = "hkps://hkps.pool.sks-keyservers.net, hkps://pgp.mit.edu";
-        public static final int KEY_SERVERS_VERSION = 3;
+        public static final int PREF_VERSION = 4;
     }
 
     public static final class DrawerItems {

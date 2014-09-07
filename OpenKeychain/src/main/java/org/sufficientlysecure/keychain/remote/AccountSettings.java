@@ -39,7 +39,7 @@ public class AccountSettings {
 
         // defaults:
         this.mEncryptionAlgorithm = PGPEncryptedData.AES_256;
-        this.mHashAlgorithm = HashAlgorithmTags.SHA512;
+        this.mHashAlgorithm = HashAlgorithmTags.SHA256;
         this.mCompression = CompressionAlgorithmTags.ZLIB;
     }
 

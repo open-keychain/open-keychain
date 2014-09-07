@@ -125,7 +125,7 @@ public class PgpKeyOperation {
      * http://kbsriram.com/2013/01/generating-rsa-keys-with-bouncycastle.html
      */
     private static final int SECRET_KEY_ENCRYPTOR_S2K_COUNT = 0x60;
-    private static final int SECRET_KEY_ENCRYPTOR_HASH_ALGO = HashAlgorithmTags.SHA512;
+    private static final int SECRET_KEY_ENCRYPTOR_HASH_ALGO = HashAlgorithmTags.SHA256;
     private static final int SECRET_KEY_ENCRYPTOR_SYMMETRIC_ALGO = SymmetricKeyAlgorithmTags.AES_256;
 
     public PgpKeyOperation(Progressable progress) {
