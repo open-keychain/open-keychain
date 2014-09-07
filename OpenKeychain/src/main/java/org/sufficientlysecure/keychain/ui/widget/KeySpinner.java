@@ -133,7 +133,7 @@ public abstract class KeySpinner extends Spinner implements LoaderManager.Loader
             inner = new CursorAdapter(null, null, 0) {
                 @Override
                 public View newView(Context context, Cursor cursor, ViewGroup parent) {
-                    return View.inflate(getContext(), R.layout.keyspinner_key, null);
+                    return View.inflate(getContext(), R.layout.keyspinner_item, null);
                 }
 
                 @Override
@@ -210,7 +210,7 @@ public abstract class KeySpinner extends Spinner implements LoaderManager.Loader
                 } else {
                     v = convertView;
                 }
-                ((TextView) v.findViewById(R.id.keyspinner_key_name)).setText("None");
+                ((TextView) v.findViewById(R.id.keyspinner_key_name)).setText(R.string.choice_none);
                 v.findViewById(R.id.keyspinner_key_email).setVisibility(View.GONE);
                 v.findViewById(R.id.keyspinner_key_id).setVisibility(View.GONE);
             } else {

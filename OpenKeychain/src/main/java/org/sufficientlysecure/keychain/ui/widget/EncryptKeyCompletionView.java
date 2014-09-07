@@ -210,9 +210,7 @@ public class EncryptKeyCompletionView extends TokenCompleteTextView {
         }
 
         public String getPrimary() {
-            if (mUserId[0] != null && mUserId[2] != null) {
-                return mUserId[0] + " (" + mUserId[2] + ")";
-            } else if (mUserId[0] != null) {
+            if (mUserId[0] != null) {
                 return mUserId[0];
             } else {
                 return mUserId[1];
@@ -220,7 +218,7 @@ public class EncryptKeyCompletionView extends TokenCompleteTextView {
         }
 
         public String getSecondary() {
-            if (mUserId[0] != null) {
+            if (mUserId[1] != null) {
                 return mUserId[1];
             } else {
                 return getKeyIdHex();

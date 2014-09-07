@@ -88,14 +88,14 @@ public final class Constants {
 
     public static final class DrawerItems {
         public static final Class KEY_LIST = KeyListActivity.class;
-        public static final Class ENCRYPT_FILE = EncryptFileActivity.class;
         public static final Class ENCRYPT_TEXT = EncryptTextActivity.class;
+        public static final Class ENCRYPT_FILE = EncryptFileActivity.class;
         public static final Class DECRYPT = DecryptActivity.class;
         public static final Class REGISTERED_APPS_LIST = AppsListActivity.class;
         public static final Class[] ARRAY = new Class[]{
                 KEY_LIST,
-                ENCRYPT_FILE,
                 ENCRYPT_TEXT,
+                ENCRYPT_FILE,
                 DECRYPT,
                 REGISTERED_APPS_LIST
         };

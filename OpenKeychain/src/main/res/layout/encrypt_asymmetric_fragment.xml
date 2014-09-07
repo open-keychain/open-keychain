@@ -22,8 +22,6 @@
 
         <TextView
             android:paddingLeft="12dp"
-            android:paddingTop="8dp"
-            android:paddingBottom="8dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceMedium"
@@ -32,6 +30,7 @@
 
         <org.sufficientlysecure.keychain.ui.widget.SignKeySpinner
             android:id="@+id/sign"
+            android:minHeight="56dip"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical" />
