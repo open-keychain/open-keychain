@@ -1,6 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <!--
+    GENERAL: Please put all strings inside quotes as described in example 1 on
+    http://developer.android.com/guide/topics/resources/string-resource.html (scroll down to "Escaping apostrophes and quotes").
+    -->
+
     <!-- title -->
     <string name="title_select_recipients">"Select Keys"</string>
     <string name="title_select_secret_key">"Select Your Key"</string>
@@ -98,14 +103,14 @@
     <string name="label_label_use_default_yubikey_pin_summary">"Uses default PIN (123456) to access Yubikeys over NFC"</string>
     <string name="label_asymmetric_from">"Signed by:"</string>
     <string name="label_to">"Encrypt to:"</string>
-    <string name="label_delete_after_encryption">"Delete File After Encryption"</string>
-    <string name="label_delete_after_decryption">"Delete After Decryption"</string>
-    <string name="label_encryption_algorithm">"Encryption Algorithm"</string>
-    <string name="label_hash_algorithm">"Hash Algorithm"</string>
-    <string name="label_symmetric">"Encrypt With Passphrase"</string>
-    <string name="label_passphrase_cache_ttl">"Passphrase Cache"</string>
-    <string name="label_message_compression">"Message Compression"</string>
-    <string name="label_file_compression">"File Compression"</string>
+    <string name="label_delete_after_encryption">"Delete file after encryption"</string>
+    <string name="label_delete_after_decryption">"Delete after decryption"</string>
+    <string name="label_encryption_algorithm">"Encryption algorithm"</string>
+    <string name="label_hash_algorithm">"Hash algorithm"</string>
+    <string name="label_symmetric">"Encrypt with passphrase"</string>
+    <string name="label_passphrase_cache_ttl">"Passphrase cache"</string>
+    <string name="label_message_compression">"Message compression"</string>
+    <string name="label_file_compression">"File compression"</string>
     <string name="label_keyservers">"Keyservers"</string>
     <string name="label_key_id">"Key ID"</string>
     <string name="label_creation">"Creation"</string>
@@ -190,7 +195,7 @@
     <string name="select_encryption_key">"Select at least one encryption key."</string>
     <string name="select_encryption_or_signature_key">"Select at least one encryption key or a signature key."</string>
     <string name="specify_file_to_encrypt_to">"Please specify which file to encrypt to.\nWARNING: File will be overwritten if it exists."</string>
-    <string name="specify_file_to_decrypt_to">"Please specify which file to decrypt to.nWARNING: File will be overwritten if it exists."</string>
+    <string name="specify_file_to_decrypt_to">"Please specify which file to decrypt to.\nWARNING: File will be overwritten if it exists."</string>
     <string name="specify_file_to_export_to">"Please specify which file to export to.\nWARNING: File will be overwritten if it exists."</string>
     <string name="key_deletion_confirmation_multi">"Do you really want to delete all selected public keys?\nYou can't undo this!"</string>
     <string name="secret_key_deletion_confirmation">"Do you really want to delete the SECRET key '%s'?\nYou can't undo this!"</string>
@@ -448,13 +453,13 @@
 
     <!-- Key view -->
     <string name="key_view_action_edit">"Edit key"</string>
-    <string name="key_view_action_encrypt">"Encrypt Text"</string>
-    <string name="key_view_action_encrypt_files">"Files"</string>
+    <string name="key_view_action_encrypt">"Encrypt text"</string>
+    <string name="key_view_action_encrypt_files">"files"</string>
     <string name="key_view_action_certify">"Certify identities"</string>
     <string name="key_view_action_update">"Update from keyserver"</string>
     <string name="key_view_action_share_with">"Share with…"</string>
     <string name="key_view_action_share_nfc">"Share over NFC"</string>
-    <string name="key_view_action_upload">"Upload to key server"</string>
+    <string name="key_view_action_upload">"Upload to keyserver"</string>
     <string name="key_view_tab_main">"Main Info"</string>
     <string name="key_view_tab_share">"Share"</string>
     <string name="key_view_tab_keys">"Subkeys"</string>
@@ -474,17 +479,17 @@
     <string name="edit_key_action_add_subkey">"Add Subkey"</string>
     <string name="edit_key_edit_user_id_title">"Select an action!"</string>
     <string-array name="edit_key_edit_user_id">
-        <item>Change to Primary Identity"</item>
-        <item>Revoke Identity"</item>
+        <item>"Change to Primary Identity"</item>
+        <item>"Revoke Identity"</item>
     </string-array>
     <string-array name="edit_key_edit_user_id_revert_revocation">
-        <item>Revert revocation"</item>
+        <item>"Revert revocation"</item>
     </string-array>
     <string name="edit_key_edit_user_id_revoked">"This identity has been revoked. This cannot be undone."</string>
     <string name="edit_key_edit_subkey_title">"Select an action!"</string>
     <string-array name="edit_key_edit_subkey">
-        <item>Change Expiry"</item>
-        <item>Revoke Subkey"</item>
+        <item>"Change Expiry"</item>
+        <item>"Revoke Subkey"</item>
     </string-array>
     <string name="edit_key_new_subkey">"new"</string>
     <string name="edit_key_select_flag">"Please select at least one flag!"</string>
@@ -504,8 +509,8 @@
 
     <!-- Navigation Drawer -->
     <string name="nav_keys">"Keys"</string>
-    <string name="nav_encrypt_text">"Encrypt Text"</string>
-    <string name="nav_encrypt_files">"Encrypt Files"</string>
+    <string name="nav_encrypt_text">"Encrypt text"</string>
+    <string name="nav_encrypt_files">"Encrypt files"</string>
     <string name="nav_decrypt">"Decrypt"</string>
     <string name="nav_apps">"Apps"</string>
     <string name="drawer_open">"Open navigation drawer"</string>
@@ -598,7 +603,7 @@
     <string name="msg_is_subkey_ok">"Marked secret subkey %s as available"</string>
     <string name="msg_is_subkey_empty">"Marked secret subkey %s as available, with empty passphrase"</string>
     <string name="msg_is_subkey_stripped">"Marked secret subkey %s as stripped"</string>
-    <string name="msg_is_subkey_divert">"Marked secret subkey %s as "divert to smartcard/NFC"</string>
+    <string name="msg_is_subkey_divert">"Marked secret subkey %s as 'divert to smartcard/NFC'"</string>
     <string name="msg_is_success_identical">"Keyring contains no new data, nothing to do"</string>
     <string name="msg_is_success">"Successfully imported secret keyring"</string>
 
@@ -642,18 +647,18 @@
         <item quantity="one">"Keyring canonicalization successful, removed one redundant certificate"</item>
         <item quantity="other">"Keyring canonicalization successful, removed %d redundant certificates"</item>
     </plurals>
-    <string name="msg_kc_uid_bad_err">"Removing bad self certificate for user id %s"</string>
-    <string name="msg_kc_uid_bad_local">"Removing user id certificate with "local" flag"</string>
+    <string name="msg_kc_uid_bad_err">"Removing bad self certificate for user id '%s'"</string>
+    <string name="msg_kc_uid_bad_local">"Removing user id certificate with 'local' flag"</string>
     <string name="msg_kc_uid_bad_time">"Removing user id with future timestamp"</string>
     <string name="msg_kc_uid_bad_type">"Removing user id certificate of unknown type (%s)"</string>
-    <string name="msg_kc_uid_bad">"Removing bad self certificate for user id "%s"</string>
-    <string name="msg_kc_uid_cert_dup">"Removing outdated self certificate for user id "%s"</string>
-    <string name="msg_kc_uid_foreign">"Removing foreign user id certificate by %s"</string>
-    <string name="msg_kc_uid_revoke_dup">"Removing redundant revocation certificate for user id "%s"</string>
-    <string name="msg_kc_uid_revoke_old">"Removing outdated revocation certificate for user id "%s"</string>
-    <string name="msg_kc_uid_no_cert">"No valid self-certificate found for user id %s, removing from ring"</string>
-    <string name="msg_kc_uid_remove">"Removing invalid user id %s"</string>
-    <string name="msg_kc_uid_dup">"Removing duplicate user id "%s". The secret key contained two of them. This may result in missing certificates!"</string>
+    <string name="msg_kc_uid_bad">"Removing bad self certificate for user id '%s'"</string>
+    <string name="msg_kc_uid_cert_dup">"Removing outdated self certificate for user id '%s'"</string>
+    <string name="msg_kc_uid_foreign">"Removing foreign user id certificate by '%s'"</string>
+    <string name="msg_kc_uid_revoke_dup">"Removing redundant revocation certificate for user id '%s'"</string>
+    <string name="msg_kc_uid_revoke_old">"Removing outdated revocation certificate for user id '%s'"</string>
+    <string name="msg_kc_uid_no_cert">"No valid self-certificate found for user id '%s', removing from ring"</string>
+    <string name="msg_kc_uid_remove">"Removing invalid user id '%s'"</string>
+    <string name="msg_kc_uid_dup">"Removing duplicate user id '%s'. The secret key contained two of them. This may result in missing certificates!"</string>
 
     <!-- Keyring merging log entries -->
     <string name="msg_mg_error_secret_dummy">"New public subkey found, but secret subkey dummy generation is not supported!"</string>
@@ -670,7 +675,7 @@
     <string name="msg_cr_error_no_master">"No master key options specified!"</string>
     <string name="msg_cr_error_no_user_id">"Keyrings must be created with at least one user id!"</string>
     <string name="msg_cr_error_no_certify">"Master key must have certify flag!"</string>
-    <string name="msg_cr_error_null_expiry">"Expiry time cannot be "same as before" on key creation. This is a programming error, please file a bug report!"</string>
+    <string name="msg_cr_error_null_expiry">"Expiry time cannot be 'same as before' on key creation. This is a programming error, please file a bug report!"</string>
     <string name="msg_cr_error_keysize_512">"Key size must be greater or equal 512!"</string>
     <string name="msg_cr_error_no_curve">"No key size specified! This is a programming error, please file a bug report!"</string>
     <string name="msg_cr_error_no_keysize">"No elliptic curve specified! This is a programming error, please file a bug report!"</string>
