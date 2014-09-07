@@ -26,14 +26,38 @@
         android:layout_marginTop="-4dip"
         android:text="alice@example.com" />
 
-    <TextView
-        android:id="@+id/keyspinner_key_id"
-        android:textColor="?android:attr/textColorTertiary"
-        android:textSize="14sp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:singleLine="true"
-        android:ellipsize="end"
-        android:typeface="monospace"
-        android:layout_marginTop="-4dip" />
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                  android:orientation="horizontal"
+                  android:layout_width="match_parent"
+                  android:padding="4dp"
+                  android:minHeight="24dp"
+                  android:layout_height="wrap_content"
+                  android:id="@+id/keyspinner_key_row">
+
+        <TextView
+            android:id="@+id/keyspinner_key_id"
+            android:textColor="?android:attr/textColorTertiary"
+            android:textSize="14sp"
+            android:layout_width="0dip"
+            android:layout_height="wrap_content"
+            android:singleLine="true"
+            android:ellipsize="end"
+            android:typeface="monospace"
+            android:layout_marginTop="-4dip"
+            android:layout_weight="1"/>
+
+        <TextView
+            android:id="@+id/keyspinner_key_status"
+            android:textColor="#e00"
+            android:textSize="12sp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:singleLine="true"
+            android:ellipsize="end"
+            android:layout_gravity="right"
+            android:text="status"
+            android:visibility="gone"/>
+
+    </LinearLayout>
+
 </LinearLayout>
