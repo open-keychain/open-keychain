@@ -51,7 +51,7 @@ import java.util.Set;
 public class EncryptFileActivity extends DrawerActivity implements EncryptActivityInterface {
 
     /* Intents */
-    public static final String ACTION_ENCRYPT_FILES = OpenKeychainIntents.ENCRYPT_DATA;
+    public static final String ACTION_ENCRYPT_DATA = OpenKeychainIntents.ENCRYPT_DATA;
 
     // enables ASCII Armor for file encryption when uri is given
     public static final String EXTRA_ASCII_ARMOR = OpenKeychainIntents.ENCRYPT_EXTRA_ASCII_ARMOR;
@@ -371,7 +371,7 @@ public class EncryptFileActivity extends DrawerActivity implements EncryptActivi
         setContentView(R.layout.encrypt_file_activity);
 
         // if called with an intent action, do not init drawer navigation
-        if (ACTION_ENCRYPT_FILES.equals(getIntent().getAction())) {
+        if (ACTION_ENCRYPT_DATA.equals(getIntent().getAction())) {
             // lock drawer
             deactivateDrawerNavigation();
             // TODO: back button to key?

@@ -151,9 +151,7 @@
                 <action android:name="org.sufficientlysecure.keychain.action.ENCRYPT_DATA" />
 
                 <category android:name="android.intent.category.DEFAULT" />
-
-                <data android:scheme="file" />
-                <data android:scheme="content" />
+                <data android:mimeType="*/*" />
             </intent-filter>
             <!-- Android's Send Action -->
             <intent-filter android:label="@string/intent_send_encrypt">
