@@ -31,6 +31,7 @@ import android.view.MenuItem;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.api.OpenKeychainIntents;
 import org.sufficientlysecure.keychain.compatibility.ClipboardReflection;
 import org.sufficientlysecure.keychain.helper.Preferences;
 import org.sufficientlysecure.keychain.helper.ShareHelper;
@@ -50,10 +51,10 @@ import java.util.Set;
 public class EncryptFileActivity extends DrawerActivity implements EncryptActivityInterface {
 
     /* Intents */
-    public static final String ACTION_ENCRYPT_FILES = Constants.INTENT_PREFIX + "ENCRYPT_FILES";
+    public static final String ACTION_ENCRYPT_FILES = OpenKeychainIntents.ENCRYPT_DATA;
 
     // enables ASCII Armor for file encryption when uri is given
-    public static final String EXTRA_ASCII_ARMOR = Constants.EXTRA_PREFIX + "EXTRA_ASCII_ARMOR";
+    public static final String EXTRA_ASCII_ARMOR = OpenKeychainIntents.ENCRYPT_EXTRA_ASCII_ARMOR;
 
     // preselect ids, for internal use
     public static final String EXTRA_SIGNATURE_KEY_ID = Constants.EXTRA_PREFIX + "EXTRA_SIGNATURE_KEY_ID";

@@ -40,6 +40,7 @@ import android.view.ViewGroup;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.api.OpenKeychainIntents;
 import org.sufficientlysecure.keychain.helper.OtherHelper;
 import org.sufficientlysecure.keychain.helper.Preferences;
 import org.sufficientlysecure.keychain.keyimport.ImportKeysListEntry;
@@ -60,11 +61,9 @@ import java.util.ArrayList;
 import java.util.Locale;
 
 public class ImportKeysActivity extends ActionBarActivity {
-    public static final String ACTION_IMPORT_KEY = Constants.INTENT_PREFIX + "IMPORT_KEY";
-    public static final String ACTION_IMPORT_KEY_FROM_QR_CODE = Constants.INTENT_PREFIX
-            + "IMPORT_KEY_FROM_QR_CODE";
-    public static final String ACTION_IMPORT_KEY_FROM_KEYSERVER = Constants.INTENT_PREFIX
-            + "IMPORT_KEY_FROM_KEYSERVER";
+    public static final String ACTION_IMPORT_KEY = OpenKeychainIntents.IMPORT_KEY;
+    public static final String ACTION_IMPORT_KEY_FROM_QR_CODE = OpenKeychainIntents.IMPORT_KEY_FROM_QR_CODE;
+    public static final String ACTION_IMPORT_KEY_FROM_KEYSERVER = OpenKeychainIntents.IMPORT_KEY_FROM_KEYSERVER;
     public static final String ACTION_IMPORT_KEY_FROM_KEYSERVER_AND_RETURN_RESULT =
             Constants.INTENT_PREFIX + "IMPORT_KEY_FROM_KEY_SERVER_AND_RETURN_RESULT";
     public static final String ACTION_IMPORT_KEY_FROM_KEYSERVER_AND_RETURN_TO_SERVICE = Constants.INTENT_PREFIX
@@ -83,12 +82,12 @@ public class ImportKeysActivity extends ActionBarActivity {
     public static final String EXTRA_RESULT = "result";
 
     // only used by ACTION_IMPORT_KEY
-    public static final String EXTRA_KEY_BYTES = Constants.EXTRA_PREFIX + "KEY_BYTES";
+    public static final String EXTRA_KEY_BYTES = OpenKeychainIntents.IMPORT_EXTRA_KEY_EXTRA_KEY_BYTES;
 
     // only used by ACTION_IMPORT_KEY_FROM_KEYSERVER
-    public static final String EXTRA_QUERY = Constants.EXTRA_PREFIX + "EXTRA_QUERY";
+    public static final String EXTRA_QUERY = OpenKeychainIntents.IMPORT_KEY_FROM_KEYSERVER_EXTRA_QUERY;
     public static final String EXTRA_KEY_ID = Constants.EXTRA_PREFIX + "EXTRA_KEY_ID";
-    public static final String EXTRA_FINGERPRINT = Constants.EXTRA_PREFIX + "EXTRA_FINGERPRINT";
+    public static final String EXTRA_FINGERPRINT = OpenKeychainIntents.IMPORT_KEY_FROM_KEYSERVER_EXTRA_FINGERPRINT;
 
     // only used by ACTION_IMPORT_KEY_FROM_KEYSERVER_AND_RETURN_TO_SERVICE when used from OpenPgpService
     public static final String EXTRA_PENDING_INTENT_DATA = "data";

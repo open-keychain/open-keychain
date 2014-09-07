@@ -31,6 +31,7 @@ import android.view.MenuItem;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.api.OpenKeychainIntents;
 import org.sufficientlysecure.keychain.compatibility.ClipboardReflection;
 import org.sufficientlysecure.keychain.helper.Preferences;
 import org.sufficientlysecure.keychain.helper.ShareHelper;
@@ -49,10 +50,10 @@ import java.util.Set;
 public class EncryptTextActivity extends DrawerActivity implements EncryptActivityInterface {
 
     /* Intents */
-    public static final String ACTION_ENCRYPT_TEXT = Constants.INTENT_PREFIX + "ENCRYPT_TEXT";
+    public static final String ACTION_ENCRYPT_TEXT = OpenKeychainIntents.ENCRYPT_TEXT;
 
     /* EXTRA keys for input */
-    public static final String EXTRA_TEXT = Constants.EXTRA_PREFIX + "EXTRA_TEXT";
+    public static final String EXTRA_TEXT = OpenKeychainIntents.ENCRYPT_EXTRA_TEXT;
 
     // preselect ids, for internal use
     public static final String EXTRA_SIGNATURE_KEY_ID = Constants.EXTRA_PREFIX + "EXTRA_SIGNATURE_KEY_ID";
