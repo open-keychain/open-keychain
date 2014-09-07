@@ -49,7 +49,10 @@ public final class Constants {
     public static final String SC = BouncyCastleProvider.PROVIDER_NAME;
     public static final String BOUNCY_CASTLE_PROVIDER_NAME = SC;
 
+    // prefix packagename for exported Intents
+    // as described in http://developer.android.com/guide/components/intents-filters.html
     public static final String INTENT_PREFIX = PACKAGE_NAME + ".action.";
+    public static final String EXTRA_PREFIX = PACKAGE_NAME + ".";
 
     public static final String CUSTOM_CONTACT_DATA_MIME_TYPE = "vnd.android.cursor.item/vnd.org.sufficientlysecure.keychain.key";
 

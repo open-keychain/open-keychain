@@ -49,14 +49,14 @@ import java.util.Set;
 public class EncryptTextActivity extends DrawerActivity implements EncryptActivityInterface {
 
     /* Intents */
-    public static final String ACTION_ENCRYPT = Constants.INTENT_PREFIX + "ENCRYPT";
+    public static final String ACTION_ENCRYPT_TEXT = Constants.INTENT_PREFIX + "ENCRYPT_TEXT";
 
     /* EXTRA keys for input */
-    public static final String EXTRA_TEXT = "text";
+    public static final String EXTRA_TEXT = Constants.EXTRA_PREFIX + "EXTRA_TEXT";
 
     // preselect ids, for internal use
-    public static final String EXTRA_SIGNATURE_KEY_ID = "signature_key_id";
-    public static final String EXTRA_ENCRYPTION_KEY_IDS = "encryption_key_ids";
+    public static final String EXTRA_SIGNATURE_KEY_ID = Constants.EXTRA_PREFIX + "EXTRA_SIGNATURE_KEY_ID";
+    public static final String EXTRA_ENCRYPTION_KEY_IDS = Constants.EXTRA_PREFIX + "EXTRA_SIGNATURE_KEY_IDS";
 
     // view
     private int mCurrentMode = MODE_ASYMMETRIC;
@@ -338,7 +338,7 @@ public class EncryptTextActivity extends DrawerActivity implements EncryptActivi
         setContentView(R.layout.encrypt_text_activity);
 
         // if called with an intent action, do not init drawer navigation
-        if (ACTION_ENCRYPT.equals(getIntent().getAction())) {
+        if (ACTION_ENCRYPT_TEXT.equals(getIntent().getAction())) {
             // lock drawer
             deactivateDrawerNavigation();
             // TODO: back button to key?
@@ -415,9 +415,9 @@ public class EncryptTextActivity extends DrawerActivity implements EncryptActivi
         /**
          * Main Actions
          */
-        if (ACTION_ENCRYPT.equals(action) && textData != null) {
+        if (ACTION_ENCRYPT_TEXT.equals(action) && textData != null) {
             mMessage = textData;
-        } else if (ACTION_ENCRYPT.equals(action)) {
+        } else if (ACTION_ENCRYPT_TEXT.equals(action)) {
             Log.e(Constants.TAG, "Include the extra 'text' in your Intent!");
         }
     }

@@ -148,18 +148,12 @@
             <!-- Keychain's own Actions -->
             <!-- ENCRYPT with data Uri -->
             <intent-filter>
-                <action android:name="org.sufficientlysecure.keychain.action.ENCRYPT" />
+                <action android:name="org.sufficientlysecure.keychain.action.ENCRYPT_FILES" />
 
                 <category android:name="android.intent.category.DEFAULT" />
 
                 <data android:scheme="file" />
                 <data android:scheme="content" />
-                <!-- everything except text/* and message/* -->
-                <data android:mimeType="image/*" />
-                <data android:mimeType="audio/*" />
-                <data android:mimeType="video/*" />
-                <data android:mimeType="application/*" />
-                <data android:mimeType="multipart/*" />
             </intent-filter>
             <!-- Android's Send Action -->
             <intent-filter android:label="@string/intent_send_encrypt">
@@ -188,9 +182,6 @@
                 <action android:name="org.sufficientlysecure.keychain.action.ENCRYPT" />
 
                 <category android:name="android.intent.category.DEFAULT" />
-
-                <data android:mimeType="text/*" />
-                <data android:mimeType="message/*" />
             </intent-filter>
             <!-- Android's Send Action -->
             <intent-filter android:label="@string/intent_send_encrypt">

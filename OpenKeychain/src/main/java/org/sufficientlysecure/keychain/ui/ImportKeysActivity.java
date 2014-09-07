@@ -83,12 +83,12 @@ public class ImportKeysActivity extends ActionBarActivity {
     public static final String EXTRA_RESULT = "result";
 
     // only used by ACTION_IMPORT_KEY
-    public static final String EXTRA_KEY_BYTES = "key_bytes";
+    public static final String EXTRA_KEY_BYTES = Constants.EXTRA_PREFIX + "KEY_BYTES";
 
     // only used by ACTION_IMPORT_KEY_FROM_KEYSERVER
-    public static final String EXTRA_QUERY = "query";
-    public static final String EXTRA_KEY_ID = "key_id";
-    public static final String EXTRA_FINGERPRINT = "fingerprint";
+    public static final String EXTRA_QUERY = Constants.EXTRA_PREFIX + "EXTRA_QUERY";
+    public static final String EXTRA_KEY_ID = Constants.EXTRA_PREFIX + "EXTRA_KEY_ID";
+    public static final String EXTRA_FINGERPRINT = Constants.EXTRA_PREFIX + "EXTRA_FINGERPRINT";
 
     // only used by ACTION_IMPORT_KEY_FROM_KEYSERVER_AND_RETURN_TO_SERVICE when used from OpenPgpService
     public static final String EXTRA_PENDING_INTENT_DATA = "data";

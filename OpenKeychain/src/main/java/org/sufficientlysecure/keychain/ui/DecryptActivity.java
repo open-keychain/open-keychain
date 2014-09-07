@@ -38,7 +38,7 @@ public class DecryptActivity extends DrawerActivity {
     public static final String ACTION_DECRYPT = Constants.INTENT_PREFIX + "DECRYPT";
 
     /* EXTRA keys for input */
-    public static final String EXTRA_TEXT = "text";
+    public static final String EXTRA_TEXT = Constants.EXTRA_PREFIX + "EXTRA_TEXT";
 
     ViewPager mViewPager;
     PagerTabStrip mPagerTabStrip;

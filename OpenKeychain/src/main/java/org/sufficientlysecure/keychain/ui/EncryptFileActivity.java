@@ -50,14 +50,14 @@ import java.util.Set;
 public class EncryptFileActivity extends DrawerActivity implements EncryptActivityInterface {
 
     /* Intents */
-    public static final String ACTION_ENCRYPT = Constants.INTENT_PREFIX + "ENCRYPT";
+    public static final String ACTION_ENCRYPT_FILES = Constants.INTENT_PREFIX + "ENCRYPT_FILES";
 
     // enables ASCII Armor for file encryption when uri is given
-    public static final String EXTRA_ASCII_ARMOR = "ascii_armor";
+    public static final String EXTRA_ASCII_ARMOR = Constants.EXTRA_PREFIX + "EXTRA_ASCII_ARMOR";
 
     // preselect ids, for internal use
-    public static final String EXTRA_SIGNATURE_KEY_ID = "signature_key_id";
-    public static final String EXTRA_ENCRYPTION_KEY_IDS = "encryption_key_ids";
+    public static final String EXTRA_SIGNATURE_KEY_ID = Constants.EXTRA_PREFIX + "EXTRA_SIGNATURE_KEY_ID";
+    public static final String EXTRA_ENCRYPTION_KEY_IDS = Constants.EXTRA_PREFIX + "EXTRA_ENCRYPTION_IDS";
 
     // view
     private int mCurrentMode = MODE_ASYMMETRIC;
@@ -370,7 +370,7 @@ public class EncryptFileActivity extends DrawerActivity implements EncryptActivi
         setContentView(R.layout.encrypt_file_activity);
 
         // if called with an intent action, do not init drawer navigation
-        if (ACTION_ENCRYPT.equals(getIntent().getAction())) {
+        if (ACTION_ENCRYPT_FILES.equals(getIntent().getAction())) {
             // lock drawer
             deactivateDrawerNavigation();
             // TODO: back button to key?
@@ -460,10 +460,10 @@ public class EncryptFileActivity extends DrawerActivity implements EncryptActivi
                 String sharedText = intent.getStringExtra(Intent.EXTRA_TEXT);
                 if (sharedText != null) {
                     // handle like normal text encryption, override action and extras to later
-                    // executeServiceMethod ACTION_ENCRYPT in main actions
+                    // executeServiceMethod ACTION_ENCRYPT_TEXT in main actions
                     extras.putString(EXTRA_TEXT, sharedText);
                     extras.putBoolean(EXTRA_ASCII_ARMOR, true);
-                    action = ACTION_ENCRYPT;
+                    action = ACTION_ENCRYPT_TEXT;
                 }
 
             } else */

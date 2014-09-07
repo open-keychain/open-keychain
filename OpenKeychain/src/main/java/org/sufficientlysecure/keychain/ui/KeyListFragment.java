@@ -328,7 +328,7 @@ public class KeyListFragment extends LoaderFragment
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     protected void encrypt(ActionMode mode, long[] masterKeyIds) {
         Intent intent = new Intent(getActivity(), EncryptFileActivity.class);
-        intent.setAction(EncryptFileActivity.ACTION_ENCRYPT);
+        intent.setAction(EncryptFileActivity.ACTION_ENCRYPT_FILES);
         intent.putExtra(EncryptFileActivity.EXTRA_ENCRYPTION_KEY_IDS, masterKeyIds);
         // used instead of startActivity set actionbar based on callingPackage
         startActivityForResult(intent, 0);
