@@ -354,6 +354,12 @@ public class OpenPgpService extends RemoteService {
                     throw new Exception(getString(R.string.error_wrong_passphrase));
                 } catch (PgpSignEncrypt.NoSigningKeyException e) {
                     throw new Exception(getString(R.string.error_no_signature_key));
+                } catch (PgpSignEncrypt.NeedNfcDataException e) {
+                    // return PendingIntent to execute NFC activity
+                    // pass through the signature creation timestamp to be used again on second execution
+                    // of PgpSignEncrypt when we have the signed hash!
+                    data.putExtra(OpenPgpApi.EXTRA_NFC_SIG_CREATION_TIMESTAMP, e.mCreationTimestamp.getTime());
+                    return getNfcIntent(data, e.mHashToSign, e.mHashAlgo);
                 }
             } finally {
                 is.close();
