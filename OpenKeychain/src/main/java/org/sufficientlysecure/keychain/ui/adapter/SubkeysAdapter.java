@@ -162,7 +162,8 @@ public class SubkeysAdapter extends CursorAdapter {
                 algorithmStr += ", " + context.getString(R.string.key_no_passphrase);
                 break;
             case UNAVAILABLE:
-                algorithmStr += ", " + context.getString(R.string.key_unavailable);
+                // don't show this on pub keys
+                //algorithmStr += ", " + context.getString(R.string.key_unavailable);
                 break;
         }
         vKeyDetails.setText(algorithmStr);
