@@ -87,6 +87,7 @@
     <string name="label_file_colon">File:</string>
     <string name="label_no_passphrase">No Passphrase</string>
     <string name="label_passphrase">Passphrase</string>
+    <string name="label_unlock">Unlocking…</string>
     <string name="label_passphrase_again">Repeat Passphrase</string>
     <string name="label_algorithm">Algorithm</string>
     <string name="label_ascii_armor">File ASCII Armor</string>
