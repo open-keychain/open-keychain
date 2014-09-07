@@ -3,7 +3,6 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:paddingTop="4dp"
     android:paddingBottom="4dp"
     android:paddingRight="16dp"
     android:paddingLeft="16dp">
@@ -11,6 +10,7 @@
     <org.sufficientlysecure.keychain.ui.widget.EncryptKeyCompletionView
         android:id="@+id/recipient_list"
         android:layout_width="match_parent"
+        android:minHeight="56dip"
         android:layout_height="wrap_content" />
 
     <LinearLayout
