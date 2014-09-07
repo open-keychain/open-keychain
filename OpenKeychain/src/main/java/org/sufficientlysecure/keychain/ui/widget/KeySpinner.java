@@ -19,6 +19,7 @@ package org.sufficientlysecure.keychain.ui.widget;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.graphics.Color;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
@@ -139,9 +140,24 @@ public abstract class KeySpinner extends Spinner implements LoaderManager.Loader
                 @Override
                 public void bindView(View view, Context context, Cursor cursor) {
                     String[] userId = KeyRing.splitUserId(cursor.getString(mIndexUserId));
-                    ((TextView) view.findViewById(R.id.keyspinner_key_name)).setText(userId[2] == null ? userId[0] : (userId[0] + " (" + userId[2] + ")"));
+                    TextView vKeyName = ((TextView) view.findViewById(R.id.keyspinner_key_name));
+                    TextView vKeyStatus = ((TextView) view.findViewById(R.id.keyspinner_key_status));
+                    vKeyName.setText(userId[2] == null ? userId[0] : (userId[0] + " (" + userId[2] + ")"));
                     ((TextView) view.findViewById(R.id.keyspinner_key_email)).setText(userId[1]);
                     ((TextView) view.findViewById(R.id.keyspinner_key_id)).setText(PgpKeyHelper.convertKeyIdToHex(cursor.getLong(mIndexKeyId)));
+                    String status = getStatus(getContext(), cursor);
+                    if (status == null) {
+                        vKeyName.setTextColor(Color.BLACK);
+                        vKeyStatus.setVisibility(View.GONE);
+                        view.setClickable(false);
+                    } else {
+                        vKeyName.setTextColor(Color.GRAY);
+                        vKeyStatus.setVisibility(View.VISIBLE);
+                        vKeyStatus.setText(status);
+                        // this is a HACK. the trick is, if the element itself is clickable, the
+                        // click is not passed on to the view list
+                        view.setClickable(true);
+                    }
                 }
 
                 @Override
@@ -212,13 +228,19 @@ public abstract class KeySpinner extends Spinner implements LoaderManager.Loader
                 }
                 ((TextView) v.findViewById(R.id.keyspinner_key_name)).setText(R.string.choice_none);
                 v.findViewById(R.id.keyspinner_key_email).setVisibility(View.GONE);
-                v.findViewById(R.id.keyspinner_key_id).setVisibility(View.GONE);
+                v.findViewById(R.id.keyspinner_key_row).setVisibility(View.GONE);
             } else {
                 v = inner.getView(position - 1, convertView, parent);
                 v.findViewById(R.id.keyspinner_key_email).setVisibility(View.VISIBLE);
-                v.findViewById(R.id.keyspinner_key_id).setVisibility(View.VISIBLE);
+                v.findViewById(R.id.keyspinner_key_row).setVisibility(View.VISIBLE);
             }
             return v;
         }
     }
+
+    /** Return a string which should be the disabled status of the key, or null if the key is enabled. */
+    String getStatus(Context context, Cursor cursor) {
+        return null;
+    }
+
 }
