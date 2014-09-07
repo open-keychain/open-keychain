@@ -24,6 +24,7 @@ import org.sufficientlysecure.keychain.util.IterableIterator;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.ArrayList;
 
 /** A generic wrapped PGPKeyRing object.
  *
@@ -56,6 +57,10 @@ public abstract class CanonicalizedKeyRing extends KeyRing {
 
     public String getPrimaryUserIdWithFallback() throws PgpGeneralException {
         return getPublicKey().getPrimaryUserIdWithFallback();
+    }
+
+    public ArrayList<String> getUnorderedUserIds() {
+        return getPublicKey().getUnorderedUserIds();
     }
 
     public boolean isRevoked() throws PgpGeneralException {

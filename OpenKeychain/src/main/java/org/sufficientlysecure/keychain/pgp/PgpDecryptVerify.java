@@ -421,18 +421,7 @@ public class PgpDecryptVerify {
                 // key found in our database!
                 signature = sigList.get(signatureIndex);
 
-                signatureResultBuilder.setSignatureAvailable(true);
-                signatureResultBuilder.setKnownKey(true);
-                signatureResultBuilder.setKeyId(signingRing.getMasterKeyId());
-                try {
-                    signatureResultBuilder.setPrimaryUserId(signingRing.getPrimaryUserIdWithFallback());
-                } catch (PgpGeneralException e) {
-                    Log.d(Constants.TAG, "No primary user id in keyring with master key id " + signingRing.getMasterKeyId());
-                }
-                signatureResultBuilder.setSignatureKeyCertified(signingRing.getVerified() > 0);
-                signatureResultBuilder.setKeyExpired(signingKey.isExpired());
-                signatureResultBuilder.setKeyRevoked(signingKey.isRevoked());
-                signatureResultBuilder.setUserIds(signingKey.getUnorderedUserIds());
+                signatureResultBuilder.initValid(signingRing, signingKey);
 
                 JcaPGPContentVerifierBuilderProvider contentVerifierBuilderProvider =
                         new JcaPGPContentVerifierBuilderProvider()
@@ -658,18 +647,7 @@ public class PgpDecryptVerify {
             // key found in our database!
             signature = sigList.get(signatureIndex);
 
-            signatureResultBuilder.setSignatureAvailable(true);
-            signatureResultBuilder.setKnownKey(true);
-            signatureResultBuilder.setKeyId(signingRing.getMasterKeyId());
-            try {
-                signatureResultBuilder.setPrimaryUserId(signingRing.getPrimaryUserIdWithFallback());
-            } catch (PgpGeneralException e) {
-                Log.d(Constants.TAG, "No primary user id in key with master key id " + signingRing.getMasterKeyId());
-            }
-            signatureResultBuilder.setSignatureKeyCertified(signingRing.getVerified() > 0);
-            signatureResultBuilder.setKeyExpired(signingKey.isExpired());
-            signatureResultBuilder.setKeyRevoked(signingKey.isRevoked());
-            signatureResultBuilder.setUserIds(signingKey.getUnorderedUserIds());
+            signatureResultBuilder.initValid(signingRing, signingKey);
 
             JcaPGPContentVerifierBuilderProvider contentVerifierBuilderProvider =
                     new JcaPGPContentVerifierBuilderProvider()
