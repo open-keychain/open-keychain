@@ -49,7 +49,7 @@ import java.util.Set;
 public class EncryptTextActivity extends DrawerActivity implements EncryptActivityInterface {
 
     /* Intents */
-    public static final String ACTION_ENCRYPT_TEXT = Constants.INTENT_PREFIX + "ENCRYPT_TEXT";
+    public static final String ACTION_ENCRYPT = Constants.INTENT_PREFIX + "ENCRYPT";
 
     /* EXTRA keys for input */
     public static final String EXTRA_TEXT = "text";
@@ -338,7 +338,7 @@ public class EncryptTextActivity extends DrawerActivity implements EncryptActivi
         setContentView(R.layout.encrypt_text_activity);
 
         // if called with an intent action, do not init drawer navigation
-        if (ACTION_ENCRYPT_TEXT.equals(getIntent().getAction())) {
+        if (ACTION_ENCRYPT.equals(getIntent().getAction())) {
             // lock drawer
             deactivateDrawerNavigation();
             // TODO: back button to key?
@@ -415,9 +415,9 @@ public class EncryptTextActivity extends DrawerActivity implements EncryptActivi
         /**
          * Main Actions
          */
-        if (ACTION_ENCRYPT_TEXT.equals(action) && textData != null) {
+        if (ACTION_ENCRYPT.equals(action) && textData != null) {
             mMessage = textData;
-        } else if (ACTION_ENCRYPT_TEXT.equals(action)) {
+        } else if (ACTION_ENCRYPT.equals(action)) {
             Log.e(Constants.TAG, "Include the extra 'text' in your Intent!");
         }
     }

@@ -57,7 +57,8 @@ public class ViewKeyMainFragment extends LoaderFragment implements
 
     private View mActionEdit;
     private View mActionEditDivider;
-    private View mActionEncrypt;
+    private View mActionEncryptFiles;
+    private View mActionEncryptText;
     private View mActionCertify;
     private View mActionCertifyText;
     private ImageView mActionCertifyImage;
@@ -83,7 +84,8 @@ public class ViewKeyMainFragment extends LoaderFragment implements
         mUserIds = (ListView) view.findViewById(R.id.view_key_user_ids);
         mActionEdit = view.findViewById(R.id.view_key_action_edit);
         mActionEditDivider = view.findViewById(R.id.view_key_action_edit_divider);
-        mActionEncrypt = view.findViewById(R.id.view_key_action_encrypt);
+        mActionEncryptText = view.findViewById(R.id.view_key_action_encrypt_text);
+        mActionEncryptFiles = view.findViewById(R.id.view_key_action_encrypt_files);
         mActionCertify = view.findViewById(R.id.view_key_action_certify);
         mActionCertifyText = view.findViewById(R.id.view_key_action_certify_text);
         mActionCertifyImage = (ImageView) view.findViewById(R.id.view_key_action_certify_image);
@@ -135,10 +137,16 @@ public class ViewKeyMainFragment extends LoaderFragment implements
 
         Log.i(Constants.TAG, "mDataUri: " + mDataUri.toString());
 
-        mActionEncrypt.setOnClickListener(new View.OnClickListener() {
+        mActionEncryptFiles.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                encrypt(mDataUri);
+                encrypt(mDataUri, false);
+            }
+        });
+        mActionEncryptText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                encrypt(mDataUri, true);
             }
         });
         mActionCertify.setOnClickListener(new View.OnClickListener() {
@@ -227,7 +235,7 @@ public class ViewKeyMainFragment extends LoaderFragment implements
                         mActionEdit.setEnabled(false);
                         mActionCertify.setEnabled(false);
                         mActionCertifyText.setEnabled(false);
-                        mActionEncrypt.setEnabled(false);
+                        mActionEncryptFiles.setEnabled(false);
                     } else {
                         mActionEdit.setEnabled(true);
 
@@ -235,11 +243,11 @@ public class ViewKeyMainFragment extends LoaderFragment implements
                         if (!data.isNull(INDEX_UNIFIED_EXPIRY) && expiryDate.before(new Date())) {
                             mActionCertify.setEnabled(false);
                             mActionCertifyText.setEnabled(false);
-                            mActionEncrypt.setEnabled(false);
+                            mActionEncryptFiles.setEnabled(false);
                         } else {
                             mActionCertify.setEnabled(true);
                             mActionCertifyText.setEnabled(true);
-                            mActionEncrypt.setEnabled(true);
+                            mActionEncryptFiles.setEnabled(true);
                         }
                     }
 
@@ -269,7 +277,7 @@ public class ViewKeyMainFragment extends LoaderFragment implements
         }
     }
 
-    private void encrypt(Uri dataUri) {
+    private void encrypt(Uri dataUri, boolean text) {
         // If there is no encryption key, don't bother.
         if (!mHasEncrypt) {
             Notify.showNotify(getActivity(), R.string.error_no_encrypt_subkey, Notify.Style.ERROR);
@@ -280,9 +288,16 @@ public class ViewKeyMainFragment extends LoaderFragment implements
                     .getCachedPublicKeyRing(dataUri)
                     .extractOrGetMasterKeyId();
             long[] encryptionKeyIds = new long[]{keyId};
-            Intent intent = new Intent(getActivity(), EncryptFileActivity.class);
-            intent.setAction(EncryptFileActivity.ACTION_ENCRYPT_FILE);
-            intent.putExtra(EncryptFileActivity.EXTRA_ENCRYPTION_KEY_IDS, encryptionKeyIds);
+            Intent intent;
+            if (text) {
+                intent = new Intent(getActivity(), EncryptTextActivity.class);
+                intent.setAction(EncryptTextActivity.ACTION_ENCRYPT);
+                intent.putExtra(EncryptTextActivity.EXTRA_ENCRYPTION_KEY_IDS, encryptionKeyIds);
+            } else {
+                intent = new Intent(getActivity(), EncryptFileActivity.class);
+                intent.setAction(EncryptFileActivity.ACTION_ENCRYPT);
+                intent.putExtra(EncryptFileActivity.EXTRA_ENCRYPTION_KEY_IDS, encryptionKeyIds);
+            }
             // used instead of startActivity set actionbar based on callingPackage
             startActivityForResult(intent, 0);
         } catch (PgpGeneralException e) {

@@ -447,7 +447,8 @@
 
     <!-- Key view -->
     <string name="key_view_action_edit">Edit key</string>
-    <string name="key_view_action_encrypt">Encrypt with this key</string>
+    <string name="key_view_action_encrypt">Encrypt Text</string>
+    <string name="key_view_action_encrypt_files">Files</string>
     <string name="key_view_action_certify">Certify identities</string>
     <string name="key_view_action_update">Update from keyserver</string>
     <string name="key_view_action_share_with">Share with…</string>
