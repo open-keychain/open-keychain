@@ -281,7 +281,7 @@ public class UncachedKeyringMergeTest {
                     ringB.getEncoded(), false, 0).getSecretKey();
             secretKey.unlock("");
             // sign all user ids
-            modified = secretKey.certifyUserIds(publicRing, publicRing.getPublicKey().getUnorderedUserIds(), null, null);
+            modified = secretKey.certifyUserIds(publicRing, publicRing.getPublicKey().getUnorderedUserIds());
         }
 
         {
