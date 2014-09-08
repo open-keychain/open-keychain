@@ -51,7 +51,7 @@ import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
 import org.sufficientlysecure.keychain.service.OperationResultParcel;
 import org.sufficientlysecure.keychain.service.OperationResultParcel.LogLevel;
 import org.sufficientlysecure.keychain.service.OperationResultParcel.LogType;
-import org.sufficientlysecure.keychain.service.OperationResultParcel.OperationLog;
+import org.sufficientlysecure.keychain.service.OperationResults.SingletonResult;
 import org.sufficientlysecure.keychain.service.PassphraseCacheService;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
 import org.sufficientlysecure.keychain.ui.adapter.SubkeysAdapter;
@@ -580,14 +580,10 @@ public class EditKeyFragment extends LoaderFragment implements
     /** Closes this activity, returning a result parcel with a single error log entry. */
     void finishWithError(LogType reason) {
 
-        // Prepare the log
-        OperationLog log = new OperationLog();
-        log.add(LogLevel.ERROR, reason, 0);
-
         // Prepare an intent with an EXTRA_RESULT
         Intent intent = new Intent();
         intent.putExtra(OperationResultParcel.EXTRA_RESULT,
-                new OperationResultParcel(OperationResultParcel.RESULT_ERROR, log));
+                new SingletonResult(SingletonResult.RESULT_ERROR, LogLevel.ERROR, reason));
 
         // Finish with result
         getActivity().setResult(EditKeyActivity.RESULT_OK, intent);
