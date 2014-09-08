@@ -381,6 +381,10 @@ public class PgpKeyOperation {
      * This is a natural workflow since pgp keyrings are immutable data structures: Old semantics
      * are changed by adding new certificates, which implicitly override older certificates.
      *
+     * Note that this method does not care about any "special" type of master key. If unlocking
+     * with a passphrase fails, the operation will fail with an unlocking error. More specific
+     * handling of errors should be done in UI code!
+     *
      */
     public EditKeyResult modifySecretKeyRing(CanonicalizedSecretKeyRing wsKR, SaveKeyringParcel saveParcel,
                                                String passphrase) {

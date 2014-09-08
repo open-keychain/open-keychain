@@ -427,6 +427,12 @@ public class OperationResultParcel implements Parcelable {
         MSG_CON_SUCCESS (R.string.msg_con_success),
         MSG_CON_WARN_DELETE_PUBLIC (R.string.msg_con_warn_delete_public),
         MSG_CON_WARN_DELETE_SECRET (R.string.msg_con_warn_delete_secret),
+
+        // messages used in UI code
+        MSG_EK_ERROR_DIVERT (R.string.msg_ek_error_divert),
+        MSG_EK_ERROR_DUMMY (R.string.msg_ek_error_dummy),
+        MSG_EK_ERROR_NOT_FOUND (R.string.msg_ek_error_not_found),
+
         ;
 
         private final int mMsgId;

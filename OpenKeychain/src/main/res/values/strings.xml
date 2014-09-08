@@ -756,6 +756,11 @@
     <string name="msg_con_warn_delete_public">"Exception deleting public cache file"</string>
     <string name="msg_con_warn_delete_secret">"Exception deleting secret cache file"</string>
 
+    <!-- Other messages used in OperationLogs -->
+    <string name="msg_ek_error_divert">"editing of nfc keys is not (yet) supported"</string>
+    <string name="msg_ek_error_dummy">"cannot edit keyring with stripped master key!"</string>
+    <string name="msg_ek_error_not_found">"key not found"</string>
+
     <!-- PassphraseCache -->
     <string name="passp_cache_notif_click_to_clear">"Click to clear cached passphrases"</string>
     <string name="passp_cache_notif_n_keys">"OpenKeychain has cached %d passphrases"</string>

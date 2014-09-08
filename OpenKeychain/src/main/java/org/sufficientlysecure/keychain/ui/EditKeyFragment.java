@@ -35,7 +35,6 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
@@ -46,9 +45,13 @@ import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
+import org.sufficientlysecure.keychain.provider.ProviderHelper.NotFoundException;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
 import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
 import org.sufficientlysecure.keychain.service.OperationResultParcel;
+import org.sufficientlysecure.keychain.service.OperationResultParcel.LogLevel;
+import org.sufficientlysecure.keychain.service.OperationResultParcel.LogType;
+import org.sufficientlysecure.keychain.service.OperationResultParcel.OperationLog;
 import org.sufficientlysecure.keychain.service.PassphraseCacheService;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
 import org.sufficientlysecure.keychain.ui.adapter.SubkeysAdapter;
@@ -169,15 +172,26 @@ public class EditKeyFragment extends LoaderFragment implements
             Uri secretUri = KeychainContract.KeyRings.buildUnifiedKeyRingUri(mDataUri);
             CachedPublicKeyRing keyRing =
                     new ProviderHelper(getActivity()).getCachedPublicKeyRing(secretUri);
+            long masterKeyId = keyRing.getMasterKeyId();
 
-            mSaveKeyringParcel = new SaveKeyringParcel(keyRing.getMasterKeyId(),
-                    keyRing.getFingerprint());
+            // check if this is a master secret key we can work with
+            switch (keyRing.getSecretKeyType(masterKeyId)) {
+                case GNU_DUMMY:
+                    finishWithError(LogType.MSG_EK_ERROR_DUMMY);
+                    return;
+                case DIVERT_TO_CARD:
+                    finishWithError(LogType.MSG_EK_ERROR_DIVERT);
+                    break;
+            }
+
+            mSaveKeyringParcel = new SaveKeyringParcel(masterKeyId, keyRing.getFingerprint());
             mPrimaryUserId = keyRing.getPrimaryUserIdWithFallback();
 
+        } catch (NotFoundException e) {
+            finishWithError(LogType.MSG_EK_ERROR_NOT_FOUND);
+            return;
         } catch (PgpGeneralException e) {
-            Log.e(Constants.TAG, "PgpGeneralException", e);
-            Toast.makeText(getActivity(), R.string.error_no_secret_key_found, Toast.LENGTH_SHORT).show();
-            getActivity().finish();
+            finishWithError(LogType.MSG_EK_ERROR_NOT_FOUND);
             return;
         }
 
@@ -185,9 +199,7 @@ public class EditKeyFragment extends LoaderFragment implements
             mCurrentPassphrase = PassphraseCacheService.getCachedPassphrase(getActivity(),
                     mSaveKeyringParcel.mMasterKeyId);
         } catch (PassphraseCacheService.KeyNotFoundException e) {
-            Log.e(Constants.TAG, "Key not found!", e);
-            Toast.makeText(getActivity(), R.string.error_no_secret_key_found, Toast.LENGTH_SHORT).show();
-            getActivity().finish();
+            finishWithError(LogType.MSG_EK_ERROR_NOT_FOUND);
             return;
         }
 
@@ -564,4 +576,22 @@ public class EditKeyFragment extends LoaderFragment implements
         getActivity().startService(intent);
 
     }
+
+    /** Closes this activity, returning a result parcel with a single error log entry. */
+    void finishWithError(LogType reason) {
+
+        // Prepare the log
+        OperationLog log = new OperationLog();
+        log.add(LogLevel.ERROR, reason, 0);
+
+        // Prepare an intent with an EXTRA_RESULT
+        Intent intent = new Intent();
+        intent.putExtra(OperationResultParcel.EXTRA_RESULT,
+                new OperationResultParcel(OperationResultParcel.RESULT_ERROR, log));
+
+        // Finish with result
+        getActivity().setResult(EditKeyActivity.RESULT_OK, intent);
+        getActivity().finish();
+    }
+
 }
