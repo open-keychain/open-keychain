@@ -177,7 +177,7 @@ public class OpenPgpService extends RemoteService {
         return result;
     }
 
-    private Intent getNfcDecryptIntent(Intent data, String pin, byte[] dec) {
+    private Intent getNfcDecryptIntent(Intent data, String pin, byte[] encryptedSessionKey) {
         // build PendingIntent for Yubikey NFC operations
         Intent intent = new Intent(getBaseContext(), NfcActivity.class);
         intent.setAction(NfcActivity.ACTION_DECRYPT_SESSION_KEY);
@@ -185,7 +185,7 @@ public class OpenPgpService extends RemoteService {
         intent.putExtra(NfcActivity.EXTRA_DATA, data);
         intent.putExtra(NfcActivity.EXTRA_PIN, pin);
 
-        intent.putExtra(NfcActivity.EXTRA_NFC_DEC, dec);
+        intent.putExtra(NfcActivity.EXTRA_NFC_ENC_SESSION_KEY, encryptedSessionKey);
         intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
         PendingIntent pi = PendingIntent.getActivity(getBaseContext(), 0,
                 intent,
@@ -432,7 +432,6 @@ public class OpenPgpService extends RemoteService {
 
             Intent result = new Intent();
             try {
-
                 String passphrase = data.getStringExtra(OpenPgpApi.EXTRA_PASSPHRASE);
                 long inputLength = is.available();
                 InputData inputData = new InputData(is, inputLength);
@@ -453,12 +452,15 @@ public class OpenPgpService extends RemoteService {
                         inputData, os
                 );
 
+                byte[] nfcDecryptedSessionKey = data.getByteArrayExtra(OpenPgpApi.EXTRA_NFC_DECRYPTED_SESSION_KEY);
+
                 // allow only private keys associated with accounts of this app
                 // no support for symmetric encryption
                 builder.setPassphrase(passphrase)
                         .setAllowSymmetricDecryption(false)
                         .setAllowedKeyIds(allowedKeyIds)
-                        .setDecryptMetadataOnly(decryptMetadataOnly);
+                        .setDecryptMetadataOnly(decryptMetadataOnly)
+                        .setNfcState(nfcDecryptedSessionKey);
 
                 PgpDecryptVerifyResult decryptVerifyResult;
                 try {
@@ -478,7 +480,7 @@ public class OpenPgpService extends RemoteService {
                     throw new Exception(getString(R.string.error_integrity_check_failed));
                 } catch (PgpDecryptVerify.NeedNfcDataException e) {
                     // return PendingIntent to execute NFC activity
-                    return getNfcDecryptIntent(data, passphrase, e.mDec);
+                    return getNfcDecryptIntent(data, e.mPassphrase, e.mEncryptedSessionKey);
                 }
 
                 if (PgpDecryptVerifyResult.KEY_PASSHRASE_NEEDED == decryptVerifyResult.getStatus()) {
@@ -522,7 +524,6 @@ public class OpenPgpService extends RemoteService {
                         result.putExtra(OpenPgpApi.RESULT_METADATA, metadata);
                     }
                 }
-
             } finally {
                 is.close();
                 if (os != null) {

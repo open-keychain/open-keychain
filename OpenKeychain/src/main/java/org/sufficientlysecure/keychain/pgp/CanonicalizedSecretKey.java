@@ -36,7 +36,7 @@ import org.spongycastle.openpgp.operator.PublicKeyDataDecryptorFactory;
 import org.spongycastle.openpgp.operator.jcajce.JcaPGPContentSignerBuilder;
 import org.spongycastle.openpgp.operator.jcajce.JcePBESecretKeyDecryptorBuilder;
 import org.spongycastle.openpgp.operator.jcajce.JcePublicKeyDataDecryptorFactoryBuilder;
-import org.spongycastle.openpgp.operator.jcajce.NfcPublicKeyDataDecryptorFactoryBuilder;
+import org.spongycastle.openpgp.operator.jcajce.NfcSyncPublicKeyDataDecryptorFactoryBuilder;
 import org.spongycastle.openpgp.operator.jcajce.NfcSyncPGPContentSignerBuilder;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
@@ -82,21 +82,27 @@ public class CanonicalizedSecretKey extends CanonicalizedPublicKey {
     }
 
     public enum SecretKeyType {
-        UNAVAILABLE(0), GNU_DUMMY (1), PASSPHRASE (2), PASSPHRASE_EMPTY (3), DIVERT_TO_CARD (4);
+        UNAVAILABLE(0), GNU_DUMMY(1), PASSPHRASE(2), PASSPHRASE_EMPTY(3), DIVERT_TO_CARD(4);
 
         final int mNum;
+
         SecretKeyType(int num) {
             mNum = num;
         }
 
         public static SecretKeyType fromNum(int num) {
             switch (num) {
-                case 1: return GNU_DUMMY;
-                case 2: return PASSPHRASE;
-                case 3: return PASSPHRASE_EMPTY;
-                case 4: return DIVERT_TO_CARD;
+                case 1:
+                    return GNU_DUMMY;
+                case 2:
+                    return PASSPHRASE;
+                case 3:
+                    return PASSPHRASE_EMPTY;
+                case 4:
+                    return DIVERT_TO_CARD;
                 // if this case happens, it's probably a check from a database value
-                default: return UNAVAILABLE;
+                default:
+                    return UNAVAILABLE;
             }
         }
 
@@ -250,14 +256,14 @@ public class CanonicalizedSecretKey extends CanonicalizedPublicKey {
         }
     }
 
-    public PublicKeyDataDecryptorFactory getDecryptorFactory() {
+    public PublicKeyDataDecryptorFactory getDecryptorFactory(byte[] nfcDecryptedSessionKey) {
         if (mPrivateKeyState == PRIVATE_KEY_STATE_LOCKED) {
             throw new PrivateKeyNotUnlockedException();
         }
 
         if (mPrivateKeyState == PRIVATE_KEY_STATE_DIVERT_TO_CARD) {
-            return new NfcPublicKeyDataDecryptorFactoryBuilder()
-                    .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME).build(mPrivateKey);
+            return new NfcSyncPublicKeyDataDecryptorFactoryBuilder()
+                    .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME).build(nfcDecryptedSessionKey);
         } else {
             return new JcePublicKeyDataDecryptorFactoryBuilder()
                     .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME).build(mPrivateKey);

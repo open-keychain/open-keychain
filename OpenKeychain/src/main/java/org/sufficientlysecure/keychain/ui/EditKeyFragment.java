@@ -186,6 +186,7 @@ public class EditKeyFragment extends LoaderFragment implements
                     mSaveKeyringParcel.mMasterKeyId);
         } catch (PassphraseCacheService.KeyNotFoundException e) {
             Log.e(Constants.TAG, "Key not found!", e);
+            Toast.makeText(getActivity(), R.string.error_no_secret_key_found, Toast.LENGTH_SHORT).show();
             getActivity().finish();
             return;
         }
