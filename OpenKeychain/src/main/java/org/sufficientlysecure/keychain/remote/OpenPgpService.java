@@ -30,7 +30,7 @@ import org.openintents.openpgp.OpenPgpMetadata;
 import org.openintents.openpgp.OpenPgpError;
 import org.openintents.openpgp.OpenPgpSignatureResult;
 import org.openintents.openpgp.util.OpenPgpApi;
-import org.openkeychain.nfc.NfcActivity;
+import org.sufficientlysecure.keychain.nfc.NfcActivity;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.PgpDecryptVerify;
