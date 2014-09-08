@@ -48,6 +48,10 @@
     <uses-feature
         android:name="android.hardware.touchscreen"
         android:required="false" />
+    <!-- SafeSlinger uses orientation=portrait, but we do not want to make it a requirement -->
+    <uses-feature
+        android:name="android.hardware.screen.portrait"
+        android:required="false" />
 
     <permission android:name="org.sufficientlysecure.keychain.WRITE_TEMPORARY_STORAGE" />
 
