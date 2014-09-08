@@ -1,8 +1,12 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <resources>
+  <!--GENERAL: Please put all strings inside quotes as described in example 1 on
+    http://developer.android.com/guide/topics/resources/string-resource.html (scroll down to "Escaping apostrophes and quotes").-->
   <!--title-->
   <string name="title_select_recipients">Choisir des clefs</string>
   <string name="title_select_secret_key">Choisir ma clef</string>
+  <string name="title_encrypt_text">Chiffrer un texte</string>
+  <string name="title_encrypt_files">Chiffrer des fichiers</string>
   <string name="title_decrypt">Déchiffrer</string>
   <string name="title_authentication">Phrase de passe</string>
   <string name="title_add_subkey">Ajouter une sous-clef</string>
@@ -80,18 +84,22 @@
   <string name="label_file_colon">Fichier :</string>
   <string name="label_no_passphrase">Aucune phrase de passe</string>
   <string name="label_passphrase">Phrase de passe</string>
+  <string name="label_unlock">Déverrouillage...</string>
   <string name="label_passphrase_again">Répéter la phrase de passe</string>
   <string name="label_algorithm">Algorithme</string>
   <string name="label_ascii_armor">Fichier ASCII Armor</string>
-  <string name="label_file_ascii_armor">Fichier : ASCII Armor</string>
+  <string name="label_file_ascii_armor">Activer l\'Armure ASCII</string>
   <string name="label_write_version_header">Faire savoir aux autres que vous utilisez OpenKeychain</string>
   <string name="label_write_version_header_summary">Ajoute « OpenKeychain v2.7 » aux signatures OpenPGP, aux cryptogrammes et aux clefs exportées</string>
-  <string name="label_delete_after_encryption">Fichier : supprimer après chiffrement</string>
-  <string name="label_delete_after_decryption">Supprimer après le chiffrement</string>
+  <string name="label_use_default_yubikey_pin">Utiliser le NIP par défaut de la Yubikey</string>
+  <string name="label_label_use_default_yubikey_pin_summary">Utilise le NIP par défaut (123456) pour accéder aux Yubikeys par la NFC</string>
+  <string name="label_asymmetric_from">Signé par :</string>
+  <string name="label_to">Chiffrer pour :</string>
+  <string name="label_delete_after_encryption">Supprimer le fichier après chiffrement</string>
+  <string name="label_delete_after_decryption">Supprimer le fichier après le déchiffrement</string>
   <string name="label_encryption_algorithm">Algorithme de chiffrement</string>
   <string name="label_hash_algorithm">Algorithme de hachage</string>
-  <string name="label_asymmetric">Avec une clef publique</string>
-  <string name="label_symmetric">Avec une phrase de passe</string>
+  <string name="label_symmetric">Chiffrer avec une phrase de passe</string>
   <string name="label_passphrase_cache_ttl">Cache de la phrase de passe</string>
   <string name="label_message_compression">Compression des messages</string>
   <string name="label_file_compression">Compression des fichiers</string>
@@ -162,6 +170,8 @@
   <string name="passphrase_must_not_be_empty">Veuillez saisir une phrase de passe</string>
   <string name="passphrase_for_symmetric_encryption">Chriffrement symétrique.</string>
   <string name="passphrase_for">Saisir une phrase de passe pour « %s »</string>
+  <string name="yubikey_pin">Saisir le NIP pour accéder à la Yubikey pour « %s »</string>
+  <string name="file_delete_confirmation">Êtes-vous certain de vouloir supprimer\n%s?</string>
   <string name="file_delete_successful">Supprimé avec succès.</string>
   <string name="no_file_selected">Choisir d\'abord un fichier.</string>
   <string name="encrypt_sign_successful">Signé et/ou chiffré avec succès.</string>
@@ -169,12 +179,23 @@
   <string name="enter_passphrase_twice">Saisir la phrase de passe deux fois.</string>
   <string name="select_encryption_key">Choisir au moins une clef de chiffrement.</string>
   <string name="select_encryption_or_signature_key">Choisir au moins une clef de chiffrement ou de signature.</string>
+  <string name="specify_file_to_encrypt_to">Veuillez spécifier vers quel fichier chiffrer.\nAVERTISSEMENT ! Le fichier sera écrasé s\'il existe.</string>
+  <string name="specify_file_to_decrypt_to">Veuillez spécifier vers quel fichier déchiffrer.\nAVERTISSEMENT : le fichier sera écrasé s\'il existe.</string>
+  <string name="specify_file_to_export_to">Veuillez spécifier vers quel fichier exporter.\nAVERTISSEMENT ! Le fichier sera écrasé s\'il existe.</string>
+  <string name="key_deletion_confirmation_multi">Voulez-vous vraiment supprimer toutes les clefs publiques choisies ?\nCeci est irréversible !</string>
+  <string name="secret_key_deletion_confirmation">Voulez-vous vraiment supprimer la clef SECRÈTE « %s » ?\nCeci est irréversible !</string>
+  <string name="public_key_deletetion_confirmation">Voulez-vous vraiment supprimer la clef publique « %s » ?\nCeci est irréversible !</string>
   <string name="also_export_secret_keys">Importer aussi les clefs secrètes</string>
+  <string name="reinstall_openkeychain">Vous venez de rencontrer un bogue connu d\'Android. Veuillez réinstaller OpenKeychain si voulez relier vos contacts avec des clefs.</string>
   <string name="key_exported">1 clef exportée avec succès.</string>
   <string name="keys_exported">%d clefs exportées avec succès.</string>
   <string name="no_keys_exported">Aucune clef exportée.</string>
   <string name="key_creation_el_gamal_info">Note : seules les sous-clefs prennent en charge ElGamal.</string>
   <string name="key_not_found">Clef %08X introuvable.</string>
+  <plurals name="bad_keys_encountered">
+    <item quantity="one">%d mauvaise clef secrète ignorée. Vous avez peut-être exporté avec l\'option\n --export-secret-subkeys\nAssurez-vous d\'exporter plutôt avec\n --export-secret-keys.</item>
+    <item quantity="other">%d mauvaises clefs secrètes ignorées. Vous avez peut-être exporté avec l\'option\n --export-secret-subkeys\nAssurez-vous d\'exporter plutôt avec\n --export-secret-keys.</item>
+  </plurals>
   <string name="key_send_success">Clef téléversée vers le serveur avec succès</string>
   <string name="key_certify_success">Identités certifiées avec succès</string>
   <string name="list_empty">Cette liste est vide !</string>
@@ -291,9 +312,9 @@
   <string name="key_curve_nist_p384">NIST P-384</string>
   <string name="key_curve_nist_p521">NIST P-521</string>
   <!--not in for now, see SaveKeyringParcel
-    <string name="key_curve_bp_p256">Brainpool P-256</string>
-    <string name="key_curve_bp_p384">Brainpool P-384</string>
-    <string name="key_curve_bp_p512">Brainpool P-512</string>-->
+    <string name="key_curve_bp_p256">"Brainpool P-256"</string>
+    <string name="key_curve_bp_p384">"Brainpool P-384"</string>
+    <string name="key_curve_bp_p512">"Brainpool P-512"</string>-->
   <!--compression-->
   <string name="compression_fast">rapide</string>
   <string name="compression_very_slow">très lent</string>
@@ -343,6 +364,7 @@
   <string name="intent_send_encrypt">Chiffrer avec OpenKeychain</string>
   <string name="intent_send_decrypt">Déchiffrer avec OpenKeychain</string>
   <!--Remote API-->
+  <string name="api_no_apps">Aucune application enregistrée !\n\nUne liste d\'applications tierces prises en charge peut être trouvée dans l\'« Aide » !</string>
   <string name="api_settings_show_info">Afficher les informations avancées</string>
   <string name="api_settings_hide_info">Masquer les informations avancées</string>
   <string name="api_settings_show_advanced">Afficher les paramètres avancés</string>
@@ -359,8 +381,11 @@
   <string name="api_settings_package_signature">SHA-256 de la signature du paquet</string>
   <string name="api_settings_accounts">Comptes</string>
   <string name="api_settings_settings">Paramètres</string>
-  <string name="api_settings_key">Ma clef pour ce compte</string>
+  <string name="api_settings_key">Clef du compte :</string>
   <string name="api_settings_accounts_empty">Aucun compte n\'est attaché à cette appli.</string>
+  <string name="api_create_account_text">L\'appli demande la création d\'un nouveau compte. Veuillez choisir une de vos clefs existantes ou en créer une nouvelle.\nLes applis ne peuvent utiliser que les clefs que vous choisissez ici !</string>
+  <string name="api_update_account_text">La clef enregistrée pour ce compte a été supprimée. Veuillez en choisir une différente !\nLes applis sont restreintes à l\'utilisation de clefs choisies ici.</string>
+  <string name="api_register_text">L\'application affichée veut chiffrer/déchiffrer des messages et les signer en votre nom.\nPermettre l\'accès ?\n\nAVERTISSEMENT : si vous ne savez pas pourquoi cet écran est apparu, refusez l\'accès ! Vous pourrez révoquer l\'accès plus tard en utilisant l\'écran « Applis ».</string>
   <string name="api_register_allow">Permettre l\'accès</string>
   <string name="api_register_disallow">Enlever l\'accès</string>
   <string name="api_register_error_select_key">Veuillez choisir une clef !</string>
@@ -384,10 +409,12 @@
   <string name="key_list_empty_button_import">importation d\'une clef existante.</string>
   <!--Key view-->
   <string name="key_view_action_edit">Modifier la clef</string>
-  <string name="key_view_action_encrypt">Chiffrer avec cette clef</string>
+  <string name="key_view_action_encrypt">Chiffrer un texte</string>
+  <string name="key_view_action_encrypt_files">fichiers</string>
   <string name="key_view_action_certify">Certifier les identités</string>
   <string name="key_view_action_update">Mise à jour depuis le serveur de clefs</string>
   <string name="key_view_action_share_with">Partager avec...</string>
+  <string name="key_view_action_share_nfc">Partager par la NFC</string>
   <string name="key_view_action_upload">Téléverser vers le serveur de clefs</string>
   <string name="key_view_tab_main">Infos principales</string>
   <string name="key_view_tab_share">Partager</string>
@@ -407,7 +434,7 @@
   <string name="edit_key_action_add_subkey">Ajouter une sous-clef</string>
   <string name="edit_key_edit_user_id_title">Choisir une action !</string>
   <string-array name="edit_key_edit_user_id">
-    <item>Changer en identité principale</item>
+    <item>Changer en identité primaire</item>
     <item>Révoquer l\'identité</item>
   </string-array>
   <string-array name="edit_key_edit_user_id_revert_revocation">
@@ -426,6 +453,7 @@
   <string name="create_key_empty">Ce champ est exigé</string>
   <string name="create_key_passphrases_not_equal">Les phrases de passe ne correspondent pas</string>
   <string name="create_key_final_text">Vous avez saisie l\'identité suivante :</string>
+  <string name="create_key_final_robot_text">Créer une clef peut prendre du temps, prenez donc un café en attendant...\n(3 sous-clefs, RSA 4096 bits)</string>
   <string name="create_key_text">Saisissez votre nom complet, votre adresse courriel et choisissez votre phrase de passe.</string>
   <string name="create_key_hint_full_name">Nom complet, p. ex. Marc-Olivier Lagacé</string>
   <!--View key-->
@@ -433,11 +461,15 @@
   <string name="view_key_expired">Cette clef est expirée !</string>
   <!--Navigation Drawer-->
   <string name="nav_keys">Clefs</string>
+  <string name="nav_encrypt_text">Chiffrer un texte</string>
+  <string name="nav_encrypt_files">Chiffrer des fichiers</string>
+  <string name="nav_decrypt">Déchiffrer</string>
   <string name="nav_apps">Applis</string>
   <string name="drawer_open">Ouvrir le tiroir de navigation</string>
   <string name="drawer_close">Fermer le tiroir de navigation</string>
   <string name="my_keys">Mes clefs</string>
   <!--hints-->
+  <string name="encrypt_content_edit_text_hint">Taper le texte</string>
   <string name="decrypt_content_edit_text_hint">Saisir le cryptogramme à déchiffrer et/ou à vérifier ici...</string>
   <!--certs-->
   <string name="cert_default">valeur par défaut</string>
@@ -513,6 +545,11 @@
   <string name="msg_is_importing_subkeys">Traitement des sous-clefs secrètes</string>
   <string name="msg_is_io_exc">Erreur lors de l\'encodage du trousseau</string>
   <string name="msg_is_pubring_generate">Génération du trousseau public à partir du trousseau secret</string>
+  <string name="msg_is_subkey_nonexistent">La sous-clef %s n\'est pas disponible dans la clef secrète</string>
+  <string name="msg_is_subkey_ok">Marquer la sous-clef secrète %s comme disponible</string>
+  <string name="msg_is_subkey_empty">Marquer la sous-clef secrète %s comme disponible, avec une phrase de passe vide</string>
+  <string name="msg_is_subkey_stripped">Marquer la sous-clef secrète %s comme dépouillée</string>
+  <string name="msg_is_subkey_divert">Marquer la sous-clef secrète %s comme « dévier vers la carte intelligente/la NFC »</string>
   <string name="msg_is_success_identical">Le trousseau ne contient pas de nouvelle donnée, rien à faire</string>
   <string name="msg_is_success">Importation du trousseau secret réussie</string>
   <!--Keyring Canonicalization log entries-->
@@ -555,17 +592,17 @@
     <item quantity="one">Canonicalisation du trousseau réussie, un certificat redondant supprimé</item>
     <item quantity="other">Canonicalisation du trousseau réussie, %d certificats redondants supprimés</item>
   </plurals>
-  <string name="msg_kc_uid_bad_err">Suppression du mauvais auto-certificat pour l\'ID d\'utilisateur %s</string>
+  <string name="msg_kc_uid_bad_err">Suppression du mauvais auto-certificat pour l\'ID d\'utilisateur « %s »</string>
   <string name="msg_kc_uid_bad_local">Suppression du certificat d\'ID d\'utilisateur ayant le drapeau « local »</string>
   <string name="msg_kc_uid_bad_time">Suppression de l\'ID d\'utilisateur ayant une estampille temporelle dans le futur</string>
   <string name="msg_kc_uid_bad_type">Suppression du certificat d\'ID d\'utilisateur de type inconnu (%s)</string>
   <string name="msg_kc_uid_bad">Suppression du mauvais auto-certificat pour l\'ID d\'utilisateur « %s »</string>
-  <string name="msg_kc_uid_cert_dup">Suppression de l\'auto-certificat périmé pour l\'ID utilisateur « %s »</string>
-  <string name="msg_kc_uid_foreign">Suppression du certificat étranger d\'ID d\'utilisateur par %s</string>
+  <string name="msg_kc_uid_cert_dup">Suppression de l\'auto-certificat périmé pour l\'ID d\'utilisateur « %s »</string>
+  <string name="msg_kc_uid_foreign">Suppression du certificat d\'ID d\'utilisateur étranger par « %s »</string>
   <string name="msg_kc_uid_revoke_dup">Suppression du certificat de révocation redondant pour l\'ID d\'utilisateur « %s »</string>
   <string name="msg_kc_uid_revoke_old">Suppression du certificat de révocation périmé pour l\'ID d\'utilisateur « %s »</string>
-  <string name="msg_kc_uid_no_cert">Aucun auto-certificat valide trouvé pour l\'ID d\'utilisateur %s, qui est maintenant enlevé du trousseau</string>
-  <string name="msg_kc_uid_remove">Suppression de l\'ID d\'utilisateur invalide %s</string>
+  <string name="msg_kc_uid_no_cert">Aucun auto-certificat valide trouvé pour l\'ID d\'utilisateur « %s », qui est maintenant enlevé du trousseau</string>
+  <string name="msg_kc_uid_remove">Suppression de l\'ID d\'utilisateur invalide « %s »</string>
   <string name="msg_kc_uid_dup">Suppression de l\'ID d\'utilisateur en double « %s ». La clef secrète en contenait deux. Ceci pourrait entraîner des certificats manquants !</string>
   <!--Keyring merging log entries-->
   <string name="msg_mg_error_secret_dummy">Une nouvelle sous-clef publique a été trouvée, mais la génération de sous-clef secrète factice n\'est pas prise en charge !</string>
@@ -581,7 +618,7 @@
   <string name="msg_cr_error_no_master">Aucune option de clef maîtresse n\'a été spécifiée !</string>
   <string name="msg_cr_error_no_user_id">Les trousseaux doivent être créés avec au moins un ID d\'utilisateur !</string>
   <string name="msg_cr_error_no_certify">La clef maîtresse doit avoir le drapeau « certifié » !</string>
-  <string name="msg_cr_error_null_expiry">L\'expiration ne peut pas être « pareille qu\'avant » lors de la création de clefs. Ceci est une erreur de programmation, veuillez remplir un rapport de bogue !</string>
+  <string name="msg_cr_error_null_expiry">L\'expiration ne peut pas être « pareille qu\'avant » à la création de la clef. Ceci est une erreur du programme, veuillez remplir un rapport de bogue !</string>
   <string name="msg_cr_error_keysize_512">La taille de la clef doit être supérieure ou égale à 512 !</string>
   <string name="msg_cr_error_no_curve">Aucune taille de clef n\'a été spécifiée ! Ceci est une erreur de programmation, veuillez remplir un rapport de bogue !</string>
   <string name="msg_cr_error_no_keysize">Aucune courbe elliptique n\'a été spécifiée ! Ceci est une erreur de programmation, veuillez remplir un rapport de bogue !</string>
@@ -664,7 +701,7 @@
   <string name="passp_cache_notif_n_keys">OpenKeychain a mis en cache %d phrases de passe</string>
   <string name="passp_cache_notif_keys">Phrases de passe mises en cache :</string>
   <string name="passp_cache_notif_clear">Effacer le cache</string>
-  <string name="passp_cache_notif_pwd">Mot de passe</string>
+  <string name="passp_cache_notif_pwd">Phrase de passe</string>
   <!--unsorted-->
   <string name="section_certifier_id">Certificateur</string>
   <string name="section_cert">Détails du certificat</string>
@@ -679,11 +716,15 @@
   <string name="error_key_not_found">Clef introuvable !</string>
   <string name="error_key_processing">Erreur lors du traitement de la clef !</string>
   <string name="key_stripped">dépouillée</string>
+  <string name="key_divert">dévier vers la carte intelligente/la NFC</string>
+  <string name="key_no_passphrase">aucune phrase de passe</string>
+  <string name="key_unavailable">non disponible</string>
   <string name="secret_cannot_multiple">Vos propres clefs ne peuvent être supprimées qu\'individuellement !</string>
   <string name="title_view_cert">Voir les détails du certificat</string>
   <string name="unknown_algorithm">inconnu</string>
   <string name="can_sign_not">impossible de signer</string>
   <string name="error_no_encrypt_subkey">Aucune sous-clef de chiffrement n\'est disponible !</string>
+  <string name="info_no_manual_account_creation">Ne pas créer de comptes-OpenKeychain manuellement.\nPour plus d\'informations, consultez l\'Aide.</string>
   <string name="contact_show_key">Montrer la clef (%s)</string>
   <!--First Time-->
   <string name="first_time_text1">Reprenez le contrôle de votre confidentialité avec OpenKeychain |</string>

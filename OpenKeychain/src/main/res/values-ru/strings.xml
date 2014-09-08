@@ -1,5 +1,7 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <resources>
+  <!--GENERAL: Please put all strings inside quotes as described in example 1 on
+    http://developer.android.com/guide/topics/resources/string-resource.html (scroll down to "Escaping apostrophes and quotes").-->
   <!--title-->
   <string name="title_select_recipients">Выберите ключи</string>
   <string name="title_select_secret_key">Выберите Ваш ключ</string>
@@ -83,18 +85,8 @@
   <string name="label_passphrase_again">Повторите пароль</string>
   <string name="label_algorithm">Алгоритм</string>
   <string name="label_ascii_armor">ASCII формат</string>
-  <string name="label_file_ascii_armor">Файлы: ASCII формат</string>
   <string name="label_write_version_header">Добавить комментарий об использовании OpenKeychain</string>
   <string name="label_write_version_header_summary">Дописывать \'OpenKeychain v2.x\' в OpenPGP подписи, шифры, и экспортируемые ключи</string>
-  <string name="label_delete_after_encryption">Файлы: Удалить после шифрования</string>
-  <string name="label_delete_after_decryption">Удалить после расшифровки</string>
-  <string name="label_encryption_algorithm">Алгоритм шифрования</string>
-  <string name="label_hash_algorithm">Hash-алгоритм</string>
-  <string name="label_asymmetric">Публичным ключом</string>
-  <string name="label_symmetric">Паролем</string>
-  <string name="label_passphrase_cache_ttl">Помнить пароль</string>
-  <string name="label_message_compression">Сжатие сообщения</string>
-  <string name="label_file_compression">Сжатие файла</string>
   <string name="label_keyservers">Серверы ключей</string>
   <string name="label_key_id">ID ключа</string>
   <string name="label_creation">Создан</string>
@@ -292,9 +284,9 @@
   <string name="key_curve_nist_p384">NIST P-384</string>
   <string name="key_curve_nist_p521">NIST P-521</string>
   <!--not in for now, see SaveKeyringParcel
-    <string name="key_curve_bp_p256">Brainpool P-256</string>
-    <string name="key_curve_bp_p384">Brainpool P-384</string>
-    <string name="key_curve_bp_p512">Brainpool P-512</string>-->
+    <string name="key_curve_bp_p256">"Brainpool P-256"</string>
+    <string name="key_curve_bp_p384">"Brainpool P-384"</string>
+    <string name="key_curve_bp_p512">"Brainpool P-512"</string>-->
   <!--compression-->
   <string name="compression_fast">быстро</string>
   <string name="compression_very_slow">очень медленно</string>
@@ -367,7 +359,6 @@
   <string name="key_list_empty_button_create">создать свой ключ</string>
   <!--Key view-->
   <string name="key_view_action_edit">Изменить ключ</string>
-  <string name="key_view_action_encrypt">Зашифровать этим ключом</string>
   <string name="key_view_action_certify">Сертифицировать</string>
   <string name="key_view_action_share_with">Отправить...</string>
   <string name="key_view_tab_main">Основные данные</string>

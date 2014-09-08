@@ -1,5 +1,7 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <resources>
+  <!--GENERAL: Please put all strings inside quotes as described in example 1 on
+    http://developer.android.com/guide/topics/resources/string-resource.html (scroll down to "Escaping apostrophes and quotes").-->
   <!--title-->
   <string name="title_decrypt">Odszyfruj</string>
   <string name="title_authentication">Hasło</string>
@@ -52,12 +54,6 @@
   <string name="label_no_passphrase">Brak hasła</string>
   <string name="label_passphrase">Hasło</string>
   <string name="label_algorithm">Algorytm</string>
-  <string name="label_delete_after_decryption">Usuń po odszyfrowaniu</string>
-  <string name="label_encryption_algorithm">Algorytm szyfrujący</string>
-  <string name="label_hash_algorithm">Algorytm funkcji skrótu</string>
-  <string name="label_passphrase_cache_ttl">Bufor haseł</string>
-  <string name="label_message_compression">Kompresja wiadomości</string>
-  <string name="label_file_compression">Kompresja plików</string>
   <string name="label_keyservers">Serwery kluczy</string>
   <string name="label_key_id">Identyfikator klucza</string>
   <string name="label_creation">Utworzenia</string>
@@ -217,9 +213,9 @@
   <string name="key_size_custom_info_dsa">Długośc klucza DSA musi być równa co najmniej 512 i co najwyżej 1024.  Musi być także wielokrotnością 64.</string>
   <!--elliptic curve names-->
   <!--not in for now, see SaveKeyringParcel
-    <string name="key_curve_bp_p256">Brainpool P-256</string>
-    <string name="key_curve_bp_p384">Brainpool P-384</string>
-    <string name="key_curve_bp_p512">Brainpool P-512</string>-->
+    <string name="key_curve_bp_p256">"Brainpool P-256"</string>
+    <string name="key_curve_bp_p384">"Brainpool P-384"</string>
+    <string name="key_curve_bp_p512">"Brainpool P-512"</string>-->
   <!--compression-->
   <string name="compression_fast">szybka</string>
   <string name="compression_very_slow">bardzo wolna</string>
@@ -275,7 +271,6 @@
   <string name="key_list_empty_text3">lub</string>
   <string name="key_list_empty_button_create">tworzenie własnego klucza</string>
   <!--Key view-->
-  <string name="key_view_action_encrypt">Zaszyfruj korzystając z tego klucza</string>
   <!--Edit key-->
   <!--Create key-->
   <!--View key-->

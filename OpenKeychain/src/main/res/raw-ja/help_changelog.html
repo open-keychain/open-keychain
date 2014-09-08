@@ -1,6 +1,18 @@
 <html>
 <head></head>
 <body>
+<h2>2.10</h2>
+<ul>
+<li>Split encrypt screen into two</li>
+<li>Fix key flags handling (now supporting Mailvelope 0.7 keys)</li>
+<li>Improved passphrase handling</li>
+<li>Key sharing via SafeSlinger</li>
+<li>Yubikey: preference to allow other PINs, currently only signing via the OpenPGP API works, not inside of OpenKeychain</li>
+<li>Fix usage of stripped keys</li>
+<li>SHA256 as default for compatibility</li>
+<li>Intent API has changed, see https://github.com/open-keychain/open-keychain/wiki/Intent-API</li>
+<li>OpenPGP API now handles revoked/expired keys and returns all user ids</li>
+</ul>
 <h2>2.9</h2>
 <ul>
 <li>v2.8 から発生したクラッシュ問題をFix</li>
@@ -57,7 +69,7 @@ Daniel Hammann, Daniel Haß, Greg Witczak, Miroojin Bakshi, Nikhil Peter Raj, Pa
 <li>新しい統合キーリスト</li>
 <li>鍵指紋のカラー化</li>
 <li>鍵サーバのポート設定のサポート</li>
-<li>弱い鍵の生成をしてしまうのを無効化</li>
+<li>弱い鍵の生成が可能だったのを無効化</li>
 <li>さらなるAPIでの内部動作</li>
 <li>ユーザーIDの証明</li>
 <li>鍵サーバへの要求をマシンリーダブル出力を基盤にした</li>
