@@ -47,11 +47,18 @@ public class Preferences {
     public static synchronized Preferences getPreferences(Context context, boolean forceNew) {
         if (sPreferences == null || forceNew) {
             sPreferences = new Preferences(context);
+        } else {
+            // to make it safe for multiple processes, call getSharedPreferences everytime
+            sPreferences.updateSharedPreferences(context);
         }
         return sPreferences;
     }
 
     private Preferences(Context context) {
+        updateSharedPreferences(context);
+    }
+
+    public void updateSharedPreferences(Context context) {
         // multi-process preferences
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
             mSharedPreferences = context.getSharedPreferences("APG.main", Context.MODE_MULTI_PROCESS);
