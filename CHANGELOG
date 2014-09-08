@@ -1,3 +1,14 @@
+## 2.10
+  * Split encrypt screen into two
+  * Fix key flags handling (now supporting Mailvelope 0.7 keys)
+  * Improved passphrase handling
+  * Key sharing via SafeSlinger
+  * Yubikey: preference to allow other PINs, currently only signing via the OpenPGP API works, not inside of OpenKeychain
+  * Fix usage of stripped keys
+  * SHA256 as default for compatibility
+  * Intent API has changed, see https://github.com/open-keychain/open-keychain/wiki/Intent-API
+  * OpenPGP API now handles revoked/expired keys and returns all user ids
+
 ## 2.9
   * Fixing crashes introduced in v2.8
   * Experimental ECC support
