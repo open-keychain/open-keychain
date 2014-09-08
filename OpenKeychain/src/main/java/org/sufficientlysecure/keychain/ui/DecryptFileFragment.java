@@ -33,15 +33,12 @@ import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.TextView;
 
-import org.openintents.openpgp.util.OpenPgpApi;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.helper.FileHelper;
-import org.sufficientlysecure.keychain.pgp.PgpDecryptVerify;
 import org.sufficientlysecure.keychain.pgp.PgpDecryptVerifyResult;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
 import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
-import org.sufficientlysecure.keychain.service.PassphraseCacheService;
 import org.sufficientlysecure.keychain.ui.dialog.DeleteFileDialogFragment;
 import org.sufficientlysecure.keychain.ui.dialog.PassphraseDialogFragment;
 import org.sufficientlysecure.keychain.util.Log;
@@ -185,20 +182,7 @@ public class DecryptFileFragment extends DecryptFragment {
                             returnData.getParcelable(KeychainIntentService.RESULT_DECRYPT_VERIFY_RESULT);
 
                     if (PgpDecryptVerifyResult.KEY_PASSHRASE_NEEDED == decryptVerifyResult.getStatus()) {
-                        try {
-                            // try to get passphrase from cache...
-                            String passphrase = PassphraseCacheService.getCachedPassphrase(
-                                    getActivity(), decryptVerifyResult.getKeyIdPassphraseNeeded());
-
-                            if (passphrase != null) {
-                                // try again with passphrase from cache
-                                decryptOriginalFilename(passphrase);
-                            } else {
-                                showPassphraseDialogForFilename(decryptVerifyResult.getKeyIdPassphraseNeeded());
-                            }
-                        } catch (PassphraseCacheService.KeyNotFoundException e) {
-                            Log.e(Constants.TAG, "PassphraseCacheService.KeyNotFoundException", e);
-                        }
+                        showPassphraseDialogForFilename(decryptVerifyResult.getKeyIdPassphraseNeeded());
                     } else if (PgpDecryptVerifyResult.SYMMETRIC_PASSHRASE_NEEDED ==
                             decryptVerifyResult.getStatus()) {
                         showPassphraseDialogForFilename(Constants.key.symmetric);
