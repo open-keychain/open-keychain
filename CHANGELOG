@@ -1,3 +1,7 @@
+## 2.9.2
+  * Fix keys broken in 2.9.1
+  * Yubikey decryption now working via API
+
 ## 2.9.1
   * Split encrypt screen into two
   * Fix key flags handling (now supporting Mailvelope 0.7 keys)
