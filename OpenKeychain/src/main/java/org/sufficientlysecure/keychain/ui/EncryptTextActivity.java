@@ -72,6 +72,7 @@ public class EncryptTextActivity extends DrawerActivity implements EncryptActivi
     // model used by fragments
     private long mEncryptionKeyIds[] = null;
     private String mEncryptionUserIds[] = null;
+    // TODO Constants.key.none? What's wrong with a null value?
     private long mSigningKeyId = Constants.key.none;
     private String mPassphrase = "";
     private boolean mShareAfterEncrypt = false;
@@ -313,10 +314,13 @@ public class EncryptTextActivity extends DrawerActivity implements EncryptActivi
             }
 
             try {
+                // TODO This should really not be decided here. We do need the info for the passphrase
+                // TODO dialog fragment though, so that's just the way it is for now.
                 if (mSigningKeyId != 0) {
                     CachedPublicKeyRing signingRing =
                             new ProviderHelper(this).getCachedPublicKeyRing(mSigningKeyId);
                     long sigSubKeyId = signingRing.getSignId();
+                    // Make sure the passphrase is cached, then start over.
                     if (PassphraseCacheService.getCachedPassphrase(this, sigSubKeyId) == null) {
                         PassphraseDialogFragment.show(this, sigSubKeyId,
                                 new Handler() {

@@ -281,11 +281,17 @@ public class KeychainIntentService extends IntentService implements Progressable
                             .setOriginalFilename(originalFilename);
 
                     try {
+
+                        // Find the appropriate subkey to sign with
                         CachedPublicKeyRing signingRing =
                                 new ProviderHelper(this).getCachedPublicKeyRing(sigMasterKeyId);
                         long sigSubKeyId = signingRing.getSignId();
-                        // It is assumed that the passphrase was cached prior to the service call.
+
+                        // Get its passphrase from cache. It is assumed that this passphrase was
+                        // cached prior to the service call.
                         String passphrase = PassphraseCacheService.getCachedPassphrase(this, sigSubKeyId);
+
+                        // Set signature settings
                         builder.setSignatureMasterKeyId(sigMasterKeyId)
                                 .setSignatureSubKeyId(sigSubKeyId)
                                 .setSignaturePassphrase(passphrase)

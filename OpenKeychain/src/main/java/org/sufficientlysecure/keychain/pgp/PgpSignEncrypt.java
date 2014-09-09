@@ -335,6 +335,7 @@ public class PgpSignEncrypt {
                 throw new NoSigningKeyException();
             }
 
+            // Make sure we are allowed to sign here!
             if ( ! signingKey.canSign()) {
                 throw new NoSigningKeyException();
             }
