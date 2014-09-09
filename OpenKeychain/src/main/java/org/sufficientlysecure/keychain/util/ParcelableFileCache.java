@@ -29,6 +29,7 @@ import java.io.DataOutputStream;
 import java.io.EOFException;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -42,13 +43,13 @@ import java.util.List;
  * To overcome this problem, we cache large Parcelables into a file in our private cache directory
  * instead of sending them through IPC.
  */
-public class FileImportCache<E extends Parcelable> {
+public class ParcelableFileCache<E extends Parcelable> {
 
     private Context mContext;
 
     private final String mFilename;
 
-    public FileImportCache(Context context, String filename) {
+    public ParcelableFileCache(Context context, String filename) {
         mContext = context;
         mFilename = filename;
     }
@@ -104,7 +105,13 @@ public class FileImportCache<E extends Parcelable> {
         }
 
         final File tempFile = new File(cacheDir, mFilename);
-        final DataInputStream ois = new DataInputStream(new FileInputStream(tempFile));
+        final DataInputStream ois;
+        try {
+            ois = new DataInputStream(new FileInputStream(tempFile));
+        } catch (FileNotFoundException e) {
+            Log.e(Constants.TAG, "parcel import file not existing", e);
+            throw new IOException(e);
+        }
 
         return new Iterator<E>() {
 

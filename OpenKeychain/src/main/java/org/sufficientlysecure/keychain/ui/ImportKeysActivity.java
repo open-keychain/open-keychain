@@ -19,8 +19,6 @@ package org.sufficientlysecure.keychain.ui;
 
 import android.annotation.TargetApi;
 import android.app.ProgressDialog;
-import android.content.DialogInterface;
-import android.content.DialogInterface.OnCancelListener;
 import android.content.Intent;
 import android.net.Uri;
 import android.nfc.NdefMessage;
@@ -52,7 +50,7 @@ import org.sufficientlysecure.keychain.service.OperationResultParcel;
 import org.sufficientlysecure.keychain.service.OperationResults.ImportKeyResult;
 import org.sufficientlysecure.keychain.ui.adapter.PagerTabStripAdapter;
 import org.sufficientlysecure.keychain.ui.widget.SlidingTabLayout;
-import org.sufficientlysecure.keychain.util.FileImportCache;
+import org.sufficientlysecure.keychain.util.ParcelableFileCache;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Notify;
 
@@ -505,8 +503,8 @@ public class ImportKeysActivity extends ActionBarActivity {
             // to prevent Java Binder problems on heavy imports
             // read FileImportCache for more info.
             try {
-                FileImportCache<ParcelableKeyRing> cache =
-                        new FileImportCache<ParcelableKeyRing>(this, "key_import.pcl");
+                ParcelableFileCache<ParcelableKeyRing> cache =
+                        new ParcelableFileCache<ParcelableKeyRing>(this, "key_import.pcl");
                 cache.writeCache(selectedEntries);
 
                 intent.putExtra(KeychainIntentService.EXTRA_DATA, data);

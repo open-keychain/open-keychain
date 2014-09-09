@@ -61,7 +61,7 @@ import org.sufficientlysecure.keychain.service.OperationResults.ConsolidateResul
 import org.sufficientlysecure.keychain.service.OperationResults.EditKeyResult;
 import org.sufficientlysecure.keychain.service.OperationResults.ImportKeyResult;
 import org.sufficientlysecure.keychain.service.OperationResults.SaveKeyringResult;
-import org.sufficientlysecure.keychain.util.FileImportCache;
+import org.sufficientlysecure.keychain.util.ParcelableFileCache;
 import org.sufficientlysecure.keychain.util.InputData;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.ProgressScaler;
@@ -512,8 +512,8 @@ public class KeychainIntentService extends IntentService implements Progressable
                     entries = data.getParcelableArrayList(IMPORT_KEY_LIST);
                 } else {
                     // get entries from cached file
-                    FileImportCache<ParcelableKeyRing> cache =
-                            new FileImportCache<ParcelableKeyRing>(this, "key_import.pcl");
+                    ParcelableFileCache<ParcelableKeyRing> cache =
+                            new ParcelableFileCache<ParcelableKeyRing>(this, "key_import.pcl");
                     entries = cache.readCacheIntoList();
                 }
 
