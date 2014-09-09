@@ -36,6 +36,9 @@ import org.sufficientlysecure.keychain.compatibility.ClipboardReflection;
 import org.sufficientlysecure.keychain.helper.Preferences;
 import org.sufficientlysecure.keychain.helper.ShareHelper;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
+import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
+import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
+import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
 import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
 import org.sufficientlysecure.keychain.service.PassphraseCacheService;
@@ -235,7 +238,7 @@ public class EncryptTextActivity extends DrawerActivity implements EncryptActivi
             }
             data.putString(KeychainIntentService.ENCRYPT_SYMMETRIC_PASSPHRASE, passphrase);
         } else {
-            data.putLong(KeychainIntentService.ENCRYPT_SIGNATURE_KEY_ID, mSigningKeyId);
+            data.putLong(KeychainIntentService.ENCRYPT_SIGNATURE_MASTER_ID, mSigningKeyId);
             data.putLongArray(KeychainIntentService.ENCRYPT_ENCRYPTION_KEYS_IDS, mEncryptionKeyIds);
         }
         return data;
@@ -310,21 +313,28 @@ public class EncryptTextActivity extends DrawerActivity implements EncryptActivi
             }
 
             try {
-                if (mSigningKeyId != 0 && PassphraseCacheService.getCachedPassphrase(this, mSigningKeyId) == null) {
-                    PassphraseDialogFragment.show(this, mSigningKeyId,
-                            new Handler() {
-                                @Override
-                                public void handleMessage(Message message) {
-                                    if (message.what == PassphraseDialogFragment.MESSAGE_OKAY) {
-                                        // restart
-                                        startEncrypt();
+                if (mSigningKeyId != 0) {
+                    CachedPublicKeyRing signingRing =
+                            new ProviderHelper(this).getCachedPublicKeyRing(mSigningKeyId);
+                    long sigSubKeyId = signingRing.getSignId();
+                    if (PassphraseCacheService.getCachedPassphrase(this, sigSubKeyId) == null) {
+                        PassphraseDialogFragment.show(this, sigSubKeyId,
+                                new Handler() {
+                                    @Override
+                                    public void handleMessage(Message message) {
+                                        if (message.what == PassphraseDialogFragment.MESSAGE_OKAY) {
+                                            // restart
+                                            startEncrypt();
+                                        }
                                     }
                                 }
-                            }
-                    );
+                        );
 
-                    return false;
+                        return false;
+                    }
                 }
+            } catch (PgpGeneralException e) {
+                Log.e(Constants.TAG, "Key not found!", e);
             } catch (PassphraseCacheService.KeyNotFoundException e) {
                 Log.e(Constants.TAG, "Key not found!", e);
             }

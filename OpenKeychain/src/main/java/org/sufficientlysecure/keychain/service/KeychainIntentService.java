@@ -50,6 +50,7 @@ import org.sufficientlysecure.keychain.pgp.Progressable;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralMsgIdException;
+import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRingData;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.KeychainDatabase;
@@ -128,7 +129,7 @@ public class KeychainIntentService extends IntentService implements Progressable
     public static final String SELECTED_URI = "selected_uri";
 
     // encrypt
-    public static final String ENCRYPT_SIGNATURE_KEY_ID = "secret_key_id";
+    public static final String ENCRYPT_SIGNATURE_MASTER_ID = "secret_key_id";
     public static final String ENCRYPT_USE_ASCII_ARMOR = "use_ascii_armor";
     public static final String ENCRYPT_ENCRYPTION_KEYS_IDS = "encryption_keys_ids";
     public static final String ENCRYPT_COMPRESSION_ID = "compression_id";
@@ -251,7 +252,7 @@ public class KeychainIntentService extends IntentService implements Progressable
                 int source = data.get(SOURCE) != null ? data.getInt(SOURCE) : data.getInt(TARGET);
                 Bundle resultData = new Bundle();
 
-                long signatureKeyId = data.getLong(ENCRYPT_SIGNATURE_KEY_ID);
+                long sigMasterKeyId = data.getLong(ENCRYPT_SIGNATURE_MASTER_ID);
                 String symmetricPassphrase = data.getString(ENCRYPT_SYMMETRIC_PASSPHRASE);
 
                 boolean useAsciiArmor = data.getBoolean(ENCRYPT_USE_ASCII_ARMOR);
@@ -280,14 +281,20 @@ public class KeychainIntentService extends IntentService implements Progressable
                             .setOriginalFilename(originalFilename);
 
                     try {
-                        builder.setSignatureMasterKeyId(signatureKeyId)
-                                .setSignaturePassphrase(
-                                        PassphraseCacheService.getCachedPassphrase(this, signatureKeyId))
+                        CachedPublicKeyRing signingRing =
+                                new ProviderHelper(this).getCachedPublicKeyRing(sigMasterKeyId);
+                        long sigSubKeyId = signingRing.getSignId();
+                        // It is assumed that the passphrase was cached prior to the service call.
+                        String passphrase = PassphraseCacheService.getCachedPassphrase(this, sigSubKeyId);
+                        builder.setSignatureMasterKeyId(sigMasterKeyId)
+                                .setSignatureSubKeyId(sigSubKeyId)
+                                .setSignaturePassphrase(passphrase)
                                 .setSignatureHashAlgorithm(
                                         Preferences.getPreferences(this).getDefaultHashAlgorithm())
-                                .setAdditionalEncryptId(signatureKeyId);
-                    } catch (PassphraseCacheService.KeyNotFoundException e) {
+                                .setAdditionalEncryptId(sigMasterKeyId);
+                    } catch (PgpGeneralException e) {
                         // encrypt-only
+                        // TODO Just silently drop the requested signature? Shouldn't we throw here?
                     }
 
                     // this assumes that the bytes are cleartext (valid for current implementation!)

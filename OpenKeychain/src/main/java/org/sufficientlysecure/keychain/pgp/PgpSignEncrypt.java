@@ -68,6 +68,7 @@ public class PgpSignEncrypt {
     private String mSymmetricPassphrase;
     private int mSymmetricEncryptionAlgorithm;
     private long mSignatureMasterKeyId;
+    private Long mSignatureSubKeyId;
     private int mSignatureHashAlgorithm;
     private String mSignaturePassphrase;
     private long mAdditionalEncryptId;
@@ -101,6 +102,7 @@ public class PgpSignEncrypt {
         this.mSymmetricPassphrase = builder.mSymmetricPassphrase;
         this.mSymmetricEncryptionAlgorithm = builder.mSymmetricEncryptionAlgorithm;
         this.mSignatureMasterKeyId = builder.mSignatureMasterKeyId;
+        this.mSignatureSubKeyId = builder.mSignatureSubKeyId;
         this.mSignatureHashAlgorithm = builder.mSignatureHashAlgorithm;
         this.mSignaturePassphrase = builder.mSignaturePassphrase;
         this.mAdditionalEncryptId = builder.mAdditionalEncryptId;
@@ -125,6 +127,7 @@ public class PgpSignEncrypt {
         private String mSymmetricPassphrase = null;
         private int mSymmetricEncryptionAlgorithm = 0;
         private long mSignatureMasterKeyId = Constants.key.none;
+        private Long mSignatureSubKeyId = null;
         private int mSignatureHashAlgorithm = 0;
         private String mSignaturePassphrase = null;
         private long mAdditionalEncryptId = Constants.key.none;
@@ -176,6 +179,11 @@ public class PgpSignEncrypt {
 
         public Builder setSignatureMasterKeyId(long signatureMasterKeyId) {
             mSignatureMasterKeyId = signatureMasterKeyId;
+            return this;
+        }
+
+        public Builder setSignatureSubKeyId(long signatureSubKeyId) {
+            mSignatureSubKeyId = signatureSubKeyId;
             return this;
         }
 
@@ -309,26 +317,32 @@ public class PgpSignEncrypt {
         /* Get keys for signature generation for later usage */
         CanonicalizedSecretKey signingKey = null;
         if (enableSignature) {
-            CanonicalizedSecretKeyRing signingKeyRing;
+
+            // If we weren't handed a passphrase, throw early
+            if (mSignaturePassphrase == null) {
+                throw new NoPassphraseException();
+            }
+
             try {
-                signingKeyRing = mProviderHelper.getCanonicalizedSecretKeyRing(mSignatureMasterKeyId);
+                // fetch the indicated master key id (the one whose name we sign in)
+                CanonicalizedSecretKeyRing signingKeyRing =
+                        mProviderHelper.getCanonicalizedSecretKeyRing(mSignatureMasterKeyId);
+                // fetch the specific subkey to sign with, or just use the master key if none specified
+                long signKeyId = mSignatureSubKeyId != null ? mSignatureSubKeyId : mSignatureMasterKeyId;
+                signingKey = signingKeyRing.getSecretKey(signKeyId);
+                // make sure it's a signing key alright!
             } catch (ProviderHelper.NotFoundException e) {
                 throw new NoSigningKeyException();
             }
-            try {
-                signingKey = signingKeyRing.getSigningSubKey();
-            } catch (PgpGeneralException e) {
-                throw new NoSigningKeyException();
-            }
 
-            if (mSignaturePassphrase == null) {
-                throw new NoPassphraseException();
+            if ( ! signingKey.canSign()) {
+                throw new NoSigningKeyException();
             }
 
             updateProgress(R.string.progress_extracting_signature_key, 0, 100);
 
             try {
-                if (!signingKey.unlock(mSignaturePassphrase)) {
+                if ( ! signingKey.unlock(mSignaturePassphrase)) {
                     throw new WrongPassphraseException();
                 }
             } catch (PgpGeneralException e) {
