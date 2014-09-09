@@ -33,7 +33,7 @@ import java.util.List;
 
 @RunWith(RobolectricTestRunner.class)
 @org.robolectric.annotation.Config(emulateSdk = 18) // Robolectric doesn't yet support 19
-public class FileImportCacheTest {
+public class ParcelableFileCacheTest {
 
     @Before
     public void setUp() throws Exception {
@@ -43,7 +43,7 @@ public class FileImportCacheTest {
     @Test
     public void testInputOutput() throws Exception {
 
-        FileImportCache<Bundle> cache = new FileImportCache<Bundle>(Robolectric.application, "test.pcl");
+        ParcelableFileCache<Bundle> cache = new ParcelableFileCache<Bundle>(Robolectric.application, "test.pcl");
 
         ArrayList<Bundle> list = new ArrayList<Bundle>();
 
