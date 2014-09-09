@@ -119,12 +119,14 @@ public class PgpKeyOperation {
      * SHA256 as the hashing function, 0x10 gives you about 64
      * iterations, 0x20 about 128, 0x30 about 256 and so on till 0xf0,
      * or about 1 million iterations. The maximum you can go to is
-     * 0xff, or about 2 million iterations.  I'll use 0xc0 as a
-     * default -- about 130,000 iterations.
+     * 0xff, or about 2 million iterations.
+     * from http://kbsriram.com/2013/01/generating-rsa-keys-with-bouncycastle.html
      *
-     * http://kbsriram.com/2013/01/generating-rsa-keys-with-bouncycastle.html
+     * Bouncy Castle default: 0x60
+     * kbsriram proposes 0xc0
+     * we use 0x90, a good trade-off between usability and security against offline attacks
      */
-    private static final int SECRET_KEY_ENCRYPTOR_S2K_COUNT = 0x60;
+    private static final int SECRET_KEY_ENCRYPTOR_S2K_COUNT = 0x90;
     private static final int SECRET_KEY_ENCRYPTOR_HASH_ALGO = HashAlgorithmTags.SHA256;
     private static final int SECRET_KEY_ENCRYPTOR_SYMMETRIC_ALGO = SymmetricKeyAlgorithmTags.AES_256;
 
