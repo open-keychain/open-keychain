@@ -56,6 +56,15 @@ import java.util.Date;
  * This service runs in its own process, but is available to all other processes as the main
  * passphrase cache. Use the static methods addCachedPassphrase and getCachedPassphrase for
  * convenience.
+ *
+ * Design decisions:
+ * - Cache passphrases based on master key ids, but try to unlock before using the subkey id
+ *   (to be compatible with stripped keys)
+ * - Cache based on master key id so that there is not need to enter a passphrase twice for sign and
+ *   decrypt (if these are two different subkeys)
+ * - Assume that all passphrases cached here are valid passphrases
+ * - Do not handle if a keyring contains subkeys with different passphrases. This is not considered
+ *   supported and has not been seen in other OpenPGP implementations
  */
 public class PassphraseCacheService extends Service {
 
