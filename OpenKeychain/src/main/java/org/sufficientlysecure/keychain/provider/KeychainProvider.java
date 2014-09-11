@@ -281,7 +281,7 @@ public class KeychainProvider extends ContentProvider {
                 qb.setProjectionMap(projectionMap);
 
                 if (projection == null) {
-                    Log.e(Constants.TAG, "Please provide a projection!");
+                    throw new IllegalArgumentException("Please provide a projection!");
                 }
 
                 // Need this as list so we can search in it
