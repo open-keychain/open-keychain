@@ -517,10 +517,6 @@ public class UncachedKeyRing {
 
             // Replace modified key in the keyring
             ring = replacePublicKey(ring, modified);
-            if (ring == null) {
-                log.add(LogLevel.ERROR, LogType.MSG_MG_ERROR_SECRET_DUMMY, indent);
-                return null;
-            }
             indent -= 1;
 
         }
@@ -698,10 +694,6 @@ public class UncachedKeyRing {
             }
             // replace pubkey in keyring
             ring = replacePublicKey(ring, modified);
-            if (ring == null) {
-                log.add(LogLevel.ERROR, LogType.MSG_MG_ERROR_SECRET_DUMMY, indent);
-                return null;
-            }
             indent -= 1;
         }
 
@@ -791,10 +783,6 @@ public class UncachedKeyRing {
                     } else {
                         // otherwise, just insert the public key
                         result = replacePublicKey(result, key);
-                        if (result == null) {
-                            log.add(LogLevel.ERROR, LogType.MSG_MG_ERROR_SECRET_DUMMY, indent);
-                            return null;
-                        }
                     }
                     continue;
                 }
@@ -823,10 +811,6 @@ public class UncachedKeyRing {
                 if (!key.isMasterKey()) {
                     if (modified != resultKey) {
                         result = replacePublicKey(result, modified);
-                        if (result == null) {
-                            log.add(LogLevel.ERROR, LogType.MSG_MG_ERROR_SECRET_DUMMY, indent);
-                            return null;
-                        }
                     }
                     continue;
                 }
@@ -851,10 +835,6 @@ public class UncachedKeyRing {
                 // If anything changed, save the updated (sub)key
                 if (modified != resultKey) {
                     result = replacePublicKey(result, modified);
-                    if (result == null) {
-                        log.add(LogLevel.ERROR, LogType.MSG_MG_ERROR_SECRET_DUMMY, indent);
-                        return null;
-                    }
                 }
 
             }
@@ -905,10 +885,10 @@ public class UncachedKeyRing {
         } else {
             PGPSecretKeyRing secRing = (PGPSecretKeyRing) ring;
             PGPSecretKey sKey = secRing.getSecretKey(key.getKeyID());
-            // TODO generate secret key with S2K dummy, if none exists!
+            // if this is a secret key which does not yet occur in the secret ring
             if (sKey == null) {
-                Log.e(Constants.TAG, "dummy secret key generation not yet implemented");
-                return null;
+                // generate a stripped secret (sub)key
+                sKey = PGPSecretKey.constructGnuDummyKey(key);
             }
             sKey = PGPSecretKey.replacePublicKey(sKey, key);
             return PGPSecretKeyRing.insertSecretKey(secRing, sKey);
