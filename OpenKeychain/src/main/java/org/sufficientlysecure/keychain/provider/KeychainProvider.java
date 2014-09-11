@@ -280,6 +280,10 @@ public class KeychainProvider extends ContentProvider {
                                 + " < " + new Date().getTime() / 1000 + ") AS " + KeyRings.IS_EXPIRED);
                 qb.setProjectionMap(projectionMap);
 
+                if (projection == null) {
+                    Log.e(Constants.TAG, "Please provide a projection!");
+                }
+
                 // Need this as list so we can search in it
                 List<String> plist = Arrays.asList(projection);
 
