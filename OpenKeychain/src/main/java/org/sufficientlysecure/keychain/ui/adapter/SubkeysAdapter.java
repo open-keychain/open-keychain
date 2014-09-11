@@ -22,6 +22,7 @@ import android.content.res.ColorStateList;
 import android.database.Cursor;
 import android.graphics.Typeface;
 import android.support.v4.widget.CursorAdapter;
+import android.text.Html;
 import android.text.format.DateFormat;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -142,6 +143,8 @@ public class SubkeysAdapter extends CursorAdapter {
 
         long keyId = cursor.getLong(INDEX_KEY_ID);
         String keyIdStr = PgpKeyHelper.convertKeyIdToHex(keyId);
+
+        // may be set with additional "stripped" later on
         String algorithmStr = PgpKeyHelper.getAlgorithmInfo(
                 context,
                 cursor.getInt(INDEX_ALGORITHM),
@@ -150,23 +153,27 @@ public class SubkeysAdapter extends CursorAdapter {
         );
 
         vKeyId.setText(keyIdStr);
-        // may be set with additional "stripped" later on
-        switch (SecretKeyType.fromNum(cursor.getInt(INDEX_HAS_SECRET))) {
-            case GNU_DUMMY:
-                algorithmStr += ", " + context.getString(R.string.key_stripped);
-                break;
-            case DIVERT_TO_CARD:
-                algorithmStr += ", " + context.getString(R.string.key_divert);
-                break;
-            case PASSPHRASE_EMPTY:
-                algorithmStr += ", " + context.getString(R.string.key_no_passphrase);
-                break;
-            case UNAVAILABLE:
-                // don't show this on pub keys
-                //algorithmStr += ", " + context.getString(R.string.key_unavailable);
-                break;
+
+        if (mSaveKeyringParcel != null && mSaveKeyringParcel.mStripSubKeys.contains(keyId)) {
+            algorithmStr += ", <b>" + context.getString(R.string.key_stripped) + "</b>";
+        } else {
+            switch (SecretKeyType.fromNum(cursor.getInt(INDEX_HAS_SECRET))) {
+                case GNU_DUMMY:
+                    algorithmStr += ", " + context.getString(R.string.key_stripped);
+                    break;
+                case DIVERT_TO_CARD:
+                    algorithmStr += ", " + context.getString(R.string.key_divert);
+                    break;
+                case PASSPHRASE_EMPTY:
+                    algorithmStr += ", " + context.getString(R.string.key_no_passphrase);
+                    break;
+                case UNAVAILABLE:
+                    // don't show this on pub keys
+                    //algorithmStr += ", " + context.getString(R.string.key_unavailable);
+                    break;
+            }
         }
-        vKeyDetails.setText(algorithmStr);
+        vKeyDetails.setText(Html.fromHtml(algorithmStr));
 
         boolean isMasterKey = cursor.getInt(INDEX_RANK) == 0;
         if (isMasterKey) {

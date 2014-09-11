@@ -293,6 +293,7 @@
     <string name="progress_modify_primaryuid">"changing primary user ID…"</string>
     <string name="progress_modify_subkeychange">"modifying subkeys…"</string>
     <string name="progress_modify_subkeyrevoke">"revoking subkeys…"</string>
+    <string name="progress_modify_subkeystrip">"stripping subkeys…"</string>
     <string name="progress_modify_subkeyadd">"adding subkeys…"</string>
     <string name="progress_modify_passphrase">"changing passphrase…"</string>
 
@@ -490,6 +491,7 @@
     <string-array name="edit_key_edit_subkey">
         <item>"Change Expiry"</item>
         <item>"Revoke Subkey"</item>
+        <item>"Strip Subkey"</item>
     </string-array>
     <string name="edit_key_new_subkey">"new"</string>
     <string name="edit_key_select_flag">"Please select at least one flag!"</string>
@@ -713,6 +715,7 @@
     <string name="msg_mf_subkey_new_id">"New subkey ID: %s"</string>
     <string name="msg_mf_error_past_expiry">"Expiry date cannot be in the past!"</string>
     <string name="msg_mf_subkey_revoke">"Revoking subkey %s"</string>
+    <string name="msg_mf_subkey_strip">"Stripping subkey %s"</string>
     <string name="msg_mf_success">"Keyring successfully modified"</string>
     <string name="msg_mf_uid_add">"Adding user id %s"</string>
     <string name="msg_mf_uid_primary">"Changing primary uid to %s"</string>

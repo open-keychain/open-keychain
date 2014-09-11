@@ -420,6 +420,14 @@ public class EditKeyFragment extends LoaderFragment implements
                             mSaveKeyringParcel.mRevokeSubKeys.add(keyId);
                         }
                         break;
+                    case EditSubkeyDialogFragment.MESSAGE_STRIP:
+                        // toggle
+                        if (mSaveKeyringParcel.mStripSubKeys.contains(keyId)) {
+                            mSaveKeyringParcel.mStripSubKeys.remove(keyId);
+                        } else {
+                            mSaveKeyringParcel.mStripSubKeys.add(keyId);
+                        }
+                        break;
                 }
                 getLoaderManager().getLoader(LOADER_ID_SUBKEYS).forceLoad();
             }
