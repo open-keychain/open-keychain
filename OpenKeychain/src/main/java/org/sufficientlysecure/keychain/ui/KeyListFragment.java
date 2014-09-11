@@ -56,8 +56,10 @@ import android.widget.TextView;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.helper.ExportHelper;
+import org.sufficientlysecure.keychain.helper.KeyUpdateHelper;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
+import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
 import org.sufficientlysecure.keychain.ui.dialog.DeleteKeyDialogFragment;
 import org.sufficientlysecure.keychain.ui.widget.ListAwareSwipeRefreshLayout;
 import org.sufficientlysecure.keychain.util.Highlighter;
@@ -707,11 +709,13 @@ public class KeyListFragment extends LoaderFragment
      * Implements OnRefreshListener for drag-to-refresh
      */
     public void onRefresh() {
-        new Handler().postDelayed(new Runnable() {
-            @Override public void run() {
+        KeyUpdateHelper updateHelper = new KeyUpdateHelper();
+        KeychainIntentServiceHandler finishedHandler = new KeychainIntentServiceHandler(getActivity()) {
+            public void handleMessage(Message message) {
                 mSwipeRefreshLayout.setRefreshing(false);
             }
-        }, 5000);
+        };
+        updateHelper.updateAllKeys(getActivity(), finishedHandler);
     }
 
 }

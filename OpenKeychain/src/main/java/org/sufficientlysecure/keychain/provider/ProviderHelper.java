@@ -30,6 +30,7 @@ import android.support.v4.util.LongSparseArray;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.helper.KeyUpdateHelper;
 import org.sufficientlysecure.keychain.helper.Preferences;
 import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedPublicKey;
@@ -67,6 +68,7 @@ import org.sufficientlysecure.keychain.util.ProgressScaler;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -1306,6 +1308,30 @@ public class ProviderHelper {
         }
 
         return keyIds;
+    }
+
+    public Set<String> getAllFingerprintsForApp(Uri uri) {
+        Set<String> fingerprints = new HashSet<String>();
+
+        String[] projection = new String[]{KeyRings.FINGERPRINT};
+
+        Cursor cursor = mContentResolver.query(uri, projection, null, null, null);
+        try {
+            if(cursor != null) {
+                int fingerprintColumn = cursor.getColumnIndex(KeyRings.FINGERPRINT);
+                while(cursor.moveToNext()) {
+                    fingerprints.add(
+                            PgpKeyHelper.convertFingerprintToHex(cursor.getBlob(fingerprintColumn))
+                    );
+                }
+            }
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+
+        return fingerprints;
     }
 
     public byte[] getApiAppSignature(String packageName) {
