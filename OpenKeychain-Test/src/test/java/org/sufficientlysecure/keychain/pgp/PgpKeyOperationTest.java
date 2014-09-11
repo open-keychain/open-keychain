@@ -30,6 +30,8 @@ import org.robolectric.shadows.ShadowLog;
 import org.spongycastle.bcpg.BCPGInputStream;
 import org.spongycastle.bcpg.Packet;
 import org.spongycastle.bcpg.PacketTags;
+import org.spongycastle.bcpg.S2K;
+import org.spongycastle.bcpg.SecretKeyPacket;
 import org.spongycastle.bcpg.SecretSubkeyPacket;
 import org.spongycastle.bcpg.SignaturePacket;
 import org.spongycastle.bcpg.UserIDPacket;
@@ -685,6 +687,58 @@ public class PgpKeyOperationTest {
                     flags, (long) modified.getPublicKey(keyId).getKeyUsage());
 
         }
+    }
+
+    @Test
+    public void testSubkeyStrip() throws Exception {
+
+        long keyId = KeyringTestingHelper.getSubkeyId(ring, 1);
+        parcel.mStripSubKeys.add(keyId);
+        applyModificationWithChecks(parcel, ring, onlyA, onlyB);
+
+        Assert.assertEquals("one extra packet in original", 1, onlyA.size());
+        Assert.assertEquals("one extra packet in modified", 1, onlyB.size());
+
+        Assert.assertEquals("old packet must be secret subkey",
+                PacketTags.SECRET_SUBKEY, onlyA.get(0).tag);
+        Assert.assertEquals("new packet must be secret subkey",
+                PacketTags.SECRET_SUBKEY, onlyB.get(0).tag);
+
+        Packet p = new BCPGInputStream(new ByteArrayInputStream(onlyB.get(0).buf)).readPacket();
+        Assert.assertEquals("new packet should have GNU_DUMMY S2K type",
+                S2K.GNU_DUMMY_S2K, ((SecretSubkeyPacket) p).getS2K().getType());
+        Assert.assertEquals("new packet should have GNU_DUMMY protection mode 0x1",
+                0x1, ((SecretSubkeyPacket) p).getS2K().getProtectionMode());
+        Assert.assertEquals("new packet secret key data should have length zero",
+                0, ((SecretSubkeyPacket) p).getSecretKeyData().length);
+        Assert.assertNull("new packet should have no iv data", ((SecretSubkeyPacket) p).getIV());
+
+    }
+
+    @Test
+    public void testMasterStrip() throws Exception {
+
+        long keyId = ring.getMasterKeyId();
+        parcel.mStripSubKeys.add(keyId);
+        applyModificationWithChecks(parcel, ring, onlyA, onlyB);
+
+        Assert.assertEquals("one extra packet in original", 1, onlyA.size());
+        Assert.assertEquals("one extra packet in modified", 1, onlyB.size());
+
+        Assert.assertEquals("old packet must be secret key",
+                PacketTags.SECRET_KEY, onlyA.get(0).tag);
+        Assert.assertEquals("new packet must be secret key",
+                PacketTags.SECRET_KEY, onlyB.get(0).tag);
+
+        Packet p = new BCPGInputStream(new ByteArrayInputStream(onlyB.get(0).buf)).readPacket();
+        Assert.assertEquals("new packet should have GNU_DUMMY S2K type",
+                S2K.GNU_DUMMY_S2K, ((SecretKeyPacket) p).getS2K().getType());
+        Assert.assertEquals("new packet should have GNU_DUMMY protection mode 0x1",
+                0x1, ((SecretKeyPacket) p).getS2K().getProtectionMode());
+        Assert.assertEquals("new packet secret key data should have length zero",
+                0, ((SecretKeyPacket) p).getSecretKeyData().length);
+        Assert.assertNull("new packet should have no iv data", ((SecretKeyPacket) p).getIV());
+
     }
 
     @Test
