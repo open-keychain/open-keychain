@@ -25,7 +25,12 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.shadows.ShadowLog;
+import org.spongycastle.bcpg.BCPGInputStream;
+import org.spongycastle.bcpg.Packet;
 import org.spongycastle.bcpg.PacketTags;
+import org.spongycastle.bcpg.S2K;
+import org.spongycastle.bcpg.SecretKeyPacket;
+import org.spongycastle.bcpg.SecretSubkeyPacket;
 import org.spongycastle.bcpg.sig.KeyFlags;
 import org.spongycastle.bcpg.PublicKeyAlgorithmTags;
 import org.spongycastle.jce.provider.BouncyCastleProvider;
@@ -38,6 +43,7 @@ import org.sufficientlysecure.keychain.support.KeyringTestingHelper;
 import org.sufficientlysecure.keychain.support.KeyringTestingHelper.RawPacket;
 import org.sufficientlysecure.keychain.util.ProgressScaler;
 
+import java.io.ByteArrayInputStream;
 import java.security.Security;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -364,20 +370,46 @@ public class UncachedKeyringMergeTest {
         final UncachedKeyRing pubA = a.extractPublicKeyRing();
         final UncachedKeyRing pubB = b.extractPublicKeyRing();
 
-        { // sec + pub, pub + sec, and pub + pub
+        { // sec + pub
 
-            try {
-                resultB = a.merge(pubB, log, 0);
-                Assert.assertNotNull("merge must succeed as sec(a)+pub(b)", resultA);
+            // this one is special, because GNU_DUMMY keys might be generated!
 
-                Assert.assertFalse("result of sec(a)+pub(b) must be same as sec(a)+sec(b)",
-                        KeyringTestingHelper.diffKeyrings(
-                                resultA.getEncoded(), resultB.getEncoded(), onlyA, onlyB)
+            resultB = a.merge(pubB, log, 0);
+            Assert.assertNotNull("merge must succeed as sec(a)+pub(b)", resultA);
+
+            // these MAY diff
+            KeyringTestingHelper.diffKeyrings(resultA.getEncoded(), resultB.getEncoded(),
+                    onlyA, onlyB);
+
+            Assert.assertEquals("sec(a)+pub(b): results must have equal number of packets",
+                    onlyA.size(), onlyB.size());
+
+            for (int i = 0; i < onlyA.size(); i++) {
+                Assert.assertEquals("sec(a)+pub(c): old packet must be secret subkey",
+                        PacketTags.SECRET_SUBKEY, onlyA.get(i).tag);
+                Assert.assertEquals("sec(a)+pub(c): new packet must be dummy secret subkey",
+                        PacketTags.SECRET_SUBKEY, onlyB.get(i).tag);
+
+                SecretKeyPacket pA = (SecretKeyPacket) new BCPGInputStream(new ByteArrayInputStream(onlyA.get(i).buf)).readPacket();
+                SecretKeyPacket pB = (SecretKeyPacket) new BCPGInputStream(new ByteArrayInputStream(onlyB.get(i).buf)).readPacket();
+
+                Assert.assertArrayEquals("sec(a)+pub(c): both packets must have equal pubkey parts",
+                        pA.getPublicKeyPacket().getEncoded(), pB.getPublicKeyPacket().getEncoded()
                 );
-            } catch (RuntimeException e) {
-                System.out.println("special case, dummy key generation not in yet");
+
+                Assert.assertEquals("sec(a)+pub(c): new packet should have GNU_DUMMY S2K type",
+                        S2K.GNU_DUMMY_S2K, pB.getS2K().getType());
+                Assert.assertEquals("sec(a)+pub(c): new packet should have GNU_DUMMY protection mode 0x1",
+                        0x1, pB.getS2K().getProtectionMode());
+                Assert.assertEquals("sec(a)+pub(c): new packet secret key data should have length zero",
+                        0, pB.getSecretKeyData().length);
+                Assert.assertNull("sec(a)+pub(c): new packet should have no iv data", pB.getIV());
+
             }
 
+        }
+
+        { // pub + sec, and pub + pub
             final UncachedKeyRing pubResult = resultA.extractPublicKeyRing();
 
             resultB = pubA.merge(b, log, 0);
