@@ -394,6 +394,7 @@ public class OperationResultParcel implements Parcelable {
         MSG_MF_SUBKEY_NEW_ID (R.string.msg_mf_subkey_new_id),
         MSG_MF_SUBKEY_NEW (R.string.msg_mf_subkey_new),
         MSG_MF_SUBKEY_REVOKE (R.string.msg_mf_subkey_revoke),
+        MSG_MF_SUBKEY_STRIP (R.string.msg_mf_subkey_strip),
         MSG_MF_SUCCESS (R.string.msg_mf_success),
         MSG_MF_UID_ADD (R.string.msg_mf_uid_add),
         MSG_MF_UID_PRIMARY (R.string.msg_mf_uid_primary),

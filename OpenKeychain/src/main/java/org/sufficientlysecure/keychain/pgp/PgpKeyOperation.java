@@ -709,7 +709,7 @@ public class PgpKeyOperation {
                         // error log entry has already been added by updateMasterCertificates itself
                         return new EditKeyResult(EditKeyResult.RESULT_ERROR, log, null);
                     }
-                    masterSecretKey = PGPSecretKey.replacePublicKey(masterSecretKey, pKey);
+                    masterSecretKey = PGPSecretKey.replacePublicKey(sKey, pKey);
                     masterPublicKey = pKey;
                     sKR = PGPSecretKeyRing.insertSecretKey(sKR, masterSecretKey);
                     continue;
@@ -750,7 +750,7 @@ public class PgpKeyOperation {
             subProgressPop();
 
             // 4b. For each subkey revocation, generate new subkey revocation certificate
-            subProgressPush(60, 70);
+            subProgressPush(60, 65);
             for (int i = 0; i < saveParcel.mRevokeSubKeys.size(); i++) {
 
                 progress(R.string.progress_modify_subkeyrevoke, (i-1) * (100 / saveParcel.mRevokeSubKeys.size()));
@@ -771,6 +771,30 @@ public class PgpKeyOperation {
 
                 pKey = PGPPublicKey.addCertification(pKey, sig);
                 sKR = PGPSecretKeyRing.insertSecretKey(sKR, PGPSecretKey.replacePublicKey(sKey, pKey));
+            }
+            subProgressPop();
+
+            // 4c. For each subkey to be stripped... do so
+            subProgressPush(65, 70);
+            for (int i = 0; i < saveParcel.mStripSubKeys.size(); i++) {
+
+                progress(R.string.progress_modify_subkeystrip, (i-1) * (100 / saveParcel.mStripSubKeys.size()));
+                long strip = saveParcel.mStripSubKeys.get(i);
+                log.add(LogLevel.INFO, LogType.MSG_MF_SUBKEY_STRIP,
+                        indent, PgpKeyHelper.convertKeyIdToHex(strip));
+
+                PGPSecretKey sKey = sKR.getSecretKey(strip);
+                if (sKey == null) {
+                    log.add(LogLevel.ERROR, LogType.MSG_MF_ERROR_SUBKEY_MISSING,
+                            indent+1, PgpKeyHelper.convertKeyIdToHex(strip));
+                    return new EditKeyResult(EditKeyResult.RESULT_ERROR, log, null);
+                }
+
+                // IT'S DANGEROUS~
+                // no really, it is. this operation irrevocably removes the private key data from the key
+                sKey = PGPSecretKey.constructGnuDummyKey(sKey.getPublicKey());
+                sKR = PGPSecretKeyRing.insertSecretKey(sKR, sKey);
+
             }
             subProgressPop();
 
