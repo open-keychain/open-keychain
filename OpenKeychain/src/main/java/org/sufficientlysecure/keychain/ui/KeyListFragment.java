@@ -35,6 +35,7 @@ import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.CursorAdapter;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.SearchView;
 import android.view.ActionMode;
@@ -55,9 +56,12 @@ import android.widget.TextView;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.helper.ExportHelper;
+import org.sufficientlysecure.keychain.helper.KeyUpdateHelper;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
+import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
 import org.sufficientlysecure.keychain.ui.dialog.DeleteKeyDialogFragment;
+import org.sufficientlysecure.keychain.ui.widget.ListAwareSwipeRefreshLayout;
 import org.sufficientlysecure.keychain.util.Highlighter;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Notify;
@@ -74,7 +78,7 @@ import se.emilsjolander.stickylistheaders.StickyListHeadersListView;
  */
 public class KeyListFragment extends LoaderFragment
         implements SearchView.OnQueryTextListener, AdapterView.OnItemClickListener,
-        LoaderManager.LoaderCallbacks<Cursor> {
+        LoaderManager.LoaderCallbacks<Cursor>, SwipeRefreshLayout.OnRefreshListener {
 
     private KeyListAdapter mAdapter;
     private StickyListHeadersListView mStickyList;
@@ -87,6 +91,8 @@ public class KeyListFragment extends LoaderFragment
     // empty list layout
     private Button mButtonEmptyCreate;
     private Button mButtonEmptyImport;
+
+    private ListAwareSwipeRefreshLayout mSwipeRefreshLayout;
 
     /**
      * Load custom layout with StickyListView from library
@@ -119,6 +125,15 @@ public class KeyListFragment extends LoaderFragment
                 startActivityForResult(intent, 0);
             }
         });
+
+        mSwipeRefreshLayout = (ListAwareSwipeRefreshLayout) view.findViewById(R.id.key_list_swipe_container);
+        mSwipeRefreshLayout.setOnRefreshListener(this);
+        mSwipeRefreshLayout.setColorScheme(
+                R.color.android_purple_dark,
+                R.color.android_purple_light,
+                R.color.android_purple_dark,
+                R.color.android_purple_light);
+        mSwipeRefreshLayout.setStickyListHeadersListView(mStickyList);
 
         return root;
     }
@@ -688,6 +703,19 @@ public class KeyListFragment extends LoaderFragment
             return v;
         }
 
+    }
+
+    /**
+     * Implements OnRefreshListener for drag-to-refresh
+     */
+    public void onRefresh() {
+        KeyUpdateHelper updateHelper = new KeyUpdateHelper();
+        KeychainIntentServiceHandler finishedHandler = new KeychainIntentServiceHandler(getActivity()) {
+            public void handleMessage(Message message) {
+                mSwipeRefreshLayout.setRefreshing(false);
+            }
+        };
+        updateHelper.updateAllKeys(getActivity(), finishedHandler);
     }
 
 }
