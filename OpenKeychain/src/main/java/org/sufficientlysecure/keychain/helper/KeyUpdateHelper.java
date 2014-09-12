@@ -48,7 +48,6 @@ public class KeyUpdateHelper {
             try {
                 HkpKeyserver hkp = new HkpKeyserver(servers[0]);
                 for (ImportKeysListEntry key : hkp.search("0x" + fingerprint)) {
-                    if (key.isRevoked() || key.isExpired()) continue;
                     if (fingerprint.equals(key.getFingerprintHex())) {
                         return key;
                     }
