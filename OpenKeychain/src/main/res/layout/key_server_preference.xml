@@ -12,7 +12,7 @@
         android:minHeight="?android:attr/listPreferredItemHeight"
         android:orientation="horizontal" >
 
-        <RelativeLayout
+        <LinearLayout
             android:layout_width="0dip"
             android:layout_height="wrap_content"
             android:layout_marginBottom="6sp"
@@ -21,6 +21,7 @@
             android:layout_marginTop="6sp"
             android:layout_weight="1"
             android:background="@android:drawable/menuitem_background"
+            android:orientation="vertical"
             android:focusable="true" >
 
             <TextView
@@ -35,20 +36,28 @@
                 android:id="@+id/summary"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignLeft="@android:id/title"
-                android:layout_below="@android:id/title"
-                android:maxLines="2"
                 android:textAppearance="?android:attr/textAppearanceSmall" />
-        </RelativeLayout>
-
+        </LinearLayout>
+        <Button
+            android:id="@+id/shuffle"
+            android:layout_width="wrap_content"
+            android:layout_height="31dp"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="4dip"
+            android:layout_marginRight="6dip"
+            android:text="shuffle"
+            android:textColor="#ffffffff"
+            android:textStyle="bold"
+            android:paddingTop="2dp"
+            android:paddingBottom="2dp"
+            android:background="@drawable/button_rounded_blue"
+            />
         <ImageButton
             android:id="@+id/add"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:layout_margin="10dp"
-            android:layout_marginLeft="4dip"
-            android:layout_marginRight="6dip"
             android:src="@drawable/plus"
             android:background="@drawable/button_rounded_green"/>
     </LinearLayout>

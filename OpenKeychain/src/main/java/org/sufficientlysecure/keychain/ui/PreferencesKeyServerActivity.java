@@ -43,6 +43,7 @@ public class PreferencesKeyServerActivity extends ActionBarActivity implements O
     private LayoutInflater mInflater;
     private ViewGroup mEditors;
     private View mAdd;
+    private View mShuffle;
     private TextView mTitle;
     private TextView mSummary;
 
@@ -73,6 +74,7 @@ public class PreferencesKeyServerActivity extends ActionBarActivity implements O
 
         mTitle = (TextView) findViewById(R.id.title);
         mSummary = (TextView) findViewById(R.id.summary);
+        mSummary.setText(getText(R.string.label_first_keyserver_is_used));
 
         mTitle.setText(R.string.label_keyservers);
 
@@ -80,9 +82,29 @@ public class PreferencesKeyServerActivity extends ActionBarActivity implements O
         mAdd = findViewById(R.id.add);
         mAdd.setOnClickListener(this);
 
+        mShuffle = findViewById(R.id.shuffle);
+        mShuffle.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Vector<String> servers = serverList();
+                String first = servers.get(0);
+                if (first != null) {
+                    servers.remove(0);
+                    servers.add(first);
+                    String[] dummy = {};
+                    makeServerList(servers.toArray(dummy));
+                }
+            }
+        });
+
         Intent intent = getIntent();
         String servers[] = intent.getStringArrayExtra(EXTRA_KEY_SERVERS);
+        makeServerList(servers);
+   }
+
+    private void makeServerList(String[] servers) {
         if (servers != null) {
+            mEditors.removeAllViews();
             for (String serv : servers) {
                 KeyServerEditor view = (KeyServerEditor) mInflater.inflate(
                         R.layout.key_server_editor, mEditors, false);
@@ -112,6 +134,18 @@ public class PreferencesKeyServerActivity extends ActionBarActivity implements O
     private void cancelClicked() {
         setResult(RESULT_CANCELED, null);
         finish();
+    }
+
+    private Vector<String> serverList() {
+        Vector<String> servers = new Vector<String>();
+        for (int i = 0; i < mEditors.getChildCount(); ++i) {
+            KeyServerEditor editor = (KeyServerEditor) mEditors.getChildAt(i);
+            String tmp = editor.getValue();
+            if (tmp.length() > 0) {
+                servers.add(tmp);
+            }
+        }
+        return servers;
     }
 
     private void okClicked() {

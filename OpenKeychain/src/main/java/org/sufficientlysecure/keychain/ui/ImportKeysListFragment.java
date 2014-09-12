@@ -37,9 +37,8 @@ import org.sufficientlysecure.keychain.keyimport.Keyserver;
 import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
 import org.sufficientlysecure.keychain.ui.adapter.AsyncTaskResultWrapper;
 import org.sufficientlysecure.keychain.ui.adapter.ImportKeysAdapter;
-import org.sufficientlysecure.keychain.ui.adapter.ImportKeysListKeybaseLoader;
+import org.sufficientlysecure.keychain.ui.adapter.ImportKeysListCloudLoader;
 import org.sufficientlysecure.keychain.ui.adapter.ImportKeysListLoader;
-import org.sufficientlysecure.keychain.ui.adapter.ImportKeysListServerLoader;
 import org.sufficientlysecure.keychain.util.InputData;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Notify;
@@ -63,8 +62,7 @@ public class ImportKeysListFragment extends ListFragment implements
     private LoaderState mLoaderState;
 
     private static final int LOADER_ID_BYTES = 0;
-    private static final int LOADER_ID_SERVER_QUERY = 1;
-    private static final int LOADER_ID_KEYBASE = 2;
+    private static final int LOADER_ID_CLOUD = 1;
 
     private LongSparseArray<ParcelableKeyRing> mCachedKeyData;
 
@@ -118,21 +116,13 @@ public class ImportKeysListFragment extends ListFragment implements
         }
     }
 
-    static public class KeyserverLoaderState extends LoaderState {
-        String serverQuery;
-        String keyserver;
+    static public class CloudLoaderState extends LoaderState {
+        Preferences.CloudSearchPrefs mCloudPrefs;
+        String mServerQuery;
 
-        KeyserverLoaderState(String serverQuery, String keyserver) {
-            this.serverQuery = serverQuery;
-            this.keyserver = keyserver;
-        }
-    }
-
-    static public class KeybaseLoaderState extends LoaderState {
-        String keybaseQuery;
-
-        KeybaseLoaderState(String keybaseQuery) {
-            this.keybaseQuery = keybaseQuery;
+        CloudLoaderState(String serverQuery, Preferences.CloudSearchPrefs cloudPrefs) {
+            mServerQuery = serverQuery;
+            mCloudPrefs = cloudPrefs;
         }
     }
 
@@ -161,9 +151,8 @@ public class ImportKeysListFragment extends ListFragment implements
         } else if (query != null) {
             // TODO: this is used when updating a key.
             // Currently it simply uses keyserver nr 0
-            String keyserver = Preferences.getPreferences(getActivity())
-                    .getKeyServers()[0];
-            mLoaderState = new KeyserverLoaderState(query, keyserver);
+            Preferences prefs = Preferences.getPreferences(getActivity());
+            mLoaderState = new CloudLoaderState(query, prefs.getCloudSearchPrefs());
         }
 
         getListView().setOnTouchListener(new OnTouchListener() {
@@ -202,11 +191,8 @@ public class ImportKeysListFragment extends ListFragment implements
         if (getLoaderManager().getLoader(LOADER_ID_BYTES) != null) {
             getLoaderManager().destroyLoader(LOADER_ID_BYTES);
         }
-        if (getLoaderManager().getLoader(LOADER_ID_SERVER_QUERY) != null) {
-            getLoaderManager().destroyLoader(LOADER_ID_SERVER_QUERY);
-        }
-        if (getLoaderManager().getLoader(LOADER_ID_KEYBASE) != null) {
-            getLoaderManager().destroyLoader(LOADER_ID_KEYBASE);
+        if (getLoaderManager().getLoader(LOADER_ID_CLOUD) != null) {
+            getLoaderManager().destroyLoader(LOADER_ID_CLOUD);
         }
         if (getView() != null) {
             setListShown(true);
@@ -219,16 +205,11 @@ public class ImportKeysListFragment extends ListFragment implements
             setListShown(false);
 
             getLoaderManager().restartLoader(LOADER_ID_BYTES, null, this);
-        } else if (mLoaderState instanceof KeyserverLoaderState) {
+        } else if (mLoaderState instanceof CloudLoaderState) {
             // Start out with a progress indicator.
             setListShown(false);
 
-            getLoaderManager().restartLoader(LOADER_ID_SERVER_QUERY, null, this);
-        } else if (mLoaderState instanceof KeybaseLoaderState) {
-            // Start out with a progress indicator.
-            setListShown(false);
-
-            getLoaderManager().restartLoader(LOADER_ID_KEYBASE, null, this);
+            getLoaderManager().restartLoader(LOADER_ID_CLOUD, null, this);
         }
     }
 
@@ -241,13 +222,9 @@ public class ImportKeysListFragment extends ListFragment implements
                 InputData inputData = getInputData(ls.keyBytes, ls.dataUri);
                 return new ImportKeysListLoader(mActivity, inputData);
             }
-            case LOADER_ID_SERVER_QUERY: {
-                KeyserverLoaderState ls = (KeyserverLoaderState) mLoaderState;
-                return new ImportKeysListServerLoader(getActivity(), ls.serverQuery, ls.keyserver);
-            }
-            case LOADER_ID_KEYBASE: {
-                KeybaseLoaderState ls = (KeybaseLoaderState) mLoaderState;
-                return new ImportKeysListKeybaseLoader(getActivity(), ls.keybaseQuery);
+            case LOADER_ID_CLOUD: {
+                CloudLoaderState ls = (CloudLoaderState) mLoaderState;
+                return new ImportKeysListCloudLoader(getActivity(), ls.mServerQuery, ls.mCloudPrefs);
             }
 
             default:
@@ -301,8 +278,7 @@ public class ImportKeysListFragment extends ListFragment implements
                 }
                 break;
 
-            case LOADER_ID_SERVER_QUERY:
-            case LOADER_ID_KEYBASE:
+            case LOADER_ID_CLOUD:
 
                 if (error == null) {
                     // No error
@@ -333,11 +309,7 @@ public class ImportKeysListFragment extends ListFragment implements
                 // Clear the data in the adapter.
                 mAdapter.clear();
                 break;
-            case LOADER_ID_SERVER_QUERY:
-                // Clear the data in the adapter.
-                mAdapter.clear();
-                break;
-            case LOADER_ID_KEYBASE:
+            case LOADER_ID_CLOUD:
                 // Clear the data in the adapter.
                 mAdapter.clear();
                 break;

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014 Dominik Schürmann <dominik@dominikschuermann.de>
+ * Copyright (C) 2013-2014 Dominik Schürmann <dominik@dominikschuermann.de>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,38 +19,48 @@ package org.sufficientlysecure.keychain.ui;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.EditText;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.TextView;
 
+import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.helper.ContactHelper;
+import org.sufficientlysecure.keychain.helper.Preferences;
+import org.sufficientlysecure.keychain.util.Log;
 
-/**
- * Import public keys from the Keybase.io directory.  First cut: just raw search.
- *   TODO: make a pick list of the people you’re following on keybase
- */
-public class ImportKeysKeybaseFragment extends Fragment {
+import java.util.List;
+
+public class ImportKeysCloudFragment extends Fragment {
+    public static final String ARG_QUERY = "query";
+    public static final String ARG_DISABLE_QUERY_EDIT = "disable_query_edit";
 
     private ImportKeysActivity mImportActivity;
-    private View mSearchButton;
-    private EditText mQueryEditText;
 
-    public static final String ARG_QUERY = "query";
+    private View mSearchButton;
+    private AutoCompleteTextView mQueryEditText;
+    private View mConfigButton;
+    private ArrayAdapter<String> mServerAdapter;
 
     /**
      * Creates new instance of this fragment
      */
-    public static ImportKeysKeybaseFragment newInstance() {
-        ImportKeysKeybaseFragment frag = new ImportKeysKeybaseFragment();
+    public static ImportKeysCloudFragment newInstance(String query, String keyserver, boolean doKeyserver, boolean doKeybase) {
+        ImportKeysCloudFragment frag = new ImportKeysCloudFragment();
 
         Bundle args = new Bundle();
+        args.putString(ARG_QUERY, query);
+
         frag.setArguments(args);
 
         return frag;
@@ -61,16 +71,26 @@ public class ImportKeysKeybaseFragment extends Fragment {
      */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.import_keys_keybase_fragment, container, false);
+        View view = inflater.inflate(R.layout.import_keys_cloud_fragment, container, false);
 
-        mQueryEditText = (EditText) view.findViewById(R.id.import_keybase_query);
+        mSearchButton = view.findViewById(R.id.cloud_import_server_search);
+        mQueryEditText = (AutoCompleteTextView) view.findViewById(R.id.cloud_import_server_query);
+        mConfigButton = view.findViewById(R.id.cloud_import_server_config_button);
 
-        mSearchButton = view.findViewById(R.id.import_keybase_search);
-        mSearchButton.setOnClickListener(new View.OnClickListener() {
+        List<String> namesAndEmails = ContactHelper.getContactNames(getActivity());
+        namesAndEmails.addAll(ContactHelper.getContactMails(getActivity()));
+        mQueryEditText.setThreshold(3);
+        mQueryEditText.setAdapter(
+                new ArrayAdapter<String>
+                        (getActivity(), android.R.layout.simple_spinner_dropdown_item,
+                                namesAndEmails
+                        )
+        );
+
+        mSearchButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                String query = mQueryEditText.getText().toString();
-                search(query);
+                search(mQueryEditText.getText().toString());
 
                 // close keyboard after pressing search
                 InputMethodManager imm =
@@ -83,13 +103,23 @@ public class ImportKeysKeybaseFragment extends Fragment {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 if (actionId == EditorInfo.IME_ACTION_SEARCH) {
-                    String query = mQueryEditText.getText().toString();
-                    search(query);
+                    search(mQueryEditText.getText().toString());
 
                     // Don't return true to let the keyboard close itself after pressing search
                     return false;
                 }
                 return false;
+            }
+        });
+
+        mConfigButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(mImportActivity, PreferencesActivity.class);
+                // GRR, for some reason I can’t set the Action or I get an incomprehensible
+                //  exception about “modern two-pane layouts”
+                // i.setAction(PreferencesActivity.ACTION_PREFS_CLOUD);
+                startActivity(i);
             }
         });
 
@@ -105,6 +135,12 @@ public class ImportKeysKeybaseFragment extends Fragment {
             if (getArguments().containsKey(ARG_QUERY)) {
                 String query = getArguments().getString(ARG_QUERY);
                 mQueryEditText.setText(query, TextView.BufferType.EDITABLE);
+
+                Log.d(Constants.TAG, "query: " + query);
+            }
+
+            if (getArguments().getBoolean(ARG_DISABLE_QUERY_EDIT, false)) {
+                mQueryEditText.setEnabled(false);
             }
         }
     }
@@ -117,6 +153,8 @@ public class ImportKeysKeybaseFragment extends Fragment {
     }
 
     private void search(String query) {
-        mImportActivity.loadCallback(new ImportKeysListFragment.KeybaseLoaderState(query));
+        Preferences prefs = Preferences.getPreferences(getActivity());
+        mImportActivity.loadCallback(new ImportKeysListFragment.CloudLoaderState(query, prefs.getCloudSearchPrefs()));
     }
+
 }
