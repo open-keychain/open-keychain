@@ -1,5 +1,7 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <resources>
+  <!--GENERAL: Please put all strings inside quotes as described in example 1 on
+    http://developer.android.com/guide/topics/resources/string-resource.html (scroll down to "Escaping apostrophes and quotes").-->
   <!--title-->
   <string name="title_select_recipients">Wähle Schlüssel</string>
   <string name="title_select_secret_key">Wähle Deinen Schlüssel</string>
@@ -85,20 +87,10 @@
   <string name="label_passphrase_again">Passwort wiederholen</string>
   <string name="label_algorithm">Algorithmus</string>
   <string name="label_ascii_armor">Datei: ASCII Armor</string>
-  <string name="label_file_ascii_armor">Datei: ASCII Armor</string>
   <string name="label_write_version_header">Lass andere wissen dass du OpenKeychain nutzt</string>
   <string name="label_write_version_header_summary">Fügt \'OpenKeychain v2.7\' zu OpenPGP Signaturen, DAten und exportierten Schlüsseln hinzu</string>
   <string name="label_asymmetric_from">Signiert von:</string>
   <string name="label_to">Verschlüsselt an:</string>
-  <string name="label_delete_after_encryption">Dateien: Nach Verschlüsselung löschen</string>
-  <string name="label_delete_after_decryption">Nach Entschlüsselung löschen</string>
-  <string name="label_encryption_algorithm">Verschlüsselungsalgorithmus</string>
-  <string name="label_hash_algorithm">Hash-Algorithmus</string>
-  <string name="label_asymmetric">Mit Schlüssel</string>
-  <string name="label_symmetric">Mit Passwort</string>
-  <string name="label_passphrase_cache_ttl">Passwort-Cache</string>
-  <string name="label_message_compression">Nachrichten-Komprimierung</string>
-  <string name="label_file_compression">Datei-Komprimierung</string>
   <string name="label_keyservers">Schlüsselserver</string>
   <string name="label_key_id">Schlüssel-ID</string>
   <string name="label_creation">Erstellungsdatum</string>
@@ -175,21 +167,14 @@
   <string name="select_encryption_key">Mindestens einen Schlüssel zum Verschlüsseln auswählen.</string>
   <string name="select_encryption_or_signature_key">Mindestens einen Schlüssel zum Verschlüsseln oder einen zum Signieren auswählen.</string>
   <string name="specify_file_to_encrypt_to">Bitte angeben in welche Datei verschlüsselt werden soll.\nWARNUNG: Datei wird überschrieben, wenn sie bereits existiert.</string>
-  <string name="specify_file_to_decrypt_to">Bitte angeben in welche Datei entschlüsselt werden soll.\nWARNUNG: Datei wird überschrieben, wenn sie bereits existiert. </string>
   <string name="specify_file_to_export_to">Bitte angeben in welche Datei exportiert werden soll.\nWARNUNG: Datei wird überschrieben, wenn sie bereits existiert. </string>
-  <string name="key_deletion_confirmation_multi">Möchtest du wirklich alle ausgewählten öffentlichen Schlüssel löschen?\nDies kann nicht rückgängig gemacht werden!</string>
-  <string name="secret_key_deletion_confirmation">Soll der PRIVATE Schlüssel \'%s\' wirklich gelöscht werden?\nDies kann nicht rückgängig gemacht werden!</string>
-  <string name="public_key_deletetion_confirmation">Soll der öffentliche Schlüssel \'%s\' wirklich gelöscht werden?\nDies kann nicht rückgängig gemacht werden! </string>
   <string name="also_export_secret_keys">Exportiere auch private Schlüssel</string>
+  <string name="reinstall_openkeychain">Sie sind auf einen Fehler in Android gestoßen. Installieren Sie OpenKeychain erneut, wenn Sie Ihre Kontakte mit Schlüsseln verbinden wollen.</string>
   <string name="key_exported">1 Schlüssel erfolgreich exportiert.</string>
   <string name="keys_exported">%d Schlüssel erfolgreich exportiert.</string>
   <string name="no_keys_exported">Keine Schlüssel exportiert.</string>
   <string name="key_creation_el_gamal_info">Beachte: Nur Unterschlüssel unterstützen ElGamal.</string>
   <string name="key_not_found">Schlüssel %08X konnte nicht gefunden werden.</string>
-  <plurals name="bad_keys_encountered">
-    <item quantity="one">%d kaputter privater Schlüssel wurde ignoriert. Evtl. wurden er mit folgender Option exportiert: --export-secret-subkeys Unbedingt mit der Option --export-secret-keys exportieren.</item>
-    <item quantity="other">%d kaputte private Schlüssel ignoriert. Evtl. wurden sie mit folgender Option exportiert: --export-secret-subkeys Unbedingt mit der Option --export-secret-keys exportieren.</item>
-  </plurals>
   <string name="key_send_success">Schlüssel wurde erfolgreich hochgeladen.</string>
   <string name="key_certify_success">Identitäten erfolgreich beglaubigt</string>
   <string name="list_empty">Diese Liste ist leer!</string>
@@ -241,6 +226,7 @@
   <!--progress dialogs, usually ending in '…'-->
   <string name="progress_done">Fertig.</string>
   <string name="progress_cancel">Abbrechen</string>
+  <string name="progress_cancelling">Abbrechen...</string>
   <string name="progress_saving">Wird gespeichert…</string>
   <string name="progress_importing">Wird importiert…</string>
   <string name="progress_exporting">Wird exportiert…</string>
@@ -250,6 +236,8 @@
   <string name="progress_generating_rsa">Erzeuge neuen RSA-Schlüssel...</string>
   <string name="progress_generating_dsa">Erzeuge neuen DSA-Schlüssel...</string>
   <string name="progress_generating_elgamal">Erzeuge neuen ElGamal-Schlüssel...</string>
+  <string name="progress_generating_ecdsa">\'Erzeuge neuen ECDSA Schlüssel...</string>
+  <string name="progress_generating_ecdh">\'Erzeuge neuen ECDH Schlüssel...</string>
   <string name="progress_modify">Schlüsselbund wird verändert...</string>
   <string name="progress_modify_unlock">Schlüsselbund wird entsperrt...</string>
   <string name="progress_modify_adduid">User-ID wird hinzugefügt...</string>
@@ -279,7 +267,9 @@
   <string name="progress_decompressing_data">Daten werden entpackt…</string>
   <string name="progress_verifying_integrity">Integrität wird überprüft…</string>
   <string name="progress_deleting_securely">\'%s\' wird sicher gelöscht…</string>
+  <string name="progress_deleting">Lösche Schlüssel</string>
   <!--action strings-->
+  <string name="hint_keyserver_search_hint">Name/Email/Schlüssel ID...</string>
   <!--key bit length selections-->
   <string name="key_size_512">512</string>
   <string name="key_size_768">768</string>
@@ -295,9 +285,9 @@
   <string name="key_size_custom_info_dsa">Die DSA-Schlüssellänge muss mindestens 512 und höchstens 1024 sein. Auch muss sie ein Mehrfaches von 64 sein.</string>
   <!--elliptic curve names-->
   <!--not in for now, see SaveKeyringParcel
-    <string name="key_curve_bp_p256">Brainpool P-256</string>
-    <string name="key_curve_bp_p384">Brainpool P-384</string>
-    <string name="key_curve_bp_p512">Brainpool P-512</string>-->
+    <string name="key_curve_bp_p256">"Brainpool P-256"</string>
+    <string name="key_curve_bp_p384">"Brainpool P-384"</string>
+    <string name="key_curve_bp_p512">"Brainpool P-512"</string>-->
   <!--compression-->
   <string name="compression_fast">schnell</string>
   <string name="compression_very_slow">sehr langsam</string>
@@ -323,6 +313,10 @@
     <item quantity="one">1 Schlüssel erfolgreich importiert</item>
     <item quantity="other">%1$d Schlüssel erfolgreich importiert</item>
   </plurals>
+  <plurals name="import_keys_added_and_updated_2">
+    <item quantity="one">und aktuallisierter Schlüssel%2$s.</item>
+    <item quantity="other">und aktuallisierte %1$d Schlüssel%2$s.</item>
+  </plurals>
   <plurals name="import_keys_added">
     <item quantity="one">Schlüssel %2$s erfolgreich importiert</item>
     <item quantity="other">%1$d Schlüssel erfolgreich importiert: %2$s.</item>
@@ -333,8 +327,10 @@
   </plurals>
   <string name="view_log">Log ansehen</string>
   <string name="import_error_nothing">Nichts zu importieren.</string>
+  <string name="import_error_nothing_cancelled">Import abgebrochen.</string>
   <string name="import_error">Fehler bei der Verarbeitung der Schlüssel!</string>
   <string name="import_with_warnings">, mit Warnungen</string>
+  <string name="import_with_cancelled">. bis abgebrochen wurde</string>
   <!--Intent labels-->
   <string name="intent_decrypt_file">Datei entschlüsseln mit OpenKeychain</string>
   <string name="intent_import_key">Schlüssel importieren mit OpenKeychain</string>
@@ -356,13 +352,16 @@
   <string name="api_settings_package_name">Paketname</string>
   <string name="api_settings_package_signature">SHA-256 der Paketsignatur</string>
   <string name="api_settings_accounts">Konten</string>
+  <string name="api_settings_settings">Einstellungen</string>
   <string name="api_settings_accounts_empty">Keine Konten mit dieser Anwendung verknüpft.</string>
   <string name="api_create_account_text">Die App verlangt die Erstellung eines neuen Accounts. Bitte wähle einen deiner existierenden Schlüssel aus oder erstelle einen neuen.\nApps können nur hier ausgewählte Schlüssel nutzen.</string>
-  <string name="api_register_text">Folgende Anwendung möchte Nachrichten ver-/entschlüsseln und in Ihrem Namen signieren. Zugriff erlauben?\n\nVORSICHT: Sollten Sie nicht wissen warum dieses Fenster erscheint, sollten Sie den Zugriff verbieten! Sie können Zugriffe später über das Menü \'Apps\' widerrufen.</string>
   <string name="api_register_allow">Zugriff erlauben</string>
   <string name="api_register_disallow">Zugriff verbieten</string>
   <string name="api_register_error_select_key">Bitte einen Schlüssel auswählen!</string>
+  <string name="api_select_pub_keys_missing_text">Für diese Identitäten wurden keine Schlüssel gefunden:</string>
+  <string name="api_select_pub_keys_dublicates_text">Für diese Identität existiert mehr als ein Schlüssel:</string>
   <string name="api_select_pub_keys_text">Bitte die Liste der Empfänger überprüfen!</string>
+  <string name="api_select_pub_keys_text_no_user_ids">Bitte wählen sie einen Empfänger!</string>
   <string name="api_error_wrong_signature">Signaturüberprüfung fehlgeschlagen! Haben Sie diese Anwendung aus einer anderen Quelle installiert? Wenn Sie eine Attacke ausschliessen können, sollten Sie die Registrierung der App in OpenKeychain widerrufen und die Anwendung erneut registrieren.</string>
   <!--Share-->
   <string name="share_qr_code_dialog_title">Über QR-Code teilen</string>
@@ -379,31 +378,40 @@
   <string name="key_list_empty_button_import">Importiere einen existierenden Schlüssel.</string>
   <!--Key view-->
   <string name="key_view_action_edit">Schlüssel bearbeiten</string>
-  <string name="key_view_action_encrypt">Mit diesem Schlüssel verschlüsseln</string>
   <string name="key_view_action_certify">Identitäten beglaubigen</string>
   <string name="key_view_action_update">Von Schlüsselserver aktualisieren</string>
   <string name="key_view_action_share_with">Teilen über...</string>
-  <string name="key_view_action_upload">Auf Schlüsselserver hochladen</string>
+  <string name="key_view_action_share_nfc">Über NFC teilen</string>
   <string name="key_view_tab_main">Informationen</string>
   <string name="key_view_tab_share">Teilen</string>
   <string name="key_view_tab_keys">Unterschlüssel</string>
   <string name="key_view_tab_certs">Beglaubigungen</string>
   <string name="user_id_info_revoked_title">Wiederrufen</string>
+  <string name="user_id_info_revoked_text">Diese Identität wurde durch den Schlüsselinhaber wiederrufen. Sie ist nicht mehr gültig.</string>
+  <string name="user_id_info_verified_title">Überprüft</string>
+  <string name="user_id_info_verified_text">Diese Identität wurde überprüft.</string>
+  <string name="user_id_info_not_verified_title">Nicht überprüft</string>
   <string name="user_id_info_invalid_title">Ungültig</string>
+  <string name="user_id_info_invalid_text">Irgend etwas ist mit dieser Identität nicht in Ordnung!</string>
   <!--Edit key-->
   <string name="edit_key_action_change_passphrase">Passwort ändern</string>
   <string name="edit_key_action_add_identity">Identität hinzufügen</string>
   <string name="edit_key_action_add_subkey">Unterschlüssel hinzufügen</string>
+  <string name="edit_key_edit_user_id_title">Eine Aktion auswählen</string>
+  <string name="edit_key_edit_subkey_title">Aktion auswählen!</string>
   <string name="edit_key_new_subkey">neu</string>
   <!--Create key-->
   <string name="create_key_upload">Schlüssel auf Schlüsselserver hochladen</string>
+  <string name="create_key_empty">Dieses Feld wird benötigt</string>
   <string name="create_key_passphrases_not_equal">Passwörter stimmen nicht überein</string>
+  <string name="create_key_text">Vollen Namen und Emailadresse angeben und Passwort wählen.</string>
   <string name="create_key_hint_full_name">Vollständiger Name, z.B. Max Mustermann</string>
   <!--View key-->
   <string name="view_key_revoked">Dieser Schlüssel wurde widerrufen!</string>
   <string name="view_key_expired">Dieser Schlüssel ist nicht mehr gültig!</string>
   <!--Navigation Drawer-->
   <string name="nav_keys">Schlüssel</string>
+  <string name="nav_decrypt">Entschlüsseln</string>
   <string name="nav_apps">Apps</string>
   <string name="drawer_open">Menü öffnen</string>
   <string name="drawer_close">Menü schließen</string>
@@ -421,6 +429,7 @@
   <string name="cert_verify_error">Fehler!</string>
   <string name="cert_verify_unavailable">Schlüssel nicht verfügbar</string>
   <!--LogType log messages. Errors should have _ERROR_ in their name and end with a !-->
+  <string name="msg_internal_error">Interner Fehler!</string>
   <!--Import Public log entries-->
   <string name="msg_ip_delete_old_ok">Alte Schlüssel aus der Datenbank löschen</string>
   <string name="msg_ip_encode_fail">Die Anwendung ist wegen Kodierungsfehler fehlgeschlagen</string>
@@ -428,6 +437,7 @@
   <string name="msg_ip_fail_remote_ex">Die Anwendung ist wegen internen Fehler fehlgeschlagen</string>
   <string name="msg_ip">Importiere öffentlichen Schlüsselbund %s</string>
   <string name="msg_ip_insert_keyring">Schlüsselbund-daten werden kodiert</string>
+  <string name="msg_ip_insert_keys">Analysiere Schlüssel</string>
   <string name="msg_ip_prepare">Datenbank-Transaktionen werden vorbereitet</string>
   <string name="msg_ip_master">Hauptschlüssel %s wird verarbeitet</string>
   <string name="msg_ip_subkey">Unterschlüssel %s wird bearbeitet</string>

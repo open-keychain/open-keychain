@@ -26,15 +26,19 @@ import android.os.Handler;
 import android.os.Message;
 import android.os.Messenger;
 import android.support.v4.app.Fragment;
-import android.support.v4.widget.DrawerLayout;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.api.OpenKeychainIntents;
 import org.sufficientlysecure.keychain.compatibility.ClipboardReflection;
 import org.sufficientlysecure.keychain.helper.Preferences;
+import org.sufficientlysecure.keychain.helper.ShareHelper;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
+import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
+import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
+import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
 import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
 import org.sufficientlysecure.keychain.service.PassphraseCacheService;
@@ -49,14 +53,14 @@ import java.util.Set;
 public class EncryptTextActivity extends DrawerActivity implements EncryptActivityInterface {
 
     /* Intents */
-    public static final String ACTION_ENCRYPT_TEXT = Constants.INTENT_PREFIX + "ENCRYPT_TEXT";
+    public static final String ACTION_ENCRYPT_TEXT = OpenKeychainIntents.ENCRYPT_TEXT;
 
     /* EXTRA keys for input */
-    public static final String EXTRA_TEXT = "text";
+    public static final String EXTRA_TEXT = OpenKeychainIntents.ENCRYPT_EXTRA_TEXT;
 
     // preselect ids, for internal use
-    public static final String EXTRA_SIGNATURE_KEY_ID = "signature_key_id";
-    public static final String EXTRA_ENCRYPTION_KEY_IDS = "encryption_key_ids";
+    public static final String EXTRA_SIGNATURE_KEY_ID = Constants.EXTRA_PREFIX + "EXTRA_SIGNATURE_KEY_ID";
+    public static final String EXTRA_ENCRYPTION_KEY_IDS = Constants.EXTRA_PREFIX + "EXTRA_SIGNATURE_KEY_IDS";
 
     // view
     private int mCurrentMode = MODE_ASYMMETRIC;
@@ -68,6 +72,7 @@ public class EncryptTextActivity extends DrawerActivity implements EncryptActivi
     // model used by fragments
     private long mEncryptionKeyIds[] = null;
     private String mEncryptionUserIds[] = null;
+    // TODO Constants.key.none? What's wrong with a null value?
     private long mSigningKeyId = Constants.key.none;
     private String mPassphrase = "";
     private boolean mShareAfterEncrypt = false;
@@ -234,7 +239,7 @@ public class EncryptTextActivity extends DrawerActivity implements EncryptActivi
             }
             data.putString(KeychainIntentService.ENCRYPT_SYMMETRIC_PASSPHRASE, passphrase);
         } else {
-            data.putLong(KeychainIntentService.ENCRYPT_SIGNATURE_KEY_ID, mSigningKeyId);
+            data.putLong(KeychainIntentService.ENCRYPT_SIGNATURE_MASTER_ID, mSigningKeyId);
             data.putLongArray(KeychainIntentService.ENCRYPT_ENCRYPTION_KEYS_IDS, mEncryptionKeyIds);
         }
         return data;
@@ -246,74 +251,18 @@ public class EncryptTextActivity extends DrawerActivity implements EncryptActivi
 
     /**
      * Create Intent Chooser but exclude OK's EncryptActivity.
-     * <p/>
-     * Put together from some stackoverflow posts...
-     *
-     * @param message
-     * @return
      */
     private Intent sendWithChooserExcludingEncrypt(Message message) {
         Intent prototype = createSendIntent(message);
-
         String title = getString(R.string.title_share_message);
 
-        // Disabled, produced an empty list on Huawei U8860 with Android Version 4.0.3
-//        // fallback on Android 2.3, otherwise we would get weird results
-//        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
-//            return Intent.createChooser(prototype, title);
-//        }
-//
-//        // prevent recursion aka Inception :P
-//        String[] blacklist = new String[]{Constants.PACKAGE_NAME + ".ui.EncryptActivity"};
-//
-//        List<LabeledIntent> targetedShareIntents = new ArrayList<LabeledIntent>();
-//
-//        List<ResolveInfo> resInfoList = getPackageManager().queryIntentActivities(prototype, 0);
-//        List<ResolveInfo> resInfoListFiltered = new ArrayList<ResolveInfo>();
-//        if (!resInfoList.isEmpty()) {
-//            for (ResolveInfo resolveInfo : resInfoList) {
-//                // do not add blacklisted ones
-//                if (resolveInfo.activityInfo == null || Arrays.asList(blacklist).contains(resolveInfo.activityInfo.name))
-//                    continue;
-//
-//                resInfoListFiltered.add(resolveInfo);
-//            }
-//
-//            if (!resInfoListFiltered.isEmpty()) {
-//                // sorting for nice readability
-//                Collections.sort(resInfoListFiltered, new Comparator<ResolveInfo>() {
-//                    @Override
-//                    public int compare(ResolveInfo first, ResolveInfo second) {
-//                        String firstName = first.loadLabel(getPackageManager()).toString();
-//                        String secondName = second.loadLabel(getPackageManager()).toString();
-//                        return firstName.compareToIgnoreCase(secondName);
-//                    }
-//                });
-//
-//                // create the custom intent list
-//                for (ResolveInfo resolveInfo : resInfoListFiltered) {
-//                    Intent targetedShareIntent = (Intent) prototype.clone();
-//                    targetedShareIntent.setPackage(resolveInfo.activityInfo.packageName);
-//                    targetedShareIntent.setClassName(resolveInfo.activityInfo.packageName, resolveInfo.activityInfo.name);
-//
-//                    LabeledIntent lIntent = new LabeledIntent(targetedShareIntent,
-//                            resolveInfo.activityInfo.packageName,
-//                            resolveInfo.loadLabel(getPackageManager()),
-//                            resolveInfo.activityInfo.icon);
-//                    targetedShareIntents.add(lIntent);
-//                }
-//
-//                // Create chooser with only one Intent in it
-//                Intent chooserIntent = Intent.createChooser(targetedShareIntents.remove(targetedShareIntents.size() - 1), title);
-//                // append all other Intents
-//                chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, targetedShareIntents.toArray(new Parcelable[]{}));
-//                return chooserIntent;
-//            }
-//
-//        }
+        // we don't want to encrypt the encrypted, no inception ;)
+        String[] blacklist = new String[]{
+                Constants.PACKAGE_NAME + ".ui.EncryptTextActivity",
+                "org.thialfihar.android.apg.ui.EncryptActivity"
+        };
 
-        // fallback to Android's default chooser
-        return Intent.createChooser(prototype, title);
+        return new ShareHelper(this).createChooserExcluding(prototype, title, blacklist);
     }
 
     private Intent createSendIntent(Message message) {
@@ -365,21 +314,31 @@ public class EncryptTextActivity extends DrawerActivity implements EncryptActivi
             }
 
             try {
-                if (mSigningKeyId != 0 && PassphraseCacheService.getCachedPassphrase(this, mSigningKeyId) == null) {
-                    PassphraseDialogFragment.show(this, mSigningKeyId,
-                            new Handler() {
-                                @Override
-                                public void handleMessage(Message message) {
-                                    if (message.what == PassphraseDialogFragment.MESSAGE_OKAY) {
-                                        // restart
-                                        startEncrypt();
+                // TODO This should really not be decided here. We do need the info for the passphrase
+                // TODO dialog fragment though, so that's just the way it is for now.
+                if (mSigningKeyId != 0) {
+                    CachedPublicKeyRing signingRing =
+                            new ProviderHelper(this).getCachedPublicKeyRing(mSigningKeyId);
+                    long sigSubKeyId = signingRing.getSignId();
+                    // Make sure the passphrase is cached, then start over.
+                    if (PassphraseCacheService.getCachedPassphrase(this, sigSubKeyId) == null) {
+                        PassphraseDialogFragment.show(this, sigSubKeyId,
+                                new Handler() {
+                                    @Override
+                                    public void handleMessage(Message message) {
+                                        if (message.what == PassphraseDialogFragment.MESSAGE_OKAY) {
+                                            // restart
+                                            startEncrypt();
+                                        }
                                     }
                                 }
-                            }
-                    );
+                        );
 
-                    return false;
+                        return false;
+                    }
                 }
+            } catch (PgpGeneralException e) {
+                Log.e(Constants.TAG, "Key not found!", e);
             } catch (PassphraseCacheService.KeyNotFoundException e) {
                 Log.e(Constants.TAG, "Key not found!", e);
             }
@@ -396,10 +355,10 @@ public class EncryptTextActivity extends DrawerActivity implements EncryptActivi
         // if called with an intent action, do not init drawer navigation
         if (ACTION_ENCRYPT_TEXT.equals(getIntent().getAction())) {
             // lock drawer
-            ((DrawerLayout) findViewById(R.id.drawer_layout)).setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+            deactivateDrawerNavigation();
             // TODO: back button to key?
         } else {
-            setupDrawerNavigation(savedInstanceState);
+            activateDrawerNavigation(savedInstanceState);
         }
 
         // Handle intent actions
@@ -410,7 +369,7 @@ public class EncryptTextActivity extends DrawerActivity implements EncryptActivi
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.encrypt_file_activity, menu);
+        getMenuInflater().inflate(R.menu.encrypt_text_activity, menu);
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -419,7 +378,8 @@ public class EncryptTextActivity extends DrawerActivity implements EncryptActivi
                 .replace(R.id.encrypt_pager_mode,
                         mCurrentMode == MODE_SYMMETRIC
                                 ? new EncryptSymmetricFragment()
-                                : new EncryptAsymmetricFragment())
+                                : new EncryptAsymmetricFragment()
+                )
                 .commitAllowingStateLoss();
         getSupportFragmentManager().executePendingTransactions();
     }

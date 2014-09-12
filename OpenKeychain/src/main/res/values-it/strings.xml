@@ -1,5 +1,7 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <resources>
+  <!--GENERAL: Please put all strings inside quotes as described in example 1 on
+    http://developer.android.com/guide/topics/resources/string-resource.html (scroll down to "Escaping apostrophes and quotes").-->
   <!--title-->
   <string name="title_select_recipients">Seleziona chiavi</string>
   <string name="title_select_secret_key">Seleziona la Tua Chiave</string>
@@ -83,18 +85,8 @@
   <string name="label_passphrase_again">Ripeti Frase di Accesso</string>
   <string name="label_algorithm">Algortimo</string>
   <string name="label_ascii_armor">Documenti con Armatura ASCII</string>
-  <string name="label_file_ascii_armor">Documenti: Armatura ASCII</string>
   <string name="label_write_version_header">Fai sapere agli altri che utilizzi OpenKeychain</string>
   <string name="label_write_version_header_summary">Scrive \'OpenKeychain v2.7\' nelle firme OpenPGP, testi cifrati e chiavi esportate</string>
-  <string name="label_delete_after_encryption">Documenti: Cancella Dopo Codifica</string>
-  <string name="label_delete_after_decryption">Cancella Dopo Decodifica</string>
-  <string name="label_encryption_algorithm">Algoritmo di Codifica</string>
-  <string name="label_hash_algorithm">Algoritmo di Hash</string>
-  <string name="label_asymmetric">Con Chiave Pubblica</string>
-  <string name="label_symmetric">Con Frase di Accesso</string>
-  <string name="label_passphrase_cache_ttl">Cache Frase di Accesso</string>
-  <string name="label_message_compression">Compressione Messaggio</string>
-  <string name="label_file_compression">Compressione File</string>
   <string name="label_keyservers">Server Chiavi</string>
   <string name="label_key_id">ID Chiave</string>
   <string name="label_creation">Creazione</string>
@@ -281,10 +273,13 @@
   <string name="key_size_custom_info_rsa">La lunghezza della chiave RSA deve essere maggiore di 1024 e al massimo 16384. Inoltre, deve essere multipla di 8.</string>
   <string name="key_size_custom_info_dsa">La lunghezza della chiave DSA deve essere almeno 512 e al massimo 1024. Inoltre, deve essere multipla di 64.</string>
   <!--elliptic curve names-->
+  <string name="key_curve_nist_p256">NIST P-256</string>
+  <string name="key_curve_nist_p384">NIST P-384</string>
+  <string name="key_curve_nist_p521">NIST P-521</string>
   <!--not in for now, see SaveKeyringParcel
-    <string name="key_curve_bp_p256">Brainpool P-256</string>
-    <string name="key_curve_bp_p384">Brainpool P-384</string>
-    <string name="key_curve_bp_p512">Brainpool P-512</string>-->
+    <string name="key_curve_bp_p256">"Brainpool P-256"</string>
+    <string name="key_curve_bp_p384">"Brainpool P-384"</string>
+    <string name="key_curve_bp_p512">"Brainpool P-512"</string>-->
   <!--compression-->
   <string name="compression_fast">veloce</string>
   <string name="compression_very_slow">molto lento</string>
@@ -371,11 +366,9 @@
   <string name="key_list_empty_button_import">importazione di chiave esistente.</string>
   <!--Key view-->
   <string name="key_view_action_edit">Modifica chiave</string>
-  <string name="key_view_action_encrypt">Codifica con questa chiave</string>
   <string name="key_view_action_certify">Certifica identità</string>
   <string name="key_view_action_update">Aggiorna dal server delle chiavi</string>
   <string name="key_view_action_share_with">Condividi con...</string>
-  <string name="key_view_action_upload">Carica nel server delle chiavi</string>
   <string name="key_view_tab_main">Info Principale</string>
   <string name="key_view_tab_share">Condividi</string>
   <string name="key_view_tab_keys">Sottochiavi</string>
@@ -393,19 +386,8 @@
   <string name="edit_key_action_add_identity">Aggiungi Identità</string>
   <string name="edit_key_action_add_subkey">Aggiungi Sottochiave</string>
   <string name="edit_key_edit_user_id_title">Seleziona un azione!</string>
-  <string-array name="edit_key_edit_user_id">
-    <item>Cambia in Identita\' Primaria</item>
-    <item>Revoca identita\'</item>
-  </string-array>
-  <string-array name="edit_key_edit_user_id_revert_revocation">
-    <item>Ripristina revoca</item>
-  </string-array>
   <string name="edit_key_edit_user_id_revoked">Questa identità è stata revocata. Ciò non può essere annullato.</string>
   <string name="edit_key_edit_subkey_title">Seleziona un azione!</string>
-  <string-array name="edit_key_edit_subkey">
-    <item>Cambia Scadenza</item>
-    <item>Revoca Sottochiave</item>
-  </string-array>
   <string name="edit_key_new_subkey">nuovo</string>
   <string name="edit_key_select_flag">Per favore seleziona almeno una spunta!</string>
   <!--Create key-->
@@ -535,16 +517,8 @@
     <item quantity="one">Canonicalizzazione portachiavi con successo, rimosso un certificato ridondante</item>
     <item quantity="other">Canonicalizzazione portachiavi con successo, rimossi %d certificati ridondanti</item>
   </plurals>
-  <string name="msg_kc_uid_bad_err">Rimozione autocertificazione corrotta per ID utente %s</string>
-  <string name="msg_kc_uid_bad_local">Rimozione certificato ID utente con caratteristica \"locale\"</string>
   <string name="msg_kc_uid_bad_time">Rimozione ID utente con marca temporale futura</string>
   <string name="msg_kc_uid_bad_type">Rimozione certificato ID utente di tipo sconosciuto (%s)</string>
-  <string name="msg_kc_uid_bad">Rimozione autocertificazione corrotta per ID utente \"%s\"</string>
-  <string name="msg_kc_uid_foreign">Rimozione certificato ID utente estraneo di %s</string>
-  <string name="msg_kc_uid_revoke_dup">Rimozione certificato di revoca ridondante per ID utente \"%s\"</string>
-  <string name="msg_kc_uid_revoke_old">Rimozione certificato di revoca scaduto per ID utente \"%s\"</string>
-  <string name="msg_kc_uid_no_cert">Nessuna autocertificazione valida trovata per ID utente %s, rimozione dal portachiavi</string>
-  <string name="msg_kc_uid_remove">Rimozione ID Utente %s non valido</string>
   <!--Keyring merging log entries-->
   <string name="msg_mg_public">Fusione nel portachiavi pubblico %s</string>
   <string name="msg_mg_secret">Fusione nel portachiavi privato %s</string>
@@ -556,7 +530,6 @@
   <string name="msg_cr_error_no_master">Nessuna opzione della chiave principale specificata!</string>
   <string name="msg_cr_error_no_user_id">I portachiavi devono essere creati con almeno un ID utente!</string>
   <string name="msg_cr_error_no_certify">La chiave principale deve avere la caratteristica di certificazione!</string>
-  <string name="msg_cr_error_null_expiry">La data di scadenza non può essere \"come prima\" sulla creazione di chiavi. Questo è un errore di programmazione, si prega di inviare una segnalazione di bug!</string>
   <string name="msg_cr_error_keysize_512">La grandezza della chiave deve essere di 512bit o maggiore</string>
   <string name="msg_cr_error_internal_pgp">Errore PGP interno!</string>
   <!--modifySecretKeyRing-->
@@ -631,7 +604,6 @@
   <string name="passp_cache_notif_n_keys">OpenKeychain ha memorizzato nella cache %d frasi di accesso</string>
   <string name="passp_cache_notif_keys">Frasi di accesso memorizzate:</string>
   <string name="passp_cache_notif_clear">Pulisci Cache</string>
-  <string name="passp_cache_notif_pwd">Password</string>
   <!--unsorted-->
   <string name="section_certifier_id">Certificatore</string>
   <string name="section_cert">Dettagli Certificato</string>
@@ -653,7 +625,7 @@
   <string name="error_no_encrypt_subkey">Nessuna sottochiave di codifica disponibile!</string>
   <string name="contact_show_key">Mostra chiave (%s)</string>
   <!--First Time-->
-  <string name="first_time_text1">Riappropriati della tua riservatezza con OpenKeychain!</string>
+  <string name="first_time_text1">Riappropriati della tua privacy con OpenKeychain!</string>
   <string name="first_time_create_key">Crea mia chiave</string>
   <string name="first_time_import_key">Importa Chiave esistente</string>
   <string name="first_time_skip">Salta Installazione</string>

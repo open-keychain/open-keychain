@@ -1,6 +1,18 @@
 <html>
 <head></head>
 <body>
+<h2>2.10</h2>
+<ul>
+<li>Split encrypt screen into two</li>
+<li>Fix key flags handling (now supporting Mailvelope 0.7 keys)</li>
+<li>Improved passphrase handling</li>
+<li>Key sharing via SafeSlinger</li>
+<li>Yubikey: preference to allow other PINs, currently only signing via the OpenPGP API works, not inside of OpenKeychain</li>
+<li>Fix usage of stripped keys</li>
+<li>SHA256 as default for compatibility</li>
+<li>Intent API has changed, see https://github.com/open-keychain/open-keychain/wiki/Intent-API</li>
+<li>OpenPGP API now handles revoked/expired keys and returns all user ids</li>
+</ul>
 <h2>2.9</h2>
 <ul>
 <li>Correction des plantages présents dans v2.8</li>
@@ -10,10 +22,10 @@
 <h2>2.8</h2>
 <ul>
 <li>Tellement de bogues ont été réglés dans cette version que nous nous concentrons sur les nouvelles caractéristiques principales.</li>
-<li>Modification des clefs : nouvelle et superbe conception, révocations des clefs </li>
+<li>Modification des clefs : nouvelle et superbe conception, révocations des clefs</li>
 <li>Importation des clefs : nouvelle et superbe conception, connexion sécurisé aux serveurs de clefs par hkps, résolution des serveurs de clefs par transactions DNS SRV</li>
 <li>Nouvel écran de premier lancement</li>
-<li>Nouvel écran de création de clef : autoremplissage du nom et du courriel d'après vos coordonnées Android</li>
+<li>Nouvel écran de création de clef : auto-remplissage du nom et du courriel d'après vos coordonnées Android</li>
 <li>Chiffrement des fichiers : nouvelle et superbe conception, prise en charge du chiffrement de fichiers multiples</li>
 <li>Nouvelles icônes d'état des clefs (par Brennan Novak)</li>
 <li>Correctif important de bogue : l'importation de grandes collections de clefs à partir d'un fichier est maintenant possible</li>

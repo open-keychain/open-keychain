@@ -53,11 +53,6 @@ public class PreferencesActivity extends PreferenceActivity {
         sPreferences = Preferences.getPreferences(this);
         super.onCreate(savedInstanceState);
 
-//        final ActionBar actionBar = getSupportActionBar();
-//        actionBar.setDisplayShowTitleEnabled(true);
-//        actionBar.setDisplayHomeAsUpEnabled(false);
-//        actionBar.setHomeButtonEnabled(false);
-
         String action = getIntent().getAction();
 
         if (action != null && action.equals(ACTION_PREFS_GEN)) {
@@ -121,6 +116,9 @@ public class PreferencesActivity extends PreferenceActivity {
 
             initializeWriteVersionHeader(
                     (CheckBoxPreference) findPreference(Constants.Pref.WRITE_VERSION_HEADER));
+
+            initializeUseDefaultYubikeyPin(
+                    (CheckBoxPreference) findPreference(Constants.Pref.USE_DEFAULT_YUBIKEY_PIN));
 
         } else if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
             // Load the legacy preferences headers
@@ -265,6 +263,9 @@ public class PreferencesActivity extends PreferenceActivity {
 
             initializeWriteVersionHeader(
                     (CheckBoxPreference) findPreference(Constants.Pref.WRITE_VERSION_HEADER));
+
+            initializeUseDefaultYubikeyPin(
+                    (CheckBoxPreference) findPreference(Constants.Pref.USE_DEFAULT_YUBIKEY_PIN));
         }
     }
 
@@ -392,6 +393,17 @@ public class PreferencesActivity extends PreferenceActivity {
             public boolean onPreferenceChange(Preference preference, Object newValue) {
                 mWriteVersionHeader.setChecked((Boolean) newValue);
                 sPreferences.setWriteVersionHeader((Boolean) newValue);
+                return false;
+            }
+        });
+    }
+
+    private static void initializeUseDefaultYubikeyPin(final CheckBoxPreference mUseDefaultYubikeyPin) {
+        mUseDefaultYubikeyPin.setChecked(sPreferences.useDefaultYubikeyPin());
+        mUseDefaultYubikeyPin.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+            public boolean onPreferenceChange(Preference preference, Object newValue) {
+                mUseDefaultYubikeyPin.setChecked((Boolean) newValue);
+                sPreferences.setUseDefaultYubikeyPin((Boolean) newValue);
                 return false;
             }
         });

@@ -56,6 +56,15 @@ import java.util.Date;
  * This service runs in its own process, but is available to all other processes as the main
  * passphrase cache. Use the static methods addCachedPassphrase and getCachedPassphrase for
  * convenience.
+ *
+ * Design decisions:
+ * - Cache passphrases based on master key ids, but try to unlock before using the subkey id
+ *   (to be compatible with stripped keys)
+ * - Cache based on master key id so that there is not need to enter a passphrase twice for sign and
+ *   decrypt (if these are two different subkeys)
+ * - Assume that all passphrases cached here are valid passphrases
+ * - Do not handle if a keyring contains subkeys with different passphrases. This is not considered
+ *   supported and has not been seen in other OpenPGP implementations
  */
 public class PassphraseCacheService extends Service {
 
@@ -213,15 +222,15 @@ public class PassphraseCacheService extends Service {
         SecretKeyType keyType = keyRing.getSecretKeyType(subKeyId);
 
         switch (keyType) {
-            // TODO: HACK for yubikeys
             case DIVERT_TO_CARD:
-                return "123456";
-            case PASSPHRASE_EMPTY:
-                try {
-                    addCachedPassphrase(this, subKeyId, "", keyRing.getPrimaryUserIdWithFallback());
-                } catch (PgpGeneralException e) {
-                    Log.d(Constants.TAG, "PgpGeneralException occured");
+                if (Preferences.getPreferences(this).useDefaultYubikeyPin()) {
+                    Log.d(Constants.TAG, "PassphraseCacheService: Using default Yubikey PIN: 123456");
+                    return "123456"; // default Yubikey PIN, see http://www.yubico.com/2012/12/yubikey-neo-openpgp/
+                } else {
+                    Log.d(Constants.TAG, "PassphraseCacheService: NOT using default Yubikey PIN");
+                    break;
                 }
+            case PASSPHRASE_EMPTY:
                 return "";
             case UNAVAILABLE:
                 throw new NotFoundException("secret key for this subkey is not available");

@@ -41,19 +41,29 @@
         android:layout_height="wrap_content"
         android:text="@string/api_settings_settings" />
 
-    <TextView
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:text="@string/api_settings_key"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
+        android:padding="0dp"
+        android:layout_margin="0dp">
 
-    <org.sufficientlysecure.keychain.ui.widget.SignKeySpinner
-        android:id="@+id/api_account_settings_key_spinner"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:layout_gravity="center_vertical" />
+        <TextView
+            android:paddingLeft="8dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="@string/api_settings_key"
+            android:paddingRight="8dp" />
+
+        <org.sufficientlysecure.keychain.ui.widget.SignKeySpinner
+            android:id="@+id/api_account_settings_key_spinner"
+            android:minHeight="56dip"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical" />
+
+    </LinearLayout>
 
     <View
         android:layout_width="match_parent"
@@ -67,9 +77,8 @@
         android:paddingRight="8dp"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
         android:text="@string/api_settings_create_key"
-        android:minHeight="48dp"
+        android:layout_height="?android:attr/listPreferredItemHeight"
         android:drawableRight="@drawable/ic_action_new_account"
         android:drawablePadding="8dp"
         android:gravity="center_vertical"
@@ -87,38 +96,71 @@
         custom:foldedLabel="@string/api_settings_show_advanced"
         custom:unFoldedLabel="@string/api_settings_hide_advanced">
 
-        <TextView
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/label_encryption_algorithm"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
+            android:padding="0dp"
+            android:layout_margin="0dp">
 
-        <Spinner
-            android:id="@+id/api_account_settings_encryption_algorithm"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            <TextView
+                android:paddingLeft="8dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="@string/label_encryption_algorithm"
+                android:paddingRight="8dp" />
 
-        <TextView
+            <Spinner
+                android:id="@+id/api_account_settings_encryption_algorithm"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+        </LinearLayout>
+
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/label_hash_algorithm"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
+            android:padding="0dp"
+            android:layout_margin="0dp">
 
-        <Spinner
-            android:id="@+id/api_account_settings_hash_algorithm"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            <TextView
+                android:paddingLeft="8dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="@string/label_hash_algorithm"
+                android:paddingRight="8dp" />
 
-        <TextView
+            <Spinner
+                android:id="@+id/api_account_settings_hash_algorithm"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+        </LinearLayout>
+
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/label_message_compression"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
+            android:padding="0dp"
+            android:layout_margin="0dp">
 
-        <Spinner
-            android:id="@+id/api_account_settings_compression"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            <TextView
+                android:paddingLeft="8dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="@string/label_message_compression"
+                android:paddingRight="8dp" />
+
+            <Spinner
+                android:id="@+id/api_account_settings_compression"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+        </LinearLayout>
 
     </org.sufficientlysecure.keychain.ui.widget.FoldableLinearLayout>
 

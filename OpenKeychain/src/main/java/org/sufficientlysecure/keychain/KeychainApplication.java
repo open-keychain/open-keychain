@@ -104,8 +104,8 @@ public class KeychainApplication extends Application {
      */
     public void checkConsolidateRecovery() {
         if (Preferences.getPreferences(this).getCachedConsolidate()) {
-            // do something which calls ProviderHelper.consolidateDatabaseStep2 with a progressable
             Intent consolidateIntent = new Intent(this, ConsolidateDialogActivity.class);
+            consolidateIntent.putExtra(ConsolidateDialogActivity.EXTRA_CONSOLIDATE_RECOVERY, true);
             consolidateIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(consolidateIntent);
         }

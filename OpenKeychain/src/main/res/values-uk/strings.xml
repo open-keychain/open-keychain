@@ -1,5 +1,7 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <resources>
+  <!--GENERAL: Please put all strings inside quotes as described in example 1 on
+    http://developer.android.com/guide/topics/resources/string-resource.html (scroll down to "Escaping apostrophes and quotes").-->
   <!--title-->
   <string name="title_select_recipients">Вибрати ключі</string>
   <string name="title_select_secret_key">Виберіть ваш ключ</string>
@@ -83,18 +85,8 @@
   <string name="label_passphrase_again">Повторити пароль</string>
   <string name="label_algorithm">Алгоритм</string>
   <string name="label_ascii_armor">Файл ASCII Armor</string>
-  <string name="label_file_ascii_armor">Файли: ASCII Armor</string>
   <string name="label_write_version_header">Нехай інші дізнаються, що ви користуєтеся OpenKeychain</string>
   <string name="label_write_version_header_summary">Напишіть \'OpenKeychain v2.7\' для підписів, зашифрованого тексту та експортованих ключів  OpenPGP</string>
-  <string name="label_delete_after_encryption">Файли: вилучити після шифрування</string>
-  <string name="label_delete_after_decryption">Вилучити після розшифрування</string>
-  <string name="label_encryption_algorithm">Алгоритм шифрування</string>
-  <string name="label_hash_algorithm">Хеш алгоритм</string>
-  <string name="label_asymmetric">З публічним ключем</string>
-  <string name="label_symmetric">З паролем</string>
-  <string name="label_passphrase_cache_ttl">Кеш парольної фрази</string>
-  <string name="label_message_compression">Стиснення повідомлення</string>
-  <string name="label_file_compression">Стиснення файлу</string>
   <string name="label_keyservers">Сервери ключів</string>
   <string name="label_key_id">ІД ключа</string>
   <string name="label_creation">Створення</string>
@@ -294,9 +286,9 @@
   <string name="key_curve_nist_p384">NIST P-384</string>
   <string name="key_curve_nist_p521">NIST P-521</string>
   <!--not in for now, see SaveKeyringParcel
-    <string name="key_curve_bp_p256">Brainpool P-256</string>
-    <string name="key_curve_bp_p384">Brainpool P-384</string>
-    <string name="key_curve_bp_p512">Brainpool P-512</string>-->
+    <string name="key_curve_bp_p256">"Brainpool P-256"</string>
+    <string name="key_curve_bp_p384">"Brainpool P-384"</string>
+    <string name="key_curve_bp_p512">"Brainpool P-512"</string>-->
   <!--compression-->
   <string name="compression_fast">швидке</string>
   <string name="compression_very_slow">дуже повільне</string>
@@ -388,11 +380,9 @@
   <string name="key_list_empty_button_import">імпортується наявний ключ.</string>
   <!--Key view-->
   <string name="key_view_action_edit">Редагувати ключ</string>
-  <string name="key_view_action_encrypt">Шифрувати з цим ключем</string>
   <string name="key_view_action_certify">Сертифікувати сутності</string>
   <string name="key_view_action_update">Оновити із сервера ключів</string>
   <string name="key_view_action_share_with">Поділитися із…</string>
-  <string name="key_view_action_upload">Відвантажити на сервер ключів</string>
   <string name="key_view_tab_main">Основна інформація</string>
   <string name="key_view_tab_share">Поділитися</string>
   <string name="key_view_tab_keys">Підключі</string>
@@ -410,19 +400,8 @@
   <string name="edit_key_action_add_identity">Додати сутність</string>
   <string name="edit_key_action_add_subkey">Додати підключ</string>
   <string name="edit_key_edit_user_id_title">Виберіть дію!</string>
-  <string-array name="edit_key_edit_user_id">
-    <item>Змінити на первинну сутність</item>
-    <item>Відкликати сутність</item>
-  </string-array>
-  <string-array name="edit_key_edit_user_id_revert_revocation">
-    <item>Обернути відкликання</item>
-  </string-array>
   <string name="edit_key_edit_user_id_revoked">Ця сутність вже відкликана. Це не можна скасувати.</string>
   <string name="edit_key_edit_subkey_title">Виберіть дію!</string>
-  <string-array name="edit_key_edit_subkey">
-    <item>Змінити термін дії</item>
-    <item>Відкликати підключ</item>
-  </string-array>
   <string name="edit_key_new_subkey">новий</string>
   <string name="edit_key_select_flag">Будь ласка, виберіть хоча б один прапор!</string>
   <!--Create key-->
@@ -538,7 +517,6 @@
     <item quantity="few">Успішна канонізація в\'язки, вилучено %d надлишкові сертифікати</item>
     <item quantity="other">Успішна канонізація в\'язки, вилучено %d надлишкових сертифікатів</item>
   </plurals>
-  <string name="msg_kc_uid_remove">Вилучення недійсного ІД користувача %s</string>
   <!--Keyring merging log entries-->
   <string name="msg_mg_public">Злиття у публічну в\'язку %s</string>
   <string name="msg_mg_secret">Злиття у секретну в\'язку %s</string>
@@ -587,7 +565,6 @@
   <string name="passp_cache_notif_n_keys">OpenKeychain має %d кешованих парольних фраз</string>
   <string name="passp_cache_notif_keys">Кешовані парольні фрази:</string>
   <string name="passp_cache_notif_clear">Очистити кеш</string>
-  <string name="passp_cache_notif_pwd">Пароль</string>
   <!--unsorted-->
   <string name="section_certifier_id">Ким підписаний</string>
   <string name="section_cert">Дані сертифікату</string>

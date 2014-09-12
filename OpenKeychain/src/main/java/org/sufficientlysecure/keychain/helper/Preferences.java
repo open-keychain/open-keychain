@@ -20,6 +20,7 @@ package org.sufficientlysecure.keychain.helper;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.os.Build;
 
 import org.spongycastle.bcpg.CompressionAlgorithmTags;
 import org.spongycastle.bcpg.HashAlgorithmTags;
@@ -29,7 +30,6 @@ import org.sufficientlysecure.keychain.Constants.Pref;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.ListIterator;
 import java.util.Vector;
 
@@ -47,12 +47,24 @@ public class Preferences {
     public static synchronized Preferences getPreferences(Context context, boolean forceNew) {
         if (sPreferences == null || forceNew) {
             sPreferences = new Preferences(context);
+        } else {
+            // to make it safe for multiple processes, call getSharedPreferences everytime
+            sPreferences.updateSharedPreferences(context);
         }
         return sPreferences;
     }
 
     private Preferences(Context context) {
-        mSharedPreferences = context.getSharedPreferences("APG.main", Context.MODE_PRIVATE);
+        updateSharedPreferences(context);
+    }
+
+    public void updateSharedPreferences(Context context) {
+        // multi-process preferences
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+            mSharedPreferences = context.getSharedPreferences("APG.main", Context.MODE_MULTI_PROCESS);
+        } else {
+            mSharedPreferences = context.getSharedPreferences("APG.main", Context.MODE_PRIVATE);
+        }
     }
 
     public String getLanguage() {
@@ -94,7 +106,7 @@ public class Preferences {
 
     public int getDefaultHashAlgorithm() {
         return mSharedPreferences.getInt(Constants.Pref.DEFAULT_HASH_ALGORITHM,
-                HashAlgorithmTags.SHA512);
+                HashAlgorithmTags.SHA256);
     }
 
     public void setDefaultHashAlgorithm(int value) {
@@ -179,6 +191,16 @@ public class Preferences {
         return mSharedPreferences.getBoolean(Constants.Pref.FIRST_TIME, true);
     }
 
+    public boolean useDefaultYubikeyPin() {
+        return mSharedPreferences.getBoolean(Pref.USE_DEFAULT_YUBIKEY_PIN, true);
+    }
+
+    public void setUseDefaultYubikeyPin(boolean useDefaultYubikeyPin) {
+        SharedPreferences.Editor editor = mSharedPreferences.edit();
+        editor.putBoolean(Pref.USE_DEFAULT_YUBIKEY_PIN, useDefaultYubikeyPin);
+        editor.commit();
+    }
+
     public void setFirstTime(boolean value) {
         SharedPreferences.Editor editor = mSharedPreferences.edit();
         editor.putBoolean(Constants.Pref.FIRST_TIME, value);
@@ -216,47 +238,6 @@ public class Preferences {
         editor.commit();
     }
 
-    public void updatePreferences() {
-        // migrate keyserver to hkps
-        if (mSharedPreferences.getInt(Constants.Pref.KEY_SERVERS_DEFAULT_VERSION, 0) !=
-                Constants.Defaults.KEY_SERVERS_VERSION) {
-            String[] serversArray = getKeyServers();
-            ArrayList<String> servers = new ArrayList<String>(Arrays.asList(serversArray));
-            ListIterator<String> it = servers.listIterator();
-            while (it.hasNext()) {
-                String server = it.next();
-                if (server == null) {
-                    continue;
-                }
-                if (server.equals("pool.sks-keyservers.net")) {
-                    // use HKPS!
-                    it.set("hkps://hkps.pool.sks-keyservers.net");
-                } else if (server.equals("pgp.mit.edu")) {
-                    // use HKPS!
-                    it.set("hkps://pgp.mit.edu");
-                } else if (server.equals("subkeys.pgp.net")) {
-                    // remove, because often down and no HKPS!
-                    it.remove();
-                }
-
-            }
-            setKeyServers(servers.toArray(new String[servers.size()]));
-            mSharedPreferences.edit()
-                    .putInt(Constants.Pref.KEY_SERVERS_DEFAULT_VERSION, Constants.Defaults.KEY_SERVERS_VERSION)
-                    .commit();
-        }
-
-        // migrate old uncompressed constant to new one
-        if (mSharedPreferences.getInt(Constants.Pref.DEFAULT_FILE_COMPRESSION, 0) == 0x21070001) {
-            setDefaultFileCompression(CompressionAlgorithmTags.UNCOMPRESSED);
-        }
-
-        // migrate away from MD5
-        if (mSharedPreferences.getInt(Constants.Pref.DEFAULT_HASH_ALGORITHM, 0) == HashAlgorithmTags.MD5) {
-            setDefaultHashAlgorithm(HashAlgorithmTags.SHA512);
-        }
-    }
-
     public void setWriteVersionHeader(boolean conceal) {
         SharedPreferences.Editor editor = mSharedPreferences.edit();
         editor.putBoolean(Constants.Pref.WRITE_VERSION_HEADER, conceal);
@@ -265,5 +246,66 @@ public class Preferences {
 
     public boolean getWriteVersionHeader() {
         return mSharedPreferences.getBoolean(Constants.Pref.WRITE_VERSION_HEADER, false);
+    }
+
+    public void updatePreferences() {
+        if (mSharedPreferences.getInt(Constants.Pref.PREF_DEFAULT_VERSION, 0) !=
+                Constants.Defaults.PREF_VERSION) {
+            switch (mSharedPreferences.getInt(Constants.Pref.PREF_DEFAULT_VERSION, 0)) {
+                case 1:
+                    // fall through
+                case 2:
+                    // fall through
+                case 3: {
+                    // migrate keyserver to hkps
+                    String[] serversArray = getKeyServers();
+                    ArrayList<String> servers = new ArrayList<String>(Arrays.asList(serversArray));
+                    ListIterator<String> it = servers.listIterator();
+                    while (it.hasNext()) {
+                        String server = it.next();
+                        if (server == null) {
+                            continue;
+                        }
+                        if (server.equals("pool.sks-keyservers.net")) {
+                            // use HKPS!
+                            it.set("hkps://hkps.pool.sks-keyservers.net");
+                        } else if (server.equals("pgp.mit.edu")) {
+                            // use HKPS!
+                            it.set("hkps://pgp.mit.edu");
+                        } else if (server.equals("subkeys.pgp.net")) {
+                            // remove, because often down and no HKPS!
+                            it.remove();
+                        }
+
+                    }
+                    setKeyServers(servers.toArray(new String[servers.size()]));
+
+                    // migrate old uncompressed constant to new one
+                    if (mSharedPreferences.getInt(Constants.Pref.DEFAULT_FILE_COMPRESSION, 0)
+                            == 0x21070001) {
+                        setDefaultFileCompression(CompressionAlgorithmTags.UNCOMPRESSED);
+                    }
+
+                    // migrate away from MD5
+                    if (mSharedPreferences.getInt(Constants.Pref.DEFAULT_HASH_ALGORITHM, 0)
+                            == HashAlgorithmTags.MD5) {
+                        setDefaultHashAlgorithm(HashAlgorithmTags.SHA256);
+                    }
+                }
+                // fall through
+                case 4: {
+                    // for compatibility: change from SHA512 to SHA256
+                    if (mSharedPreferences.getInt(Constants.Pref.DEFAULT_HASH_ALGORITHM, 0)
+                            == HashAlgorithmTags.SHA512) {
+                        setDefaultHashAlgorithm(HashAlgorithmTags.SHA256);
+                    }
+                }
+            }
+
+            // write new preference version
+            mSharedPreferences.edit()
+                    .putInt(Constants.Pref.PREF_DEFAULT_VERSION, Constants.Defaults.PREF_VERSION)
+                    .commit();
+        }
     }
 }

@@ -119,13 +119,15 @@ public class PgpKeyOperation {
      * SHA256 as the hashing function, 0x10 gives you about 64
      * iterations, 0x20 about 128, 0x30 about 256 and so on till 0xf0,
      * or about 1 million iterations. The maximum you can go to is
-     * 0xff, or about 2 million iterations.  I'll use 0xc0 as a
-     * default -- about 130,000 iterations.
+     * 0xff, or about 2 million iterations.
+     * from http://kbsriram.com/2013/01/generating-rsa-keys-with-bouncycastle.html
      *
-     * http://kbsriram.com/2013/01/generating-rsa-keys-with-bouncycastle.html
+     * Bouncy Castle default: 0x60
+     * kbsriram proposes 0xc0
+     * we use 0x90, a good trade-off between usability and security against offline attacks
      */
-    private static final int SECRET_KEY_ENCRYPTOR_S2K_COUNT = 0x60;
-    private static final int SECRET_KEY_ENCRYPTOR_HASH_ALGO = HashAlgorithmTags.SHA512;
+    private static final int SECRET_KEY_ENCRYPTOR_S2K_COUNT = 0x90;
+    private static final int SECRET_KEY_ENCRYPTOR_HASH_ALGO = HashAlgorithmTags.SHA256;
     private static final int SECRET_KEY_ENCRYPTOR_SYMMETRIC_ALGO = SymmetricKeyAlgorithmTags.AES_256;
 
     public PgpKeyOperation(Progressable progress) {
@@ -380,6 +382,10 @@ public class PgpKeyOperation {
      * PGPSecretKeyRing must be modified and consequently consolidated with its public counterpart.
      * This is a natural workflow since pgp keyrings are immutable data structures: Old semantics
      * are changed by adding new certificates, which implicitly override older certificates.
+     *
+     * Note that this method does not care about any "special" type of master key. If unlocking
+     * with a passphrase fails, the operation will fail with an unlocking error. More specific
+     * handling of errors should be done in UI code!
      *
      */
     public EditKeyResult modifySecretKeyRing(CanonicalizedSecretKeyRing wsKR, SaveKeyringParcel saveParcel,
@@ -703,7 +709,7 @@ public class PgpKeyOperation {
                         // error log entry has already been added by updateMasterCertificates itself
                         return new EditKeyResult(EditKeyResult.RESULT_ERROR, log, null);
                     }
-                    masterSecretKey = PGPSecretKey.replacePublicKey(masterSecretKey, pKey);
+                    masterSecretKey = PGPSecretKey.replacePublicKey(sKey, pKey);
                     masterPublicKey = pKey;
                     sKR = PGPSecretKeyRing.insertSecretKey(sKR, masterSecretKey);
                     continue;
@@ -744,7 +750,7 @@ public class PgpKeyOperation {
             subProgressPop();
 
             // 4b. For each subkey revocation, generate new subkey revocation certificate
-            subProgressPush(60, 70);
+            subProgressPush(60, 65);
             for (int i = 0; i < saveParcel.mRevokeSubKeys.size(); i++) {
 
                 progress(R.string.progress_modify_subkeyrevoke, (i-1) * (100 / saveParcel.mRevokeSubKeys.size()));
@@ -765,6 +771,30 @@ public class PgpKeyOperation {
 
                 pKey = PGPPublicKey.addCertification(pKey, sig);
                 sKR = PGPSecretKeyRing.insertSecretKey(sKR, PGPSecretKey.replacePublicKey(sKey, pKey));
+            }
+            subProgressPop();
+
+            // 4c. For each subkey to be stripped... do so
+            subProgressPush(65, 70);
+            for (int i = 0; i < saveParcel.mStripSubKeys.size(); i++) {
+
+                progress(R.string.progress_modify_subkeystrip, (i-1) * (100 / saveParcel.mStripSubKeys.size()));
+                long strip = saveParcel.mStripSubKeys.get(i);
+                log.add(LogLevel.INFO, LogType.MSG_MF_SUBKEY_STRIP,
+                        indent, PgpKeyHelper.convertKeyIdToHex(strip));
+
+                PGPSecretKey sKey = sKR.getSecretKey(strip);
+                if (sKey == null) {
+                    log.add(LogLevel.ERROR, LogType.MSG_MF_ERROR_SUBKEY_MISSING,
+                            indent+1, PgpKeyHelper.convertKeyIdToHex(strip));
+                    return new EditKeyResult(EditKeyResult.RESULT_ERROR, log, null);
+                }
+
+                // IT'S DANGEROUS~
+                // no really, it is. this operation irrevocably removes the private key data from the key
+                sKey = PGPSecretKey.constructGnuDummyKey(sKey.getPublicKey());
+                sKR = PGPSecretKeyRing.insertSecretKey(sKR, sKey);
+
             }
             subProgressPop();
 

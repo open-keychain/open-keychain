@@ -56,6 +56,7 @@ public class SaveKeyringParcel implements Parcelable {
 
     public ArrayList<String> mRevokeUserIds;
     public ArrayList<Long> mRevokeSubKeys;
+    public ArrayList<Long> mStripSubKeys;
 
     public SaveKeyringParcel() {
         reset();
@@ -75,6 +76,7 @@ public class SaveKeyringParcel implements Parcelable {
         mChangeSubKeys = new ArrayList<SubkeyChange>();
         mRevokeUserIds = new ArrayList<String>();
         mRevokeSubKeys = new ArrayList<Long>();
+        mStripSubKeys = new ArrayList<Long>();
     }
 
     // performance gain for using Parcelable here would probably be negligible,
@@ -167,6 +169,7 @@ public class SaveKeyringParcel implements Parcelable {
 
         mRevokeUserIds = source.createStringArrayList();
         mRevokeSubKeys = (ArrayList<Long>) source.readSerializable();
+        mStripSubKeys = (ArrayList<Long>) source.readSerializable();
     }
 
     @Override
@@ -187,6 +190,7 @@ public class SaveKeyringParcel implements Parcelable {
 
         destination.writeStringList(mRevokeUserIds);
         destination.writeSerializable(mRevokeSubKeys);
+        destination.writeSerializable(mStripSubKeys);
     }
 
     public static final Creator<SaveKeyringParcel> CREATOR = new Creator<SaveKeyringParcel>() {
@@ -214,6 +218,7 @@ public class SaveKeyringParcel implements Parcelable {
         out += "mChangePrimaryUserId: " + mChangePrimaryUserId + "\n";
         out += "mRevokeUserIds: " + mRevokeUserIds + "\n";
         out += "mRevokeSubKeys: " + mRevokeSubKeys;
+        out += "mStripSubKeys: " + mStripSubKeys;
 
         return out;
     }

@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:orientation="vertical"
     android:paddingLeft="16dp"
-    android:paddingRight="16dp"
-    android:stretchColumns="1">
+    android:paddingRight="16dp">
 
     <CheckBox
         android:id="@+id/passphrase_no_passphrase"
@@ -12,41 +12,27 @@
         android:layout_height="wrap_content"
         android:text="@string/label_no_passphrase" />
 
-    <TableRow android:layout_marginBottom="5dip">
+    <EditText
+        android:id="@+id/passphrase_passphrase"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        android:imeOptions="actionNext"
+        android:inputType="textPassword"
+        android:hint="@string/label_passphrase"
+        android:ems="10"
+        android:layout_gravity="center_horizontal" />
 
-        <TextView
-            android:id="@+id/passphrase_label_passphrase"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:padding="4dp"
-            android:text="@string/label_passphrase" />
+    <EditText
+        android:id="@+id/passphrase_passphrase_again"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:imeOptions="actionDone"
+        android:inputType="textPassword"
+        android:hint="@string/label_passphrase_again"
+        android:ems="10"
+        android:layout_gravity="center_horizontal" />
 
-        <EditText
-            android:id="@+id/passphrase_passphrase"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:inputType="textPassword"
-            android:padding="4dp" />
-    </TableRow>
-
-    <TableRow android:layout_marginBottom="10dip">
-
-        <TextView
-            android:id="@+id/passphrase_label_passphrase_again"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:padding="4dp"
-            android:text="@string/label_passphrase_again" />
-
-        <EditText
-            android:id="@+id/passphrase_passphrase_again"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:imeOptions="actionDone"
-            android:inputType="textPassword"
-            android:padding="4dp" />
-    </TableRow>
-
-</TableLayout>
+</LinearLayout>

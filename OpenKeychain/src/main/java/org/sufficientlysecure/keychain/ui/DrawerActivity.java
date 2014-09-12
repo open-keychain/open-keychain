@@ -56,7 +56,11 @@ public class DrawerActivity extends ActionBarActivity {
     private static final int MENU_ID_PREFERENCE = 222;
     private static final int MENU_ID_HELP = 223;
 
-    protected void setupDrawerNavigation(Bundle savedInstanceState) {
+    protected void deactivateDrawerNavigation() {
+        ((DrawerLayout) findViewById(R.id.drawer_layout)).setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+    }
+
+    protected void activateDrawerNavigation(Bundle savedInstanceState) {
         mDrawerTitle = getString(R.string.app_name);
         mDrawerLayout = (FixedDrawerLayout) findViewById(R.id.drawer_layout);
         mDrawerList = (ListView) findViewById(R.id.left_drawer);
@@ -79,8 +83,8 @@ public class DrawerActivity extends ActionBarActivity {
 
         NavItem mItemIconTexts[] = new NavItem[]{
                 new NavItem(R.drawable.ic_action_person, getString(R.string.nav_keys)),
-                new NavItem(R.drawable.ic_action_secure, getString(R.string.nav_encrypt_files)),
                 new NavItem(R.drawable.ic_action_secure, getString(R.string.nav_encrypt_text)),
+                new NavItem(R.drawable.ic_action_secure, getString(R.string.nav_encrypt_files)),
                 new NavItem(R.drawable.ic_action_not_secure, getString(R.string.nav_decrypt)),
                 new NavItem(R.drawable.ic_action_view_as_list, getString(R.string.nav_apps))};
 
@@ -244,7 +248,8 @@ public class DrawerActivity extends ActionBarActivity {
 
         /**
          * NavItem constructor
-         * @param icon The icons resource-id
+         *
+         * @param icon  The icons resource-id
          * @param title The title of the menu entry
          */
         public NavItem(int icon, String title) {

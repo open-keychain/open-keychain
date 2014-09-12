@@ -40,7 +40,6 @@ import org.sufficientlysecure.keychain.remote.AccountSettings;
 import org.sufficientlysecure.keychain.service.OperationResultParcel;
 import org.sufficientlysecure.keychain.service.OperationResults;
 import org.sufficientlysecure.keychain.ui.CreateKeyActivity;
-import org.sufficientlysecure.keychain.ui.SelectSecretKeyLayoutFragment;
 import org.sufficientlysecure.keychain.ui.adapter.KeyValueSpinnerAdapter;
 import org.sufficientlysecure.keychain.ui.widget.KeySpinner;
 import org.sufficientlysecure.keychain.ui.widget.SignKeySpinner;

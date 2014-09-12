@@ -1,6 +1,18 @@
 <html>
 <head></head>
 <body>
+<h2>2.10</h2>
+<ul>
+<li>Split encrypt screen into two</li>
+<li>Fix key flags handling (now supporting Mailvelope 0.7 keys)</li>
+<li>Improved passphrase handling</li>
+<li>Key sharing via SafeSlinger</li>
+<li>Yubikey: preference to allow other PINs, currently only signing via the OpenPGP API works, not inside of OpenKeychain</li>
+<li>Fix usage of stripped keys</li>
+<li>SHA256 as default for compatibility</li>
+<li>Intent API has changed, see https://github.com/open-keychain/open-keychain/wiki/Intent-API</li>
+<li>OpenPGP API now handles revoked/expired keys and returns all user ids</li>
+</ul>
 <h2>2.9</h2>
 <ul>
 <li>Fixing crashes introduced in v2.8</li>
@@ -11,16 +23,16 @@
 <ul>
 <li>Es wurden in diesem Release so viele Bugs ausgebessert, sodass wir uns besser auf die neuen Funktionen konzentrieren</li>
 <li>Schlüsselbearbeitung: tolles neues Design und Schlüsselrückruf</li>
-<li>Schlüsselimport: tolles neues Design, gesicherte Verbindungen zum Schlüsselserver über HKPS, Schlüsselserver [?] über DNS SRV Einträge </li>
+<li>Schlüsselimport: tolles neues Design, gesicherte Verbindungen zum Schlüsselserver über HKPS, Schlüsselserver [?] über DNS SRV Einträge</li>
 <li>Neuer Bildschirm bei der ersten Öffnung</li>
 <li>New key creation screen: autocompletion of name and email based on your personal Android accounts</li>
 <li>Dateiverschlüsselung: tolles neues Design, Unterstützung für mehrere Dateien</li>
 <li>Neue Icons zum Anzeigen des Schlüsselstatus' (von Brennan Novak)</li>
-<li>Wichtige Ausbesserung eines Bugs: Importieren größerer Schlüsselsammlungen aus einer Datei ist nun möglich </li>
-<li>Benachrichtigung, die die Passphrasen im Cache anzeigt </li>
+<li>Wichtige Ausbesserung eines Bugs: Importieren größerer Schlüsselsammlungen aus einer Datei ist nun möglich</li>
+<li>Benachrichtigung, die die Passphrasen im Cache anzeigt</li>
 <li>Keys are connected to Android's contacts</li>
 </ul>
-<p>Dieser Release wäre ohne die Arbeit von Vincent Breitmoser (GSoC 2014), mar-v-in (GSoC 2014), Daniel Albert, Art O Cathain, Daniel Haß, Tim Bray und Thialfihar nicht möglich </p>
+<p>Dieser Release wäre ohne die Arbeit von Vincent Breitmoser (GSoC 2014), mar-v-in (GSoC 2014), Daniel Albert, Art O Cathain, Daniel Haß, Tim Bray und Thialfihar nicht möglich</p>
 
 <h2>2.7</h2>
 <ul>
@@ -36,15 +48,15 @@
 </ul>
 <h2>2.6</h2>
 <ul>
-<li>Schlüsselzertifizierungen (danke an Vincent Breitmoser) </li>
-<li>Unterstützung für GnuPG-Teilschlüssel (danke an Vincent Breitmoser) </li>
+<li>Schlüsselzertifizierungen (danke an Vincent Breitmoser)</li>
+<li>Unterstützung für GnuPG-Teilschlüssel (danke an Vincent Breitmoser)</li>
 <li>Neues Design für Signaturverifikation</li>
 <li>Benutzerdefinierte Schlüssellänge (Dank an Greg Witczak)</li>
 <li>Fehler behoben bei der Teilen-Funktion von anderen Apps</li>
 </ul>
 <h2>2.5</h2>
 <ul>
-<li>Fehler bei der Entschlüsselung symmetrischer PGP Nachrichten/Dateien behoben </li>
+<li>Fehler bei der Entschlüsselung symmetrischer PGP Nachrichten/Dateien behoben</li>
 <li>Refactored key edit screen (thanks to Ash Hughes)</li>
 <li>Neues modernes Design für Verschlüsselungs-/Entschlüsselungs-Bildschirme</li>
 <li>OpenPGP API Version 3 (mehrfache api accounts, interne fehlerbehebungen, schlüssel suche)</li>

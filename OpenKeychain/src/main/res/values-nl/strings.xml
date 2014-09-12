@@ -1,5 +1,7 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <resources>
+  <!--GENERAL: Please put all strings inside quotes as described in example 1 on
+    http://developer.android.com/guide/topics/resources/string-resource.html (scroll down to "Escaping apostrophes and quotes").-->
   <!--title-->
   <string name="title_decrypt">Ontsleutelen</string>
   <string name="title_authentication">Wachtwoord</string>
@@ -64,12 +66,6 @@
   <string name="label_no_passphrase">Geen wachtwoord</string>
   <string name="label_passphrase">Wachtwoord</string>
   <string name="label_algorithm">Algoritme</string>
-  <string name="label_delete_after_decryption">Verwijderen na ontsleuteling</string>
-  <string name="label_encryption_algorithm">Versleutelingsalgoritme</string>
-  <string name="label_hash_algorithm">Verificatie-algoritme</string>
-  <string name="label_passphrase_cache_ttl">Wachtwoordcache</string>
-  <string name="label_message_compression">Berichtcompressie</string>
-  <string name="label_file_compression">Bestandscompressie</string>
   <string name="label_keyservers">Sleutelservers</string>
   <string name="label_key_id">Sleutel-id</string>
   <string name="label_creation">Aanmaak</string>
@@ -230,9 +226,9 @@
   <string name="key_size_custom_info_dsa">DSA sleutellengte moet minstens 512 zijn en maximaal 1024. Het moet ook deelbaar zijn door 64.</string>
   <!--elliptic curve names-->
   <!--not in for now, see SaveKeyringParcel
-    <string name="key_curve_bp_p256">Brainpool P-256</string>
-    <string name="key_curve_bp_p384">Brainpool P-384</string>
-    <string name="key_curve_bp_p512">Brainpool P-512</string>-->
+    <string name="key_curve_bp_p256">"Brainpool P-256"</string>
+    <string name="key_curve_bp_p384">"Brainpool P-384"</string>
+    <string name="key_curve_bp_p512">"Brainpool P-512"</string>-->
   <!--compression-->
   <string name="compression_fast">snel</string>
   <string name="compression_very_slow">zeer langzaam</string>
@@ -289,7 +285,6 @@
   <string name="key_list_empty_button_create">uw eigen sleutel aanmaken</string>
   <!--Key view-->
   <string name="key_view_action_edit">Sleutel bewerken</string>
-  <string name="key_view_action_encrypt">Codeer met deze sleutel</string>
   <string name="key_view_action_certify">Certifiëer identiteiten</string>
   <string name="key_view_action_share_with">Delen met...</string>
   <string name="key_view_tab_main">Hoofd Info</string>

@@ -19,8 +19,6 @@ package org.sufficientlysecure.keychain.ui;
 
 import android.annotation.TargetApi;
 import android.app.ProgressDialog;
-import android.content.DialogInterface;
-import android.content.DialogInterface.OnCancelListener;
 import android.content.Intent;
 import android.net.Uri;
 import android.nfc.NdefMessage;
@@ -40,6 +38,7 @@ import android.view.ViewGroup;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.api.OpenKeychainIntents;
 import org.sufficientlysecure.keychain.helper.OtherHelper;
 import org.sufficientlysecure.keychain.helper.Preferences;
 import org.sufficientlysecure.keychain.keyimport.ImportKeysListEntry;
@@ -51,7 +50,7 @@ import org.sufficientlysecure.keychain.service.OperationResultParcel;
 import org.sufficientlysecure.keychain.service.OperationResults.ImportKeyResult;
 import org.sufficientlysecure.keychain.ui.adapter.PagerTabStripAdapter;
 import org.sufficientlysecure.keychain.ui.widget.SlidingTabLayout;
-import org.sufficientlysecure.keychain.util.FileImportCache;
+import org.sufficientlysecure.keychain.util.ParcelableFileCache;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Notify;
 
@@ -60,11 +59,9 @@ import java.util.ArrayList;
 import java.util.Locale;
 
 public class ImportKeysActivity extends ActionBarActivity {
-    public static final String ACTION_IMPORT_KEY = Constants.INTENT_PREFIX + "IMPORT_KEY";
-    public static final String ACTION_IMPORT_KEY_FROM_QR_CODE = Constants.INTENT_PREFIX
-            + "IMPORT_KEY_FROM_QR_CODE";
-    public static final String ACTION_IMPORT_KEY_FROM_KEYSERVER = Constants.INTENT_PREFIX
-            + "IMPORT_KEY_FROM_KEYSERVER";
+    public static final String ACTION_IMPORT_KEY = OpenKeychainIntents.IMPORT_KEY;
+    public static final String ACTION_IMPORT_KEY_FROM_QR_CODE = OpenKeychainIntents.IMPORT_KEY_FROM_QR_CODE;
+    public static final String ACTION_IMPORT_KEY_FROM_KEYSERVER = OpenKeychainIntents.IMPORT_KEY_FROM_KEYSERVER;
     public static final String ACTION_IMPORT_KEY_FROM_KEYSERVER_AND_RETURN_RESULT =
             Constants.INTENT_PREFIX + "IMPORT_KEY_FROM_KEY_SERVER_AND_RETURN_RESULT";
     public static final String ACTION_IMPORT_KEY_FROM_KEYSERVER_AND_RETURN_TO_SERVICE = Constants.INTENT_PREFIX
@@ -83,12 +80,12 @@ public class ImportKeysActivity extends ActionBarActivity {
     public static final String EXTRA_RESULT = "result";
 
     // only used by ACTION_IMPORT_KEY
-    public static final String EXTRA_KEY_BYTES = "key_bytes";
+    public static final String EXTRA_KEY_BYTES = OpenKeychainIntents.IMPORT_EXTRA_KEY_EXTRA_KEY_BYTES;
 
     // only used by ACTION_IMPORT_KEY_FROM_KEYSERVER
-    public static final String EXTRA_QUERY = "query";
-    public static final String EXTRA_KEY_ID = "key_id";
-    public static final String EXTRA_FINGERPRINT = "fingerprint";
+    public static final String EXTRA_QUERY = OpenKeychainIntents.IMPORT_KEY_FROM_KEYSERVER_EXTRA_QUERY;
+    public static final String EXTRA_KEY_ID = Constants.EXTRA_PREFIX + "EXTRA_KEY_ID";
+    public static final String EXTRA_FINGERPRINT = OpenKeychainIntents.IMPORT_KEY_FROM_KEYSERVER_EXTRA_FINGERPRINT;
 
     // only used by ACTION_IMPORT_KEY_FROM_KEYSERVER_AND_RETURN_TO_SERVICE when used from OpenPgpService
     public static final String EXTRA_PENDING_INTENT_DATA = "data";
@@ -506,8 +503,8 @@ public class ImportKeysActivity extends ActionBarActivity {
             // to prevent Java Binder problems on heavy imports
             // read FileImportCache for more info.
             try {
-                FileImportCache<ParcelableKeyRing> cache =
-                        new FileImportCache<ParcelableKeyRing>(this, "key_import.pcl");
+                ParcelableFileCache<ParcelableKeyRing> cache =
+                        new ParcelableFileCache<ParcelableKeyRing>(this, "key_import.pcl");
                 cache.writeCache(selectedEntries);
 
                 intent.putExtra(KeychainIntentService.EXTRA_DATA, data);

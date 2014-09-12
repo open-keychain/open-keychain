@@ -34,17 +34,20 @@ import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
  */
 public class ConsolidateDialogActivity extends FragmentActivity {
 
+    public static final String EXTRA_CONSOLIDATE_RECOVERY = "consolidate_recovery";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         // this activity itself has no content view (see manifest)
 
-        consolidateRecovery();
+        boolean recovery = getIntent().getBooleanExtra(EXTRA_CONSOLIDATE_RECOVERY, false);
 
+        consolidateRecovery(recovery);
     }
 
-    private void consolidateRecovery() {
+    private void consolidateRecovery(boolean recovery) {
         // Message is received after importing is done in KeychainIntentService
         KeychainIntentServiceHandler saveHandler = new KeychainIntentServiceHandler(
                 this,
@@ -81,7 +84,7 @@ public class ConsolidateDialogActivity extends FragmentActivity {
 
         // fill values for this action
         Bundle data = new Bundle();
-        data.putBoolean(KeychainIntentService.CONSOLIDATE_RECOVERY, true);
+        data.putBoolean(KeychainIntentService.CONSOLIDATE_RECOVERY, recovery);
         intent.putExtra(KeychainIntentService.EXTRA_DATA, data);
 
         // Create a new Messenger for the communication back
@@ -93,7 +96,6 @@ public class ConsolidateDialogActivity extends FragmentActivity {
 
         // start service with intent
         startService(intent);
-
     }
 
 }

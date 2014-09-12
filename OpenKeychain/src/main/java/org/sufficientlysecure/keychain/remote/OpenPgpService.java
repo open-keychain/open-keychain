@@ -30,7 +30,7 @@ import org.openintents.openpgp.OpenPgpMetadata;
 import org.openintents.openpgp.OpenPgpError;
 import org.openintents.openpgp.OpenPgpSignatureResult;
 import org.openintents.openpgp.util.OpenPgpApi;
-import org.openkeychain.nfc.NfcActivity;
+import org.sufficientlysecure.keychain.nfc.NfcActivity;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.PgpDecryptVerify;
@@ -155,15 +155,38 @@ public class OpenPgpService extends RemoteService {
         }
     }
 
-    private Intent getNfcIntent(Intent data, byte[] hashToSign, int hashAlgo) {
+    private Intent getNfcSignIntent(Intent data, String pin, byte[] hashToSign, int hashAlgo) {
         // build PendingIntent for Yubikey NFC operations
         Intent intent = new Intent(getBaseContext(), NfcActivity.class);
         intent.setAction(NfcActivity.ACTION_SIGN_HASH);
+        // pass params through to activity that it can be returned again later to repeat pgp operation
+        intent.putExtra(NfcActivity.EXTRA_DATA, data);
+        intent.putExtra(NfcActivity.EXTRA_PIN, pin);
+
         intent.putExtra(NfcActivity.EXTRA_NFC_HASH_TO_SIGN, hashToSign);
         intent.putExtra(NfcActivity.EXTRA_NFC_HASH_ALGO, hashAlgo);
         intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        PendingIntent pi = PendingIntent.getActivity(getBaseContext(), 0,
+                intent,
+                PendingIntent.FLAG_CANCEL_CURRENT);
+
+        // return PendingIntent to be executed by client
+        Intent result = new Intent();
+        result.putExtra(OpenPgpApi.RESULT_INTENT, pi);
+        result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_USER_INTERACTION_REQUIRED);
+        return result;
+    }
+
+    private Intent getNfcDecryptIntent(Intent data, String pin, byte[] encryptedSessionKey) {
+        // build PendingIntent for Yubikey NFC operations
+        Intent intent = new Intent(getBaseContext(), NfcActivity.class);
+        intent.setAction(NfcActivity.ACTION_DECRYPT_SESSION_KEY);
         // pass params through to activity that it can be returned again later to repeat pgp operation
         intent.putExtra(NfcActivity.EXTRA_DATA, data);
+        intent.putExtra(NfcActivity.EXTRA_PIN, pin);
+
+        intent.putExtra(NfcActivity.EXTRA_NFC_ENC_SESSION_KEY, encryptedSessionKey);
+        intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
         PendingIntent pi = PendingIntent.getActivity(getBaseContext(), 0,
                 intent,
                 PendingIntent.FLAG_CANCEL_CURRENT);
@@ -217,7 +240,12 @@ public class OpenPgpService extends RemoteService {
             }
 
             byte[] nfcSignedHash = data.getByteArrayExtra(OpenPgpApi.EXTRA_NFC_SIGNED_HASH);
-            Date nfcCreationTimestamp = new Date(data.getLongExtra(OpenPgpApi.EXTRA_NFC_SIG_CREATION_TIMESTAMP, 0));
+            // carefully: only set if timestamp exists
+            Date nfcCreationDate = null;
+            long nfcCreationTimestamp = data.getLongExtra(OpenPgpApi.EXTRA_NFC_SIG_CREATION_TIMESTAMP, 0);
+            if (nfcCreationTimestamp > 0) {
+                nfcCreationDate = new Date(nfcCreationTimestamp);
+            }
 
             // Get Input- and OutputStream from ParcelFileDescriptor
             InputStream is = new ParcelFileDescriptor.AutoCloseInputStream(input);
@@ -235,7 +263,7 @@ public class OpenPgpService extends RemoteService {
                         .setSignatureHashAlgorithm(accSettings.getHashAlgorithm())
                         .setSignatureMasterKeyId(accSettings.getKeyId())
                         .setSignaturePassphrase(passphrase)
-                        .setNfcState(nfcSignedHash, nfcCreationTimestamp);
+                        .setNfcState(nfcSignedHash, nfcCreationDate);
 
                 // TODO: currently always assume cleartext input, no sign-only of binary currently!
                 builder.setCleartextInput(true);
@@ -257,7 +285,7 @@ public class OpenPgpService extends RemoteService {
                     // pass through the signature creation timestamp to be used again on second execution
                     // of PgpSignEncrypt when we have the signed hash!
                     data.putExtra(OpenPgpApi.EXTRA_NFC_SIG_CREATION_TIMESTAMP, e.mCreationTimestamp.getTime());
-                    return getNfcIntent(data, e.mHashToSign, e.mHashAlgo);
+                    return getNfcSignIntent(data, passphrase, e.mHashToSign, e.mHashAlgo);
                 }
             } finally {
                 is.close();
@@ -322,8 +350,8 @@ public class OpenPgpService extends RemoteService {
                         .setOriginalFilename(originalFilename)
                         .setAdditionalEncryptId(accSettings.getKeyId()); // add acc key for encryption
 
+                String passphrase = null;
                 if (sign) {
-                    String passphrase;
                     if (data.hasExtra(OpenPgpApi.EXTRA_PASSPHRASE)) {
                         passphrase = data.getStringExtra(OpenPgpApi.EXTRA_PASSPHRASE);
                     } else {
@@ -335,10 +363,19 @@ public class OpenPgpService extends RemoteService {
                         return getPassphraseIntent(data, accSettings.getKeyId());
                     }
 
+                    byte[] nfcSignedHash = data.getByteArrayExtra(OpenPgpApi.EXTRA_NFC_SIGNED_HASH);
+                    // carefully: only set if timestamp exists
+                    Date nfcCreationDate = null;
+                    long nfcCreationTimestamp = data.getLongExtra(OpenPgpApi.EXTRA_NFC_SIG_CREATION_TIMESTAMP, 0);
+                    if (nfcCreationTimestamp > 0) {
+                        nfcCreationDate = new Date(nfcCreationTimestamp);
+                    }
+
                     // sign and encrypt
                     builder.setSignatureHashAlgorithm(accSettings.getHashAlgorithm())
                             .setSignatureMasterKeyId(accSettings.getKeyId())
-                            .setSignaturePassphrase(passphrase);
+                            .setSignaturePassphrase(passphrase)
+                            .setNfcState(nfcSignedHash, nfcCreationDate);
                 }
 
                 try {
@@ -354,6 +391,12 @@ public class OpenPgpService extends RemoteService {
                     throw new Exception(getString(R.string.error_wrong_passphrase));
                 } catch (PgpSignEncrypt.NoSigningKeyException e) {
                     throw new Exception(getString(R.string.error_no_signature_key));
+                } catch (PgpSignEncrypt.NeedNfcDataException e) {
+                    // return PendingIntent to execute NFC activity
+                    // pass through the signature creation timestamp to be used again on second execution
+                    // of PgpSignEncrypt when we have the signed hash!
+                    data.putExtra(OpenPgpApi.EXTRA_NFC_SIG_CREATION_TIMESTAMP, e.mCreationTimestamp.getTime());
+                    return getNfcSignIntent(data, passphrase, e.mHashToSign, e.mHashAlgo);
                 }
             } finally {
                 is.close();
@@ -389,7 +432,6 @@ public class OpenPgpService extends RemoteService {
 
             Intent result = new Intent();
             try {
-
                 String passphrase = data.getStringExtra(OpenPgpApi.EXTRA_PASSPHRASE);
                 long inputLength = is.available();
                 InputData inputData = new InputData(is, inputLength);
@@ -410,12 +452,15 @@ public class OpenPgpService extends RemoteService {
                         inputData, os
                 );
 
+                byte[] nfcDecryptedSessionKey = data.getByteArrayExtra(OpenPgpApi.EXTRA_NFC_DECRYPTED_SESSION_KEY);
+
                 // allow only private keys associated with accounts of this app
                 // no support for symmetric encryption
                 builder.setPassphrase(passphrase)
                         .setAllowSymmetricDecryption(false)
                         .setAllowedKeyIds(allowedKeyIds)
-                        .setDecryptMetadataOnly(decryptMetadataOnly);
+                        .setDecryptMetadataOnly(decryptMetadataOnly)
+                        .setNfcState(nfcDecryptedSessionKey);
 
                 PgpDecryptVerifyResult decryptVerifyResult;
                 try {
@@ -433,6 +478,9 @@ public class OpenPgpService extends RemoteService {
                     throw new Exception(getString(R.string.error_no_secret_key_found));
                 } catch (PgpDecryptVerify.IntegrityCheckFailedException e) {
                     throw new Exception(getString(R.string.error_integrity_check_failed));
+                } catch (PgpDecryptVerify.NeedNfcDataException e) {
+                    // return PendingIntent to execute NFC activity
+                    return getNfcDecryptIntent(data, e.mPassphrase, e.mEncryptedSessionKey);
                 }
 
                 if (PgpDecryptVerifyResult.KEY_PASSHRASE_NEEDED == decryptVerifyResult.getStatus()) {
@@ -476,7 +524,6 @@ public class OpenPgpService extends RemoteService {
                         result.putExtra(OpenPgpApi.RESULT_METADATA, metadata);
                     }
                 }
-
             } finally {
                 is.close();
                 if (os != null) {

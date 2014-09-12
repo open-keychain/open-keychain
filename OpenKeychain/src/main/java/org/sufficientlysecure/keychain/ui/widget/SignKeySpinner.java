@@ -24,6 +24,8 @@ import android.os.Bundle;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.util.AttributeSet;
+
+import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 
 public class SignKeySpinner extends KeySpinner {
@@ -51,16 +53,41 @@ public class SignKeySpinner extends KeySpinner {
                 KeychainContract.KeyRings.MASTER_KEY_ID,
                 KeychainContract.KeyRings.KEY_ID,
                 KeychainContract.KeyRings.USER_ID,
+                KeychainContract.KeyRings.IS_REVOKED,
                 KeychainContract.KeyRings.IS_EXPIRED,
                 KeychainContract.KeyRings.HAS_SIGN,
                 KeychainContract.KeyRings.HAS_ANY_SECRET
         };
 
-        String where = KeychainContract.KeyRings.HAS_ANY_SECRET + " = 1 AND " + KeychainContract.KeyRings.HAS_SIGN + " NOT NULL AND "
-                + KeychainContract.KeyRings.IS_REVOKED + " = 0 AND " + KeychainContract.KeyRings.IS_EXPIRED + " = 0";
+        String where = KeychainContract.KeyRings.HAS_ANY_SECRET + " = 1";
 
         // Now create and return a CursorLoader that will take care of
         // creating a Cursor for the data being displayed.
         return new CursorLoader(getContext(), baseUri, projection, where, null, null);
     }
+
+    private int mIndexHasSign, mIndexIsRevoked, mIndexIsExpired;
+
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
+        super.onLoadFinished(loader, cursor);
+        mIndexHasSign = cursor.getColumnIndex(KeychainContract.KeyRings.HAS_SIGN);
+        mIndexIsRevoked = cursor.getColumnIndex(KeychainContract.KeyRings.IS_REVOKED);
+        mIndexIsExpired = cursor.getColumnIndex(KeychainContract.KeyRings.IS_EXPIRED);
+    }
+
+    @Override
+    String getStatus(Context context, Cursor cursor) {
+        if (cursor.getInt(mIndexIsRevoked) != 0) {
+            return context.getString(R.string.revoked);
+        }
+        if (cursor.getInt(mIndexHasSign) == 0) {
+            return context.getString(R.string.key_unavailable);
+        }
+        if (cursor.getInt(mIndexIsExpired) != 0) {
+            return context.getString(R.string.expired);
+        }
+        return null;
+    }
+
 }

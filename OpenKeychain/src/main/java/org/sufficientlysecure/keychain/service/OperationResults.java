@@ -33,12 +33,68 @@ import com.github.johnpersano.supertoasts.util.Style;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedKeyRing;
-import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
 import org.sufficientlysecure.keychain.ui.LogDisplayActivity;
 import org.sufficientlysecure.keychain.ui.LogDisplayFragment;
 
 public abstract class OperationResults {
+
+    /** This is a simple subclass meant to contain only a single log message. This log
+     * message is also shown without a log button in the createNotify SuperToast. */
+    public static class SingletonResult extends OperationResultParcel {
+
+        /** Construct from a parcel - trivial because we have no extra data. */
+        public SingletonResult(Parcel source) {
+            super(source);
+        }
+
+        public SingletonResult(int result, LogLevel level, LogType reason) {
+            super(result, new OperationLog());
+            // Prepare the log
+            mLog.add(level, reason, 0);
+        }
+
+        @Override
+        public SuperCardToast createNotify(final Activity activity) {
+
+            // there is exactly one error msg - use that one
+            String str = activity.getString(mLog.iterator().next().mType.getMsgId());
+            int color;
+
+            // Determine color by result type
+            if (cancelled()) {
+                color = Style.RED;
+            } else if (success()) {
+                if (getLog().containsWarnings()) {
+                    color = Style.ORANGE;
+                } else {
+                    color = Style.GREEN;
+                }
+            } else {
+                color = Style.RED;
+            }
+
+            SuperCardToast toast = new SuperCardToast(activity, SuperToast.Type.STANDARD,
+                    Style.getStyle(color, SuperToast.Animations.POPUP));
+            toast.setText(str);
+            toast.setDuration(SuperToast.Duration.EXTRA_LONG);
+            toast.setIndeterminate(false);
+            toast.setSwipeToDismiss(true);
+            return toast;
+
+        }
+
+        public static Creator<SingletonResult> CREATOR = new Creator<SingletonResult>() {
+            public SingletonResult createFromParcel(final Parcel source) {
+                return new SingletonResult(source);
+            }
+
+            public SingletonResult[] newArray(final int size) {
+                return new SingletonResult[size];
+            }
+        };
+
+    }
 
     public static class ImportKeyResult extends OperationResultParcel {
 

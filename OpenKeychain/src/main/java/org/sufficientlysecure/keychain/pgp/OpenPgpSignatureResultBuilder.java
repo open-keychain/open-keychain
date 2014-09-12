@@ -19,6 +19,7 @@ package org.sufficientlysecure.keychain.pgp;
 
 import org.openintents.openpgp.OpenPgpSignatureResult;
 import org.sufficientlysecure.keychain.Constants;
+import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.util.Log;
 
 import java.util.ArrayList;
@@ -84,6 +85,27 @@ public class OpenPgpSignatureResultBuilder {
 
     public boolean isValidSignature() {
         return mValidSignature;
+    }
+
+    public void initValid(CanonicalizedPublicKeyRing signingRing,
+                          CanonicalizedPublicKey signingKey) {
+        setSignatureAvailable(true);
+        setKnownKey(true);
+
+        // from RING
+        setKeyId(signingRing.getMasterKeyId());
+        try {
+            setPrimaryUserId(signingRing.getPrimaryUserIdWithFallback());
+        } catch (PgpGeneralException e) {
+            Log.d(Constants.TAG, "No primary user id in keyring with master key id " + signingRing.getMasterKeyId());
+        }
+        setSignatureKeyCertified(signingRing.getVerified() > 0);
+        Log.d(Constants.TAG, "signingRing.getUnorderedUserIds(): " + signingRing.getUnorderedUserIds());
+        setUserIds(signingRing.getUnorderedUserIds());
+
+        // from KEY
+        setKeyExpired(signingKey.isExpired());
+        setKeyRevoked(signingKey.isRevoked());
     }
 
     public OpenPgpSignatureResult build() {

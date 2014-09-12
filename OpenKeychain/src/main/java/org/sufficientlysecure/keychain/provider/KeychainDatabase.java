@@ -19,6 +19,7 @@
 package org.sufficientlysecure.keychain.provider;
 
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
@@ -33,6 +34,7 @@ import org.sufficientlysecure.keychain.provider.KeychainContract.CertsColumns;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRingsColumns;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeysColumns;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UserIdsColumns;
+import org.sufficientlysecure.keychain.ui.ConsolidateDialogActivity;
 import org.sufficientlysecure.keychain.util.Log;
 
 import java.io.File;
@@ -52,8 +54,9 @@ import java.io.IOException;
  */
 public class KeychainDatabase extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "openkeychain.db";
-    private static final int DATABASE_VERSION = 3;
+    private static final int DATABASE_VERSION = 4;
     static Boolean apgHack = false;
+    private Context mContext;
 
     public interface Tables {
         String KEY_RINGS_PUBLIC = "keyrings_public";
@@ -164,6 +167,7 @@ public class KeychainDatabase extends SQLiteOpenHelper {
 
     KeychainDatabase(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
+        mContext = context;
 
         // make sure this is only done once, on the first instance!
         boolean iAmIt = false;
@@ -203,21 +207,35 @@ public class KeychainDatabase extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        // add has_secret for all who are upgrading from a beta version
+        Log.d(Constants.TAG, "Upgrading db from " + oldVersion + " to " + newVersion);
+
         switch (oldVersion) {
             case 1:
+                // add has_secret for all who are upgrading from a beta version
                 try {
                     db.execSQL("ALTER TABLE keys ADD COLUMN has_secret BOOLEAN");
                 } catch(Exception e){
                     // never mind, the column probably already existed
                 }
+                // fall through
             case 2:
+                // ECC support
                 try {
                     db.execSQL("ALTER TABLE keys ADD COLUMN " + KeysColumns.KEY_CURVE_OID + " TEXT");
                 } catch(Exception e){
                     // never mind, the column probably already existed
                 }
+                // fall through
+            case 3:
+                // better s2k detection, we need consolidate
+                // fall through
         }
+
+        // always do consolidate after upgrade
+        Intent consolidateIntent = new Intent(mContext.getApplicationContext(), ConsolidateDialogActivity.class);
+        consolidateIntent.putExtra(ConsolidateDialogActivity.EXTRA_CONSOLIDATE_RECOVERY, false);
+        consolidateIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        mContext.getApplicationContext().startActivity(consolidateIntent);
     }
 
     /** This method tries to import data from a provided database.

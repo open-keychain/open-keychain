@@ -1,6 +1,18 @@
 <html>
 <head></head>
 <body>
+<h2>2.10</h2>
+<ul>
+<li>Split encrypt screen into two</li>
+<li>Fix key flags handling (now supporting Mailvelope 0.7 keys)</li>
+<li>Improved passphrase handling</li>
+<li>Key sharing via SafeSlinger</li>
+<li>Yubikey: preference to allow other PINs, currently only signing via the OpenPGP API works, not inside of OpenKeychain</li>
+<li>Fix usage of stripped keys</li>
+<li>SHA256 as default for compatibility</li>
+<li>Intent API has changed, see https://github.com/open-keychain/open-keychain/wiki/Intent-API</li>
+<li>OpenPGP API now handles revoked/expired keys and returns all user ids</li>
+</ul>
 <h2>2.9</h2>
 <ul>
 <li>Fixing crashes introduced in v2.8</li>
@@ -47,11 +59,11 @@
 <li>Fix decryption of symmetric pgp messages/files</li>
 <li>Refactored key edit screen (thanks to Ash Hughes)</li>
 <li>New modern design for encrypt/decrypt screens</li>
-<li>OpenPGP API wersja 3 (wiele kont API, wewnętrzne poprawki, wyszukiwanie kluczy)</li>
+<li>OpenPGP API version 3 (multiple api accounts, internal fixes, key lookup)</li>
 </ul>
 <h2>2.4</h2>
-<p>Podziękowania dla wszystkich kandydatów do Google Summer of Code 2014 którzy uczynili to wydanie bogatym w nowe funkcje i pozbawione błedów!
-Poza kilkoma małymi poprawkami, znaczna ilość aktualizacji została wykonana przez poniższe osoby (w kolejności alfabetycznej):
+<p>Thanks to all applicants of Google Summer of Code 2014 who made this release feature rich and bug free!
+Besides several small patches, a notable number of patches are made by the following people (in alphabetical order):
 Daniel Hammann, Daniel Haß, Greg Witczak, Miroojin Bakshi, Nikhil Peter Raj, Paul Sarbinowski, Sreeram Boyapati, Vincent Breitmoser.</p>
 <ul>
 <li>New unified key list</li>
@@ -79,7 +91,7 @@ Daniel Hammann, Daniel Haß, Greg Witczak, Miroojin Bakshi, Nikhil Peter Raj, Pa
 <li>Fix layout and dialog style on Android 2.2-3.0</li>
 <li>Fix crash on keys with empty user ids</li>
 <li>Fix crash and empty lists when coming back from signing screen</li>
-<li>Bouncy Castle (biblioteka kryptograficzna) zaktualizowana z wersji 1.47 do 1.50 i kompilowana ze źródeł</li>
+<li>Bouncy Castle (cryptography library) updated from 1.47 to 1.50 and build from source</li>
 <li>Fix upload of key from signing screen</li>
 </ul>
 <h2>2.2</h2>
@@ -96,13 +108,13 @@ Daniel Hammann, Daniel Haß, Greg Witczak, Miroojin Bakshi, Nikhil Peter Raj, Pa
 </ul>
 <h2>2.1.1</h2>
 <ul>
-<li>aktualizacje API, przygotowanie do integracji z K-9 Mail</li>
+<li>API Updates, preparation for K-9 Mail integration</li>
 </ul>
 <h2>2.1</h2>
 <ul>
 <li>Lots of bug fixes</li>
 <li>New API for developers</li>
-<li>Naprawiono błąd generatora liczb losowych (PRNG), Google.</li>
+<li>PRNG bug fix by Google</li>
 </ul>
 <h2>2.0</h2>
 <ul>
@@ -139,7 +151,7 @@ Daniel Hammann, Daniel Haß, Greg Witczak, Miroojin Bakshi, Nikhil Peter Raj, Pa
 </ul>
 <h2>1.0.5</h2>
 <ul>
-<li>tłumaczenie na niemiecki i włoski</li>
+<li>German and Italian translation</li>
 <li>Much smaller package, due to reduced BC sources</li>
 <li>New preferences GUI</li>
 <li>Layout adjustment for localization</li>
@@ -162,13 +174,13 @@ Daniel Hammann, Daniel Haß, Greg Witczak, Miroojin Bakshi, Nikhil Peter Raj, Pa
 </ul>
 <h2>1.0.1</h2>
 <ul>
-<li>wyświetlanie kont w GMailu było zepsute w 1.0.0, naprawiono je ponownie</li>
+<li>GMail account listing was broken in 1.0.0, fixed again</li>
 </ul>
 <h2>1.0.0</h2>
 <ul>
-<li>integracja z K-9 Mail, APG obsługuje wersję beta K-9 Mail</li>
+<li>K-9 Mail integration, APG supporting beta build of K-9 Mail</li>
 <li>Support of more file managers (including ASTRO)</li>
-<li>tłumaczenie na słoweński</li>
+<li>Slovenian translation</li>
 <li>New database, much faster, less memory usage</li>
 <li>Defined Intents and content provider for other apps</li>
 <li>Bugfixes</li>

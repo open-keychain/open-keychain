@@ -26,6 +26,7 @@ import android.support.v4.view.ViewPager;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.api.OpenKeychainIntents;
 import org.sufficientlysecure.keychain.pgp.PgpHelper;
 import org.sufficientlysecure.keychain.ui.adapter.PagerTabStripAdapter;
 import org.sufficientlysecure.keychain.util.Log;
@@ -35,10 +36,10 @@ import java.util.regex.Matcher;
 public class DecryptActivity extends DrawerActivity {
 
     /* Intents */
-    public static final String ACTION_DECRYPT = Constants.INTENT_PREFIX + "DECRYPT";
+    public static final String ACTION_DECRYPT = OpenKeychainIntents.DECRYPT;
 
     /* EXTRA keys for input */
-    public static final String EXTRA_TEXT = "text";
+    public static final String EXTRA_TEXT = OpenKeychainIntents.DECRYPT_EXTRA_TEXT;
 
     ViewPager mViewPager;
     PagerTabStrip mPagerTabStrip;
@@ -67,7 +68,7 @@ public class DecryptActivity extends DrawerActivity {
 
         initView();
 
-        setupDrawerNavigation(savedInstanceState);
+        activateDrawerNavigation(savedInstanceState);
 
         // Handle intent actions, maybe changes the bundles
         handleActions(getIntent());

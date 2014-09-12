@@ -49,7 +49,10 @@ public final class Constants {
     public static final String SC = BouncyCastleProvider.PROVIDER_NAME;
     public static final String BOUNCY_CASTLE_PROVIDER_NAME = SC;
 
+    // prefix packagename for exported Intents
+    // as described in http://developer.android.com/guide/components/intents-filters.html
     public static final String INTENT_PREFIX = PACKAGE_NAME + ".action.";
+    public static final String EXTRA_PREFIX = PACKAGE_NAME + ".";
 
     public static final String CUSTOM_CONTACT_DATA_MIME_TYPE = "vnd.android.cursor.item/vnd.org.sufficientlysecure.keychain.key";
 
@@ -71,30 +74,31 @@ public final class Constants {
         public static final String PASSPHRASE_CACHE_TTL = "passphraseCacheTtl";
         public static final String LANGUAGE = "language";
         public static final String KEY_SERVERS = "keyServers";
-        public static final String KEY_SERVERS_DEFAULT_VERSION = "keyServersDefaultVersion";
+        public static final String PREF_DEFAULT_VERSION = "keyServersDefaultVersion";
         public static final String WRITE_VERSION_HEADER = "writeVersionHeader";
         public static final String FIRST_TIME = "firstTime";
         public static final String SHOW_ADVANCED_TABS = "showAdvancedTabs";
         public static final String CACHED_CONSOLIDATE = "cachedConsolidate";
         public static final String CACHED_CONSOLIDATE_SECRETS = "cachedConsolidateSecrets";
         public static final String CACHED_CONSOLIDATE_PUBLICS = "cachedConsolidatePublics";
+        public static final String USE_DEFAULT_YUBIKEY_PIN = "useDefaultYubikeyPin";
     }
 
     public static final class Defaults {
         public static final String KEY_SERVERS = "hkps://hkps.pool.sks-keyservers.net, hkps://pgp.mit.edu";
-        public static final int KEY_SERVERS_VERSION = 3;
+        public static final int PREF_VERSION = 4;
     }
 
     public static final class DrawerItems {
         public static final Class KEY_LIST = KeyListActivity.class;
-        public static final Class ENCRYPT_FILE = EncryptFileActivity.class;
         public static final Class ENCRYPT_TEXT = EncryptTextActivity.class;
+        public static final Class ENCRYPT_FILE = EncryptFileActivity.class;
         public static final Class DECRYPT = DecryptActivity.class;
         public static final Class REGISTERED_APPS_LIST = AppsListActivity.class;
         public static final Class[] ARRAY = new Class[]{
                 KEY_LIST,
-                ENCRYPT_FILE,
                 ENCRYPT_TEXT,
+                ENCRYPT_FILE,
                 DECRYPT,
                 REGISTERED_APPS_LIST
         };

@@ -101,24 +101,4 @@ public class EncryptTextFragment extends Fragment {
             mMessage.setText(text);
         }
     }
-
-    /**
-     * Fixes bad message characters for gmail
-     *
-     * @param message
-     * @return
-     */
-    private String fixBadCharactersForGmail(String message) {
-        // fix the message a bit, trailing spaces and newlines break stuff,
-        // because GMail sends as HTML and such things fuck up the
-        // signature,
-        // TODO: things like "<" and ">" also fuck up the signature
-        message = message.replaceAll(" +\n", "\n");
-        message = message.replaceAll("\n\n+", "\n\n");
-        message = message.replaceFirst("^\n+", "");
-        // make sure there'll be exactly one newline at the end
-        message = message.replaceFirst("\n*$", "\n");
-
-        return message;
-    }
 }

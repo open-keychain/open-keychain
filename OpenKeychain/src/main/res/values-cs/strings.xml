@@ -1,5 +1,7 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <resources>
+  <!--GENERAL: Please put all strings inside quotes as described in example 1 on
+    http://developer.android.com/guide/topics/resources/string-resource.html (scroll down to "Escaping apostrophes and quotes").-->
   <!--title-->
   <string name="title_select_recipients">Vybrat klíče</string>
   <string name="title_select_secret_key">Vybrat svůj klíč</string>
@@ -83,16 +85,6 @@
   <string name="label_passphrase_again">Opakovat heslo</string>
   <string name="label_algorithm">Algoritmus</string>
   <string name="label_ascii_armor">Soubor ASCII armor</string>
-  <string name="label_file_ascii_armor">Soubory: ASCII armor</string>
-  <string name="label_delete_after_encryption">Soubory: smazat po zašifrování</string>
-  <string name="label_delete_after_decryption">Smazat po rozšifrování</string>
-  <string name="label_encryption_algorithm">Šifrovací algoritmus</string>
-  <string name="label_hash_algorithm">Hashovací algoritmus</string>
-  <string name="label_asymmetric">Veřejným klíčem</string>
-  <string name="label_symmetric">Heslem</string>
-  <string name="label_passphrase_cache_ttl">Cache hesel</string>
-  <string name="label_message_compression">Komprimovat zprávu</string>
-  <string name="label_file_compression">Komprimovat soubor</string>
   <string name="label_keyservers">Keyservery</string>
   <string name="label_key_id">ID klíče</string>
   <string name="label_creation">Vytvořeno</string>
@@ -259,9 +251,9 @@
   <string name="key_size_custom_info_dsa">Délka DSA klíče musí být alespoň 512 a nejvýše 1024. Zároveň musí být dělitelná 64.</string>
   <!--elliptic curve names-->
   <!--not in for now, see SaveKeyringParcel
-    <string name="key_curve_bp_p256">Brainpool P-256</string>
-    <string name="key_curve_bp_p384">Brainpool P-384</string>
-    <string name="key_curve_bp_p512">Brainpool P-512</string>-->
+    <string name="key_curve_bp_p256">"Brainpool P-256"</string>
+    <string name="key_curve_bp_p384">"Brainpool P-384"</string>
+    <string name="key_curve_bp_p512">"Brainpool P-512"</string>-->
   <!--compression-->
   <string name="compression_fast">rychle</string>
   <string name="compression_very_slow">velmi pomalu</string>
@@ -325,11 +317,9 @@
   <string name="key_list_empty_button_import">Importuji existující klíč.</string>
   <!--Key view-->
   <string name="key_view_action_edit">Editovat klíč</string>
-  <string name="key_view_action_encrypt">Šifruji pomocí těchto klíčů.</string>
   <string name="key_view_action_certify">Certifikovat identity</string>
   <string name="key_view_action_update">Aktualizuji z keyserveru</string>
   <string name="key_view_action_share_with">Sdílet pomocí...</string>
-  <string name="key_view_action_upload">Aktualizovat na keyserver</string>
   <string name="key_view_tab_main">Hlavní info</string>
   <string name="key_view_tab_share">Sdílet</string>
   <string name="key_view_tab_keys">Podklíče</string>
@@ -339,19 +329,8 @@
   <string name="edit_key_action_add_identity">Přidat identitu</string>
   <string name="edit_key_action_add_subkey">Přidat podklíč</string>
   <string name="edit_key_edit_user_id_title">Vyberte akci!</string>
-  <string-array name="edit_key_edit_user_id">
-    <item>Změnit na hlavní identitu</item>
-    <item>Zneplatnit identitu</item>
-  </string-array>
-  <string-array name="edit_key_edit_user_id_revert_revocation">
-    <item>Zrušit zneplatnění</item>
-  </string-array>
   <string name="edit_key_edit_user_id_revoked">Tato identity byla zneplatněna. Toto není možné vzít zpět.</string>
   <string name="edit_key_edit_subkey_title">Vyberte akci!</string>
-  <string-array name="edit_key_edit_subkey">
-    <item>Změnit expiraci</item>
-    <item>Zneplatnit podklíč</item>
-  </string-array>
   <string name="edit_key_new_subkey">nový</string>
   <!--Create key-->
   <string name="create_key_upload">Aktualizovat klíč na keyserver</string>

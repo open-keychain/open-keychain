@@ -93,21 +93,49 @@
             android:layout_height="1dip"
             android:background="?android:attr/listDivider" />
 
-        <TextView
-            android:id="@+id/view_key_action_encrypt"
-            android:paddingLeft="8dp"
-            android:paddingRight="8dp"
-            android:textAppearance="?android:attr/textAppearanceMedium"
+
+        <LinearLayout
+            android:id="@+id/view_key_action_encrypt_text"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:minHeight="?android:attr/listPreferredItemHeight"
+            android:layout_height="?android:attr/listPreferredItemHeight"
             android:clickable="true"
             style="@style/SelectableItem"
-            android:text="@string/key_view_action_encrypt"
-            android:layout_weight="1"
-            android:drawableRight="@drawable/ic_action_secure"
-            android:drawablePadding="8dp"
-            android:gravity="center_vertical" />
+            android:orientation="horizontal">
+
+            <TextView
+                android:paddingLeft="8dp"
+                android:paddingRight="8dp"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:layout_width="0dip"
+                android:layout_height="match_parent"
+                android:text="@string/key_view_action_encrypt"
+                android:layout_weight="1"
+                android:drawableRight="@drawable/ic_action_secure"
+                android:drawablePadding="8dp"
+                android:gravity="center_vertical" />
+
+            <View
+                android:layout_width="1dip"
+                android:layout_height="match_parent"
+                android:gravity="right"
+                android:layout_marginBottom="8dp"
+                android:layout_marginTop="8dp"
+                android:background="?android:attr/listDivider" />
+
+            <TextView
+                android:id="@+id/view_key_action_encrypt_files"
+                android:paddingLeft="8dp"
+                android:paddingRight="8dp"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="@string/key_view_action_encrypt_files"
+                android:drawableRight="@drawable/ic_action_secure"
+                android:drawablePadding="8dp"
+                android:gravity="center_vertical"
+                style="@style/SelectableItem" />
+
+        </LinearLayout>
 
         <View
             android:layout_width="match_parent"

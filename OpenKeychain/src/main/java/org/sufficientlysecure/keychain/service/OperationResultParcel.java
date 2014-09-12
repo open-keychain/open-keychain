@@ -394,6 +394,7 @@ public class OperationResultParcel implements Parcelable {
         MSG_MF_SUBKEY_NEW_ID (R.string.msg_mf_subkey_new_id),
         MSG_MF_SUBKEY_NEW (R.string.msg_mf_subkey_new),
         MSG_MF_SUBKEY_REVOKE (R.string.msg_mf_subkey_revoke),
+        MSG_MF_SUBKEY_STRIP (R.string.msg_mf_subkey_strip),
         MSG_MF_SUCCESS (R.string.msg_mf_success),
         MSG_MF_UID_ADD (R.string.msg_mf_uid_add),
         MSG_MF_UID_PRIMARY (R.string.msg_mf_uid_primary),
@@ -427,6 +428,12 @@ public class OperationResultParcel implements Parcelable {
         MSG_CON_SUCCESS (R.string.msg_con_success),
         MSG_CON_WARN_DELETE_PUBLIC (R.string.msg_con_warn_delete_public),
         MSG_CON_WARN_DELETE_SECRET (R.string.msg_con_warn_delete_secret),
+
+        // messages used in UI code
+        MSG_EK_ERROR_DIVERT (R.string.msg_ek_error_divert),
+        MSG_EK_ERROR_DUMMY (R.string.msg_ek_error_dummy),
+        MSG_EK_ERROR_NOT_FOUND (R.string.msg_ek_error_not_found),
+
         ;
 
         private final int mMsgId;

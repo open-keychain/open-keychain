@@ -26,14 +26,15 @@ import android.os.Handler;
 import android.os.Message;
 import android.os.Messenger;
 import android.support.v4.app.Fragment;
-import android.support.v4.widget.DrawerLayout;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.api.OpenKeychainIntents;
 import org.sufficientlysecure.keychain.compatibility.ClipboardReflection;
 import org.sufficientlysecure.keychain.helper.Preferences;
+import org.sufficientlysecure.keychain.helper.ShareHelper;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
 import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
@@ -50,14 +51,14 @@ import java.util.Set;
 public class EncryptFileActivity extends DrawerActivity implements EncryptActivityInterface {
 
     /* Intents */
-    public static final String ACTION_ENCRYPT_FILE = Constants.INTENT_PREFIX + "ENCRYPT_FILE";
+    public static final String ACTION_ENCRYPT_DATA = OpenKeychainIntents.ENCRYPT_DATA;
 
     // enables ASCII Armor for file encryption when uri is given
-    public static final String EXTRA_ASCII_ARMOR = "ascii_armor";
+    public static final String EXTRA_ASCII_ARMOR = OpenKeychainIntents.ENCRYPT_EXTRA_ASCII_ARMOR;
 
     // preselect ids, for internal use
-    public static final String EXTRA_SIGNATURE_KEY_ID = "signature_key_id";
-    public static final String EXTRA_ENCRYPTION_KEY_IDS = "encryption_key_ids";
+    public static final String EXTRA_SIGNATURE_KEY_ID = Constants.EXTRA_PREFIX + "EXTRA_SIGNATURE_KEY_ID";
+    public static final String EXTRA_ENCRYPTION_KEY_IDS = Constants.EXTRA_PREFIX + "EXTRA_ENCRYPTION_IDS";
 
     // view
     private int mCurrentMode = MODE_ASYMMETRIC;
@@ -251,7 +252,7 @@ public class EncryptFileActivity extends DrawerActivity implements EncryptActivi
             }
             data.putString(KeychainIntentService.ENCRYPT_SYMMETRIC_PASSPHRASE, passphrase);
         } else {
-            data.putLong(KeychainIntentService.ENCRYPT_SIGNATURE_KEY_ID, mSigningKeyId);
+            data.putLong(KeychainIntentService.ENCRYPT_SIGNATURE_MASTER_ID, mSigningKeyId);
             data.putLongArray(KeychainIntentService.ENCRYPT_ENCRYPTION_KEYS_IDS, mEncryptionKeyIds);
         }
         return data;
@@ -263,74 +264,18 @@ public class EncryptFileActivity extends DrawerActivity implements EncryptActivi
 
     /**
      * Create Intent Chooser but exclude OK's EncryptActivity.
-     * <p/>
-     * Put together from some stackoverflow posts...
-     *
-     * @param message
-     * @return
      */
     private Intent sendWithChooserExcludingEncrypt(Message message) {
         Intent prototype = createSendIntent(message);
-
         String title = getString(R.string.title_share_file);
 
-        // Disabled, produced an empty list on Huawei U8860 with Android Version 4.0.3
-//        // fallback on Android 2.3, otherwise we would get weird results
-//        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
-//            return Intent.createChooser(prototype, title);
-//        }
-//
-//        // prevent recursion aka Inception :P
-//        String[] blacklist = new String[]{Constants.PACKAGE_NAME + ".ui.EncryptActivity"};
-//
-//        List<LabeledIntent> targetedShareIntents = new ArrayList<LabeledIntent>();
-//
-//        List<ResolveInfo> resInfoList = getPackageManager().queryIntentActivities(prototype, 0);
-//        List<ResolveInfo> resInfoListFiltered = new ArrayList<ResolveInfo>();
-//        if (!resInfoList.isEmpty()) {
-//            for (ResolveInfo resolveInfo : resInfoList) {
-//                // do not add blacklisted ones
-//                if (resolveInfo.activityInfo == null || Arrays.asList(blacklist).contains(resolveInfo.activityInfo.name))
-//                    continue;
-//
-//                resInfoListFiltered.add(resolveInfo);
-//            }
-//
-//            if (!resInfoListFiltered.isEmpty()) {
-//                // sorting for nice readability
-//                Collections.sort(resInfoListFiltered, new Comparator<ResolveInfo>() {
-//                    @Override
-//                    public int compare(ResolveInfo first, ResolveInfo second) {
-//                        String firstName = first.loadLabel(getPackageManager()).toString();
-//                        String secondName = second.loadLabel(getPackageManager()).toString();
-//                        return firstName.compareToIgnoreCase(secondName);
-//                    }
-//                });
-//
-//                // create the custom intent list
-//                for (ResolveInfo resolveInfo : resInfoListFiltered) {
-//                    Intent targetedShareIntent = (Intent) prototype.clone();
-//                    targetedShareIntent.setPackage(resolveInfo.activityInfo.packageName);
-//                    targetedShareIntent.setClassName(resolveInfo.activityInfo.packageName, resolveInfo.activityInfo.name);
-//
-//                    LabeledIntent lIntent = new LabeledIntent(targetedShareIntent,
-//                            resolveInfo.activityInfo.packageName,
-//                            resolveInfo.loadLabel(getPackageManager()),
-//                            resolveInfo.activityInfo.icon);
-//                    targetedShareIntents.add(lIntent);
-//                }
-//
-//                // Create chooser with only one Intent in it
-//                Intent chooserIntent = Intent.createChooser(targetedShareIntents.remove(targetedShareIntents.size() - 1), title);
-//                // append all other Intents
-//                chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, targetedShareIntents.toArray(new Parcelable[]{}));
-//                return chooserIntent;
-//            }
-//
-//        }
+        // we don't want to encrypt the encrypted, no inception ;)
+        String[] blacklist = new String[]{
+                Constants.PACKAGE_NAME + ".ui.EncryptFileActivity",
+                "org.thialfihar.android.apg.ui.EncryptActivity"
+        };
 
-        // fallback to Android's default chooser
-        return Intent.createChooser(prototype, title);
+        return new ShareHelper(this).createChooserExcluding(prototype, title, blacklist);
     }
 
     private Intent createSendIntent(Message message) {
@@ -426,12 +371,12 @@ public class EncryptFileActivity extends DrawerActivity implements EncryptActivi
         setContentView(R.layout.encrypt_file_activity);
 
         // if called with an intent action, do not init drawer navigation
-        if (ACTION_ENCRYPT_FILE.equals(getIntent().getAction())) {
+        if (ACTION_ENCRYPT_DATA.equals(getIntent().getAction())) {
             // lock drawer
-            ((DrawerLayout) findViewById(R.id.drawer_layout)).setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+            deactivateDrawerNavigation();
             // TODO: back button to key?
         } else {
-            setupDrawerNavigation(savedInstanceState);
+            activateDrawerNavigation(savedInstanceState);
         }
 
         // Handle intent actions
@@ -453,7 +398,8 @@ public class EncryptFileActivity extends DrawerActivity implements EncryptActivi
                 .replace(R.id.encrypt_pager_mode,
                         mCurrentMode == MODE_SYMMETRIC
                                 ? new EncryptSymmetricFragment()
-                                : new EncryptAsymmetricFragment())
+                                : new EncryptAsymmetricFragment()
+                )
                 .commitAllowingStateLoss();
         getSupportFragmentManager().executePendingTransactions();
     }
@@ -515,13 +461,14 @@ public class EncryptFileActivity extends DrawerActivity implements EncryptActivi
                 String sharedText = intent.getStringExtra(Intent.EXTRA_TEXT);
                 if (sharedText != null) {
                     // handle like normal text encryption, override action and extras to later
-                    // executeServiceMethod ACTION_ENCRYPT_FILE in main actions
+                    // executeServiceMethod ACTION_ENCRYPT_TEXT in main actions
                     extras.putString(EXTRA_TEXT, sharedText);
                     extras.putBoolean(EXTRA_ASCII_ARMOR, true);
-                    action = ACTION_ENCRYPT_FILE;
+                    action = ACTION_ENCRYPT_TEXT;
                 }
 
-            } else */ {
+            } else */
+            {
                 // Files via content provider, override uri and action
                 uris.clear();
                 uris.add(intent.<Uri>getParcelableExtra(Intent.EXTRA_STREAM));

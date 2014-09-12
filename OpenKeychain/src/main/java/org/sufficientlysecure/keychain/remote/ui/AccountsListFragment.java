@@ -104,7 +104,7 @@ public class AccountsListFragment extends ListFragment implements
                 // edit account settings
                 Intent intent = new Intent(getActivity(), AccountSettingsActivity.class);
                 intent.setData(accountUri);
-                startActivity(intent);
+                startActivityForResult(intent, 0);
             }
         });
 

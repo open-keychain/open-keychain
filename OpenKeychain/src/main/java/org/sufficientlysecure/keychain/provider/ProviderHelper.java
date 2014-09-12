@@ -60,7 +60,7 @@ import org.sufficientlysecure.keychain.service.OperationResultParcel.LogType;
 import org.sufficientlysecure.keychain.service.OperationResultParcel.OperationLog;
 import org.sufficientlysecure.keychain.service.OperationResults.ConsolidateResult;
 import org.sufficientlysecure.keychain.service.OperationResults.SaveKeyringResult;
-import org.sufficientlysecure.keychain.util.FileImportCache;
+import org.sufficientlysecure.keychain.util.ParcelableFileCache;
 import org.sufficientlysecure.keychain.util.IterableIterator;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.ProgressFixedScaler;
@@ -891,8 +891,8 @@ public class ProviderHelper {
 
             Preferences.getPreferences(mContext).setCachedConsolidateNumSecrets(cursor.getCount());
 
-            FileImportCache<ParcelableKeyRing> cache =
-                    new FileImportCache<ParcelableKeyRing>(mContext, "consolidate_secret.pcl");
+            ParcelableFileCache<ParcelableKeyRing> cache =
+                    new ParcelableFileCache<ParcelableKeyRing>(mContext, "consolidate_secret.pcl");
             cache.writeCache(new Iterator<ParcelableKeyRing>() {
                 ParcelableKeyRing ring;
 
@@ -953,8 +953,8 @@ public class ProviderHelper {
 
             Preferences.getPreferences(mContext).setCachedConsolidateNumPublics(cursor.getCount());
 
-            FileImportCache<ParcelableKeyRing> cache =
-                    new FileImportCache<ParcelableKeyRing>(mContext, "consolidate_public.pcl");
+            ParcelableFileCache<ParcelableKeyRing> cache =
+                    new ParcelableFileCache<ParcelableKeyRing>(mContext, "consolidate_public.pcl");
             cache.writeCache(new Iterator<ParcelableKeyRing>() {
                 ParcelableKeyRing ring;
 
@@ -1043,10 +1043,10 @@ public class ProviderHelper {
             log(LogLevel.DEBUG, LogType.MSG_CON_DB_CLEAR);
             mContentResolver.delete(KeyRings.buildUnifiedKeyRingsUri(), null, null);
 
-            FileImportCache<ParcelableKeyRing> cacheSecret =
-                    new FileImportCache<ParcelableKeyRing>(mContext, "consolidate_secret.pcl");
-            FileImportCache<ParcelableKeyRing> cachePublic =
-                    new FileImportCache<ParcelableKeyRing>(mContext, "consolidate_public.pcl");
+            ParcelableFileCache<ParcelableKeyRing> cacheSecret =
+                    new ParcelableFileCache<ParcelableKeyRing>(mContext, "consolidate_secret.pcl");
+            ParcelableFileCache<ParcelableKeyRing> cachePublic =
+                    new ParcelableFileCache<ParcelableKeyRing>(mContext, "consolidate_public.pcl");
 
             // 3. Re-Import secret keyrings from cache
             if (numSecrets > 0) try {

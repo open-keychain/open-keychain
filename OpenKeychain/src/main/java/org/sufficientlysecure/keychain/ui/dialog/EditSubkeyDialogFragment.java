@@ -34,6 +34,7 @@ public class EditSubkeyDialogFragment extends DialogFragment {
 
     public static final int MESSAGE_CHANGE_EXPIRY = 1;
     public static final int MESSAGE_REVOKE = 2;
+    public static final int MESSAGE_STRIP = 3;
 
     private Messenger mMessenger;
 
@@ -71,6 +72,9 @@ public class EditSubkeyDialogFragment extends DialogFragment {
                         break;
                     case 1:
                         sendMessageToHandler(MESSAGE_REVOKE, null);
+                        break;
+                    case 2:
+                        sendMessageToHandler(MESSAGE_STRIP, null);
                         break;
                     default:
                         break;

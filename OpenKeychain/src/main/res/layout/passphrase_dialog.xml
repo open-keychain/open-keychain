@@ -3,22 +3,51 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:paddingLeft="16dp"
-    android:paddingRight="16dp" >
+    android:paddingRight="16dp"
+    android:orientation="vertical">
 
-    <TextView
-        android:id="@+id/passphrase_label_passphrase"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical"
-        android:padding="4dp"
-        android:text="@string/label_passphrase" />
-
-    <EditText
-        android:id="@+id/passphrase_passphrase"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:imeOptions="actionDone"
-        android:inputType="textPassword"
-        android:padding="4dp" />
+        android:orientation="horizontal"
+        android:id="@+id/input">
+
+        <EditText
+            android:id="@+id/passphrase_passphrase"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+            android:imeOptions="actionDone"
+            android:inputType="textPassword"
+            android:hint="@string/label_passphrase"
+            android:ems="10"
+            android:layout_gravity="center_horizontal" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:id="@+id/progress"
+        android:visibility="gone">
+
+        <ProgressBar
+            style="?android:attr/progressBarStyle"
+            android:layout_gravity="center_horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            style="?android:attr/textAppearanceMedium"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingLeft="8dp"
+            android:padding="4dp"
+            android:text="@string/label_unlock"
+            android:layout_gravity="center_vertical" />
+
+    </LinearLayout>
 
 </LinearLayout>

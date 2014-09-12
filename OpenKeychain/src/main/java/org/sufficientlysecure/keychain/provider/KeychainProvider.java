@@ -280,6 +280,10 @@ public class KeychainProvider extends ContentProvider {
                                 + " < " + new Date().getTime() / 1000 + ") AS " + KeyRings.IS_EXPIRED);
                 qb.setProjectionMap(projectionMap);
 
+                if (projection == null) {
+                    throw new IllegalArgumentException("Please provide a projection!");
+                }
+
                 // Need this as list so we can search in it
                 List<String> plist = Arrays.asList(projection);
 
@@ -325,6 +329,7 @@ public class KeychainProvider extends ContentProvider {
                                     + " = " + Tables.KEYS + "." + Keys.MASTER_KEY_ID
                                 + " AND kS." + Keys.IS_REVOKED + " = 0"
                                 + " AND kS." + Keys.CAN_SIGN + " = 1"
+                                + " AND kS." + Keys.HAS_SECRET + " > 1"
                                 + " AND ( kS." + Keys.EXPIRY + " IS NULL OR kS." + Keys.EXPIRY
                                     + " >= " + new Date().getTime() / 1000 + " )"
                             + ")" : "")
@@ -334,6 +339,7 @@ public class KeychainProvider extends ContentProvider {
                                 + " = " + Tables.KEYS + "." + Keys.MASTER_KEY_ID
                                 + " AND kC." + Keys.IS_REVOKED + " = 0"
                                 + " AND kC." + Keys.CAN_CERTIFY + " = 1"
+                                + " AND kC." + Keys.HAS_SECRET + " > 1"
                                 + " AND ( kC." + Keys.EXPIRY + " IS NULL OR kC." + Keys.EXPIRY
                                 + " >= " + new Date().getTime() / 1000 + " )"
                                 + ")" : "")

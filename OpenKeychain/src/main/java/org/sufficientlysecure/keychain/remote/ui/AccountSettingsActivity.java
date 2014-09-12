@@ -31,6 +31,7 @@ import org.sufficientlysecure.keychain.helper.ActionBarHelper;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.remote.AccountSettings;
 import org.sufficientlysecure.keychain.service.OperationResultParcel;
+import org.sufficientlysecure.keychain.ui.CertifyKeyActivity;
 import org.sufficientlysecure.keychain.util.Log;
 
 public class AccountSettingsActivity extends ActionBarActivity {
@@ -104,6 +105,11 @@ public class AccountSettingsActivity extends ActionBarActivity {
 
     private void save() {
         new ProviderHelper(this).updateApiAccount(mAccountUri, mAccountSettingsFragment.getAccSettings());
+        // TODO: show "account saved" instead of "operation succeeded"
+        OperationResultParcel result = new OperationResultParcel(OperationResultParcel.RESULT_OK, null);
+        Intent intent = new Intent();
+        intent.putExtra(OperationResultParcel.EXTRA_RESULT, result);
+        setResult(RESULT_OK, intent);
         finish();
     }
 
@@ -118,4 +124,9 @@ public class AccountSettingsActivity extends ActionBarActivity {
         }
     }
 
+    @Override
+    public void onBackPressed() {
+        save();
+        super.onBackPressed();
+    }
 }

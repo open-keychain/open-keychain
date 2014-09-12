@@ -50,6 +50,7 @@ import org.sufficientlysecure.keychain.pgp.Progressable;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralMsgIdException;
+import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRingData;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.KeychainDatabase;
@@ -61,7 +62,7 @@ import org.sufficientlysecure.keychain.service.OperationResults.ConsolidateResul
 import org.sufficientlysecure.keychain.service.OperationResults.EditKeyResult;
 import org.sufficientlysecure.keychain.service.OperationResults.ImportKeyResult;
 import org.sufficientlysecure.keychain.service.OperationResults.SaveKeyringResult;
-import org.sufficientlysecure.keychain.util.FileImportCache;
+import org.sufficientlysecure.keychain.util.ParcelableFileCache;
 import org.sufficientlysecure.keychain.util.InputData;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.ProgressScaler;
@@ -128,7 +129,7 @@ public class KeychainIntentService extends IntentService implements Progressable
     public static final String SELECTED_URI = "selected_uri";
 
     // encrypt
-    public static final String ENCRYPT_SIGNATURE_KEY_ID = "secret_key_id";
+    public static final String ENCRYPT_SIGNATURE_MASTER_ID = "secret_key_id";
     public static final String ENCRYPT_USE_ASCII_ARMOR = "use_ascii_armor";
     public static final String ENCRYPT_ENCRYPTION_KEYS_IDS = "encryption_keys_ids";
     public static final String ENCRYPT_COMPRESSION_ID = "compression_id";
@@ -251,7 +252,7 @@ public class KeychainIntentService extends IntentService implements Progressable
                 int source = data.get(SOURCE) != null ? data.getInt(SOURCE) : data.getInt(TARGET);
                 Bundle resultData = new Bundle();
 
-                long signatureKeyId = data.getLong(ENCRYPT_SIGNATURE_KEY_ID);
+                long sigMasterKeyId = data.getLong(ENCRYPT_SIGNATURE_MASTER_ID);
                 String symmetricPassphrase = data.getString(ENCRYPT_SYMMETRIC_PASSPHRASE);
 
                 boolean useAsciiArmor = data.getBoolean(ENCRYPT_USE_ASCII_ARMOR);
@@ -280,14 +281,26 @@ public class KeychainIntentService extends IntentService implements Progressable
                             .setOriginalFilename(originalFilename);
 
                     try {
-                        builder.setSignatureMasterKeyId(signatureKeyId)
-                                .setSignaturePassphrase(
-                                        PassphraseCacheService.getCachedPassphrase(this, signatureKeyId))
+
+                        // Find the appropriate subkey to sign with
+                        CachedPublicKeyRing signingRing =
+                                new ProviderHelper(this).getCachedPublicKeyRing(sigMasterKeyId);
+                        long sigSubKeyId = signingRing.getSignId();
+
+                        // Get its passphrase from cache. It is assumed that this passphrase was
+                        // cached prior to the service call.
+                        String passphrase = PassphraseCacheService.getCachedPassphrase(this, sigSubKeyId);
+
+                        // Set signature settings
+                        builder.setSignatureMasterKeyId(sigMasterKeyId)
+                                .setSignatureSubKeyId(sigSubKeyId)
+                                .setSignaturePassphrase(passphrase)
                                 .setSignatureHashAlgorithm(
                                         Preferences.getPreferences(this).getDefaultHashAlgorithm())
-                                .setAdditionalEncryptId(signatureKeyId);
-                    } catch (PassphraseCacheService.KeyNotFoundException e) {
+                                .setAdditionalEncryptId(sigMasterKeyId);
+                    } catch (PgpGeneralException e) {
                         // encrypt-only
+                        // TODO Just silently drop the requested signature? Shouldn't we throw here?
                     }
 
                     // this assumes that the bytes are cleartext (valid for current implementation!)
@@ -512,8 +525,8 @@ public class KeychainIntentService extends IntentService implements Progressable
                     entries = data.getParcelableArrayList(IMPORT_KEY_LIST);
                 } else {
                     // get entries from cached file
-                    FileImportCache<ParcelableKeyRing> cache =
-                            new FileImportCache<ParcelableKeyRing>(this, "key_import.pcl");
+                    ParcelableFileCache<ParcelableKeyRing> cache =
+                            new ParcelableFileCache<ParcelableKeyRing>(this, "key_import.pcl");
                     entries = cache.readCacheIntoList();
                 }
 
@@ -697,7 +710,8 @@ public class KeychainIntentService extends IntentService implements Progressable
                 if (!certificationKey.unlock(signaturePassphrase)) {
                     throw new PgpGeneralException("Error extracting key (bad passphrase?)");
                 }
-                UncachedKeyRing newRing = certificationKey.certifyUserIds(publicRing, userIds);
+                // TODO: supply nfc stuff
+                UncachedKeyRing newRing = certificationKey.certifyUserIds(publicRing, userIds, null, null);
 
                 // store the signed key in our local cache
                 providerHelper.savePublicKeyRing(newRing);
