@@ -50,7 +50,6 @@ import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.helper.Preferences;
 import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
-import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UserIds;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
@@ -335,14 +334,12 @@ public class CertifyKeyFragment extends LoaderFragment
                     Intent intent = new Intent();
                     intent.putExtra(OperationResultParcel.EXTRA_RESULT, result);
                     mActivity.setResult(CertifyKeyActivity.RESULT_OK, intent);
-                    mActivity.finish();
 
                     // check if we need to send the key to the server or not
                     if (mUploadKeyCheckbox.isChecked()) {
                         // upload the newly signed key to the keyserver
                         uploadKey();
                     } else {
-                        mActivity.setResult(CertifyKeyActivity.RESULT_OK);
                         mActivity.finish();
                     }
                 }
@@ -367,7 +364,7 @@ public class CertifyKeyFragment extends LoaderFragment
         intent.setAction(KeychainIntentService.ACTION_UPLOAD_KEYRING);
 
         // set data uri as path to keyring
-        Uri blobUri = KeychainContract.KeyRingData.buildPublicKeyRingUri(mDataUri);
+        Uri blobUri = KeyRings.buildUnifiedKeyRingUri(mDataUri);
         intent.setData(blobUri);
 
         // fill values for this action
