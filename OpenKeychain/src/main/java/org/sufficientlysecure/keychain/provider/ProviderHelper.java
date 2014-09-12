@@ -154,7 +154,7 @@ public class ProviderHelper {
     }
 
     public HashMap<String, Object> getGenericData(Uri uri, String[] proj, int[] types)
-        throws NotFoundException {
+            throws NotFoundException {
         return getGenericData(uri, proj, types, null);
     }
 
@@ -208,7 +208,7 @@ public class ProviderHelper {
                 KeyRings.HAS_ANY_SECRET, KeyRings.VERIFIED,
                 // and of course, ring data
                 KeyRings.PUBKEY_DATA
-            }, KeyRings.HAS_ANY_SECRET + " = 1", null, null);
+        }, KeyRings.HAS_ANY_SECRET + " = 1", null, null);
 
         try {
             LongSparseArray<CanonicalizedPublicKey> result = new LongSparseArray<CanonicalizedPublicKey>();
@@ -406,11 +406,11 @@ public class ProviderHelper {
                         values.put(Keys.EXPIRY, expiryDate.getTime() / 1000);
                         if (key.isExpired()) {
                             log(LogLevel.DEBUG, keyId == masterKeyId ?
-                                    LogType.MSG_IP_MASTER_EXPIRED : LogType.MSG_IP_SUBKEY_EXPIRED,
+                                            LogType.MSG_IP_MASTER_EXPIRED : LogType.MSG_IP_SUBKEY_EXPIRED,
                                     expiryDate.toString());
                         } else {
                             log(LogLevel.DEBUG, keyId == masterKeyId ?
-                                    LogType.MSG_IP_MASTER_EXPIRES : LogType.MSG_IP_SUBKEY_EXPIRES,
+                                            LogType.MSG_IP_MASTER_EXPIRES : LogType.MSG_IP_SUBKEY_EXPIRES,
                                     expiryDate.toString());
                         }
                     }
@@ -1307,6 +1307,27 @@ public class ProviderHelper {
 
         return keyIds;
     }
+
+    public Set<String> getAllFingerprints(Uri uri) {
+         Set<String> fingerprints = new HashSet<String>();
+         String[] projection = new String[]{KeyRings.FINGERPRINT};
+         Cursor cursor = mContentResolver.query(uri, projection, null, null, null);
+         try {
+             if(cursor != null) {
+                 int fingerprintColumn = cursor.getColumnIndex(KeyRings.FINGERPRINT);
+                 while(cursor.moveToNext()) {
+                     fingerprints.add(
+                            PgpKeyHelper.convertFingerprintToHex(cursor.getBlob(fingerprintColumn))
+                         );
+                     }
+                 }
+             } finally {
+             if (cursor != null) {
+                 cursor.close();
+                 }
+             }
+         return fingerprints;
+     }
 
     public byte[] getApiAppSignature(String packageName) {
         Uri queryUri = ApiApps.buildByPackageNameUri(packageName);
