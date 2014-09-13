@@ -339,6 +339,7 @@ public class OperationResultParcel implements Parcelable {
         MSG_KC_UID_REVOKE_DUP (R.string.msg_kc_uid_revoke_dup),
         MSG_KC_UID_REVOKE_OLD (R.string.msg_kc_uid_revoke_old),
         MSG_KC_UID_REMOVE (R.string.msg_kc_uid_remove),
+        MSG_KC_UID_WARN_ENCODING (R.string.msg_kc_uid_warn_encoding),
 
 
         // keyring consolidation
