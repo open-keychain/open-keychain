@@ -1,0 +1,103 @@
+/*
+ * Copyright (C) 2014 Daniel Albert
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+package org.sufficientlysecure.keychain.helper;
+
+import android.content.Context;
+import android.content.Intent;
+import android.os.AsyncTask;
+import android.os.Bundle;
+import android.os.Messenger;
+
+import org.sufficientlysecure.keychain.keyimport.HkpKeyserver;
+import org.sufficientlysecure.keychain.keyimport.ImportKeysListEntry;
+import org.sufficientlysecure.keychain.keyimport.Keyserver;
+import org.sufficientlysecure.keychain.provider.KeychainContract;
+import org.sufficientlysecure.keychain.provider.ProviderHelper;
+import org.sufficientlysecure.keychain.service.KeychainIntentService;
+import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
+import org.sufficientlysecure.keychain.util.Log;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class KeyUpdateHelper {
+
+    public void updateAllKeys(Context context, KeychainIntentServiceHandler finishedHandler) {
+        UpdateTask updateTask = new UpdateTask(context, finishedHandler);
+        updateTask.execute();
+    }
+
+    public ImportKeysListEntry getKeyByFingerprint(Context context, String fingerprint) {
+        String[] servers = Preferences.getPreferences(context).getKeyServers();
+        if (servers != null && servers.length != 0 && servers[0] != null) {
+            try {
+                HkpKeyserver hkp = new HkpKeyserver(servers[0]);
+                for (ImportKeysListEntry key : hkp.search("0x" + fingerprint)) {
+                    if (fingerprint.equals(key.getFingerprintHex())) {
+                        return key;
+                    }
+                }
+            } catch (Keyserver.QueryNeedsRepairException e) {
+            } catch (Keyserver.QueryFailedException e) {
+            }
+        }
+        return null;
+    }
+
+    private class UpdateTask extends AsyncTask<Void, Void, Void> {
+        private Context mContext;
+        private KeychainIntentServiceHandler mHandler;
+
+        public UpdateTask(Context context, KeychainIntentServiceHandler handler) {
+            this.mContext = context;
+            this.mHandler = handler;
+        }
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            ProviderHelper providerHelper = new ProviderHelper(mContext);
+            List<ImportKeysListEntry> keys = new ArrayList<ImportKeysListEntry>();
+            String[] servers = Preferences.getPreferences(mContext).getKeyServers();
+
+            if (servers != null && servers.length > 0) {
+                // Load all the fingerprints in the database and prepare to import them
+                for (String fprint : providerHelper.getAllFingerprints(KeychainContract.KeyRings.buildUnifiedKeyRingsUri())) {
+                    ImportKeysListEntry key = new ImportKeysListEntry();
+                    key.setFingerprintHex(fprint);
+                    key.setBitStrength(1337);
+                    key.setOrigin(servers[0]);
+                    keys.add(key);
+                }
+
+                // Start the service and update the keys
+                Intent importIntent = new Intent(mContext, KeychainIntentService.class);
+                importIntent.setAction(KeychainIntentService.ACTION_DOWNLOAD_AND_IMPORT_KEYS);
+
+                Bundle importData = new Bundle();
+                importData.putParcelableArrayList(KeychainIntentService.DOWNLOAD_KEY_LIST,
+                        new ArrayList<ImportKeysListEntry>(keys));
+                importIntent.putExtra(KeychainIntentService.EXTRA_DATA, importData);
+
+                importIntent.putExtra(KeychainIntentService.EXTRA_MESSENGER, new Messenger(mHandler));
+
+                mContext.startService(importIntent);
+            }
+            return null;
+        }
+    }
+}
