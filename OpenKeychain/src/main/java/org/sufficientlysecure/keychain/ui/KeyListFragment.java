@@ -36,6 +36,7 @@ import android.support.v4.content.Loader;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.CursorAdapter;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.SearchView;
 import android.view.ActionMode;
@@ -43,6 +44,7 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
@@ -94,6 +96,8 @@ public class KeyListFragment extends LoaderFragment
     private Button mButtonEmptyCreate;
     private Button mButtonEmptyImport;
 
+    boolean hideMenu = false;
+
     /**
      * Load custom layout with StickyListView from library
      */
@@ -134,8 +138,48 @@ public class KeyListFragment extends LoaderFragment
                 R.color.android_purple_dark,
                 R.color.android_purple_light);
         mSwipeRefreshLayout.setStickyListHeadersListView(mStickyList);
+        mSwipeRefreshLayout.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if (event.getAction() == MotionEvent.ACTION_MOVE) {
+                    updateActionbarForSwipe(true);
+                } else {
+                    updateActionbarForSwipe(false);
+                }
+                return false;
+            }
+        });
 
         return root;
+    }
+
+    private void updateActionbarForSwipe(boolean show) {
+        ActionBarActivity activity = (ActionBarActivity) getActivity();
+        ActionBar bar = activity.getSupportActionBar();
+
+        if (show) {
+            bar.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
+            bar.setDisplayUseLogoEnabled(false);
+            bar.setCustomView(R.layout.custom_actionbar);
+            TextView title = (TextView) getActivity().findViewById(R.id.custom_actionbar_text);
+            title.setText(R.string.swipe_to_update);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+                hideMenu = true;
+                activity.invalidateOptionsMenu();
+            }
+        } else {
+            bar.setTitle(getActivity().getTitle());
+            bar.setDisplayHomeAsUpEnabled(true);
+            bar.setDisplayShowTitleEnabled(true);
+            bar.setDisplayUseLogoEnabled(true);
+            bar.setDisplayShowHomeEnabled(true);
+            bar.setDisplayShowCustomEnabled(false);
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+                hideMenu = false;
+                activity.invalidateOptionsMenu();
+            }
+        }
     }
 
     @Override
@@ -420,6 +464,12 @@ public class KeyListFragment extends LoaderFragment
                 return true;
             }
         });
+
+        if (hideMenu) {
+            for (int i = 0; i < menu.size(); i++) {
+                menu.getItem(i).setVisible(false);
+            }
+        }
 
         super.onCreateOptionsMenu(menu, inflater);
     }
@@ -723,5 +773,6 @@ public class KeyListFragment extends LoaderFragment
             }
         };
         updateHelper.updateAllKeys(getActivity(), finishedHandler);
+        updateActionbarForSwipe(false);
     }
 }
