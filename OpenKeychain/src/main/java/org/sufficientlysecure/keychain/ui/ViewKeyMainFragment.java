@@ -235,6 +235,7 @@ public class ViewKeyMainFragment extends LoaderFragment implements
                         mActionEdit.setEnabled(false);
                         mActionCertify.setEnabled(false);
                         mActionCertifyText.setEnabled(false);
+                        mActionEncryptText.setEnabled(false);
                         mActionEncryptFiles.setEnabled(false);
                     } else {
                         mActionEdit.setEnabled(true);
@@ -243,10 +244,12 @@ public class ViewKeyMainFragment extends LoaderFragment implements
                         if (!data.isNull(INDEX_UNIFIED_EXPIRY) && expiryDate.before(new Date())) {
                             mActionCertify.setEnabled(false);
                             mActionCertifyText.setEnabled(false);
+                            mActionEncryptText.setEnabled(false);
                             mActionEncryptFiles.setEnabled(false);
                         } else {
                             mActionCertify.setEnabled(true);
                             mActionCertifyText.setEnabled(true);
+                            mActionEncryptText.setEnabled(true);
                             mActionEncryptFiles.setEnabled(true);
                         }
                     }
