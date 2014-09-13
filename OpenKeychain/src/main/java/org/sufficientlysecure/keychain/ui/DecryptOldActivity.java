@@ -33,7 +33,7 @@ import org.sufficientlysecure.keychain.util.Log;
 
 import java.util.regex.Matcher;
 
-public class DecryptActivity extends DrawerActivity {
+public class DecryptOldActivity extends DrawerActivity {
 
     /* Intents */
     public static final String ACTION_DECRYPT = OpenKeychainIntents.DECRYPT;
@@ -64,7 +64,7 @@ public class DecryptActivity extends DrawerActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.decrypt_activity);
+        setContentView(R.layout.decrypt_activity_old);
 
         initView();
 
