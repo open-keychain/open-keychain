@@ -440,8 +440,7 @@ public class UncachedKeyRing {
                             }
                             // warn user if the signature was made with bad encoding
                             if (!cert.verifySignature(masterKey, userId)) {
-                                log.add(LogLevel.WARN, LogType.MSG_KC_UID_WARN_ENCODING,
-                                        indent, userId);
+                                log.add(LogLevel.WARN, LogType.MSG_KC_UID_WARN_ENCODING, indent);
                             }
                         } catch (PgpGeneralException e) {
                             log.add(LogLevel.WARN, LogType.MSG_KC_UID_BAD_ERR,
