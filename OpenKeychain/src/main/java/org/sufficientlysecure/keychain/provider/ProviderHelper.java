@@ -472,6 +472,10 @@ public class ProviderHelper {
                         // verify signatures from known private keys
                         if (trustedKeys.indexOfKey(certId) >= 0) {
                             CanonicalizedPublicKey trustedKey = trustedKeys.get(certId);
+                            if (cert.isRevocation()) {
+                                // skip for now
+                                continue;
+                            }
                             cert.init(trustedKey);
                             if (cert.verifySignature(masterKey, rawUserId)) {
                                 item.trustedCerts.add(cert);
