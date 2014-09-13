@@ -128,10 +128,18 @@ public class UncachedPublicKey {
     public String getPrimaryUserId() {
         String found = null;
         PGPSignature foundSig = null;
+        // noinspection unchecked
         for (String userId : new IterableIterator<String>(mPublicKey.getUserIDs())) {
             PGPSignature revocation = null;
 
-            for (PGPSignature sig : new IterableIterator<PGPSignature>(mPublicKey.getSignaturesForID(userId))) {
+            @SuppressWarnings("unchecked")
+            Iterator<PGPSignature> signaturesIt = mPublicKey.getSignaturesForID(userId);
+            // no signatures for this User ID
+            if (signaturesIt == null) {
+                continue;
+            }
+
+            for (PGPSignature sig : new IterableIterator<PGPSignature>(signaturesIt)) {
                 try {
 
                     // if this is a revocation, this is not the user id
@@ -314,17 +322,21 @@ public class UncachedPublicKey {
 
     public Iterator<WrappedSignature> getSignaturesForId(String userId) {
         final Iterator<PGPSignature> it = mPublicKey.getSignaturesForID(userId);
-        return new Iterator<WrappedSignature>() {
-            public void remove() {
-                it.remove();
-            }
-            public WrappedSignature next() {
-                return new WrappedSignature(it.next());
-            }
-            public boolean hasNext() {
-                return it.hasNext();
-            }
-        };
+        if (it != null) {
+            return new Iterator<WrappedSignature>() {
+                public void remove() {
+                    it.remove();
+                }
+                public WrappedSignature next() {
+                    return new WrappedSignature(it.next());
+                }
+                public boolean hasNext() {
+                    return it.hasNext();
+                }
+            };
+        } else {
+            return null;
+        }
     }
 
 }

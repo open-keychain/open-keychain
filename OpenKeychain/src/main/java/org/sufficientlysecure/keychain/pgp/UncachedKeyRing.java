@@ -375,130 +375,131 @@ public class UncachedKeyRing {
                 PGPSignature selfCert = null;
                 revocation = null;
 
-                // look through signatures for this specific key
-                for (PGPSignature zert : new IterableIterator<PGPSignature>(
-                        masterKey.getSignaturesForID(userId))) {
-                    WrappedSignature cert = new WrappedSignature(zert);
-                    long certId = cert.getKeyId();
+                // look through signatures for this specific user id
+                @SuppressWarnings("unchecked")
+                Iterator<PGPSignature> signaturesIt = masterKey.getSignaturesForID(userId);
+                if (signaturesIt != null) {
+                    for (PGPSignature zert : new IterableIterator<PGPSignature>(signaturesIt)) {
+                        WrappedSignature cert = new WrappedSignature(zert);
+                        long certId = cert.getKeyId();
 
-                    int type = zert.getSignatureType();
-                    if (type != PGPSignature.DEFAULT_CERTIFICATION
-                            && type != PGPSignature.NO_CERTIFICATION
-                            && type != PGPSignature.CASUAL_CERTIFICATION
-                            && type != PGPSignature.POSITIVE_CERTIFICATION
-                            && type != PGPSignature.CERTIFICATION_REVOCATION) {
-                        log.add(LogLevel.WARN, LogType.MSG_KC_UID_BAD_TYPE,
-                                indent, "0x" + Integer.toString(zert.getSignatureType(), 16));
-                        modified = PGPPublicKey.removeCertification(modified, userId, zert);
-                        badCerts += 1;
-                        continue;
-                    }
-
-                    if (cert.getCreationTime().after(now)) {
-                        // Creation date in the future? No way!
-                        log.add(LogLevel.WARN, LogType.MSG_KC_UID_BAD_TIME, indent);
-                        modified = PGPPublicKey.removeCertification(modified, userId, zert);
-                        badCerts += 1;
-                        continue;
-                    }
-
-                    if (cert.isLocal()) {
-                        // Creation date in the future? No way!
-                        log.add(LogLevel.WARN, LogType.MSG_KC_UID_BAD_LOCAL, indent);
-                        modified = PGPPublicKey.removeCertification(modified, userId, zert);
-                        badCerts += 1;
-                        continue;
-                    }
-
-                    // If this is a foreign signature, ...
-                    if (certId != masterKeyId) {
-                        // never mind any further for public keys, but remove them from secret ones
-                        if (isSecret()) {
-                            log.add(LogLevel.WARN, LogType.MSG_KC_UID_FOREIGN,
-                                    indent, PgpKeyHelper.convertKeyIdToHex(certId));
+                        int type = zert.getSignatureType();
+                        if (type != PGPSignature.DEFAULT_CERTIFICATION
+                                && type != PGPSignature.NO_CERTIFICATION
+                                && type != PGPSignature.CASUAL_CERTIFICATION
+                                && type != PGPSignature.POSITIVE_CERTIFICATION
+                                && type != PGPSignature.CERTIFICATION_REVOCATION) {
+                            log.add(LogLevel.WARN, LogType.MSG_KC_UID_BAD_TYPE,
+                                    indent, "0x" + Integer.toString(zert.getSignatureType(), 16));
                             modified = PGPPublicKey.removeCertification(modified, userId, zert);
                             badCerts += 1;
+                            continue;
                         }
-                        continue;
-                    }
 
-                    // Otherwise, first make sure it checks out
-                    try {
-                        cert.init(masterKey);
-                        if (!cert.verifySignature(masterKey, userId)) {
-                            log.add(LogLevel.WARN, LogType.MSG_KC_UID_BAD,
+                        if (cert.getCreationTime().after(now)) {
+                            // Creation date in the future? No way!
+                            log.add(LogLevel.WARN, LogType.MSG_KC_UID_BAD_TIME, indent);
+                            modified = PGPPublicKey.removeCertification(modified, userId, zert);
+                            badCerts += 1;
+                            continue;
+                        }
+
+                        if (cert.isLocal()) {
+                            // Creation date in the future? No way!
+                            log.add(LogLevel.WARN, LogType.MSG_KC_UID_BAD_LOCAL, indent);
+                            modified = PGPPublicKey.removeCertification(modified, userId, zert);
+                            badCerts += 1;
+                            continue;
+                        }
+
+                        // If this is a foreign signature, ...
+                        if (certId != masterKeyId) {
+                            // never mind any further for public keys, but remove them from secret ones
+                            if (isSecret()) {
+                                log.add(LogLevel.WARN, LogType.MSG_KC_UID_FOREIGN,
+                                        indent, PgpKeyHelper.convertKeyIdToHex(certId));
+                                modified = PGPPublicKey.removeCertification(modified, userId, zert);
+                                badCerts += 1;
+                            }
+                            continue;
+                        }
+
+                        // Otherwise, first make sure it checks out
+                        try {
+                            cert.init(masterKey);
+                            if (!cert.verifySignature(masterKey, userId)) {
+                                log.add(LogLevel.WARN, LogType.MSG_KC_UID_BAD,
+                                        indent, userId);
+                                modified = PGPPublicKey.removeCertification(modified, userId, zert);
+                                badCerts += 1;
+                                continue;
+                            }
+                        } catch (PgpGeneralException e) {
+                            log.add(LogLevel.WARN, LogType.MSG_KC_UID_BAD_ERR,
                                     indent, userId);
                             modified = PGPPublicKey.removeCertification(modified, userId, zert);
                             badCerts += 1;
                             continue;
                         }
-                    } catch (PgpGeneralException e) {
-                        log.add(LogLevel.WARN, LogType.MSG_KC_UID_BAD_ERR,
-                                indent, userId);
-                        modified = PGPPublicKey.removeCertification(modified, userId, zert);
-                        badCerts += 1;
-                        continue;
+
+                        switch (type) {
+                            case PGPSignature.DEFAULT_CERTIFICATION:
+                            case PGPSignature.NO_CERTIFICATION:
+                            case PGPSignature.CASUAL_CERTIFICATION:
+                            case PGPSignature.POSITIVE_CERTIFICATION:
+                                if (selfCert == null) {
+                                    selfCert = zert;
+                                } else if (selfCert.getCreationTime().before(cert.getCreationTime())) {
+                                    log.add(LogLevel.DEBUG, LogType.MSG_KC_UID_CERT_DUP,
+                                            indent, userId);
+                                    modified = PGPPublicKey.removeCertification(modified, userId, selfCert);
+                                    redundantCerts += 1;
+                                    selfCert = zert;
+                                } else {
+                                    log.add(LogLevel.DEBUG, LogType.MSG_KC_UID_CERT_DUP,
+                                            indent, userId);
+                                    modified = PGPPublicKey.removeCertification(modified, userId, zert);
+                                    redundantCerts += 1;
+                                }
+                                // If there is a revocation certificate, and it's older than this, drop it
+                                if (revocation != null
+                                        && revocation.getCreationTime().before(selfCert.getCreationTime())) {
+                                    log.add(LogLevel.DEBUG, LogType.MSG_KC_UID_REVOKE_OLD,
+                                            indent, userId);
+                                    modified = PGPPublicKey.removeCertification(modified, userId, revocation);
+                                    revocation = null;
+                                    redundantCerts += 1;
+                                }
+                                break;
+
+                            case PGPSignature.CERTIFICATION_REVOCATION:
+                                // If this is older than the (latest) self cert, drop it
+                                if (selfCert != null && selfCert.getCreationTime().after(zert.getCreationTime())) {
+                                    log.add(LogLevel.DEBUG, LogType.MSG_KC_UID_REVOKE_OLD,
+                                            indent, userId);
+                                    modified = PGPPublicKey.removeCertification(modified, userId, zert);
+                                    redundantCerts += 1;
+                                    continue;
+                                }
+                                // first revocation? remember it.
+                                if (revocation == null) {
+                                    revocation = zert;
+                                    // more revocations? at least one is superfluous, then.
+                                } else if (revocation.getCreationTime().before(cert.getCreationTime())) {
+                                    log.add(LogLevel.DEBUG, LogType.MSG_KC_UID_REVOKE_DUP,
+                                            indent, userId);
+                                    modified = PGPPublicKey.removeCertification(modified, userId, revocation);
+                                    redundantCerts += 1;
+                                    revocation = zert;
+                                } else {
+                                    log.add(LogLevel.DEBUG, LogType.MSG_KC_UID_REVOKE_DUP,
+                                            indent, userId);
+                                    modified = PGPPublicKey.removeCertification(modified, userId, zert);
+                                    redundantCerts += 1;
+                                }
+                                break;
+                        }
                     }
-
-                    switch (type) {
-                        case PGPSignature.DEFAULT_CERTIFICATION:
-                        case PGPSignature.NO_CERTIFICATION:
-                        case PGPSignature.CASUAL_CERTIFICATION:
-                        case PGPSignature.POSITIVE_CERTIFICATION:
-                            if (selfCert == null) {
-                                selfCert = zert;
-                            } else if (selfCert.getCreationTime().before(cert.getCreationTime())) {
-                                log.add(LogLevel.DEBUG, LogType.MSG_KC_UID_CERT_DUP,
-                                        indent, userId);
-                                modified = PGPPublicKey.removeCertification(modified, userId, selfCert);
-                                redundantCerts += 1;
-                                selfCert = zert;
-                            } else {
-                                log.add(LogLevel.DEBUG, LogType.MSG_KC_UID_CERT_DUP,
-                                        indent, userId);
-                                modified = PGPPublicKey.removeCertification(modified, userId, zert);
-                                redundantCerts += 1;
-                            }
-                            // If there is a revocation certificate, and it's older than this, drop it
-                            if (revocation != null
-                                    && revocation.getCreationTime().before(selfCert.getCreationTime())) {
-                                log.add(LogLevel.DEBUG, LogType.MSG_KC_UID_REVOKE_OLD,
-                                        indent, userId);
-                                modified = PGPPublicKey.removeCertification(modified, userId, revocation);
-                                revocation = null;
-                                redundantCerts += 1;
-                            }
-                            break;
-
-                        case PGPSignature.CERTIFICATION_REVOCATION:
-                            // If this is older than the (latest) self cert, drop it
-                            if (selfCert != null && selfCert.getCreationTime().after(zert.getCreationTime())) {
-                                log.add(LogLevel.DEBUG, LogType.MSG_KC_UID_REVOKE_OLD,
-                                        indent, userId);
-                                modified = PGPPublicKey.removeCertification(modified, userId, zert);
-                                redundantCerts += 1;
-                                continue;
-                            }
-                            // first revocation? remember it.
-                            if (revocation == null) {
-                                revocation = zert;
-                                // more revocations? at least one is superfluous, then.
-                            } else if (revocation.getCreationTime().before(cert.getCreationTime())) {
-                                log.add(LogLevel.DEBUG, LogType.MSG_KC_UID_REVOKE_DUP,
-                                        indent, userId);
-                                modified = PGPPublicKey.removeCertification(modified, userId, revocation);
-                                redundantCerts += 1;
-                                revocation = zert;
-                            } else {
-                                log.add(LogLevel.DEBUG, LogType.MSG_KC_UID_REVOKE_DUP,
-                                        indent, userId);
-                                modified = PGPPublicKey.removeCertification(modified, userId, zert);
-                                redundantCerts += 1;
-                            }
-                            break;
-
-                    }
-
                 }
 
                 // If no valid certificate (if only a revocation) remains, drop it
@@ -510,7 +511,7 @@ public class UncachedKeyRing {
             }
 
             // If NO user ids remain, error out!
-            if (!modified.getUserIDs().hasNext()) {
+            if (modified == null || !modified.getUserIDs().hasNext()) {
                 log.add(LogLevel.ERROR, LogType.MSG_KC_ERROR_NO_UID, indent);
                 return null;
             }
@@ -817,7 +818,13 @@ public class UncachedKeyRing {
 
                 // Copy over all user id certificates
                 for (String userId : new IterableIterator<String>(key.getUserIDs())) {
-                    for (PGPSignature cert : new IterableIterator<PGPSignature>(key.getSignaturesForID(userId))) {
+                    @SuppressWarnings("unchecked")
+                    Iterator<PGPSignature> signaturesIt = key.getSignaturesForID(userId);
+                    // no signatures for this User ID, skip it
+                    if (signaturesIt == null) {
+                        continue;
+                    }
+                    for (PGPSignature cert : new IterableIterator<PGPSignature>(signaturesIt)) {
                         // Don't merge foreign stuff into secret keys
                         if (cert.getKeyID() != masterKeyId && isSecret()) {
                             continue;
