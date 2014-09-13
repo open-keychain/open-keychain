@@ -1,0 +1,357 @@
+/*
+ * Copyright (C) 2014 Dominik Schürmann <dominik@dominikschuermann.de>
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+package org.sufficientlysecure.keychain.ui;
+
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.os.AsyncTask;
+import android.os.Bundle;
+import android.os.Messenger;
+import android.support.v4.app.DialogFragment;
+import android.support.v4.app.FragmentActivity;
+import android.view.KeyEvent;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import org.sufficientlysecure.keychain.Constants;
+import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.compatibility.DialogFragmentWorkaround;
+import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey;
+import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKeyRing;
+import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
+import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
+import org.sufficientlysecure.keychain.provider.KeychainContract;
+import org.sufficientlysecure.keychain.provider.ProviderHelper;
+import org.sufficientlysecure.keychain.service.PassphraseCacheService;
+import org.sufficientlysecure.keychain.ui.dialog.CustomAlertDialogBuilder;
+import org.sufficientlysecure.keychain.util.Log;
+
+/**
+ * We can not directly create a dialog on the application context.
+ * This activity encapsulates a DialogFragment to emulate a dialog.
+ */
+public class PassphraseDialogActivity extends FragmentActivity {
+    public static final String MESSAGE_DATA_PASSPHRASE = "passphrase";
+
+    public static final String EXTRA_SECRET_KEY_ID = "secret_key_id";
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        // this activity itself has no content view (see manifest)
+
+        long keyId = getIntent().getLongExtra(EXTRA_SECRET_KEY_ID, 0);
+
+        show(this, keyId);
+    }
+
+    /**
+     * Shows passphrase dialog to cache a new passphrase the user enters for using it later for
+     * encryption. Based on mSecretKeyId it asks for a passphrase to open a private key or it asks
+     * for a symmetric passphrase
+     */
+    public static void show(final FragmentActivity context, final long keyId) {
+        DialogFragmentWorkaround.INTERFACE.runnableRunDelayed(new Runnable() {
+            public void run() {
+                // do NOT check if the key even needs a passphrase. that's not our job here.
+                PassphraseDialogFragment frag = new PassphraseDialogFragment();
+                Bundle args = new Bundle();
+                args.putLong(EXTRA_SECRET_KEY_ID, keyId);
+
+                frag.setArguments(args);
+
+                frag.show(context.getSupportFragmentManager(), "passphraseDialog");
+            }
+        });
+    }
+
+    public static class PassphraseDialogFragment extends DialogFragment implements TextView.OnEditorActionListener {
+        private Messenger mMessenger;
+        private EditText mPassphraseEditText;
+        private View mInput, mProgress;
+
+        CanonicalizedSecretKeyRing mSecretRing = null;
+        boolean mIsCancelled = false;
+        long mSubKeyId;
+
+        /**
+         * Creates dialog
+         */
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            final Activity activity = getActivity();
+            mSubKeyId = getArguments().getLong(EXTRA_SECRET_KEY_ID);
+
+            CustomAlertDialogBuilder alert = new CustomAlertDialogBuilder(activity);
+
+            alert.setTitle(R.string.title_authentication);
+
+            String userId;
+
+            if (mSubKeyId == Constants.key.symmetric || mSubKeyId == Constants.key.none) {
+                alert.setMessage(R.string.passphrase_for_symmetric_encryption);
+            } else {
+                String message;
+                try {
+                    ProviderHelper helper = new ProviderHelper(activity);
+                    mSecretRing = helper.getCanonicalizedSecretKeyRing(
+                            KeychainContract.KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(mSubKeyId));
+                    // yes the inner try/catch block is necessary, otherwise the final variable
+                    // above can't be statically verified to have been set in all cases because
+                    // the catch clause doesn't return.
+                    try {
+                        userId = mSecretRing.getPrimaryUserIdWithFallback();
+                    } catch (PgpGeneralException e) {
+                        userId = null;
+                    }
+
+                /* Get key type for message */
+                    // find a master key id for our key
+                    long masterKeyId = new ProviderHelper(getActivity()).getMasterKeyId(mSubKeyId);
+                    CachedPublicKeyRing keyRing = new ProviderHelper(getActivity()).getCachedPublicKeyRing(masterKeyId);
+                    // get the type of key (from the database)
+                    CanonicalizedSecretKey.SecretKeyType keyType = keyRing.getSecretKeyType(mSubKeyId);
+                    switch (keyType) {
+                        case PASSPHRASE:
+                            message = getString(R.string.passphrase_for, userId);
+                            break;
+                        case DIVERT_TO_CARD:
+                            message = getString(R.string.yubikey_pin, userId);
+                            break;
+                        default:
+                            message = "This should not happen!";
+                            break;
+                    }
+
+                } catch (ProviderHelper.NotFoundException e) {
+                    alert.setTitle(R.string.title_key_not_found);
+                    alert.setMessage(getString(R.string.key_not_found, mSubKeyId));
+                    alert.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            dismiss();
+                        }
+                    });
+                    alert.setCancelable(false);
+                    return alert.create();
+                }
+
+                alert.setMessage(message);
+            }
+
+            LayoutInflater inflater = activity.getLayoutInflater();
+            View view = inflater.inflate(R.layout.passphrase_dialog, null);
+            alert.setView(view);
+
+            mPassphraseEditText = (EditText) view.findViewById(R.id.passphrase_passphrase);
+            mInput = view.findViewById(R.id.input);
+            mProgress = view.findViewById(R.id.progress);
+
+            alert.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+
+                @Override
+                public void onClick(DialogInterface dialog, int id) {
+                    dialog.cancel();
+                }
+            });
+
+            // Hack to open keyboard.
+            // This is the only method that I found to work across all Android versions
+            // http://turbomanage.wordpress.com/2012/05/02/show-soft-keyboard-automatically-when-edittext-receives-focus/
+            // Notes: * onCreateView can't be used because we want to add buttons to the dialog
+            //        * opening in onActivityCreated does not work on Android 4.4
+            mPassphraseEditText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+                @Override
+                public void onFocusChange(View v, boolean hasFocus) {
+                    mPassphraseEditText.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            InputMethodManager imm = (InputMethodManager) getActivity()
+                                    .getSystemService(Context.INPUT_METHOD_SERVICE);
+                            imm.showSoftInput(mPassphraseEditText, InputMethodManager.SHOW_IMPLICIT);
+                        }
+                    });
+                }
+            });
+            mPassphraseEditText.requestFocus();
+
+            mPassphraseEditText.setImeActionLabel(getString(android.R.string.ok), EditorInfo.IME_ACTION_DONE);
+            mPassphraseEditText.setOnEditorActionListener(this);
+
+            AlertDialog dialog = alert.create();
+            dialog.setButton(DialogInterface.BUTTON_POSITIVE,
+                    activity.getString(android.R.string.ok), (DialogInterface.OnClickListener) null);
+
+            return dialog;
+        }
+
+        @Override
+        public void onStart() {
+            super.onStart();
+
+            // Override the default behavior so the dialog is NOT dismissed on click
+            final Button positive = ((AlertDialog) getDialog()).getButton(DialogInterface.BUTTON_POSITIVE);
+            positive.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    final String passphrase = mPassphraseEditText.getText().toString();
+
+                    // Early breakout if we are dealing with a symmetric key
+                    if (mSecretRing == null) {
+                        PassphraseCacheService.addCachedPassphrase(getActivity(), Constants.key.symmetric,
+                                passphrase, getString(R.string.passp_cache_notif_pwd));
+                        // also return passphrase back to activity
+                        Intent returnIntent = new Intent();
+                        returnIntent.putExtra(MESSAGE_DATA_PASSPHRASE, passphrase);
+                        getActivity().setResult(RESULT_OK, returnIntent);
+                        dismiss();
+                        getActivity().finish();
+                        return;
+                    }
+
+                    mInput.setVisibility(View.GONE);
+                    mProgress.setVisibility(View.VISIBLE);
+                    positive.setEnabled(false);
+
+                    new AsyncTask<Void, Void, Boolean>() {
+                        @Override
+                        protected Boolean doInBackground(Void... params) {
+                            try {
+                                // wait some 100ms here, give the user time to appreciate the progress bar
+                                try {
+                                    Thread.sleep(100);
+                                } catch (InterruptedException e) {
+                                    // never mind
+                                }
+                                // make sure this unlocks
+                                return mSecretRing.getSecretKey(mSubKeyId).unlock(passphrase);
+                            } catch (PgpGeneralException e) {
+                                Toast.makeText(getActivity(), R.string.error_could_not_extract_private_key,
+                                        Toast.LENGTH_SHORT).show();
+
+                                getActivity().setResult(RESULT_CANCELED);
+                                dismiss();
+                                getActivity().finish();
+                                return false;
+                            }
+                        }
+
+                        /** Handle a good or bad passphrase. This happens in the UI thread!  */
+                        @Override
+                        protected void onPostExecute(Boolean result) {
+                            super.onPostExecute(result);
+
+                            // if we were cancelled in the meantime, the result isn't relevant anymore
+                            if (mIsCancelled) {
+                                return;
+                            }
+
+                            // if the passphrase was wrong, reset and re-enable the dialogue
+                            if (!result) {
+                                mPassphraseEditText.setText("");
+                                mPassphraseEditText.setError(getString(R.string.wrong_passphrase));
+                                mInput.setVisibility(View.VISIBLE);
+                                mProgress.setVisibility(View.GONE);
+                                positive.setEnabled(true);
+                                return;
+                            }
+
+                            // cache the new passphrase
+                            Log.d(Constants.TAG, "Everything okay! Caching entered passphrase");
+
+                            try {
+                                PassphraseCacheService.addCachedPassphrase(getActivity(), mSubKeyId,
+                                        passphrase, mSecretRing.getPrimaryUserIdWithFallback());
+                            } catch (PgpGeneralException e) {
+                                Log.e(Constants.TAG, "adding of a passphrase failed", e);
+                            }
+
+                            // also return passphrase back to activity
+                            Intent returnIntent = new Intent();
+                            returnIntent.putExtra(MESSAGE_DATA_PASSPHRASE, passphrase);
+                            getActivity().setResult(RESULT_OK, returnIntent);
+                            dismiss();
+                            getActivity().finish();
+                        }
+                    }.execute();
+                }
+            });
+
+        }
+
+        @Override
+        public void onCancel(DialogInterface dialog) {
+            super.onCancel(dialog);
+
+            // note we need no synchronization here, this variable is only accessed in the ui thread
+            mIsCancelled = true;
+
+            // dismiss the dialogue
+            getActivity().setResult(RESULT_CANCELED);
+            dismiss();
+            getActivity().finish();
+        }
+
+        @Override
+        public void onDismiss(DialogInterface dialog) {
+            super.onDismiss(dialog);
+            Log.d(Constants.TAG, "onDismiss");
+
+            // hide keyboard on dismiss
+            hideKeyboard();
+        }
+
+        private void hideKeyboard() {
+            InputMethodManager inputManager = (InputMethodManager) getActivity()
+                    .getSystemService(Context.INPUT_METHOD_SERVICE);
+
+            //check if no view has focus:
+            View v = getActivity().getCurrentFocus();
+            if (v == null)
+                return;
+
+            inputManager.hideSoftInputFromWindow(v.getWindowToken(), 0);
+        }
+
+        /**
+         * Associate the "done" button on the soft keyboard with the okay button in the view
+         */
+        @Override
+        public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+            if (EditorInfo.IME_ACTION_DONE == actionId) {
+                AlertDialog dialog = ((AlertDialog) getDialog());
+                Button bt = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
+
+                bt.performClick();
+                return true;
+            }
+            return false;
+        }
+
+    }
+}
