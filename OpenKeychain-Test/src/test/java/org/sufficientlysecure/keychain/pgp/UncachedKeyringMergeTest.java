@@ -31,6 +31,7 @@ import org.spongycastle.bcpg.S2K;
 import org.spongycastle.bcpg.SecretKeyPacket;
 import org.spongycastle.bcpg.sig.KeyFlags;
 import org.spongycastle.jce.provider.BouncyCastleProvider;
+import org.spongycastle.util.Strings;
 import org.sufficientlysecure.keychain.service.results.OperationResultParcel;
 import org.sufficientlysecure.keychain.service.results.EditKeyResult;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
@@ -296,7 +297,7 @@ public class UncachedKeyringMergeTest {
 
         {
             byte[] sig = KeyringTestingHelper.getNth(
-                    modified.getPublicKey().getSignaturesForId("twi"), 1).getEncoded();
+                    modified.getPublicKey().getSignaturesForRawId(Strings.toUTF8ByteArray("twi")), 1).getEncoded();
 
             // inject the (foreign!) signature into subkey signature position
             UncachedKeyRing moreModified = KeyringTestingHelper.injectPacket(modified, sig, 1);

@@ -44,6 +44,7 @@ import org.spongycastle.openpgp.operator.PGPContentSignerBuilder;
 import org.spongycastle.openpgp.operator.jcajce.JcaKeyFingerprintCalculator;
 import org.spongycastle.openpgp.operator.jcajce.JcaPGPContentSignerBuilder;
 import org.spongycastle.openpgp.operator.jcajce.JcePBESecretKeyDecryptorBuilder;
+import org.spongycastle.util.Strings;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.service.results.OperationResultParcel;
 import org.sufficientlysecure.keychain.service.results.EditKeyResult;
@@ -157,7 +158,7 @@ public class UncachedKeyringCanonicalizeTest {
     @Test public void testUidSignature() throws Exception {
 
         UncachedPublicKey masterKey = ring.getPublicKey();
-        final WrappedSignature sig = masterKey.getSignaturesForId("twi").next();
+        final WrappedSignature sig = masterKey.getSignaturesForRawId(Strings.toUTF8ByteArray("twi")).next();
 
         byte[] raw = sig.getEncoded();
         // destroy the signature
