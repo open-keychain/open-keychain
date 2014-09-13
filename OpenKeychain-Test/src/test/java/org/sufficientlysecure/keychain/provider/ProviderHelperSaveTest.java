@@ -76,8 +76,7 @@ public class ProviderHelperSaveTest {
 
     @Test public void testImportNoFlagKey() throws Exception {
 
-        UncachedKeyRing pub =
-                readRingFromResource("/test-keys/mailvelope_07_no_key_flags.asc");
+        UncachedKeyRing pub = readRingFromResource("/test-keys/mailvelope_07_no_key_flags.asc");
         long keyId = pub.getMasterKeyId();
         Assert.assertNull("key flags should be null", pub.getPublicKey().getKeyUsage());
 
@@ -100,8 +99,7 @@ public class ProviderHelperSaveTest {
 
     @Test public void testImportDivertToCard() throws Exception {
 
-        UncachedKeyRing sec =
-                readRingFromResource("/test-keys/divert_to_card_sec.asc");
+        UncachedKeyRing sec = readRingFromResource("/test-keys/divert_to_card_sec.asc");
         long keyId = sec.getMasterKeyId();
 
         SaveKeyringResult result;
@@ -124,8 +122,7 @@ public class ProviderHelperSaveTest {
 
     @Test public void testImportBadEncodedUserId() throws Exception {
 
-        UncachedKeyRing key =
-                readRingFromResource("/test-keys/bad_user_id_encoding.asc");
+        UncachedKeyRing key = readRingFromResource("/test-keys/bad_user_id_encoding.asc");
         long keyId = key.getMasterKeyId();
 
         SaveKeyringResult result;
@@ -133,8 +130,6 @@ public class ProviderHelperSaveTest {
         result = mProviderHelper.savePublicKeyRing(key, new ProgressScaler());
         Assert.assertTrue("import of keyring should succeed", result.success());
 
-        // make sure both the CanonicalizedSecretKeyRing as well as the CachedPublicKeyRing correctly
-        // indicate the secret key type
         CanonicalizedPublicKeyRing ring = mProviderHelper.getCanonicalizedPublicKeyRing(keyId);
         boolean found = false;
         byte[] badUserId = Hex.decode("436c61757320467261656e6b656c203c436c6175732e4672e46e6b656c4068616c696661782e727774682d61616368656e2e64653e");
