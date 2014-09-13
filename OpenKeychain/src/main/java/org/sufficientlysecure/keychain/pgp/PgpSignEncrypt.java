@@ -35,6 +35,10 @@ import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
+import org.sufficientlysecure.keychain.service.results.OperationResultParcel.LogLevel;
+import org.sufficientlysecure.keychain.service.results.OperationResultParcel.LogType;
+import org.sufficientlysecure.keychain.service.results.OperationResultParcel.OperationLog;
+import org.sufficientlysecure.keychain.service.results.SignEncryptResult;
 import org.sufficientlysecure.keychain.util.InputData;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.ProgressScaler;
@@ -45,8 +49,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
-import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
 import java.security.SignatureException;
 import java.util.Arrays;
 import java.util.Date;
@@ -247,44 +249,16 @@ public class PgpSignEncrypt {
         }
     }
 
-    public static class KeyExtractionException extends Exception {
-        public KeyExtractionException() {
-        }
-    }
-
-    public static class NoPassphraseException extends Exception {
-        public NoPassphraseException() {
-        }
-    }
-
-    public static class WrongPassphraseException extends Exception {
-        public WrongPassphraseException() {
-        }
-    }
-
-    public static class NoSigningKeyException extends Exception {
-        public NoSigningKeyException() {
-        }
-    }
-
-    public static class NeedNfcDataException extends Exception {
-        public byte[] mHashToSign;
-        public int mHashAlgo;
-        public Date mCreationTimestamp;
-
-        public NeedNfcDataException(byte[] hashToSign, int hashAlgo, Date creationTimestamp) {
-            mHashToSign = hashToSign;
-            mHashAlgo = hashAlgo;
-            mCreationTimestamp = creationTimestamp;
-        }
-    }
-
     /**
      * Signs and/or encrypts data based on parameters of class
      */
-    public void execute()
-            throws IOException, PGPException, NoSuchProviderException,
-            NoSuchAlgorithmException, SignatureException, KeyExtractionException, NoSigningKeyException, NoPassphraseException, NeedNfcDataException, WrongPassphraseException {
+    public SignEncryptResult execute() {
+
+        int indent = 0;
+        OperationLog log = new OperationLog();
+
+        log.add(LogLevel.START, LogType.MSG_SE, indent);
+        indent += 1;
 
         boolean enableSignature = mSignatureMasterKeyId != Constants.key.none;
         boolean enableEncryption = ((mEncryptionMasterKeyIds != null && mEncryptionMasterKeyIds.length > 0)
@@ -320,7 +294,8 @@ public class PgpSignEncrypt {
 
             // If we weren't handed a passphrase, throw early
             if (mSignaturePassphrase == null) {
-                throw new NoPassphraseException();
+                log.add(LogLevel.ERROR, LogType.MSG_SE_ERROR_NO_PASSPHRASE, indent);
+                return new SignEncryptResult(SignEncryptResult.RESULT_ERROR, log);
             }
 
             try {
@@ -332,22 +307,26 @@ public class PgpSignEncrypt {
                 signingKey = signingKeyRing.getSecretKey(signKeyId);
                 // make sure it's a signing key alright!
             } catch (ProviderHelper.NotFoundException e) {
-                throw new NoSigningKeyException();
+                log.add(LogLevel.ERROR, LogType.MSG_SE_ERROR_SIGN_KEY, indent);
+                return new SignEncryptResult(SignEncryptResult.RESULT_ERROR, log);
             }
 
             // Make sure we are allowed to sign here!
-            if ( ! signingKey.canSign()) {
-                throw new NoSigningKeyException();
+            if (!signingKey.canSign()) {
+                log.add(LogLevel.ERROR, LogType.MSG_SE_ERROR_KEY_SIGN, indent);
+                return new SignEncryptResult(SignEncryptResult.RESULT_ERROR, log);
             }
 
             updateProgress(R.string.progress_extracting_signature_key, 0, 100);
 
             try {
-                if ( ! signingKey.unlock(mSignaturePassphrase)) {
-                    throw new WrongPassphraseException();
+                if (!signingKey.unlock(mSignaturePassphrase)) {
+                    log.add(LogLevel.ERROR, LogType.MSG_SE_ERROR_BAD_PASSPHRASE, indent);
+                    return new SignEncryptResult(SignEncryptResult.RESULT_ERROR, log);
                 }
             } catch (PgpGeneralException e) {
-                throw new KeyExtractionException();
+                log.add(LogLevel.ERROR, LogType.MSG_SE_ERROR_UNLOCK, indent);
+                return new SignEncryptResult(SignEncryptResult.RESULT_ERROR, log);
             }
 
             // check if hash algo is supported
@@ -372,12 +351,14 @@ public class PgpSignEncrypt {
 
             if (mSymmetricPassphrase != null) {
                 // Symmetric encryption
-                Log.d(Constants.TAG, "encryptionMasterKeyIds length is 0 -> symmetric encryption");
+                log.add(LogLevel.DEBUG, LogType.MSG_SE_SYMMETRIC, indent);
 
                 JcePBEKeyEncryptionMethodGenerator symmetricEncryptionGenerator =
                         new JcePBEKeyEncryptionMethodGenerator(mSymmetricPassphrase.toCharArray());
                 cPk.addMethod(symmetricEncryptionGenerator);
             } else {
+                log.add(LogLevel.INFO, LogType.MSG_SE_ASYMMETRIC, indent);
+
                 // Asymmetric encryption
                 for (long id : mEncryptionMasterKeyIds) {
                     try {
@@ -385,10 +366,14 @@ public class PgpSignEncrypt {
                                 KeyRings.buildUnifiedKeyRingUri(id));
                         CanonicalizedPublicKey key = keyRing.getEncryptionSubKey();
                         cPk.addMethod(key.getPubKeyEncryptionGenerator());
+                        log.add(LogLevel.DEBUG, LogType.MSG_SE_KEY_OK, indent +1,
+                                PgpKeyHelper.convertKeyIdToHex(id));
                     } catch (PgpGeneralException e) {
-                        Log.e(Constants.TAG, "key not found!", e);
+                        log.add(LogLevel.WARN, LogType.MSG_SE_KEY_WARN, indent +1,
+                                PgpKeyHelper.convertKeyIdToHex(id));
                     } catch (ProviderHelper.NotFoundException e) {
-                        Log.e(Constants.TAG, "key not found!", e);
+                        log.add(LogLevel.WARN, LogType.MSG_SE_KEY_UNKNOWN, indent +1,
+                                PgpKeyHelper.convertKeyIdToHex(id));
                     }
                 }
             }
@@ -404,168 +389,199 @@ public class PgpSignEncrypt {
                 signatureGenerator = signingKey.getSignatureGenerator(
                         mSignatureHashAlgorithm, cleartext, mNfcSignedHash, mNfcCreationTimestamp);
             } catch (PgpGeneralException e) {
-                // TODO throw correct type of exception (which shouldn't be PGPException)
-                throw new KeyExtractionException();
+                log.add(LogLevel.ERROR, LogType.MSG_SE_ERROR_NFC, indent);
+                return new SignEncryptResult(SignEncryptResult.RESULT_ERROR, log);
             }
         }
 
         ProgressScaler progressScaler =
                 new ProgressScaler(mProgressable, 8, 95, 100);
         PGPCompressedDataGenerator compressGen = null;
-        OutputStream pOut = null;
+        OutputStream pOut;
         OutputStream encryptionOut = null;
         BCPGOutputStream bcpgOut;
 
-        if (enableEncryption) {
-            /* actual encryption */
-            updateProgress(R.string.progress_encrypting, 8, 100);
+        try {
 
-            encryptionOut = cPk.open(out, new byte[1 << 16]);
+            if (enableEncryption) {
+                /* actual encryption */
+                updateProgress(R.string.progress_encrypting, 8, 100);
+                log.add(LogLevel.DEBUG, enableSignature
+                        ? LogType.MSG_SE_SIGCRYPTING
+                        : LogType.MSG_SE_ENCRYPTING,
+                        indent);
+                indent += 1;
 
-            if (enableCompression) {
-                compressGen = new PGPCompressedDataGenerator(mCompressionId);
-                bcpgOut = new BCPGOutputStream(compressGen.open(encryptionOut));
+                encryptionOut = cPk.open(out, new byte[1 << 16]);
+
+                if (enableCompression) {
+                    log.add(LogLevel.DEBUG, LogType.MSG_SE_COMPRESSING, indent);
+                    compressGen = new PGPCompressedDataGenerator(mCompressionId);
+                    bcpgOut = new BCPGOutputStream(compressGen.open(encryptionOut));
+                } else {
+                    bcpgOut = new BCPGOutputStream(encryptionOut);
+                }
+
+                if (enableSignature) {
+                    signatureGenerator.generateOnePassVersion(false).encode(bcpgOut);
+                }
+
+                PGPLiteralDataGenerator literalGen = new PGPLiteralDataGenerator();
+                char literalDataFormatTag;
+                if (mCleartextInput) {
+                    literalDataFormatTag = PGPLiteralData.UTF8;
+                } else {
+                    literalDataFormatTag = PGPLiteralData.BINARY;
+                }
+                pOut = literalGen.open(bcpgOut, literalDataFormatTag, mOriginalFilename, new Date(),
+                        new byte[1 << 16]);
+
+                long alreadyWritten = 0;
+                int length;
+                byte[] buffer = new byte[1 << 16];
+                InputStream in = mData.getInputStream();
+                while ((length = in.read(buffer)) > 0) {
+                    pOut.write(buffer, 0, length);
+
+                    // update signature buffer if signature is requested
+                    if (enableSignature) {
+                        signatureGenerator.update(buffer, 0, length);
+                    }
+
+                    alreadyWritten += length;
+                    if (mData.getSize() > 0) {
+                        long progress = 100 * alreadyWritten / mData.getSize();
+                        progressScaler.setProgress((int) progress, 100);
+                    }
+                }
+
+                literalGen.close();
+                indent -= 1;
+
+            } else if (enableSignature && mCleartextInput && mEnableAsciiArmorOutput) {
+                /* cleartext signature: sign-only of ascii text */
+
+                updateProgress(R.string.progress_signing, 8, 100);
+                log.add(LogLevel.DEBUG, LogType.MSG_SE_SIGNING, indent);
+
+                // write -----BEGIN PGP SIGNED MESSAGE-----
+                armorOut.beginClearText(mSignatureHashAlgorithm);
+
+                InputStream in = mData.getInputStream();
+                final BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+
+                // update signature buffer with first line
+                processLine(reader.readLine(), armorOut, signatureGenerator);
+
+                // TODO: progress: fake annealing?
+                while (true) {
+                    String line = reader.readLine();
+
+                    // end cleartext signature with newline, see http://tools.ietf.org/html/rfc4880#section-7
+                    if (line == null) {
+                        armorOut.write(NEW_LINE);
+                        break;
+                    }
+
+                    armorOut.write(NEW_LINE);
+
+                    // update signature buffer with input line
+                    signatureGenerator.update(NEW_LINE);
+                    processLine(line, armorOut, signatureGenerator);
+                }
+
+                armorOut.endClearText();
+
+                pOut = new BCPGOutputStream(armorOut);
+            } else if (enableSignature && !mCleartextInput) {
+                /* sign-only binary (files/data stream) */
+
+                updateProgress(R.string.progress_signing, 8, 100);
+                log.add(LogLevel.DEBUG, LogType.MSG_SE_ENCRYPTING, indent);
+
+                InputStream in = mData.getInputStream();
+
+                if (enableCompression) {
+                    compressGen = new PGPCompressedDataGenerator(mCompressionId);
+                    bcpgOut = new BCPGOutputStream(compressGen.open(out));
+                } else {
+                    bcpgOut = new BCPGOutputStream(out);
+                }
+
+                signatureGenerator.generateOnePassVersion(false).encode(bcpgOut);
+
+                PGPLiteralDataGenerator literalGen = new PGPLiteralDataGenerator();
+                pOut = literalGen.open(bcpgOut, PGPLiteralData.BINARY, mOriginalFilename, new Date(),
+                        new byte[1 << 16]);
+
+                long alreadyWritten = 0;
+                int length;
+                byte[] buffer = new byte[1 << 16];
+                while ((length = in.read(buffer)) > 0) {
+                    pOut.write(buffer, 0, length);
+
+                    signatureGenerator.update(buffer, 0, length);
+
+                    alreadyWritten += length;
+                    if (mData.getSize() > 0) {
+                        long progress = 100 * alreadyWritten / mData.getSize();
+                        progressScaler.setProgress((int) progress, 100);
+                    }
+                }
+
+                literalGen.close();
             } else {
-                bcpgOut = new BCPGOutputStream(encryptionOut);
+                pOut = null;
+                log.add(LogLevel.WARN, LogType.MSG_SE_CLEARSIGN_ONLY, indent);
             }
 
             if (enableSignature) {
-                signatureGenerator.generateOnePassVersion(false).encode(bcpgOut);
-            }
-
-            PGPLiteralDataGenerator literalGen = new PGPLiteralDataGenerator();
-            char literalDataFormatTag;
-            if (mCleartextInput) {
-                literalDataFormatTag = PGPLiteralData.UTF8;
-            } else {
-                literalDataFormatTag = PGPLiteralData.BINARY;
-            }
-            pOut = literalGen.open(bcpgOut, literalDataFormatTag, mOriginalFilename, new Date(),
-                    new byte[1 << 16]);
-
-            long alreadyWritten = 0;
-            int length;
-            byte[] buffer = new byte[1 << 16];
-            InputStream in = mData.getInputStream();
-            while ((length = in.read(buffer)) > 0) {
-                pOut.write(buffer, 0, length);
-
-                // update signature buffer if signature is requested
-                if (enableSignature) {
-                    signatureGenerator.update(buffer, 0, length);
-                }
-
-                alreadyWritten += length;
-                if (mData.getSize() > 0) {
-                    long progress = 100 * alreadyWritten / mData.getSize();
-                    progressScaler.setProgress((int) progress, 100);
+                updateProgress(R.string.progress_generating_signature, 95, 100);
+                try {
+                    signatureGenerator.generate().encode(pOut);
+                } catch (NfcSyncPGPContentSignerBuilder.NfcInteractionNeeded e) {
+                    // this secret key diverts to a OpenPGP card, throw exception with hash that will be signed
+                    log.add(LogLevel.OK, LogType.MSG_SE_PENDING_NFC, indent);
+                    SignEncryptResult result =
+                            new SignEncryptResult(SignEncryptResult.RESULT_PENDING_NFC, log);
+                    result.setNfcData(e.hashToSign, e.hashAlgo, e.creationTimestamp);
+                    return new SignEncryptResult(SignEncryptResult.RESULT_PENDING_NFC, log);
                 }
             }
 
-            literalGen.close();
-        } else if (enableSignature && mCleartextInput && mEnableAsciiArmorOutput) {
-            /* cleartext signature: sign-only of ascii text */
-
-            updateProgress(R.string.progress_signing, 8, 100);
-
-            // write -----BEGIN PGP SIGNED MESSAGE-----
-            armorOut.beginClearText(mSignatureHashAlgorithm);
-
-            InputStream in = mData.getInputStream();
-            final BufferedReader reader = new BufferedReader(new InputStreamReader(in));
-
-            // update signature buffer with first line
-            processLine(reader.readLine(), armorOut, signatureGenerator);
-
-            // TODO: progress: fake annealing?
-            while (true) {
-                String line = reader.readLine();
-
-                // end cleartext signature with newline, see http://tools.ietf.org/html/rfc4880#section-7
-                if (line == null) {
-                    armorOut.write(NEW_LINE);
-                    break;
+            // closing outputs
+            // NOTE: closing needs to be done in the correct order!
+            // TODO: closing bcpgOut and pOut???
+            if (enableEncryption) {
+                if (enableCompression) {
+                    compressGen.close();
                 }
 
-                armorOut.write(NEW_LINE);
-
-                // update signature buffer with input line
-                signatureGenerator.update(NEW_LINE);
-                processLine(line, armorOut, signatureGenerator);
+                encryptionOut.close();
+            }
+            if (mEnableAsciiArmorOutput) {
+                armorOut.close();
             }
 
-            armorOut.endClearText();
+            out.close();
+            mOutStream.close();
 
-            pOut = new BCPGOutputStream(armorOut);
-        } else if (enableSignature && !mCleartextInput) {
-            /* sign-only binary (files/data stream) */
-
-            updateProgress(R.string.progress_signing, 8, 100);
-
-            InputStream in = mData.getInputStream();
-
-            if (enableCompression) {
-                compressGen = new PGPCompressedDataGenerator(mCompressionId);
-                bcpgOut = new BCPGOutputStream(compressGen.open(out));
-            } else {
-                bcpgOut = new BCPGOutputStream(out);
-            }
-
-            signatureGenerator.generateOnePassVersion(false).encode(bcpgOut);
-
-            PGPLiteralDataGenerator literalGen = new PGPLiteralDataGenerator();
-            pOut = literalGen.open(bcpgOut, PGPLiteralData.BINARY, mOriginalFilename, new Date(),
-                    new byte[1 << 16]);
-
-            long alreadyWritten = 0;
-            int length;
-            byte[] buffer = new byte[1 << 16];
-            while ((length = in.read(buffer)) > 0) {
-                pOut.write(buffer, 0, length);
-
-                signatureGenerator.update(buffer, 0, length);
-
-                alreadyWritten += length;
-                if (mData.getSize() > 0) {
-                    long progress = 100 * alreadyWritten / mData.getSize();
-                    progressScaler.setProgress((int) progress, 100);
-                }
-            }
-
-            literalGen.close();
-        } else {
-            pOut = null;
-            Log.e(Constants.TAG, "not supported!");
+        } catch (SignatureException e) {
+            log.add(LogLevel.ERROR, LogType.MSG_SE_ERROR_SIG, indent);
+            return new SignEncryptResult(SignEncryptResult.RESULT_ERROR, log);
+        } catch (PGPException e) {
+            log.add(LogLevel.ERROR, LogType.MSG_SE_ERROR_PGP, indent);
+            return new SignEncryptResult(SignEncryptResult.RESULT_ERROR, log);
+        } catch (IOException e) {
+            log.add(LogLevel.ERROR, LogType.MSG_SE_ERROR_IO, indent);
+            return new SignEncryptResult(SignEncryptResult.RESULT_ERROR, log);
         }
-
-        if (enableSignature) {
-            updateProgress(R.string.progress_generating_signature, 95, 100);
-            try {
-                signatureGenerator.generate().encode(pOut);
-            } catch (NfcSyncPGPContentSignerBuilder.NfcInteractionNeeded e) {
-                // this secret key diverts to a OpenPGP card, throw exception with hash that will be signed
-                throw new NeedNfcDataException(e.hashToSign, e.hashAlgo, e.creationTimestamp);
-            }
-        }
-
-        // closing outputs
-        // NOTE: closing needs to be done in the correct order!
-        // TODO: closing bcpgOut and pOut???
-        if (enableEncryption) {
-            if (enableCompression) {
-                compressGen.close();
-            }
-
-            encryptionOut.close();
-        }
-        if (mEnableAsciiArmorOutput) {
-            armorOut.close();
-        }
-
-        out.close();
-        mOutStream.close();
 
         updateProgress(R.string.progress_done, 100, 100);
+
+        log.add(LogLevel.OK, LogType.MSG_SE_OK, indent);
+        return new SignEncryptResult(SignEncryptResult.RESULT_OK, log);
+
     }
 
     private static void processLine(final String pLine, final ArmoredOutputStream pArmoredOutput,
