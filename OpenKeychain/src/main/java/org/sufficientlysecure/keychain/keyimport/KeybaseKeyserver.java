@@ -65,6 +65,8 @@ public class KeybaseKeyserver extends Keyserver {
         entry.setQuery(mQuery);
         entry.setOrigin(ORIGIN);
 
+        entry.setRevoked(false); // keybase doesn’t say anything about revoked keys
+
         String username = match.getUsername();
         String fullName = match.getFullName();
         String fingerprint = match.getFingerprint();

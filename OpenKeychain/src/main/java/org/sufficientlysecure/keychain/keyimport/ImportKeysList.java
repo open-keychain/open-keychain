@@ -50,15 +50,23 @@ public class ImportKeysList extends ArrayList<ImportKeysListEntry> {
     private synchronized boolean addOrMerge(ImportKeysListEntry toAdd) {
         for (ImportKeysListEntry existing : this) {
             if (toAdd.hasSameKeyAs(existing)) {
-                return mergeIDs(toAdd, existing);
+                return mergeDupes(toAdd, existing);
             }
         }
         return super.add(toAdd);
     }
 
     // being a little anal about the ArrayList#addAll contract here
-    private boolean mergeIDs(ImportKeysListEntry incoming, ImportKeysListEntry existing) {
+    private boolean mergeDupes(ImportKeysListEntry incoming, ImportKeysListEntry existing) {
         boolean modified = false;
+        if (incoming.isRevoked()) {
+            existing.setRevoked(true);
+            modified = true;
+        }
+        if (incoming.isExpired()) {
+            existing.setExpired(true);
+            modified = true;
+        }
         ArrayList<String> incomingIDs = incoming.getUserIds();
         ArrayList<String> existingIDs = existing.getUserIds();
         for (String incomingID : incomingIDs) {

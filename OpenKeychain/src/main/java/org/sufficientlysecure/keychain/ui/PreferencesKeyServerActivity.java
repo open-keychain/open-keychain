@@ -43,7 +43,7 @@ public class PreferencesKeyServerActivity extends ActionBarActivity implements O
     private LayoutInflater mInflater;
     private ViewGroup mEditors;
     private View mAdd;
-    private View mShuffle;
+    private View mRotate;
     private TextView mTitle;
     private TextView mSummary;
 
@@ -82,8 +82,8 @@ public class PreferencesKeyServerActivity extends ActionBarActivity implements O
         mAdd = findViewById(R.id.add);
         mAdd.setOnClickListener(this);
 
-        mShuffle = findViewById(R.id.shuffle);
-        mShuffle.setOnClickListener(new OnClickListener() {
+        mRotate = findViewById(R.id.rotate);
+        mRotate.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
                 Vector<String> servers = serverList();

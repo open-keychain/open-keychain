@@ -39,13 +39,13 @@
                 android:textAppearance="?android:attr/textAppearanceSmall" />
         </LinearLayout>
         <Button
-            android:id="@+id/shuffle"
+            android:id="@+id/rotate"
             android:layout_width="wrap_content"
             android:layout_height="31dp"
             android:layout_gravity="center_vertical"
             android:layout_marginLeft="4dip"
             android:layout_marginRight="6dip"
-            android:text="shuffle"
+            android:text="rotate"
             android:textColor="#ffffffff"
             android:textStyle="bold"
             android:paddingTop="2dp"
