@@ -701,7 +701,7 @@
     <string name="msg_mf_error_revoked_primary">"Revoked user ids cannot be primary!"</string>
     <string name="msg_mf_error_null_expiry">"Expiry time cannot be "same as before" on subkey creation. This is a programming error, please file a bug report!"</string>
     <string name="msg_mf_error_passphrase_master">"Fatal error decrypting master key! This is likely a programming error, please file a bug report!"</string>
-    <string name="msg_mf_error_pgp">"PGP internal exception!"</string>
+    <string name="msg_mf_error_pgp">"Internal PGP error!"</string>
     <string name="msg_mf_error_sig">"Signature exception!"</string>
     <string name="msg_mf_master">"Modifying master certifications"</string>
     <string name="msg_mf_passphrase">"Changing passphrase for keyring…"</string>
@@ -802,6 +802,30 @@
     <string name="msg_dc_trail_sym">"Encountered trailing, symmetrically encrypted data"</string>
     <string name="msg_dc_trail_unknown">"Encountered trailing data of unknown type"</string>
     <string name="msg_dc_unlocking">"Unlocking secret key"</string>
+
+    <!-- Messages for SignEncrypt operation -->
+    <string name="msg_se_asymmetric">"Preparing public keys for encryption"</string>
+    <string name="msg_se_clearsign_only">"Signing of cleartext input not supported!"</string>
+    <string name="msg_se_compressing">"Preparing compression"</string>
+    <string name="msg_se_encrypting">"Encrypting data"</string>
+    <string name="msg_se_error_bad_passphrase">"Bad passphrase!"</string>
+    <string name="msg_se_error_io">"Encountered IO Exception during operation!"</string>
+    <string name="msg_se_error_key_sign">"Selected signing key cannot sign data!"</string>
+    <string name="msg_se_error_sign_key">"Error fetching signing key!"</string>
+    <string name="msg_se_error_nfc">"NFC data error!"</string>
+    <string name="msg_se_error_no_passphrase">"No passphrase provided!"</string>
+    <string name="msg_se_error_pgp">"Internal PGP error!"</string>
+    <string name="msg_se_error_sig">"Encountered PGP signature exception!"</string>
+    <string name="msg_se_error_unlock">"Unknown error unlocking key!"</string>
+    <string name="msg_se_key_ok">"Encrypting for key: %s"</string>
+    <string name="msg_se_key_unknown">"Missing key for encryption: %s"</string>
+    <string name="msg_se_key_warn">"Bad key for encryption: %s"</string>
+    <string name="msg_se_ok">"Sign/Encrypt operation successful!"</string>
+    <string name="msg_se_pending_nfc">"NFC token required, requesting user input…"</string>
+    <string name="msg_se_signing">"Signing data (without encryption)"</string>
+    <string name="msg_se_sigcrypting">"Encrypting data with signature"</string>
+    <string name="msg_se">"Starting sign and/or encrypt operation"</string>
+    <string name="msg_se_symmetric">"Preparing symmetric encryption"</string>
 
     <!-- PassphraseCache -->
     <string name="passp_cache_notif_click_to_clear">"Click to clear cached passphrases"</string>

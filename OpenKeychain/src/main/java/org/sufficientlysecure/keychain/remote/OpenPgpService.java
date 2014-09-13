@@ -45,6 +45,8 @@ import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.remote.ui.RemoteServiceActivity;
 import org.sufficientlysecure.keychain.service.PassphraseCacheService;
+import org.sufficientlysecure.keychain.service.results.OperationResultParcel.LogEntryParcel;
+import org.sufficientlysecure.keychain.service.results.SignEncryptResult;
 import org.sufficientlysecure.keychain.ui.ImportKeysActivity;
 import org.sufficientlysecure.keychain.ui.ViewKeyActivity;
 import org.sufficientlysecure.keychain.util.InputData;
@@ -269,25 +271,28 @@ public class OpenPgpService extends RemoteService {
                 // TODO: currently always assume cleartext input, no sign-only of binary currently!
                 builder.setCleartextInput(true);
 
-                try {
-                    builder.build().execute();
+                // execute PGP operation!
+                SignEncryptResult result = builder.build().execute();
 
-                    // throw exceptions upwards to client with meaningful messages
-                } catch (PgpSignEncrypt.KeyExtractionException e) {
-                    throw new Exception(getString(R.string.error_could_not_extract_private_key));
-                } catch (PgpSignEncrypt.NoPassphraseException e) {
-                    throw new Exception(getString(R.string.error_no_signature_passphrase));
-                } catch (PgpSignEncrypt.WrongPassphraseException e) {
-                    throw new Exception(getString(R.string.error_wrong_passphrase));
-                } catch (PgpSignEncrypt.NoSigningKeyException e) {
-                    throw new Exception(getString(R.string.error_no_signature_key));
-                } catch (PgpSignEncrypt.NeedNfcDataException e) {
-                    // return PendingIntent to execute NFC activity
-                    // pass through the signature creation timestamp to be used again on second execution
-                    // of PgpSignEncrypt when we have the signed hash!
-                    data.putExtra(OpenPgpApi.EXTRA_NFC_SIG_CREATION_TIMESTAMP, e.mCreationTimestamp.getTime());
-                    return getNfcSignIntent(data, passphrase, e.mHashToSign, e.mHashAlgo);
+                if (result.isPending()) {
+                    switch (result.getResult()) {
+                        case SignEncryptResult.RESULT_PENDING_NFC:
+                            // return PendingIntent to execute NFC activity
+                            // pass through the signature creation timestamp to be used again on second execution
+                            // of PgpSignEncrypt when we have the signed hash!
+                            data.putExtra(OpenPgpApi.EXTRA_NFC_SIG_CREATION_TIMESTAMP, result.getNfcTimestamp().getTime());
+                            return getNfcSignIntent(data, passphrase, result.getNfcHash(), result.getNfcAlgo());
+
+                        default:
+                            throw new Exception("Encountered unhandled pending state - please file a bug report!");
+                    }
                 }
+
+                if (!result.success()) {
+                    LogEntryParcel errorMsg = result.getLog().getLast();
+                    throw new Exception(getString(errorMsg.mType.getMsgId()));
+                }
+
             } finally {
                 is.close();
                 os.close();
@@ -379,26 +384,28 @@ public class OpenPgpService extends RemoteService {
                             .setNfcState(nfcSignedHash, nfcCreationDate);
                 }
 
-                try {
-                    // execute PGP operation!
-                    builder.build().execute();
+                // execute PGP operation!
+                SignEncryptResult result = builder.build().execute();
 
-                    // throw exceptions upwards to client with meaningful messages
-                } catch (PgpSignEncrypt.KeyExtractionException e) {
-                    throw new Exception(getString(R.string.error_could_not_extract_private_key));
-                } catch (PgpSignEncrypt.NoPassphraseException e) {
-                    throw new Exception(getString(R.string.error_no_signature_passphrase));
-                } catch (PgpSignEncrypt.WrongPassphraseException e) {
-                    throw new Exception(getString(R.string.error_wrong_passphrase));
-                } catch (PgpSignEncrypt.NoSigningKeyException e) {
-                    throw new Exception(getString(R.string.error_no_signature_key));
-                } catch (PgpSignEncrypt.NeedNfcDataException e) {
-                    // return PendingIntent to execute NFC activity
-                    // pass through the signature creation timestamp to be used again on second execution
-                    // of PgpSignEncrypt when we have the signed hash!
-                    data.putExtra(OpenPgpApi.EXTRA_NFC_SIG_CREATION_TIMESTAMP, e.mCreationTimestamp.getTime());
-                    return getNfcSignIntent(data, passphrase, e.mHashToSign, e.mHashAlgo);
+                if (result.isPending()) {
+                    switch (result.getResult()) {
+                        case SignEncryptResult.RESULT_PENDING_NFC:
+                            // return PendingIntent to execute NFC activity
+                            // pass through the signature creation timestamp to be used again on second execution
+                            // of PgpSignEncrypt when we have the signed hash!
+                            data.putExtra(OpenPgpApi.EXTRA_NFC_SIG_CREATION_TIMESTAMP, result.getNfcTimestamp().getTime());
+                            return getNfcSignIntent(data, passphrase, result.getNfcHash(), result.getNfcAlgo());
+
+                        default:
+                            throw new Exception("Encountered unhandled pending state - please file a bug report!");
+                    }
                 }
+
+                if (!result.success()) {
+                    LogEntryParcel errorMsg = result.getLog().getLast();
+                    throw new Exception(getString(errorMsg.mType.getMsgId()));
+                }
+
             } finally {
                 is.close();
                 os.close();

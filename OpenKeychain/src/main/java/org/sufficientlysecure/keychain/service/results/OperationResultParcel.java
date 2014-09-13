@@ -474,6 +474,30 @@ public class OperationResultParcel implements Parcelable {
         MSG_DC_TRAIL_UNKNOWN (R.string.msg_dc_trail_unknown),
         MSG_DC_UNLOCKING (R.string.msg_dc_unlocking),
 
+        // signencrypt
+        MSG_SE_ASYMMETRIC (R.string.msg_se_asymmetric),
+        MSG_SE_CLEARSIGN_ONLY (R.string.msg_se_clearsign_only),
+        MSG_SE_COMPRESSING (R.string.msg_se_compressing),
+        MSG_SE_ENCRYPTING (R.string.msg_se_encrypting),
+        MSG_SE_ERROR_BAD_PASSPHRASE (R.string.msg_se_error_bad_passphrase),
+        MSG_SE_ERROR_IO (R.string.msg_se_error_io),
+        MSG_SE_ERROR_SIGN_KEY(R.string.msg_se_error_sign_key),
+        MSG_SE_ERROR_KEY_SIGN (R.string.msg_se_error_key_sign),
+        MSG_SE_ERROR_NFC (R.string.msg_se_error_nfc),
+        MSG_SE_ERROR_NO_PASSPHRASE (R.string.msg_se_error_no_passphrase),
+        MSG_SE_ERROR_PGP (R.string.msg_se_error_pgp),
+        MSG_SE_ERROR_SIG (R.string.msg_se_error_sig),
+        MSG_SE_ERROR_UNLOCK (R.string.msg_se_error_unlock),
+        MSG_SE_KEY_OK (R.string.msg_se_key_ok),
+        MSG_SE_KEY_UNKNOWN (R.string.msg_se_key_unknown),
+        MSG_SE_KEY_WARN (R.string.msg_se_key_warn),
+        MSG_SE_OK (R.string.msg_se_ok),
+        MSG_SE_PENDING_NFC (R.string.msg_se_pending_nfc),
+        MSG_SE (R.string.msg_se),
+        MSG_SE_SIGNING (R.string.msg_se_signing),
+        MSG_SE_SIGCRYPTING (R.string.msg_se_sigcrypting),
+        MSG_SE_SYMMETRIC (R.string.msg_se_symmetric),
+
         ;
 
         private final int mMsgId;
@@ -560,6 +584,13 @@ public class OperationResultParcel implements Parcelable {
 
         public boolean isEmpty() {
             return mParcels.isEmpty();
+        }
+
+        public LogEntryParcel getLast() {
+            if (mParcels.isEmpty()) {
+                return null;
+            }
+            return mParcels.get(mParcels.size() -1);
         }
 
         @Override

@@ -42,6 +42,7 @@ import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
 import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
 import org.sufficientlysecure.keychain.service.PassphraseCacheService;
+import org.sufficientlysecure.keychain.service.results.SignEncryptResult;
 import org.sufficientlysecure.keychain.ui.dialog.PassphraseDialogFragment;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Notify;
@@ -184,7 +185,7 @@ public class EncryptTextActivity extends DrawerActivity implements EncryptActivi
 
         // Send all information needed to service to edit key in other thread
         Intent intent = new Intent(this, KeychainIntentService.class);
-        intent.setAction(KeychainIntentService.ACTION_ENCRYPT_SIGN);
+        intent.setAction(KeychainIntentService.ACTION_SIGN_ENCRYPT);
         intent.putExtra(KeychainIntentService.EXTRA_DATA, createEncryptBundle());
 
         // Message is received after encrypting is done in KeychainIntentService
@@ -195,14 +196,26 @@ public class EncryptTextActivity extends DrawerActivity implements EncryptActivi
                 super.handleMessage(message);
 
                 if (message.arg1 == KeychainIntentServiceHandler.MESSAGE_OKAY) {
+
+                    SignEncryptResult result =
+                            message.getData().getParcelable(SignEncryptResult.EXTRA_RESULT);
+
+                    // TODO if (result.isPending())
+
+                    if (!result.success()) {
+                        result.createNotify(EncryptTextActivity.this).show();
+                        return;
+                    }
+
                     if (mShareAfterEncrypt) {
                         // Share encrypted message/file
                         startActivity(sendWithChooserExcludingEncrypt(message));
                     } else {
                         // Copy to clipboard
                         copyToClipboard(message);
-                        Notify.showNotify(EncryptTextActivity.this,
-                                R.string.encrypt_sign_clipboard_successful, Notify.Style.INFO);
+                        result.createNotify(EncryptTextActivity.this).show();
+                        // Notify.showNotify(EncryptTextActivity.this,
+                                // R.string.encrypt_sign_clipboard_successful, Notify.Style.INFO);
                     }
                 }
             }

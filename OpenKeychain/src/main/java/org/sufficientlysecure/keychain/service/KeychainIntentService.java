@@ -63,6 +63,7 @@ import org.sufficientlysecure.keychain.service.results.ConsolidateResult;
 import org.sufficientlysecure.keychain.service.results.EditKeyResult;
 import org.sufficientlysecure.keychain.service.results.ImportKeyResult;
 import org.sufficientlysecure.keychain.service.results.SaveKeyringResult;
+import org.sufficientlysecure.keychain.service.results.SignEncryptResult;
 import org.sufficientlysecure.keychain.util.ParcelableFileCache;
 import org.sufficientlysecure.keychain.util.InputData;
 import org.sufficientlysecure.keychain.util.Log;
@@ -91,7 +92,7 @@ public class KeychainIntentService extends IntentService implements Progressable
     public static final String EXTRA_DATA = "data";
 
     /* possible actions */
-    public static final String ACTION_ENCRYPT_SIGN = Constants.INTENT_PREFIX + "ENCRYPT_SIGN";
+    public static final String ACTION_SIGN_ENCRYPT = Constants.INTENT_PREFIX + "SIGN_ENCRYPT";
 
     public static final String ACTION_DECRYPT_VERIFY = Constants.INTENT_PREFIX + "DECRYPT_VERIFY";
 
@@ -247,7 +248,7 @@ public class KeychainIntentService extends IntentService implements Progressable
         String action = intent.getAction();
 
         // executeServiceMethod action from extra bundle
-        if (ACTION_ENCRYPT_SIGN.equals(action)) {
+        if (ACTION_SIGN_ENCRYPT.equals(action)) {
             try {
                 /* Input */
                 int source = data.get(SOURCE) != null ? data.getInt(SOURCE) : data.getInt(TARGET);
@@ -309,7 +310,8 @@ public class KeychainIntentService extends IntentService implements Progressable
                         builder.setCleartextInput(true);
                     }
 
-                    builder.build().execute();
+                    SignEncryptResult result = builder.build().execute();
+                    resultData.putParcelable(SignEncryptResult.EXTRA_RESULT, result);
 
                     outStream.close();
 
@@ -779,12 +781,6 @@ public class KeychainIntentService extends IntentService implements Progressable
         if (e instanceof PgpGeneralMsgIdException) {
             e = ((PgpGeneralMsgIdException) e).getContextualized(this);
             message = e.getMessage();
-        } else if (e instanceof PgpSignEncrypt.KeyExtractionException) {
-            message = getString(R.string.error_could_not_extract_private_key);
-        } else if (e instanceof PgpSignEncrypt.NoPassphraseException) {
-            message = getString(R.string.error_no_signature_passphrase);
-        } else if (e instanceof PgpSignEncrypt.NoSigningKeyException) {
-            message = getString(R.string.error_no_signature_key);
         } else {
             message = e.getMessage();
         }

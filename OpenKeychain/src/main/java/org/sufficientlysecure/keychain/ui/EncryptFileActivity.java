@@ -183,7 +183,7 @@ public class EncryptFileActivity extends DrawerActivity implements EncryptActivi
 
         // Send all information needed to service to edit key in other thread
         Intent intent = new Intent(this, KeychainIntentService.class);
-        intent.setAction(KeychainIntentService.ACTION_ENCRYPT_SIGN);
+        intent.setAction(KeychainIntentService.ACTION_SIGN_ENCRYPT);
         intent.putExtra(KeychainIntentService.EXTRA_DATA, createEncryptBundle());
 
         // Message is received after encrypting is done in KeychainIntentService
