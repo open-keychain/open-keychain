@@ -70,9 +70,13 @@ public class ListAwareSwipeRefreshLayout extends NoScrollableSwipeRefreshLayout 
 
         return (mIsLocked || (
                 mStickyListHeadersListView.getWrappedList().getChildCount() > 0
-                        && (mStickyListHeadersListView.getTop() > 0
-                        || mStickyListHeadersListView.getFirstVisiblePosition() > 0
-                ))
+                &&
+                (
+                    mStickyListHeadersListView.getWrappedList().getChildAt(0).getTop() < 0
+                    ||
+                    mStickyListHeadersListView.getFirstVisiblePosition() > 0
+                )
+            )
         );
     }
 }
