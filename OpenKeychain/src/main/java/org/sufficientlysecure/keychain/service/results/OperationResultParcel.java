@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.sufficientlysecure.keychain.service;
+package org.sufficientlysecure.keychain.service.results;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -49,6 +49,7 @@ import java.util.List;
  * list (ie, enum) of all possible log types, which should in all cases be tied
  * to string resource ids.
  *
+ * TODO ideally, this class should be abstract, and all actual results of a specific subclass
  *
  */
 public class OperationResultParcel implements Parcelable {

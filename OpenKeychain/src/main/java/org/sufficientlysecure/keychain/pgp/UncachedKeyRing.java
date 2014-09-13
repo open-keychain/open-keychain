@@ -35,9 +35,9 @@ import org.spongycastle.openpgp.PGPUtil;
 import org.spongycastle.openpgp.operator.jcajce.JcaKeyFingerprintCalculator;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
-import org.sufficientlysecure.keychain.service.OperationResultParcel.LogLevel;
-import org.sufficientlysecure.keychain.service.OperationResultParcel.LogType;
-import org.sufficientlysecure.keychain.service.OperationResultParcel.OperationLog;
+import org.sufficientlysecure.keychain.service.results.OperationResultParcel.LogLevel;
+import org.sufficientlysecure.keychain.service.results.OperationResultParcel.LogType;
+import org.sufficientlysecure.keychain.service.results.OperationResultParcel.OperationLog;
 import org.sufficientlysecure.keychain.util.IterableIterator;
 import org.sufficientlysecure.keychain.util.Log;
 

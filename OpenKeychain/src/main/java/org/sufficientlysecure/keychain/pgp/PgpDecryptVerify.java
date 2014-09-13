@@ -60,7 +60,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URLConnection;
 import java.security.SignatureException;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.Set;
 
