@@ -364,7 +364,7 @@ public class KeychainIntentService extends IntentService implements Progressable
 
                 outStream.close();
 
-                resultData.putParcelable(RESULT_DECRYPT_VERIFY_RESULT, decryptVerifyResult);
+                resultData.putParcelable(DecryptVerifyResult.EXTRA_RESULT, decryptVerifyResult);
 
                 /* Output */
 
@@ -411,7 +411,7 @@ public class KeychainIntentService extends IntentService implements Progressable
 
                 DecryptVerifyResult decryptVerifyResult = builder.build().execute();
 
-                resultData.putParcelable(RESULT_DECRYPT_VERIFY_RESULT, decryptVerifyResult);
+                resultData.putParcelable(DecryptVerifyResult.EXTRA_RESULT, decryptVerifyResult);
 
                 /* Output */
                 OtherHelper.logDebugBundle(resultData, "resultData");
