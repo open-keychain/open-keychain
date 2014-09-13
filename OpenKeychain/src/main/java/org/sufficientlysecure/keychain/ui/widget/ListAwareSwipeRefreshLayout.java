@@ -18,6 +18,7 @@
 package org.sufficientlysecure.keychain.ui.widget;
 
 import android.content.Context;
+import android.support.v4.widget.NoScrollableSwipeRefreshLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.AttributeSet;
 
@@ -25,8 +26,7 @@ import org.sufficientlysecure.keychain.util.Log;
 
 import se.emilsjolander.stickylistheaders.StickyListHeadersListView;
 
-public class ListAwareSwipeRefreshLayout extends SwipeRefreshLayout {
-
+public class ListAwareSwipeRefreshLayout extends NoScrollableSwipeRefreshLayout {
 
     private StickyListHeadersListView mStickyListHeadersListView = null;
     private boolean mIsLocked = false;
@@ -37,6 +37,7 @@ public class ListAwareSwipeRefreshLayout extends SwipeRefreshLayout {
     public ListAwareSwipeRefreshLayout(Context context) {
         super(context);
     }
+
     public ListAwareSwipeRefreshLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
@@ -47,6 +48,7 @@ public class ListAwareSwipeRefreshLayout extends SwipeRefreshLayout {
     public void setStickyListHeadersListView(StickyListHeadersListView stickyListHeadersListView) {
         mStickyListHeadersListView = stickyListHeadersListView;
     }
+
     public StickyListHeadersListView getStickyListHeadersListView() {
         return mStickyListHeadersListView;
     }
@@ -55,27 +57,22 @@ public class ListAwareSwipeRefreshLayout extends SwipeRefreshLayout {
         mIsLocked = locked;
         Log.d("ListAwareSwipeRefreshLayout", (mIsLocked ? "is locked" : "not locked"));
     }
+
     public boolean getIsLocked() {
         return mIsLocked;
     }
 
     @Override
     public boolean canChildScrollUp() {
-        if (mStickyListHeadersListView == null)
+        if (mStickyListHeadersListView == null) {
             return super.canChildScrollUp();
+        }
 
-        return (
-            mIsLocked
-            ||
-            (
+        return (mIsLocked || (
                 mStickyListHeadersListView.getWrappedList().getChildCount() > 0
-                &&
-                (
-                    mStickyListHeadersListView.getTop() > 0
-                    ||
-                    mStickyListHeadersListView.getFirstVisiblePosition() > 0
-                )
-            )
+                        && (mStickyListHeadersListView.getTop() > 0
+                        || mStickyListHeadersListView.getFirstVisiblePosition() > 0
+                ))
         );
     }
 }
