@@ -25,13 +25,17 @@ import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.shadows.ShadowLog;
+import org.spongycastle.util.encoders.Hex;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedPublicKeyRing;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey.SecretKeyType;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKeyRing;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
 import org.sufficientlysecure.keychain.service.results.SaveKeyringResult;
+import org.sufficientlysecure.keychain.util.IterableIterator;
 import org.sufficientlysecure.keychain.util.ProgressScaler;
+
+import java.util.Arrays;
 
 @RunWith(RobolectricTestRunner.class)
 @org.robolectric.annotation.Config(emulateSdk = 18) // Robolectric doesn't yet support 19
@@ -102,7 +106,6 @@ public class ProviderHelperSaveTest {
 
         SaveKeyringResult result;
 
-        // insert both keys, second should fail
         result = mProviderHelper.saveSecretKeyRing(sec, new ProgressScaler());
         Assert.assertTrue("import of secret keyring should succeed", result.success());
 
@@ -117,6 +120,32 @@ public class ProviderHelperSaveTest {
                     SecretKeyType.DIVERT_TO_CARD, cachedRing.getSecretKeyType(key.getKeyId()));
         }
 
+    }
+
+    @Test public void testImportBadEncodedUserId() throws Exception {
+
+        UncachedKeyRing key =
+                readRingFromResource("/test-keys/bad_user_id_encoding.asc");
+        long keyId = key.getMasterKeyId();
+
+        SaveKeyringResult result;
+
+        result = mProviderHelper.savePublicKeyRing(key, new ProgressScaler());
+        Assert.assertTrue("import of keyring should succeed", result.success());
+
+        // make sure both the CanonicalizedSecretKeyRing as well as the CachedPublicKeyRing correctly
+        // indicate the secret key type
+        CanonicalizedPublicKeyRing ring = mProviderHelper.getCanonicalizedPublicKeyRing(keyId);
+        boolean found = false;
+        byte[] badUserId = Hex.decode("436c61757320467261656e6b656c203c436c6175732e4672e46e6b656c4068616c696661782e727774682d61616368656e2e64653e");
+        for (byte[] rawUserId : new IterableIterator<byte[]>(
+                ring.getUnorderedRawUserIds().iterator())) {
+            if (Arrays.equals(rawUserId, badUserId)) {
+                found = true;
+            }
+        }
+
+        Assert.assertTrue("import of the badly encoded user id should succeed", found);
     }
 
     UncachedKeyRing readRingFromResource(String name) throws Exception {
