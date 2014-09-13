@@ -28,6 +28,7 @@ import android.net.Uri;
 import android.os.RemoteException;
 import android.support.v4.util.LongSparseArray;
 
+import org.spongycastle.util.Strings;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.helper.Preferences;
@@ -434,8 +435,11 @@ public class ProviderHelper {
             }
             mIndent += 1;
             List<UserIdItem> uids = new ArrayList<UserIdItem>();
-            for (String userId : new IterableIterator<String>(
-                    masterKey.getUnorderedUserIds().iterator())) {
+            for (byte[] rawUserId : new IterableIterator<byte[]>(
+                    masterKey.getUnorderedRawUserIds().iterator())) {
+                String userId = Strings.fromUTF8ByteArray(rawUserId);
+                Log.d(Constants.TAG, "userId: "+userId);
+
                 UserIdItem item = new UserIdItem();
                 uids.add(item);
                 item.userId = userId;
@@ -446,7 +450,7 @@ public class ProviderHelper {
                 mIndent += 1;
                 // look through signatures for this specific key
                 for (WrappedSignature cert : new IterableIterator<WrappedSignature>(
-                        masterKey.getSignaturesForId(userId))) {
+                        masterKey.getSignaturesForRawId(rawUserId))) {
                     long certId = cert.getKeyId();
                     try {
                         // self signature
@@ -469,7 +473,7 @@ public class ProviderHelper {
                         if (trustedKeys.indexOfKey(certId) >= 0) {
                             CanonicalizedPublicKey trustedKey = trustedKeys.get(certId);
                             cert.init(trustedKey);
-                            if (cert.verifySignature(masterKey, userId)) {
+                            if (cert.verifySignature(masterKey, rawUserId)) {
                                 item.trustedCerts.add(cert);
                                 log(LogLevel.INFO, LogType.MSG_IP_UID_CERT_GOOD,
                                         PgpKeyHelper.convertKeyIdToHexShort(trustedKey.getKeyId())

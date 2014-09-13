@@ -187,8 +187,16 @@ public class WrappedSignature {
         }
     }
 
-    public boolean verifySignature(UncachedPublicKey key, String uid) throws PgpGeneralException {
-        return verifySignature(key.getPublicKey(), uid);
+    boolean verifySignature(PGPPublicKey key, byte[] rawUserId) throws PgpGeneralException {
+        try {
+            return mSig.verifyCertification(rawUserId, key);
+        } catch (PGPException e) {
+            throw new PgpGeneralException("Error!", e);
+        }
+    }
+
+    public boolean verifySignature(UncachedPublicKey key, byte[] rawUserId) throws PgpGeneralException {
+        return verifySignature(key.getPublicKey(), rawUserId);
     }
     public boolean verifySignature(CanonicalizedPublicKey key, String uid) throws PgpGeneralException {
         return verifySignature(key.getPublicKey(), uid);

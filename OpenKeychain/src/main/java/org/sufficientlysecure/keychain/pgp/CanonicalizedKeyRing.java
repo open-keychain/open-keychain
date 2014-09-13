@@ -59,6 +59,10 @@ public abstract class CanonicalizedKeyRing extends KeyRing {
         return getPublicKey().getPrimaryUserIdWithFallback();
     }
 
+    public ArrayList<byte[]> getUnorderedRawUserIds() {
+        return getPublicKey().getUnorderedRawUserIds();
+    }
+
     public ArrayList<String> getUnorderedUserIds() {
         return getPublicKey().getUnorderedUserIds();
     }

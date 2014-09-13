@@ -28,11 +28,13 @@ import org.spongycastle.openpgp.PGPPublicKey;
 import org.spongycastle.openpgp.PGPSignature;
 import org.spongycastle.openpgp.PGPSignatureSubpacketVector;
 import org.spongycastle.openpgp.operator.jcajce.JcaPGPContentVerifierBuilderProvider;
+import org.spongycastle.util.Strings;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.util.IterableIterator;
 import org.sufficientlysecure.keychain.util.Log;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -126,14 +128,14 @@ public class UncachedPublicKey {
      *
      */
     public String getPrimaryUserId() {
-        String found = null;
+        byte[] found = null;
         PGPSignature foundSig = null;
         // noinspection unchecked
-        for (String userId : new IterableIterator<String>(mPublicKey.getUserIDs())) {
+        for (byte[] rawUserId : new IterableIterator<byte[]>(mPublicKey.getRawUserIDs())) {
             PGPSignature revocation = null;
 
             @SuppressWarnings("unchecked")
-            Iterator<PGPSignature> signaturesIt = mPublicKey.getSignaturesForID(userId);
+            Iterator<PGPSignature> signaturesIt = mPublicKey.getSignaturesForID(rawUserId);
             // no signatures for this User ID
             if (signaturesIt == null) {
                 continue;
@@ -147,10 +149,10 @@ public class UncachedPublicKey {
                         // make sure it's actually valid
                         sig.init(new JcaPGPContentVerifierBuilderProvider().setProvider(
                                 Constants.BOUNCY_CASTLE_PROVIDER_NAME), mPublicKey);
-                        if (!sig.verifyCertification(userId, mPublicKey)) {
+                        if (!sig.verifyCertification(rawUserId, mPublicKey)) {
                             continue;
                         }
-                        if (found != null && found.equals(userId)) {
+                        if (found != null && Arrays.equals(found, rawUserId)) {
                             found = null;
                         }
                         revocation = sig;
@@ -169,8 +171,8 @@ public class UncachedPublicKey {
                         // make sure it's actually valid
                         sig.init(new JcaPGPContentVerifierBuilderProvider().setProvider(
                                 Constants.BOUNCY_CASTLE_PROVIDER_NAME), mPublicKey);
-                        if (sig.verifyCertification(userId, mPublicKey)) {
-                            found = userId;
+                        if (sig.verifyCertification(rawUserId, mPublicKey)) {
+                            found = rawUserId;
                             foundSig = sig;
                             // this one can't be relevant anymore at this point
                             revocation = null;
@@ -182,7 +184,11 @@ public class UncachedPublicKey {
                 }
             }
         }
-        return found;
+        if (found != null) {
+            return Strings.fromUTF8ByteArray(found);
+        } else {
+            return null;
+        }
     }
 
     /**
@@ -199,6 +205,14 @@ public class UncachedPublicKey {
     public ArrayList<String> getUnorderedUserIds() {
         ArrayList<String> userIds = new ArrayList<String>();
         for (String userId : new IterableIterator<String>(mPublicKey.getUserIDs())) {
+            userIds.add(userId);
+        }
+        return userIds;
+    }
+
+    public ArrayList<byte[]> getUnorderedRawUserIds() {
+        ArrayList<byte[]> userIds = new ArrayList<byte[]>();
+        for (byte[] userId : new IterableIterator<byte[]>(mPublicKey.getRawUserIDs())) {
             userIds.add(userId);
         }
         return userIds;
@@ -320,8 +334,8 @@ public class UncachedPublicKey {
         };
     }
 
-    public Iterator<WrappedSignature> getSignaturesForId(String userId) {
-        final Iterator<PGPSignature> it = mPublicKey.getSignaturesForID(userId);
+    public Iterator<WrappedSignature> getSignaturesForRawId(byte[] rawUserId) {
+        final Iterator<PGPSignature> it = mPublicKey.getSignaturesForID(rawUserId);
         if (it != null) {
             return new Iterator<WrappedSignature>() {
                 public void remove() {
