@@ -64,6 +64,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URLConnection;
 import java.security.SignatureException;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.Set;
 
@@ -403,7 +404,7 @@ public class PgpDecryptVerify {
             updateProgress(R.string.progress_extracting_key, currentProgress, 100);
 
             try {
-                log.add(LogLevel.WARN, LogType.MSG_DC_UNLOCKING, indent +1);
+                log.add(LogLevel.INFO, LogType.MSG_DC_UNLOCKING, indent +1);
                 if (!secretEncryptionKey.unlock(mPassphrase)) {
                     log.add(LogLevel.ERROR, LogType.MSG_DC_ERROR_BAD_PASSPHRASE, indent +1);
                     return new DecryptVerifyResult(DecryptVerifyResult.RESULT_ERROR, log);
@@ -554,10 +555,17 @@ public class PgpDecryptVerify {
                     literalData.getModificationTime().getTime(),
                     originalSize);
 
-            log.add(LogLevel.DEBUG, LogType.MSG_DC_CLEAR_META_FILE, indent +1);
-            log.add(LogLevel.DEBUG, LogType.MSG_DC_CLEAR_META_MIME, indent +1);
-            log.add(LogLevel.DEBUG, LogType.MSG_DC_CLEAR_META_TIME, indent +1);
-            log.add(LogLevel.DEBUG, LogType.MSG_DC_CLEAR_META_SIZE, indent +1);
+            if ( ! originalFilename.equals("")) {
+                log.add(LogLevel.DEBUG, LogType.MSG_DC_CLEAR_META_FILE, indent + 1, originalFilename);
+            }
+            log.add(LogLevel.DEBUG, LogType.MSG_DC_CLEAR_META_MIME, indent +1,
+                    mimeType);
+            log.add(LogLevel.DEBUG, LogType.MSG_DC_CLEAR_META_TIME, indent +1,
+                    new Date(literalData.getModificationTime().getTime()).toString());
+            if (originalSize != 0) {
+                log.add(LogLevel.DEBUG, LogType.MSG_DC_CLEAR_META_SIZE, indent + 1,
+                        Long.toString(originalSize));
+            }
 
             // return here if we want to decrypt the metadata only
             if (mDecryptMetadataOnly) {
