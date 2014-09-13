@@ -34,6 +34,7 @@ import org.sufficientlysecure.keychain.nfc.NfcActivity;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.PgpDecryptVerify;
+import org.sufficientlysecure.keychain.provider.KeychainDatabase.Tables;
 import org.sufficientlysecure.keychain.service.results.DecryptVerifyResult;
 import org.sufficientlysecure.keychain.pgp.PgpHelper;
 import org.sufficientlysecure.keychain.pgp.PgpSignEncrypt;
@@ -65,8 +66,8 @@ public class OpenPgpService extends RemoteService {
     };
 
     // do not pre-select revoked or expired keys
-    static final String EMAIL_SEARCH_WHERE = KeychainContract.KeyRings.IS_REVOKED + " = 0 AND "
-            + KeychainContract.KeyRings.IS_EXPIRED + " = 0";
+    static final String EMAIL_SEARCH_WHERE = Tables.KEYS + "." + KeychainContract.KeyRings.IS_REVOKED
+            + " = 0 AND " + KeychainContract.KeyRings.IS_EXPIRED + " = 0";
 
     /**
      * Search database for key ids based on emails.

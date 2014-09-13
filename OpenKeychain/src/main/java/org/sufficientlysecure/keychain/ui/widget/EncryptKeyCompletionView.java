@@ -47,6 +47,7 @@ import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
+import org.sufficientlysecure.keychain.provider.KeychainDatabase.Tables;
 import org.sufficientlysecure.keychain.util.Log;
 
 import java.util.ArrayList;
@@ -128,7 +129,7 @@ public class EncryptKeyCompletionView extends TokenCompleteTextView {
                     };
 
                     String where = KeyRings.HAS_ENCRYPT + " NOT NULL AND " + KeyRings.IS_EXPIRED + " = 0 AND "
-                            + KeyRings.IS_REVOKED + " = 0";
+                            + Tables.KEYS + "." + KeyRings.IS_REVOKED + " = 0";
 
                     return new CursorLoader(getContext(), baseUri, projection, where, null, null);
                 }
