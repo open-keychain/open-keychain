@@ -32,7 +32,7 @@ import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.remote.AppSettings;
-import org.sufficientlysecure.keychain.service.OperationResultParcel;
+import org.sufficientlysecure.keychain.service.results.OperationResultParcel;
 import org.sufficientlysecure.keychain.util.Log;
 
 public class AppSettingsActivity extends ActionBarActivity {

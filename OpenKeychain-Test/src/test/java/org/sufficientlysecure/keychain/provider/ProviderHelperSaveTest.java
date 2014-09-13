@@ -30,14 +30,8 @@ import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey.SecretKeyType;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKeyRing;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
-import org.sufficientlysecure.keychain.pgp.UncachedPublicKey;
-import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
-import org.sufficientlysecure.keychain.service.OperationResults.SaveKeyringResult;
-import org.sufficientlysecure.keychain.support.KeyringTestingHelper;
+import org.sufficientlysecure.keychain.service.results.SaveKeyringResult;
 import org.sufficientlysecure.keychain.util.ProgressScaler;
-
-import java.io.IOException;
-import java.util.Iterator;
 
 @RunWith(RobolectricTestRunner.class)
 @org.robolectric.annotation.Config(emulateSdk = 18) // Robolectric doesn't yet support 19

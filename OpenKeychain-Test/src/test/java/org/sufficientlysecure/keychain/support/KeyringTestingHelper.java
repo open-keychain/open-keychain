@@ -24,7 +24,7 @@ import org.spongycastle.util.Arrays;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
-import org.sufficientlysecure.keychain.service.OperationResults;
+import org.sufficientlysecure.keychain.service.results.SaveKeyringResult;
 import org.sufficientlysecure.keychain.util.ProgressScaler;
 
 import java.io.ByteArrayInputStream;
@@ -59,7 +59,7 @@ public class KeyringTestingHelper {
         // Should throw an exception; key is not yet saved
         retrieveKeyAndExpectNotFound(providerHelper, masterKeyId);
 
-        OperationResults.SaveKeyringResult saveKeyringResult = providerHelper.savePublicKeyRing(ring, new ProgressScaler());
+        SaveKeyringResult saveKeyringResult = providerHelper.savePublicKeyRing(ring, new ProgressScaler());
 
         boolean saveSuccess = saveKeyringResult.success();
 

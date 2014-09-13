@@ -39,10 +39,10 @@ import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
 import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
-import org.sufficientlysecure.keychain.service.OperationResultParcel;
-import org.sufficientlysecure.keychain.service.OperationResults;
+import org.sufficientlysecure.keychain.service.results.OperationResultParcel;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel.Algorithm;
+import org.sufficientlysecure.keychain.service.results.SaveKeyringResult;
 import org.sufficientlysecure.keychain.util.Log;
 
 public class CreateKeyFinalFragment extends Fragment {
@@ -140,7 +140,7 @@ public class CreateKeyFinalFragment extends Fragment {
                     if (returnData == null) {
                         return;
                     }
-                    final OperationResults.SaveKeyringResult result =
+                    final SaveKeyringResult result =
                             returnData.getParcelable(OperationResultParcel.EXTRA_RESULT);
                     if (result == null) {
                         Log.e(Constants.TAG, "result == null");
@@ -189,7 +189,7 @@ public class CreateKeyFinalFragment extends Fragment {
         getActivity().startService(intent);
     }
 
-    private void uploadKey(final OperationResults.SaveKeyringResult saveKeyResult) {
+    private void uploadKey(final SaveKeyringResult saveKeyResult) {
         // Send all information needed to service to upload key in other thread
         final Intent intent = new Intent(getActivity(), KeychainIntentService.class);
 

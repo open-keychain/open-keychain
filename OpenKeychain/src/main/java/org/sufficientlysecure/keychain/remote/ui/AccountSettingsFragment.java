@@ -26,19 +26,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
-import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
-import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
-import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.remote.AccountSettings;
-import org.sufficientlysecure.keychain.service.OperationResultParcel;
-import org.sufficientlysecure.keychain.service.OperationResults;
+import org.sufficientlysecure.keychain.service.results.OperationResultParcel;
+import org.sufficientlysecure.keychain.service.results.SaveKeyringResult;
 import org.sufficientlysecure.keychain.ui.CreateKeyActivity;
 import org.sufficientlysecure.keychain.ui.adapter.KeyValueSpinnerAdapter;
 import org.sufficientlysecure.keychain.ui.widget.KeySpinner;
@@ -176,7 +172,7 @@ public class AccountSettingsFragment extends Fragment {
             case REQUEST_CODE_CREATE_KEY: {
                 if (resultCode == Activity.RESULT_OK) {
                     if (data != null && data.hasExtra(OperationResultParcel.EXTRA_RESULT)) {
-                        OperationResults.SaveKeyringResult result = data.getParcelableExtra(OperationResultParcel.EXTRA_RESULT);
+                        SaveKeyringResult result = data.getParcelableExtra(OperationResultParcel.EXTRA_RESULT);
                         mSelectKeySpinner.setSelectedKeyId(result.mRingMasterKeyId);
                     } else {
                         Log.e(Constants.TAG, "missing result!");
