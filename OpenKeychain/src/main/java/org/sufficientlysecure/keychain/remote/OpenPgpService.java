@@ -34,7 +34,7 @@ import org.sufficientlysecure.keychain.nfc.NfcActivity;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.PgpDecryptVerify;
-import org.sufficientlysecure.keychain.pgp.PgpDecryptVerifyResult;
+import org.sufficientlysecure.keychain.service.results.DecryptVerifyResult;
 import org.sufficientlysecure.keychain.pgp.PgpHelper;
 import org.sufficientlysecure.keychain.pgp.PgpSignEncrypt;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
@@ -462,32 +462,23 @@ public class OpenPgpService extends RemoteService {
                         .setDecryptMetadataOnly(decryptMetadataOnly)
                         .setNfcState(nfcDecryptedSessionKey);
 
-                PgpDecryptVerifyResult decryptVerifyResult;
-                try {
-                    // TODO: currently does not support binary signed-only content
-                    decryptVerifyResult = builder.build().execute();
+                // TODO: currently does not support binary signed-only content
+                DecryptVerifyResult decryptVerifyResult = builder.build().execute();
 
-                    // throw exceptions upwards to client with meaningful messages
-                } catch (PgpDecryptVerify.InvalidDataException e) {
-                    throw new Exception(getString(R.string.error_invalid_data));
-                } catch (PgpDecryptVerify.KeyExtractionException e) {
-                    throw new Exception(getString(R.string.error_could_not_extract_private_key));
-                } catch (PgpDecryptVerify.WrongPassphraseException e) {
-                    throw new Exception(getString(R.string.error_wrong_passphrase));
-                } catch (PgpDecryptVerify.NoSecretKeyException e) {
-                    throw new Exception(getString(R.string.error_no_secret_key_found));
-                } catch (PgpDecryptVerify.IntegrityCheckFailedException e) {
-                    throw new Exception(getString(R.string.error_integrity_check_failed));
-                } catch (PgpDecryptVerify.NeedNfcDataException e) {
-                    // return PendingIntent to execute NFC activity
-                    return getNfcDecryptIntent(data, e.mPassphrase, e.mEncryptedSessionKey);
-                }
-
-                if (PgpDecryptVerifyResult.KEY_PASSHRASE_NEEDED == decryptVerifyResult.getStatus()) {
-                    // get PendingIntent for passphrase input, add it to given params and return to client
-                    return getPassphraseIntent(data, decryptVerifyResult.getKeyIdPassphraseNeeded());
-                } else if (PgpDecryptVerifyResult.SYMMETRIC_PASSHRASE_NEEDED == decryptVerifyResult.getStatus()) {
-                    throw new PgpGeneralException("Decryption of symmetric content not supported by API!");
+                if (decryptVerifyResult.isPending()) {
+                    switch (decryptVerifyResult.getResult()) {
+                        case DecryptVerifyResult.RESULT_PENDING_ASYM_PASSPHRASE:
+                            return getPassphraseIntent(data, decryptVerifyResult.getKeyIdPassphraseNeeded());
+                        case DecryptVerifyResult.RESULT_PENDING_SYM_PASSPHRASE:
+                            throw new PgpGeneralException(
+                                    "Decryption of symmetric content not supported by API!");
+                        case DecryptVerifyResult.RESULT_PENDING_NFC:
+                            // TODO get passphrase here? currently not in DecryptVerifyResult
+                            return getNfcDecryptIntent(
+                                    data, null, decryptVerifyResult.getNfcEncryptedSessionKey());
+                    }
+                    throw new PgpGeneralException(
+                            "Encountered unhandled type of pending action not supported by API!");
                 }
 
                 OpenPgpSignatureResult signatureResult = decryptVerifyResult.getSignatureResult();

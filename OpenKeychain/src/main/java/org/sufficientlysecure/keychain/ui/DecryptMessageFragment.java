@@ -31,7 +31,7 @@ import android.widget.EditText;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.compatibility.ClipboardReflection;
-import org.sufficientlysecure.keychain.pgp.PgpDecryptVerifyResult;
+import org.sufficientlysecure.keychain.service.results.DecryptVerifyResult;
 import org.sufficientlysecure.keychain.pgp.PgpHelper;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
 import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
@@ -143,24 +143,34 @@ public class DecryptMessageFragment extends DecryptFragment {
                     // get returned data bundle
                     Bundle returnData = message.getData();
 
-                    PgpDecryptVerifyResult decryptVerifyResult =
+                    DecryptVerifyResult result =
                             returnData.getParcelable(KeychainIntentService.RESULT_DECRYPT_VERIFY_RESULT);
 
-                    if (PgpDecryptVerifyResult.KEY_PASSHRASE_NEEDED == decryptVerifyResult.getStatus()) {
-                        showPassphraseDialog(decryptVerifyResult.getKeyIdPassphraseNeeded());
-                    } else if (PgpDecryptVerifyResult.SYMMETRIC_PASSHRASE_NEEDED ==
-                                    decryptVerifyResult.getStatus()) {
-                        showPassphraseDialog(Constants.key.symmetric);
-                    } else {
-                        byte[] decryptedMessage = returnData
-                                .getByteArray(KeychainIntentService.RESULT_DECRYPTED_BYTES);
-                        mMessage.setText(new String(decryptedMessage));
-                        mMessage.setHorizontallyScrolling(false);
-
-                        // display signature result in activity
-                        onResult(decryptVerifyResult);
+                    if (result.isPending()) {
+                        switch (result.getResult()) {
+                            case DecryptVerifyResult.RESULT_PENDING_ASYM_PASSPHRASE:
+                                showPassphraseDialog(result.getKeyIdPassphraseNeeded());
+                                return;
+                            case DecryptVerifyResult.RESULT_PENDING_SYM_PASSPHRASE:
+                                showPassphraseDialog(Constants.key.symmetric);
+                                return;
+                        }
+                        // error, we can't work with this!
+                        result.createNotify(getActivity()).show();
+                        return;
                     }
+
+                    byte[] decryptedMessage = returnData
+                            .getByteArray(KeychainIntentService.RESULT_DECRYPTED_BYTES);
+                    mMessage.setText(new String(decryptedMessage));
+                    mMessage.setHorizontallyScrolling(false);
+
+                    result.createNotify(getActivity()).show();
+
+                    // display signature result in activity
+                    onResult(result);
                 }
+
             }
         };
 

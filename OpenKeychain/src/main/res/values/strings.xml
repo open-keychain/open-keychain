@@ -764,6 +764,44 @@
     <string name="msg_ek_error_dummy">"Cannot edit keyring with stripped master key!"</string>
     <string name="msg_ek_error_not_found">"Key not found!"</string>
 
+    <!-- Messages for DecryptVerify operation -->
+    <string name="msg_dc_askip_no_key">"Data not encrypted with known key, skipping…"</string>
+    <string name="msg_dc_askip_not_allowed">"Data not encrypted with allowed key, skipping…"</string>
+    <string name="msg_dc_asym">"Found block of asymmetrically encrypted data for key %s"</string>
+    <string name="msg_dc_clear_data">"Processing literal data"</string>
+    <string name="msg_dc_clear_decompress">"Unpacking compressed data"</string>
+    <string name="msg_dc_clear_meta_file">"Filename: %s"</string>
+    <string name="msg_dc_clear_meta_mime">"MIME type: %s"</string>
+    <string name="msg_dc_clear_meta_size">"Filesize: %s"</string>
+    <string name="msg_dc_clear_meta_time">"Modification time: %s"</string>
+    <string name="msg_dc_clear_signature_bad">"Signature check NOT OK!"</string>
+    <string name="msg_dc_clear_signature_check">"Verifying signature data"</string>
+    <string name="msg_dc_clear_signature_ok">"Signature check OK"</string>
+    <string name="msg_dc_clear_signature">"Saving signature data for later"</string>
+    <string name="msg_dc_clear">"Processing cleartext data"</string>
+    <string name="msg_dc_error_bad_passphrase">"Error unlocking key, bad passphrase!"</string>
+    <string name="msg_dc_error_extract_key">"Unknown error unlocking key!"</string>
+    <string name="msg_dc_error_integrity_check">"Integrity check error!"</string>
+    <string name="msg_dc_error_invalid_siglist">"No valid signature data found!"</string>
+    <string name="msg_dc_error_io">"Encountered IO Exception during operation!"</string>
+    <string name="msg_dc_error_no_data">"No encrypted data found in stream!"</string>
+    <string name="msg_dc_error_no_key">"No encrypted data with known secret key found in stream!"</string>
+    <string name="msg_dc_error_pgp_exception">"Encountered PGP Exception during operation!"</string>
+    <string name="msg_dc_integrity_check_ok">"Integrity check ok!"</string>
+    <string name="msg_dc_ok_meta_only">"Only metadata was requested, skipping decryption"</string>
+    <string name="msg_dc_ok">"OK"</string>
+    <string name="msg_dc_pass_cached">"Using passphrase from cache"</string>
+    <string name="msg_dc_pending_nfc">"NFC token required, requesting user input…"</string>
+    <string name="msg_dc_pending_passphrase">"Passphrase required, requesting user input…"</string>
+    <string name="msg_dc_prep_streams">"Preparing streams for decryption"</string>
+    <string name="msg_dc">"Starting decrypt operation…"</string>
+    <string name="msg_dc_sym_skip">"Symmetric data not allowed, skipping…"</string>
+    <string name="msg_dc_sym">"Found block of symmetrically encrypted data"</string>
+    <string name="msg_dc_trail_asym">"Encountered trailing, asymmetrically encrypted data"</string>
+    <string name="msg_dc_trail_sym">"Encountered trailing, symmetrically encrypted data"</string>
+    <string name="msg_dc_trail_unknown">"Encountered trailing data of unknown type"</string>
+    <string name="msg_dc_unlocking">"Unlocking secret key"</string>
+
     <!-- PassphraseCache -->
     <string name="passp_cache_notif_click_to_clear">"Click to clear cached passphrases"</string>
     <string name="passp_cache_notif_n_keys">"OpenKeychain has cached %d passphrases"</string>
