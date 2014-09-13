@@ -434,7 +434,13 @@ public class PgpSignEncrypt {
             }
 
             PGPLiteralDataGenerator literalGen = new PGPLiteralDataGenerator();
-            pOut = literalGen.open(bcpgOut, PGPLiteralData.BINARY, mOriginalFilename, new Date(),
+            char literalDataFormatTag;
+            if (mCleartextInput) {
+                literalDataFormatTag = PGPLiteralData.UTF8;
+            } else {
+                literalDataFormatTag = PGPLiteralData.BINARY;
+            }
+            pOut = literalGen.open(bcpgOut, literalDataFormatTag, mOriginalFilename, new Date(),
                     new byte[1 << 16]);
 
             long alreadyWritten = 0;
