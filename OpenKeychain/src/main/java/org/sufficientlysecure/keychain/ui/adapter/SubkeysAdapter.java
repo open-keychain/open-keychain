@@ -22,8 +22,11 @@ import android.content.res.ColorStateList;
 import android.database.Cursor;
 import android.graphics.Typeface;
 import android.support.v4.widget.CursorAdapter;
-import android.text.Html;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.SpannableStringBuilder;
 import android.text.format.DateFormat;
+import android.text.style.StyleSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -143,29 +146,36 @@ public class SubkeysAdapter extends CursorAdapter {
 
         long keyId = cursor.getLong(INDEX_KEY_ID);
         String keyIdStr = PgpKeyHelper.convertKeyIdToHex(keyId);
+        vKeyId.setText(keyIdStr);
 
         // may be set with additional "stripped" later on
-        String algorithmStr = PgpKeyHelper.getAlgorithmInfo(
+        SpannableStringBuilder algorithmStr = new SpannableStringBuilder();
+        algorithmStr.append(PgpKeyHelper.getAlgorithmInfo(
                 context,
                 cursor.getInt(INDEX_ALGORITHM),
                 cursor.getInt(INDEX_KEY_SIZE),
                 cursor.getString(INDEX_KEY_CURVE_OID)
-        );
-
-        vKeyId.setText(keyIdStr);
+        ));
 
         if (mSaveKeyringParcel != null && mSaveKeyringParcel.mStripSubKeys.contains(keyId)) {
-            algorithmStr += ", <b>" + context.getString(R.string.key_stripped) + "</b>";
+            algorithmStr.append(", ");
+            final SpannableString boldStripped = new SpannableString(
+                    context.getString(R.string.key_stripped)
+            );
+            boldStripped.setSpan(new StyleSpan(Typeface.BOLD), 0, boldStripped.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         } else {
             switch (SecretKeyType.fromNum(cursor.getInt(INDEX_HAS_SECRET))) {
                 case GNU_DUMMY:
-                    algorithmStr += ", " + context.getString(R.string.key_stripped);
+                    algorithmStr.append(", ");
+                    algorithmStr.append(context.getString(R.string.key_stripped));
                     break;
                 case DIVERT_TO_CARD:
-                    algorithmStr += ", " + context.getString(R.string.key_divert);
+                    algorithmStr.append(", ");
+                    algorithmStr.append(context.getString(R.string.key_divert));
                     break;
                 case PASSPHRASE_EMPTY:
-                    algorithmStr += ", " + context.getString(R.string.key_no_passphrase);
+                    algorithmStr.append(", ");
+                    algorithmStr.append(context.getString(R.string.key_no_passphrase));
                     break;
                 case UNAVAILABLE:
                     // don't show this on pub keys
@@ -173,7 +183,7 @@ public class SubkeysAdapter extends CursorAdapter {
                     break;
             }
         }
-        vKeyDetails.setText(Html.fromHtml(algorithmStr));
+        vKeyDetails.setText(algorithmStr, TextView.BufferType.SPANNABLE);
 
         boolean isMasterKey = cursor.getInt(INDEX_RANK) == 0;
         if (isMasterKey) {
