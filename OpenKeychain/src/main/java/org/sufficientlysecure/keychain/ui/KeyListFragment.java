@@ -57,6 +57,7 @@ import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.helper.ExportHelper;
 import org.sufficientlysecure.keychain.helper.KeyUpdateHelper;
+import org.sufficientlysecure.keychain.helper.Preferences;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
@@ -135,6 +136,13 @@ public class KeyListFragment extends LoaderFragment
         mSwipeRefreshLayout.setStickyListHeadersListView(mStickyList);
 
         return root;
+    }
+
+    @Override
+    public void onResume() {
+        String[] servers = Preferences.getPreferences(getActivity()).getKeyServers();
+        mSwipeRefreshLayout.setIsLocked(servers == null || servers.length == 0 || servers[0] == null);
+        super.onResume();
     }
 
     /**

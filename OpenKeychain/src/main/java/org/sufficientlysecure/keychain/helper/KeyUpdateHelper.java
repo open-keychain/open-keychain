@@ -44,7 +44,7 @@ public class KeyUpdateHelper {
 
     public ImportKeysListEntry getKeyByFingerprint(Context context, String fingerprint) {
         String[] servers = Preferences.getPreferences(context).getKeyServers();
-        if (servers != null && servers.length != 0) {
+        if (servers != null && servers.length != 0 && servers[0] != null) {
             try {
                 HkpKeyserver hkp = new HkpKeyserver(servers[0]);
                 for (ImportKeysListEntry key : hkp.search("0x" + fingerprint)) {
@@ -72,28 +72,31 @@ public class KeyUpdateHelper {
         protected Void doInBackground(Void... voids) {
             ProviderHelper providerHelper = new ProviderHelper(mContext);
             List<ImportKeysListEntry> keys = new ArrayList<ImportKeysListEntry>();
+            String[] servers = Preferences.getPreferences(mContext).getKeyServers();
 
-            // Load all the fingerprints in the database and prepare to import them
-            for(String fprint : providerHelper.getAllFingerprints(KeychainContract.KeyRings.buildUnifiedKeyRingsUri())) {
-                ImportKeysListEntry key = getKeyByFingerprint(mContext, fprint);
-                if(key != null) {
+            if (servers != null && servers.length > 0) {
+                // Load all the fingerprints in the database and prepare to import them
+                for (String fprint : providerHelper.getAllFingerprints(KeychainContract.KeyRings.buildUnifiedKeyRingsUri())) {
+                    ImportKeysListEntry key = new ImportKeysListEntry();
+                    key.setFingerprintHex(fprint);
+                    key.setBitStrength(1337);
+                    key.setOrigin(servers[0]);
                     keys.add(key);
                 }
+
+                // Start the service and update the keys
+                Intent importIntent = new Intent(mContext, KeychainIntentService.class);
+                importIntent.setAction(KeychainIntentService.ACTION_DOWNLOAD_AND_IMPORT_KEYS);
+
+                Bundle importData = new Bundle();
+                importData.putParcelableArrayList(KeychainIntentService.DOWNLOAD_KEY_LIST,
+                        new ArrayList<ImportKeysListEntry>(keys));
+                importIntent.putExtra(KeychainIntentService.EXTRA_DATA, importData);
+
+                importIntent.putExtra(KeychainIntentService.EXTRA_MESSENGER, new Messenger(mHandler));
+
+                mContext.startService(importIntent);
             }
-
-            // Start the service and update the keys
-            Intent importIntent = new Intent(mContext, KeychainIntentService.class);
-            importIntent.setAction(KeychainIntentService.ACTION_DOWNLOAD_AND_IMPORT_KEYS);
-
-            Bundle importData = new Bundle();
-            importData.putParcelableArrayList(KeychainIntentService.DOWNLOAD_KEY_LIST,
-                    new ArrayList<ImportKeysListEntry>(keys));
-            importIntent.putExtra(KeychainIntentService.EXTRA_DATA, importData);
-
-            importIntent.putExtra(KeychainIntentService.EXTRA_MESSENGER, new Messenger(mHandler));
-
-            mContext.startService(importIntent);
-
             return null;
         }
     }

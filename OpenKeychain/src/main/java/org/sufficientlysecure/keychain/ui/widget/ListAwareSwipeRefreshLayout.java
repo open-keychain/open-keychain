@@ -1,49 +1,81 @@
+/*
+ * Copyright (C) 2014 Daniel Albert
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package org.sufficientlysecure.keychain.ui.widget;
 
 import android.content.Context;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.AttributeSet;
 
+import org.sufficientlysecure.keychain.util.Log;
+
 import se.emilsjolander.stickylistheaders.StickyListHeadersListView;
 
 public class ListAwareSwipeRefreshLayout extends SwipeRefreshLayout {
 
-    /**
-     * A StickyListHeadersListView whose parent view is this SwipeRefreshLayout
-     */
-    private StickyListHeadersListView mStickyListHeadersListView;
 
+    private StickyListHeadersListView mStickyListHeadersListView = null;
+    private boolean mIsLocked = false;
+
+    /**
+     * Constructors
+     */
     public ListAwareSwipeRefreshLayout(Context context) {
         super(context);
     }
-
     public ListAwareSwipeRefreshLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
 
+    /**
+     * Getters / Setters
+     */
     public void setStickyListHeadersListView(StickyListHeadersListView stickyListHeadersListView) {
         mStickyListHeadersListView = stickyListHeadersListView;
+    }
+    public StickyListHeadersListView getStickyListHeadersListView() {
+        return mStickyListHeadersListView;
+    }
+
+    public void setIsLocked(boolean locked) {
+        mIsLocked = locked;
+        Log.d("ListAwareSwipeRefreshLayout", (mIsLocked ? "is locked" : "not locked"));
+    }
+    public boolean getIsLocked() {
+        return mIsLocked;
     }
 
     @Override
     public boolean canChildScrollUp() {
-        if (mStickyListHeadersListView != null) {
-            // In order to scroll a StickyListHeadersListView up:
-            // Firstly, the wrapped ListView must have at least one item
-            return (mStickyListHeadersListView.getListChildCount() > 0) &&
-                    // And then, the first visible item must not be the first item
-                    ((mStickyListHeadersListView.getFirstVisiblePosition() > 0) ||
-                            // If the first visible item is the first item,
-                            // (we've reached the first item)
-                            // make sure that its top must not cross over the padding top of the wrapped ListView
-                            (mStickyListHeadersListView.getListChildAt(0).getTop() < 0));
-
-            // If the wrapped ListView is empty or,
-            // the first item is located below the padding top of the wrapped ListView,
-            // we can allow performing refreshing now
-        } else {
-            // Fall back to default implementation
+        if (mStickyListHeadersListView == null)
             return super.canChildScrollUp();
-        }
+
+        return (
+            mIsLocked
+            ||
+            (
+                mStickyListHeadersListView.getWrappedList().getChildCount() > 0
+                &&
+                (
+                    mStickyListHeadersListView.getTop() > 0
+                    ||
+                    mStickyListHeadersListView.getFirstVisiblePosition() > 0
+                )
+            )
+        );
     }
 }
