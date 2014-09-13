@@ -82,7 +82,7 @@ import se.emilsjolander.stickylistheaders.StickyListHeadersListView;
  */
 public class KeyListFragment extends LoaderFragment
         implements SearchView.OnQueryTextListener, AdapterView.OnItemClickListener,
-        LoaderManager.LoaderCallbacks<Cursor>, NoScrollableSwipeRefreshLayout.OnRefreshListener {
+        LoaderManager.LoaderCallbacks<Cursor>, ListAwareSwipeRefreshLayout.OnRefreshListener {
 
     private KeyListAdapter mAdapter;
     private StickyListHeadersListView mStickyList;
