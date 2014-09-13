@@ -42,23 +42,6 @@ public class KeyUpdateHelper {
         updateTask.execute();
     }
 
-    public ImportKeysListEntry getKeyByFingerprint(Context context, String fingerprint) {
-        String[] servers = Preferences.getPreferences(context).getKeyServers();
-        if (servers != null && servers.length != 0 && servers[0] != null) {
-            try {
-                HkpKeyserver hkp = new HkpKeyserver(servers[0]);
-                for (ImportKeysListEntry key : hkp.search("0x" + fingerprint)) {
-                    if (fingerprint.equals(key.getFingerprintHex())) {
-                        return key;
-                    }
-                }
-            } catch (Keyserver.QueryNeedsRepairException e) {
-            } catch (Keyserver.QueryFailedException e) {
-            }
-        }
-        return null;
-    }
-
     private class UpdateTask extends AsyncTask<Void, Void, Void> {
         private Context mContext;
         private KeychainIntentServiceHandler mHandler;
