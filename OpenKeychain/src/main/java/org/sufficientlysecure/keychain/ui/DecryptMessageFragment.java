@@ -146,19 +146,26 @@ public class DecryptMessageFragment extends DecryptFragment {
                     DecryptVerifyResult result =
                             returnData.getParcelable(KeychainIntentService.RESULT_DECRYPT_VERIFY_RESULT);
 
-                    switch (result.getResult()) {
-                        case DecryptVerifyResult.RESULT_PENDING_ASYM_PASSPHRASE:
-                            showPassphraseDialog(result.getKeyIdPassphraseNeeded());
-                            return;
-                        case DecryptVerifyResult.RESULT_PENDING_SYM_PASSPHRASE:
-                            showPassphraseDialog(Constants.key.symmetric);
-                            return;
+                    if (result.isPending()) {
+                        switch (result.getResult()) {
+                            case DecryptVerifyResult.RESULT_PENDING_ASYM_PASSPHRASE:
+                                showPassphraseDialog(result.getKeyIdPassphraseNeeded());
+                                return;
+                            case DecryptVerifyResult.RESULT_PENDING_SYM_PASSPHRASE:
+                                showPassphraseDialog(Constants.key.symmetric);
+                                return;
+                        }
+                        // error, we can't work with this!
+                        result.createNotify(getActivity());
+                        return;
                     }
 
                     byte[] decryptedMessage = returnData
                             .getByteArray(KeychainIntentService.RESULT_DECRYPTED_BYTES);
                     mMessage.setText(new String(decryptedMessage));
                     mMessage.setHorizontallyScrolling(false);
+
+                    result.createNotify(getActivity());
 
                     // display signature result in activity
                     onResult(result);

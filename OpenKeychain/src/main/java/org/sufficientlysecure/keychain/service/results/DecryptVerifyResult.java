@@ -18,7 +18,6 @@
 package org.sufficientlysecure.keychain.service.results;
 
 import android.os.Parcel;
-import android.os.Parcelable;
 
 import org.openintents.openpgp.OpenPgpMetadata;
 import org.openintents.openpgp.OpenPgpSignatureResult;
@@ -34,7 +33,7 @@ public class DecryptVerifyResult extends OperationResultParcel {
     public static final int RESULT_PENDING_NFC = RESULT_PENDING +48;
 
     long mKeyIdPassphraseNeeded;
-    byte[] mSessionKey;
+    byte[] mNfcSessionKey;
 
     OpenPgpSignatureResult mSignatureResult;
     OpenPgpMetadata mDecryptMetadata;
@@ -48,7 +47,11 @@ public class DecryptVerifyResult extends OperationResultParcel {
     }
 
     public void setNfcEncryptedSessionKey(byte[] sessionKey) {
-        mSessionKey = sessionKey;
+        mNfcSessionKey = sessionKey;
+    }
+
+    public byte[] getNfcEncryptedSessionKey() {
+        return mNfcSessionKey;
     }
 
     public OpenPgpSignatureResult getSignatureResult() {
@@ -80,7 +83,7 @@ public class DecryptVerifyResult extends OperationResultParcel {
         mKeyIdPassphraseNeeded = source.readLong();
         mSignatureResult = source.readParcelable(OpenPgpSignatureResult.class.getClassLoader());
         mDecryptMetadata = source.readParcelable(OpenPgpMetadata.class.getClassLoader());
-        mSessionKey = source.readInt() != 0 ? source.createByteArray() : null;
+        mNfcSessionKey = source.readInt() != 0 ? source.createByteArray() : null;
     }
 
     public int describeContents() {
@@ -92,9 +95,9 @@ public class DecryptVerifyResult extends OperationResultParcel {
         dest.writeLong(mKeyIdPassphraseNeeded);
         dest.writeParcelable(mSignatureResult, 0);
         dest.writeParcelable(mDecryptMetadata, 0);
-        if (mSessionKey != null) {
+        if (mNfcSessionKey != null) {
             dest.writeInt(1);
-            dest.writeByteArray(mSessionKey);
+            dest.writeByteArray(mNfcSessionKey);
         } else {
             dest.writeInt(0);
         }

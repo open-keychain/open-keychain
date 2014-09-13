@@ -261,13 +261,18 @@ public class DecryptFileFragment extends DecryptFragment {
                     DecryptVerifyResult result =
                             returnData.getParcelable(KeychainIntentService.RESULT_DECRYPT_VERIFY_RESULT);
 
-                    switch (result.getResult()) {
-                        case DecryptVerifyResult.RESULT_PENDING_ASYM_PASSPHRASE:
-                            showPassphraseDialog(result.getKeyIdPassphraseNeeded());
-                            return;
-                        case DecryptVerifyResult.RESULT_PENDING_SYM_PASSPHRASE:
-                            showPassphraseDialog(Constants.key.symmetric);
-                            return;
+                    if (result.isPending()) {
+                        switch (result.getResult()) {
+                            case DecryptVerifyResult.RESULT_PENDING_ASYM_PASSPHRASE:
+                                showPassphraseDialog(result.getKeyIdPassphraseNeeded());
+                                return;
+                            case DecryptVerifyResult.RESULT_PENDING_SYM_PASSPHRASE:
+                                showPassphraseDialog(Constants.key.symmetric);
+                                return;
+                        }
+                        // error, we can't work with this!
+                        result.createNotify(getActivity());
+                        return;
                     }
 
                     // display signature result in activity

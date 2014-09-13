@@ -337,15 +337,22 @@ public class KeychainIntentService extends IntentService implements Progressable
 
                 Bundle resultData = new Bundle();
 
-                /* TODO find passphrase from cache, if not provided
-                    return PassphraseCacheService.getCachedPassphrase(
-                        KeychainIntentService.this, masterKeyId);
-                */
-
                 // verifyText and decrypt returning additional resultData values for the
                 // verification of signatures
                 PgpDecryptVerify.Builder builder = new PgpDecryptVerify.Builder(
-                        new ProviderHelper(this), inputData, outStream
+                        new ProviderHelper(this),
+                        new PgpDecryptVerify.PassphraseCache() {
+                            @Override
+                            public String getCachedPassphrase(long masterKeyId) {
+                                try {
+                                    return PassphraseCacheService.getCachedPassphrase(
+                                            KeychainIntentService.this, masterKeyId);
+                                } catch (PassphraseCacheService.KeyNotFoundException e) {
+                                    return null;
+                                }
+                            }
+                        },
+                        inputData, outStream
                 );
                 builder.setProgressable(this)
                         .setAllowSymmetricDecryption(true)
@@ -378,15 +385,22 @@ public class KeychainIntentService extends IntentService implements Progressable
 
                 Bundle resultData = new Bundle();
 
-                /* TODO find passphrase from cache, if not provided
-                    return PassphraseCacheService.getCachedPassphrase(
-                        KeychainIntentService.this, masterKeyId);
-                */
-
                 // verifyText and decrypt returning additional resultData values for the
                 // verification of signatures
                 PgpDecryptVerify.Builder builder = new PgpDecryptVerify.Builder(
-                        new ProviderHelper(this), inputData, null
+                        new ProviderHelper(this),
+                        new PgpDecryptVerify.PassphraseCache() {
+                            @Override
+                            public String getCachedPassphrase(long masterKeyId) throws PgpDecryptVerify.NoSecretKeyException {
+                                try {
+                                    return PassphraseCacheService.getCachedPassphrase(
+                                            KeychainIntentService.this, masterKeyId);
+                                } catch (PassphraseCacheService.KeyNotFoundException e) {
+                                    throw new PgpDecryptVerify.NoSecretKeyException();
+                                }
+                            }
+                        },
+                        inputData, null
                 );
                 builder.setProgressable(this)
                         .setAllowSymmetricDecryption(true)

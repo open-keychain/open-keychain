@@ -49,6 +49,8 @@ import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.results.DecryptVerifyResult;
+import org.sufficientlysecure.keychain.service.results.OperationResultParcel.LogLevel;
+import org.sufficientlysecure.keychain.service.results.OperationResultParcel.LogType;
 import org.sufficientlysecure.keychain.service.results.OperationResultParcel.OperationLog;
 import org.sufficientlysecure.keychain.util.InputData;
 import org.sufficientlysecure.keychain.util.Log;
@@ -70,6 +72,7 @@ import java.util.Set;
  */
 public class PgpDecryptVerify {
     private ProviderHelper mProviderHelper;
+    private PassphraseCache mPassphraseCache;
     private InputData mData;
     private OutputStream mOutStream;
 
@@ -83,6 +86,7 @@ public class PgpDecryptVerify {
     private PgpDecryptVerify(Builder builder) {
         // private Constructor can only be called from Builder
         this.mProviderHelper = builder.mProviderHelper;
+        this.mPassphraseCache = builder.mPassphraseCache;
         this.mData = builder.mData;
         this.mOutStream = builder.mOutStream;
 
@@ -97,6 +101,7 @@ public class PgpDecryptVerify {
     public static class Builder {
         // mandatory parameter
         private ProviderHelper mProviderHelper;
+        private PassphraseCache mPassphraseCache;
         private InputData mData;
         private OutputStream mOutStream;
 
@@ -108,8 +113,10 @@ public class PgpDecryptVerify {
         private boolean mDecryptMetadataOnly = false;
         private byte[] mDecryptedSessionKey = null;
 
-        public Builder(ProviderHelper providerHelper, InputData data, OutputStream outStream) {
+        public Builder(ProviderHelper providerHelper, PassphraseCache passphraseCache,
+                       InputData data, OutputStream outStream) {
             this.mProviderHelper = providerHelper;
+            this.mPassphraseCache = passphraseCache;
             this.mData = data;
             this.mOutStream = outStream;
         }
@@ -166,6 +173,16 @@ public class PgpDecryptVerify {
     public void updateProgress(int current, int total) {
         if (mProgressable != null) {
             mProgressable.setProgress(current, total);
+        }
+    }
+
+    public interface PassphraseCache {
+        public String getCachedPassphrase(long masterKeyId)
+                throws NoSecretKeyException;
+    }
+
+    public static class NoSecretKeyException extends Exception {
+        public NoSecretKeyException() {
         }
     }
 
@@ -286,12 +303,24 @@ public class PgpDecryptVerify {
 
                 encryptedDataAsymmetric = encData;
 
-                // if passphrase was not cached, return here indicating that a passphrase is missing!
+                // if no passphrase was explicitly set try to get it from the cache service
                 if (mPassphrase == null) {
-                    DecryptVerifyResult result =
-                            new DecryptVerifyResult(DecryptVerifyResult.RESULT_PENDING_ASYM_PASSPHRASE, log);
-                    result.setKeyIdPassphraseNeeded(subKeyId);
-                    return result;
+                    try {
+                        // returns "" if key has no passphrase
+                        mPassphrase = mPassphraseCache.getCachedPassphrase(subKeyId);
+                    } catch (NoSecretKeyException e) {
+                        // log.add(LogLevel.ERROR, LogType.MSG_DEC_ERROR_NO_KEY);
+                        return new DecryptVerifyResult(DecryptVerifyResult.RESULT_ERROR, log);
+                    }
+
+                    // if passphrase was not cached, return here
+                    // indicating that a passphrase is missing!
+                    if (mPassphrase == null) {
+                        DecryptVerifyResult result =
+                                new DecryptVerifyResult(DecryptVerifyResult.RESULT_PENDING_ASYM_PASSPHRASE, log);
+                        result.setKeyIdPassphraseNeeded(subKeyId);
+                        return result;
+                    }
                 }
 
                 // break out of while, only decrypt the first packet where we have a key
