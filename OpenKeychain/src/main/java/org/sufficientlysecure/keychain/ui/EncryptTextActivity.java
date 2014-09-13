@@ -409,16 +409,29 @@ public class EncryptTextActivity extends DrawerActivity implements EncryptActivi
     private void handleActions(Intent intent) {
         String action = intent.getAction();
         Bundle extras = intent.getExtras();
-        // Should always be text/plain
-        // String type = intent.getType();
-        ArrayList<Uri> uris = new ArrayList<Uri>();
+        String type = intent.getType();
 
         if (extras == null) {
             extras = new Bundle();
         }
 
-        if (intent.getData() != null) {
-            uris.add(intent.getData());
+        /*
+         * Android's Action
+         */
+
+        // When sending to OpenKeychain Encrypt via share menu
+        if (Intent.ACTION_SEND.equals(action) && type != null) {
+            // When sending to OpenKeychain Encrypt via share menu
+            if ("text/plain".equals(type)) {
+                String sharedText = intent.getStringExtra(Intent.EXTRA_TEXT);
+                if (sharedText != null) {
+                    // handle like normal text encryption, override action and extras to later
+                    // executeServiceMethod ACTION_ENCRYPT_TEXT in main actions
+                    extras.putString(EXTRA_TEXT, sharedText);
+                    action = ACTION_ENCRYPT_TEXT;
+                }
+
+            }
         }
 
         String textData = extras.getString(EXTRA_TEXT);

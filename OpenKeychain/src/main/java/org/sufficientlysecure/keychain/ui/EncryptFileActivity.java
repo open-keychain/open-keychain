@@ -452,27 +452,11 @@ public class EncryptFileActivity extends DrawerActivity implements EncryptActivi
          * Android's Action
          */
 
+        // When sending to OpenKeychain Encrypt via share menu
         if (Intent.ACTION_SEND.equals(action) && type != null) {
-            // When sending to OpenKeychain Encrypt via share menu
-            /* if ("text/plain".equals(type)) {
-                // TODO handle, maybe forward to "encrypt text" activity?
-
-                Plain text
-                String sharedText = intent.getStringExtra(Intent.EXTRA_TEXT);
-                if (sharedText != null) {
-                    // handle like normal text encryption, override action and extras to later
-                    // executeServiceMethod ACTION_ENCRYPT_TEXT in main actions
-                    extras.putString(EXTRA_TEXT, sharedText);
-                    extras.putBoolean(EXTRA_ASCII_ARMOR, true);
-                    action = ACTION_ENCRYPT_TEXT;
-                }
-
-            } else */
-            {
-                // Files via content provider, override uri and action
-                uris.clear();
-                uris.add(intent.<Uri>getParcelableExtra(Intent.EXTRA_STREAM));
-            }
+            // Files via content provider, override uri and action
+            uris.clear();
+            uris.add(intent.<Uri>getParcelableExtra(Intent.EXTRA_STREAM));
         }
 
         if (Intent.ACTION_SEND_MULTIPLE.equals(action) && type != null) {
