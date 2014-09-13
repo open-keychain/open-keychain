@@ -27,6 +27,7 @@ import android.util.AttributeSet;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainDatabase;
+import org.sufficientlysecure.keychain.provider.KeychainDatabase.Tables;
 
 public class CertifyKeySpinner extends KeySpinner {
     private long mHiddenMasterKeyId = Constants.key.none;
@@ -67,7 +68,7 @@ public class CertifyKeySpinner extends KeySpinner {
 
         String where = KeychainContract.KeyRings.HAS_ANY_SECRET + " = 1 AND "
                 + KeychainContract.KeyRings.HAS_CERTIFY + " NOT NULL AND "
-                + KeychainContract.KeyRings.IS_REVOKED + " = 0 AND "
+                + Tables.KEYS + "." + KeychainContract.KeyRings.IS_REVOKED + " = 0 AND "
                 + KeychainContract.KeyRings.IS_EXPIRED + " = 0 AND " + KeychainDatabase.Tables.KEYS + "."
                 + KeychainContract.KeyRings.MASTER_KEY_ID + " != " + mHiddenMasterKeyId;
 
