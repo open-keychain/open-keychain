@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.sufficientlysecure.keychain.pgp;
+package org.sufficientlysecure.keychain.service.results;
 
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -23,24 +23,21 @@ import android.os.Parcelable;
 import org.openintents.openpgp.OpenPgpMetadata;
 import org.openintents.openpgp.OpenPgpSignatureResult;
 
-public class PgpDecryptVerifyResult implements Parcelable {
-    public static final int SUCCESS = 1;
-    public static final int KEY_PASSHRASE_NEEDED = 2;
-    public static final int SYMMETRIC_PASSHRASE_NEEDED = 3;
+public class DecryptVerifyResult extends OperationResultParcel {
 
-    int mStatus;
+    // the fourth bit indicates a "data pending" result!
+    public static final int RESULT_PENDING = 8;
+
+    // fifth to sixth bit in addition indicate specific type of pending
+    public static final int RESULT_PENDING_ASYM_PASSPHRASE = RESULT_PENDING +16;
+    public static final int RESULT_PENDING_SYM_PASSPHRASE = RESULT_PENDING +32;
+    public static final int RESULT_PENDING_NFC = RESULT_PENDING +48;
+
     long mKeyIdPassphraseNeeded;
+    byte[] mSessionKey;
 
     OpenPgpSignatureResult mSignatureResult;
     OpenPgpMetadata mDecryptMetadata;
-
-    public int getStatus() {
-        return mStatus;
-    }
-
-    public void setStatus(int status) {
-        mStatus = status;
-    }
 
     public long getKeyIdPassphraseNeeded() {
         return mKeyIdPassphraseNeeded;
@@ -48,6 +45,10 @@ public class PgpDecryptVerifyResult implements Parcelable {
 
     public void setKeyIdPassphraseNeeded(long keyIdPassphraseNeeded) {
         mKeyIdPassphraseNeeded = keyIdPassphraseNeeded;
+    }
+
+    public void setNfcEncryptedSessionKey(byte[] sessionKey) {
+        mSessionKey = sessionKey;
     }
 
     public OpenPgpSignatureResult getSignatureResult() {
@@ -66,41 +67,47 @@ public class PgpDecryptVerifyResult implements Parcelable {
         mDecryptMetadata = decryptMetadata;
     }
 
-    public PgpDecryptVerifyResult() {
-
+    public boolean isPending() {
+        return (mResult & RESULT_PENDING) != 0;
     }
 
-    public PgpDecryptVerifyResult(PgpDecryptVerifyResult b) {
-        this.mStatus = b.mStatus;
-        this.mKeyIdPassphraseNeeded = b.mKeyIdPassphraseNeeded;
-        this.mSignatureResult = b.mSignatureResult;
-        this.mDecryptMetadata = b.mDecryptMetadata;
+    public DecryptVerifyResult(int result, OperationLog log) {
+        super(result, log);
     }
 
+    public DecryptVerifyResult(Parcel source) {
+        super(source);
+        mKeyIdPassphraseNeeded = source.readLong();
+        mSignatureResult = source.readParcelable(OpenPgpSignatureResult.class.getClassLoader());
+        mDecryptMetadata = source.readParcelable(OpenPgpMetadata.class.getClassLoader());
+        mSessionKey = source.readInt() != 0 ? source.createByteArray() : null;
+    }
 
     public int describeContents() {
         return 0;
     }
 
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeInt(mStatus);
+        super.writeToParcel(dest, flags);
         dest.writeLong(mKeyIdPassphraseNeeded);
         dest.writeParcelable(mSignatureResult, 0);
         dest.writeParcelable(mDecryptMetadata, 0);
+        if (mSessionKey != null) {
+            dest.writeInt(1);
+            dest.writeByteArray(mSessionKey);
+        } else {
+            dest.writeInt(0);
+        }
     }
 
-    public static final Creator<PgpDecryptVerifyResult> CREATOR = new Creator<PgpDecryptVerifyResult>() {
-        public PgpDecryptVerifyResult createFromParcel(final Parcel source) {
-            PgpDecryptVerifyResult vr = new PgpDecryptVerifyResult();
-            vr.mStatus = source.readInt();
-            vr.mKeyIdPassphraseNeeded = source.readLong();
-            vr.mSignatureResult = source.readParcelable(OpenPgpSignatureResult.class.getClassLoader());
-            vr.mDecryptMetadata = source.readParcelable(OpenPgpMetadata.class.getClassLoader());
-            return vr;
+    public static final Creator<DecryptVerifyResult> CREATOR = new Creator<DecryptVerifyResult>() {
+        public DecryptVerifyResult createFromParcel(final Parcel source) {
+            return new DecryptVerifyResult(source);
         }
 
-        public PgpDecryptVerifyResult[] newArray(final int size) {
-            return new PgpDecryptVerifyResult[size];
+        public DecryptVerifyResult[] newArray(final int size) {
+            return new DecryptVerifyResult[size];
         }
     };
+
 }

@@ -34,7 +34,7 @@ import org.sufficientlysecure.keychain.nfc.NfcActivity;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.PgpDecryptVerify;
-import org.sufficientlysecure.keychain.pgp.PgpDecryptVerifyResult;
+import org.sufficientlysecure.keychain.service.results.DecryptVerifyResult;
 import org.sufficientlysecure.keychain.pgp.PgpHelper;
 import org.sufficientlysecure.keychain.pgp.PgpSignEncrypt;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
@@ -462,7 +462,7 @@ public class OpenPgpService extends RemoteService {
                         .setDecryptMetadataOnly(decryptMetadataOnly)
                         .setNfcState(nfcDecryptedSessionKey);
 
-                PgpDecryptVerifyResult decryptVerifyResult;
+                DecryptVerifyResult decryptVerifyResult;
                 try {
                     // TODO: currently does not support binary signed-only content
                     decryptVerifyResult = builder.build().execute();
@@ -483,10 +483,10 @@ public class OpenPgpService extends RemoteService {
                     return getNfcDecryptIntent(data, e.mPassphrase, e.mEncryptedSessionKey);
                 }
 
-                if (PgpDecryptVerifyResult.KEY_PASSHRASE_NEEDED == decryptVerifyResult.getStatus()) {
+                if (DecryptVerifyResult.RESULT_PENDING_ASYM_PASSPHRASE == decryptVerifyResult.getStatus()) {
                     // get PendingIntent for passphrase input, add it to given params and return to client
                     return getPassphraseIntent(data, decryptVerifyResult.getKeyIdPassphraseNeeded());
-                } else if (PgpDecryptVerifyResult.SYMMETRIC_PASSHRASE_NEEDED == decryptVerifyResult.getStatus()) {
+                } else if (DecryptVerifyResult.RESULT_PENDING_SYM_PASSPHRASE == decryptVerifyResult.getStatus()) {
                     throw new PgpGeneralException("Decryption of symmetric content not supported by API!");
                 }
 

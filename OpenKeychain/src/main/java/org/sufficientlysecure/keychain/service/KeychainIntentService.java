@@ -41,7 +41,7 @@ import org.sufficientlysecure.keychain.pgp.CanonicalizedPublicKeyRing;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKeyRing;
 import org.sufficientlysecure.keychain.pgp.PgpDecryptVerify;
-import org.sufficientlysecure.keychain.pgp.PgpDecryptVerifyResult;
+import org.sufficientlysecure.keychain.service.results.DecryptVerifyResult;
 import org.sufficientlysecure.keychain.pgp.PgpHelper;
 import org.sufficientlysecure.keychain.pgp.PgpImportExport;
 import org.sufficientlysecure.keychain.pgp.PgpKeyOperation;
@@ -337,28 +337,21 @@ public class KeychainIntentService extends IntentService implements Progressable
 
                 Bundle resultData = new Bundle();
 
+                /* TODO find passphrase from cache, if not provided
+                    return PassphraseCacheService.getCachedPassphrase(
+                        KeychainIntentService.this, masterKeyId);
+                */
+
                 // verifyText and decrypt returning additional resultData values for the
                 // verification of signatures
                 PgpDecryptVerify.Builder builder = new PgpDecryptVerify.Builder(
-                        new ProviderHelper(this),
-                        new PgpDecryptVerify.PassphraseCache() {
-                            @Override
-                            public String getCachedPassphrase(long masterKeyId) throws PgpDecryptVerify.NoSecretKeyException {
-                                try {
-                                    return PassphraseCacheService.getCachedPassphrase(
-                                            KeychainIntentService.this, masterKeyId);
-                                } catch (PassphraseCacheService.KeyNotFoundException e) {
-                                    throw new PgpDecryptVerify.NoSecretKeyException();
-                                }
-                            }
-                        },
-                        inputData, outStream
+                        new ProviderHelper(this), inputData, outStream
                 );
                 builder.setProgressable(this)
                         .setAllowSymmetricDecryption(true)
                         .setPassphrase(passphrase);
 
-                PgpDecryptVerifyResult decryptVerifyResult = builder.build().execute();
+                DecryptVerifyResult decryptVerifyResult = builder.build().execute();
 
                 outStream.close();
 
@@ -385,29 +378,22 @@ public class KeychainIntentService extends IntentService implements Progressable
 
                 Bundle resultData = new Bundle();
 
+                /* TODO find passphrase from cache, if not provided
+                    return PassphraseCacheService.getCachedPassphrase(
+                        KeychainIntentService.this, masterKeyId);
+                */
+
                 // verifyText and decrypt returning additional resultData values for the
                 // verification of signatures
                 PgpDecryptVerify.Builder builder = new PgpDecryptVerify.Builder(
-                        new ProviderHelper(this),
-                        new PgpDecryptVerify.PassphraseCache() {
-                            @Override
-                            public String getCachedPassphrase(long masterKeyId) throws PgpDecryptVerify.NoSecretKeyException {
-                                try {
-                                    return PassphraseCacheService.getCachedPassphrase(
-                                            KeychainIntentService.this, masterKeyId);
-                                } catch (PassphraseCacheService.KeyNotFoundException e) {
-                                    throw new PgpDecryptVerify.NoSecretKeyException();
-                                }
-                            }
-                        },
-                        inputData, null
+                        new ProviderHelper(this), inputData, null
                 );
                 builder.setProgressable(this)
                         .setAllowSymmetricDecryption(true)
                         .setPassphrase(passphrase)
                         .setDecryptMetadataOnly(true);
 
-                PgpDecryptVerifyResult decryptVerifyResult = builder.build().execute();
+                DecryptVerifyResult decryptVerifyResult = builder.build().execute();
 
                 resultData.putParcelable(RESULT_DECRYPT_VERIFY_RESULT, decryptVerifyResult);
 
@@ -785,16 +771,6 @@ public class KeychainIntentService extends IntentService implements Progressable
             message = getString(R.string.error_no_signature_passphrase);
         } else if (e instanceof PgpSignEncrypt.NoSigningKeyException) {
             message = getString(R.string.error_no_signature_key);
-        } else if (e instanceof PgpDecryptVerify.InvalidDataException) {
-            message = getString(R.string.error_invalid_data);
-        } else if (e instanceof PgpDecryptVerify.KeyExtractionException) {
-            message = getString(R.string.error_could_not_extract_private_key);
-        } else if (e instanceof PgpDecryptVerify.WrongPassphraseException) {
-            message = getString(R.string.error_wrong_passphrase);
-        } else if (e instanceof PgpDecryptVerify.NoSecretKeyException) {
-            message = getString(R.string.error_no_secret_key_found);
-        } else if (e instanceof PgpDecryptVerify.IntegrityCheckFailedException) {
-            message = getString(R.string.error_integrity_check_failed);
         } else {
             message = e.getMessage();
         }

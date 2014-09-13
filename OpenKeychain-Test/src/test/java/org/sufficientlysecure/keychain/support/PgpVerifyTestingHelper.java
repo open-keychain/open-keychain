@@ -19,7 +19,7 @@ package org.sufficientlysecure.keychain.support;
 import android.content.Context;
 
 import org.sufficientlysecure.keychain.pgp.PgpDecryptVerify;
-import org.sufficientlysecure.keychain.pgp.PgpDecryptVerifyResult;
+import org.sufficientlysecure.keychain.service.results.DecryptVerifyResult;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.util.InputData;
 
@@ -56,7 +56,7 @@ public class PgpVerifyTestingHelper {
         OutputStream outStream = new ByteArrayOutputStream();
 
         PgpDecryptVerify verify = new PgpDecryptVerify.Builder(providerHelper, passphraseCache, data, outStream).build();
-        PgpDecryptVerifyResult result = verify.execute();
+        DecryptVerifyResult result = verify.execute();
 
         return result.getSignatureResult().getStatus();
     }

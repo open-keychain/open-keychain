@@ -34,7 +34,7 @@ import android.widget.TextView;
 import org.openintents.openpgp.OpenPgpSignatureResult;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
-import org.sufficientlysecure.keychain.pgp.PgpDecryptVerifyResult;
+import org.sufficientlysecure.keychain.service.results.DecryptVerifyResult;
 import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
 import org.sufficientlysecure.keychain.ui.dialog.PassphraseDialogFragment;
 
@@ -100,7 +100,7 @@ public abstract class DecryptFragment extends Fragment {
         }
     }
 
-    protected void onResult(PgpDecryptVerifyResult decryptVerifyResult) {
+    protected void onResult(DecryptVerifyResult decryptVerifyResult) {
         OpenPgpSignatureResult signatureResult = decryptVerifyResult.getSignatureResult();
 
         mSignatureKeyId = 0;

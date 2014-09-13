@@ -36,7 +36,7 @@ import android.widget.TextView;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.helper.FileHelper;
-import org.sufficientlysecure.keychain.pgp.PgpDecryptVerifyResult;
+import org.sufficientlysecure.keychain.service.results.DecryptVerifyResult;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
 import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
 import org.sufficientlysecure.keychain.ui.dialog.DeleteFileDialogFragment;
@@ -178,19 +178,20 @@ public class DecryptFileFragment extends DecryptFragment {
                     // get returned data bundle
                     Bundle returnData = message.getData();
 
-                    PgpDecryptVerifyResult decryptVerifyResult =
+                    DecryptVerifyResult result =
                             returnData.getParcelable(KeychainIntentService.RESULT_DECRYPT_VERIFY_RESULT);
 
-                    if (PgpDecryptVerifyResult.KEY_PASSHRASE_NEEDED == decryptVerifyResult.getStatus()) {
-                        showPassphraseDialogForFilename(decryptVerifyResult.getKeyIdPassphraseNeeded());
-                    } else if (PgpDecryptVerifyResult.SYMMETRIC_PASSHRASE_NEEDED ==
-                            decryptVerifyResult.getStatus()) {
-                        showPassphraseDialogForFilename(Constants.key.symmetric);
-                    } else {
-
-                        // go on...
-                        askForOutputFilename(decryptVerifyResult.getDecryptMetadata().getFilename());
+                    switch (result.getResult()) {
+                        case DecryptVerifyResult.RESULT_PENDING_ASYM_PASSPHRASE:
+                            showPassphraseDialog(result.getKeyIdPassphraseNeeded());
+                            return;
+                        case DecryptVerifyResult.RESULT_PENDING_SYM_PASSPHRASE:
+                            showPassphraseDialog(Constants.key.symmetric);
+                            return;
                     }
+
+                    // go on...
+                    askForOutputFilename(result.getDecryptMetadata().getFilename());
                 }
             }
         };
@@ -257,35 +258,38 @@ public class DecryptFileFragment extends DecryptFragment {
                     // get returned data bundle
                     Bundle returnData = message.getData();
 
-                    PgpDecryptVerifyResult decryptVerifyResult =
+                    DecryptVerifyResult result =
                             returnData.getParcelable(KeychainIntentService.RESULT_DECRYPT_VERIFY_RESULT);
 
-                    if (PgpDecryptVerifyResult.KEY_PASSHRASE_NEEDED == decryptVerifyResult.getStatus()) {
-                        showPassphraseDialog(decryptVerifyResult.getKeyIdPassphraseNeeded());
-                    } else if (PgpDecryptVerifyResult.SYMMETRIC_PASSHRASE_NEEDED ==
-                            decryptVerifyResult.getStatus()) {
-                        showPassphraseDialog(Constants.key.symmetric);
-                    } else {
-                        // display signature result in activity
-                        onResult(decryptVerifyResult);
-
-                        if (mDeleteAfter.isChecked()) {
-                            // Create and show dialog to delete original file
-                            DeleteFileDialogFragment deleteFileDialog = DeleteFileDialogFragment.newInstance(mInputUri);
-                            deleteFileDialog.show(getActivity().getSupportFragmentManager(), "deleteDialog");
-                            setInputUri(null);
-                        }
-
-                        /*
-                        // A future open after decryption feature
-                        if () {
-                            Intent viewFile = new Intent(Intent.ACTION_VIEW);
-                            viewFile.setData(mOutputUri);
-                            startActivity(viewFile);
-                        }
-                        */
+                    switch (result.getResult()) {
+                        case DecryptVerifyResult.RESULT_PENDING_ASYM_PASSPHRASE:
+                            showPassphraseDialog(result.getKeyIdPassphraseNeeded());
+                            return;
+                        case DecryptVerifyResult.RESULT_PENDING_SYM_PASSPHRASE:
+                            showPassphraseDialog(Constants.key.symmetric);
+                            return;
                     }
+
+                    // display signature result in activity
+                    onResult(result);
+
+                    if (mDeleteAfter.isChecked()) {
+                        // Create and show dialog to delete original file
+                        DeleteFileDialogFragment deleteFileDialog = DeleteFileDialogFragment.newInstance(mInputUri);
+                        deleteFileDialog.show(getActivity().getSupportFragmentManager(), "deleteDialog");
+                        setInputUri(null);
+                    }
+
+                    /*
+                    // A future open after decryption feature
+                    if () {
+                        Intent viewFile = new Intent(Intent.ACTION_VIEW);
+                        viewFile.setData(mOutputUri);
+                        startActivity(viewFile);
+                    }
+                    */
                 }
+
             }
         };
 
