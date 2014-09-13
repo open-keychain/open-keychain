@@ -375,11 +375,14 @@ public class PgpDecryptVerify {
         while (it.hasNext()) {
             Object obj = it.next();
             if (obj instanceof PGPPublicKeyEncryptedData) {
-                log.add(LogLevel.WARN, LogType.MSG_DC_TRAIL_ASYM, 0);
+                PGPPublicKeyEncryptedData encData = (PGPPublicKeyEncryptedData) obj;
+                long subKeyId = encData.getKeyID();
+                log.add(LogLevel.DEBUG, LogType.MSG_DC_TRAIL_ASYM, indent,
+                        PgpKeyHelper.convertKeyIdToHex(subKeyId));
             } else if (obj instanceof PGPPBEEncryptedData) {
-                log.add(LogLevel.WARN, LogType.MSG_DC_TRAIL_SYM, 0);
+                log.add(LogLevel.WARN, LogType.MSG_DC_TRAIL_SYM, indent);
             } else {
-                log.add(LogLevel.WARN, LogType.MSG_DC_TRAIL_UNKNOWN, 0);
+                log.add(LogLevel.WARN, LogType.MSG_DC_TRAIL_UNKNOWN, indent);
             }
         }
 
