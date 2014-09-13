@@ -59,6 +59,7 @@ public class ViewKeyMainFragment extends LoaderFragment implements
     private View mActionEditDivider;
     private View mActionEncryptFiles;
     private View mActionEncryptText;
+    private View mActionEncryptTextText;
     private View mActionCertify;
     private View mActionCertifyText;
     private ImageView mActionCertifyImage;
@@ -85,6 +86,7 @@ public class ViewKeyMainFragment extends LoaderFragment implements
         mActionEdit = view.findViewById(R.id.view_key_action_edit);
         mActionEditDivider = view.findViewById(R.id.view_key_action_edit_divider);
         mActionEncryptText = view.findViewById(R.id.view_key_action_encrypt_text);
+        mActionEncryptTextText = view.findViewById(R.id.view_key_action_encrypt_text_text);
         mActionEncryptFiles = view.findViewById(R.id.view_key_action_encrypt_files);
         mActionCertify = view.findViewById(R.id.view_key_action_certify);
         mActionCertifyText = view.findViewById(R.id.view_key_action_certify_text);
@@ -236,6 +238,7 @@ public class ViewKeyMainFragment extends LoaderFragment implements
                         mActionCertify.setEnabled(false);
                         mActionCertifyText.setEnabled(false);
                         mActionEncryptText.setEnabled(false);
+                        mActionEncryptTextText.setEnabled(false);
                         mActionEncryptFiles.setEnabled(false);
                     } else {
                         mActionEdit.setEnabled(true);
@@ -245,11 +248,13 @@ public class ViewKeyMainFragment extends LoaderFragment implements
                             mActionCertify.setEnabled(false);
                             mActionCertifyText.setEnabled(false);
                             mActionEncryptText.setEnabled(false);
+                            mActionEncryptTextText.setEnabled(false);
                             mActionEncryptFiles.setEnabled(false);
                         } else {
                             mActionCertify.setEnabled(true);
                             mActionCertifyText.setEnabled(true);
                             mActionEncryptText.setEnabled(true);
+                            mActionEncryptTextText.setEnabled(true);
                             mActionEncryptFiles.setEnabled(true);
                         }
                     }

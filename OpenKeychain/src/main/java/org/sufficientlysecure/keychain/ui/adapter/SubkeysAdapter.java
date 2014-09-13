@@ -163,6 +163,7 @@ public class SubkeysAdapter extends CursorAdapter {
                     context.getString(R.string.key_stripped)
             );
             boldStripped.setSpan(new StyleSpan(Typeface.BOLD), 0, boldStripped.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            algorithmStr.append(boldStripped);
         } else {
             switch (SecretKeyType.fromNum(cursor.getInt(INDEX_HAS_SECRET))) {
                 case GNU_DUMMY:

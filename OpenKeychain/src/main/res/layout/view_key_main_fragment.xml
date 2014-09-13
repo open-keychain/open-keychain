@@ -103,6 +103,7 @@
             android:orientation="horizontal">
 
             <TextView
+                android:id="@+id/view_key_action_encrypt_text_text"
                 android:paddingLeft="8dp"
                 android:paddingRight="8dp"
                 android:textAppearance="?android:attr/textAppearanceMedium"
