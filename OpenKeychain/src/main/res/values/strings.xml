@@ -661,6 +661,7 @@
     <string name="msg_kc_uid_no_cert">"No valid self-certificate found for user id '%s', removing from ring"</string>
     <string name="msg_kc_uid_remove">"Removing invalid user id '%s'"</string>
     <string name="msg_kc_uid_dup">"Removing duplicate user id '%s'. The secret key contained two of them. This may result in missing certificates!"</string>
+    <string name="msg_kc_uid_warn_encoding">"User id does not verify as UTF-8!"</string>
 
     <!-- Keyring merging log entries -->
     <string name="msg_mg_error_secret_dummy">"New public subkey found, but secret subkey dummy generation is not supported!"</string>
