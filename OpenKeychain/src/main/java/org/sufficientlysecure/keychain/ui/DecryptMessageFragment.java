@@ -156,7 +156,7 @@ public class DecryptMessageFragment extends DecryptFragment {
                                 return;
                         }
                         // error, we can't work with this!
-                        result.createNotify(getActivity());
+                        result.createNotify(getActivity()).show();
                         return;
                     }
 
@@ -165,7 +165,7 @@ public class DecryptMessageFragment extends DecryptFragment {
                     mMessage.setText(new String(decryptedMessage));
                     mMessage.setHorizontallyScrolling(false);
 
-                    result.createNotify(getActivity());
+                    result.createNotify(getActivity()).show();
 
                     // display signature result in activity
                     onResult(result);
