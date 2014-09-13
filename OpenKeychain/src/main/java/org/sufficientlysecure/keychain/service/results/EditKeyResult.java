@@ -23,7 +23,7 @@ import android.os.Parcel;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
 
-public class EditKeyResult extends OperationResultParcel {
+public class EditKeyResult extends OperationResult {
 
     private transient UncachedKeyRing mRing;
     public final long mRingMasterKeyId;

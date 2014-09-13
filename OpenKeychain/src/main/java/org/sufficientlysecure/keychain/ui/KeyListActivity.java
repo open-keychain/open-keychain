@@ -34,7 +34,7 @@ import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainDatabase;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
 import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
-import org.sufficientlysecure.keychain.service.results.OperationResultParcel;
+import org.sufficientlysecure.keychain.service.results.OperationResult;
 import org.sufficientlysecure.keychain.service.results.ConsolidateResult;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Notify;
@@ -166,7 +166,7 @@ public class KeyListActivity extends DrawerActivity {
                         return;
                     }
                     final ConsolidateResult result =
-                            returnData.getParcelable(OperationResultParcel.EXTRA_RESULT);
+                            returnData.getParcelable(OperationResult.EXTRA_RESULT);
                     if (result == null) {
                         return;
                     }
@@ -201,8 +201,8 @@ public class KeyListActivity extends DrawerActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         // if a result has been returned, display a notify
-        if (data != null && data.hasExtra(OperationResultParcel.EXTRA_RESULT)) {
-            OperationResultParcel result = data.getParcelableExtra(OperationResultParcel.EXTRA_RESULT);
+        if (data != null && data.hasExtra(OperationResult.EXTRA_RESULT)) {
+            OperationResult result = data.getParcelableExtra(OperationResult.EXTRA_RESULT);
             result.createNotify(this).show();
         } else {
             super.onActivityResult(requestCode, resultCode, data);

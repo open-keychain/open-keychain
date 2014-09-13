@@ -23,7 +23,7 @@ import android.os.Parcel;
 import org.openintents.openpgp.OpenPgpMetadata;
 import org.openintents.openpgp.OpenPgpSignatureResult;
 
-public class DecryptVerifyResult extends OperationResultParcel {
+public class DecryptVerifyResult extends OperationResult {
 
     // the fourth bit indicates a "data pending" result! (it's also a form of non-success)
     public static final int RESULT_PENDING = RESULT_ERROR +8;

@@ -33,7 +33,7 @@ import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.remote.AccountSettings;
-import org.sufficientlysecure.keychain.service.results.OperationResultParcel;
+import org.sufficientlysecure.keychain.service.results.OperationResult;
 import org.sufficientlysecure.keychain.service.results.SaveKeyringResult;
 import org.sufficientlysecure.keychain.ui.CreateKeyActivity;
 import org.sufficientlysecure.keychain.ui.adapter.KeyValueSpinnerAdapter;
@@ -171,8 +171,8 @@ public class AccountSettingsFragment extends Fragment {
         switch (requestCode) {
             case REQUEST_CODE_CREATE_KEY: {
                 if (resultCode == Activity.RESULT_OK) {
-                    if (data != null && data.hasExtra(OperationResultParcel.EXTRA_RESULT)) {
-                        SaveKeyringResult result = data.getParcelableExtra(OperationResultParcel.EXTRA_RESULT);
+                    if (data != null && data.hasExtra(OperationResult.EXTRA_RESULT)) {
+                        SaveKeyringResult result = data.getParcelableExtra(OperationResult.EXTRA_RESULT);
                         mSelectKeySpinner.setSelectedKeyId(result.mRingMasterKeyId);
                     } else {
                         Log.e(Constants.TAG, "missing result!");

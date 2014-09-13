@@ -30,7 +30,10 @@ import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.helper.ActionBarHelper;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.remote.AccountSettings;
-import org.sufficientlysecure.keychain.service.results.OperationResultParcel;
+import org.sufficientlysecure.keychain.service.results.OperationResult;
+import org.sufficientlysecure.keychain.service.results.OperationResult.LogLevel;
+import org.sufficientlysecure.keychain.service.results.OperationResult.LogType;
+import org.sufficientlysecure.keychain.service.results.SingletonResult;
 import org.sufficientlysecure.keychain.util.Log;
 
 public class AccountSettingsActivity extends ActionBarActivity {
@@ -105,9 +108,10 @@ public class AccountSettingsActivity extends ActionBarActivity {
     private void save() {
         new ProviderHelper(this).updateApiAccount(mAccountUri, mAccountSettingsFragment.getAccSettings());
         // TODO: show "account saved" instead of "operation succeeded"
-        OperationResultParcel result = new OperationResultParcel(OperationResultParcel.RESULT_OK, null);
+        SingletonResult result = new SingletonResult(
+                SingletonResult.RESULT_OK, LogLevel.OK, LogType.MSG_ACC_SAVED);
         Intent intent = new Intent();
-        intent.putExtra(OperationResultParcel.EXTRA_RESULT, result);
+        intent.putExtra(SingletonResult.EXTRA_RESULT, result);
         setResult(RESULT_OK, intent);
         finish();
     }
@@ -115,8 +119,8 @@ public class AccountSettingsActivity extends ActionBarActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         // if a result has been returned, display a notify
-        if (data != null && data.hasExtra(OperationResultParcel.EXTRA_RESULT)) {
-            OperationResultParcel result = data.getParcelableExtra(OperationResultParcel.EXTRA_RESULT);
+        if (data != null && data.hasExtra(OperationResult.EXTRA_RESULT)) {
+            OperationResult result = data.getParcelableExtra(OperationResult.EXTRA_RESULT);
             result.createNotify(this).show();
         } else {
             super.onActivityResult(requestCode, resultCode, data);

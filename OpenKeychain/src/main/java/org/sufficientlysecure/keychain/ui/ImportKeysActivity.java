@@ -46,7 +46,7 @@ import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
 import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
 import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
-import org.sufficientlysecure.keychain.service.results.OperationResultParcel;
+import org.sufficientlysecure.keychain.service.results.OperationResult;
 import org.sufficientlysecure.keychain.service.results.ImportKeyResult;
 import org.sufficientlysecure.keychain.ui.adapter.PagerTabStripAdapter;
 import org.sufficientlysecure.keychain.ui.widget.SlidingTabLayout;
@@ -459,7 +459,7 @@ public class ImportKeysActivity extends ActionBarActivity {
                         return;
                     }
                     final ImportKeyResult result =
-                            returnData.getParcelable(OperationResultParcel.EXTRA_RESULT);
+                            returnData.getParcelable(OperationResult.EXTRA_RESULT);
                     if (result == null) {
                         Log.e(Constants.TAG, "result == null");
                         return;

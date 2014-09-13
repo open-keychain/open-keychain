@@ -37,9 +37,9 @@ import android.widget.TextView;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.service.results.OperationResultParcel;
-import org.sufficientlysecure.keychain.service.results.OperationResultParcel.LogEntryParcel;
-import org.sufficientlysecure.keychain.service.results.OperationResultParcel.LogLevel;
+import org.sufficientlysecure.keychain.service.results.OperationResult;
+import org.sufficientlysecure.keychain.service.results.OperationResult.LogEntryParcel;
+import org.sufficientlysecure.keychain.service.results.OperationResult.LogLevel;
 import org.sufficientlysecure.keychain.util.Log;
 
 import java.util.HashMap;
@@ -50,7 +50,7 @@ public class LogDisplayFragment extends ListFragment implements OnTouchListener 
     LogAdapter mAdapter;
     LogLevel mLevel = LogLevel.DEBUG;
 
-    OperationResultParcel mResult;
+    OperationResult mResult;
 
     GestureDetector mDetector;
 
@@ -66,7 +66,7 @@ public class LogDisplayFragment extends ListFragment implements OnTouchListener 
             return;
         }
 
-        mResult = intent.<OperationResultParcel>getParcelableExtra(EXTRA_RESULT);
+        mResult = intent.<OperationResult>getParcelableExtra(EXTRA_RESULT);
         if (mResult == null) {
             getActivity().finish();
             return;
@@ -135,7 +135,7 @@ public class LogDisplayFragment extends ListFragment implements OnTouchListener 
         private LayoutInflater mInflater;
         private int dipFactor;
 
-        public LogAdapter(Context context, OperationResultParcel.OperationLog log, LogLevel level) {
+        public LogAdapter(Context context, OperationResult.OperationLog log, LogLevel level) {
             super(context, R.layout.log_display_item);
             mInflater = LayoutInflater.from(getContext());
             dipFactor = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,

@@ -36,9 +36,9 @@ import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
-import org.sufficientlysecure.keychain.service.results.OperationResultParcel.LogLevel;
-import org.sufficientlysecure.keychain.service.results.OperationResultParcel.LogType;
-import org.sufficientlysecure.keychain.service.results.OperationResultParcel.OperationLog;
+import org.sufficientlysecure.keychain.service.results.OperationResult.LogLevel;
+import org.sufficientlysecure.keychain.service.results.OperationResult.LogType;
+import org.sufficientlysecure.keychain.service.results.OperationResult.OperationLog;
 import org.sufficientlysecure.keychain.service.results.SignEncryptResult;
 import org.sufficientlysecure.keychain.util.InputData;
 import org.sufficientlysecure.keychain.util.Log;
@@ -367,7 +367,7 @@ public class PgpSignEncrypt {
                                 KeyRings.buildUnifiedKeyRingUri(id));
                         CanonicalizedPublicKey key = keyRing.getEncryptionSubKey();
                         cPk.addMethod(key.getPubKeyEncryptionGenerator());
-                        log.add(LogLevel.DEBUG, LogType.MSG_SE_KEY_OK, indent +1,
+                        log.add(LogLevel.DEBUG, LogType.MSG_SE_KEY_OK, indent + 1,
                                 PgpKeyHelper.convertKeyIdToHex(id));
                     } catch (PgpGeneralException e) {
                         log.add(LogLevel.WARN, LogType.MSG_SE_KEY_WARN, indent +1,

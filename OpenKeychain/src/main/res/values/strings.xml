@@ -214,8 +214,6 @@
         <item quantity="other">"%d bad secret keys ignored. Perhaps you exported with the option\n --export-secret-subkeys\nMake sure you export with\n --export-secret-keys\ninstead.""</item>
     </plurals>
 
-    <string name="key_send_success">"Successfully uploaded key to server"</string>
-    <string name="key_certify_success">"Successfully certified identities"</string>
     <string name="list_empty">"This list is empty!"</string>
     <string name="nfc_successful">"Successfully sent key with NFC Beam!"</string>
     <string name="key_copied_to_clipboard">"Key has been copied to the clipboard!"</string>
@@ -826,6 +824,11 @@
     <string name="msg_se_sigcrypting">"Encrypting data with signature"</string>
     <string name="msg_se">"Starting sign and/or encrypt operation"</string>
     <string name="msg_se_symmetric">"Preparing symmetric encryption"</string>
+
+    <string name="msg_crt_upload_success">"Successfully uploaded key to server"</string>
+    <string name="msg_crt_success">"Successfully certified identities"</string>
+
+    <string name="msg_acc_saved">"Account saved"</string>
 
     <!-- PassphraseCache -->
     <string name="passp_cache_notif_click_to_clear">"Click to clear cached passphrases"</string>

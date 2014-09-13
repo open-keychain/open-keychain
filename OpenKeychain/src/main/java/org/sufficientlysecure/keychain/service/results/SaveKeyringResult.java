@@ -23,7 +23,7 @@ import android.os.Parcel;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedKeyRing;
 
-public class SaveKeyringResult extends OperationResultParcel {
+public class SaveKeyringResult extends OperationResult {
 
     public final long mRingMasterKeyId;
 

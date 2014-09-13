@@ -56,7 +56,7 @@ import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
-import org.sufficientlysecure.keychain.service.results.OperationResultParcel;
+import org.sufficientlysecure.keychain.service.results.OperationResult;
 import org.sufficientlysecure.keychain.ui.adapter.PagerTabStripAdapter;
 import org.sufficientlysecure.keychain.ui.widget.SlidingTabLayout;
 import org.sufficientlysecure.keychain.ui.widget.SlidingTabLayout.TabColorizer;
@@ -322,8 +322,8 @@ public class ViewKeyActivity extends ActionBarActivity implements
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         // if a result has been returned, display a notify
-        if (data != null && data.hasExtra(OperationResultParcel.EXTRA_RESULT)) {
-            OperationResultParcel result = data.getParcelableExtra(OperationResultParcel.EXTRA_RESULT);
+        if (data != null && data.hasExtra(OperationResult.EXTRA_RESULT)) {
+            OperationResult result = data.getParcelableExtra(OperationResult.EXTRA_RESULT);
             result.createNotify(this).show();
         } else {
             super.onActivityResult(requestCode, resultCode, data);

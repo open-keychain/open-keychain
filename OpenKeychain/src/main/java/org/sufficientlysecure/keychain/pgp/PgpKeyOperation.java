@@ -46,10 +46,10 @@ import org.spongycastle.openpgp.operator.jcajce.JcePBESecretKeyDecryptorBuilder;
 import org.spongycastle.openpgp.operator.jcajce.JcePBESecretKeyEncryptorBuilder;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.service.results.OperationResultParcel;
-import org.sufficientlysecure.keychain.service.results.OperationResultParcel.LogLevel;
-import org.sufficientlysecure.keychain.service.results.OperationResultParcel.LogType;
-import org.sufficientlysecure.keychain.service.results.OperationResultParcel.OperationLog;
+import org.sufficientlysecure.keychain.service.results.OperationResult;
+import org.sufficientlysecure.keychain.service.results.OperationResult.LogLevel;
+import org.sufficientlysecure.keychain.service.results.OperationResult.LogType;
+import org.sufficientlysecure.keychain.service.results.OperationResult.OperationLog;
 import org.sufficientlysecure.keychain.service.results.EditKeyResult;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel.Algorithm;
@@ -949,7 +949,7 @@ public class PgpKeyOperation {
 
         progress(R.string.progress_done, 100);
         log.add(LogLevel.OK, LogType.MSG_MF_SUCCESS, indent);
-        return new EditKeyResult(OperationResultParcel.RESULT_OK, log, new UncachedKeyRing(sKR));
+        return new EditKeyResult(OperationResult.RESULT_OK, log, new UncachedKeyRing(sKR));
 
     }
 

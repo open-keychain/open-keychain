@@ -19,12 +19,9 @@ package org.sufficientlysecure.keychain.service.results;
 
 import android.os.Parcel;
 
-import org.openintents.openpgp.OpenPgpMetadata;
-import org.openintents.openpgp.OpenPgpSignatureResult;
-
 import java.util.Date;
 
-public class SignEncryptResult extends OperationResultParcel {
+public class SignEncryptResult extends OperationResult {
 
     // the fourth bit indicates a "data pending" result! (it's also a form of non-success)
     public static final int RESULT_PENDING = RESULT_ERROR +8;

@@ -55,10 +55,10 @@ import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRingData;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.KeychainDatabase;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
-import org.sufficientlysecure.keychain.service.results.OperationResultParcel;
-import org.sufficientlysecure.keychain.service.results.OperationResultParcel.LogLevel;
-import org.sufficientlysecure.keychain.service.results.OperationResultParcel.LogType;
-import org.sufficientlysecure.keychain.service.results.OperationResultParcel.OperationLog;
+import org.sufficientlysecure.keychain.service.results.OperationResult;
+import org.sufficientlysecure.keychain.service.results.OperationResult.LogLevel;
+import org.sufficientlysecure.keychain.service.results.OperationResult.LogType;
+import org.sufficientlysecure.keychain.service.results.OperationResult.OperationLog;
 import org.sufficientlysecure.keychain.service.results.ConsolidateResult;
 import org.sufficientlysecure.keychain.service.results.EditKeyResult;
 import org.sufficientlysecure.keychain.service.results.ImportKeyResult;
@@ -813,9 +813,9 @@ public class KeychainIntentService extends IntentService implements Progressable
         }
     }
 
-    private void sendMessageToHandler(Integer arg1, OperationResultParcel data) {
+    private void sendMessageToHandler(Integer arg1, OperationResult data) {
         Bundle bundle = new Bundle();
-        bundle.putParcelable(OperationResultParcel.EXTRA_RESULT, data);
+        bundle.putParcelable(OperationResult.EXTRA_RESULT, data);
         sendMessageToHandler(arg1, null, bundle);
     }
 
