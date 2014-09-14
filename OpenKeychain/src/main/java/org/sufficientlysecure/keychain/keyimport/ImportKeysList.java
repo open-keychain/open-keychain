@@ -67,6 +67,9 @@ public class ImportKeysList extends ArrayList<ImportKeysListEntry> {
             existing.setExpired(true);
             modified = true;
         }
+        for (String origin : incoming.getOrigins()) {
+            existing.addOrigin(origin);
+        }
         ArrayList<String> incomingIDs = incoming.getUserIds();
         ArrayList<String> existingIDs = existing.getUserIds();
         for (String incomingID : incomingIDs) {

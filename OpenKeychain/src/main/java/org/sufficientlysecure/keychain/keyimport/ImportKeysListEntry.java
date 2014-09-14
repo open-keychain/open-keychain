@@ -46,7 +46,7 @@ public class ImportKeysListEntry implements Serializable, Parcelable {
     private String mPrimaryUserId;
     private String mExtraData;
     private String mQuery;
-    private String mOrigin;
+    private ArrayList<String> mOrigins;
     private Integer mHashCode = null;
 
     private boolean mSelected;
@@ -70,7 +70,7 @@ public class ImportKeysListEntry implements Serializable, Parcelable {
         dest.writeByte((byte) (mSecretKey ? 1 : 0));
         dest.writeByte((byte) (mSelected ? 1 : 0));
         dest.writeString(mExtraData);
-        dest.writeString(mOrigin);
+        dest.writeStringList(mOrigins);
     }
 
     public static final Creator<ImportKeysListEntry> CREATOR = new Creator<ImportKeysListEntry>() {
@@ -90,7 +90,8 @@ public class ImportKeysListEntry implements Serializable, Parcelable {
             vr.mSecretKey = source.readByte() == 1;
             vr.mSelected = source.readByte() == 1;
             vr.mExtraData = source.readString();
-            vr.mOrigin = source.readString();
+            vr.mOrigins = new ArrayList<String>();
+            source.readStringList(vr.mOrigins);
 
             return vr;
         }
@@ -230,12 +231,12 @@ public class ImportKeysListEntry implements Serializable, Parcelable {
         mQuery = query;
     }
 
-    public String getOrigin() {
-        return mOrigin;
+    public ArrayList<String> getOrigins() {
+        return mOrigins;
     }
 
-    public void setOrigin(String origin) {
-        mOrigin = origin;
+    public void addOrigin(String origin) {
+        mOrigins.add(origin);
     }
 
     /**
@@ -247,6 +248,7 @@ public class ImportKeysListEntry implements Serializable, Parcelable {
         // do not select by default
         mSelected = false;
         mUserIds = new ArrayList<String>();
+        mOrigins = new ArrayList<String>();
     }
 
     /**

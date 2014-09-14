@@ -4,34 +4,34 @@
     <item android:state_pressed="true" >
         <shape android:shape="rectangle"  >
             <padding
-                android:bottom="2dip"
+                android:bottom="3dip"
                 android:left="2dip"
                 android:right="2dip"
-                android:top="2dip" />
+                android:top="1dip" />
             <corners android:radius="6dip" />
-            <solid android:color="#4747a4" />
+            <solid android:color="#4444cc" />
         </shape>
     </item>
     <item android:state_focused="true">
         <shape android:shape="rectangle"  >
             <padding
-                android:bottom="2dip"
+                android:bottom="3dip"
                 android:left="2dip"
                 android:right="2dip"
-                android:top="2dip" />
+                android:top="1dip" />
             <corners android:radius="6dip" />
-            <solid android:color="#4747a4"/>
+            <solid android:color="#4444cc"/>
         </shape>
     </item>
     <item >
         <shape android:shape="rectangle"  >
             <padding
-                android:bottom="2dip"
+                android:bottom="3dip"
                 android:left="2dip"
                 android:right="2dip"
-                android:top="2dip" />
+                android:top="1dip" />
             <corners android:radius="6dip" />
-            <solid android:color="#5c5cb8" />
+            <solid android:color="#5555ee" />
         </shape>
     </item>
 </selector>

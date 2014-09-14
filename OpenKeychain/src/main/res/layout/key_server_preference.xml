@@ -48,8 +48,6 @@
             android:text="rotate"
             android:textColor="#ffffffff"
             android:textStyle="bold"
-            android:paddingTop="2dp"
-            android:paddingBottom="2dp"
             android:background="@drawable/button_rounded_blue"
             />
         <ImageButton
