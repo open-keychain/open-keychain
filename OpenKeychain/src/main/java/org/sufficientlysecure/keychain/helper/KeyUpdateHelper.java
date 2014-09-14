@@ -63,7 +63,7 @@ public class KeyUpdateHelper {
                     ImportKeysListEntry key = new ImportKeysListEntry();
                     key.setFingerprintHex(fprint);
                     key.setBitStrength(1337);
-                    key.setOrigin(servers[0]);
+                    key.addOrigin(servers[0]);
                     keys.add(key);
                 }
 
