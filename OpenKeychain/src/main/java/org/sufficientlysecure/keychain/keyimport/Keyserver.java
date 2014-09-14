@@ -24,7 +24,19 @@ import java.io.InputStream;
 import java.util.List;
 
 public abstract class Keyserver {
-    public static class QueryFailedException extends Exception {
+
+    public static class CloudSearchFailureException extends Exception {
+        private static final long serialVersionUID = 2703768928624654515L;
+
+        public CloudSearchFailureException(String message) {
+            super(message);
+        }
+        public CloudSearchFailureException() {
+            super();
+        }
+    }
+
+    public static class QueryFailedException extends CloudSearchFailureException {
         private static final long serialVersionUID = 2703768928624654512L;
 
         public QueryFailedException(String message) {
@@ -32,7 +44,7 @@ public abstract class Keyserver {
         }
     }
 
-    public static class QueryNeedsRepairException extends Exception {
+    public static class QueryNeedsRepairException extends CloudSearchFailureException {
         private static final long serialVersionUID = 2693768928624654512L;
     }
 

@@ -30,6 +30,8 @@
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:paddingRight="8dp"
+        android:paddingTop="2dp"
+        android:gravity="top|center"
         android:clickable="false"
         android:focusable="false"
         android:focusableInTouchMode="false" />

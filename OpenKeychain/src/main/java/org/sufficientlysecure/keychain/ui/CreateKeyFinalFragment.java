@@ -204,7 +204,7 @@ public class CreateKeyFinalFragment extends Fragment {
         Bundle data = new Bundle();
 
         // upload to favorite keyserver
-        String keyserver = Preferences.getPreferences(getActivity()).getKeyServers()[0];
+        String keyserver = Preferences.getPreferences(getActivity()).getPreferredKeyserver();
         data.putString(KeychainIntentService.UPLOAD_KEY_SERVER, keyserver);
 
         intent.putExtra(KeychainIntentService.EXTRA_DATA, data);

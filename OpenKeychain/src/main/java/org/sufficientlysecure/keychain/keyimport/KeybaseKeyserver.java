@@ -63,7 +63,9 @@ public class KeybaseKeyserver extends Keyserver {
     private ImportKeysListEntry makeEntry(Match match) throws KeybaseException {
         final ImportKeysListEntry entry = new ImportKeysListEntry();
         entry.setQuery(mQuery);
-        entry.setOrigin(ORIGIN);
+        entry.addOrigin(ORIGIN);
+
+        entry.setRevoked(false); // keybase doesn’t say anything about revoked keys
 
         String username = match.getUsername();
         String fullName = match.getFullName();
