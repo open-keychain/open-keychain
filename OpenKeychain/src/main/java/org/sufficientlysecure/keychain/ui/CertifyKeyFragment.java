@@ -54,8 +54,11 @@ import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UserIds;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
 import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
-import org.sufficientlysecure.keychain.service.results.OperationResultParcel;
+import org.sufficientlysecure.keychain.service.results.OperationResult;
 import org.sufficientlysecure.keychain.service.PassphraseCacheService;
+import org.sufficientlysecure.keychain.service.results.OperationResult.LogLevel;
+import org.sufficientlysecure.keychain.service.results.OperationResult.LogType;
+import org.sufficientlysecure.keychain.service.results.SingletonResult;
 import org.sufficientlysecure.keychain.ui.adapter.UserIdsAdapter;
 import org.sufficientlysecure.keychain.ui.dialog.PassphraseDialogFragment;
 import org.sufficientlysecure.keychain.ui.widget.CertifyKeySpinner;
@@ -327,12 +330,10 @@ public class CertifyKeyFragment extends LoaderFragment
 
                 if (message.arg1 == KeychainIntentServiceHandler.MESSAGE_OKAY) {
 
-//                    Notify.showNotify(CertifyKeyActivity.this, R.string.key_certify_success,
-//                            Notify.Style.INFO);
-
-                    OperationResultParcel result = new OperationResultParcel(OperationResultParcel.RESULT_OK, null);
+                    SingletonResult result = new SingletonResult(
+                            SingletonResult.RESULT_OK, LogLevel.OK, LogType.MSG_CRT_SUCCESS);
                     Intent intent = new Intent();
-                    intent.putExtra(OperationResultParcel.EXTRA_RESULT, result);
+                    intent.putExtra(SingletonResult.EXTRA_RESULT, result);
                     mActivity.setResult(CertifyKeyActivity.RESULT_OK, intent);
 
                     // check if we need to send the key to the server or not
@@ -383,12 +384,10 @@ public class CertifyKeyFragment extends LoaderFragment
                 super.handleMessage(message);
 
                 if (message.arg1 == KeychainIntentServiceHandler.MESSAGE_OKAY) {
-                    //Notify.showNotify(CertifyKeyActivity.this, R.string.key_send_success,
-                    //Notify.Style.INFO);
-
-                    OperationResultParcel result = new OperationResultParcel(OperationResultParcel.RESULT_OK, null);
+                    SingletonResult result = new SingletonResult(SingletonResult.RESULT_OK,
+                            LogLevel.OK, LogType.MSG_CRT_UPLOAD_SUCCESS);
                     Intent intent = new Intent();
-                    intent.putExtra(OperationResultParcel.EXTRA_RESULT, result);
+                    intent.putExtra(SingletonResult.EXTRA_RESULT, result);
                     mActivity.setResult(CertifyKeyActivity.RESULT_OK, intent);
                     mActivity.finish();
                 }

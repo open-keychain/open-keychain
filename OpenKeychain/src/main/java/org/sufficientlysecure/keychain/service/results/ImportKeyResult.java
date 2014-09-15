@@ -34,7 +34,7 @@ import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.ui.LogDisplayActivity;
 import org.sufficientlysecure.keychain.ui.LogDisplayFragment;
 
-public class ImportKeyResult extends OperationResultParcel {
+public class ImportKeyResult extends OperationResult {
 
     public final int mNewKeys, mUpdatedKeys, mBadKeys, mSecret;
 
@@ -109,7 +109,7 @@ public class ImportKeyResult extends OperationResultParcel {
         int duration, color;
 
         // Not an overall failure
-        if ((resultType & OperationResultParcel.RESULT_ERROR) == 0) {
+        if ((resultType & OperationResult.RESULT_ERROR) == 0) {
             String withWarnings;
 
             duration = Duration.EXTRA_LONG;

@@ -52,7 +52,7 @@ import java.util.List;
  * TODO ideally, this class should be abstract, and all actual results of a specific subclass
  *
  */
-public class OperationResultParcel implements Parcelable {
+public abstract class OperationResult implements Parcelable {
 
     public static final String EXTRA_RESULT = "operation_result";
 
@@ -71,12 +71,12 @@ public class OperationResultParcel implements Parcelable {
     /// A list of log entries tied to the operation result.
     final OperationLog mLog;
 
-    public OperationResultParcel(int result, OperationLog log) {
+    public OperationResult(int result, OperationLog log) {
         mResult = result;
         mLog = log;
     }
 
-    public OperationResultParcel(Parcel source) {
+    public OperationResult(Parcel source) {
         mResult = source.readInt();
         mLog = new OperationLog();
         mLog.addAll(source.createTypedArrayList(LogEntryParcel.CREATOR));
@@ -156,25 +156,22 @@ public class OperationResultParcel implements Parcelable {
 
     public SuperCardToast createNotify(final Activity activity) {
 
-        String str;
         int color;
+
+        // Take the last message as string
+        String str = activity.getString(mLog.getLast().mType.getMsgId());
 
         // Not an overall failure
         if (cancelled()) {
             color = Style.RED;
-            str = "operation cancelled!";
         } else if (success()) {
             if (getLog().containsWarnings()) {
                 color = Style.ORANGE;
             } else {
                 color = Style.GREEN;
             }
-            str = "operation succeeded!";
-            // str = activity.getString(R.string.import_error);
         } else {
             color = Style.RED;
-            str = "operation failed";
-            // str = activity.getString(R.string.import_error);
         }
 
         boolean button = getLog() != null && !getLog().isEmpty();
@@ -197,7 +194,7 @@ public class OperationResultParcel implements Parcelable {
                         public void onClick(View view, Parcelable token) {
                             Intent intent = new Intent(
                                     activity, LogDisplayActivity.class);
-                            intent.putExtra(LogDisplayFragment.EXTRA_RESULT, OperationResultParcel.this);
+                            intent.putExtra(LogDisplayFragment.EXTRA_RESULT, OperationResult.this);
                             activity.startActivity(intent);
                         }
                     }
@@ -498,6 +495,11 @@ public class OperationResultParcel implements Parcelable {
         MSG_SE_SIGCRYPTING (R.string.msg_se_sigcrypting),
         MSG_SE_SYMMETRIC (R.string.msg_se_symmetric),
 
+        MSG_CRT_UPLOAD_SUCCESS (R.string.msg_crt_upload_success),
+        MSG_CRT_SUCCESS (R.string.msg_crt_success),
+
+        MSG_ACC_SAVED (R.string.api_settings_save)
+
         ;
 
         private final int mMsgId;
@@ -533,27 +535,17 @@ public class OperationResultParcel implements Parcelable {
         }
     }
 
-    public static final Creator<OperationResultParcel> CREATOR = new Creator<OperationResultParcel>() {
-        public OperationResultParcel createFromParcel(final Parcel source) {
-            return new OperationResultParcel(source);
-        }
-
-        public OperationResultParcel[] newArray(final int size) {
-            return new OperationResultParcel[size];
-        }
-    };
-
     public static class OperationLog implements Iterable<LogEntryParcel> {
 
         private final List<LogEntryParcel> mParcels = new ArrayList<LogEntryParcel>();
 
         /// Simple convenience method
         public void add(LogLevel level, LogType type, int indent, Object... parameters) {
-            mParcels.add(new OperationResultParcel.LogEntryParcel(level, type, indent, parameters));
+            mParcels.add(new OperationResult.LogEntryParcel(level, type, indent, parameters));
         }
 
         public void add(LogLevel level, LogType type, int indent) {
-            mParcels.add(new OperationResultParcel.LogEntryParcel(level, type, indent, (Object[]) null));
+            mParcels.add(new OperationResult.LogEntryParcel(level, type, indent, (Object[]) null));
         }
 
         public boolean containsType(LogType type) {

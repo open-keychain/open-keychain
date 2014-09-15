@@ -55,10 +55,10 @@ import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRingData;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.KeychainDatabase;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
-import org.sufficientlysecure.keychain.service.results.OperationResultParcel;
-import org.sufficientlysecure.keychain.service.results.OperationResultParcel.LogLevel;
-import org.sufficientlysecure.keychain.service.results.OperationResultParcel.LogType;
-import org.sufficientlysecure.keychain.service.results.OperationResultParcel.OperationLog;
+import org.sufficientlysecure.keychain.service.results.OperationResult;
+import org.sufficientlysecure.keychain.service.results.OperationResult.LogLevel;
+import org.sufficientlysecure.keychain.service.results.OperationResult.LogType;
+import org.sufficientlysecure.keychain.service.results.OperationResult.OperationLog;
 import org.sufficientlysecure.keychain.service.results.ConsolidateResult;
 import org.sufficientlysecure.keychain.service.results.EditKeyResult;
 import org.sufficientlysecure.keychain.service.results.ImportKeyResult;
@@ -364,7 +364,7 @@ public class KeychainIntentService extends IntentService implements Progressable
 
                 outStream.close();
 
-                resultData.putParcelable(RESULT_DECRYPT_VERIFY_RESULT, decryptVerifyResult);
+                resultData.putParcelable(DecryptVerifyResult.EXTRA_RESULT, decryptVerifyResult);
 
                 /* Output */
 
@@ -411,7 +411,7 @@ public class KeychainIntentService extends IntentService implements Progressable
 
                 DecryptVerifyResult decryptVerifyResult = builder.build().execute();
 
-                resultData.putParcelable(RESULT_DECRYPT_VERIFY_RESULT, decryptVerifyResult);
+                resultData.putParcelable(DecryptVerifyResult.EXTRA_RESULT, decryptVerifyResult);
 
                 /* Output */
                 OtherHelper.logDebugBundle(resultData, "resultData");
@@ -652,27 +652,35 @@ public class KeychainIntentService extends IntentService implements Progressable
                 for (ImportKeysListEntry entry : entries) {
                     try {
                         Keyserver server;
-                        if (entry.getOrigin() == null) {
-                            server = new HkpKeyserver(keyServer);
-                        } else if (KeybaseKeyserver.ORIGIN.equals(entry.getOrigin())) {
-                            server = new KeybaseKeyserver();
-                        } else {
-                            server = new HkpKeyserver(entry.getOrigin());
+                        ArrayList<String> origins = entry.getOrigins();
+                        if (origins == null) {
+                            origins = new ArrayList<String>();
                         }
-
-                        // if available use complete fingerprint for get request
-                        byte[] downloadedKeyBytes;
-                        if (KeybaseKeyserver.ORIGIN.equals(entry.getOrigin())) {
-                            downloadedKeyBytes = server.get(entry.getExtraData()).getBytes();
-                        } else if (entry.getFingerprintHex() != null) {
-                            downloadedKeyBytes = server.get("0x" + entry.getFingerprintHex()).getBytes();
-                        } else {
-                            downloadedKeyBytes = server.get(entry.getKeyIdHex()).getBytes();
+                        if (origins.isEmpty()) {
+                            origins.add(keyServer);
                         }
+                        for (String origin : origins) {
+                            if (KeybaseKeyserver.ORIGIN.equals(origin)) {
+                                server = new KeybaseKeyserver();
+                            } else {
+                                server = new HkpKeyserver(origin);
+                            }
+                            Log.d(Constants.TAG, "IMPORTING " + entry.getKeyIdHex() + " FROM: " + server);
 
-                        // save key bytes in entry object for doing the
-                        // actual import afterwards
-                        keyRings.add(new ParcelableKeyRing(downloadedKeyBytes, entry.getFingerprintHex()));
+                            // if available use complete fingerprint for get request
+                            byte[] downloadedKeyBytes;
+                            if (KeybaseKeyserver.ORIGIN.equals(origin)) {
+                                downloadedKeyBytes = server.get(entry.getExtraData()).getBytes();
+                            } else if (entry.getFingerprintHex() != null) {
+                                downloadedKeyBytes = server.get("0x" + entry.getFingerprintHex()).getBytes();
+                            } else {
+                                downloadedKeyBytes = server.get(entry.getKeyIdHex()).getBytes();
+                            }
+
+                            // save key bytes in entry object for doing the
+                            // actual import afterwards
+                            keyRings.add(new ParcelableKeyRing(downloadedKeyBytes, entry.getFingerprintHex()));
+                        }
                     } catch (Exception e) {
                         sendErrorToHandler(e);
                     }
@@ -813,9 +821,9 @@ public class KeychainIntentService extends IntentService implements Progressable
         }
     }
 
-    private void sendMessageToHandler(Integer arg1, OperationResultParcel data) {
+    private void sendMessageToHandler(Integer arg1, OperationResult data) {
         Bundle bundle = new Bundle();
-        bundle.putParcelable(OperationResultParcel.EXTRA_RESULT, data);
+        bundle.putParcelable(OperationResult.EXTRA_RESULT, data);
         sendMessageToHandler(arg1, null, bundle);
     }
 

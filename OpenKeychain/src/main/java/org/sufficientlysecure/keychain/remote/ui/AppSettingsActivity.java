@@ -32,7 +32,7 @@ import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.remote.AppSettings;
-import org.sufficientlysecure.keychain.service.results.OperationResultParcel;
+import org.sufficientlysecure.keychain.service.results.OperationResult;
 import org.sufficientlysecure.keychain.util.Log;
 
 public class AppSettingsActivity extends ActionBarActivity {
@@ -158,8 +158,8 @@ public class AppSettingsActivity extends ActionBarActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         // if a result has been returned, display a notify
-        if (data != null && data.hasExtra(OperationResultParcel.EXTRA_RESULT)) {
-            OperationResultParcel result = data.getParcelableExtra(OperationResultParcel.EXTRA_RESULT);
+        if (data != null && data.hasExtra(OperationResult.EXTRA_RESULT)) {
+            OperationResult result = data.getParcelableExtra(OperationResult.EXTRA_RESULT);
             result.createNotify(this).show();
         } else {
             super.onActivityResult(requestCode, resultCode, data);

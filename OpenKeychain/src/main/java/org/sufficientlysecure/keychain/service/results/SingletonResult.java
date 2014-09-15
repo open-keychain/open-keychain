@@ -27,7 +27,7 @@ import com.github.johnpersano.supertoasts.util.Style;
 
 /** This is a simple subclass meant to contain only a single log message. This log
  * message is also shown without a log button in the createNotify SuperToast. */
-public class SingletonResult extends OperationResultParcel {
+public class SingletonResult extends OperationResult {
 
     /** Construct from a parcel - trivial because we have no extra data. */
     public SingletonResult(Parcel source) {

@@ -21,39 +21,46 @@ import android.content.Context;
 import android.support.v4.content.AsyncTaskLoader;
 
 import org.sufficientlysecure.keychain.Constants;
+import org.sufficientlysecure.keychain.helper.Preferences;
+import org.sufficientlysecure.keychain.keyimport.CloudSearch;
 import org.sufficientlysecure.keychain.keyimport.ImportKeysListEntry;
-import org.sufficientlysecure.keychain.keyimport.KeybaseKeyserver;
-import org.sufficientlysecure.keychain.keyimport.Keyserver;
 import org.sufficientlysecure.keychain.util.Log;
 
 import java.util.ArrayList;
 
-public class ImportKeysListKeybaseLoader
+public class ImportKeysListCloudLoader
         extends AsyncTaskLoader<AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>>> {
     Context mContext;
 
-    String mKeybaseQuery;
+
+    Preferences.CloudSearchPrefs mCloudPrefs;
+    String mServerQuery;
 
     private ArrayList<ImportKeysListEntry> mEntryList = new ArrayList<ImportKeysListEntry>();
     private AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>> mEntryListWrapper;
 
-    public ImportKeysListKeybaseLoader(Context context, String keybaseQuery) {
+    public ImportKeysListCloudLoader(Context context, String serverQuery, Preferences.CloudSearchPrefs cloudPrefs) {
         super(context);
         mContext = context;
-        mKeybaseQuery = keybaseQuery;
+        mServerQuery = serverQuery;
+        mCloudPrefs = cloudPrefs;
     }
 
     @Override
     public AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>> loadInBackground() {
-
         mEntryListWrapper = new AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>>(mEntryList, null);
 
-        if (mKeybaseQuery == null) {
-            Log.e(Constants.TAG, "mKeybaseQery is null!");
+        if (mServerQuery == null) {
+            Log.e(Constants.TAG, "mServerQuery is null!");
             return mEntryListWrapper;
         }
 
-        queryServer(mKeybaseQuery);
+        if (mServerQuery.startsWith("0x") && mServerQuery.length() == 42) {
+            Log.d(Constants.TAG, "This search is based on a unique fingerprint. Enforce a fingerprint check!");
+            queryServer(true);
+        } else {
+            queryServer(false);
+        }
 
         return mEntryListWrapper;
     }
@@ -82,21 +89,33 @@ public class ImportKeysListKeybaseLoader
     }
 
     /**
-     * Query keybase
+     * Query keyserver
      */
-    private void queryServer(String query) {
-
-        KeybaseKeyserver server = new KeybaseKeyserver();
+    private void queryServer(boolean enforceFingerprint) {
         try {
-            ArrayList<ImportKeysListEntry> searchResult = server.search(query);
+            ArrayList<ImportKeysListEntry> searchResult = CloudSearch.search(mServerQuery, mCloudPrefs);
 
             mEntryList.clear();
-
-            mEntryList.addAll(searchResult);
+            // add result to data
+            if (enforceFingerprint) {
+                String fingerprint = mServerQuery.substring(2);
+                Log.d(Constants.TAG, "fingerprint: " + fingerprint);
+                // query must return only one result!
+                if (searchResult.size() == 1) {
+                    ImportKeysListEntry uniqueEntry = searchResult.get(0);
+                    /*
+                     * set fingerprint explicitly after query
+                     * to enforce a check when the key is imported by KeychainIntentService
+                     */
+                    uniqueEntry.setFingerprintHex(fingerprint);
+                    uniqueEntry.setSelected(true);
+                    mEntryList.add(uniqueEntry);
+                }
+            } else {
+                mEntryList.addAll(searchResult);
+            }
             mEntryListWrapper = new AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>>(mEntryList, null);
-        } catch (Keyserver.QueryFailedException e) {
-            mEntryListWrapper = new AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>>(mEntryList, e);
-        } catch (Keyserver.QueryNeedsRepairException e) {
+        } catch (Exception e) {
             mEntryListWrapper = new AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>>(mEntryList, e);
         }
     }

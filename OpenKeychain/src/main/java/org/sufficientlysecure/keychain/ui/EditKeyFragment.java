@@ -48,9 +48,9 @@ import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.provider.ProviderHelper.NotFoundException;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
 import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
-import org.sufficientlysecure.keychain.service.results.OperationResultParcel;
-import org.sufficientlysecure.keychain.service.results.OperationResultParcel.LogLevel;
-import org.sufficientlysecure.keychain.service.results.OperationResultParcel.LogType;
+import org.sufficientlysecure.keychain.service.results.OperationResult;
+import org.sufficientlysecure.keychain.service.results.OperationResult.LogLevel;
+import org.sufficientlysecure.keychain.service.results.OperationResult.LogType;
 import org.sufficientlysecure.keychain.service.results.SingletonResult;
 import org.sufficientlysecure.keychain.service.PassphraseCacheService;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
@@ -541,8 +541,8 @@ public class EditKeyFragment extends LoaderFragment implements
                     if (returnData == null) {
                         return;
                     }
-                    final OperationResultParcel result =
-                            returnData.getParcelable(OperationResultParcel.EXTRA_RESULT);
+                    final OperationResult result =
+                            returnData.getParcelable(OperationResult.EXTRA_RESULT);
                     if (result == null) {
                         return;
                     }
@@ -555,7 +555,7 @@ public class EditKeyFragment extends LoaderFragment implements
 
                     // if good -> finish, return result to showkey and display there!
                     Intent intent = new Intent();
-                    intent.putExtra(OperationResultParcel.EXTRA_RESULT, result);
+                    intent.putExtra(OperationResult.EXTRA_RESULT, result);
                     getActivity().setResult(EditKeyActivity.RESULT_OK, intent);
                     getActivity().finish();
 
@@ -590,7 +590,7 @@ public class EditKeyFragment extends LoaderFragment implements
 
         // Prepare an intent with an EXTRA_RESULT
         Intent intent = new Intent();
-        intent.putExtra(OperationResultParcel.EXTRA_RESULT,
+        intent.putExtra(OperationResult.EXTRA_RESULT,
                 new SingletonResult(SingletonResult.RESULT_ERROR, LogLevel.ERROR, reason));
 
         // Finish with result

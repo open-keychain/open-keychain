@@ -46,7 +46,7 @@ import org.spongycastle.openpgp.operator.jcajce.JcaPGPContentSignerBuilder;
 import org.spongycastle.openpgp.operator.jcajce.JcePBESecretKeyDecryptorBuilder;
 import org.spongycastle.util.Strings;
 import org.sufficientlysecure.keychain.Constants;
-import org.sufficientlysecure.keychain.service.results.OperationResultParcel;
+import org.sufficientlysecure.keychain.service.results.OperationResult;
 import org.sufficientlysecure.keychain.service.results.EditKeyResult;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel.Algorithm;
@@ -75,7 +75,7 @@ public class UncachedKeyringCanonicalizeTest {
     UncachedKeyRing ring;
     ArrayList<RawPacket> onlyA = new ArrayList<RawPacket>();
     ArrayList<RawPacket> onlyB = new ArrayList<RawPacket>();
-    OperationResultParcel.OperationLog log = new OperationResultParcel.OperationLog();
+    OperationResult.OperationLog log = new OperationResult.OperationLog();
     PGPSignatureSubpacketGenerator subHashedPacketsGen;
     PGPSecretKey secretKey;
 
@@ -303,7 +303,7 @@ public class UncachedKeyringCanonicalizeTest {
         parcel.mAddUserIds.add("trix");
         PgpKeyOperation op = new PgpKeyOperation(null);
 
-        OperationResultParcel.OperationLog log = new OperationResultParcel.OperationLog();
+        OperationResult.OperationLog log = new OperationResult.OperationLog();
         UncachedKeyRing foreign = op.createSecretKeyRing(parcel).getRing();
 
         Assert.assertNotNull("initial test key creation must succeed", foreign);
@@ -532,7 +532,7 @@ public class UncachedKeyringCanonicalizeTest {
 
     private static void injectEverywhere(UncachedKeyRing ring, byte[] packet) throws Exception {
 
-        OperationResultParcel.OperationLog log = new OperationResultParcel.OperationLog();
+        OperationResult.OperationLog log = new OperationResult.OperationLog();
 
         byte[] encodedRing = ring.getEncoded();
 

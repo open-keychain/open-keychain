@@ -39,7 +39,7 @@ import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
 import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
-import org.sufficientlysecure.keychain.service.results.OperationResultParcel;
+import org.sufficientlysecure.keychain.service.results.OperationResult;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel.Algorithm;
 import org.sufficientlysecure.keychain.service.results.SaveKeyringResult;
@@ -141,7 +141,7 @@ public class CreateKeyFinalFragment extends Fragment {
                         return;
                     }
                     final SaveKeyringResult result =
-                            returnData.getParcelable(OperationResultParcel.EXTRA_RESULT);
+                            returnData.getParcelable(OperationResult.EXTRA_RESULT);
                     if (result == null) {
                         Log.e(Constants.TAG, "result == null");
                         return;
@@ -152,7 +152,7 @@ public class CreateKeyFinalFragment extends Fragment {
                         uploadKey(result);
                     } else {
                         Intent data = new Intent();
-                        data.putExtra(OperationResultParcel.EXTRA_RESULT, result);
+                        data.putExtra(OperationResult.EXTRA_RESULT, result);
                         getActivity().setResult(Activity.RESULT_OK, data);
                         getActivity().finish();
                     }
@@ -204,7 +204,7 @@ public class CreateKeyFinalFragment extends Fragment {
         Bundle data = new Bundle();
 
         // upload to favorite keyserver
-        String keyserver = Preferences.getPreferences(getActivity()).getKeyServers()[0];
+        String keyserver = Preferences.getPreferences(getActivity()).getPreferredKeyserver();
         data.putString(KeychainIntentService.UPLOAD_KEY_SERVER, keyserver);
 
         intent.putExtra(KeychainIntentService.EXTRA_DATA, data);
@@ -223,7 +223,7 @@ public class CreateKeyFinalFragment extends Fragment {
                     //Notify.Style.INFO);
 
                     Intent data = new Intent();
-                    data.putExtra(OperationResultParcel.EXTRA_RESULT, saveKeyResult);
+                    data.putExtra(OperationResult.EXTRA_RESULT, saveKeyResult);
                     getActivity().setResult(Activity.RESULT_OK, data);
                     getActivity().finish();
                 }

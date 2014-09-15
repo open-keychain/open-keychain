@@ -278,7 +278,7 @@ public class HkpKeyserver extends Keyserver {
         while (matcher.find()) {
             final ImportKeysListEntry entry = new ImportKeysListEntry();
             entry.setQuery(query);
-            entry.setOrigin(getUrlPrefix() + mHost + ":" + mPort);
+            entry.addOrigin(getUrlPrefix() + mHost + ":" + mPort);
 
             int bitSize = Integer.parseInt(matcher.group(3));
             entry.setBitStrength(bitSize);

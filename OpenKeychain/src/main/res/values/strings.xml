@@ -16,6 +16,7 @@
     <string name="title_add_subkey">"Add subkey"</string>
     <string name="title_edit_key">"Edit Key"</string>
     <string name="title_preferences">"Preferences"</string>
+    <string name="title_cloud_search_preferences">"Cloud Search Preferences"</string>
     <string name="title_api_registered_apps">"Apps"</string>
     <string name="title_key_server_preference">"Keyserver Preference"</string>
     <string name="title_change_passphrase">"Change Passphrase"</string>
@@ -39,6 +40,7 @@
     <!-- section -->
     <string name="section_user_ids">"Identities"</string>
     <string name="section_keys">"Subkeys"</string>
+    <string name="section_cloud_search">"Cloud search"</string>
     <string name="section_general">"General"</string>
     <string name="section_defaults">"Defaults"</string>
     <string name="section_advanced">"Advanced"</string>
@@ -125,6 +127,8 @@
     <string name="label_send_key">"Upload key to selected keyserver after certification"</string>
     <string name="label_fingerprint">"Fingerprint"</string>
     <string name="expiry_date_dialog_title">"Set expiry date"</string>
+    <string name="label_first_keyserver_is_used">"(First keyserver listed is preferred)"</string>
+    <string name="label_preferred">"preferred"</string>
 
     <string name="user_id_no_name">"&lt;no name&gt;"</string>
     <string name="none">"&lt;none&gt;"</string>
@@ -214,8 +218,6 @@
         <item quantity="other">"%d bad secret keys ignored. Perhaps you exported with the option\n --export-secret-subkeys\nMake sure you export with\n --export-secret-keys\ninstead.""</item>
     </plurals>
 
-    <string name="key_send_success">"Successfully uploaded key to server"</string>
-    <string name="key_certify_success">"Successfully certified identities"</string>
     <string name="list_empty">"This list is empty!"</string>
     <string name="nfc_successful">"Successfully sent key with NFC Beam!"</string>
     <string name="key_copied_to_clipboard">"Key has been copied to the clipboard!"</string>
@@ -325,7 +327,7 @@
 
     <!-- action strings -->
     <string name="hint_keyserver_search_hint">"Name/Email/Key ID…"</string>
-    <string name="hint_keybase_search_hint">"Name/Email/Proof/Key…"</string>
+    <string name="hint_cloud_search_hint">"Name/Email/Proof/Key…"</string>
 
     <!-- key bit length selections -->
     <string name="key_size_512">"512"</string>
@@ -366,9 +368,9 @@
 
     <!-- Import -->
     <string name="import_tab_keyserver">"Keyserver"</string>
+    <string name="import_tab_cloud">"Search Cloud"</string>
     <string name="import_tab_direct">"File/Clipboard"</string>
     <string name="import_tab_qr_code">"QR Code/NFC"</string>
-    <string name="import_tab_keybase">"Keybase.io"</string>
     <string name="import_import">"Import selected keys"</string>
     <string name="import_qr_code_wrong">"QR Code malformed! Please try again!"</string>
     <string name="import_qr_code_too_short_fingerprint">"Fingerprint is too short (&lt; 16 characters)"</string>
@@ -825,6 +827,11 @@
     <string name="msg_se_sigcrypting">"Encrypting data with signature"</string>
     <string name="msg_se">"Starting sign and/or encrypt operation"</string>
     <string name="msg_se_symmetric">"Preparing symmetric encryption"</string>
+
+    <string name="msg_crt_upload_success">"Successfully uploaded key to server"</string>
+    <string name="msg_crt_success">"Successfully certified identities"</string>
+
+    <string name="msg_acc_saved">"Account saved"</string>
 
     <!-- PassphraseCache -->
     <string name="passp_cache_notif_click_to_clear">"Click to clear cached passphrases"</string>

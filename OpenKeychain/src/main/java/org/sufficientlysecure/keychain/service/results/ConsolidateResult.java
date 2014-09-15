@@ -18,7 +18,7 @@
 
 package org.sufficientlysecure.keychain.service.results;
 
-public class ConsolidateResult extends OperationResultParcel {
+public class ConsolidateResult extends OperationResult {
 
     public ConsolidateResult(int result, OperationLog log) {
         super(result, log);

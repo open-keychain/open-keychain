@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014 Dominik Schürmann <dominik@dominikschuermann.de>
+ * Copyright (C) 2014 Vincent Breitmoser <v.breitmoser@mugenguild.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,15 +19,12 @@ package org.sufficientlysecure.keychain.service.results;
 
 import android.os.Parcel;
 
-import org.openintents.openpgp.OpenPgpMetadata;
-import org.openintents.openpgp.OpenPgpSignatureResult;
-
 import java.util.Date;
 
-public class SignEncryptResult extends OperationResultParcel {
+public class SignEncryptResult extends OperationResult {
 
-    // the fourth bit indicates a "data pending" result!
-    public static final int RESULT_PENDING = 8;
+    // the fourth bit indicates a "data pending" result! (it's also a form of non-success)
+    public static final int RESULT_PENDING = RESULT_ERROR +8;
 
     // fifth to sixth bit in addition indicate specific type of pending
     public static final int RESULT_PENDING_NFC = RESULT_PENDING +16;

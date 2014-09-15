@@ -220,6 +220,9 @@ public class Preferences {
         }
         return servers.toArray(chunks);
     }
+    public String getPreferredKeyserver() {
+        return getKeyServers()[0];
+    }
 
     public void setKeyServers(String[] value) {
         SharedPreferences.Editor editor = mSharedPreferences.edit();
@@ -246,6 +249,35 @@ public class Preferences {
 
     public boolean getWriteVersionHeader() {
         return mSharedPreferences.getBoolean(Constants.Pref.WRITE_VERSION_HEADER, false);
+    }
+
+    public void setSearchKeyserver(boolean searchKeyserver) {
+        SharedPreferences.Editor editor = mSharedPreferences.edit();
+        editor.putBoolean(Pref.SEARCH_KEYSERVER, searchKeyserver);
+        editor.commit();
+    }
+    public void setSearchKeybase(boolean searchKeybase) {
+        SharedPreferences.Editor editor = mSharedPreferences.edit();
+        editor.putBoolean(Pref.SEARCH_KEYBASE, searchKeybase);
+        editor.commit();
+    }
+
+    public CloudSearchPrefs getCloudSearchPrefs() {
+            return new CloudSearchPrefs(mSharedPreferences.getBoolean(Pref.SEARCH_KEYSERVER, true),
+                mSharedPreferences.getBoolean(Pref.SEARCH_KEYBASE, true),
+                getPreferredKeyserver());
+    }
+
+    public static class CloudSearchPrefs {
+        public final boolean searchKeyserver;
+        public final boolean searchKeybase;
+        public final String keyserver;
+
+        public CloudSearchPrefs(boolean searchKeyserver, boolean searchKeybase, String keyserver) {
+            this.searchKeyserver = searchKeyserver;
+            this.searchKeybase = searchKeybase;
+            this.keyserver = keyserver;
+        }
     }
 
     public void updatePreferences() {

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <CheckBoxPreference
+        android:title="Search Keyserver"
+        android:defaultValue="true"
+        android:summary="Search HKP keyserver"
+        android:key="search_keyserver_pref" />
+
+    <CheckBoxPreference
+        android:title="Search Keybase.io"
+        android:defaultValue="true"
+        android:summary="Search Keybase.io index"
+        android:key="search_keybase_pref" />
+
+    <PreferenceScreen
+        android:key="keyServers"
+        android:persistent="false"
+        android:title="@string/label_keyservers" />
+</PreferenceScreen>

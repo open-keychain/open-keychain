@@ -205,7 +205,7 @@ public class DecryptFilesFragment extends DecryptFragment {
                     Bundle returnData = message.getData();
 
                     DecryptVerifyResult result =
-                            returnData.getParcelable(KeychainIntentService.RESULT_DECRYPT_VERIFY_RESULT);
+                            returnData.getParcelable(DecryptVerifyResult.EXTRA_RESULT);
 
                     switch (result.getResult()) {
                         case DecryptVerifyResult.RESULT_PENDING_ASYM_PASSPHRASE:
@@ -285,7 +285,7 @@ public class DecryptFilesFragment extends DecryptFragment {
                     Bundle returnData = message.getData();
 
                     DecryptVerifyResult result =
-                            returnData.getParcelable(KeychainIntentService.RESULT_DECRYPT_VERIFY_RESULT);
+                            returnData.getParcelable(DecryptVerifyResult.EXTRA_RESULT);
 
                     if (result.isPending()) {
                         switch (result.getResult()) {

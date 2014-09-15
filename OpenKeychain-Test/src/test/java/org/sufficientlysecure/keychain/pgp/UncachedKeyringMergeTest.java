@@ -32,7 +32,7 @@ import org.spongycastle.bcpg.SecretKeyPacket;
 import org.spongycastle.bcpg.sig.KeyFlags;
 import org.spongycastle.jce.provider.BouncyCastleProvider;
 import org.spongycastle.util.Strings;
-import org.sufficientlysecure.keychain.service.results.OperationResultParcel;
+import org.sufficientlysecure.keychain.service.results.OperationResult;
 import org.sufficientlysecure.keychain.service.results.EditKeyResult;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel.Algorithm;
@@ -77,7 +77,7 @@ public class UncachedKeyringMergeTest {
     UncachedKeyRing ringA, ringB;
     ArrayList<RawPacket> onlyA = new ArrayList<RawPacket>();
     ArrayList<RawPacket> onlyB = new ArrayList<RawPacket>();
-    OperationResultParcel.OperationLog log = new OperationResultParcel.OperationLog();
+    OperationResult.OperationLog log = new OperationResult.OperationLog();
     PgpKeyOperation op;
     SaveKeyringParcel parcel;
 
@@ -99,7 +99,7 @@ public class UncachedKeyringMergeTest {
             parcel.mNewPassphrase = "";
             PgpKeyOperation op = new PgpKeyOperation(null);
 
-            OperationResultParcel.OperationLog log = new OperationResultParcel.OperationLog();
+            OperationResult.OperationLog log = new OperationResult.OperationLog();
 
             EditKeyResult result = op.createSecretKeyRing(parcel);
             staticRingA = result.getRing();
@@ -115,7 +115,7 @@ public class UncachedKeyringMergeTest {
             parcel.mNewPassphrase = "";
             PgpKeyOperation op = new PgpKeyOperation(null);
 
-            OperationResultParcel.OperationLog log = new OperationResultParcel.OperationLog();
+            OperationResult.OperationLog log = new OperationResult.OperationLog();
             EditKeyResult result = op.createSecretKeyRing(parcel);
             staticRingB = result.getRing();
         }

@@ -61,9 +61,9 @@ public class EmailKeyHelper {
 
         if (keys.isEmpty()) {
             // Most users don't have the SRV record, so ask a default server as well
-            String[] servers = Preferences.getPreferences(context).getKeyServers();
-            if (servers != null && servers.length != 0) {
-                HkpKeyserver hkp = new HkpKeyserver(servers[0]);
+            String server = Preferences.getPreferences(context).getPreferredKeyserver();
+            if (server != null) {
+                HkpKeyserver hkp = new HkpKeyserver(server);
                 keys.addAll(getEmailKeys(mail, hkp));
             }
         }
