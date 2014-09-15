@@ -490,9 +490,9 @@
   <string name="msg_ip_delete_old_fail">Aucune ancienne clef de supprimée (création d\'une nouvelle ?)</string>
   <string name="msg_ip_delete_old_ok">L\'ancienne clef a été supprimée de la base de données</string>
   <string name="msg_ip_encode_fail">Échec de l\'opération causé par une erreur d\'encodage</string>
-  <string name="msg_ip_fail_io_exc">Échec de l\'opération causé par une erreur d\'e/s</string>
-  <string name="msg_ip_fail_op_exc">Échec de l\'opération causé par une erreur de base de données</string>
-  <string name="msg_ip_fail_remote_ex">Échec de l\'opération causé par une erreur interne</string>
+  <string name="msg_ip_error_io_exc">Échec de l\'opération causé par une erreur d\'e/s</string>
+  <string name="msg_ip_error_op_exc">Échec de l\'opération causé par une erreur de base de données</string>
+  <string name="msg_ip_error_remote_ex">Échec de l\'opération causé par une erreur interne</string>
   <string name="msg_ip">Importation du trousseau public %s</string>
   <string name="msg_ip_insert_keyring">Encodage des données du trousseau</string>
   <string name="msg_ip_insert_keys">Analyse des clefs</string>
@@ -543,7 +543,7 @@
   <string name="msg_is">Importation de la clef secrète %s</string>
   <string name="msg_is_db_exception">Erreur de base de données!</string>
   <string name="msg_is_importing_subkeys">Traitement des sous-clefs secrètes</string>
-  <string name="msg_is_io_exc">Erreur lors de l\'encodage du trousseau</string>
+  <string name="msg_is_error_io_exc">Erreur lors de l\'encodage du trousseau</string>
   <string name="msg_is_pubring_generate">Génération du trousseau public à partir du trousseau secret</string>
   <string name="msg_is_subkey_nonexistent">La sous-clef %s n\'est pas disponible dans la clef secrète</string>
   <string name="msg_is_subkey_ok">Marquer la sous-clef secrète %s comme disponible</string>

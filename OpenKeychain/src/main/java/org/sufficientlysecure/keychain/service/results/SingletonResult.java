@@ -37,7 +37,7 @@ public class SingletonResult extends OperationResult {
     public SingletonResult(int result, LogLevel level, LogType reason) {
         super(result, new OperationLog());
         // Prepare the log
-        mLog.add(level, reason, 0);
+        mLog.add(reason, 0);
     }
 
     @Override

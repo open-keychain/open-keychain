@@ -49,7 +49,6 @@ import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.results.DecryptVerifyResult;
-import org.sufficientlysecure.keychain.service.results.OperationResult.LogLevel;
 import org.sufficientlysecure.keychain.service.results.OperationResult.LogType;
 import org.sufficientlysecure.keychain.service.results.OperationResult.OperationLog;
 import org.sufficientlysecure.keychain.util.InputData;
@@ -210,11 +209,11 @@ public class PgpDecryptVerify {
             return decryptVerify(in, 0);
         } catch (PGPException e) {
             OperationLog log = new OperationLog();
-            log.add(LogLevel.ERROR, LogType.MSG_DC_ERROR_PGP_EXCEPTION, 1);
+            log.add(LogType.MSG_DC_ERROR_PGP_EXCEPTION, 1);
             return new DecryptVerifyResult(DecryptVerifyResult.RESULT_ERROR, log);
         } catch (IOException e) {
             OperationLog log = new OperationLog();
-            log.add(LogLevel.ERROR, LogType.MSG_DC_ERROR_IO, 1);
+            log.add(LogType.MSG_DC_ERROR_IO, 1);
             return new DecryptVerifyResult(DecryptVerifyResult.RESULT_ERROR, log);
         }
     }
@@ -226,7 +225,7 @@ public class PgpDecryptVerify {
 
         OperationLog log = new OperationLog();
 
-        log.add(LogLevel.START, LogType.MSG_DC, indent);
+        log.add(LogType.MSG_DC, indent);
         indent += 1;
 
         PGPObjectFactory pgpF = new PGPObjectFactory(in, new JcaKeyFingerprintCalculator());
@@ -243,7 +242,7 @@ public class PgpDecryptVerify {
         }
 
         if (enc == null) {
-            log.add(LogLevel.ERROR, LogType.MSG_DC_ERROR_INVALID_SIGLIST, indent);
+            log.add(LogType.MSG_DC_ERROR_INVALID_SIGLIST, indent);
             return new DecryptVerifyResult(DecryptVerifyResult.RESULT_ERROR, log);
         }
 
@@ -270,7 +269,7 @@ public class PgpDecryptVerify {
                 PGPPublicKeyEncryptedData encData = (PGPPublicKeyEncryptedData) obj;
                 long subKeyId = encData.getKeyID();
 
-                log.add(LogLevel.DEBUG, LogType.MSG_DC_ASYM, indent,
+                log.add(LogType.MSG_DC_ASYM, indent,
                         PgpKeyHelper.convertKeyIdToHex(subKeyId));
 
                 CanonicalizedSecretKeyRing secretKeyRing;
@@ -281,19 +280,19 @@ public class PgpDecryptVerify {
                     );
                 } catch (ProviderHelper.NotFoundException e) {
                     // continue with the next packet in the while loop
-                    log.add(LogLevel.DEBUG, LogType.MSG_DC_ASKIP_NO_KEY, indent +1);
+                    log.add(LogType.MSG_DC_ASKIP_NO_KEY, indent +1);
                     continue;
                 }
                 if (secretKeyRing == null) {
                     // continue with the next packet in the while loop
-                    log.add(LogLevel.DEBUG, LogType.MSG_DC_ASKIP_NO_KEY, indent +1);
+                    log.add(LogType.MSG_DC_ASKIP_NO_KEY, indent +1);
                     continue;
                 }
                 // get subkey which has been used for this encryption packet
                 secretEncryptionKey = secretKeyRing.getSecretKey(subKeyId);
                 if (secretEncryptionKey == null) {
                     // should actually never happen, so no need to be more specific.
-                    log.add(LogLevel.DEBUG, LogType.MSG_DC_ASKIP_NO_KEY, indent +1);
+                    log.add(LogType.MSG_DC_ASKIP_NO_KEY, indent +1);
                     continue;
                 }
 
@@ -307,7 +306,7 @@ public class PgpDecryptVerify {
                     if (!mAllowedKeyIds.contains(masterKeyId)) {
                         // this key is in our db, but NOT allowed!
                         // continue with the next packet in the while loop
-                        log.add(LogLevel.DEBUG, LogType.MSG_DC_ASKIP_NOT_ALLOWED, indent +1);
+                        log.add(LogType.MSG_DC_ASKIP_NOT_ALLOWED, indent +1);
                         continue;
                     }
                 }
@@ -322,15 +321,15 @@ public class PgpDecryptVerify {
                     try {
                         // returns "" if key has no passphrase
                         mPassphrase = mPassphraseCache.getCachedPassphrase(subKeyId);
-                        log.add(LogLevel.DEBUG, LogType.MSG_DC_PASS_CACHED, indent +1);
+                        log.add(LogType.MSG_DC_PASS_CACHED, indent +1);
                     } catch (NoSecretKeyException e) {
-                        log.add(LogLevel.ERROR, LogType.MSG_DC_ERROR_NO_KEY, indent +1);
+                        log.add(LogType.MSG_DC_ERROR_NO_KEY, indent +1);
                         return new DecryptVerifyResult(DecryptVerifyResult.RESULT_ERROR, log);
                     }
 
                     // if passphrase was not cached, return here indicating that a passphrase is missing!
                     if (mPassphrase == null) {
-                        log.add(LogLevel.INFO, LogType.MSG_DC_PENDING_PASSPHRASE, indent +1);
+                        log.add(LogType.MSG_DC_PENDING_PASSPHRASE, indent +1);
                         DecryptVerifyResult result =
                                 new DecryptVerifyResult(DecryptVerifyResult.RESULT_PENDING_ASYM_PASSPHRASE, log);
                         result.setKeyIdPassphraseNeeded(subKeyId);
@@ -344,10 +343,10 @@ public class PgpDecryptVerify {
             } else if (obj instanceof PGPPBEEncryptedData) {
                 anyPacketFound = true;
 
-                log.add(LogLevel.DEBUG, LogType.MSG_DC_SYM, indent);
+                log.add(LogType.MSG_DC_SYM, indent);
 
                 if (! mAllowSymmetricDecryption) {
-                    log.add(LogLevel.WARN, LogType.MSG_DC_SYM_SKIP, indent +1);
+                    log.add(LogType.MSG_DC_SYM_SKIP, indent +1);
                     continue;
                 }
 
@@ -362,7 +361,7 @@ public class PgpDecryptVerify {
                 // if no passphrase is given, return here
                 // indicating that a passphrase is missing!
                 if (mPassphrase == null) {
-                    log.add(LogLevel.INFO, LogType.MSG_DC_PENDING_PASSPHRASE, indent +1);
+                    log.add(LogType.MSG_DC_PENDING_PASSPHRASE, indent +1);
                     return new DecryptVerifyResult(DecryptVerifyResult.RESULT_PENDING_SYM_PASSPHRASE, log);
                 }
 
@@ -377,16 +376,16 @@ public class PgpDecryptVerify {
             if (obj instanceof PGPPublicKeyEncryptedData) {
                 PGPPublicKeyEncryptedData encData = (PGPPublicKeyEncryptedData) obj;
                 long subKeyId = encData.getKeyID();
-                log.add(LogLevel.DEBUG, LogType.MSG_DC_TRAIL_ASYM, indent,
+                log.add(LogType.MSG_DC_TRAIL_ASYM, indent,
                         PgpKeyHelper.convertKeyIdToHex(subKeyId));
             } else if (obj instanceof PGPPBEEncryptedData) {
-                log.add(LogLevel.WARN, LogType.MSG_DC_TRAIL_SYM, indent);
+                log.add(LogType.MSG_DC_TRAIL_SYM, indent);
             } else {
-                log.add(LogLevel.WARN, LogType.MSG_DC_TRAIL_UNKNOWN, indent);
+                log.add(LogType.MSG_DC_TRAIL_UNKNOWN, indent);
             }
         }
 
-        log.add(LogLevel.DEBUG, LogType.MSG_DC_PREP_STREAMS, indent);
+        log.add(LogType.MSG_DC_PREP_STREAMS, indent);
 
         // we made sure above one of these two would be true
         if (symmetricPacketFound) {
@@ -407,13 +406,13 @@ public class PgpDecryptVerify {
             updateProgress(R.string.progress_extracting_key, currentProgress, 100);
 
             try {
-                log.add(LogLevel.INFO, LogType.MSG_DC_UNLOCKING, indent +1);
+                log.add(LogType.MSG_DC_UNLOCKING, indent +1);
                 if (!secretEncryptionKey.unlock(mPassphrase)) {
-                    log.add(LogLevel.ERROR, LogType.MSG_DC_ERROR_BAD_PASSPHRASE, indent +1);
+                    log.add(LogType.MSG_DC_ERROR_BAD_PASSPHRASE, indent +1);
                     return new DecryptVerifyResult(DecryptVerifyResult.RESULT_ERROR, log);
                 }
             } catch (PgpGeneralException e) {
-                log.add(LogLevel.ERROR, LogType.MSG_DC_ERROR_EXTRACT_KEY, indent +1);
+                log.add(LogType.MSG_DC_ERROR_EXTRACT_KEY, indent +1);
                 return new DecryptVerifyResult(DecryptVerifyResult.RESULT_ERROR, log);
             }
 
@@ -425,7 +424,7 @@ public class PgpDecryptVerify {
                         = secretEncryptionKey.getDecryptorFactory(mDecryptedSessionKey);
                 clear = encryptedDataAsymmetric.getDataStream(decryptorFactory);
             } catch (NfcSyncPublicKeyDataDecryptorFactoryBuilder.NfcInteractionNeeded e) {
-                log.add(LogLevel.INFO, LogType.MSG_DC_PENDING_NFC, indent +1);
+                log.add(LogType.MSG_DC_PENDING_NFC, indent +1);
                 DecryptVerifyResult result =
                         new DecryptVerifyResult(DecryptVerifyResult.RESULT_PENDING_NFC, log);
                 result.setNfcEncryptedSessionKey(e.encryptedSessionKey);
@@ -436,7 +435,7 @@ public class PgpDecryptVerify {
         } else {
             // If we didn't find any useful data, error out
             // no packet has been found where we have the corresponding secret key in our db
-            log.add(LogLevel.ERROR,
+            log.add(
                     anyPacketFound ? LogType.MSG_DC_ERROR_NO_KEY : LogType.MSG_DC_ERROR_NO_DATA, indent +1);
             return new DecryptVerifyResult(DecryptVerifyResult.RESULT_ERROR, log);
         }
@@ -448,11 +447,11 @@ public class PgpDecryptVerify {
         CanonicalizedPublicKeyRing signingRing = null;
         CanonicalizedPublicKey signingKey = null;
 
-        log.add(LogLevel.DEBUG, LogType.MSG_DC_CLEAR, indent);
+        log.add(LogType.MSG_DC_CLEAR, indent);
         indent += 1;
 
         if (dataChunk instanceof PGPCompressedData) {
-            log.add(LogLevel.DEBUG, LogType.MSG_DC_CLEAR_DECOMPRESS, indent +1);
+            log.add(LogType.MSG_DC_CLEAR_DECOMPRESS, indent +1);
             currentProgress += 2;
             updateProgress(R.string.progress_decompressing_data, currentProgress, 100);
 
@@ -465,7 +464,7 @@ public class PgpDecryptVerify {
 
         PGPOnePassSignature signature = null;
         if (dataChunk instanceof PGPOnePassSignatureList) {
-            log.add(LogLevel.DEBUG, LogType.MSG_DC_CLEAR_SIGNATURE, indent +1);
+            log.add(LogType.MSG_DC_CLEAR_SIGNATURE, indent +1);
             currentProgress += 2;
             updateProgress(R.string.progress_processing_signature, currentProgress, 100);
 
@@ -516,7 +515,7 @@ public class PgpDecryptVerify {
         OpenPgpMetadata metadata;
 
         if (dataChunk instanceof PGPLiteralData) {
-            log.add(LogLevel.DEBUG, LogType.MSG_DC_CLEAR_DATA, indent +1);
+            log.add(LogType.MSG_DC_CLEAR_DATA, indent +1);
             indent += 2;
             currentProgress += 4;
             updateProgress(R.string.progress_decrypting, currentProgress, 100);
@@ -559,20 +558,20 @@ public class PgpDecryptVerify {
                     originalSize);
 
             if ( ! originalFilename.equals("")) {
-                log.add(LogLevel.DEBUG, LogType.MSG_DC_CLEAR_META_FILE, indent + 1, originalFilename);
+                log.add(LogType.MSG_DC_CLEAR_META_FILE, indent + 1, originalFilename);
             }
-            log.add(LogLevel.DEBUG, LogType.MSG_DC_CLEAR_META_MIME, indent +1,
+            log.add(LogType.MSG_DC_CLEAR_META_MIME, indent +1,
                     mimeType);
-            log.add(LogLevel.DEBUG, LogType.MSG_DC_CLEAR_META_TIME, indent +1,
+            log.add(LogType.MSG_DC_CLEAR_META_TIME, indent +1,
                     new Date(literalData.getModificationTime().getTime()).toString());
             if (originalSize != 0) {
-                log.add(LogLevel.DEBUG, LogType.MSG_DC_CLEAR_META_SIZE, indent + 1,
+                log.add(LogType.MSG_DC_CLEAR_META_SIZE, indent + 1,
                         Long.toString(originalSize));
             }
 
             // return here if we want to decrypt the metadata only
             if (mDecryptMetadataOnly) {
-                log.add(LogLevel.OK, LogType.MSG_DC_OK_META_ONLY, indent);
+                log.add(LogType.MSG_DC_OK_META_ONLY, indent);
                 DecryptVerifyResult result =
                         new DecryptVerifyResult(DecryptVerifyResult.RESULT_OK, log);
                 result.setDecryptMetadata(metadata);
@@ -619,7 +618,7 @@ public class PgpDecryptVerify {
 
             if (signature != null) {
                 updateProgress(R.string.progress_verifying_signature, 90, 100);
-                log.add(LogLevel.DEBUG, LogType.MSG_DC_CLEAR_SIGNATURE_CHECK, indent);
+                log.add(LogType.MSG_DC_CLEAR_SIGNATURE_CHECK, indent);
 
                 PGPSignatureList signatureList = (PGPSignatureList) plainFact.nextObject();
                 PGPSignature messageSignature = signatureList.get(signatureIndex);
@@ -631,9 +630,9 @@ public class PgpDecryptVerify {
                 // Verify signature and check binding signatures
                 boolean validSignature = signature.verify(messageSignature);
                 if (validSignature) {
-                    log.add(LogLevel.DEBUG, LogType.MSG_DC_CLEAR_SIGNATURE_OK, indent +1);
+                    log.add(LogType.MSG_DC_CLEAR_SIGNATURE_OK, indent +1);
                 } else {
-                    log.add(LogLevel.WARN, LogType.MSG_DC_CLEAR_SIGNATURE_BAD, indent +1);
+                    log.add(LogType.MSG_DC_CLEAR_SIGNATURE_BAD, indent +1);
                 }
                 signatureResultBuilder.setValidSignature(validSignature);
             }
@@ -648,9 +647,9 @@ public class PgpDecryptVerify {
             updateProgress(R.string.progress_verifying_integrity, 95, 100);
 
             if (encryptedData.verify()) {
-                log.add(LogLevel.INFO, LogType.MSG_DC_INTEGRITY_CHECK_OK, indent);
+                log.add(LogType.MSG_DC_INTEGRITY_CHECK_OK, indent);
             } else {
-                log.add(LogLevel.ERROR, LogType.MSG_DC_ERROR_INTEGRITY_CHECK, indent);
+                log.add(LogType.MSG_DC_ERROR_INTEGRITY_CHECK, indent);
                 return new DecryptVerifyResult(DecryptVerifyResult.RESULT_ERROR, log);
             }
         } else {
@@ -661,14 +660,14 @@ public class PgpDecryptVerify {
             // Handle missing integrity protection like failed integrity protection!
             // The MDC packet can be stripped by an attacker!
             if (!signatureResultBuilder.isValidSignature()) {
-                log.add(LogLevel.ERROR, LogType.MSG_DC_ERROR_INTEGRITY_CHECK, indent);
+                log.add(LogType.MSG_DC_ERROR_INTEGRITY_CHECK, indent);
                 return new DecryptVerifyResult(DecryptVerifyResult.RESULT_ERROR, log);
             }
         }
 
         updateProgress(R.string.progress_done, 100, 100);
 
-        log.add(LogLevel.OK, LogType.MSG_DC_OK, indent);
+        log.add(LogType.MSG_DC_OK, indent);
 
         // Return a positive result, with metadata and verification info
         DecryptVerifyResult result =
@@ -724,7 +723,7 @@ public class PgpDecryptVerify {
 
         PGPSignatureList sigList = (PGPSignatureList) pgpFact.nextObject();
         if (sigList == null) {
-            log.add(LogLevel.ERROR, LogType.MSG_DC_ERROR_INVALID_SIGLIST, 0);
+            log.add(LogType.MSG_DC_ERROR_INVALID_SIGLIST, 0);
             return new DecryptVerifyResult(DecryptVerifyResult.RESULT_ERROR, log);
         }
 

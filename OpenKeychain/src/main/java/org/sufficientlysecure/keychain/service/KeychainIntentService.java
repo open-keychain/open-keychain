@@ -56,7 +56,6 @@ import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.KeychainDatabase;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.results.OperationResult;
-import org.sufficientlysecure.keychain.service.results.OperationResult.LogLevel;
 import org.sufficientlysecure.keychain.service.results.OperationResult.LogType;
 import org.sufficientlysecure.keychain.service.results.OperationResult.OperationLog;
 import org.sufficientlysecure.keychain.service.results.ConsolidateResult;
@@ -462,7 +461,7 @@ public class KeychainIntentService extends IntentService implements Progressable
                     OperationLog log = modifyResult.getLog();
                     // If it wasn't added before, add log entry
                     if (!modifyResult.cancelled()) {
-                        log.add(LogLevel.CANCELLED, LogType.MSG_OPERATION_CANCELLED, 0);
+                        log.add(LogType.MSG_OPERATION_CANCELLED, 0);
                     }
                     // If so, just stop without saving
                     SaveKeyringResult saveResult = new SaveKeyringResult(

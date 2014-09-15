@@ -66,7 +66,7 @@ public class LogDisplayFragment extends ListFragment implements OnTouchListener 
             return;
         }
 
-        mResult = intent.<OperationResult>getParcelableExtra(EXTRA_RESULT);
+        mResult = intent.getParcelableExtra(EXTRA_RESULT);
         if (mResult == null) {
             getActivity().finish();
             return;
@@ -142,7 +142,7 @@ public class LogDisplayFragment extends ListFragment implements OnTouchListener 
                     (float) 8, getResources().getDisplayMetrics());
             // we can't use addAll for a LogLevel.DEBUG shortcut here, unfortunately :(
             for (LogEntryParcel e : log) {
-                if (e.mLevel.ordinal() >= level.ordinal()) {
+                if (e.mType.mLevel.ordinal() >= level.ordinal()) {
                     add(e);
                 }
             }
@@ -183,9 +183,9 @@ public class LogDisplayFragment extends ListFragment implements OnTouchListener 
                 ih.mText.setText(getResources().getString(entry.mType.getMsgId(),
                         entry.mParameters));
             }
-            ih.mText.setTextColor(entry.mLevel == LogLevel.DEBUG ? Color.GRAY : Color.BLACK);
+            ih.mText.setTextColor(entry.mType.mLevel == LogLevel.DEBUG ? Color.GRAY : Color.BLACK);
             convertView.setPadding((entry.mIndent) * dipFactor, 0, 0, 0);
-            switch (entry.mLevel) {
+            switch (entry.mType.mLevel) {
                 case DEBUG: ih.mImg.setBackgroundColor(Color.GRAY); break;
                 case INFO: ih.mImg.setBackgroundColor(Color.BLACK); break;
                 case WARN: ih.mImg.setBackgroundColor(Color.YELLOW); break;

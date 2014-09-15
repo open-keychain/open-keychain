@@ -490,9 +490,9 @@
   <string name="msg_ip_delete_old_fail">No se borró ninguna clave antigua (¿crear una nueva?)</string>
   <string name="msg_ip_delete_old_ok">Clave antigua borrada de la base de datos</string>
   <string name="msg_ip_encode_fail">La operación falló debido a un error de codificación</string>
-  <string name="msg_ip_fail_io_exc">La operación falló debido a un error de E/S</string>
-  <string name="msg_ip_fail_op_exc">La operación falló debido a un error de la base de datos</string>
-  <string name="msg_ip_fail_remote_ex">La operación falló debido a un error interno</string>
+  <string name="msg_ip_error_io_exc">La operación falló debido a un error de E/S</string>
+  <string name="msg_ip_error_op_exc">La operación falló debido a un error de la base de datos</string>
+  <string name="msg_ip_error_remote_ex">La operación falló debido a un error interno</string>
   <string name="msg_ip">Importando juego de claves públicas %s</string>
   <string name="msg_ip_insert_keyring">Codificando datos del juego de claves (keyring)</string>
   <string name="msg_ip_insert_keys">Analizando claves</string>
@@ -543,7 +543,7 @@
   <string name="msg_is">Importando clave secreta (privada) %s</string>
   <string name="msg_is_db_exception">¡Error de base de datos!</string>
   <string name="msg_is_importing_subkeys">Procesando subclaves secretas</string>
-  <string name="msg_is_io_exc">Error codificando el juego de claves</string>
+  <string name="msg_is_error_io_exc">Error codificando el juego de claves</string>
   <string name="msg_is_pubring_generate">Generando un juego de claves públicas desde el juego de claves secretas (privadas)</string>
   <string name="msg_is_subkey_nonexistent">La subclave %s no está disponible en la clave secreta (privada)</string>
   <string name="msg_is_subkey_ok">Subclave secreta (privada) %s marcada como disponible</string>

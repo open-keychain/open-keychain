@@ -33,7 +33,6 @@ import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
-import org.sufficientlysecure.keychain.service.results.OperationResult.LogLevel;
 import org.sufficientlysecure.keychain.service.results.OperationResult.LogType;
 import org.sufficientlysecure.keychain.service.results.OperationResult.OperationLog;
 import org.sufficientlysecure.keychain.service.results.ImportKeyResult;
@@ -209,7 +208,7 @@ public class PgpImportExport {
             }
         }
         if (mCancelled != null && mCancelled.get()) {
-            log.add(LogLevel.CANCELLED, LogType.MSG_OPERATION_CANCELLED, 0);
+            log.add(LogType.MSG_OPERATION_CANCELLED, 0);
             resultType |= ImportKeyResult.RESULT_CANCELLED;
         }
 

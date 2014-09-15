@@ -425,9 +425,9 @@
   <string name="msg_ip_delete_old_fail">Nessuna vecchia chiave cancellata (stai creando una nuova?)</string>
   <string name="msg_ip_delete_old_ok">Cancellate vecchie chiavi dal database</string>
   <string name="msg_ip_encode_fail">Operazione fallita a causa di un errore di codifica</string>
-  <string name="msg_ip_fail_io_exc">Operazione fallita a causa di un errore di i/o</string>
-  <string name="msg_ip_fail_op_exc">Operazione fallita a causa di un errore della banca dati</string>
-  <string name="msg_ip_fail_remote_ex">Operazione fallita a causa di un errore interno</string>
+  <string name="msg_ip_error_io_exc">Operazione fallita a causa di un errore di i/o</string>
+  <string name="msg_ip_error_op_exc">Operazione fallita a causa di un errore della banca dati</string>
+  <string name="msg_ip_error_remote_ex">Operazione fallita a causa di un errore interno</string>
   <string name="msg_ip">Importazione portachiavi pubblico %s</string>
   <string name="msg_ip_insert_keyring">Codifica dati del portachiavi</string>
   <string name="msg_ip_insert_keys">Elaborazione chiavi</string>
@@ -478,7 +478,7 @@
   <string name="msg_is">Importazione chiave segreta %s</string>
   <string name="msg_is_db_exception">Errore Banca Dati!</string>
   <string name="msg_is_importing_subkeys">Elaborazione sottochiavi segrete</string>
-  <string name="msg_is_io_exc">Errore codifica portachiavi</string>
+  <string name="msg_is_error_io_exc">Errore codifica portachiavi</string>
   <string name="msg_is_pubring_generate">Generazione portachiavi pubblico da portachiavi privato</string>
   <string name="msg_is_success_identical">Il portachiavi non contiene nuovi dati, nulla da eseguire</string>
   <string name="msg_is_success">Portachiavi segreto importato con successo</string>

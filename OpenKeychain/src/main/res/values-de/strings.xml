@@ -433,8 +433,8 @@
   <!--Import Public log entries-->
   <string name="msg_ip_delete_old_ok">Alte Schlüssel aus der Datenbank löschen</string>
   <string name="msg_ip_encode_fail">Die Anwendung ist wegen Kodierungsfehler fehlgeschlagen</string>
-  <string name="msg_ip_fail_io_exc">Die Anwendung ist wegen eines Eingabe/Ausgabe-Fehlers fehlgeschlagen</string>
-  <string name="msg_ip_fail_remote_ex">Die Anwendung ist wegen internen Fehler fehlgeschlagen</string>
+  <string name="msg_ip_error_io_exc">Die Anwendung ist wegen eines Eingabe/Ausgabe-Fehlers fehlgeschlagen</string>
+  <string name="msg_ip_error_remote_ex">Die Anwendung ist wegen internen Fehler fehlgeschlagen</string>
   <string name="msg_ip">Importiere öffentlichen Schlüsselbund %s</string>
   <string name="msg_ip_insert_keyring">Schlüsselbund-daten werden kodiert</string>
   <string name="msg_ip_insert_keys">Analysiere Schlüssel</string>

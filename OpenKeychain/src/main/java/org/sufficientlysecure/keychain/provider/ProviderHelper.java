@@ -124,12 +124,12 @@ public class ProviderHelper {
 
     public void log(LogLevel level, LogType type) {
         if(mLog != null) {
-            mLog.add(level, type, mIndent);
+            mLog.add(type, mIndent);
         }
     }
     public void log(LogLevel level, LogType type, Object... parameters) {
         if(mLog != null) {
-            mLog.add(level, type, mIndent, parameters);
+            mLog.add(type, mIndent, parameters);
         }
     }
 
@@ -527,7 +527,7 @@ public class ProviderHelper {
             }
 
         } catch (IOException e) {
-            log(LogLevel.ERROR, LogType.MSG_IP_FAIL_IO_EXC);
+            log(LogLevel.ERROR, LogType.MSG_IP_ERROR_IO_EXC);
             Log.e(Constants.TAG, "IOException during import", e);
             return SaveKeyringResult.RESULT_ERROR;
         } finally {
@@ -554,11 +554,11 @@ public class ProviderHelper {
             return result;
 
         } catch (RemoteException e) {
-            log(LogLevel.ERROR, LogType.MSG_IP_FAIL_REMOTE_EX);
+            log(LogLevel.ERROR, LogType.MSG_IP_ERROR_REMOTE_EX);
             Log.e(Constants.TAG, "RemoteException during import", e);
             return SaveKeyringResult.RESULT_ERROR;
         } catch (OperationApplicationException e) {
-            log(LogLevel.ERROR, LogType.MSG_IP_FAIL_OP_EXC);
+            log(LogLevel.ERROR, LogType.MSG_IP_ERROR_OP_EXC);
             Log.e(Constants.TAG, "OperationApplicationException during import", e);
             return SaveKeyringResult.RESULT_ERROR;
         }
@@ -613,7 +613,7 @@ public class ProviderHelper {
                 }
             } catch (IOException e) {
                 Log.e(Constants.TAG, "Failed to encode key!", e);
-                log(LogLevel.ERROR, LogType.MSG_IS_FAIL_IO_EXC);
+                log(LogLevel.ERROR, LogType.MSG_IS_ERROR_IO_EXC);
                 return SaveKeyringResult.RESULT_ERROR;
             }
 
@@ -771,7 +771,7 @@ public class ProviderHelper {
             return new SaveKeyringResult(result, mLog, canSecretRing);
 
         } catch (IOException e) {
-            log(LogLevel.ERROR, LogType.MSG_IP_FAIL_IO_EXC);
+            log(LogLevel.ERROR, LogType.MSG_IP_ERROR_IO_EXC);
             return new SaveKeyringResult(SaveKeyringResult.RESULT_ERROR, mLog, null);
         } finally {
             mIndent -= 1;
@@ -865,7 +865,7 @@ public class ProviderHelper {
             return new SaveKeyringResult(result, mLog, canSecretRing);
 
         } catch (IOException e) {
-            log(LogLevel.ERROR, LogType.MSG_IS_FAIL_IO_EXC);
+            log(LogLevel.ERROR, LogType.MSG_IS_ERROR_IO_EXC);
             return new SaveKeyringResult(SaveKeyringResult.RESULT_ERROR, mLog, null);
         } finally {
             mIndent -= 1;

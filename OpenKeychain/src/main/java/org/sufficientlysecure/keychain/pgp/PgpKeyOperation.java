@@ -47,7 +47,6 @@ import org.spongycastle.openpgp.operator.jcajce.JcePBESecretKeyEncryptorBuilder;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.service.results.OperationResult;
-import org.sufficientlysecure.keychain.service.results.OperationResult.LogLevel;
 import org.sufficientlysecure.keychain.service.results.OperationResult.LogType;
 import org.sufficientlysecure.keychain.service.results.OperationResult.OperationLog;
 import org.sufficientlysecure.keychain.service.results.EditKeyResult;
@@ -192,16 +191,16 @@ public class PgpKeyOperation {
             // Some safety checks
             if (add.mAlgorithm == Algorithm.ECDH || add.mAlgorithm == Algorithm.ECDSA) {
                 if (add.mCurve == null) {
-                    log.add(LogLevel.ERROR, LogType.MSG_CR_ERROR_NO_CURVE, indent);
+                    log.add(LogType.MSG_CR_ERROR_NO_CURVE, indent);
                     return null;
                 }
             } else {
                 if (add.mKeySize == null) {
-                    log.add(LogLevel.ERROR, LogType.MSG_CR_ERROR_NO_KEYSIZE, indent);
+                    log.add(LogType.MSG_CR_ERROR_NO_KEYSIZE, indent);
                     return null;
                 }
                 if (add.mKeySize < 512) {
-                    log.add(LogLevel.ERROR, LogType.MSG_CR_ERROR_KEYSIZE_512, indent);
+                    log.add(LogType.MSG_CR_ERROR_KEYSIZE_512, indent);
                     return null;
                 }
             }
@@ -212,7 +211,7 @@ public class PgpKeyOperation {
             switch (add.mAlgorithm) {
                 case DSA: {
                     if ((add.mFlags & (PGPKeyFlags.CAN_ENCRYPT_COMMS | PGPKeyFlags.CAN_ENCRYPT_STORAGE)) > 0) {
-                        log.add(LogLevel.ERROR, LogType.MSG_CR_ERROR_FLAGS_DSA, indent);
+                        log.add(LogType.MSG_CR_ERROR_FLAGS_DSA, indent);
                         return null;
                     }
                     progress(R.string.progress_generating_dsa, 30);
@@ -224,7 +223,7 @@ public class PgpKeyOperation {
 
                 case ELGAMAL: {
                     if ((add.mFlags & (PGPKeyFlags.CAN_SIGN | PGPKeyFlags.CAN_CERTIFY)) > 0) {
-                        log.add(LogLevel.ERROR, LogType.MSG_CR_ERROR_FLAGS_ELGAMAL, indent);
+                        log.add(LogType.MSG_CR_ERROR_FLAGS_ELGAMAL, indent);
                         return null;
                     }
                     progress(R.string.progress_generating_elgamal, 30);
@@ -250,7 +249,7 @@ public class PgpKeyOperation {
 
                 case ECDSA: {
                     if ((add.mFlags & (PGPKeyFlags.CAN_ENCRYPT_COMMS | PGPKeyFlags.CAN_ENCRYPT_STORAGE)) > 0) {
-                        log.add(LogLevel.ERROR, LogType.MSG_CR_ERROR_FLAGS_ECDSA, indent);
+                        log.add(LogType.MSG_CR_ERROR_FLAGS_ECDSA, indent);
                         return null;
                     }
                     progress(R.string.progress_generating_ecdsa, 30);
@@ -265,7 +264,7 @@ public class PgpKeyOperation {
                 case ECDH: {
                     // make sure there are no sign or certify flags set
                     if ((add.mFlags & (PGPKeyFlags.CAN_SIGN | PGPKeyFlags.CAN_CERTIFY)) > 0) {
-                        log.add(LogLevel.ERROR, LogType.MSG_CR_ERROR_FLAGS_ECDH, indent);
+                        log.add(LogType.MSG_CR_ERROR_FLAGS_ECDH, indent);
                         return null;
                     }
                     progress(R.string.progress_generating_ecdh, 30);
@@ -278,7 +277,7 @@ public class PgpKeyOperation {
                 }
 
                 default: {
-                    log.add(LogLevel.ERROR, LogType.MSG_CR_ERROR_UNKNOWN_ALGO, indent);
+                    log.add(LogType.MSG_CR_ERROR_UNKNOWN_ALGO, indent);
                     return null;
                 }
             }
@@ -289,13 +288,13 @@ public class PgpKeyOperation {
         } catch(NoSuchProviderException e) {
             throw new RuntimeException(e);
         } catch(NoSuchAlgorithmException e) {
-            log.add(LogLevel.ERROR, LogType.MSG_CR_ERROR_UNKNOWN_ALGO, indent);
+            log.add(LogType.MSG_CR_ERROR_UNKNOWN_ALGO, indent);
             return null;
         } catch(InvalidAlgorithmParameterException e) {
             throw new RuntimeException(e);
         } catch(PGPException e) {
             Log.e(Constants.TAG, "internal pgp error", e);
-            log.add(LogLevel.ERROR, LogType.MSG_CR_ERROR_INTERNAL_PGP, indent);
+            log.add(LogType.MSG_CR_ERROR_INTERNAL_PGP, indent);
             return null;
         }
     }
@@ -307,28 +306,28 @@ public class PgpKeyOperation {
 
         try {
 
-            log.add(LogLevel.START, LogType.MSG_CR, indent);
+            log.add(LogType.MSG_CR, indent);
             progress(R.string.progress_building_key, 0);
             indent += 1;
 
             if (saveParcel.mAddSubKeys.isEmpty()) {
-                log.add(LogLevel.ERROR, LogType.MSG_CR_ERROR_NO_MASTER, indent);
+                log.add(LogType.MSG_CR_ERROR_NO_MASTER, indent);
                 return new EditKeyResult(EditKeyResult.RESULT_ERROR, log, null);
             }
 
             if (saveParcel.mAddUserIds.isEmpty()) {
-                log.add(LogLevel.ERROR, LogType.MSG_CR_ERROR_NO_USER_ID, indent);
+                log.add(LogType.MSG_CR_ERROR_NO_USER_ID, indent);
                 return new EditKeyResult(EditKeyResult.RESULT_ERROR, log, null);
             }
 
             SubkeyAdd add = saveParcel.mAddSubKeys.remove(0);
             if ((add.mFlags & KeyFlags.CERTIFY_OTHER) != KeyFlags.CERTIFY_OTHER) {
-                log.add(LogLevel.ERROR, LogType.MSG_CR_ERROR_NO_CERTIFY, indent);
+                log.add(LogType.MSG_CR_ERROR_NO_CERTIFY, indent);
                 return new EditKeyResult(EditKeyResult.RESULT_ERROR, log, null);
             }
 
             if (add.mExpiry == null) {
-                log.add(LogLevel.ERROR, LogType.MSG_CR_ERROR_NULL_EXPIRY, indent);
+                log.add(LogType.MSG_CR_ERROR_NULL_EXPIRY, indent);
                 return new EditKeyResult(EditKeyResult.RESULT_ERROR, log, null);
             }
 
@@ -363,7 +362,7 @@ public class PgpKeyOperation {
             return internal(sKR, masterSecretKey, add.mFlags, add.mExpiry, saveParcel, "", log);
 
         } catch (PGPException e) {
-            log.add(LogLevel.ERROR, LogType.MSG_CR_ERROR_INTERNAL_PGP, indent);
+            log.add(LogType.MSG_CR_ERROR_INTERNAL_PGP, indent);
             Log.e(Constants.TAG, "pgp error encoding key", e);
             return new EditKeyResult(EditKeyResult.RESULT_ERROR, log, null);
         } catch (IOException e) {
@@ -405,14 +404,14 @@ public class PgpKeyOperation {
          * 6. If requested, change passphrase
          */
 
-        log.add(LogLevel.START, LogType.MSG_MF, indent,
+        log.add(LogType.MSG_MF, indent,
                 PgpKeyHelper.convertKeyIdToHex(wsKR.getMasterKeyId()));
         indent += 1;
         progress(R.string.progress_building_key, 0);
 
         // Make sure this is called with a proper SaveKeyringParcel
         if (saveParcel.mMasterKeyId == null || saveParcel.mMasterKeyId != wsKR.getMasterKeyId()) {
-            log.add(LogLevel.ERROR, LogType.MSG_MF_ERROR_KEYID, indent);
+            log.add(LogType.MSG_MF_ERROR_KEYID, indent);
             return new EditKeyResult(EditKeyResult.RESULT_ERROR, log, null);
         }
 
@@ -423,7 +422,7 @@ public class PgpKeyOperation {
         // Make sure the fingerprint matches
         if (saveParcel.mFingerprint == null || !Arrays.equals(saveParcel.mFingerprint,
                                     masterSecretKey.getPublicKey().getFingerprint())) {
-            log.add(LogLevel.ERROR, LogType.MSG_MF_ERROR_FINGERPRINT, indent);
+            log.add(LogType.MSG_MF_ERROR_FINGERPRINT, indent);
             return new EditKeyResult(EditKeyResult.RESULT_ERROR, log, null);
         }
 
@@ -451,7 +450,7 @@ public class PgpKeyOperation {
 
         // 1. Unlock private key
         progress(R.string.progress_modify_unlock, 10);
-        log.add(LogLevel.DEBUG, LogType.MSG_MF_UNLOCK, indent);
+        log.add(LogType.MSG_MF_UNLOCK, indent);
         PGPPrivateKey masterPrivateKey;
         {
             try {
@@ -459,7 +458,7 @@ public class PgpKeyOperation {
                         Constants.BOUNCY_CASTLE_PROVIDER_NAME).build(passphrase.toCharArray());
                 masterPrivateKey = masterSecretKey.extractPrivateKey(keyDecryptor);
             } catch (PGPException e) {
-                log.add(LogLevel.ERROR, LogType.MSG_MF_UNLOCK_ERROR, indent + 1);
+                log.add(LogType.MSG_MF_UNLOCK_ERROR, indent + 1);
                 return new EditKeyResult(EditKeyResult.RESULT_ERROR, log, null);
             }
         }
@@ -468,7 +467,7 @@ public class PgpKeyOperation {
 
             // Check if we were cancelled
             if (checkCancelled()) {
-                log.add(LogLevel.CANCELLED, LogType.MSG_OPERATION_CANCELLED, indent);
+                log.add(LogType.MSG_OPERATION_CANCELLED, indent);
                 return new EditKeyResult(EditKeyResult.RESULT_CANCELLED, log, null);
             }
 
@@ -482,10 +481,10 @@ public class PgpKeyOperation {
 
                     progress(R.string.progress_modify_adduid, (i - 1) * (100 / saveParcel.mAddUserIds.size()));
                     String userId = saveParcel.mAddUserIds.get(i);
-                    log.add(LogLevel.INFO, LogType.MSG_MF_UID_ADD, indent, userId);
+                    log.add(LogType.MSG_MF_UID_ADD, indent, userId);
 
                     if (userId.equals("")) {
-                        log.add(LogLevel.ERROR, LogType.MSG_MF_UID_ERROR_EMPTY, indent + 1);
+                        log.add(LogType.MSG_MF_UID_ERROR_EMPTY, indent + 1);
                         return new EditKeyResult(EditKeyResult.RESULT_ERROR, log, null);
                     }
 
@@ -497,7 +496,7 @@ public class PgpKeyOperation {
                         for (PGPSignature cert : new IterableIterator<PGPSignature>(it)) {
                             if (cert.getKeyID() != masterPublicKey.getKeyID()) {
                                 // foreign certificate?! error error error
-                                log.add(LogLevel.ERROR, LogType.MSG_MF_ERROR_INTEGRITY, indent);
+                                log.add(LogType.MSG_MF_ERROR_INTEGRITY, indent);
                                 return new EditKeyResult(EditKeyResult.RESULT_ERROR, log, null);
                             }
                             if (cert.getSignatureType() == PGPSignature.CERTIFICATION_REVOCATION
@@ -527,7 +526,7 @@ public class PgpKeyOperation {
 
                     progress(R.string.progress_modify_revokeuid, (i - 1) * (100 / saveParcel.mRevokeUserIds.size()));
                     String userId = saveParcel.mRevokeUserIds.get(i);
-                    log.add(LogLevel.INFO, LogType.MSG_MF_UID_REVOKE, indent, userId);
+                    log.add(LogType.MSG_MF_UID_REVOKE, indent, userId);
 
                     // Make sure the user id exists (yes these are 10 LoC in Java!)
                     boolean exists = false;
@@ -539,7 +538,7 @@ public class PgpKeyOperation {
                         }
                     }
                     if (!exists) {
-                        log.add(LogLevel.ERROR, LogType.MSG_MF_ERROR_NOEXIST_REVOKE, indent);
+                        log.add(LogType.MSG_MF_ERROR_NOEXIST_REVOKE, indent);
                         return new EditKeyResult(EditKeyResult.RESULT_ERROR, log, null);
                     }
 
@@ -557,7 +556,7 @@ public class PgpKeyOperation {
 
                     // keep track if we actually changed one
                     boolean ok = false;
-                    log.add(LogLevel.INFO, LogType.MSG_MF_UID_PRIMARY, indent);
+                    log.add(LogType.MSG_MF_UID_PRIMARY, indent);
                     indent += 1;
 
                     // we work on the modifiedPublicKey here, to respect new or newly revoked uids
@@ -570,7 +569,7 @@ public class PgpKeyOperation {
                                 modifiedPublicKey.getSignaturesForID(userId))) {
                             if (cert.getKeyID() != masterPublicKey.getKeyID()) {
                                 // foreign certificate?! error error error
-                                log.add(LogLevel.ERROR, LogType.MSG_MF_ERROR_INTEGRITY, indent);
+                                log.add(LogType.MSG_MF_ERROR_INTEGRITY, indent);
                                 return new EditKeyResult(EditKeyResult.RESULT_ERROR, log, null);
                             }
                             // we know from canonicalization that if there is any revocation here, it
@@ -591,7 +590,7 @@ public class PgpKeyOperation {
 
                         if (currentCert == null) {
                             // no certificate found?! error error error
-                            log.add(LogLevel.ERROR, LogType.MSG_MF_ERROR_INTEGRITY, indent);
+                            log.add(LogType.MSG_MF_ERROR_INTEGRITY, indent);
                             return new EditKeyResult(EditKeyResult.RESULT_ERROR, log, null);
                         }
 
@@ -599,7 +598,7 @@ public class PgpKeyOperation {
                         if (isRevoked) {
                             // revoked user ids cannot be primary!
                             if (userId.equals(saveParcel.mChangePrimaryUserId)) {
-                                log.add(LogLevel.ERROR, LogType.MSG_MF_ERROR_REVOKED_PRIMARY, indent);
+                                log.add(LogType.MSG_MF_ERROR_REVOKED_PRIMARY, indent);
                                 return new EditKeyResult(EditKeyResult.RESULT_ERROR, log, null);
                             }
                             continue;
@@ -614,7 +613,7 @@ public class PgpKeyOperation {
                                 continue;
                             }
                             // otherwise, generate new non-primary certification
-                            log.add(LogLevel.DEBUG, LogType.MSG_MF_PRIMARY_REPLACE_OLD, indent);
+                            log.add(LogType.MSG_MF_PRIMARY_REPLACE_OLD, indent);
                             modifiedPublicKey = PGPPublicKey.removeCertification(
                                     modifiedPublicKey, userId, currentCert);
                             PGPSignature newCert = generateUserIdSignature(
@@ -630,7 +629,7 @@ public class PgpKeyOperation {
                         // if it should be
                         if (userId.equals(saveParcel.mChangePrimaryUserId)) {
                             // add shiny new primary user id certificate
-                            log.add(LogLevel.DEBUG, LogType.MSG_MF_PRIMARY_NEW, indent);
+                            log.add(LogType.MSG_MF_PRIMARY_NEW, indent);
                             modifiedPublicKey = PGPPublicKey.removeCertification(
                                     modifiedPublicKey, userId, currentCert);
                             PGPSignature newCert = generateUserIdSignature(
@@ -648,7 +647,7 @@ public class PgpKeyOperation {
                     indent -= 1;
 
                     if (!ok) {
-                        log.add(LogLevel.ERROR, LogType.MSG_MF_ERROR_NOEXIST_PRIMARY, indent);
+                        log.add(LogType.MSG_MF_ERROR_NOEXIST_PRIMARY, indent);
                         return new EditKeyResult(EditKeyResult.RESULT_ERROR, log, null);
                     }
                 }
@@ -664,7 +663,7 @@ public class PgpKeyOperation {
 
             // Check if we were cancelled - again
             if (checkCancelled()) {
-                log.add(LogLevel.CANCELLED, LogType.MSG_OPERATION_CANCELLED, indent);
+                log.add(LogType.MSG_OPERATION_CANCELLED, indent);
                 return new EditKeyResult(EditKeyResult.RESULT_CANCELLED, log, null);
             }
 
@@ -674,12 +673,12 @@ public class PgpKeyOperation {
 
                 progress(R.string.progress_modify_subkeychange, (i-1) * (100 / saveParcel.mChangeSubKeys.size()));
                 SaveKeyringParcel.SubkeyChange change = saveParcel.mChangeSubKeys.get(i);
-                log.add(LogLevel.INFO, LogType.MSG_MF_SUBKEY_CHANGE,
+                log.add(LogType.MSG_MF_SUBKEY_CHANGE,
                         indent, PgpKeyHelper.convertKeyIdToHex(change.mKeyId));
 
                 PGPSecretKey sKey = sKR.getSecretKey(change.mKeyId);
                 if (sKey == null) {
-                    log.add(LogLevel.ERROR, LogType.MSG_MF_ERROR_SUBKEY_MISSING,
+                    log.add(LogType.MSG_MF_ERROR_SUBKEY_MISSING,
                             indent + 1, PgpKeyHelper.convertKeyIdToHex(change.mKeyId));
                     return new EditKeyResult(EditKeyResult.RESULT_ERROR, log, null);
                 }
@@ -687,7 +686,7 @@ public class PgpKeyOperation {
                 // expiry must not be in the past
                 if (change.mExpiry != null && change.mExpiry != 0 &&
                         new Date(change.mExpiry*1000).before(new Date())) {
-                    log.add(LogLevel.ERROR, LogType.MSG_MF_ERROR_PAST_EXPIRY,
+                    log.add(LogType.MSG_MF_ERROR_PAST_EXPIRY,
                             indent + 1, PgpKeyHelper.convertKeyIdToHex(change.mKeyId));
                     return new EditKeyResult(EditKeyResult.RESULT_ERROR, log, null);
                 }
@@ -698,7 +697,7 @@ public class PgpKeyOperation {
                     long expiry = change.mExpiry == null ? masterKeyExpiry : change.mExpiry;
 
                     if ((flags & KeyFlags.CERTIFY_OTHER) != KeyFlags.CERTIFY_OTHER) {
-                        log.add(LogLevel.ERROR, LogType.MSG_MF_ERROR_NO_CERTIFY, indent + 1);
+                        log.add(LogType.MSG_MF_ERROR_NO_CERTIFY, indent + 1);
                         return new EditKeyResult(EditKeyResult.RESULT_ERROR, log, null);
                     }
 
@@ -755,12 +754,12 @@ public class PgpKeyOperation {
 
                 progress(R.string.progress_modify_subkeyrevoke, (i-1) * (100 / saveParcel.mRevokeSubKeys.size()));
                 long revocation = saveParcel.mRevokeSubKeys.get(i);
-                log.add(LogLevel.INFO, LogType.MSG_MF_SUBKEY_REVOKE,
+                log.add(LogType.MSG_MF_SUBKEY_REVOKE,
                         indent, PgpKeyHelper.convertKeyIdToHex(revocation));
 
                 PGPSecretKey sKey = sKR.getSecretKey(revocation);
                 if (sKey == null) {
-                    log.add(LogLevel.ERROR, LogType.MSG_MF_ERROR_SUBKEY_MISSING,
+                    log.add(LogType.MSG_MF_ERROR_SUBKEY_MISSING,
                             indent+1, PgpKeyHelper.convertKeyIdToHex(revocation));
                     return new EditKeyResult(EditKeyResult.RESULT_ERROR, log, null);
                 }
@@ -780,12 +779,12 @@ public class PgpKeyOperation {
 
                 progress(R.string.progress_modify_subkeystrip, (i-1) * (100 / saveParcel.mStripSubKeys.size()));
                 long strip = saveParcel.mStripSubKeys.get(i);
-                log.add(LogLevel.INFO, LogType.MSG_MF_SUBKEY_STRIP,
+                log.add(LogType.MSG_MF_SUBKEY_STRIP,
                         indent, PgpKeyHelper.convertKeyIdToHex(strip));
 
                 PGPSecretKey sKey = sKR.getSecretKey(strip);
                 if (sKey == null) {
-                    log.add(LogLevel.ERROR, LogType.MSG_MF_ERROR_SUBKEY_MISSING,
+                    log.add(LogType.MSG_MF_ERROR_SUBKEY_MISSING,
                             indent+1, PgpKeyHelper.convertKeyIdToHex(strip));
                     return new EditKeyResult(EditKeyResult.RESULT_ERROR, log, null);
                 }
@@ -804,22 +803,22 @@ public class PgpKeyOperation {
 
                 // Check if we were cancelled - again. This operation is expensive so we do it each loop.
                 if (checkCancelled()) {
-                    log.add(LogLevel.CANCELLED, LogType.MSG_OPERATION_CANCELLED, indent);
+                    log.add(LogType.MSG_OPERATION_CANCELLED, indent);
                     return new EditKeyResult(EditKeyResult.RESULT_CANCELLED, log, null);
                 }
 
                 progress(R.string.progress_modify_subkeyadd, (i-1) * (100 / saveParcel.mAddSubKeys.size()));
                 SaveKeyringParcel.SubkeyAdd add = saveParcel.mAddSubKeys.get(i);
-                log.add(LogLevel.INFO, LogType.MSG_MF_SUBKEY_NEW, indent,
+                log.add(LogType.MSG_MF_SUBKEY_NEW, indent,
                         PgpKeyHelper.getAlgorithmInfo(add.mAlgorithm, add.mKeySize, add.mCurve) );
 
                 if (add.mExpiry == null) {
-                    log.add(LogLevel.ERROR, LogType.MSG_MF_ERROR_NULL_EXPIRY, indent +1);
+                    log.add(LogType.MSG_MF_ERROR_NULL_EXPIRY, indent +1);
                     return new EditKeyResult(EditKeyResult.RESULT_ERROR, log, null);
                 }
 
                 if (add.mExpiry > 0L && new Date(add.mExpiry*1000).before(new Date())) {
-                    log.add(LogLevel.ERROR, LogType.MSG_MF_ERROR_PAST_EXPIRY, indent +1);
+                    log.add(LogType.MSG_MF_ERROR_PAST_EXPIRY, indent +1);
                     return new EditKeyResult(EditKeyResult.RESULT_ERROR, log, null);
                 }
 
@@ -831,7 +830,7 @@ public class PgpKeyOperation {
                 PGPKeyPair keyPair = createKey(add, log, indent);
                 subProgressPop();
                 if (keyPair == null) {
-                    log.add(LogLevel.ERROR, LogType.MSG_MF_ERROR_PGP, indent +1);
+                    log.add(LogType.MSG_MF_ERROR_PGP, indent +1);
                     return new EditKeyResult(EditKeyResult.RESULT_ERROR, log, null);
                 }
 
@@ -856,7 +855,7 @@ public class PgpKeyOperation {
                     sKey = new PGPSecretKey(keyPair.getPrivateKey(), pKey, sha1Calc, false, keyEncryptor);
                 }
 
-                log.add(LogLevel.DEBUG, LogType.MSG_MF_SUBKEY_NEW_ID,
+                log.add(LogType.MSG_MF_SUBKEY_NEW_ID,
                         indent+1, PgpKeyHelper.convertKeyIdToHex(sKey.getKeyID()));
 
                 sKR = PGPSecretKeyRing.insertSecretKey(sKR, sKey);
@@ -866,14 +865,14 @@ public class PgpKeyOperation {
 
             // Check if we were cancelled - again. This operation is expensive so we do it each loop.
             if (checkCancelled()) {
-                log.add(LogLevel.CANCELLED, LogType.MSG_OPERATION_CANCELLED, indent);
+                log.add(LogType.MSG_OPERATION_CANCELLED, indent);
                 return new EditKeyResult(EditKeyResult.RESULT_CANCELLED, log, null);
             }
 
             // 6. If requested, change passphrase
             if (saveParcel.mNewPassphrase != null) {
                 progress(R.string.progress_modify_passphrase, 90);
-                log.add(LogLevel.INFO, LogType.MSG_MF_PASSPHRASE, indent);
+                log.add(LogType.MSG_MF_PASSPHRASE, indent);
                 indent += 1;
 
                 PGPDigestCalculator encryptorHashCalc = new JcaPGPDigestCalculatorProviderBuilder().build()
@@ -888,7 +887,7 @@ public class PgpKeyOperation {
 
                 // noinspection unchecked
                 for (PGPSecretKey sKey : new IterableIterator<PGPSecretKey>(sKR.getSecretKeys())) {
-                    log.add(LogLevel.DEBUG, LogType.MSG_MF_PASSPHRASE_KEY, indent,
+                    log.add(LogType.MSG_MF_PASSPHRASE_KEY, indent,
                             PgpKeyHelper.convertKeyIdToHex(sKey.getKeyID()));
 
                     boolean ok = false;
@@ -901,14 +900,14 @@ public class PgpKeyOperation {
 
                         // if this is the master key, error!
                         if (sKey.getKeyID() == masterPublicKey.getKeyID()) {
-                            log.add(LogLevel.ERROR, LogType.MSG_MF_ERROR_PASSPHRASE_MASTER, indent+1);
+                            log.add(LogType.MSG_MF_ERROR_PASSPHRASE_MASTER, indent+1);
                             return new EditKeyResult(EditKeyResult.RESULT_ERROR, log, null);
                         }
 
                         // being in here means decrypt failed, likely due to a bad passphrase try
                         // again with an empty passphrase, maybe we can salvage this
                         try {
-                            log.add(LogLevel.DEBUG, LogType.MSG_MF_PASSPHRASE_EMPTY_RETRY, indent+1);
+                            log.add(LogType.MSG_MF_PASSPHRASE_EMPTY_RETRY, indent+1);
                             PBESecretKeyDecryptor emptyDecryptor =
                                 new JcePBESecretKeyDecryptorBuilder().setProvider(
                                     Constants.BOUNCY_CASTLE_PROVIDER_NAME).build("".toCharArray());
@@ -921,7 +920,7 @@ public class PgpKeyOperation {
 
                     if (!ok) {
                         // for a subkey, it's merely a warning
-                        log.add(LogLevel.WARN, LogType.MSG_MF_PASSPHRASE_FAIL, indent+1,
+                        log.add(LogType.MSG_MF_PASSPHRASE_FAIL, indent+1,
                                 PgpKeyHelper.convertKeyIdToHex(sKey.getKeyID()));
                         continue;
                     }
@@ -935,20 +934,20 @@ public class PgpKeyOperation {
 
         } catch (IOException e) {
             Log.e(Constants.TAG, "encountered IOException while modifying key", e);
-            log.add(LogLevel.ERROR, LogType.MSG_MF_ERROR_ENCODE, indent+1);
+            log.add(LogType.MSG_MF_ERROR_ENCODE, indent+1);
             return new EditKeyResult(EditKeyResult.RESULT_ERROR, log, null);
         } catch (PGPException e) {
             Log.e(Constants.TAG, "encountered pgp error while modifying key", e);
-            log.add(LogLevel.ERROR, LogType.MSG_MF_ERROR_PGP, indent+1);
+            log.add(LogType.MSG_MF_ERROR_PGP, indent+1);
             return new EditKeyResult(EditKeyResult.RESULT_ERROR, log, null);
         } catch (SignatureException e) {
             Log.e(Constants.TAG, "encountered SignatureException while modifying key", e);
-            log.add(LogLevel.ERROR, LogType.MSG_MF_ERROR_SIG, indent+1);
+            log.add(LogType.MSG_MF_ERROR_SIG, indent+1);
             return new EditKeyResult(EditKeyResult.RESULT_ERROR, log, null);
         }
 
         progress(R.string.progress_done, 100);
-        log.add(LogLevel.OK, LogType.MSG_MF_SUCCESS, indent);
+        log.add(LogType.MSG_MF_SUCCESS, indent);
         return new EditKeyResult(OperationResult.RESULT_OK, log, new UncachedKeyRing(sKR));
 
     }
@@ -961,7 +960,7 @@ public class PgpKeyOperation {
 
         // keep track if we actually changed one
         boolean ok = false;
-        log.add(LogLevel.DEBUG, LogType.MSG_MF_MASTER, indent);
+        log.add(LogType.MSG_MF_MASTER, indent);
         indent += 1;
 
         PGPPublicKey modifiedPublicKey = masterPublicKey;
@@ -976,7 +975,7 @@ public class PgpKeyOperation {
                     modifiedPublicKey.getSignaturesForID(userId))) {
                 if (cert.getKeyID() != masterPublicKey.getKeyID()) {
                     // foreign certificate?! error error error
-                    log.add(LogLevel.ERROR, LogType.MSG_MF_ERROR_INTEGRITY, indent);
+                    log.add(LogType.MSG_MF_ERROR_INTEGRITY, indent);
                     return null;
                 }
                 // we know from canonicalization that if there is any revocation here, it
@@ -997,7 +996,7 @@ public class PgpKeyOperation {
 
             if (currentCert == null) {
                 // no certificate found?! error error error
-                log.add(LogLevel.ERROR, LogType.MSG_MF_ERROR_INTEGRITY, indent);
+                log.add(LogType.MSG_MF_ERROR_INTEGRITY, indent);
                 return null;
             }
 
@@ -1021,7 +1020,7 @@ public class PgpKeyOperation {
 
         if (!ok) {
             // might happen, theoretically, if there is a key with no uid..
-            log.add(LogLevel.ERROR, LogType.MSG_MF_ERROR_MASTER_NONE, indent);
+            log.add(LogType.MSG_MF_ERROR_MASTER_NONE, indent);
             return null;
         }
 

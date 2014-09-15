@@ -543,9 +543,9 @@
     <string name="msg_ip_delete_old_fail">"No old key deleted (creating a new one?)"</string>
     <string name="msg_ip_delete_old_ok">"Deleted old key from database"</string>
     <string name="msg_ip_encode_fail">"Operation failed due to encoding error"</string>
-    <string name="msg_ip_fail_io_exc">"Operation failed due to i/o error"</string>
-    <string name="msg_ip_fail_op_exc">"Operation failed due to database error"</string>
-    <string name="msg_ip_fail_remote_ex">"Operation failed due to internal error"</string>
+    <string name="msg_ip_error_io_exc">"Operation failed due to i/o error"</string>
+    <string name="msg_ip_error_op_exc">"Operation failed due to database error"</string>
+    <string name="msg_ip_error_remote_ex">"Operation failed due to internal error"</string>
     <string name="msg_ip">"Importing public keyring %s"</string>
     <string name="msg_ip_insert_keyring">"Encoding keyring data"</string>
     <string name="msg_ip_insert_keys">"Parsing keys"</string>
@@ -597,7 +597,7 @@
     <string name="msg_is">"Importing secret key %s"</string>
     <string name="msg_is_db_exception">"Database error!"</string>
     <string name="msg_is_importing_subkeys">"Processing secret subkeys"</string>
-    <string name="msg_is_io_exc">"Error encoding keyring"</string>
+    <string name="msg_is_error_io_exc">"Error encoding keyring"</string>
     <string name="msg_is_pubring_generate">"Generating public keyring from secret keyring"</string>
     <string name="msg_is_subkey_nonexistent">"Subkey %s unavailable in secret key"</string>
     <string name="msg_is_subkey_ok">"Marked secret subkey %s as available"</string>

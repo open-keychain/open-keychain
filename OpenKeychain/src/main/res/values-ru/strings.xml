@@ -409,8 +409,8 @@
   <string name="msg_ip_delete_old_fail">Старый ключ не удален (создать новый?)</string>
   <string name="msg_ip_delete_old_ok">Старый ключ удален из базы</string>
   <string name="msg_ip_encode_fail">Действие прервано из-за ошибки кодировки</string>
-  <string name="msg_ip_fail_io_exc">Действие прервано из-за ошибки ввода/вывода</string>
-  <string name="msg_ip_fail_remote_ex">Действие прервано из-за внутренней ошибки</string>
+  <string name="msg_ip_error_io_exc">Действие прервано из-за ошибки ввода/вывода</string>
+  <string name="msg_ip_error_remote_ex">Действие прервано из-за внутренней ошибки</string>
   <string name="msg_ip">Импорт связки публичных ключей %s</string>
   <string name="msg_ip_insert_keys">Разбор ключей</string>
   <string name="msg_ip_prepare">Подготовка операций</string>

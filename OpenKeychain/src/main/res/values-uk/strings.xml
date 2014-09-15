@@ -439,9 +439,9 @@
   <string name="msg_ip_delete_old_fail">Нема вилученого старого ключа (створюється новий?)</string>
   <string name="msg_ip_delete_old_ok">Вилучений старий ключ з бази даних</string>
   <string name="msg_ip_encode_fail">Операція не вдалася через помилку кодування</string>
-  <string name="msg_ip_fail_io_exc">Операція не вдалася через помилку вводу/виводу</string>
-  <string name="msg_ip_fail_op_exc">Операція не вдалася через помилку бази даних</string>
-  <string name="msg_ip_fail_remote_ex">Операція не вдалася через внутрішню помилку</string>
+  <string name="msg_ip_error_io_exc">Операція не вдалася через помилку вводу/виводу</string>
+  <string name="msg_ip_error_op_exc">Операція не вдалася через помилку бази даних</string>
+  <string name="msg_ip_error_remote_ex">Операція не вдалася через внутрішню помилку</string>
   <string name="msg_ip">Імпортується публічна в\'язка %s</string>
   <string name="msg_ip_insert_keyring">Шифруються дані із в\'язки</string>
   <string name="msg_ip_insert_keys">Аналізуються ключі</string>
@@ -494,7 +494,7 @@
   <string name="msg_is">Імпортується секретний ключ %s</string>
   <string name="msg_is_db_exception">Помилка бази даних!</string>
   <string name="msg_is_importing_subkeys">Опрацьовуються секретні підключі</string>
-  <string name="msg_is_io_exc">Помилка шифрування в’язки</string>
+  <string name="msg_is_error_io_exc">Помилка шифрування в’язки</string>
   <string name="msg_is_pubring_generate">Генерується публічна в\'язка із секретної</string>
   <string name="msg_is_success_identical">В\'язка не містить нових даних. Нема що робити.</string>
   <string name="msg_is_success">Успішно імпортована секретна в\'язка</string>

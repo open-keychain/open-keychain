@@ -410,8 +410,8 @@
   <string name="msg_ip_delete_old_fail">Noben star ključ ni bil izbrisan (ustvarim novega?)</string>
   <string name="msg_ip_delete_old_ok">Star ključ je bil izbrisan iz baze</string>
   <string name="msg_ip_encode_fail">Operacija ni uspela zaradi napake</string>
-  <string name="msg_ip_fail_io_exc">Operacija ni uspela zaradi napake pri branju/pisanju</string>
-  <string name="msg_ip_fail_remote_ex">Operacija ni uspela zaradi notranje napake</string>
+  <string name="msg_ip_error_io_exc">Operacija ni uspela zaradi napake pri branju/pisanju</string>
+  <string name="msg_ip_error_remote_ex">Operacija ni uspela zaradi notranje napake</string>
   <string name="msg_ip">Uvažam javno zbirko ključev %s</string>
   <string name="msg_ip_insert_keyring">Šifriram podatke zbirke klučev</string>
   <string name="msg_ip_prepare">Pripravljam </string>

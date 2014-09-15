@@ -498,9 +498,9 @@
   <string name="msg_ip_delete_old_fail">削除された古い鍵はありません (新しく作りますか?)</string>
   <string name="msg_ip_delete_old_ok">データベースから古い鍵を削除しました</string>
   <string name="msg_ip_encode_fail">エンコードエラーにより操作が失敗しました</string>
-  <string name="msg_ip_fail_io_exc">I/Oエラーにより操作が失敗しました</string>
-  <string name="msg_ip_fail_op_exc">データベースエラーにより操作が失敗しました</string>
-  <string name="msg_ip_fail_remote_ex">内部エラーにより操作が失敗しました</string>
+  <string name="msg_ip_error_io_exc">I/Oエラーにより操作が失敗しました</string>
+  <string name="msg_ip_error_op_exc">データベースエラーにより操作が失敗しました</string>
+  <string name="msg_ip_error_remote_ex">内部エラーにより操作が失敗しました</string>
   <string name="msg_ip">公開鍵の鍵輪 %s をインポート</string>
   <string name="msg_ip_insert_keyring">鍵輪データのエンコード中</string>
   <string name="msg_ip_insert_keys">鍵の解析中</string>
@@ -549,7 +549,7 @@
   <string name="msg_is">秘密鍵 %s のインポート中</string>
   <string name="msg_is_db_exception">データベースエラー!</string>
   <string name="msg_is_importing_subkeys">秘密鍵の副鍵の処理中</string>
-  <string name="msg_is_io_exc">鍵輪のエンコードエラー</string>
+  <string name="msg_is_error_io_exc">鍵輪のエンコードエラー</string>
   <string name="msg_is_pubring_generate">秘密鍵の鍵輪から公開鍵の鍵輪を生成中</string>
   <string name="msg_is_subkey_nonexistent">秘密鍵の副鍵 %s が利用不可能</string>
   <string name="msg_is_subkey_ok">秘密鍵の副鍵 %s を利用可能としてマーク</string>
