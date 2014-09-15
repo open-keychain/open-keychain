@@ -8,17 +8,71 @@
 
     <include layout="@layout/notify_area" />
 
-    <android.support.v4.view.ViewPager
-        android:id="@+id/decrypt_pager"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:paddingTop="4dp"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:orientation="vertical">
 
-        <android.support.v4.view.PagerTabStrip
-            android:id="@+id/decrypt_pager_tab_strip"
+        <TextView
+            style="@style/SectionHeader"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="top"
-            android:textColor="@color/emphasis" />
-    </android.support.v4.view.ViewPager>
+            android:layout_marginTop="16dp"
+            android:text="Files" />
+
+
+        <TextView
+            android:id="@+id/decrypt_files"
+            android:paddingLeft="8dp"
+            android:paddingRight="8dp"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="?android:attr/listPreferredItemHeight"
+            android:clickable="true"
+            style="@style/SelectableItem"
+            android:text="Decrypt files"
+            android:drawableRight="@drawable/ic_action_collection"
+            android:drawablePadding="8dp"
+            android:gravity="center_vertical" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dip"
+            android:background="?android:attr/listDivider"
+            android:layout_marginBottom="8dp" />
+
+        <TextView
+            style="@style/SectionHeader"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
+            android:text="Text" />
+
+        <TextView
+            android:id="@+id/decrypt_from_clipboard"
+            android:paddingLeft="8dp"
+            android:paddingRight="8dp"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="?android:attr/listPreferredItemHeight"
+            android:clickable="true"
+            style="@style/SelectableItem"
+            android:text="Decrypt from clipboard"
+            android:drawableRight="@drawable/ic_action_paste"
+            android:drawablePadding="8dp"
+            android:gravity="center_vertical" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dip"
+            android:background="?android:attr/listDivider"
+            android:layout_marginBottom="8dp" />
+
+    </LinearLayout>
 
 </LinearLayout>

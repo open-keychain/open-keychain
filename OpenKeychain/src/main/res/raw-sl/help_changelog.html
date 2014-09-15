@@ -1,16 +1,21 @@
 <html>
 <head></head>
 <body>
-<h2>2.10</h2>
+<h2>2.9.2</h2>
 <ul>
-<li>Split encrypt screen into two</li>
+<li>Popravek ključev, pokvarjenih v verziji 2.9.1</li>
+<li>Dešifriranje z Yubikey ključem sedaj deluje prek API-ja</li>
+</ul>
+<h2>2.9.1</h2>
+<ul>
+<li>Ekran za šifriranje razdeljen na dva ekrana</li>
 <li>Fix key flags handling (now supporting Mailvelope 0.7 keys)</li>
-<li>Improved passphrase handling</li>
+<li>Izboljšano delo z gesli</li>
 <li>Key sharing via SafeSlinger</li>
 <li>Yubikey: preference to allow other PINs, currently only signing via the OpenPGP API works, not inside of OpenKeychain</li>
 <li>Fix usage of stripped keys</li>
-<li>SHA256 as default for compatibility</li>
-<li>Intent API has changed, see https://github.com/open-keychain/open-keychain/wiki/Intent-API</li>
+<li>SHA256 je privzet za večjo združljivost</li>
+<li>Intent API je bil spremenjen, glej https://github.com/open-keychain/open-keychain/wiki/Intent-API</li>
 <li>OpenPGP API now handles revoked/expired keys and returns all user ids</li>
 </ul>
 <h2>2.9</h2>

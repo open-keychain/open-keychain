@@ -25,24 +25,25 @@
             android:paddingRight="16dp"
             android:orientation="vertical">
 
-
-            <EditText
-                android:id="@+id/message"
+            <TextView
+                android:id="@+id/decrypt_text_plaintext"
+                android:textAppearance="?android:attr/textAppearanceMedium"
                 android:layout_width="match_parent"
                 android:layout_height="0dip"
                 android:gravity="top"
-                android:hint="@string/decrypt_content_edit_text_hint"
-                android:inputType="text|textCapSentences|textMultiLine|textLongMessage|textNoSuggestions"
+                android:hint=""
                 android:scrollHorizontally="true"
-                android:layout_weight="1" />
+                android:layout_weight="1"
+                android:textIsSelectable="true" />
 
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dip"
                 android:background="?android:attr/listDivider" />
 
+
             <LinearLayout
-                android:id="@+id/action_decrypt"
+                android:id="@+id/action_encrypt_share_plaintext"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:clickable="true"
@@ -57,7 +58,9 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:minHeight="?android:attr/listPreferredItemHeight"
-                    android:text="@string/btn_decrypt_verify_message"
+                    android:text="Share plaintext"
+                    android:drawableRight="@drawable/ic_action_share"
+                    android:drawablePadding="8dp"
                     android:gravity="center_vertical"
                     android:layout_weight="1" />
 
@@ -70,11 +73,11 @@
                     android:background="?android:attr/listDivider" />
 
                 <ImageButton
-                    android:id="@+id/action_decrypt_from_clipboard"
+                    android:id="@+id/action_copy_plaintext"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:padding="8dp"
-                    android:src="@drawable/ic_action_paste"
+                    android:src="@drawable/ic_action_copy"
                     android:layout_gravity="center_vertical"
                     style="@style/SelectableItem" />
 

@@ -18,6 +18,7 @@
 package org.sufficientlysecure.keychain.ui;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
@@ -40,7 +41,7 @@ import java.util.List;
 @SuppressLint("NewApi")
 public class PreferencesActivity extends PreferenceActivity {
 
-    public static final String ACTION_PREFS_GEN = "org.sufficientlysecure.keychain.ui.PREFS_GEN";
+    public static final String ACTION_PREFS_CLOUD = "org.sufficientlysecure.keychain.ui.PREFS_CLOUD";
     public static final String ACTION_PREFS_ADV = "org.sufficientlysecure.keychain.ui.PREFS_ADV";
 
     public static final int REQUEST_CODE_KEYSERVER_PREF = 0x00007005;
@@ -55,16 +56,11 @@ public class PreferencesActivity extends PreferenceActivity {
 
         String action = getIntent().getAction();
 
-        if (action != null && action.equals(ACTION_PREFS_GEN)) {
-            addPreferencesFromResource(R.xml.gen_preferences);
-
-            initializePassPassphraceCacheTtl(
-                    (IntegerListPreference) findPreference(Constants.Pref.PASSPHRASE_CACHE_TTL));
+        if (action != null && action.equals(ACTION_PREFS_CLOUD)) {
+            addPreferencesFromResource(R.xml.cloud_search_prefs);
 
             mKeyServerPreference = (PreferenceScreen) findPreference(Constants.Pref.KEY_SERVERS);
-            String servers[] = sPreferences.getKeyServers();
-            mKeyServerPreference.setSummary(getResources().getQuantityString(R.plurals.n_keyservers,
-                    servers.length, servers.length));
+            mKeyServerPreference.setSummary(keyserverSummary(this));
             mKeyServerPreference
                     .setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
                         public boolean onPreferenceClick(Preference preference) {
@@ -76,9 +72,18 @@ public class PreferencesActivity extends PreferenceActivity {
                             return false;
                         }
                     });
+            initializeSearchKeyserver(
+                    (CheckBoxPreference) findPreference(Constants.Pref.SEARCH_KEYSERVER)
+            );
+            initializeSearchKeybase(
+                    (CheckBoxPreference) findPreference(Constants.Pref.SEARCH_KEYBASE)
+            );
 
         } else if (action != null && action.equals(ACTION_PREFS_ADV)) {
             addPreferencesFromResource(R.xml.adv_preferences);
+
+            initializePassPassphraceCacheTtl(
+                    (IntegerListPreference) findPreference(Constants.Pref.PASSPHRASE_CACHE_TTL));
 
             initializeEncryptionAlgorithm(
                     (IntegerListPreference) findPreference(Constants.Pref.DEFAULT_ENCRYPTION_ALGORITHM));
@@ -136,8 +141,7 @@ public class PreferencesActivity extends PreferenceActivity {
                 String servers[] = data
                         .getStringArrayExtra(PreferencesKeyServerActivity.EXTRA_KEY_SERVERS);
                 sPreferences.setKeyServers(servers);
-                mKeyServerPreference.setSummary(getResources().getQuantityString(
-                        R.plurals.n_keyservers, servers.length, servers.length));
+                mKeyServerPreference.setSummary(keyserverSummary(this));
                 break;
             }
 
@@ -156,9 +160,9 @@ public class PreferencesActivity extends PreferenceActivity {
     }
 
     /**
-     * This fragment shows the general preferences in android 3.0+
+     * This fragment shows the Cloud Search preferences in android 3.0+
      */
-    public static class GeneralPrefsFragment extends PreferenceFragment {
+    public static class CloudSearchPrefsFragment extends PreferenceFragment {
 
         private PreferenceScreen mKeyServerPreference = null;
 
@@ -167,15 +171,11 @@ public class PreferencesActivity extends PreferenceActivity {
             super.onCreate(savedInstanceState);
 
             // Load the preferences from an XML resource
-            addPreferencesFromResource(R.xml.gen_preferences);
-
-            initializePassPassphraceCacheTtl(
-                    (IntegerListPreference) findPreference(Constants.Pref.PASSPHRASE_CACHE_TTL));
+            addPreferencesFromResource(R.xml.cloud_search_prefs);
 
             mKeyServerPreference = (PreferenceScreen) findPreference(Constants.Pref.KEY_SERVERS);
-            String servers[] = sPreferences.getKeyServers();
-            mKeyServerPreference.setSummary(getResources().getQuantityString(R.plurals.n_keyservers,
-                    servers.length, servers.length));
+            mKeyServerPreference.setSummary(keyserverSummary(getActivity()));
+
             mKeyServerPreference
                     .setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
                         public boolean onPreferenceClick(Preference preference) {
@@ -187,6 +187,12 @@ public class PreferencesActivity extends PreferenceActivity {
                             return false;
                         }
                     });
+            initializeSearchKeyserver(
+                    (CheckBoxPreference) findPreference(Constants.Pref.SEARCH_KEYSERVER)
+            );
+            initializeSearchKeybase(
+                    (CheckBoxPreference) findPreference(Constants.Pref.SEARCH_KEYBASE)
+            );
         }
 
         @Override
@@ -199,8 +205,7 @@ public class PreferencesActivity extends PreferenceActivity {
                     String servers[] = data
                             .getStringArrayExtra(PreferencesKeyServerActivity.EXTRA_KEY_SERVERS);
                     sPreferences.setKeyServers(servers);
-                    mKeyServerPreference.setSummary(getResources().getQuantityString(
-                            R.plurals.n_keyservers, servers.length, servers.length));
+                    mKeyServerPreference.setSummary(keyserverSummary(getActivity()));
                     break;
                 }
 
@@ -223,6 +228,9 @@ public class PreferencesActivity extends PreferenceActivity {
 
             // Load the preferences from an XML resource
             addPreferencesFromResource(R.xml.adv_preferences);
+
+            initializePassPassphraceCacheTtl(
+                    (IntegerListPreference) findPreference(Constants.Pref.PASSPHRASE_CACHE_TTL));
 
             initializeEncryptionAlgorithm(
                     (IntegerListPreference) findPreference(Constants.Pref.DEFAULT_ENCRYPTION_ALGORITHM));
@@ -271,7 +279,7 @@ public class PreferencesActivity extends PreferenceActivity {
 
     protected boolean isValidFragment(String fragmentName) {
         return AdvancedPrefsFragment.class.getName().equals(fragmentName)
-                || GeneralPrefsFragment.class.getName().equals(fragmentName)
+                || CloudSearchPrefsFragment.class.getName().equals(fragmentName)
                 || super.isValidFragment(fragmentName);
     }
 
@@ -398,6 +406,39 @@ public class PreferencesActivity extends PreferenceActivity {
         });
     }
 
+    private static void initializeSearchKeyserver(final CheckBoxPreference mSearchKeyserver) {
+        Preferences.CloudSearchPrefs prefs = sPreferences.getCloudSearchPrefs();
+        mSearchKeyserver.setChecked(prefs.searchKeyserver);
+        mSearchKeyserver.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+            @Override
+            public boolean onPreferenceChange(Preference preference, Object newValue) {
+                mSearchKeyserver.setChecked((Boolean) newValue);
+                sPreferences.setSearchKeyserver((Boolean) newValue);
+                return false;
+            }
+        });
+    }
+
+    private static void initializeSearchKeybase(final CheckBoxPreference mSearchKeybase) {
+        Preferences.CloudSearchPrefs prefs = sPreferences.getCloudSearchPrefs();
+        mSearchKeybase.setChecked(prefs.searchKeybase);
+        mSearchKeybase.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+            @Override
+            public boolean onPreferenceChange(Preference preference, Object newValue) {
+                mSearchKeybase.setChecked((Boolean) newValue);
+                sPreferences.setSearchKeybase((Boolean) newValue);
+                return false;
+            }
+        });
+    }
+
+    public static String keyserverSummary(Context context) {
+        String[] servers = sPreferences.getKeyServers();
+        String serverSummary = context.getResources().getQuantityString(
+                R.plurals.n_keyservers, servers.length, servers.length);
+        return serverSummary + "; " + context.getString(R.string.label_preferred) + ": " + sPreferences.getPreferredKeyserver();
+    }
+
     private static void initializeUseDefaultYubikeyPin(final CheckBoxPreference mUseDefaultYubikeyPin) {
         mUseDefaultYubikeyPin.setChecked(sPreferences.useDefaultYubikeyPin());
         mUseDefaultYubikeyPin.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
@@ -408,4 +449,5 @@ public class PreferencesActivity extends PreferenceActivity {
             }
         });
     }
+
 }

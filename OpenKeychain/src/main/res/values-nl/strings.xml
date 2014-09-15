@@ -142,8 +142,6 @@
   <string name="no_keys_exported">Geen sleutels geëxporteerd.</string>
   <string name="key_creation_el_gamal_info">Opmerking: alleen subsleutels ondersteunen ElGamal.</string>
   <string name="key_not_found">Kan de sleutel %08X niet vinden.</string>
-  <string name="key_send_success">Succesvol sleutel naar server geüpload</string>
-  <string name="key_certify_success">Succesvol identiteiten gecertificeerd</string>
   <string name="list_empty">Lijst is leeg</string>
   <string name="nfc_successful">Succesvol sleutel verstuurd met NFC Beam!</string>
   <string name="key_copied_to_clipboard">Sleutel is gekopieerd naar het klembord!</string>
@@ -318,6 +316,9 @@
   <!--createSecretKeyRing-->
   <!--modifySecretKeyRing-->
   <!--Consolidate-->
+  <!--Other messages used in OperationLogs-->
+  <!--Messages for DecryptVerify operation-->
+  <!--Messages for SignEncrypt operation-->
   <!--PassphraseCache-->
   <!--unsorted-->
   <string name="section_certifier_id">Certificeer</string>

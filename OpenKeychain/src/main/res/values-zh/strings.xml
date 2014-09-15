@@ -72,7 +72,6 @@
   <string name="select_encryption_or_signature_key">选择至少一个加密密钥或者签名密钥</string>
   <string name="key_exported">成功地导出了1个密钥</string>
   <string name="no_keys_exported">没有密钥被导出</string>
-  <string name="key_send_success">成功地上传了密钥到服务器</string>
   <string name="list_empty">这个列表是空的！</string>
   <!--errors
          no punctuation, all lowercase,
@@ -148,6 +147,9 @@
   <!--createSecretKeyRing-->
   <!--modifySecretKeyRing-->
   <!--Consolidate-->
+  <!--Other messages used in OperationLogs-->
+  <!--Messages for DecryptVerify operation-->
+  <!--Messages for SignEncrypt operation-->
   <!--PassphraseCache-->
   <!--unsorted-->
   <!--First Time-->

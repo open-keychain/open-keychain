@@ -40,6 +40,7 @@ import org.sufficientlysecure.keychain.service.results.OperationResult.LogType;
 import org.sufficientlysecure.keychain.service.results.OperationResult.OperationLog;
 import org.sufficientlysecure.keychain.util.IterableIterator;
 import org.sufficientlysecure.keychain.util.Log;
+import org.sufficientlysecure.keychain.util.Utf8Util;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -363,7 +364,7 @@ public class UncachedKeyRing {
 
             ArrayList<byte[]> processedUserIds = new ArrayList<byte[]>();
             for (byte[] rawUserId : new IterableIterator<byte[]>(masterKey.getRawUserIDs())) {
-                String userId = Strings.fromUTF8ByteArray(rawUserId);
+                String userId = Utf8Util.fromUTF8ByteArrayReplaceBadEncoding(rawUserId);
 
                 // check for duplicate user ids
                 if (processedUserIds.contains(rawUserId)) {
@@ -437,7 +438,7 @@ public class UncachedKeyRing {
                                 continue;
                             }
                             // warn user if the signature was made with bad encoding
-                            if (!cert.verifySignature(masterKey, userId)) {
+                            if (!Utf8Util.isValidUTF8(rawUserId)) {
                                 log.add(LogType.MSG_KC_UID_WARN_ENCODING, indent);
                             }
                         } catch (PgpGeneralException e) {

@@ -5,12 +5,14 @@
   <!--title-->
   <string name="title_select_recipients">Vybrat klíče</string>
   <string name="title_select_secret_key">Vybrat svůj klíč</string>
+  <string name="title_encrypt_text">Zašifrovat text</string>
+  <string name="title_encrypt_files">Zašifrovat soubory</string>
   <string name="title_decrypt">Rozšifrovat</string>
   <string name="title_authentication">Heslo</string>
   <string name="title_add_subkey">Přidat podklíč</string>
   <string name="title_edit_key">Editovat klíč</string>
   <string name="title_preferences">Možnosti</string>
-  <string name="title_api_registered_apps">Appky</string>
+  <string name="title_api_registered_apps">Aplikace</string>
   <string name="title_key_server_preference">Nastavení keyservrů</string>
   <string name="title_change_passphrase">Změnit heslo</string>
   <string name="title_share_fingerprint_with">Sdílet otisk s...</string>
@@ -82,15 +84,31 @@
   <string name="label_file_colon">Soubor:</string>
   <string name="label_no_passphrase">Bez hesla</string>
   <string name="label_passphrase">Heslo</string>
+  <string name="label_unlock">Odemykám...</string>
   <string name="label_passphrase_again">Opakovat heslo</string>
   <string name="label_algorithm">Algoritmus</string>
   <string name="label_ascii_armor">Soubor ASCII armor</string>
+  <string name="label_file_ascii_armor">Povolit ASCII armor</string>
+  <string name="label_write_version_header">Dát ostatním vědět, že používáte OpenKeychain</string>
+  <string name="label_use_default_yubikey_pin">Použít výchozí Yubikey PIN</string>
+  <string name="label_label_use_default_yubikey_pin_summary">Používá základní PIN (123456) pro přístup k Yubikey přes NFC</string>
+  <string name="label_asymmetric_from">Podepsáno:</string>
+  <string name="label_to">Zašifrovat pro:</string>
+  <string name="label_delete_after_encryption">Smazat soubor po zašifrování</string>
+  <string name="label_delete_after_decryption">Smazat po rozšifrování</string>
+  <string name="label_encryption_algorithm">Šifrovací algoritmus</string>
+  <string name="label_hash_algorithm">Hashovací algoritmus</string>
+  <string name="label_symmetric">Zašifrovat heslem</string>
+  <string name="label_passphrase_cache_ttl">Cache hesel</string>
+  <string name="label_message_compression">Komprimovat zprávu</string>
+  <string name="label_file_compression">Komprimovat soubor</string>
   <string name="label_keyservers">Keyservery</string>
   <string name="label_key_id">ID klíče</string>
   <string name="label_creation">Vytvořeno</string>
   <string name="label_expiry">Expirace</string>
   <string name="label_usage">Použití</string>
   <string name="label_key_size">Délka klíče</string>
+  <string name="label_ecc_curve">Eliptická křivka</string>
   <string name="label_main_user_id">Hlavní identita</string>
   <string name="label_name">Jméno</string>
   <string name="label_comment">Komentář</string>
@@ -98,6 +116,7 @@
   <string name="label_send_key">Po vytvoření nahrt na vybraný keyserver</string>
   <string name="label_fingerprint">Otisk</string>
   <string name="expiry_date_dialog_title">Nastavit datum expirace</string>
+  <string name="label_preferred">upřednostněno</string>
   <string name="user_id_no_name">&lt;beze jména&gt;</string>
   <string name="none">&lt;žádný&gt;</string>
   <string name="no_key">&lt;žádný klíč&gt;</string>
@@ -107,6 +126,16 @@
   <string name="can_certify_not">nemůže ověřit</string>
   <string name="expired">po epiraci</string>
   <string name="revoked">revokovat</string>
+  <plurals name="n_keys">
+    <item quantity="one">1 klíč</item>
+    <item quantity="few">%d klíče</item>
+    <item quantity="other">%d klíčů</item>
+  </plurals>
+  <plurals name="n_keyservers">
+    <item quantity="one">%d keyserver</item>
+    <item quantity="few">%d keyservery</item>
+    <item quantity="other">%d keyserverů</item>
+  </plurals>
   <string name="secret_key">Tajný klíč:</string>
   <!--choice-->
   <string name="choice_none">Žádný</string>
@@ -125,6 +154,8 @@
   <string name="dsa">DSA</string>
   <string name="elgamal">ElGamal</string>
   <string name="rsa">RSA</string>
+  <string name="ecdh">ECDH</string>
+  <string name="ecdsa">ECDSA</string>
   <string name="filemanager_title_open">Otevřít...</string>
   <string name="warning">Varovnání</string>
   <string name="error">Chyba</string>
@@ -141,6 +172,8 @@
   <string name="passphrase_must_not_be_empty">Prosím zadejte heslo.</string>
   <string name="passphrase_for_symmetric_encryption">Symetrická šifra.</string>
   <string name="passphrase_for">Zadejte heslo pro \'%s\'</string>
+  <string name="yubikey_pin">Zadejte PIN pro přístup k Yubikey pro \'%s\'</string>
+  <string name="file_delete_confirmation">Chcete opravdu smazat\n%s?</string>
   <string name="file_delete_successful">Úspěšně smazáno.</string>
   <string name="no_file_selected">Nejprve vyberte soubor.</string>
   <string name="encrypt_sign_successful">Úspěšně podepsáno a/nebo zašifrováno.</string>
@@ -154,8 +187,6 @@
   <string name="no_keys_exported">Žádný kláč pro export.</string>
   <string name="key_creation_el_gamal_info">Žádný: pouze podklíče podporují ElGamal.</string>
   <string name="key_not_found">Nemohu najít klíč %08X.</string>
-  <string name="key_send_success">Úspěšně nahráno na keyserver.</string>
-  <string name="key_certify_success">Úspěšně ověřené identity</string>
   <string name="list_empty">Seznam je prázný!</string>
   <string name="nfc_successful">Úspěšně odeslaný klíč pomocí NFC Beam!</string>
   <string name="key_copied_to_clipboard">Klíč byl zkopírován do schránky!</string>
@@ -201,6 +232,7 @@
   <!--progress dialogs, usually ending in '…'-->
   <string name="progress_done">Hotovo.</string>
   <string name="progress_cancel">Zrušit</string>
+  <string name="progress_cancelling">ukončuji...</string>
   <string name="progress_saving">ukládám...</string>
   <string name="progress_importing">importuji...</string>
   <string name="progress_exporting">exportuji...</string>
@@ -210,6 +242,8 @@
   <string name="progress_generating_rsa">generuji nový RSA klíč...</string>
   <string name="progress_generating_dsa">generuji nový DSA klíč...</string>
   <string name="progress_generating_elgamal">generuji nový ElGamal klíč...</string>
+  <string name="progress_generating_ecdsa">generuji nový EDCSA klíč...</string>
+  <string name="progress_generating_ecdh">generuji nový EDCH klíč...</string>
   <string name="progress_modify">modifikuji klíčenku...</string>
   <string name="progress_modify_unlock">odemykám klíčenku...</string>
   <string name="progress_modify_adduid">přidávám uživatelské IDčka...</string>
@@ -219,6 +253,11 @@
   <string name="progress_modify_subkeyrevoke">revokuji podklíče...</string>
   <string name="progress_modify_subkeyadd">přidávám podklíče...</string>
   <string name="progress_modify_passphrase">mněním heslo...</string>
+  <plurals name="progress_exporting_key">
+    <item quantity="one">exportuji klíč...</item>
+    <item quantity="few">exportuji klíče...</item>
+    <item quantity="other">exportuji klíče...</item>
+  </plurals>
   <string name="progress_extracting_signature_key">extrahuji podpisový klíč...</string>
   <string name="progress_extracting_key">extrahuji klíč...</string>
   <string name="progress_preparing_streams">připravuji streamy...</string>
@@ -235,7 +274,9 @@
   <string name="progress_decompressing_data">rozbaluji data...</string>
   <string name="progress_verifying_integrity">verifikuji integritu...</string>
   <string name="progress_deleting_securely">mažu \'%s\' bezpečně...</string>
+  <string name="progress_deleting">mažu klíče...</string>
   <!--action strings-->
+  <string name="hint_keyserver_search_hint">Jméno/Email/ID klíče</string>
   <!--key bit length selections-->
   <string name="key_size_512">512</string>
   <string name="key_size_768">768</string>
@@ -250,6 +291,9 @@
   <string name="key_size_custom_info_rsa">Délka RSA klíče musí být větší než 1024 a alespoň 16384. Zároveň musí být dělitelná 8mi.</string>
   <string name="key_size_custom_info_dsa">Délka DSA klíče musí být alespoň 512 a nejvýše 1024. Zároveň musí být dělitelná 64.</string>
   <!--elliptic curve names-->
+  <string name="key_curve_nist_p256">NIST P-256</string>
+  <string name="key_curve_nist_p384">NIST P-384</string>
+  <string name="key_curve_nist_p521">NIST P-521</string>
   <!--not in for now, see SaveKeyringParcel
     <string name="key_curve_bp_p256">"Brainpool P-256"</string>
     <string name="key_curve_bp_p384">"Brainpool P-384"</string>
@@ -267,9 +311,9 @@
   <string name="help_about_version">Verze:</string>
   <!--Import-->
   <string name="import_tab_keyserver">Keyserver</string>
+  <string name="import_tab_cloud">Hledat v cloudu</string>
   <string name="import_tab_direct">Soubor/schránka</string>
   <string name="import_tab_qr_code">QR kód/NFC</string>
-  <string name="import_tab_keybase">Keybase.io</string>
   <string name="import_import">Importovat vybrané klíče</string>
   <string name="import_qr_code_wrong">QR kód nerozpoznán! Zkuste to znovu prosím!</string>
   <string name="import_qr_code_too_short_fingerprint">Fingerprint je příliš krátký (&lt; 16 znaků)</string>
@@ -277,6 +321,7 @@
   <!--Import result toast-->
   <string name="view_log">Zobrazit log</string>
   <string name="import_error_nothing">Nic k importu</string>
+  <string name="import_error_nothing_cancelled">Import zrušen.</string>
   <string name="import_error">Chyba importu klíčů!</string>
   <string name="import_with_warnings">, s varováními</string>
   <!--Intent labels-->
@@ -300,16 +345,26 @@
   <string name="api_settings_package_name">Jméno balíčku</string>
   <string name="api_settings_package_signature">SHA-256 z podpisu balíčku</string>
   <string name="api_settings_accounts">Účty</string>
+  <string name="api_settings_settings">Nastavení</string>
+  <string name="api_settings_key">Klíč účtu:</string>
   <string name="api_settings_accounts_empty">Žádné účty nejsou specifikovány pro tuto appku.</string>
   <string name="api_register_allow">Povolit přístup</string>
   <string name="api_register_disallow">Zamítnout přístup</string>
   <string name="api_register_error_select_key">Prosím vyberte klíč!</string>
+  <string name="api_select_pub_keys_missing_text">Nebyly nalezeny žádné klíče pro tyto identity:</string>
+  <string name="api_select_pub_keys_dublicates_text">Existuje více jak jeden klíč pro tyto identity:</string>
   <string name="api_select_pub_keys_text">Zkontrolujte prosím seznam příjemců!</string>
-  <string name="api_error_wrong_signature">Selhala kontrola podpisu! Instalovali jste tuto appku z jiného zdroje? Pokud jste si jistí, že toto není útok, zneplatněte registraci této appky v OpenKeychain a poté ji znovu zaregistrujte.</string>
+  <string name="api_select_pub_keys_text_no_user_ids">Vyberte prosím příjemce!</string>
+  <string name="api_error_wrong_signature">Selhala kontrola podpisu! Instalovali jste tuto aplikaci z jiného zdroje? Pokud jste si jistí, že toto není útok, zneplatněte registraci této aplikace v OpenKeychain a poté ji znovu zaregistrujte.</string>
   <!--Share-->
   <string name="share_qr_code_dialog_title">Sdílet pomocí QR kódu</string>
   <string name="share_nfc_dialog">Sdílet pomocí NFC</string>
   <!--Key list-->
+  <plurals name="key_list_selected_keys">
+    <item quantity="one">1 kíč vybrán</item>
+    <item quantity="few">%d klíče vybrány.</item>
+    <item quantity="other">%d klíčů vybráno.</item>
+  </plurals>
   <string name="key_list_empty_text1">Žádné klíče nejsou zatím k dispozici...</string>
   <string name="key_list_empty_text2">Můžete začít pomocí</string>
   <string name="key_list_empty_text3">nebo</string>
@@ -317,18 +372,37 @@
   <string name="key_list_empty_button_import">Importuji existující klíč.</string>
   <!--Key view-->
   <string name="key_view_action_edit">Editovat klíč</string>
+  <string name="key_view_action_encrypt">Zašifrovat text</string>
+  <string name="key_view_action_encrypt_files">soubory</string>
   <string name="key_view_action_certify">Certifikovat identity</string>
   <string name="key_view_action_update">Aktualizuji z keyserveru</string>
   <string name="key_view_action_share_with">Sdílet pomocí...</string>
+  <string name="key_view_action_share_nfc">Sdílet přes NFC</string>
+  <string name="key_view_action_upload">Nahrát na keyserver</string>
   <string name="key_view_tab_main">Hlavní info</string>
   <string name="key_view_tab_share">Sdílet</string>
   <string name="key_view_tab_keys">Podklíče</string>
   <string name="key_view_tab_certs">Certifikáty</string>
+  <string name="user_id_info_revoked_title">Zneplatněno</string>
+  <string name="user_id_info_revoked_text">Tato identity byla zneplatněna vlastníkem klíče. Klíč již není platný.</string>
+  <string name="user_id_info_verified_title">Ověřeno</string>
+  <string name="user_id_info_verified_text">Tato identita byla ověřena.</string>
+  <string name="user_id_info_not_verified_title">Neověřeno</string>
+  <string name="user_id_info_not_verified_text">Tato identita nebyla ještě ověřena. Nemůžete si být jisti, jestli identita opravdu odpovídá určité osobě.</string>
+  <string name="user_id_info_invalid_title">Neplatná</string>
+  <string name="user_id_info_invalid_text">S touto identitou je něco v nepořádku!</string>
   <!--Edit key-->
   <string name="edit_key_action_change_passphrase">Změnit heslo</string>
   <string name="edit_key_action_add_identity">Přidat identitu</string>
   <string name="edit_key_action_add_subkey">Přidat podklíč</string>
   <string name="edit_key_edit_user_id_title">Vyberte akci!</string>
+  <string-array name="edit_key_edit_user_id">
+    <item>Změnit na hlavní identitu</item>
+    <item>Zneplatnit identitu</item>
+  </string-array>
+  <string-array name="edit_key_edit_user_id_revert_revocation">
+    <item>Zrušit zneplatnění</item>
+  </string-array>
   <string name="edit_key_edit_user_id_revoked">Tato identity byla zneplatněna. Toto není možné vzít zpět.</string>
   <string name="edit_key_edit_subkey_title">Vyberte akci!</string>
   <string name="edit_key_new_subkey">nový</string>
@@ -344,11 +418,15 @@
   <string name="view_key_expired">Tento klíč vyexpiroval!</string>
   <!--Navigation Drawer-->
   <string name="nav_keys">Klíče</string>
-  <string name="nav_apps">Appky</string>
+  <string name="nav_encrypt_text">Zašifrovat text</string>
+  <string name="nav_encrypt_files">Zašifrovat soubory</string>
+  <string name="nav_decrypt">Rozšifrovat</string>
+  <string name="nav_apps">Aplikace</string>
   <string name="drawer_open">Otevřít navigační panel</string>
   <string name="drawer_close">Zavří navigační panel</string>
   <string name="my_keys">Moje Klíče</string>
   <!--hints-->
+  <string name="encrypt_content_edit_text_hint">Napsat text</string>
   <string name="decrypt_content_edit_text_hint">Vložte zašifrovaný text pro jeho rozšifrování a/nebo ověření...</string>
   <!--certs-->
   <string name="cert_default">výchozí</string>
@@ -361,20 +439,57 @@
   <string name="cert_verify_error">chyba!</string>
   <string name="cert_verify_unavailable">klíč není k dispozici</string>
   <!--LogType log messages. Errors should have _ERROR_ in their name and end with a !-->
+  <string name="msg_internal_error">Vnitřní chyba!</string>
+  <string name="msg_cancelled">Operace ukončena.</string>
   <!--Import Public log entries-->
+  <string name="msg_ip_encode_fail">Operace selhala kvůli chybě kódování</string>
+  <string name="msg_ip_fail_io_exc">Operace selhala kvůli chybě vstupu/výstupu</string>
+  <string name="msg_ip_fail_op_exc">Operace selhala kvůli chybě databáze</string>
+  <string name="msg_ip_fail_remote_ex">Operace selhala kvůli interní chybě </string>
+  <string name="msg_ip">Importuje se veřejná klíčenka %s</string>
+  <string name="msg_ip_uid_revoked">Uživatelské ID je zneplatněné</string>
   <!--Import Secret log entries-->
+  <string name="msg_is_db_exception">Chyba databáze!</string>
   <!--Keyring Canonicalization log entries-->
   <!--Keyring merging log entries-->
+  <string name="msg_mg_unchanged">Žádné nové certifikáty</string>
   <!--createSecretKeyRing-->
+  <string name="msg_cr">Generuji nový hlavní klíč</string>
+  <string name="msg_cr_error_no_keysize">Nebyla specifikována eliptická křivka! Toto je chyba v programování a je třeba ji nahlásit!</string>
+  <string name="msg_cr_error_internal_pgp">Vnitřní chyba PGP!</string>
   <!--modifySecretKeyRing-->
+  <string name="msg_mr">Upravuji klíčenku %s</string>
+  <string name="msg_mf_uid_error_empty">Uživatelské ID nesmí být prázdné!</string>
   <!--Consolidate-->
+  <string name="msg_con_error_db">Chyba otevírání databáze!</string>
+  <!--Other messages used in OperationLogs-->
+  <string name="msg_ek_error_not_found">Klíč nenalezen!</string>
+  <!--Messages for DecryptVerify operation-->
+  <!--Messages for SignEncrypt operation-->
   <!--PassphraseCache-->
+  <string name="passp_cache_notif_clear">Smazat cache</string>
+  <string name="passp_cache_notif_pwd">Heslo</string>
   <!--unsorted-->
+  <string name="section_cert">Detaily certifikátu</string>
   <string name="label_user_id">Identita</string>
   <string name="unknown_uid">&lt;neznámý&gt;</string>
   <string name="empty_certs">Žádné certifikáty pro tento klíč</string>
   <string name="label_revocation">Důvod revokace</string>
   <string name="label_verify_status">Stav ověření</string>
   <string name="label_cert_type">Typ</string>
+  <string name="error_key_not_found">Klíč nenalezen!</string>
+  <string name="error_key_processing">Chyba zpracování klíče!</string>
+  <string name="key_no_passphrase">bez hesla</string>
+  <string name="key_unavailable">nedostupný</string>
+  <string name="secret_cannot_multiple">Vaše vlastní klíče lze mazat pouze jednotlivě!</string>
+  <string name="title_view_cert">Zobrazit detaily certifikátu</string>
+  <string name="unknown_algorithm">neznámý</string>
+  <string name="can_sign_not">nelze podepsat</string>
+  <string name="error_no_encrypt_subkey">Není dostupný šifrovací podklíč!</string>
+  <string name="contact_show_key">Zobrazit klíč (%s)</string>
   <!--First Time-->
+  <string name="first_time_text1">Převezměte opět kontrolu nad svým soukromím s OpenKeychain!</string>
+  <string name="first_time_create_key">Vytvořit vlastní klíč</string>
+  <string name="first_time_import_key">Importovat existující klíč</string>
+  <string name="first_time_skip">Přeskočit nastavení</string>
 </resources>

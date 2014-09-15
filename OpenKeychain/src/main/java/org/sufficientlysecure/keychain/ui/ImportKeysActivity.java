@@ -68,8 +68,6 @@ public class ImportKeysActivity extends ActionBarActivity {
             + "IMPORT_KEY_FROM_KEY_SERVER_AND_RETURN";
     public static final String ACTION_IMPORT_KEY_FROM_FILE_AND_RETURN = Constants.INTENT_PREFIX
             + "IMPORT_KEY_FROM_FILE_AND_RETURN";
-    public static final String ACTION_IMPORT_KEY_FROM_KEYBASE = Constants.INTENT_PREFIX
-            + "IMPORT_KEY_FROM_KEYBASE";
 
     // Actions for internal use only:
     public static final String ACTION_IMPORT_KEY_FROM_FILE = Constants.INTENT_PREFIX
@@ -101,12 +99,11 @@ public class ImportKeysActivity extends ActionBarActivity {
     public static final int VIEW_PAGER_HEIGHT = 64; // dp
 
     private static final int ALL_TABS = -1;
-    private static final int TAB_KEYSERVER = 0;
+    private static final int TAB_CLOUD = 0;
     private static final int TAB_QR_CODE = 1;
     private static final int TAB_FILE = 2;
-    private static final int TAB_KEYBASE = 3;
 
-    private int mSwitchToTab = TAB_KEYSERVER;
+    private int mSwitchToTab = TAB_CLOUD;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -193,8 +190,8 @@ public class ImportKeysActivity extends ActionBarActivity {
                 if (query != null && query.length() > 0) {
                     // display keyserver fragment with query
                     serverBundle = new Bundle();
-                    serverBundle.putString(ImportKeysServerFragment.ARG_QUERY, query);
-                    mSwitchToTab = TAB_KEYSERVER;
+                    serverBundle.putString(ImportKeysCloudFragment.ARG_QUERY, query);
+                    mSwitchToTab = TAB_CLOUD;
 
                     // action: search immediately
                     startListFragment(savedInstanceState, null, null, query);
@@ -214,11 +211,11 @@ public class ImportKeysActivity extends ActionBarActivity {
 
                     // display keyserver fragment with query
                     serverBundle = new Bundle();
-                    serverBundle.putString(ImportKeysServerFragment.ARG_QUERY, query);
-                    serverBundle.putBoolean(ImportKeysServerFragment.ARG_DISABLE_QUERY_EDIT, true);
+                    serverBundle.putString(ImportKeysCloudFragment.ARG_QUERY, query);
+                    serverBundle.putBoolean(ImportKeysCloudFragment.ARG_DISABLE_QUERY_EDIT, true);
                     // display server tab only
-                    showTabOnly = TAB_KEYSERVER;
-                    mSwitchToTab = TAB_KEYSERVER;
+                    showTabOnly = TAB_CLOUD;
+                    mSwitchToTab = TAB_CLOUD;
 
                     // action: search immediately
                     startListFragment(savedInstanceState, null, null, query);
@@ -259,12 +256,6 @@ public class ImportKeysActivity extends ActionBarActivity {
 
             // no immediate actions!
             startListFragment(savedInstanceState, null, null, null);
-        } else if (ACTION_IMPORT_KEY_FROM_KEYBASE.equals(action)) {
-            // NOTE: this only displays the appropriate fragment, no actions are taken
-            mSwitchToTab = TAB_KEYBASE;
-
-            // no immediate actions!
-            startListFragment(savedInstanceState, null, null, null);
         } else {
             startListFragment(savedInstanceState, null, null, null);
         }
@@ -299,19 +290,17 @@ public class ImportKeysActivity extends ActionBarActivity {
 
         switch (showTabOnly) {
             case ALL_TABS:
-                // show all tabs
-                mTabsAdapter.addTab(ImportKeysServerFragment.class,
-                        serverBundle, getString(R.string.import_tab_keyserver));
+                // show default tabs
+                mTabsAdapter.addTab(ImportKeysCloudFragment.class,
+                        serverBundle, getString(R.string.import_tab_cloud));
                 mTabsAdapter.addTab(ImportKeysQrCodeFragment.class,
                         null, getString(R.string.import_tab_qr_code));
                 mTabsAdapter.addTab(ImportKeysFileFragment.class,
                         null, getString(R.string.import_tab_direct));
-                mTabsAdapter.addTab(ImportKeysKeybaseFragment.class,
-                        null, getString(R.string.import_tab_keybase));
                 break;
-            case TAB_KEYSERVER:
-                mTabsAdapter.addTab(ImportKeysServerFragment.class,
-                        serverBundle, getString(R.string.import_tab_keyserver));
+            case TAB_CLOUD:
+                mTabsAdapter.addTab(ImportKeysCloudFragment.class,
+                        serverBundle, getString(R.string.import_tab_cloud));
                 break;
             case TAB_QR_CODE:
                 mTabsAdapter.addTab(ImportKeysQrCodeFragment.class,
@@ -320,10 +309,6 @@ public class ImportKeysActivity extends ActionBarActivity {
             case TAB_FILE:
                 mTabsAdapter.addTab(ImportKeysFileFragment.class,
                         null, getString(R.string.import_tab_direct));
-                break;
-            case TAB_KEYBASE:
-                mTabsAdapter.addTab(ImportKeysKeybaseFragment.class,
-                        null, getString(R.string.import_tab_keybase));
                 break;
         }
 
@@ -380,18 +365,17 @@ public class ImportKeysActivity extends ActionBarActivity {
         if (mViewPager.getAdapter() != null)
             mViewPager.setAdapter(null);
         mViewPager.setAdapter(mTabsAdapter);
-        mViewPager.setCurrentItem(TAB_KEYSERVER);
+        mViewPager.setCurrentItem(TAB_CLOUD);
 
-        ImportKeysServerFragment f = (ImportKeysServerFragment)
-                getActiveFragment(mViewPager, TAB_KEYSERVER);
+        ImportKeysCloudFragment f = (ImportKeysCloudFragment)
+                getActiveFragment(mViewPager, TAB_CLOUD);
 
-        // ask favorite keyserver
-        String keyserver = Preferences.getPreferences(ImportKeysActivity.this).getKeyServers()[0];
+        // search config
+        Preferences prefs = Preferences.getPreferences(ImportKeysActivity.this);
+        Preferences.CloudSearchPrefs cloudPrefs = new Preferences.CloudSearchPrefs(true, true, prefs.getPreferredKeyserver());
 
-        // set fields of ImportKeysServerFragment
-        f.setQueryAndKeyserver(query, keyserver);
         // search directly
-        loadCallback(new ImportKeysListFragment.KeyserverLoaderState(query, keyserver));
+        loadCallback(new ImportKeysListFragment.CloudLoaderState(query, cloudPrefs));
     }
 
     // http://stackoverflow.com/a/9293207
@@ -522,8 +506,8 @@ public class ImportKeysActivity extends ActionBarActivity {
                 Log.e(Constants.TAG, "Problem writing cache file", e);
                 Notify.showNotify(this, "Problem writing cache file!", Notify.Style.ERROR);
             }
-        } else if (ls instanceof ImportKeysListFragment.KeyserverLoaderState) {
-            ImportKeysListFragment.KeyserverLoaderState sls = (ImportKeysListFragment.KeyserverLoaderState) ls;
+        } else if (ls instanceof ImportKeysListFragment.CloudLoaderState) {
+            ImportKeysListFragment.CloudLoaderState sls = (ImportKeysListFragment.CloudLoaderState) ls;
 
             // Send all information needed to service to query keys in other thread
             Intent intent = new Intent(this, KeychainIntentService.class);
@@ -533,7 +517,7 @@ public class ImportKeysActivity extends ActionBarActivity {
             // fill values for this action
             Bundle data = new Bundle();
 
-            data.putString(KeychainIntentService.DOWNLOAD_KEY_SERVER, sls.keyserver);
+            data.putString(KeychainIntentService.DOWNLOAD_KEY_SERVER, sls.mCloudPrefs.keyserver);
 
             // get selected key entries
             ArrayList<ImportKeysListEntry> selectedEntries = mListFragment.getSelectedEntries();
@@ -550,31 +534,6 @@ public class ImportKeysActivity extends ActionBarActivity {
 
             // start service with intent
             startService(intent);
-        } else if (ls instanceof ImportKeysListFragment.KeybaseLoaderState) {
-            // Send all information needed to service to query keys in other thread
-            Intent intent = new Intent(this, KeychainIntentService.class);
-
-            intent.setAction(KeychainIntentService.ACTION_IMPORT_KEYBASE_KEYS);
-
-            // fill values for this action
-            Bundle data = new Bundle();
-
-            // get selected key entries
-            ArrayList<ImportKeysListEntry> selectedEntries = mListFragment.getSelectedEntries();
-            data.putParcelableArrayList(KeychainIntentService.DOWNLOAD_KEY_LIST, selectedEntries);
-
-            intent.putExtra(KeychainIntentService.EXTRA_DATA, data);
-
-            // Create a new Messenger for the communication back
-            Messenger messenger = new Messenger(saveHandler);
-            intent.putExtra(KeychainIntentService.EXTRA_MESSENGER, messenger);
-
-            // show progress dialog
-            saveHandler.showProgressDialog(this);
-
-            // start service with intent
-            startService(intent);
-
         } else {
             Notify.showNotify(this, R.string.error_nothing_import, Notify.Style.ERROR);
         }

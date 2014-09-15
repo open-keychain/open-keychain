@@ -1,6 +1,12 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
     <PreferenceCategory android:title="@string/section_defaults">
         <org.sufficientlysecure.keychain.ui.widget.IntegerListPreference
+            android:entries="@array/passphrase_cache_ttl_entries"
+            android:entryValues="@array/passphrase_cache_ttl_values"
+            android:key="passphraseCacheTtl"
+            android:persistent="false"
+            android:title="@string/label_passphrase_cache_ttl" />
+        <org.sufficientlysecure.keychain.ui.widget.IntegerListPreference
             android:key="defaultEncryptionAlgorithm"
             android:persistent="false"
             android:title="@string/label_encryption_algorithm" />

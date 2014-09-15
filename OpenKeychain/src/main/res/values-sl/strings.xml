@@ -84,13 +84,23 @@
   <string name="label_file_colon">Datoteka:</string>
   <string name="label_no_passphrase">Brez gesla</string>
   <string name="label_passphrase">Geslo</string>
+  <string name="label_unlock">Odklepanje...</string>
   <string name="label_passphrase_again">Ponovi geslo</string>
   <string name="label_algorithm">Algoritem</string>
   <string name="label_ascii_armor">ASCII oklep datotek</string>
+  <string name="label_file_ascii_armor">Omogoči ASCII ovoj</string>
   <string name="label_write_version_header">Daj drugim vedeti, da uporabljate OpenKeychain</string>
   <string name="label_write_version_header_summary">Zapiše \'OpenKeychain v2.7\' v OpenPGP podpis, šifrirano besedilo in izvožene ključe</string>
   <string name="label_asymmetric_from">Podpisal:</string>
   <string name="label_to">Šifriraj za:</string>
+  <string name="label_delete_after_encryption">Izbriši datoteko po dešifriranju</string>
+  <string name="label_delete_after_decryption">Izbriši po dešifriranju</string>
+  <string name="label_encryption_algorithm">Šifrirni algoritem</string>
+  <string name="label_hash_algorithm">Zgostitveni algoritem</string>
+  <string name="label_symmetric">Šifriranje z geslom</string>
+  <string name="label_passphrase_cache_ttl">Hranjenje gesla v spominu</string>
+  <string name="label_message_compression">Stiskanje sporočil</string>
+  <string name="label_file_compression">Stiskanje datotek</string>
   <string name="label_keyservers">Strežniki</string>
   <string name="label_key_id">ID ključa</string>
   <string name="label_creation">Ustvarjanje</string>
@@ -178,8 +188,6 @@
   <string name="no_keys_exported">Noben ključ ni bil izvožen.</string>
   <string name="key_creation_el_gamal_info">Pozor: ELGamal podpirajo samo podključi.</string>
   <string name="key_not_found">Ne najdem ključa %08X.</string>
-  <string name="key_send_success">Ključ je bil uspešno naložen na strežnik.</string>
-  <string name="key_certify_success">Uspešno overjene identitete</string>
   <string name="list_empty">Lista je prazna!</string>
   <string name="nfc_successful">Ključ uspešno poslan preko NFC Beam!</string>
   <string name="key_copied_to_clipboard">Ključ je bil prekopiran v odložišče!</string>
@@ -227,6 +235,7 @@
   <!--progress dialogs, usually ending in '…'-->
   <string name="progress_done">Opravljeno.</string>
   <string name="progress_cancel">Prekliči</string>
+  <string name="progress_cancelling">preklic...</string>
   <string name="progress_saving">shranjujem...</string>
   <string name="progress_importing">uvažam...</string>
   <string name="progress_exporting">izvažam...</string>
@@ -258,6 +267,7 @@
   <string name="progress_processing_signature">obdelujem podpis...</string>
   <string name="progress_verifying_signature">preverjam podpis...</string>
   <string name="progress_signing">podpisujem...</string>
+  <string name="progress_certifying">overjanje...</string>
   <string name="progress_reading_data">berem podatke...</string>
   <string name="progress_finding_key">iščem ključ...</string>
   <string name="progress_decompressing_data">razširjam podatke...</string>
@@ -299,8 +309,8 @@
   <string name="help_tab_about">O aplikaciji</string>
   <string name="help_about_version">Različica:</string>
   <!--Import-->
+  <string name="import_tab_keyserver">Strežnik</string>
   <string name="import_tab_direct">Datoteka/odložišče</string>
-  <string name="import_tab_keybase">Keybase.io</string>
   <string name="import_import">Uvozi izbrane ključe</string>
   <string name="import_qr_code_wrong">Koda QR je deformirana! Poskusite znova!</string>
   <string name="import_qr_code_too_short_fingerprint">Prstni odtis je prekratek (&lt; 16 znakov)</string>
@@ -357,9 +367,13 @@
   <string name="key_list_empty_button_import">uvažanje obstoječega ključa.</string>
   <!--Key view-->
   <string name="key_view_action_edit">Uredi ključ</string>
+  <string name="key_view_action_encrypt">Šifriraj besedilo</string>
+  <string name="key_view_action_encrypt_files">datoteke</string>
   <string name="key_view_action_certify">Overi identitete</string>
   <string name="key_view_action_update">Posodobi s strežnika</string>
   <string name="key_view_action_share_with">Deli z...</string>
+  <string name="key_view_action_share_nfc">Deli preko NFC</string>
+  <string name="key_view_action_upload">Naloži na strežnik</string>
   <string name="key_view_tab_main">Glavne informacije</string>
   <string name="key_view_tab_share">Deli</string>
   <string name="key_view_tab_keys">Podključi</string>
@@ -375,6 +389,9 @@
   <string name="edit_key_action_add_identity">Dodaj identiteto</string>
   <string name="edit_key_action_add_subkey">Dodaj podključ</string>
   <string name="edit_key_edit_user_id_title">Izberite dejanje!</string>
+  <string-array name="edit_key_edit_user_id_revert_revocation">
+    <item>Revert revocation</item>
+  </string-array>
   <string name="edit_key_edit_subkey_title">Izberite dejanje!</string>
   <string name="edit_key_new_subkey">nov</string>
   <!--Create key-->
@@ -386,12 +403,15 @@
   <string name="view_key_expired">Ta ključ je pretekel!</string>
   <!--Navigation Drawer-->
   <string name="nav_keys">Ključi</string>
+  <string name="nav_encrypt_text">Šifriraj besedilo</string>
+  <string name="nav_encrypt_files">Šifriraj datoteke</string>
   <string name="nav_decrypt">Dešifriraj</string>
   <string name="nav_apps">Aplikacije</string>
   <string name="drawer_open">Odprite navigacijski poteznik</string>
   <string name="drawer_close">Zaprite navigacijski poteznik</string>
   <string name="my_keys">Moji ključi</string>
   <!--hints-->
+  <string name="encrypt_content_edit_text_hint">Vpišite besedilo</string>
   <string name="decrypt_content_edit_text_hint">Tu vnesite tajnopis za dešifriranje in/ali overbo...</string>
   <!--certs-->
   <string name="cert_default">privzeto</string>
@@ -404,6 +424,7 @@
   <string name="cert_verify_error">napaka!</string>
   <string name="cert_verify_unavailable">ključ ni na voljo</string>
   <!--LogType log messages. Errors should have _ERROR_ in their name and end with a !-->
+  <string name="msg_cancelled">Dejanje preklicano.</string>
   <!--Import Public log entries-->
   <string name="msg_ip_apply_batch">Uveljavljam serijsko dodajanje.</string>
   <string name="msg_ip_bad_type_secret">Poskus uvoza zasebne zbirke ključev kot javne. Prosimo prijavite dogodek kot \"hrošč\" (napako).</string>
@@ -458,10 +479,16 @@
   <string name="msg_mf_subkey_new_id">Nov podključ z ID-jem: %s</string>
   <string name="msg_mf_subkey_revoke">Preklic podključa %s</string>
   <!--Consolidate-->
+  <string name="msg_con_db_clear">Čiščenje podatkovne baze</string>
+  <!--Other messages used in OperationLogs-->
+  <string name="msg_ek_error_not_found">Ključ ni bil najden!</string>
+  <!--Messages for DecryptVerify operation-->
+  <!--Messages for SignEncrypt operation-->
   <!--PassphraseCache-->
   <string name="passp_cache_notif_click_to_clear">Kliknite za izbris zapomnjenih gesel</string>
   <string name="passp_cache_notif_n_keys">OpenKeychain pomni gesla: %d</string>
   <string name="passp_cache_notif_keys">Zapomnjena gesla:</string>
+  <string name="passp_cache_notif_pwd">Geslo</string>
   <!--unsorted-->
   <string name="section_certifier_id">Overovitelj</string>
   <string name="section_cert">Podrobnosti potrdil</string>
@@ -475,6 +502,9 @@
   <string name="error_key_not_found">Ključ ni bil najden!</string>
   <string name="error_key_processing">Napaka pri obdelavi ključa!</string>
   <string name="key_stripped">slečen</string>
+  <string name="key_divert">preusmeri na pametno kartico/NFC</string>
+  <string name="key_no_passphrase">brez gesla</string>
+  <string name="key_unavailable">ni na voljo</string>
   <string name="title_view_cert">Preglej podrobosti certifikata</string>
   <string name="unknown_algorithm">neznan</string>
   <string name="can_sign_not">ne more podpisati</string>

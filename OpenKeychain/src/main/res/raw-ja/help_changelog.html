@@ -1,17 +1,22 @@
 <html>
 <head></head>
 <body>
-<h2>2.10</h2>
+<h2>2.9.2</h2>
 <ul>
-<li>Split encrypt screen into two</li>
-<li>Fix key flags handling (now supporting Mailvelope 0.7 keys)</li>
-<li>Improved passphrase handling</li>
-<li>Key sharing via SafeSlinger</li>
-<li>Yubikey: preference to allow other PINs, currently only signing via the OpenPGP API works, not inside of OpenKeychain</li>
-<li>Fix usage of stripped keys</li>
-<li>SHA256 as default for compatibility</li>
-<li>Intent API has changed, see https://github.com/open-keychain/open-keychain/wiki/Intent-API</li>
-<li>OpenPGP API now handles revoked/expired keys and returns all user ids</li>
+<li>2.9.1での鍵破壊問題修正</li>
+<li>API経由でYubikeyの復号処理が動くようになった</li>
+</ul>
+<h2>2.9.1</h2>
+<ul>
+<li>暗号化スクリーンを2つに分割</li>
+<li>鍵のフラグ管理を修正 (現在Mailvelope 0.7 鍵をサポート)</li>
+<li>パスフレーズの取り回しを改善</li>
+<li>SafeSlingerでの鍵の共有</li>
+<li>Yubikey: 設定で他のPINを受け付け、現在OpenPGP API経由での署名しか動きません、OpenKeychainの内部ではないため</li>
+<li>ストリップした鍵の利用法を修正</li>
+<li>互換性のためデフォルトをSHA256に</li>
+<li>インテント API を変更しました、以下参照 https://github.com/open-keychain/open-keychain/wiki/Intent-API</li>
+<li>OpenPGP API は現在破棄/期限切れの鍵を扱えるようになり、またすべてのユーザIDを返すようになりました</li>
 </ul>
 <h2>2.9</h2>
 <ul>

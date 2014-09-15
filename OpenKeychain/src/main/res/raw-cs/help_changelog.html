@@ -1,12 +1,17 @@
 <html>
 <head></head>
 <body>
-<h2>2.10</h2>
+<h2>2.9.2</h2>
+<ul>
+<li>Fix keys broken in 2.9.1</li>
+<li>Yubikey decryption now working via API</li>
+</ul>
+<h2>2.9.1</h2>
 <ul>
 <li>Split encrypt screen into two</li>
 <li>Fix key flags handling (now supporting Mailvelope 0.7 keys)</li>
-<li>Improved passphrase handling</li>
-<li>Key sharing via SafeSlinger</li>
+<li>Vylepšené zacházení s hesly</li>
+<li>Sdílení klíčů přes SafeSlinger</li>
 <li>Yubikey: preference to allow other PINs, currently only signing via the OpenPGP API works, not inside of OpenKeychain</li>
 <li>Fix usage of stripped keys</li>
 <li>SHA256 as default for compatibility</li>
@@ -16,7 +21,7 @@
 <h2>2.9</h2>
 <ul>
 <li>Fixing crashes introduced in v2.8</li>
-<li>Experimental ECC support</li>
+<li>Experimentální podpora ECC</li>
 <li>Experimental Yubikey support (signing-only with imported keys)</li>
 </ul>
 <h2>2.8</h2>
@@ -24,13 +29,13 @@
 <li>So many bugs have been fixed in this release that we focus on the main new features</li>
 <li>Key edit: awesome new design, key revocation</li>
 <li>Key import: awesome new design, secure keyserver connections via hkps, keyserver resolving via DNS SRV records</li>
-<li>New first time screen</li>
+<li>Nová úvodní obrazovka</li>
 <li>New key creation screen: autocompletion of name and email based on your personal Android accounts</li>
 <li>File encryption: awesome new design, support for encrypting multiple files</li>
 <li>New icons to show status of key (by Brennan Novak)</li>
 <li>Important bug fix: Importing of large key collections from a file is now possible</li>
 <li>Notification showing cached passphrases</li>
-<li>Keys are connected to Android's contacts</li>
+<li>Klíče jsou připojeny ke kontaktům v Androidu</li>
 </ul>
 <p>This release wouldn't be possible without the work of Vincent Breitmoser (GSoC 2014), mar-v-in (GSoC 2014), Daniel Albert, Art O Cathain, Daniel Haß, Tim Bray, Thialfihar</p>
 
@@ -120,19 +125,19 @@ Daniel Hammann, Daniel Haß, Greg Witczak, Miroojin Bakshi, Nikhil Peter Raj, Pa
 <ul>
 <li>Complete redesign</li>
 <li>Share public keys via qr codes, nfc beam</li>
-<li>Sign keys</li>
-<li>Upload keys to server</li>
+<li>Podepsat klíče</li>
+<li>Nahrát klíče na server</li>
 <li>Fixes import issues</li>
 <li>New AIDL API</li>
 </ul>
 <h2>1.0.8</h2>
 <ul>
-<li>Basic keyserver support</li>
+<li>Základní podpora keyserverů</li>
 <li>App2sd</li>
 <li>More choices for passphrase cache: 1, 2, 4, 8, hours</li>
 <li>Translations: Norwegian (thanks, Sander Danielsen), Chinese (thanks, Zhang Fredrick)</li>
-<li>Bugfixes</li>
-<li>Optimizations</li>
+<li>Opravy chyb</li>
+<li>Optimalizace</li>
 </ul>
 <h2>1.0.7</h2>
 <ul>
@@ -142,16 +147,16 @@ Daniel Hammann, Daniel Haß, Greg Witczak, Miroojin Bakshi, Nikhil Peter Raj, Pa
 <h2>1.0.6</h2>
 <ul>
 <li>Account adding crash on Froyo fixed</li>
-<li>Secure file deletion</li>
+<li>Bezpečné mazání souborů</li>
 <li>Option to delete key file after import</li>
 <li>Stream encryption/decryption (gallery, etc.)</li>
 <li>New options (language, force v3 signatures)</li>
 <li>Interface changes</li>
-<li>Bugfixes</li>
+<li>Opravy chyb</li>
 </ul>
 <h2>1.0.5</h2>
 <ul>
-<li>German and Italian translation</li>
+<li>Německý a Italský překlad</li>
 <li>Much smaller package, due to reduced BC sources</li>
 <li>New preferences GUI</li>
 <li>Layout adjustment for localization</li>
@@ -183,7 +188,7 @@ Daniel Hammann, Daniel Haß, Greg Witczak, Miroojin Bakshi, Nikhil Peter Raj, Pa
 <li>Slovenian translation</li>
 <li>New database, much faster, less memory usage</li>
 <li>Defined Intents and content provider for other apps</li>
-<li>Bugfixes</li>
+<li>Opravy chyb</li>
 </ul>
 </body>
 </html>

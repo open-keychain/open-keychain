@@ -651,27 +651,35 @@ public class KeychainIntentService extends IntentService implements Progressable
                 for (ImportKeysListEntry entry : entries) {
                     try {
                         Keyserver server;
-                        if (entry.getOrigin() == null) {
-                            server = new HkpKeyserver(keyServer);
-                        } else if (KeybaseKeyserver.ORIGIN.equals(entry.getOrigin())) {
-                            server = new KeybaseKeyserver();
-                        } else {
-                            server = new HkpKeyserver(entry.getOrigin());
+                        ArrayList<String> origins = entry.getOrigins();
+                        if (origins == null) {
+                            origins = new ArrayList<String>();
                         }
-
-                        // if available use complete fingerprint for get request
-                        byte[] downloadedKeyBytes;
-                        if (KeybaseKeyserver.ORIGIN.equals(entry.getOrigin())) {
-                            downloadedKeyBytes = server.get(entry.getExtraData()).getBytes();
-                        } else if (entry.getFingerprintHex() != null) {
-                            downloadedKeyBytes = server.get("0x" + entry.getFingerprintHex()).getBytes();
-                        } else {
-                            downloadedKeyBytes = server.get(entry.getKeyIdHex()).getBytes();
+                        if (origins.isEmpty()) {
+                            origins.add(keyServer);
                         }
+                        for (String origin : origins) {
+                            if (KeybaseKeyserver.ORIGIN.equals(origin)) {
+                                server = new KeybaseKeyserver();
+                            } else {
+                                server = new HkpKeyserver(origin);
+                            }
+                            Log.d(Constants.TAG, "IMPORTING " + entry.getKeyIdHex() + " FROM: " + server);
 
-                        // save key bytes in entry object for doing the
-                        // actual import afterwards
-                        keyRings.add(new ParcelableKeyRing(downloadedKeyBytes, entry.getFingerprintHex()));
+                            // if available use complete fingerprint for get request
+                            byte[] downloadedKeyBytes;
+                            if (KeybaseKeyserver.ORIGIN.equals(origin)) {
+                                downloadedKeyBytes = server.get(entry.getExtraData()).getBytes();
+                            } else if (entry.getFingerprintHex() != null) {
+                                downloadedKeyBytes = server.get("0x" + entry.getFingerprintHex()).getBytes();
+                            } else {
+                                downloadedKeyBytes = server.get(entry.getKeyIdHex()).getBytes();
+                            }
+
+                            // save key bytes in entry object for doing the
+                            // actual import afterwards
+                            keyRings.add(new ParcelableKeyRing(downloadedKeyBytes, entry.getFingerprintHex()));
+                        }
                     } catch (Exception e) {
                         sendErrorToHandler(e);
                     }

@@ -204,8 +204,6 @@
  --export-secret-keys
 に置き換えてください。</item>
   </plurals>
-  <string name="key_send_success">鍵を鍵サーバにアップロードしました</string>
-  <string name="key_certify_success">ユーザIDの検証に成功</string>
   <string name="list_empty">このリストは空です!</string>
   <string name="nfc_successful">NFCビームで鍵を送信しました!</string>
   <string name="key_copied_to_clipboard">鍵はクリプボードにコピーされました!</string>
@@ -299,7 +297,6 @@
   <string name="progress_con_reimport">統合: 再インポート中…</string>
   <!--action strings-->
   <string name="hint_keyserver_search_hint">名前/メール/鍵ID...</string>
-  <string name="hint_keybase_search_hint">名前/メール/証明/鍵...</string>
   <!--key bit length selections-->
   <string name="key_size_512">512</string>
   <string name="key_size_768">768</string>
@@ -336,7 +333,6 @@
   <string name="import_tab_keyserver">鍵サーバ</string>
   <string name="import_tab_direct">ファイル/クリップボード</string>
   <string name="import_tab_qr_code">QRコード/NFC</string>
-  <string name="import_tab_keybase">Keybase.io</string>
   <string name="import_import">選択した鍵のインポート</string>
   <string name="import_qr_code_wrong">不適QRコード! もう一度!</string>
   <string name="import_qr_code_too_short_fingerprint">指紋が短かすぎます (&lt; 16 文字)</string>
@@ -450,10 +446,6 @@
   </string-array>
   <string name="edit_key_edit_user_id_revoked">このIDは破棄されています。続けることができません。</string>
   <string name="edit_key_edit_subkey_title">アクションを選んでください!</string>
-  <string-array name="edit_key_edit_subkey">
-    <item>期限を変更</item>
-    <item>副鍵を破棄</item>
-  </string-array>
   <string name="edit_key_new_subkey">新規</string>
   <string name="edit_key_select_flag">最低1つフラグを選択してください!</string>
   <!--Create key-->
@@ -644,7 +636,6 @@
   <string name="msg_mf_error_revoked_primary">主ユーザIDの破棄はできません!</string>
   <string name="msg_mf_error_null_expiry">副鍵の生成時に期限を\"過去\"とすることはできません。これはプログラムエラーで、バグレポートとしてファイルを送ってください!</string>
   <string name="msg_mf_error_passphrase_master">主鍵の復号で致命的な失敗! これはプログラミングのエラーの場合がありますので、バグレポートの提出をお願いします!</string>
-  <string name="msg_mf_error_pgp">PGP内部例外!</string>
   <string name="msg_mf_error_sig">署名例外!</string>
   <string name="msg_mf_master">マスター認証を変更</string>
   <string name="msg_mf_passphrase">鍵輪のパスフレーズの変更中...</string>
@@ -697,6 +688,12 @@
   <string name="msg_con_reimport_secret_skip">再インポートで秘密鍵がありません、スキップします...</string>
   <string name="msg_con_warn_delete_public">公開鍵キャッシュファイルの削除例外</string>
   <string name="msg_con_warn_delete_secret">秘密鍵のキャッシュファイルを削除中に例外発生</string>
+  <!--Other messages used in OperationLogs-->
+  <string name="msg_ek_error_divert">NFCの鍵の編集は(まだ)サポートされていません!</string>
+  <string name="msg_ek_error_dummy">ストリップした主鍵では鍵輪を編集できません!</string>
+  <string name="msg_ek_error_not_found">鍵が見当りません!</string>
+  <!--Messages for DecryptVerify operation-->
+  <!--Messages for SignEncrypt operation-->
   <!--PassphraseCache-->
   <string name="passp_cache_notif_click_to_clear">クリックしてパスフレーズのキャッシュをクリア</string>
   <string name="passp_cache_notif_n_keys">OpenKeychainは %d のパスフレーズをキャッシュしています</string>

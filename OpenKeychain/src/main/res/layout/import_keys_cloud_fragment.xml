@@ -11,12 +11,12 @@
         android:orientation="horizontal">
 
         <AutoCompleteTextView
-            android:id="@+id/import_server_query"
+            android:id="@+id/cloud_import_server_query"
             android:layout_width="0dip"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:gravity="top|left"
-            android:hint="@string/hint_keyserver_search_hint"
+            android:hint="@string/hint_cloud_search_hint"
             android:imeOptions="actionSearch"
             android:inputType="textNoSuggestions"
             android:singleLine="true"
@@ -26,7 +26,7 @@
             android:layout_gravity="center_vertical" />
 
         <ImageButton
-            android:id="@+id/import_server_search"
+            android:id="@+id/cloud_import_server_search"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:padding="8dp"
@@ -43,7 +43,7 @@
             android:background="?android:attr/listDivider" />
 
         <ImageButton
-            android:id="@+id/import_server_config_button"
+            android:id="@+id/cloud_import_server_config_button"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:padding="8dp"
@@ -53,24 +53,5 @@
 
     </LinearLayout>
 
-    <LinearLayout
-        android:id="@+id/import_server_config"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dip"
-            android:background="?android:attr/listDivider" />
-
-        <Spinner
-            android:id="@+id/import_server_spinner"
-            android:layout_marginLeft="8dp"
-            android:layout_marginRight="8dp"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-
-    </LinearLayout>
 
 </LinearLayout>

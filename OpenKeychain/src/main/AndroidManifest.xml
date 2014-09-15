@@ -58,7 +58,6 @@
     <uses-permission android:name="org.sufficientlysecure.keychain.WRITE_TEMPORARY_STORAGE" />
 
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.NFC" />
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
@@ -139,11 +138,6 @@
             android:label="@string/title_select_recipients"
             android:launchMode="singleTop" />
         <activity
-            android:name=".ui.SelectSecretKeyActivity"
-            android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
-            android:label="@string/title_select_secret_key"
-            android:launchMode="singleTop" />
-        <activity
             android:name=".ui.EncryptFileActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
             android:label="@string/title_encrypt_files"
@@ -199,6 +193,34 @@
             android:name=".ui.DecryptActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
             android:label="@string/title_decrypt"
+            android:windowSoftInputMode="stateHidden" />
+        <activity
+            android:name=".ui.DecryptTextActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
+            android:label="@string/title_decrypt"
+            android:windowSoftInputMode="stateHidden">
+
+            <!-- Keychain's own Actions -->
+            <!-- DECRYPT with text as extra -->
+            <intent-filter>
+                <action android:name="org.sufficientlysecure.keychain.action.DECRYPT_TEXT" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+            <!-- Android's Send Action -->
+            <intent-filter android:label="@string/intent_send_decrypt">
+                <action android:name="android.intent.action.SEND" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+
+                <data android:mimeType="text/*" />
+                <data android:mimeType="message/*" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".ui.DecryptFilesActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
+            android:label="@string/title_decrypt"
             android:windowSoftInputMode="stateHidden">
 
             <!-- VIEW with mimeType application/octet-stream, application/pgp and text/pgp  -->
@@ -214,12 +236,6 @@
                 <data android:mimeType="text/pgp" />
             </intent-filter>
             <!-- Keychain's own Actions -->
-            <!-- DECRYPT with text as extra -->
-            <intent-filter>
-                <action android:name="org.sufficientlysecure.keychain.action.DECRYPT" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
             <!-- DECRYPT with data Uri -->
             <intent-filter>
                 <action android:name="org.sufficientlysecure.keychain.action.DECRYPT" />
@@ -235,7 +251,12 @@
 
                 <category android:name="android.intent.category.DEFAULT" />
 
-                <data android:mimeType="*/*" />
+                <!-- everything except text/* and message/* -->
+                <data android:mimeType="image/*" />
+                <data android:mimeType="audio/*" />
+                <data android:mimeType="video/*" />
+                <data android:mimeType="application/*" />
+                <data android:mimeType="multipart/*" />
             </intent-filter>
             <!-- Linking "Decrypt" to file types -->
             <intent-filter android:label="@string/intent_decrypt_file">

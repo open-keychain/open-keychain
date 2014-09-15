@@ -164,8 +164,6 @@
   <string name="no_keys_exported">Nessuna chiave esportata.</string>
   <string name="key_creation_el_gamal_info">Nota: supporto sottochiavi solo per ElGamal.</string>
   <string name="key_not_found">Impossibile trovare la chiave %08X.</string>
-  <string name="key_send_success">Chiave caricata con successo sul server</string>
-  <string name="key_certify_success">Identità certificata correttamente</string>
   <string name="list_empty">Lista vuota!</string>
   <string name="nfc_successful">Chiave correttamente inviata tramite NFC Beam!</string>
   <string name="key_copied_to_clipboard">Chiave copiata negli appunti!</string>
@@ -258,7 +256,6 @@
   <string name="progress_con_reimport">consolidazione: reimportazione...</string>
   <!--action strings-->
   <string name="hint_keyserver_search_hint">Nome/Email/ID Chiave...</string>
-  <string name="hint_keybase_search_hint">Nome/Email/Certificato/Chiave...</string>
   <!--key bit length selections-->
   <string name="key_size_512">512</string>
   <string name="key_size_768">768</string>
@@ -295,7 +292,6 @@
   <string name="import_tab_keyserver">Server delle chiavi</string>
   <string name="import_tab_direct">File/Appunti</string>
   <string name="import_tab_qr_code">Codice QR/NFC</string>
-  <string name="import_tab_keybase">Keybase.io</string>
   <string name="import_import">Importa chiavi selezionate</string>
   <string name="import_qr_code_wrong">Codica QR deformato! Prova di nuovo!</string>
   <string name="import_qr_code_too_short_fingerprint">Impronta troppo corta (&lt; 16 caratteri)</string>
@@ -544,7 +540,6 @@
   <string name="msg_mf_error_revoked_primary">ID utente revocato non può essere primario!</string>
   <string name="msg_mf_error_null_expiry">La data di scadenza non può essere \"come prima\" sulla creazione di sottochiavi. Questo è un errore di programmazione, si prega di inviare una segnalazione di bug!</string>
   <string name="msg_mf_error_passphrase_master">Errore irreversibile nella decodifica della chiave principale! Questo è probabilmente un errore di programmazione, si prega di inviare una segnalazione di bug!</string>
-  <string name="msg_mf_error_pgp">Eccezione interna di PGP!</string>
   <string name="msg_mf_error_sig">Eccezione di firma!</string>
   <string name="msg_mf_master">Modifica delle certificazioni principali</string>
   <string name="msg_mf_passphrase">Cambio frase di accesso del portachiavi...</string>
@@ -599,6 +594,9 @@
   <string name="msg_con_reimport_secret_skip">Nessuna chiave privata da reimportare, proseguo...</string>
   <string name="msg_con_warn_delete_public">Eccezione durante la eliminazione del file di cache pubblico</string>
   <string name="msg_con_warn_delete_secret">Eccezione durante la eliminazione del file di cache privato</string>
+  <!--Other messages used in OperationLogs-->
+  <!--Messages for DecryptVerify operation-->
+  <!--Messages for SignEncrypt operation-->
   <!--PassphraseCache-->
   <string name="passp_cache_notif_click_to_clear">Clicca per rimuovere la frase di accesso nella cache</string>
   <string name="passp_cache_notif_n_keys">OpenKeychain ha memorizzato nella cache %d frasi di accesso</string>
