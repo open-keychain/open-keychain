@@ -955,8 +955,6 @@ public class PgpKeyOperationTest {
             CanonicalizedSecretKeyRing secretRing = new CanonicalizedSecretKeyRing(modified.getEncoded(), false, 0);
             EditKeyResult result = op.modifySecretKeyRing(secretRing, parcel, otherPassphrase2);
             Assert.assertTrue("key modification must succeed", result.success());
-            Assert.assertTrue("log must contain a warning",
-                    result.getLog().containsWarnings());
             Assert.assertTrue("log must contain a failed passphrase change warning",
                     result.getLog().containsType(LogType.MSG_MF_PASSPHRASE_FAIL));
         }
