@@ -50,6 +50,7 @@ import org.sufficientlysecure.keychain.support.KeyringTestingHelper;
 import org.sufficientlysecure.keychain.support.KeyringTestingHelper.RawPacket;
 import org.sufficientlysecure.keychain.support.TestDataUtil;
 import org.sufficientlysecure.keychain.util.ProgressScaler;
+import org.sufficientlysecure.keychain.util.TestingUtils;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -65,7 +66,7 @@ import java.util.Random;
 public class PgpKeyOperationTest {
 
     static UncachedKeyRing staticRing;
-    final static String passphrase = genPassphrase();
+    final static String passphrase = TestingUtils.genPassphrase();
 
     UncachedKeyRing ring;
     PgpKeyOperation op;
@@ -919,7 +920,7 @@ public class PgpKeyOperationTest {
                 PacketTags.SECRET_SUBKEY, sKeyNoPassphrase.tag);
 
         // modify keyring, change to non-empty passphrase
-        String otherPassphrase = genPassphrase(true);
+        String otherPassphrase = TestingUtils.genPassphrase(true);
         parcel.mNewPassphrase = otherPassphrase;
         modified = applyModificationWithChecks(parcel, modified, onlyA, onlyB, "");
 
@@ -927,7 +928,7 @@ public class PgpKeyOperationTest {
         Assert.assertEquals("extracted packet should be a secret subkey",
                 PacketTags.SECRET_SUBKEY, sKeyNoPassphrase.tag);
 
-        String otherPassphrase2 = genPassphrase(true);
+        String otherPassphrase2 = TestingUtils.genPassphrase(true);
         parcel.mNewPassphrase = otherPassphrase2;
         {
             // if we replace a secret key with one without passphrase
@@ -1094,22 +1095,6 @@ public class PgpKeyOperationTest {
 
         return result.getRing();
 
-    }
-
-    private static String genPassphrase() {
-        return genPassphrase(false);
-    }
-
-    private static String genPassphrase(boolean noEmpty) {
-        String chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ123456789!@#$%^&*()-_=";
-        Random r = new Random();
-        StringBuilder passbuilder = new StringBuilder();
-        // 20% chance for an empty passphrase
-        for(int i = 0, j = noEmpty || r.nextInt(10) > 2 ? r.nextInt(20)+1 : 0; i < j; i++) {
-            passbuilder.append(chars.charAt(r.nextInt(chars.length())));
-        }
-        System.out.println("Generated passphrase: '" + passbuilder.toString() + "'");
-        return passbuilder.toString();
     }
 
 }
