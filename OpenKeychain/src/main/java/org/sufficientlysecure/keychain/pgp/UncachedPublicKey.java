@@ -32,6 +32,7 @@ import org.spongycastle.util.Strings;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.util.IterableIterator;
 import org.sufficientlysecure.keychain.util.Log;
+import org.sufficientlysecure.keychain.util.Utf8Util;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -185,7 +186,7 @@ public class UncachedPublicKey {
             }
         }
         if (found != null) {
-            return Strings.fromUTF8ByteArray(found);
+            return Utf8Util.fromUTF8ByteArrayReplaceBadEncoding(found);
         } else {
             return null;
         }
@@ -204,8 +205,9 @@ public class UncachedPublicKey {
 
     public ArrayList<String> getUnorderedUserIds() {
         ArrayList<String> userIds = new ArrayList<String>();
-        for (String userId : new IterableIterator<String>(mPublicKey.getUserIDs())) {
-            userIds.add(userId);
+        for (byte[] rawUserId : new IterableIterator<byte[]>(mPublicKey.getRawUserIDs())) {
+            // use our decoding method
+            userIds.add(Utf8Util.fromUTF8ByteArrayReplaceBadEncoding(rawUserId));
         }
         return userIds;
     }

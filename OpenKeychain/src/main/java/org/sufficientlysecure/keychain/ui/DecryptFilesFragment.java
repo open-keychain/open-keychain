@@ -46,9 +46,10 @@ import org.sufficientlysecure.keychain.util.Notify;
 
 import java.io.File;
 
-public class DecryptFileFragment extends DecryptFragment {
+public class DecryptFilesFragment extends DecryptFragment {
     public static final String ARG_URI = "uri";
-    public static final String ARG_FROM_VIEW_INTENT = "view_intent";
+//    public static final String ARG_FROM_VIEW_INTENT = "view_intent";
+    public static final String ARG_OPEN_DIRECTLY = "open_directly";
 
     private static final int REQUEST_CODE_INPUT = 0x00007003;
     private static final int REQUEST_CODE_OUTPUT = 0x00007007;
@@ -63,6 +64,22 @@ public class DecryptFileFragment extends DecryptFragment {
     private Uri mOutputUri = null;
 
     /**
+     * Creates new instance of this fragment
+     */
+    public static DecryptFilesFragment newInstance(Uri uri, boolean openDirectly) {
+        DecryptFilesFragment frag = new DecryptFilesFragment();
+
+        Bundle args = new Bundle();
+        args.putParcelable(ARG_URI, uri);
+//        args.putBoolean(ARG_FROM_VIEW_INTENT, fromViewIntent);
+        args.putBoolean(ARG_OPEN_DIRECTLY, openDirectly);
+
+        frag.setArguments(args);
+
+        return frag;
+    }
+
+    /**
      * Inflate the layout for this fragment
      */
     @Override
@@ -75,9 +92,9 @@ public class DecryptFileFragment extends DecryptFragment {
         view.findViewById(R.id.decrypt_file_browse).setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                    FileHelper.openDocument(DecryptFileFragment.this, "*/*", REQUEST_CODE_INPUT);
+                    FileHelper.openDocument(DecryptFilesFragment.this, "*/*", REQUEST_CODE_INPUT);
                 } else {
-                    FileHelper.openFile(DecryptFileFragment.this, mInputUri, "*/*",
+                    FileHelper.openFile(DecryptFilesFragment.this, mInputUri, "*/*",
                             REQUEST_CODE_INPUT);
                 }
             }
@@ -97,6 +114,15 @@ public class DecryptFileFragment extends DecryptFragment {
         super.onActivityCreated(savedInstanceState);
 
         setInputUri(getArguments().<Uri>getParcelable(ARG_URI));
+
+        if (getArguments().getBoolean(ARG_OPEN_DIRECTLY, false)) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                FileHelper.openDocument(DecryptFilesFragment.this, "*/*", REQUEST_CODE_INPUT);
+            } else {
+                FileHelper.openFile(DecryptFilesFragment.this, mInputUri, "*/*",
+                        REQUEST_CODE_INPUT);
+            }
+        }
     }
 
     private void setInputUri(Uri inputUri) {

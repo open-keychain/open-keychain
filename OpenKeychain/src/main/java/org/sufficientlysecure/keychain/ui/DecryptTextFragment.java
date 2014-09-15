@@ -24,92 +24,75 @@ import android.os.Message;
 import android.os.Messenger;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.widget.EditText;
+import android.widget.TextView;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.compatibility.ClipboardReflection;
-import org.sufficientlysecure.keychain.service.results.DecryptVerifyResult;
-import org.sufficientlysecure.keychain.pgp.PgpHelper;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
 import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
+import org.sufficientlysecure.keychain.service.results.DecryptVerifyResult;
 import org.sufficientlysecure.keychain.util.Log;
-import org.sufficientlysecure.keychain.util.Notify;
 
-import java.util.regex.Matcher;
-
-public class DecryptMessageFragment extends DecryptFragment {
+public class DecryptTextFragment extends DecryptFragment {
     public static final String ARG_CIPHERTEXT = "ciphertext";
 
-    // view
-    private EditText mMessage;
-    private View mDecryptButton;
-    private View mDecryptFromCLipboardButton;
-
-    // model
+//    // view
+    private TextView mMessage;
+//    private View mDecryptButton;
+//    private View mDecryptFromCLipboardButton;
+//
+//    // model
     private String mCiphertext;
+
+    /**
+     * Creates new instance of this fragment
+     */
+    public static DecryptTextFragment newInstance(String ciphertext) {
+        DecryptTextFragment frag = new DecryptTextFragment();
+
+        Bundle args = new Bundle();
+        args.putString(ARG_CIPHERTEXT, ciphertext);
+
+        frag.setArguments(args);
+
+        return frag;
+    }
 
     /**
      * Inflate the layout for this fragment
      */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.decrypt_message_fragment, container, false);
+        View view = inflater.inflate(R.layout.decrypt_text_fragment, container, false);
 
-        mMessage = (EditText) view.findViewById(R.id.message);
-        mDecryptButton = view.findViewById(R.id.action_decrypt);
-        mDecryptFromCLipboardButton = view.findViewById(R.id.action_decrypt_from_clipboard);
-        mDecryptButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                decryptClicked();
-            }
-        });
-        mDecryptFromCLipboardButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                decryptFromClipboardClicked();
-            }
-        });
+        mMessage = (TextView) view.findViewById(R.id.decrypt_text_plaintext);
+//        mDecryptButton = view.findViewById(R.id.action_decrypt);
+//        mDecryptFromCLipboardButton = view.findViewById(R.id.action_decrypt_from_clipboard);
+//        mDecryptButton.setOnClickListener(new OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                decryptClicked();
+//            }
+//        });
+//        mDecryptFromCLipboardButton.setOnClickListener(new OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                decryptFromClipboardClicked();
+//            }
+//        });
 
         return view;
     }
 
     @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
         String ciphertext = getArguments().getString(ARG_CIPHERTEXT);
         if (ciphertext != null) {
             mCiphertext = ciphertext;
             decryptStart(null);
-        }
-    }
-
-    private void decryptClicked() {
-        mCiphertext = mMessage.getText().toString();
-        decryptStart(null);
-    }
-
-    private void decryptFromClipboardClicked() {
-        CharSequence clipboardText = ClipboardReflection.getClipboardText(getActivity());
-
-        // only decrypt if clipboard content is available and a pgp message or cleartext signature
-        if (clipboardText != null) {
-            Matcher matcher = PgpHelper.PGP_MESSAGE.matcher(clipboardText);
-            if (!matcher.matches()) {
-                matcher = PgpHelper.PGP_CLEARTEXT_SIGNATURE.matcher(clipboardText);
-            }
-            if (matcher.matches()) {
-                mCiphertext = matcher.group(1);
-                decryptStart(null);
-            } else {
-                Notify.showNotify(getActivity(), R.string.error_invalid_data, Notify.Style.ERROR);
-            }
-        } else {
-            Notify.showNotify(getActivity(), R.string.error_invalid_data, Notify.Style.ERROR);
         }
     }
 

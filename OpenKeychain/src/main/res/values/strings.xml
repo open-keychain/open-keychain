@@ -521,7 +521,6 @@
 
     <!-- hints -->
     <string name="encrypt_content_edit_text_hint">"Type text"</string>
-    <string name="decrypt_content_edit_text_hint">"Enter ciphertext here to decrypt and/or verify…"</string>
 
     <!-- certs -->
     <string name="cert_default">"default"</string>

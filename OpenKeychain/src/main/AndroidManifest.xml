@@ -139,11 +139,6 @@
             android:label="@string/title_select_recipients"
             android:launchMode="singleTop" />
         <activity
-            android:name=".ui.SelectSecretKeyActivity"
-            android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
-            android:label="@string/title_select_secret_key"
-            android:launchMode="singleTop" />
-        <activity
             android:name=".ui.EncryptFileActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
             android:label="@string/title_encrypt_files"
@@ -196,170 +191,37 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ui.DecryptOldActivity"
-            android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
-            android:label="@string/title_decrypt"
-            android:windowSoftInputMode="stateHidden">
-
-            <!-- VIEW with mimeType application/octet-stream, application/pgp and text/pgp  -->
-            <intent-filter android:label="@string/intent_send_decrypt">
-                <action android:name="android.intent.action.VIEW" />
-
-                <category android:name="android.intent.category.BROWSABLE" />
-                <category android:name="android.intent.category.DEFAULT" />
-
-                <!-- mime type as defined in http://tools.ietf.org/html/rfc3156 -->
-                <data android:mimeType="application/octet-stream" />
-                <data android:mimeType="application/pgp" />
-                <data android:mimeType="text/pgp" />
-            </intent-filter>
-            <!-- Keychain's own Actions -->
-            <!-- DECRYPT with text as extra -->
-            <intent-filter>
-                <action android:name="org.sufficientlysecure.keychain.action.DECRYPT" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
-            <!-- DECRYPT with data Uri -->
-            <intent-filter>
-                <action android:name="org.sufficientlysecure.keychain.action.DECRYPT" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-
-                <data android:scheme="file" />
-                <data android:scheme="content" />
-            </intent-filter>
-            <!-- Android's Send Action -->
-            <intent-filter android:label="@string/intent_send_decrypt">
-                <action android:name="android.intent.action.SEND" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-
-                <data android:mimeType="*/*" />
-            </intent-filter>
-            <!-- Linking "Decrypt" to file types -->
-            <intent-filter android:label="@string/intent_decrypt_file">
-                <action android:name="android.intent.action.VIEW" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-
-                <data android:host="*" />
-                <data android:scheme="file" />
-                <data android:scheme="content" />
-
-                <!-- GnuPG ASCII data, mostly keys, but sometimes signatures and encrypted data -->
-                <data android:pathPattern=".*\\.asc" />
-                <data android:pathPattern=".*\\..*\\.asc" />
-                <data android:pathPattern=".*\\..*\\..*\\.asc" />
-                <data android:pathPattern=".*\\..*\\..*\\..*\\.asc" />
-                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\.asc" />
-                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\.asc" />
-                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\.asc" />
-                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\.asc" />
-                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\.asc" />
-                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\.asc" />
-                <!-- GnuPG binary encrypted/signed data, binary format -->
-                <data android:pathPattern=".*\\.gpg" />
-                <data android:pathPattern=".*\\..*\\.gpg" />
-                <data android:pathPattern=".*\\..*\\..*\\.gpg" />
-                <data android:pathPattern=".*\\..*\\..*\\..*\\.gpg" />
-                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\.gpg" />
-                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\.gpg" />
-                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\.gpg" />
-                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\.gpg" />
-                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\.gpg" />
-                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\.gpg" />
-                <!-- PGP encrypted data, binary format -->
-                <data android:pathPattern=".*\\.pgp" />
-                <data android:pathPattern=".*\\..*\\.pgp" />
-                <data android:pathPattern=".*\\..*\\..*\\.pgp" />
-                <data android:pathPattern=".*\\..*\\..*\\..*\\.pgp" />
-                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\.pgp" />
-                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\.pgp" />
-                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\.pgp" />
-                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\.pgp" />
-                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\.pgp" />
-                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\.pgp" />
-                <!-- on some mail clients, PGP attachments show up as *.bin -->
-                <data android:pathPattern=".*\\.bin" />
-                <data android:pathPattern=".*\\..*\\.bin" />
-                <data android:pathPattern=".*\\..*\\..*\\.bin" />
-                <data android:pathPattern=".*\\..*\\..*\\..*\\.bin" />
-                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\.bin" />
-                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\.bin" />
-                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\.bin" />
-                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\.bin" />
-                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\.bin" />
-                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\.bin" />
-            </intent-filter>
-            <!--
-                Some apps will only respect these file associations
-                if the mimeType is not set, and other apps will only respect them if mimeType is set
-                to */*. Therefore we have two whole copies of the same thing, besides setting the mimeType.
-            -->
-            <intent-filter android:label="@string/intent_decrypt_file">
-                <action android:name="android.intent.action.VIEW" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-
-                <data android:host="*" />
-                <data android:scheme="file" />
-                <data android:scheme="content" />
-
-                <data android:mimeType="*/*" />
-
-                <!-- GnuPG ASCII data, mostly keys, but sometimes signatures and encrypted data -->
-                <data android:pathPattern=".*\\.asc" />
-                <data android:pathPattern=".*\\..*\\.asc" />
-                <data android:pathPattern=".*\\..*\\..*\\.asc" />
-                <data android:pathPattern=".*\\..*\\..*\\..*\\.asc" />
-                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\.asc" />
-                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\.asc" />
-                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\.asc" />
-                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\.asc" />
-                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\.asc" />
-                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\.asc" />
-                <!-- GnuPG binary encrypted/signed data, binary format -->
-                <data android:pathPattern=".*\\.gpg" />
-                <data android:pathPattern=".*\\..*\\.gpg" />
-                <data android:pathPattern=".*\\..*\\..*\\.gpg" />
-                <data android:pathPattern=".*\\..*\\..*\\..*\\.gpg" />
-                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\.gpg" />
-                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\.gpg" />
-                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\.gpg" />
-                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\.gpg" />
-                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\.gpg" />
-                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\.gpg" />
-                <!-- PGP encrypted data, binary format -->
-                <data android:pathPattern=".*\\.pgp" />
-                <data android:pathPattern=".*\\..*\\.pgp" />
-                <data android:pathPattern=".*\\..*\\..*\\.pgp" />
-                <data android:pathPattern=".*\\..*\\..*\\..*\\.pgp" />
-                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\.pgp" />
-                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\.pgp" />
-                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\.pgp" />
-                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\.pgp" />
-                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\.pgp" />
-                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\.pgp" />
-                <!-- on some mail clients, PGP attachments show up as *.bin -->
-                <data android:pathPattern=".*\\.bin" />
-                <data android:pathPattern=".*\\..*\\.bin" />
-                <data android:pathPattern=".*\\..*\\..*\\.bin" />
-                <data android:pathPattern=".*\\..*\\..*\\..*\\.bin" />
-                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\.bin" />
-                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\.bin" />
-                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\.bin" />
-                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\.bin" />
-                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\.bin" />
-                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\.bin" />
-            </intent-filter>
-        </activity>
-        <activity
             android:name=".ui.DecryptActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
             android:label="@string/title_decrypt"
+            android:windowSoftInputMode="stateHidden" />
+        <activity
+            android:name=".ui.DecryptTextActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
+            android:label="@string/title_decrypt"
+            android:windowSoftInputMode="stateHidden">
+
+            <!-- Keychain's own Actions -->
+            <!-- DECRYPT with text as extra -->
+            <intent-filter>
+                <action android:name="org.sufficientlysecure.keychain.action.DECRYPT_TEXT" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+            <!-- Android's Send Action -->
+            <intent-filter android:label="@string/intent_send_decrypt">
+                <action android:name="android.intent.action.SEND" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+
+                <data android:mimeType="text/*" />
+                <data android:mimeType="message/*" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".ui.DecryptFilesActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
+            android:label="@string/title_decrypt"
             android:windowSoftInputMode="stateHidden">
 
             <!-- VIEW with mimeType application/octet-stream, application/pgp and text/pgp  -->
@@ -375,12 +237,6 @@
                 <data android:mimeType="text/pgp" />
             </intent-filter>
             <!-- Keychain's own Actions -->
-            <!-- DECRYPT with text as extra -->
-            <intent-filter>
-                <action android:name="org.sufficientlysecure.keychain.action.DECRYPT" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
             <!-- DECRYPT with data Uri -->
             <intent-filter>
                 <action android:name="org.sufficientlysecure.keychain.action.DECRYPT" />
@@ -396,7 +252,12 @@
 
                 <category android:name="android.intent.category.DEFAULT" />
 
-                <data android:mimeType="*/*" />
+                <!-- everything except text/* and message/* -->
+                <data android:mimeType="image/*" />
+                <data android:mimeType="audio/*" />
+                <data android:mimeType="video/*" />
+                <data android:mimeType="application/*" />
+                <data android:mimeType="multipart/*" />
             </intent-filter>
             <!-- Linking "Decrypt" to file types -->
             <intent-filter android:label="@string/intent_decrypt_file">

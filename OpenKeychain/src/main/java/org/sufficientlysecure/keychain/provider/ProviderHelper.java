@@ -65,6 +65,7 @@ import org.sufficientlysecure.keychain.util.IterableIterator;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.ProgressFixedScaler;
 import org.sufficientlysecure.keychain.util.ProgressScaler;
+import org.sufficientlysecure.keychain.util.Utf8Util;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -437,8 +438,7 @@ public class ProviderHelper {
             List<UserIdItem> uids = new ArrayList<UserIdItem>();
             for (byte[] rawUserId : new IterableIterator<byte[]>(
                     masterKey.getUnorderedRawUserIds().iterator())) {
-                String userId = Strings.fromUTF8ByteArray(rawUserId);
-                Log.d(Constants.TAG, "userId: "+userId);
+                String userId = Utf8Util.fromUTF8ByteArrayReplaceBadEncoding(rawUserId);
 
                 UserIdItem item = new UserIdItem();
                 uids.add(item);
