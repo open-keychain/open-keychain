@@ -22,7 +22,6 @@ import android.os.Environment;
 import org.spongycastle.jce.provider.BouncyCastleProvider;
 import org.sufficientlysecure.keychain.remote.ui.AppsListActivity;
 import org.sufficientlysecure.keychain.ui.DecryptActivity;
-import org.sufficientlysecure.keychain.ui.DecryptOldActivity;
 import org.sufficientlysecure.keychain.ui.EncryptFileActivity;
 import org.sufficientlysecure.keychain.ui.EncryptTextActivity;
 import org.sufficientlysecure.keychain.ui.KeyListActivity;
