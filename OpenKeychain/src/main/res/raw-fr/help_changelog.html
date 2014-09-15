@@ -1,17 +1,22 @@
 <html>
 <head></head>
 <body>
-<h2>2.10</h2>
+<h2>2.9.2</h2>
 <ul>
-<li>Split encrypt screen into two</li>
-<li>Fix key flags handling (now supporting Mailvelope 0.7 keys)</li>
-<li>Improved passphrase handling</li>
-<li>Key sharing via SafeSlinger</li>
-<li>Yubikey: preference to allow other PINs, currently only signing via the OpenPGP API works, not inside of OpenKeychain</li>
-<li>Fix usage of stripped keys</li>
-<li>SHA256 as default for compatibility</li>
-<li>Intent API has changed, see https://github.com/open-keychain/open-keychain/wiki/Intent-API</li>
-<li>OpenPGP API now handles revoked/expired keys and returns all user ids</li>
+<li>Correctif - Clefs brisées dans 2.9.1</li>
+<li>Le déchiffrement des Yukukeys par l'API fonctionne maintenant</li>
+</ul>
+<h2>2.9.1</h2>
+<ul>
+<li>Partage de l'écran de chiffrement en deux</li>
+<li>Correctif - Gestion des drapeaux de clefs (prend maintenant en charge les clefs Mailvelope 0.7)</li>
+<li>Gestion des phrases de passe améliorée</li>
+<li>Partage de clefs par SafeSlinger</li>
+<li>Yubikey : préférence pour permette d'autre NIP, seule la signature par l'API OpenPGP fonctionne présentement, mais pas à l'intérieur d'OpenKeychain</li>
+<li>Correctif - Utilisation de clefs dépouillées</li>
+<li>SHA256 par défaut pour la compatibilité</li>
+<li>L'API des intentions a changé, voir https://github.com/open-keychain/open-keychain/wiki/Intent-API</li>
+<li>L'API d'OpenPGP gère maintenant les clefs révoquées/expirées et retourne tous les ID d'utilisateurs</li>
 </ul>
 <h2>2.9</h2>
 <ul>
@@ -52,11 +57,11 @@
 <li>Prise en charge clefs secrètes partielles de GnuPG (merci à Vincent Breitmoser)</li>
 <li>Nouvelle conception de la vérification de signatures</li>
 <li>Longueur de clef personnalisée (merci à Greg Witczak)</li>
-<li>Correctif - fonctionnalités partagées d'autres applis</li>
+<li>Correctif - Fonctionnalités partagées d'autres applis</li>
 </ul>
 <h2>2.5</h2>
 <ul>
-<li>Correctif - déchiffrement de messages/fichiers pgp symétriques</li>
+<li>Correctif -Déchiffrement de messages/fichiers pgp symétriques</li>
 <li>Écran de modification des clefs remanié (merci à Ash Hughes)</li>
 <li>Nouvelle conception moderne pour les écrans de chiffrement/déchiffrement</li>
 <li>API OpenPGP version 3 (comptes multiples d'api, correctifs internes, recherche de clefs)</li>
@@ -85,14 +90,14 @@ Daniel Hammann, Daniel Haß, Greg Witczak, Miroojin Bakshi, Nikhil Peter Raj, Pa
 <h2>2.3</h2>
 <ul>
 <li>Suppressions de l'exportation non nécessaire des clefs publiques lors de l'exportation de clefs secrètes (merci à Ash Hughes)</li>
-<li>Correctif - définition de la date de péremption des clefs (merci à Ash Hughes)</li>
+<li>Correctif - Définition de la date de péremption des clefs (merci à Ash Hughes)</li>
 <li>Plus de correctifs internes affectant la modifications des clefs (merci à Ash hughes)</li>
 <li>Interrogation des serveurs de clefs directement depuis l'écran d'importation</li>
-<li>Correctif - mise en page et du style des fenêtres de dialogue sur Android 2.2-3.0</li>
-<li>Correctif - plantage pour les clefs avec des ID d'utilisateur vides</li>
-<li>Correctif - plantage et listes vides en revenant de l'écran de signature</li>
+<li>Correctif - Mise en page et du style des fenêtres de dialogue sur Android 2.2-3.0</li>
+<li>Correctif - Plantage pour les clefs avec des ID d'utilisateur vides</li>
+<li>Correctif - Plantage et listes vides en revenant de l'écran de signature</li>
 <li>Bouncy Castle (bibliothèque cryptographique) mise à jour de 1.47 à 1.50 et compilée depuis la source</li>
-<li>Correctif - téléversement d'une clef depuis l'écran de signature</li>
+<li>Correctif - Téléversement d'une clef depuis l'écran de signature</li>
 </ul>
 <h2>2.2</h2>
 <ul>
@@ -141,7 +146,7 @@ Daniel Hammann, Daniel Haß, Greg Witczak, Miroojin Bakshi, Nikhil Peter Raj, Pa
 </ul>
 <h2>1.0.6</h2>
 <ul>
-<li>Correctif - plantage lors de l'ajout de compte sur Froyo</li>
+<li>Correctif - Plantage lors de l'ajout de compte sur Froyo</li>
 <li>Suppression sécurisée de fichiers</li>
 <li>Option de suppression du fichier de clef après l'importation</li>
 <li>Chiffrement/déchiffrement de flux (galerie, etc.)</li>

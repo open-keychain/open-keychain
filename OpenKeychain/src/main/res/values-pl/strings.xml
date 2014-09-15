@@ -131,7 +131,6 @@
   <string name="no_keys_exported">Nie wyeksportowano żadnych kluczy.</string>
   <string name="key_creation_el_gamal_info">Informacja: tylko podklucze mogą być tworzone przy użyciu algorytmu ElGamal.</string>
   <string name="key_not_found">Nie można znaleźć klucza %08X.</string>
-  <string name="key_send_success">Pomyślnie wysłano klucz na serwer</string>
   <string name="list_empty">Lista jest pusta!</string>
   <string name="nfc_successful">Pomyślnie wysłano klucz przez NFC Beam!</string>
   <string name="key_copied_to_clipboard">Klucz został skopiowany do schowka!</string>
@@ -297,6 +296,9 @@
   <!--createSecretKeyRing-->
   <!--modifySecretKeyRing-->
   <!--Consolidate-->
+  <!--Other messages used in OperationLogs-->
+  <!--Messages for DecryptVerify operation-->
+  <!--Messages for SignEncrypt operation-->
   <!--PassphraseCache-->
   <!--unsorted-->
   <string name="section_cert">Szczegóły certyfikatu</string>

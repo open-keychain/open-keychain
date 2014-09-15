@@ -170,8 +170,6 @@
   <string name="no_keys_exported">Ключи не были экспортированы.</string>
   <string name="key_creation_el_gamal_info">Прим.: только вторичные ключи поддерживают ElGamal.</string>
   <string name="key_not_found">Не удается найти ключ %08X.</string>
-  <string name="key_send_success">Ключ успешно загружен на сервер</string>
-  <string name="key_certify_success">Подписанные идентификаторы</string>
   <string name="list_empty">Список пуст!</string>
   <string name="nfc_successful">Ключ успешно передан через NFC!</string>
   <string name="key_copied_to_clipboard">Ключ скопирован в буфер обмена!</string>
@@ -302,7 +300,6 @@
   <string name="import_tab_keyserver">Сервер ключей</string>
   <string name="import_tab_direct">Файл/Буфер</string>
   <string name="import_tab_qr_code">QR код/NFC</string>
-  <string name="import_tab_keybase">Keybase.io</string>
   <string name="import_import">Импорт выбранных ключей</string>
   <string name="import_qr_code_wrong">Некорректный QR код. Попробуйте снова!</string>
   <string name="import_qr_code_too_short_fingerprint">Отпечаток слишком коротнкий (&lt; 16 символов)</string>
@@ -435,7 +432,6 @@
   <string name="msg_mf_error_encode">Ошибка кодирования!</string>
   <string name="msg_mf_error_integrity">Внутренняя ошибка, сбой проверки целостности!</string>
   <string name="msg_mf_error_revoked_primary">Аннулированные идентификаторы не могут быть основными!</string>
-  <string name="msg_mf_error_pgp">Внутренняя ошибка PGP!</string>
   <string name="msg_mf_error_sig">Ошибка подписи!</string>
   <string name="msg_mf_success">Связка успешно изменена</string>
   <string name="msg_mf_uid_add">Добавление id %s</string>
@@ -444,6 +440,9 @@
   <string name="msg_mf_unlock_error">Ошибка разблокирования связки!</string>
   <string name="msg_mf_unlock">Разблокирование связки</string>
   <!--Consolidate-->
+  <!--Other messages used in OperationLogs-->
+  <!--Messages for DecryptVerify operation-->
+  <!--Messages for SignEncrypt operation-->
   <!--PassphraseCache-->
   <!--unsorted-->
   <string name="section_certifier_id">Кем подписан</string>

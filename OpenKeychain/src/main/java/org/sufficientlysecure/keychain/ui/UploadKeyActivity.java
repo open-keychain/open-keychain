@@ -113,7 +113,7 @@ public class UploadKeyActivity extends ActionBarActivity {
 
                 if (message.arg1 == KeychainIntentServiceHandler.MESSAGE_OKAY) {
 
-                    Toast.makeText(UploadKeyActivity.this, R.string.key_send_success,
+                    Toast.makeText(UploadKeyActivity.this, R.string.msg_crt_upload_success,
                             Toast.LENGTH_SHORT).show();
                     finish();
                 }

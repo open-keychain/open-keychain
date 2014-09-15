@@ -169,8 +169,6 @@
   <string name="no_keys_exported">Жодного ключа не експортовано.</string>
   <string name="key_creation_el_gamal_info">Примітка: лише підключі підтримують ElGamal.</string>
   <string name="key_not_found">Не можливо знайти ключ %08X.</string>
-  <string name="key_send_success">Успішно завантажено ключ на сервер</string>
-  <string name="key_certify_success">Успішно сертифіковані сутності</string>
   <string name="list_empty">Цей список - порожній!</string>
   <string name="nfc_successful">Успішно надіслано ключ через промінь NFC!</string>
   <string name="key_copied_to_clipboard">Ключ вже скопійовано у буфер обміну!</string>
@@ -267,7 +265,6 @@
   <string name="progress_con_reimport">consolidate: повторний імпорт…</string>
   <!--action strings-->
   <string name="hint_keyserver_search_hint">Назва/Ел. пошта/ІД ключа…</string>
-  <string name="hint_keybase_search_hint">Назва/Ел.пошта/Доказ/Ключ…</string>
   <!--key bit length selections-->
   <string name="key_size_512">512</string>
   <string name="key_size_768">768</string>
@@ -304,7 +301,6 @@
   <string name="import_tab_keyserver">Сервер ключів</string>
   <string name="import_tab_direct">Файл/Буфер обміну</string>
   <string name="import_tab_qr_code">Код QR/NFC</string>
-  <string name="import_tab_keybase">Keybase.io</string>
   <string name="import_import">Імпортувати вибрані ключі</string>
   <string name="import_qr_code_wrong">Невірний штрих-код! Спробуйте знову!</string>
   <string name="import_qr_code_too_short_fingerprint">Відбиток надто короткий (&lt; 16 символів)</string>
@@ -540,7 +536,6 @@
   <string name="msg_mf_error_noexist_primary">Вказаний поганий ІД первинного користувача!</string>
   <string name="msg_mf_error_noexist_revoke">Вказаний поганий ІД первинного користувача!</string>
   <string name="msg_mf_error_revoked_primary">ІД відхилених користувачів не може бути первинним!</string>
-  <string name="msg_mf_error_pgp">Внутрішній виняток PGP!</string>
   <string name="msg_mf_error_sig">Виняток підпису!</string>
   <string name="msg_mf_master">Змінюються основі сертифікації</string>
   <string name="msg_mf_primary_replace_old">Замінюється сертифікат ІД попереднього первинного користувача</string>
@@ -560,6 +555,9 @@
   <!--Consolidate-->
   <string name="msg_con_error_public">Помилка повторного імпорту публічних ключів!</string>
   <string name="msg_con_error_secret">Помилка повторного імпорту секретних ключів!</string>
+  <!--Other messages used in OperationLogs-->
+  <!--Messages for DecryptVerify operation-->
+  <!--Messages for SignEncrypt operation-->
   <!--PassphraseCache-->
   <string name="passp_cache_notif_click_to_clear">Клацніть для очищення кешованих парольних фраз</string>
   <string name="passp_cache_notif_n_keys">OpenKeychain має %d кешованих парольних фраз</string>
