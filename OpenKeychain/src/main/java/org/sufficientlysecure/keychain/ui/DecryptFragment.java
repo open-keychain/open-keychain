@@ -120,8 +120,7 @@ public abstract class DecryptFragment extends Fragment {
             if (userIdSplit[1] != null) {
                 mUserIdRest.setText(userIdSplit[1]);
             } else {
-                mUserIdRest.setText(getString(R.string.label_key_id) + ": "
-                        + PgpKeyHelper.convertKeyIdToHex(mSignatureKeyId));
+                mUserIdRest.setText(getString(R.string.label_key_id) + ": " + PgpKeyHelper.beautifyKeyId(mSignatureKeyId));
             }
 
             switch (signatureResult.getStatus()) {

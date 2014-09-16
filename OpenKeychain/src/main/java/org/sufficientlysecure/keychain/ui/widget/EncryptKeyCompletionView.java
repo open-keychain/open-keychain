@@ -239,7 +239,7 @@ public class EncryptKeyCompletionView extends TokenCompleteTextView {
         }
 
         public String getKeyIdHex() {
-            return PgpKeyHelper.convertKeyIdToHex(mKeyId);
+            return PgpKeyHelper.beautifyKeyId(mKeyId);
         }
 
         public String getKeyIdHexShort() {

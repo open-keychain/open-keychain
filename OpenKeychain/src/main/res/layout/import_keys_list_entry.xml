@@ -105,9 +105,8 @@
             android:id="@+id/subkey_item_key_id"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="0xBBBBBBBBBBBBBBBB"
-            android:textAppearance="?android:attr/textAppearanceSmall"
-            android:typeface="monospace" />
+            android:text="0123 4567 89AB CDEF"
+            android:textAppearance="?android:attr/textAppearanceSmall" />
 
         <TextView
             android:id="@+id/view_key_fingerprint"

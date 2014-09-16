@@ -33,6 +33,7 @@ import android.widget.TextView;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.keyimport.ImportKeysListEntry;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
+import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
 import org.sufficientlysecure.keychain.util.Highlighter;
 
 import java.util.ArrayList;
@@ -150,7 +151,9 @@ public class ImportKeysAdapter extends ArrayAdapter<ImportKeysListEntry> {
             holder.mainUserIdRest.setVisibility(View.GONE);
         }
 
-        holder.keyId.setText(entry.getKeyIdHex());
+        String keyLabel = getContext().getString(R.string.label_key_id) + ": " +
+                PgpKeyHelper.beautifyKeyId(entry.getKeyIdHex());
+        holder.keyId.setText(keyLabel);
 
         // don't show full fingerprint on key import
         holder.fingerprint.setVisibility(View.GONE);
