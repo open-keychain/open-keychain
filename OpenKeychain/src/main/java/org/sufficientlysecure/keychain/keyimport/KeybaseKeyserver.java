@@ -76,10 +76,10 @@ public class KeybaseKeyserver extends Keyserver {
         // store extra info, so we can query for the keybase id directly
         entry.setExtraData(username);
 
-        final int algorithmId = match.getAlgorithmId();
-        entry.setAlgorithm(PgpKeyHelper.getAlgorithmInfo(algorithmId, null, null));
         final int bitStrength = match.getBitStrength();
         entry.setBitStrength(bitStrength);
+        final int algorithmId = match.getAlgorithmId();
+        entry.setAlgorithm(PgpKeyHelper.getAlgorithmInfo(algorithmId, bitStrength, null));
 
         ArrayList<String> userIds = new ArrayList<String>();
         String name = fullName + " <keybase.io/" + username + ">";
