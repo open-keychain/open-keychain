@@ -54,8 +54,6 @@ public class RemoteServiceActivity extends ActionBarActivity {
     public static final String ACTION_REGISTER = Constants.INTENT_PREFIX + "API_ACTIVITY_REGISTER";
     public static final String ACTION_CREATE_ACCOUNT = Constants.INTENT_PREFIX
             + "API_ACTIVITY_CREATE_ACCOUNT";
-    public static final String ACTION_CACHE_PASSPHRASE = Constants.INTENT_PREFIX
-            + "API_ACTIVITY_CACHE_PASSPHRASE";
     public static final String ACTION_SELECT_PUB_KEYS = Constants.INTENT_PREFIX
             + "API_ACTIVITY_SELECT_PUB_KEYS";
     public static final String ACTION_ERROR_MESSAGE = Constants.INTENT_PREFIX
@@ -210,26 +208,6 @@ public class RemoteServiceActivity extends ActionBarActivity {
                         public void onClick(View v) {
                             // Cancel
                             RemoteServiceActivity.this.setResult(RESULT_CANCELED);
-                            RemoteServiceActivity.this.finish();
-                        }
-                    }
-            );
-
-        } else if (ACTION_CACHE_PASSPHRASE.equals(action)) {
-            long secretKeyId = extras.getLong(EXTRA_SECRET_KEY_ID);
-            final Intent resultData = extras.getParcelable(EXTRA_DATA);
-
-            PassphraseDialogFragment.show(this, secretKeyId,
-                    new Handler() {
-                        @Override
-                        public void handleMessage(Message message) {
-                            if (message.what == PassphraseDialogFragment.MESSAGE_OKAY) {
-                                // return given params again, for calling the service method again
-                                RemoteServiceActivity.this.setResult(RESULT_OK, resultData);
-                            } else {
-                                RemoteServiceActivity.this.setResult(RESULT_CANCELED);
-                            }
-
                             RemoteServiceActivity.this.finish();
                         }
                     }

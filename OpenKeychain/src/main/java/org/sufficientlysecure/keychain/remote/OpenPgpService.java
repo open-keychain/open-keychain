@@ -48,6 +48,7 @@ import org.sufficientlysecure.keychain.service.PassphraseCacheService;
 import org.sufficientlysecure.keychain.service.results.OperationResult.LogEntryParcel;
 import org.sufficientlysecure.keychain.service.results.SignEncryptResult;
 import org.sufficientlysecure.keychain.ui.ImportKeysActivity;
+import org.sufficientlysecure.keychain.ui.PassphraseDialogActivity;
 import org.sufficientlysecure.keychain.ui.ViewKeyActivity;
 import org.sufficientlysecure.keychain.util.InputData;
 import org.sufficientlysecure.keychain.util.Log;
@@ -203,11 +204,10 @@ public class OpenPgpService extends RemoteService {
 
     private Intent getPassphraseIntent(Intent data, long keyId) {
         // build PendingIntent for passphrase input
-        Intent intent = new Intent(getBaseContext(), RemoteServiceActivity.class);
-        intent.setAction(RemoteServiceActivity.ACTION_CACHE_PASSPHRASE);
-        intent.putExtra(RemoteServiceActivity.EXTRA_SECRET_KEY_ID, keyId);
+        Intent intent = new Intent(getBaseContext(), PassphraseDialogActivity.class);
+        intent.putExtra(PassphraseDialogActivity.EXTRA_SUBKEY_ID, keyId);
         // pass params through to activity that it can be returned again later to repeat pgp operation
-        intent.putExtra(RemoteServiceActivity.EXTRA_DATA, data);
+        intent.putExtra(PassphraseDialogActivity.EXTRA_DATA, data);
         PendingIntent pi = PendingIntent.getActivity(getBaseContext(), 0,
                 intent,
                 PendingIntent.FLAG_CANCEL_CURRENT);

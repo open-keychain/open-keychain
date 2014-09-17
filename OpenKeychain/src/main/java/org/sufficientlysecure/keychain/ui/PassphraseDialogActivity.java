@@ -64,7 +64,6 @@ public class PassphraseDialogActivity extends FragmentActivity {
     // special extra for OpenPgpService
     public static final String EXTRA_DATA = "data";
 
-    private Intent mServiceIntent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,9 +82,9 @@ public class PassphraseDialogActivity extends FragmentActivity {
 
         long keyId = getIntent().getLongExtra(EXTRA_SUBKEY_ID, 0);
 
-        mServiceIntent = getIntent().getParcelableExtra(EXTRA_DATA);
+        Intent serviceIntent = getIntent().getParcelableExtra(EXTRA_DATA);
 
-        show(this, keyId);
+        show(this, keyId, serviceIntent);
     }
 
     /**
@@ -93,13 +92,14 @@ public class PassphraseDialogActivity extends FragmentActivity {
      * encryption. Based on mSecretKeyId it asks for a passphrase to open a private key or it asks
      * for a symmetric passphrase
      */
-    public static void show(final FragmentActivity context, final long keyId) {
+    public static void show(final FragmentActivity context, final long keyId, final Intent serviceIntent) {
         DialogFragmentWorkaround.INTERFACE.runnableRunDelayed(new Runnable() {
             public void run() {
                 // do NOT check if the key even needs a passphrase. that's not our job here.
                 PassphraseDialogFragment frag = new PassphraseDialogFragment();
                 Bundle args = new Bundle();
                 args.putLong(EXTRA_SUBKEY_ID, keyId);
+                args.putParcelable(EXTRA_DATA, serviceIntent);
 
                 frag.setArguments(args);
 
@@ -112,9 +112,11 @@ public class PassphraseDialogActivity extends FragmentActivity {
         private EditText mPassphraseEditText;
         private View mInput, mProgress;
 
-        CanonicalizedSecretKeyRing mSecretRing = null;
-        boolean mIsCancelled = false;
-        long mSubKeyId;
+        private CanonicalizedSecretKeyRing mSecretRing = null;
+        private boolean mIsCancelled = false;
+        private long mSubKeyId;
+
+        private Intent mServiceIntent;
 
         /**
          * Creates dialog
@@ -129,6 +131,7 @@ public class PassphraseDialogActivity extends FragmentActivity {
                     R.style.Theme_AppCompat_Light);
 
             mSubKeyId = getArguments().getLong(EXTRA_SUBKEY_ID);
+            mServiceIntent = getArguments().getParcelable(EXTRA_DATA);
 
             CustomAlertDialogBuilder alert = new CustomAlertDialogBuilder(theme);
 
@@ -250,12 +253,8 @@ public class PassphraseDialogActivity extends FragmentActivity {
                     if (mSecretRing == null) {
                         PassphraseCacheService.addCachedPassphrase(getActivity(), Constants.key.symmetric,
                                 passphrase, getString(R.string.passp_cache_notif_pwd));
-                        // also return passphrase back to activity
-                        Intent returnIntent = new Intent();
-                        returnIntent.putExtra(MESSAGE_DATA_PASSPHRASE, passphrase);
-                        getActivity().setResult(RESULT_OK, returnIntent);
-                        dismiss();
-                        getActivity().finish();
+
+                        finishCaching(passphrase);
                         return;
                     }
 
@@ -316,17 +315,28 @@ public class PassphraseDialogActivity extends FragmentActivity {
                                 Log.e(Constants.TAG, "adding of a passphrase failed", e);
                             }
 
-                            // also return passphrase back to activity
-                            Intent returnIntent = new Intent();
-                            returnIntent.putExtra(MESSAGE_DATA_PASSPHRASE, passphrase);
-                            getActivity().setResult(RESULT_OK, returnIntent);
-                            dismiss();
-                            getActivity().finish();
+                            finishCaching(passphrase);
                         }
                     }.execute();
                 }
             });
+        }
 
+        private void finishCaching(String passphrase) {
+            if (mServiceIntent != null) {
+                // TODO: Not routing passphrase through OpenPGP API currently
+                // due to security concerns...
+                // BUT this means you need to _cache_ passphrases!
+                getActivity().setResult(RESULT_OK, mServiceIntent);
+            } else {
+                // also return passphrase back to activity
+                Intent returnIntent = new Intent();
+                returnIntent.putExtra(MESSAGE_DATA_PASSPHRASE, passphrase);
+                getActivity().setResult(RESULT_OK, returnIntent);
+            }
+
+            dismiss();
+            getActivity().finish();
         }
 
         @Override
