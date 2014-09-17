@@ -2,12 +2,14 @@ package org.sufficientlysecure.keychain.ui.dialog;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.view.ContextThemeWrapper;
 import android.view.View;
 import android.widget.TextView;
 
 import org.sufficientlysecure.keychain.R;
 
-/** This class extends AlertDiaog.Builder, styling the header using emphasis color.
+/**
+ * This class extends AlertDiaog.Builder, styling the header using emphasis color.
  * Note that this class is a huge hack, because dialog boxes aren't easily stylable.
  * Also, the dialog NEEDS to be called with show() directly, not create(), otherwise
  * the order of internal operations will lead to a crash!
@@ -15,7 +17,9 @@ import org.sufficientlysecure.keychain.R;
 public class CustomAlertDialogBuilder extends AlertDialog.Builder {
 
     public CustomAlertDialogBuilder(Activity activity) {
-        super(activity);
+        // if the progress dialog is displayed from the application class, design is missing
+        // hack to get holo design (which is not automatically applied due to activity's Theme.NoDisplay
+        super(new ContextThemeWrapper(activity, R.style.Theme_AppCompat_Light));
     }
 
     @Override

@@ -59,7 +59,7 @@ import org.sufficientlysecure.keychain.util.Log;
 public class PassphraseDialogActivity extends FragmentActivity {
     public static final String MESSAGE_DATA_PASSPHRASE = "passphrase";
 
-    public static final String EXTRA_SECRET_KEY_ID = "secret_key_id";
+    public static final String EXTRA_SUBKEY_ID = "secret_key_id";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,7 +76,7 @@ public class PassphraseDialogActivity extends FragmentActivity {
 
         // this activity itself has no content view (see manifest)
 
-        long keyId = getIntent().getLongExtra(EXTRA_SECRET_KEY_ID, 0);
+        long keyId = getIntent().getLongExtra(EXTRA_SUBKEY_ID, 0);
 
         show(this, keyId);
     }
@@ -92,7 +92,7 @@ public class PassphraseDialogActivity extends FragmentActivity {
                 // do NOT check if the key even needs a passphrase. that's not our job here.
                 PassphraseDialogFragment frag = new PassphraseDialogFragment();
                 Bundle args = new Bundle();
-                args.putLong(EXTRA_SECRET_KEY_ID, keyId);
+                args.putLong(EXTRA_SUBKEY_ID, keyId);
 
                 frag.setArguments(args);
 
@@ -116,7 +116,7 @@ public class PassphraseDialogActivity extends FragmentActivity {
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
             final Activity activity = getActivity();
-            mSubKeyId = getArguments().getLong(EXTRA_SECRET_KEY_ID);
+            mSubKeyId = getArguments().getLong(EXTRA_SUBKEY_ID);
 
             CustomAlertDialogBuilder alert = new CustomAlertDialogBuilder(activity);
 

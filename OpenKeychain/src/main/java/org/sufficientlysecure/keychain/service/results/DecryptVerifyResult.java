@@ -26,12 +26,12 @@ import org.openintents.openpgp.OpenPgpSignatureResult;
 public class DecryptVerifyResult extends OperationResult {
 
     // the fourth bit indicates a "data pending" result! (it's also a form of non-success)
-    public static final int RESULT_PENDING = RESULT_ERROR +8;
+    public static final int RESULT_PENDING = RESULT_ERROR + 8;
 
     // fifth to sixth bit in addition indicate specific type of pending
-    public static final int RESULT_PENDING_ASYM_PASSPHRASE = RESULT_PENDING +16;
-    public static final int RESULT_PENDING_SYM_PASSPHRASE = RESULT_PENDING +32;
-    public static final int RESULT_PENDING_NFC = RESULT_PENDING +48;
+    public static final int RESULT_PENDING_ASYM_PASSPHRASE = RESULT_PENDING + 16;
+    public static final int RESULT_PENDING_SYM_PASSPHRASE = RESULT_PENDING + 32;
+    public static final int RESULT_PENDING_NFC = RESULT_PENDING + 48;
 
     long mKeyIdPassphraseNeeded;
     byte[] mNfcSessionKey;

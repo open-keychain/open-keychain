@@ -24,14 +24,25 @@ import java.util.Date;
 public class SignEncryptResult extends OperationResult {
 
     // the fourth bit indicates a "data pending" result! (it's also a form of non-success)
-    public static final int RESULT_PENDING = RESULT_ERROR +8;
+    public static final int RESULT_PENDING = RESULT_ERROR + 8;
 
     // fifth to sixth bit in addition indicate specific type of pending
-    public static final int RESULT_PENDING_NFC = RESULT_PENDING +16;
+    public static final int RESULT_PENDING_PASSPHRASE = RESULT_PENDING + 16;
+    public static final int RESULT_PENDING_NFC = RESULT_PENDING + 32;
+
+    long mKeyIdPassphraseNeeded;
 
     byte[] mNfcHash;
     int mNfcAlgo;
     Date mNfcTimestamp;
+
+    public long getKeyIdPassphraseNeeded() {
+        return mKeyIdPassphraseNeeded;
+    }
+
+    public void setKeyIdPassphraseNeeded(long keyIdPassphraseNeeded) {
+        mKeyIdPassphraseNeeded = keyIdPassphraseNeeded;
+    }
 
     public void setNfcData(byte[] sessionKey, int nfcAlgo, Date nfcTimestamp) {
         mNfcHash = sessionKey;
@@ -52,7 +63,7 @@ public class SignEncryptResult extends OperationResult {
     }
 
     public boolean isPending() {
-        return (mResult & RESULT_PENDING) != 0;
+        return (mResult & RESULT_PENDING) == RESULT_PENDING;
     }
 
     public SignEncryptResult(int result, OperationLog log) {

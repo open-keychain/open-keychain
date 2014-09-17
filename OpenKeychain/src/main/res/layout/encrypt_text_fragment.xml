@@ -13,7 +13,7 @@
         android:orientation="vertical">
 
         <EditText
-            android:id="@+id/message"
+            android:id="@+id/encrypt_text_text"
             android:layout_width="match_parent"
             android:layout_height="0dip"
             android:gravity="top"

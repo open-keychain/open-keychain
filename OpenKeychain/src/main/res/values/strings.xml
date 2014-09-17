@@ -823,6 +823,7 @@
     <string name="msg_se_key_warn">"Bad key for encryption: %s"</string>
     <string name="msg_se_ok">"Sign/Encrypt operation successful!"</string>
     <string name="msg_se_pending_nfc">"NFC token required, requesting user input…"</string>
+    <string name="msg_se_pending_passphrase">"Passphrase required, requesting user input…"</string>
     <string name="msg_se_signing">"Signing data (without encryption)"</string>
     <string name="msg_se_sigcrypting">"Encrypting data with signature"</string>
     <string name="msg_se">"Starting sign and/or encrypt operation"</string>

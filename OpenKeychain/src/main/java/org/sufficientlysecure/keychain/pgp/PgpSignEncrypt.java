@@ -59,6 +59,7 @@ import java.util.LinkedList;
  */
 public class PgpSignEncrypt {
     private ProviderHelper mProviderHelper;
+    private PassphraseCacheInterface mPassphraseCache;
     private String mVersionHeader;
     private InputData mData;
     private OutputStream mOutStream;
@@ -93,6 +94,7 @@ public class PgpSignEncrypt {
     private PgpSignEncrypt(Builder builder) {
         // private Constructor can only be called from Builder
         this.mProviderHelper = builder.mProviderHelper;
+        this.mPassphraseCache = builder.mPassphraseCache;
         this.mVersionHeader = builder.mVersionHeader;
         this.mData = builder.mData;
         this.mOutStream = builder.mOutStream;
@@ -117,6 +119,7 @@ public class PgpSignEncrypt {
     public static class Builder {
         // mandatory parameter
         private ProviderHelper mProviderHelper;
+        private PassphraseCacheInterface mPassphraseCache;
         private InputData mData;
         private OutputStream mOutStream;
 
@@ -138,8 +141,10 @@ public class PgpSignEncrypt {
         private byte[] mNfcSignedHash = null;
         private Date mNfcCreationTimestamp = null;
 
-        public Builder(ProviderHelper providerHelper, InputData data, OutputStream outStream) {
+        public Builder(ProviderHelper providerHelper, PassphraseCacheInterface passphraseCache,
+                       InputData data, OutputStream outStream) {
             mProviderHelper = providerHelper;
+            mPassphraseCache = passphraseCache;
             mData = data;
             mOutStream = outStream;
         }
@@ -290,20 +295,15 @@ public class PgpSignEncrypt {
 
         /* Get keys for signature generation for later usage */
         CanonicalizedSecretKey signingKey = null;
+        long signKeyId;
         if (enableSignature) {
-
-            // If we weren't handed a passphrase, throw early
-            if (mSignaturePassphrase == null) {
-                log.add(LogType.MSG_SE_ERROR_NO_PASSPHRASE, indent);
-                return new SignEncryptResult(SignEncryptResult.RESULT_ERROR, log);
-            }
 
             try {
                 // fetch the indicated master key id (the one whose name we sign in)
                 CanonicalizedSecretKeyRing signingKeyRing =
                         mProviderHelper.getCanonicalizedSecretKeyRing(mSignatureMasterKeyId);
                 // fetch the specific subkey to sign with, or just use the master key if none specified
-                long signKeyId = mSignatureSubKeyId != null ? mSignatureSubKeyId : mSignatureMasterKeyId;
+                signKeyId = mSignatureSubKeyId != null ? mSignatureSubKeyId : mSignatureMasterKeyId;
                 signingKey = signingKeyRing.getSecretKey(signKeyId);
                 // make sure it's a signing key alright!
             } catch (ProviderHelper.NotFoundException e) {
@@ -315,6 +315,28 @@ public class PgpSignEncrypt {
             if (!signingKey.canSign()) {
                 log.add(LogType.MSG_SE_ERROR_KEY_SIGN, indent);
                 return new SignEncryptResult(SignEncryptResult.RESULT_ERROR, log);
+            }
+
+            // if no passphrase was explicitly set try to get it from the cache service
+            if (mSignaturePassphrase == null) {
+                try {
+                    // returns "" if key has no passphrase
+                    mSignaturePassphrase = mPassphraseCache.getCachedPassphrase(signKeyId);
+                    // TODO
+//                    log.add(LogType.MSG_DC_PASS_CACHED, indent + 1);
+                } catch (PassphraseCacheInterface.NoSecretKeyException e) {
+                    // TODO
+//                    log.add(LogType.MSG_DC_ERROR_NO_KEY, indent + 1);
+                    return new SignEncryptResult(SignEncryptResult.RESULT_ERROR, log);
+                }
+
+                // if passphrase was not cached, return here indicating that a passphrase is missing!
+                if (mSignaturePassphrase == null) {
+                    log.add(LogType.MSG_SE_PENDING_PASSPHRASE, indent + 1);
+                    SignEncryptResult result = new SignEncryptResult(SignEncryptResult.RESULT_PENDING_PASSPHRASE, log);
+                    result.setKeyIdPassphraseNeeded(signKeyId);
+                    return result;
+                }
             }
 
             updateProgress(R.string.progress_extracting_signature_key, 0, 100);
@@ -369,10 +391,10 @@ public class PgpSignEncrypt {
                         log.add(LogType.MSG_SE_KEY_OK, indent + 1,
                                 PgpKeyHelper.convertKeyIdToHex(id));
                     } catch (PgpGeneralException e) {
-                        log.add(LogType.MSG_SE_KEY_WARN, indent +1,
+                        log.add(LogType.MSG_SE_KEY_WARN, indent + 1,
                                 PgpKeyHelper.convertKeyIdToHex(id));
                     } catch (ProviderHelper.NotFoundException e) {
-                        log.add(LogType.MSG_SE_KEY_UNKNOWN, indent +1,
+                        log.add(LogType.MSG_SE_KEY_UNKNOWN, indent + 1,
                                 PgpKeyHelper.convertKeyIdToHex(id));
                     }
                 }
@@ -407,9 +429,10 @@ public class PgpSignEncrypt {
                 /* actual encryption */
                 updateProgress(R.string.progress_encrypting, 8, 100);
                 log.add(enableSignature
-                        ? LogType.MSG_SE_SIGCRYPTING
-                        : LogType.MSG_SE_ENCRYPTING,
-                        indent);
+                                ? LogType.MSG_SE_SIGCRYPTING
+                                : LogType.MSG_SE_ENCRYPTING,
+                        indent
+                );
                 indent += 1;
 
                 encryptionOut = cPk.open(out, new byte[1 << 16]);

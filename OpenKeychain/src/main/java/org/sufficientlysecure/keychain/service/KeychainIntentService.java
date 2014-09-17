@@ -40,6 +40,7 @@ import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedPublicKeyRing;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKeyRing;
+import org.sufficientlysecure.keychain.pgp.PassphraseCacheInterface;
 import org.sufficientlysecure.keychain.pgp.PgpDecryptVerify;
 import org.sufficientlysecure.keychain.service.results.DecryptVerifyResult;
 import org.sufficientlysecure.keychain.pgp.PgpHelper;
@@ -269,6 +270,17 @@ public class KeychainIntentService extends IntentService implements Progressable
                     /* Operation */
                     PgpSignEncrypt.Builder builder = new PgpSignEncrypt.Builder(
                             new ProviderHelper(this),
+                            new PassphraseCacheInterface() {
+                                @Override
+                                public String getCachedPassphrase(long masterKeyId) throws PassphraseCacheInterface.NoSecretKeyException {
+                                    try {
+                                        return PassphraseCacheService.getCachedPassphrase(
+                                                KeychainIntentService.this, masterKeyId);
+                                    } catch (PassphraseCacheService.KeyNotFoundException e) {
+                                        throw new PassphraseCacheInterface.NoSecretKeyException();
+                                    }
+                                }
+                            },
                             inputData, outStream
                     );
                     builder.setProgressable(this)
@@ -342,14 +354,14 @@ public class KeychainIntentService extends IntentService implements Progressable
                 // verification of signatures
                 PgpDecryptVerify.Builder builder = new PgpDecryptVerify.Builder(
                         new ProviderHelper(this),
-                        new PgpDecryptVerify.PassphraseCache() {
+                        new PassphraseCacheInterface() {
                             @Override
-                            public String getCachedPassphrase(long masterKeyId) {
+                            public String getCachedPassphrase(long masterKeyId) throws PassphraseCacheInterface.NoSecretKeyException {
                                 try {
                                     return PassphraseCacheService.getCachedPassphrase(
                                             KeychainIntentService.this, masterKeyId);
                                 } catch (PassphraseCacheService.KeyNotFoundException e) {
-                                    return null;
+                                    throw new PassphraseCacheInterface.NoSecretKeyException();
                                 }
                             }
                         },
@@ -390,14 +402,14 @@ public class KeychainIntentService extends IntentService implements Progressable
                 // verification of signatures
                 PgpDecryptVerify.Builder builder = new PgpDecryptVerify.Builder(
                         new ProviderHelper(this),
-                        new PgpDecryptVerify.PassphraseCache() {
+                        new PassphraseCacheInterface() {
                             @Override
-                            public String getCachedPassphrase(long masterKeyId) throws PgpDecryptVerify.NoSecretKeyException {
+                            public String getCachedPassphrase(long masterKeyId) throws PassphraseCacheInterface.NoSecretKeyException {
                                 try {
                                     return PassphraseCacheService.getCachedPassphrase(
                                             KeychainIntentService.this, masterKeyId);
                                 } catch (PassphraseCacheService.KeyNotFoundException e) {
-                                    throw new PgpDecryptVerify.NoSecretKeyException();
+                                    throw new PassphraseCacheInterface.NoSecretKeyException();
                                 }
                             }
                         },

@@ -32,12 +32,11 @@ import org.sufficientlysecure.keychain.R;
 public class EncryptTextFragment extends Fragment {
     public static final String ARG_TEXT = "text";
 
-    private TextView mMessage = null;
+    private TextView mText;
     private View mEncryptShare;
     private View mEncryptClipboard;
 
     private EncryptActivityInterface mEncryptInterface;
-
 
     @Override
     public void onAttach(Activity activity) {
@@ -56,8 +55,8 @@ public class EncryptTextFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.encrypt_text_fragment, container, false);
 
-        mMessage = (TextView) view.findViewById(R.id.message);
-        mMessage.addTextChangedListener(new TextWatcher() {
+        mText = (TextView) view.findViewById(R.id.encrypt_text_text);
+        mText.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
@@ -98,7 +97,7 @@ public class EncryptTextFragment extends Fragment {
 
         String text = mEncryptInterface.getMessage();
         if (text != null) {
-            mMessage.setText(text);
+            mText.setText(text);
         }
     }
 }

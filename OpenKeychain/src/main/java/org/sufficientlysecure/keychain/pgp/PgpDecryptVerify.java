@@ -72,7 +72,7 @@ import java.util.Set;
  */
 public class PgpDecryptVerify {
     private ProviderHelper mProviderHelper;
-    private PassphraseCache mPassphraseCache;
+    private PassphraseCacheInterface mPassphraseCache;
     private InputData mData;
     private OutputStream mOutStream;
 
@@ -101,7 +101,7 @@ public class PgpDecryptVerify {
     public static class Builder {
         // mandatory parameter
         private ProviderHelper mProviderHelper;
-        private PassphraseCache mPassphraseCache;
+        private PassphraseCacheInterface mPassphraseCache;
         private InputData mData;
         private OutputStream mOutStream;
 
@@ -113,12 +113,12 @@ public class PgpDecryptVerify {
         private boolean mDecryptMetadataOnly = false;
         private byte[] mDecryptedSessionKey = null;
 
-        public Builder(ProviderHelper providerHelper, PassphraseCache passphraseCache,
+        public Builder(ProviderHelper providerHelper, PassphraseCacheInterface passphraseCache,
                        InputData data, OutputStream outStream) {
-            this.mProviderHelper = providerHelper;
-            this.mPassphraseCache = passphraseCache;
-            this.mData = data;
-            this.mOutStream = outStream;
+            mProviderHelper = providerHelper;
+            mPassphraseCache = passphraseCache;
+            mData = data;
+            mOutStream = outStream;
         }
 
         public Builder setProgressable(Progressable progressable) {
@@ -173,16 +173,6 @@ public class PgpDecryptVerify {
     public void updateProgress(int current, int total) {
         if (mProgressable != null) {
             mProgressable.setProgress(current, total);
-        }
-    }
-
-    public interface PassphraseCache {
-        public String getCachedPassphrase(long masterKeyId)
-                throws NoSecretKeyException;
-    }
-
-    public static class NoSecretKeyException extends Exception {
-        public NoSecretKeyException() {
         }
     }
 
@@ -322,7 +312,7 @@ public class PgpDecryptVerify {
                         // returns "" if key has no passphrase
                         mPassphrase = mPassphraseCache.getCachedPassphrase(subKeyId);
                         log.add(LogType.MSG_DC_PASS_CACHED, indent +1);
-                    } catch (NoSecretKeyException e) {
+                    } catch (PassphraseCacheInterface.NoSecretKeyException e) {
                         log.add(LogType.MSG_DC_ERROR_NO_KEY, indent +1);
                         return new DecryptVerifyResult(DecryptVerifyResult.RESULT_ERROR, log);
                     }

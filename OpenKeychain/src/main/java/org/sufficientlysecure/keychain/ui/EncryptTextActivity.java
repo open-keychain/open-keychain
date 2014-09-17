@@ -22,7 +22,6 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.Message;
 import android.os.Messenger;
 import android.support.v4.app.Fragment;
@@ -35,15 +34,11 @@ import org.sufficientlysecure.keychain.api.OpenKeychainIntents;
 import org.sufficientlysecure.keychain.compatibility.ClipboardReflection;
 import org.sufficientlysecure.keychain.helper.Preferences;
 import org.sufficientlysecure.keychain.helper.ShareHelper;
+import org.sufficientlysecure.keychain.nfc.NfcActivity;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
-import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
-import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
-import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
 import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
-import org.sufficientlysecure.keychain.service.PassphraseCacheService;
 import org.sufficientlysecure.keychain.service.results.SignEncryptResult;
-import org.sufficientlysecure.keychain.ui.dialog.PassphraseDialogFragment;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Notify;
 
@@ -200,22 +195,36 @@ public class EncryptTextActivity extends DrawerActivity implements EncryptActivi
                     SignEncryptResult result =
                             message.getData().getParcelable(SignEncryptResult.EXTRA_RESULT);
 
-                    // TODO if (result.isPending())
+                    if (result.isPending()) {
+                        Log.d(Constants.TAG, "result.getResult() " + result.getResult());
+                        if ((result.getResult() & SignEncryptResult.RESULT_PENDING_PASSPHRASE) ==
+                                SignEncryptResult.RESULT_PENDING_PASSPHRASE) {
+                            Log.d(Constants.TAG, "passp");
+                            startPassphraseDialog(result.getKeyIdPassphraseNeeded());
+                        } else if ((result.getResult() & SignEncryptResult.RESULT_PENDING_NFC) ==
+                                SignEncryptResult.RESULT_PENDING_NFC) {
+                            Log.d(Constants.TAG, "nfc");
 
-                    if (!result.success()) {
-                        result.createNotify(EncryptTextActivity.this).show();
-                        return;
-                    }
+                            // use after nfc sign
+////                                data.putExtra(OpenPgpApi.EXTRA_NFC_SIG_CREATION_TIMESTAMP, result.getNfcTimestamp().getTime());
+                            startNfcSign("123456", result.getNfcHash(), result.getNfcAlgo());
+                        } else {
+                            throw new RuntimeException("Unhandled pending result!");
+                        }
 
-                    if (mShareAfterEncrypt) {
-                        // Share encrypted message/file
-                        startActivity(sendWithChooserExcludingEncrypt(message));
+                    } else if (result.success()) {
+                        if (mShareAfterEncrypt) {
+                            // Share encrypted message/file
+                            startActivity(sendWithChooserExcludingEncrypt(message));
+                        } else {
+                            // Copy to clipboard
+                            copyToClipboard(message);
+                            result.createNotify(EncryptTextActivity.this).show();
+                            // Notify.showNotify(EncryptTextActivity.this,
+                            // R.string.encrypt_sign_clipboard_successful, Notify.Style.INFO);
+                        }
                     } else {
-                        // Copy to clipboard
-                        copyToClipboard(message);
                         result.createNotify(EncryptTextActivity.this).show();
-                        // Notify.showNotify(EncryptTextActivity.this,
-                                // R.string.encrypt_sign_clipboard_successful, Notify.Style.INFO);
                     }
                 }
             }
@@ -229,6 +238,36 @@ public class EncryptTextActivity extends DrawerActivity implements EncryptActivi
 
         // start service with intent
         startService(intent);
+    }
+
+    private void startNfcSign(String pin, byte[] hashToSign, int hashAlgo) {
+        Intent data = new Intent();
+
+        // build PendingIntent for Yubikey NFC operations
+        Intent intent = new Intent(this, NfcActivity.class);
+        intent.setAction(NfcActivity.ACTION_SIGN_HASH);
+        // pass params through to activity that it can be returned again later to repeat pgp operation
+        intent.putExtra(NfcActivity.EXTRA_DATA, data);
+        intent.putExtra(NfcActivity.EXTRA_PIN, pin);
+
+        intent.putExtra(NfcActivity.EXTRA_NFC_HASH_TO_SIGN, hashToSign);
+        intent.putExtra(NfcActivity.EXTRA_NFC_HASH_ALGO, hashAlgo);
+        intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+
+        startActivityForResult(intent, 0);
+    }
+
+    private void startPassphraseDialog(long subkeyId) {
+        Intent data = new Intent();
+
+        // build PendingIntent for Yubikey NFC operations
+        Intent intent = new Intent(this, PassphraseDialogActivity.class);
+        // pass params through to activity that it can be returned again later to repeat pgp operation
+        intent.putExtra(PassphraseDialogActivity.EXTRA_SUBKEY_ID, subkeyId);
+
+//        intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+
+        startActivityForResult(intent, 0);
     }
 
     private Bundle createEncryptBundle() {
@@ -326,35 +365,35 @@ public class EncryptTextActivity extends DrawerActivity implements EncryptActivi
                 return false;
             }
 
-            try {
-                // TODO This should really not be decided here. We do need the info for the passphrase
-                // TODO dialog fragment though, so that's just the way it is for now.
-                if (mSigningKeyId != 0) {
-                    CachedPublicKeyRing signingRing =
-                            new ProviderHelper(this).getCachedPublicKeyRing(mSigningKeyId);
-                    long sigSubKeyId = signingRing.getSignId();
-                    // Make sure the passphrase is cached, then start over.
-                    if (PassphraseCacheService.getCachedPassphrase(this, sigSubKeyId) == null) {
-                        PassphraseDialogFragment.show(this, sigSubKeyId,
-                                new Handler() {
-                                    @Override
-                                    public void handleMessage(Message message) {
-                                        if (message.what == PassphraseDialogFragment.MESSAGE_OKAY) {
-                                            // restart
-                                            startEncrypt();
-                                        }
-                                    }
-                                }
-                        );
-
-                        return false;
-                    }
-                }
-            } catch (PgpGeneralException e) {
-                Log.e(Constants.TAG, "Key not found!", e);
-            } catch (PassphraseCacheService.KeyNotFoundException e) {
-                Log.e(Constants.TAG, "Key not found!", e);
-            }
+//            try {
+//                // TODO This should really not be decided here. We do need the info for the passphrase
+//                // TODO dialog fragment though, so that's just the way it is for now.
+//                if (mSigningKeyId != 0) {
+//                    CachedPublicKeyRing signingRing =
+//                            new ProviderHelper(this).getCachedPublicKeyRing(mSigningKeyId);
+//                    long sigSubKeyId = signingRing.getSignId();
+//                    // Make sure the passphrase is cached, then start over.
+//                    if (PassphraseCacheService.getCachedPassphrase(this, sigSubKeyId) == null) {
+//                        PassphraseDialogFragment.show(this, sigSubKeyId,
+//                                new Handler() {
+//                                    @Override
+//                                    public void handleMessage(Message message) {
+//                                        if (message.what == PassphraseDialogFragment.MESSAGE_OKAY) {
+//                                            // restart
+//                                            startEncrypt();
+//                                        }
+//                                    }
+//                                }
+//                        );
+//
+//                        return false;
+//                    }
+//                }
+//            } catch (PgpGeneralException e) {
+//                Log.e(Constants.TAG, "Key not found!", e);
+//            } catch (PassphraseCacheService.KeyNotFoundException e) {
+//                Log.e(Constants.TAG, "Key not found!", e);
+//            }
         }
         return true;
     }
