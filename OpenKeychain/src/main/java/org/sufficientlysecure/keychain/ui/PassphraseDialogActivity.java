@@ -61,6 +61,11 @@ public class PassphraseDialogActivity extends FragmentActivity {
 
     public static final String EXTRA_SUBKEY_ID = "secret_key_id";
 
+    // special extra for OpenPgpService
+    public static final String EXTRA_DATA = "data";
+
+    private Intent mServiceIntent;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -77,6 +82,8 @@ public class PassphraseDialogActivity extends FragmentActivity {
         // this activity itself has no content view (see manifest)
 
         long keyId = getIntent().getLongExtra(EXTRA_SUBKEY_ID, 0);
+
+        mServiceIntent = getIntent().getParcelableExtra(EXTRA_DATA);
 
         show(this, keyId);
     }

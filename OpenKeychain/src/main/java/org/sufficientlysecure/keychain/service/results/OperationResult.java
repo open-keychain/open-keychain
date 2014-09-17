@@ -152,6 +152,10 @@ public abstract class OperationResult implements Parcelable {
 
         int color;
 
+        Log.d(Constants.TAG, "mLog.getLast()"+mLog.getLast());
+        Log.d(Constants.TAG, "mLog.getLast().mType"+mLog.getLast().mType);
+        Log.d(Constants.TAG, "mLog.getLast().mType.getMsgId()"+mLog.getLast().mType.getMsgId());
+
         // Take the last message as string
         String str = activity.getString(mLog.getLast().mType.getMsgId());
 

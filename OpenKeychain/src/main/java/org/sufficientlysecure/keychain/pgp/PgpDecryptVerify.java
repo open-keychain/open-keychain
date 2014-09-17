@@ -191,7 +191,7 @@ public class PgpDecryptVerify {
 
                 if (aIn.isClearText()) {
                     // a cleartext signature, verify it with the other method
-                    return verifyCleartextSignature(aIn);
+                    return verifyCleartextSignature(aIn, 0);
                 }
                 // else: ascii armored encryption! go on...
             }
@@ -672,7 +672,7 @@ public class PgpDecryptVerify {
      * The method is heavily based on
      * pg/src/main/java/org/spongycastle/openpgp/examples/ClearSignedFileProcessor.java
      */
-    private DecryptVerifyResult verifyCleartextSignature(ArmoredInputStream aIn)
+    private DecryptVerifyResult verifyCleartextSignature(ArmoredInputStream aIn, int indent)
             throws IOException, PGPException {
 
         OperationLog log = new OperationLog();
@@ -756,6 +756,7 @@ public class PgpDecryptVerify {
 
         if (signature != null) try {
             updateProgress(R.string.progress_verifying_signature, 90, 100);
+            log.add(LogType.MSG_DC_CLEAR_SIGNATURE_CHECK, indent);
 
             InputStream sigIn = new BufferedInputStream(new ByteArrayInputStream(clearText));
 
@@ -776,6 +777,11 @@ public class PgpDecryptVerify {
 
             // Verify signature and check binding signatures
             boolean validSignature = signature.verify();
+            if (validSignature) {
+                log.add(LogType.MSG_DC_CLEAR_SIGNATURE_OK, indent +1);
+            } else {
+                log.add(LogType.MSG_DC_CLEAR_SIGNATURE_BAD, indent +1);
+            }
             signatureResultBuilder.setValidSignature(validSignature);
 
         } catch (SignatureException e) {
@@ -783,6 +789,8 @@ public class PgpDecryptVerify {
         }
 
         updateProgress(R.string.progress_done, 100, 100);
+
+        log.add(LogType.MSG_DC_OK, indent);
 
         DecryptVerifyResult result = new DecryptVerifyResult(DecryptVerifyResult.RESULT_OK, log);
         result.setSignatureResult(signatureResultBuilder.build());
