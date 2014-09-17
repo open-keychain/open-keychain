@@ -209,8 +209,7 @@ public class EncryptFileActivity extends DrawerActivity implements EncryptActivi
                         // Share encrypted message/file
                         startActivity(sendWithChooserExcludingEncrypt(message));
                     } else {
-                        // Copy to clipboard
-                        copyToClipboard(message);
+                        // Save encrypted file
                         Notify.showNotify(EncryptFileActivity.this,
                                 R.string.encrypt_sign_clipboard_successful, Notify.Style.INFO);
                     }
@@ -256,10 +255,6 @@ public class EncryptFileActivity extends DrawerActivity implements EncryptActivi
             data.putLongArray(KeychainIntentService.ENCRYPT_ENCRYPTION_KEYS_IDS, mEncryptionKeyIds);
         }
         return data;
-    }
-
-    private void copyToClipboard(Message message) {
-        ClipboardReflection.copyToClipboard(this, new String(message.getData().getByteArray(KeychainIntentService.RESULT_BYTES)));
     }
 
     /**
