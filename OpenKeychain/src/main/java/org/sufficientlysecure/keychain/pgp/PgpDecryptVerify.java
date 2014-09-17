@@ -643,9 +643,6 @@ public class PgpDecryptVerify {
                 return new DecryptVerifyResult(DecryptVerifyResult.RESULT_ERROR, log);
             }
         } else {
-            // no integrity check
-            Log.d(Constants.TAG, "Encrypted data was not integrity protected! MDC packet is missing!");
-
             // If no valid signature is present:
             // Handle missing integrity protection like failed integrity protection!
             // The MDC packet can be stripped by an attacker!
