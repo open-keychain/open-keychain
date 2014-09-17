@@ -56,6 +56,7 @@ import android.widget.TextView;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.ExportHelper;
 import org.sufficientlysecure.keychain.util.KeyUpdateHelper;
 import org.sufficientlysecure.keychain.util.Preferences;
@@ -572,16 +573,10 @@ public class KeyListFragment extends LoaderFragment
 
                 // Note: order is important!
                 if (isRevoked) {
-                    h.mStatus.setImageDrawable(
-                            getResources().getDrawable(R.drawable.status_signature_revoked_cutout));
-                    h.mStatus.setColorFilter(getResources().getColor(R.color.android_red_dark),
-                            PorterDuff.Mode.SRC_ATOP);
+                    KeyFormattingUtils.setStatusImage(getActivity(), h.mStatus, KeyFormattingUtils.STATE_REVOKED);
                     h.mStatus.setVisibility(View.VISIBLE);
                 } else if (isExpired) {
-                    h.mStatus.setImageDrawable(
-                            getResources().getDrawable(R.drawable.status_signature_expired_cutout));
-                    h.mStatus.setColorFilter(getResources().getColor(R.color.android_orange_dark),
-                            PorterDuff.Mode.SRC_ATOP);
+                    KeyFormattingUtils.setStatusImage(getActivity(), h.mStatus, KeyFormattingUtils.STATE_EXPIRED);
                     h.mStatus.setVisibility(View.VISIBLE);
                 } else if (isVerified) {
                     if (cursor.getInt(KeyListFragment.INDEX_HAS_ANY_SECRET) != 0) {
@@ -589,10 +584,7 @@ public class KeyListFragment extends LoaderFragment
                         h.mStatus.setVisibility(View.GONE);
                     } else {
                         // this is a public key - show if it's verified
-                        h.mStatus.setImageDrawable(
-                                getResources().getDrawable(R.drawable.status_signature_verified_cutout));
-                        h.mStatus.setColorFilter(getResources().getColor(R.color.android_green_dark),
-                                PorterDuff.Mode.SRC_ATOP);
+                        KeyFormattingUtils.setStatusImage(getActivity(), h.mStatus, KeyFormattingUtils.STATE_VERIFIED);
                         h.mStatus.setVisibility(View.VISIBLE);
                     }
                 } else {

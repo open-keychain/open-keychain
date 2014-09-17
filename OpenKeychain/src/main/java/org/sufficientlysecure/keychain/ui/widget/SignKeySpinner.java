@@ -24,9 +24,11 @@ import android.os.Bundle;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.util.AttributeSet;
+import android.widget.ImageView;
 
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
+import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 
 public class SignKeySpinner extends KeySpinner {
     public SignKeySpinner(Context context) {
@@ -69,25 +71,30 @@ public class SignKeySpinner extends KeySpinner {
     private int mIndexHasSign, mIndexIsRevoked, mIndexIsExpired;
 
     @Override
-    public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
-        super.onLoadFinished(loader, cursor);
-        mIndexHasSign = cursor.getColumnIndex(KeychainContract.KeyRings.HAS_SIGN);
-        mIndexIsRevoked = cursor.getColumnIndex(KeychainContract.KeyRings.IS_REVOKED);
-        mIndexIsExpired = cursor.getColumnIndex(KeychainContract.KeyRings.IS_EXPIRED);
+    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+        super.onLoadFinished(loader, data);
+        mIndexHasSign = data.getColumnIndex(KeychainContract.KeyRings.HAS_SIGN);
+        mIndexIsRevoked = data.getColumnIndex(KeychainContract.KeyRings.IS_REVOKED);
+        mIndexIsExpired = data.getColumnIndex(KeychainContract.KeyRings.IS_EXPIRED);
     }
 
     @Override
-    String getStatus(Context context, Cursor cursor) {
+    boolean setStatus(Context context, Cursor cursor, ImageView statusView) {
         if (cursor.getInt(mIndexIsRevoked) != 0) {
-            return context.getString(R.string.revoked);
-        }
-        if (cursor.getInt(mIndexHasSign) == 0) {
-            return context.getString(R.string.key_unavailable);
+            KeyFormattingUtils.setStatusImage(getContext(), statusView, KeyFormattingUtils.STATE_REVOKED);
+            return false;
         }
         if (cursor.getInt(mIndexIsExpired) != 0) {
-            return context.getString(R.string.expired);
+            KeyFormattingUtils.setStatusImage(getContext(), statusView, KeyFormattingUtils.STATE_EXPIRED);
+            return false;
         }
-        return null;
+        if (cursor.getInt(mIndexHasSign) == 0) {
+            KeyFormattingUtils.setStatusImage(getContext(), statusView, KeyFormattingUtils.STATE_UNAVAILABLE);
+            return false;
+        }
+
+        // valid key
+        return true;
     }
 
 }

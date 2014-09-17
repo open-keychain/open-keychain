@@ -19,10 +19,14 @@
 package org.sufficientlysecure.keychain.ui.util;
 
 import android.content.Context;
+import android.database.Cursor;
 import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.style.ForegroundColorSpan;
+import android.view.View;
+import android.widget.ImageView;
 
 import org.spongycastle.asn1.ASN1ObjectIdentifier;
 import org.spongycastle.asn1.nist.NISTNamedCurves;
@@ -328,6 +332,43 @@ public class KeyFormattingUtils {
         return new int[]{((int) digest[0] + 256) % 256,
                 ((int) digest[1] + 256) % 256,
                 ((int) digest[2] + 256) % 256};
+    }
+
+    public static final int STATE_REVOKED = 1;
+    public static final int STATE_EXPIRED = 2;
+    public static final int STATE_VERIFIED = 3;
+    public static final int STATE_UNAVAILABLE = 4;
+
+    /**
+     * returns true if status has been set, if false no status!
+     */
+    public static void setStatusImage(Context context, ImageView statusView, int state) {
+        switch (state) {
+            case STATE_REVOKED:
+                statusView.setImageDrawable(
+                        context.getResources().getDrawable(R.drawable.status_signature_revoked_cutout));
+                statusView.setColorFilter(context.getResources().getColor(R.color.android_red_dark),
+                        PorterDuff.Mode.SRC_ATOP);
+                break;
+            case STATE_EXPIRED:
+                statusView.setImageDrawable(
+                        context.getResources().getDrawable(R.drawable.status_signature_expired_cutout));
+                statusView.setColorFilter(context.getResources().getColor(R.color.android_orange_dark),
+                        PorterDuff.Mode.SRC_ATOP);
+                break;
+            case STATE_UNAVAILABLE:
+                statusView.setImageDrawable(
+                        context.getResources().getDrawable(R.drawable.status_signature_invalid_cutout));
+                statusView.setColorFilter(context.getResources().getColor(R.color.bg_gray),
+                        PorterDuff.Mode.SRC_ATOP);
+                break;
+            case STATE_VERIFIED:
+                statusView.setImageDrawable(
+                        context.getResources().getDrawable(R.drawable.status_signature_verified_cutout));
+                statusView.setColorFilter(context.getResources().getColor(R.color.android_green_dark),
+                        PorterDuff.Mode.SRC_ATOP);
+                break;
+        }
     }
 
 }

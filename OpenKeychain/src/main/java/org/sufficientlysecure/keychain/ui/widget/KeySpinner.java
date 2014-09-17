@@ -29,6 +29,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.SpinnerAdapter;
 import android.widget.TextView;
@@ -139,21 +140,28 @@ public abstract class KeySpinner extends Spinner implements LoaderManager.Loader
 
                 @Override
                 public void bindView(View view, Context context, Cursor cursor) {
+                    TextView vKeyName = (TextView) view.findViewById(R.id.keyspinner_key_name);
+                    ImageView vKeyStatus = (ImageView) view.findViewById(R.id.keyspinner_key_status);
+                    TextView vKeyEmail = (TextView) view.findViewById(R.id.keyspinner_key_email);
+                    TextView vKeyId = (TextView) view.findViewById(R.id.keyspinner_key_id);
+
                     String[] userId = KeyRing.splitUserId(cursor.getString(mIndexUserId));
-                    TextView vKeyName = ((TextView) view.findViewById(R.id.keyspinner_key_name));
-                    TextView vKeyStatus = ((TextView) view.findViewById(R.id.keyspinner_key_status));
                     vKeyName.setText(userId[2] == null ? userId[0] : (userId[0] + " (" + userId[2] + ")"));
-                    ((TextView) view.findViewById(R.id.keyspinner_key_email)).setText(userId[1]);
-                    ((TextView) view.findViewById(R.id.keyspinner_key_id)).setText(KeyFormattingUtils.convertKeyIdToHex(cursor.getLong(mIndexKeyId)));
-                    String status = getStatus(getContext(), cursor);
-                    if (status == null) {
+                    vKeyEmail.setText(userId[1]);
+                    vKeyId.setText(KeyFormattingUtils.convertKeyIdToHex(cursor.getLong(mIndexKeyId)));
+
+                    boolean valid = setStatus(getContext(), cursor, vKeyStatus);
+                    if (valid) {
                         vKeyName.setTextColor(Color.BLACK);
+                        vKeyEmail.setTextColor(Color.BLACK);
+                        vKeyId.setTextColor(Color.BLACK);
                         vKeyStatus.setVisibility(View.GONE);
                         view.setClickable(false);
                     } else {
                         vKeyName.setTextColor(Color.GRAY);
+                        vKeyEmail.setTextColor(Color.GRAY);
+                        vKeyId.setTextColor(Color.GRAY);
                         vKeyStatus.setVisibility(View.VISIBLE);
-                        vKeyStatus.setText(status);
                         // this is a HACK. the trick is, if the element itself is clickable, the
                         // click is not passed on to the view list
                         view.setClickable(true);
@@ -228,19 +236,19 @@ public abstract class KeySpinner extends Spinner implements LoaderManager.Loader
                 }
                 ((TextView) v.findViewById(R.id.keyspinner_key_name)).setText(R.string.choice_none);
                 v.findViewById(R.id.keyspinner_key_email).setVisibility(View.GONE);
-                v.findViewById(R.id.keyspinner_key_row).setVisibility(View.GONE);
+                v.findViewById(R.id.keyspinner_key_id).setVisibility(View.GONE);
+                v.findViewById(R.id.keyspinner_key_status).setVisibility(View.GONE);
             } else {
                 v = inner.getView(position - 1, convertView, parent);
                 v.findViewById(R.id.keyspinner_key_email).setVisibility(View.VISIBLE);
-                v.findViewById(R.id.keyspinner_key_row).setVisibility(View.VISIBLE);
+                v.findViewById(R.id.keyspinner_key_id).setVisibility(View.VISIBLE);
             }
             return v;
         }
     }
 
-    /** Return a string which should be the disabled status of the key, or null if the key is enabled. */
-    String getStatus(Context context, Cursor cursor) {
-        return null;
+    boolean setStatus(Context context, Cursor cursor, ImageView statusView) {
+        return true;
     }
 
 }
