@@ -132,14 +132,13 @@ public class KeychainIntentService extends IntentService implements Progressable
 
     // encrypt
     public static final String ENCRYPT_SIGNATURE_MASTER_ID = "secret_key_id";
+    public static final String ENCRYPT_SIGNATURE_KEY_PASSPHRASE = "secret_key_passphrase";
     public static final String ENCRYPT_USE_ASCII_ARMOR = "use_ascii_armor";
     public static final String ENCRYPT_ENCRYPTION_KEYS_IDS = "encryption_keys_ids";
     public static final String ENCRYPT_COMPRESSION_ID = "compression_id";
     public static final String ENCRYPT_MESSAGE_BYTES = "message_bytes";
-    public static final String ENCRYPT_INPUT_FILE = "input_file";
     public static final String ENCRYPT_INPUT_URI = "input_uri";
     public static final String ENCRYPT_INPUT_URIS = "input_uris";
-    public static final String ENCRYPT_OUTPUT_FILE = "output_file";
     public static final String ENCRYPT_OUTPUT_URI = "output_uri";
     public static final String ENCRYPT_OUTPUT_URIS = "output_uris";
     public static final String ENCRYPT_SYMMETRIC_PASSPHRASE = "passphrase";
@@ -255,6 +254,7 @@ public class KeychainIntentService extends IntentService implements Progressable
                 Bundle resultData = new Bundle();
 
                 long sigMasterKeyId = data.getLong(ENCRYPT_SIGNATURE_MASTER_ID);
+                String sigKeyPassphrase = data.getString(ENCRYPT_SIGNATURE_KEY_PASSPHRASE);
                 String symmetricPassphrase = data.getString(ENCRYPT_SYMMETRIC_PASSPHRASE);
 
                 boolean useAsciiArmor = data.getBoolean(ENCRYPT_USE_ASCII_ARMOR);
@@ -300,14 +300,10 @@ public class KeychainIntentService extends IntentService implements Progressable
                                 new ProviderHelper(this).getCachedPublicKeyRing(sigMasterKeyId);
                         long sigSubKeyId = signingRing.getSignId();
 
-                        // Get its passphrase from cache. It is assumed that this passphrase was
-                        // cached prior to the service call.
-                        String passphrase = PassphraseCacheService.getCachedPassphrase(this, sigSubKeyId);
-
                         // Set signature settings
                         builder.setSignatureMasterKeyId(sigMasterKeyId)
                                 .setSignatureSubKeyId(sigSubKeyId)
-                                .setSignaturePassphrase(passphrase)
+                                .setSignaturePassphrase(sigKeyPassphrase)
                                 .setSignatureHashAlgorithm(
                                         Preferences.getPreferences(this).getDefaultHashAlgorithm())
                                 .setAdditionalEncryptId(sigMasterKeyId);

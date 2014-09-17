@@ -70,6 +70,7 @@ public class EncryptTextActivity extends EncryptActivity implements EncryptActiv
     private String mEncryptionUserIds[] = null;
     // TODO Constants.key.none? What's wrong with a null value?
     private long mSigningKeyId = Constants.key.none;
+    private String mSigningKeyPassphrase = null;
     private String mPassphrase = "";
     private boolean mShareAfterEncrypt = false;
     private ArrayList<Uri> mInputUris;
@@ -219,6 +220,9 @@ public class EncryptTextActivity extends EncryptActivity implements EncryptActiv
                             // Notify.showNotify(EncryptTextActivity.this,
                             // R.string.encrypt_sign_clipboard_successful, Notify.Style.INFO);
                         }
+
+                        // reset parameters, TODO: better state saving?
+                        mSigningKeyPassphrase = null;
                     } else {
                         pgpResult.createNotify(EncryptTextActivity.this).show();
                     }
@@ -234,6 +238,34 @@ public class EncryptTextActivity extends EncryptActivity implements EncryptActiv
 
         // start service with intent
         startService(intent);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode) {
+            case REQUEST_CODE_PASSPHRASE: {
+                if (resultCode == RESULT_OK && data != null) {
+                    mSigningKeyPassphrase = data.getStringExtra(PassphraseDialogActivity.MESSAGE_DATA_PASSPHRASE);
+                    startEncrypt();
+                    return;
+                }
+                break;
+            }
+
+            case REQUEST_CODE_NFC: {
+                if (resultCode == RESULT_OK && data != null) {
+
+                    startEncrypt();
+                    return;
+                }
+                break;
+            }
+
+            default: {
+                super.onActivityResult(requestCode, resultCode, data);
+                break;
+            }
+        }
     }
 
     private Bundle createEncryptBundle() {
@@ -259,6 +291,8 @@ public class EncryptTextActivity extends EncryptActivity implements EncryptActiv
         } else {
             data.putLong(KeychainIntentService.ENCRYPT_SIGNATURE_MASTER_ID, mSigningKeyId);
             data.putLongArray(KeychainIntentService.ENCRYPT_ENCRYPTION_KEYS_IDS, mEncryptionKeyIds);
+            data.putString(KeychainIntentService.ENCRYPT_SIGNATURE_KEY_PASSPHRASE, mSigningKeyPassphrase);
+            data.putLongArray(KeychainIntentService.ENCRYPT_SIGNATURE_KEY_PASSPHRASE, mEncryptionKeyIds);
         }
         return data;
     }

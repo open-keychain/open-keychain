@@ -1,8 +1,7 @@
 package org.sufficientlysecure.keychain.ui.dialog;
 
-import android.app.Activity;
 import android.app.AlertDialog;
-import android.view.ContextThemeWrapper;
+import android.content.Context;
 import android.view.View;
 import android.widget.TextView;
 
@@ -16,10 +15,8 @@ import org.sufficientlysecure.keychain.R;
  */
 public class CustomAlertDialogBuilder extends AlertDialog.Builder {
 
-    public CustomAlertDialogBuilder(Activity activity) {
-        // if the progress dialog is displayed from the application class, design is missing
-        // hack to get holo design (which is not automatically applied due to activity's Theme.NoDisplay
-        super(new ContextThemeWrapper(activity, R.style.Theme_AppCompat_Light));
+    public CustomAlertDialogBuilder(Context context) {
+        super(context);
     }
 
     @Override

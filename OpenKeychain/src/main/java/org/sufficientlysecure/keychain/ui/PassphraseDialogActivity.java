@@ -25,9 +25,9 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Messenger;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
+import android.view.ContextThemeWrapper;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -102,7 +102,6 @@ public class PassphraseDialogActivity extends FragmentActivity {
     }
 
     public static class PassphraseDialogFragment extends DialogFragment implements TextView.OnEditorActionListener {
-        private Messenger mMessenger;
         private EditText mPassphraseEditText;
         private View mInput, mProgress;
 
@@ -116,9 +115,15 @@ public class PassphraseDialogActivity extends FragmentActivity {
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
             final Activity activity = getActivity();
+
+            // if the dialog is displayed from the application class, design is missing
+            // hack to get holo design (which is not automatically applied due to activity's Theme.NoDisplay
+            ContextThemeWrapper theme = new ContextThemeWrapper(activity,
+                    R.style.Theme_AppCompat_Light);
+
             mSubKeyId = getArguments().getLong(EXTRA_SUBKEY_ID);
 
-            CustomAlertDialogBuilder alert = new CustomAlertDialogBuilder(activity);
+            CustomAlertDialogBuilder alert = new CustomAlertDialogBuilder(theme);
 
             alert.setTitle(R.string.title_authentication);
 
@@ -174,7 +179,7 @@ public class PassphraseDialogActivity extends FragmentActivity {
                 alert.setMessage(message);
             }
 
-            LayoutInflater inflater = activity.getLayoutInflater();
+            LayoutInflater inflater = LayoutInflater.from(theme);
             View view = inflater.inflate(R.layout.passphrase_dialog, null);
             alert.setView(view);
 
@@ -201,6 +206,9 @@ public class PassphraseDialogActivity extends FragmentActivity {
                     mPassphraseEditText.post(new Runnable() {
                         @Override
                         public void run() {
+                            if (getActivity() == null || mPassphraseEditText == null) {
+                                return;
+                            }
                             InputMethodManager imm = (InputMethodManager) getActivity()
                                     .getSystemService(Context.INPUT_METHOD_SERVICE);
                             imm.showSoftInput(mPassphraseEditText, InputMethodManager.SHOW_IMPLICIT);
@@ -320,32 +328,27 @@ public class PassphraseDialogActivity extends FragmentActivity {
 
             // note we need no synchronization here, this variable is only accessed in the ui thread
             mIsCancelled = true;
-
-            // dismiss the dialogue
-            getActivity().setResult(RESULT_CANCELED);
-            dismiss();
-            getActivity().finish();
         }
 
         @Override
         public void onDismiss(DialogInterface dialog) {
             super.onDismiss(dialog);
-            Log.d(Constants.TAG, "onDismiss");
 
-            // hide keyboard on dismiss
             hideKeyboard();
+
+            getActivity().setResult(RESULT_CANCELED);
+            getActivity().finish();
         }
 
         private void hideKeyboard() {
+            if (getActivity() == null) {
+                return;
+            }
+
             InputMethodManager inputManager = (InputMethodManager) getActivity()
                     .getSystemService(Context.INPUT_METHOD_SERVICE);
 
-            //check if no view has focus:
-            View v = getActivity().getCurrentFocus();
-            if (v == null)
-                return;
-
-            inputManager.hideSoftInputFromWindow(v.getWindowToken(), 0);
+            inputManager.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
         }
 
         /**
@@ -364,4 +367,6 @@ public class PassphraseDialogActivity extends FragmentActivity {
         }
 
     }
+
+
 }

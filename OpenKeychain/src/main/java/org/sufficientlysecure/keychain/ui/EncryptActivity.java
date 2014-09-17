@@ -5,6 +5,23 @@ import android.content.Intent;
 import org.sufficientlysecure.keychain.nfc.NfcActivity;
 
 public class EncryptActivity extends DrawerActivity {
+
+    public static final int REQUEST_CODE_PASSPHRASE = 0x00008001;
+    public static final int REQUEST_CODE_NFC = 0x00008002;
+
+    protected void startPassphraseDialog(long subkeyId) {
+        Intent data = new Intent();
+
+        // build PendingIntent for Yubikey NFC operations
+        Intent intent = new Intent(this, PassphraseDialogActivity.class);
+        // pass params through to activity that it can be returned again later to repeat pgp operation
+        intent.putExtra(PassphraseDialogActivity.EXTRA_SUBKEY_ID, subkeyId);
+
+//        intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+
+        startActivityForResult(intent, REQUEST_CODE_PASSPHRASE);
+    }
+
     protected void startNfcSign(String pin, byte[] hashToSign, int hashAlgo) {
         Intent data = new Intent();
 
@@ -19,19 +36,8 @@ public class EncryptActivity extends DrawerActivity {
         intent.putExtra(NfcActivity.EXTRA_NFC_HASH_ALGO, hashAlgo);
         intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
-        startActivityForResult(intent, 0);
+        startActivityForResult(intent, REQUEST_CODE_NFC);
     }
 
-    protected void startPassphraseDialog(long subkeyId) {
-        Intent data = new Intent();
 
-        // build PendingIntent for Yubikey NFC operations
-        Intent intent = new Intent(this, PassphraseDialogActivity.class);
-        // pass params through to activity that it can be returned again later to repeat pgp operation
-        intent.putExtra(PassphraseDialogActivity.EXTRA_SUBKEY_ID, subkeyId);
-
-//        intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
-
-        startActivityForResult(intent, 0);
-    }
 }

@@ -607,6 +607,7 @@
         <activity
             android:name=".ui.ConsolidateDialogActivity"
             android:theme="@android:style/Theme.NoDisplay" />
+        <!-- stateHidden -->
         <activity
             android:name=".ui.PassphraseDialogActivity"
             android:theme="@android:style/Theme.NoDisplay" />
