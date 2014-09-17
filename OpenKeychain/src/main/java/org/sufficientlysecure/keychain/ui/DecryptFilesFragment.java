@@ -48,7 +48,7 @@ import java.io.File;
 
 public class DecryptFilesFragment extends DecryptFragment {
     public static final String ARG_URI = "uri";
-//    public static final String ARG_FROM_VIEW_INTENT = "view_intent";
+    //    public static final String ARG_FROM_VIEW_INTENT = "view_intent";
     public static final String ARG_OPEN_DIRECTLY = "open_directly";
 
     private static final int REQUEST_CODE_INPUT = 0x00007003;
@@ -204,20 +204,28 @@ public class DecryptFilesFragment extends DecryptFragment {
                     // get returned data bundle
                     Bundle returnData = message.getData();
 
-                    DecryptVerifyResult result =
+                    DecryptVerifyResult pgpResult =
                             returnData.getParcelable(DecryptVerifyResult.EXTRA_RESULT);
 
-                    switch (result.getResult()) {
-                        case DecryptVerifyResult.RESULT_PENDING_ASYM_PASSPHRASE:
-                            showPassphraseDialog(result.getKeyIdPassphraseNeeded());
-                            return;
-                        case DecryptVerifyResult.RESULT_PENDING_SYM_PASSPHRASE:
+                    if (pgpResult.isPending()) {
+                        if ((pgpResult.getResult() & DecryptVerifyResult.RESULT_PENDING_ASYM_PASSPHRASE) ==
+                                DecryptVerifyResult.RESULT_PENDING_ASYM_PASSPHRASE) {
+                            showPassphraseDialog(pgpResult.getKeyIdPassphraseNeeded());
+                        } else if ((pgpResult.getResult() & DecryptVerifyResult.RESULT_PENDING_SYM_PASSPHRASE) ==
+                                DecryptVerifyResult.RESULT_PENDING_SYM_PASSPHRASE) {
                             showPassphraseDialog(Constants.key.symmetric);
-                            return;
+                        } else if ((pgpResult.getResult() & DecryptVerifyResult.RESULT_PENDING_NFC) ==
+                                DecryptVerifyResult.RESULT_PENDING_NFC) {
+                            // TODO
+                        } else {
+                            throw new RuntimeException("Unhandled pending result!");
+                        }
+                    } else if (pgpResult.success()) {
+                        // go on...
+                        askForOutputFilename(pgpResult.getDecryptMetadata().getFilename());
+                    } else {
+                        pgpResult.createNotify(getActivity()).show();
                     }
-
-                    // go on...
-                    askForOutputFilename(result.getDecryptMetadata().getFilename());
                 }
             }
         };
@@ -284,41 +292,45 @@ public class DecryptFilesFragment extends DecryptFragment {
                     // get returned data bundle
                     Bundle returnData = message.getData();
 
-                    DecryptVerifyResult result =
+                    DecryptVerifyResult pgpResult =
                             returnData.getParcelable(DecryptVerifyResult.EXTRA_RESULT);
 
-                    if (result.isPending()) {
-                        switch (result.getResult()) {
-                            case DecryptVerifyResult.RESULT_PENDING_ASYM_PASSPHRASE:
-                                showPassphraseDialog(result.getKeyIdPassphraseNeeded());
-                                return;
-                            case DecryptVerifyResult.RESULT_PENDING_SYM_PASSPHRASE:
-                                showPassphraseDialog(Constants.key.symmetric);
-                                return;
+                    if (pgpResult.isPending()) {
+                        if ((pgpResult.getResult() & DecryptVerifyResult.RESULT_PENDING_ASYM_PASSPHRASE) ==
+                                DecryptVerifyResult.RESULT_PENDING_ASYM_PASSPHRASE) {
+                            showPassphraseDialog(pgpResult.getKeyIdPassphraseNeeded());
+                        } else if ((pgpResult.getResult() & DecryptVerifyResult.RESULT_PENDING_SYM_PASSPHRASE) ==
+                                DecryptVerifyResult.RESULT_PENDING_SYM_PASSPHRASE) {
+                            showPassphraseDialog(Constants.key.symmetric);
+                        } else if ((pgpResult.getResult() & DecryptVerifyResult.RESULT_PENDING_NFC) ==
+                                DecryptVerifyResult.RESULT_PENDING_NFC) {
+                            // TODO
+                        } else {
+                            throw new RuntimeException("Unhandled pending result!");
                         }
-                        // error, we can't work with this!
-                        result.createNotify(getActivity());
-                        return;
-                    }
+                    } else if (pgpResult.success()) {
 
-                    // display signature result in activity
-                    onResult(result);
+                        // display signature result in activity
+                        onResult(pgpResult);
 
-                    if (mDeleteAfter.isChecked()) {
-                        // Create and show dialog to delete original file
-                        DeleteFileDialogFragment deleteFileDialog = DeleteFileDialogFragment.newInstance(mInputUri);
-                        deleteFileDialog.show(getActivity().getSupportFragmentManager(), "deleteDialog");
-                        setInputUri(null);
-                    }
+                        if (mDeleteAfter.isChecked()) {
+                            // Create and show dialog to delete original file
+                            DeleteFileDialogFragment deleteFileDialog = DeleteFileDialogFragment.newInstance(mInputUri);
+                            deleteFileDialog.show(getActivity().getSupportFragmentManager(), "deleteDialog");
+                            setInputUri(null);
+                        }
 
-                    /*
-                    // A future open after decryption feature
-                    if () {
-                        Intent viewFile = new Intent(Intent.ACTION_VIEW);
-                        viewFile.setData(mOutputUri);
-                        startActivity(viewFile);
+                        /*
+                        // A future open after decryption feature
+                        if () {
+                            Intent viewFile = new Intent(Intent.ACTION_VIEW);
+                            viewFile.setData(mOutputUri);
+                            startActivity(viewFile);
+                        }
+                        */
+                    } else {
+                        pgpResult.createNotify(getActivity()).show();
                     }
-                    */
                 }
 
             }

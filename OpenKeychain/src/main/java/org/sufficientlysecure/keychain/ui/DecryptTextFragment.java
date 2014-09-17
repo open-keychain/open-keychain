@@ -126,34 +126,37 @@ public class DecryptTextFragment extends DecryptFragment {
                     // get returned data bundle
                     Bundle returnData = message.getData();
 
-                    DecryptVerifyResult result =
+                    DecryptVerifyResult pgpResult =
                             returnData.getParcelable(DecryptVerifyResult.EXTRA_RESULT);
 
-                    if (result.isPending()) {
-                        switch (result.getResult()) {
-                            case DecryptVerifyResult.RESULT_PENDING_ASYM_PASSPHRASE:
-                                showPassphraseDialog(result.getKeyIdPassphraseNeeded());
-                                return;
-                            case DecryptVerifyResult.RESULT_PENDING_SYM_PASSPHRASE:
-                                showPassphraseDialog(Constants.key.symmetric);
-                                return;
+                    if (pgpResult.isPending()) {
+                        if ((pgpResult.getResult() & DecryptVerifyResult.RESULT_PENDING_ASYM_PASSPHRASE) ==
+                                DecryptVerifyResult.RESULT_PENDING_ASYM_PASSPHRASE) {
+                            showPassphraseDialog(pgpResult.getKeyIdPassphraseNeeded());
+                        } else if ((pgpResult.getResult() & DecryptVerifyResult.RESULT_PENDING_SYM_PASSPHRASE) ==
+                                DecryptVerifyResult.RESULT_PENDING_SYM_PASSPHRASE) {
+                            showPassphraseDialog(Constants.key.symmetric);
+                        } else if ((pgpResult.getResult() & DecryptVerifyResult.RESULT_PENDING_NFC) ==
+                                DecryptVerifyResult.RESULT_PENDING_NFC) {
+                            // TODO
+                        } else {
+                            throw new RuntimeException("Unhandled pending result!");
                         }
-                        // error, we can't work with this!
-                        result.createNotify(getActivity()).show();
-                        return;
+                    } else if (pgpResult.success()) {
+
+                        byte[] decryptedMessage = returnData
+                                .getByteArray(KeychainIntentService.RESULT_DECRYPTED_BYTES);
+                        mMessage.setText(new String(decryptedMessage));
+                        mMessage.setHorizontallyScrolling(false);
+
+                        pgpResult.createNotify(getActivity()).show();
+
+                        // display signature result in activity
+                        onResult(pgpResult);
+                    } else {
+                        pgpResult.createNotify(getActivity()).show();
                     }
-
-                    byte[] decryptedMessage = returnData
-                            .getByteArray(KeychainIntentService.RESULT_DECRYPTED_BYTES);
-                    mMessage.setText(new String(decryptedMessage));
-                    mMessage.setHorizontallyScrolling(false);
-
-                    result.createNotify(getActivity()).show();
-
-                    // display signature result in activity
-                    onResult(result);
                 }
-
             }
         };
 

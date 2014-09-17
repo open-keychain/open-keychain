@@ -138,7 +138,7 @@
             android:label="@string/title_select_recipients"
             android:launchMode="singleTop" />
         <activity
-            android:name=".ui.EncryptFileActivity"
+            android:name=".ui.EncryptFilesActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
             android:label="@string/title_encrypt_files"
             android:windowSoftInputMode="stateHidden">

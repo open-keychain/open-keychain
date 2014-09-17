@@ -46,7 +46,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
-public class EncryptTextActivity extends DrawerActivity implements EncryptActivityInterface {
+public class EncryptTextActivity extends EncryptActivity implements EncryptActivityInterface {
 
     /* Intents */
     public static final String ACTION_ENCRYPT_TEXT = OpenKeychainIntents.ENCRYPT_TEXT;
@@ -192,39 +192,35 @@ public class EncryptTextActivity extends DrawerActivity implements EncryptActivi
 
                 if (message.arg1 == KeychainIntentServiceHandler.MESSAGE_OKAY) {
 
-                    SignEncryptResult result =
+                    SignEncryptResult pgpResult =
                             message.getData().getParcelable(SignEncryptResult.EXTRA_RESULT);
 
-                    if (result.isPending()) {
-                        Log.d(Constants.TAG, "result.getResult() " + result.getResult());
-                        if ((result.getResult() & SignEncryptResult.RESULT_PENDING_PASSPHRASE) ==
+                    if (pgpResult.isPending()) {
+                        if ((pgpResult.getResult() & SignEncryptResult.RESULT_PENDING_PASSPHRASE) ==
                                 SignEncryptResult.RESULT_PENDING_PASSPHRASE) {
-                            Log.d(Constants.TAG, "passp");
-                            startPassphraseDialog(result.getKeyIdPassphraseNeeded());
-                        } else if ((result.getResult() & SignEncryptResult.RESULT_PENDING_NFC) ==
+                            startPassphraseDialog(pgpResult.getKeyIdPassphraseNeeded());
+                        } else if ((pgpResult.getResult() & SignEncryptResult.RESULT_PENDING_NFC) ==
                                 SignEncryptResult.RESULT_PENDING_NFC) {
-                            Log.d(Constants.TAG, "nfc");
 
                             // use after nfc sign
 ////                                data.putExtra(OpenPgpApi.EXTRA_NFC_SIG_CREATION_TIMESTAMP, result.getNfcTimestamp().getTime());
-                            startNfcSign("123456", result.getNfcHash(), result.getNfcAlgo());
+                            startNfcSign("123456", pgpResult.getNfcHash(), pgpResult.getNfcAlgo());
                         } else {
                             throw new RuntimeException("Unhandled pending result!");
                         }
-
-                    } else if (result.success()) {
+                    } else if (pgpResult.success()) {
                         if (mShareAfterEncrypt) {
                             // Share encrypted message/file
                             startActivity(sendWithChooserExcludingEncrypt(message));
                         } else {
                             // Copy to clipboard
                             copyToClipboard(message);
-                            result.createNotify(EncryptTextActivity.this).show();
+                            pgpResult.createNotify(EncryptTextActivity.this).show();
                             // Notify.showNotify(EncryptTextActivity.this,
                             // R.string.encrypt_sign_clipboard_successful, Notify.Style.INFO);
                         }
                     } else {
-                        result.createNotify(EncryptTextActivity.this).show();
+                        pgpResult.createNotify(EncryptTextActivity.this).show();
                     }
                 }
             }
@@ -238,36 +234,6 @@ public class EncryptTextActivity extends DrawerActivity implements EncryptActivi
 
         // start service with intent
         startService(intent);
-    }
-
-    private void startNfcSign(String pin, byte[] hashToSign, int hashAlgo) {
-        Intent data = new Intent();
-
-        // build PendingIntent for Yubikey NFC operations
-        Intent intent = new Intent(this, NfcActivity.class);
-        intent.setAction(NfcActivity.ACTION_SIGN_HASH);
-        // pass params through to activity that it can be returned again later to repeat pgp operation
-        intent.putExtra(NfcActivity.EXTRA_DATA, data);
-        intent.putExtra(NfcActivity.EXTRA_PIN, pin);
-
-        intent.putExtra(NfcActivity.EXTRA_NFC_HASH_TO_SIGN, hashToSign);
-        intent.putExtra(NfcActivity.EXTRA_NFC_HASH_ALGO, hashAlgo);
-        intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
-
-        startActivityForResult(intent, 0);
-    }
-
-    private void startPassphraseDialog(long subkeyId) {
-        Intent data = new Intent();
-
-        // build PendingIntent for Yubikey NFC operations
-        Intent intent = new Intent(this, PassphraseDialogActivity.class);
-        // pass params through to activity that it can be returned again later to repeat pgp operation
-        intent.putExtra(PassphraseDialogActivity.EXTRA_SUBKEY_ID, subkeyId);
-
-//        intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
-
-        startActivityForResult(intent, 0);
     }
 
     private Bundle createEncryptBundle() {

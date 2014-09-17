@@ -35,8 +35,6 @@ import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.CursorAdapter;
-import android.support.v4.widget.NoScrollableSwipeRefreshLayout;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.SearchView;
@@ -394,9 +392,9 @@ public class KeyListFragment extends LoaderFragment
 
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     protected void encrypt(ActionMode mode, long[] masterKeyIds) {
-        Intent intent = new Intent(getActivity(), EncryptFileActivity.class);
-        intent.setAction(EncryptFileActivity.ACTION_ENCRYPT_DATA);
-        intent.putExtra(EncryptFileActivity.EXTRA_ENCRYPTION_KEY_IDS, masterKeyIds);
+        Intent intent = new Intent(getActivity(), EncryptFilesActivity.class);
+        intent.setAction(EncryptFilesActivity.ACTION_ENCRYPT_DATA);
+        intent.putExtra(EncryptFilesActivity.EXTRA_ENCRYPTION_KEY_IDS, masterKeyIds);
         // used instead of startActivity set actionbar based on callingPackage
         startActivityForResult(intent, 0);
 

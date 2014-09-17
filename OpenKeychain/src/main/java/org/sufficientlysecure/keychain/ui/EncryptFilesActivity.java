@@ -22,7 +22,6 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.Message;
 import android.os.Messenger;
 import android.support.v4.app.Fragment;
@@ -32,15 +31,13 @@ import android.view.MenuItem;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.api.OpenKeychainIntents;
-import org.sufficientlysecure.keychain.compatibility.ClipboardReflection;
 import org.sufficientlysecure.keychain.helper.Preferences;
 import org.sufficientlysecure.keychain.helper.ShareHelper;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
 import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
-import org.sufficientlysecure.keychain.service.PassphraseCacheService;
+import org.sufficientlysecure.keychain.service.results.SignEncryptResult;
 import org.sufficientlysecure.keychain.ui.dialog.DeleteFileDialogFragment;
-import org.sufficientlysecure.keychain.ui.dialog.PassphraseDialogFragment;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Notify;
 
@@ -48,7 +45,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
-public class EncryptFileActivity extends DrawerActivity implements EncryptActivityInterface {
+public class EncryptFilesActivity extends EncryptActivity implements EncryptActivityInterface {
 
     /* Intents */
     public static final String ACTION_ENCRYPT_DATA = OpenKeychainIntents.ENCRYPT_DATA;
@@ -194,24 +191,44 @@ public class EncryptFileActivity extends DrawerActivity implements EncryptActivi
                 super.handleMessage(message);
 
                 if (message.arg1 == KeychainIntentServiceHandler.MESSAGE_OKAY) {
-                    Notify.showNotify(EncryptFileActivity.this, R.string.encrypt_sign_successful, Notify.Style.INFO);
+                    Notify.showNotify(EncryptFilesActivity.this, R.string.encrypt_sign_successful, Notify.Style.INFO);
 
-                    if (mDeleteAfterEncrypt) {
-                        for (Uri inputUri : mInputUris) {
-                            DeleteFileDialogFragment deleteFileDialog = DeleteFileDialogFragment.newInstance(inputUri);
-                            deleteFileDialog.show(getSupportFragmentManager(), "deleteDialog");
+                    SignEncryptResult pgpResult =
+                            message.getData().getParcelable(SignEncryptResult.EXTRA_RESULT);
+
+                    if (pgpResult.isPending()) {
+                        if ((pgpResult.getResult() & SignEncryptResult.RESULT_PENDING_PASSPHRASE) ==
+                                SignEncryptResult.RESULT_PENDING_PASSPHRASE) {
+                            startPassphraseDialog(pgpResult.getKeyIdPassphraseNeeded());
+                        } else if ((pgpResult.getResult() & SignEncryptResult.RESULT_PENDING_NFC) ==
+                                SignEncryptResult.RESULT_PENDING_NFC) {
+
+                            // use after nfc sign
+////                                data.putExtra(OpenPgpApi.EXTRA_NFC_SIG_CREATION_TIMESTAMP, result.getNfcTimestamp().getTime());
+                            startNfcSign("123456", pgpResult.getNfcHash(), pgpResult.getNfcAlgo());
+                        } else {
+                            throw new RuntimeException("Unhandled pending result!");
                         }
-                        mInputUris.clear();
-                        notifyUpdate();
-                    }
+                    } else if (pgpResult.success()) {
+                        if (mDeleteAfterEncrypt) {
+                            for (Uri inputUri : mInputUris) {
+                                DeleteFileDialogFragment deleteFileDialog = DeleteFileDialogFragment.newInstance(inputUri);
+                                deleteFileDialog.show(getSupportFragmentManager(), "deleteDialog");
+                            }
+                            mInputUris.clear();
+                            notifyUpdate();
+                        }
 
-                    if (mShareAfterEncrypt) {
-                        // Share encrypted message/file
-                        startActivity(sendWithChooserExcludingEncrypt(message));
+                        if (mShareAfterEncrypt) {
+                            // Share encrypted message/file
+                            startActivity(sendWithChooserExcludingEncrypt(message));
+                        } else {
+                            // Save encrypted file
+                            Notify.showNotify(EncryptFilesActivity.this,
+                                    R.string.encrypt_sign_clipboard_successful, Notify.Style.INFO);
+                        }
                     } else {
-                        // Save encrypted file
-                        Notify.showNotify(EncryptFileActivity.this,
-                                R.string.encrypt_sign_clipboard_successful, Notify.Style.INFO);
+                        pgpResult.createNotify(EncryptFilesActivity.this).show();
                     }
                 }
             }
@@ -336,25 +353,25 @@ public class EncryptFileActivity extends DrawerActivity implements EncryptActivi
                 return false;
             }
 
-            try {
-                if (mSigningKeyId != 0 && PassphraseCacheService.getCachedPassphrase(this, mSigningKeyId) == null) {
-                    PassphraseDialogFragment.show(this, mSigningKeyId,
-                            new Handler() {
-                                @Override
-                                public void handleMessage(Message message) {
-                                    if (message.what == PassphraseDialogFragment.MESSAGE_OKAY) {
-                                        // restart
-                                        startEncrypt();
-                                    }
-                                }
-                            }
-                    );
-
-                    return false;
-                }
-            } catch (PassphraseCacheService.KeyNotFoundException e) {
-                Log.e(Constants.TAG, "Key not found!", e);
-            }
+//            try {
+//                if (mSigningKeyId != 0 && PassphraseCacheService.getCachedPassphrase(this, mSigningKeyId) == null) {
+//                    PassphraseDialogFragment.show(this, mSigningKeyId,
+//                            new Handler() {
+//                                @Override
+//                                public void handleMessage(Message message) {
+//                                    if (message.what == PassphraseDialogFragment.MESSAGE_OKAY) {
+//                                        // restart
+//                                        startEncrypt();
+//                                    }
+//                                }
+//                            }
+//                    );
+//
+//                    return false;
+//                }
+//            } catch (PassphraseCacheService.KeyNotFoundException e) {
+//                Log.e(Constants.TAG, "Key not found!", e);
+//            }
         }
         return true;
     }

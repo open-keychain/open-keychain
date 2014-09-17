@@ -17,7 +17,7 @@
 
     <fragment
         android:id="@+id/encrypt_file_fragment"
-        android:name="org.sufficientlysecure.keychain.ui.EncryptFileFragment"
+        android:name="org.sufficientlysecure.keychain.ui.EncryptFilesFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 

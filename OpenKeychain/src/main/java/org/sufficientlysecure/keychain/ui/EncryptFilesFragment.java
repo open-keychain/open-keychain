@@ -43,10 +43,9 @@ import org.sufficientlysecure.keychain.provider.TemporaryStorageProvider;
 import java.io.File;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 
-public class EncryptFileFragment extends Fragment implements EncryptActivityInterface.UpdateListener {
+public class EncryptFilesFragment extends Fragment implements EncryptActivityInterface.UpdateListener {
     public static final String ARG_URIS = "uris";
 
     private static final int REQUEST_CODE_INPUT = 0x00007003;
@@ -115,9 +114,9 @@ public class EncryptFileFragment extends Fragment implements EncryptActivityInte
 
     private void addInputUri() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            FileHelper.openDocument(EncryptFileFragment.this, "*/*", true, REQUEST_CODE_INPUT);
+            FileHelper.openDocument(EncryptFilesFragment.this, "*/*", true, REQUEST_CODE_INPUT);
         } else {
-            FileHelper.openFile(EncryptFileFragment.this, mEncryptInterface.getInputUris().isEmpty() ?
+            FileHelper.openFile(EncryptFilesFragment.this, mEncryptInterface.getInputUris().isEmpty() ?
                             null : mEncryptInterface.getInputUris().get(mEncryptInterface.getInputUris().size() - 1),
                     "*/*", REQUEST_CODE_INPUT);
         }

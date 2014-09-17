@@ -302,9 +302,9 @@ public class ViewKeyMainFragment extends LoaderFragment implements
                 intent.setAction(EncryptTextActivity.ACTION_ENCRYPT_TEXT);
                 intent.putExtra(EncryptTextActivity.EXTRA_ENCRYPTION_KEY_IDS, encryptionKeyIds);
             } else {
-                intent = new Intent(getActivity(), EncryptFileActivity.class);
-                intent.setAction(EncryptFileActivity.ACTION_ENCRYPT_DATA);
-                intent.putExtra(EncryptFileActivity.EXTRA_ENCRYPTION_KEY_IDS, encryptionKeyIds);
+                intent = new Intent(getActivity(), EncryptFilesActivity.class);
+                intent.setAction(EncryptFilesActivity.ACTION_ENCRYPT_DATA);
+                intent.putExtra(EncryptFilesActivity.EXTRA_ENCRYPTION_KEY_IDS, encryptionKeyIds);
             }
             // used instead of startActivity set actionbar based on callingPackage
             startActivityForResult(intent, 0);
