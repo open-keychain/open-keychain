@@ -128,7 +128,7 @@ abstract public class SelectKeyCursorAdapter extends CursorAdapter {
         }
 
         long masterKeyId = cursor.getLong(mIndexMasterKeyId);
-        h.keyId.setText(PgpKeyHelper.convertKeyIdToHex(masterKeyId));
+        h.keyId.setText(context.getString(R.string.label_key_id) + ": " + PgpKeyHelper.beautifyKeyId(masterKeyId));
 
         boolean enabled = true;
         if (cursor.getInt(mIndexRevoked) != 0) {

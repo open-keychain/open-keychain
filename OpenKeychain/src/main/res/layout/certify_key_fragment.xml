@@ -61,8 +61,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:paddingRight="5dip"
-                        android:text=""
-                        android:typeface="monospace" />
+                        android:text="0123 4567 89ab cdef" />
                 </TableRow>
 
                 <TableRow

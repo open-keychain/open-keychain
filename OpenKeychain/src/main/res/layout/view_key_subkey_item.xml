@@ -52,9 +52,8 @@
                 android:id="@+id/subkey_item_key_id"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="0x00000000"
+                android:text="Key ID: 0123 4567 89ab cdef"
                 android:textAppearance="?android:attr/textAppearanceMedium"
-                android:typeface="monospace"
                 android:layout_weight="1" />
 
             <ImageView

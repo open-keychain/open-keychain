@@ -145,7 +145,7 @@ public class SubkeysAdapter extends CursorAdapter {
         deleteImage.setVisibility(View.GONE);
 
         long keyId = cursor.getLong(INDEX_KEY_ID);
-        String keyIdStr = PgpKeyHelper.convertKeyIdToHex(keyId);
+        String keyIdStr = context.getString(R.string.label_key_id) + ": " + PgpKeyHelper.beautifyKeyId(keyId);
         vKeyId.setText(keyIdStr);
 
         // may be set with additional "stripped" later on

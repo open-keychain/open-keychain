@@ -108,11 +108,11 @@ public class ImportKeysListEntry implements Serializable, Parcelable {
         return super.hashCode();
     }
 
-    public boolean hasSameKeyAs(Object o) {
-        if (mFingerprintHex == null || o == null || !(o instanceof ImportKeysListEntry)) {
+    public boolean hasSameKeyAs(ImportKeysListEntry other) {
+        if (mFingerprintHex == null || other == null) {
             return false;
         }
-        return mFingerprintHex.equals(((ImportKeysListEntry) o).mFingerprintHex);
+        return mFingerprintHex.equals(other.mFingerprintHex);
     }
 
     public String getKeyIdHex() {
