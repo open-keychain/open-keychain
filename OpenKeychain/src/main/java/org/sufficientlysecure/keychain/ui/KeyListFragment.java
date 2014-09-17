@@ -56,17 +56,17 @@ import android.widget.TextView;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.helper.ExportHelper;
-import org.sufficientlysecure.keychain.helper.KeyUpdateHelper;
-import org.sufficientlysecure.keychain.helper.Preferences;
+import org.sufficientlysecure.keychain.util.ExportHelper;
+import org.sufficientlysecure.keychain.util.KeyUpdateHelper;
+import org.sufficientlysecure.keychain.util.Preferences;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
 import org.sufficientlysecure.keychain.ui.dialog.DeleteKeyDialogFragment;
 import org.sufficientlysecure.keychain.ui.widget.ListAwareSwipeRefreshLayout;
-import org.sufficientlysecure.keychain.util.Highlighter;
+import org.sufficientlysecure.keychain.ui.util.Highlighter;
 import org.sufficientlysecure.keychain.util.Log;
-import org.sufficientlysecure.keychain.util.Notify;
+import org.sufficientlysecure.keychain.ui.util.Notify;
 
 import java.util.Date;
 import java.util.HashMap;

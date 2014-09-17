@@ -29,7 +29,7 @@ import android.view.ViewGroup;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.compatibility.ClipboardReflection;
-import org.sufficientlysecure.keychain.helper.FileHelper;
+import org.sufficientlysecure.keychain.util.FileHelper;
 
 import java.util.Locale;
 

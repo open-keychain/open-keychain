@@ -43,7 +43,7 @@ import android.widget.TextView;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.compatibility.ClipboardReflection;
-import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
+import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
@@ -51,12 +51,11 @@ import org.sufficientlysecure.keychain.provider.KeychainContract.Keys;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.ui.dialog.ShareNfcDialogFragment;
 import org.sufficientlysecure.keychain.util.Log;
-import org.sufficientlysecure.keychain.util.Notify;
-import org.sufficientlysecure.keychain.util.QrCodeUtils;
+import org.sufficientlysecure.keychain.ui.util.Notify;
+import org.sufficientlysecure.keychain.ui.util.QrCodeUtils;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
 
 import edu.cmu.cylab.starslinger.exchange.ExchangeActivity;
 import edu.cmu.cylab.starslinger.exchange.ExchangeConfig;
@@ -180,7 +179,7 @@ public class ViewKeyShareFragment extends LoaderFragment implements
                 byte[] data = (byte[]) providerHelper.getGenericData(
                         KeyRings.buildUnifiedKeyRingUri(dataUri),
                         Keys.FINGERPRINT, ProviderHelper.FIELD_TYPE_BLOB);
-                String fingerprint = PgpKeyHelper.convertFingerprintToHex(data);
+                String fingerprint = KeyFormattingUtils.convertFingerprintToHex(data);
                 if (!toClipboard) {
                     content = Constants.FINGERPRINT_SCHEME + ":" + fingerprint;
                 } else {
@@ -375,8 +374,8 @@ public class ViewKeyShareFragment extends LoaderFragment implements
                 if (data.moveToFirst()) {
 
                     byte[] fingerprintBlob = data.getBlob(INDEX_UNIFIED_FINGERPRINT);
-                    String fingerprint = PgpKeyHelper.convertFingerprintToHex(fingerprintBlob);
-                    mFingerprint.setText(PgpKeyHelper.colorizeFingerprint(fingerprint));
+                    String fingerprint = KeyFormattingUtils.convertFingerprintToHex(fingerprintBlob);
+                    mFingerprint.setText(KeyFormattingUtils.colorizeFingerprint(fingerprint));
 
                     loadQrCode(fingerprint);
 

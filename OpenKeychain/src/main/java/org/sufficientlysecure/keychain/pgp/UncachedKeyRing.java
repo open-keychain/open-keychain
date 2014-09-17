@@ -33,11 +33,11 @@ import org.spongycastle.openpgp.PGPSignature;
 import org.spongycastle.openpgp.PGPSignatureList;
 import org.spongycastle.openpgp.PGPUtil;
 import org.spongycastle.openpgp.operator.jcajce.JcaKeyFingerprintCalculator;
-import org.spongycastle.util.Strings;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.service.results.OperationResult.LogType;
 import org.sufficientlysecure.keychain.service.results.OperationResult.OperationLog;
+import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.IterableIterator;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Utf8Util;
@@ -261,7 +261,7 @@ public class UncachedKeyRing {
     public CanonicalizedKeyRing canonicalize(OperationLog log, int indent) {
 
         log.add(isSecret() ? LogType.MSG_KC_SECRET : LogType.MSG_KC_PUBLIC,
-                indent, PgpKeyHelper.convertKeyIdToHex(getMasterKeyId()));
+                indent, KeyFormattingUtils.convertKeyIdToHex(getMasterKeyId()));
         indent += 1;
 
         // do not accept v3 keys
@@ -286,7 +286,7 @@ public class UncachedKeyRing {
 
         {
             log.add(LogType.MSG_KC_MASTER,
-                    indent, PgpKeyHelper.convertKeyIdToHex(masterKey.getKeyID()));
+                    indent, KeyFormattingUtils.convertKeyIdToHex(masterKey.getKeyID()));
             indent += 1;
 
             PGPPublicKey modified = masterKey;
@@ -420,7 +420,7 @@ public class UncachedKeyRing {
                             // never mind any further for public keys, but remove them from secret ones
                             if (isSecret()) {
                                 log.add(LogType.MSG_KC_UID_FOREIGN,
-                                        indent, PgpKeyHelper.convertKeyIdToHex(certId));
+                                        indent, KeyFormattingUtils.convertKeyIdToHex(certId));
                                 modified = PGPPublicKey.removeCertification(modified, rawUserId, zert);
                                 badCerts += 1;
                             }
@@ -536,7 +536,7 @@ public class UncachedKeyRing {
                 continue;
             }
             log.add(LogType.MSG_KC_SUB,
-                    indent, PgpKeyHelper.convertKeyIdToHex(key.getKeyID()));
+                    indent, KeyFormattingUtils.convertKeyIdToHex(key.getKeyID()));
             indent += 1;
 
             if (Arrays.binarySearch(KNOWN_ALGORITHMS, key.getAlgorithm()) < 0) {
@@ -689,7 +689,7 @@ public class UncachedKeyRing {
                 ring = removeSubKey(ring, key);
 
                 log.add(LogType.MSG_KC_SUB_NO_CERT,
-                        indent, PgpKeyHelper.convertKeyIdToHex(key.getKeyID()));
+                        indent, KeyFormattingUtils.convertKeyIdToHex(key.getKeyID()));
                 indent -= 1;
                 continue;
             }
@@ -737,7 +737,7 @@ public class UncachedKeyRing {
     public UncachedKeyRing merge(UncachedKeyRing other, OperationLog log, int indent) {
 
         log.add(isSecret() ? LogType.MSG_MG_SECRET : LogType.MSG_MG_PUBLIC,
-                indent, PgpKeyHelper.convertKeyIdToHex(getMasterKeyId()));
+                indent, KeyFormattingUtils.convertKeyIdToHex(getMasterKeyId()));
         indent += 1;
 
         long masterKeyId = other.getMasterKeyId();

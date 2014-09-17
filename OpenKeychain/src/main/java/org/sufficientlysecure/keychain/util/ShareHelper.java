@@ -1,4 +1,4 @@
-package org.sufficientlysecure.keychain.helper;
+package org.sufficientlysecure.keychain.util;
 
 import android.content.Context;
 import android.content.Intent;

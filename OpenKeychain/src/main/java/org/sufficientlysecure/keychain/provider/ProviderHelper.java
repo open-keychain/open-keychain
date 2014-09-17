@@ -28,10 +28,10 @@ import android.net.Uri;
 import android.os.RemoteException;
 import android.support.v4.util.LongSparseArray;
 
-import org.spongycastle.util.Strings;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.helper.Preferences;
+import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
+import org.sufficientlysecure.keychain.util.Preferences;
 import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedPublicKey;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedPublicKeyRing;
@@ -41,7 +41,6 @@ import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKeyRing;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.pgp.PgpHelper;
 import org.sufficientlysecure.keychain.pgp.PgpImportExport;
-import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
 import org.sufficientlysecure.keychain.pgp.Progressable;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
 import org.sufficientlysecure.keychain.pgp.UncachedPublicKey;
@@ -344,7 +343,7 @@ public class ProviderHelper {
                 for (CanonicalizedPublicKey key : keyRing.publicKeyIterator()) {
                     long keyId = key.getKeyId();
                     log(LogLevel.DEBUG, keyId == masterKeyId ? LogType.MSG_IP_MASTER : LogType.MSG_IP_SUBKEY,
-                            PgpKeyHelper.convertKeyIdToHex(keyId)
+                            KeyFormattingUtils.convertKeyIdToHex(keyId)
                     );
                     mIndent += 1;
 
@@ -480,7 +479,7 @@ public class ProviderHelper {
                             if (cert.verifySignature(masterKey, rawUserId)) {
                                 item.trustedCerts.add(cert);
                                 log(LogLevel.INFO, LogType.MSG_IP_UID_CERT_GOOD,
-                                        PgpKeyHelper.convertKeyIdToHexShort(trustedKey.getKeyId())
+                                        KeyFormattingUtils.convertKeyIdToHexShort(trustedKey.getKeyId())
                                 );
                             } else {
                                 log(LogLevel.WARN, LogType.MSG_IP_UID_CERT_BAD);
@@ -491,7 +490,7 @@ public class ProviderHelper {
 
                     } catch (PgpGeneralException e) {
                         log(LogLevel.WARN, LogType.MSG_IP_UID_CERT_ERROR,
-                                PgpKeyHelper.convertKeyIdToHex(cert.getKeyId()));
+                                KeyFormattingUtils.convertKeyIdToHex(cert.getKeyId()));
                     }
                 }
 
@@ -592,7 +591,7 @@ public class ProviderHelper {
     private int saveCanonicalizedSecretKeyRing(CanonicalizedSecretKeyRing keyRing) {
 
         long masterKeyId = keyRing.getMasterKeyId();
-        log(LogLevel.START, LogType.MSG_IS, PgpKeyHelper.convertKeyIdToHex(masterKeyId));
+        log(LogLevel.START, LogType.MSG_IS, KeyFormattingUtils.convertKeyIdToHex(masterKeyId));
         mIndent += 1;
 
         try {
@@ -638,28 +637,28 @@ public class ProviderHelper {
                         switch (mode) {
                             case PASSPHRASE:
                                 log(LogLevel.DEBUG, LogType.MSG_IS_SUBKEY_OK,
-                                        PgpKeyHelper.convertKeyIdToHex(id)
+                                        KeyFormattingUtils.convertKeyIdToHex(id)
                                 );
                                 break;
                             case PASSPHRASE_EMPTY:
                                 log(LogLevel.DEBUG, LogType.MSG_IS_SUBKEY_EMPTY,
-                                        PgpKeyHelper.convertKeyIdToHex(id)
+                                        KeyFormattingUtils.convertKeyIdToHex(id)
                                 );
                                 break;
                             case GNU_DUMMY:
                                 log(LogLevel.DEBUG, LogType.MSG_IS_SUBKEY_STRIPPED,
-                                        PgpKeyHelper.convertKeyIdToHex(id)
+                                        KeyFormattingUtils.convertKeyIdToHex(id)
                                 );
                                 break;
                             case DIVERT_TO_CARD:
                                 log(LogLevel.DEBUG, LogType.MSG_IS_SUBKEY_DIVERT,
-                                        PgpKeyHelper.convertKeyIdToHex(id)
+                                        KeyFormattingUtils.convertKeyIdToHex(id)
                                 );
                                 break;
                         }
                     } else {
                         log(LogLevel.WARN, LogType.MSG_IS_SUBKEY_NONEXISTENT,
-                                PgpKeyHelper.convertKeyIdToHex(id)
+                                KeyFormattingUtils.convertKeyIdToHex(id)
                         );
                     }
                 }
@@ -691,7 +690,7 @@ public class ProviderHelper {
 
         try {
             long masterKeyId = publicRing.getMasterKeyId();
-            log(LogLevel.START, LogType.MSG_IP, PgpKeyHelper.convertKeyIdToHex(masterKeyId));
+            log(LogLevel.START, LogType.MSG_IP, KeyFormattingUtils.convertKeyIdToHex(masterKeyId));
             mIndent += 1;
 
             if (publicRing.isSecret()) {
@@ -783,7 +782,7 @@ public class ProviderHelper {
 
         try {
             long masterKeyId = secretRing.getMasterKeyId();
-            log(LogLevel.START, LogType.MSG_IS, PgpKeyHelper.convertKeyIdToHex(masterKeyId));
+            log(LogLevel.START, LogType.MSG_IS, KeyFormattingUtils.convertKeyIdToHex(masterKeyId));
             mIndent += 1;
 
             if ( ! secretRing.isSecret()) {
@@ -816,7 +815,7 @@ public class ProviderHelper {
                 if (Arrays.hashCode(secretRing.getEncoded())
                         == Arrays.hashCode(oldSecretRing.getEncoded())) {
                     log(LogLevel.OK, LogType.MSG_IS_SUCCESS_IDENTICAL,
-                            PgpKeyHelper.convertKeyIdToHex(masterKeyId) );
+                            KeyFormattingUtils.convertKeyIdToHex(masterKeyId) );
                     return new SaveKeyringResult(SaveKeyringResult.UPDATED, mLog, null);
                 }
             } catch (NotFoundException e) {
@@ -911,7 +910,7 @@ public class ProviderHelper {
                         return false;
                     }
                     ring = new ParcelableKeyRing(cursor.getBlob(0),
-                            PgpKeyHelper.convertFingerprintToHex(cursor.getBlob(1)));
+                            KeyFormattingUtils.convertFingerprintToHex(cursor.getBlob(1)));
                     cursor.moveToNext();
                     return true;
                 }
@@ -973,7 +972,7 @@ public class ProviderHelper {
                         return false;
                     }
                     ring = new ParcelableKeyRing(cursor.getBlob(0),
-                            PgpKeyHelper.convertFingerprintToHex(cursor.getBlob(1)));
+                            KeyFormattingUtils.convertFingerprintToHex(cursor.getBlob(1)));
                     cursor.moveToNext();
                     return true;
                 }
@@ -1325,7 +1324,7 @@ public class ProviderHelper {
                  int fingerprintColumn = cursor.getColumnIndex(KeyRings.FINGERPRINT);
                  while(cursor.moveToNext()) {
                      fingerprints.add(
-                            PgpKeyHelper.convertFingerprintToHex(cursor.getBlob(fingerprintColumn))
+                            KeyFormattingUtils.convertFingerprintToHex(cursor.getBlob(fingerprintColumn))
                          );
                      }
                  }

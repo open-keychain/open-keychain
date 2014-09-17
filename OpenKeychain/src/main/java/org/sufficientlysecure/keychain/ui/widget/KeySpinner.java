@@ -36,7 +36,7 @@ import android.widget.TextView;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
-import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
+import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.util.Log;
 
@@ -144,7 +144,7 @@ public abstract class KeySpinner extends Spinner implements LoaderManager.Loader
                     TextView vKeyStatus = ((TextView) view.findViewById(R.id.keyspinner_key_status));
                     vKeyName.setText(userId[2] == null ? userId[0] : (userId[0] + " (" + userId[2] + ")"));
                     ((TextView) view.findViewById(R.id.keyspinner_key_email)).setText(userId[1]);
-                    ((TextView) view.findViewById(R.id.keyspinner_key_id)).setText(PgpKeyHelper.convertKeyIdToHex(cursor.getLong(mIndexKeyId)));
+                    ((TextView) view.findViewById(R.id.keyspinner_key_id)).setText(KeyFormattingUtils.convertKeyIdToHex(cursor.getLong(mIndexKeyId)));
                     String status = getStatus(getContext(), cursor);
                     if (status == null) {
                         vKeyName.setTextColor(Color.BLACK);

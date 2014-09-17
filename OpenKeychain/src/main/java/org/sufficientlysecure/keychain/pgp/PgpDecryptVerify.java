@@ -51,6 +51,7 @@ import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.results.DecryptVerifyResult;
 import org.sufficientlysecure.keychain.service.results.OperationResult.LogType;
 import org.sufficientlysecure.keychain.service.results.OperationResult.OperationLog;
+import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.InputData;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.ProgressScaler;
@@ -260,7 +261,7 @@ public class PgpDecryptVerify {
                 long subKeyId = encData.getKeyID();
 
                 log.add(LogType.MSG_DC_ASYM, indent,
-                        PgpKeyHelper.convertKeyIdToHex(subKeyId));
+                        KeyFormattingUtils.convertKeyIdToHex(subKeyId));
 
                 CanonicalizedSecretKeyRing secretKeyRing;
                 try {
@@ -367,7 +368,7 @@ public class PgpDecryptVerify {
                 PGPPublicKeyEncryptedData encData = (PGPPublicKeyEncryptedData) obj;
                 long subKeyId = encData.getKeyID();
                 log.add(LogType.MSG_DC_TRAIL_ASYM, indent,
-                        PgpKeyHelper.convertKeyIdToHex(subKeyId));
+                        KeyFormattingUtils.convertKeyIdToHex(subKeyId));
             } else if (obj instanceof PGPPBEEncryptedData) {
                 log.add(LogType.MSG_DC_TRAIL_SYM, indent);
             } else {

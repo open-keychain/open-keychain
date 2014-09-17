@@ -39,11 +39,11 @@ import android.view.ViewGroup;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.api.OpenKeychainIntents;
-import org.sufficientlysecure.keychain.helper.OtherHelper;
-import org.sufficientlysecure.keychain.helper.Preferences;
+import org.sufficientlysecure.keychain.ui.util.FormattingUtils;
+import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
+import org.sufficientlysecure.keychain.util.Preferences;
 import org.sufficientlysecure.keychain.keyimport.ImportKeysListEntry;
 import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
-import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
 import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
 import org.sufficientlysecure.keychain.service.results.OperationResult;
@@ -52,7 +52,7 @@ import org.sufficientlysecure.keychain.ui.adapter.PagerTabStripAdapter;
 import org.sufficientlysecure.keychain.ui.widget.SlidingTabLayout;
 import org.sufficientlysecure.keychain.util.ParcelableFileCache;
 import org.sufficientlysecure.keychain.util.Log;
-import org.sufficientlysecure.keychain.util.Notify;
+import org.sufficientlysecure.keychain.ui.util.Notify;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -183,7 +183,7 @@ public class ImportKeysActivity extends ActionBarActivity {
                 } else if (extras.containsKey(EXTRA_KEY_ID)) {
                     long keyId = extras.getLong(EXTRA_KEY_ID, 0);
                     if (keyId != 0) {
-                        query = PgpKeyHelper.convertKeyIdToHex(keyId);
+                        query = KeyFormattingUtils.convertKeyIdToHex(keyId);
                     }
                 }
 
@@ -340,14 +340,14 @@ public class ImportKeysActivity extends ActionBarActivity {
 
     public void resizeViewPager(int dp) {
         ViewGroup.LayoutParams params = mViewPager.getLayoutParams();
-        params.height = OtherHelper.dpToPx(this, dp);
+        params.height = FormattingUtils.dpToPx(this, dp);
         // update layout after operations
         mSlidingTabLayout.setViewPager(mViewPager);
     }
 
     public int getViewPagerHeight() {
         ViewGroup.LayoutParams params = mViewPager.getLayoutParams();
-        return OtherHelper.pxToDp(this, params.height);
+        return FormattingUtils.pxToDp(this, params.height);
     }
 
     private String getFingerprintFromUri(Uri dataUri) {

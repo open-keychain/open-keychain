@@ -54,6 +54,7 @@ import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel.Algorithm;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel.Curve;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel.SubkeyAdd;
+import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.IterableIterator;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Primes;
@@ -405,7 +406,7 @@ public class PgpKeyOperation {
          */
 
         log.add(LogType.MSG_MF, indent,
-                PgpKeyHelper.convertKeyIdToHex(wsKR.getMasterKeyId()));
+                KeyFormattingUtils.convertKeyIdToHex(wsKR.getMasterKeyId()));
         indent += 1;
         progress(R.string.progress_building_key, 0);
 
@@ -674,12 +675,12 @@ public class PgpKeyOperation {
                 progress(R.string.progress_modify_subkeychange, (i-1) * (100 / saveParcel.mChangeSubKeys.size()));
                 SaveKeyringParcel.SubkeyChange change = saveParcel.mChangeSubKeys.get(i);
                 log.add(LogType.MSG_MF_SUBKEY_CHANGE,
-                        indent, PgpKeyHelper.convertKeyIdToHex(change.mKeyId));
+                        indent, KeyFormattingUtils.convertKeyIdToHex(change.mKeyId));
 
                 PGPSecretKey sKey = sKR.getSecretKey(change.mKeyId);
                 if (sKey == null) {
                     log.add(LogType.MSG_MF_ERROR_SUBKEY_MISSING,
-                            indent + 1, PgpKeyHelper.convertKeyIdToHex(change.mKeyId));
+                            indent + 1, KeyFormattingUtils.convertKeyIdToHex(change.mKeyId));
                     return new EditKeyResult(EditKeyResult.RESULT_ERROR, log, null);
                 }
 
@@ -687,7 +688,7 @@ public class PgpKeyOperation {
                 if (change.mExpiry != null && change.mExpiry != 0 &&
                         new Date(change.mExpiry*1000).before(new Date())) {
                     log.add(LogType.MSG_MF_ERROR_PAST_EXPIRY,
-                            indent + 1, PgpKeyHelper.convertKeyIdToHex(change.mKeyId));
+                            indent + 1, KeyFormattingUtils.convertKeyIdToHex(change.mKeyId));
                     return new EditKeyResult(EditKeyResult.RESULT_ERROR, log, null);
                 }
 
@@ -755,12 +756,12 @@ public class PgpKeyOperation {
                 progress(R.string.progress_modify_subkeyrevoke, (i-1) * (100 / saveParcel.mRevokeSubKeys.size()));
                 long revocation = saveParcel.mRevokeSubKeys.get(i);
                 log.add(LogType.MSG_MF_SUBKEY_REVOKE,
-                        indent, PgpKeyHelper.convertKeyIdToHex(revocation));
+                        indent, KeyFormattingUtils.convertKeyIdToHex(revocation));
 
                 PGPSecretKey sKey = sKR.getSecretKey(revocation);
                 if (sKey == null) {
                     log.add(LogType.MSG_MF_ERROR_SUBKEY_MISSING,
-                            indent+1, PgpKeyHelper.convertKeyIdToHex(revocation));
+                            indent+1, KeyFormattingUtils.convertKeyIdToHex(revocation));
                     return new EditKeyResult(EditKeyResult.RESULT_ERROR, log, null);
                 }
                 PGPPublicKey pKey = sKey.getPublicKey();
@@ -780,12 +781,12 @@ public class PgpKeyOperation {
                 progress(R.string.progress_modify_subkeystrip, (i-1) * (100 / saveParcel.mStripSubKeys.size()));
                 long strip = saveParcel.mStripSubKeys.get(i);
                 log.add(LogType.MSG_MF_SUBKEY_STRIP,
-                        indent, PgpKeyHelper.convertKeyIdToHex(strip));
+                        indent, KeyFormattingUtils.convertKeyIdToHex(strip));
 
                 PGPSecretKey sKey = sKR.getSecretKey(strip);
                 if (sKey == null) {
                     log.add(LogType.MSG_MF_ERROR_SUBKEY_MISSING,
-                            indent+1, PgpKeyHelper.convertKeyIdToHex(strip));
+                            indent+1, KeyFormattingUtils.convertKeyIdToHex(strip));
                     return new EditKeyResult(EditKeyResult.RESULT_ERROR, log, null);
                 }
 
@@ -810,7 +811,7 @@ public class PgpKeyOperation {
                 progress(R.string.progress_modify_subkeyadd, (i-1) * (100 / saveParcel.mAddSubKeys.size()));
                 SaveKeyringParcel.SubkeyAdd add = saveParcel.mAddSubKeys.get(i);
                 log.add(LogType.MSG_MF_SUBKEY_NEW, indent,
-                        PgpKeyHelper.getAlgorithmInfo(add.mAlgorithm, add.mKeySize, add.mCurve) );
+                        KeyFormattingUtils.getAlgorithmInfo(add.mAlgorithm, add.mKeySize, add.mCurve) );
 
                 if (add.mExpiry == null) {
                     log.add(LogType.MSG_MF_ERROR_NULL_EXPIRY, indent +1);
@@ -856,7 +857,7 @@ public class PgpKeyOperation {
                 }
 
                 log.add(LogType.MSG_MF_SUBKEY_NEW_ID,
-                        indent+1, PgpKeyHelper.convertKeyIdToHex(sKey.getKeyID()));
+                        indent+1, KeyFormattingUtils.convertKeyIdToHex(sKey.getKeyID()));
 
                 sKR = PGPSecretKeyRing.insertSecretKey(sKR, sKey);
 
@@ -888,7 +889,7 @@ public class PgpKeyOperation {
                 // noinspection unchecked
                 for (PGPSecretKey sKey : new IterableIterator<PGPSecretKey>(sKR.getSecretKeys())) {
                     log.add(LogType.MSG_MF_PASSPHRASE_KEY, indent,
-                            PgpKeyHelper.convertKeyIdToHex(sKey.getKeyID()));
+                            KeyFormattingUtils.convertKeyIdToHex(sKey.getKeyID()));
 
                     boolean ok = false;
 
@@ -921,7 +922,7 @@ public class PgpKeyOperation {
                     if (!ok) {
                         // for a subkey, it's merely a warning
                         log.add(LogType.MSG_MF_PASSPHRASE_FAIL, indent+1,
-                                PgpKeyHelper.convertKeyIdToHex(sKey.getKeyID()));
+                                KeyFormattingUtils.convertKeyIdToHex(sKey.getKeyID()));
                         continue;
                     }
 

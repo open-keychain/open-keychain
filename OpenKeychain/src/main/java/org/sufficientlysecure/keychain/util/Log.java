@@ -17,7 +17,12 @@
 
 package org.sufficientlysecure.keychain.util;
 
+import android.os.Bundle;
+
 import org.sufficientlysecure.keychain.Constants;
+
+import java.util.Iterator;
+import java.util.Set;
 
 /**
  * Wraps Android Logging to enable or disable debug output using Constants
@@ -80,4 +85,35 @@ public final class Log {
         android.util.Log.e(tag, msg, tr);
     }
 
+
+    /**
+     * Logs bundle content to debug for inspecting the content
+     *
+     * @param bundle
+     * @param bundleName
+     */
+    public static void logDebugBundle(Bundle bundle, String bundleName) {
+        if (Constants.DEBUG) {
+            if (bundle != null) {
+                Set<String> ks = bundle.keySet();
+                Iterator<String> iterator = ks.iterator();
+
+                Log.d(Constants.TAG, "Bundle " + bundleName + ":");
+                Log.d(Constants.TAG, "------------------------------");
+                while (iterator.hasNext()) {
+                    String key = iterator.next();
+                    Object value = bundle.get(key);
+
+                    if (value != null) {
+                        Log.d(Constants.TAG, key + " : " + value.toString());
+                    } else {
+                        Log.d(Constants.TAG, key + " : null");
+                    }
+                }
+                Log.d(Constants.TAG, "------------------------------");
+            } else {
+                Log.d(Constants.TAG, "Bundle " + bundleName + ": null");
+            }
+        }
+    }
 }

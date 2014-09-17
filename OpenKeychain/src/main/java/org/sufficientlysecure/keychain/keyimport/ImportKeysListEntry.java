@@ -21,7 +21,7 @@ import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
+import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
 import org.sufficientlysecure.keychain.pgp.UncachedPublicKey;
 
@@ -273,14 +273,14 @@ public class ImportKeysListEntry implements Serializable, Parcelable {
         }
 
         mKeyId = key.getKeyId();
-        mKeyIdHex = PgpKeyHelper.convertKeyIdToHex(mKeyId);
+        mKeyIdHex = KeyFormattingUtils.convertKeyIdToHex(mKeyId);
 
         mRevoked = key.isRevoked();
-        mFingerprintHex = PgpKeyHelper.convertFingerprintToHex(key.getFingerprint());
+        mFingerprintHex = KeyFormattingUtils.convertFingerprintToHex(key.getFingerprint());
         mBitStrength = key.getBitStrength();
         mCurveOid = key.getCurveOid();
         final int algorithm = key.getAlgorithm();
-        mAlgorithm = PgpKeyHelper.getAlgorithmInfo(context, algorithm, mBitStrength, mCurveOid);
+        mAlgorithm = KeyFormattingUtils.getAlgorithmInfo(context, algorithm, mBitStrength, mCurveOid);
     }
 
 }

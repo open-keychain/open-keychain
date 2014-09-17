@@ -36,8 +36,8 @@ import android.widget.TextView;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.helper.FileHelper;
-import org.sufficientlysecure.keychain.helper.OtherHelper;
+import org.sufficientlysecure.keychain.ui.util.FormattingUtils;
+import org.sufficientlysecure.keychain.util.FileHelper;
 import org.sufficientlysecure.keychain.provider.TemporaryStorageProvider;
 
 import java.io.File;
@@ -282,7 +282,7 @@ public class EncryptFilesFragment extends Fragment implements EncryptActivityInt
                     delInputUri(position);
                 }
             });
-            int px = OtherHelper.dpToPx(getActivity(), 48);
+            int px = FormattingUtils.dpToPx(getActivity(), 48);
             if (!thumbnailCache.containsKey(inputUri)) {
                 thumbnailCache.put(inputUri, FileHelper.getThumbnail(getActivity(), inputUri, new Point(px, px)));
             }

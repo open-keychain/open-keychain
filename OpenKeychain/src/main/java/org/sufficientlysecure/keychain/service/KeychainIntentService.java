@@ -29,9 +29,8 @@ import android.os.RemoteException;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.helper.FileHelper;
-import org.sufficientlysecure.keychain.helper.OtherHelper;
-import org.sufficientlysecure.keychain.helper.Preferences;
+import org.sufficientlysecure.keychain.util.FileHelper;
+import org.sufficientlysecure.keychain.util.Preferences;
 import org.sufficientlysecure.keychain.keyimport.HkpKeyserver;
 import org.sufficientlysecure.keychain.keyimport.ImportKeysListEntry;
 import org.sufficientlysecure.keychain.keyimport.KeybaseKeyserver;
@@ -242,7 +241,7 @@ public class KeychainIntentService extends IntentService implements Progressable
             return;
         }
 
-        OtherHelper.logDebugBundle(data, "EXTRA_DATA");
+        Log.logDebugBundle(data, "EXTRA_DATA");
 
         String action = intent.getAction();
 
@@ -328,7 +327,7 @@ public class KeychainIntentService extends IntentService implements Progressable
 
                 }
 
-                OtherHelper.logDebugBundle(resultData, "resultData");
+                Log.logDebugBundle(resultData, "resultData");
 
                 sendMessageToHandler(KeychainIntentServiceHandler.MESSAGE_OKAY, resultData);
             } catch (Exception e) {
@@ -377,7 +376,7 @@ public class KeychainIntentService extends IntentService implements Progressable
 
                 finalizeDecryptOutputStream(data, resultData, outStream);
 
-                OtherHelper.logDebugBundle(resultData, "resultData");
+                Log.logDebugBundle(resultData, "resultData");
 
                 sendMessageToHandler(KeychainIntentServiceHandler.MESSAGE_OKAY, resultData);
             } catch (Exception e) {
@@ -421,7 +420,7 @@ public class KeychainIntentService extends IntentService implements Progressable
                 resultData.putParcelable(DecryptVerifyResult.EXTRA_RESULT, decryptVerifyResult);
 
                 /* Output */
-                OtherHelper.logDebugBundle(resultData, "resultData");
+                Log.logDebugBundle(resultData, "resultData");
 
                 sendMessageToHandler(KeychainIntentServiceHandler.MESSAGE_OKAY, resultData);
             } catch (Exception e) {

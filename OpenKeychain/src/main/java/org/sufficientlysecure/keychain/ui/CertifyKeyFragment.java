@@ -48,13 +48,12 @@ import android.widget.TextView;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.helper.Preferences;
-import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
+import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
+import org.sufficientlysecure.keychain.util.Preferences;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UserIds;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
 import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
-import org.sufficientlysecure.keychain.service.results.OperationResult;
 import org.sufficientlysecure.keychain.service.PassphraseCacheService;
 import org.sufficientlysecure.keychain.service.results.OperationResult.LogLevel;
 import org.sufficientlysecure.keychain.service.results.OperationResult.LogType;
@@ -64,7 +63,7 @@ import org.sufficientlysecure.keychain.ui.dialog.PassphraseDialogFragment;
 import org.sufficientlysecure.keychain.ui.widget.CertifyKeySpinner;
 import org.sufficientlysecure.keychain.ui.widget.KeySpinner;
 import org.sufficientlysecure.keychain.util.Log;
-import org.sufficientlysecure.keychain.util.Notify;
+import org.sufficientlysecure.keychain.ui.util.Notify;
 
 import java.util.ArrayList;
 
@@ -238,15 +237,15 @@ public class CertifyKeyFragment extends LoaderFragment
                 if (data.moveToFirst()) {
                     mPubKeyId = data.getLong(INDEX_MASTER_KEY_ID);
                     mCertifyKeySpinner.setHiddenMasterKeyId(mPubKeyId);
-                    String keyIdStr = PgpKeyHelper.convertKeyIdToHex(mPubKeyId);
+                    String keyIdStr = KeyFormattingUtils.convertKeyIdToHex(mPubKeyId);
                     mInfoKeyId.setText(keyIdStr);
 
                     String mainUserId = data.getString(INDEX_USER_ID);
                     mInfoPrimaryUserId.setText(mainUserId);
 
                     byte[] fingerprintBlob = data.getBlob(INDEX_FINGERPRINT);
-                    String fingerprint = PgpKeyHelper.convertFingerprintToHex(fingerprintBlob);
-                    mInfoFingerprint.setText(PgpKeyHelper.colorizeFingerprint(fingerprint));
+                    String fingerprint = KeyFormattingUtils.convertFingerprintToHex(fingerprintBlob);
+                    mInfoFingerprint.setText(KeyFormattingUtils.colorizeFingerprint(fingerprint));
                 }
                 break;
             case LOADER_ID_USER_IDS:

@@ -30,7 +30,7 @@ import android.widget.TextView;
 
 import org.spongycastle.bcpg.sig.KeyFlags;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
+import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
 
 import java.util.Calendar;
@@ -96,7 +96,7 @@ public class SubkeysAddedAdapter extends ArrayAdapter<SaveKeyringParcel.SubkeyAd
         // save reference to model item
         holder.mModel = getItem(position);
 
-        String algorithmStr = PgpKeyHelper.getAlgorithmInfo(
+        String algorithmStr = KeyFormattingUtils.getAlgorithmInfo(
                 mActivity,
                 holder.mModel.mAlgorithm,
                 holder.mModel.mKeySize,

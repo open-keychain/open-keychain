@@ -25,7 +25,7 @@ import android.view.View;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.helper.ActionBarHelper;
+import org.sufficientlysecure.keychain.ui.util.ActionBarHelper;
 
 public class SelectPublicKeyActivity extends ActionBarActivity {
 

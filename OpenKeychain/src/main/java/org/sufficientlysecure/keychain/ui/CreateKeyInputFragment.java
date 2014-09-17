@@ -32,7 +32,7 @@ import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
 
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.helper.ContactHelper;
+import org.sufficientlysecure.keychain.util.ContactHelper;
 
 import java.util.regex.Matcher;
 

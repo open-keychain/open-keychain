@@ -35,7 +35,7 @@ import org.openintents.openpgp.OpenPgpSignatureResult;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.service.results.DecryptVerifyResult;
-import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
+import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.ui.dialog.PassphraseDialogFragment;
 
 public abstract class DecryptFragment extends Fragment {
@@ -121,7 +121,7 @@ public abstract class DecryptFragment extends Fragment {
                 mUserIdRest.setText(userIdSplit[1]);
             } else {
                 mUserIdRest.setText(getString(R.string.label_key_id) + ": "
-                        + PgpKeyHelper.convertKeyIdToHex(mSignatureKeyId));
+                        + KeyFormattingUtils.convertKeyIdToHex(mSignatureKeyId));
             }
 
             switch (signatureResult.getStatus()) {

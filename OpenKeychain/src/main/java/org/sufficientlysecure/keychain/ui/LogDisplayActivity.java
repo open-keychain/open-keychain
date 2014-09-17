@@ -23,7 +23,7 @@ import android.support.v7.app.ActionBarActivity;
 import android.view.View;
 
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.helper.ActionBarHelper;
+import org.sufficientlysecure.keychain.ui.util.ActionBarHelper;
 
 public class LogDisplayActivity extends ActionBarActivity {
 

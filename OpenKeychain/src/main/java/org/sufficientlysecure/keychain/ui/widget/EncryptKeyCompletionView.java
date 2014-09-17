@@ -41,9 +41,9 @@ import com.tokenautocomplete.TokenCompleteTextView;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.helper.ContactHelper;
+import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
+import org.sufficientlysecure.keychain.util.ContactHelper;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
-import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
@@ -192,14 +192,14 @@ public class EncryptKeyCompletionView extends TokenCompleteTextView {
         public EncryptionKey(Cursor cursor) {
             this(cursor.getString(cursor.getColumnIndexOrThrow(KeyRings.USER_ID)),
                     cursor.getLong(cursor.getColumnIndexOrThrow(KeyRings.KEY_ID)),
-                    PgpKeyHelper.convertFingerprintToHex(
+                    KeyFormattingUtils.convertFingerprintToHex(
                             cursor.getBlob(cursor.getColumnIndexOrThrow(KeyRings.FINGERPRINT))));
 
         }
 
         public EncryptionKey(CachedPublicKeyRing ring) throws PgpGeneralException {
             this(ring.getPrimaryUserId(), ring.extractOrGetMasterKeyId(),
-                    PgpKeyHelper.convertFingerprintToHex(ring.getFingerprint()));
+                    KeyFormattingUtils.convertFingerprintToHex(ring.getFingerprint()));
         }
 
         public String getUserId() {
@@ -239,11 +239,11 @@ public class EncryptKeyCompletionView extends TokenCompleteTextView {
         }
 
         public String getKeyIdHex() {
-            return PgpKeyHelper.convertKeyIdToHex(mKeyId);
+            return KeyFormattingUtils.convertKeyIdToHex(mKeyId);
         }
 
         public String getKeyIdHexShort() {
-            return PgpKeyHelper.convertKeyIdToHexShort(mKeyId);
+            return KeyFormattingUtils.convertKeyIdToHexShort(mKeyId);
         }
 
         @Override

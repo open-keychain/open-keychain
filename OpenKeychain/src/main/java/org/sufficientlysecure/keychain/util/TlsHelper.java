@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.sufficientlysecure.keychain.helper;
+package org.sufficientlysecure.keychain.util;
 
 import android.content.res.AssetManager;
 

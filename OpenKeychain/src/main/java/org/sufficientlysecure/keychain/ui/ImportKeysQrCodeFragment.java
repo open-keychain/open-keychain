@@ -32,7 +32,7 @@ import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.util.IntentIntegratorSupportV4;
 import org.sufficientlysecure.keychain.util.Log;
-import org.sufficientlysecure.keychain.util.Notify;
+import org.sufficientlysecure.keychain.ui.util.Notify;
 
 import java.util.Locale;
 

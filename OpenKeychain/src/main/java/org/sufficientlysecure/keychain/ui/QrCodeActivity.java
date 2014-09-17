@@ -25,14 +25,14 @@ import android.widget.ImageView;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.helper.ActionBarHelper;
-import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
+import org.sufficientlysecure.keychain.ui.util.ActionBarHelper;
+import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.util.Log;
-import org.sufficientlysecure.keychain.util.Notify;
-import org.sufficientlysecure.keychain.util.Notify.Style;
-import org.sufficientlysecure.keychain.util.QrCodeUtils;
+import org.sufficientlysecure.keychain.ui.util.Notify;
+import org.sufficientlysecure.keychain.ui.util.Notify.Style;
+import org.sufficientlysecure.keychain.ui.util.QrCodeUtils;
 
 public class QrCodeActivity extends ActionBarActivity {
 
@@ -85,7 +85,7 @@ public class QrCodeActivity extends ActionBarActivity {
                 finish();
             }
 
-            String fingerprint = PgpKeyHelper.convertFingerprintToHex(blob);
+            String fingerprint = KeyFormattingUtils.convertFingerprintToHex(blob);
             String qrCodeContent = Constants.FINGERPRINT_SCHEME + ":" + fingerprint;
             mFingerprintQrCode.setImageBitmap(QrCodeUtils.getQRCodeBitmap(qrCodeContent, QR_CODE_SIZE));
         } catch (ProviderHelper.NotFoundException e) {

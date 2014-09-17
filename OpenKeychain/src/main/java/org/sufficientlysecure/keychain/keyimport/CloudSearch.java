@@ -17,7 +17,7 @@
 package org.sufficientlysecure.keychain.keyimport;
 
 import org.sufficientlysecure.keychain.Constants;
-import org.sufficientlysecure.keychain.helper.Preferences;
+import org.sufficientlysecure.keychain.util.Preferences;
 import org.sufficientlysecure.keychain.util.Log;
 
 import java.util.ArrayList;

@@ -21,7 +21,7 @@ import android.content.Context;
 import android.support.v4.content.AsyncTaskLoader;
 
 import org.sufficientlysecure.keychain.Constants;
-import org.sufficientlysecure.keychain.helper.Preferences;
+import org.sufficientlysecure.keychain.util.Preferences;
 import org.sufficientlysecure.keychain.keyimport.CloudSearch;
 import org.sufficientlysecure.keychain.keyimport.ImportKeysListEntry;
 import org.sufficientlysecure.keychain.util.Log;

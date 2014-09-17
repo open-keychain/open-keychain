@@ -39,6 +39,7 @@ import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.results.OperationResult.LogType;
 import org.sufficientlysecure.keychain.service.results.OperationResult.OperationLog;
 import org.sufficientlysecure.keychain.service.results.SignEncryptResult;
+import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.InputData;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.ProgressScaler;
@@ -389,13 +390,13 @@ public class PgpSignEncrypt {
                         CanonicalizedPublicKey key = keyRing.getEncryptionSubKey();
                         cPk.addMethod(key.getPubKeyEncryptionGenerator());
                         log.add(LogType.MSG_SE_KEY_OK, indent + 1,
-                                PgpKeyHelper.convertKeyIdToHex(id));
+                                KeyFormattingUtils.convertKeyIdToHex(id));
                     } catch (PgpGeneralException e) {
                         log.add(LogType.MSG_SE_KEY_WARN, indent + 1,
-                                PgpKeyHelper.convertKeyIdToHex(id));
+                                KeyFormattingUtils.convertKeyIdToHex(id));
                     } catch (ProviderHelper.NotFoundException e) {
                         log.add(LogType.MSG_SE_KEY_UNKNOWN, indent + 1,
-                                PgpKeyHelper.convertKeyIdToHex(id));
+                                KeyFormattingUtils.convertKeyIdToHex(id));
                     }
                 }
             }

@@ -36,7 +36,7 @@ import android.widget.TextView;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedPublicKeyRing;
-import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
+import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.pgp.WrappedSignature;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.provider.KeychainContract.Certs;
@@ -120,7 +120,7 @@ public class ViewCertActivity extends ActionBarActivity
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         if (data.moveToFirst()) {
-            String signeeKey = PgpKeyHelper.convertKeyIdToHex(data.getLong(INDEX_MASTER_KEY_ID));
+            String signeeKey = KeyFormattingUtils.convertKeyIdToHex(data.getLong(INDEX_MASTER_KEY_ID));
             mSigneeKey.setText(signeeKey);
 
             String signeeUid = data.getString(INDEX_USER_ID);
@@ -130,7 +130,7 @@ public class ViewCertActivity extends ActionBarActivity
             mCreation.setText(DateFormat.getDateFormat(getApplicationContext()).format(creationDate));
 
             mCertifierKeyId = data.getLong(INDEX_KEY_ID_CERTIFIER);
-            String certifierKey = PgpKeyHelper.convertKeyIdToHex(mCertifierKeyId);
+            String certifierKey = KeyFormattingUtils.convertKeyIdToHex(mCertifierKeyId);
             mCertifierKey.setText(certifierKey);
 
             String certifierUid = data.getString(INDEX_SIGNER_UID);
@@ -167,7 +167,7 @@ public class ViewCertActivity extends ActionBarActivity
                 mStatus.setTextColor(getResources().getColor(R.color.black));
             }
 
-            String algorithmStr = PgpKeyHelper.getAlgorithmInfo(this, sig.getKeyAlgorithm(), null, null);
+            String algorithmStr = KeyFormattingUtils.getAlgorithmInfo(this, sig.getKeyAlgorithm(), null, null);
             mAlgorithm.setText(algorithmStr);
 
             mRowReason.setVisibility(View.GONE);

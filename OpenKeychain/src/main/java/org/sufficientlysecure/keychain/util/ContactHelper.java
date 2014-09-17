@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.sufficientlysecure.keychain.helper;
+package org.sufficientlysecure.keychain.util;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
@@ -35,9 +35,8 @@ import android.util.Patterns;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
-import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
+import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
-import org.sufficientlysecure.keychain.util.Log;
 
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -303,9 +302,9 @@ public class ContactHelper {
         if (cursor != null) {
             while (cursor.moveToNext()) {
                 String[] primaryUserId = KeyRing.splitUserId(cursor.getString(0));
-                String fingerprint = PgpKeyHelper.convertFingerprintToHex(cursor.getBlob(1));
+                String fingerprint = KeyFormattingUtils.convertFingerprintToHex(cursor.getBlob(1));
                 contactFingerprints.remove(fingerprint);
-                String keyIdShort = PgpKeyHelper.convertKeyIdToHexShort(cursor.getLong(2));
+                String keyIdShort = KeyFormattingUtils.convertKeyIdToHexShort(cursor.getLong(2));
                 long masterKeyId = cursor.getLong(3);
                 boolean isExpired = !cursor.isNull(4) && new Date(cursor.getLong(4) * 1000).before(new Date());
                 boolean isRevoked = cursor.getInt(5) > 0;

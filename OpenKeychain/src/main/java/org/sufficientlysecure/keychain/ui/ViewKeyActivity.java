@@ -48,11 +48,11 @@ import android.widget.TextView;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.helper.ContactHelper;
-import org.sufficientlysecure.keychain.helper.ExportHelper;
-import org.sufficientlysecure.keychain.helper.Preferences;
+import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
+import org.sufficientlysecure.keychain.util.ContactHelper;
+import org.sufficientlysecure.keychain.util.ExportHelper;
+import org.sufficientlysecure.keychain.util.Preferences;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
-import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
@@ -61,7 +61,7 @@ import org.sufficientlysecure.keychain.ui.adapter.PagerTabStripAdapter;
 import org.sufficientlysecure.keychain.ui.widget.SlidingTabLayout;
 import org.sufficientlysecure.keychain.ui.widget.SlidingTabLayout.TabColorizer;
 import org.sufficientlysecure.keychain.util.Log;
-import org.sufficientlysecure.keychain.util.Notify;
+import org.sufficientlysecure.keychain.ui.util.Notify;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -470,7 +470,7 @@ public class ViewKeyActivity extends ActionBarActivity implements
 
                     // get key id from MASTER_KEY_ID
                     long masterKeyId = data.getLong(INDEX_UNIFIED_MASTER_KEY_ID);
-                    String keyIdStr = PgpKeyHelper.convertKeyIdToHex(masterKeyId);
+                    String keyIdStr = KeyFormattingUtils.convertKeyIdToHex(masterKeyId);
                     getSupportActionBar().setSubtitle(keyIdStr);
 
                     boolean isRevoked = data.getInt(INDEX_UNIFIED_IS_REVOKED) > 0;

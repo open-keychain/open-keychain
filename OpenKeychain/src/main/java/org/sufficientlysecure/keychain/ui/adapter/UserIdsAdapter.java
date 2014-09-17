@@ -32,7 +32,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.helper.OtherHelper;
+import org.sufficientlysecure.keychain.ui.util.FormattingUtils;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.provider.KeychainContract.Certs;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UserIds;
@@ -172,9 +172,9 @@ public class UserIdsAdapter extends CursorAdapter implements AdapterView.OnItemC
             vName.setEnabled(false);
             vAddress.setEnabled(false);
             vComment.setEnabled(false);
-            vName.setText(OtherHelper.strikeOutText(vName.getText()));
-            vAddress.setText(OtherHelper.strikeOutText(vAddress.getText()));
-            vComment.setText(OtherHelper.strikeOutText(vComment.getText()));
+            vName.setText(FormattingUtils.strikeOutText(vName.getText()));
+            vAddress.setText(FormattingUtils.strikeOutText(vAddress.getText()));
+            vComment.setText(FormattingUtils.strikeOutText(vComment.getText()));
         } else {
             vName.setEnabled(true);
             vAddress.setEnabled(true);

@@ -22,25 +22,15 @@ import android.app.Service;
 import android.content.AbstractThreadedSyncAdapter;
 import android.content.ContentProviderClient;
 import android.content.ContentResolver;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SyncResult;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.IBinder;
-import android.os.Looper;
-import android.os.Message;
-import android.os.Messenger;
 import android.provider.ContactsContract;
 
 import org.sufficientlysecure.keychain.Constants;
-import org.sufficientlysecure.keychain.KeychainApplication;
-import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.helper.ContactHelper;
-import org.sufficientlysecure.keychain.helper.EmailKeyHelper;
+import org.sufficientlysecure.keychain.util.ContactHelper;
 import org.sufficientlysecure.keychain.util.Log;
-
-import java.util.concurrent.atomic.AtomicBoolean;
 
 public class ContactSyncAdapterService extends Service {
 

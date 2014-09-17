@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.sufficientlysecure.keychain.util;
+package org.sufficientlysecure.keychain.ui.util;
 
 import android.content.Context;
 import android.text.Spannable;

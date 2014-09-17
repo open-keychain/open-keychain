@@ -37,7 +37,7 @@ import android.widget.TextView;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
-import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
+import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.pgp.WrappedSignature;
 import org.sufficientlysecure.keychain.provider.KeychainContract.Certs;
 import org.sufficientlysecure.keychain.provider.KeychainDatabase.Tables;
@@ -219,7 +219,7 @@ public class ViewKeyCertsFragment extends LoaderFragment
             TextView wSignerName = (TextView) view.findViewById(R.id.signerName);
             TextView wSignStatus = (TextView) view.findViewById(R.id.signStatus);
 
-            String signerKeyId = PgpKeyHelper.convertKeyIdToHex(cursor.getLong(mIndexSignerKeyId));
+            String signerKeyId = KeyFormattingUtils.convertKeyIdToHex(cursor.getLong(mIndexSignerKeyId));
             String[] userId = KeyRing.splitUserId(cursor.getString(mIndexSignerUserId));
             if (userId[0] != null) {
                 wSignerName.setText(userId[0]);

@@ -28,7 +28,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.helper.ActionBarHelper;
+import org.sufficientlysecure.keychain.ui.util.ActionBarHelper;
 import org.sufficientlysecure.keychain.ui.widget.Editor;
 import org.sufficientlysecure.keychain.ui.widget.Editor.EditorListener;
 import org.sufficientlysecure.keychain.ui.widget.KeyServerEditor;

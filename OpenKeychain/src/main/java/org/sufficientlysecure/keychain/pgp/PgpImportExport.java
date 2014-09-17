@@ -37,6 +37,7 @@ import org.sufficientlysecure.keychain.service.results.OperationResult.LogType;
 import org.sufficientlysecure.keychain.service.results.OperationResult.OperationLog;
 import org.sufficientlysecure.keychain.service.results.ImportKeyResult;
 import org.sufficientlysecure.keychain.service.results.SaveKeyringResult;
+import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.IterableIterator;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.ProgressScaler;
@@ -144,8 +145,8 @@ public class PgpImportExport {
 
                 String expectedFp = entry.getExpectedFingerprint();
                 if(expectedFp != null) {
-                    if(!PgpKeyHelper.convertFingerprintToHex(key.getFingerprint()).equals(expectedFp)) {
-                        Log.d(Constants.TAG, "fingerprint: " + PgpKeyHelper.convertFingerprintToHex(key.getFingerprint()));
+                    if(!KeyFormattingUtils.convertFingerprintToHex(key.getFingerprint()).equals(expectedFp)) {
+                        Log.d(Constants.TAG, "fingerprint: " + KeyFormattingUtils.convertFingerprintToHex(key.getFingerprint()));
                         Log.d(Constants.TAG, "expected fingerprint: " + expectedFp);
                         Log.e(Constants.TAG, "Actual key fingerprint is not the same as expected!");
                         badKeys += 1;

@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.sufficientlysecure.keychain.pgp;
+package org.sufficientlysecure.keychain.ui.util;
 
 import android.content.Context;
 import android.graphics.Color;
@@ -40,7 +40,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Locale;
 
-public class PgpKeyHelper {
+public class KeyFormattingUtils {
 
     public static String getAlgorithmInfo(int algorithm, Integer keySize, String oid) {
         return getAlgorithmInfo(null, algorithm, keySize, oid);
@@ -74,14 +74,14 @@ public class PgpKeyHelper {
                 if (oid == null) {
                     return "ECDSA";
                 }
-                String oidName = PgpKeyHelper.getCurveInfo(context, oid);
+                String oidName = KeyFormattingUtils.getCurveInfo(context, oid);
                 return "ECDSA (" + oidName + ")";
             }
             case PublicKeyAlgorithmTags.ECDH: {
                 if (oid == null) {
                     return "ECDH";
                 }
-                String oidName = PgpKeyHelper.getCurveInfo(context, oid);
+                String oidName = KeyFormattingUtils.getCurveInfo(context, oid);
                 return "ECDH (" + oidName + ")";
             }
 
@@ -245,7 +245,6 @@ public class PgpKeyHelper {
         }
         return hexString;
     }
-
 
     public static SpannableStringBuilder colorizeFingerprint(String fingerprint) {
         // split by 4 characters

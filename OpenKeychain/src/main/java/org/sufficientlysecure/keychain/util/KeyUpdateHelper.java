@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.sufficientlysecure.keychain.helper;
+package org.sufficientlysecure.keychain.util;
 
 import android.content.Context;
 import android.content.Intent;
@@ -23,14 +23,11 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Messenger;
 
-import org.sufficientlysecure.keychain.keyimport.HkpKeyserver;
 import org.sufficientlysecure.keychain.keyimport.ImportKeysListEntry;
-import org.sufficientlysecure.keychain.keyimport.Keyserver;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
 import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
-import org.sufficientlysecure.keychain.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;

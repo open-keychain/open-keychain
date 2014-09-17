@@ -31,8 +31,8 @@ import android.provider.ContactsContract;
 import android.widget.Toast;
 
 import org.spongycastle.jce.provider.BouncyCastleProvider;
-import org.sufficientlysecure.keychain.helper.Preferences;
-import org.sufficientlysecure.keychain.helper.TlsHelper;
+import org.sufficientlysecure.keychain.util.Preferences;
+import org.sufficientlysecure.keychain.util.TlsHelper;
 import org.sufficientlysecure.keychain.provider.TemporaryStorageProvider;
 import org.sufficientlysecure.keychain.ui.ConsolidateDialogActivity;
 import org.sufficientlysecure.keychain.util.Log;

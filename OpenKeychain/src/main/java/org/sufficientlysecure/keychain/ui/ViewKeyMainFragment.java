@@ -36,7 +36,7 @@ import android.widget.ListView;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.compatibility.DialogFragmentWorkaround;
-import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
+import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
@@ -46,7 +46,7 @@ import org.sufficientlysecure.keychain.provider.ProviderHelper.NotFoundException
 import org.sufficientlysecure.keychain.ui.adapter.UserIdsAdapter;
 import org.sufficientlysecure.keychain.ui.dialog.UserIdInfoDialogFragment;
 import org.sufficientlysecure.keychain.util.Log;
-import org.sufficientlysecure.keychain.util.Notify;
+import org.sufficientlysecure.keychain.ui.util.Notify;
 
 import java.util.Date;
 
@@ -318,7 +318,7 @@ public class ViewKeyMainFragment extends LoaderFragment implements
         byte[] blob = (byte[]) providerHelper.getGenericData(
                 KeychainContract.KeyRings.buildUnifiedKeyRingUri(dataUri),
                 KeychainContract.Keys.FINGERPRINT, ProviderHelper.FIELD_TYPE_BLOB);
-        String fingerprint = PgpKeyHelper.convertFingerprintToHex(blob);
+        String fingerprint = KeyFormattingUtils.convertFingerprintToHex(blob);
 
         Intent queryIntent = new Intent(getActivity(), ImportKeysActivity.class);
         queryIntent.setAction(ImportKeysActivity.ACTION_IMPORT_KEY_FROM_KEYSERVER_AND_RETURN_RESULT);

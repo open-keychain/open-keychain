@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.sufficientlysecure.keychain.util;
+package org.sufficientlysecure.keychain.ui.util;
 
 import android.graphics.Bitmap;
 import android.graphics.Color;
@@ -29,6 +29,7 @@ import com.google.zxing.qrcode.QRCodeWriter;
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
 
 import org.sufficientlysecure.keychain.Constants;
+import org.sufficientlysecure.keychain.util.Log;
 
 import java.util.Hashtable;
 

@@ -34,9 +34,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.helper.OtherHelper;
+import org.sufficientlysecure.keychain.ui.util.FormattingUtils;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey.SecretKeyType;
-import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
+import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.provider.KeychainContract.Keys;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
 
@@ -145,12 +145,12 @@ public class SubkeysAdapter extends CursorAdapter {
         deleteImage.setVisibility(View.GONE);
 
         long keyId = cursor.getLong(INDEX_KEY_ID);
-        String keyIdStr = PgpKeyHelper.convertKeyIdToHex(keyId);
+        String keyIdStr = KeyFormattingUtils.convertKeyIdToHex(keyId);
         vKeyId.setText(keyIdStr);
 
         // may be set with additional "stripped" later on
         SpannableStringBuilder algorithmStr = new SpannableStringBuilder();
-        algorithmStr.append(PgpKeyHelper.getAlgorithmInfo(
+        algorithmStr.append(KeyFormattingUtils.getAlgorithmInfo(
                 context,
                 cursor.getInt(INDEX_ALGORITHM),
                 cursor.getInt(INDEX_KEY_SIZE),
@@ -259,9 +259,9 @@ public class SubkeysAdapter extends CursorAdapter {
         // if key is expired or revoked, strike through text
         boolean isInvalid = isRevoked || isExpired;
         if (isInvalid) {
-            vKeyId.setText(OtherHelper.strikeOutText(vKeyId.getText()));
-            vKeyDetails.setText(OtherHelper.strikeOutText(vKeyDetails.getText()));
-            vKeyExpiry.setText(OtherHelper.strikeOutText(vKeyExpiry.getText()));
+            vKeyId.setText(FormattingUtils.strikeOutText(vKeyId.getText()));
+            vKeyDetails.setText(FormattingUtils.strikeOutText(vKeyDetails.getText()));
+            vKeyExpiry.setText(FormattingUtils.strikeOutText(vKeyExpiry.getText()));
         }
         vKeyId.setEnabled(!isInvalid);
         vKeyDetails.setEnabled(!isInvalid);

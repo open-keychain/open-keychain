@@ -29,9 +29,9 @@ import android.widget.TextView;
 
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
-import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
+import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
-import org.sufficientlysecure.keychain.util.Highlighter;
+import org.sufficientlysecure.keychain.ui.util.Highlighter;
 
 import java.util.Date;
 
@@ -128,7 +128,7 @@ abstract public class SelectKeyCursorAdapter extends CursorAdapter {
         }
 
         long masterKeyId = cursor.getLong(mIndexMasterKeyId);
-        h.keyId.setText(PgpKeyHelper.convertKeyIdToHex(masterKeyId));
+        h.keyId.setText(KeyFormattingUtils.convertKeyIdToHex(masterKeyId));
 
         boolean enabled = true;
         if (cursor.getInt(mIndexRevoked) != 0) {

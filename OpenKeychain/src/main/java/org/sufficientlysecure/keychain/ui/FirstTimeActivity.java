@@ -25,7 +25,7 @@ import android.view.Window;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.helper.Preferences;
+import org.sufficientlysecure.keychain.util.Preferences;
 import org.sufficientlysecure.keychain.util.Log;
 
 public class FirstTimeActivity extends ActionBarActivity {

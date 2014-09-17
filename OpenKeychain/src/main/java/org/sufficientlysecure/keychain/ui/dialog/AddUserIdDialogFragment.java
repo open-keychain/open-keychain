@@ -45,7 +45,7 @@ import android.widget.TextView.OnEditorActionListener;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.helper.ContactHelper;
+import org.sufficientlysecure.keychain.util.ContactHelper;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.util.Log;
 

@@ -19,9 +19,9 @@
 package org.sufficientlysecure.keychain.keyimport;
 
 import org.sufficientlysecure.keychain.Constants;
-import org.sufficientlysecure.keychain.helper.TlsHelper;
+import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
+import org.sufficientlysecure.keychain.util.TlsHelper;
 import org.sufficientlysecure.keychain.pgp.PgpHelper;
-import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
 import org.sufficientlysecure.keychain.util.Log;
 
 import java.io.BufferedWriter;
@@ -283,7 +283,7 @@ public class HkpKeyserver extends Keyserver {
             int bitSize = Integer.parseInt(matcher.group(3));
             entry.setBitStrength(bitSize);
             int algorithmId = Integer.decode(matcher.group(2));
-            entry.setAlgorithm(PgpKeyHelper.getAlgorithmInfo(algorithmId, bitSize, null));
+            entry.setAlgorithm(KeyFormattingUtils.getAlgorithmInfo(algorithmId, bitSize, null));
 
             // group 1 contains the full fingerprint (v4) or the long key id if available
             // see http://bit.ly/1d4bxbk and http://bit.ly/1gD1wwr

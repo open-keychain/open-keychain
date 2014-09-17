@@ -28,7 +28,7 @@ import android.support.v4.app.FragmentActivity;
 import android.widget.Toast;
 
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.helper.FileHelper;
+import org.sufficientlysecure.keychain.util.FileHelper;
 
 public class DeleteFileDialogFragment extends DialogFragment {
     private static final String ARG_DELETE_URI = "delete_uri";

@@ -23,7 +23,7 @@ import com.textuality.keybase.lib.Search;
 import com.textuality.keybase.lib.User;
 
 import org.sufficientlysecure.keychain.Constants;
-import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
+import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.Log;
 
 import java.util.ArrayList;
@@ -79,7 +79,7 @@ public class KeybaseKeyserver extends Keyserver {
         final int bitStrength = match.getBitStrength();
         entry.setBitStrength(bitStrength);
         final int algorithmId = match.getAlgorithmId();
-        entry.setAlgorithm(PgpKeyHelper.getAlgorithmInfo(algorithmId, bitStrength, null));
+        entry.setAlgorithm(KeyFormattingUtils.getAlgorithmInfo(algorithmId, bitStrength, null));
 
         ArrayList<String> userIds = new ArrayList<String>();
         String name = fullName + " <keybase.io/" + username + ">";
