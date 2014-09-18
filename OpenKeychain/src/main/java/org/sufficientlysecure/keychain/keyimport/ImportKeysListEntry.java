@@ -276,6 +276,7 @@ public class ImportKeysListEntry implements Serializable, Parcelable {
         mKeyIdHex = KeyFormattingUtils.convertKeyIdToHex(mKeyId);
 
         mRevoked = key.isRevoked();
+        mExpired = key.isExpired();
         mFingerprintHex = KeyFormattingUtils.convertFingerprintToHex(key.getFingerprint());
         mBitStrength = key.getBitStrength();
         mCurveOid = key.getCurveOid();

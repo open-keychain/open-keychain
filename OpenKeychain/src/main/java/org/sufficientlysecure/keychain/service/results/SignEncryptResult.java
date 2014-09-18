@@ -44,8 +44,8 @@ public class SignEncryptResult extends OperationResult {
         mKeyIdPassphraseNeeded = keyIdPassphraseNeeded;
     }
 
-    public void setNfcData(byte[] sessionKey, int nfcAlgo, Date nfcTimestamp) {
-        mNfcHash = sessionKey;
+    public void setNfcData(byte[] nfcHash, int nfcAlgo, Date nfcTimestamp) {
+        mNfcHash = nfcHash;
         mNfcAlgo = nfcAlgo;
         mNfcTimestamp = nfcTimestamp;
     }

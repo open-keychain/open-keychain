@@ -31,6 +31,7 @@ import org.spongycastle.openpgp.PGPSignatureGenerator;
 import org.spongycastle.openpgp.operator.jcajce.JcePBEKeyEncryptionMethodGenerator;
 import org.spongycastle.openpgp.operator.jcajce.JcePGPDataEncryptorBuilder;
 import org.spongycastle.openpgp.operator.jcajce.NfcSyncPGPContentSignerBuilder;
+import org.spongycastle.util.encoders.Hex;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
@@ -569,6 +570,7 @@ public class PgpSignEncrypt {
                     SignEncryptResult result =
                             new SignEncryptResult(SignEncryptResult.RESULT_PENDING_NFC, log);
                     result.setNfcData(e.hashToSign, e.hashAlgo, e.creationTimestamp);
+                    Log.d(Constants.TAG, "e.hashToSign"+ Hex.toHexString(e.hashToSign));
                     return result;
                 }
             }

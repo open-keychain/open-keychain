@@ -21,12 +21,14 @@ import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
+import android.media.Image;
 import android.os.Build;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -34,6 +36,7 @@ import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.keyimport.ImportKeysListEntry;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.ui.util.Highlighter;
+import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -51,7 +54,8 @@ public class ImportKeysAdapter extends ArrayAdapter<ImportKeysListEntry> {
         public TextView keyId;
         public TextView fingerprint;
         public TextView algorithm;
-        public TextView status;
+        public ImageView status;
+        public View userIdsDivider;
         public LinearLayout userIdsList;
         public CheckBox checkBox;
     }
@@ -114,7 +118,8 @@ public class ImportKeysAdapter extends ArrayAdapter<ImportKeysListEntry> {
             holder.keyId = (TextView) convertView.findViewById(R.id.subkey_item_key_id);
             holder.fingerprint = (TextView) convertView.findViewById(R.id.view_key_fingerprint);
             holder.algorithm = (TextView) convertView.findViewById(R.id.algorithm);
-            holder.status = (TextView) convertView.findViewById(R.id.status);
+            holder.status = (ImageView) convertView.findViewById(R.id.status);
+            holder.userIdsDivider = convertView.findViewById(R.id.user_ids_divider);
             holder.userIdsList = (LinearLayout) convertView.findViewById(R.id.user_ids_list);
             holder.checkBox = (CheckBox) convertView.findViewById(R.id.selected);
             convertView.setTag(holder);
@@ -159,20 +164,30 @@ public class ImportKeysAdapter extends ArrayAdapter<ImportKeysListEntry> {
             holder.algorithm.setText(entry.getAlgorithm());
             holder.algorithm.setVisibility(View.VISIBLE);
         } else {
-            holder.algorithm.setVisibility(View.INVISIBLE);
+            holder.algorithm.setVisibility(View.GONE);
         }
 
         if (entry.isRevoked()) {
             holder.status.setVisibility(View.VISIBLE);
-            holder.status.setText(R.string.revoked);
+            KeyFormattingUtils.setStatusImage(getContext(), holder.status, KeyFormattingUtils.STATE_REVOKED);
+            // no more space for algorithm display
+            holder.algorithm.setVisibility(View.GONE);
+        } else if (entry.isExpired()) {
+            holder.status.setVisibility(View.VISIBLE);
+            KeyFormattingUtils.setStatusImage(getContext(), holder.status, KeyFormattingUtils.STATE_EXPIRED);
+            // no more space for algorithm display
+            holder.algorithm.setVisibility(View.GONE);
         } else {
             holder.status.setVisibility(View.GONE);
+            holder.algorithm.setVisibility(View.VISIBLE);
         }
 
         if (entry.getUserIds().size() == 1) {
             holder.userIdsList.setVisibility(View.GONE);
+            holder.userIdsDivider.setVisibility(View.GONE);
         } else {
             holder.userIdsList.setVisibility(View.VISIBLE);
+            holder.userIdsDivider.setVisibility(View.VISIBLE);
 
             // destroyLoader view from holder
             holder.userIdsList.removeAllViews();

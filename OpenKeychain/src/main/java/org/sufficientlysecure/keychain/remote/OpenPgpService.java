@@ -30,6 +30,7 @@ import org.openintents.openpgp.OpenPgpMetadata;
 import org.openintents.openpgp.OpenPgpError;
 import org.openintents.openpgp.OpenPgpSignatureResult;
 import org.openintents.openpgp.util.OpenPgpApi;
+import org.spongycastle.util.encoders.Hex;
 import org.sufficientlysecure.keychain.nfc.NfcActivity;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.pgp.PassphraseCacheInterface;
@@ -244,10 +245,17 @@ public class OpenPgpService extends RemoteService {
             }
 
             byte[] nfcSignedHash = data.getByteArrayExtra(OpenPgpApi.EXTRA_NFC_SIGNED_HASH);
+            if (nfcSignedHash != null) {
+                Log.d(Constants.TAG, "nfcSignedHash:" + Hex.toHexString(nfcSignedHash));
+            } else {
+                Log.d(Constants.TAG, "nfcSignedHash: null");
+            }
+
             // carefully: only set if timestamp exists
             Date nfcCreationDate = null;
-            long nfcCreationTimestamp = data.getLongExtra(OpenPgpApi.EXTRA_NFC_SIG_CREATION_TIMESTAMP, 0);
-            if (nfcCreationTimestamp != 0) {
+            long nfcCreationTimestamp = data.getLongExtra(OpenPgpApi.EXTRA_NFC_SIG_CREATION_TIMESTAMP, -1);
+            Log.d(Constants.TAG, "nfcCreationTimestamp: " + nfcCreationTimestamp);
+            if (nfcCreationTimestamp != -1) {
                 nfcCreationDate = new Date(nfcCreationTimestamp);
             }
 
@@ -406,8 +414,8 @@ public class OpenPgpService extends RemoteService {
                     byte[] nfcSignedHash = data.getByteArrayExtra(OpenPgpApi.EXTRA_NFC_SIGNED_HASH);
                     // carefully: only set if timestamp exists
                     Date nfcCreationDate = null;
-                    long nfcCreationTimestamp = data.getLongExtra(OpenPgpApi.EXTRA_NFC_SIG_CREATION_TIMESTAMP, 0);
-                    if (nfcCreationTimestamp != 0) {
+                    long nfcCreationTimestamp = data.getLongExtra(OpenPgpApi.EXTRA_NFC_SIG_CREATION_TIMESTAMP, -1);
+                    if (nfcCreationTimestamp != -1) {
                         nfcCreationDate = new Date(nfcCreationTimestamp);
                     }
 

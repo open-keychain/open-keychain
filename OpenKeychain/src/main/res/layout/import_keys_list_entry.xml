@@ -1,20 +1,5 @@
-<!--
-    Copyright (C) 2010-2014 Thialfihar <thi@thialfihar.org>
-
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
--->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:custom="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:minHeight="?android:attr/listPreferredItemHeight"
@@ -67,6 +52,14 @@
                     android:text="alice@example.com"
                     android:textAppearance="?android:attr/textAppearanceSmall" />
 
+                <TextView
+                    android:id="@+id/subkey_item_key_id"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="0xBBBBBBBBBBBBBBBB"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:typeface="monospace" />
+
             </LinearLayout>
 
             <LinearLayout
@@ -76,24 +69,32 @@
                 android:orientation="vertical"
                 android:paddingLeft="4dp">
 
-                <TextView
+                <ImageView
                     android:id="@+id/status"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="status"
-                    android:textAppearance="?android:attr/textAppearanceSmall"
-                    android:textColor="#e00" />
+                    android:layout_gravity="center"
+                    android:src="@drawable/status_signature_revoked_cutout"
+                    android:padding="16dp" />
 
                 <TextView
                     android:id="@+id/algorithm"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="RSA"
-                    android:textAppearance="?android:attr/textAppearanceSmall"
-                    android:layout_gravity="right" />
+                    android:textAppearance="?android:attr/textAppearanceSmall" />
+
             </LinearLayout>
         </LinearLayout>
 
+        <View
+            android:id="@+id/user_ids_divider"
+            android:layout_width="match_parent"
+            android:layout_height="1dip"
+            android:gravity="right"
+            android:layout_marginBottom="2dp"
+            android:layout_marginTop="2dp"
+            android:background="?android:attr/listDivider" />
 
         <LinearLayout
             android:id="@+id/user_ids_list"
@@ -102,20 +103,13 @@
             android:orientation="vertical" />
 
         <TextView
-            android:id="@+id/subkey_item_key_id"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="0xBBBBBBBBBBBBBBBB"
-            android:textAppearance="?android:attr/textAppearanceSmall"
-            android:typeface="monospace" />
-
-        <TextView
             android:id="@+id/view_key_fingerprint"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="0000 0000 0000 0000 0000\n0000 0000 0000 0000 0000"
             android:typeface="monospace"
             android:textAppearance="?android:attr/textAppearanceSmall" />
+
     </LinearLayout>
 
 </LinearLayout>
