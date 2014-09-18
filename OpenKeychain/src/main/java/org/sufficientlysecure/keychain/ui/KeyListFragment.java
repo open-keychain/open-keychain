@@ -135,13 +135,14 @@ public class KeyListFragment extends LoaderFragment
         mSwipeRefreshLayout.setOnRefreshListener(new NoScrollableSwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                KeyUpdateHelper updateHelper = new KeyUpdateHelper();
                 KeychainIntentServiceHandler finishedHandler = new KeychainIntentServiceHandler(getActivity()) {
                     public void handleMessage(Message message) {
-                        mSwipeRefreshLayout.setRefreshing(false);
+                        if (message.arg1 == KeychainIntentServiceHandler.MESSAGE_OKAY) {
+                            mSwipeRefreshLayout.setRefreshing(false);
+                        }
                     }
                 };
-                updateHelper.updateAllKeys(getActivity(), finishedHandler);
+                new KeyUpdateHelper().updateAllKeys(getActivity(), finishedHandler);
                 updateActionbarForSwipe(false);
             }
         });
@@ -158,7 +159,6 @@ public class KeyListFragment extends LoaderFragment
                     updateActionbarForSwipe(true);
                 } else {
                     updateActionbarForSwipe(false);
-                    mSwipeRefreshLayout.setRefreshing(false);
                 }
                 return false;
             }
