@@ -34,6 +34,7 @@ import org.sufficientlysecure.keychain.nfc.NfcActivity;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.pgp.PassphraseCacheInterface;
 import org.sufficientlysecure.keychain.pgp.PgpDecryptVerify;
+import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
 import org.sufficientlysecure.keychain.provider.KeychainDatabase.Tables;
 import org.sufficientlysecure.keychain.service.results.DecryptVerifyResult;
 import org.sufficientlysecure.keychain.pgp.PgpHelper;
@@ -246,7 +247,7 @@ public class OpenPgpService extends RemoteService {
             // carefully: only set if timestamp exists
             Date nfcCreationDate = null;
             long nfcCreationTimestamp = data.getLongExtra(OpenPgpApi.EXTRA_NFC_SIG_CREATION_TIMESTAMP, 0);
-            if (nfcCreationTimestamp > 0) {
+            if (nfcCreationTimestamp != 0) {
                 nfcCreationDate = new Date(nfcCreationTimestamp);
             }
 
@@ -256,6 +257,11 @@ public class OpenPgpService extends RemoteService {
             try {
                 long inputLength = is.available();
                 InputData inputData = new InputData(is, inputLength);
+
+                // Find the appropriate subkey to sign with
+                CachedPublicKeyRing signingRing =
+                        new ProviderHelper(this).getCachedPublicKeyRing(accSettings.getKeyId());
+                long sigSubKeyId = signingRing.getSignId();
 
                 // sign-only
                 PgpSignEncrypt.Builder builder = new PgpSignEncrypt.Builder(
@@ -276,6 +282,7 @@ public class OpenPgpService extends RemoteService {
                         .setVersionHeader(PgpHelper.getVersionForHeader(this))
                         .setSignatureHashAlgorithm(accSettings.getHashAlgorithm())
                         .setSignatureMasterKeyId(accSettings.getKeyId())
+                        .setSignatureSubKeyId(sigSubKeyId)
                         .setSignaturePassphrase(passphrase)
                         .setNfcState(nfcSignedHash, nfcCreationDate);
 
@@ -398,13 +405,19 @@ public class OpenPgpService extends RemoteService {
                     // carefully: only set if timestamp exists
                     Date nfcCreationDate = null;
                     long nfcCreationTimestamp = data.getLongExtra(OpenPgpApi.EXTRA_NFC_SIG_CREATION_TIMESTAMP, 0);
-                    if (nfcCreationTimestamp > 0) {
+                    if (nfcCreationTimestamp != 0) {
                         nfcCreationDate = new Date(nfcCreationTimestamp);
                     }
+
+                    // Find the appropriate subkey to sign with
+                    CachedPublicKeyRing signingRing =
+                            new ProviderHelper(this).getCachedPublicKeyRing(accSettings.getKeyId());
+                    long sigSubKeyId = signingRing.getSignId();
 
                     // sign and encrypt
                     builder.setSignatureHashAlgorithm(accSettings.getHashAlgorithm())
                             .setSignatureMasterKeyId(accSettings.getKeyId())
+                            .setSignatureSubKeyId(sigSubKeyId)
                             .setSignaturePassphrase(passphrase)
                             .setNfcState(nfcSignedHash, nfcCreationDate);
                 }

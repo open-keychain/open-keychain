@@ -340,7 +340,7 @@ public class KeyFormattingUtils {
     public static final int STATE_UNAVAILABLE = 4;
 
     /**
-     * returns true if status has been set, if false no status!
+     * Sets status image based on constant
      */
     public static void setStatusImage(Context context, ImageView statusView, int state) {
         switch (state) {
