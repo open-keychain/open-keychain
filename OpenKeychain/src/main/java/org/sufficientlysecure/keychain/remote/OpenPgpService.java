@@ -277,7 +277,8 @@ public class OpenPgpService extends RemoteService {
                                 }
                             }
                         },
-                        inputData, os);
+                        inputData, os
+                );
                 builder.setEnableAsciiArmorOutput(asciiArmor)
                         .setVersionHeader(PgpHelper.getVersionForHeader(this))
                         .setSignatureHashAlgorithm(accSettings.getHashAlgorithm())
@@ -379,7 +380,8 @@ public class OpenPgpService extends RemoteService {
                                 }
                             }
                         },
-                        inputData, os);
+                        inputData, os
+                );
                 builder.setEnableAsciiArmorOutput(asciiArmor)
                         .setVersionHeader(PgpHelper.getVersionForHeader(this))
                         .setCompressionId(accSettings.getCompression())
@@ -524,9 +526,8 @@ public class OpenPgpService extends RemoteService {
                                 "Decryption of symmetric content not supported by API!");
                     } else if ((pgpResult.getResult() & DecryptVerifyResult.RESULT_PENDING_NFC) ==
                             DecryptVerifyResult.RESULT_PENDING_NFC) {
-                        // TODO get passphrase here? currently not in DecryptVerifyResult
                         return getNfcDecryptIntent(
-                                data, null, pgpResult.getNfcEncryptedSessionKey());
+                                data, pgpResult.getNfcPassphrase(), pgpResult.getNfcEncryptedSessionKey());
                     } else {
                         throw new PgpGeneralException(
                                 "Encountered unhandled type of pending action not supported by API!");

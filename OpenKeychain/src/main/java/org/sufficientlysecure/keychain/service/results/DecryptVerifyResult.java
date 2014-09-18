@@ -31,10 +31,12 @@ public class DecryptVerifyResult extends OperationResult {
     // fifth to sixth bit in addition indicate specific type of pending
     public static final int RESULT_PENDING_ASYM_PASSPHRASE = RESULT_PENDING + 16;
     public static final int RESULT_PENDING_SYM_PASSPHRASE = RESULT_PENDING + 32;
-    public static final int RESULT_PENDING_NFC = RESULT_PENDING + 48;
+    public static final int RESULT_PENDING_NFC = RESULT_PENDING + 64;
 
     long mKeyIdPassphraseNeeded;
+
     byte[] mNfcSessionKey;
+    String mNfcPassphrase;
 
     OpenPgpSignatureResult mSignatureResult;
     OpenPgpMetadata mDecryptMetadata;
@@ -47,12 +49,17 @@ public class DecryptVerifyResult extends OperationResult {
         mKeyIdPassphraseNeeded = keyIdPassphraseNeeded;
     }
 
-    public void setNfcEncryptedSessionKey(byte[] sessionKey) {
+    public void setNfcState(byte[] sessionKey, String passphrase) {
         mNfcSessionKey = sessionKey;
+        mNfcPassphrase = passphrase;
     }
 
     public byte[] getNfcEncryptedSessionKey() {
         return mNfcSessionKey;
+    }
+
+    public String getNfcPassphrase() {
+        return mNfcPassphrase;
     }
 
     public OpenPgpSignatureResult getSignatureResult() {
@@ -72,7 +79,7 @@ public class DecryptVerifyResult extends OperationResult {
     }
 
     public boolean isPending() {
-        return (mResult & RESULT_PENDING) != 0;
+        return (mResult & RESULT_PENDING) == RESULT_PENDING;
     }
 
     public DecryptVerifyResult(int result, OperationLog log) {
@@ -85,6 +92,7 @@ public class DecryptVerifyResult extends OperationResult {
         mSignatureResult = source.readParcelable(OpenPgpSignatureResult.class.getClassLoader());
         mDecryptMetadata = source.readParcelable(OpenPgpMetadata.class.getClassLoader());
         mNfcSessionKey = source.readInt() != 0 ? source.createByteArray() : null;
+        mNfcPassphrase = source.readString();
     }
 
     public int describeContents() {
@@ -102,6 +110,7 @@ public class DecryptVerifyResult extends OperationResult {
         } else {
             dest.writeInt(0);
         }
+        dest.writeString(mNfcPassphrase);
     }
 
     public static final Creator<DecryptVerifyResult> CREATOR = new Creator<DecryptVerifyResult>() {
