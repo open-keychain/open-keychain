@@ -154,10 +154,11 @@ public class KeyListFragment extends LoaderFragment
         mSwipeRefreshLayout.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                if (event.getAction() == MotionEvent.ACTION_MOVE) {
                     updateActionbarForSwipe(true);
                 } else {
                     updateActionbarForSwipe(false);
+                    mSwipeRefreshLayout.setRefreshing(false);
                 }
                 return false;
             }
