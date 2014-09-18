@@ -90,7 +90,7 @@ public class SignEncryptResult extends OperationResult {
             dest.writeInt(0);
         }
         dest.writeInt(mNfcAlgo);
-        if (mNfcHash != null) {
+        if (mNfcTimestamp != null) {
             dest.writeInt(1);
             dest.writeLong(mNfcTimestamp.getTime());
         } else {
