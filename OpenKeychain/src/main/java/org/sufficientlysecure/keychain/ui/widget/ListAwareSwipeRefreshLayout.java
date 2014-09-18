@@ -19,10 +19,7 @@ package org.sufficientlysecure.keychain.ui.widget;
 
 import android.content.Context;
 import android.support.v4.widget.NoScrollableSwipeRefreshLayout;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.AttributeSet;
-
-import org.sufficientlysecure.keychain.util.Log;
 
 import se.emilsjolander.stickylistheaders.StickyListHeadersListView;
 
@@ -55,7 +52,6 @@ public class ListAwareSwipeRefreshLayout extends NoScrollableSwipeRefreshLayout 
 
     public void setIsLocked(boolean locked) {
         mIsLocked = locked;
-        Log.d("ListAwareSwipeRefreshLayout", (mIsLocked ? "is locked" : "not locked"));
     }
 
     public boolean getIsLocked() {
@@ -70,13 +66,9 @@ public class ListAwareSwipeRefreshLayout extends NoScrollableSwipeRefreshLayout 
 
         return (mIsLocked || (
                 mStickyListHeadersListView.getWrappedList().getChildCount() > 0
-                &&
-                (
-                    mStickyListHeadersListView.getWrappedList().getChildAt(0).getTop() < 0
-                    ||
-                    mStickyListHeadersListView.getFirstVisiblePosition() > 0
-                )
-            )
+                        && (mStickyListHeadersListView.getWrappedList().getChildAt(0).getTop() < 0
+                        || mStickyListHeadersListView.getFirstVisiblePosition() > 0)
+        )
         );
     }
 }

@@ -35,6 +35,7 @@ import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.CursorAdapter;
+import android.support.v4.widget.NoScrollableSwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.SearchView;
@@ -81,7 +82,7 @@ import se.emilsjolander.stickylistheaders.StickyListHeadersListView;
  */
 public class KeyListFragment extends LoaderFragment
         implements SearchView.OnQueryTextListener, AdapterView.OnItemClickListener,
-        LoaderManager.LoaderCallbacks<Cursor>, ListAwareSwipeRefreshLayout.OnRefreshListener {
+        LoaderManager.LoaderCallbacks<Cursor> {
 
     private KeyListAdapter mAdapter;
     private StickyListHeadersListView mStickyList;
@@ -131,7 +132,19 @@ public class KeyListFragment extends LoaderFragment
         });
 
         mSwipeRefreshLayout = (ListAwareSwipeRefreshLayout) view.findViewById(R.id.key_list_swipe_container);
-        mSwipeRefreshLayout.setOnRefreshListener(this);
+        mSwipeRefreshLayout.setOnRefreshListener(new NoScrollableSwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                KeyUpdateHelper updateHelper = new KeyUpdateHelper();
+                KeychainIntentServiceHandler finishedHandler = new KeychainIntentServiceHandler(getActivity()) {
+                    public void handleMessage(Message message) {
+                        mSwipeRefreshLayout.setRefreshing(false);
+                    }
+                };
+                updateHelper.updateAllKeys(getActivity(), finishedHandler);
+                updateActionbarForSwipe(false);
+            }
+        });
         mSwipeRefreshLayout.setColorScheme(
                 R.color.android_purple_dark,
                 R.color.android_purple_light,
@@ -141,7 +154,7 @@ public class KeyListFragment extends LoaderFragment
         mSwipeRefreshLayout.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                if (event.getAction() == MotionEvent.ACTION_MOVE) {
+                if (event.getAction() == MotionEvent.ACTION_DOWN) {
                     updateActionbarForSwipe(true);
                 } else {
                     updateActionbarForSwipe(false);
@@ -454,6 +467,8 @@ public class KeyListFragment extends LoaderFragment
         MenuItemCompat.setOnActionExpandListener(searchItem, new MenuItemCompat.OnActionExpandListener() {
             @Override
             public boolean onMenuItemActionExpand(MenuItem item) {
+                // disable swipe-to-refresh
+                mSwipeRefreshLayout.setIsLocked(true);
                 return true;
             }
 
@@ -461,6 +476,8 @@ public class KeyListFragment extends LoaderFragment
             public boolean onMenuItemActionCollapse(MenuItem item) {
                 mQuery = null;
                 getLoaderManager().restartLoader(0, null, KeyListFragment.this);
+                // enable swipe-to-refresh
+                mSwipeRefreshLayout.setIsLocked(false);
                 return true;
             }
         });
@@ -753,17 +770,4 @@ public class KeyListFragment extends LoaderFragment
 
     }
 
-    /**
-     * Implements OnRefreshListener for drag-to-refresh
-     */
-    public void onRefresh() {
-        KeyUpdateHelper updateHelper = new KeyUpdateHelper();
-        KeychainIntentServiceHandler finishedHandler = new KeychainIntentServiceHandler(getActivity()) {
-            public void handleMessage(Message message) {
-                mSwipeRefreshLayout.setRefreshing(false);
-            }
-        };
-        updateHelper.updateAllKeys(getActivity(), finishedHandler);
-        updateActionbarForSwipe(false);
-    }
 }
