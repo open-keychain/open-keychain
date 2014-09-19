@@ -54,7 +54,6 @@ import org.sufficientlysecure.keychain.provider.KeychainContract.Keys;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UserIds;
 import org.sufficientlysecure.keychain.remote.AccountSettings;
 import org.sufficientlysecure.keychain.remote.AppSettings;
-import org.sufficientlysecure.keychain.service.results.OperationResult.LogLevel;
 import org.sufficientlysecure.keychain.service.results.OperationResult.LogType;
 import org.sufficientlysecure.keychain.service.results.OperationResult.OperationLog;
 import org.sufficientlysecure.keychain.service.results.ConsolidateResult;
@@ -122,12 +121,12 @@ public class ProviderHelper {
         }
     }
 
-    public void log(LogLevel level, LogType type) {
+    public void log(LogType type) {
         if(mLog != null) {
             mLog.add(type, mIndent);
         }
     }
-    public void log(LogLevel level, LogType type, Object... parameters) {
+    public void log(LogType type, Object... parameters) {
         if(mLog != null) {
             mLog.add(type, mIndent, parameters);
         }
@@ -313,20 +312,20 @@ public class ProviderHelper {
         ArrayList<ContentProviderOperation> operations;
         try {
 
-            log(LogLevel.DEBUG, LogType.MSG_IP_PREPARE);
+            log(LogType.MSG_IP_PREPARE);
             mIndent += 1;
 
             // save all keys and userIds included in keyRing object in database
             operations = new ArrayList<ContentProviderOperation>();
 
-            log(LogLevel.INFO, LogType.MSG_IP_INSERT_KEYRING);
+            log(LogType.MSG_IP_INSERT_KEYRING);
             { // insert keyring
                 ContentValues values = new ContentValues();
                 values.put(KeyRingData.MASTER_KEY_ID, masterKeyId);
                 try {
                     values.put(KeyRingData.KEY_RING_DATA, keyRing.getEncoded());
                 } catch (IOException e) {
-                    log(LogLevel.ERROR, LogType.MSG_IP_ENCODE_FAIL);
+                    log(LogType.MSG_IP_ENCODE_FAIL);
                     return SaveKeyringResult.RESULT_ERROR;
                 }
 
@@ -334,7 +333,7 @@ public class ProviderHelper {
                 operations.add(ContentProviderOperation.newInsert(uri).withValues(values).build());
             }
 
-            log(LogLevel.INFO, LogType.MSG_IP_INSERT_SUBKEYS);
+            log(LogType.MSG_IP_INSERT_SUBKEYS);
             progress.setProgress(LogType.MSG_IP_INSERT_SUBKEYS.getMsgId(), 40, 100);
             mIndent += 1;
             { // insert subkeys
@@ -342,7 +341,7 @@ public class ProviderHelper {
                 int rank = 0;
                 for (CanonicalizedPublicKey key : keyRing.publicKeyIterator()) {
                     long keyId = key.getKeyId();
-                    log(LogLevel.DEBUG, keyId == masterKeyId ? LogType.MSG_IP_MASTER : LogType.MSG_IP_SUBKEY,
+                    log(keyId == masterKeyId ? LogType.MSG_IP_MASTER : LogType.MSG_IP_SUBKEY,
                             KeyFormattingUtils.convertKeyIdToHex(keyId)
                     );
                     mIndent += 1;
@@ -365,36 +364,36 @@ public class ProviderHelper {
                     if (masterKeyId == keyId) {
                         if (c) {
                             if (e) {
-                                log(LogLevel.DEBUG, s ? LogType.MSG_IP_MASTER_FLAGS_CES
+                                log(s ? LogType.MSG_IP_MASTER_FLAGS_CES
                                         : LogType.MSG_IP_MASTER_FLAGS_CEX);
                             } else {
-                                log(LogLevel.DEBUG, s ? LogType.MSG_IP_MASTER_FLAGS_CXS
+                                log(s ? LogType.MSG_IP_MASTER_FLAGS_CXS
                                         : LogType.MSG_IP_MASTER_FLAGS_CXX);
                             }
                         } else {
                             if (e) {
-                                log(LogLevel.DEBUG, s ? LogType.MSG_IP_MASTER_FLAGS_XES
+                                log(s ? LogType.MSG_IP_MASTER_FLAGS_XES
                                         : LogType.MSG_IP_MASTER_FLAGS_XEX);
                             } else {
-                                log(LogLevel.DEBUG, s ? LogType.MSG_IP_MASTER_FLAGS_XXS
+                                log(s ? LogType.MSG_IP_MASTER_FLAGS_XXS
                                         : LogType.MSG_IP_MASTER_FLAGS_XXX);
                             }
                         }
                     } else {
                         if (c) {
                             if (e) {
-                                log(LogLevel.DEBUG, s ? LogType.MSG_IP_SUBKEY_FLAGS_CES
+                                log(s ? LogType.MSG_IP_SUBKEY_FLAGS_CES
                                         : LogType.MSG_IP_SUBKEY_FLAGS_CEX);
                             } else {
-                                log(LogLevel.DEBUG, s ? LogType.MSG_IP_SUBKEY_FLAGS_CXS
+                                log(s ? LogType.MSG_IP_SUBKEY_FLAGS_CXS
                                         : LogType.MSG_IP_SUBKEY_FLAGS_CXX);
                             }
                         } else {
                             if (e) {
-                                log(LogLevel.DEBUG, s ? LogType.MSG_IP_SUBKEY_FLAGS_XES
+                                log(s ? LogType.MSG_IP_SUBKEY_FLAGS_XES
                                         : LogType.MSG_IP_SUBKEY_FLAGS_XEX);
                             } else {
-                                log(LogLevel.DEBUG, s ? LogType.MSG_IP_SUBKEY_FLAGS_XXS
+                                log(s ? LogType.MSG_IP_SUBKEY_FLAGS_XXS
                                         : LogType.MSG_IP_SUBKEY_FLAGS_XXX);
                             }
                         }
@@ -406,11 +405,11 @@ public class ProviderHelper {
                     if (expiryDate != null) {
                         values.put(Keys.EXPIRY, expiryDate.getTime() / 1000);
                         if (key.isExpired()) {
-                            log(LogLevel.DEBUG, keyId == masterKeyId ?
+                            log(keyId == masterKeyId ?
                                             LogType.MSG_IP_MASTER_EXPIRED : LogType.MSG_IP_SUBKEY_EXPIRED,
                                     expiryDate.toString());
                         } else {
-                            log(LogLevel.DEBUG, keyId == masterKeyId ?
+                            log(keyId == masterKeyId ?
                                             LogType.MSG_IP_MASTER_EXPIRES : LogType.MSG_IP_SUBKEY_EXPIRES,
                                     expiryDate.toString());
                         }
@@ -429,9 +428,9 @@ public class ProviderHelper {
             // classify and order user ids. primary are moved to the front, revoked to the back,
             // otherwise the order in the keyfile is preserved.
             if (trustedKeys.size() == 0) {
-                log(LogLevel.INFO, LogType.MSG_IP_UID_CLASSIFYING_ZERO);
+                log(LogType.MSG_IP_UID_CLASSIFYING_ZERO);
             } else {
-                log(LogLevel.INFO, LogType.MSG_IP_UID_CLASSIFYING, trustedKeys.size());
+                log(LogType.MSG_IP_UID_CLASSIFYING, trustedKeys.size());
             }
             mIndent += 1;
             List<UserIdItem> uids = new ArrayList<UserIdItem>();
@@ -445,7 +444,7 @@ public class ProviderHelper {
 
                 int unknownCerts = 0;
 
-                log(LogLevel.INFO, LogType.MSG_IP_UID_PROCESSING, userId);
+                log(LogType.MSG_IP_UID_PROCESSING, userId);
                 mIndent += 1;
                 // look through signatures for this specific key
                 for (WrappedSignature cert : new IterableIterator<WrappedSignature>(
@@ -462,7 +461,7 @@ public class ProviderHelper {
                                 item.isPrimary = cert.isPrimaryUserId();
                             } else {
                                 item.isRevoked = true;
-                                log(LogLevel.INFO, LogType.MSG_IP_UID_REVOKED);
+                                log(LogType.MSG_IP_UID_REVOKED);
                             }
                             continue;
 
@@ -478,24 +477,24 @@ public class ProviderHelper {
                             cert.init(trustedKey);
                             if (cert.verifySignature(masterKey, rawUserId)) {
                                 item.trustedCerts.add(cert);
-                                log(LogLevel.INFO, LogType.MSG_IP_UID_CERT_GOOD,
+                                log(LogType.MSG_IP_UID_CERT_GOOD,
                                         KeyFormattingUtils.convertKeyIdToHexShort(trustedKey.getKeyId())
                                 );
                             } else {
-                                log(LogLevel.WARN, LogType.MSG_IP_UID_CERT_BAD);
+                                log(LogType.MSG_IP_UID_CERT_BAD);
                             }
                         }
 
                         unknownCerts += 1;
 
                     } catch (PgpGeneralException e) {
-                        log(LogLevel.WARN, LogType.MSG_IP_UID_CERT_ERROR,
+                        log(LogType.MSG_IP_UID_CERT_ERROR,
                                 KeyFormattingUtils.convertKeyIdToHex(cert.getKeyId()));
                     }
                 }
 
                 if (unknownCerts > 0) {
-                    log(LogLevel.DEBUG, LogType.MSG_IP_UID_CERTS_UNKNOWN, unknownCerts);
+                    log(LogType.MSG_IP_UID_CERTS_UNKNOWN, unknownCerts);
                 }
                 mIndent -= 1;
 
@@ -503,7 +502,7 @@ public class ProviderHelper {
             mIndent -= 1;
 
             progress.setProgress(LogType.MSG_IP_UID_REORDER.getMsgId(), 65, 100);
-            log(LogLevel.DEBUG, LogType.MSG_IP_UID_REORDER);
+            log(LogType.MSG_IP_UID_REORDER);
             // primary before regular before revoked (see UserIdItem.compareTo)
             // this is a stable sort, so the order of keys is otherwise preserved.
             Collections.sort(uids);
@@ -526,7 +525,7 @@ public class ProviderHelper {
             }
 
         } catch (IOException e) {
-            log(LogLevel.ERROR, LogType.MSG_IP_ERROR_IO_EXC);
+            log(LogType.MSG_IP_ERROR_IO_EXC);
             Log.e(Constants.TAG, "IOException during import", e);
             return SaveKeyringResult.RESULT_ERROR;
         } finally {
@@ -538,26 +537,26 @@ public class ProviderHelper {
             int deleted = mContentResolver.delete(
                     KeyRingData.buildPublicKeyRingUri(masterKeyId), null, null);
             if (deleted > 0) {
-                log(LogLevel.DEBUG, LogType.MSG_IP_DELETE_OLD_OK);
+                log(LogType.MSG_IP_DELETE_OLD_OK);
                 result |= SaveKeyringResult.UPDATED;
             } else {
-                log(LogLevel.DEBUG, LogType.MSG_IP_DELETE_OLD_FAIL);
+                log(LogType.MSG_IP_DELETE_OLD_FAIL);
             }
 
-            log(LogLevel.DEBUG, LogType.MSG_IP_APPLY_BATCH);
+            log(LogType.MSG_IP_APPLY_BATCH);
             progress.setProgress(LogType.MSG_IP_APPLY_BATCH.getMsgId(), 75, 100);
             mContentResolver.applyBatch(KeychainContract.CONTENT_AUTHORITY, operations);
 
-            log(LogLevel.OK, LogType.MSG_IP_SUCCESS);
+            log(LogType.MSG_IP_SUCCESS);
             progress.setProgress(LogType.MSG_IP_SUCCESS.getMsgId(), 90, 100);
             return result;
 
         } catch (RemoteException e) {
-            log(LogLevel.ERROR, LogType.MSG_IP_ERROR_REMOTE_EX);
+            log(LogType.MSG_IP_ERROR_REMOTE_EX);
             Log.e(Constants.TAG, "RemoteException during import", e);
             return SaveKeyringResult.RESULT_ERROR;
         } catch (OperationApplicationException e) {
-            log(LogLevel.ERROR, LogType.MSG_IP_ERROR_OP_EXC);
+            log(LogType.MSG_IP_ERROR_OP_EXC);
             Log.e(Constants.TAG, "OperationApplicationException during import", e);
             return SaveKeyringResult.RESULT_ERROR;
         }
@@ -591,7 +590,7 @@ public class ProviderHelper {
     private int saveCanonicalizedSecretKeyRing(CanonicalizedSecretKeyRing keyRing) {
 
         long masterKeyId = keyRing.getMasterKeyId();
-        log(LogLevel.START, LogType.MSG_IS, KeyFormattingUtils.convertKeyIdToHex(masterKeyId));
+        log(LogType.MSG_IS, KeyFormattingUtils.convertKeyIdToHex(masterKeyId));
         mIndent += 1;
 
         try {
@@ -607,12 +606,12 @@ public class ProviderHelper {
                 // insert new version of this keyRing
                 Uri uri = KeyRingData.buildSecretKeyRingUri(masterKeyId);
                 if (mContentResolver.insert(uri, values) == null) {
-                    log(LogLevel.ERROR, LogType.MSG_IS_DB_EXCEPTION);
+                    log(LogType.MSG_IS_DB_EXCEPTION);
                     return SaveKeyringResult.RESULT_ERROR;
                 }
             } catch (IOException e) {
                 Log.e(Constants.TAG, "Failed to encode key!", e);
-                log(LogLevel.ERROR, LogType.MSG_IS_ERROR_IO_EXC);
+                log(LogType.MSG_IS_ERROR_IO_EXC);
                 return SaveKeyringResult.RESULT_ERROR;
             }
 
@@ -625,7 +624,7 @@ public class ProviderHelper {
                 mContentResolver.update(uri, values, null, null);
 
                 // then, mark exactly the keys we have available
-                log(LogLevel.INFO, LogType.MSG_IS_IMPORTING_SUBKEYS);
+                log(LogType.MSG_IS_IMPORTING_SUBKEYS);
                 mIndent += 1;
                 for (CanonicalizedSecretKey sub : keyRing.secretKeyIterator()) {
                     long id = sub.getKeyId();
@@ -636,28 +635,28 @@ public class ProviderHelper {
                     if (upd == 1) {
                         switch (mode) {
                             case PASSPHRASE:
-                                log(LogLevel.DEBUG, LogType.MSG_IS_SUBKEY_OK,
+                                log(LogType.MSG_IS_SUBKEY_OK,
                                         KeyFormattingUtils.convertKeyIdToHex(id)
                                 );
                                 break;
                             case PASSPHRASE_EMPTY:
-                                log(LogLevel.DEBUG, LogType.MSG_IS_SUBKEY_EMPTY,
+                                log(LogType.MSG_IS_SUBKEY_EMPTY,
                                         KeyFormattingUtils.convertKeyIdToHex(id)
                                 );
                                 break;
                             case GNU_DUMMY:
-                                log(LogLevel.DEBUG, LogType.MSG_IS_SUBKEY_STRIPPED,
+                                log(LogType.MSG_IS_SUBKEY_STRIPPED,
                                         KeyFormattingUtils.convertKeyIdToHex(id)
                                 );
                                 break;
                             case DIVERT_TO_CARD:
-                                log(LogLevel.DEBUG, LogType.MSG_IS_SUBKEY_DIVERT,
+                                log(LogType.MSG_IS_SUBKEY_DIVERT,
                                         KeyFormattingUtils.convertKeyIdToHex(id)
                                 );
                                 break;
                         }
                     } else {
-                        log(LogLevel.WARN, LogType.MSG_IS_SUBKEY_NONEXISTENT,
+                        log(LogType.MSG_IS_SUBKEY_NONEXISTENT,
                                 KeyFormattingUtils.convertKeyIdToHex(id)
                         );
                     }
@@ -668,7 +667,7 @@ public class ProviderHelper {
                 // with has_secret = 0
             }
 
-            log(LogLevel.OK, LogType.MSG_IS_SUCCESS);
+            log(LogType.MSG_IS_SUCCESS);
             return result;
 
         } finally {
@@ -690,11 +689,11 @@ public class ProviderHelper {
 
         try {
             long masterKeyId = publicRing.getMasterKeyId();
-            log(LogLevel.START, LogType.MSG_IP, KeyFormattingUtils.convertKeyIdToHex(masterKeyId));
+            log(LogType.MSG_IP, KeyFormattingUtils.convertKeyIdToHex(masterKeyId));
             mIndent += 1;
 
             if (publicRing.isSecret()) {
-                log(LogLevel.ERROR, LogType.MSG_IP_BAD_TYPE_SECRET);
+                log(LogType.MSG_IP_BAD_TYPE_SECRET);
                 return new SaveKeyringResult(SaveKeyringResult.RESULT_ERROR, mLog, null);
             }
 
@@ -721,7 +720,7 @@ public class ProviderHelper {
                 // Early breakout if nothing changed
                 if (Arrays.hashCode(publicRing.getEncoded())
                         == Arrays.hashCode(oldPublicRing.getEncoded())) {
-                    log(LogLevel.OK, LogType.MSG_IP_SUCCESS_IDENTICAL);
+                    log(LogType.MSG_IP_SUCCESS_IDENTICAL);
                     return new SaveKeyringResult(SaveKeyringResult.UPDATED, mLog, null);
                 }
             } catch (NotFoundException e) {
@@ -770,7 +769,7 @@ public class ProviderHelper {
             return new SaveKeyringResult(result, mLog, canSecretRing);
 
         } catch (IOException e) {
-            log(LogLevel.ERROR, LogType.MSG_IP_ERROR_IO_EXC);
+            log(LogType.MSG_IP_ERROR_IO_EXC);
             return new SaveKeyringResult(SaveKeyringResult.RESULT_ERROR, mLog, null);
         } finally {
             mIndent -= 1;
@@ -782,11 +781,11 @@ public class ProviderHelper {
 
         try {
             long masterKeyId = secretRing.getMasterKeyId();
-            log(LogLevel.START, LogType.MSG_IS, KeyFormattingUtils.convertKeyIdToHex(masterKeyId));
+            log(LogType.MSG_IS, KeyFormattingUtils.convertKeyIdToHex(masterKeyId));
             mIndent += 1;
 
             if ( ! secretRing.isSecret()) {
-                log(LogLevel.ERROR, LogType.MSG_IS_BAD_TYPE_PUBLIC);
+                log(LogType.MSG_IS_BAD_TYPE_PUBLIC);
                 return new SaveKeyringResult(SaveKeyringResult.RESULT_ERROR, mLog, null);
             }
 
@@ -814,7 +813,7 @@ public class ProviderHelper {
                 // Early breakout if nothing changed
                 if (Arrays.hashCode(secretRing.getEncoded())
                         == Arrays.hashCode(oldSecretRing.getEncoded())) {
-                    log(LogLevel.OK, LogType.MSG_IS_SUCCESS_IDENTICAL,
+                    log(LogType.MSG_IS_SUCCESS_IDENTICAL,
                             KeyFormattingUtils.convertKeyIdToHex(masterKeyId) );
                     return new SaveKeyringResult(SaveKeyringResult.UPDATED, mLog, null);
                 }
@@ -842,7 +841,7 @@ public class ProviderHelper {
                 }
 
             } catch (NotFoundException e) {
-                log(LogLevel.DEBUG, LogType.MSG_IS_PUBRING_GENERATE);
+                log(LogType.MSG_IS_PUBRING_GENERATE);
                 publicRing = secretRing.extractPublicKeyRing();
             }
 
@@ -864,7 +863,7 @@ public class ProviderHelper {
             return new SaveKeyringResult(result, mLog, canSecretRing);
 
         } catch (IOException e) {
-            log(LogLevel.ERROR, LogType.MSG_IS_ERROR_IO_EXC);
+            log(LogType.MSG_IS_ERROR_IO_EXC);
             return new SaveKeyringResult(SaveKeyringResult.RESULT_ERROR, mLog, null);
         } finally {
             mIndent -= 1;
@@ -875,14 +874,14 @@ public class ProviderHelper {
     public ConsolidateResult consolidateDatabaseStep1(Progressable progress) {
 
         // 1a. fetch all secret keyrings into a cache file
-        log(LogLevel.START, LogType.MSG_CON);
+        log(LogType.MSG_CON);
         mIndent += 1;
 
         progress.setProgress(R.string.progress_con_saving, 0, 100);
 
         try {
 
-            log(LogLevel.DEBUG, LogType.MSG_CON_SAVE_SECRET);
+            log(LogType.MSG_CON_SAVE_SECRET);
             mIndent += 1;
 
             final Cursor cursor = mContentResolver.query(KeyRings.buildUnifiedKeyRingsUri(), new String[]{
@@ -890,7 +889,7 @@ public class ProviderHelper {
             }, KeyRings.HAS_ANY_SECRET + " = 1", null, null);
 
             if (cursor == null || !cursor.moveToFirst()) {
-                log(LogLevel.ERROR, LogType.MSG_CON_ERROR_DB);
+                log(LogType.MSG_CON_ERROR_DB);
                 return new ConsolidateResult(ConsolidateResult.RESULT_ERROR, mLog);
             }
 
@@ -933,7 +932,7 @@ public class ProviderHelper {
 
         } catch (IOException e) {
             Log.e(Constants.TAG, "error saving secret", e);
-            log(LogLevel.ERROR, LogType.MSG_CON_ERROR_IO_SECRET);
+            log(LogType.MSG_CON_ERROR_IO_SECRET);
             return new ConsolidateResult(ConsolidateResult.RESULT_ERROR, mLog);
         } finally {
             mIndent -= 1;
@@ -944,7 +943,7 @@ public class ProviderHelper {
         // 1b. fetch all public keyrings into a cache file
         try {
 
-            log(LogLevel.DEBUG, LogType.MSG_CON_SAVE_PUBLIC);
+            log(LogType.MSG_CON_SAVE_PUBLIC);
             mIndent += 1;
 
             final Cursor cursor = mContentResolver.query(KeyRings.buildUnifiedKeyRingsUri(), new String[]{
@@ -952,7 +951,7 @@ public class ProviderHelper {
             }, null, null, null);
 
             if (cursor == null || !cursor.moveToFirst()) {
-                log(LogLevel.ERROR, LogType.MSG_CON_ERROR_DB);
+                log(LogType.MSG_CON_ERROR_DB);
                 return new ConsolidateResult(ConsolidateResult.RESULT_ERROR, mLog);
             }
 
@@ -995,13 +994,13 @@ public class ProviderHelper {
 
         } catch (IOException e) {
             Log.e(Constants.TAG, "error saving public", e);
-            log(LogLevel.ERROR, LogType.MSG_CON_ERROR_IO_PUBLIC);
+            log(LogType.MSG_CON_ERROR_IO_PUBLIC);
             return new ConsolidateResult(ConsolidateResult.RESULT_ERROR, mLog);
         } finally {
             mIndent -= 1;
         }
 
-        log(LogLevel.INFO, LogType.MSG_CON_CRITICAL_IN);
+        log(LogType.MSG_CON_CRITICAL_IN);
         Preferences.getPreferences(mContext).setCachedConsolidate(true);
 
         return consolidateDatabaseStep2(progress, false);
@@ -1017,7 +1016,7 @@ public class ProviderHelper {
 
         synchronized (ProviderHelper.class) {
             if (mConsolidateCritical) {
-                log(LogLevel.ERROR, LogType.MSG_CON_ERROR_CONCURRENT);
+                log(LogType.MSG_CON_ERROR_CONCURRENT);
                 return new ConsolidateResult(ConsolidateResult.RESULT_ERROR, mLog);
             }
             mConsolidateCritical = true;
@@ -1032,20 +1031,20 @@ public class ProviderHelper {
 
             if (recovery) {
                 if (numSecrets >= 0 && numPublics >= 0) {
-                    log(LogLevel.START, LogType.MSG_CON_RECOVER, numSecrets, numPublics);
+                    log(LogType.MSG_CON_RECOVER, numSecrets, numPublics);
                 } else {
-                    log(LogLevel.START, LogType.MSG_CON_RECOVER_UNKNOWN);
+                    log(LogType.MSG_CON_RECOVER_UNKNOWN);
                 }
                 mIndent += 1;
             }
 
             if (!prefs.getCachedConsolidate()) {
-                log(LogLevel.ERROR, LogType.MSG_CON_ERROR_BAD_STATE);
+                log(LogType.MSG_CON_ERROR_BAD_STATE);
                 return new ConsolidateResult(ConsolidateResult.RESULT_ERROR, mLog);
             }
 
             // 2. wipe database (IT'S DANGEROUS)
-            log(LogLevel.DEBUG, LogType.MSG_CON_DB_CLEAR);
+            log(LogType.MSG_CON_DB_CLEAR);
             mContentResolver.delete(KeyRings.buildUnifiedKeyRingsUri(), null, null);
 
             ParcelableFileCache<ParcelableKeyRing> cacheSecret =
@@ -1055,7 +1054,7 @@ public class ProviderHelper {
 
             // 3. Re-Import secret keyrings from cache
             if (numSecrets > 0) try {
-                log(LogLevel.DEBUG, LogType.MSG_CON_REIMPORT_SECRET, numSecrets);
+                log(LogType.MSG_CON_REIMPORT_SECRET, numSecrets);
                 mIndent += 1;
 
                 new PgpImportExport(mContext, this,
@@ -1063,18 +1062,18 @@ public class ProviderHelper {
                         .importKeyRings(cacheSecret.readCache(false), numSecrets);
             } catch (IOException e) {
                 Log.e(Constants.TAG, "error importing secret", e);
-                log(LogLevel.ERROR, LogType.MSG_CON_ERROR_SECRET);
+                log(LogType.MSG_CON_ERROR_SECRET);
                 return new ConsolidateResult(ConsolidateResult.RESULT_ERROR, mLog);
             } finally {
                 mIndent -= 1;
             }
             else {
-                log(LogLevel.DEBUG, LogType.MSG_CON_REIMPORT_SECRET_SKIP);
+                log(LogType.MSG_CON_REIMPORT_SECRET_SKIP);
             }
 
             // 4. Re-Import public keyrings from cache
             if (numPublics > 0) try {
-                log(LogLevel.DEBUG, LogType.MSG_CON_REIMPORT_PUBLIC, numPublics);
+                log(LogType.MSG_CON_REIMPORT_PUBLIC, numPublics);
                 mIndent += 1;
 
                 new PgpImportExport(mContext, this,
@@ -1082,45 +1081,45 @@ public class ProviderHelper {
                         .importKeyRings(cachePublic.readCache(false), numPublics);
             } catch (IOException e) {
                 Log.e(Constants.TAG, "error importing public", e);
-                log(LogLevel.ERROR, LogType.MSG_CON_ERROR_PUBLIC);
+                log(LogType.MSG_CON_ERROR_PUBLIC);
                 return new ConsolidateResult(ConsolidateResult.RESULT_ERROR, mLog);
             } finally {
                 mIndent -= 1;
             }
             else {
-                log(LogLevel.DEBUG, LogType.MSG_CON_REIMPORT_PUBLIC_SKIP);
+                log(LogType.MSG_CON_REIMPORT_PUBLIC_SKIP);
             }
 
-            log(LogLevel.INFO, LogType.MSG_CON_CRITICAL_OUT);
+            log(LogType.MSG_CON_CRITICAL_OUT);
             Preferences.getPreferences(mContext).setCachedConsolidate(false);
 
             // 5. Delete caches
             try {
-                log(LogLevel.DEBUG, LogType.MSG_CON_DELETE_SECRET);
+                log(LogType.MSG_CON_DELETE_SECRET);
                 mIndent += 1;
                 cacheSecret.delete();
             } catch (IOException e) {
                 // doesn't /really/ matter
                 Log.e(Constants.TAG, "IOException during delete of secret cache", e);
-                log(LogLevel.WARN, LogType.MSG_CON_WARN_DELETE_SECRET);
+                log(LogType.MSG_CON_WARN_DELETE_SECRET);
             } finally {
                 mIndent -= 1;
             }
 
             try {
-                log(LogLevel.DEBUG, LogType.MSG_CON_DELETE_PUBLIC);
+                log(LogType.MSG_CON_DELETE_PUBLIC);
                 mIndent += 1;
                 cachePublic.delete();
             } catch (IOException e) {
                 // doesn't /really/ matter
                 Log.e(Constants.TAG, "IOException during deletion of public cache", e);
-                log(LogLevel.WARN, LogType.MSG_CON_WARN_DELETE_PUBLIC);
+                log(LogType.MSG_CON_WARN_DELETE_PUBLIC);
             } finally {
                 mIndent -= 1;
             }
 
             progress.setProgress(100, 100);
-            log(LogLevel.OK, LogType.MSG_CON_SUCCESS);
+            log(LogType.MSG_CON_SUCCESS);
             mIndent -= 1;
 
             return new ConsolidateResult(ConsolidateResult.RESULT_OK, mLog);
