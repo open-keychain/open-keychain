@@ -148,7 +148,7 @@ public abstract class KeySpinner extends Spinner implements LoaderManager.Loader
                     String[] userId = KeyRing.splitUserId(cursor.getString(mIndexUserId));
                     vKeyName.setText(userId[2] == null ? userId[0] : (userId[0] + " (" + userId[2] + ")"));
                     vKeyEmail.setText(userId[1]);
-                    vKeyId.setText(KeyFormattingUtils.convertKeyIdToHex(cursor.getLong(mIndexKeyId)));
+                    vKeyId.setText(KeyFormattingUtils.beautifyKeyIdWithPrefix(getContext(), cursor.getLong(mIndexKeyId)));
 
                     boolean valid = setStatus(getContext(), cursor, vKeyStatus);
                     if (valid) {

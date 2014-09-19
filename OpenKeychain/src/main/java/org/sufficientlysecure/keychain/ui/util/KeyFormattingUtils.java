@@ -22,9 +22,13 @@ import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
+import android.graphics.Typeface;
 import android.text.Spannable;
+import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
 import android.text.style.ForegroundColorSpan;
+import android.text.style.StyleSpan;
+import android.text.style.TypefaceSpan;
 import android.view.View;
 import android.widget.ImageView;
 
@@ -248,6 +252,56 @@ public class KeyFormattingUtils {
             hexString = "0" + hexString;
         }
         return hexString;
+    }
+
+    /**
+     * Makes a human-readable version of a key ID, which is usually 64 bits: lower-case, no
+     * leading 0x, space-separated quartets (for keys whose length in hex is divisible by 4)
+     *
+     * @param idHex - the key id
+     * @return - the beautified form
+     */
+    public static SpannableString beautifyKeyId(String idHex) {
+        if (idHex.startsWith("0x")) {
+            idHex = idHex.substring(2);
+        }
+        if ((idHex.length() % 4) == 0) {
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < idHex.length(); i += 4) {
+                if (i != 0) {
+                    sb.appendCodePoint(0x2008); // U+2008 PUNCTUATION SPACE
+                }
+                sb.append(idHex.substring(i, i + 4).toLowerCase(Locale.US));
+            }
+            idHex = sb.toString();
+        }
+
+        SpannableString ss = new SpannableString(idHex);
+        ss.setSpan(new TypefaceSpan("monospace"), 0, idHex.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        return ss;
+    }
+
+    /**
+     * Makes a human-readable version of a key ID, which is usually 64 bits: lower-case, no
+     * leading 0x, space-separated quartets (for keys whose length in hex is divisible by 4)
+     *
+     * @param keyId - the key id
+     * @return - the beautified form
+     */
+    public static SpannableString beautifyKeyId(long keyId) {
+        return beautifyKeyId(convertKeyIdToHex(keyId));
+    }
+
+    public static SpannableStringBuilder beautifyKeyIdWithPrefix(Context context, String idHex) {
+        SpannableStringBuilder ssb = new SpannableStringBuilder();
+        ssb.append("ID");
+        ssb.append(": ");
+        ssb.append(beautifyKeyId(idHex));
+        return ssb;
+    }
+
+    public static SpannableStringBuilder beautifyKeyIdWithPrefix(Context context, long keyId) {
+        return beautifyKeyIdWithPrefix(context, convertKeyIdToHex(keyId));
     }
 
     public static SpannableStringBuilder colorizeFingerprint(String fingerprint) {

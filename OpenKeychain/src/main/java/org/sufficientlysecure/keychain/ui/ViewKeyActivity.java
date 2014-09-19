@@ -470,8 +470,7 @@ public class ViewKeyActivity extends ActionBarActivity implements
 
                     // get key id from MASTER_KEY_ID
                     long masterKeyId = data.getLong(INDEX_UNIFIED_MASTER_KEY_ID);
-                    String keyIdStr = KeyFormattingUtils.convertKeyIdToHex(masterKeyId);
-                    getSupportActionBar().setSubtitle(keyIdStr);
+                    getSupportActionBar().setSubtitle(KeyFormattingUtils.beautifyKeyIdWithPrefix(this, masterKeyId));
 
                     boolean isRevoked = data.getInt(INDEX_UNIFIED_IS_REVOKED) > 0;
                     boolean isExpired = !data.isNull(INDEX_UNIFIED_EXPIRY)

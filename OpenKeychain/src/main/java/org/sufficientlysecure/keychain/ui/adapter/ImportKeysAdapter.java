@@ -155,7 +155,7 @@ public class ImportKeysAdapter extends ArrayAdapter<ImportKeysListEntry> {
             holder.mainUserIdRest.setVisibility(View.GONE);
         }
 
-        holder.keyId.setText(entry.getKeyIdHex());
+        holder.keyId.setText(KeyFormattingUtils.beautifyKeyIdWithPrefix(getContext(), entry.getKeyIdHex()));
 
         // don't show full fingerprint on key import
         holder.fingerprint.setVisibility(View.GONE);

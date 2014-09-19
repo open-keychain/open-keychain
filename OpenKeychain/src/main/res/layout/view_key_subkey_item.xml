@@ -54,7 +54,6 @@
                 android:layout_height="wrap_content"
                 android:text="0x00000000"
                 android:textAppearance="?android:attr/textAppearanceMedium"
-                android:typeface="monospace"
                 android:layout_weight="1" />
 
             <ImageView

@@ -28,6 +28,7 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.widget.CursorAdapter;
+import android.text.SpannableStringBuilder;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -219,7 +220,7 @@ public class ViewKeyCertsFragment extends LoaderFragment
             TextView wSignerName = (TextView) view.findViewById(R.id.signerName);
             TextView wSignStatus = (TextView) view.findViewById(R.id.signStatus);
 
-            String signerKeyId = KeyFormattingUtils.convertKeyIdToHex(cursor.getLong(mIndexSignerKeyId));
+            SpannableStringBuilder signerKeyId = KeyFormattingUtils.beautifyKeyIdWithPrefix(getActivity(), cursor.getLong(mIndexSignerKeyId));
             String[] userId = KeyRing.splitUserId(cursor.getString(mIndexSignerUserId));
             if (userId[0] != null) {
                 wSignerName.setText(userId[0]);

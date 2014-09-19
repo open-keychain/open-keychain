@@ -145,8 +145,7 @@ public class SubkeysAdapter extends CursorAdapter {
         deleteImage.setVisibility(View.GONE);
 
         long keyId = cursor.getLong(INDEX_KEY_ID);
-        String keyIdStr = KeyFormattingUtils.convertKeyIdToHex(keyId);
-        vKeyId.setText(keyIdStr);
+        vKeyId.setText(KeyFormattingUtils.beautifyKeyId(keyId));
 
         // may be set with additional "stripped" later on
         SpannableStringBuilder algorithmStr = new SpannableStringBuilder();

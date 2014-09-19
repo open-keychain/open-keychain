@@ -56,9 +56,8 @@
                     android:id="@+id/subkey_item_key_id"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="0xBBBBBBBBBBBBBBBB"
-                    android:textAppearance="?android:attr/textAppearanceSmall"
-                    android:typeface="monospace" />
+                    android:text="Key ID: abcd abcd abcd abcd"
+                    android:textAppearance="?android:attr/textAppearanceSmall" />
 
             </LinearLayout>
 

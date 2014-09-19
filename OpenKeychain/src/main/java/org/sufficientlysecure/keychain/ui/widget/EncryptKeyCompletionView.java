@@ -28,6 +28,7 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.text.SpannableStringBuilder;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -218,15 +219,15 @@ public class EncryptKeyCompletionView extends TokenCompleteTextView {
             }
         }
 
-        public String getSecondary() {
+        public SpannableStringBuilder getSecondary() {
             if (mUserId[1] != null) {
-                return mUserId[1];
+                return new SpannableStringBuilder(mUserId[1]);
             } else {
                 return getKeyIdHex();
             }
         }
 
-        public String getTertiary() {
+        public SpannableStringBuilder getTertiary() {
             if (mUserId[0] != null) {
                 return getKeyIdHex();
             } else {
@@ -238,8 +239,8 @@ public class EncryptKeyCompletionView extends TokenCompleteTextView {
             return mKeyId;
         }
 
-        public String getKeyIdHex() {
-            return KeyFormattingUtils.convertKeyIdToHex(mKeyId);
+        public SpannableStringBuilder getKeyIdHex() {
+            return KeyFormattingUtils.beautifyKeyIdWithPrefix(getContext(), mKeyId);
         }
 
         public String getKeyIdHexShort() {
@@ -278,7 +279,7 @@ public class EncryptKeyCompletionView extends TokenCompleteTextView {
         protected boolean keepObject(EncryptionKey obj, String mask) {
             String m = mask.toLowerCase(Locale.ENGLISH);
             return obj.getUserId().toLowerCase(Locale.ENGLISH).contains(m) ||
-                    obj.getKeyIdHex().contains(m) ||
+                    obj.getKeyIdHex().toString().contains(m) ||
                     obj.getKeyIdHexShort().startsWith(m);
         }
     }

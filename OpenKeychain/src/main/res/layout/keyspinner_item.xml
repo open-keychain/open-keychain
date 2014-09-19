@@ -44,7 +44,6 @@
             android:layout_height="wrap_content"
             android:singleLine="true"
             android:ellipsize="end"
-            android:typeface="monospace"
             android:textAppearance="?android:attr/textAppearanceSmall"/>
     </LinearLayout>
 
