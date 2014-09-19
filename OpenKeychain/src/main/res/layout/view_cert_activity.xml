@@ -13,26 +13,6 @@
         android:paddingLeft="16dp"
         android:paddingRight="16dp">
 
-        <LinearLayout
-            android:orientation="horizontal"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:layout_marginTop="14dp">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/label_verify_status" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/cert_verify_ok"
-                android:id="@+id/status"
-                android:layout_marginLeft="30dp" />
-        </LinearLayout>
-
         <TextView
             style="@style/SectionHeader"
             android:layout_width="wrap_content"

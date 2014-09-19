@@ -85,7 +85,6 @@ public class ViewCertActivity extends ActionBarActivity
 
         setContentView(R.layout.view_cert_activity);
 
-        mStatus = (TextView) findViewById(R.id.status);
         mSigneeKey = (TextView) findViewById(R.id.signee_key);
         mSigneeUid = (TextView) findViewById(R.id.signee_uid);
         mAlgorithm = (TextView) findViewById(R.id.algorithm);
@@ -141,31 +140,6 @@ public class ViewCertActivity extends ActionBarActivity
             }
 
             WrappedSignature sig = WrappedSignature.fromBytes(data.getBlob(INDEX_DATA));
-            try {
-                ProviderHelper providerHelper = new ProviderHelper(this);
-
-                CanonicalizedPublicKeyRing signeeRing =
-                        providerHelper.getCanonicalizedPublicKeyRing(data.getLong(INDEX_MASTER_KEY_ID));
-                CanonicalizedPublicKeyRing signerRing =
-                        providerHelper.getCanonicalizedPublicKeyRing(sig.getKeyId());
-
-                try {
-                    sig.init(signerRing.getPublicKey());
-                    if (sig.verifySignature(signeeRing.getPublicKey(), signeeUid)) {
-                        mStatus.setText(R.string.cert_verify_ok);
-                        mStatus.setTextColor(getResources().getColor(R.color.android_green_light));
-                    } else {
-                        mStatus.setText(R.string.cert_verify_failed);
-                        mStatus.setTextColor(getResources().getColor(R.color.alert));
-                    }
-                } catch (PgpGeneralException e) {
-                    mStatus.setText(R.string.cert_verify_error);
-                    mStatus.setTextColor(getResources().getColor(R.color.alert));
-                }
-            } catch (ProviderHelper.NotFoundException e) {
-                mStatus.setText(R.string.cert_verify_unavailable);
-                mStatus.setTextColor(getResources().getColor(R.color.black));
-            }
 
             String algorithmStr = KeyFormattingUtils.getAlgorithmInfo(this, sig.getKeyAlgorithm(), null, null);
             mAlgorithm.setText(algorithmStr);

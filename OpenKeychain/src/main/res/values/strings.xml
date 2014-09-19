@@ -762,7 +762,7 @@
     <string name="msg_con_warn_delete_secret">"Exception deleting secret cache file"</string>
 
     <!-- Other messages used in OperationLogs -->
-    <string name="msg_ek_error_divert">"Editing of nfc keys is not (yet) supported!"</string>
+    <string name="msg_ek_error_divert">"Editing of NFC keys is not (yet) supported!"</string>
     <string name="msg_ek_error_dummy">"Cannot edit keyring with stripped master key!"</string>
     <string name="msg_ek_error_not_found">"Key not found!"</string>
 
@@ -789,7 +789,7 @@
     <string name="msg_dc_error_no_data">"No encrypted data found in stream!"</string>
     <string name="msg_dc_error_no_key">"No encrypted data with known secret key found in stream!"</string>
     <string name="msg_dc_error_pgp_exception">"Encountered PGP Exception during operation!"</string>
-    <string name="msg_dc_integrity_check_ok">"Integrity check ok!"</string>
+    <string name="msg_dc_integrity_check_ok">"Integrity check OK!"</string>
     <string name="msg_dc_ok_meta_only">"Only metadata was requested, skipping decryption"</string>
     <string name="msg_dc_ok">"OK"</string>
     <string name="msg_dc_pass_cached">"Using passphrase from cache"</string>
@@ -847,7 +847,7 @@
     <string name="label_user_id">"Identity"</string>
     <string name="unknown_uid">"&lt;unknown&gt;"</string>
     <string name="empty_certs">"No certificates for this key"</string>
-    <string name="certs_text">"Only self-certificates and certificates created with your keys are displayed here."</string>
+    <string name="certs_text">"Only validated self-certificates and validated certificates created with your keys are displayed here."</string>
     <string name="section_uids_to_certify">"Identities to certify"</string>
     <string name="label_revocation">"Revocation Reason"</string>
     <string name="label_verify_status">"Verification Status"</string>
