@@ -450,47 +450,67 @@ public class ProviderHelper {
                 for (WrappedSignature cert : new IterableIterator<WrappedSignature>(
                         masterKey.getSignaturesForRawId(rawUserId))) {
                     long certId = cert.getKeyId();
+                    // self signature
+                    if (certId == masterKeyId) {
+
+                        // NOTE self-certificates are already verified during canonicalization,
+                        // AND we know there is at most one cert plus at most one revocation
+                        if (!cert.isRevocation()) {
+                            item.selfCert = cert;
+                            item.isPrimary = cert.isPrimaryUserId();
+                        } else {
+                            item.isRevoked = true;
+                            log(LogType.MSG_IP_UID_REVOKED);
+                        }
+                        continue;
+
+                    }
+
+                    // do we have a trusted key for this?
+                    if (trustedKeys.indexOfKey(certId) < 0) {
+                        unknownCerts += 1;
+                        continue;
+                    }
+
+                    // verify signatures from known private keys
+                    CanonicalizedPublicKey trustedKey = trustedKeys.get(certId);
+
                     try {
-                        // self signature
-                        if (certId == masterKeyId) {
-
-                            // NOTE self-certificates are already verified during canonicalization,
-                            // AND we know there is at most one cert plus at most one revocation
-                            if (!cert.isRevocation()) {
-                                item.selfCert = cert;
-                                item.isPrimary = cert.isPrimaryUserId();
-                            } else {
-                                item.isRevoked = true;
-                                log(LogType.MSG_IP_UID_REVOKED);
-                            }
+                        cert.init(trustedKey);
+                        // if it doesn't certify, leave a note and skip
+                        if ( ! cert.verifySignature(masterKey, rawUserId)) {
+                            log(LogType.MSG_IP_UID_CERT_BAD);
                             continue;
-
                         }
 
-                        // verify signatures from known private keys
-                        if (trustedKeys.indexOfKey(certId) >= 0) {
-                            CanonicalizedPublicKey trustedKey = trustedKeys.get(certId);
-                            if (cert.isRevocation()) {
-                                // skip for now
+                        log(cert.isRevocation()
+                                        ? LogType.MSG_IP_UID_CERT_GOOD_REVOKE
+                                        : LogType.MSG_IP_UID_CERT_GOOD,
+                                KeyFormattingUtils.convertKeyIdToHexShort(trustedKey.getKeyId())
+                        );
+
+                        // check if there is a previous certificate
+                        WrappedSignature prev = item.trustedCerts.get(cert.getKeyId());
+                        if (prev != null) {
+                            // if it's newer, skip this one
+                            if (prev.getCreationTime().after(cert.getCreationTime())) {
+                                log(LogType.MSG_IP_UID_CERT_OLD);
                                 continue;
                             }
-                            cert.init(trustedKey);
-                            if (cert.verifySignature(masterKey, rawUserId)) {
-                                item.trustedCerts.add(cert);
-                                log(LogType.MSG_IP_UID_CERT_GOOD,
-                                        KeyFormattingUtils.convertKeyIdToHexShort(trustedKey.getKeyId())
-                                );
-                            } else {
-                                log(LogType.MSG_IP_UID_CERT_BAD);
+                            // if the previous one was a non-revokable certification, no need to look further
+                            if (!prev.isRevocation() && !prev.isRevokable()) {
+                                log(LogType.MSG_IP_UID_CERT_NONREVOKE);
+                                continue;
                             }
+                            log(LogType.MSG_IP_UID_CERT_NEW);
                         }
-
-                        unknownCerts += 1;
+                        item.trustedCerts.put(cert.getKeyId(), cert);
 
                     } catch (PgpGeneralException e) {
                         log(LogType.MSG_IP_UID_CERT_ERROR,
                                 KeyFormattingUtils.convertKeyIdToHex(cert.getKeyId()));
                     }
+
                 }
 
                 if (unknownCerts > 0) {
@@ -518,9 +538,18 @@ public class ProviderHelper {
                 if (item.isRevoked) {
                     continue;
                 }
-                for (int i = 0; i < item.trustedCerts.size(); i++) {
+
+                // iterate over signatures
+                for (int i = 0; i < item.trustedCerts.size() ; i++) {
+                    WrappedSignature sig = item.trustedCerts.valueAt(i);
+                    // if it's a revocation
+                    if (sig.isRevocation()) {
+                        // don't further process it
+                        continue;
+                    }
+                    // otherwise, build database operation
                     operations.add(buildCertOperations(
-                            masterKeyId, userIdRank, item.trustedCerts.get(i), Certs.VERIFIED_SECRET));
+                            masterKeyId, userIdRank, sig, Certs.VERIFIED_SECRET));
                 }
             }
 
@@ -568,7 +597,7 @@ public class ProviderHelper {
         boolean isPrimary = false;
         boolean isRevoked = false;
         WrappedSignature selfCert;
-        List<WrappedSignature> trustedCerts = new ArrayList<WrappedSignature>();
+        LongSparseArray<WrappedSignature> trustedCerts = new LongSparseArray<WrappedSignature>();
 
         @Override
         public int compareTo(UserIdItem o) {

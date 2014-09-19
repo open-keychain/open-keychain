@@ -580,7 +580,11 @@
     <string name="msg_ip_reinsert_secret">"Re-inserting secret key"</string>
     <string name="msg_ip_uid_cert_bad">"Encountered bad certificate!"</string>
     <string name="msg_ip_uid_cert_error">"Error processing certificate!"</string>
-    <string name="msg_ip_uid_cert_good">"User id is certified by %1$s"</string>
+    <string name="msg_ip_uid_cert_nonrevoke">"Already have a non-revokable certificate, skipping."</string>
+    <string name="msg_ip_uid_cert_old">"Certificate is older than previous, skipping."</string>
+    <string name="msg_ip_uid_cert_new">"Certificate is more recent, replacing previous."</string>
+    <string name="msg_ip_uid_cert_good">"Found good certificate by %1$s"</string>
+    <string name="msg_ip_uid_cert_good_revoke">"Found good certificate revocation by %1$s"</string>
     <plurals name="msg_ip_uid_certs_unknown">
         <item quantity="one">"Ignoring one certificate issued by an unknown public key"</item>
         <item quantity="other">"Ignoring %s certificates issued by unknown public keys"</item>

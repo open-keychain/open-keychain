@@ -20,6 +20,8 @@ package org.sufficientlysecure.keychain.pgp;
 
 import org.spongycastle.bcpg.SignatureSubpacket;
 import org.spongycastle.bcpg.SignatureSubpacketTags;
+import org.spongycastle.bcpg.sig.Exportable;
+import org.spongycastle.bcpg.sig.Revocable;
 import org.spongycastle.bcpg.sig.RevocationReason;
 import org.spongycastle.openpgp.PGPException;
 import org.spongycastle.openpgp.PGPObjectFactory;
@@ -218,12 +220,23 @@ public class WrappedSignature {
         return new WrappedSignature(signatures.get(0));
     }
 
+    /** Returns true if this certificate is revocable in general. */
+    public boolean isRevokable () {
+        // If nothing is specified, the packet is considered revocable
+        if (mSig.getHashedSubPackets() == null
+                || !mSig.getHashedSubPackets().hasSubpacket(SignatureSubpacketTags.REVOCABLE)) {
+            return true;
+        }
+        SignatureSubpacket p = mSig.getHashedSubPackets().getSubpacket(SignatureSubpacketTags.REVOCABLE);
+        return ((Revocable) p).isRevocable();
+    }
+
     public boolean isLocal() {
         if (mSig.getHashedSubPackets() == null
                 || !mSig.getHashedSubPackets().hasSubpacket(SignatureSubpacketTags.EXPORTABLE)) {
             return false;
         }
         SignatureSubpacket p = mSig.getHashedSubPackets().getSubpacket(SignatureSubpacketTags.EXPORTABLE);
-        return p.getData()[0] == 0;
+        return ((Exportable) p).isExportable();
     }
 }
