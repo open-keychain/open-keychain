@@ -237,6 +237,6 @@ public class WrappedSignature {
             return false;
         }
         SignatureSubpacket p = mSig.getHashedSubPackets().getSubpacket(SignatureSubpacketTags.EXPORTABLE);
-        return ((Exportable) p).isExportable();
+        return ! ((Exportable) p).isExportable();
     }
 }
