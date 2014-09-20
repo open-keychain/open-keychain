@@ -220,7 +220,7 @@ public class ViewKeyCertsFragment extends LoaderFragment
             TextView wSignerName = (TextView) view.findViewById(R.id.signerName);
             TextView wSignStatus = (TextView) view.findViewById(R.id.signStatus);
 
-            SpannableStringBuilder signerKeyId = KeyFormattingUtils.beautifyKeyIdWithPrefix(getActivity(), cursor.getLong(mIndexSignerKeyId));
+            String signerKeyId = KeyFormattingUtils.beautifyKeyIdWithPrefix(getActivity(), cursor.getLong(mIndexSignerKeyId));
             String[] userId = KeyRing.splitUserId(cursor.getString(mIndexSignerUserId));
             if (userId[0] != null) {
                 wSignerName.setText(userId[0]);

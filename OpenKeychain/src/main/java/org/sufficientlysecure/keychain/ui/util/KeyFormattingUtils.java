@@ -261,7 +261,7 @@ public class KeyFormattingUtils {
      * @param idHex - the key id
      * @return - the beautified form
      */
-    public static SpannableString beautifyKeyId(String idHex) {
+    public static String beautifyKeyId(String idHex) {
         if (idHex.startsWith("0x")) {
             idHex = idHex.substring(2);
         }
@@ -276,9 +276,7 @@ public class KeyFormattingUtils {
             idHex = sb.toString();
         }
 
-        SpannableString ss = new SpannableString(idHex);
-        ss.setSpan(new TypefaceSpan("monospace"), 0, idHex.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        return ss;
+        return idHex;
     }
 
     /**
@@ -288,19 +286,15 @@ public class KeyFormattingUtils {
      * @param keyId - the key id
      * @return - the beautified form
      */
-    public static SpannableString beautifyKeyId(long keyId) {
+    public static String beautifyKeyId(long keyId) {
         return beautifyKeyId(convertKeyIdToHex(keyId));
     }
 
-    public static SpannableStringBuilder beautifyKeyIdWithPrefix(Context context, String idHex) {
-        SpannableStringBuilder ssb = new SpannableStringBuilder();
-        ssb.append("ID");
-        ssb.append(": ");
-        ssb.append(beautifyKeyId(idHex));
-        return ssb;
+    public static String beautifyKeyIdWithPrefix(Context context, String idHex) {
+        return "ID: " + beautifyKeyId(idHex);
     }
 
-    public static SpannableStringBuilder beautifyKeyIdWithPrefix(Context context, long keyId) {
+    public static String beautifyKeyIdWithPrefix(Context context, long keyId) {
         return beautifyKeyIdWithPrefix(context, convertKeyIdToHex(keyId));
     }
 

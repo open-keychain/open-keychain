@@ -121,8 +121,7 @@ public class ViewCertActivity extends ActionBarActivity
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         if (data.moveToFirst()) {
-            SpannableString signeeKey = KeyFormattingUtils.beautifyKeyId(data.getLong(INDEX_MASTER_KEY_ID));
-            mSigneeKey.setText(signeeKey);
+            mSigneeKey.setText(KeyFormattingUtils.beautifyKeyId(data.getLong(INDEX_MASTER_KEY_ID)));
 
             String signeeUid = data.getString(INDEX_USER_ID);
             mSigneeUid.setText(signeeUid);
@@ -131,8 +130,7 @@ public class ViewCertActivity extends ActionBarActivity
             mCreation.setText(DateFormat.getDateFormat(getApplicationContext()).format(creationDate));
 
             mCertifierKeyId = data.getLong(INDEX_KEY_ID_CERTIFIER);
-            SpannableString certifierKey = KeyFormattingUtils.beautifyKeyId(mCertifierKeyId);
-            mCertifierKey.setText(certifierKey);
+            mCertifierKey.setText(KeyFormattingUtils.beautifyKeyId(mCertifierKeyId));
 
             String certifierUid = data.getString(INDEX_SIGNER_UID);
             if (certifierUid != null) {

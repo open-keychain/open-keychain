@@ -219,15 +219,15 @@ public class EncryptKeyCompletionView extends TokenCompleteTextView {
             }
         }
 
-        public SpannableStringBuilder getSecondary() {
+        public String getSecondary() {
             if (mUserId[1] != null) {
-                return new SpannableStringBuilder(mUserId[1]);
+                return mUserId[1];
             } else {
                 return getKeyIdHex();
             }
         }
 
-        public SpannableStringBuilder getTertiary() {
+        public String getTertiary() {
             if (mUserId[0] != null) {
                 return getKeyIdHex();
             } else {
@@ -239,7 +239,7 @@ public class EncryptKeyCompletionView extends TokenCompleteTextView {
             return mKeyId;
         }
 
-        public SpannableStringBuilder getKeyIdHex() {
+        public String getKeyIdHex() {
             return KeyFormattingUtils.beautifyKeyIdWithPrefix(getContext(), mKeyId);
         }
 
