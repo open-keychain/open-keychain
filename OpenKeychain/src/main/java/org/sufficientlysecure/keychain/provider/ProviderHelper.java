@@ -356,10 +356,11 @@ public class ProviderHelper {
                     values.put(Keys.ALGORITHM, key.getAlgorithm());
                     values.put(Keys.FINGERPRINT, key.getFingerprint());
 
-                    boolean c = key.canCertify(), e = key.canEncrypt(), s = key.canSign();
+                    boolean c = key.canCertify(), e = key.canEncrypt(), s = key.canSign(), a = key.canAuthenticate();
                     values.put(Keys.CAN_CERTIFY, c);
                     values.put(Keys.CAN_ENCRYPT, e);
                     values.put(Keys.CAN_SIGN, s);
+                    values.put(Keys.CAN_AUTHENTICATE, a);
                     values.put(Keys.IS_REVOKED, key.isRevoked());
                     if (masterKeyId == keyId) {
                         if (c) {

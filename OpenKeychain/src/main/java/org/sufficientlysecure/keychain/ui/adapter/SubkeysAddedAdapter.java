@@ -53,8 +53,9 @@ public class SubkeysAddedAdapter extends ArrayAdapter<SaveKeyringParcel.SubkeyAd
         public TextView vKeyDetails;
         public TextView vKeyExpiry;
         public ImageView vCertifyIcon;
-        public ImageView vEncryptIcon;
         public ImageView vSignIcon;
+        public ImageView vEncryptIcon;
+        public ImageView vAuthenticateIcon;
         public ImageButton vDelete;
         // also hold a reference to the model item
         public SaveKeyringParcel.SubkeyAdd mModel;
@@ -69,16 +70,18 @@ public class SubkeysAddedAdapter extends ArrayAdapter<SaveKeyringParcel.SubkeyAd
             holder.vKeyDetails = (TextView) convertView.findViewById(R.id.subkey_item_details);
             holder.vKeyExpiry = (TextView) convertView.findViewById(R.id.subkey_item_expiry);
             holder.vCertifyIcon = (ImageView) convertView.findViewById(R.id.subkey_item_ic_certify);
-            holder.vEncryptIcon = (ImageView) convertView.findViewById(R.id.subkey_item_ic_encrypt);
             holder.vSignIcon = (ImageView) convertView.findViewById(R.id.subkey_item_ic_sign);
+            holder.vEncryptIcon = (ImageView) convertView.findViewById(R.id.subkey_item_ic_encrypt);
+            holder.vAuthenticateIcon = (ImageView) convertView.findViewById(R.id.subkey_item_ic_authenticate);
+
             holder.vDelete = (ImageButton) convertView.findViewById(R.id.subkey_item_delete_button);
             holder.vDelete.setVisibility(View.VISIBLE); // always visible
 
             // not used:
-            ImageView editImage = (ImageView) convertView.findViewById(R.id.subkey_item_edit_image);
-            editImage.setVisibility(View.GONE);
-            ImageView revokedIcon = (ImageView) convertView.findViewById(R.id.subkey_item_ic_revoked);
-            revokedIcon.setVisibility(View.GONE);
+            ImageView vEdit = (ImageView) convertView.findViewById(R.id.subkey_item_edit_image);
+            vEdit.setVisibility(View.GONE);
+            ImageView vStatus = (ImageView) convertView.findViewById(R.id.subkey_item_status);
+            vStatus.setVisibility(View.GONE);
 
             convertView.setTag(holder);
 
@@ -136,7 +139,11 @@ public class SubkeysAddedAdapter extends ArrayAdapter<SaveKeyringParcel.SubkeyAd
         } else {
             holder.vEncryptIcon.setVisibility(View.GONE);
         }
-        // TODO: missing icon for authenticate
+        if ((flags & KeyFlags.AUTHENTICATION) > 0) {
+            holder.vAuthenticateIcon.setVisibility(View.VISIBLE);
+        } else {
+            holder.vAuthenticateIcon.setVisibility(View.GONE);
+        }
 
         return convertView;
     }

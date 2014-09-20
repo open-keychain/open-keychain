@@ -251,6 +251,7 @@ public class KeychainProvider extends ContentProvider {
                 projectionMap.put(KeyRings.CAN_CERTIFY, Tables.KEYS + "." + Keys.CAN_CERTIFY);
                 projectionMap.put(KeyRings.CAN_ENCRYPT, Tables.KEYS + "." + Keys.CAN_ENCRYPT);
                 projectionMap.put(KeyRings.CAN_SIGN, Tables.KEYS + "." + Keys.CAN_SIGN);
+                projectionMap.put(KeyRings.CAN_AUTHENTICATE, Tables.KEYS + "." + Keys.CAN_AUTHENTICATE);
                 projectionMap.put(KeyRings.CREATION, Tables.KEYS + "." + Keys.CREATION);
                 projectionMap.put(KeyRings.EXPIRY, Tables.KEYS + "." + Keys.EXPIRY);
                 projectionMap.put(KeyRings.ALGORITHM, Tables.KEYS + "." + Keys.ALGORITHM);
@@ -333,6 +334,16 @@ public class KeychainProvider extends ContentProvider {
                                 + " AND ( kS." + Keys.EXPIRY + " IS NULL OR kS." + Keys.EXPIRY
                                     + " >= " + new Date().getTime() / 1000 + " )"
                             + ")" : "")
+                        + (plist.contains(KeyRings.HAS_AUTHENTICATE) ?
+                            " LEFT JOIN " + Tables.KEYS + " AS kS ON ("
+                                    +"kS." + Keys.MASTER_KEY_ID
+                                    + " = " + Tables.KEYS + "." + Keys.MASTER_KEY_ID
+                                    + " AND kS." + Keys.IS_REVOKED + " = 0"
+                                    + " AND kS." + Keys.CAN_AUTHENTICATE + " = 1"
+                                    + " AND kS." + Keys.HAS_SECRET + " > 1"
+                                    + " AND ( kS." + Keys.EXPIRY + " IS NULL OR kS." + Keys.EXPIRY
+                                    + " >= " + new Date().getTime() / 1000 + " )"
+                                    + ")" : "")
                         + (plist.contains(KeyRings.HAS_CERTIFY) ?
                             " LEFT JOIN " + Tables.KEYS + " AS kC ON ("
                                 +"kC." + Keys.MASTER_KEY_ID
@@ -424,6 +435,7 @@ public class KeychainProvider extends ContentProvider {
                 projectionMap.put(Keys.CAN_CERTIFY, Keys.CAN_CERTIFY);
                 projectionMap.put(Keys.CAN_ENCRYPT, Keys.CAN_ENCRYPT);
                 projectionMap.put(Keys.CAN_SIGN, Keys.CAN_SIGN);
+                projectionMap.put(Keys.CAN_AUTHENTICATE, Keys.CAN_AUTHENTICATE);
                 projectionMap.put(Keys.HAS_SECRET, Keys.HAS_SECRET);
                 projectionMap.put(Keys.CREATION, Keys.CREATION);
                 projectionMap.put(Keys.EXPIRY, Keys.EXPIRY);

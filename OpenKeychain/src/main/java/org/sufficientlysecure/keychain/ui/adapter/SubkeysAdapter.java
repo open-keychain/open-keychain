@@ -20,6 +20,7 @@ package org.sufficientlysecure.keychain.ui.adapter;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.database.Cursor;
+import android.graphics.PorterDuff;
 import android.graphics.Typeface;
 import android.support.v4.widget.CursorAdapter;
 import android.text.Spannable;
@@ -62,6 +63,7 @@ public class SubkeysAdapter extends CursorAdapter {
             Keys.CAN_CERTIFY,
             Keys.CAN_ENCRYPT,
             Keys.CAN_SIGN,
+            Keys.CAN_AUTHENTICATE,
             Keys.IS_REVOKED,
             Keys.CREATION,
             Keys.EXPIRY,
@@ -77,10 +79,11 @@ public class SubkeysAdapter extends CursorAdapter {
     private static final int INDEX_CAN_CERTIFY = 7;
     private static final int INDEX_CAN_ENCRYPT = 8;
     private static final int INDEX_CAN_SIGN = 9;
-    private static final int INDEX_IS_REVOKED = 10;
-    private static final int INDEX_CREATION = 11;
-    private static final int INDEX_EXPIRY = 12;
-    private static final int INDEX_FINGERPRINT = 13;
+    private static final int INDEX_CAN_AUTHENTICATE = 10;
+    private static final int INDEX_IS_REVOKED = 11;
+    private static final int INDEX_CREATION = 12;
+    private static final int INDEX_EXPIRY = 13;
+    private static final int INDEX_FINGERPRINT = 14;
 
     public SubkeysAdapter(Context context, Cursor c, int flags,
                           SaveKeyringParcel saveKeyringParcel) {
@@ -135,10 +138,11 @@ public class SubkeysAdapter extends CursorAdapter {
         TextView vKeyDetails = (TextView) view.findViewById(R.id.subkey_item_details);
         TextView vKeyExpiry = (TextView) view.findViewById(R.id.subkey_item_expiry);
         ImageView vCertifyIcon = (ImageView) view.findViewById(R.id.subkey_item_ic_certify);
-        ImageView vEncryptIcon = (ImageView) view.findViewById(R.id.subkey_item_ic_encrypt);
         ImageView vSignIcon = (ImageView) view.findViewById(R.id.subkey_item_ic_sign);
-        ImageView vRevokedIcon = (ImageView) view.findViewById(R.id.subkey_item_ic_revoked);
+        ImageView vEncryptIcon = (ImageView) view.findViewById(R.id.subkey_item_ic_encrypt);
+        ImageView vAuthenticateIcon = (ImageView) view.findViewById(R.id.subkey_item_ic_authenticate);
         ImageView vEditImage = (ImageView) view.findViewById(R.id.subkey_item_edit_image);
+        ImageView vStatus = (ImageView) view.findViewById(R.id.subkey_item_status);
 
         // not used:
         ImageView deleteImage = (ImageView) view.findViewById(R.id.subkey_item_delete_button);
@@ -196,7 +200,7 @@ public class SubkeysAdapter extends CursorAdapter {
         vCertifyIcon.setVisibility(cursor.getInt(INDEX_CAN_CERTIFY) != 0 ? View.VISIBLE : View.GONE);
         vEncryptIcon.setVisibility(cursor.getInt(INDEX_CAN_ENCRYPT) != 0 ? View.VISIBLE : View.GONE);
         vSignIcon.setVisibility(cursor.getInt(INDEX_CAN_SIGN) != 0 ? View.VISIBLE : View.GONE);
-        // TODO: missing icon for authenticate
+        vAuthenticateIcon.setVisibility(cursor.getInt(INDEX_CAN_AUTHENTICATE) != 0 ? View.VISIBLE : View.GONE);
 
         boolean isRevoked = cursor.getInt(INDEX_IS_REVOKED) > 0;
 
@@ -245,22 +249,50 @@ public class SubkeysAdapter extends CursorAdapter {
             vKeyExpiry.setText(context.getString(R.string.label_expiry) + ": " + context.getString(R.string.none));
         }
 
-        if (isRevoked) {
-            vRevokedIcon.setVisibility(View.VISIBLE);
+        // if key is expired or revoked, strike through text
+        boolean isInvalid = isRevoked || isExpired;
+        if (isInvalid) {
+            vStatus.setVisibility(View.VISIBLE);
+
+            vKeyId.setText(FormattingUtils.strikeOutText(vKeyId.getText()));
+            vKeyDetails.setText(FormattingUtils.strikeOutText(vKeyDetails.getText()));
+            vKeyExpiry.setText(FormattingUtils.strikeOutText(vKeyExpiry.getText()));
+
+            vCertifyIcon.setColorFilter(
+                    mContext.getResources().getColor(R.color.bg_gray),
+                    PorterDuff.Mode.SRC_IN);
+            vSignIcon.setColorFilter(
+                    mContext.getResources().getColor(R.color.bg_gray),
+                    PorterDuff.Mode.SRC_IN);
+            vEncryptIcon.setColorFilter(
+                    mContext.getResources().getColor(R.color.bg_gray),
+                    PorterDuff.Mode.SRC_IN);
+            vAuthenticateIcon.setColorFilter(
+                    mContext.getResources().getColor(R.color.bg_gray),
+                    PorterDuff.Mode.SRC_IN);
+
+            if (isRevoked) {
+                vStatus.setImageResource(R.drawable.status_signature_revoked_cutout);
+                vStatus.setColorFilter(
+                        mContext.getResources().getColor(R.color.bg_gray),
+                        PorterDuff.Mode.SRC_IN);
+            } else if (isExpired) {
+                vStatus.setImageResource(R.drawable.status_signature_expired_cutout);
+                vStatus.setColorFilter(
+                        mContext.getResources().getColor(R.color.bg_gray),
+                        PorterDuff.Mode.SRC_IN);
+            }
         } else {
+            vStatus.setVisibility(View.GONE);
+
             vKeyId.setTextColor(mDefaultTextColor);
             vKeyDetails.setTextColor(mDefaultTextColor);
             vKeyExpiry.setTextColor(mDefaultTextColor);
 
-            vRevokedIcon.setVisibility(View.GONE);
-        }
-
-        // if key is expired or revoked, strike through text
-        boolean isInvalid = isRevoked || isExpired;
-        if (isInvalid) {
-            vKeyId.setText(FormattingUtils.strikeOutText(vKeyId.getText()));
-            vKeyDetails.setText(FormattingUtils.strikeOutText(vKeyDetails.getText()));
-            vKeyExpiry.setText(FormattingUtils.strikeOutText(vKeyExpiry.getText()));
+            vCertifyIcon.clearColorFilter();
+            vSignIcon.clearColorFilter();
+            vEncryptIcon.clearColorFilter();
+            vAuthenticateIcon.clearColorFilter();
         }
         vKeyId.setEnabled(!isInvalid);
         vKeyDetails.setEnabled(!isInvalid);

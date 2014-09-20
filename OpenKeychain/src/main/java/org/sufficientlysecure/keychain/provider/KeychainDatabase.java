@@ -54,7 +54,7 @@ import java.io.IOException;
  */
 public class KeychainDatabase extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "openkeychain.db";
-    private static final int DATABASE_VERSION = 4;
+    private static final int DATABASE_VERSION = 5;
     static Boolean apgHack = false;
     private Context mContext;
 
@@ -96,6 +96,7 @@ public class KeychainDatabase extends SQLiteOpenHelper {
                 + KeysColumns.CAN_CERTIFY + " BOOLEAN, "
                 + KeysColumns.CAN_SIGN + " BOOLEAN, "
                 + KeysColumns.CAN_ENCRYPT + " BOOLEAN, "
+                + KeysColumns.CAN_AUTHENTICATE + " BOOLEAN, "
                 + KeysColumns.IS_REVOKED + " BOOLEAN, "
                 + KeysColumns.HAS_SECRET + " BOOLEAN, "
 
@@ -214,20 +215,27 @@ public class KeychainDatabase extends SQLiteOpenHelper {
                 // add has_secret for all who are upgrading from a beta version
                 try {
                     db.execSQL("ALTER TABLE keys ADD COLUMN has_secret BOOLEAN");
-                } catch(Exception e){
+                } catch (Exception e){
                     // never mind, the column probably already existed
                 }
                 // fall through
             case 2:
                 // ECC support
                 try {
-                    db.execSQL("ALTER TABLE keys ADD COLUMN " + KeysColumns.KEY_CURVE_OID + " TEXT");
-                } catch(Exception e){
+                    db.execSQL("ALTER TABLE keys ADD COLUMN key_curve_oid TEXT");
+                } catch (Exception e){
                     // never mind, the column probably already existed
                 }
                 // fall through
             case 3:
                 // better s2k detection, we need consolidate
+                // fall through
+            case 4:
+                try {
+                    db.execSQL("ALTER TABLE keys ADD COLUMN can_authenticate BOOLEAN");
+                } catch (Exception e){
+                    // never mind, the column probably already existed
+                }
                 // fall through
         }
 

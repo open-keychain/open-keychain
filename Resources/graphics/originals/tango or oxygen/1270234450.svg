@@ -1,0 +1,305 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Generator: Adobe Illustrator 9.0, SVG Export Plug-In  -->
+<svg
+    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns="http://www.w3.org/2000/svg"
+    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+    xmlns:cc="http://creativecommons.org/ns#"
+    xmlns:xlink="http://www.w3.org/1999/xlink"
+    xmlns:dc="http://purl.org/dc/elements/1.1/"
+    xmlns:svg="http://www.w3.org/2000/svg"
+    xmlns:ns1="http://sozi.baierouge.fr"
+    id="svg5105"
+    xml:space="preserve"
+    sodipodi:version="0.32"
+    viewBox="0 0 48 48"
+    inkscape:output_extension="org.inkscape.output.svg.inkscape"
+    inkscape:version="0.46"
+    sodipodi:docname="application-certificate.svg"
+    sodipodi:docbase="/home/jimmac/gfx/ximian/tango-icon-theme/scalable/mimetypes"
+  >
+<defs
+      id="defs5187"
+    >
+<linearGradient
+        id="linearGradient6665"
+      >
+  <stop
+          id="stop6667"
+          style="stop-color:#000000"
+          offset="0"
+      />
+  <stop
+          id="stop6669"
+          style="stop-color:#000000;stop-opacity:0"
+          offset="1"
+      />
+</linearGradient
+    >
+<radialGradient
+        id="radialGradient5284"
+        gradientUnits="userSpaceOnUse"
+        cx="28.789"
+        cy="20.971"
+        r="13.281"
+        gradientTransform="matrix(1.3104 0 0 1.3104 -8.6427 -4.376)"
+        inkscape:collect="always"
+      ><stop
+          id="stop5115"
+          style="stop-color:#E41E08"
+          offset="0"
+      /><stop
+          id="stop5117"
+          style="stop-color:#901505"
+          offset="1"
+      /></radialGradient
+    >
+			<linearGradient
+        id="linearGradient6610"
+        y2="49.895"
+        gradientUnits="userSpaceOnUse"
+        y1="5.9245"
+        gradientTransform="matrix(.97573 0 0 .93103 -0.132 1.9784)"
+        x2="43.141"
+        x1="15.339"
+        inkscape:collect="always"
+      ><stop
+          id="stop6606"
+          style="stop-color:#ffa196"
+          offset="0"
+      /><stop
+          id="stop6608"
+          style="stop-color:#ff1f06;stop-opacity:0"
+          offset="1"
+      /></linearGradient
+    >
+<linearGradient
+        id="linearGradient6623"
+        y2="22.783"
+        gradientUnits="userSpaceOnUse"
+        y1="9.4437"
+        gradientTransform="matrix(1.0287 0 0 .97213 -1.2803 1.1893)"
+        x2="29.957"
+        x1="18.57"
+        inkscape:collect="always"
+      ><stop
+          id="stop6619"
+          style="stop-color:#ffffff;stop-opacity:.24742"
+          offset="0"
+      /><stop
+          id="stop6621"
+          style="stop-color:#ffffff;stop-opacity:0"
+          offset="1"
+      /></linearGradient
+    >
+<linearGradient
+        id="linearGradient6631"
+        y2="35.018"
+        gradientUnits="userSpaceOnUse"
+        y1="22.886"
+        gradientTransform="matrix(.84394 0 0 1.1849 -1.2803 1.6893)"
+        x2="38.251"
+        x1="38.506"
+        inkscape:collect="always"
+      ><stop
+          id="stop6627"
+          style="stop-color:#1d2349"
+          offset="0"
+      /><stop
+          id="stop6637"
+          style="stop-color:#4c5279"
+          offset=".35315"
+      /><stop
+          id="stop6633"
+          style="stop-color:#b3bdff"
+          offset=".46552"
+      /><stop
+          id="stop6635"
+          style="stop-color:#727cbe"
+          offset=".64982"
+      /><stop
+          id="stop6629"
+          style="stop-color:#323c7e"
+          offset="1"
+      /></linearGradient
+    >
+<radialGradient
+        id="radialGradient6663"
+        cx="24.452"
+        xlink:href="#linearGradient6665"
+        gradientUnits="userSpaceOnUse"
+        cy="19.819"
+        r="33.156"
+        gradientTransform="matrix(1.0245 0 0 .97611 .93934 -.53033)"
+        inkscape:collect="always"
+    />
+<radialGradient
+        id="radialGradient6675"
+        gradientUnits="userSpaceOnUse"
+        xlink:href="#linearGradient6665"
+        cx="24.452"
+        cy="19.819"
+        r="33.156"
+        gradientTransform="matrix(1.0245 0 0 .97611 1.6464 -.35355)"
+        inkscape:collect="always"
+    />
+<radialGradient
+        id="radialGradient6678"
+        gradientUnits="userSpaceOnUse"
+        cx="26.887"
+        cy="20.479"
+        r="14.694"
+        gradientTransform="matrix(1.1356 0 0 1.1356 -4.5403 -2.0774)"
+        inkscape:collect="always"
+      ><stop
+          id="stop5122"
+          style="stop-color:#E41E08"
+          offset="0"
+      /><stop
+          id="stop5124"
+          style="stop-color:#901505"
+          offset="1"
+      /></radialGradient
+    >
+<linearGradient
+        id="linearGradient6690"
+        y2="27.404"
+        gradientUnits="userSpaceOnUse"
+        y1="35.458"
+        gradientTransform="scale(.84394 1.1849)"
+        x2="36.499"
+        x1="37.503"
+        inkscape:collect="always"
+      ><stop
+          id="stop6686"
+          style="stop-color:#d5dbff"
+          offset="0"
+      /><stop
+          id="stop6688"
+          style="stop-color:#6579ff;stop-opacity:0"
+          offset="1"
+      /></linearGradient
+    >
+</defs
+  >
+<sodipodi:namedview
+      id="base"
+      bordercolor="#666666"
+      inkscape:window-x="203"
+      inkscape:window-y="30"
+      pagecolor="#ffffff"
+      inkscape:window-height="818"
+      inkscape:zoom="5.6568542"
+      inkscape:pageshadow="2"
+      showgrid="false"
+      borderopacity="0.16470588"
+      inkscape:current-layer="svg5105"
+      inkscape:cx="20.303269"
+      inkscape:cy="20.392013"
+      inkscape:showpageshadow="false"
+      inkscape:window-width="821"
+      inkscape:pageopacity="0.0"
+  />
+<path
+      id="path6671"
+      style="opacity:.48045;color:#000000;fill:url(#radialGradient6675)"
+      d="m25.389 19.305s-5.905 8.176-5.905 11.923c0 3.748 6.814 1.704 9.539 4.429s-6.359 9.766-6.359 9.766l9.084-2.499 3.634 3.861c0-4.655 5.337-8.403 2.612-11.242-2.839-2.838-10.902-2.498-11.356-6.245s-1.135-9.879-1.135-9.879l-0.114-0.114z"
+  />
+<path
+      id="path6639"
+      sodipodi:nodetypes="csssssssssssss"
+      style="opacity:.48045;fill:url(#radialGradient6663)"
+      d="m36.916 9.3947c1.322 3.0573 3.643 2.9013 3.701 6.9823 0.032 2.276 1.832 3.471 1.832 5.796 0 2.324-4.015 3.473-5.382 4.841-1.368 1.367 0.108 4.874-3.602 5.905-3.675 1.02-5.47-0.411-7.795-0.411s-7.888 4.483-9.939 2.432c-2.052-2.051-2.095-6.534-3.873-8.312-1.9146-1.914-4.9396-4.589-4.9396-8.008s1.9742-5.224 4.8026-8.402c2.918-3.2794 3.009-8.2052 6.427-8.2052 3.419 0 4.73 0.9378 7.639 0.8643 4.639-0.1172 5.207-2.3234 8.618-0.5935 3.008 1.5251 1.477 4.7177 2.511 7.1111z"
+  />
+<path
+      id="path5112"
+      style="stroke:#1f254f;stroke-miterlimit:6.6;fill:url(#linearGradient6631)"
+      d="m23.621 18.068s-5.905 8.176-5.905 11.923 6.814 1.703 9.539 4.429c2.725 2.725-6.359 9.765-6.359 9.765l9.084-2.498 3.634 3.861c0-4.656 5.337-8.403 2.612-11.242-2.839-2.839-10.901-2.498-11.356-6.246-0.454-3.747-1.135-9.879-1.135-9.879l-0.114-0.113z"
+  />
+<path
+      id="path6680"
+      sodipodi:nodetypes="cscccsss"
+      style="stroke:url(#linearGradient6690);stroke-width:.72113;stroke-miterlimit:6.6;fill:none"
+      d="m20.803 31.602c4.552 0.449 7.429 1.236 7.807 3.99 0.33 2.407-4.232 6.732-4.232 6.732l5.844-1.624 2.841 2.961c0.663-3.711 4.365-6.222 2.679-8.505-2.115-2.863-8.966-2.243-9.294-4.946-0.327-2.702-8.334 1.125-5.645 1.392z"
+  />
+<path
+      id="path5119"
+      sodipodi:nodetypes="csssssssssssss"
+      style="stroke-linejoin:round;stroke:#4c0901;stroke-linecap:round;fill:url(#radialGradient5284)"
+      d="m34.935 9.2468c1.267 2.9292 3.491 2.7802 3.546 6.6912 0.032 2.18 1.756 3.325 1.756 5.553s-3.847 3.328-5.157 4.639c-1.311 1.31 0.103 4.671-3.452 5.658-3.521 0.978-5.241-0.393-7.469-0.393s-7.558 4.295-9.524 2.33c-1.966-1.966-2.007-6.261-3.711-7.965-1.8345-1.834-4.7331-4.397-4.7331-7.673s1.8918-5.006 4.6021-8.051c2.796-3.1427 2.883-7.8627 6.159-7.8627s4.531 0.8987 7.32 0.8282c4.444-0.1123 4.989-2.2263 8.258-0.5687 2.882 1.4614 1.414 4.5206 2.405 6.814z"
+  />
+<path
+      id="path5126"
+      style="fill:url(#radialGradient6678)"
+      d="m34.977 17.568c0 6.245-5.11 11.355-11.356 11.355-6.245 0-11.355-5.11-11.355-11.355 0-6.246 5.11-11.356 11.355-11.356 6.246 0.0001 11.356 5.11 11.356 11.356z"
+  />
+<path
+      id="path6600"
+      sodipodi:nodetypes="csssssssssssss"
+      style="stroke-linejoin:round;stroke:url(#linearGradient6610);stroke-linecap:round;fill:none"
+      d="m33.889 10.03c1.153 2.668 3.179 2.532 3.229 6.094 0.029 1.986 1.599 3.028 1.599 5.057s-3.503 3.031-4.697 4.225c-1.193 1.193 0.094 4.254-3.143 5.153-3.207 0.891-4.774-0.358-6.802-0.358-2.029 0-6.884 3.912-8.674 2.122s-1.828-5.702-3.38-7.254c-1.67-1.671-4.3102-4.005-4.3102-6.988 0-2.984 1.7228-4.559 4.1912-7.332 2.547-2.8622 2.625-7.1608 5.609-7.1608 2.983 0 4.127 0.8184 6.666 0.7542 4.048-0.1023 4.544-2.0275 7.521-0.5179 2.625 1.3309 1.288 4.117 2.191 6.2055z"
+  />
+<path
+      id="path6612"
+      style="color:#000000;fill:url(#linearGradient6623)"
+      d="m23.663 7.0525c-5.868 0-10.646 4.7425-10.646 10.61 0 3.672 1.984 6.781 4.816 8.691 7.241-3.897 5.954-10.805 15.607-12.746-1.599-3.8493-5.351-6.5545-9.777-6.5545z"
+  />
+<metadata
+    ><rdf:RDF
+      ><cc:Work
+        ><dc:format
+          >image/svg+xml</dc:format
+        ><dc:type
+            rdf:resource="http://purl.org/dc/dcmitype/StillImage"
+        /><cc:license
+            rdf:resource="http://creativecommons.org/licenses/publicdomain/"
+        /><dc:publisher
+          ><cc:Agent
+              rdf:about="http://openclipart.org/"
+            ><dc:title
+              >Openclipart</dc:title
+            ></cc:Agent
+          ></dc:publisher
+        ><dc:title
+          >tango application certificate</dc:title
+        ><dc:date
+          >2010-04-02T18:54:10</dc:date
+        ><dc:description
+          >An icon from Tango Project. Since version 0.8.90 Tango Project icons are Public Domain: </dc:description
+        ><dc:source
+          >https://openclipart.org/detail/36067/tango-application-certificate-by-warszawianka</dc:source
+        ><dc:creator
+          ><cc:Agent
+            ><dc:title
+              >warszawianka</dc:title
+            ></cc:Agent
+          ></dc:creator
+        ><dc:subject
+          ><rdf:Bag
+            ><rdf:li
+              >externalsource</rdf:li
+            ><rdf:li
+              >icon</rdf:li
+            ><rdf:li
+              >ribbon</rdf:li
+            ><rdf:li
+              >seal</rdf:li
+            ><rdf:li
+              >tango</rdf:li
+            ></rdf:Bag
+          ></dc:subject
+        ></cc:Work
+      ><cc:License
+          rdf:about="http://creativecommons.org/licenses/publicdomain/"
+        ><cc:permits
+            rdf:resource="http://creativecommons.org/ns#Reproduction"
+        /><cc:permits
+            rdf:resource="http://creativecommons.org/ns#Distribution"
+        /><cc:permits
+            rdf:resource="http://creativecommons.org/ns#DerivativeWorks"
+        /></cc:License
+      ></rdf:RDF
+    ></metadata
+  ></svg
+>
