@@ -104,7 +104,7 @@ public class ImportKeysFileFragment extends Fragment {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
             case REQUEST_CODE_FILE: {
-                if (resultCode == Activity.RESULT_OK && data != null) {
+                if (resultCode == Activity.RESULT_OK && data != null && data.getData() != null) {
 
                     // load data
                     mImportActivity.loadCallback(new ImportKeysListFragment.BytesLoaderState(null, data.getData()));
