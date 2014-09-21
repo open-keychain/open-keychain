@@ -42,11 +42,14 @@ import java.util.TimeZone;
 public class SubkeysAddedAdapter extends ArrayAdapter<SaveKeyringParcel.SubkeyAdd> {
     private LayoutInflater mInflater;
     private Activity mActivity;
+    private boolean mNewKeyring;
 
-    public SubkeysAddedAdapter(Activity activity, List<SaveKeyringParcel.SubkeyAdd> data) {
+    public SubkeysAddedAdapter(Activity activity, List<SaveKeyringParcel.SubkeyAdd> data,
+                               boolean newKeyring) {
         super(activity, -1, data);
         mActivity = activity;
         mInflater = (LayoutInflater) activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        mNewKeyring = newKeyring;
     }
 
     static class ViewHolder {
@@ -107,7 +110,7 @@ public class SubkeysAddedAdapter extends ArrayAdapter<SaveKeyringParcel.SubkeyAd
                 holder.mModel.mCurve
         );
 
-        boolean isMasterKey = position == 0;
+        boolean isMasterKey = mNewKeyring && position == 0;
         if (isMasterKey) {
             holder.vKeyId.setTypeface(null, Typeface.BOLD);
         } else {

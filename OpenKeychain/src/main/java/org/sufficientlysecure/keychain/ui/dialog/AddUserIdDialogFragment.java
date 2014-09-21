@@ -200,7 +200,6 @@ public class AddUserIdDialogFragment extends DialogFragment implements OnEditorA
     @Override
     public void onDismiss(DialogInterface dialog) {
         super.onDismiss(dialog);
-        Log.d(Constants.TAG, "onDismiss");
 
         // hide keyboard on dismiss
         hideKeyboard();
@@ -210,7 +209,7 @@ public class AddUserIdDialogFragment extends DialogFragment implements OnEditorA
         InputMethodManager inputManager = (InputMethodManager) getActivity()
                 .getSystemService(Context.INPUT_METHOD_SERVICE);
 
-        //check if no view has focus:
+        // check if no view has focus:
         View v = getActivity().getCurrentFocus();
         if (v == null)
             return;

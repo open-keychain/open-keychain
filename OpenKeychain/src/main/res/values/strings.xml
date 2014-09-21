@@ -497,6 +497,8 @@
     </string-array>
     <string name="edit_key_new_subkey">"new subkey"</string>
     <string name="edit_key_select_flag">"Please select at least one flag!"</string>
+    <string name="edit_key_error_add_identity">"Add at least one identity!"</string>
+    <string name="edit_key_error_add_subkey">"Add at least one subkey!"</string>
 
     <!-- Create key -->
     <string name="create_key_upload">"Upload key to keyserver"</string>

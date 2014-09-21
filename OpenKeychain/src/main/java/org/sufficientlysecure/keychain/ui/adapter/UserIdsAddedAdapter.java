@@ -19,6 +19,7 @@ package org.sufficientlysecure.keychain.ui.adapter;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Typeface;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -35,14 +36,16 @@ import java.util.List;
 
 public class UserIdsAddedAdapter extends ArrayAdapter<String> {
     private LayoutInflater mInflater;
+    private boolean mNewKeyring;
 
     // hold a private reference to the underlying data List
     private List<String> mData;
 
-    public UserIdsAddedAdapter(Activity activity, List<String> data) {
+    public UserIdsAddedAdapter(Activity activity, List<String> data, boolean newKeyring) {
         super(activity, -1, data);
         mInflater = (LayoutInflater) activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         mData = data;
+        mNewKeyring = newKeyring;
     }
 
     public List<String> getData() {
@@ -109,6 +112,15 @@ public class UserIdsAddedAdapter extends ArrayAdapter<String> {
             holder.vComment.setVisibility(View.VISIBLE);
         } else {
             holder.vComment.setVisibility(View.GONE);
+        }
+
+        boolean isPrimary = mNewKeyring && position == 0;
+        if (isPrimary) {
+            holder.vName.setTypeface(null, Typeface.BOLD);
+            holder.vAddress.setTypeface(null, Typeface.BOLD);
+        } else {
+            holder.vName.setTypeface(null, Typeface.NORMAL);
+            holder.vAddress.setTypeface(null, Typeface.NORMAL);
         }
 
         return convertView;

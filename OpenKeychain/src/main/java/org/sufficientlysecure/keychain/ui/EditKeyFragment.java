@@ -66,6 +66,7 @@ import org.sufficientlysecure.keychain.ui.dialog.EditSubkeyExpiryDialogFragment;
 import org.sufficientlysecure.keychain.ui.dialog.EditUserIdDialogFragment;
 import org.sufficientlysecure.keychain.ui.dialog.PassphraseDialogFragment;
 import org.sufficientlysecure.keychain.ui.dialog.SetPassphraseDialogFragment;
+import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.util.Log;
 
 public class EditKeyFragment extends LoaderFragment implements
@@ -190,10 +191,10 @@ public class EditKeyFragment extends LoaderFragment implements
         mPrimaryUserId = saveKeyringParcel.mChangePrimaryUserId;
         mCurrentPassphrase = saveKeyringParcel.mNewPassphrase;
 
-        mUserIdsAddedAdapter = new UserIdsAddedAdapter(getActivity(), mSaveKeyringParcel.mAddUserIds);
+        mUserIdsAddedAdapter = new UserIdsAddedAdapter(getActivity(), mSaveKeyringParcel.mAddUserIds, true);
         mUserIdsAddedList.setAdapter(mUserIdsAddedAdapter);
 
-        mSubkeysAddedAdapter = new SubkeysAddedAdapter(getActivity(), mSaveKeyringParcel.mAddSubKeys);
+        mSubkeysAddedAdapter = new SubkeysAddedAdapter(getActivity(), mSaveKeyringParcel.mAddSubKeys, true);
         mSubkeysAddedList.setAdapter(mSubkeysAddedAdapter);
 
         // show directly
@@ -270,13 +271,13 @@ public class EditKeyFragment extends LoaderFragment implements
         mUserIdsList.setAdapter(mUserIdsAdapter);
 
         // TODO: SaveParcel from savedInstance?!
-        mUserIdsAddedAdapter = new UserIdsAddedAdapter(getActivity(), mSaveKeyringParcel.mAddUserIds);
+        mUserIdsAddedAdapter = new UserIdsAddedAdapter(getActivity(), mSaveKeyringParcel.mAddUserIds, false);
         mUserIdsAddedList.setAdapter(mUserIdsAddedAdapter);
 
         mSubkeysAdapter = new SubkeysAdapter(getActivity(), null, 0, mSaveKeyringParcel);
         mSubkeysList.setAdapter(mSubkeysAdapter);
 
-        mSubkeysAddedAdapter = new SubkeysAddedAdapter(getActivity(), mSaveKeyringParcel.mAddSubKeys);
+        mSubkeysAddedAdapter = new SubkeysAddedAdapter(getActivity(), mSaveKeyringParcel.mAddSubKeys, false);
         mSubkeysAddedList.setAdapter(mSubkeysAddedAdapter);
     }
 
@@ -566,6 +567,18 @@ public class EditKeyFragment extends LoaderFragment implements
     }
 
     private void returnKeyringParcel() {
+        if (mSaveKeyringParcel.mAddUserIds.size() == 0) {
+            Notify.showNotify(getActivity(), R.string.edit_key_error_add_identity, Notify.Style.ERROR);
+            return;
+        }
+        if (mSaveKeyringParcel.mAddSubKeys.size() == 0) {
+            Notify.showNotify(getActivity(), R.string.edit_key_error_add_subkey, Notify.Style.ERROR);
+            return;
+        }
+
+        // use first user id as primary
+        mSaveKeyringParcel.mChangePrimaryUserId = mSaveKeyringParcel.mAddUserIds.get(0);
+
         Intent returnIntent = new Intent();
         returnIntent.putExtra(EditKeyActivity.EXTRA_SAVE_KEYRING_PARCEL, mSaveKeyringParcel);
         getActivity().setResult(Activity.RESULT_OK, returnIntent);
@@ -638,7 +651,6 @@ public class EditKeyFragment extends LoaderFragment implements
      * Closes this activity, returning a result parcel with a single error log entry.
      */
     void finishWithError(LogType reason) {
-
         // Prepare an intent with an EXTRA_RESULT
         Intent intent = new Intent();
         intent.putExtra(OperationResult.EXTRA_RESULT,

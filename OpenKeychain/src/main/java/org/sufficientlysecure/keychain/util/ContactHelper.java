@@ -130,7 +130,6 @@ public class ContactHelper {
                 Set<String> currNames = new HashSet<String>();
                 while (profileCursor.moveToNext()) {
                     String name = profileCursor.getString(1);
-                    Log.d(Constants.TAG, "name" + name);
                     if (name != null) {
                         currNames.add(name);
                     }
