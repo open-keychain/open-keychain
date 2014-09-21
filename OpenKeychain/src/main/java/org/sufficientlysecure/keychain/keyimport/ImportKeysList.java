@@ -78,6 +78,7 @@ public class ImportKeysList extends ArrayList<ImportKeysListEntry> {
                 modified = true;
             }
         }
+        existing.updateMergedUserIds();
         return modified;
     }
 

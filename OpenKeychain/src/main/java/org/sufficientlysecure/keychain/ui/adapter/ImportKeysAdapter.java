@@ -21,7 +21,6 @@ import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
-import android.media.Image;
 import android.os.Build;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -35,12 +34,16 @@ import android.widget.TextView;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.keyimport.ImportKeysListEntry;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
+import org.sufficientlysecure.keychain.ui.util.FormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.Highlighter;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 public class ImportKeysAdapter extends ArrayAdapter<ImportKeysListEntry> {
     protected LayoutInflater mInflater;
@@ -112,16 +115,16 @@ public class ImportKeysAdapter extends ArrayAdapter<ImportKeysListEntry> {
         ViewHolder holder;
         if (convertView == null) {
             holder = new ViewHolder();
-            convertView = mInflater.inflate(R.layout.import_keys_list_entry, null);
-            holder.mainUserId = (TextView) convertView.findViewById(R.id.mainUserId);
-            holder.mainUserIdRest = (TextView) convertView.findViewById(R.id.mainUserIdRest);
-            holder.keyId = (TextView) convertView.findViewById(R.id.subkey_item_key_id);
-            holder.fingerprint = (TextView) convertView.findViewById(R.id.view_key_fingerprint);
-            holder.algorithm = (TextView) convertView.findViewById(R.id.algorithm);
-            holder.status = (ImageView) convertView.findViewById(R.id.status);
-            holder.userIdsDivider = convertView.findViewById(R.id.user_ids_divider);
-            holder.userIdsList = (LinearLayout) convertView.findViewById(R.id.user_ids_list);
-            holder.checkBox = (CheckBox) convertView.findViewById(R.id.selected);
+            convertView = mInflater.inflate(R.layout.import_keys_list_item, null);
+            holder.mainUserId = (TextView) convertView.findViewById(R.id.import_item_user_id);
+            holder.mainUserIdRest = (TextView) convertView.findViewById(R.id.import_item_user_id_email);
+            holder.keyId = (TextView) convertView.findViewById(R.id.import_item_key_id);
+            holder.fingerprint = (TextView) convertView.findViewById(R.id.import_item_fingerprint);
+            holder.algorithm = (TextView) convertView.findViewById(R.id.import_item_algorithm);
+            holder.status = (ImageView) convertView.findViewById(R.id.import_item_status);
+            holder.userIdsDivider = convertView.findViewById(R.id.import_item_status_divider);
+            holder.userIdsList = (LinearLayout) convertView.findViewById(R.id.import_item_user_ids_list);
+            holder.checkBox = (CheckBox) convertView.findViewById(R.id.import_item_selected);
             convertView.setTag(holder);
         } else {
             holder = (ViewHolder) convertView.getTag();
@@ -192,15 +195,27 @@ public class ImportKeysAdapter extends ArrayAdapter<ImportKeysListEntry> {
             // destroyLoader view from holder
             holder.userIdsList.removeAllViews();
 
-            Iterator<String> it = entry.getUserIds().iterator();
-            // skip primary user id
-            it.next();
-            while (it.hasNext()) {
-                String uid = it.next();
+            HashMap<String, HashSet<String>> mergedUserIds = entry.getMergedUserIds();
+            for (Map.Entry<String, HashSet<String>> pair : mergedUserIds.entrySet()) {
+                String cUserId = pair.getKey();
+                HashSet<String> cEmails = pair.getValue();
+
                 TextView uidView = (TextView) mInflater.inflate(
                         R.layout.import_keys_list_entry_user_id, null);
-                uidView.setText(highlighter.highlight(uid));
+                uidView.setText(highlighter.highlight(cUserId));
+                uidView.setPadding(0, 0, FormattingUtils.dpToPx(getContext(), 8), 0);
+
                 holder.userIdsList.addView(uidView);
+
+                for (String email : cEmails) {
+                    TextView emailView = (TextView) mInflater.inflate(
+                            R.layout.import_keys_list_entry_user_id, null);
+                    emailView.setPadding(
+                            FormattingUtils.dpToPx(getContext(), 16), 0,
+                            FormattingUtils.dpToPx(getContext(), 8), 0);
+                    emailView.setText(highlighter.highlight(email));
+                    holder.userIdsList.addView(emailView);
+                }
             }
         }
 
