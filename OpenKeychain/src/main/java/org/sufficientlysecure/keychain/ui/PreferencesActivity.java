@@ -88,6 +88,9 @@ public class PreferencesActivity extends PreferenceActivity {
             initializeEncryptionAlgorithm(
                     (IntegerListPreference) findPreference(Constants.Pref.DEFAULT_ENCRYPTION_ALGORITHM));
 
+            initializeHashAlgorithm(
+                    (IntegerListPreference) findPreference(Constants.Pref.DEFAULT_HASH_ALGORITHM));
+
             int[] valueIds = new int[]{
                     CompressionAlgorithmTags.UNCOMPRESSED,
                     CompressionAlgorithmTags.ZIP,
@@ -104,13 +107,9 @@ public class PreferencesActivity extends PreferenceActivity {
                 values[i] = "" + valueIds[i];
             }
 
-            initializeHashAlgorithm(
-                    (IntegerListPreference) findPreference(Constants.Pref.DEFAULT_HASH_ALGORITHM),
-                    valueIds, entries, values);
-
             initializeMessageCompression(
                     (IntegerListPreference) findPreference(Constants.Pref.DEFAULT_MESSAGE_COMPRESSION),
-                    valueIds, entries, values);
+                    entries, values);
 
             initializeFileCompression(
                     (IntegerListPreference) findPreference(Constants.Pref.DEFAULT_FILE_COMPRESSION),
@@ -235,6 +234,9 @@ public class PreferencesActivity extends PreferenceActivity {
             initializeEncryptionAlgorithm(
                     (IntegerListPreference) findPreference(Constants.Pref.DEFAULT_ENCRYPTION_ALGORITHM));
 
+            initializeHashAlgorithm(
+                    (IntegerListPreference) findPreference(Constants.Pref.DEFAULT_HASH_ALGORITHM));
+
             int[] valueIds = new int[]{
                     CompressionAlgorithmTags.UNCOMPRESSED,
                     CompressionAlgorithmTags.ZIP,
@@ -254,13 +256,9 @@ public class PreferencesActivity extends PreferenceActivity {
                 values[i] = "" + valueIds[i];
             }
 
-            initializeHashAlgorithm(
-                    (IntegerListPreference) findPreference(Constants.Pref.DEFAULT_HASH_ALGORITHM),
-                    valueIds, entries, values);
-
             initializeMessageCompression(
                     (IntegerListPreference) findPreference(Constants.Pref.DEFAULT_MESSAGE_COMPRESSION),
-                    valueIds, entries, values);
+                    entries, values);
 
             initializeFileCompression(
                     (IntegerListPreference) findPreference(Constants.Pref.DEFAULT_FILE_COMPRESSION),
@@ -324,14 +322,13 @@ public class PreferencesActivity extends PreferenceActivity {
                 });
     }
 
-    private static void initializeHashAlgorithm
-            (final IntegerListPreference mHashAlgorithm, int[] valueIds, String[] entries, String[] values) {
-        valueIds = new int[]{HashAlgorithmTags.RIPEMD160,
+    private static void initializeHashAlgorithm(final IntegerListPreference mHashAlgorithm) {
+        int[] valueIds = new int[]{HashAlgorithmTags.RIPEMD160,
                 HashAlgorithmTags.SHA1, HashAlgorithmTags.SHA224, HashAlgorithmTags.SHA256,
                 HashAlgorithmTags.SHA384, HashAlgorithmTags.SHA512,};
-        entries = new String[]{"RIPEMD-160", "SHA-1", "SHA-224", "SHA-256", "SHA-384",
+        String[] entries = new String[]{"RIPEMD-160", "SHA-1", "SHA-224", "SHA-256", "SHA-384",
                 "SHA-512",};
-        values = new String[valueIds.length];
+        String[] values = new String[valueIds.length];
         for (int i = 0; i < values.length; ++i) {
             values[i] = "" + valueIds[i];
         }
@@ -349,9 +346,8 @@ public class PreferencesActivity extends PreferenceActivity {
         });
     }
 
-    private static void initializeMessageCompression(
-            final IntegerListPreference mMessageCompression,
-            int[] valueIds, String[] entries, String[] values) {
+    private static void initializeMessageCompression(final IntegerListPreference mMessageCompression,
+                                                     String[] entries, String[] values) {
         mMessageCompression.setEntries(entries);
         mMessageCompression.setEntryValues(values);
         mMessageCompression.setValue("" + sPreferences.getDefaultMessageCompression());
