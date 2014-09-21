@@ -82,7 +82,10 @@ public class KeybaseKeyserver extends Keyserver {
         entry.setAlgorithm(KeyFormattingUtils.getAlgorithmInfo(algorithmId, bitStrength, null));
 
         ArrayList<String> userIds = new ArrayList<String>();
-        String name = fullName + " <keybase.io/" + username + ">";
+        String name = "<keybase.io/" + username + ">";
+        if (fullName != null) {
+            name = fullName + " " + name;
+        }
         userIds.add(name);
 
         List<String> proofLabels = match.getProofLabels();
