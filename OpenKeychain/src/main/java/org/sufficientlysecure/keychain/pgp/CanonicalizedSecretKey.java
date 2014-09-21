@@ -117,7 +117,7 @@ public class CanonicalizedSecretKey extends CanonicalizedPublicKey {
     }
 
     public SecretKeyType getSecretKeyType() {
-        if (mSecretKey.getS2K().getType() == S2K.GNU_DUMMY_S2K) {
+        if (mSecretKey.getS2K() != null && mSecretKey.getS2K().getType() == S2K.GNU_DUMMY_S2K) {
             // divert to card is special
             if (mSecretKey.getS2K().getProtectionMode() == S2K.GNU_PROTECTION_MODE_DIVERT_TO_CARD) {
                 return SecretKeyType.DIVERT_TO_CARD;
