@@ -8,21 +8,21 @@
     android:paddingTop="8dp"
     android:paddingBottom="8dp">
 
-    <AutoCompleteTextView
+    <org.sufficientlysecure.keychain.ui.widget.AutoCorrectAutoCompleteTextView
         android:id="@+id/add_user_id_address"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="@string/label_email"
         android:imeOptions="actionNext"
-        android:inputType="textEmailAddress"
+        android:inputType="textAutoCorrect|textEmailAddress"
         android:textAppearance="?android:attr/textAppearanceMedium" />
 
-    <AutoCompleteTextView
+    <org.sufficientlysecure.keychain.ui.widget.AutoCorrectAutoCompleteTextView
         android:id="@+id/add_user_id_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:imeOptions="actionNext"
-        android:inputType="textPersonName"
+        android:inputType="textAutoCorrect|textPersonName|textCapWords"
         android:hint="@string/create_key_hint_full_name"
         android:textAppearance="?android:attr/textAppearanceSmall" />
 

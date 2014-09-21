@@ -22,10 +22,12 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.text.method.TextKeyListener;
 import android.util.Patterns;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
@@ -68,10 +70,10 @@ public class CreateKeyInputFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.create_key_input_fragment, container, false);
 
-        mNameEdit = (AutoCompleteTextView) view.findViewById(R.id.name);
-        mEmailEdit = (AutoCompleteTextView) view.findViewById(R.id.email);
-        mPassphraseEdit = (EditText) view.findViewById(R.id.passphrase);
-        mPassphraseEditAgain = (EditText) view.findViewById(R.id.passphrase_again);
+        mNameEdit = (AutoCompleteTextView) view.findViewById(R.id.create_key_name);
+        mEmailEdit = (AutoCompleteTextView) view.findViewById(R.id.create_key_email);
+        mPassphraseEdit = (EditText) view.findViewById(R.id.create_key_passphrase);
+        mPassphraseEditAgain = (EditText) view.findViewById(R.id.create_key_passphrase_again);
         mCreateButton = view.findViewById(R.id.create_key_button);
 
         // initial values

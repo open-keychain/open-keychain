@@ -31,26 +31,26 @@
                 android:layout_marginTop="8dp"
                 android:text="@string/label_user_id" />
 
-            <AutoCompleteTextView
+            <org.sufficientlysecure.keychain.ui.widget.AutoCorrectAutoCompleteTextView
+                android:id="@+id/create_key_name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:layout_marginBottom="8dp"
                 android:imeOptions="actionNext"
-                android:inputType="textPersonName"
+                android:inputType="textAutoCorrect|textPersonName|textCapWords"
                 android:hint="@string/create_key_hint_full_name"
-                android:ems="10"
-                android:id="@+id/name" />
+                android:ems="10" />
 
-            <AutoCompleteTextView
-                android:id="@+id/email"
+            <org.sufficientlysecure.keychain.ui.widget.AutoCorrectAutoCompleteTextView
+                android:id="@+id/create_key_email"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="8dp"
                 android:imeOptions="actionNext"
+                android:inputType="textAutoCorrect|textEmailAddress"
                 android:hint="@string/label_email"
-                android:ems="10"
-                android:inputType="textEmailAddress" />
+                android:ems="10" />
 
             <TextView
                 style="@style/SectionHeader"
@@ -59,7 +59,7 @@
                 android:text="@string/label_passphrase" />
 
             <EditText
-                android:id="@+id/passphrase"
+                android:id="@+id/create_key_passphrase"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
@@ -71,7 +71,7 @@
                 android:layout_gravity="center_horizontal" />
 
             <EditText
-                android:id="@+id/passphrase_again"
+                android:id="@+id/create_key_passphrase_again"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="8dp"
