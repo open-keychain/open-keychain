@@ -77,7 +77,6 @@ public class ImportKeysListFragment extends ListFragment implements
     public ArrayList<ParcelableKeyRing> getSelectedData() {
         ArrayList<ParcelableKeyRing> result = new ArrayList<ParcelableKeyRing>();
         for (ImportKeysListEntry entry : getSelectedEntries()) {
-            Log.d(Constants.TAG, "code" + Integer.toString(entry.hashCode()));
             result.add(mCachedKeyData.get(entry.hashCode()));
         }
         return result;
@@ -149,8 +148,6 @@ public class ImportKeysListFragment extends ListFragment implements
         if (dataUri != null || bytes != null) {
             mLoaderState = new BytesLoaderState(bytes, dataUri);
         } else if (query != null) {
-            // TODO: this is used when updating a key.
-            // Currently it simply uses keyserver nr 0
             Preferences prefs = Preferences.getPreferences(getActivity());
             mLoaderState = new CloudLoaderState(query, prefs.getCloudSearchPrefs());
         }
@@ -164,6 +161,8 @@ public class ImportKeysListFragment extends ListFragment implements
                 return false;
             }
         });
+
+        getListView().setFastScrollEnabled(true);
 
         restartLoaders();
     }

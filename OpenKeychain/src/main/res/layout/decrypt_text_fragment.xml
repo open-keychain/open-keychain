@@ -48,8 +48,7 @@
                 android:layout_height="wrap_content"
                 android:clickable="true"
                 style="@style/SelectableItem"
-                android:orientation="horizontal"
-                android:layout_marginBottom="8dp">
+                android:orientation="horizontal">
 
                 <TextView
                     android:paddingLeft="8dp"

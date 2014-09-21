@@ -120,7 +120,7 @@ public class KeyListActivity extends DrawerActivity {
                 try {
                     KeychainDatabase.debugBackup(this, false);
                     Notify.showNotify(this, "Backup to debug_backup.db completed", Notify.Style.INFO);
-                } catch(IOException e) {
+                } catch (IOException e) {
                     Log.e(Constants.TAG, "IO Error", e);
                     Notify.showNotify(this, "IO Error: " + e.getMessage(), Notify.Style.ERROR);
                 }

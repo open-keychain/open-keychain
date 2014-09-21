@@ -4,7 +4,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <include layout="@layout/notify_area"/>
+    <include layout="@layout/notify_area" />
 
     <org.sufficientlysecure.keychain.ui.widget.SlidingTabLayout
         android:id="@+id/import_sliding_tab_layout"
@@ -57,7 +57,6 @@
             android:id="@+id/import_import"
             android:paddingLeft="8dp"
             android:paddingRight="8dp"
-            android:layout_marginBottom="8dp"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:layout_width="match_parent"
             android:layout_height="match_parent"

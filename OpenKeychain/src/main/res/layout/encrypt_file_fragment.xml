@@ -34,7 +34,6 @@
             android:paddingLeft="8dp"
             android:layout_width="match_parent"
             android:layout_height="?android:attr/listPreferredItemHeight"
-            android:layout_marginBottom="8dp"
             android:clickable="true"
             style="@style/SelectableItem"
             android:orientation="horizontal">
