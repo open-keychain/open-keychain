@@ -237,7 +237,7 @@ public class CertifyKeyFragment extends LoaderFragment
                 if (data.moveToFirst()) {
                     mPubKeyId = data.getLong(INDEX_MASTER_KEY_ID);
                     mCertifyKeySpinner.setHiddenMasterKeyId(mPubKeyId);
-                    String keyIdStr = KeyFormattingUtils.convertKeyIdToHex(mPubKeyId);
+                    String keyIdStr = KeyFormattingUtils.beautifyKeyId(mPubKeyId);
                     mInfoKeyId.setText(keyIdStr);
 
                     String mainUserId = data.getString(INDEX_USER_ID);

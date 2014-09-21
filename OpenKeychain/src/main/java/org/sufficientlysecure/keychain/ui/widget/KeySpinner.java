@@ -151,21 +151,7 @@ public abstract class KeySpinner extends Spinner implements LoaderManager.Loader
                     vKeyId.setText(KeyFormattingUtils.beautifyKeyIdWithPrefix(getContext(), cursor.getLong(mIndexKeyId)));
 
                     boolean valid = setStatus(getContext(), cursor, vKeyStatus);
-                    if (valid) {
-                        vKeyName.setTextColor(Color.BLACK);
-                        vKeyEmail.setTextColor(Color.BLACK);
-                        vKeyId.setTextColor(Color.BLACK);
-                        vKeyStatus.setVisibility(View.GONE);
-                        view.setClickable(false);
-                    } else {
-                        vKeyName.setTextColor(Color.GRAY);
-                        vKeyEmail.setTextColor(Color.GRAY);
-                        vKeyId.setTextColor(Color.GRAY);
-                        vKeyStatus.setVisibility(View.VISIBLE);
-                        // this is a HACK. the trick is, if the element itself is clickable, the
-                        // click is not passed on to the view list
-                        view.setClickable(true);
-                    }
+                    setItemEnabled(view, valid);
                 }
 
                 @Override
@@ -178,6 +164,29 @@ public abstract class KeySpinner extends Spinner implements LoaderManager.Loader
                     }
                 }
             };
+        }
+
+        private void setItemEnabled(View view, boolean enabled) {
+            TextView vKeyName = (TextView) view.findViewById(R.id.keyspinner_key_name);
+            ImageView vKeyStatus = (ImageView) view.findViewById(R.id.keyspinner_key_status);
+            TextView vKeyEmail = (TextView) view.findViewById(R.id.keyspinner_key_email);
+            TextView vKeyId = (TextView) view.findViewById(R.id.keyspinner_key_id);
+
+            if (enabled) {
+                vKeyName.setTextColor(Color.BLACK);
+                vKeyEmail.setTextColor(Color.BLACK);
+                vKeyId.setTextColor(Color.BLACK);
+                vKeyStatus.setVisibility(View.GONE);
+                view.setClickable(false);
+            } else {
+                vKeyName.setTextColor(Color.GRAY);
+                vKeyEmail.setTextColor(Color.GRAY);
+                vKeyId.setTextColor(Color.GRAY);
+                vKeyStatus.setVisibility(View.VISIBLE);
+                // this is a HACK. the trick is, if the element itself is clickable, the
+                // click is not passed on to the view list
+                view.setClickable(true);
+            }
         }
 
         public Cursor swapCursor(Cursor newCursor) {
@@ -227,23 +236,31 @@ public abstract class KeySpinner extends Spinner implements LoaderManager.Loader
 
         @Override
         public View getDropDownView(int position, View convertView, ViewGroup parent) {
-            View v;
+            View view;
             if (position == 0) {
                 if (convertView == null) {
-                    v = inner.newView(null, null, parent);
+                    view = inner.newView(null, null, parent);
                 } else {
-                    v = convertView;
+                    view = convertView;
                 }
-                ((TextView) v.findViewById(R.id.keyspinner_key_name)).setText(R.string.choice_none);
-                v.findViewById(R.id.keyspinner_key_email).setVisibility(View.GONE);
-                v.findViewById(R.id.keyspinner_key_id).setVisibility(View.GONE);
-                v.findViewById(R.id.keyspinner_key_status).setVisibility(View.GONE);
+                TextView vKeyName = (TextView) view.findViewById(R.id.keyspinner_key_name);
+                ImageView vKeyStatus = (ImageView) view.findViewById(R.id.keyspinner_key_status);
+                TextView vKeyEmail = (TextView) view.findViewById(R.id.keyspinner_key_email);
+                TextView vKeyId = (TextView) view.findViewById(R.id.keyspinner_key_id);
+
+                vKeyName.setText(R.string.choice_none);
+                vKeyEmail.setVisibility(View.GONE);
+                vKeyId.setVisibility(View.GONE);
+                vKeyStatus.setVisibility(View.GONE);
+                setItemEnabled(view, true);
             } else {
-                v = inner.getView(position - 1, convertView, parent);
-                v.findViewById(R.id.keyspinner_key_email).setVisibility(View.VISIBLE);
-                v.findViewById(R.id.keyspinner_key_id).setVisibility(View.VISIBLE);
+                view = inner.getView(position - 1, convertView, parent);
+                TextView vKeyEmail = (TextView) view.findViewById(R.id.keyspinner_key_email);
+                TextView vKeyId = (TextView) view.findViewById(R.id.keyspinner_key_id);
+                vKeyEmail.setVisibility(View.VISIBLE);
+                vKeyId.setVisibility(View.VISIBLE);
             }
-            return v;
+            return view;
         }
     }
 

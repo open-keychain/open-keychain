@@ -335,13 +335,13 @@ public class KeychainProvider extends ContentProvider {
                                     + " >= " + new Date().getTime() / 1000 + " )"
                             + ")" : "")
                         + (plist.contains(KeyRings.HAS_AUTHENTICATE) ?
-                            " LEFT JOIN " + Tables.KEYS + " AS kS ON ("
-                                    +"kS." + Keys.MASTER_KEY_ID
+                            " LEFT JOIN " + Tables.KEYS + " AS kA ON ("
+                                    +"kA." + Keys.MASTER_KEY_ID
                                     + " = " + Tables.KEYS + "." + Keys.MASTER_KEY_ID
-                                    + " AND kS." + Keys.IS_REVOKED + " = 0"
-                                    + " AND kS." + Keys.CAN_AUTHENTICATE + " = 1"
-                                    + " AND kS." + Keys.HAS_SECRET + " > 1"
-                                    + " AND ( kS." + Keys.EXPIRY + " IS NULL OR kS." + Keys.EXPIRY
+                                    + " AND kA." + Keys.IS_REVOKED + " = 0"
+                                    + " AND kA." + Keys.CAN_AUTHENTICATE + " = 1"
+                                    + " AND kA." + Keys.HAS_SECRET + " > 1"
+                                    + " AND ( kA." + Keys.EXPIRY + " IS NULL OR kA." + Keys.EXPIRY
                                     + " >= " + new Date().getTime() / 1000 + " )"
                                     + ")" : "")
                         + (plist.contains(KeyRings.HAS_CERTIFY) ?
