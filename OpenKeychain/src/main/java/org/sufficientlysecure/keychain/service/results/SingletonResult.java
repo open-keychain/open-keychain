@@ -67,7 +67,11 @@ public class SingletonResult extends OperationResult {
         toast.setIndeterminate(false);
         toast.setSwipeToDismiss(true);
         return toast;
+    }
 
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        super.writeToParcel(dest, flags);
     }
 
     public static Creator<SingletonResult> CREATOR = new Creator<SingletonResult>() {

@@ -57,11 +57,11 @@ public class LogDisplayFragment extends ListFragment implements OnTouchListener 
     public static final String EXTRA_RESULT = "log";
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
         Intent intent = getActivity().getIntent();
-        if (intent.getExtras() == null || !intent.getExtras().containsKey(EXTRA_RESULT)) {
+        if (intent == null) {
             getActivity().finish();
             return;
         }
@@ -90,7 +90,8 @@ public class LogDisplayFragment extends ListFragment implements OnTouchListener 
         });
 
         getListView().setFastScrollEnabled(true);
-
+        getListView().setDividerHeight(0);
+        getListView().setOnTouchListener(this);
     }
 
     public void decreaseLogLevel() {
@@ -117,13 +118,6 @@ public class LogDisplayFragment extends ListFragment implements OnTouchListener 
         mAdapter = mAdapters.get(mLevel);
         setListAdapter(mAdapter);
         */
-    }
-
-    @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        getListView().setDividerHeight(0);
-        getListView().setOnTouchListener(this);
     }
 
     @Override

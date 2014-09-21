@@ -26,11 +26,14 @@ public class ConsolidateResult extends OperationResult {
         super(result, log);
     }
 
-    /**
-     * Construct from a parcel - trivial because we have no extra data.
-     */
+    /** Construct from a parcel - trivial because we have no extra data. */
     public ConsolidateResult(Parcel source) {
         super(source);
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        super.writeToParcel(dest, flags);
     }
 
     public static Creator<ConsolidateResult> CREATOR = new Creator<ConsolidateResult>() {
