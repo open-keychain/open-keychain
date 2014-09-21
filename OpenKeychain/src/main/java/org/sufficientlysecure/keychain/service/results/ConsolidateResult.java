@@ -18,10 +18,29 @@
 
 package org.sufficientlysecure.keychain.service.results;
 
+import android.os.Parcel;
+
 public class ConsolidateResult extends OperationResult {
 
     public ConsolidateResult(int result, OperationLog log) {
         super(result, log);
     }
+
+    /**
+     * Construct from a parcel - trivial because we have no extra data.
+     */
+    public ConsolidateResult(Parcel source) {
+        super(source);
+    }
+
+    public static Creator<ConsolidateResult> CREATOR = new Creator<ConsolidateResult>() {
+        public ConsolidateResult createFromParcel(final Parcel source) {
+            return new ConsolidateResult(source);
+        }
+
+        public ConsolidateResult[] newArray(final int size) {
+            return new ConsolidateResult[size];
+        }
+    };
 
 }
