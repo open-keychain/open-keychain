@@ -89,6 +89,8 @@ public class LogDisplayFragment extends ListFragment implements OnTouchListener 
             }
         });
 
+        getListView().setFastScrollEnabled(true);
+
     }
 
     public void decreaseLogLevel() {

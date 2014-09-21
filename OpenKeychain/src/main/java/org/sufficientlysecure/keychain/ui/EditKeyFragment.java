@@ -17,6 +17,7 @@
 
 package org.sufficientlysecure.keychain.ui;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.database.Cursor;
@@ -71,6 +72,7 @@ public class EditKeyFragment extends LoaderFragment implements
         LoaderManager.LoaderCallbacks<Cursor> {
 
     public static final String ARG_DATA_URI = "uri";
+    public static final String ARG_SAVE_KEYRING_PARCEL = "save_keyring_parcel";
 
     private ListView mUserIdsList;
     private ListView mSubkeysList;
@@ -112,6 +114,17 @@ public class EditKeyFragment extends LoaderFragment implements
         return frag;
     }
 
+    public static EditKeyFragment newInstance(SaveKeyringParcel saveKeyringParcel) {
+        EditKeyFragment frag = new EditKeyFragment();
+
+        Bundle args = new Bundle();
+        args.putParcelable(ARG_SAVE_KEYRING_PARCEL, saveKeyringParcel);
+
+        frag.setArguments(args);
+
+        return frag;
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup superContainer, Bundle savedInstanceState) {
         View root = super.onCreateView(inflater, superContainer, savedInstanceState);
@@ -138,29 +151,54 @@ public class EditKeyFragment extends LoaderFragment implements
                 new OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        // Save
-                        save(mCurrentPassphrase);
+                        // if we are working on an Uri, save directly
+                        if (mDataUri == null) {
+                            returnKeyringParcel();
+                        } else {
+                            saveInDatabase(mCurrentPassphrase);
+                        }
                     }
                 }, R.string.menu_key_edit_cancel, R.drawable.ic_action_cancel,
                 new OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        // Cancel
+                        // cancel
+                        getActivity().setResult(Activity.RESULT_CANCELED);
                         getActivity().finish();
                     }
                 }
         );
 
         Uri dataUri = getArguments().getParcelable(ARG_DATA_URI);
-        if (dataUri == null) {
-            Log.e(Constants.TAG, "Data missing. Should be Uri of key!");
+        SaveKeyringParcel saveKeyringParcel = getArguments().getParcelable(ARG_SAVE_KEYRING_PARCEL);
+        if (dataUri == null && saveKeyringParcel == null) {
+            Log.e(Constants.TAG, "Either a key Uri or ARG_SAVE_KEYRING_PARCEL is required!");
             getActivity().finish();
             return;
         }
 
-        loadData(dataUri);
+        initView();
+        if (dataUri != null) {
+            loadData(dataUri);
+        } else {
+            loadSaveKeyringParcel(saveKeyringParcel);
+        }
     }
 
+    private void loadSaveKeyringParcel(SaveKeyringParcel saveKeyringParcel) {
+        mSaveKeyringParcel = saveKeyringParcel;
+        mPrimaryUserId = saveKeyringParcel.mChangePrimaryUserId;
+        mCurrentPassphrase = saveKeyringParcel.mNewPassphrase;
+
+        mUserIdsAddedAdapter = new UserIdsAddedAdapter(getActivity(), mSaveKeyringParcel.mAddUserIds);
+        mUserIdsAddedList.setAdapter(mUserIdsAddedAdapter);
+
+        mSubkeysAddedAdapter = new SubkeysAddedAdapter(getActivity(), mSaveKeyringParcel.mAddSubKeys);
+        mSubkeysAddedList.setAdapter(mSubkeysAddedAdapter);
+
+        // show directly
+        setContentShown(true);
+    }
 
     private void loadData(Uri dataUri) {
         mDataUri = dataUri;
@@ -228,6 +266,21 @@ public class EditKeyFragment extends LoaderFragment implements
             getLoaderManager().initLoader(LOADER_ID_SUBKEYS, null, EditKeyFragment.this);
         }
 
+        mUserIdsAdapter = new UserIdsAdapter(getActivity(), null, 0, mSaveKeyringParcel);
+        mUserIdsList.setAdapter(mUserIdsAdapter);
+
+        // TODO: SaveParcel from savedInstance?!
+        mUserIdsAddedAdapter = new UserIdsAddedAdapter(getActivity(), mSaveKeyringParcel.mAddUserIds);
+        mUserIdsAddedList.setAdapter(mUserIdsAddedAdapter);
+
+        mSubkeysAdapter = new SubkeysAdapter(getActivity(), null, 0, mSaveKeyringParcel);
+        mSubkeysList.setAdapter(mSubkeysAdapter);
+
+        mSubkeysAddedAdapter = new SubkeysAddedAdapter(getActivity(), mSaveKeyringParcel.mAddSubKeys);
+        mSubkeysAddedList.setAdapter(mSubkeysAddedAdapter);
+    }
+
+    private void initView() {
         mChangePassphrase.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -249,23 +302,6 @@ public class EditKeyFragment extends LoaderFragment implements
             }
         });
 
-        mUserIdsAdapter = new UserIdsAdapter(getActivity(), null, 0, mSaveKeyringParcel);
-        mUserIdsList.setAdapter(mUserIdsAdapter);
-
-        mUserIdsList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                editUserId(position);
-            }
-        });
-
-        // TODO: SaveParcel from savedInstance?!
-        mUserIdsAddedAdapter = new UserIdsAddedAdapter(getActivity(), mSaveKeyringParcel.mAddUserIds);
-        mUserIdsAddedList.setAdapter(mUserIdsAddedAdapter);
-
-        mSubkeysAdapter = new SubkeysAdapter(getActivity(), null, 0, mSaveKeyringParcel);
-        mSubkeysList.setAdapter(mSubkeysAdapter);
-
         mSubkeysList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -273,9 +309,12 @@ public class EditKeyFragment extends LoaderFragment implements
             }
         });
 
-        mSubkeysAddedAdapter = new SubkeysAddedAdapter(getActivity(), mSaveKeyringParcel.mAddSubKeys);
-        mSubkeysAddedList.setAdapter(mSubkeysAddedAdapter);
-
+        mUserIdsList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                editUserId(position);
+            }
+        });
     }
 
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
@@ -505,8 +544,12 @@ public class EditKeyFragment extends LoaderFragment implements
     }
 
     private void addSubkey() {
-        boolean willBeMasterKey = mSubkeysAdapter.getCount() == 0
-                && mSubkeysAddedAdapter.getCount() == 0;
+        boolean willBeMasterKey;
+        if (mSubkeysAdapter != null) {
+            willBeMasterKey = mSubkeysAdapter.getCount() == 0 && mSubkeysAddedAdapter.getCount() == 0;
+        } else {
+            willBeMasterKey = mSubkeysAddedAdapter.getCount() == 0;
+        }
 
         AddSubkeyDialogFragment addSubkeyDialogFragment =
                 AddSubkeyDialogFragment.newInstance(willBeMasterKey);
@@ -522,7 +565,14 @@ public class EditKeyFragment extends LoaderFragment implements
         addSubkeyDialogFragment.show(getActivity().getSupportFragmentManager(), "addSubkeyDialog");
     }
 
-    private void save(String passphrase) {
+    private void returnKeyringParcel() {
+        Intent returnIntent = new Intent();
+        returnIntent.putExtra(EditKeyActivity.EXTRA_SAVE_KEYRING_PARCEL, mSaveKeyringParcel);
+        getActivity().setResult(Activity.RESULT_OK, returnIntent);
+        getActivity().finish();
+    }
+
+    private void saveInDatabase(String passphrase) {
         Log.d(Constants.TAG, "mSaveKeyringParcel:\n" + mSaveKeyringParcel.toString());
 
         KeychainIntentServiceHandler saveHandler = new KeychainIntentServiceHandler(
@@ -582,10 +632,11 @@ public class EditKeyFragment extends LoaderFragment implements
 
         // start service with intent
         getActivity().startService(intent);
-
     }
 
-    /** Closes this activity, returning a result parcel with a single error log entry. */
+    /**
+     * Closes this activity, returning a result parcel with a single error log entry.
+     */
     void finishWithError(LogType reason) {
 
         // Prepare an intent with an EXTRA_RESULT

@@ -23,9 +23,12 @@ import android.support.v7.app.ActionBarActivity;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
 import org.sufficientlysecure.keychain.util.Log;
 
 public class EditKeyActivity extends ActionBarActivity {
+
+    public static final String EXTRA_SAVE_KEYRING_PARCEL = "save_keyring_parcel";
 
     private EditKeyFragment mEditKeyFragment;
 
@@ -36,16 +39,17 @@ public class EditKeyActivity extends ActionBarActivity {
         setContentView(R.layout.edit_key_activity);
 
         Uri dataUri = getIntent().getData();
-        if (dataUri == null) {
-            Log.e(Constants.TAG, "Data missing. Should be Uri of key!");
+        SaveKeyringParcel saveKeyringParcel = getIntent().getParcelableExtra(EXTRA_SAVE_KEYRING_PARCEL);
+        if (dataUri == null && saveKeyringParcel == null) {
+            Log.e(Constants.TAG, "Either a key Uri or EXTRA_SAVE_KEYRING_PARCEL is required!");
             finish();
             return;
         }
 
-        loadFragment(savedInstanceState, dataUri);
+        loadFragment(savedInstanceState, dataUri, saveKeyringParcel);
     }
 
-    private void loadFragment(Bundle savedInstanceState, Uri dataUri) {
+    private void loadFragment(Bundle savedInstanceState, Uri dataUri, SaveKeyringParcel saveKeyringParcel) {
         // However, if we're being restored from a previous state,
         // then we don't need to do anything and should return or else
         // we could end up with overlapping fragments.
@@ -54,7 +58,11 @@ public class EditKeyActivity extends ActionBarActivity {
         }
 
         // Create an instance of the fragment
-        mEditKeyFragment = EditKeyFragment.newInstance(dataUri);
+        if (dataUri != null) {
+            mEditKeyFragment = EditKeyFragment.newInstance(dataUri);
+        } else {
+            mEditKeyFragment = EditKeyFragment.newInstance(saveKeyringParcel);
+        }
 
         // Add the fragment to the 'fragment_container' FrameLayout
         // NOTE: We use commitAllowingStateLoss() to prevent weird crashes!

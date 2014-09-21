@@ -19,6 +19,7 @@ package org.sufficientlysecure.keychain.ui.adapter;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Typeface;
 import android.text.format.DateFormat;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -105,6 +106,14 @@ public class SubkeysAddedAdapter extends ArrayAdapter<SaveKeyringParcel.SubkeyAd
                 holder.mModel.mKeySize,
                 holder.mModel.mCurve
         );
+
+        boolean isMasterKey = position == 0;
+        if (isMasterKey) {
+            holder.vKeyId.setTypeface(null, Typeface.BOLD);
+        } else {
+            holder.vKeyId.setTypeface(null, Typeface.NORMAL);
+        }
+
         holder.vKeyId.setText(R.string.edit_key_new_subkey);
         holder.vKeyDetails.setText(algorithmStr);
 

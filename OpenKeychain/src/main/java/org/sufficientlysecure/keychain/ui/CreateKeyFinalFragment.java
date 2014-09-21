@@ -47,6 +47,8 @@ import org.sufficientlysecure.keychain.util.Log;
 
 public class CreateKeyFinalFragment extends Fragment {
 
+    public static final int REQUEST_EDIT_KEY = 0x00008007;
+
     CreateKeyActivity mCreateKeyActivity;
 
     TextView mNameEdit;
@@ -54,6 +56,8 @@ public class CreateKeyFinalFragment extends Fragment {
     CheckBox mUploadCheckbox;
     View mBackButton;
     View mCreateButton;
+    TextView mEditText;
+    View mEditButton;
 
     public static final String ARG_NAME = "name";
     public static final String ARG_EMAIL = "email";
@@ -62,6 +66,8 @@ public class CreateKeyFinalFragment extends Fragment {
     String mName;
     String mEmail;
     String mPassphrase;
+
+    SaveKeyringParcel mSaveKeyringParcel;
 
     /**
      * Creates new instance of this fragment
@@ -88,6 +94,8 @@ public class CreateKeyFinalFragment extends Fragment {
         mUploadCheckbox = (CheckBox) view.findViewById(R.id.create_key_upload);
         mBackButton = view.findViewById(R.id.create_key_back_button);
         mCreateButton = view.findViewById(R.id.create_key_create_button);
+        mEditText = (TextView) view.findViewById(R.id.create_key_edit_text);
+        mEditButton = view.findViewById(R.id.create_key_edit_button);
 
         // get args
         mName = getArguments().getString(ARG_NAME);
@@ -112,7 +120,32 @@ public class CreateKeyFinalFragment extends Fragment {
             }
         });
 
+        mEditButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent edit = new Intent(getActivity(), EditKeyActivity.class);
+                edit.putExtra(EditKeyActivity.EXTRA_SAVE_KEYRING_PARCEL, mSaveKeyringParcel);
+                startActivityForResult(edit, REQUEST_EDIT_KEY);
+            }
+        });
+
         return view;
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode) {
+            case REQUEST_EDIT_KEY: {
+                if (resultCode == Activity.RESULT_OK) {
+                    mSaveKeyringParcel = data.getParcelableExtra(EditKeyActivity.EXTRA_SAVE_KEYRING_PARCEL);
+                    mEditText.setText(R.string.create_key_custom);
+                }
+                break;
+            }
+
+            default:
+                super.onActivityResult(requestCode, resultCode, data);
+        }
     }
 
     @Override
@@ -120,6 +153,20 @@ public class CreateKeyFinalFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
 
         mCreateKeyActivity = (CreateKeyActivity) getActivity();
+
+        if (mSaveKeyringParcel == null) {
+            mSaveKeyringParcel = new SaveKeyringParcel();
+            mSaveKeyringParcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
+                    Algorithm.RSA, 4096, null, KeyFlags.CERTIFY_OTHER, 0L));
+            mSaveKeyringParcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
+                    Algorithm.RSA, 4096, null, KeyFlags.SIGN_DATA, 0L));
+            mSaveKeyringParcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
+                    Algorithm.RSA, 4096, null, KeyFlags.ENCRYPT_COMMS | KeyFlags.ENCRYPT_STORAGE, 0L));
+            String userId = KeyRing.createUserId(mName, mEmail, null);
+            mSaveKeyringParcel.mAddUserIds.add(userId);
+            mSaveKeyringParcel.mChangePrimaryUserId = userId;
+            mSaveKeyringParcel.mNewPassphrase = mPassphrase;
+        }
     }
 
     private void createKey() {
@@ -163,20 +210,8 @@ public class CreateKeyFinalFragment extends Fragment {
         // fill values for this action
         Bundle data = new Bundle();
 
-        SaveKeyringParcel parcel = new SaveKeyringParcel();
-        parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
-                Algorithm.RSA, 4096, null, KeyFlags.CERTIFY_OTHER, 0L));
-        parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
-                Algorithm.RSA, 4096, null, KeyFlags.SIGN_DATA, 0L));
-        parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
-                Algorithm.RSA, 4096, null, KeyFlags.ENCRYPT_COMMS | KeyFlags.ENCRYPT_STORAGE, 0L));
-        String userId = KeyRing.createUserId(mName, mEmail, null);
-        parcel.mAddUserIds.add(userId);
-        parcel.mChangePrimaryUserId = userId;
-        parcel.mNewPassphrase = mPassphrase;
-
         // get selected key entries
-        data.putParcelable(KeychainIntentService.EDIT_KEYRING_PARCEL, parcel);
+        data.putParcelable(KeychainIntentService.EDIT_KEYRING_PARCEL, mSaveKeyringParcel);
 
         intent.putExtra(KeychainIntentService.EXTRA_DATA, data);
 

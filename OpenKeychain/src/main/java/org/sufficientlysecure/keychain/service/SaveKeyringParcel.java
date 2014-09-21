@@ -217,7 +217,7 @@ public class SaveKeyringParcel implements Parcelable {
         out += "mChangeSubKeys: " + mChangeSubKeys + "\n";
         out += "mChangePrimaryUserId: " + mChangePrimaryUserId + "\n";
         out += "mRevokeUserIds: " + mRevokeUserIds + "\n";
-        out += "mRevokeSubKeys: " + mRevokeSubKeys;
+        out += "mRevokeSubKeys: " + mRevokeSubKeys + "\n";
         out += "mStripSubKeys: " + mStripSubKeys;
 
         return out;

@@ -74,6 +74,54 @@
                 android:layout_height="1dip"
                 android:background="?android:attr/listDivider" />
 
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/create_key_edit_text"
+                    android:padding="8dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/create_key_rsa"
+                    android:textColor="@color/android_green_dark"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:minHeight="?android:attr/listPreferredItemHeight"
+                    android:clickable="true"
+                    android:gravity="center_vertical"
+                    android:layout_gravity="center_vertical" />
+
+                <View
+                    android:layout_width="1dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:background="?android:attr/listDivider" />
+
+                <TextView
+                    android:id="@+id/create_key_edit_button"
+                    android:paddingLeft="8dp"
+                    android:paddingRight="8dp"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/create_key_edit"
+                    android:minHeight="?android:attr/listPreferredItemHeight"
+                    android:gravity="center_vertical"
+                    android:clickable="true"
+                    style="@style/SelectableItem"
+                    android:layout_gravity="center_vertical" />
+            </LinearLayout>
+
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dip"
+                android:background="?android:attr/listDivider" />
+
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
