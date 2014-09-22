@@ -26,8 +26,10 @@ import org.junit.Before;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.shadows.ShadowLog;
 import org.spongycastle.bcpg.BCPGInputStream;
+import org.spongycastle.bcpg.HashAlgorithmTags;
 import org.spongycastle.bcpg.Packet;
 import org.spongycastle.bcpg.PacketTags;
+import org.spongycastle.bcpg.SymmetricKeyAlgorithmTags;
 import org.spongycastle.bcpg.UserIDPacket;
 import org.spongycastle.bcpg.sig.KeyFlags;
 import org.spongycastle.jce.provider.BouncyCastleProvider;
@@ -40,16 +42,22 @@ import org.spongycastle.openpgp.PGPSignatureGenerator;
 import org.spongycastle.openpgp.PGPSignatureSubpacketGenerator;
 import org.spongycastle.openpgp.PGPUtil;
 import org.spongycastle.openpgp.operator.PBESecretKeyDecryptor;
+import org.spongycastle.openpgp.operator.PBESecretKeyEncryptor;
 import org.spongycastle.openpgp.operator.PGPContentSignerBuilder;
+import org.spongycastle.openpgp.operator.PGPDigestCalculator;
 import org.spongycastle.openpgp.operator.jcajce.JcaKeyFingerprintCalculator;
 import org.spongycastle.openpgp.operator.jcajce.JcaPGPContentSignerBuilder;
+import org.spongycastle.openpgp.operator.jcajce.JcaPGPDigestCalculatorProviderBuilder;
 import org.spongycastle.openpgp.operator.jcajce.JcePBESecretKeyDecryptorBuilder;
+import org.spongycastle.openpgp.operator.jcajce.JcePBESecretKeyEncryptorBuilder;
 import org.spongycastle.util.Strings;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.service.results.OperationResult;
 import org.sufficientlysecure.keychain.service.results.EditKeyResult;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel.Algorithm;
+import org.sufficientlysecure.keychain.service.results.OperationResult.LogType;
+import org.sufficientlysecure.keychain.service.results.OperationResult.OperationLog;
 import org.sufficientlysecure.keychain.support.KeyringTestingHelper;
 import org.sufficientlysecure.keychain.support.KeyringTestingHelper.RawPacket;
 
@@ -462,6 +470,69 @@ public class UncachedKeyringCanonicalizeTest {
                 PacketTags.SIGNATURE, onlyA.get(1).tag);
         Assert.assertEquals("second missing packet should be a signature",
                 PacketTags.SIGNATURE, onlyA.get(2).tag);
+
+    }
+
+    @Test
+    public void testDuplicateSubkey() throws Exception {
+
+        { // duplicate subkey
+
+            // get subkey packets
+            Iterator<RawPacket> it = KeyringTestingHelper.parseKeyring(ring.getEncoded());
+            RawPacket subKey = KeyringTestingHelper.getNth(it, 5);
+            RawPacket subSig = it.next();
+
+            // inject at a second position
+            UncachedKeyRing modified = ring;
+            modified = KeyringTestingHelper.injectPacket(modified, subKey.buf, 7);
+            modified = KeyringTestingHelper.injectPacket(modified, subSig.buf, 8);
+
+            // canonicalize, and check if we lose the bad signature
+            OperationLog log = new OperationLog();
+            CanonicalizedKeyRing canonicalized = modified.canonicalize(log, 0);
+            Assert.assertNull("canonicalization with duplicate subkey should fail", canonicalized);
+            Assert.assertTrue("log should contain dup_key event", log.containsType(LogType.MSG_KC_ERROR_DUP_KEY));
+        }
+
+        { // duplicate subkey, which is the same as the master key
+
+            // We actually encountered one of these in the wild:
+            // https://www.sparkasse-holstein.de/firmenkunden/electronic_banking/secure-e-mail/pdf/Spk_Holstein_PGP_Domain-Zertifikat.asc
+
+            CanonicalizedSecretKeyRing canonicalized = (CanonicalizedSecretKeyRing) ring.canonicalize(log, 0);
+
+            CanonicalizedSecretKey masterSecretKey = canonicalized.getSecretKey();
+            masterSecretKey.unlock("");
+            PGPPublicKey masterPublicKey = masterSecretKey.getPublicKey();
+            PGPSignature cert = PgpKeyOperation.generateSubkeyBindingSignature(
+                    masterPublicKey, masterSecretKey.getPrivateKey(), masterSecretKey.getPrivateKey(),
+                    masterPublicKey, masterSecretKey.getKeyUsage(), 0);
+            PGPPublicKey subPubKey = PGPPublicKey.addSubkeyBindingCertification(masterPublicKey, cert);
+
+            PGPSecretKey sKey;
+            {
+                // Build key encrypter and decrypter based on passphrase
+                PGPDigestCalculator encryptorHashCalc = new JcaPGPDigestCalculatorProviderBuilder()
+                        .build().get(HashAlgorithmTags.SHA256);
+                PBESecretKeyEncryptor keyEncryptor = new JcePBESecretKeyEncryptorBuilder(
+                        SymmetricKeyAlgorithmTags.AES_256, encryptorHashCalc, 10)
+                        .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME).build("".toCharArray());
+
+                // NOTE: only SHA1 is supported for key checksum calculations.
+                PGPDigestCalculator sha1Calc = new JcaPGPDigestCalculatorProviderBuilder()
+                        .build().get(HashAlgorithmTags.SHA1);
+                sKey = new PGPSecretKey(masterSecretKey.getPrivateKey(), subPubKey, sha1Calc, false, keyEncryptor);
+            }
+
+            UncachedKeyRing modified = KeyringTestingHelper.injectPacket(ring, sKey.getEncoded(), 5);
+
+            // canonicalize, and check if we lose the bad signature
+            OperationLog log = new OperationLog();
+            CanonicalizedKeyRing result = modified.canonicalize(log, 0);
+            Assert.assertNull("canonicalization with duplicate subkey (from master) should fail", result);
+            Assert.assertTrue("log should contain dup_key event", log.containsType(LogType.MSG_KC_ERROR_DUP_KEY));
+        }
 
     }
 

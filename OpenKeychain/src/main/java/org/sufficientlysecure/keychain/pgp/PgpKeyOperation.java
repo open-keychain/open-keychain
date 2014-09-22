@@ -1118,7 +1118,7 @@ public class PgpKeyOperation {
                 pKey, flags, expiry);
     }
 
-    private static PGPSignature generateSubkeyBindingSignature(
+    static PGPSignature generateSubkeyBindingSignature(
             PGPPublicKey masterPublicKey, PGPPrivateKey masterPrivateKey,
             PGPPrivateKey subPrivateKey, PGPPublicKey pKey, int flags, long expiry)
             throws IOException, PGPException, SignatureException {

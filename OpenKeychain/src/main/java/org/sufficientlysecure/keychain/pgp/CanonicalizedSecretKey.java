@@ -329,9 +329,9 @@ public class CanonicalizedSecretKey extends CanonicalizedPublicKey {
         return new UncachedSecretKey(mSecretKey);
     }
 
-    // HACK
-    public PGPSecretKey getSecretKey() {
-        return mSecretKey;
+    // HACK, for TESTING ONLY!!
+    PGPPrivateKey getPrivateKey () {
+        return mPrivateKey;
     }
 
 }
