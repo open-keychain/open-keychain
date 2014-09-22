@@ -51,6 +51,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.TreeSet;
@@ -529,12 +530,25 @@ public class UncachedKeyRing {
 
         }
 
+        // Keep track of ids we encountered so far
+        Set<Long> knownIds = new HashSet<Long>();
+
         // Process all keys
         for (PGPPublicKey key : new IterableIterator<PGPPublicKey>(ring.getPublicKeys())) {
-            // Don't care about the master key here, that one gets special treatment above
+            // Make sure this is not a duplicate, avoid undefined behavior!
+            if (knownIds.contains(key.getKeyID())) {
+                log.add(LogType.MSG_KC_ERROR_DUP_KEY, indent,
+                        KeyFormattingUtils.convertKeyIdToHex(key.getKeyID()));
+                return null;
+            }
+            // Add the key id to known
+            knownIds.add(key.getKeyID());
+
+            // Don't care about the master key any further, that one gets special treatment above
             if (key.isMasterKey()) {
                 continue;
             }
+
             log.add(LogType.MSG_KC_SUB,
                     indent, KeyFormattingUtils.convertKeyIdToHex(key.getKeyID()));
             indent += 1;

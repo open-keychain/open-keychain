@@ -316,6 +316,7 @@ public abstract class OperationResult implements Parcelable {
         MSG_KC_ERROR_V3 (LogLevel.ERROR, R.string.msg_kc_error_v3),
         MSG_KC_ERROR_NO_UID (LogLevel.ERROR, R.string.msg_kc_error_no_uid),
         MSG_KC_ERROR_MASTER_ALGO (LogLevel.ERROR, R.string.msg_kc_error_master_algo),
+        MSG_KC_ERROR_DUP_KEY (LogLevel.ERROR, R.string.msg_kc_error_dup_key),
         MSG_KC_MASTER (LogLevel.DEBUG, R.string.msg_kc_master),
         MSG_KC_REVOKE_BAD_ERR (LogLevel.WARN, R.string.msg_kc_revoke_bad_err),
         MSG_KC_REVOKE_BAD_LOCAL (LogLevel.WARN, R.string.msg_kc_revoke_bad_local),
