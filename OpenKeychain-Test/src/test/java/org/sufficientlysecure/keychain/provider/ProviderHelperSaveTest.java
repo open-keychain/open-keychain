@@ -25,6 +25,7 @@ import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.shadows.ShadowLog;
+import org.spongycastle.bcpg.sig.KeyFlags;
 import org.spongycastle.util.encoders.Hex;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedPublicKeyRing;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey;
@@ -36,6 +37,7 @@ import org.sufficientlysecure.keychain.util.IterableIterator;
 import org.sufficientlysecure.keychain.util.ProgressScaler;
 
 import java.util.Arrays;
+import java.util.Iterator;
 
 @RunWith(RobolectricTestRunner.class)
 @org.robolectric.annotation.Config(emulateSdk = 18) // Robolectric doesn't yet support 19
@@ -111,12 +113,53 @@ public class ProviderHelperSaveTest {
         // indicate the secret key type
         CachedPublicKeyRing cachedRing = mProviderHelper.getCachedPublicKeyRing(keyId);
         CanonicalizedSecretKeyRing secRing = mProviderHelper.getCanonicalizedSecretKeyRing(keyId);
-        for (CanonicalizedSecretKey key : secRing.secretKeyIterator()) {
-            Assert.assertEquals("all subkeys from CanonicalizedSecretKeyRing should be divert-to-key",
+
+        Iterator<CanonicalizedSecretKey> it = secRing.secretKeyIterator().iterator();
+
+        { // first subkey
+            Assert.assertTrue("keyring should have 3 subkeys (1)", it.hasNext());
+            CanonicalizedSecretKey key = it.next();
+            Assert.assertEquals("first subkey should be of type sign+certify",
+                    KeyFlags.CERTIFY_OTHER | KeyFlags.SIGN_DATA, (int) key.getKeyUsage());
+            Assert.assertEquals("first subkey should be divert-to-card",
                     SecretKeyType.DIVERT_TO_CARD, key.getSecretKeyType());
+            Assert.assertTrue("canCertify() should be true", key.canCertify());
+            Assert.assertTrue("canSign() should be true", key.canSign());
+
+            // cached
             Assert.assertEquals("all subkeys from CachedPublicKeyRing should be divert-to-key",
                     SecretKeyType.DIVERT_TO_CARD, cachedRing.getSecretKeyType(key.getKeyId()));
         }
+
+        { // second subkey
+            Assert.assertTrue("keyring should have 3 subkeys (2)", it.hasNext());
+            CanonicalizedSecretKey key = it.next();
+            Assert.assertEquals("second subkey should be of type authenticate",
+                    KeyFlags.AUTHENTICATION, (int) key.getKeyUsage());
+            Assert.assertEquals("second subkey should be divert-to-card",
+                    SecretKeyType.DIVERT_TO_CARD, key.getSecretKeyType());
+            Assert.assertTrue("canAuthenticate() should be true", key.canAuthenticate());
+
+            // cached
+            Assert.assertEquals("all subkeys from CachedPublicKeyRing should be divert-to-key",
+                    SecretKeyType.DIVERT_TO_CARD, cachedRing.getSecretKeyType(key.getKeyId()));
+        }
+
+        { // third subkey
+            Assert.assertTrue("keyring should have 3 subkeys (3)", it.hasNext());
+            CanonicalizedSecretKey key = it.next();
+            Assert.assertEquals("first subkey should be of type encrypt (both types)",
+                    KeyFlags.ENCRYPT_COMMS | KeyFlags.ENCRYPT_STORAGE, (int) key.getKeyUsage());
+            Assert.assertEquals("third subkey should be divert-to-card",
+                    SecretKeyType.DIVERT_TO_CARD, key.getSecretKeyType());
+            Assert.assertTrue("canEncrypt() should be true", key.canEncrypt());
+
+            // cached
+            Assert.assertEquals("all subkeys from CachedPublicKeyRing should be divert-to-key",
+                    SecretKeyType.DIVERT_TO_CARD, cachedRing.getSecretKeyType(key.getKeyId()));
+        }
+
+        Assert.assertFalse("keyring should have 3 subkeys (4)", it.hasNext());
 
     }
 
