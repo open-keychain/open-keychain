@@ -362,40 +362,82 @@ public class ProviderHelper {
                     values.put(Keys.CAN_SIGN, s);
                     values.put(Keys.CAN_AUTHENTICATE, a);
                     values.put(Keys.IS_REVOKED, key.isRevoked());
+
                     if (masterKeyId == keyId) {
-                        if (c) {
-                            if (e) {
-                                log(s ? LogType.MSG_IP_MASTER_FLAGS_CES
-                                        : LogType.MSG_IP_MASTER_FLAGS_CEX);
+                        // yes it's ugly. got any better ideas?
+                        if (a) {
+                            if (c) {
+                                if (e) {
+                                    log(s ? LogType.MSG_IP_MASTER_FLAGS_CESA
+                                            : LogType.MSG_IP_MASTER_FLAGS_CEXA);
+                                } else {
+                                    log(s ? LogType.MSG_IP_MASTER_FLAGS_CXSA
+                                            : LogType.MSG_IP_MASTER_FLAGS_CXXA);
+                                }
                             } else {
-                                log(s ? LogType.MSG_IP_MASTER_FLAGS_CXS
-                                        : LogType.MSG_IP_MASTER_FLAGS_CXX);
+                                if (e) {
+                                    log(s ? LogType.MSG_IP_MASTER_FLAGS_XESA
+                                            : LogType.MSG_IP_MASTER_FLAGS_XEXA);
+                                } else {
+                                    log(s ? LogType.MSG_IP_MASTER_FLAGS_XXSA
+                                            : LogType.MSG_IP_MASTER_FLAGS_XXXA);
+                                }
                             }
                         } else {
-                            if (e) {
-                                log(s ? LogType.MSG_IP_MASTER_FLAGS_XES
-                                        : LogType.MSG_IP_MASTER_FLAGS_XEX);
+                            if (c) {
+                                if (e) {
+                                    log(s ? LogType.MSG_IP_MASTER_FLAGS_CESX
+                                            : LogType.MSG_IP_MASTER_FLAGS_CEXX);
+                                } else {
+                                    log(s ? LogType.MSG_IP_MASTER_FLAGS_CXSX
+                                            : LogType.MSG_IP_MASTER_FLAGS_CXXX);
+                                }
                             } else {
-                                log(s ? LogType.MSG_IP_MASTER_FLAGS_XXS
-                                        : LogType.MSG_IP_MASTER_FLAGS_XXX);
+                                if (e) {
+                                    log(s ? LogType.MSG_IP_MASTER_FLAGS_XESX
+                                            : LogType.MSG_IP_MASTER_FLAGS_XEXX);
+                                } else {
+                                    log(s ? LogType.MSG_IP_MASTER_FLAGS_XXSX
+                                            : LogType.MSG_IP_MASTER_FLAGS_XXXX);
+                                }
                             }
                         }
                     } else {
-                        if (c) {
-                            if (e) {
-                                log(s ? LogType.MSG_IP_SUBKEY_FLAGS_CES
-                                        : LogType.MSG_IP_SUBKEY_FLAGS_CEX);
+                        if (a) {
+                            if (c) {
+                                if (e) {
+                                    log(s ? LogType.MSG_IP_SUBKEY_FLAGS_CESA
+                                            : LogType.MSG_IP_SUBKEY_FLAGS_CEXA);
+                                } else {
+                                    log(s ? LogType.MSG_IP_SUBKEY_FLAGS_CXSA
+                                            : LogType.MSG_IP_SUBKEY_FLAGS_CXXA);
+                                }
                             } else {
-                                log(s ? LogType.MSG_IP_SUBKEY_FLAGS_CXS
-                                        : LogType.MSG_IP_SUBKEY_FLAGS_CXX);
+                                if (e) {
+                                    log(s ? LogType.MSG_IP_SUBKEY_FLAGS_XESA
+                                            : LogType.MSG_IP_SUBKEY_FLAGS_XEXA);
+                                } else {
+                                    log(s ? LogType.MSG_IP_SUBKEY_FLAGS_XXSA
+                                            : LogType.MSG_IP_SUBKEY_FLAGS_XXXA);
+                                }
                             }
                         } else {
-                            if (e) {
-                                log(s ? LogType.MSG_IP_SUBKEY_FLAGS_XES
-                                        : LogType.MSG_IP_SUBKEY_FLAGS_XEX);
+                            if (c) {
+                                if (e) {
+                                    log(s ? LogType.MSG_IP_SUBKEY_FLAGS_CESX
+                                            : LogType.MSG_IP_SUBKEY_FLAGS_CEXX);
+                                } else {
+                                    log(s ? LogType.MSG_IP_SUBKEY_FLAGS_CXSX
+                                            : LogType.MSG_IP_SUBKEY_FLAGS_CXXX);
+                                }
                             } else {
-                                log(s ? LogType.MSG_IP_SUBKEY_FLAGS_XXS
-                                        : LogType.MSG_IP_SUBKEY_FLAGS_XXX);
+                                if (e) {
+                                    log(s ? LogType.MSG_IP_SUBKEY_FLAGS_XESX
+                                            : LogType.MSG_IP_SUBKEY_FLAGS_XEXX);
+                                } else {
+                                    log(s ? LogType.MSG_IP_SUBKEY_FLAGS_XXSX
+                                            : LogType.MSG_IP_SUBKEY_FLAGS_XXXX);
+                                }
                             }
                         }
                     }
