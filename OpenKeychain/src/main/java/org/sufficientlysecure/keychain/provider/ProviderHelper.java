@@ -389,9 +389,17 @@ public class ProviderHelper {
 
                     // see above
                     if (masterKeyId == keyId) {
-                        log(LOG_TYPES_FLAG_MASTER[(c?1:0) + (e?2:0) + (s?4:0) + (a?8:0)]);
+                        if (key.getKeyUsage() == null) {
+                            log(LogType.MSG_IP_MASTER_FLAGS_UNSPECIFIED);
+                        } else {
+                            log(LOG_TYPES_FLAG_MASTER[(c?1:0) + (e?2:0) + (s?4:0) + (a?8:0)]);
+                        }
                     } else {
-                        log(LOG_TYPES_FLAG_SUBKEY[(c?1:0) + (e?2:0) + (s?4:0) + (a?8:0)]);
+                        if (key.getKeyUsage() == null) {
+                            log(LogType.MSG_IP_SUBKEY_FLAGS_UNSPECIFIED);
+                        } else {
+                            log(LOG_TYPES_FLAG_SUBKEY[(c ? 1 : 0) + (e ? 2 : 0) + (s ? 4 : 0) + (a ? 8 : 0)]);
+                        }
                     }
 
                     Date creation = key.getCreationTime();

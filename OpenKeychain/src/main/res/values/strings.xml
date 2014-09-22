@@ -561,6 +561,7 @@
     <string name="msg_ip_master">"Processing master key %s"</string>
     <string name="msg_ip_master_expired">"Keyring expired on %s"</string>
     <string name="msg_ip_master_expires">"Keyring expires on %s"</string>
+    <string name="msg_ip_master_flags_unspecified">"Master flags: unspecified (assuming all)"</string>
     <string name="msg_ip_master_flags_cesa">"Master flags: certify, encrypt, sign, authenticate"</string>
     <string name="msg_ip_master_flags_cesx">"Master flags: certify, encrypt, sign"</string>
     <string name="msg_ip_master_flags_cexa">"Master flags: certify, encrypt, authenticate"</string>
@@ -580,6 +581,7 @@
     <string name="msg_ip_subkey">"Processing subkey %s"</string>
     <string name="msg_ip_subkey_expired">"Subkey expired on %s"</string>
     <string name="msg_ip_subkey_expires">"Subkey expires on %s"</string>
+    <string name="msg_ip_subkey_flags_unspecified">"Subkey flags: unspecified (assuming all)"</string>
     <string name="msg_ip_subkey_flags_cesa">"Subkey flags: certify, encrypt, sign, authenticate"</string>
     <string name="msg_ip_subkey_flags_cesx">"Subkey flags: certify, encrypt, sign"</string>
     <string name="msg_ip_subkey_flags_cexa">"Subkey flags: certify, encrypt, authenticate"</string>
