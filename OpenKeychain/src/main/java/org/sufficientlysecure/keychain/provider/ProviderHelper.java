@@ -293,6 +293,30 @@ public class ProviderHelper {
         }
     }
 
+    // bits, in order: CESA. make SURE these are correct, we will get bad log entries otherwise!!
+    static final LogType LOG_TYPES_FLAG_MASTER[] = new LogType[] {
+            LogType.MSG_IP_MASTER_FLAGS_XXXX, LogType.MSG_IP_MASTER_FLAGS_CXXX,
+            LogType.MSG_IP_MASTER_FLAGS_XEXX, LogType.MSG_IP_MASTER_FLAGS_CEXX,
+            LogType.MSG_IP_MASTER_FLAGS_XXSX, LogType.MSG_IP_MASTER_FLAGS_CXSX,
+            LogType.MSG_IP_MASTER_FLAGS_XESX, LogType.MSG_IP_MASTER_FLAGS_CESX,
+            LogType.MSG_IP_MASTER_FLAGS_XXXA, LogType.MSG_IP_MASTER_FLAGS_CXXA,
+            LogType.MSG_IP_MASTER_FLAGS_XEXA, LogType.MSG_IP_MASTER_FLAGS_CEXA,
+            LogType.MSG_IP_MASTER_FLAGS_XXSA, LogType.MSG_IP_MASTER_FLAGS_CXSA,
+            LogType.MSG_IP_MASTER_FLAGS_XESA, LogType.MSG_IP_MASTER_FLAGS_CESA
+    };
+
+    // same as above, but for subkeys
+    static final LogType LOG_TYPES_FLAG_SUBKEY[] = new LogType[] {
+            LogType.MSG_IP_SUBKEY_FLAGS_XXXX, LogType.MSG_IP_SUBKEY_FLAGS_CXXX,
+            LogType.MSG_IP_SUBKEY_FLAGS_XEXX, LogType.MSG_IP_SUBKEY_FLAGS_CEXX,
+            LogType.MSG_IP_SUBKEY_FLAGS_XXSX, LogType.MSG_IP_SUBKEY_FLAGS_CXSX,
+            LogType.MSG_IP_SUBKEY_FLAGS_XESX, LogType.MSG_IP_SUBKEY_FLAGS_CESX,
+            LogType.MSG_IP_SUBKEY_FLAGS_XXXA, LogType.MSG_IP_SUBKEY_FLAGS_CXXA,
+            LogType.MSG_IP_SUBKEY_FLAGS_XEXA, LogType.MSG_IP_SUBKEY_FLAGS_CEXA,
+            LogType.MSG_IP_SUBKEY_FLAGS_XXSA, LogType.MSG_IP_SUBKEY_FLAGS_CXSA,
+            LogType.MSG_IP_SUBKEY_FLAGS_XESA, LogType.MSG_IP_SUBKEY_FLAGS_CESA
+    };
+
     /** Saves an UncachedKeyRing of the public variant into the db.
      *
      * This method will not delete all previous data for this masterKeyId from the database prior
@@ -363,83 +387,11 @@ public class ProviderHelper {
                     values.put(Keys.CAN_AUTHENTICATE, a);
                     values.put(Keys.IS_REVOKED, key.isRevoked());
 
+                    // see above
                     if (masterKeyId == keyId) {
-                        // yes it's ugly. got any better ideas?
-                        if (a) {
-                            if (c) {
-                                if (e) {
-                                    log(s ? LogType.MSG_IP_MASTER_FLAGS_CESA
-                                            : LogType.MSG_IP_MASTER_FLAGS_CEXA);
-                                } else {
-                                    log(s ? LogType.MSG_IP_MASTER_FLAGS_CXSA
-                                            : LogType.MSG_IP_MASTER_FLAGS_CXXA);
-                                }
-                            } else {
-                                if (e) {
-                                    log(s ? LogType.MSG_IP_MASTER_FLAGS_XESA
-                                            : LogType.MSG_IP_MASTER_FLAGS_XEXA);
-                                } else {
-                                    log(s ? LogType.MSG_IP_MASTER_FLAGS_XXSA
-                                            : LogType.MSG_IP_MASTER_FLAGS_XXXA);
-                                }
-                            }
-                        } else {
-                            if (c) {
-                                if (e) {
-                                    log(s ? LogType.MSG_IP_MASTER_FLAGS_CESX
-                                            : LogType.MSG_IP_MASTER_FLAGS_CEXX);
-                                } else {
-                                    log(s ? LogType.MSG_IP_MASTER_FLAGS_CXSX
-                                            : LogType.MSG_IP_MASTER_FLAGS_CXXX);
-                                }
-                            } else {
-                                if (e) {
-                                    log(s ? LogType.MSG_IP_MASTER_FLAGS_XESX
-                                            : LogType.MSG_IP_MASTER_FLAGS_XEXX);
-                                } else {
-                                    log(s ? LogType.MSG_IP_MASTER_FLAGS_XXSX
-                                            : LogType.MSG_IP_MASTER_FLAGS_XXXX);
-                                }
-                            }
-                        }
+                        log(LOG_TYPES_FLAG_MASTER[(c?1:0) + (e?2:0) + (s?4:0) + (a?8:0)]);
                     } else {
-                        if (a) {
-                            if (c) {
-                                if (e) {
-                                    log(s ? LogType.MSG_IP_SUBKEY_FLAGS_CESA
-                                            : LogType.MSG_IP_SUBKEY_FLAGS_CEXA);
-                                } else {
-                                    log(s ? LogType.MSG_IP_SUBKEY_FLAGS_CXSA
-                                            : LogType.MSG_IP_SUBKEY_FLAGS_CXXA);
-                                }
-                            } else {
-                                if (e) {
-                                    log(s ? LogType.MSG_IP_SUBKEY_FLAGS_XESA
-                                            : LogType.MSG_IP_SUBKEY_FLAGS_XEXA);
-                                } else {
-                                    log(s ? LogType.MSG_IP_SUBKEY_FLAGS_XXSA
-                                            : LogType.MSG_IP_SUBKEY_FLAGS_XXXA);
-                                }
-                            }
-                        } else {
-                            if (c) {
-                                if (e) {
-                                    log(s ? LogType.MSG_IP_SUBKEY_FLAGS_CESX
-                                            : LogType.MSG_IP_SUBKEY_FLAGS_CEXX);
-                                } else {
-                                    log(s ? LogType.MSG_IP_SUBKEY_FLAGS_CXSX
-                                            : LogType.MSG_IP_SUBKEY_FLAGS_CXXX);
-                                }
-                            } else {
-                                if (e) {
-                                    log(s ? LogType.MSG_IP_SUBKEY_FLAGS_XESX
-                                            : LogType.MSG_IP_SUBKEY_FLAGS_XEXX);
-                                } else {
-                                    log(s ? LogType.MSG_IP_SUBKEY_FLAGS_XXSX
-                                            : LogType.MSG_IP_SUBKEY_FLAGS_XXXX);
-                                }
-                            }
-                        }
+                        log(LOG_TYPES_FLAG_SUBKEY[(c?1:0) + (e?2:0) + (s?4:0) + (a?8:0)]);
                     }
 
                     Date creation = key.getCreationTime();
