@@ -17,11 +17,8 @@
 
 package org.sufficientlysecure.keychain.ui;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -37,10 +34,12 @@ import org.sufficientlysecure.keychain.nfc.NfcActivity;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.service.results.DecryptVerifyResult;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
-import org.sufficientlysecure.keychain.ui.dialog.PassphraseDialogFragment;
 
 public abstract class DecryptFragment extends Fragment {
     private static final int RESULT_CODE_LOOKUP_KEY = 0x00007006;
+
+    public static final int REQUEST_CODE_PASSPHRASE = 0x00008001;
+    public static final int REQUEST_CODE_NFC_DECRYPT = 0x00008002;
 
     protected long mSignatureKeyId = 0;
 
@@ -85,9 +84,6 @@ public abstract class DecryptFragment extends Fragment {
         startActivityForResult(intent, RESULT_CODE_LOOKUP_KEY);
     }
 
-    public static final int REQUEST_CODE_PASSPHRASE = 0x00008001;
-    public static final int REQUEST_CODE_NFC = 0x00008002;
-
     protected void startPassphraseDialog(long subkeyId) {
         Intent intent = new Intent(getActivity(), PassphraseDialogActivity.class);
         intent.putExtra(PassphraseDialogActivity.EXTRA_SUBKEY_ID, subkeyId);
@@ -104,7 +100,7 @@ public abstract class DecryptFragment extends Fragment {
         intent.putExtra(NfcActivity.EXTRA_NFC_ENC_SESSION_KEY, encryptedSessionKey);
         intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
-        startActivityForResult(intent, REQUEST_CODE_NFC);
+        startActivityForResult(intent, REQUEST_CODE_NFC_DECRYPT);
     }
 
     protected void onResult(DecryptVerifyResult decryptVerifyResult) {
@@ -206,7 +202,6 @@ public abstract class DecryptFragment extends Fragment {
 
     /**
      * Should be overridden by MessageFragment and FileFragment to start actual decryption
-     *
      */
     protected abstract void decryptStart();
 

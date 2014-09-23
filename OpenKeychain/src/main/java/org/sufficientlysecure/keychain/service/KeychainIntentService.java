@@ -137,9 +137,9 @@ public class KeychainIntentService extends IntentService implements Progressable
     public static final String ENCRYPT_ENCRYPTION_KEYS_IDS = "encryption_keys_ids";
     public static final String ENCRYPT_COMPRESSION_ID = "compression_id";
     public static final String ENCRYPT_MESSAGE_BYTES = "message_bytes";
-    public static final String ENCRYPT_INPUT_URI = "input_uri";
+    public static final String ENCRYPT_DECRYPT_INPUT_URI = "input_uri";
     public static final String ENCRYPT_INPUT_URIS = "input_uris";
-    public static final String ENCRYPT_OUTPUT_URI = "output_uri";
+    public static final String ENCRYPT_DECRYPT_OUTPUT_URI = "output_uri";
     public static final String ENCRYPT_OUTPUT_URIS = "output_uris";
     public static final String ENCRYPT_SYMMETRIC_PASSPHRASE = "passphrase";
 
@@ -854,7 +854,7 @@ public class KeychainIntentService extends IntentService implements Progressable
                 return new InputData(new ByteArrayInputStream(bytes), bytes.length);
 
             case IO_URI: /* encrypting content uri */
-                Uri providerUri = data.getParcelable(ENCRYPT_INPUT_URI);
+                Uri providerUri = data.getParcelable(ENCRYPT_DECRYPT_INPUT_URI);
 
                 // InputStream
                 return new InputData(getContentResolver().openInputStream(providerUri), FileHelper.getFileSize(this, providerUri, 0));
@@ -906,7 +906,7 @@ public class KeychainIntentService extends IntentService implements Progressable
                 return "";
 
             case IO_URI:
-                Uri providerUri = data.getParcelable(ENCRYPT_INPUT_URI);
+                Uri providerUri = data.getParcelable(ENCRYPT_DECRYPT_INPUT_URI);
 
                 return FileHelper.getFilename(this, providerUri);
 
@@ -927,7 +927,7 @@ public class KeychainIntentService extends IntentService implements Progressable
                 return new ByteArrayOutputStream();
 
             case IO_URI:
-                Uri providerUri = data.getParcelable(ENCRYPT_OUTPUT_URI);
+                Uri providerUri = data.getParcelable(ENCRYPT_DECRYPT_OUTPUT_URI);
 
                 return getContentResolver().openOutputStream(providerUri);
 

@@ -32,7 +32,6 @@ import org.openintents.openpgp.util.OpenPgpApi;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.compatibility.ClipboardReflection;
-import org.sufficientlysecure.keychain.nfc.NfcActivity;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
 import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
 import org.sufficientlysecure.keychain.service.results.DecryptVerifyResult;
@@ -220,7 +219,7 @@ public class DecryptTextFragment extends DecryptFragment {
                 return;
             }
 
-            case REQUEST_CODE_NFC: {
+            case REQUEST_CODE_NFC_DECRYPT: {
                 if (resultCode == Activity.RESULT_OK && data != null) {
                     mNfcDecryptedSessionKey = data.getByteArrayExtra(OpenPgpApi.EXTRA_NFC_DECRYPTED_SESSION_KEY);
                     decryptStart();

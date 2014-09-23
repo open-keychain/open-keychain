@@ -23,7 +23,6 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.Message;
 import android.os.Messenger;
 import android.text.TextUtils;
@@ -41,7 +40,6 @@ import org.sufficientlysecure.keychain.service.results.DecryptVerifyResult;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
 import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
 import org.sufficientlysecure.keychain.ui.dialog.DeleteFileDialogFragment;
-import org.sufficientlysecure.keychain.ui.dialog.PassphraseDialogFragment;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 
@@ -183,10 +181,10 @@ public class DecryptFilesFragment extends DecryptFragment {
         Log.d(Constants.TAG, "mInputUri=" + mInputUri + ", mOutputUri=" + mOutputUri);
 
         data.putInt(KeychainIntentService.SOURCE, KeychainIntentService.IO_URI);
-        data.putParcelable(KeychainIntentService.ENCRYPT_INPUT_URI, mInputUri);
+        data.putParcelable(KeychainIntentService.ENCRYPT_DECRYPT_INPUT_URI, mInputUri);
 
         data.putInt(KeychainIntentService.TARGET, KeychainIntentService.IO_URI);
-        data.putParcelable(KeychainIntentService.ENCRYPT_OUTPUT_URI, mOutputUri);
+        data.putParcelable(KeychainIntentService.ENCRYPT_DECRYPT_OUTPUT_URI, mOutputUri);
 
         data.putString(KeychainIntentService.DECRYPT_PASSPHRASE, mPassphrase);
         data.putByteArray(KeychainIntentService.DECRYPT_NFC_DECRYPTED_SESSION_KEY, mNfcDecryptedSessionKey);
@@ -257,10 +255,10 @@ public class DecryptFilesFragment extends DecryptFragment {
         Log.d(Constants.TAG, "mInputUri=" + mInputUri + ", mOutputUri=" + mOutputUri);
 
         data.putInt(KeychainIntentService.SOURCE, KeychainIntentService.IO_URI);
-        data.putParcelable(KeychainIntentService.ENCRYPT_INPUT_URI, mInputUri);
+        data.putParcelable(KeychainIntentService.ENCRYPT_DECRYPT_INPUT_URI, mInputUri);
 
         data.putInt(KeychainIntentService.TARGET, KeychainIntentService.IO_URI);
-        data.putParcelable(KeychainIntentService.ENCRYPT_OUTPUT_URI, mOutputUri);
+        data.putParcelable(KeychainIntentService.ENCRYPT_DECRYPT_OUTPUT_URI, mOutputUri);
 
         data.putString(KeychainIntentService.DECRYPT_PASSPHRASE, mPassphrase);
         data.putByteArray(KeychainIntentService.DECRYPT_NFC_DECRYPTED_SESSION_KEY, mNfcDecryptedSessionKey);
@@ -290,7 +288,7 @@ public class DecryptFilesFragment extends DecryptFragment {
                             startPassphraseDialog(Constants.key.symmetric);
                         } else if ((pgpResult.getResult() & DecryptVerifyResult.RESULT_PENDING_NFC) ==
                                 DecryptVerifyResult.RESULT_PENDING_NFC) {
-                            // TODO
+                            startNfcDecrypt(pgpResult.getNfcPassphrase(), pgpResult.getNfcEncryptedSessionKey());
                         } else {
                             throw new RuntimeException("Unhandled pending result!");
                         }
@@ -344,10 +342,10 @@ public class DecryptFilesFragment extends DecryptFragment {
                 return;
             }
 
-            case REQUEST_CODE_NFC: {
+            case REQUEST_CODE_NFC_DECRYPT: {
                 if (resultCode == Activity.RESULT_OK && data != null) {
                     mNfcDecryptedSessionKey = data.getByteArrayExtra(OpenPgpApi.EXTRA_NFC_DECRYPTED_SESSION_KEY);
-                    decryptStart();
+                    decryptOriginalFilename();
                 }
                 return;
             }
