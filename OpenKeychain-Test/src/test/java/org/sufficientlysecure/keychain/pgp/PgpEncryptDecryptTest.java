@@ -264,10 +264,19 @@ public class PgpEncryptDecryptTest {
         }
 
         @Override
-        public String getCachedPassphrase(long masterKeyId) throws NoSecretKeyException {
+        public String getCachedPassphrase(long masterKeyId, long subKeyId) throws NoSecretKeyException {
             if (mExpectedId != null){
                 Assert.assertEquals("requested passphrase must be for expected id",
-                        (long) mExpectedId, masterKeyId);
+                        (long) mExpectedId, subKeyId);
+            }
+            return mPassphrase;
+        }
+
+        @Override
+        public String getCachedPassphrase(long subKeyId) throws NoSecretKeyException {
+            if (mExpectedId != null){
+                Assert.assertEquals("requested passphrase must be for expected id",
+                        (long) mExpectedId, subKeyId);
             }
             return mPassphrase;
         }
