@@ -52,34 +52,6 @@
             android:layout_marginTop="32dp"
             android:text="@string/section_decrypt_text" />
 
-        <!--<TextView-->
-        <!--android:id="@+id/decrypt_from_clipboard"-->
-        <!--android:paddingLeft="8dp"-->
-        <!--android:paddingRight="8dp"-->
-        <!--android:textAppearance="?android:attr/textAppearanceMedium"-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:minHeight="?android:attr/listPreferredItemHeight"-->
-        <!--android:clickable="true"-->
-        <!--style="@style/SelectableItem"-->
-        <!--android:text="@string/btn_decrypt_clipboard"-->
-        <!--android:drawableRight="@drawable/ic_action_paste"-->
-        <!--android:drawablePadding="8dp"-->
-        <!--android:gravity="center_vertical" />-->
-
-        <!--<TextView-->
-        <!--android:paddingLeft="8dp"-->
-        <!--android:paddingRight="8dp"-->
-        <!--android:textAppearance="?android:attr/textAppearanceSmall"-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:clickable="true"-->
-        <!--style="@style/SelectableItem"-->
-        <!--android:text="@string/btn_decrypt_clipboard"-->
-        <!--android:drawablePadding="8dp"-->
-        <!--android:gravity="center_vertical" />-->
-
-
         <LinearLayout
             android:id="@+id/decrypt_from_clipboard"
             android:layout_width="match_parent"
