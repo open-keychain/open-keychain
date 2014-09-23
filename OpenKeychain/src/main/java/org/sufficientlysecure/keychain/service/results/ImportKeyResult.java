@@ -165,7 +165,7 @@ public class ImportKeyResult extends OperationResult {
                                 ? R.string.import_error_nothing_cancelled
                                 : R.string.import_error_nothing);
             } else {
-                str = activity.getString(R.string.import_error);
+                str = activity.getResources().getQuantityString(R.plurals.import_error, mBadKeys);
             }
         }
 
