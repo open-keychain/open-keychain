@@ -526,8 +526,9 @@ public class OpenPgpService extends RemoteService {
                                 "Decryption of symmetric content not supported by API!");
                     } else if ((pgpResult.getResult() & DecryptVerifyResult.RESULT_PENDING_NFC) ==
                             DecryptVerifyResult.RESULT_PENDING_NFC) {
-                        return getNfcDecryptIntent(
-                                data, pgpResult.getNfcPassphrase(), pgpResult.getNfcEncryptedSessionKey());
+                        // we assume that the pin has been cached before
+                        String pin = passphraseCacheInterface.getCachedPassphrase(pgpResult.getNfcKeyId());
+                        return getNfcDecryptIntent(data, pin, pgpResult.getNfcEncryptedSessionKey());
                     } else {
                         throw new PgpGeneralException(
                                 "Encountered unhandled type of pending action not supported by API!");

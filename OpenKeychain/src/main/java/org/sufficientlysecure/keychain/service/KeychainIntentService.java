@@ -146,6 +146,7 @@ public class KeychainIntentService extends IntentService implements Progressable
     // decrypt/verify
     public static final String DECRYPT_CIPHERTEXT_BYTES = "ciphertext_bytes";
     public static final String DECRYPT_PASSPHRASE = "passphrase";
+    public static final String DECRYPT_NFC_DECRYPTED_SESSION_KEY = "nfc_decrypted_session_key";
 
     // save keyring
     public static final String EDIT_KEYRING_PARCEL = "save_parcel";
@@ -326,6 +327,7 @@ public class KeychainIntentService extends IntentService implements Progressable
             try {
                 /* Input */
                 String passphrase = data.getString(DECRYPT_PASSPHRASE);
+                byte[] nfcDecryptedSessionKey = data.getByteArray(DECRYPT_NFC_DECRYPTED_SESSION_KEY);
 
                 InputData inputData = createDecryptInputData(data);
                 OutputStream outStream = createCryptOutputStream(data);
@@ -342,7 +344,8 @@ public class KeychainIntentService extends IntentService implements Progressable
                 );
                 builder.setProgressable(this)
                         .setAllowSymmetricDecryption(true)
-                        .setPassphrase(passphrase);
+                        .setPassphrase(passphrase)
+                        .setNfcState(nfcDecryptedSessionKey);
 
                 DecryptVerifyResult decryptVerifyResult = builder.build().execute();
 
@@ -364,6 +367,7 @@ public class KeychainIntentService extends IntentService implements Progressable
             try {
                 /* Input */
                 String passphrase = data.getString(DECRYPT_PASSPHRASE);
+                byte[] nfcDecryptedSessionKey = data.getByteArray(DECRYPT_NFC_DECRYPTED_SESSION_KEY);
 
                 InputData inputData = createDecryptInputData(data);
 
@@ -380,7 +384,8 @@ public class KeychainIntentService extends IntentService implements Progressable
                 builder.setProgressable(this)
                         .setAllowSymmetricDecryption(true)
                         .setPassphrase(passphrase)
-                        .setDecryptMetadataOnly(true);
+                        .setDecryptMetadataOnly(true)
+                        .setNfcState(nfcDecryptedSessionKey);
 
                 DecryptVerifyResult decryptVerifyResult = builder.build().execute();
 

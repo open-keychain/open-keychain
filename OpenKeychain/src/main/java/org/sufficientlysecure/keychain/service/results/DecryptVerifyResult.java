@@ -36,7 +36,7 @@ public class DecryptVerifyResult extends OperationResult {
     long mKeyIdPassphraseNeeded;
 
     byte[] mNfcSessionKey;
-    String mNfcPassphrase;
+    long mNfcKeyId;
 
     OpenPgpSignatureResult mSignatureResult;
     OpenPgpMetadata mDecryptMetadata;
@@ -49,17 +49,17 @@ public class DecryptVerifyResult extends OperationResult {
         mKeyIdPassphraseNeeded = keyIdPassphraseNeeded;
     }
 
-    public void setNfcState(byte[] sessionKey, String passphrase) {
+    public void setNfcState(byte[] sessionKey, long nfcKeyId) {
         mNfcSessionKey = sessionKey;
-        mNfcPassphrase = passphrase;
+        mNfcKeyId = nfcKeyId;
     }
 
     public byte[] getNfcEncryptedSessionKey() {
         return mNfcSessionKey;
     }
 
-    public String getNfcPassphrase() {
-        return mNfcPassphrase;
+    public long getNfcKeyId() {
+        return mNfcKeyId;
     }
 
     public OpenPgpSignatureResult getSignatureResult() {
@@ -92,7 +92,6 @@ public class DecryptVerifyResult extends OperationResult {
         mSignatureResult = source.readParcelable(OpenPgpSignatureResult.class.getClassLoader());
         mDecryptMetadata = source.readParcelable(OpenPgpMetadata.class.getClassLoader());
         mNfcSessionKey = source.readInt() != 0 ? source.createByteArray() : null;
-        mNfcPassphrase = source.readString();
     }
 
     public int describeContents() {
@@ -110,7 +109,6 @@ public class DecryptVerifyResult extends OperationResult {
         } else {
             dest.writeInt(0);
         }
-        dest.writeString(mNfcPassphrase);
     }
 
     public static final Creator<DecryptVerifyResult> CREATOR = new Creator<DecryptVerifyResult>() {

@@ -28,9 +28,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import org.openintents.openpgp.util.OpenPgpApi;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.compatibility.ClipboardReflection;
+import org.sufficientlysecure.keychain.nfc.NfcActivity;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
 import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
 import org.sufficientlysecure.keychain.service.results.DecryptVerifyResult;
@@ -124,12 +126,12 @@ public class DecryptTextFragment extends DecryptFragment {
         String ciphertext = getArguments().getString(ARG_CIPHERTEXT);
         if (ciphertext != null) {
             mCiphertext = ciphertext;
-            decryptStart(null);
+            decryptStart();
         }
     }
 
     @Override
-    protected void decryptStart(String passphrase) {
+    protected void decryptStart() {
         Log.d(Constants.TAG, "decryptStart");
 
         // Send all information needed to service to decrypt in other thread
@@ -143,7 +145,8 @@ public class DecryptTextFragment extends DecryptFragment {
         // data
         data.putInt(KeychainIntentService.TARGET, KeychainIntentService.IO_BYTES);
         data.putByteArray(KeychainIntentService.DECRYPT_CIPHERTEXT_BYTES, mCiphertext.getBytes());
-        data.putString(KeychainIntentService.DECRYPT_PASSPHRASE, passphrase);
+        data.putString(KeychainIntentService.DECRYPT_PASSPHRASE, mPassphrase);
+        data.putByteArray(KeychainIntentService.DECRYPT_NFC_DECRYPTED_SESSION_KEY, mNfcDecryptedSessionKey);
 
         intent.putExtra(KeychainIntentService.EXTRA_DATA, data);
 
@@ -170,7 +173,7 @@ public class DecryptTextFragment extends DecryptFragment {
                             startPassphraseDialog(Constants.key.symmetric);
                         } else if ((pgpResult.getResult() & DecryptVerifyResult.RESULT_PENDING_NFC) ==
                                 DecryptVerifyResult.RESULT_PENDING_NFC) {
-                            // TODO
+                            startNfcDecrypt(mPassphrase, pgpResult.getNfcEncryptedSessionKey());
                         } else {
                             throw new RuntimeException("Unhandled pending result!");
                         }
@@ -209,8 +212,8 @@ public class DecryptTextFragment extends DecryptFragment {
 
             case REQUEST_CODE_PASSPHRASE: {
                 if (resultCode == Activity.RESULT_OK && data != null) {
-                    String passphrase = data.getStringExtra(PassphraseDialogActivity.MESSAGE_DATA_PASSPHRASE);
-                    decryptStart(passphrase);
+                    mPassphrase = data.getStringExtra(PassphraseDialogActivity.MESSAGE_DATA_PASSPHRASE);
+                    decryptStart();
                 } else {
                     getActivity().finish();
                 }
@@ -219,7 +222,8 @@ public class DecryptTextFragment extends DecryptFragment {
 
             case REQUEST_CODE_NFC: {
                 if (resultCode == Activity.RESULT_OK && data != null) {
-                    // TODO
+                    mNfcDecryptedSessionKey = data.getByteArrayExtra(OpenPgpApi.EXTRA_NFC_DECRYPTED_SESSION_KEY);
+                    decryptStart();
                 } else {
                     getActivity().finish();
                 }

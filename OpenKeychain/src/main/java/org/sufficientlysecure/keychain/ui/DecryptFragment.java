@@ -54,6 +54,9 @@ public abstract class DecryptFragment extends Fragment {
 
     protected Button mLookupKey;
 
+    // State
+    protected String mPassphrase;
+    protected byte[] mNfcDecryptedSessionKey;
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -91,41 +94,18 @@ public abstract class DecryptFragment extends Fragment {
         startActivityForResult(intent, REQUEST_CODE_PASSPHRASE);
     }
 
-    protected void startNfcSign(String pin, byte[] hashToSign, int hashAlgo) {
-        Intent data = new Intent();
-
+    protected void startNfcDecrypt(String pin, byte[] encryptedSessionKey) {
         // build PendingIntent for Yubikey NFC operations
         Intent intent = new Intent(getActivity(), NfcActivity.class);
-        intent.setAction(NfcActivity.ACTION_SIGN_HASH);
-        // pass params through to activity that it can be returned again later to repeat pgp operation
-        intent.putExtra(NfcActivity.EXTRA_DATA, data);
+        intent.setAction(NfcActivity.ACTION_DECRYPT_SESSION_KEY);
+        intent.putExtra(NfcActivity.EXTRA_DATA, new Intent()); // not used, only relevant to OpenPgpService
         intent.putExtra(NfcActivity.EXTRA_PIN, pin);
 
-        intent.putExtra(NfcActivity.EXTRA_NFC_HASH_TO_SIGN, hashToSign);
-        intent.putExtra(NfcActivity.EXTRA_NFC_HASH_ALGO, hashAlgo);
+        intent.putExtra(NfcActivity.EXTRA_NFC_ENC_SESSION_KEY, encryptedSessionKey);
         intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
         startActivityForResult(intent, REQUEST_CODE_NFC);
     }
-
-//    @Override
-//    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-//        switch (requestCode) {
-//
-//            case RESULT_CODE_LOOKUP_KEY: {
-//                if (resultCode == Activity.RESULT_OK) {
-//                    // TODO: generate new OpenPgpSignatureResult and display it
-//                }
-//                return;
-//            }
-//
-//            default: {
-//                super.onActivityResult(requestCode, resultCode, data);
-//
-//                break;
-//            }
-//        }
-//    }
 
     protected void onResult(DecryptVerifyResult decryptVerifyResult) {
         OpenPgpSignatureResult signatureResult = decryptVerifyResult.getSignatureResult();
@@ -224,26 +204,10 @@ public abstract class DecryptFragment extends Fragment {
         }
     }
 
-//    protected void showPassphraseDialog(long keyId) {
-//        PassphraseDialogFragment.show(getActivity(), keyId,
-//                new Handler() {
-//                    @Override
-//                    public void handleMessage(Message message) {
-//                        if (message.what == PassphraseDialogFragment.MESSAGE_OKAY) {
-//                            String passphrase =
-//                                    message.getData().getString(PassphraseDialogFragment.MESSAGE_DATA_PASSPHRASE);
-//                            decryptStart(passphrase);
-//                        }
-//                    }
-//                }
-//        );
-//    }
-
     /**
      * Should be overridden by MessageFragment and FileFragment to start actual decryption
      *
-     * @param passphrase
      */
-    protected abstract void decryptStart(String passphrase);
+    protected abstract void decryptStart();
 
 }
