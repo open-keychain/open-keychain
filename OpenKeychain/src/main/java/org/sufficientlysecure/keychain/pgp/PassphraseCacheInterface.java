@@ -6,6 +6,8 @@ public interface PassphraseCacheInterface {
         }
     }
 
-    public String getCachedPassphrase(long masterKeyId) throws NoSecretKeyException;
+    public String getCachedPassphrase(long subKeyId) throws NoSecretKeyException;
+
+    public String getCachedPassphrase(long masterKeyId, long subKeyId) throws NoSecretKeyException;
 
 }

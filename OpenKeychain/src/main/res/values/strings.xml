@@ -111,6 +111,7 @@
     <string name="label_hash_algorithm">"Hash algorithm"</string>
     <string name="label_symmetric">"Encrypt with passphrase"</string>
     <string name="label_passphrase_cache_ttl">"Passphrase cache"</string>
+    <string name="label_passphrase_cache_subs">"Cache passphrases by subkey"</string>
     <string name="label_message_compression">"Message compression"</string>
     <string name="label_file_compression">"File compression"</string>
     <string name="label_keyservers">"Keyservers"</string>

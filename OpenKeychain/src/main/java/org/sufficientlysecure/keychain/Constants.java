@@ -72,6 +72,7 @@ public final class Constants {
         public static final String DEFAULT_MESSAGE_COMPRESSION = "defaultMessageCompression";
         public static final String DEFAULT_FILE_COMPRESSION = "defaultFileCompression";
         public static final String PASSPHRASE_CACHE_TTL = "passphraseCacheTtl";
+        public static final String PASSPHRASE_CACHE_SUBS = "passphraseCacheSubs";
         public static final String LANGUAGE = "language";
         public static final String KEY_SERVERS = "keyServers";
         public static final String PREF_DEFAULT_VERSION = "keyServersDefaultVersion";

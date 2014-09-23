@@ -82,7 +82,7 @@ public class PreferencesActivity extends PreferenceActivity {
         } else if (action != null && action.equals(ACTION_PREFS_ADV)) {
             addPreferencesFromResource(R.xml.adv_preferences);
 
-            initializePassPassphraceCacheTtl(
+            initializePassphraseCacheTtl(
                     (IntegerListPreference) findPreference(Constants.Pref.PASSPHRASE_CACHE_TTL));
 
             initializeEncryptionAlgorithm(
@@ -228,7 +228,10 @@ public class PreferencesActivity extends PreferenceActivity {
             // Load the preferences from an XML resource
             addPreferencesFromResource(R.xml.adv_preferences);
 
-            initializePassPassphraceCacheTtl(
+            initializePassphraseCacheSubs(
+                    (CheckBoxPreference) findPreference(Constants.Pref.PASSPHRASE_CACHE_SUBS));
+
+            initializePassphraseCacheTtl(
                     (IntegerListPreference) findPreference(Constants.Pref.PASSPHRASE_CACHE_TTL));
 
             initializeEncryptionAlgorithm(
@@ -281,7 +284,18 @@ public class PreferencesActivity extends PreferenceActivity {
                 || super.isValidFragment(fragmentName);
     }
 
-    private static void initializePassPassphraceCacheTtl(final IntegerListPreference mPassphraseCacheTtl) {
+    private static void initializePassphraseCacheSubs(final CheckBoxPreference mPassphraseCacheSubs) {
+        mPassphraseCacheSubs.setChecked(sPreferences.getPassphraseCacheSubs());
+        mPassphraseCacheSubs.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+            public boolean onPreferenceChange(Preference preference, Object newValue) {
+                mPassphraseCacheSubs.setChecked((Boolean) newValue);
+                sPreferences.setPassphraseCacheSubs((Boolean) newValue);
+                return false;
+            }
+        });
+    }
+
+    private static void initializePassphraseCacheTtl(final IntegerListPreference mPassphraseCacheTtl) {
         mPassphraseCacheTtl.setValue("" + sPreferences.getPassphraseCacheTtl());
         mPassphraseCacheTtl.setSummary(mPassphraseCacheTtl.getEntry());
         mPassphraseCacheTtl

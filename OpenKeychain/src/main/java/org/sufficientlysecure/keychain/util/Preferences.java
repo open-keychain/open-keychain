@@ -93,6 +93,16 @@ public class Preferences {
         editor.commit();
     }
 
+    public boolean getPassphraseCacheSubs() {
+        return mSharedPreferences.getBoolean(Pref.PASSPHRASE_CACHE_SUBS, false);
+    }
+
+    public void setPassphraseCacheSubs(boolean value) {
+        SharedPreferences.Editor editor = mSharedPreferences.edit();
+        editor.putBoolean(Pref.PASSPHRASE_CACHE_SUBS, value);
+        editor.commit();
+    }
+
     public int getDefaultEncryptionAlgorithm() {
         return mSharedPreferences.getInt(Constants.Pref.DEFAULT_ENCRYPTION_ALGORITHM,
                 PGPEncryptedData.AES_256);

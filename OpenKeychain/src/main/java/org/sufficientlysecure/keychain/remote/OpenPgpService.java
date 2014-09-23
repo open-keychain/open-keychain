@@ -34,9 +34,11 @@ import org.spongycastle.util.encoders.Hex;
 import org.sufficientlysecure.keychain.nfc.NfcActivity;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.pgp.PassphraseCacheInterface;
+import org.sufficientlysecure.keychain.pgp.PassphraseCacheInterface.NoSecretKeyException;
 import org.sufficientlysecure.keychain.pgp.PgpDecryptVerify;
 import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
 import org.sufficientlysecure.keychain.provider.KeychainDatabase.Tables;
+import org.sufficientlysecure.keychain.provider.ProviderHelper.NotFoundException;
 import org.sufficientlysecure.keychain.service.results.DecryptVerifyResult;
 import org.sufficientlysecure.keychain.pgp.PgpHelper;
 import org.sufficientlysecure.keychain.pgp.PgpSignEncrypt;
@@ -73,6 +75,28 @@ public class OpenPgpService extends RemoteService {
     // do not pre-select revoked or expired keys
     static final String EMAIL_SEARCH_WHERE = Tables.KEYS + "." + KeychainContract.KeyRings.IS_REVOKED
             + " = 0 AND " + KeychainContract.KeyRings.IS_EXPIRED + " = 0";
+
+    private PassphraseCacheInterface passphraseCacheInterface = new PassphraseCacheInterface() {
+        @Override
+        public String getCachedPassphrase(long subKeyId) throws NoSecretKeyException {
+            try {
+                long masterKeyId = new ProviderHelper(getContext()).getMasterKeyId(subKeyId);
+                return getCachedPassphrase(masterKeyId, subKeyId);
+            } catch (NotFoundException e) {
+                throw new PassphraseCacheInterface.NoSecretKeyException();
+            }
+        }
+
+        @Override
+        public String getCachedPassphrase(long masterKeyId, long subKeyId) throws NoSecretKeyException {
+            try {
+                return PassphraseCacheService.getCachedPassphrase(
+                        getContext(), masterKeyId, subKeyId);
+            } catch (PassphraseCacheService.KeyNotFoundException e) {
+                throw new PassphraseCacheInterface.NoSecretKeyException();
+            }
+        }
+    };
 
     /**
      * Search database for key ids based on emails.
@@ -232,7 +256,8 @@ public class OpenPgpService extends RemoteService {
                 passphrase = data.getStringExtra(OpenPgpApi.EXTRA_PASSPHRASE);
             } else {
                 try {
-                    passphrase = PassphraseCacheService.getCachedPassphrase(getContext(), accSettings.getKeyId());
+                    passphrase = PassphraseCacheService.getCachedPassphrase(getContext(),
+                            accSettings.getKeyId(), accSettings.getKeyId());
                 } catch (PassphraseCacheService.KeyNotFoundException e) {
                     // secret key that is set for this account is deleted?
                     // show account config again!
@@ -269,22 +294,11 @@ public class OpenPgpService extends RemoteService {
                 // Find the appropriate subkey to sign with
                 CachedPublicKeyRing signingRing =
                         new ProviderHelper(this).getCachedPublicKeyRing(accSettings.getKeyId());
-                long sigSubKeyId = signingRing.getSignId();
+                final long sigSubKeyId = signingRing.getSignId();
 
                 // sign-only
                 PgpSignEncrypt.Builder builder = new PgpSignEncrypt.Builder(
-                        new ProviderHelper(getContext()),
-                        new PassphraseCacheInterface() {
-                            @Override
-                            public String getCachedPassphrase(long masterKeyId) throws PassphraseCacheInterface.NoSecretKeyException {
-                                try {
-                                    return PassphraseCacheService.getCachedPassphrase(
-                                            OpenPgpService.this, masterKeyId);
-                                } catch (PassphraseCacheService.KeyNotFoundException e) {
-                                    throw new PassphraseCacheInterface.NoSecretKeyException();
-                                }
-                            }
-                        },
+                        new ProviderHelper(getContext()), passphraseCacheInterface,
                         inputData, os
                 );
                 builder.setEnableAsciiArmorOutput(asciiArmor)
@@ -376,18 +390,7 @@ public class OpenPgpService extends RemoteService {
                 InputData inputData = new InputData(is, inputLength);
 
                 PgpSignEncrypt.Builder builder = new PgpSignEncrypt.Builder(
-                        new ProviderHelper(getContext()),
-                        new PassphraseCacheInterface() {
-                            @Override
-                            public String getCachedPassphrase(long masterKeyId) throws PassphraseCacheInterface.NoSecretKeyException {
-                                try {
-                                    return PassphraseCacheService.getCachedPassphrase(
-                                            OpenPgpService.this, masterKeyId);
-                                } catch (PassphraseCacheService.KeyNotFoundException e) {
-                                    throw new PassphraseCacheInterface.NoSecretKeyException();
-                                }
-                            }
-                        },
+                        new ProviderHelper(getContext()), passphraseCacheInterface,
                         inputData, os
                 );
                 builder.setEnableAsciiArmorOutput(asciiArmor)
@@ -404,7 +407,7 @@ public class OpenPgpService extends RemoteService {
                         passphrase = data.getStringExtra(OpenPgpApi.EXTRA_PASSPHRASE);
                     } else {
                         passphrase = PassphraseCacheService.getCachedPassphrase(getContext(),
-                                accSettings.getKeyId());
+                                accSettings.getKeyId(), accSettings.getKeyId());
                     }
                     if (passphrase == null) {
                         // get PendingIntent for passphrase input, add it to given params and return to client
@@ -496,18 +499,7 @@ public class OpenPgpService extends RemoteService {
                 InputData inputData = new InputData(is, inputLength);
 
                 PgpDecryptVerify.Builder builder = new PgpDecryptVerify.Builder(
-                        new ProviderHelper(this),
-                        new PassphraseCacheInterface() {
-                            @Override
-                            public String getCachedPassphrase(long masterKeyId) throws PassphraseCacheInterface.NoSecretKeyException {
-                                try {
-                                    return PassphraseCacheService.getCachedPassphrase(
-                                            OpenPgpService.this, masterKeyId);
-                                } catch (PassphraseCacheService.KeyNotFoundException e) {
-                                    throw new PassphraseCacheInterface.NoSecretKeyException();
-                                }
-                            }
-                        },
+                        new ProviderHelper(getContext()), passphraseCacheInterface,
                         inputData, os
                 );
 

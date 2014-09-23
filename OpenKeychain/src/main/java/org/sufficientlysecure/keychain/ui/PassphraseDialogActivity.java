@@ -64,7 +64,6 @@ public class PassphraseDialogActivity extends FragmentActivity {
     // special extra for OpenPgpService
     public static final String EXTRA_DATA = "data";
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -251,8 +250,9 @@ public class PassphraseDialogActivity extends FragmentActivity {
 
                     // Early breakout if we are dealing with a symmetric key
                     if (mSecretRing == null) {
-                        PassphraseCacheService.addCachedPassphrase(getActivity(), Constants.key.symmetric,
-                                passphrase, getString(R.string.passp_cache_notif_pwd));
+                        PassphraseCacheService.addCachedPassphrase(getActivity(),
+                                Constants.key.symmetric, Constants.key.symmetric,  passphrase,
+                                getString(R.string.passp_cache_notif_pwd));
 
                         finishCaching(passphrase);
                         return;
@@ -309,8 +309,9 @@ public class PassphraseDialogActivity extends FragmentActivity {
                             Log.d(Constants.TAG, "Everything okay! Caching entered passphrase");
 
                             try {
-                                PassphraseCacheService.addCachedPassphrase(getActivity(), mSubKeyId,
-                                        passphrase, mSecretRing.getPrimaryUserIdWithFallback());
+                                PassphraseCacheService.addCachedPassphrase(getActivity(),
+                                        mSecretRing.getMasterKeyId(), mSubKeyId, passphrase,
+                                        mSecretRing.getPrimaryUserIdWithFallback());
                             } catch (PgpGeneralException e) {
                                 Log.e(Constants.TAG, "adding of a passphrase failed", e);
                             }

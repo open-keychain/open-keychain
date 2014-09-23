@@ -6,6 +6,10 @@
             android:key="passphraseCacheTtl"
             android:persistent="false"
             android:title="@string/label_passphrase_cache_ttl" />
+        <CheckBoxPreference
+            android:key="passphraseCacheSubs"
+            android:persistent="false"
+            android:title="@string/label_passphrase_cache_subs" />
         <org.sufficientlysecure.keychain.ui.widget.IntegerListPreference
             android:key="defaultEncryptionAlgorithm"
             android:persistent="false"

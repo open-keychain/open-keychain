@@ -271,7 +271,7 @@ public class CertifyKeyFragment extends LoaderFragment
         // get the user's passphrase for this key (if required)
         String passphrase;
         try {
-            passphrase = PassphraseCacheService.getCachedPassphrase(mActivity, mMasterKeyId);
+            passphrase = PassphraseCacheService.getCachedPassphrase(mActivity, mMasterKeyId, mMasterKeyId);
         } catch (PassphraseCacheService.KeyNotFoundException e) {
             Log.e(Constants.TAG, "Key not found!", e);
             mActivity.finish();

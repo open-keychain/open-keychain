@@ -236,7 +236,7 @@ public class EditKeyFragment extends LoaderFragment implements
 
         try {
             mCurrentPassphrase = PassphraseCacheService.getCachedPassphrase(getActivity(),
-                    mSaveKeyringParcel.mMasterKeyId);
+                    mSaveKeyringParcel.mMasterKeyId, mSaveKeyringParcel.mMasterKeyId);
         } catch (PassphraseCacheService.KeyNotFoundException e) {
             finishWithError(LogType.MSG_EK_ERROR_NOT_FOUND);
             return;

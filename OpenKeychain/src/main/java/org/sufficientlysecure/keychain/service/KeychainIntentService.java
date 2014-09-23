@@ -29,6 +29,7 @@ import android.os.RemoteException;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.provider.ProviderHelper.NotFoundException;
 import org.sufficientlysecure.keychain.util.FileHelper;
 import org.sufficientlysecure.keychain.util.Preferences;
 import org.sufficientlysecure.keychain.keyimport.HkpKeyserver;
@@ -84,7 +85,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * data from the activities or other apps, queues these intents, executes them, and stops itself
  * after doing them.
  */
-public class KeychainIntentService extends IntentService implements Progressable {
+public class KeychainIntentService extends IntentService implements Progressable, PassphraseCacheInterface {
 
     /* extras that can be given by intent */
     public static final String EXTRA_MESSENGER = "messenger";
@@ -268,19 +269,7 @@ public class KeychainIntentService extends IntentService implements Progressable
 
                     /* Operation */
                     PgpSignEncrypt.Builder builder = new PgpSignEncrypt.Builder(
-                            new ProviderHelper(this),
-                            new PassphraseCacheInterface() {
-                                @Override
-                                public String getCachedPassphrase(long masterKeyId) throws PassphraseCacheInterface.NoSecretKeyException {
-                                    try {
-                                        return PassphraseCacheService.getCachedPassphrase(
-                                                KeychainIntentService.this, masterKeyId);
-                                    } catch (PassphraseCacheService.KeyNotFoundException e) {
-                                        throw new PassphraseCacheInterface.NoSecretKeyException();
-                                    }
-                                }
-                            },
-                            inputData, outStream
+                            new ProviderHelper(this), this, inputData, outStream
                     );
                     builder.setProgressable(this)
                             .setEnableAsciiArmorOutput(useAsciiArmor)
@@ -348,18 +337,7 @@ public class KeychainIntentService extends IntentService implements Progressable
                 // verifyText and decrypt returning additional resultData values for the
                 // verification of signatures
                 PgpDecryptVerify.Builder builder = new PgpDecryptVerify.Builder(
-                        new ProviderHelper(this),
-                        new PassphraseCacheInterface() {
-                            @Override
-                            public String getCachedPassphrase(long masterKeyId) throws PassphraseCacheInterface.NoSecretKeyException {
-                                try {
-                                    return PassphraseCacheService.getCachedPassphrase(
-                                            KeychainIntentService.this, masterKeyId);
-                                } catch (PassphraseCacheService.KeyNotFoundException e) {
-                                    throw new PassphraseCacheInterface.NoSecretKeyException();
-                                }
-                            }
-                        },
+                        new ProviderHelper(this), this,
                         inputData, outStream
                 );
                 builder.setProgressable(this)
@@ -397,18 +375,7 @@ public class KeychainIntentService extends IntentService implements Progressable
                 // verification of signatures
                 PgpDecryptVerify.Builder builder = new PgpDecryptVerify.Builder(
                         new ProviderHelper(this),
-                        new PassphraseCacheInterface() {
-                            @Override
-                            public String getCachedPassphrase(long masterKeyId) throws PassphraseCacheInterface.NoSecretKeyException {
-                                try {
-                                    return PassphraseCacheService.getCachedPassphrase(
-                                            KeychainIntentService.this, masterKeyId);
-                                } catch (PassphraseCacheService.KeyNotFoundException e) {
-                                    throw new PassphraseCacheInterface.NoSecretKeyException();
-                                }
-                            }
-                        },
-                        inputData, null
+                        this, inputData, null
                 );
                 builder.setProgressable(this)
                         .setAllowSymmetricDecryption(true)
@@ -489,7 +456,7 @@ public class KeychainIntentService extends IntentService implements Progressable
 
                 // cache new passphrase
                 if (saveParcel.mNewPassphrase != null) {
-                    PassphraseCacheService.addCachedPassphrase(this, ring.getMasterKeyId(),
+                    PassphraseCacheService.addCachedPassphrase(this, ring.getMasterKeyId(), ring.getMasterKeyId(),
                             saveParcel.mNewPassphrase, ring.getPublicKey().getPrimaryUserIdWithFallback());
                 }
 
@@ -715,7 +682,7 @@ public class KeychainIntentService extends IntentService implements Progressable
 
                 /* Operation */
                 String signaturePassphrase = PassphraseCacheService.getCachedPassphrase(this,
-                        masterKeyId);
+                        masterKeyId, masterKeyId);
                 if (signaturePassphrase == null) {
                     throw new PgpGeneralException("Unable to obtain passphrase");
                 }
@@ -895,6 +862,26 @@ public class KeychainIntentService extends IntentService implements Progressable
 
             default:
                 throw new PgpGeneralException("No target choosen!");
+        }
+    }
+
+    @Override
+    public String getCachedPassphrase(long subKeyId) throws NoSecretKeyException {
+        try {
+            long masterKeyId = new ProviderHelper(this).getMasterKeyId(subKeyId);
+            return getCachedPassphrase(masterKeyId, subKeyId);
+        } catch (NotFoundException e) {
+            throw new PassphraseCacheInterface.NoSecretKeyException();
+        }
+    }
+
+    @Override
+    public String getCachedPassphrase(long masterKeyId, long subKeyId) throws NoSecretKeyException {
+        try {
+            return PassphraseCacheService.getCachedPassphrase(
+                    KeychainIntentService.this, masterKeyId, subKeyId);
+        } catch (PassphraseCacheService.KeyNotFoundException e) {
+            throw new PassphraseCacheInterface.NoSecretKeyException();
         }
     }
 
