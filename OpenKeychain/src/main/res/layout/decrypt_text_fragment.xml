@@ -43,7 +43,7 @@
 
 
             <LinearLayout
-                android:id="@+id/action_encrypt_share_plaintext"
+                android:id="@+id/action_decrypt_share_plaintext"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:clickable="true"
@@ -57,7 +57,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:minHeight="?android:attr/listPreferredItemHeight"
-                    android:text="Share plaintext"
+                    android:text="@string/btn_add_share_decrypted_text"
                     android:drawableRight="@drawable/ic_action_share"
                     android:drawablePadding="8dp"
                     android:gravity="center_vertical"
@@ -72,7 +72,7 @@
                     android:background="?android:attr/listDivider" />
 
                 <ImageButton
-                    android:id="@+id/action_copy_plaintext"
+                    android:id="@+id/action_decrypt_copy_plaintext"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:padding="8dp"

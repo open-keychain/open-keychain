@@ -208,10 +208,10 @@ public class DecryptFilesFragment extends DecryptFragment {
                     if (pgpResult.isPending()) {
                         if ((pgpResult.getResult() & DecryptVerifyResult.RESULT_PENDING_ASYM_PASSPHRASE) ==
                                 DecryptVerifyResult.RESULT_PENDING_ASYM_PASSPHRASE) {
-                            showPassphraseDialog(pgpResult.getKeyIdPassphraseNeeded());
+                            startPassphraseDialog(pgpResult.getKeyIdPassphraseNeeded());
                         } else if ((pgpResult.getResult() & DecryptVerifyResult.RESULT_PENDING_SYM_PASSPHRASE) ==
                                 DecryptVerifyResult.RESULT_PENDING_SYM_PASSPHRASE) {
-                            showPassphraseDialog(Constants.key.symmetric);
+                            startPassphraseDialog(Constants.key.symmetric);
                         } else if ((pgpResult.getResult() & DecryptVerifyResult.RESULT_PENDING_NFC) ==
                                 DecryptVerifyResult.RESULT_PENDING_NFC) {
                             // TODO
@@ -296,10 +296,10 @@ public class DecryptFilesFragment extends DecryptFragment {
                     if (pgpResult.isPending()) {
                         if ((pgpResult.getResult() & DecryptVerifyResult.RESULT_PENDING_ASYM_PASSPHRASE) ==
                                 DecryptVerifyResult.RESULT_PENDING_ASYM_PASSPHRASE) {
-                            showPassphraseDialog(pgpResult.getKeyIdPassphraseNeeded());
+                            startPassphraseDialog(pgpResult.getKeyIdPassphraseNeeded());
                         } else if ((pgpResult.getResult() & DecryptVerifyResult.RESULT_PENDING_SYM_PASSPHRASE) ==
                                 DecryptVerifyResult.RESULT_PENDING_SYM_PASSPHRASE) {
-                            showPassphraseDialog(Constants.key.symmetric);
+                            startPassphraseDialog(Constants.key.symmetric);
                         } else if ((pgpResult.getResult() & DecryptVerifyResult.RESULT_PENDING_NFC) ==
                                 DecryptVerifyResult.RESULT_PENDING_NFC) {
                             // TODO

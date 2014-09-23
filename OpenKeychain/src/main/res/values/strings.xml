@@ -70,6 +70,7 @@
     <string name="btn_view_cert_key">"View certification key"</string>
     <string name="btn_create_key">"Create key"</string>
     <string name="btn_add_files">"Add file(s)"</string>
+    <string name="btn_add_share_decrypted_text">"Share decrypted text"</string>
 
     <!-- menu -->
     <string name="menu_preferences">"Settings"</string>
@@ -225,6 +226,7 @@
     <string name="fingerprint_copied_to_clipboard">"Fingerprint has been copied to the clipboard!"</string>
     <string name="select_key_to_certify">"Please select a key to be used for certification!"</string>
     <string name="key_too_big_for_sharing">"Key is too big to be shared this way!"</string>
+    <string name="text_copied_to_clipboard">"Text has been copied to the clipboard!"</string>
 
     <!--
          errors

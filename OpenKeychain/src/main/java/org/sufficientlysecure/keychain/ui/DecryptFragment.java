@@ -33,6 +33,7 @@ import android.widget.TextView;
 
 import org.openintents.openpgp.OpenPgpSignatureResult;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.nfc.NfcActivity;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.service.results.DecryptVerifyResult;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
@@ -81,24 +82,50 @@ public abstract class DecryptFragment extends Fragment {
         startActivityForResult(intent, RESULT_CODE_LOOKUP_KEY);
     }
 
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        switch (requestCode) {
+    public static final int REQUEST_CODE_PASSPHRASE = 0x00008001;
+    public static final int REQUEST_CODE_NFC = 0x00008002;
 
-            case RESULT_CODE_LOOKUP_KEY: {
-                if (resultCode == Activity.RESULT_OK) {
-                    // TODO: generate new OpenPgpSignatureResult and display it
-                }
-                return;
-            }
-
-            default: {
-                super.onActivityResult(requestCode, resultCode, data);
-
-                break;
-            }
-        }
+    protected void startPassphraseDialog(long subkeyId) {
+        Intent intent = new Intent(getActivity(), PassphraseDialogActivity.class);
+        intent.putExtra(PassphraseDialogActivity.EXTRA_SUBKEY_ID, subkeyId);
+        startActivityForResult(intent, REQUEST_CODE_PASSPHRASE);
     }
+
+    protected void startNfcSign(String pin, byte[] hashToSign, int hashAlgo) {
+        Intent data = new Intent();
+
+        // build PendingIntent for Yubikey NFC operations
+        Intent intent = new Intent(getActivity(), NfcActivity.class);
+        intent.setAction(NfcActivity.ACTION_SIGN_HASH);
+        // pass params through to activity that it can be returned again later to repeat pgp operation
+        intent.putExtra(NfcActivity.EXTRA_DATA, data);
+        intent.putExtra(NfcActivity.EXTRA_PIN, pin);
+
+        intent.putExtra(NfcActivity.EXTRA_NFC_HASH_TO_SIGN, hashToSign);
+        intent.putExtra(NfcActivity.EXTRA_NFC_HASH_ALGO, hashAlgo);
+        intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+
+        startActivityForResult(intent, REQUEST_CODE_NFC);
+    }
+
+//    @Override
+//    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+//        switch (requestCode) {
+//
+//            case RESULT_CODE_LOOKUP_KEY: {
+//                if (resultCode == Activity.RESULT_OK) {
+//                    // TODO: generate new OpenPgpSignatureResult and display it
+//                }
+//                return;
+//            }
+//
+//            default: {
+//                super.onActivityResult(requestCode, resultCode, data);
+//
+//                break;
+//            }
+//        }
+//    }
 
     protected void onResult(DecryptVerifyResult decryptVerifyResult) {
         OpenPgpSignatureResult signatureResult = decryptVerifyResult.getSignatureResult();
@@ -197,20 +224,20 @@ public abstract class DecryptFragment extends Fragment {
         }
     }
 
-    protected void showPassphraseDialog(long keyId) {
-        PassphraseDialogFragment.show(getActivity(), keyId,
-                new Handler() {
-                    @Override
-                    public void handleMessage(Message message) {
-                        if (message.what == PassphraseDialogFragment.MESSAGE_OKAY) {
-                            String passphrase =
-                                    message.getData().getString(PassphraseDialogFragment.MESSAGE_DATA_PASSPHRASE);
-                            decryptStart(passphrase);
-                        }
-                    }
-                }
-        );
-    }
+//    protected void showPassphraseDialog(long keyId) {
+//        PassphraseDialogFragment.show(getActivity(), keyId,
+//                new Handler() {
+//                    @Override
+//                    public void handleMessage(Message message) {
+//                        if (message.what == PassphraseDialogFragment.MESSAGE_OKAY) {
+//                            String passphrase =
+//                                    message.getData().getString(PassphraseDialogFragment.MESSAGE_DATA_PASSPHRASE);
+//                            decryptStart(passphrase);
+//                        }
+//                    }
+//                }
+//        );
+//    }
 
     /**
      * Should be overridden by MessageFragment and FileFragment to start actual decryption

@@ -10,15 +10,8 @@ public class EncryptActivity extends DrawerActivity {
     public static final int REQUEST_CODE_NFC = 0x00008002;
 
     protected void startPassphraseDialog(long subkeyId) {
-        Intent data = new Intent();
-
-        // build PendingIntent for Yubikey NFC operations
         Intent intent = new Intent(this, PassphraseDialogActivity.class);
-        // pass params through to activity that it can be returned again later to repeat pgp operation
         intent.putExtra(PassphraseDialogActivity.EXTRA_SUBKEY_ID, subkeyId);
-
-//        intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
-
         startActivityForResult(intent, REQUEST_CODE_PASSPHRASE);
     }
 

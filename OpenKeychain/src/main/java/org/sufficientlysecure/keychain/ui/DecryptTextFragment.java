@@ -17,6 +17,7 @@
 
 package org.sufficientlysecure.keychain.ui;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
@@ -29,20 +30,23 @@ import android.widget.TextView;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.compatibility.ClipboardReflection;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
 import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
 import org.sufficientlysecure.keychain.service.results.DecryptVerifyResult;
+import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.util.Log;
+import org.sufficientlysecure.keychain.util.ShareHelper;
 
 public class DecryptTextFragment extends DecryptFragment {
     public static final String ARG_CIPHERTEXT = "ciphertext";
 
-//    // view
-    private TextView mMessage;
-//    private View mDecryptButton;
-//    private View mDecryptFromCLipboardButton;
-//
-//    // model
+    // view
+    private TextView mText;
+    private View mShareButton;
+    private View mCopyButton;
+
+    // model
     private String mCiphertext;
 
     /**
@@ -66,23 +70,51 @@ public class DecryptTextFragment extends DecryptFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.decrypt_text_fragment, container, false);
 
-        mMessage = (TextView) view.findViewById(R.id.decrypt_text_plaintext);
-//        mDecryptButton = view.findViewById(R.id.action_decrypt);
-//        mDecryptFromCLipboardButton = view.findViewById(R.id.action_decrypt_from_clipboard);
-//        mDecryptButton.setOnClickListener(new OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                decryptClicked();
-//            }
-//        });
-//        mDecryptFromCLipboardButton.setOnClickListener(new OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                decryptFromClipboardClicked();
-//            }
-//        });
+        mText = (TextView) view.findViewById(R.id.decrypt_text_plaintext);
+        mShareButton = view.findViewById(R.id.action_decrypt_share_plaintext);
+        mCopyButton = view.findViewById(R.id.action_decrypt_copy_plaintext);
+        mShareButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(sendWithChooserExcludingEncrypt(mText.getText().toString()));
+            }
+        });
+        mCopyButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                copyToClipboard(mText.getText().toString());
+            }
+        });
 
         return view;
+    }
+
+    /**
+     * Create Intent Chooser but exclude OK's EncryptActivity.
+     */
+    private Intent sendWithChooserExcludingEncrypt(String text) {
+        Intent prototype = createSendIntent(text);
+        String title = getString(R.string.title_share_file);
+
+        // we don't want to encrypt the encrypted, no inception ;)
+        String[] blacklist = new String[]{
+                Constants.PACKAGE_NAME + ".ui.DecryptTextActivity",
+                "org.thialfihar.android.apg.ui.DecryptActivity"
+        };
+
+        return new ShareHelper(getActivity()).createChooserExcluding(prototype, title, blacklist);
+    }
+
+    private Intent createSendIntent(String text) {
+        Intent sendIntent = new Intent(Intent.ACTION_SEND);
+        sendIntent.putExtra(Intent.EXTRA_TEXT, text);
+        sendIntent.setType("text/plain");
+        return sendIntent;
+    }
+
+    private void copyToClipboard(String text) {
+        ClipboardReflection.copyToClipboard(getActivity(), text);
+        Notify.showNotify(getActivity(), R.string.text_copied_to_clipboard, Notify.Style.INFO);
     }
 
     @Override
@@ -132,10 +164,10 @@ public class DecryptTextFragment extends DecryptFragment {
                     if (pgpResult.isPending()) {
                         if ((pgpResult.getResult() & DecryptVerifyResult.RESULT_PENDING_ASYM_PASSPHRASE) ==
                                 DecryptVerifyResult.RESULT_PENDING_ASYM_PASSPHRASE) {
-                            showPassphraseDialog(pgpResult.getKeyIdPassphraseNeeded());
+                            startPassphraseDialog(pgpResult.getKeyIdPassphraseNeeded());
                         } else if ((pgpResult.getResult() & DecryptVerifyResult.RESULT_PENDING_SYM_PASSPHRASE) ==
                                 DecryptVerifyResult.RESULT_PENDING_SYM_PASSPHRASE) {
-                            showPassphraseDialog(Constants.key.symmetric);
+                            startPassphraseDialog(Constants.key.symmetric);
                         } else if ((pgpResult.getResult() & DecryptVerifyResult.RESULT_PENDING_NFC) ==
                                 DecryptVerifyResult.RESULT_PENDING_NFC) {
                             // TODO
@@ -146,8 +178,8 @@ public class DecryptTextFragment extends DecryptFragment {
 
                         byte[] decryptedMessage = returnData
                                 .getByteArray(KeychainIntentService.RESULT_DECRYPTED_BYTES);
-                        mMessage.setText(new String(decryptedMessage));
-                        mMessage.setHorizontallyScrolling(false);
+                        mText.setText(new String(decryptedMessage));
+                        mText.setHorizontallyScrolling(false);
 
                         pgpResult.createNotify(getActivity()).show();
 
@@ -169,6 +201,39 @@ public class DecryptTextFragment extends DecryptFragment {
 
         // start service with intent
         getActivity().startService(intent);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode) {
+
+            case REQUEST_CODE_PASSPHRASE: {
+                if (resultCode == Activity.RESULT_OK && data != null) {
+                    String passphrase = data.getStringExtra(PassphraseDialogActivity.MESSAGE_DATA_PASSPHRASE);
+                    decryptStart(passphrase);
+                    return;
+                } else {
+                    getActivity().finish();
+                }
+                break;
+            }
+
+            case REQUEST_CODE_NFC: {
+                if (resultCode == Activity.RESULT_OK && data != null) {
+                    // TODO
+                    return;
+                } else {
+                    getActivity().finish();
+                }
+                break;
+            }
+
+            default: {
+                super.onActivityResult(requestCode, resultCode, data);
+
+                break;
+            }
+        }
     }
 
 }
