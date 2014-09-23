@@ -65,10 +65,8 @@
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:clickable="true"
                 android:paddingRight="4dp"
                 android:gravity="center_vertical"
-                style="@style/SelectableItem"
                 android:orientation="vertical">
 
                 <TextView
@@ -90,7 +88,6 @@
             </LinearLayout>
 
             <ImageView
-                android:id="@+id/view_key_action_certify_image"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:padding="8dp"
