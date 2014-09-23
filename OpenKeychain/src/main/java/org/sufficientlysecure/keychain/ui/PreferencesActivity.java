@@ -82,6 +82,9 @@ public class PreferencesActivity extends PreferenceActivity {
         } else if (action != null && action.equals(ACTION_PREFS_ADV)) {
             addPreferencesFromResource(R.xml.adv_preferences);
 
+            initializePassphraseCacheSubs(
+                    (CheckBoxPreference) findPreference(Constants.Pref.PASSPHRASE_CACHE_SUBS));
+
             initializePassphraseCacheTtl(
                     (IntegerListPreference) findPreference(Constants.Pref.PASSPHRASE_CACHE_TTL));
 
