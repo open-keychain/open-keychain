@@ -20,6 +20,12 @@ package org.sufficientlysecure.keychain.ui.widget;
 import android.content.Context;
 import android.support.v4.widget.NoScrollableSwipeRefreshLayout;
 import android.util.AttributeSet;
+import android.view.InputDevice;
+import android.view.InputDevice.MotionRange;
+import android.view.MotionEvent;
+
+import org.sufficientlysecure.keychain.Constants;
+import org.sufficientlysecure.keychain.util.Log;
 
 import se.emilsjolander.stickylistheaders.StickyListHeadersListView;
 
@@ -71,4 +77,24 @@ public class ListAwareSwipeRefreshLayout extends NoScrollableSwipeRefreshLayout 
         )
         );
     }
+
+    /** Called on a touch event, this method exempts a small area in the upper right from pull to
+     * refresh handling.
+     *
+     * If the touch event happens somewhere in the upper right corner of the screen, we return false
+     * to indicate that the event was not handled. This ensures events in that area are always
+     * handed through to the list scrollbar handle. For all other cases, we pass the message through
+     * to the pull to refresh handler.
+     */
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        float ratioX = event.getX() / event.getDevice().getMotionRange(MotionEvent.AXIS_X).getMax();
+        float ratioY = event.getY() / event.getDevice().getMotionRange(MotionEvent.AXIS_Y).getMax();
+        // if this is the upper right corner, don't handle as pull to refresh event
+        if (ratioX > 0.85f && ratioY < 0.15f) {
+            return false;
+        }
+        return super.onTouchEvent(event);
+    }
+
 }
