@@ -54,9 +54,11 @@ import org.sufficientlysecure.keychain.util.TestingUtils;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.security.Security;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
@@ -923,6 +925,23 @@ public class PgpKeyOperationTest {
         String otherPassphrase = TestingUtils.genPassphrase(true);
         parcel.mNewPassphrase = otherPassphrase;
         modified = applyModificationWithChecks(parcel, modified, onlyA, onlyB, "");
+
+        Assert.assertEquals("exactly three packets should have been modified (the secret keys)",
+                3, onlyB.size());
+
+        { // quick check to make sure no two secret keys have the same IV
+            HashSet<ByteBuffer> ivs = new HashSet<ByteBuffer>();
+            for (int i = 0; i < 3; i++) {
+                SecretKeyPacket p = (SecretKeyPacket) new BCPGInputStream(
+                        new ByteArrayInputStream(onlyB.get(i).buf)).readPacket();
+                ByteBuffer iv = ByteBuffer.wrap(p.getIV());
+                Assert.assertFalse(
+                        "no two secret keys should have the same s2k iv (slightly non-deterministic!)",
+                        ivs.contains(iv)
+                );
+                ivs.add(iv);
+            }
+        }
 
         RawPacket sKeyWithPassphrase = onlyB.get(1);
         Assert.assertEquals("extracted packet should be a secret subkey",
