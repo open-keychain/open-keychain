@@ -96,7 +96,8 @@
         <activity
             android:name=".ui.CreateKeyActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
-            android:label="@string/title_create_key">
+            android:label="@string/title_create_key"
+            android:parentActivityName=".ui.KeyListActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".ui.KeyListActivity" />
@@ -198,7 +199,11 @@
             android:name=".ui.DecryptTextActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
             android:label="@string/title_decrypt"
-            android:windowSoftInputMode="stateHidden">
+            android:windowSoftInputMode="stateHidden"
+            android:parentActivityName=".ui.DecryptActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".ui.DecryptActivity" />
 
             <!-- Keychain's own Actions -->
             <!-- DECRYPT with text as extra -->
@@ -221,7 +226,11 @@
             android:name=".ui.DecryptFilesActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
             android:label="@string/title_decrypt"
-            android:windowSoftInputMode="stateHidden">
+            android:windowSoftInputMode="stateHidden"
+            android:parentActivityName=".ui.DecryptActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".ui.DecryptActivity" />
 
             <!-- VIEW with mimeType application/octet-stream, application/pgp and text/pgp  -->
             <intent-filter android:label="@string/intent_send_decrypt">

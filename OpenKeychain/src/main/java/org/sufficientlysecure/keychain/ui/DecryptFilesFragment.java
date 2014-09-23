@@ -48,7 +48,6 @@ import java.io.File;
 
 public class DecryptFilesFragment extends DecryptFragment {
     public static final String ARG_URI = "uri";
-    //    public static final String ARG_FROM_VIEW_INTENT = "view_intent";
     public static final String ARG_OPEN_DIRECTLY = "open_directly";
 
     private static final int REQUEST_CODE_INPUT = 0x00007003;
@@ -71,7 +70,6 @@ public class DecryptFilesFragment extends DecryptFragment {
 
         Bundle args = new Bundle();
         args.putParcelable(ARG_URI, uri);
-//        args.putBoolean(ARG_FROM_VIEW_INTENT, fromViewIntent);
         args.putBoolean(ARG_OPEN_DIRECTLY, openDirectly);
 
         frag.setArguments(args);

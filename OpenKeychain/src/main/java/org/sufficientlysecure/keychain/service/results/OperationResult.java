@@ -519,7 +519,9 @@ public abstract class OperationResult implements Parcelable {
         MSG_CRT_UPLOAD_SUCCESS (LogLevel.OK, R.string.msg_crt_upload_success),
         MSG_CRT_SUCCESS (LogLevel.OK, R.string.msg_crt_success),
 
-        MSG_ACC_SAVED (LogLevel.INFO, R.string.api_settings_save)
+        MSG_ACC_SAVED (LogLevel.INFO, R.string.api_settings_save_msg),
+
+        MSG_NO_VALID_ENC (LogLevel.ERROR, R.string.error_invalid_data)
 
         ;
 

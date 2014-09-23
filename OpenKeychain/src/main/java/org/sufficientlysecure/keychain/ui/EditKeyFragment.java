@@ -654,7 +654,7 @@ public class EditKeyFragment extends LoaderFragment implements
         // Prepare an intent with an EXTRA_RESULT
         Intent intent = new Intent();
         intent.putExtra(OperationResult.EXTRA_RESULT,
-                new SingletonResult(SingletonResult.RESULT_ERROR, LogLevel.ERROR, reason));
+                new SingletonResult(SingletonResult.RESULT_ERROR, reason));
 
         // Finish with result
         getActivity().setResult(EditKeyActivity.RESULT_OK, intent);

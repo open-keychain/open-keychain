@@ -34,7 +34,7 @@ public class SingletonResult extends OperationResult {
         super(source);
     }
 
-    public SingletonResult(int result, LogLevel level, LogType reason) {
+    public SingletonResult(int result, LogType reason) {
         super(result, new OperationLog());
         // Prepare the log
         mLog.add(reason, 0);

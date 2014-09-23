@@ -330,7 +330,7 @@ public class CertifyKeyFragment extends LoaderFragment
                 if (message.arg1 == KeychainIntentServiceHandler.MESSAGE_OKAY) {
 
                     SingletonResult result = new SingletonResult(
-                            SingletonResult.RESULT_OK, LogLevel.OK, LogType.MSG_CRT_SUCCESS);
+                            SingletonResult.RESULT_OK, LogType.MSG_CRT_SUCCESS);
                     Intent intent = new Intent();
                     intent.putExtra(SingletonResult.EXTRA_RESULT, result);
                     mActivity.setResult(CertifyKeyActivity.RESULT_OK, intent);
@@ -384,7 +384,7 @@ public class CertifyKeyFragment extends LoaderFragment
 
                 if (message.arg1 == KeychainIntentServiceHandler.MESSAGE_OKAY) {
                     SingletonResult result = new SingletonResult(SingletonResult.RESULT_OK,
-                            LogLevel.OK, LogType.MSG_CRT_UPLOAD_SUCCESS);
+                            LogType.MSG_CRT_UPLOAD_SUCCESS);
                     Intent intent = new Intent();
                     intent.putExtra(SingletonResult.EXTRA_RESULT, result);
                     mActivity.setResult(CertifyKeyActivity.RESULT_OK, intent);

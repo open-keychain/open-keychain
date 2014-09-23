@@ -27,6 +27,8 @@ import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.api.OpenKeychainIntents;
 import org.sufficientlysecure.keychain.compatibility.ClipboardReflection;
 import org.sufficientlysecure.keychain.pgp.PgpHelper;
+import org.sufficientlysecure.keychain.service.results.OperationResult;
+import org.sufficientlysecure.keychain.service.results.SingletonResult;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 
@@ -54,6 +56,48 @@ public class DecryptTextActivity extends ActionBarActivity {
     }
 
     /**
+     * Fix the message a bit, trailing spaces and newlines break stuff,
+     * because GMail sends as HTML and such things break ASCII Armor
+     * TODO: things like "<" and ">" also make problems
+     * <p/>
+     * NOTE: Do not use on cleartext signatures, only on ASCII-armored ciphertext,
+     * it would change the signed message
+     */
+    private String fixAsciiArmoredCiphertext(String message) {
+        message = message.replaceAll(" +\n", "\n");
+        message = message.replaceAll("\n\n+", "\n\n");
+        message = message.replaceFirst("^\n+", "");
+        // make sure there'll be exactly one newline at the end
+        message = message.replaceFirst("\n*$", "\n");
+        // replace non breakable spaces
+        message = message.replaceAll("\\xa0", " ");
+
+        return message;
+    }
+
+    private String getPgpContent(String input) {
+        // only decrypt if clipboard content is available and a pgp message or cleartext signature
+        if (input != null) {
+            Matcher matcher = PgpHelper.PGP_MESSAGE.matcher(input);
+            if (matcher.matches()) {
+                String message = matcher.group(1);
+                message = fixAsciiArmoredCiphertext(message);
+                return message;
+            } else {
+                matcher = PgpHelper.PGP_CLEARTEXT_SIGNATURE.matcher(input);
+                if (matcher.matches()) {
+                    // return cleartext signature
+                    return matcher.group(1);
+                } else {
+                    return null;
+                }
+            }
+        } else {
+            return null;
+        }
+    }
+
+    /**
      * Handles all actions with this intent
      *
      * @param intent
@@ -67,73 +111,58 @@ public class DecryptTextActivity extends ActionBarActivity {
             extras = new Bundle();
         }
 
-        String textData = null;
-
-        /*
-         * Android's Action
-         */
         if (Intent.ACTION_SEND.equals(action) && type != null) {
+            // Android action
+
             // When sending to Keychain Decrypt via share menu
             if ("text/plain".equals(type)) {
-                // Plain text
                 String sharedText = intent.getStringExtra(Intent.EXTRA_TEXT);
+                sharedText = getPgpContent(sharedText);
+
                 if (sharedText != null) {
-                    // handle like normal text decryption, override action and extras to later
-                    // executeServiceMethod ACTION_DECRYPT_TEXT in main actions
-                    textData = sharedText;
+                    loadFragment(savedInstanceState, sharedText);
+                } else {
+                    Notify.showNotify(this, R.string.error_invalid_data, Notify.Style.ERROR);
                 }
-            }
-        }
-
-        /**
-         * Main Actions
-         */
-        textData = extras.getString(EXTRA_TEXT);
-        if (ACTION_DECRYPT_TEXT.equals(action) && textData != null) {
-            Log.d(Constants.TAG, "textData not null, matching text ...");
-            Matcher matcher = PgpHelper.PGP_MESSAGE.matcher(textData);
-            if (matcher.matches()) {
-                Log.d(Constants.TAG, "PGP_MESSAGE matched");
-                textData = matcher.group(1);
-                // replace non breakable spaces
-                textData = textData.replaceAll("\\xa0", " ");
             } else {
-                matcher = PgpHelper.PGP_CLEARTEXT_SIGNATURE.matcher(textData);
-                if (matcher.matches()) {
-                    Log.d(Constants.TAG, "PGP_CLEARTEXT_SIGNATURE matched");
-                    textData = matcher.group(1);
-                    // replace non breakable spaces
-                    textData = textData.replaceAll("\\xa0", " ");
-                } else {
-                    Notify.showNotify(this, R.string.error_invalid_data, Notify.Style.ERROR);
-                    Log.d(Constants.TAG, "Nothing matched!");
-                }
+                Log.e(Constants.TAG, "ACTION_SEND received non-plaintext, this should not happen in this activity!");
             }
-        } else if (ACTION_DECRYPT_FROM_CLIPBOARD.equals(action)) {
-            CharSequence clipboardText = ClipboardReflection.getClipboardText(this);
+        } else if (ACTION_DECRYPT_TEXT.equals(action)) {
+            Log.d(Constants.TAG, "ACTION_DECRYPT_TEXT textData not null, matching text...");
 
-            // only decrypt if clipboard content is available and a pgp message or cleartext signature
-            if (clipboardText != null) {
-                Matcher matcher = PgpHelper.PGP_MESSAGE.matcher(clipboardText);
-                if (!matcher.matches()) {
-                    matcher = PgpHelper.PGP_CLEARTEXT_SIGNATURE.matcher(clipboardText);
-                }
-                if (matcher.matches()) {
-                    textData = matcher.group(1);
-                } else {
-                    Notify.showNotify(this, R.string.error_invalid_data, Notify.Style.ERROR);
-                }
+            String extraText = extras.getString(EXTRA_TEXT);
+            extraText = getPgpContent(extraText);
+
+            if (extraText != null) {
+                loadFragment(savedInstanceState, extraText);
             } else {
                 Notify.showNotify(this, R.string.error_invalid_data, Notify.Style.ERROR);
             }
-        } else if (ACTION_DECRYPT_TEXT.equals(action)) {
-            Log.e(Constants.TAG,
-                    "Include the extra 'text' in your Intent!");
-        }
+        } else if (ACTION_DECRYPT_FROM_CLIPBOARD.equals(action)) {
+            Log.d(Constants.TAG, "ACTION_DECRYPT_FROM_CLIPBOARD");
 
-        loadFragment(savedInstanceState, textData);
+            String clipboardText = ClipboardReflection.getClipboardText(this).toString();
+            clipboardText = getPgpContent(clipboardText);
+
+            if (clipboardText != null) {
+                loadFragment(savedInstanceState, clipboardText);
+            } else {
+                returnInvalidResult();
+            }
+        } else if (ACTION_DECRYPT_TEXT.equals(action)) {
+            Log.e(Constants.TAG, "Include the extra 'text' in your Intent!");
+            finish();
+        }
     }
 
+    private void returnInvalidResult() {
+        SingletonResult result = new SingletonResult(
+                SingletonResult.RESULT_ERROR, OperationResult.LogType.MSG_NO_VALID_ENC);
+        Intent intent = new Intent();
+        intent.putExtra(SingletonResult.EXTRA_RESULT, result);
+        setResult(RESULT_OK, intent);
+        finish();
+    }
 
     private void loadFragment(Bundle savedInstanceState, String ciphertext) {
         // However, if we're being restored from a previous state,

@@ -107,9 +107,8 @@ public class AccountSettingsActivity extends ActionBarActivity {
 
     private void save() {
         new ProviderHelper(this).updateApiAccount(mAccountUri, mAccountSettingsFragment.getAccSettings());
-        // TODO: show "account saved" instead of "operation succeeded"
         SingletonResult result = new SingletonResult(
-                SingletonResult.RESULT_OK, LogLevel.OK, LogType.MSG_ACC_SAVED);
+                SingletonResult.RESULT_OK, LogType.MSG_ACC_SAVED);
         Intent intent = new Intent();
         intent.putExtra(SingletonResult.EXTRA_RESULT, result);
         setResult(RESULT_OK, intent);
