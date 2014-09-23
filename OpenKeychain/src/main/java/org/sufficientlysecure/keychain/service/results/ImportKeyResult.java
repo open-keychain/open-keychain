@@ -61,6 +61,10 @@ public class ImportKeyResult extends OperationResult {
         return (mResult & RESULT_OK_UPDATED) == RESULT_OK_UPDATED;
     }
 
+    public boolean isOkWithErrors() {
+        return (mResult & RESULT_WITH_ERRORS) == RESULT_WITH_ERRORS;
+    }
+
     public boolean isFailNothing() {
         return (mResult & RESULT_FAIL_NOTHING) == RESULT_FAIL_NOTHING;
     }
@@ -129,7 +133,7 @@ public class ImportKeyResult extends OperationResult {
             }
 
             // New and updated keys
-            if (this.isOkBoth()) {
+            if (isOkBoth()) {
                 str = activity.getResources().getQuantityString(
                         R.plurals.import_keys_added_and_updated_1, mNewKeys, mNewKeys);
                 str += " " + activity.getResources().getQuantityString(
@@ -144,6 +148,13 @@ public class ImportKeyResult extends OperationResult {
                 duration = 0;
                 color = Style.RED;
                 str = "internal error";
+            }
+            if (isOkWithErrors()) {
+                // definitely switch to warning-style message in this case!
+                duration = 0;
+                color = Style.RED;
+                str += " " + activity.getResources().getQuantityString(
+                        R.plurals.import_keys_with_errors, mBadKeys);
             }
 
         } else {
