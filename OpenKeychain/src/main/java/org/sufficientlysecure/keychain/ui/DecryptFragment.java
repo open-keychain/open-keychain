@@ -17,11 +17,8 @@
 
 package org.sufficientlysecure.keychain.ui;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -33,13 +30,16 @@ import android.widget.TextView;
 
 import org.openintents.openpgp.OpenPgpSignatureResult;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.nfc.NfcActivity;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.service.results.DecryptVerifyResult;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
-import org.sufficientlysecure.keychain.ui.dialog.PassphraseDialogFragment;
 
 public abstract class DecryptFragment extends Fragment {
     private static final int RESULT_CODE_LOOKUP_KEY = 0x00007006;
+
+    public static final int REQUEST_CODE_PASSPHRASE = 0x00008001;
+    public static final int REQUEST_CODE_NFC_DECRYPT = 0x00008002;
 
     protected long mSignatureKeyId = 0;
 
@@ -53,6 +53,9 @@ public abstract class DecryptFragment extends Fragment {
 
     protected Button mLookupKey;
 
+    // State
+    protected String mPassphrase;
+    protected byte[] mNfcDecryptedSessionKey;
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -81,23 +84,23 @@ public abstract class DecryptFragment extends Fragment {
         startActivityForResult(intent, RESULT_CODE_LOOKUP_KEY);
     }
 
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        switch (requestCode) {
+    protected void startPassphraseDialog(long subkeyId) {
+        Intent intent = new Intent(getActivity(), PassphraseDialogActivity.class);
+        intent.putExtra(PassphraseDialogActivity.EXTRA_SUBKEY_ID, subkeyId);
+        startActivityForResult(intent, REQUEST_CODE_PASSPHRASE);
+    }
 
-            case RESULT_CODE_LOOKUP_KEY: {
-                if (resultCode == Activity.RESULT_OK) {
-                    // TODO: generate new OpenPgpSignatureResult and display it
-                }
-                return;
-            }
+    protected void startNfcDecrypt(String pin, byte[] encryptedSessionKey) {
+        // build PendingIntent for Yubikey NFC operations
+        Intent intent = new Intent(getActivity(), NfcActivity.class);
+        intent.setAction(NfcActivity.ACTION_DECRYPT_SESSION_KEY);
+        intent.putExtra(NfcActivity.EXTRA_DATA, new Intent()); // not used, only relevant to OpenPgpService
+        intent.putExtra(NfcActivity.EXTRA_PIN, pin);
 
-            default: {
-                super.onActivityResult(requestCode, resultCode, data);
+        intent.putExtra(NfcActivity.EXTRA_NFC_ENC_SESSION_KEY, encryptedSessionKey);
+        intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
-                break;
-            }
-        }
+        startActivityForResult(intent, REQUEST_CODE_NFC_DECRYPT);
     }
 
     protected void onResult(DecryptVerifyResult decryptVerifyResult) {
@@ -197,26 +200,9 @@ public abstract class DecryptFragment extends Fragment {
         }
     }
 
-    protected void showPassphraseDialog(long keyId) {
-        PassphraseDialogFragment.show(getActivity(), keyId,
-                new Handler() {
-                    @Override
-                    public void handleMessage(Message message) {
-                        if (message.what == PassphraseDialogFragment.MESSAGE_OKAY) {
-                            String passphrase =
-                                    message.getData().getString(PassphraseDialogFragment.MESSAGE_DATA_PASSPHRASE);
-                            decryptStart(passphrase);
-                        }
-                    }
-                }
-        );
-    }
-
     /**
      * Should be overridden by MessageFragment and FileFragment to start actual decryption
-     *
-     * @param passphrase
      */
-    protected abstract void decryptStart(String passphrase);
+    protected abstract void decryptStart();
 
 }

@@ -135,7 +135,7 @@ public class EncryptAsymmetricFragment extends Fragment implements EncryptActivi
             try {
                 CachedPublicKeyRing keyring = mProviderHelper.getCachedPublicKeyRing(
                         KeyRings.buildUnifiedKeyRingUri(signatureKey));
-                if(keyring.hasAnySecret()) {
+                if (keyring.hasAnySecret()) {
                     setSignatureKeyId(keyring.getMasterKeyId());
                     mSign.setSelectedKeyId(mEncryptInterface.getSignatureKey());
                 }

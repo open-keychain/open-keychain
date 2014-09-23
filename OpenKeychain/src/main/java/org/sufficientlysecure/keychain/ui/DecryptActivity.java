@@ -22,6 +22,7 @@ import android.os.Bundle;
 import android.view.View;
 
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.service.results.OperationResult;
 
 public class DecryptActivity extends DrawerActivity {
 
@@ -50,8 +51,19 @@ public class DecryptActivity extends DrawerActivity {
             public void onClick(View v) {
                 Intent clipboardDecrypt = new Intent(DecryptActivity.this, DecryptTextActivity.class);
                 clipboardDecrypt.setAction(DecryptTextActivity.ACTION_DECRYPT_FROM_CLIPBOARD);
-                startActivity(clipboardDecrypt);
+                startActivityForResult(clipboardDecrypt, 0);
             }
         });
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        // if a result has been returned, display a notify
+        if (data != null && data.hasExtra(OperationResult.EXTRA_RESULT)) {
+            OperationResult result = data.getParcelableExtra(OperationResult.EXTRA_RESULT);
+            result.createNotify(this).show();
+        } else {
+            super.onActivityResult(requestCode, resultCode, data);
+        }
     }
 }

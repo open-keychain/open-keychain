@@ -51,6 +51,8 @@
     <string name="section_key_server">"Keyserver"</string>
     <string name="section_fingerprint">"Fingerprint"</string>
     <string name="section_key_to_certify">"Key to be certified"</string>
+    <string name="section_decrypt_files">"Files"</string>
+    <string name="section_decrypt_text">"Text"</string>
 
     <!-- button -->
     <string name="btn_decrypt_verify_file">"Decrypt, verify, and save file"</string>
@@ -70,6 +72,10 @@
     <string name="btn_view_cert_key">"View certification key"</string>
     <string name="btn_create_key">"Create key"</string>
     <string name="btn_add_files">"Add file(s)"</string>
+    <string name="btn_add_share_decrypted_text">"Share decrypted text"</string>
+    <string name="btn_decrypt_clipboard">"Decrypt from clipboard"</string>
+    <string name="btn_decrypt_and_verify">"and verify signatures"</string>
+    <string name="btn_decrypt_files">"Decrypt files"</string>
 
     <!-- menu -->
     <string name="menu_preferences">"Settings"</string>
@@ -225,6 +231,7 @@
     <string name="fingerprint_copied_to_clipboard">"Fingerprint has been copied to the clipboard!"</string>
     <string name="select_key_to_certify">"Please select a key to be used for certification!"</string>
     <string name="key_too_big_for_sharing">"Key is too big to be shared this way!"</string>
+    <string name="text_copied_to_clipboard">"Text has been copied to the clipboard!"</string>
 
     <!--
          errors
@@ -241,7 +248,7 @@
     <string name="error_key_needs_a_user_id">"need at least one identity"</string>
     <string name="error_no_signature_passphrase">"no passphrase given"</string>
     <string name="error_no_signature_key">"no signature key given"</string>
-    <string name="error_invalid_data">"not valid encryption data"</string>
+    <string name="error_invalid_data">"No valid encrypted or signed OpenPGP content!"</string>
     <string name="error_integrity_check_failed">"integrity check failed! Data has been modified!"</string>
     <string name="error_wrong_passphrase">"wrong passphrase"</string>
     <string name="error_could_not_extract_private_key">"could not extract private key"</string>
@@ -424,6 +431,7 @@
     <string name="api_settings_select_key">"Select key"</string>
     <string name="api_settings_create_key">"Create new key for this account"</string>
     <string name="api_settings_save">"Save"</string>
+    <string name="api_settings_save_msg">"Account has been saved"</string>
     <string name="api_settings_cancel">"Cancel"</string>
     <string name="api_settings_revoke">"Revoke access"</string>
     <string name="api_settings_start">"Start application"</string>
