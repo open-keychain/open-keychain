@@ -88,6 +88,9 @@ public class DecryptFilesFragment extends DecryptFragment {
         mDecryptButton = view.findViewById(R.id.decrypt_file_action_decrypt);
         view.findViewById(R.id.decrypt_file_browse).setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
+                // reset state
+                mPassphrase = null;
+                mNfcDecryptedSessionKey = null;
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
                     FileHelper.openDocument(DecryptFilesFragment.this, "*/*", REQUEST_CODE_INPUT);
                 } else {
@@ -139,7 +142,6 @@ public class DecryptFilesFragment extends DecryptFragment {
             return;
         }
 
-//        askForOutputFilename();
         decryptOriginalFilename();
     }
 
