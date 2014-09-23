@@ -21,7 +21,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:text="Files" />
+            android:text="@string/section_decrypt_files" />
 
 
         <TextView
@@ -34,7 +34,7 @@
             android:minHeight="?android:attr/listPreferredItemHeight"
             android:clickable="true"
             style="@style/SelectableItem"
-            android:text="Decrypt files"
+            android:text="@string/btn_decrypt_files"
             android:drawableRight="@drawable/ic_action_collection"
             android:drawablePadding="8dp"
             android:gravity="center_vertical" />
@@ -50,22 +50,82 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="32dp"
-            android:text="Text" />
+            android:text="@string/section_decrypt_text" />
 
-        <TextView
+        <!--<TextView-->
+        <!--android:id="@+id/decrypt_from_clipboard"-->
+        <!--android:paddingLeft="8dp"-->
+        <!--android:paddingRight="8dp"-->
+        <!--android:textAppearance="?android:attr/textAppearanceMedium"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:minHeight="?android:attr/listPreferredItemHeight"-->
+        <!--android:clickable="true"-->
+        <!--style="@style/SelectableItem"-->
+        <!--android:text="@string/btn_decrypt_clipboard"-->
+        <!--android:drawableRight="@drawable/ic_action_paste"-->
+        <!--android:drawablePadding="8dp"-->
+        <!--android:gravity="center_vertical" />-->
+
+        <!--<TextView-->
+        <!--android:paddingLeft="8dp"-->
+        <!--android:paddingRight="8dp"-->
+        <!--android:textAppearance="?android:attr/textAppearanceSmall"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:clickable="true"-->
+        <!--style="@style/SelectableItem"-->
+        <!--android:text="@string/btn_decrypt_clipboard"-->
+        <!--android:drawablePadding="8dp"-->
+        <!--android:gravity="center_vertical" />-->
+
+
+        <LinearLayout
             android:id="@+id/decrypt_from_clipboard"
-            android:paddingLeft="8dp"
-            android:paddingRight="8dp"
-            android:textAppearance="?android:attr/textAppearanceMedium"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:minHeight="?android:attr/listPreferredItemHeight"
+            android:layout_height="?android:attr/listPreferredItemHeight"
             android:clickable="true"
+            android:paddingRight="4dp"
             style="@style/SelectableItem"
-            android:text="Decrypt from clipboard"
-            android:drawableRight="@drawable/ic_action_paste"
-            android:drawablePadding="8dp"
-            android:gravity="center_vertical" />
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:clickable="true"
+                android:paddingRight="4dp"
+                android:gravity="center_vertical"
+                style="@style/SelectableItem"
+                android:orientation="vertical">
+
+                <TextView
+                    android:paddingLeft="8dp"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/btn_decrypt_clipboard" />
+
+                <TextView
+                    android:paddingLeft="8dp"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/tertiary_text_light"
+                    android:text="@string/btn_decrypt_and_verify"
+                    android:gravity="center_vertical" />
+
+            </LinearLayout>
+
+            <ImageView
+                android:id="@+id/view_key_action_certify_image"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:padding="8dp"
+                android:src="@drawable/ic_action_paste"
+                android:layout_gravity="center_vertical" />
+
+        </LinearLayout>
 
         <View
             android:layout_width="match_parent"
@@ -74,5 +134,6 @@
             android:layout_marginBottom="8dp" />
 
     </LinearLayout>
+
 
 </LinearLayout>

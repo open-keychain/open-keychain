@@ -51,6 +51,8 @@
     <string name="section_key_server">"Keyserver"</string>
     <string name="section_fingerprint">"Fingerprint"</string>
     <string name="section_key_to_certify">"Key to be certified"</string>
+    <string name="section_decrypt_files">"Files"</string>
+    <string name="section_decrypt_text">"Text"</string>
 
     <!-- button -->
     <string name="btn_decrypt_verify_file">"Decrypt, verify, and save file"</string>
@@ -71,6 +73,9 @@
     <string name="btn_create_key">"Create key"</string>
     <string name="btn_add_files">"Add file(s)"</string>
     <string name="btn_add_share_decrypted_text">"Share decrypted text"</string>
+    <string name="btn_decrypt_clipboard">"Decrypt from clipboard"</string>
+    <string name="btn_decrypt_and_verify">"and verify signatures"</string>
+    <string name="btn_decrypt_files">"Decrypt files"</string>
 
     <!-- menu -->
     <string name="menu_preferences">"Settings"</string>
