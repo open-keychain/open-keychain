@@ -77,6 +77,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -133,6 +134,8 @@ public class KeychainIntentService extends IntentService implements Progressable
     // encrypt
     public static final String ENCRYPT_SIGNATURE_MASTER_ID = "secret_key_id";
     public static final String ENCRYPT_SIGNATURE_KEY_PASSPHRASE = "secret_key_passphrase";
+    public static final String ENCRYPT_SIGNATURE_NFC_TIMESTAMP = "signature_nfc_timestamp";
+    public static final String ENCRYPT_SIGNATURE_NFC_HASH = "signature_nfc_hash";
     public static final String ENCRYPT_USE_ASCII_ARMOR = "use_ascii_armor";
     public static final String ENCRYPT_ENCRYPTION_KEYS_IDS = "encryption_keys_ids";
     public static final String ENCRYPT_COMPRESSION_ID = "compression_id";
@@ -256,6 +259,10 @@ public class KeychainIntentService extends IntentService implements Progressable
 
                 long sigMasterKeyId = data.getLong(ENCRYPT_SIGNATURE_MASTER_ID);
                 String sigKeyPassphrase = data.getString(ENCRYPT_SIGNATURE_KEY_PASSPHRASE);
+
+                byte[] nfcHash = data.getByteArray(ENCRYPT_SIGNATURE_NFC_HASH);
+                Date nfcTimestamp = (Date) data.getSerializable(ENCRYPT_SIGNATURE_NFC_TIMESTAMP);
+
                 String symmetricPassphrase = data.getString(ENCRYPT_SYMMETRIC_PASSPHRASE);
 
                 boolean useAsciiArmor = data.getBoolean(ENCRYPT_USE_ASCII_ARMOR);
@@ -296,6 +303,10 @@ public class KeychainIntentService extends IntentService implements Progressable
                                 .setSignatureHashAlgorithm(
                                         Preferences.getPreferences(this).getDefaultHashAlgorithm())
                                 .setAdditionalEncryptId(sigMasterKeyId);
+                        if (nfcHash != null && nfcTimestamp != null) {
+                            builder.setNfcState(nfcHash, nfcTimestamp);
+                        }
+
                     } catch (PgpGeneralException e) {
                         // encrypt-only
                         // TODO Just silently drop the requested signature? Shouldn't we throw here?

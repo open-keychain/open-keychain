@@ -28,6 +28,7 @@ import android.support.v4.app.Fragment;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import org.openintents.openpgp.util.OpenPgpApi;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.api.OpenKeychainIntents;
@@ -42,6 +43,7 @@ import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -70,6 +72,8 @@ public class EncryptTextActivity extends EncryptActivity implements EncryptActiv
     // TODO Constants.key.none? What's wrong with a null value?
     private long mSigningKeyId = Constants.key.none;
     private String mSigningKeyPassphrase = null;
+    private Date mNfcTimestamp = null;
+    private byte[] mNfcHash = null;
     private String mPassphrase = "";
     private boolean mShareAfterEncrypt = false;
     private ArrayList<Uri> mInputUris;
@@ -202,28 +206,31 @@ public class EncryptTextActivity extends EncryptActivity implements EncryptActiv
                         } else if ((pgpResult.getResult() & SignEncryptResult.RESULT_PENDING_NFC) ==
                                 SignEncryptResult.RESULT_PENDING_NFC) {
 
-                            // use after nfc sign
-////                                data.putExtra(OpenPgpApi.EXTRA_NFC_SIG_CREATION_TIMESTAMP, result.getNfcTimestamp().getTime());
+                            mNfcTimestamp = pgpResult.getNfcTimestamp();
                             startNfcSign("123456", pgpResult.getNfcHash(), pgpResult.getNfcAlgo());
                         } else {
                             throw new RuntimeException("Unhandled pending result!");
                         }
-                    } else if (pgpResult.success()) {
-                        if (mShareAfterEncrypt) {
-                            // Share encrypted message/file
-                            startActivity(sendWithChooserExcludingEncrypt(message));
+                    } else {
+                        if (pgpResult.success()) {
+                            if (mShareAfterEncrypt) {
+                                // Share encrypted message/file
+                                startActivity(sendWithChooserExcludingEncrypt(message));
+                            } else {
+                                // Copy to clipboard
+                                copyToClipboard(message);
+                                pgpResult.createNotify(EncryptTextActivity.this).show();
+                                // Notify.showNotify(EncryptTextActivity.this,
+                                // R.string.encrypt_sign_clipboard_successful, Notify.Style.INFO);
+                            }
                         } else {
-                            // Copy to clipboard
-                            copyToClipboard(message);
                             pgpResult.createNotify(EncryptTextActivity.this).show();
-                            // Notify.showNotify(EncryptTextActivity.this,
-                            // R.string.encrypt_sign_clipboard_successful, Notify.Style.INFO);
                         }
 
-                        // reset parameters, TODO: better state saving?
+                        // no matter the result, reset parameters
                         mSigningKeyPassphrase = null;
-                    } else {
-                        pgpResult.createNotify(EncryptTextActivity.this).show();
+                        mNfcHash = null;
+                        mNfcTimestamp = null;
                     }
                 }
             }
@@ -253,7 +260,7 @@ public class EncryptTextActivity extends EncryptActivity implements EncryptActiv
 
             case REQUEST_CODE_NFC: {
                 if (resultCode == RESULT_OK && data != null) {
-
+                    mNfcHash = data.getByteArrayExtra(OpenPgpApi.EXTRA_NFC_SIGNED_HASH);
                     startEncrypt();
                     return;
                 }
@@ -292,6 +299,8 @@ public class EncryptTextActivity extends EncryptActivity implements EncryptActiv
             data.putLongArray(KeychainIntentService.ENCRYPT_ENCRYPTION_KEYS_IDS, mEncryptionKeyIds);
             data.putString(KeychainIntentService.ENCRYPT_SIGNATURE_KEY_PASSPHRASE, mSigningKeyPassphrase);
             data.putLongArray(KeychainIntentService.ENCRYPT_SIGNATURE_KEY_PASSPHRASE, mEncryptionKeyIds);
+            data.putSerializable(KeychainIntentService.ENCRYPT_SIGNATURE_NFC_TIMESTAMP, mNfcTimestamp);
+            data.putByteArray(KeychainIntentService.ENCRYPT_SIGNATURE_NFC_HASH, mNfcHash);
         }
         return data;
     }

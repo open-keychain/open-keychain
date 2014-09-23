@@ -88,11 +88,15 @@ public class ListAwareSwipeRefreshLayout extends NoScrollableSwipeRefreshLayout 
      */
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        float ratioX = event.getX() / event.getDevice().getMotionRange(MotionEvent.AXIS_X).getMax();
-        float ratioY = event.getY() / event.getDevice().getMotionRange(MotionEvent.AXIS_Y).getMax();
-        // if this is the upper right corner, don't handle as pull to refresh event
-        if (ratioX > 0.85f && ratioY < 0.15f) {
-            return false;
+        // The device may be null. This actually happens
+        if (event.getDevice() != null) {
+            // MotionEvent.AXIS_X is api level 12, for some reason, so we use a constant 0 here
+            float ratioX = event.getX() / event.getDevice().getMotionRange(0).getMax();
+            float ratioY = event.getY() / event.getDevice().getMotionRange(1).getMax();
+            // if this is the upper right corner, don't handle as pull to refresh event
+            if (ratioX > 0.85f && ratioY < 0.15f) {
+                return false;
+            }
         }
         return super.onTouchEvent(event);
     }
