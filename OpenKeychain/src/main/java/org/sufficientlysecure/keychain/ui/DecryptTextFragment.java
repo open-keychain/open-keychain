@@ -90,13 +90,13 @@ public class DecryptTextFragment extends DecryptFragment {
     }
 
     /**
-     * Create Intent Chooser but exclude OK's EncryptActivity.
+     * Create Intent Chooser but exclude decrypt activites
      */
     private Intent sendWithChooserExcludingEncrypt(String text) {
         Intent prototype = createSendIntent(text);
         String title = getString(R.string.title_share_file);
 
-        // we don't want to encrypt the encrypted, no inception ;)
+        // we don't want to decrypt the decypted, no inception ;)
         String[] blacklist = new String[]{
                 Constants.PACKAGE_NAME + ".ui.DecryptTextActivity",
                 "org.thialfihar.android.apg.ui.DecryptActivity"
@@ -211,27 +211,23 @@ public class DecryptTextFragment extends DecryptFragment {
                 if (resultCode == Activity.RESULT_OK && data != null) {
                     String passphrase = data.getStringExtra(PassphraseDialogActivity.MESSAGE_DATA_PASSPHRASE);
                     decryptStart(passphrase);
-                    return;
                 } else {
                     getActivity().finish();
                 }
-                break;
+                return;
             }
 
             case REQUEST_CODE_NFC: {
                 if (resultCode == Activity.RESULT_OK && data != null) {
                     // TODO
-                    return;
                 } else {
                     getActivity().finish();
                 }
-                break;
+                return;
             }
 
             default: {
                 super.onActivityResult(requestCode, resultCode, data);
-
-                break;
             }
         }
     }

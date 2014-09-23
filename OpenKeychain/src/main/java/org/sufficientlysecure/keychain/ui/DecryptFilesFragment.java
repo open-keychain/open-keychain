@@ -348,12 +348,28 @@ public class DecryptFilesFragment extends DecryptFragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
+            case REQUEST_CODE_PASSPHRASE: {
+                if (resultCode == Activity.RESULT_OK && data != null) {
+                    String passphrase = data.getStringExtra(PassphraseDialogActivity.MESSAGE_DATA_PASSPHRASE);
+                    decryptOriginalFilename(passphrase);
+                }
+                return;
+            }
+
+            case REQUEST_CODE_NFC: {
+                if (resultCode == Activity.RESULT_OK && data != null) {
+                    // TODO
+                }
+                return;
+            }
+
             case REQUEST_CODE_INPUT: {
                 if (resultCode == Activity.RESULT_OK && data != null) {
                     setInputUri(data.getData());
                 }
                 return;
             }
+
             case REQUEST_CODE_OUTPUT: {
                 // This happens after output file was selected, so start our operation
                 if (resultCode == Activity.RESULT_OK && data != null) {
@@ -365,8 +381,6 @@ public class DecryptFilesFragment extends DecryptFragment {
 
             default: {
                 super.onActivityResult(requestCode, resultCode, data);
-
-                break;
             }
         }
     }

@@ -191,8 +191,6 @@ public class EncryptFilesActivity extends EncryptActivity implements EncryptActi
                 super.handleMessage(message);
 
                 if (message.arg1 == KeychainIntentServiceHandler.MESSAGE_OKAY) {
-                    Notify.showNotify(EncryptFilesActivity.this, R.string.encrypt_sign_successful, Notify.Style.INFO);
-
                     SignEncryptResult pgpResult =
                             message.getData().getParcelable(SignEncryptResult.EXTRA_RESULT);
 
@@ -224,8 +222,7 @@ public class EncryptFilesActivity extends EncryptActivity implements EncryptActi
                             startActivity(sendWithChooserExcludingEncrypt(message));
                         } else {
                             // Save encrypted file
-                            Notify.showNotify(EncryptFilesActivity.this,
-                                    R.string.encrypt_sign_clipboard_successful, Notify.Style.INFO);
+                            pgpResult.createNotify(EncryptFilesActivity.this).show();
                         }
                     } else {
                         pgpResult.createNotify(EncryptFilesActivity.this).show();
