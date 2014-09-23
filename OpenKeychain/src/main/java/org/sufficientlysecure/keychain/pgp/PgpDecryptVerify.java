@@ -418,7 +418,7 @@ public class PgpDecryptVerify {
                 log.add(LogType.MSG_DC_PENDING_NFC, indent +1);
                 DecryptVerifyResult result =
                         new DecryptVerifyResult(DecryptVerifyResult.RESULT_PENDING_NFC, log);
-                result.setNfcState(e.encryptedSessionKey, secretEncryptionKey.getKeyId());
+                result.setNfcState(e.encryptedSessionKey, mPassphrase);
                 return result;
             }
             encryptedData = encryptedDataAsymmetric;

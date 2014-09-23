@@ -216,7 +216,7 @@ public class DecryptFilesFragment extends DecryptFragment {
                             startPassphraseDialog(Constants.key.symmetric);
                         } else if ((pgpResult.getResult() & DecryptVerifyResult.RESULT_PENDING_NFC) ==
                                 DecryptVerifyResult.RESULT_PENDING_NFC) {
-                            startNfcDecrypt(mPassphrase, pgpResult.getNfcEncryptedSessionKey());
+                            startNfcDecrypt(pgpResult.getNfcPassphrase(), pgpResult.getNfcEncryptedSessionKey());
                         } else {
                             throw new RuntimeException("Unhandled pending result!");
                         }
