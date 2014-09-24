@@ -19,7 +19,6 @@ dependencies {
     compile project(':extern:minidns')
     compile project(':extern:KeybaseLib:Lib')
     compile project(':extern:TokenAutoComplete:library')
-    compile project(':extern:openpgp-card-nfc-lib:library')
     compile project(':extern:safeslinger-exchange')
 }
 

@@ -620,6 +620,9 @@
             android:name=".ui.PassphraseDialogActivity"
             android:theme="@android:style/Theme.NoDisplay" />
         <activity
+            android:name="ui.NfcActivity"
+            android:launchMode="singleTop" />
+        <activity
             android:name=".ui.HelpActivity"
             android:label="@string/title_help" />
 

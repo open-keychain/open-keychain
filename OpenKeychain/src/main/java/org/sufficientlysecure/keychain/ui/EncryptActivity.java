@@ -2,10 +2,6 @@ package org.sufficientlysecure.keychain.ui;
 
 import android.content.Intent;
 
-import org.sufficientlysecure.keychain.nfc.NfcActivity;
-
-import java.util.Date;
-
 public class EncryptActivity extends DrawerActivity {
 
     public static final int REQUEST_CODE_PASSPHRASE = 0x00008001;
