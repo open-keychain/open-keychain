@@ -17,13 +17,14 @@
 
 package org.sufficientlysecure.keychain.remote.ui;
 
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.database.CursorJoiner;
 import android.database.MatrixCursor;
-import android.database.MergeCursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
@@ -56,11 +57,23 @@ public class AppsListFragment extends ListFragment implements
         getListView().setOnItemClickListener(new OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+                boolean isInstalled = mAdapter.getItemIsInstalled(position);
                 String selectedPackageName = mAdapter.getItemPackageName(position);
-                // edit app settings
-                Intent intent = new Intent(getActivity(), AppSettingsActivity.class);
-                intent.setData(KeychainContract.ApiApps.buildByPackageNameUri(selectedPackageName));
-                startActivity(intent);
+
+                if (isInstalled) {
+                    // edit app settings
+                    Intent intent = new Intent(getActivity(), AppSettingsActivity.class);
+                    intent.setData(KeychainContract.ApiApps.buildByPackageNameUri(selectedPackageName));
+                    startActivity(intent);
+                } else {
+                    try {
+                        startActivity(new Intent(Intent.ACTION_VIEW,
+                                Uri.parse("market://details?id=" + selectedPackageName)));
+                    } catch (ActivityNotFoundException anfe) {
+                        startActivity(new Intent(Intent.ACTION_VIEW,
+                                Uri.parse("http://play.google.com/store/apps/details?id=" + selectedPackageName)));
+                    }
+                }
             }
         });
 
@@ -80,11 +93,21 @@ public class AppsListFragment extends ListFragment implements
         getLoaderManager().initLoader(0, null, this);
     }
 
+    private static final String TEMP_COLUMN_INSTALLED = "INSTALLED";
+    private static final String TEMP_COLUMN_NAME = "NAME";
+
     // These are the Contacts rows that we will retrieve.
     static final String[] PROJECTION = new String[]{
             ApiApps._ID, // 0
-            ApiApps.PACKAGE_NAME // 1
+            ApiApps.PACKAGE_NAME, // 1
+            "0 as " + TEMP_COLUMN_INSTALLED, // changed later in cursor joiner
+            "null as " + TEMP_COLUMN_NAME // installed apps can retrieve app name from Android OS
     };
+
+    private static final int INDEX_ID = 0;
+    private static final int INDEX_PACKAGE_NAME = 1;
+    private static final int INDEX_INSTALLED = 2;
+    private static final int INDEX_NAME = 3;
 
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         // This is called when a new Loader needs to be created. This
@@ -100,18 +123,89 @@ public class AppsListFragment extends ListFragment implements
     }
 
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        MatrixCursor matrixCursor = new MatrixCursor(
-                new String[]{ApiApps._ID, ApiApps.PACKAGE_NAME, ApiApps.PACKAGE_SIGNATURE}
-        );
-        matrixCursor.addRow(new Object[]{200, "com.fsck.k9", new byte[]{}});
+        MatrixCursor availableAppsCursor = new MatrixCursor(new String[]{
+                ApiApps._ID,
+                ApiApps.PACKAGE_NAME,
+                TEMP_COLUMN_INSTALLED,
+                TEMP_COLUMN_NAME
+        });
+        availableAppsCursor.addRow(new Object[]{1, "com.fsck.k9", 0, "K-9 Mail"});
+        availableAppsCursor.addRow(new Object[]{1, "eu.siacs.conversations", 0, "Conversations (Instant Messaging)"});
+//        availableAppsCursor.addRow(new Object[]{1, "org.sufficientlysecure.keychain.demo", 0, "API Example"});
 
-        MergeCursor mergeCursor = new MergeCursor(
-                new Cursor[]{matrixCursor, data}
-        );
+        MatrixCursor mergedCursor = new MatrixCursor(new String[]{
+                ApiApps._ID,
+                ApiApps.PACKAGE_NAME,
+                TEMP_COLUMN_INSTALLED,
+                TEMP_COLUMN_NAME
+        });
+
+        CursorJoiner joiner = new CursorJoiner(
+                availableAppsCursor,
+                new String[]{ApiApps.PACKAGE_NAME},
+                data,
+                new String[]{ApiApps.PACKAGE_NAME});
+        for (CursorJoiner.Result joinerResult : joiner) {
+            switch (joinerResult) {
+                case LEFT: {
+                    // handle case where a row in cursorA is unique
+                    mergedCursor.addRow(new Object[]{
+                            availableAppsCursor.getLong(INDEX_ID),
+                            availableAppsCursor.getString(INDEX_PACKAGE_NAME),
+                            availableAppsCursor.getInt(INDEX_INSTALLED),
+                            availableAppsCursor.getString(INDEX_NAME)
+                    });
+                    break;
+                }
+                case RIGHT: {
+                    // handle case where a row in cursorB is unique
+                    String packageName = data.getString(INDEX_PACKAGE_NAME);
+                    int installed;
+                    try {
+                        getActivity().getPackageManager().getApplicationInfo(packageName, 0);
+                        installed = 1;
+                    } catch (final PackageManager.NameNotFoundException e) {
+                        installed = 0;
+                    }
+
+                    mergedCursor.addRow(new Object[]{
+                            data.getLong(INDEX_ID),
+                            packageName,
+                            installed,
+                            null
+                    });
+                    break;
+                }
+                case BOTH: {
+                    // handle case where a row with the same key is in both cursors
+                    String packageName = data.getString(INDEX_PACKAGE_NAME);
+                    String name;
+                    int installed;
+                    try {
+                        getActivity().getPackageManager().getApplicationInfo(packageName, 0);
+                        installed = 1;
+                        name = data.getString(INDEX_NAME);
+                    } catch (final PackageManager.NameNotFoundException e) {
+                        installed = 0;
+                        // if not installed take name from available apps list
+                        name = availableAppsCursor.getString(INDEX_NAME);
+                    }
+
+                    mergedCursor.addRow(new Object[]{
+                            data.getLong(INDEX_ID),
+                            packageName,
+                            installed,
+                            name
+                    });
+                    break;
+                }
+            }
+        }
+
 
         // Swap the new cursor in. (The framework will take care of closing the
         // old cursor once we return.)
-        mAdapter.swapCursor(mergeCursor);
+        mAdapter.swapCursor(mergedCursor);
     }
 
     public void onLoaderReset(Loader<Cursor> loader) {
@@ -143,7 +237,7 @@ public class AppsListFragment extends ListFragment implements
         public String getItemPackageName(int position) {
             if (mDataValid && mCursor != null) {
                 if (mCursor.moveToPosition(position)) {
-                    return mCursor.getString(1);
+                    return mCursor.getString(INDEX_PACKAGE_NAME);
                 } else {
                     return null;
                 }
@@ -152,26 +246,47 @@ public class AppsListFragment extends ListFragment implements
             }
         }
 
+        public boolean getItemIsInstalled(int position) {
+            if (mDataValid && mCursor != null) {
+                if (mCursor.moveToPosition(position)) {
+                    return (mCursor.getInt(INDEX_INSTALLED) == 1);
+                } else {
+                    return false;
+                }
+            } else {
+                return false;
+            }
+        }
+
         @Override
         public void bindView(View view, Context context, Cursor cursor) {
             TextView text = (TextView) view.findViewById(R.id.api_apps_adapter_item_name);
             ImageView icon = (ImageView) view.findViewById(R.id.api_apps_adapter_item_icon);
+            ImageView installIcon = (ImageView) view.findViewById(R.id.api_apps_adapter_install_icon);
 
-            String packageName = cursor.getString(cursor.getColumnIndex(ApiApps.PACKAGE_NAME));
-            if (packageName != null) {
-                // get application name
-                try {
-                    ApplicationInfo ai = mPM.getApplicationInfo(packageName, 0);
+            String packageName = cursor.getString(INDEX_PACKAGE_NAME);
+            int installed = cursor.getInt(INDEX_INSTALLED);
+            String name = cursor.getString(INDEX_NAME);
 
-                    text.setText(mPM.getApplicationLabel(ai));
-                    icon.setImageDrawable(mPM.getApplicationIcon(ai));
-                } catch (final PackageManager.NameNotFoundException e) {
-                    // fallback
-                    text.setText(packageName);
-                }
-            } else {
+            // get application name and icon
+            try {
+                ApplicationInfo ai = mPM.getApplicationInfo(packageName, 0);
+
+                text.setText(mPM.getApplicationLabel(ai));
+                icon.setImageDrawable(mPM.getApplicationIcon(ai));
+            } catch (final PackageManager.NameNotFoundException e) {
                 // fallback
-                text.setText("No Name");
+                if (name == null) {
+                    text.setText(packageName);
+                } else {
+                    text.setText(name);
+                }
+            }
+
+            if (installed == 1) {
+                installIcon.setVisibility(View.GONE);
+            } else {
+                installIcon.setVisibility(View.VISIBLE);
             }
         }
 
