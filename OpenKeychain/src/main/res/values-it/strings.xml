@@ -183,7 +183,6 @@
   <string name="error_key_needs_a_user_id">neccessaria almeno una identità</string>
   <string name="error_no_signature_passphrase">nessuna frase di accesso inserita</string>
   <string name="error_no_signature_key">nessuna chiave di firma inserita</string>
-  <string name="error_invalid_data">dati di codifica non validi</string>
   <string name="error_integrity_check_failed">Controllo di integrita\' fallito! I dati sono stati modificati!</string>
   <string name="error_wrong_passphrase">frase di accesso errata</string>
   <string name="error_could_not_extract_private_key">impossibile estrarre la chiave privata</string>
@@ -315,7 +314,6 @@
   </plurals>
   <string name="view_log">Mostra registro</string>
   <string name="import_error_nothing">Niente da importare</string>
-  <string name="import_error">Errore di importazione chiavi!</string>
   <string name="import_with_warnings">, con avvisi</string>
   <!--Intent labels-->
   <string name="intent_decrypt_file">Decodifica File con OpenKeychain</string>
@@ -384,7 +382,6 @@
   <string name="edit_key_edit_user_id_title">Seleziona un azione!</string>
   <string name="edit_key_edit_user_id_revoked">Questa identità è stata revocata. Ciò non può essere annullato.</string>
   <string name="edit_key_edit_subkey_title">Seleziona un azione!</string>
-  <string name="edit_key_new_subkey">nuovo</string>
   <string name="edit_key_select_flag">Per favore seleziona almeno una spunta!</string>
   <!--Create key-->
   <string name="create_key_upload">Carica chiave nel server delle chiavi</string>
@@ -403,7 +400,6 @@
   <string name="drawer_close">Chiudi drawer di navigazione</string>
   <string name="my_keys">Le Mie Chiavi</string>
   <!--hints-->
-  <string name="decrypt_content_edit_text_hint">Inserisci il testo cifrato qui per la decodifica e/o verifica...</string>
   <!--certs-->
   <string name="cert_default">predefiniti</string>
   <string name="cert_none">nessuno</string>
@@ -421,9 +417,6 @@
   <string name="msg_ip_delete_old_fail">Nessuna vecchia chiave cancellata (stai creando una nuova?)</string>
   <string name="msg_ip_delete_old_ok">Cancellate vecchie chiavi dal database</string>
   <string name="msg_ip_encode_fail">Operazione fallita a causa di un errore di codifica</string>
-  <string name="msg_ip_error_io_exc">Operazione fallita a causa di un errore di i/o</string>
-  <string name="msg_ip_error_op_exc">Operazione fallita a causa di un errore della banca dati</string>
-  <string name="msg_ip_error_remote_ex">Operazione fallita a causa di un errore interno</string>
   <string name="msg_ip">Importazione portachiavi pubblico %s</string>
   <string name="msg_ip_insert_keyring">Codifica dati del portachiavi</string>
   <string name="msg_ip_insert_keys">Elaborazione chiavi</string>
@@ -431,31 +424,14 @@
   <string name="msg_ip_master">Elaborazione chiave principale %s</string>
   <string name="msg_ip_master_expired">Portachiavi scaduto il %s</string>
   <string name="msg_ip_master_expires">Il portachiavi scade il %s</string>
-  <string name="msg_ip_master_flags_ces">Caratteristiche chiave principale: certifica, codifica, firma</string>
-  <string name="msg_ip_master_flags_cex">Caratteristiche chiave principale: certifica, codifica</string>
-  <string name="msg_ip_master_flags_cxs">Caratteristiche chiave principale: certifica, firma</string>
-  <string name="msg_ip_master_flags_xes">Caratteristiche chiave principale: codifica, firma</string>
-  <string name="msg_ip_master_flags_cxx">Caratteristiche chiave principale: certifica</string>
-  <string name="msg_ip_master_flags_xex">Caratteristiche chiave principale: codifica</string>
-  <string name="msg_ip_master_flags_xxs">Caratteristiche chiave principale: firma</string>
-  <string name="msg_ip_master_flags_xxx">Caratteristiche chiave principale: nessuna</string>
   <string name="msg_ip_subkey">Elaborazione sottochiave %s</string>
   <string name="msg_ip_subkey_expired">Sottochiave scaduta il %s</string>
   <string name="msg_ip_subkey_expires">La sottochiave scade il %s</string>
-  <string name="msg_ip_subkey_flags_ces">Caratteristiche sottochiave: certifica, codifica, firma</string>
-  <string name="msg_ip_subkey_flags_cex">Caratteristiche sottochiave: certifica, codifica</string>
-  <string name="msg_ip_subkey_flags_cxs">Caratteristiche sottochiave: certifica, firma</string>
-  <string name="msg_ip_subkey_flags_xes">Caratteristiche sottochiave: codifica, firma</string>
-  <string name="msg_ip_subkey_flags_cxx">Caratteristiche sottochiave: certifica</string>
-  <string name="msg_ip_subkey_flags_xex">Caratteristiche sottochiave: codifica</string>
-  <string name="msg_ip_subkey_flags_xxs">Caratteristiche sottochiave: firma</string>
-  <string name="msg_ip_subkey_flags_xxx">Caratteristiche sottochiave: nessuna</string>
   <string name="msg_ip_success">Portachiavi pubblico importato con successo</string>
   <string name="msg_ip_success_identical">Il portachiavi non contiene nuovi dati, nulla da eseguire</string>
   <string name="msg_ip_reinsert_secret">Reinserimento chiave segreta</string>
   <string name="msg_ip_uid_cert_bad">Riscontrato certificato sbagliato!</string>
   <string name="msg_ip_uid_cert_error">Errore elaborazione certificato!</string>
-  <string name="msg_ip_uid_cert_good">ID utente certificato da %1$s</string>
   <plurals name="msg_ip_uid_certs_unknown">
     <item quantity="one">Ignoro un certificato rilasciato da chiavi pubbliche sconosciute</item>
     <item quantity="other">Ignoro %s certificati rilasciati da chiavi pubbliche sconosciute</item>
@@ -474,7 +450,6 @@
   <string name="msg_is">Importazione chiave segreta %s</string>
   <string name="msg_is_db_exception">Errore Banca Dati!</string>
   <string name="msg_is_importing_subkeys">Elaborazione sottochiavi segrete</string>
-  <string name="msg_is_error_io_exc">Errore codifica portachiavi</string>
   <string name="msg_is_pubring_generate">Generazione portachiavi pubblico da portachiavi privato</string>
   <string name="msg_is_success_identical">Il portachiavi non contiene nuovi dati, nulla da eseguire</string>
   <string name="msg_is_success">Portachiavi segreto importato con successo</string>
@@ -608,7 +583,6 @@
   <string name="label_user_id">Identit</string>
   <string name="unknown_uid">&lt;sconosciuto&gt;</string>
   <string name="empty_certs">Nessun certificato per questa chiave</string>
-  <string name="certs_text">Solo le autocertificazioni e i certificati creati con le tue chiavi vengono visualizzati qui.</string>
   <string name="section_uids_to_certify">Identità da certificare</string>
   <string name="label_revocation">Ragione della Revoca</string>
   <string name="label_verify_status">Stato Verifica</string>

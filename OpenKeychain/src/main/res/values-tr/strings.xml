@@ -271,7 +271,6 @@
   <string name="edit_key_action_add_subkey">Alt anahtar Ekle</string>
   <string name="edit_key_edit_user_id_title">Bir eylem seç!</string>
   <string name="edit_key_edit_subkey_title">Bir eylem seç!</string>
-  <string name="edit_key_new_subkey">yeni</string>
   <string name="edit_key_select_flag">Lütfen en az bir bayrak seçiniz!</string>
   <!--Create key-->
   <string name="create_key_empty">Bu alan zorunludur</string>

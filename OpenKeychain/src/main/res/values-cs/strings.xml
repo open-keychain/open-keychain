@@ -206,7 +206,6 @@
   <string name="error_key_needs_a_user_id">potřebuji alespoň jednu identitu</string>
   <string name="error_no_signature_passphrase">nebylo poskytnuto heslo</string>
   <string name="error_no_signature_key">nebyl poskytnut podpisový klíč</string>
-  <string name="error_invalid_data">kryptovaná data nejsou správná</string>
   <string name="error_integrity_check_failed">selhala kontrola integrity! Data byla pozměněna!</string>
   <string name="error_wrong_passphrase">špatné heslo</string>
   <string name="error_could_not_extract_private_key">nebylo možné extrahovat privátní klíč</string>
@@ -322,7 +321,6 @@
   <string name="view_log">Zobrazit log</string>
   <string name="import_error_nothing">Nic k importu</string>
   <string name="import_error_nothing_cancelled">Import zrušen.</string>
-  <string name="import_error">Chyba importu klíčů!</string>
   <string name="import_with_warnings">, s varováními</string>
   <!--Intent labels-->
   <string name="intent_decrypt_file">Dešifrovat soubor pomocí OpenKeychain</string>
@@ -405,7 +403,6 @@
   </string-array>
   <string name="edit_key_edit_user_id_revoked">Tato identity byla zneplatněna. Toto není možné vzít zpět.</string>
   <string name="edit_key_edit_subkey_title">Vyberte akci!</string>
-  <string name="edit_key_new_subkey">nový</string>
   <!--Create key-->
   <string name="create_key_upload">Aktualizovat klíč na keyserver</string>
   <string name="create_key_empty">Toto pole je vyžadováno</string>
@@ -427,7 +424,6 @@
   <string name="my_keys">Moje Klíče</string>
   <!--hints-->
   <string name="encrypt_content_edit_text_hint">Napsat text</string>
-  <string name="decrypt_content_edit_text_hint">Vložte zašifrovaný text pro jeho rozšifrování a/nebo ověření...</string>
   <!--certs-->
   <string name="cert_default">výchozí</string>
   <string name="cert_none">žádný</string>
@@ -443,9 +439,6 @@
   <string name="msg_cancelled">Operace ukončena.</string>
   <!--Import Public log entries-->
   <string name="msg_ip_encode_fail">Operace selhala kvůli chybě kódování</string>
-  <string name="msg_ip_fail_io_exc">Operace selhala kvůli chybě vstupu/výstupu</string>
-  <string name="msg_ip_fail_op_exc">Operace selhala kvůli chybě databáze</string>
-  <string name="msg_ip_fail_remote_ex">Operace selhala kvůli interní chybě </string>
   <string name="msg_ip">Importuje se veřejná klíčenka %s</string>
   <string name="msg_ip_uid_revoked">Uživatelské ID je zneplatněné</string>
   <!--Import Secret log entries-->
@@ -466,7 +459,9 @@
   <string name="msg_ek_error_not_found">Klíč nenalezen!</string>
   <!--Messages for DecryptVerify operation-->
   <!--Messages for SignEncrypt operation-->
+  <string name="msg_acc_saved">Účet uložen</string>
   <!--PassphraseCache-->
+  <string name="passp_cache_notif_click_to_clear">Kliknout pro vymazání načtených hesel</string>
   <string name="passp_cache_notif_clear">Smazat cache</string>
   <string name="passp_cache_notif_pwd">Heslo</string>
   <!--unsorted-->
@@ -487,6 +482,7 @@
   <string name="can_sign_not">nelze podepsat</string>
   <string name="error_no_encrypt_subkey">Není dostupný šifrovací podklíč!</string>
   <string name="contact_show_key">Zobrazit klíč (%s)</string>
+  <string name="swipe_to_update">Potáhnout dolů pro aktualizaci z keyserveru</string>
   <!--First Time-->
   <string name="first_time_text1">Převezměte opět kontrolu nad svým soukromím s OpenKeychain!</string>
   <string name="first_time_create_key">Vytvořit vlastní klíč</string>

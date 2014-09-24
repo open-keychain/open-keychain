@@ -82,7 +82,6 @@
   <string name="error_unknown_algorithm_choice">位置的算法选择</string>
   <string name="error_no_signature_passphrase">没有提供密语</string>
   <string name="error_no_signature_key">没有提供密钥</string>
-  <string name="error_invalid_data">不是有效的加密数据</string>
   <string name="error_wrong_passphrase">错误的密语</string>
   <!--errors without preceeding Error:-->
   <!--results shown after decryption/verification-->

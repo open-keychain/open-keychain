@@ -207,7 +207,6 @@
   <string name="error_key_needs_a_user_id">potrebujete vsaj eno identiteto</string>
   <string name="error_no_signature_passphrase">dano ni bilo nobeno geslo</string>
   <string name="error_no_signature_key">dan ni bil noben podpisni ključ</string>
-  <string name="error_invalid_data">neveljavni šifrirni podatki</string>
   <string name="error_integrity_check_failed">Preverba neokrnjenosti ni bila uspešna! Podatki so bili spremenjeni!</string>
   <string name="error_wrong_passphrase">napačno geslo</string>
   <string name="error_could_not_extract_private_key">ne morem izvleči zasebnega ključa</string>
@@ -318,7 +317,6 @@
   <string name="view_log">Poglej dnevnik</string>
   <string name="import_error_nothing">Nič za uvoziti.</string>
   <string name="import_error_nothing_cancelled">Uvoz preklican.</string>
-  <string name="import_error">Napaka pri uvozu ključev!</string>
   <string name="import_with_warnings">, z opozorilom</string>
   <string name="import_with_cancelled"> do preklica</string>
   <!--Intent labels-->
@@ -393,7 +391,6 @@
     <item>Revert revocation</item>
   </string-array>
   <string name="edit_key_edit_subkey_title">Izberite dejanje!</string>
-  <string name="edit_key_new_subkey">nov</string>
   <!--Create key-->
   <string name="create_key_upload">Naloži ključ na strežnik ključev</string>
   <string name="create_key_empty">To polje je obvezno</string>
@@ -412,7 +409,6 @@
   <string name="my_keys">Moji ključi</string>
   <!--hints-->
   <string name="encrypt_content_edit_text_hint">Vpišite besedilo</string>
-  <string name="decrypt_content_edit_text_hint">Tu vnesite tajnopis za dešifriranje in/ali overbo...</string>
   <!--certs-->
   <string name="cert_default">privzeto</string>
   <string name="cert_none">brez</string>
@@ -431,8 +427,6 @@
   <string name="msg_ip_delete_old_fail">Noben star ključ ni bil izbrisan (ustvarim novega?)</string>
   <string name="msg_ip_delete_old_ok">Star ključ je bil izbrisan iz baze</string>
   <string name="msg_ip_encode_fail">Operacija ni uspela zaradi napake</string>
-  <string name="msg_ip_error_io_exc">Operacija ni uspela zaradi napake pri branju/pisanju</string>
-  <string name="msg_ip_error_remote_ex">Operacija ni uspela zaradi notranje napake</string>
   <string name="msg_ip">Uvažam javno zbirko ključev %s</string>
   <string name="msg_ip_insert_keyring">Šifriram podatke zbirke klučev</string>
   <string name="msg_ip_prepare">Pripravljam </string>
@@ -440,14 +434,6 @@
   <string name="msg_ip_subkey">Obdelujem podključ %s</string>
   <string name="msg_ip_subkey_expired">Podključ je potekel %s</string>
   <string name="msg_ip_subkey_expires">Podključ poteče %s</string>
-  <string name="msg_ip_subkey_flags_ces">Oznake podključa: overja, šifrira, podpisuje</string>
-  <string name="msg_ip_subkey_flags_cex">Oznake podključa: overja, šifrira</string>
-  <string name="msg_ip_subkey_flags_cxs">Oznake podključa: overja, podpisuje</string>
-  <string name="msg_ip_subkey_flags_xes">Oznake podključa: šifrira, podpisuje</string>
-  <string name="msg_ip_subkey_flags_cxx">Oznake podključa: overja</string>
-  <string name="msg_ip_subkey_flags_xex">Oznake podključa: šifrira</string>
-  <string name="msg_ip_subkey_flags_xxs">Oznake podključa: podpisuje</string>
-  <string name="msg_ip_subkey_flags_xxx">Oznake podključa: brez</string>
   <string name="msg_ip_success">Uspešno uvožena javna zbirka klučev </string>
   <string name="msg_ip_reinsert_secret">Ponovno vnašam zasebni ključ</string>
   <string name="msg_ip_uid_cert_bad">Naleteli ste na slab certifikat!</string>
