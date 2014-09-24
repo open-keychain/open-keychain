@@ -369,9 +369,8 @@ public class NfcActivity extends ActionBarActivity {
         }
 
         // Make sure the signature we received is actually the expected number of bytes long!
-        // TODO this is only right for RSA 2048 bit keys. Do we support anything else right now?
-        if (signature.length() != 512) {
-            toast("Bad signature length! Expected 256 bytes, got " + signature.length() / 2);
+        if (signature.length() != 256 && signature.length() != 512) {
+            toast("Bad signature length! Expected 128 or 256 bytes, got " + signature.length() / 2);
             return null;
         }
 
