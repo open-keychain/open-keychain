@@ -584,7 +584,7 @@
     <string name="msg_ip_master_flags_cexx">"Master flags: certify, encrypt"</string>
     <string name="msg_ip_master_flags_cxsa">"Master flags: certify, sign, authenticate"</string>
     <string name="msg_ip_master_flags_cxsx">"Master flags: certify, sign"</string>
-    <string name="msg_ip_master_flags_cxxa">"Master flags: certify, authentcate"</string>
+    <string name="msg_ip_master_flags_cxxa">"Master flags: certify, authenticate"</string>
     <string name="msg_ip_master_flags_cxxx">"Master flags: certify"</string>
     <string name="msg_ip_master_flags_xesa">"Master flags: encrypt, sign, authenticate"</string>
     <string name="msg_ip_master_flags_xesx">"Master flags: encrypt, sign"</string>
@@ -604,7 +604,7 @@
     <string name="msg_ip_subkey_flags_cexx">"Subkey flags: certify, encrypt"</string>
     <string name="msg_ip_subkey_flags_cxsa">"Subkey flags: certify, sign, authenticate"</string>
     <string name="msg_ip_subkey_flags_cxsx">"Subkey flags: certify, sign"</string>
-    <string name="msg_ip_subkey_flags_cxxa">"Subkey flags: certify, authentcate"</string>
+    <string name="msg_ip_subkey_flags_cxxa">"Subkey flags: certify, authenticate"</string>
     <string name="msg_ip_subkey_flags_cxxx">"Subkey flags: certify"</string>
     <string name="msg_ip_subkey_flags_xesa">"Subkey flags: encrypt, sign, authenticate"</string>
     <string name="msg_ip_subkey_flags_xesx">"Subkey flags: encrypt, sign"</string>

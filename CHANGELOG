@@ -104,7 +104,7 @@ Daniel Hammann, Daniel Haß, Greg Witczak, Miroojin Bakshi, Nikhil Peter Raj, Pa
 
 ## 2.0
   * Complete redesign
-  * Share public keys via qr codes, nfc beam
+  * Share public keys via QR codes, NFC beam
   * Sign keys
   * Upload keys to server
   * Fixes import issues
