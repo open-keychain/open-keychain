@@ -299,7 +299,7 @@ public class NfcActivity extends ActionBarActivity {
                 if (hash.length != 20) {
                     throw new RuntimeException("Bad hash length (" + hash.length + ", expected 10!");
                 }
-                dsi = "30" // Lc TODO 0x30 == 48. shouldn't this be 35, for 15 header bytes + 20 hash?
+                dsi = "23" // Lc
                         + "3021" // Tag/Length of Sequence, the 0x21 includes all following 33 bytes
                         + "3009" // Tag/Length of Sequence, the 0x09 are the following header bytes
                         + "0605" + "2B0E03021A" // OID of SHA1
@@ -310,13 +310,13 @@ public class NfcActivity extends ActionBarActivity {
                 if (hash.length != 20) {
                     throw new RuntimeException("Bad hash length (" + hash.length + ", expected 20!");
                 }
-                dsi = "303021300906052B2403020105000414" + getHex(hash);
+                dsi = "233021300906052B2403020105000414" + getHex(hash);
                 break;
             case HashAlgorithmTags.SHA224:
                 if (hash.length != 28) {
                     throw new RuntimeException("Bad hash length (" + hash.length + ", expected 28!");
                 }
-                dsi = "34302D300D06096086480165030402040500041C" + getHex(hash);
+                dsi = "2F302D300D06096086480165030402040500041C" + getHex(hash);
                 break;
             case HashAlgorithmTags.SHA256:
                 if (hash.length != 32) {
@@ -328,13 +328,13 @@ public class NfcActivity extends ActionBarActivity {
                 if (hash.length != 48) {
                     throw new RuntimeException("Bad hash length (" + hash.length + ", expected 48!");
                 }
-                dsi = "343041300D060960864801650304020205000430" + getHex(hash);
+                dsi = "433041300D060960864801650304020205000430" + getHex(hash);
                 break;
             case HashAlgorithmTags.SHA512:
                 if (hash.length != 64) {
                     throw new RuntimeException("Bad hash length (" + hash.length + ", expected 64!");
                 }
-                dsi = "343051300D060960864801650304020305000440" + getHex(hash);
+                dsi = "533051300D060960864801650304020305000440" + getHex(hash);
                 break;
             default:
                 throw new RuntimeException("Not supported hash algo!");
@@ -369,6 +369,7 @@ public class NfcActivity extends ActionBarActivity {
         }
 
         // Make sure the signature we received is actually the expected number of bytes long!
+        // TODO this is only right for RSA 2048 bit keys. Do we support anything else right now?
         if (signature.length() != 512) {
             toast("Bad signature length! Expected 256 bytes, got " + signature.length() / 2);
             return null;
