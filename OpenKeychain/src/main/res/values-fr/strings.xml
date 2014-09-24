@@ -12,6 +12,7 @@
   <string name="title_add_subkey">Ajouter une sous-clef</string>
   <string name="title_edit_key">Modifier une clef</string>
   <string name="title_preferences">Préférences</string>
+  <string name="title_cloud_search_preferences">Préférences de recherche nuagique</string>
   <string name="title_api_registered_apps">Applis</string>
   <string name="title_key_server_preference">Préférences du serveur de clefs</string>
   <string name="title_change_passphrase">Modifier la phrase de passe</string>
@@ -34,6 +35,7 @@
   <!--section-->
   <string name="section_user_ids">identités</string>
   <string name="section_keys">Sous-clefs</string>
+  <string name="section_cloud_search">Recherche nuagique</string>
   <string name="section_general">Général</string>
   <string name="section_defaults">Valeurs par défaut</string>
   <string name="section_advanced">Avancé</string>
@@ -117,6 +119,8 @@
   <string name="label_send_key">Téléverser la clef vers le serveur de clefs choisi après certification</string>
   <string name="label_fingerprint">Empreinte</string>
   <string name="expiry_date_dialog_title">Définir une date d\'expiration</string>
+  <string name="label_first_keyserver_is_used">(Le premier serveur de clefs listé est préféré)</string>
+  <string name="label_preferred">préféré</string>
   <string name="user_id_no_name">&lt;aucun nom&gt;</string>
   <string name="none">&lt;aucune&gt;</string>
   <string name="no_key">&lt;pas de clef&gt;</string>
@@ -215,7 +219,6 @@
   <string name="error_key_needs_a_user_id">au moins une identité est nécessaire</string>
   <string name="error_no_signature_passphrase">aucune phrase de passe n\'a été donnée</string>
   <string name="error_no_signature_key">aucune clef de signature n\'a été donnée</string>
-  <string name="error_invalid_data">aucune donnée de chiffrement valide</string>
   <string name="error_integrity_check_failed">la vérification de l\'intégrité a échoué ! Les données ont été modifiées !</string>
   <string name="error_wrong_passphrase">phrase de passe erronnée</string>
   <string name="error_could_not_extract_private_key">impossible d\'extraire la clef privée</string>
@@ -292,6 +295,7 @@
   <string name="progress_con_reimport">consolider : réimportation...</string>
   <!--action strings-->
   <string name="hint_keyserver_search_hint">Nom/courriel/ID de clef...</string>
+  <string name="hint_cloud_search_hint">Nom/Courriel/Preuve/Clef...</string>
   <!--key bit length selections-->
   <string name="key_size_512">512</string>
   <string name="key_size_768">768</string>
@@ -326,6 +330,7 @@
   <string name="help_about_version">Version :</string>
   <!--Import-->
   <string name="import_tab_keyserver">Serveur de clefs</string>
+  <string name="import_tab_cloud">Rechercher dans le nuage</string>
   <string name="import_tab_direct">Fichier/presse-papiers</string>
   <string name="import_tab_qr_code">Code QR/NFC</string>
   <string name="import_import">Importer les clefs choisies</string>
@@ -352,7 +357,6 @@
   <string name="view_log">Consulter le journal</string>
   <string name="import_error_nothing">Rien à importer.</string>
   <string name="import_error_nothing_cancelled">Importation annulée.</string>
-  <string name="import_error">Erreur lors de l\'importation des clefs !</string>
   <string name="import_with_warnings">, avec des avertissements</string>
   <string name="import_with_cancelled">, jusqu\'à l\'annulation</string>
   <!--Intent labels-->
@@ -444,16 +448,21 @@
     <item>Révoquer la sous-clef</item>
     <item>Dépouiller la sous-clef</item>
   </string-array>
-  <string name="edit_key_new_subkey">nouvelle</string>
+  <string name="edit_key_new_subkey">nouvelle sous-clef</string>
   <string name="edit_key_select_flag">Veuillez sélectionner au moins un drapeau !</string>
+  <string name="edit_key_error_add_identity">Ajouter au moins une identité !</string>
+  <string name="edit_key_error_add_subkey">Ajouter au moins une sous-clef !</string>
   <!--Create key-->
   <string name="create_key_upload">Téléverser la clef vers le serveur de clefs</string>
   <string name="create_key_empty">Ce champ est exigé</string>
   <string name="create_key_passphrases_not_equal">Les phrases de passe ne correspondent pas</string>
   <string name="create_key_final_text">Vous avez saisie l\'identité suivante :</string>
-  <string name="create_key_final_robot_text">Créer une clef peut prendre du temps, prenez donc un café en attendant...\n(3 sous-clefs, RSA 4096 bits)</string>
+  <string name="create_key_final_robot_text">Créer une clef peut prendre du temps, prenez donc un café en attendant...</string>
+  <string name="create_key_rsa">(3 sous-clefs, RSA, 4096 bits)</string>
+  <string name="create_key_custom">(configuration personnalisée de la clef)</string>
   <string name="create_key_text">Saisissez votre nom complet, votre adresse courriel et choisissez votre phrase de passe.</string>
   <string name="create_key_hint_full_name">Nom complet, p. ex. Marc-Olivier Lagacé</string>
+  <string name="create_key_edit">Changer la configuration de la clef</string>
   <!--View key-->
   <string name="view_key_revoked">Cette clef a été révoquée !</string>
   <string name="view_key_expired">Cette clef est expirée !</string>
@@ -468,7 +477,6 @@
   <string name="my_keys">Mes clefs</string>
   <!--hints-->
   <string name="encrypt_content_edit_text_hint">Taper le texte</string>
-  <string name="decrypt_content_edit_text_hint">Saisir le cryptogramme à déchiffrer et/ou à vérifier ici...</string>
   <!--certs-->
   <string name="cert_default">valeur par défaut</string>
   <string name="cert_none">aucun</string>
@@ -498,31 +506,51 @@
   <string name="msg_ip_master">Traitement de la clef maîtresse %s</string>
   <string name="msg_ip_master_expired">Trousseau expiré le %s</string>
   <string name="msg_ip_master_expires">Le trousseau expire le %s</string>
-  <string name="msg_ip_master_flags_ces">Drapeaux de la clef maîtresse : certifier, chiffrer, signer</string>
-  <string name="msg_ip_master_flags_cex">Drapeaux de la clef maîtresse : certifier, chiffrer</string>
-  <string name="msg_ip_master_flags_cxs">Drapeaux de la clef maîtresse : certifier, signer</string>
-  <string name="msg_ip_master_flags_xes">Drapeaux de la clef maîtresse : chiffrer, signer</string>
-  <string name="msg_ip_master_flags_cxx">Drapeaux de la clef maîtresse : certifier</string>
-  <string name="msg_ip_master_flags_xex">Drapeaux de la clef maîtresse : chiffrer</string>
-  <string name="msg_ip_master_flags_xxs">Drapeaux de la clef maîtresse : signer</string>
-  <string name="msg_ip_master_flags_xxx">Drapeaux de la clef maîtresse : aucun</string>
+  <string name="msg_ip_master_flags_unspecified">Drapeaux maîtres : non spécifiés (« tout » sera assumé)</string>
+  <string name="msg_ip_master_flags_cesa">Drapeaux maîtres : certifier, chiffrer, signer, authentifier</string>
+  <string name="msg_ip_master_flags_cesx">Drapeaux maîtres : certifier, chiffrer, signer</string>
+  <string name="msg_ip_master_flags_cexa">Drapeaux maîtres : certifier, chiffrer, authentifier</string>
+  <string name="msg_ip_master_flags_cexx">Drapeaux maîtres : certifier, chiffrer</string>
+  <string name="msg_ip_master_flags_cxsa">Drapeaux maîtres : certifier, signer, authentifier</string>
+  <string name="msg_ip_master_flags_cxsx">Drapeaux maîtres : certifier, signer</string>
+  <string name="msg_ip_master_flags_cxxx">Drapeaux maîtres : certifier</string>
+  <string name="msg_ip_master_flags_xesa">Drapeaux maîtres : chiffrer, signer, authentifier</string>
+  <string name="msg_ip_master_flags_xesx">Drapeaux maîtres : chiffrer, signer</string>
+  <string name="msg_ip_master_flags_xexa">Drapeaux maîtres : chiffrer, authentifier</string>
+  <string name="msg_ip_master_flags_xexx">Drapeaux maîtres : chiffrer</string>
+  <string name="msg_ip_master_flags_xxsa">Drapeaux maîtres : signer, authentifier</string>
+  <string name="msg_ip_master_flags_xxsx">Drapeaux maîtres : signer</string>
+  <string name="msg_ip_master_flags_xxxa">Drapeaux maîtres : authentifier</string>
+  <string name="msg_ip_master_flags_xxxx">Drapeaux maîtres : aucun</string>
   <string name="msg_ip_subkey">Traitement de la sous-clef %s</string>
   <string name="msg_ip_subkey_expired">La sous-clef a expiré le %s</string>
   <string name="msg_ip_subkey_expires">La sous-clef expire le %s</string>
-  <string name="msg_ip_subkey_flags_ces">Drapeaux de sous-clef : certifier, chiffrer, signer</string>
-  <string name="msg_ip_subkey_flags_cex">Drapeaux de sous-clef : certifier, chiffrer</string>
-  <string name="msg_ip_subkey_flags_cxs">Drapeaux de sous-clef : certifier, signer</string>
-  <string name="msg_ip_subkey_flags_xes">Drapeaux de sous-clef : chiffrer, signer</string>
-  <string name="msg_ip_subkey_flags_cxx">Drapeaux de sous-clef : certifier</string>
-  <string name="msg_ip_subkey_flags_xex">Drapeaux de sous-clef : chiffrer</string>
-  <string name="msg_ip_subkey_flags_xxs">Drapeaux de sous-clef : signer</string>
-  <string name="msg_ip_subkey_flags_xxx">Drapeaux de sous-clef : aucun</string>
+  <string name="msg_ip_subkey_flags_unspecified">Drapeaux de sous-clef : non spécifiés (« tout » sera assumé)</string>
+  <string name="msg_ip_subkey_flags_cesa">Drapeaux de sous-clef : certifier, chiffrer, signer, authentifier</string>
+  <string name="msg_ip_subkey_flags_cesx">Drapeaux de sous-clef : certifier, chiffrer, signer</string>
+  <string name="msg_ip_subkey_flags_cexa">Drapeaux de sous-clef : certifier, chiffrer, authentifier</string>
+  <string name="msg_ip_subkey_flags_cexx">Drapeaux de sous-clef : certifier, chiffrer</string>
+  <string name="msg_ip_subkey_flags_cxsa">Drapeaux de sous-clef : certifier, signer, authentifier</string>
+  <string name="msg_ip_subkey_flags_cxsx">Drapeaux de sous-clef : certifier, signer</string>
+  <string name="msg_ip_subkey_flags_cxxx">Drapeaux de sous-clef : certifier</string>
+  <string name="msg_ip_subkey_flags_xesa">Drapeaux de sous-clef : chiffrer, signer, authentifier</string>
+  <string name="msg_ip_subkey_flags_xesx">Drapeaux de sous-clef : chiffrer, signer</string>
+  <string name="msg_ip_subkey_flags_xexa">Drapeaux de sous-clef : chiffrer, authentifier</string>
+  <string name="msg_ip_subkey_flags_xexx">Drapeaux de sous-clef : chiffrer</string>
+  <string name="msg_ip_subkey_flags_xxsa">Drapeaux de sous-clef : signer, authentifier</string>
+  <string name="msg_ip_subkey_flags_xxsx">Drapeaux de sous-clef : signer</string>
+  <string name="msg_ip_subkey_flags_xxxa">Drapeaux de sous-clef : authentifier</string>
+  <string name="msg_ip_subkey_flags_xxxx">Drapeaux de sous-clef : aucun</string>
   <string name="msg_ip_success">Importation du trousseau public réussie</string>
   <string name="msg_ip_success_identical">Le trousseau ne contient pas de nouvelle donnée, rien à faire</string>
   <string name="msg_ip_reinsert_secret">Réinsertion de la clef secrète</string>
   <string name="msg_ip_uid_cert_bad">Un mauvais certificat a été rencontré !</string>
   <string name="msg_ip_uid_cert_error">Erreur lors du traitement du certificat !</string>
-  <string name="msg_ip_uid_cert_good">L\'ID d\'utilisateur est certifié par %1$s</string>
+  <string name="msg_ip_uid_cert_nonrevoke">Il y a déjà un certificat non-révocable, étape ignorée.</string>
+  <string name="msg_ip_uid_cert_old">Le certificat est plus ancien que le précédent, étape ignorée.</string>
+  <string name="msg_ip_uid_cert_new">Le certificat est plus récent, remplacement du précédent.</string>
+  <string name="msg_ip_uid_cert_good">Un bon certificat par %1$s a été trouvé</string>
+  <string name="msg_ip_uid_cert_good_revoke">Une bonne révocation de certificat par %1$s a été trouvée</string>
   <plurals name="msg_ip_uid_certs_unknown">
     <item quantity="one">Un certificat ignoré provenant d\'une clef publique inconnue</item>
     <item quantity="other">%s certificats ignorés provenant de clefs publiques inconnues</item>
@@ -556,6 +584,7 @@
   <string name="msg_kc_error_v3">Ceci est une clef OpenPGP version 3, qui a été déprécié et n\'est plus pris en charge !</string>
   <string name="msg_kc_error_no_uid">Le trousseau n\'a pas d\'ID d\'utilisateur valide !</string>
   <string name="msg_kc_error_master_algo">La clef maîtresse utilise un algorithme (%s) inconnu ! </string>
+  <string name="msg_kc_error_dup_key">La sous-clef %s se présente deux fois dans le trousseau. Le trousseau est mal formé, pas d\'importation ! </string>
   <string name="msg_kc_master">Traitement de la clef maîtresse</string>
   <string name="msg_kc_revoke_bad_err">Suppression du mauvais certificat de révocation du trousseau</string>
   <string name="msg_kc_revoke_bad_local">Suppression du certificat de révocation du trousseau ayant le drapeau « local »</string>
@@ -602,6 +631,7 @@
   <string name="msg_kc_uid_no_cert">Aucun auto-certificat valide trouvé pour l\'ID d\'utilisateur « %s », qui est maintenant enlevé du trousseau</string>
   <string name="msg_kc_uid_remove">Suppression de l\'ID d\'utilisateur invalide « %s »</string>
   <string name="msg_kc_uid_dup">Suppression de l\'ID d\'utilisateur en double « %s ». La clef secrète en contenait deux. Ceci pourrait entraîner des certificats manquants !</string>
+  <string name="msg_kc_uid_warn_encoding">L\'ID d\'utilisateur ne passe pas le test UTF-8 !</string>
   <!--Keyring merging log entries-->
   <string name="msg_mg_error_secret_dummy">Une nouvelle sous-clef publique a été trouvée, mais la génération de sous-clef secrète factice n\'est pas prise en charge !</string>
   <string name="msg_mg_error_heterogeneous">Il a été tenté de fusionner des trousseaux avec des empreintes différentes !</string>
@@ -638,6 +668,7 @@
   <string name="msg_mf_error_revoked_primary">Les ID d\'utilisateurs révoqués ne peuvent pas être principaux !</string>
   <string name="msg_mf_error_null_expiry">L\'expiration ne peut pas être « pareille qu\'avant » lors de la création de sous-clefs. Ceci est une erreur de programmation, veuillez remplir un rapport de bogue !</string>
   <string name="msg_mf_error_passphrase_master">Erreur fatale lors du déchiffrement de la clef maîtresse ! Ceci est probablement une erreur de programmation, veuillez remplir un rapport de bogue !</string>
+  <string name="msg_mf_error_pgp">Erreur interne de PGP !</string>
   <string name="msg_mf_error_sig">Exception de signature !</string>
   <string name="msg_mf_master">Modification des certifications maîtresses</string>
   <string name="msg_mf_passphrase">Changement de la phrase de passe pour le trousseau...</string>
@@ -699,7 +730,69 @@
   <string name="msg_ek_error_dummy">Impossible de modifier un trousseau avec une clef maîtresse dépouillée !</string>
   <string name="msg_ek_error_not_found">Clef introuvable !</string>
   <!--Messages for DecryptVerify operation-->
+  <string name="msg_dc_askip_no_key">Les données ne sont pas chiffrées avec un clef connue, étape ignorée...</string>
+  <string name="msg_dc_askip_not_allowed">Les données ne sont pas chiffrées avec un clef autorisée, étape ignorée...</string>
+  <string name="msg_dc_asym">Un bloc de données chiffrées asymétriquement a été trouvé pour la clef %s</string>
+  <string name="msg_dc_clear_data">Traitement des données littérales</string>
+  <string name="msg_dc_clear_decompress">Extraction des données compressées</string>
+  <string name="msg_dc_clear_meta_file">Nom de fichier : %s</string>
+  <string name="msg_dc_clear_meta_mime">Type MIME : %s</string>
+  <string name="msg_dc_clear_meta_size">Taille de fichier : %s</string>
+  <string name="msg_dc_clear_meta_time">Heure de modification : %s</string>
+  <string name="msg_dc_clear_signature_bad">La vérification de la signature n\'est PAS CORRECTE !</string>
+  <string name="msg_dc_clear_signature_check">Vérification des données de signature</string>
+  <string name="msg_dc_clear_signature_ok">La vérification de la signature OK</string>
+  <string name="msg_dc_clear_signature">Enregistrement des données de signature pour plus tard</string>
+  <string name="msg_dc_clear">Traitement des données de texte en clair</string>
+  <string name="msg_dc_error_bad_passphrase">Erreur lors du déverrouillage de la clef, phrase de passe erronée !</string>
+  <string name="msg_dc_error_extract_key">Erreur inconnue lors du déverrouillage de la clef !</string>
+  <string name="msg_dc_error_integrity_check">Erreur de vérification de l\'intégrité !</string>
+  <string name="msg_dc_error_invalid_siglist">Aucune donnée de signature valide trouvée !</string>
+  <string name="msg_dc_error_io">Une exception E/S a été rencontrée durant l\'opération !</string>
+  <string name="msg_dc_error_no_data">Aucune donnée chiffrée n\'a été trouvée dans le flux !</string>
+  <string name="msg_dc_error_no_key">Aucune donnée chiffrée avec une clef secrète connue n\'a été trouvée dans le flux !</string>
+  <string name="msg_dc_error_pgp_exception">Une exception PGP a été rencontrée durant l\'opération !</string>
+  <string name="msg_dc_integrity_check_ok">Vérification de l\'intégrité OK !</string>
+  <string name="msg_dc_ok_meta_only">Seules les métadonnées ont été demandées, déchiffrement ignoré</string>
+  <string name="msg_dc_ok">OK</string>
+  <string name="msg_dc_pass_cached">Utilisation de la phrase de passe du cache</string>
+  <string name="msg_dc_pending_nfc">Jeton NFC exigé, demande de saisie à l\'utilisateur...</string>
+  <string name="msg_dc_pending_passphrase">Phrase de passe exigée, demande de saisie à l\'utilisateur...</string>
+  <string name="msg_dc_prep_streams">Préparation des flux pour le déchiffrement</string>
+  <string name="msg_dc">Début de l\'opération de déchiffrement...</string>
+  <string name="msg_dc_sym_skip">Données symétriques non autorisées, étape ignorée...</string>
+  <string name="msg_dc_sym">Bloc de données chiffrées symétriquement trouvé</string>
+  <string name="msg_dc_trail_asym">Des données traînantes chiffrées asymétriquement ont été rencontrées pour la clef %s</string>
+  <string name="msg_dc_trail_sym">Des données traînantes chiffrées symétriquement ont été rencontrées</string>
+  <string name="msg_dc_trail_unknown">Des données traînantes de type inconnu ont été rencontrées</string>
+  <string name="msg_dc_unlocking">Déverrouillage de la clef secrète</string>
   <!--Messages for SignEncrypt operation-->
+  <string name="msg_se_asymmetric">Préparation de la clef secrète pour le chiffrement</string>
+  <string name="msg_se_clearsign_only">La signature d\'entrée de texte en clair n\'est pas prise en charge !</string>
+  <string name="msg_se_compressing">Préparation de la compression</string>
+  <string name="msg_se_encrypting">Chiffrement des données</string>
+  <string name="msg_se_error_bad_passphrase">Phrase de passe erronée !</string>
+  <string name="msg_se_error_io">Exception E/S rencontrée durant l\'opération !</string>
+  <string name="msg_se_error_key_sign">La clef de signature choisie ne peut pas signer les données !</string>
+  <string name="msg_se_error_sign_key">Erreur lors de la récupération de la clef de signature !</string>
+  <string name="msg_se_error_nfc">Erreur de données NFC !</string>
+  <string name="msg_se_error_no_passphrase">Aucune phrase de passe fournie !</string>
+  <string name="msg_se_error_pgp">Erreur interne PGP !</string>
+  <string name="msg_se_error_sig">Une exception de signature PGP a été rencontrée !</string>
+  <string name="msg_se_error_unlock">Erreur inconnue lors du déverrouillage de la clef !</string>
+  <string name="msg_se_key_ok">Chiffrement pour la clef : %s</string>
+  <string name="msg_se_key_unknown">Clef manquante pour le chiffrement : %s</string>
+  <string name="msg_se_key_warn">Clef erronée pour le chiffrement : %s</string>
+  <string name="msg_se_ok">Opération de signature/chiffrement réussie !</string>
+  <string name="msg_se_pending_nfc">Jeton NFC exigé, demande de saisie à l\'utilisateur...</string>
+  <string name="msg_se_pending_passphrase">Phrase de passe exigée, demande de saisie à l\'utilisateur...</string>
+  <string name="msg_se_signing">Signature des données (sans chiffrement)</string>
+  <string name="msg_se_sigcrypting">Chiffrement des données avec signature</string>
+  <string name="msg_se">Début de l\'opération de signature et/ou de chiffrement</string>
+  <string name="msg_se_symmetric">Préparation du chiffrement symétrique</string>
+  <string name="msg_crt_upload_success">Clef téléversée vers le serveur avec succès</string>
+  <string name="msg_crt_success">Identités certifiées avec succès</string>
+  <string name="msg_acc_saved">Compte enregistré</string>
   <!--PassphraseCache-->
   <string name="passp_cache_notif_click_to_clear">Cliquer ici pour effacer les phrases de passe mises en cache</string>
   <string name="passp_cache_notif_n_keys">OpenKeychain a mis en cache %d phrases de passe</string>
@@ -712,7 +805,7 @@
   <string name="label_user_id">identité</string>
   <string name="unknown_uid">&lt;inconnu&gt;</string>
   <string name="empty_certs">Aucun certificat pour cette clef</string>
-  <string name="certs_text">Seuls les auto-certificats et les certificats créés avec vos clefs sont affichés ici.</string>
+  <string name="certs_text">Seuls les auto-certificats et les certificats validés créés avec vos clefs sont affichés ici.</string>
   <string name="section_uids_to_certify">Identités à certifier</string>
   <string name="label_revocation">Raison de la révocation</string>
   <string name="label_verify_status">État de vérification</string>
@@ -730,6 +823,7 @@
   <string name="error_no_encrypt_subkey">Aucune sous-clef de chiffrement n\'est disponible !</string>
   <string name="info_no_manual_account_creation">Ne pas créer de comptes-OpenKeychain manuellement.\nPour plus d\'informations, consultez l\'Aide.</string>
   <string name="contact_show_key">Montrer la clef (%s)</string>
+  <string name="swipe_to_update">Glisser vers le bas pour mettre à jour à partir du serveur de clefs</string>
   <!--First Time-->
   <string name="first_time_text1">Reprenez le contrôle de votre confidentialité avec OpenKeychain |</string>
   <string name="first_time_create_key">Créer ma clef</string>

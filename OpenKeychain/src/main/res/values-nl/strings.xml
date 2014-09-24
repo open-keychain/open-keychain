@@ -161,7 +161,6 @@
   <string name="error_key_needs_a_user_id">minstens een identiteit vereist</string>
   <string name="error_no_signature_passphrase">geen wachtwoord opgegeven</string>
   <string name="error_no_signature_key">geen ondertekeningssleutel opgegeven</string>
-  <string name="error_invalid_data">geen geldige versleutelingsgegevens</string>
   <string name="error_integrity_check_failed">integriteitcheck niet geslaagd! Data is bewerkt!</string>
   <string name="error_wrong_passphrase">wachtwoord verekerd</string>
   <string name="error_could_not_extract_private_key">kan privésleutel niet uitpakken</string>
@@ -298,7 +297,6 @@
   <string name="drawer_close">Sluit navigatiemenu</string>
   <string name="my_keys">Mijn Sleutels</string>
   <!--hints-->
-  <string name="decrypt_content_edit_text_hint">Voer cijfertekst hier in om te decoderen en/of verifiëren...</string>
   <!--certs-->
   <string name="cert_default">standaard</string>
   <string name="cert_none">geen</string>

@@ -147,7 +147,6 @@
   <string name="error_user_id_no_email">nie znaleziono adresu email</string>
   <string name="error_no_signature_passphrase">nie podano hasła</string>
   <string name="error_no_signature_key">nie podano klucza podpisu</string>
-  <string name="error_invalid_data">nieprawidłowe dane</string>
   <string name="error_integrity_check_failed">Sprawdzanie spójności zakończone niepowodzeniem! Dane były modyfikowane!</string>
   <string name="error_wrong_passphrase">nieprawidłowe hasło</string>
   <string name="error_could_not_extract_private_key">nie można wyodrębnić klucza prywatnego</string>
@@ -279,7 +278,6 @@
   <string name="drawer_close">Zamknij panel nawigacji</string>
   <string name="my_keys">Moje klucze</string>
   <!--hints-->
-  <string name="decrypt_content_edit_text_hint">Wpisz tutaj tekst do zaszyfrowania i/lub zweryfikowania...</string>
   <!--certs-->
   <string name="cert_default">domyślny</string>
   <string name="cert_none">żaden</string>

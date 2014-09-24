@@ -12,6 +12,7 @@
   <string name="title_add_subkey">副鍵の追加</string>
   <string name="title_edit_key">鍵の編集</string>
   <string name="title_preferences">設定</string>
+  <string name="title_cloud_search_preferences">クラウド検索設定</string>
   <string name="title_api_registered_apps">アプリ</string>
   <string name="title_key_server_preference">鍵サーバ設定</string>
   <string name="title_change_passphrase">パスフレーズの変更</string>
@@ -34,6 +35,7 @@
   <!--section-->
   <string name="section_user_ids">ユーザID</string>
   <string name="section_keys">副鍵</string>
+  <string name="section_cloud_search">クラウド検索</string>
   <string name="section_general">一般</string>
   <string name="section_defaults">デフォルト</string>
   <string name="section_advanced">拡張</string>
@@ -44,6 +46,8 @@
   <string name="section_key_server">鍵サーバ</string>
   <string name="section_fingerprint">指紋</string>
   <string name="section_key_to_certify">鍵は検証されています。</string>
+  <string name="section_decrypt_files">ファイル</string>
+  <string name="section_decrypt_text">テキスト</string>
   <!--button-->
   <string name="btn_decrypt_verify_file">復号化と検証、そしてファイルの保存</string>
   <string name="btn_decrypt_verify_message">メッセージの復号化と検証</string>
@@ -62,6 +66,10 @@
   <string name="btn_view_cert_key">検証した鍵を見る</string>
   <string name="btn_create_key">鍵の生成</string>
   <string name="btn_add_files">ファイルの追加</string>
+  <string name="btn_add_share_decrypted_text">復号化したテキストの共有</string>
+  <string name="btn_decrypt_clipboard">クリップボードから復号化</string>
+  <string name="btn_decrypt_and_verify">と署名の検証</string>
+  <string name="btn_decrypt_files">ファイルの復号化</string>
   <!--menu-->
   <string name="menu_preferences">設定</string>
   <string name="menu_help">ヘルプ</string>
@@ -101,6 +109,7 @@
   <string name="label_hash_algorithm">ハッシュアルゴリズム</string>
   <string name="label_symmetric">パスフレーズで暗号化</string>
   <string name="label_passphrase_cache_ttl">パスフレーズキャッシュ</string>
+  <string name="label_passphrase_cache_subs">副鍵のパスフレーズをキャッシュ</string>
   <string name="label_message_compression">メッセージの圧縮</string>
   <string name="label_file_compression">ファイルの圧縮</string>
   <string name="label_keyservers">鍵サーバ</string>
@@ -117,6 +126,8 @@
   <string name="label_send_key">証明後選択した鍵サーバに鍵をアップロード</string>
   <string name="label_fingerprint">指紋</string>
   <string name="expiry_date_dialog_title">期限日時を設定</string>
+  <string name="label_first_keyserver_is_used">(リストの最初の鍵サーバが優先されます)</string>
+  <string name="label_preferred">優先</string>
   <string name="user_id_no_name">&lt;名前なし&gt;</string>
   <string name="none">&lt;無し&gt;</string>
   <string name="no_key">&lt;鍵無し&gt;</string>
@@ -210,6 +221,7 @@
   <string name="fingerprint_copied_to_clipboard">指紋はクリプボードにコピーされました!</string>
   <string name="select_key_to_certify">検証に使う鍵を選択して下さい!</string>
   <string name="key_too_big_for_sharing">この共有方法では鍵が大きすぎます!</string>
+  <string name="text_copied_to_clipboard">鍵はクリプボードにコピーされました!</string>
   <!--errors
          no punctuation, all lowercase,
          they will be put after "error_message", e.g. "Error: file not found"-->
@@ -223,7 +235,7 @@
   <string name="error_key_needs_a_user_id">最低でも1つのユーザIDが必要です</string>
   <string name="error_no_signature_passphrase">パスフレーズが与えられていません</string>
   <string name="error_no_signature_key">署名鍵を与えられていません</string>
-  <string name="error_invalid_data">暗号化データが不正です</string>
+  <string name="error_invalid_data">暗号化もしくは署名の検証されてないOpenPGPの内容!</string>
   <string name="error_integrity_check_failed">完全性チェックが失敗しました! データに変更があります!</string>
   <string name="error_wrong_passphrase">正しくないパスフレーズです</string>
   <string name="error_could_not_extract_private_key">秘密鍵を取り出すことができません</string>
@@ -271,6 +283,7 @@
   <string name="progress_modify_primaryuid">主ユーザIDを変更中...</string>
   <string name="progress_modify_subkeychange">副鍵の変更中...</string>
   <string name="progress_modify_subkeyrevoke">副鍵の破棄中...</string>
+  <string name="progress_modify_subkeystrip">副鍵のストリップ中...</string>
   <string name="progress_modify_subkeyadd">副鍵を追加中...</string>
   <string name="progress_modify_passphrase">パスフレーズの変更中...</string>
   <plurals name="progress_exporting_key">
@@ -297,6 +310,7 @@
   <string name="progress_con_reimport">統合: 再インポート中…</string>
   <!--action strings-->
   <string name="hint_keyserver_search_hint">名前/メール/鍵ID...</string>
+  <string name="hint_cloud_search_hint">名前/メール/証明/鍵...</string>
   <!--key bit length selections-->
   <string name="key_size_512">512</string>
   <string name="key_size_768">768</string>
@@ -331,6 +345,7 @@
   <string name="help_about_version">バージョン:</string>
   <!--Import-->
   <string name="import_tab_keyserver">鍵サーバ</string>
+  <string name="import_tab_cloud">検索をクラウドで</string>
   <string name="import_tab_direct">ファイル/クリップボード</string>
   <string name="import_tab_qr_code">QRコード/NFC</string>
   <string name="import_import">選択した鍵のインポート</string>
@@ -350,12 +365,17 @@
   <plurals name="import_keys_updated">
     <item quantity="other">%1$d の鍵%2$sのアップデートに成功。</item>
   </plurals>
+  <plurals name="import_keys_with_errors">
+    <item quantity="other">%d 個の鍵でインポート失敗!</item>
+  </plurals>
   <string name="view_log">ログを見る</string>
   <string name="import_error_nothing">インポートするものがありません。</string>
   <string name="import_error_nothing_cancelled">インポートをキャンセルしました。</string>
-  <string name="import_error">鍵のインポートのエラー!</string>
   <string name="import_with_warnings">、とワーニング</string>
   <string name="import_with_cancelled">、キャンセルされるまで</string>
+  <plurals name="import_error">
+    <item quantity="other">%d 個の鍵のインポート失敗!</item>
+  </plurals>
   <!--Intent labels-->
   <string name="intent_decrypt_file">OpenKeychainでファイルを復号化</string>
   <string name="intent_import_key">OpenKeychainに鍵をインポート</string>
@@ -373,6 +393,7 @@
   <string name="api_settings_select_key">鍵の選択</string>
   <string name="api_settings_create_key">このアカウントで新しい鍵を生成</string>
   <string name="api_settings_save">保存</string>
+  <string name="api_settings_save_msg">アカウントが保存されました</string>
   <string name="api_settings_cancel">キャンセル</string>
   <string name="api_settings_revoke">破棄されたアクセス</string>
   <string name="api_settings_start">アプリケーションを開始</string>
@@ -446,16 +467,26 @@
   </string-array>
   <string name="edit_key_edit_user_id_revoked">このIDは破棄されています。続けることができません。</string>
   <string name="edit_key_edit_subkey_title">アクションを選んでください!</string>
-  <string name="edit_key_new_subkey">新規</string>
+  <string-array name="edit_key_edit_subkey">
+    <item>期限の変更</item>
+    <item>副鍵の破棄</item>
+    <item>副鍵のストリップ</item>
+  </string-array>
+  <string name="edit_key_new_subkey">新しい副鍵</string>
   <string name="edit_key_select_flag">最低1つフラグを選択してください!</string>
+  <string name="edit_key_error_add_identity">最低でも1つのユーザIDを追加!</string>
+  <string name="edit_key_error_add_subkey">最低でも1つの副鍵を追加!</string>
   <!--Create key-->
   <string name="create_key_upload">鍵サーバへアップロード</string>
   <string name="create_key_empty">このフィールドは必須です</string>
   <string name="create_key_passphrases_not_equal">パスフレーズが一致しない</string>
   <string name="create_key_final_text">あたなが入力したIDは以下です:</string>
-  <string name="create_key_final_robot_text">鍵生成にしばらくかかります、その間にお茶でも1杯どうぞ…\n(3副鍵、RSA、4096 bit)</string>
+  <string name="create_key_final_robot_text">しばらくの間鍵を生成しています、その間はコーヒーでもどうぞ....</string>
+  <string name="create_key_rsa">(3副鍵、RSA, 4096 bit)</string>
+  <string name="create_key_custom">(個別の鍵設定)</string>
   <string name="create_key_text">フルネーム、Eメールアドレスを入力そしてパスフレーズを選択してください。</string>
   <string name="create_key_hint_full_name">フルネーム、例えば Max Mustermann</string>
+  <string name="create_key_edit">鍵の設定変更</string>
   <!--View key-->
   <string name="view_key_revoked">この鍵は破棄されています!</string>
   <string name="view_key_expired">この鍵は期限切れです!</string>
@@ -470,7 +501,6 @@
   <string name="my_keys">自分の鍵</string>
   <!--hints-->
   <string name="encrypt_content_edit_text_hint">テキストを入力</string>
-  <string name="decrypt_content_edit_text_hint">ここに入力された暗号化テキストを復号化/検証...</string>
   <!--certs-->
   <string name="cert_default">デフォルト</string>
   <string name="cert_none">無し</string>
@@ -500,31 +530,53 @@
   <string name="msg_ip_master">主鍵処理中 %s</string>
   <string name="msg_ip_master_expired">%s が鍵輪の期限切れ</string>
   <string name="msg_ip_master_expires">%s に鍵輪が期限切れ</string>
-  <string name="msg_ip_master_flags_ces">主鍵のフラグ: 検証、暗号化、署名</string>
-  <string name="msg_ip_master_flags_cex">主鍵のフラグ: 検証、暗号化</string>
-  <string name="msg_ip_master_flags_cxs">主鍵のフラグ: 検証、署名</string>
-  <string name="msg_ip_master_flags_xes">主鍵のフラグ: 暗号化、署名</string>
-  <string name="msg_ip_master_flags_cxx">主鍵のフラグ: 検証</string>
-  <string name="msg_ip_master_flags_xex">主鍵のフラグ: 暗号化</string>
-  <string name="msg_ip_master_flags_xxs">主鍵のフラグ: 署名</string>
-  <string name="msg_ip_master_flags_xxx">主鍵のフラグ: なし</string>
+  <string name="msg_ip_master_flags_unspecified">主鍵のフラグ: 不特定 (すべてを仮定します)</string>
+  <string name="msg_ip_master_flags_cesa">主鍵のフラグ: 検証、暗号化、署名、認証</string>
+  <string name="msg_ip_master_flags_cesx">主鍵のフラグ: 検証、暗号化、署名</string>
+  <string name="msg_ip_master_flags_cexa">主鍵のフラグ: 検証、暗号化、認証</string>
+  <string name="msg_ip_master_flags_cexx">主鍵のフラグ: 検証、暗号化</string>
+  <string name="msg_ip_master_flags_cxsa">主鍵のフラグ: 検証、署名、認証</string>
+  <string name="msg_ip_master_flags_cxsx">主鍵のフラグ: 検証、署名</string>
+  <string name="msg_ip_master_flags_cxxa">主鍵のフラグ: 検証、認証</string>
+  <string name="msg_ip_master_flags_cxxx">主鍵のフラグ: 検証</string>
+  <string name="msg_ip_master_flags_xesa">主鍵のフラグ: 暗号化、署名、認証</string>
+  <string name="msg_ip_master_flags_xesx">主鍵のフラグ: 暗号化、署名</string>
+  <string name="msg_ip_master_flags_xexa">主鍵のフラグ: 暗号化、認証</string>
+  <string name="msg_ip_master_flags_xexx">主鍵のフラグ: 暗号化</string>
+  <string name="msg_ip_master_flags_xxsa">主鍵のフラグ: 署名、認証</string>
+  <string name="msg_ip_master_flags_xxsx">主鍵のフラグ: 署名</string>
+  <string name="msg_ip_master_flags_xxxa">主鍵のフラグ: 認証</string>
+  <string name="msg_ip_master_flags_xxxx">主鍵のフラグ: なし</string>
   <string name="msg_ip_subkey">副鍵 %s の処理中</string>
   <string name="msg_ip_subkey_expired">%s が副鍵の期限切れ</string>
   <string name="msg_ip_subkey_expires">%s に副鍵が期限切れ</string>
-  <string name="msg_ip_subkey_flags_ces">副鍵のフラグ: 検証、暗号化、署名</string>
-  <string name="msg_ip_subkey_flags_cex">副鍵のフラグ: 検証、暗号化</string>
-  <string name="msg_ip_subkey_flags_cxs">副鍵のフラグ: 検証、署名</string>
-  <string name="msg_ip_subkey_flags_xes">副鍵のフラグ: 暗号化、署名</string>
-  <string name="msg_ip_subkey_flags_cxx">副鍵のフラグ: 検証</string>
-  <string name="msg_ip_subkey_flags_xex">副鍵のフラグ: 暗号化</string>
-  <string name="msg_ip_subkey_flags_xxs">副鍵のフラグ: 署名</string>
-  <string name="msg_ip_subkey_flags_xxx">副鍵のフラグ: なし</string>
+  <string name="msg_ip_subkey_flags_unspecified">副鍵のフラグ: 不特定 (すべてを仮定します)</string>
+  <string name="msg_ip_subkey_flags_cesa">副鍵のフラグ: 検証、暗号化、署名、認証</string>
+  <string name="msg_ip_subkey_flags_cesx">副鍵のフラグ: 検証、暗号化、署名</string>
+  <string name="msg_ip_subkey_flags_cexa">副鍵のフラグ: 検証、暗号化、認証</string>
+  <string name="msg_ip_subkey_flags_cexx">副鍵のフラグ: 検証、暗号化</string>
+  <string name="msg_ip_subkey_flags_cxsa">副鍵のフラグ: 検証、署名、認証</string>
+  <string name="msg_ip_subkey_flags_cxsx">副鍵のフラグ: 検証、署名</string>
+  <string name="msg_ip_subkey_flags_cxxa">副鍵のフラグ: 検証、認証</string>
+  <string name="msg_ip_subkey_flags_cxxx">副鍵のフラグ: 検証</string>
+  <string name="msg_ip_subkey_flags_xesa">副鍵のフラグ: 暗号化、署名、認証</string>
+  <string name="msg_ip_subkey_flags_xesx">副鍵のフラグ: 暗号化、署名</string>
+  <string name="msg_ip_subkey_flags_xexa">副鍵のフラグ: 暗号化、署名</string>
+  <string name="msg_ip_subkey_flags_xexx">副鍵のフラグ: 暗号化</string>
+  <string name="msg_ip_subkey_flags_xxsa">副鍵のフラグ: 署名、認証</string>
+  <string name="msg_ip_subkey_flags_xxsx">副鍵のフラグ: 署名</string>
+  <string name="msg_ip_subkey_flags_xxxa">副鍵のフラグ: 認証</string>
+  <string name="msg_ip_subkey_flags_xxxx">副鍵のフラグ: なし</string>
   <string name="msg_ip_success">公開鍵の鍵輪のインポートに成功</string>
   <string name="msg_ip_success_identical">鍵輪にデータがないため、なにもしません</string>
   <string name="msg_ip_reinsert_secret">秘密鍵を再挿入中</string>
   <string name="msg_ip_uid_cert_bad">問題のある検証と遭遇しました!</string>
   <string name="msg_ip_uid_cert_error">検証の処理中にエラーしました!</string>
-  <string name="msg_ip_uid_cert_good">ユーザIDは %1$s によって検証されました</string>
+  <string name="msg_ip_uid_cert_nonrevoke">すでに破棄不能証明を持っています、スキップします。</string>
+  <string name="msg_ip_uid_cert_old">証明が以前のものより古いです、スキップします。</string>
+  <string name="msg_ip_uid_cert_new">証明がより新しいです、以前のものを置き換えます。</string>
+  <string name="msg_ip_uid_cert_good">%1$s にて良好な証明を見付けました</string>
+  <string name="msg_ip_uid_cert_good_revoke">%1$s にて良好な破棄証明を見付けました</string>
   <plurals name="msg_ip_uid_certs_unknown">
     <item quantity="other">不明な公開鍵から %s の検証を無視</item>
   </plurals>
@@ -556,6 +608,7 @@
   <string name="msg_kc_error_v3">これはOpenPGP バージョン3の鍵で、これは非推奨でもうサポートされなくなりました!</string>
   <string name="msg_kc_error_no_uid">鍵輪が正しいユーザIDを含んでいませんでした!</string>
   <string name="msg_kc_error_master_algo">主鍵で不明なアルゴリズム(%s)を利用しています!</string>
+  <string name="msg_kc_error_dup_key">鍵輪の中に副鍵 %s が2度出現しました。鍵輪が不整形となっており、インポートできあせん!</string>
   <string name="msg_kc_master">主鍵処理中</string>
   <string name="msg_kc_revoke_bad_err">問題のある鍵輪の破棄証明を破棄中</string>
   <string name="msg_kc_revoke_bad_local">鍵輪のローカルフラグ付き破棄証明を破棄中</string>
@@ -600,6 +653,7 @@
   <string name="msg_kc_uid_no_cert">ユーザID \'%s\' の正常な自己署名が見付かりませんでした、鍵輪から除去しました</string>
   <string name="msg_kc_uid_remove">正しくないユーザID \'%s\' を破棄中</string>
   <string name="msg_kc_uid_dup">重複したユーザID \'%s\' を削除中。秘密鍵を二つもっています。この結果は署名を失っているのかもしれません!</string>
+  <string name="msg_kc_uid_warn_encoding">ユーザIDがUTF-8で検証できませんでした!</string>
   <!--Keyring merging log entries-->
   <string name="msg_mg_error_secret_dummy">新しい公開鍵の副鍵を見付けました、しかしダミー生成の秘密鍵の副鍵でサポートされません。!</string>
   <string name="msg_mg_error_heterogeneous">指紋が異なる鍵輪をマージしようとしています!</string>
@@ -636,6 +690,7 @@
   <string name="msg_mf_error_revoked_primary">主ユーザIDの破棄はできません!</string>
   <string name="msg_mf_error_null_expiry">副鍵の生成時に期限を\"過去\"とすることはできません。これはプログラムエラーで、バグレポートとしてファイルを送ってください!</string>
   <string name="msg_mf_error_passphrase_master">主鍵の復号で致命的な失敗! これはプログラミングのエラーの場合がありますので、バグレポートの提出をお願いします!</string>
+  <string name="msg_mf_error_pgp">PGP内部エラー!</string>
   <string name="msg_mf_error_sig">署名例外!</string>
   <string name="msg_mf_master">マスター認証を変更</string>
   <string name="msg_mf_passphrase">鍵輪のパスフレーズの変更中...</string>
@@ -650,6 +705,7 @@
   <string name="msg_mf_subkey_new_id">新しい副鍵 ID: %s</string>
   <string name="msg_mf_error_past_expiry">期限切れ日を過去にはできません!</string>
   <string name="msg_mf_subkey_revoke">副鍵 %s を破棄中</string>
+  <string name="msg_mf_subkey_strip">副鍵 %s のストリップ中</string>
   <string name="msg_mf_success">鍵輪の変更に成功</string>
   <string name="msg_mf_uid_add">ユーザID %s を追加中</string>
   <string name="msg_mf_uid_primary">主UIDを %s に変更中</string>
@@ -693,7 +749,69 @@
   <string name="msg_ek_error_dummy">ストリップした主鍵では鍵輪を編集できません!</string>
   <string name="msg_ek_error_not_found">鍵が見当りません!</string>
   <!--Messages for DecryptVerify operation-->
+  <string name="msg_dc_askip_no_key">既知の鍵で暗号化されていないデータです、スキップします...</string>
+  <string name="msg_dc_askip_not_allowed">受け入れた鍵で暗号化されていないデータです、スキップします...</string>
+  <string name="msg_dc_asym">鍵 %s で非対称の暗号化されたデータのブロックを検出</string>
+  <string name="msg_dc_clear_data">固定データを処理中</string>
+  <string name="msg_dc_clear_decompress">圧縮データの展開中</string>
+  <string name="msg_dc_clear_meta_file">ファイル名: %s</string>
+  <string name="msg_dc_clear_meta_mime">MIME種別: %s</string>
+  <string name="msg_dc_clear_meta_size">ファイルサイズ: %s</string>
+  <string name="msg_dc_clear_meta_time">更新日時: %s</string>
+  <string name="msg_dc_clear_signature_bad">署名の確認がOKではありません!</string>
+  <string name="msg_dc_clear_signature_check">署名データの検証中</string>
+  <string name="msg_dc_clear_signature_ok">署名の確認はOKです</string>
+  <string name="msg_dc_clear_signature">後程署名データを保存します</string>
+  <string name="msg_dc_clear">平文データの処理中</string>
+  <string name="msg_dc_error_bad_passphrase">鍵のロック解除エラー、パスフレーズに問題があります!</string>
+  <string name="msg_dc_error_extract_key">鍵のロック解除で不明なエラー!</string>
+  <string name="msg_dc_error_integrity_check">完全性チェックエラー!</string>
+  <string name="msg_dc_error_invalid_siglist">正常な署名データが見付からなかった!</string>
+  <string name="msg_dc_error_io">操作中にIO例外に当たりました!</string>
+  <string name="msg_dc_error_no_data">ストリーム中に暗号化されたデータが見付からなかった!</string>
+  <string name="msg_dc_error_no_key">ストリーム中に既知の秘密鍵で暗号化されたデータが見付からなかった!</string>
+  <string name="msg_dc_error_pgp_exception">操作中にPGP例外に当たりました!</string>
+  <string name="msg_dc_integrity_check_ok">完全性チェックOK!</string>
+  <string name="msg_dc_ok_meta_only">メタデータだけが要求され、暗号化をスキップしました</string>
+  <string name="msg_dc_ok">OK</string>
+  <string name="msg_dc_pass_cached">キャッシュからパスフレーズを利用します。</string>
+  <string name="msg_dc_pending_nfc">NFCトークンが必要、ユーザー入力を要求中...</string>
+  <string name="msg_dc_pending_passphrase">パスフレーズが必要、ユーザー入力を要求中...</string>
+  <string name="msg_dc_prep_streams">暗号化のストリームの検証</string>
+  <string name="msg_dc">復号化操作を開始します...</string>
+  <string name="msg_dc_sym_skip">受け入れできない対称暗号データです、スキップします...</string>
+  <string name="msg_dc_sym">対称暗号化されたデータのブロックを検出</string>
+  <string name="msg_dc_trail_asym">追跡で遭遇、鍵 %s で非対称の暗号化されたデータ</string>
+  <string name="msg_dc_trail_sym">追跡で遭遇、対称暗号化されたデータ</string>
+  <string name="msg_dc_trail_unknown">追跡で未知のタイプのデータに遭遇</string>
+  <string name="msg_dc_unlocking">秘密鍵のロック解除</string>
   <!--Messages for SignEncrypt operation-->
+  <string name="msg_se_asymmetric">暗号化のための公開鍵の検証</string>
+  <string name="msg_se_clearsign_only">クリアテキスト署名の入力はサポートされていません!</string>
+  <string name="msg_se_compressing">圧縮の検証</string>
+  <string name="msg_se_encrypting">暗号化データ</string>
+  <string name="msg_se_error_bad_passphrase">駄目なパスフレーズ!</string>
+  <string name="msg_se_error_io">操作中にIO例外に当たりました!</string>
+  <string name="msg_se_error_key_sign">選択した署名鍵で署名データができません!</string>
+  <string name="msg_se_error_sign_key">署名鍵の取得エラー!</string>
+  <string name="msg_se_error_nfc">NFC データエラー!</string>
+  <string name="msg_se_error_no_passphrase">パスフレーズなしで提供!</string>
+  <string name="msg_se_error_pgp">PGP内部エラー!</string>
+  <string name="msg_se_error_sig">PGP署名例外に当たりました!</string>
+  <string name="msg_se_error_unlock">鍵のロック解除で不明なエラー!</string>
+  <string name="msg_se_key_ok">暗号化の鍵: %s</string>
+  <string name="msg_se_key_unknown">暗号化で鍵を紛失: %s</string>
+  <string name="msg_se_key_warn">暗号化に問題のある鍵: %s</string>
+  <string name="msg_se_ok">署名/暗号化操作に成功!</string>
+  <string name="msg_se_pending_nfc">NFCトークンが必要、ユーザー入力を要求中...</string>
+  <string name="msg_se_pending_passphrase">パスフレーズが必要、ユーザー入力を要求中...</string>
+  <string name="msg_se_signing">署名データ(暗号化していない)</string>
+  <string name="msg_se_sigcrypting">データを署名付きで暗号化中</string>
+  <string name="msg_se">署名/暗号化操作を開始します</string>
+  <string name="msg_se_symmetric">対称暗号の検証</string>
+  <string name="msg_crt_upload_success">鍵をサーバにアップロードしました</string>
+  <string name="msg_crt_success">ユーザIDの検証に成功</string>
+  <string name="msg_acc_saved">アカウント保存</string>
   <!--PassphraseCache-->
   <string name="passp_cache_notif_click_to_clear">クリックしてパスフレーズのキャッシュをクリア</string>
   <string name="passp_cache_notif_n_keys">OpenKeychainは %d のパスフレーズをキャッシュしています</string>
@@ -706,7 +824,7 @@
   <string name="label_user_id">ユーザID</string>
   <string name="unknown_uid">&lt;不明&gt;</string>
   <string name="empty_certs">この鍵に証明がない</string>
-  <string name="certs_text">あなたの鍵でだけ生成された自己証明と証明がここに表示されます</string>
+  <string name="certs_text">あなたの検証された自己証明とあなたの鍵で生成された証明がここに表示されます</string>
   <string name="section_uids_to_certify">ユーザIDを検証</string>
   <string name="label_revocation">破棄の理由</string>
   <string name="label_verify_status">検証ステータス</string>
@@ -725,6 +843,7 @@
   <string name="info_no_manual_account_creation">OpenKeychainのアカウントを手動では生成できません.
 より詳細は、ヘルプを参照のこと。</string>
   <string name="contact_show_key">鍵 (%s) を表示</string>
+  <string name="swipe_to_update">下スワイプでキーサーバから更新します</string>
   <!--First Time-->
   <string name="first_time_text1">OpenKeychainであなたのプライバシーを取り戻しましょう!</string>
   <string name="first_time_create_key">自分の鍵の生成</string>

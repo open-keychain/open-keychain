@@ -188,7 +188,6 @@
   <string name="error_key_needs_a_user_id">хоча б одна сутність</string>
   <string name="error_no_signature_passphrase">не подано парольної фрази</string>
   <string name="error_no_signature_key">не подано ключ підпису</string>
-  <string name="error_invalid_data">недійсні дані шифрування</string>
   <string name="error_integrity_check_failed">Невдала перевірка цілісності! Дані вже змінено!</string>
   <string name="error_wrong_passphrase">помилкова парольна фраза</string>
   <string name="error_could_not_extract_private_key">не можна витягти секретний ключ</string>
@@ -328,7 +327,6 @@
   </plurals>
   <string name="view_log">Переглянути журнал</string>
   <string name="import_error_nothing">Нема що імпортувати.</string>
-  <string name="import_error">Помилка імпорту ключів!</string>
   <string name="import_with_warnings">, із застереженнями</string>
   <!--Intent labels-->
   <string name="intent_decrypt_file">Розшифрувати файл з OpenKeychain</string>
@@ -398,7 +396,6 @@
   <string name="edit_key_edit_user_id_title">Виберіть дію!</string>
   <string name="edit_key_edit_user_id_revoked">Ця сутність вже відкликана. Це не можна скасувати.</string>
   <string name="edit_key_edit_subkey_title">Виберіть дію!</string>
-  <string name="edit_key_new_subkey">новий</string>
   <string name="edit_key_select_flag">Будь ласка, виберіть хоча б один прапор!</string>
   <!--Create key-->
   <string name="create_key_upload">Відвантажити ключ на сервер ключів</string>
@@ -417,7 +414,6 @@
   <string name="drawer_close">Закрити панель навігації</string>
   <string name="my_keys">Мої ключі</string>
   <!--hints-->
-  <string name="decrypt_content_edit_text_hint">Уведіть зашифрований текст тут для його розшифрування та/або перевірки…</string>
   <!--certs-->
   <string name="cert_default">типово</string>
   <string name="cert_none">жоден</string>
@@ -435,9 +431,6 @@
   <string name="msg_ip_delete_old_fail">Нема вилученого старого ключа (створюється новий?)</string>
   <string name="msg_ip_delete_old_ok">Вилучений старий ключ з бази даних</string>
   <string name="msg_ip_encode_fail">Операція не вдалася через помилку кодування</string>
-  <string name="msg_ip_error_io_exc">Операція не вдалася через помилку вводу/виводу</string>
-  <string name="msg_ip_error_op_exc">Операція не вдалася через помилку бази даних</string>
-  <string name="msg_ip_error_remote_ex">Операція не вдалася через внутрішню помилку</string>
   <string name="msg_ip">Імпортується публічна в\'язка %s</string>
   <string name="msg_ip_insert_keyring">Шифруються дані із в\'язки</string>
   <string name="msg_ip_insert_keys">Аналізуються ключі</string>
@@ -445,31 +438,14 @@
   <string name="msg_ip_master">Обробляється основний ключа %s</string>
   <string name="msg_ip_master_expired">В\'язка закінчилася %s</string>
   <string name="msg_ip_master_expires">В\'язка закінчується %s</string>
-  <string name="msg_ip_master_flags_ces">Прапори основного ключа: certify, encrypt, sign</string>
-  <string name="msg_ip_master_flags_cex">Прапори основного ключа: certify, encrypt</string>
-  <string name="msg_ip_master_flags_cxs">Прапори основного ключа: certify, sign</string>
-  <string name="msg_ip_master_flags_xes">Прапори основного ключа: encrypt, sign</string>
-  <string name="msg_ip_master_flags_cxx">Прапори основного ключа: certify</string>
-  <string name="msg_ip_master_flags_xex">Прапори основного ключа: encrypt</string>
-  <string name="msg_ip_master_flags_xxs">Прапори основного ключа: sign</string>
-  <string name="msg_ip_master_flags_xxx">Прапори основного ключа: немає</string>
   <string name="msg_ip_subkey">Опрацьовується підключ %s</string>
   <string name="msg_ip_subkey_expired">Підключ закінчився %s</string>
   <string name="msg_ip_subkey_expires">Підключ закінчуєтья %s</string>
-  <string name="msg_ip_subkey_flags_ces">Прапори підключів: certify, encrypt, sign</string>
-  <string name="msg_ip_subkey_flags_cex">Прапори підключів: certify, encrypt</string>
-  <string name="msg_ip_subkey_flags_cxs">Прапори підключів: certify, sign</string>
-  <string name="msg_ip_subkey_flags_xes">Прапори підключів: encrypt, sign</string>
-  <string name="msg_ip_subkey_flags_cxx">Прапори підключів: certify</string>
-  <string name="msg_ip_subkey_flags_xex">Прапори підключів: encrypt</string>
-  <string name="msg_ip_subkey_flags_xxs">Прапори підключів: sign</string>
-  <string name="msg_ip_subkey_flags_xxx">Прапори підключів: жодний</string>
   <string name="msg_ip_success">Успішно імпортована публічна в\'язка</string>
   <string name="msg_ip_success_identical">В\'язка не містить нових даних. Нема що робити.</string>
   <string name="msg_ip_reinsert_secret">Повторне вставлення секретного ключа</string>
   <string name="msg_ip_uid_cert_bad">Виявлено поганий сертифікат!</string>
   <string name="msg_ip_uid_cert_error">Помилка опрацювання сертифікату!</string>
-  <string name="msg_ip_uid_cert_good">ІД користувача сертифіковано %1$s</string>
   <plurals name="msg_ip_uid_certs_unknown">
     <item quantity="one">Ігнорується один сертифікат виданий невідомим відкритим ключем</item>
     <item quantity="few">Ігнорується %s сертифікати, виданих невідомими відкритими ключами</item>
@@ -490,7 +466,6 @@
   <string name="msg_is">Імпортується секретний ключ %s</string>
   <string name="msg_is_db_exception">Помилка бази даних!</string>
   <string name="msg_is_importing_subkeys">Опрацьовуються секретні підключі</string>
-  <string name="msg_is_error_io_exc">Помилка шифрування в’язки</string>
   <string name="msg_is_pubring_generate">Генерується публічна в\'язка із секретної</string>
   <string name="msg_is_success_identical">В\'язка не містить нових даних. Нема що робити.</string>
   <string name="msg_is_success">Успішно імпортована секретна в\'язка</string>

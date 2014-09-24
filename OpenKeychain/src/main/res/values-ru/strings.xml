@@ -189,7 +189,6 @@
   <string name="error_key_needs_a_user_id">необходим хотя бы один идентификатор</string>
   <string name="error_no_signature_passphrase">пароль не задан</string>
   <string name="error_no_signature_key">ключ для подписи не задан</string>
-  <string name="error_invalid_data">некорректное шифрование</string>
   <string name="error_integrity_check_failed">Проверка целостности не удалась! Данные изменились!</string>
   <string name="error_wrong_passphrase">неправильный пароль</string>
   <string name="error_could_not_extract_private_key">не удалось извлечь личный ключ</string>
@@ -312,7 +311,6 @@
   </plurals>
   <string name="view_log">Смотреть журнал</string>
   <string name="import_error_nothing">Нет данных для импорта.</string>
-  <string name="import_error">Ошибка импорта ключей!</string>
   <string name="import_with_warnings">, с предупреждениями</string>
   <!--Intent labels-->
   <string name="intent_decrypt_file">OpenKeychain: Расшифровать файл</string>
@@ -390,7 +388,6 @@
   <string name="drawer_close">Закрыть панель навигации</string>
   <string name="my_keys">Мои ключи</string>
   <!--hints-->
-  <string name="decrypt_content_edit_text_hint">Введите сюда шифр для расшифровки и/или проверки...</string>
   <!--certs-->
   <string name="cert_default">по умолчанию</string>
   <string name="cert_none">нет</string>
@@ -406,8 +403,6 @@
   <string name="msg_ip_delete_old_fail">Старый ключ не удален (создать новый?)</string>
   <string name="msg_ip_delete_old_ok">Старый ключ удален из базы</string>
   <string name="msg_ip_encode_fail">Действие прервано из-за ошибки кодировки</string>
-  <string name="msg_ip_error_io_exc">Действие прервано из-за ошибки ввода/вывода</string>
-  <string name="msg_ip_error_remote_ex">Действие прервано из-за внутренней ошибки</string>
   <string name="msg_ip">Импорт связки публичных ключей %s</string>
   <string name="msg_ip_insert_keys">Разбор ключей</string>
   <string name="msg_ip_prepare">Подготовка операций</string>

@@ -219,7 +219,6 @@
   <string name="error_key_needs_a_user_id">necesita al menos una identidad</string>
   <string name="error_no_signature_passphrase">no has proporcionado una frase de contraseña</string>
   <string name="error_no_signature_key">no has proporcionado una clave de firma</string>
-  <string name="error_invalid_data">cifrado de datos no válido</string>
   <string name="error_integrity_check_failed">¡ha fallado la comprobación de integridad! ¡Los datos han sido modificados!</string>
   <string name="error_wrong_passphrase">frase de contraseña incorrecta</string>
   <string name="error_could_not_extract_private_key">no se puede extraer la clave privada</string>
@@ -358,7 +357,6 @@
   <string name="view_log">Ver registro (log)</string>
   <string name="import_error_nothing">No hay nada que importar.</string>
   <string name="import_error_nothing_cancelled">Importación cancelada.</string>
-  <string name="import_error">¡Error importando claves!</string>
   <string name="import_with_warnings">, con advertencias</string>
   <string name="import_with_cancelled">, hasta que este cancelada</string>
   <!--Intent labels-->
@@ -450,16 +448,21 @@
     <item>Revocar subclave</item>
     <item>Desnudar subclave</item>
   </string-array>
-  <string name="edit_key_new_subkey">nueva</string>
+  <string name="edit_key_new_subkey">nueva subclave</string>
   <string name="edit_key_select_flag">¡Por favor, seleccione al menos un indicador!</string>
+  <string name="edit_key_error_add_identity">¡Añadir al menos una identidad!</string>
+  <string name="edit_key_error_add_subkey">¡Añadir al menos una subclave!</string>
   <!--Create key-->
   <string name="create_key_upload">Subir clave al servidor de claves</string>
   <string name="create_key_empty">Este campo es obligatorio</string>
   <string name="create_key_passphrases_not_equal">Las frases-contraseña no coinciden</string>
   <string name="create_key_final_text">Ha introducido la siguiente identidad:</string>
-  <string name="create_key_final_robot_text">Crear una clave puede llevar un rato, tómese una taza de café entre tanto...\n(3 subclaves, RSA, 4096 bits)</string>
+  <string name="create_key_final_robot_text">Crear una clave puede llevar un tiempo, tómese una taza de café entre tanto...</string>
+  <string name="create_key_rsa">(3 subclaves, RSA, 4096 bits)</string>
+  <string name="create_key_custom">(configuración de clave personalizada)</string>
   <string name="create_key_text">Introduzca su nombre completo, dirección de correo electrónico, y elija una frase contraseña.</string>
   <string name="create_key_hint_full_name">Nombre completo, ej. Max Mustermann</string>
+  <string name="create_key_edit">Cambiar configuración de clave</string>
   <!--View key-->
   <string name="view_key_revoked">¡Esta clave ha sido revocada!</string>
   <string name="view_key_expired">¡Esta clave ha expirado!</string>
@@ -474,7 +477,6 @@
   <string name="my_keys">Mis claves</string>
   <!--hints-->
   <string name="encrypt_content_edit_text_hint">Escriba el texto</string>
-  <string name="decrypt_content_edit_text_hint">Introduce aquí el texto cifrado para descifrarlo y/o verificarlo...</string>
   <!--certs-->
   <string name="cert_default">predeterminado</string>
   <string name="cert_none">ninguno</string>
@@ -504,31 +506,51 @@
   <string name="msg_ip_master">Procesando clave maestra %s</string>
   <string name="msg_ip_master_expired">El juego de claves expiró el %s</string>
   <string name="msg_ip_master_expires">El juego de claves expira el %s</string>
-  <string name="msg_ip_master_flags_ces">Distintivos de clave maestra: certificar, cifrar, firmar</string>
-  <string name="msg_ip_master_flags_cex">Distintivos de clave maestra: certificar, cifrar</string>
-  <string name="msg_ip_master_flags_cxs">Distintivos de clave maestra: certificar, firmar</string>
-  <string name="msg_ip_master_flags_xes">Distintivos de clave maestra: cifrar, firmar</string>
-  <string name="msg_ip_master_flags_cxx">Distintivos de clave maestra: certificar</string>
-  <string name="msg_ip_master_flags_xex">Distintivos de clave maestra: cifrar</string>
-  <string name="msg_ip_master_flags_xxs">Distintivos de clave maestra: firmar</string>
-  <string name="msg_ip_master_flags_xxx">Distintivos de clave maestra: ninguno</string>
+  <string name="msg_ip_master_flags_unspecified">Indicativos maestros: no especificados (se asumen todos)</string>
+  <string name="msg_ip_master_flags_cesa">Indicativos maestros: certificar, cifrar, firmar, autentificar</string>
+  <string name="msg_ip_master_flags_cesx">Indicativos maestros: certificar, cifrar, firmar</string>
+  <string name="msg_ip_master_flags_cexa">Indicativos maestros: certificar, cifrar, autentificar</string>
+  <string name="msg_ip_master_flags_cexx">Indicativos maestros: certificar, cifrar</string>
+  <string name="msg_ip_master_flags_cxsa">Indicativos maestros: certificar, firmar, autentificar</string>
+  <string name="msg_ip_master_flags_cxsx">Indicativos maestros: certificar, firmar</string>
+  <string name="msg_ip_master_flags_cxxx">Indicativos maestros: certificar</string>
+  <string name="msg_ip_master_flags_xesa">Indicativos maestros: cifrar, firmar, autentificar</string>
+  <string name="msg_ip_master_flags_xesx">Indicativos maestros: cifrar, firmar</string>
+  <string name="msg_ip_master_flags_xexa">Indicativos maestros: cifrar, autentificar</string>
+  <string name="msg_ip_master_flags_xexx">Indicativos maestros: cifrar</string>
+  <string name="msg_ip_master_flags_xxsa">Indicativos maestros: firmar, autentificar</string>
+  <string name="msg_ip_master_flags_xxsx">Indicativos maestros: firmar</string>
+  <string name="msg_ip_master_flags_xxxa">Indicativos maestros: autentificar</string>
+  <string name="msg_ip_master_flags_xxxx">Indicativos maestros: ninguno</string>
   <string name="msg_ip_subkey">Procesando subclave %s</string>
   <string name="msg_ip_subkey_expired">La subclave expiró el %s</string>
   <string name="msg_ip_subkey_expires">La subclave expira el %s</string>
-  <string name="msg_ip_subkey_flags_ces">Distintivos de subclave: certificar, cifrar, firmar</string>
-  <string name="msg_ip_subkey_flags_cex">Distintivos de subclave: certificar, cifrar</string>
-  <string name="msg_ip_subkey_flags_cxs">Distintivos de subclave: certificar, firmar</string>
-  <string name="msg_ip_subkey_flags_xes">Distintivos de subclave: cifrar, firmar</string>
-  <string name="msg_ip_subkey_flags_cxx">Distintivos de subclave: certificar</string>
-  <string name="msg_ip_subkey_flags_xex">Distintivos de subclave: cifrar</string>
-  <string name="msg_ip_subkey_flags_xxs">Distintivos de subclave: firmar</string>
-  <string name="msg_ip_subkey_flags_xxx">Distintivos de subclave: ninguno</string>
+  <string name="msg_ip_subkey_flags_unspecified">Indicativos de subclave: no especificados (se asumen todos)</string>
+  <string name="msg_ip_subkey_flags_cesa">Indicativos de subclave: certificar, cifrar, firmar, autentificar</string>
+  <string name="msg_ip_subkey_flags_cesx">Indicativos de subclave: certificar, cifrar, firmar</string>
+  <string name="msg_ip_subkey_flags_cexa">Indicativos de subclave: certificar, cifrar, autentificar</string>
+  <string name="msg_ip_subkey_flags_cexx">Indicativos de subclave: certificar, cifrar</string>
+  <string name="msg_ip_subkey_flags_cxsa">Indicativos de subclave: certificar, firmar, autentificar</string>
+  <string name="msg_ip_subkey_flags_cxsx">Indicativos de subclave: certificar, firmar</string>
+  <string name="msg_ip_subkey_flags_cxxx">Indicativos de subclave: certificar</string>
+  <string name="msg_ip_subkey_flags_xesa">Indicativos de subclave: cifrar, firmar, autentificar</string>
+  <string name="msg_ip_subkey_flags_xesx">Indicativos de subclave: cifrar, firmar</string>
+  <string name="msg_ip_subkey_flags_xexa">Indicativos de subclave: cifrar, autentificar</string>
+  <string name="msg_ip_subkey_flags_xexx">Indicativos de subclave: cifrar</string>
+  <string name="msg_ip_subkey_flags_xxsa">Indicativos de subclave: firmar, autentificar</string>
+  <string name="msg_ip_subkey_flags_xxsx">Indicativos de subclave: firmar</string>
+  <string name="msg_ip_subkey_flags_xxxa">Indicativos de subclave: autentificar</string>
+  <string name="msg_ip_subkey_flags_xxxx">Indicativos de subclave: ninguno</string>
   <string name="msg_ip_success">Juego de claves públicas importado con éxito</string>
   <string name="msg_ip_success_identical">El juego de claves no contiene nuevos datos, no hay nada que hacer</string>
   <string name="msg_ip_reinsert_secret">Re-insertando clave secreta</string>
   <string name="msg_ip_uid_cert_bad">¡Se encontró un certificado defectuoso!</string>
   <string name="msg_ip_uid_cert_error">¡Error procesando certificado!</string>
-  <string name="msg_ip_uid_cert_good">La identidad del usuario está certificada por %1$s</string>
+  <string name="msg_ip_uid_cert_nonrevoke">Ya tiene un certificado no-revocable, omitiendo.</string>
+  <string name="msg_ip_uid_cert_old">El certificado es más antiguo que el anterior, omitiendo.</string>
+  <string name="msg_ip_uid_cert_new">El certificado es más reciente, reemplazando el anterior.</string>
+  <string name="msg_ip_uid_cert_good">Se encontró un certificado correcto por %1$s</string>
+  <string name="msg_ip_uid_cert_good_revoke">Se encontró un certificado de revocación correcto por %1$s</string>
   <plurals name="msg_ip_uid_certs_unknown">
     <item quantity="one">Ignorando un certificado publicado por una clave pública desconocida</item>
     <item quantity="other">Ignorando %s certificados publicados por claves públicas desconocidas</item>
@@ -547,7 +569,7 @@
   <string name="msg_is">Importando clave secreta (privada) %s</string>
   <string name="msg_is_db_exception">¡Error de base de datos!</string>
   <string name="msg_is_importing_subkeys">Procesando subclaves secretas</string>
-  <string name="msg_is_error_io_exc">Error codificando el juego de claves</string>
+  <string name="msg_is_error_io_exc">Error codificando el juego de claves (keyring)</string>
   <string name="msg_is_pubring_generate">Generando un juego de claves públicas desde el juego de claves secretas (privadas)</string>
   <string name="msg_is_subkey_nonexistent">La subclave %s no está disponible en la clave secreta (privada)</string>
   <string name="msg_is_subkey_ok">Subclave secreta (privada) %s marcada como disponible</string>
@@ -562,6 +584,7 @@
   <string name="msg_kc_error_v3">¡Esta es una clave OpenPGP versión 3, que ha sido desechada y ya no está soportada!</string>
   <string name="msg_kc_error_no_uid">¡El juego de claves no tiene identidades de usuario válidas!</string>
   <string name="msg_kc_error_master_algo">¡La clave maestra usa un algoritmo (%s) desconocido!</string>
+  <string name="msg_kc_error_dup_key">La subclave %s aparece dos veces en el juego de claves (keyring). El juego de claves está mal formado, ¡no se va a importar!</string>
   <string name="msg_kc_master">Procesando clave maestra</string>
   <string name="msg_kc_revoke_bad_err">Eliminando certificado defectuoso de revocación de juego de claves</string>
   <string name="msg_kc_revoke_bad_local">Eliminando certificado de revocación de juego de claves, con distintivo \"local\"</string>
@@ -729,7 +752,7 @@
   <string name="msg_dc_error_no_data">¡No se encontraron datos cifrados en el flujo de datos (`stream`)!</string>
   <string name="msg_dc_error_no_key">¡No se encontraron datos cifrados con clave secreta (privada) conocida en el flujo de datos (`stream`)!</string>
   <string name="msg_dc_error_pgp_exception">¡Se encontró una Excepción PGP durante la operación!</string>
-  <string name="msg_dc_integrity_check_ok">¡Comprobación de integridad correcta!</string>
+  <string name="msg_dc_integrity_check_ok">¡Comprobación de integridad CORRECTA!</string>
   <string name="msg_dc_ok_meta_only">Sólo fueron solicitados los metadatos, omitiendo descifrado</string>
   <string name="msg_dc_ok">CORRECTO</string>
   <string name="msg_dc_pass_cached">Usando frase-contraseña desde caché</string>
@@ -762,6 +785,7 @@
   <string name="msg_se_key_warn">Clave para cifrado errónea: %s</string>
   <string name="msg_se_ok">¡Operación de firmado/cifrado completada!</string>
   <string name="msg_se_pending_nfc">Se requiere credencial NFC, solicitando su introducción por el usuario...</string>
+  <string name="msg_se_pending_passphrase">Se requiere frase-contraseña, solicitando que el usuario la introduzca...</string>
   <string name="msg_se_signing">Firmando datos (sin cifrado)</string>
   <string name="msg_se_sigcrypting">Cifrando datos con firma</string>
   <string name="msg_se">Iniciando operación de firmado y/o cifrado</string>
@@ -781,7 +805,7 @@
   <string name="label_user_id">Identidad</string>
   <string name="unknown_uid">&lt;desconocido&gt;</string>
   <string name="empty_certs">No hay certificados para esta clave</string>
-  <string name="certs_text">Sólo los auto-certificados y los certificados creados con las claves de usted se muestran aquí.</string>
+  <string name="certs_text">Aquí sólo se muestran auto-certificados validados y certificados validados creados con sus claves.</string>
   <string name="section_uids_to_certify">Identidades a certificar</string>
   <string name="label_revocation">Razón de la revocación</string>
   <string name="label_verify_status">Estado de la verificación</string>

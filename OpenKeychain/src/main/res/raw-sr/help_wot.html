@@ -1,0 +1,17 @@
+<html>
+<head></head>
+<body>
+<h2>Web of Trust</h2>
+<p>The Web of Trust describes the part of PGP which deals with creation and bookkeeping of certifications. It provides mechanisms to help the user keep track of who a public key belongs to, and share this information with others; To ensure the privacy of encrypted communication, it is essential to know that the public key you encrypt to belongs to the person you think it does.</p>
+
+<h2>Support in OpenKeychain</h2>
+<p>There is only basic support for Web of Trust in OpenKeychain. This is a heavy work in progress and subject to changes in upcoming releases.</p>
+
+<h2>Trust Model</h2>
+<p>Trust evaluation is based on the simple assumption that all keys which have secret keys available are trusted. Public keys which contain at least one user id certified by a trusted key will be marked with a green dot in the key listings. It is not (yet) possible to specify trust levels for certificates of other known public keys.</p>
+
+<h2>Certifying keys</h2>
+<p>Support for key certification is available, and user ids can be certified individually. It is not yet possible to specify the level of trust or create local and other special types of certificates.</p>
+
+</body>
+</html>
