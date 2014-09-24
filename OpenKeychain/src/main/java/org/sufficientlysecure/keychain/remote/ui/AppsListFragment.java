@@ -40,9 +40,11 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainContract.ApiApps;
+import org.sufficientlysecure.keychain.util.Log;
 
 public class AppsListFragment extends ListFragment implements
         LoaderManager.LoaderCallbacks<Cursor> {
@@ -57,14 +59,31 @@ public class AppsListFragment extends ListFragment implements
         getListView().setOnItemClickListener(new OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-                boolean isInstalled = mAdapter.getItemIsInstalled(position);
                 String selectedPackageName = mAdapter.getItemPackageName(position);
+                boolean installed = mAdapter.getItemIsInstalled(position);
+                boolean registered = mAdapter.getItemIsRegistered(position);
 
-                if (isInstalled) {
-                    // edit app settings
-                    Intent intent = new Intent(getActivity(), AppSettingsActivity.class);
-                    intent.setData(KeychainContract.ApiApps.buildByPackageNameUri(selectedPackageName));
-                    startActivity(intent);
+                if (installed) {
+                    if (registered) {
+                        // edit app settings
+                        Intent intent = new Intent(getActivity(), AppSettingsActivity.class);
+                        intent.setData(KeychainContract.ApiApps.buildByPackageNameUri(selectedPackageName));
+                        startActivity(intent);
+                    } else {
+                        Intent i;
+                        PackageManager manager = getActivity().getPackageManager();
+                        try {
+                            i = manager.getLaunchIntentForPackage(selectedPackageName);
+                            if (i == null)
+                                throw new PackageManager.NameNotFoundException();
+                            // start like the Android launcher would do
+                            i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
+                            i.addCategory(Intent.CATEGORY_LAUNCHER);
+                            startActivity(i);
+                        } catch (PackageManager.NameNotFoundException e) {
+                            Log.e(Constants.TAG, "startApp", e);
+                        }
+                    }
                 } else {
                     try {
                         startActivity(new Intent(Intent.ACTION_VIEW,
@@ -88,26 +107,34 @@ public class AppsListFragment extends ListFragment implements
         mAdapter = new RegisteredAppsAdapter(getActivity(), null, 0);
         setListAdapter(mAdapter);
 
-        // Prepare the loader. Either re-connect with an existing one,
-        // or start a new one.
-        getLoaderManager().initLoader(0, null, this);
+        // Loader is started in onResume!
     }
 
-    private static final String TEMP_COLUMN_INSTALLED = "INSTALLED";
+    @Override
+    public void onResume() {
+        super.onResume();
+        // after coming back from Google Play -> reload
+        getLoaderManager().restartLoader(0, null, this);
+    }
+
     private static final String TEMP_COLUMN_NAME = "NAME";
+    private static final String TEMP_COLUMN_INSTALLED = "INSTALLED";
+    private static final String TEMP_COLUMN_REGISTERED = "REGISTERED";
 
     // These are the Contacts rows that we will retrieve.
     static final String[] PROJECTION = new String[]{
             ApiApps._ID, // 0
             ApiApps.PACKAGE_NAME, // 1
+            "null as " + TEMP_COLUMN_NAME, // installed apps can retrieve app name from Android OS
             "0 as " + TEMP_COLUMN_INSTALLED, // changed later in cursor joiner
-            "null as " + TEMP_COLUMN_NAME // installed apps can retrieve app name from Android OS
+            "1 as " + TEMP_COLUMN_REGISTERED // if it is in db it is registered
     };
 
     private static final int INDEX_ID = 0;
     private static final int INDEX_PACKAGE_NAME = 1;
-    private static final int INDEX_INSTALLED = 2;
-    private static final int INDEX_NAME = 3;
+    private static final int INDEX_NAME = 2;
+    private static final int INDEX_INSTALLED = 3;
+    private static final int INDEX_REGISTERED = 4;
 
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         // This is called when a new Loader needs to be created. This
@@ -126,18 +153,20 @@ public class AppsListFragment extends ListFragment implements
         MatrixCursor availableAppsCursor = new MatrixCursor(new String[]{
                 ApiApps._ID,
                 ApiApps.PACKAGE_NAME,
+                TEMP_COLUMN_NAME,
                 TEMP_COLUMN_INSTALLED,
-                TEMP_COLUMN_NAME
+                TEMP_COLUMN_REGISTERED
         });
-        availableAppsCursor.addRow(new Object[]{1, "com.fsck.k9", 0, "K-9 Mail"});
-        availableAppsCursor.addRow(new Object[]{1, "eu.siacs.conversations", 0, "Conversations (Instant Messaging)"});
-//        availableAppsCursor.addRow(new Object[]{1, "org.sufficientlysecure.keychain.demo", 0, "API Example"});
+        availableAppsCursor.addRow(new Object[]{1, "com.fsck.k9", "K-9 Mail", 0, 0});
+        availableAppsCursor.addRow(new Object[]{1, "eu.siacs.conversations", "Conversations (Instant Messaging)", 0, 0});
+//        availableAppsCursor.addRow(new Object[]{1, "org.sufficientlysecure.keychain.demo", "API Example", 0, 0});
 
         MatrixCursor mergedCursor = new MatrixCursor(new String[]{
                 ApiApps._ID,
                 ApiApps.PACKAGE_NAME,
+                TEMP_COLUMN_NAME,
                 TEMP_COLUMN_INSTALLED,
-                TEMP_COLUMN_NAME
+                TEMP_COLUMN_REGISTERED
         });
 
         CursorJoiner joiner = new CursorJoiner(
@@ -148,45 +177,39 @@ public class AppsListFragment extends ListFragment implements
         for (CursorJoiner.Result joinerResult : joiner) {
             switch (joinerResult) {
                 case LEFT: {
-                    // handle case where a row in cursorA is unique
+                    // handle case where a row in availableAppsCursor is unique
+                    String packageName = availableAppsCursor.getString(INDEX_PACKAGE_NAME);
+
                     mergedCursor.addRow(new Object[]{
                             availableAppsCursor.getLong(INDEX_ID),
-                            availableAppsCursor.getString(INDEX_PACKAGE_NAME),
-                            availableAppsCursor.getInt(INDEX_INSTALLED),
-                            availableAppsCursor.getString(INDEX_NAME)
+                            packageName,
+                            availableAppsCursor.getString(INDEX_NAME),
+                            isInstalled(packageName),
+                            0
                     });
                     break;
                 }
                 case RIGHT: {
-                    // handle case where a row in cursorB is unique
+                    // handle case where a row in data is unique
                     String packageName = data.getString(INDEX_PACKAGE_NAME);
-                    int installed;
-                    try {
-                        getActivity().getPackageManager().getApplicationInfo(packageName, 0);
-                        installed = 1;
-                    } catch (final PackageManager.NameNotFoundException e) {
-                        installed = 0;
-                    }
 
                     mergedCursor.addRow(new Object[]{
                             data.getLong(INDEX_ID),
                             packageName,
-                            installed,
-                            null
+                            null,
+                            isInstalled(packageName),
+                            1
                     });
                     break;
                 }
                 case BOTH: {
                     // handle case where a row with the same key is in both cursors
                     String packageName = data.getString(INDEX_PACKAGE_NAME);
+
                     String name;
-                    int installed;
-                    try {
-                        getActivity().getPackageManager().getApplicationInfo(packageName, 0);
-                        installed = 1;
+                    if (isInstalled(packageName) == 1) {
                         name = data.getString(INDEX_NAME);
-                    } catch (final PackageManager.NameNotFoundException e) {
-                        installed = 0;
+                    } else {
                         // if not installed take name from available apps list
                         name = availableAppsCursor.getString(INDEX_NAME);
                     }
@@ -194,18 +217,27 @@ public class AppsListFragment extends ListFragment implements
                     mergedCursor.addRow(new Object[]{
                             data.getLong(INDEX_ID),
                             packageName,
-                            installed,
-                            name
+                            name,
+                            isInstalled(packageName),
+                            1
                     });
                     break;
                 }
             }
         }
 
-
         // Swap the new cursor in. (The framework will take care of closing the
         // old cursor once we return.)
         mAdapter.swapCursor(mergedCursor);
+    }
+
+    private int isInstalled(String packageName) {
+        try {
+            getActivity().getPackageManager().getApplicationInfo(packageName, 0);
+            return 1;
+        } catch (final PackageManager.NameNotFoundException e) {
+            return 0;
+        }
     }
 
     public void onLoaderReset(Loader<Cursor> loader) {
@@ -250,6 +282,18 @@ public class AppsListFragment extends ListFragment implements
             if (mDataValid && mCursor != null) {
                 if (mCursor.moveToPosition(position)) {
                     return (mCursor.getInt(INDEX_INSTALLED) == 1);
+                } else {
+                    return false;
+                }
+            } else {
+                return false;
+            }
+        }
+
+        public boolean getItemIsRegistered(int position) {
+            if (mDataValid && mCursor != null) {
+                if (mCursor.moveToPosition(position)) {
+                    return (mCursor.getInt(INDEX_REGISTERED) == 1);
                 } else {
                     return false;
                 }

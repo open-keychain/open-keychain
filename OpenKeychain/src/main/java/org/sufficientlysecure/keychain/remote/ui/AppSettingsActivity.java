@@ -91,7 +91,6 @@ public class AppSettingsActivity extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    // TODO: breaks Yubikey NFC Foreground dispatching
     private void startApp() {
         Intent i;
         PackageManager manager = getPackageManager();
