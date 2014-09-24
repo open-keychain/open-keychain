@@ -202,7 +202,7 @@ public class NfcActivity extends ActionBarActivity {
             + "20" // INS
             + "00" // P1
             + "82" // P2 (PW1)
-            + "06" // Lc TODO should be length of PIN?
+            + String.format("%02d", mPin.length()) // Lc
             + Hex.toHexString(mPin.getBytes());
         if ( ! card(login).equals(accepted)) { // login
             toast("Wrong PIN!");
