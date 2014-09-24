@@ -162,6 +162,8 @@ public class KeyListFragment extends LoaderFragment
                 return false;
             }
         });
+        // Just disable for now
+        mSwipeRefreshLayout.setIsLocked(true);
 
         return root;
     }
@@ -195,12 +197,14 @@ public class KeyListFragment extends LoaderFragment
         }
     }
 
+    /*
     @Override
     public void onResume() {
         String[] servers = Preferences.getPreferences(getActivity()).getKeyServers();
         mSwipeRefreshLayout.setIsLocked(servers == null || servers.length == 0 || servers[0] == null);
         super.onResume();
     }
+    */
 
     /**
      * Define Adapter and Loader on create of Activity
@@ -468,7 +472,7 @@ public class KeyListFragment extends LoaderFragment
             @Override
             public boolean onMenuItemActionExpand(MenuItem item) {
                 // disable swipe-to-refresh
-                mSwipeRefreshLayout.setIsLocked(true);
+                // mSwipeRefreshLayout.setIsLocked(true);
                 return true;
             }
 
@@ -477,7 +481,7 @@ public class KeyListFragment extends LoaderFragment
                 mQuery = null;
                 getLoaderManager().restartLoader(0, null, KeyListFragment.this);
                 // enable swipe-to-refresh
-                mSwipeRefreshLayout.setIsLocked(false);
+                // mSwipeRefreshLayout.setIsLocked(false);
                 return true;
             }
         });
