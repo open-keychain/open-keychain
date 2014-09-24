@@ -16,13 +16,14 @@ import android.nfc.tech.IsoDep;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
-import android.util.Log;
 import android.view.WindowManager;
 import android.widget.Toast;
 
 import org.spongycastle.bcpg.HashAlgorithmTags;
 import org.spongycastle.util.encoders.Hex;
+import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.util.Log;
 
 import java.io.IOException;
 import java.util.Locale;
@@ -35,7 +36,6 @@ import java.util.Locale;
  */
 @TargetApi(Build.VERSION_CODES.GINGERBREAD_MR1)
 public class NfcActivity extends ActionBarActivity {
-    private static final String TAG = "Keychain";
 
     // actions
     public static final String ACTION_SIGN_HASH = "sign_hash";
@@ -73,7 +73,7 @@ public class NfcActivity extends ActionBarActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.d(TAG, "NfcActivity.onCreate");
+        Log.d(Constants.TAG, "NfcActivity.onCreate");
 
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
@@ -90,27 +90,27 @@ public class NfcActivity extends ActionBarActivity {
             mHashAlgo = data.getInt(EXTRA_NFC_HASH_ALGO);
             mServiceIntent = data.getParcelable(EXTRA_DATA);
 
-            Log.d(TAG, "NfcActivity mAction: " + mAction);
-            Log.d(TAG, "NfcActivity mPin: " + mPin);
-            Log.d(TAG, "NfcActivity mHashToSign as hex: " + getHex(mHashToSign));
-            Log.d(TAG, "NfcActivity mServiceIntent: " + mServiceIntent.toString());
+            Log.d(Constants.TAG, "NfcActivity mAction: " + mAction);
+            Log.d(Constants.TAG, "NfcActivity mPin: " + mPin);
+            Log.d(Constants.TAG, "NfcActivity mHashToSign as hex: " + getHex(mHashToSign));
+            Log.d(Constants.TAG, "NfcActivity mServiceIntent: " + mServiceIntent.toString());
         } else if (ACTION_DECRYPT_SESSION_KEY.equals(action)) {
             mAction = action;
             mPin = data.getString(EXTRA_PIN);
             mEncryptedSessionKey = data.getByteArray(EXTRA_NFC_ENC_SESSION_KEY);
             mServiceIntent = data.getParcelable(EXTRA_DATA);
 
-            Log.d(TAG, "NfcActivity mAction: " + mAction);
-            Log.d(TAG, "NfcActivity mPin: " + mPin);
-            Log.d(TAG, "NfcActivity mEncryptedSessionKey as hex: " + getHex(mEncryptedSessionKey));
-            Log.d(TAG, "NfcActivity mServiceIntent: " + mServiceIntent.toString());
+            Log.d(Constants.TAG, "NfcActivity mAction: " + mAction);
+            Log.d(Constants.TAG, "NfcActivity mPin: " + mPin);
+            Log.d(Constants.TAG, "NfcActivity mEncryptedSessionKey as hex: " + getHex(mEncryptedSessionKey));
+            Log.d(Constants.TAG, "NfcActivity mServiceIntent: " + mServiceIntent.toString());
         } else if (NfcAdapter.ACTION_TAG_DISCOVERED.equals(action)) {
-            Log.e(TAG, "This should not happen, but there is a bug in Android!");
+            Log.e(Constants.TAG, "This should not happen, but there is a bug in Android!");
 
             toast("This should not happen, but there is a bug in Android! Clear all app tasks and start app from launcher again!");
             finish();
         } else {
-            Log.d(TAG, "Action not supported: " + action);
+            Log.d(Constants.TAG, "Action not supported: " + action);
         }
     }
 
@@ -120,7 +120,7 @@ public class NfcActivity extends ActionBarActivity {
      */
     public void onPause() {
         super.onPause();
-        Log.d(TAG, "NfcActivity.onPause");
+        Log.d(Constants.TAG, "NfcActivity.onPause");
 
         disableNfcForegroundDispatch();
     }
@@ -131,7 +131,7 @@ public class NfcActivity extends ActionBarActivity {
      */
     public void onResume() {
         super.onResume();
-        Log.d(TAG, "NfcActivity.onResume");
+        Log.d(Constants.TAG, "NfcActivity.onResume");
 
         enableNfcForegroundDispatch();
     }
@@ -145,7 +145,7 @@ public class NfcActivity extends ActionBarActivity {
             try {
                 handleNdefDiscoveredIntent(intent);
             } catch (IOException e) {
-                Log.e(TAG, "Connection error!", e);
+                Log.e(Constants.TAG, "Connection error!", e);
                 toast("Connection Error: " + e.getMessage());
                 setResult(RESULT_CANCELED, mServiceIntent);
                 finish();
@@ -221,7 +221,7 @@ public class NfcActivity extends ActionBarActivity {
                 return;
             }
 
-            Log.d(TAG, "NfcActivity signedHash as hex: " + getHex(signedHash));
+            Log.d(Constants.TAG, "NfcActivity signedHash as hex: " + getHex(signedHash));
 
             // give data through for new service call
             // OpenPgpApi.EXTRA_NFC_SIGNED_HASH
@@ -260,7 +260,7 @@ public class NfcActivity extends ActionBarActivity {
      */
     public long getKeyId() throws IOException {
         String keyId = getFingerprint().substring(24);
-        Log.d(TAG, "keyId: " + keyId);
+        Log.d(Constants.TAG, "keyId: " + keyId);
         return Long.parseLong(keyId, 16);
     }
 
@@ -276,7 +276,7 @@ public class NfcActivity extends ActionBarActivity {
         fingerprint = fingerprint.toLowerCase(Locale.ENGLISH); // better enforce lower case
         fingerprint = fingerprint.substring(fingerprint.indexOf("c5") + 4, fingerprint.indexOf("c5") + 44);
 
-        Log.d(TAG, "fingerprint: " + fingerprint);
+        Log.d(Constants.TAG, "fingerprint: " + fingerprint);
 
         return fingerprint;
     }
@@ -293,7 +293,7 @@ public class NfcActivity extends ActionBarActivity {
         // dsi, including Lc
         String dsi;
 
-        Log.i(TAG, "Hash: " + hashAlgo);
+        Log.i(Constants.TAG, "Hash: " + hashAlgo);
         switch (hashAlgo) {
             case HashAlgorithmTags.SHA1:
                 if (hash.length != 20) {
@@ -354,14 +354,14 @@ public class NfcActivity extends ActionBarActivity {
 
         // while we are getting 0x61 status codes, retrieve more data
         while (status.substring(0, 2).equals("61")) {
-            Log.d(TAG, "requesting more data, status " + status);
+            Log.d(Constants.TAG, "requesting more data, status " + status);
             // Send GET RESPONSE command
             response = card("00C00000" + status.substring(2));
             status = response.substring(response.length()-4);
             signature += response.substring(0, response.length()-4);
         }
 
-        Log.d(TAG, "final response:" + status);
+        Log.d(Constants.TAG, "final response:" + status);
 
         if ( ! status.equals("9000")) {
             toast("Bad NFC response code: " + status);
@@ -403,7 +403,7 @@ public class NfcActivity extends ActionBarActivity {
 
         String decryptedSessionKey = getDataField(second);
 
-        Log.d(TAG, "decryptedSessionKey: " + decryptedSessionKey);
+        Log.d(Constants.TAG, "decryptedSessionKey: " + decryptedSessionKey);
 
         return Hex.decode(decryptedSessionKey);
     }
@@ -435,9 +435,9 @@ public class NfcActivity extends ActionBarActivity {
         try {
             mNfcAdapter.enableForegroundDispatch(this, nfcPendingIntent, writeTagFilters, null);
         } catch (IllegalStateException e) {
-            Log.i(TAG, "NfcForegroundDispatch Error!", e);
+            Log.i(Constants.TAG, "NfcForegroundDispatch Error!", e);
         }
-        Log.d(TAG, "NfcForegroundDispatch has been enabled!");
+        Log.d(Constants.TAG, "NfcForegroundDispatch has been enabled!");
     }
 
     /**
@@ -445,7 +445,7 @@ public class NfcActivity extends ActionBarActivity {
      */
     public void disableNfcForegroundDispatch() {
         mNfcAdapter.disableForegroundDispatch(this);
-        Log.d(TAG, "NfcForegroundDispatch has been disabled!");
+        Log.d(Constants.TAG, "NfcForegroundDispatch has been disabled!");
     }
 
     /**
