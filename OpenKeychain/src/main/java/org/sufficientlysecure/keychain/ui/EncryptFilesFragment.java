@@ -158,6 +158,10 @@ public class EncryptFilesFragment extends Fragment implements EncryptActivityInt
     }
 
     private void encryptClicked(boolean share) {
+        if (mEncryptInterface.getInputUris().isEmpty()) {
+            Notify.showNotify(getActivity(), R.string.error_no_file_selected, Notify.Style.ERROR);
+            return;
+        }
         if (share) {
             mEncryptInterface.getOutputUris().clear();
             for (Uri uri : mEncryptInterface.getInputUris()) {

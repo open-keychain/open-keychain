@@ -910,6 +910,7 @@
     <string name="info_no_manual_account_creation">"Do not create OpenKeychain-Accounts manually.\nFor more information, see Help."</string>
     <string name="contact_show_key">"Show key (%s)"</string>
     <string name="swipe_to_update">"Swipe down to update from keyserver"</string>
+    <string name="error_no_file_selected">"Select at least one file to encrypt!"</string>
     <string name="error_multi_not_supported">"Saving of multiple files not supported. This is a limitation on current Android."</string>
 
     <!-- First Time -->
