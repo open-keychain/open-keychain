@@ -569,7 +569,7 @@ public class PgpSignEncrypt {
                     log.add(LogType.MSG_SE_PENDING_NFC, indent);
                     SignEncryptResult result =
                             new SignEncryptResult(SignEncryptResult.RESULT_PENDING_NFC, log);
-                    result.setNfcData(e.hashToSign, e.hashAlgo, e.creationTimestamp);
+                    result.setNfcData(e.hashToSign, e.hashAlgo, e.creationTimestamp, mSignaturePassphrase);
                     Log.d(Constants.TAG, "e.hashToSign"+ Hex.toHexString(e.hashToSign));
                     return result;
                 }

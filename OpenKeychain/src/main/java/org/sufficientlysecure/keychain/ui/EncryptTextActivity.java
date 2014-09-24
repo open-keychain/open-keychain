@@ -207,7 +207,7 @@ public class EncryptTextActivity extends EncryptActivity implements EncryptActiv
                                 SignEncryptResult.RESULT_PENDING_NFC) {
 
                             mNfcTimestamp = pgpResult.getNfcTimestamp();
-                            startNfcSign("123456", pgpResult.getNfcHash(), pgpResult.getNfcAlgo());
+                            startNfcSign(pgpResult.getNfcPassphrase(), pgpResult.getNfcHash(), pgpResult.getNfcAlgo());
                         } else {
                             throw new RuntimeException("Unhandled pending result!");
                         }

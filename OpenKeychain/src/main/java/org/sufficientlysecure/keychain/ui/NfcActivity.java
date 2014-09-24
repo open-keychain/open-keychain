@@ -43,6 +43,7 @@ public class NfcActivity extends ActionBarActivity {
 
     // always
     public static final String EXTRA_PIN = "pin";
+    public static final String EXTRA_FINGERPRINT = "fingerprint";
     // special extra for OpenPgpService
     public static final String EXTRA_DATA = "data";
 
@@ -63,6 +64,8 @@ public class NfcActivity extends ActionBarActivity {
 
     private String mPin;
 
+    private byte[] mFingerprint;
+
     // sign
     private byte[] mHashToSign;
     private int mHashAlgo;
@@ -82,6 +85,9 @@ public class NfcActivity extends ActionBarActivity {
         Intent intent = getIntent();
         Bundle data = intent.getExtras();
         String action = intent.getAction();
+
+        // TODO check fingerprint
+        // mFingerprint = data.getByteArray(EXTRA_FINGERPRINT);
 
         if (ACTION_SIGN_HASH.equals(action)) {
             mAction = action;
