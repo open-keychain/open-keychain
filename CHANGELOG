@@ -1,5 +1,5 @@
 ## 3.0
-  * Fix Yubikey signature generation and decryption
+  * Full support for Yubikey signature generation and decryption!
   * Propose installable compatible apps in apps list
   * New design for decryption screens
   * Many fixes for key import, also fixes stripped keys
@@ -7,7 +7,7 @@
   * User interface to generate custom keys
   * Fixing user id revocation certificates
   * New cloud search (searches over traditional keyservers and keybase.io)
-  * Support to strip keys inside OpenKeychain
+  * Support for stripping keys inside OpenKeychain
 
 ## 2.9.2
   * Fix keys broken in 2.9.1
