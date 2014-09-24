@@ -18,17 +18,14 @@
 
 package org.sufficientlysecure.keychain.ui;
 
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Message;
-import android.os.Messenger;
 import android.support.v4.app.Fragment;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import org.openintents.openpgp.util.OpenPgpApi;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.api.OpenKeychainIntents;
@@ -37,13 +34,11 @@ import org.sufficientlysecure.keychain.util.Preferences;
 import org.sufficientlysecure.keychain.util.ShareHelper;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
-import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
 import org.sufficientlysecure.keychain.service.results.SignEncryptResult;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -71,9 +66,6 @@ public class EncryptTextActivity extends EncryptActivity implements EncryptActiv
     private String mEncryptionUserIds[] = null;
     // TODO Constants.key.none? What's wrong with a null value?
     private long mSigningKeyId = Constants.key.none;
-    private String mSigningKeyPassphrase = null;
-    private Date mNfcTimestamp = null;
-    private byte[] mNfcHash = null;
     private String mPassphrase = "";
     private boolean mShareAfterEncrypt = false;
     private ArrayList<Uri> mInputUris;
@@ -176,105 +168,22 @@ public class EncryptTextActivity extends EncryptActivity implements EncryptActiv
         startEncrypt();
     }
 
-    public void startEncrypt() {
-        if (!inputIsValid()) {
-            // Notify was created by inputIsValid.
-            return;
+    @Override
+    protected void onEncryptSuccess(Message message, SignEncryptResult pgpResult) {
+        if (mShareAfterEncrypt) {
+            // Share encrypted message/file
+            startActivity(sendWithChooserExcludingEncrypt(message));
+        } else {
+            // Copy to clipboard
+            copyToClipboard(message);
+            pgpResult.createNotify(EncryptTextActivity.this).show();
+            // Notify.showNotify(EncryptTextActivity.this,
+            // R.string.encrypt_sign_clipboard_successful, Notify.Style.INFO);
         }
-
-        // Send all information needed to service to edit key in other thread
-        Intent intent = new Intent(this, KeychainIntentService.class);
-        intent.setAction(KeychainIntentService.ACTION_SIGN_ENCRYPT);
-        intent.putExtra(KeychainIntentService.EXTRA_DATA, createEncryptBundle());
-
-        // Message is received after encrypting is done in KeychainIntentService
-        KeychainIntentServiceHandler serviceHandler = new KeychainIntentServiceHandler(this,
-                getString(R.string.progress_encrypting), ProgressDialog.STYLE_HORIZONTAL) {
-            public void handleMessage(Message message) {
-                // handle messages by standard KeychainIntentServiceHandler first
-                super.handleMessage(message);
-
-                if (message.arg1 == KeychainIntentServiceHandler.MESSAGE_OKAY) {
-
-                    SignEncryptResult pgpResult =
-                            message.getData().getParcelable(SignEncryptResult.EXTRA_RESULT);
-
-                    if (pgpResult.isPending()) {
-                        if ((pgpResult.getResult() & SignEncryptResult.RESULT_PENDING_PASSPHRASE) ==
-                                SignEncryptResult.RESULT_PENDING_PASSPHRASE) {
-                            startPassphraseDialog(pgpResult.getKeyIdPassphraseNeeded());
-                        } else if ((pgpResult.getResult() & SignEncryptResult.RESULT_PENDING_NFC) ==
-                                SignEncryptResult.RESULT_PENDING_NFC) {
-
-                            mNfcTimestamp = pgpResult.getNfcTimestamp();
-                            startNfcSign(pgpResult.getNfcPassphrase(), pgpResult.getNfcHash(), pgpResult.getNfcAlgo());
-                        } else {
-                            throw new RuntimeException("Unhandled pending result!");
-                        }
-                    } else {
-                        if (pgpResult.success()) {
-                            if (mShareAfterEncrypt) {
-                                // Share encrypted message/file
-                                startActivity(sendWithChooserExcludingEncrypt(message));
-                            } else {
-                                // Copy to clipboard
-                                copyToClipboard(message);
-                                pgpResult.createNotify(EncryptTextActivity.this).show();
-                                // Notify.showNotify(EncryptTextActivity.this,
-                                // R.string.encrypt_sign_clipboard_successful, Notify.Style.INFO);
-                            }
-                        } else {
-                            pgpResult.createNotify(EncryptTextActivity.this).show();
-                        }
-
-                        // no matter the result, reset parameters
-                        mSigningKeyPassphrase = null;
-                        mNfcHash = null;
-                        mNfcTimestamp = null;
-                    }
-                }
-            }
-        };
-        // Create a new Messenger for the communication back
-        Messenger messenger = new Messenger(serviceHandler);
-        intent.putExtra(KeychainIntentService.EXTRA_MESSENGER, messenger);
-
-        // show progress dialog
-        serviceHandler.showProgressDialog(this);
-
-        // start service with intent
-        startService(intent);
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        switch (requestCode) {
-            case REQUEST_CODE_PASSPHRASE: {
-                if (resultCode == RESULT_OK && data != null) {
-                    mSigningKeyPassphrase = data.getStringExtra(PassphraseDialogActivity.MESSAGE_DATA_PASSPHRASE);
-                    startEncrypt();
-                    return;
-                }
-                break;
-            }
-
-            case REQUEST_CODE_NFC: {
-                if (resultCode == RESULT_OK && data != null) {
-                    mNfcHash = data.getByteArrayExtra(OpenPgpApi.EXTRA_NFC_SIGNED_HASH);
-                    startEncrypt();
-                    return;
-                }
-                break;
-            }
-
-            default: {
-                super.onActivityResult(requestCode, resultCode, data);
-                break;
-            }
-        }
-    }
-
-    private Bundle createEncryptBundle() {
+    protected Bundle createEncryptBundle() {
         // fill values for this action
         Bundle data = new Bundle();
 
@@ -298,7 +207,6 @@ public class EncryptTextActivity extends EncryptActivity implements EncryptActiv
             data.putLong(KeychainIntentService.ENCRYPT_SIGNATURE_MASTER_ID, mSigningKeyId);
             data.putLongArray(KeychainIntentService.ENCRYPT_ENCRYPTION_KEYS_IDS, mEncryptionKeyIds);
             data.putString(KeychainIntentService.ENCRYPT_SIGNATURE_KEY_PASSPHRASE, mSigningKeyPassphrase);
-            data.putLongArray(KeychainIntentService.ENCRYPT_SIGNATURE_KEY_PASSPHRASE, mEncryptionKeyIds);
             data.putSerializable(KeychainIntentService.ENCRYPT_SIGNATURE_NFC_TIMESTAMP, mNfcTimestamp);
             data.putByteArray(KeychainIntentService.ENCRYPT_SIGNATURE_NFC_HASH, mNfcHash);
         }
@@ -344,7 +252,7 @@ public class EncryptTextActivity extends EncryptActivity implements EncryptActiv
         return sendIntent;
     }
 
-    private boolean inputIsValid() {
+    protected boolean inputIsValid() {
         if (mMessage == null) {
             Notify.showNotify(this, R.string.error_message, Notify.Style.ERROR);
             return false;
@@ -372,36 +280,6 @@ public class EncryptTextActivity extends EncryptActivity implements EncryptActiv
                 Notify.showNotify(this, R.string.select_encryption_or_signature_key, Notify.Style.ERROR);
                 return false;
             }
-
-//            try {
-//                // TODO This should really not be decided here. We do need the info for the passphrase
-//                // TODO dialog fragment though, so that's just the way it is for now.
-//                if (mSigningKeyId != 0) {
-//                    CachedPublicKeyRing signingRing =
-//                            new ProviderHelper(this).getCachedPublicKeyRing(mSigningKeyId);
-//                    long sigSubKeyId = signingRing.getSignId();
-//                    // Make sure the passphrase is cached, then start over.
-//                    if (PassphraseCacheService.getCachedPassphrase(this, sigSubKeyId) == null) {
-//                        PassphraseDialogFragment.show(this, sigSubKeyId,
-//                                new Handler() {
-//                                    @Override
-//                                    public void handleMessage(Message message) {
-//                                        if (message.what == PassphraseDialogFragment.MESSAGE_OKAY) {
-//                                            // restart
-//                                            startEncrypt();
-//                                        }
-//                                    }
-//                                }
-//                        );
-//
-//                        return false;
-//                    }
-//                }
-//            } catch (PgpGeneralException e) {
-//                Log.e(Constants.TAG, "Key not found!", e);
-//            } catch (PassphraseCacheService.KeyNotFoundException e) {
-//                Log.e(Constants.TAG, "Key not found!", e);
-//            }
         }
         return true;
     }

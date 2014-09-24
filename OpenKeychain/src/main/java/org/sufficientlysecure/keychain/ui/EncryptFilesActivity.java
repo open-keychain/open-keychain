@@ -18,12 +18,10 @@
 
 package org.sufficientlysecure.keychain.ui;
 
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Message;
-import android.os.Messenger;
 import android.support.v4.app.Fragment;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -35,7 +33,6 @@ import org.sufficientlysecure.keychain.util.Preferences;
 import org.sufficientlysecure.keychain.util.ShareHelper;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
-import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
 import org.sufficientlysecure.keychain.service.results.SignEncryptResult;
 import org.sufficientlysecure.keychain.ui.dialog.DeleteFileDialogFragment;
 import org.sufficientlysecure.keychain.util.Log;
@@ -172,76 +169,28 @@ public class EncryptFilesActivity extends EncryptActivity implements EncryptActi
         startEncrypt();
     }
 
-    public void startEncrypt() {
-        if (!inputIsValid()) {
-            // Notify was created by inputIsValid.
-            return;
+    @Override
+    public void onEncryptSuccess(Message message, SignEncryptResult pgpResult) {
+        if (mDeleteAfterEncrypt) {
+            for (Uri inputUri : mInputUris) {
+                DeleteFileDialogFragment deleteFileDialog = DeleteFileDialogFragment.newInstance(inputUri);
+                deleteFileDialog.show(getSupportFragmentManager(), "deleteDialog");
+            }
+            mInputUris.clear();
+            notifyUpdate();
         }
 
-        // Send all information needed to service to edit key in other thread
-        Intent intent = new Intent(this, KeychainIntentService.class);
-        intent.setAction(KeychainIntentService.ACTION_SIGN_ENCRYPT);
-        intent.putExtra(KeychainIntentService.EXTRA_DATA, createEncryptBundle());
-
-        // Message is received after encrypting is done in KeychainIntentService
-        KeychainIntentServiceHandler serviceHandler = new KeychainIntentServiceHandler(this,
-                getString(R.string.progress_encrypting), ProgressDialog.STYLE_HORIZONTAL) {
-            public void handleMessage(Message message) {
-                // handle messages by standard KeychainIntentServiceHandler first
-                super.handleMessage(message);
-
-                if (message.arg1 == KeychainIntentServiceHandler.MESSAGE_OKAY) {
-                    SignEncryptResult pgpResult =
-                            message.getData().getParcelable(SignEncryptResult.EXTRA_RESULT);
-
-                    if (pgpResult.isPending()) {
-                        if ((pgpResult.getResult() & SignEncryptResult.RESULT_PENDING_PASSPHRASE) ==
-                                SignEncryptResult.RESULT_PENDING_PASSPHRASE) {
-                            startPassphraseDialog(pgpResult.getKeyIdPassphraseNeeded());
-                        } else if ((pgpResult.getResult() & SignEncryptResult.RESULT_PENDING_NFC) ==
-                                SignEncryptResult.RESULT_PENDING_NFC) {
-
-                            // use after nfc sign
-////                                data.putExtra(OpenPgpApi.EXTRA_NFC_SIG_CREATION_TIMESTAMP, result.getNfcTimestamp().getTime());
-                            startNfcSign("123456", pgpResult.getNfcHash(), pgpResult.getNfcAlgo());
-                        } else {
-                            throw new RuntimeException("Unhandled pending result!");
-                        }
-                    } else if (pgpResult.success()) {
-                        if (mDeleteAfterEncrypt) {
-                            for (Uri inputUri : mInputUris) {
-                                DeleteFileDialogFragment deleteFileDialog = DeleteFileDialogFragment.newInstance(inputUri);
-                                deleteFileDialog.show(getSupportFragmentManager(), "deleteDialog");
-                            }
-                            mInputUris.clear();
-                            notifyUpdate();
-                        }
-
-                        if (mShareAfterEncrypt) {
-                            // Share encrypted message/file
-                            startActivity(sendWithChooserExcludingEncrypt(message));
-                        } else {
-                            // Save encrypted file
-                            pgpResult.createNotify(EncryptFilesActivity.this).show();
-                        }
-                    } else {
-                        pgpResult.createNotify(EncryptFilesActivity.this).show();
-                    }
-                }
-            }
-        };
-        // Create a new Messenger for the communication back
-        Messenger messenger = new Messenger(serviceHandler);
-        intent.putExtra(KeychainIntentService.EXTRA_MESSENGER, messenger);
-
-        // show progress dialog
-        serviceHandler.showProgressDialog(this);
-
-        // start service with intent
-        startService(intent);
+        if (mShareAfterEncrypt) {
+            // Share encrypted message/file
+            startActivity(sendWithChooserExcludingEncrypt(message));
+        } else {
+            // Save encrypted file
+            pgpResult.createNotify(EncryptFilesActivity.this).show();
+        }
     }
 
-    private Bundle createEncryptBundle() {
+    @Override
+    protected Bundle createEncryptBundle() {
         // fill values for this action
         Bundle data = new Bundle();
 
@@ -267,6 +216,9 @@ public class EncryptFilesActivity extends EncryptActivity implements EncryptActi
         } else {
             data.putLong(KeychainIntentService.ENCRYPT_SIGNATURE_MASTER_ID, mSigningKeyId);
             data.putLongArray(KeychainIntentService.ENCRYPT_ENCRYPTION_KEYS_IDS, mEncryptionKeyIds);
+            data.putString(KeychainIntentService.ENCRYPT_SIGNATURE_KEY_PASSPHRASE, mSigningKeyPassphrase);
+            data.putSerializable(KeychainIntentService.ENCRYPT_SIGNATURE_NFC_TIMESTAMP, mNfcTimestamp);
+            data.putByteArray(KeychainIntentService.ENCRYPT_SIGNATURE_NFC_HASH, mNfcHash);
         }
         return data;
     }
@@ -312,7 +264,7 @@ public class EncryptFilesActivity extends EncryptActivity implements EncryptActi
         return sendIntent;
     }
 
-    private boolean inputIsValid() {
+    protected boolean inputIsValid() {
         // file checks
 
         if (mInputUris.isEmpty()) {
@@ -349,26 +301,6 @@ public class EncryptFilesActivity extends EncryptActivity implements EncryptActi
                 Notify.showNotify(this, R.string.select_encryption_key, Notify.Style.ERROR);
                 return false;
             }
-
-//            try {
-//                if (mSigningKeyId != 0 && PassphraseCacheService.getCachedPassphrase(this, mSigningKeyId) == null) {
-//                    PassphraseDialogFragment.show(this, mSigningKeyId,
-//                            new Handler() {
-//                                @Override
-//                                public void handleMessage(Message message) {
-//                                    if (message.what == PassphraseDialogFragment.MESSAGE_OKAY) {
-//                                        // restart
-//                                        startEncrypt();
-//                                    }
-//                                }
-//                            }
-//                    );
-//
-//                    return false;
-//                }
-//            } catch (PassphraseCacheService.KeyNotFoundException e) {
-//                Log.e(Constants.TAG, "Key not found!", e);
-//            }
         }
         return true;
     }
