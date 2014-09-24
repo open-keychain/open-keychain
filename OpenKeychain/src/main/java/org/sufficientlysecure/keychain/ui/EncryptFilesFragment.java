@@ -37,6 +37,7 @@ import android.widget.TextView;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.ui.util.FormattingUtils;
+import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.util.FileHelper;
 import org.sufficientlysecure.keychain.provider.TemporaryStorageProvider;
 
@@ -56,7 +57,6 @@ public class EncryptFilesFragment extends Fragment implements EncryptActivityInt
     // view
     private View mAddView;
     private View mShareFile;
-    private View mEncryptFile;
     private ListView mSelectedFiles;
     private SelectedFilesAdapter mAdapter = new SelectedFilesAdapter();
     private final Map<Uri, Bitmap> thumbnailCache = new HashMap<Uri, Bitmap>();
@@ -78,8 +78,8 @@ public class EncryptFilesFragment extends Fragment implements EncryptActivityInt
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.encrypt_file_fragment, container, false);
 
-        mEncryptFile = view.findViewById(R.id.action_encrypt_file);
-        mEncryptFile.setOnClickListener(new View.OnClickListener() {
+        View vEncryptFile = view.findViewById(R.id.action_encrypt_file);
+        vEncryptFile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 encryptClicked(false);
@@ -130,31 +130,12 @@ public class EncryptFilesFragment extends Fragment implements EncryptActivityInt
         mEncryptInterface.getInputUris().add(inputUri);
         mEncryptInterface.notifyUpdate();
         mSelectedFiles.requestFocus();
-
-        /**
-         * We hide the encrypt to file button if multiple files are selected.
-         *
-         * With Android L it will be possible to select a target directory for multiple files, so we might want to
-         * change this later
-         */
-
-        if (mEncryptInterface.getInputUris().size() > 1) {
-            mEncryptFile.setVisibility(View.GONE);
-        } else {
-            mEncryptFile.setVisibility(View.VISIBLE);
-        }
     }
 
     private void delInputUri(int position) {
         mEncryptInterface.getInputUris().remove(position);
         mEncryptInterface.notifyUpdate();
         mSelectedFiles.requestFocus();
-
-        if (mEncryptInterface.getInputUris().size() > 1) {
-            mEncryptFile.setVisibility(View.GONE);
-        } else {
-            mEncryptFile.setVisibility(View.VISIBLE);
-        }
     }
 
     private void showOutputFileDialog() {
@@ -185,7 +166,11 @@ public class EncryptFilesFragment extends Fragment implements EncryptActivityInt
                 mEncryptInterface.getOutputUris().add(TemporaryStorageProvider.createFile(getActivity(), targetName));
             }
             mEncryptInterface.startEncrypt(true);
-        } else if (mEncryptInterface.getInputUris().size() == 1) {
+        } else {
+            if (mEncryptInterface.getInputUris().size() > 1) {
+                Notify.showNotify(getActivity(), R.string.error_multi_not_supported, Notify.Style.ERROR);
+                return;
+            }
             showOutputFileDialog();
         }
     }
