@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2014 Dominik Schürmann <dominik@dominikschuermann.de>
+ * Copyright (C) 2014 Vincent Breitmoser <v.breitmoser@mugenguild.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,12 +18,22 @@
 
 package org.sufficientlysecure.keychain.ui;
 
+import android.annotation.TargetApi;
 import android.content.Intent;
+import android.os.AsyncTask;
+import android.os.Build;
+import android.os.Build.VERSION;
+import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
 import android.view.View;
 
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.compatibility.ClipboardReflection;
+import org.sufficientlysecure.keychain.pgp.PgpHelper;
 import org.sufficientlysecure.keychain.service.results.OperationResult;
+import org.sufficientlysecure.keychain.ui.util.SubtleAttentionSeeker;
+
+import java.util.regex.Matcher;
 
 public class DecryptActivity extends DrawerActivity {
 
@@ -54,6 +65,47 @@ public class DecryptActivity extends DrawerActivity {
                 startActivityForResult(clipboardDecrypt, 0);
             }
         });
+    }
+
+    @TargetApi(VERSION_CODES.HONEYCOMB)
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        // This is an eye candy ice cream sandwich feature, nvm on versions below
+        if (Build.VERSION.SDK_INT >= VERSION_CODES.ICE_CREAM_SANDWICH) {
+
+            // get text from clipboard
+            final String clipboardText =
+                    ClipboardReflection.getClipboardText(DecryptActivity.this).toString();
+
+            new AsyncTask<Void,Void,Boolean>() {
+                @Override
+                protected Boolean doInBackground(Void... params) {
+
+                    // see if it looks like a pgp thing
+                    Matcher matcher = PgpHelper.PGP_MESSAGE.matcher(clipboardText);
+                    boolean animate = matcher.matches();
+
+                    // see if it looks like another pgp thing
+                    if(!animate) {
+                        matcher = PgpHelper.PGP_CLEARTEXT_SIGNATURE.matcher(clipboardText);
+                        animate = matcher.matches();
+                    }
+                    return animate;
+                }
+
+                @Override
+                protected void onPostExecute(Boolean animate) {
+                    super.onPostExecute(animate);
+
+                    // if so, animate the clipboard icon just a bit~
+                    if(animate) {
+                        SubtleAttentionSeeker.tada(findViewById(R.id.clipboard_icon), 1.5f).start();
+                    }
+                }
+            }.execute();
+        }
     }
 
     @Override
