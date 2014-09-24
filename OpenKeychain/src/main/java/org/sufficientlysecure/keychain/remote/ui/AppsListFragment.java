@@ -22,6 +22,8 @@ import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.database.MatrixCursor;
+import android.database.MergeCursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
@@ -98,9 +100,18 @@ public class AppsListFragment extends ListFragment implements
     }
 
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+        MatrixCursor matrixCursor = new MatrixCursor(
+                new String[]{ApiApps._ID, ApiApps.PACKAGE_NAME, ApiApps.PACKAGE_SIGNATURE}
+        );
+        matrixCursor.addRow(new Object[]{200, "com.fsck.k9", new byte[]{}});
+
+        MergeCursor mergeCursor = new MergeCursor(
+                new Cursor[]{matrixCursor, data}
+        );
+
         // Swap the new cursor in. (The framework will take care of closing the
         // old cursor once we return.)
-        mAdapter.swapCursor(data);
+        mAdapter.swapCursor(mergeCursor);
     }
 
     public void onLoaderReset(Loader<Cursor> loader) {
