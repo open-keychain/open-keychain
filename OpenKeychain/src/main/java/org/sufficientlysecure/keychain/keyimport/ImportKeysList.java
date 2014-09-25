@@ -59,6 +59,8 @@ public class ImportKeysList extends ArrayList<ImportKeysListEntry> {
     // being a little anal about the ArrayList#addAll contract here
     private boolean mergeDupes(ImportKeysListEntry incoming, ImportKeysListEntry existing) {
         boolean modified = false;
+
+        // if any source thinks it’s expired/revoked, it is
         if (incoming.isRevoked()) {
             existing.setRevoked(true);
             modified = true;
@@ -67,8 +69,16 @@ public class ImportKeysList extends ArrayList<ImportKeysListEntry> {
             existing.setExpired(true);
             modified = true;
         }
+
+        // we’re going to want to try to fetch the key from everywhere we found it, so remember
+        //  all the origins
         for (String origin : incoming.getOrigins()) {
             existing.addOrigin(origin);
+
+            // to work properly, Keybase-sourced entries need to pass along the extra
+            if (KeybaseKeyserver.ORIGIN.equals(origin)) {
+                existing.setExtraData(incoming.getExtraData());
+            }
         }
         ArrayList<String> incomingIDs = incoming.getUserIds();
         ArrayList<String> existingIDs = existing.getUserIds();
