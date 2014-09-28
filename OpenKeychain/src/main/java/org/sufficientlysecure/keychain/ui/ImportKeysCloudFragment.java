@@ -155,6 +155,19 @@ public class ImportKeysCloudFragment extends Fragment {
     private void search(String query) {
         Preferences prefs = Preferences.getPreferences(getActivity());
         mImportActivity.loadCallback(new ImportKeysListFragment.CloudLoaderState(query, prefs.getCloudSearchPrefs()));
+        hideKeyboard();
+    }
+
+    private void hideKeyboard() {
+        InputMethodManager inputManager = (InputMethodManager) getActivity()
+                .getSystemService(Context.INPUT_METHOD_SERVICE);
+
+        // check if no view has focus
+        View v = getActivity().getCurrentFocus();
+        if (v == null)
+            return;
+
+        inputManager.hideSoftInputFromWindow(v.getWindowToken(), 0);
     }
 
 }

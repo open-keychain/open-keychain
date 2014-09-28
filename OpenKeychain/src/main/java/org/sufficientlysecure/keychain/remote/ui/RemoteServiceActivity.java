@@ -27,21 +27,21 @@ import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
 import android.text.style.BulletSpan;
+import android.text.style.ForegroundColorSpan;
 import android.text.style.StyleSpan;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import org.openintents.openpgp.util.OpenPgpApi;
-import org.sufficientlysecure.htmltextview.HtmlTextView;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.ui.util.ActionBarHelper;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.remote.AccountSettings;
 import org.sufficientlysecure.keychain.remote.AppSettings;
 import org.sufficientlysecure.keychain.ui.SelectPublicKeyFragment;
+import org.sufficientlysecure.keychain.ui.util.ActionBarHelper;
 import org.sufficientlysecure.keychain.util.Log;
 
 import java.util.ArrayList;
@@ -301,7 +301,8 @@ public class RemoteServiceActivity extends ActionBarActivity {
         } else if (ACTION_ERROR_MESSAGE.equals(action)) {
             String errorMessage = intent.getStringExtra(EXTRA_ERROR_MESSAGE);
 
-            String text = "<font color=\"red\">" + errorMessage + "</font>";
+            Spannable redErrorMessage = new SpannableString(errorMessage);
+            redErrorMessage.setSpan(new ForegroundColorSpan(Color.RED), 0, errorMessage.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 
             // Inflate a "Done" custom action bar view
             ActionBarHelper.setOneButtonView(getSupportActionBar(),
@@ -319,8 +320,8 @@ public class RemoteServiceActivity extends ActionBarActivity {
             setContentView(R.layout.api_remote_error_message);
 
             // set text on view
-            HtmlTextView textView = (HtmlTextView) findViewById(R.id.api_app_error_message_text);
-            textView.setHtmlFromString(text, true);
+            TextView textView = (TextView) findViewById(R.id.api_app_error_message_text);
+            textView.setText(redErrorMessage);
         } else {
             Log.e(Constants.TAG, "Action does not exist!");
             setResult(RESULT_CANCELED);

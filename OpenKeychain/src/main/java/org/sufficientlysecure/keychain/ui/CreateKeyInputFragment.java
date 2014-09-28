@@ -22,12 +22,10 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.text.method.TextKeyListener;
 import android.util.Patterns;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
@@ -171,7 +169,7 @@ public class CreateKeyInputFragment extends Fragment {
         InputMethodManager inputManager = (InputMethodManager) getActivity()
                 .getSystemService(Context.INPUT_METHOD_SERVICE);
 
-        //check if no view has focus:
+        // check if no view has focus
         View v = getActivity().getCurrentFocus();
         if (v == null)
             return;
