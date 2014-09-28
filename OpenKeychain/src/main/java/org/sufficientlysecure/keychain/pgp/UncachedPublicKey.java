@@ -18,9 +18,6 @@
 
 package org.sufficientlysecure.keychain.pgp;
 
-import org.spongycastle.asn1.ASN1ObjectIdentifier;
-import org.spongycastle.asn1.nist.NISTNamedCurves;
-import org.spongycastle.asn1.teletrust.TeleTrusTNamedCurves;
 import org.spongycastle.bcpg.ECPublicBCPGKey;
 import org.spongycastle.bcpg.SignatureSubpacketTags;
 import org.spongycastle.bcpg.sig.KeyFlags;
@@ -28,7 +25,6 @@ import org.spongycastle.openpgp.PGPPublicKey;
 import org.spongycastle.openpgp.PGPSignature;
 import org.spongycastle.openpgp.PGPSignatureSubpacketVector;
 import org.spongycastle.openpgp.operator.jcajce.JcaPGPContentVerifierBuilderProvider;
-import org.spongycastle.util.Strings;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.util.IterableIterator;
 import org.sufficientlysecure.keychain.util.Log;
@@ -264,12 +260,6 @@ public class UncachedPublicKey {
             return (getKeyUsage() & KeyFlags.CERTIFY_OTHER) != 0;
         }
 
-        if (mPublicKey.getAlgorithm() == PGPPublicKey.RSA_GENERAL
-                || mPublicKey.getAlgorithm() == PGPPublicKey.RSA_SIGN
-                || mPublicKey.getAlgorithm() == PGPPublicKey.ECDSA) {
-            return true;
-        }
-
         return false;
     }
 
@@ -279,9 +269,7 @@ public class UncachedPublicKey {
             return (getKeyUsage() & KeyFlags.SIGN_DATA) != 0;
         }
 
-        if (mPublicKey.getAlgorithm() == PGPPublicKey.RSA_GENERAL
-                || mPublicKey.getAlgorithm() == PGPPublicKey.RSA_SIGN
-                || mPublicKey.getAlgorithm() == PGPPublicKey.ECDSA) {
+        if (UncachedKeyRing.isSigningAlgo(mPublicKey.getAlgorithm())) {
             return true;
         }
 
@@ -295,7 +283,7 @@ public class UncachedPublicKey {
         }
 
         // RSA_GENERAL, RSA_ENCRYPT, ELGAMAL_ENCRYPT, ELGAMAL_GENERAL, ECDH
-        if (mPublicKey.isEncryptionKey()) {
+        if (UncachedKeyRing.isEncryptionAlgo(mPublicKey.getAlgorithm())) {
             return true;
         }
 

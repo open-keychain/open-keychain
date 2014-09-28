@@ -619,8 +619,7 @@ public class UncachedKeyRing {
                     boolean needsPrimaryBinding = false;
 
                     // If the algorithm is even suitable for signing
-                    if (key.getAlgorithm() != PublicKeyAlgorithmTags.ELGAMAL_ENCRYPT
-                            && key.getAlgorithm() != PublicKeyAlgorithmTags.RSA_ENCRYPT) {
+                    if (isSigningAlgo(key.getAlgorithm())) {
 
                         // If this certificate says it allows signing for the key
                         if (zert.getHashedSubPackets() != null &&
@@ -720,6 +719,24 @@ public class UncachedKeyRing {
                         indent, KeyFormattingUtils.convertKeyIdToHex(key.getKeyID()));
                 indent -= 1;
                 continue;
+            }
+
+            // If we have flags, check if the algorithm supports all of them
+            if (selfCert.getHashedSubPackets() == null
+                    && selfCert.getHashedSubPackets().hasSubpacket(SignatureSubpacketTags.KEY_FLAGS)) {
+                int flags = ((KeyFlags) selfCert.getHashedSubPackets().getSubpacket(SignatureSubpacketTags.KEY_FLAGS)).getFlags();
+                int algo = key.getAlgorithm();
+                // If this is a signing key, but not a signing algorithm, warn the user
+                if (!isSigningAlgo(algo) && (flags & PGPKeyFlags.CAN_SIGN) == PGPKeyFlags.CAN_SIGN) {
+                    log.add(LogType.MSG_KC_SUB_ALGO_BAD_SIGN, indent);
+                }
+                // If this is an encryption key, but not an encryption algorithm, warn the user
+                if (!isEncryptionAlgo(algo) && (
+                           (flags & PGPKeyFlags.CAN_ENCRYPT_COMMS) == PGPKeyFlags.CAN_ENCRYPT_COMMS
+                        || (flags & PGPKeyFlags.CAN_ENCRYPT_STORAGE) == PGPKeyFlags.CAN_ENCRYPT_STORAGE
+                    )) {
+                    log.add(LogType.MSG_KC_SUB_ALGO_BAD_ENCRYPT, indent);
+                }
             }
 
             // re-add certification
@@ -951,6 +968,25 @@ public class UncachedKeyRing {
             PGPSecretKey sKey = ((PGPSecretKeyRing) ring).getSecretKey(key.getKeyID());
             return PGPSecretKeyRing.removeSecretKey((PGPSecretKeyRing) ring, sKey);
         }
+    }
+
+
+    /** Returns true if the algorithm is of a type which is suitable for signing. */
+    static boolean isSigningAlgo(int algorithm) {
+        return algorithm == PGPPublicKey.RSA_GENERAL
+                || algorithm == PGPPublicKey.RSA_SIGN
+                || algorithm == PGPPublicKey.DSA
+                || algorithm == PGPPublicKey.ELGAMAL_GENERAL
+                || algorithm == PGPPublicKey.ECDSA;
+    }
+
+    /** Returns true if the algorithm is of a type which is suitable for encryption. */
+    static boolean isEncryptionAlgo(int algorithm) {
+        return algorithm == PGPPublicKey.RSA_GENERAL
+                || algorithm == PGPPublicKey.RSA_ENCRYPT
+                || algorithm == PGPPublicKey.ELGAMAL_ENCRYPT
+                || algorithm == PGPPublicKey.ELGAMAL_GENERAL
+                || algorithm == PGPPublicKey.ECDH;
     }
 
 }

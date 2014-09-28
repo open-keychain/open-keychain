@@ -341,6 +341,8 @@ public abstract class OperationResult implements Parcelable {
         MSG_KC_SUB_REVOKE_BAD (LogLevel.WARN, R.string.msg_kc_sub_revoke_bad),
         MSG_KC_SUB_REVOKE_DUP (LogLevel.DEBUG, R.string.msg_kc_sub_revoke_dup),
         MSG_KC_SUB_UNKNOWN_ALGO (LogLevel.WARN, R.string.msg_kc_sub_unknown_algo),
+        MSG_KC_SUB_ALGO_BAD_ENCRYPT (LogLevel.WARN, R.string.msg_kc_sub_algo_bad_encrpyt),
+        MSG_KC_SUB_ALGO_BAD_SIGN (LogLevel.WARN, R.string.msg_kc_sub_algo_bad_sign),
         MSG_KC_SUCCESS_BAD (LogLevel.OK, R.plurals.msg_kc_success_bad),
         MSG_KC_SUCCESS_BAD_AND_RED (LogLevel.OK, R.string.msg_kc_success_bad_and_red),
         MSG_KC_SUCCESS_REDUNDANT (LogLevel.OK, R.plurals.msg_kc_success_redundant),
