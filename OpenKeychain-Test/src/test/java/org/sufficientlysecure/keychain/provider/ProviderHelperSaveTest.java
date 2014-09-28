@@ -80,7 +80,6 @@ public class ProviderHelperSaveTest {
 
         UncachedKeyRing pub = readRingFromResource("/test-keys/mailvelope_07_no_key_flags.asc");
         long keyId = pub.getMasterKeyId();
-        Assert.assertNull("key flags should be null", pub.getPublicKey().getKeyUsage());
 
         mProviderHelper.savePublicKeyRing(pub);
 

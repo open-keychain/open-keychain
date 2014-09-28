@@ -39,7 +39,6 @@ import java.util.Iterator;
 
 public class UncachedPublicKey {
     protected final PGPPublicKey mPublicKey;
-    private Integer mCacheUsage = null;
 
     public UncachedPublicKey(PGPPublicKey key) {
         mPublicKey = key;
@@ -226,77 +225,6 @@ public class UncachedPublicKey {
 
     public boolean isEC() {
         return getAlgorithm() == PGPPublicKey.ECDH || getAlgorithm() == PGPPublicKey.ECDSA;
-    }
-
-    /**
-     * Get all key usage flags.
-     * If at least one key flag subpacket is present return these.
-     * If no subpacket is present it returns null.
-     */
-    @SuppressWarnings("unchecked")
-    public Integer getKeyUsage() {
-        if (mCacheUsage == null) {
-            for (PGPSignature sig : new IterableIterator<PGPSignature>(mPublicKey.getSignatures())) {
-                if (mPublicKey.isMasterKey() && sig.getKeyID() != mPublicKey.getKeyID()) {
-                    continue;
-                }
-
-                PGPSignatureSubpacketVector hashed = sig.getHashedSubPackets();
-                if (hashed != null && hashed.getSubpacket(SignatureSubpacketTags.KEY_FLAGS) != null) {
-                    // init if at least one key flag subpacket has been found
-                    if (mCacheUsage == null) {
-                        mCacheUsage = 0;
-                    }
-                    mCacheUsage |= hashed.getKeyFlags();
-                }
-            }
-        }
-        return mCacheUsage;
-    }
-
-    public boolean canCertify() {
-        // if key flags subpacket is available, honor it!
-        if (getKeyUsage() != null) {
-            return (getKeyUsage() & KeyFlags.CERTIFY_OTHER) != 0;
-        }
-
-        return false;
-    }
-
-    public boolean canSign() {
-        // if key flags subpacket is available, honor it!
-        if (getKeyUsage() != null) {
-            return (getKeyUsage() & KeyFlags.SIGN_DATA) != 0;
-        }
-
-        if (UncachedKeyRing.isSigningAlgo(mPublicKey.getAlgorithm())) {
-            return true;
-        }
-
-        return false;
-    }
-
-    public boolean canEncrypt() {
-        // if key flags subpacket is available, honor it!
-        if (getKeyUsage() != null) {
-            return (getKeyUsage() & (KeyFlags.ENCRYPT_COMMS | KeyFlags.ENCRYPT_STORAGE)) != 0;
-        }
-
-        // RSA_GENERAL, RSA_ENCRYPT, ELGAMAL_ENCRYPT, ELGAMAL_GENERAL, ECDH
-        if (UncachedKeyRing.isEncryptionAlgo(mPublicKey.getAlgorithm())) {
-            return true;
-        }
-
-        return false;
-    }
-
-    public boolean canAuthenticate() {
-        // if key flags subpacket is available, honor it!
-        if (getKeyUsage() != null) {
-            return (getKeyUsage() & KeyFlags.AUTHENTICATION) != 0;
-        }
-
-        return false;
     }
 
     public byte[] getFingerprint() {

@@ -18,7 +18,11 @@
 
 package org.sufficientlysecure.keychain.pgp;
 
+import org.spongycastle.bcpg.SignatureSubpacketTags;
+import org.spongycastle.bcpg.sig.KeyFlags;
 import org.spongycastle.openpgp.PGPPublicKey;
+import org.spongycastle.openpgp.PGPSignature;
+import org.spongycastle.openpgp.PGPSignatureSubpacketVector;
 import org.spongycastle.openpgp.operator.jcajce.JcePublicKeyKeyEncryptionMethodGenerator;
 import org.sufficientlysecure.keychain.util.IterableIterator;
 
@@ -36,6 +40,7 @@ public class CanonicalizedPublicKey extends UncachedPublicKey {
 
     // this is the parent key ring
     final KeyRing mRing;
+    private Integer mCacheUsage = null;
 
     CanonicalizedPublicKey(KeyRing ring, PGPPublicKey key) {
         super(key);
@@ -46,12 +51,82 @@ public class CanonicalizedPublicKey extends UncachedPublicKey {
         return new IterableIterator<String>(mPublicKey.getUserIDs());
     }
 
-    public KeyRing getKeyRing() {
-        return mRing;
-    }
-
     JcePublicKeyKeyEncryptionMethodGenerator getPubKeyEncryptionGenerator() {
         return  new JcePublicKeyKeyEncryptionMethodGenerator(mPublicKey);
     }
 
+    public boolean canSign() {
+        // if key flags subpacket is available, honor it!
+        if (getKeyUsage() != null) {
+            return (getKeyUsage() & KeyFlags.SIGN_DATA) != 0;
+        }
+
+        if (UncachedKeyRing.isSigningAlgo(mPublicKey.getAlgorithm())) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Get all key usage flags.
+     * If at least one key flag subpacket is present return these.
+     * If no subpacket is present it returns null.
+     */
+    @SuppressWarnings("unchecked")
+    public Integer getKeyUsage() {
+        if (mCacheUsage == null) {
+            for (PGPSignature sig : new IterableIterator<PGPSignature>(mPublicKey.getSignatures())) {
+                if (mPublicKey.isMasterKey() && sig.getKeyID() != mPublicKey.getKeyID()) {
+                    continue;
+                }
+
+                PGPSignatureSubpacketVector hashed = sig.getHashedSubPackets();
+                if (hashed != null && hashed.getSubpacket(SignatureSubpacketTags.KEY_FLAGS) != null) {
+                    // init if at least one key flag subpacket has been found
+                    if (mCacheUsage == null) {
+                        mCacheUsage = 0;
+                    }
+                    mCacheUsage |= hashed.getKeyFlags();
+                }
+            }
+        }
+        return mCacheUsage;
+    }
+
+    public boolean canCertify() {
+        // if key flags subpacket is available, honor it!
+        if (getKeyUsage() != null) {
+            return (getKeyUsage() & KeyFlags.CERTIFY_OTHER) != 0;
+        }
+
+        if (UncachedKeyRing.isSigningAlgo(mPublicKey.getAlgorithm())) {
+            return true;
+        }
+
+        return false;
+    }
+
+    public boolean canEncrypt() {
+        // if key flags subpacket is available, honor it!
+        if (getKeyUsage() != null) {
+            return (getKeyUsage() & (KeyFlags.ENCRYPT_COMMS | KeyFlags.ENCRYPT_STORAGE)) != 0;
+        }
+
+        // RSA_GENERAL, RSA_ENCRYPT, ELGAMAL_ENCRYPT, ELGAMAL_GENERAL, ECDH
+        if (UncachedKeyRing.isEncryptionAlgo(mPublicKey.getAlgorithm())) {
+            return true;
+        }
+
+        return false;
+    }
+
+    public boolean canAuthenticate() {
+        // if key flags subpacket is available, honor it!
+        if (getKeyUsage() != null) {
+            return (getKeyUsage() & KeyFlags.AUTHENTICATION) != 0;
+        }
+
+        return false;
+    }
 }

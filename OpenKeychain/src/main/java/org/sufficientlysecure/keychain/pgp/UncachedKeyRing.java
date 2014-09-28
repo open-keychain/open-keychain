@@ -22,7 +22,6 @@ import org.spongycastle.bcpg.ArmoredOutputStream;
 import org.spongycastle.bcpg.PublicKeyAlgorithmTags;
 import org.spongycastle.bcpg.SignatureSubpacketTags;
 import org.spongycastle.bcpg.sig.KeyFlags;
-import org.spongycastle.openpgp.PGPKeyFlags;
 import org.spongycastle.openpgp.PGPKeyRing;
 import org.spongycastle.openpgp.PGPObjectFactory;
 import org.spongycastle.openpgp.PGPPublicKey;
@@ -626,7 +625,7 @@ public class UncachedKeyRing {
                                 zert.getHashedSubPackets().hasSubpacket(SignatureSubpacketTags.KEY_FLAGS)) {
                             int flags = ((KeyFlags) zert.getHashedSubPackets()
                                     .getSubpacket(SignatureSubpacketTags.KEY_FLAGS)).getFlags();
-                            if ((flags & PGPKeyFlags.CAN_SIGN) == PGPKeyFlags.CAN_SIGN) {
+                            if ((flags & KeyFlags.SIGN_DATA) == KeyFlags.SIGN_DATA) {
                                 needsPrimaryBinding = true;
                             }
                         } else {
@@ -727,13 +726,13 @@ public class UncachedKeyRing {
                 int flags = ((KeyFlags) selfCert.getHashedSubPackets().getSubpacket(SignatureSubpacketTags.KEY_FLAGS)).getFlags();
                 int algo = key.getAlgorithm();
                 // If this is a signing key, but not a signing algorithm, warn the user
-                if (!isSigningAlgo(algo) && (flags & PGPKeyFlags.CAN_SIGN) == PGPKeyFlags.CAN_SIGN) {
+                if (!isSigningAlgo(algo) && (flags & KeyFlags.SIGN_DATA) == KeyFlags.SIGN_DATA) {
                     log.add(LogType.MSG_KC_SUB_ALGO_BAD_SIGN, indent);
                 }
                 // If this is an encryption key, but not an encryption algorithm, warn the user
                 if (!isEncryptionAlgo(algo) && (
-                           (flags & PGPKeyFlags.CAN_ENCRYPT_COMMS) == PGPKeyFlags.CAN_ENCRYPT_COMMS
-                        || (flags & PGPKeyFlags.CAN_ENCRYPT_STORAGE) == PGPKeyFlags.CAN_ENCRYPT_STORAGE
+                           (flags & KeyFlags.ENCRYPT_STORAGE) == KeyFlags.ENCRYPT_STORAGE
+                        || (flags & KeyFlags.ENCRYPT_COMMS) == KeyFlags.ENCRYPT_COMMS
                     )) {
                     log.add(LogType.MSG_KC_SUB_ALGO_BAD_ENCRYPT, indent);
                 }
