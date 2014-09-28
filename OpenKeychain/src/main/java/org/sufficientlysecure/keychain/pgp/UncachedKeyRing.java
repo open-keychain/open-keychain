@@ -616,43 +616,51 @@ public class UncachedKeyRing {
                         continue;
                     }
 
+                    boolean needsPrimaryBinding = false;
+
                     // if this certificate says it allows signing for the key
                     if (zert.getHashedSubPackets() != null &&
                             zert.getHashedSubPackets().hasSubpacket(SignatureSubpacketTags.KEY_FLAGS)) {
-
                         int flags = ((KeyFlags) zert.getHashedSubPackets()
                                 .getSubpacket(SignatureSubpacketTags.KEY_FLAGS)).getFlags();
                         if ((flags & PGPKeyFlags.CAN_SIGN) == PGPKeyFlags.CAN_SIGN) {
-                            boolean ok = false;
-                            // it MUST have an embedded primary key binding signature
-                            try {
-                                PGPSignatureList list = zert.getUnhashedSubPackets().getEmbeddedSignatures();
-                                for (int i = 0; i < list.size(); i++) {
-                                    WrappedSignature subsig = new WrappedSignature(list.get(i));
-                                    if (subsig.getSignatureType() == PGPSignature.PRIMARYKEY_BINDING) {
-                                        subsig.init(key);
-                                        if (subsig.verifySignature(masterKey, key)) {
-                                            ok = true;
-                                        } else {
-                                            log.add(LogType.MSG_KC_SUB_PRIMARY_BAD, indent);
-                                            badCerts += 1;
-                                            continue uids;
-                                        }
+                            needsPrimaryBinding = true;
+                        }
+                    } else {
+                        // If there are no key flags, we STILL require this because the key can sign!
+                        needsPrimaryBinding = true;
+                    }
+
+                    // If this key can sign, it MUST have a primary key binding certificate
+                    if (needsPrimaryBinding) {
+                        boolean ok = false;
+                        if (zert.getUnhashedSubPackets() != null) try {
+                            // Check all embedded signatures, if any of them fits
+                            PGPSignatureList list = zert.getUnhashedSubPackets().getEmbeddedSignatures();
+                            for (int i = 0; i < list.size(); i++) {
+                                WrappedSignature subsig = new WrappedSignature(list.get(i));
+                                if (subsig.getSignatureType() == PGPSignature.PRIMARYKEY_BINDING) {
+                                    subsig.init(key);
+                                    if (subsig.verifySignature(masterKey, key)) {
+                                        ok = true;
+                                    } else {
+                                        log.add(LogType.MSG_KC_SUB_PRIMARY_BAD, indent);
+                                        badCerts += 1;
+                                        continue uids;
                                     }
                                 }
-                            } catch (Exception e) {
-                                log.add(LogType.MSG_KC_SUB_PRIMARY_BAD_ERR, indent);
-                                badCerts += 1;
-                                continue;
                             }
-                            // if it doesn't, get rid of this!
-                            if (!ok) {
-                                log.add(LogType.MSG_KC_SUB_PRIMARY_NONE, indent);
-                                badCerts += 1;
-                                continue;
-                            }
+                        } catch (Exception e) {
+                            log.add(LogType.MSG_KC_SUB_PRIMARY_BAD_ERR, indent);
+                            badCerts += 1;
+                            continue;
                         }
-
+                        // if it doesn't, get rid of this!
+                        if (!ok) {
+                            log.add(LogType.MSG_KC_SUB_PRIMARY_NONE, indent);
+                            badCerts += 1;
+                            continue;
+                        }
                     }
 
                     // if we already have a cert, and this one is older: skip it
