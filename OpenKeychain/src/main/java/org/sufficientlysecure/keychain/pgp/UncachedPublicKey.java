@@ -39,6 +39,7 @@ import java.util.Iterator;
 
 public class UncachedPublicKey {
     protected final PGPPublicKey mPublicKey;
+    private Integer mCacheUsage = null;
 
     public UncachedPublicKey(PGPPublicKey key) {
         mPublicKey = key;
@@ -231,9 +232,8 @@ public class UncachedPublicKey {
         return mPublicKey.getFingerprint();
     }
 
-    // TODO This method should have package visibility - no access outside the pgp package!
     // (It's still used in ProviderHelper at this point)
-    public PGPPublicKey getPublicKey() {
+    PGPPublicKey getPublicKey() {
         return mPublicKey;
     }
 
@@ -271,4 +271,33 @@ public class UncachedPublicKey {
         }
     }
 
+    /** Get all key usage flags.
+     * If at least one key flag subpacket is present return these. If no
+     * subpacket is present it returns null.
+     *
+     * Note that this method has package visiblity because it is used in test
+     * cases. Certificates of UncachedPublicKey instances can NOT be assumed to
+     * be verified, so the result of this method should not be used in other
+     * places!
+     */
+    @SuppressWarnings("unchecked")
+    Integer getKeyUsage() {
+        if (mCacheUsage == null) {
+            for (PGPSignature sig : new IterableIterator<PGPSignature>(mPublicKey.getSignatures())) {
+                if (mPublicKey.isMasterKey() && sig.getKeyID() != mPublicKey.getKeyID()) {
+                    continue;
+                }
+
+                PGPSignatureSubpacketVector hashed = sig.getHashedSubPackets();
+                if (hashed != null && hashed.getSubpacket(SignatureSubpacketTags.KEY_FLAGS) != null) {
+                    // init if at least one key flag subpacket has been found
+                    if (mCacheUsage == null) {
+                        mCacheUsage = 0;
+                    }
+                    mCacheUsage |= hashed.getKeyFlags();
+                }
+            }
+        }
+        return mCacheUsage;
+    }
 }

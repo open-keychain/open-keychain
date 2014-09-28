@@ -18,11 +18,8 @@
 
 package org.sufficientlysecure.keychain.pgp;
 
-import org.spongycastle.bcpg.SignatureSubpacketTags;
 import org.spongycastle.bcpg.sig.KeyFlags;
 import org.spongycastle.openpgp.PGPPublicKey;
-import org.spongycastle.openpgp.PGPSignature;
-import org.spongycastle.openpgp.PGPSignatureSubpacketVector;
 import org.spongycastle.openpgp.operator.jcajce.JcePublicKeyKeyEncryptionMethodGenerator;
 import org.sufficientlysecure.keychain.util.IterableIterator;
 
@@ -40,7 +37,6 @@ public class CanonicalizedPublicKey extends UncachedPublicKey {
 
     // this is the parent key ring
     final KeyRing mRing;
-    private Integer mCacheUsage = null;
 
     CanonicalizedPublicKey(KeyRing ring, PGPPublicKey key) {
         super(key);
@@ -52,7 +48,7 @@ public class CanonicalizedPublicKey extends UncachedPublicKey {
     }
 
     JcePublicKeyKeyEncryptionMethodGenerator getPubKeyEncryptionGenerator() {
-        return  new JcePublicKeyKeyEncryptionMethodGenerator(mPublicKey);
+        return new JcePublicKeyKeyEncryptionMethodGenerator(mPublicKey);
     }
 
     public boolean canSign() {
@@ -66,32 +62,6 @@ public class CanonicalizedPublicKey extends UncachedPublicKey {
         }
 
         return false;
-    }
-
-    /**
-     * Get all key usage flags.
-     * If at least one key flag subpacket is present return these.
-     * If no subpacket is present it returns null.
-     */
-    @SuppressWarnings("unchecked")
-    public Integer getKeyUsage() {
-        if (mCacheUsage == null) {
-            for (PGPSignature sig : new IterableIterator<PGPSignature>(mPublicKey.getSignatures())) {
-                if (mPublicKey.isMasterKey() && sig.getKeyID() != mPublicKey.getKeyID()) {
-                    continue;
-                }
-
-                PGPSignatureSubpacketVector hashed = sig.getHashedSubPackets();
-                if (hashed != null && hashed.getSubpacket(SignatureSubpacketTags.KEY_FLAGS) != null) {
-                    // init if at least one key flag subpacket has been found
-                    if (mCacheUsage == null) {
-                        mCacheUsage = 0;
-                    }
-                    mCacheUsage |= hashed.getKeyFlags();
-                }
-            }
-        }
-        return mCacheUsage;
     }
 
     public boolean canCertify() {
@@ -128,5 +98,10 @@ public class CanonicalizedPublicKey extends UncachedPublicKey {
         }
 
         return false;
+    }
+
+    /** Same method as superclass, but we make it public. */
+    public Integer getKeyUsage() {
+        return super.getKeyUsage();
     }
 }

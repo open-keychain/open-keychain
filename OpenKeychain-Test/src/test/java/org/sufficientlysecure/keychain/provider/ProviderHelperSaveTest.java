@@ -32,6 +32,7 @@ import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey.SecretKeyType;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKeyRing;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
+import org.sufficientlysecure.keychain.service.results.OperationResult.OperationLog;
 import org.sufficientlysecure.keychain.service.results.SaveKeyringResult;
 import org.sufficientlysecure.keychain.util.IterableIterator;
 import org.sufficientlysecure.keychain.util.ProgressScaler;
@@ -80,6 +81,8 @@ public class ProviderHelperSaveTest {
 
         UncachedKeyRing pub = readRingFromResource("/test-keys/mailvelope_07_no_key_flags.asc");
         long keyId = pub.getMasterKeyId();
+        Assert.assertNull("key flags should be null",
+                pub.canonicalize(new OperationLog(), 0).getPublicKey().getKeyUsage());
 
         mProviderHelper.savePublicKeyRing(pub);
 
