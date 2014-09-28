@@ -618,17 +618,23 @@ public class UncachedKeyRing {
 
                     boolean needsPrimaryBinding = false;
 
-                    // if this certificate says it allows signing for the key
-                    if (zert.getHashedSubPackets() != null &&
-                            zert.getHashedSubPackets().hasSubpacket(SignatureSubpacketTags.KEY_FLAGS)) {
-                        int flags = ((KeyFlags) zert.getHashedSubPackets()
-                                .getSubpacket(SignatureSubpacketTags.KEY_FLAGS)).getFlags();
-                        if ((flags & PGPKeyFlags.CAN_SIGN) == PGPKeyFlags.CAN_SIGN) {
+                    // If the algorithm is even suitable for signing
+                    if (key.getAlgorithm() != PublicKeyAlgorithmTags.ELGAMAL_ENCRYPT
+                            && key.getAlgorithm() != PublicKeyAlgorithmTags.RSA_ENCRYPT) {
+
+                        // If this certificate says it allows signing for the key
+                        if (zert.getHashedSubPackets() != null &&
+                                zert.getHashedSubPackets().hasSubpacket(SignatureSubpacketTags.KEY_FLAGS)) {
+                            int flags = ((KeyFlags) zert.getHashedSubPackets()
+                                    .getSubpacket(SignatureSubpacketTags.KEY_FLAGS)).getFlags();
+                            if ((flags & PGPKeyFlags.CAN_SIGN) == PGPKeyFlags.CAN_SIGN) {
+                                needsPrimaryBinding = true;
+                            }
+                        } else {
+                            // If there are no key flags, we STILL require this because the key can sign!
                             needsPrimaryBinding = true;
                         }
-                    } else {
-                        // If there are no key flags, we STILL require this because the key can sign!
-                        needsPrimaryBinding = true;
+
                     }
 
                     // If this key can sign, it MUST have a primary key binding certificate
