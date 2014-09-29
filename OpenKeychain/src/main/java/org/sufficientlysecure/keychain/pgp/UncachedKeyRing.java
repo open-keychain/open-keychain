@@ -22,7 +22,6 @@ import org.spongycastle.bcpg.ArmoredOutputStream;
 import org.spongycastle.bcpg.PublicKeyAlgorithmTags;
 import org.spongycastle.bcpg.SignatureSubpacketTags;
 import org.spongycastle.bcpg.sig.KeyFlags;
-import org.spongycastle.openpgp.PGPKeyFlags;
 import org.spongycastle.openpgp.PGPKeyRing;
 import org.spongycastle.openpgp.PGPObjectFactory;
 import org.spongycastle.openpgp.PGPPublicKey;
@@ -616,43 +615,56 @@ public class UncachedKeyRing {
                         continue;
                     }
 
-                    // if this certificate says it allows signing for the key
-                    if (zert.getHashedSubPackets() != null &&
-                            zert.getHashedSubPackets().hasSubpacket(SignatureSubpacketTags.KEY_FLAGS)) {
+                    boolean needsPrimaryBinding = false;
 
-                        int flags = ((KeyFlags) zert.getHashedSubPackets()
-                                .getSubpacket(SignatureSubpacketTags.KEY_FLAGS)).getFlags();
-                        if ((flags & PGPKeyFlags.CAN_SIGN) == PGPKeyFlags.CAN_SIGN) {
-                            boolean ok = false;
-                            // it MUST have an embedded primary key binding signature
-                            try {
-                                PGPSignatureList list = zert.getUnhashedSubPackets().getEmbeddedSignatures();
-                                for (int i = 0; i < list.size(); i++) {
-                                    WrappedSignature subsig = new WrappedSignature(list.get(i));
-                                    if (subsig.getSignatureType() == PGPSignature.PRIMARYKEY_BINDING) {
-                                        subsig.init(key);
-                                        if (subsig.verifySignature(masterKey, key)) {
-                                            ok = true;
-                                        } else {
-                                            log.add(LogType.MSG_KC_SUB_PRIMARY_BAD, indent);
-                                            badCerts += 1;
-                                            continue uids;
-                                        }
-                                    }
-                                }
-                            } catch (Exception e) {
-                                log.add(LogType.MSG_KC_SUB_PRIMARY_BAD_ERR, indent);
-                                badCerts += 1;
-                                continue;
+                    // If the algorithm is even suitable for signing
+                    if (isSigningAlgo(key.getAlgorithm())) {
+
+                        // If this certificate says it allows signing for the key
+                        if (zert.getHashedSubPackets() != null &&
+                                zert.getHashedSubPackets().hasSubpacket(SignatureSubpacketTags.KEY_FLAGS)) {
+                            int flags = ((KeyFlags) zert.getHashedSubPackets()
+                                    .getSubpacket(SignatureSubpacketTags.KEY_FLAGS)).getFlags();
+                            if ((flags & KeyFlags.SIGN_DATA) == KeyFlags.SIGN_DATA) {
+                                needsPrimaryBinding = true;
                             }
-                            // if it doesn't, get rid of this!
-                            if (!ok) {
-                                log.add(LogType.MSG_KC_SUB_PRIMARY_NONE, indent);
-                                badCerts += 1;
-                                continue;
-                            }
+                        } else {
+                            // If there are no key flags, we STILL require this because the key can sign!
+                            needsPrimaryBinding = true;
                         }
 
+                    }
+
+                    // If this key can sign, it MUST have a primary key binding certificate
+                    if (needsPrimaryBinding) {
+                        boolean ok = false;
+                        if (zert.getUnhashedSubPackets() != null) try {
+                            // Check all embedded signatures, if any of them fits
+                            PGPSignatureList list = zert.getUnhashedSubPackets().getEmbeddedSignatures();
+                            for (int i = 0; i < list.size(); i++) {
+                                WrappedSignature subsig = new WrappedSignature(list.get(i));
+                                if (subsig.getSignatureType() == PGPSignature.PRIMARYKEY_BINDING) {
+                                    subsig.init(key);
+                                    if (subsig.verifySignature(masterKey, key)) {
+                                        ok = true;
+                                    } else {
+                                        log.add(LogType.MSG_KC_SUB_PRIMARY_BAD, indent);
+                                        badCerts += 1;
+                                        continue uids;
+                                    }
+                                }
+                            }
+                        } catch (Exception e) {
+                            log.add(LogType.MSG_KC_SUB_PRIMARY_BAD_ERR, indent);
+                            badCerts += 1;
+                            continue;
+                        }
+                        // if it doesn't, get rid of this!
+                        if (!ok) {
+                            log.add(LogType.MSG_KC_SUB_PRIMARY_NONE, indent);
+                            badCerts += 1;
+                            continue;
+                        }
                     }
 
                     // if we already have a cert, and this one is older: skip it
@@ -706,6 +718,24 @@ public class UncachedKeyRing {
                         indent, KeyFormattingUtils.convertKeyIdToHex(key.getKeyID()));
                 indent -= 1;
                 continue;
+            }
+
+            // If we have flags, check if the algorithm supports all of them
+            if (selfCert.getHashedSubPackets() == null
+                    && selfCert.getHashedSubPackets().hasSubpacket(SignatureSubpacketTags.KEY_FLAGS)) {
+                int flags = ((KeyFlags) selfCert.getHashedSubPackets().getSubpacket(SignatureSubpacketTags.KEY_FLAGS)).getFlags();
+                int algo = key.getAlgorithm();
+                // If this is a signing key, but not a signing algorithm, warn the user
+                if (!isSigningAlgo(algo) && (flags & KeyFlags.SIGN_DATA) == KeyFlags.SIGN_DATA) {
+                    log.add(LogType.MSG_KC_SUB_ALGO_BAD_SIGN, indent);
+                }
+                // If this is an encryption key, but not an encryption algorithm, warn the user
+                if (!isEncryptionAlgo(algo) && (
+                           (flags & KeyFlags.ENCRYPT_STORAGE) == KeyFlags.ENCRYPT_STORAGE
+                        || (flags & KeyFlags.ENCRYPT_COMMS) == KeyFlags.ENCRYPT_COMMS
+                    )) {
+                    log.add(LogType.MSG_KC_SUB_ALGO_BAD_ENCRYPT, indent);
+                }
             }
 
             // re-add certification
@@ -937,6 +967,25 @@ public class UncachedKeyRing {
             PGPSecretKey sKey = ((PGPSecretKeyRing) ring).getSecretKey(key.getKeyID());
             return PGPSecretKeyRing.removeSecretKey((PGPSecretKeyRing) ring, sKey);
         }
+    }
+
+
+    /** Returns true if the algorithm is of a type which is suitable for signing. */
+    static boolean isSigningAlgo(int algorithm) {
+        return algorithm == PGPPublicKey.RSA_GENERAL
+                || algorithm == PGPPublicKey.RSA_SIGN
+                || algorithm == PGPPublicKey.DSA
+                || algorithm == PGPPublicKey.ELGAMAL_GENERAL
+                || algorithm == PGPPublicKey.ECDSA;
+    }
+
+    /** Returns true if the algorithm is of a type which is suitable for encryption. */
+    static boolean isEncryptionAlgo(int algorithm) {
+        return algorithm == PGPPublicKey.RSA_GENERAL
+                || algorithm == PGPPublicKey.RSA_ENCRYPT
+                || algorithm == PGPPublicKey.ELGAMAL_ENCRYPT
+                || algorithm == PGPPublicKey.ELGAMAL_GENERAL
+                || algorithm == PGPPublicKey.ECDH;
     }
 
 }

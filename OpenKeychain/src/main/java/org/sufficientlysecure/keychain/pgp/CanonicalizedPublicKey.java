@@ -18,6 +18,7 @@
 
 package org.sufficientlysecure.keychain.pgp;
 
+import org.spongycastle.bcpg.sig.KeyFlags;
 import org.spongycastle.openpgp.PGPPublicKey;
 import org.spongycastle.openpgp.operator.jcajce.JcePublicKeyKeyEncryptionMethodGenerator;
 import org.sufficientlysecure.keychain.util.IterableIterator;
@@ -46,12 +47,61 @@ public class CanonicalizedPublicKey extends UncachedPublicKey {
         return new IterableIterator<String>(mPublicKey.getUserIDs());
     }
 
-    public KeyRing getKeyRing() {
-        return mRing;
-    }
-
     JcePublicKeyKeyEncryptionMethodGenerator getPubKeyEncryptionGenerator() {
-        return  new JcePublicKeyKeyEncryptionMethodGenerator(mPublicKey);
+        return new JcePublicKeyKeyEncryptionMethodGenerator(mPublicKey);
     }
 
+    public boolean canSign() {
+        // if key flags subpacket is available, honor it!
+        if (getKeyUsage() != null) {
+            return (getKeyUsage() & KeyFlags.SIGN_DATA) != 0;
+        }
+
+        if (UncachedKeyRing.isSigningAlgo(mPublicKey.getAlgorithm())) {
+            return true;
+        }
+
+        return false;
+    }
+
+    public boolean canCertify() {
+        // if key flags subpacket is available, honor it!
+        if (getKeyUsage() != null) {
+            return (getKeyUsage() & KeyFlags.CERTIFY_OTHER) != 0;
+        }
+
+        if (UncachedKeyRing.isSigningAlgo(mPublicKey.getAlgorithm())) {
+            return true;
+        }
+
+        return false;
+    }
+
+    public boolean canEncrypt() {
+        // if key flags subpacket is available, honor it!
+        if (getKeyUsage() != null) {
+            return (getKeyUsage() & (KeyFlags.ENCRYPT_COMMS | KeyFlags.ENCRYPT_STORAGE)) != 0;
+        }
+
+        // RSA_GENERAL, RSA_ENCRYPT, ELGAMAL_ENCRYPT, ELGAMAL_GENERAL, ECDH
+        if (UncachedKeyRing.isEncryptionAlgo(mPublicKey.getAlgorithm())) {
+            return true;
+        }
+
+        return false;
+    }
+
+    public boolean canAuthenticate() {
+        // if key flags subpacket is available, honor it!
+        if (getKeyUsage() != null) {
+            return (getKeyUsage() & KeyFlags.AUTHENTICATION) != 0;
+        }
+
+        return false;
+    }
+
+    /** Same method as superclass, but we make it public. */
+    public Integer getKeyUsage() {
+        return super.getKeyUsage();
+    }
 }

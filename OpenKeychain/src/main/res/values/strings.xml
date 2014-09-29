@@ -684,6 +684,8 @@
     <string name="msg_kc_sub_revoke_bad">"Removing bad subkey revocation certificate"</string>
     <string name="msg_kc_sub_revoke_dup">"Removing redundant subkey revocation certificate"</string>
     <string name="msg_kc_sub_unknown_algo">"Subkey uses an unknown algorithm, not importing…"</string>
+    <string name="msg_kc_sub_algo_bad_encrpyt">"Subkey has encryption usage flag, but algorithm is not suitable for encryption."</string>
+    <string name="msg_kc_sub_algo_bad_sign">"Subkey has signing usage flag, but algorithm is not suitable for signing."</string>
     <string name="msg_kc_success">"Keyring canonicalization successful, no changes"</string>
     <plurals name="msg_kc_success_bad">
         <item quantity="one">"Keyring canonicalization successful, removed one erroneous certificate"</item>

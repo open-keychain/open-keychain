@@ -18,9 +18,6 @@
 
 package org.sufficientlysecure.keychain.pgp;
 
-import org.spongycastle.asn1.ASN1ObjectIdentifier;
-import org.spongycastle.asn1.nist.NISTNamedCurves;
-import org.spongycastle.asn1.teletrust.TeleTrusTNamedCurves;
 import org.spongycastle.bcpg.ECPublicBCPGKey;
 import org.spongycastle.bcpg.SignatureSubpacketTags;
 import org.spongycastle.bcpg.sig.KeyFlags;
@@ -28,7 +25,6 @@ import org.spongycastle.openpgp.PGPPublicKey;
 import org.spongycastle.openpgp.PGPSignature;
 import org.spongycastle.openpgp.PGPSignatureSubpacketVector;
 import org.spongycastle.openpgp.operator.jcajce.JcaPGPContentVerifierBuilderProvider;
-import org.spongycastle.util.Strings;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.util.IterableIterator;
 import org.sufficientlysecure.keychain.util.Log;
@@ -232,92 +228,12 @@ public class UncachedPublicKey {
         return getAlgorithm() == PGPPublicKey.ECDH || getAlgorithm() == PGPPublicKey.ECDSA;
     }
 
-    /**
-     * Get all key usage flags.
-     * If at least one key flag subpacket is present return these.
-     * If no subpacket is present it returns null.
-     */
-    @SuppressWarnings("unchecked")
-    public Integer getKeyUsage() {
-        if (mCacheUsage == null) {
-            for (PGPSignature sig : new IterableIterator<PGPSignature>(mPublicKey.getSignatures())) {
-                if (mPublicKey.isMasterKey() && sig.getKeyID() != mPublicKey.getKeyID()) {
-                    continue;
-                }
-
-                PGPSignatureSubpacketVector hashed = sig.getHashedSubPackets();
-                if (hashed != null && hashed.getSubpacket(SignatureSubpacketTags.KEY_FLAGS) != null) {
-                    // init if at least one key flag subpacket has been found
-                    if (mCacheUsage == null) {
-                        mCacheUsage = 0;
-                    }
-                    mCacheUsage |= hashed.getKeyFlags();
-                }
-            }
-        }
-        return mCacheUsage;
-    }
-
-    public boolean canCertify() {
-        // if key flags subpacket is available, honor it!
-        if (getKeyUsage() != null) {
-            return (getKeyUsage() & KeyFlags.CERTIFY_OTHER) != 0;
-        }
-
-        if (mPublicKey.getAlgorithm() == PGPPublicKey.RSA_GENERAL
-                || mPublicKey.getAlgorithm() == PGPPublicKey.RSA_SIGN
-                || mPublicKey.getAlgorithm() == PGPPublicKey.ECDSA) {
-            return true;
-        }
-
-        return false;
-    }
-
-    public boolean canSign() {
-        // if key flags subpacket is available, honor it!
-        if (getKeyUsage() != null) {
-            return (getKeyUsage() & KeyFlags.SIGN_DATA) != 0;
-        }
-
-        if (mPublicKey.getAlgorithm() == PGPPublicKey.RSA_GENERAL
-                || mPublicKey.getAlgorithm() == PGPPublicKey.RSA_SIGN
-                || mPublicKey.getAlgorithm() == PGPPublicKey.ECDSA) {
-            return true;
-        }
-
-        return false;
-    }
-
-    public boolean canEncrypt() {
-        // if key flags subpacket is available, honor it!
-        if (getKeyUsage() != null) {
-            return (getKeyUsage() & (KeyFlags.ENCRYPT_COMMS | KeyFlags.ENCRYPT_STORAGE)) != 0;
-        }
-
-        // RSA_GENERAL, RSA_ENCRYPT, ELGAMAL_ENCRYPT, ELGAMAL_GENERAL, ECDH
-        if (mPublicKey.isEncryptionKey()) {
-            return true;
-        }
-
-        return false;
-    }
-
-    public boolean canAuthenticate() {
-        // if key flags subpacket is available, honor it!
-        if (getKeyUsage() != null) {
-            return (getKeyUsage() & KeyFlags.AUTHENTICATION) != 0;
-        }
-
-        return false;
-    }
-
     public byte[] getFingerprint() {
         return mPublicKey.getFingerprint();
     }
 
-    // TODO This method should have package visibility - no access outside the pgp package!
     // (It's still used in ProviderHelper at this point)
-    public PGPPublicKey getPublicKey() {
+    PGPPublicKey getPublicKey() {
         return mPublicKey;
     }
 
@@ -355,4 +271,33 @@ public class UncachedPublicKey {
         }
     }
 
+    /** Get all key usage flags.
+     * If at least one key flag subpacket is present return these. If no
+     * subpacket is present it returns null.
+     *
+     * Note that this method has package visiblity because it is used in test
+     * cases. Certificates of UncachedPublicKey instances can NOT be assumed to
+     * be verified, so the result of this method should not be used in other
+     * places!
+     */
+    @SuppressWarnings("unchecked")
+    Integer getKeyUsage() {
+        if (mCacheUsage == null) {
+            for (PGPSignature sig : new IterableIterator<PGPSignature>(mPublicKey.getSignatures())) {
+                if (mPublicKey.isMasterKey() && sig.getKeyID() != mPublicKey.getKeyID()) {
+                    continue;
+                }
+
+                PGPSignatureSubpacketVector hashed = sig.getHashedSubPackets();
+                if (hashed != null && hashed.getSubpacket(SignatureSubpacketTags.KEY_FLAGS) != null) {
+                    // init if at least one key flag subpacket has been found
+                    if (mCacheUsage == null) {
+                        mCacheUsage = 0;
+                    }
+                    mCacheUsage |= hashed.getKeyFlags();
+                }
+            }
+        }
+        return mCacheUsage;
+    }
 }

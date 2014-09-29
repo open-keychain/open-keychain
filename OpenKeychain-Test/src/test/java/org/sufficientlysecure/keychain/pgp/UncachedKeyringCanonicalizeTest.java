@@ -370,8 +370,6 @@ public class UncachedKeyringCanonicalizeTest {
     @Test public void testSubkeyBindingNoPKB() throws Exception {
 
         UncachedPublicKey pKey = KeyringTestingHelper.getNth(ring.getPublicKeys(), 1);
-        Assert.assertTrue("second subkey must be able to sign", pKey.canSign());
-
         PGPSignature sig;
 
         subHashedPacketsGen.setKeyFlags(false, KeyFlags.SIGN_DATA);
