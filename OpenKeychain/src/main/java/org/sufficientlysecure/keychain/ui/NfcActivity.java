@@ -45,8 +45,8 @@ public class NfcActivity extends ActionBarActivity {
     public static final String ACTION_DECRYPT_SESSION_KEY = "decrypt_session_key";
 
     // always
+    public static final String EXTRA_KEY_ID = "key_id";
     public static final String EXTRA_PIN = "pin";
-    public static final String EXTRA_FINGERPRINT = "fingerprint";
     // special extra for OpenPgpService
     public static final String EXTRA_DATA = "data";
 
@@ -66,8 +66,7 @@ public class NfcActivity extends ActionBarActivity {
     private String mAction;
 
     private String mPin;
-
-    private byte[] mFingerprint;
+    private Long mKeyId;
 
     // sign
     private byte[] mHashToSign;
@@ -89,8 +88,10 @@ public class NfcActivity extends ActionBarActivity {
         Bundle data = intent.getExtras();
         String action = intent.getAction();
 
-        // TODO check fingerprint
-        // mFingerprint = data.getByteArray(EXTRA_FINGERPRINT);
+        // if we get are passed a key id, save it for the check
+        if (data.containsKey(EXTRA_KEY_ID)) {
+            mKeyId = data.getLong(EXTRA_KEY_ID);
+        }
 
         if (ACTION_SIGN_HASH.equals(action)) {
             mAction = action;
@@ -204,6 +205,19 @@ public class NfcActivity extends ActionBarActivity {
             return;
         }
 
+        // If we were supplied with a key id for checking, do so
+        if (mKeyId != null) {
+            // We always check the master key id
+            long keyId = nfcGetKeyId(mIsoDep, 0);
+            // If it's wrong, just cancel
+            if (keyId != mKeyId) {
+                toast("NFC Tag has wrong key id!");
+                setResult(RESULT_CANCELED, mServiceIntent);
+                finish();
+                return;
+            }
+        }
+
         // Command APDU for VERIFY command (page 32)
         String login =
               "00" // CLA
@@ -246,6 +260,7 @@ public class NfcActivity extends ActionBarActivity {
             setResult(RESULT_OK, mServiceIntent);
             finish();
         }
+
     }
 
     /**
