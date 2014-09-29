@@ -620,9 +620,18 @@
         <activity
             android:name=".ui.PassphraseDialogActivity"
             android:theme="@android:style/Theme.NoDisplay" />
+        <!--
+        NOTE: singleTop is set to get NFC foreground dispatch to work.
+              Then, all NFC intents will be broadcasted to onNewIntent() of this activity!
+              If more than one task stack of OpenKeychain exists, the broadcast
+              restarts the activity with onCreate() instead of calling onNewIntent().
+              taskAffinity and allowTaskReparenting somehow prevents this from happening!
+         -->
         <activity
             android:name=".ui.NfcActivity"
-            android:launchMode="singleTop" />
+            android:launchMode="singleTop"
+            android:taskAffinity=":Nfc"
+            android:allowTaskReparenting="true" />
 
         <activity
             android:name=".ui.NfcIntentActivity"

@@ -97,7 +97,6 @@ public abstract class DecryptFragment extends Fragment {
         intent.putExtra(NfcActivity.EXTRA_PIN, pin);
 
         intent.putExtra(NfcActivity.EXTRA_NFC_ENC_SESSION_KEY, encryptedSessionKey);
-        intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
         startActivityForResult(intent, REQUEST_CODE_NFC_DECRYPT);
     }
