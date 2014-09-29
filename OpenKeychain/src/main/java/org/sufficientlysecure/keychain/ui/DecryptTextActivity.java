@@ -112,11 +112,11 @@ public class DecryptTextActivity extends ActionBarActivity {
         }
 
         if (Intent.ACTION_SEND.equals(action) && type != null) {
-            // Android action
+            Log.logDebugBundle(extras, "extras");
 
             // When sending to Keychain Decrypt via share menu
             if ("text/plain".equals(type)) {
-                String sharedText = intent.getStringExtra(Intent.EXTRA_TEXT);
+                String sharedText = extras.getString(Intent.EXTRA_TEXT);
                 sharedText = getPgpContent(sharedText);
 
                 if (sharedText != null) {
