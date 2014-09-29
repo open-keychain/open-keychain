@@ -633,16 +633,16 @@
             android:taskAffinity=":Nfc"
             android:allowTaskReparenting="true" />
 
-        <activity
-            android:name=".ui.NfcIntentActivity"
-            android:launchMode="singleTop">
-            <intent-filter>
-                <action android:name="android.nfc.action.NDEF_DISCOVERED" />
+        <!--<activity-->
+            <!--android:name=".ui.NfcIntentActivity"-->
+            <!--android:launchMode="singleTop">-->
+            <!--<intent-filter>-->
+                <!--<action android:name="android.nfc.action.NDEF_DISCOVERED" />-->
 
-                <category android:name="android.intent.category.DEFAULT" />
-                <data android:host="my.yubico.com" android:scheme="https"/>
-            </intent-filter>
-        </activity>
+                <!--<category android:name="android.intent.category.DEFAULT" />-->
+                <!--<data android:host="my.yubico.com" android:scheme="https"/>-->
+            <!--</intent-filter>-->
+        <!--</activity>-->
 
         <activity
             android:name=".ui.HelpActivity"
