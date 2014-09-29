@@ -194,7 +194,6 @@ public class OpenPgpService extends RemoteService {
 
         intent.putExtra(NfcActivity.EXTRA_NFC_HASH_TO_SIGN, hashToSign);
         intent.putExtra(NfcActivity.EXTRA_NFC_HASH_ALGO, hashAlgo);
-        intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
         PendingIntent pi = PendingIntent.getActivity(getBaseContext(), 0,
                 intent,
                 PendingIntent.FLAG_CANCEL_CURRENT);
@@ -215,7 +214,6 @@ public class OpenPgpService extends RemoteService {
         intent.putExtra(NfcActivity.EXTRA_PIN, pin);
 
         intent.putExtra(NfcActivity.EXTRA_NFC_ENC_SESSION_KEY, encryptedSessionKey);
-        intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
         PendingIntent pi = PendingIntent.getActivity(getBaseContext(), 0,
                 intent,
                 PendingIntent.FLAG_CANCEL_CURRENT);

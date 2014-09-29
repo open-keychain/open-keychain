@@ -111,9 +111,8 @@ public class NfcActivity extends ActionBarActivity {
             Log.d(Constants.TAG, "NfcActivity mEncryptedSessionKey as hex: " + getHex(mEncryptedSessionKey));
             Log.d(Constants.TAG, "NfcActivity mServiceIntent: " + mServiceIntent.toString());
         } else if (NfcAdapter.ACTION_TAG_DISCOVERED.equals(action)) {
-            Log.e(Constants.TAG, "This should not happen, but there is a bug in Android!");
-
-            toast("This should not happen, but there is a bug in Android! Clear all app tasks and start app from launcher again!");
+            Log.e(Constants.TAG, "This should not happen! NfcActivity.onCreate() is being called instead of onNewIntent()!");
+            toast("This should not happen! Please create a new bug report that the NFC screen is restarted!");
             finish();
         } else {
             Log.d(Constants.TAG, "Action not supported: " + action);

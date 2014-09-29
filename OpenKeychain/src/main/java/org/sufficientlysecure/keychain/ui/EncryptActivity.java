@@ -40,7 +40,6 @@ public abstract class EncryptActivity extends DrawerActivity {
         intent.putExtra(NfcActivity.EXTRA_PIN, pin);
         intent.putExtra(NfcActivity.EXTRA_NFC_HASH_TO_SIGN, hashToSign);
         intent.putExtra(NfcActivity.EXTRA_NFC_HASH_ALGO, hashAlgo);
-        intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
         startActivityForResult(intent, REQUEST_CODE_NFC);
     }
