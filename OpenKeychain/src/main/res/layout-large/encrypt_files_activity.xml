@@ -13,6 +13,5 @@
 
     </android.support.v4.widget.FixedDrawerLayout>
 
-    <include layout="@layout/decrypt_content_old" />
-
+    <include layout="@layout/encrypt_files_content" />
 </FrameLayout>

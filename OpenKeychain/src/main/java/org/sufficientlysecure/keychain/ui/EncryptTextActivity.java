@@ -302,7 +302,6 @@ public class EncryptTextActivity extends EncryptActivity implements EncryptActiv
         // Handle intent actions
         handleActions(getIntent());
         updateModeFragment();
-
     }
 
     @Override
@@ -359,9 +358,11 @@ public class EncryptTextActivity extends EncryptActivity implements EncryptActiv
 
         // When sending to OpenKeychain Encrypt via share menu
         if (Intent.ACTION_SEND.equals(action) && type != null) {
+            Log.logDebugBundle(extras, "extras");
+
             // When sending to OpenKeychain Encrypt via share menu
             if ("text/plain".equals(type)) {
-                String sharedText = intent.getStringExtra(Intent.EXTRA_TEXT);
+                String sharedText = extras.getString(Intent.EXTRA_TEXT);
                 if (sharedText != null) {
                     // handle like normal text encryption, override action and extras to later
                     // executeServiceMethod ACTION_ENCRYPT_TEXT in main actions

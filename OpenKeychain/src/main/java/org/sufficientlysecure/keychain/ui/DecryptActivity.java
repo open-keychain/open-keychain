@@ -79,7 +79,7 @@ public class DecryptActivity extends DrawerActivity {
             final String clipboardText =
                     ClipboardReflection.getClipboardText(DecryptActivity.this).toString();
 
-            new AsyncTask<Void,Void,Boolean>() {
+            AsyncTask<Void, Void, Boolean> tadaTask = new AsyncTask<Void, Void, Boolean>() {
                 @Override
                 protected Boolean doInBackground(Void... params) {
 
@@ -88,7 +88,7 @@ public class DecryptActivity extends DrawerActivity {
                     boolean animate = matcher.matches();
 
                     // see if it looks like another pgp thing
-                    if(!animate) {
+                    if (!animate) {
                         matcher = PgpHelper.PGP_CLEARTEXT_SIGNATURE.matcher(clipboardText);
                         animate = matcher.matches();
                     }
@@ -100,11 +100,15 @@ public class DecryptActivity extends DrawerActivity {
                     super.onPostExecute(animate);
 
                     // if so, animate the clipboard icon just a bit~
-                    if(animate) {
+                    if (animate) {
                         SubtleAttentionSeeker.tada(findViewById(R.id.clipboard_icon), 1.5f).start();
                     }
                 }
-            }.execute();
+            };
+
+            if (clipboardText != null) {
+                tadaTask.execute();
+            }
         }
     }
 
