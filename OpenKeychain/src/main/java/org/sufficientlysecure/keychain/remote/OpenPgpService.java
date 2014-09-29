@@ -400,15 +400,21 @@ public class OpenPgpService extends RemoteService {
 
                 String passphrase = null;
                 if (sign) {
+
+                    // Find the appropriate subkey to sign with
+                    CachedPublicKeyRing signingRing =
+                            new ProviderHelper(this).getCachedPublicKeyRing(accSettings.getKeyId());
+                    final long sigSubKeyId = signingRing.getSignId();
+
                     if (data.hasExtra(OpenPgpApi.EXTRA_PASSPHRASE)) {
                         passphrase = data.getStringExtra(OpenPgpApi.EXTRA_PASSPHRASE);
                     } else {
                         passphrase = PassphraseCacheService.getCachedPassphrase(getContext(),
-                                accSettings.getKeyId(), accSettings.getKeyId());
+                                accSettings.getKeyId(), sigSubKeyId);
                     }
                     if (passphrase == null) {
                         // get PendingIntent for passphrase input, add it to given params and return to client
-                        return getPassphraseIntent(data, accSettings.getKeyId());
+                        return getPassphraseIntent(data, sigSubKeyId);
                     }
 
                     byte[] nfcSignedHash = data.getByteArrayExtra(OpenPgpApi.EXTRA_NFC_SIGNED_HASH);
@@ -418,11 +424,6 @@ public class OpenPgpService extends RemoteService {
                     if (nfcCreationTimestamp != -1) {
                         nfcCreationDate = new Date(nfcCreationTimestamp);
                     }
-
-                    // Find the appropriate subkey to sign with
-                    CachedPublicKeyRing signingRing =
-                            new ProviderHelper(this).getCachedPublicKeyRing(accSettings.getKeyId());
-                    long sigSubKeyId = signingRing.getSignId();
 
                     // sign and encrypt
                     builder.setSignatureHashAlgorithm(accSettings.getHashAlgorithm())
