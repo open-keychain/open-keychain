@@ -23,9 +23,12 @@ import org.spongycastle.bcpg.HashAlgorithmTags;
 import org.spongycastle.util.encoders.Hex;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
+import org.sufficientlysecure.keychain.util.Iso7816TLV;
 import org.sufficientlysecure.keychain.util.Log;
 
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.util.Locale;
 
 /**
@@ -257,33 +260,59 @@ public class NfcActivity extends ActionBarActivity {
         return getName(card(info)) + " <" + (new String(Hex.decode(getDataField(card(data))))) + ">";
     }
 
-    /**
-     * Gets the long key ID
+    /** Return the key id from application specific data stored on tag, or null
+     * if it doesn't exist.
      *
-     * @return the long key id (last 16 bytes of the fingerprint)
-     * @throws java.io.IOException
+     * @param idx Index of the key to return the fingerprint from.
+     * @return The long key id of the requested key, or null if not found.
      */
-    public long getKeyId() throws IOException {
-        String keyId = getFingerprint().substring(24);
-        Log.d(Constants.TAG, "keyId: " + keyId);
-        return Long.parseLong(keyId, 16);
+    public static Long nfcGetKeyId(IsoDep isoDep, int idx) throws IOException {
+        byte[] fp = nfcGetFingerprint(isoDep, idx);
+        if (fp == null) {
+            return null;
+        }
+        ByteBuffer buf = ByteBuffer.wrap(fp);
+        // skip first 12 bytes of the fingerprint
+        buf.position(12);
+        // the last eight bytes are the key id (big endian, which is default order in ByteBuffer)
+        return buf.getLong();
     }
 
-    /**
-     * Gets the fingerprint of the signature key
+    /** Return fingerprints of all keys from application specific data stored
+     * on tag, or null if data not available.
      *
-     * @return the fingerprint
-     * @throws java.io.IOException
+     * @return The fingerprints of all subkeys in a contiguous byte array.
      */
-    public String getFingerprint() throws IOException {
+    public static byte[] nfcGetFingerprints(IsoDep isoDep) throws IOException {
         String data = "00CA006E00";
-        String fingerprint = card(data);
-        fingerprint = fingerprint.toLowerCase(Locale.ENGLISH); // better enforce lower case
-        fingerprint = fingerprint.substring(fingerprint.indexOf("c5") + 4, fingerprint.indexOf("c5") + 44);
+        byte[] buf = isoDep.transceive(Hex.decode(data));
 
-        Log.d(Constants.TAG, "fingerprint: " + fingerprint);
+        Iso7816TLV tlv = Iso7816TLV.readSingle(buf, true);
+        Log.d(Constants.TAG, "nfc tlv data:\n" + tlv.prettyPrint());
 
-        return fingerprint;
+        Iso7816TLV fptlv = Iso7816TLV.findRecursive(tlv, 0xc5);
+        if (fptlv == null) {
+            return null;
+        }
+
+        return fptlv.mV;
+    }
+
+    /** Return the fingerprint from application specific data stored on tag, or
+     * null if it doesn't exist.
+     *
+     * @param idx Index of the key to return the fingerprint from.
+     * @return The fingerprint of the requested key, or null if not found.
+     */
+    public static byte[] nfcGetFingerprint(IsoDep isoDep, int idx) throws IOException {
+        byte[] data = nfcGetFingerprints(isoDep);
+
+        // return the master key fingerprint
+        ByteBuffer fpbuf = ByteBuffer.wrap(data);
+        byte[] fp = new byte[20];
+        fpbuf.get(fp, 20*idx, 20);
+
+        return fp;
     }
 
     /**
