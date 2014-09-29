@@ -76,7 +76,7 @@ public class EncryptFilesFragment extends Fragment implements EncryptActivityInt
      */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.encrypt_file_fragment, container, false);
+        View view = inflater.inflate(R.layout.encrypt_files_fragment, container, false);
 
         View vEncryptFile = view.findViewById(R.id.action_encrypt_file);
         vEncryptFile.setOnClickListener(new View.OnClickListener() {

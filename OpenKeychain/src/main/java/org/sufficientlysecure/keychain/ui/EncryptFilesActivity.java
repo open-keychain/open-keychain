@@ -309,7 +309,7 @@ public class EncryptFilesActivity extends EncryptActivity implements EncryptActi
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.encrypt_file_activity);
+        setContentView(R.layout.encrypt_files_activity);
 
         // if called with an intent action, do not init drawer navigation
         if (ACTION_ENCRYPT_DATA.equals(getIntent().getAction())) {

@@ -7,7 +7,7 @@
         android:layout_height="match_parent"
         tools:context=".ui.EncryptFileActivity">
 
-    <include layout="@layout/encrypt_file_content"/>
+    <include layout="@layout/encrypt_files_content"/>
 
     <include layout="@layout/drawer_list" />
 
