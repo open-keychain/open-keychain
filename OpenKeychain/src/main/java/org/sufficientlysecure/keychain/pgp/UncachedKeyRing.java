@@ -721,7 +721,7 @@ public class UncachedKeyRing {
             }
 
             // If we have flags, check if the algorithm supports all of them
-            if (selfCert.getHashedSubPackets() == null
+            if (selfCert.getHashedSubPackets() != null
                     && selfCert.getHashedSubPackets().hasSubpacket(SignatureSubpacketTags.KEY_FLAGS)) {
                 int flags = ((KeyFlags) selfCert.getHashedSubPackets().getSubpacket(SignatureSubpacketTags.KEY_FLAGS)).getFlags();
                 int algo = key.getAlgorithm();
