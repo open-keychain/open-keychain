@@ -35,6 +35,7 @@ public class DecryptVerifyResult extends OperationResult {
 
     long mKeyIdPassphraseNeeded;
 
+    long mNfcSubKeyId;
     byte[] mNfcSessionKey;
     String mNfcPassphrase;
 
@@ -49,9 +50,14 @@ public class DecryptVerifyResult extends OperationResult {
         mKeyIdPassphraseNeeded = keyIdPassphraseNeeded;
     }
 
-    public void setNfcState(byte[] sessionKey, String passphrase) {
+    public void setNfcState(long subKeyId, byte[] sessionKey, String passphrase) {
+        mNfcSubKeyId = subKeyId;
         mNfcSessionKey = sessionKey;
         mNfcPassphrase = passphrase;
+    }
+
+    public long getNfcSubKeyId() {
+        return mNfcSubKeyId;
     }
 
     public byte[] getNfcEncryptedSessionKey() {

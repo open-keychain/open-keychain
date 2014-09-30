@@ -89,11 +89,12 @@ public abstract class DecryptFragment extends Fragment {
         startActivityForResult(intent, REQUEST_CODE_PASSPHRASE);
     }
 
-    protected void startNfcDecrypt(String pin, byte[] encryptedSessionKey) {
+    protected void startNfcDecrypt(long subKeyId, String pin, byte[] encryptedSessionKey) {
         // build PendingIntent for Yubikey NFC operations
         Intent intent = new Intent(getActivity(), NfcActivity.class);
         intent.setAction(NfcActivity.ACTION_DECRYPT_SESSION_KEY);
         intent.putExtra(NfcActivity.EXTRA_DATA, new Intent()); // not used, only relevant to OpenPgpService
+        intent.putExtra(NfcActivity.EXTRA_KEY_ID, subKeyId);
         intent.putExtra(NfcActivity.EXTRA_PIN, pin);
 
         intent.putExtra(NfcActivity.EXTRA_NFC_ENC_SESSION_KEY, encryptedSessionKey);

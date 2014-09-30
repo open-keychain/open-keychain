@@ -205,19 +205,6 @@ public class NfcActivity extends ActionBarActivity {
             return;
         }
 
-        // If we were supplied with a key id for checking, do so
-        if (mKeyId != null) {
-            // We always check the master key id
-            long keyId = nfcGetKeyId(mIsoDep, 0);
-            // If it's wrong, just cancel
-            if (keyId != mKeyId) {
-                toast("NFC Tag has wrong key id!");
-                setResult(RESULT_CANCELED, mServiceIntent);
-                finish();
-                return;
-            }
-        }
-
         // Command APDU for VERIFY command (page 32)
         String login =
               "00" // CLA
@@ -234,6 +221,20 @@ public class NfcActivity extends ActionBarActivity {
         }
 
         if (ACTION_SIGN_HASH.equals(mAction)) {
+
+            // If we were supplied with a key id for checking, do so
+            if (mKeyId != null) {
+                // For signing, we check the master key
+                long keyId = nfcGetKeyId(mIsoDep, 0);
+                // If it's wrong, just cancel
+                if (keyId != mKeyId) {
+                    toast("NFC Tag has wrong signing key id!");
+                    setResult(RESULT_CANCELED, mServiceIntent);
+                    finish();
+                    return;
+                }
+            }
+
             // returns signed hash
             byte[] signedHash = nfcCalculateSignature(mHashToSign, mHashAlgo);
 
@@ -252,6 +253,20 @@ public class NfcActivity extends ActionBarActivity {
             finish();
 
         } else if (ACTION_DECRYPT_SESSION_KEY.equals(mAction)) {
+
+            // If we were supplied with a key id for checking, do so
+            if (mKeyId != null) {
+                // For decryption, we check the confidentiality key
+                long keyId = nfcGetKeyId(mIsoDep, 1);
+                // If it's wrong, just cancel
+                if (keyId != mKeyId) {
+                    toast("NFC Tag has wrong encryption key id!");
+                    setResult(RESULT_CANCELED, mServiceIntent);
+                    finish();
+                    return;
+                }
+            }
+
             byte[] decryptedSessionKey = nfcDecryptSessionKey(mEncryptedSessionKey);
 
             // give data through for new service call

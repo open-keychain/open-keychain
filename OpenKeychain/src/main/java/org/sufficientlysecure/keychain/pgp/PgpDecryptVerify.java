@@ -289,7 +289,7 @@ public class PgpDecryptVerify {
 
                 // allow only specific keys for decryption?
                 if (mAllowedKeyIds != null) {
-                    long masterKeyId = secretEncryptionKey.getRing().getMasterKeyId();
+                    long masterKeyId = secretKeyRing.getMasterKeyId();
                     Log.d(Constants.TAG, "encData.getKeyID(): " + subKeyId);
                     Log.d(Constants.TAG, "mAllowedKeyIds: " + mAllowedKeyIds);
                     Log.d(Constants.TAG, "masterKeyId: " + masterKeyId);
@@ -418,7 +418,7 @@ public class PgpDecryptVerify {
                 log.add(LogType.MSG_DC_PENDING_NFC, indent +1);
                 DecryptVerifyResult result =
                         new DecryptVerifyResult(DecryptVerifyResult.RESULT_PENDING_NFC, log);
-                result.setNfcState(e.encryptedSessionKey, mPassphrase);
+                result.setNfcState(secretEncryptionKey.getKeyId(), e.encryptedSessionKey, mPassphrase);
                 return result;
             }
             encryptedData = encryptedDataAsymmetric;
