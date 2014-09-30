@@ -569,7 +569,9 @@ public class PgpSignEncrypt {
                     log.add(LogType.MSG_SE_PENDING_NFC, indent);
                     SignEncryptResult result =
                             new SignEncryptResult(SignEncryptResult.RESULT_PENDING_NFC, log);
-                    result.setNfcData(e.hashToSign, e.hashAlgo, e.creationTimestamp, mSignaturePassphrase);
+                    // Note that the checked key here is the master key, not the signing key
+                    // (although these are always the same on Yubikeys)
+                    result.setNfcData(mSignatureMasterKeyId, e.hashToSign, e.hashAlgo, e.creationTimestamp, mSignaturePassphrase);
                     Log.d(Constants.TAG, "e.hashToSign"+ Hex.toHexString(e.hashToSign));
                     return result;
                 }

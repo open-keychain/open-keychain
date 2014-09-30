@@ -32,6 +32,7 @@ public class SignEncryptResult extends OperationResult {
 
     long mKeyIdPassphraseNeeded;
 
+    long mNfcKeyId;
     byte[] mNfcHash;
     int mNfcAlgo;
     Date mNfcTimestamp;
@@ -45,11 +46,16 @@ public class SignEncryptResult extends OperationResult {
         mKeyIdPassphraseNeeded = keyIdPassphraseNeeded;
     }
 
-    public void setNfcData(byte[] nfcHash, int nfcAlgo, Date nfcTimestamp, String passphrase) {
+    public void setNfcData(long nfcKeyId, byte[] nfcHash, int nfcAlgo, Date nfcTimestamp, String passphrase) {
+        mNfcKeyId = nfcKeyId;
         mNfcHash = nfcHash;
         mNfcAlgo = nfcAlgo;
         mNfcTimestamp = nfcTimestamp;
         mNfcPassphrase = passphrase;
+    }
+
+    public long getNfcKeyId() {
+        return mNfcKeyId;
     }
 
     public byte[] getNfcHash() {

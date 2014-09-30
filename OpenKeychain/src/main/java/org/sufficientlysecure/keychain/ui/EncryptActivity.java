@@ -30,13 +30,14 @@ public abstract class EncryptActivity extends DrawerActivity {
         startActivityForResult(intent, REQUEST_CODE_PASSPHRASE);
     }
 
-    protected void startNfcSign(String pin, byte[] hashToSign, int hashAlgo) {
+    protected void startNfcSign(long keyId, String pin, byte[] hashToSign, int hashAlgo) {
         // build PendingIntent for Yubikey NFC operations
         Intent intent = new Intent(this, NfcActivity.class);
         intent.setAction(NfcActivity.ACTION_SIGN_HASH);
 
         // pass params through to activity that it can be returned again later to repeat pgp operation
         intent.putExtra(NfcActivity.EXTRA_DATA, new Intent()); // not used, only relevant to OpenPgpService
+        intent.putExtra(NfcActivity.EXTRA_KEY_ID, keyId);
         intent.putExtra(NfcActivity.EXTRA_PIN, pin);
         intent.putExtra(NfcActivity.EXTRA_NFC_HASH_TO_SIGN, hashToSign);
         intent.putExtra(NfcActivity.EXTRA_NFC_HASH_ALGO, hashAlgo);
@@ -102,7 +103,7 @@ public abstract class EncryptActivity extends DrawerActivity {
                                 SignEncryptResult.RESULT_PENDING_NFC) {
 
                             mNfcTimestamp = pgpResult.getNfcTimestamp();
-                            startNfcSign(pgpResult.getNfcPassphrase(), pgpResult.getNfcHash(), pgpResult.getNfcAlgo());
+                            startNfcSign(pgpResult.getNfcKeyId(), pgpResult.getNfcPassphrase(), pgpResult.getNfcHash(), pgpResult.getNfcAlgo());
                         } else {
                             throw new RuntimeException("Unhandled pending result!");
                         }
