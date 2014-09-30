@@ -340,7 +340,8 @@ public class NfcActivity extends ActionBarActivity {
         // return the master key fingerprint
         ByteBuffer fpbuf = ByteBuffer.wrap(data);
         byte[] fp = new byte[20];
-        fpbuf.get(fp, 20*idx, 20);
+        fpbuf.position(idx*20);
+        fpbuf.get(fp, 0, 20);
 
         return fp;
     }
