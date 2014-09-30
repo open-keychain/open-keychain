@@ -54,7 +54,7 @@ import java.io.IOException;
  */
 public class KeychainDatabase extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "openkeychain.db";
-    private static final int DATABASE_VERSION = 5;
+    private static final int DATABASE_VERSION = 6;
     static Boolean apgHack = false;
     private Context mContext;
 
@@ -215,7 +215,7 @@ public class KeychainDatabase extends SQLiteOpenHelper {
                 // add has_secret for all who are upgrading from a beta version
                 try {
                     db.execSQL("ALTER TABLE keys ADD COLUMN has_secret BOOLEAN");
-                } catch (Exception e){
+                } catch (Exception e) {
                     // never mind, the column probably already existed
                 }
                 // fall through
@@ -223,7 +223,7 @@ public class KeychainDatabase extends SQLiteOpenHelper {
                 // ECC support
                 try {
                     db.execSQL("ALTER TABLE keys ADD COLUMN key_curve_oid TEXT");
-                } catch (Exception e){
+                } catch (Exception e) {
                     // never mind, the column probably already existed
                 }
                 // fall through
@@ -233,9 +233,12 @@ public class KeychainDatabase extends SQLiteOpenHelper {
             case 4:
                 try {
                     db.execSQL("ALTER TABLE keys ADD COLUMN can_authenticate BOOLEAN");
-                } catch (Exception e){
+                } catch (Exception e) {
                     // never mind, the column probably already existed
                 }
+                // fall through
+            case 5:
+                // do consolidate for 3.0 beta3
                 // fall through
         }
 
