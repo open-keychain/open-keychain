@@ -1,194 +1,207 @@
 <html>
 <head></head>
 <body>
+
+<h2>3.0</h2>
+<ul>
+<li>Пуна подршка за прављење и дешифровање Јубикључ потписа!</li>
+<li>Предлози за инсталабилне компатибилне апликације у списку апликација</li>
+<li>Нови дизајн за екране дешифровања</li>
+<li>Много исправки за увоз кључа, такође исправљени огољени кључеви</li>
+<li>Поштовање и приказ заставица аутентификације кључа</li>
+<li>Корисничко сучеље за прављење прилагођених кључева</li>
+<li>Исправка корисничког ид-а сертификата опозива</li>
+<li>Нова клауд претрага (тражи преко традиционални сервера кључева и keybase.io)</li>
+<li>Подршка за огољивање кључева унутар OpenKeychain-а</li>
+</ul>
 <h2>2.9.2</h2>
 <ul>
-<li>Fix keys broken in 2.9.1</li>
-<li>Yubikey decryption now working via API</li>
+<li>Исправка кључева покварених у 2.9.1</li>
+<li>Јубикључ дешифровање сада ради преко АПИ-ја</li>
 </ul>
 <h2>2.9.1</h2>
 <ul>
-<li>Split encrypt screen into two</li>
-<li>Fix key flags handling (now supporting Mailvelope 0.7 keys)</li>
-<li>Improved passphrase handling</li>
-<li>Key sharing via SafeSlinger</li>
-<li>Yubikey: preference to allow other PINs, currently only signing via the OpenPGP API works, not inside of OpenKeychain</li>
-<li>Fix usage of stripped keys</li>
-<li>SHA256 as default for compatibility</li>
-<li>Intent API has changed, see https://github.com/open-keychain/open-keychain/wiki/Intent-API</li>
-<li>OpenPGP API now handles revoked/expired keys and returns all user ids</li>
+<li>Подела екрана шифровања на два дела</li>
+<li>Исправка руковања заставицама кључа (подршка за Mailvelope 0.7 кључеве)</li>
+<li>Побољшано руковање лозинкама</li>
+<li>Дељење кључа преко Сејфслингера (SafeSlinger)</li>
+<li>Јубикључ: опција за дозволу осталих ПИН-ова, тренутно ради само потписивање преко ОпенПГП АПИ-ја, не унутар OpenKeychain-а</li>
+<li>Исправка употребе огољених кључева</li>
+<li>СХА256 подразумевано због компатибилности</li>
+<li>Интент АПИ је измењен, погледајте https://github.com/open-keychain/open-keychain/wiki/Intent-API</li>
+<li>ОпенПГП АПИ сада рукује опозваним/истеклим кључевима и враћа све корисничке ид-ове</li>
 </ul>
 <h2>2.9</h2>
 <ul>
-<li>Fixing crashes introduced in v2.8</li>
-<li>Experimental ECC support</li>
-<li>Experimental Yubikey support (signing-only with imported keys)</li>
+<li>Поправка рушења која су се појавила у в2.8</li>
+<li>Експериментална подршка за ЕЦЦ</li>
+<li>Експериментална подршка за Јубикључ (Yubikey) (само пријава са увезеним кључевима)</li>
 </ul>
 <h2>2.8</h2>
 <ul>
-<li>So many bugs have been fixed in this release that we focus on the main new features</li>
-<li>Key edit: awesome new design, key revocation</li>
-<li>Key import: awesome new design, secure keyserver connections via hkps, keyserver resolving via DNS SRV records</li>
-<li>New first time screen</li>
-<li>New key creation screen: autocompletion of name and email based on your personal Android accounts</li>
-<li>File encryption: awesome new design, support for encrypting multiple files</li>
-<li>New icons to show status of key (by Brennan Novak)</li>
-<li>Important bug fix: Importing of large key collections from a file is now possible</li>
-<li>Notification showing cached passphrases</li>
-<li>Keys are connected to Android's contacts</li>
+<li>Толико много грешака је исправљено у овом издању па се базирамо на главне нове функције</li>
+<li>Уређивање кључа: сјајан нови дизајн, опозив кључа</li>
+<li>Увоз кључа: сјајан нови дизајн, сигурне везе на сервере кључева преко hkps, разлучивање сервера кључева преко ДНС СРВ записа</li>
+<li>Нови почетни екран</li>
+<li>Нови екран за прављење кључа: аутоматско довршавање имена и е-адресе на основу ваших личних Андроид налога</li>
+<li>Шифровање фајла: сјајан нови дизајн, подршка за шифровање више фајлова</li>
+<li>Нове иконе за приказ стања кључа (Бренан Новак (Brennan Novak))</li>
+<li>Важна исправка: увоз великих збирки кључева из фајла је сада могуће</li>
+<li>Обавештење које показује кеширане лозинке</li>
+<li>Кључеви су повезани са Андроидовим контактима</li>
 </ul>
-<p>This release wouldn't be possible without the work of Vincent Breitmoser (GSoC 2014), mar-v-in (GSoC 2014), Daniel Albert, Art O Cathain, Daniel Haß, Tim Bray, Thialfihar</p>
+<p>Ово издање не би било могуће без рада Винсента Брајтмозера (ГСоЦ 2014), „mar-v-in“-а (ГСоЦ 2014), Данијела Алберта (Daniel Albert), Арта Катијана (Art O Cathain), Данијела Хаса, Тима Бреја, „Thialfihar“-а</p>
 
 <h2>2.7</h2>
 <ul>
-<li>Purple! (Dominik, Vincent)</li>
-<li>New key view design (Dominik, Vincent)</li>
-<li>New flat Android buttons (Dominik, Vincent)</li>
-<li>API fixes (Dominik)</li>
-<li>Keybase.io import (Tim Bray)</li>
+<li>Љубичасто! (Доминик, Винсент)</li>
+<li>Нови дизајн приказа кључа (Доминик, Винсент)</li>
+<li>Нова равна Андроид дугмад (Доминик, Винсент)</li>
+<li>АПИ исправке (Доминик)</li>
+<li>Keybase.io увоз (Тим Бреј (Tim Bray))</li>
 </ul>
 <h2>2.6.1</h2>
 <ul>
-<li>Some fixes for regression bugs</li>
+<li>Поправке неких регресивних грешака</li>
 </ul>
 <h2>2.6</h2>
 <ul>
-<li>Key certifications (thanks to Vincent Breitmoser)</li>
-<li>Support for GnuPG partial secret keys (thanks to Vincent Breitmoser)</li>
-<li>New design for signature verification</li>
-<li>Custom key length (thanks to Greg Witczak)</li>
-<li>Fix share-functionality from other apps</li>
+<li>Овере кључа (захваљујући Винсенту Брајтмозеру)</li>
+<li>Подршка за ГнуПГ деломично тајне кључеве (захваљујући Винсенту Брајтмозеру)</li>
+<li>Нови дизајн за оверу потписа</li>
+<li>Подесива дужина кључа (захваљујући Грегу Вичаку)</li>
+<li>Поправка функције дељења из других апликација</li>
 </ul>
 <h2>2.5</h2>
 <ul>
-<li>Fix decryption of symmetric pgp messages/files</li>
-<li>Refactored key edit screen (thanks to Ash Hughes)</li>
-<li>New modern design for encrypt/decrypt screens</li>
-<li>OpenPGP API version 3 (multiple api accounts, internal fixes, key lookup)</li>
+<li>Поправка дешифровања симетричних пгп порука/фајлова</li>
+<li>Прерађен екран уређивања кључа (захваљујући Ешу Хјуџесу)</li>
+<li>Нови модерни дизајн за екране шифровања/дешифровања</li>
+<li>ОпенПГП АПИ издање 3 (вишеструки АПИ налози, унутрашње исправке, потрага кључа)</li>
 </ul>
 <h2>2.4</h2>
-<p>Thanks to all applicants of Google Summer of Code 2014 who made this release feature rich and bug free!
-Besides several small patches, a notable number of patches are made by the following people (in alphabetical order):
-Daniel Hammann, Daniel Haß, Greg Witczak, Miroojin Bakshi, Nikhil Peter Raj, Paul Sarbinowski, Sreeram Boyapati, Vincent Breitmoser.</p>
+<p>Хвала свим апликантима Гугловог Лета Ко̂да 2014 који су учинили ово издање богатим у могућностима и без грешака!
+Осим неколицине малих закрпа, значајан број закрпа направили су следећи људи (по абецедном реду):
+Данијел Хаман (Daniel Hammann), Данијел Хас (Daniel Haß), Грег Вичак (Greg Witczak), Мируђин Бакши (Miroojin Bakshi), Никил Питер Раж (Nikhil Peter Raj), Паул Сарбиновски (Paul Sarbinowski), Срирам Бујапати (Sreeram Boyapati), Винсент Брајтмозер (Vincent Breitmoser).</p>
 <ul>
-<li>New unified key list</li>
-<li>Colorized key fingerprint</li>
-<li>Support for keyserver ports</li>
-<li>Deactivate possibility to generate weak keys</li>
-<li>Much more internal work on the API</li>
-<li>Certify user ids</li>
-<li>Keyserver query based on machine-readable output</li>
-<li>Lock navigation drawer on tablets</li>
-<li>Suggestions for emails on creation of keys</li>
-<li>Search in public key lists</li>
-<li>And much more improvements and fixes…</li>
+<li>Нови обједињени списак кључева</li>
+<li>Обојени отисак прста кључа</li>
+<li>Подршка за портове сервера кључева</li>
+<li>Искључи могућност стварања слабих кључева</li>
+<li>Много унутрашњег рада на АПИ-ју</li>
+<li>Овери корисничке ид</li>
+<li>Упит сервера кључева заснован на машински читљивом излазу</li>
+<li>Закључавање навигационе фиоке на таблетима</li>
+<li>Предлози за е-адресе на прављењу кључева</li>
+<li>Претрага спискова јавних кључева</li>
+<li>И још много побољшања и исправки…</li>
 </ul>
 <h2>2.3.1</h2>
 <ul>
-<li>Hotfix for crash when upgrading from old versions</li>
+<li>Брза исправка рушења приликом надоградње са претходних издања</li>
 </ul>
 <h2>2.3</h2>
 <ul>
-<li>Remove unnecessary export of public keys when exporting secret key (thanks to Ash Hughes)</li>
-<li>Fix setting expiry dates on keys (thanks to Ash Hughes)</li>
-<li>More internal fixes when editing keys (thanks to Ash Hughes)</li>
-<li>Querying keyservers directly from the import screen</li>
-<li>Fix layout and dialog style on Android 2.2-3.0</li>
-<li>Fix crash on keys with empty user ids</li>
-<li>Fix crash and empty lists when coming back from signing screen</li>
-<li>Bouncy Castle (cryptography library) updated from 1.47 to 1.50 and build from source</li>
-<li>Fix upload of key from signing screen</li>
+<li>Уклоњен непотребан извоз јавних кључева приликом извоза тајног кључа (захваљујући Ешу Хјуџесу)</li>
+<li>Поправљено постављање датума истицања кључева (захваљујући Ешу Хјуџесу)</li>
+<li>Још унутрашњих исправки уређивања кључа (захваљујући Ешу Хјуџесу)</li>
+<li>Упит сервера кључева директно са екрана увоза</li>
+<li>Поправка распореда и стила дијалога на Андроиду 2.2-3.0</li>
+<li>Поправка рушења на кључевима са празним корисничким ид</li>
+<li>Поправка рушења и празних спискова након повратка са екрана потписа</li>
+<li>„Bouncy Castle“ (криптографска библиотека) ажурирана са 1.47 на издање 1.50 и изграђена од изворног ко̂да</li>
+<li>Поправка учитавања кључа са екрана потписа</li>
 </ul>
 <h2>2.2</h2>
 <ul>
-<li>New design with navigation drawer</li>
-<li>New public key list design</li>
-<li>New public key view</li>
-<li>Bug fixes for importing of keys</li>
-<li>Key cross-certification (thanks to Ash Hughes)</li>
-<li>Handle UTF-8 passwords properly (thanks to Ash Hughes)</li>
-<li>First version with new languages (thanks to the contributors on Transifex)</li>
-<li>Sharing of keys via QR Codes fixed and improved</li>
-<li>Package signature verification for API</li>
+<li>Нови дизајн са навигационом фиоком</li>
+<li>Нови дизајн списка јавних кључева</li>
+<li>Нови приказ јавног кључа</li>
+<li>Поправке грешака увоза кључева</li>
+<li>Унакрсна сертификација кључева (захваљујући Ешу Хјуџесу)</li>
+<li>Исправно руковање УТФ-8 лозинкама (захваљујући Ешу Хјуџесу (Ash Hughes))</li>
+<li>Прво издање са новим језицима (захваљујући доприносиоцима са Трансифекса)</li>
+<li>Поправљено и побољшано дељење кључева преко QR ко̂дова</li>
+<li>Овера потписа пакета за АПИ</li>
 </ul>
 <h2>2.1.1</h2>
 <ul>
-<li>API Updates, preparation for K-9 Mail integration</li>
+<li>Ажурирања АПИ-ја, припрема за интеграцију у К-9 Пошту</li>
 </ul>
 <h2>2.1</h2>
 <ul>
-<li>Lots of bug fixes</li>
-<li>New API for developers</li>
-<li>PRNG bug fix by Google</li>
+<li>Много исправки грешака</li>
+<li>Нови АПИ за програмере</li>
+<li>Гуглова исправка ПРНГ грешке</li>
 </ul>
 <h2>2.0</h2>
 <ul>
-<li>Complete redesign</li>
-<li>Share public keys via QR codes, NFC beam</li>
-<li>Sign keys</li>
-<li>Upload keys to server</li>
-<li>Fixes import issues</li>
-<li>New AIDL API</li>
+<li>Комплетан редизајн</li>
+<li>Подела кључева преко QR ко̂дова, НФЦ сноп</li>
+<li>Потпис кључева</li>
+<li>Учитавање кључева на сервер</li>
+<li>Поправке за проблеме увоза</li>
+<li>Нови АИДЛ АПИ</li>
 </ul>
 <h2>1.0.8</h2>
 <ul>
-<li>Basic keyserver support</li>
+<li>Основна подршка за сервер кључева</li>
 <li>App2sd</li>
-<li>More choices for passphrase cache: 1, 2, 4, 8, hours</li>
-<li>Translations: Norwegian (thanks, Sander Danielsen), Chinese (thanks, Zhang Fredrick)</li>
-<li>Bugfixes</li>
-<li>Optimizations</li>
+<li>Још избора за кеш лозинке: 1, 2, 4, 8 сати</li>
+<li>Преводи: норвешки (Сандер Даниелсен (Sander Danielsen)), кинески (Жанг Фредрик (Zhang Fredrick))</li>
+<li>Поправке грешака</li>
+<li>Оптимизације</li>
 </ul>
 <h2>1.0.7</h2>
 <ul>
-<li>Fixed problem with signature verification of texts with trailing newline</li>
-<li>More options for passphrase cache time to live (20, 40, 60 mins)</li>
+<li>Решен проблем овере потписа текста са пратећим новим редом</li>
+<li>Још опција за време живота кеша лозинке (20, 40, 60 минута)</li>
 </ul>
 <h2>1.0.6</h2>
 <ul>
-<li>Account adding crash on Froyo fixed</li>
-<li>Secure file deletion</li>
-<li>Option to delete key file after import</li>
-<li>Stream encryption/decryption (gallery, etc.)</li>
-<li>New options (language, force v3 signatures)</li>
-<li>Interface changes</li>
-<li>Bugfixes</li>
+<li>Поправљено рушење при додавању налога на Фроју</li>
+<li>Сигурно брисање фајлова</li>
+<li>Опција за брисање фајла кључа након увоза</li>
+<li>Проточно шифровање/дешифровање (галерија, итд.)</li>
+<li>Нове опције (језик, форсирање в3 потписа)</li>
+<li>Промене сучеља</li>
+<li>Поправке грешака</li>
 </ul>
 <h2>1.0.5</h2>
 <ul>
-<li>German and Italian translation</li>
-<li>Much smaller package, due to reduced BC sources</li>
-<li>New preferences GUI</li>
-<li>Layout adjustment for localization</li>
-<li>Signature bugfix</li>
+<li>Немачки и талијански преводи</li>
+<li>Много мањи пакет, захваљујући редукованим БЦ изворима</li>
+<li>Нови ГУИ за поставке</li>
+<li>Подешен распоред за локализацију</li>
+<li>Поправка грешке потписа</li>
 </ul>
 <h2>1.0.4</h2>
 <ul>
-<li>Fixed another crash caused by some SDK bug with query builder</li>
+<li>Поправљено још једно рушење узроковано неком СДК грешком у креатору упита</li>
 </ul>
 <h2>1.0.3</h2>
 <ul>
-<li>Fixed crashes during encryption/signing and possibly key export</li>
+<li>Поправљено рушење током шифровања/потписивања и можда извоза кључева</li>
 </ul>
 <h2>1.0.2</h2>
 <ul>
-<li>Filterable key lists</li>
-<li>Smarter pre-selection of encryption keys</li>
-<li>New Intent handling for VIEW and SEND, allows files to be encrypted/decrypted out of file managers</li>
-<li>Fixes and additional features (key preselection) for K-9 Mail, new beta build available</li>
+<li>Могућност филтрирања списка кључева</li>
+<li>Паметнији предизбор кључева за шифровање</li>
+<li>Ново Интент руковање за VIEW и SEND, дозвољава да фајлови буду шифровани/дешифровани унутар менаџера фајлова</li>
+<li>Поправке и додатне могућности (предизбор кључа) за К-9 Пошту, ново бета издање доступно</li>
 </ul>
 <h2>1.0.1</h2>
 <ul>
-<li>GMail account listing was broken in 1.0.0, fixed again</li>
+<li>Испис налога ГМејла је био покварен у 1.0.0, исправљен поново</li>
 </ul>
 <h2>1.0.0</h2>
 <ul>
-<li>K-9 Mail integration, APG supporting beta build of K-9 Mail</li>
-<li>Support of more file managers (including ASTRO)</li>
-<li>Slovenian translation</li>
-<li>New database, much faster, less memory usage</li>
-<li>Defined Intents and content provider for other apps</li>
-<li>Bugfixes</li>
+<li>Интеграција у К-9 Пошту, АПГ подржава бета издања К-9 Поште</li>
+<li>Подршка за још менаџера фајлова (укључујући АСТРО)</li>
+<li>Словеначки превод</li>
+<li>Нова база података, много бржа, мањи утрошак меморије</li>
+<li>Дефинисани „Интент“ и давалац садржаја за друге апликације</li>
+<li>Поправке грешака</li>
 </ul>
 </body>
 </html>

@@ -5,11 +5,14 @@
   <!--title-->
   <string name="title_select_recipients">Seleziona chiavi</string>
   <string name="title_select_secret_key">Seleziona la Tua Chiave</string>
+  <string name="title_encrypt_text">Testo Cifrato</string>
+  <string name="title_encrypt_files">File Cifrati</string>
   <string name="title_decrypt">Decodifica</string>
   <string name="title_authentication">Frase di accesso</string>
   <string name="title_add_subkey">Aggiungi Sottochiave</string>
   <string name="title_edit_key">Modifica Chiave</string>
   <string name="title_preferences">Preferenze</string>
+  <string name="title_cloud_search_preferences">Preferenze di ricerca</string>
   <string name="title_api_registered_apps">Apps</string>
   <string name="title_key_server_preference">Preferenze Server delle Chiavi</string>
   <string name="title_change_passphrase">Cambia Frase Di Accesso</string>
@@ -32,6 +35,7 @@
   <!--section-->
   <string name="section_user_ids">Identità</string>
   <string name="section_keys">Sottochiavi</string>
+  <string name="section_cloud_search">Ricerca</string>
   <string name="section_general">Generale</string>
   <string name="section_defaults">Predefiniti</string>
   <string name="section_advanced">Avanzato</string>
@@ -42,6 +46,8 @@
   <string name="section_key_server">Server delle Chiavi</string>
   <string name="section_fingerprint">Impronta</string>
   <string name="section_key_to_certify">Chiave da certificare</string>
+  <string name="section_decrypt_files">Files</string>
+  <string name="section_decrypt_text">Testo</string>
   <!--button-->
   <string name="btn_decrypt_verify_file">Decodifica, verifica e salva su file</string>
   <string name="btn_decrypt_verify_message">Decodifica e verifica messaggio</string>
@@ -60,6 +66,10 @@
   <string name="btn_view_cert_key">Mostra chiave di certificazione</string>
   <string name="btn_create_key">Crea chiave</string>
   <string name="btn_add_files">Aggiungi file(s)</string>
+  <string name="btn_add_share_decrypted_text">Condividi testo decifrato</string>
+  <string name="btn_decrypt_clipboard">Decifra dalla lavagna</string>
+  <string name="btn_decrypt_and_verify">e verifica le firme</string>
+  <string name="btn_decrypt_files">Decifra files</string>
   <!--menu-->
   <string name="menu_preferences">Impostazioni</string>
   <string name="menu_help">Aiuto</string>
@@ -82,17 +92,32 @@
   <string name="label_file_colon">File:</string>
   <string name="label_no_passphrase">Nessuna Frase di Accesso</string>
   <string name="label_passphrase">Frase di Accesso</string>
+  <string name="label_unlock">Sbloccando...</string>
   <string name="label_passphrase_again">Ripeti Frase di Accesso</string>
   <string name="label_algorithm">Algortimo</string>
   <string name="label_ascii_armor">Documenti con Armatura ASCII</string>
   <string name="label_write_version_header">Fai sapere agli altri che utilizzi OpenKeychain</string>
   <string name="label_write_version_header_summary">Scrive \'OpenKeychain v2.7\' nelle firme OpenPGP, testi cifrati e chiavi esportate</string>
+  <string name="label_use_default_yubikey_pin">Utilizza PIN Yubikey</string>
+  <string name="label_label_use_default_yubikey_pin_summary">Utilizza il PIN base (123456) per accedere a Yubikeys tramite NFC</string>
+  <string name="label_asymmetric_from">Firmato da:</string>
+  <string name="label_to">Codifica per:</string>
+  <string name="label_delete_after_encryption">Elimina file dopo la codifica</string>
+  <string name="label_delete_after_decryption">Elimina dopo la decodifica</string>
+  <string name="label_encryption_algorithm">Algoritmo di codifica</string>
+  <string name="label_hash_algorithm">Algoritmo Hash</string>
+  <string name="label_symmetric">Cifra con password</string>
+  <string name="label_passphrase_cache_ttl">Memorizza password</string>
+  <string name="label_passphrase_cache_subs">Memorizza password tramite sottochiave</string>
+  <string name="label_message_compression">Compressione messaggio</string>
+  <string name="label_file_compression">Compressione file</string>
   <string name="label_keyservers">Server Chiavi</string>
   <string name="label_key_id">ID Chiave</string>
   <string name="label_creation">Creazione</string>
   <string name="label_expiry">Scadenza</string>
   <string name="label_usage">Utilizzo</string>
   <string name="label_key_size">Dimensione Chiave</string>
+  <string name="label_ecc_curve">Curva Elittica</string>
   <string name="label_main_user_id">Identità Primaria</string>
   <string name="label_name">Nome</string>
   <string name="label_comment">Commento</string>
@@ -100,6 +125,7 @@
   <string name="label_send_key">Carica chiave nel server delle chiavi selezionati dopo la certificazione</string>
   <string name="label_fingerprint">Impronta</string>
   <string name="expiry_date_dialog_title">Impostare la data di scadenza</string>
+  <string name="label_preferred">preferiti</string>
   <string name="user_id_no_name">&lt;nessun nome&gt;</string>
   <string name="none">&lt;nessuno&gt;</string>
   <string name="no_key">&lt;nessuna chiave&gt;</string>
@@ -135,6 +161,8 @@
   <string name="dsa">DSA</string>
   <string name="elgamal">ElGamal</string>
   <string name="rsa">RSA</string>
+  <string name="ecdh">ECDH</string>
+  <string name="ecdsa">ECDSA</string>
   <string name="filemanager_title_open">Apri...</string>
   <string name="warning">Attenzione</string>
   <string name="error">Errore</string>
@@ -151,6 +179,8 @@
   <string name="passphrase_must_not_be_empty">Si prega di inserire una frase di accesso.</string>
   <string name="passphrase_for_symmetric_encryption">Codifica Simmetrica.</string>
   <string name="passphrase_for">Inserisci la frase di accesso per \'%s\'</string>
+  <string name="yubikey_pin">Inserisci il PIN per accedere a Yubikey con \'%s\'</string>
+  <string name="file_delete_confirmation">Sei sicuro di voler eliminare\n%s?</string>
   <string name="file_delete_successful">Eliminato correttamente.</string>
   <string name="no_file_selected">Seleziona un file prima.</string>
   <string name="encrypt_sign_successful">Firmato e/o codificato con successo.</string>
@@ -158,6 +188,18 @@
   <string name="enter_passphrase_twice">Inserisci la frase di accesso due volte.</string>
   <string name="select_encryption_key">Seleziona almeno una chiave di codifica.</string>
   <string name="select_encryption_or_signature_key">Seleziona almeno una chiave di codifica o di firma.</string>
+  <string name="specify_file_to_encrypt_to">Perfavore specifica il file da codificare.
+ATTENZIONE: Il file sara\' sovrascritto se esistente.</string>
+  <string name="specify_file_to_decrypt_to">Perfavore specifica il file da decodificare.
+ATTENZIONE: Il file sara\' sovrascritto se esistente.</string>
+  <string name="specify_file_to_export_to">Perfavore specifica il file da esportare.
+ATTENZIONE: Il file sara\' sovrascritto se esistente.</string>
+  <string name="key_deletion_confirmation_multi">Vuoi veramente eliminare tutte le chiavi pubbliche selezionate?
+Non potrai annullare!</string>
+  <string name="secret_key_deletion_confirmation">Vuoi veramente eliminare la chiave PRIVATA \'%s\'?
+Non potrai annullare!</string>
+  <string name="public_key_deletetion_confirmation">Vuoi veramente eliminare la chiave pubblica \'%s\'?
+Non potrai annullare!</string>
   <string name="also_export_secret_keys">Esporta anche chiave segreta</string>
   <string name="key_exported">1 chiave esportata correttamente.</string>
   <string name="keys_exported">%d chiavi esportate correttamente.</string>
@@ -170,6 +212,7 @@
   <string name="fingerprint_copied_to_clipboard">Impronta copiata negli appunti!</string>
   <string name="select_key_to_certify">Per favore seleziona una chiave per la certificazione!</string>
   <string name="key_too_big_for_sharing">Chiave troppo grande per essere condivisa in questo modo!</string>
+  <string name="text_copied_to_clipboard">Il testo è stato copiato sulla lavagna!</string>
   <!--errors
          no punctuation, all lowercase,
          they will be put after "error_message", e.g. "Error: file not found"-->
@@ -212,6 +255,7 @@
   <!--progress dialogs, usually ending in '…'-->
   <string name="progress_done">Fatto.</string>
   <string name="progress_cancel">Annulla</string>
+  <string name="progress_cancelling">cancellando...</string>
   <string name="progress_saving">salvataggio...</string>
   <string name="progress_importing">importazione...</string>
   <string name="progress_exporting">esportazione...</string>
@@ -221,6 +265,8 @@
   <string name="progress_generating_rsa">generazione di una nuova chiave RSA...</string>
   <string name="progress_generating_dsa">generazione di una nuova chiave DSA...</string>
   <string name="progress_generating_elgamal">generazione di una nuova chiave ElGamal...</string>
+  <string name="progress_generating_ecdsa">generazione di una nuova chiave ECDSA...</string>
+  <string name="progress_generating_ecdh">generazione di una nuova chiave ECDH...</string>
   <string name="progress_modify">modifica portachiavi...</string>
   <string name="progress_modify_unlock">Sblocco portachiavi...</string>
   <string name="progress_modify_adduid">Aggiunta ID utente...</string>
@@ -255,6 +301,7 @@
   <string name="progress_con_reimport">consolidazione: reimportazione...</string>
   <!--action strings-->
   <string name="hint_keyserver_search_hint">Nome/Email/ID Chiave...</string>
+  <string name="hint_cloud_search_hint">Nome/Email/Certificato/Chiave...</string>
   <!--key bit length selections-->
   <string name="key_size_512">512</string>
   <string name="key_size_768">768</string>
@@ -314,6 +361,7 @@
   </plurals>
   <string name="view_log">Mostra registro</string>
   <string name="import_error_nothing">Niente da importare</string>
+  <string name="import_error_nothing_cancelled">Importazione cancellata.</string>
   <string name="import_with_warnings">, con avvisi</string>
   <!--Intent labels-->
   <string name="intent_decrypt_file">Decodifica File con OpenKeychain</string>
@@ -329,6 +377,7 @@
   <string name="api_settings_select_key">Seleziona chiave</string>
   <string name="api_settings_create_key">Crea una nuova chiave per questo account</string>
   <string name="api_settings_save">Salva</string>
+  <string name="api_settings_save_msg">L\'account è stato salvato</string>
   <string name="api_settings_cancel">Annulla</string>
   <string name="api_settings_revoke">Revoca accesso</string>
   <string name="api_settings_start">Avvia applicazione</string>
@@ -336,7 +385,13 @@
   <string name="api_settings_package_name">Nome Pacchetto</string>
   <string name="api_settings_package_signature">SHA-256 della Firma del Pacchetto</string>
   <string name="api_settings_accounts">Account</string>
+  <string name="api_settings_settings">Impostazioni</string>
+  <string name="api_settings_key">Chiave account:</string>
   <string name="api_settings_accounts_empty">Nessun account collegato a questa applicazione</string>
+  <string name="api_create_account_text">L\'applicazione richiede la creazione di un nuovo account. Si prega di selezionare una chiave esistente o crearne una nuova.\nLe applicazioni sono limitate all\'utilizzo delle chiavi selezionate qui!</string>
+  <string name="api_update_account_text">La chiave salvata per questo account è stata cancellata. Perfavore selezionane una diversa!\nLe applicazioni sono limitate all\'utilizzo delle chiavi qui selezionate!</string>
+  <string name="api_register_text">Le app visualizzate hanno richiesto l\'accesso a OpenKeychain.
+Permetti accesso?\n\nATTENZIONE: Se non sai perche\' questo schermata e\' apparsa, nega l\'accesso! Puoi revocare l\'accesso dopo, usando la schermata \'App Registrate\'.</string>
   <string name="api_register_allow">Permetti accesso</string>
   <string name="api_register_disallow">Nega accesso</string>
   <string name="api_register_error_select_key">Per favore selezionare una chiave!</string>
@@ -360,9 +415,13 @@
   <string name="key_list_empty_button_import">importazione di chiave esistente.</string>
   <!--Key view-->
   <string name="key_view_action_edit">Modifica chiave</string>
+  <string name="key_view_action_encrypt">Codifica Testo</string>
+  <string name="key_view_action_encrypt_files">documenti</string>
   <string name="key_view_action_certify">Certifica identità</string>
   <string name="key_view_action_update">Aggiorna dal server delle chiavi</string>
   <string name="key_view_action_share_with">Condividi con...</string>
+  <string name="key_view_action_share_nfc">Condividi tramite NFC</string>
+  <string name="key_view_action_upload">Carica sul Server delle Chiavi</string>
   <string name="key_view_tab_main">Info Principale</string>
   <string name="key_view_tab_share">Condividi</string>
   <string name="key_view_tab_keys">Sottochiavi</string>
@@ -380,26 +439,49 @@
   <string name="edit_key_action_add_identity">Aggiungi Identità</string>
   <string name="edit_key_action_add_subkey">Aggiungi Sottochiave</string>
   <string name="edit_key_edit_user_id_title">Seleziona un azione!</string>
+  <string-array name="edit_key_edit_user_id">
+    <item>Cambia in Identita\' Primaria</item>
+    <item>Revoca identita\'</item>
+  </string-array>
+  <string-array name="edit_key_edit_user_id_revert_revocation">
+    <item>Ripristina revoca</item>
+  </string-array>
   <string name="edit_key_edit_user_id_revoked">Questa identità è stata revocata. Ciò non può essere annullato.</string>
   <string name="edit_key_edit_subkey_title">Seleziona un azione!</string>
+  <string-array name="edit_key_edit_subkey">
+    <item>Cambia Scadenza</item>
+    <item>Revoca Sottochiave</item>
+    <item>Pulisci Sottochiave</item>
+  </string-array>
+  <string name="edit_key_new_subkey">nuova sottochiave</string>
   <string name="edit_key_select_flag">Per favore seleziona almeno una spunta!</string>
+  <string name="edit_key_error_add_identity">Aggiungi almeno una identità</string>
+  <string name="edit_key_error_add_subkey">Aggiungi almeno una sottochiave!</string>
   <!--Create key-->
   <string name="create_key_upload">Carica chiave nel server delle chiavi</string>
   <string name="create_key_empty">Questo campo è necessario</string>
   <string name="create_key_passphrases_not_equal">Le frasi di accesso non coincidono.</string>
   <string name="create_key_final_text">Hai inserito la seguente identità:</string>
+  <string name="create_key_final_robot_text">La creazione di una chiave richiede un po\' di tempo, prendi un caffè nel frattempo...</string>
+  <string name="create_key_rsa">(3 sottochiavi, RSA, 4096 bit)</string>
+  <string name="create_key_custom">(personalizza la configurazione della chiave)</string>
   <string name="create_key_text">Inserisci Nome Completo, Email e scegli una Frase di Accesso.</string>
   <string name="create_key_hint_full_name">Nome completo, es: Mario Rossi</string>
+  <string name="create_key_edit">Cambia configurazione della chiave</string>
   <!--View key-->
   <string name="view_key_revoked">Questa chiave è stata revocata!</string>
   <string name="view_key_expired">Questa chiave è scaduta</string>
   <!--Navigation Drawer-->
   <string name="nav_keys">Chiavi</string>
+  <string name="nav_encrypt_text">Codifica Testo</string>
+  <string name="nav_encrypt_files">Codifica documenti</string>
+  <string name="nav_decrypt">Decodifica</string>
   <string name="nav_apps">Apps</string>
   <string name="drawer_open">Apri drawer di navigazione</string>
   <string name="drawer_close">Chiudi drawer di navigazione</string>
   <string name="my_keys">Le Mie Chiavi</string>
   <!--hints-->
+  <string name="encrypt_content_edit_text_hint">Digita testo</string>
   <!--certs-->
   <string name="cert_default">predefiniti</string>
   <string name="cert_none">nessuno</string>
@@ -411,12 +493,17 @@
   <string name="cert_verify_error">errore!</string>
   <string name="cert_verify_unavailable">chiave non disponibile</string>
   <!--LogType log messages. Errors should have _ERROR_ in their name and end with a !-->
+  <string name="msg_internal_error">Errore interno!</string>
+  <string name="msg_cancelled">Operazione cancellata.</string>
   <!--Import Public log entries-->
   <string name="msg_ip_apply_batch">Applicazione inserimento operazioni in batch.</string>
   <string name="msg_ip_bad_type_secret">Ho cercato di importare portachiavi privato come pubblico. Questo è un bug, per cortesia inviateci un rapporto!</string>
   <string name="msg_ip_delete_old_fail">Nessuna vecchia chiave cancellata (stai creando una nuova?)</string>
   <string name="msg_ip_delete_old_ok">Cancellate vecchie chiavi dal database</string>
   <string name="msg_ip_encode_fail">Operazione fallita a causa di un errore di codifica</string>
+  <string name="msg_ip_error_io_exc">Operazione fallita a causa di un errore di i/o</string>
+  <string name="msg_ip_error_op_exc">Operazione fallita a causa di un errore della banca dati</string>
+  <string name="msg_ip_error_remote_ex">Operazione fallita a causa di un errore interno</string>
   <string name="msg_ip">Importazione portachiavi pubblico %s</string>
   <string name="msg_ip_insert_keyring">Codifica dati del portachiavi</string>
   <string name="msg_ip_insert_keys">Elaborazione chiavi</string>
@@ -424,9 +511,43 @@
   <string name="msg_ip_master">Elaborazione chiave principale %s</string>
   <string name="msg_ip_master_expired">Portachiavi scaduto il %s</string>
   <string name="msg_ip_master_expires">Il portachiavi scade il %s</string>
+  <string name="msg_ip_master_flags_unspecified">Caratteristiche chiave principale: non specificate (si assume tutte quante)</string>
+  <string name="msg_ip_master_flags_cesa">Caratteristiche chiave principale: certifica, codifica, firma, autentica</string>
+  <string name="msg_ip_master_flags_cesx">Caratteristiche chiave principale: certifica, codifica, firma</string>
+  <string name="msg_ip_master_flags_cexa">Caratteristiche chiave principale: certifica, codifica, firma</string>
+  <string name="msg_ip_master_flags_cexx">Caratteristiche chiave principale: certifica, codifica</string>
+  <string name="msg_ip_master_flags_cxsa">Caratteristiche chiave principale: certifica, firma, autentica</string>
+  <string name="msg_ip_master_flags_cxsx">Caratteristiche chiave principale: certifica, firma</string>
+  <string name="msg_ip_master_flags_cxxa">Caratteristiche chiave principale: certifica, autentica</string>
+  <string name="msg_ip_master_flags_cxxx">Caratteristiche chiave principale: certifica</string>
+  <string name="msg_ip_master_flags_xesa">Caratteristiche chiave principale: codifica, firma, autentica</string>
+  <string name="msg_ip_master_flags_xesx">Caratteristiche chiave principale: codifica, firma</string>
+  <string name="msg_ip_master_flags_xexa">Caratteristiche chiave principale: codifica, autentica</string>
+  <string name="msg_ip_master_flags_xexx">Caratteristiche chiave principale: codifica</string>
+  <string name="msg_ip_master_flags_xxsa">Caratteristiche chiave principale: firma, autentica</string>
+  <string name="msg_ip_master_flags_xxsx">Caratteristiche chiave principale: firma</string>
+  <string name="msg_ip_master_flags_xxxa">Caratteristiche chiave principale: autentica</string>
+  <string name="msg_ip_master_flags_xxxx">Caratteristiche chiave principale: nessuna</string>
   <string name="msg_ip_subkey">Elaborazione sottochiave %s</string>
   <string name="msg_ip_subkey_expired">Sottochiave scaduta il %s</string>
   <string name="msg_ip_subkey_expires">La sottochiave scade il %s</string>
+  <string name="msg_ip_subkey_flags_unspecified">Caratteristiche sottochiave: non specificate (si assume tutte quante) </string>
+  <string name="msg_ip_subkey_flags_cesa">Caratteristiche sottochiave: certifica, codifica, firma, autentica</string>
+  <string name="msg_ip_subkey_flags_cesx">Caratteristiche sottochiave: certifica, codifica, firma</string>
+  <string name="msg_ip_subkey_flags_cexa">Caratteristiche sottochiave: certifica, codifica, autentica</string>
+  <string name="msg_ip_subkey_flags_cexx">Caratteristiche sottochiave: certifica, codifica</string>
+  <string name="msg_ip_subkey_flags_cxsa">Caratteristiche sottochiave: certifica, firma, autentica</string>
+  <string name="msg_ip_subkey_flags_cxsx">Caratteristiche sottochiave: certifica, firma</string>
+  <string name="msg_ip_subkey_flags_cxxa">Caratteristiche sottochiave: certifica, autentica</string>
+  <string name="msg_ip_subkey_flags_cxxx">Caratteristiche sottochiave: certifica</string>
+  <string name="msg_ip_subkey_flags_xesa">Caratteristiche sottochiave: codifica, firma, autentica</string>
+  <string name="msg_ip_subkey_flags_xesx">Caratteristiche sottochiave: codifica, firma</string>
+  <string name="msg_ip_subkey_flags_xexa">Caratteristiche sottochiave: codifica, autentica</string>
+  <string name="msg_ip_subkey_flags_xexx">Caratteristiche sottochiave: codifica</string>
+  <string name="msg_ip_subkey_flags_xxsa">Caratteristiche sottochiave: firma, autentica</string>
+  <string name="msg_ip_subkey_flags_xxsx">Caratteristiche sottochiave: firma</string>
+  <string name="msg_ip_subkey_flags_xxxa">Caratteristiche sottochiave: autentica</string>
+  <string name="msg_ip_subkey_flags_xxxx">Caratteristiche sottochiave: nessuna</string>
   <string name="msg_ip_success">Portachiavi pubblico importato con successo</string>
   <string name="msg_ip_success_identical">Il portachiavi non contiene nuovi dati, nulla da eseguire</string>
   <string name="msg_ip_reinsert_secret">Reinserimento chiave segreta</string>

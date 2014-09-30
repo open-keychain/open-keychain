@@ -1,17 +1,30 @@
 <html>
 <head></head>
 <body>
+
+<h2>3.0</h2>
+<ul>
+<li>Yubikey imza oluşturma ve şifre çözme için tam destek</li>
+<li>Propose installable compatible apps in apps list</li>
+<li>Şifre çözme ekranları için yeni dizayn</li>
+<li>Many fixes for key import, also fixes stripped keys</li>
+<li>Honor and display key authenticate flags</li>
+<li>Özel anahtarlar üretmek için kullanıcı arayüzü</li>
+<li>Fixing user id revocation certificates</li>
+<li>New cloud search (searches over traditional keyservers and keybase.io)</li>
+<li>Support for stripping keys inside OpenKeychain</li>
+</ul>
 <h2>2.9.2</h2>
 <ul>
 <li>Fix keys broken in 2.9.1</li>
-<li>Yubikey decryption now working via API</li>
+<li>Yubikey şifre çözme şimdi API aracılığıyla çalışıyor</li>
 </ul>
 <h2>2.9.1</h2>
 <ul>
-<li>Split encrypt screen into two</li>
+<li>Şifreleme ekranı iki kısma bölündü</li>
 <li>Fix key flags handling (now supporting Mailvelope 0.7 keys)</li>
 <li>Improved passphrase handling</li>
-<li>Key sharing via SafeSlinger</li>
+<li>SafeSlinger aracılığıyla anahtar paylaşımı</li>
 <li>Yubikey: preference to allow other PINs, currently only signing via the OpenPGP API works, not inside of OpenKeychain</li>
 <li>Fix usage of stripped keys</li>
 <li>SHA256 as default for compatibility</li>
@@ -85,7 +98,7 @@ Daniel Hammann, Daniel Haß, Greg Witczak, Miroojin Bakshi, Nikhil Peter Raj, Pa
 </ul>
 <h2>2.3.1</h2>
 <ul>
-<li>Hotfix for crash when upgrading from old versions</li>
+<li>Eski sürümden güncellenirken çökmeler düzeltildi</li>
 </ul>
 <h2>2.3</h2>
 <ul>
@@ -104,40 +117,40 @@ Daniel Hammann, Daniel Haß, Greg Witczak, Miroojin Bakshi, Nikhil Peter Raj, Pa
 <li>New design with navigation drawer</li>
 <li>New public key list design</li>
 <li>New public key view</li>
-<li>Bug fixes for importing of keys</li>
+<li>Anahtar içe aktarmada hata düzeltmeleri</li>
 <li>Key cross-certification (thanks to Ash Hughes)</li>
 <li>Handle UTF-8 passwords properly (thanks to Ash Hughes)</li>
-<li>First version with new languages (thanks to the contributors on Transifex)</li>
-<li>Sharing of keys via QR Codes fixed and improved</li>
-<li>Package signature verification for API</li>
+<li>Yeni dillerle birlikte ilk sürüm (Transifex'teki katkı yapan herkese teşekkürler)</li>
+<li>Anahtarları QR Kodları ile paylaşma düzeltildi ve geliştirildi</li>
+<li>API için paket imza doğrulaması</li>
 </ul>
 <h2>2.1.1</h2>
 <ul>
-<li>API Updates, preparation for K-9 Mail integration</li>
+<li>API güncellemeleri, K-9 Mail entegrasyonuna hazırlık</li>
 </ul>
 <h2>2.1</h2>
 <ul>
-<li>Lots of bug fixes</li>
-<li>New API for developers</li>
-<li>PRNG bug fix by Google</li>
+<li>Birçok hata düzeltmesi</li>
+<li>Geliştiriciler için yeni API</li>
+<li>Google tarafından PRNG hata düzeltmesi</li>
 </ul>
 <h2>2.0</h2>
 <ul>
-<li>Complete redesign</li>
-<li>Share public keys via QR codes, NFC beam</li>
-<li>Sign keys</li>
-<li>Upload keys to server</li>
-<li>Fixes import issues</li>
+<li>Tamamen yeniden dizayn edildi</li>
+<li>Genel anahtarları QR kodları ve NFC ile paylaşabilme</li>
+<li>İmza anahtarları</li>
+<li>Anahtarları sunucuya yükleme</li>
+<li>İçe aktarma sorunlarına düzeltme</li>
 <li>New AIDL API</li>
 </ul>
 <h2>1.0.8</h2>
 <ul>
-<li>Basic keyserver support</li>
+<li>Temel keyserver desteği</li>
 <li>App2sd</li>
 <li>More choices for passphrase cache: 1, 2, 4, 8, hours</li>
-<li>Translations: Norwegian (thanks, Sander Danielsen), Chinese (thanks, Zhang Fredrick)</li>
-<li>Bugfixes</li>
-<li>Optimizations</li>
+<li>Çeviriler: Norveççe (Sander Danielsen'e teşekkürler), Çince (Zhang Fredrick'e teşekkürler)</li>
+<li>Hata Düzeltmeleri</li>
+<li>Optimizasyonlar</li>
 </ul>
 <h2>1.0.7</h2>
 <ul>
@@ -146,21 +159,21 @@ Daniel Hammann, Daniel Haß, Greg Witczak, Miroojin Bakshi, Nikhil Peter Raj, Pa
 </ul>
 <h2>1.0.6</h2>
 <ul>
-<li>Account adding crash on Froyo fixed</li>
-<li>Secure file deletion</li>
-<li>Option to delete key file after import</li>
+<li>Froyo üzerinde hesap eklerken çökme düzeltildi</li>
+<li>Güvenli dosya silme</li>
+<li>İçe aktarmadan sonra anahtar silme seçeneği</li>
 <li>Stream encryption/decryption (gallery, etc.)</li>
 <li>New options (language, force v3 signatures)</li>
-<li>Interface changes</li>
-<li>Bugfixes</li>
+<li>Arayüz değişiklikleri</li>
+<li>Hata Düzeltmeleri</li>
 </ul>
 <h2>1.0.5</h2>
 <ul>
-<li>German and Italian translation</li>
+<li>Almanca ve İtalyanca çeviri</li>
 <li>Much smaller package, due to reduced BC sources</li>
 <li>New preferences GUI</li>
 <li>Layout adjustment for localization</li>
-<li>Signature bugfix</li>
+<li>İmza hata düzetmesi</li>
 </ul>
 <h2>1.0.4</h2>
 <ul>
@@ -172,7 +185,7 @@ Daniel Hammann, Daniel Haß, Greg Witczak, Miroojin Bakshi, Nikhil Peter Raj, Pa
 </ul>
 <h2>1.0.2</h2>
 <ul>
-<li>Filterable key lists</li>
+<li>Filtrelenebilir anahtar listeleri</li>
 <li>Smarter pre-selection of encryption keys</li>
 <li>New Intent handling for VIEW and SEND, allows files to be encrypted/decrypted out of file managers</li>
 <li>Fixes and additional features (key preselection) for K-9 Mail, new beta build available</li>
@@ -185,10 +198,10 @@ Daniel Hammann, Daniel Haß, Greg Witczak, Miroojin Bakshi, Nikhil Peter Raj, Pa
 <ul>
 <li>K-9 Mail integration, APG supporting beta build of K-9 Mail</li>
 <li>Support of more file managers (including ASTRO)</li>
-<li>Slovenian translation</li>
-<li>New database, much faster, less memory usage</li>
+<li>Slovence çeviri</li>
+<li>Yeni veritabanı, daha hızlı, daha az hafıza kullanımı</li>
 <li>Defined Intents and content provider for other apps</li>
-<li>Bugfixes</li>
+<li>Hata Düzeltmeleri</li>
 </ul>
 </body>
 </html>

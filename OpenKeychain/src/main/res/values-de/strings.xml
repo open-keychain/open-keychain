@@ -362,11 +362,19 @@
     <item quantity="one">Schlüssel %2$s erfolgreich aktualisiert.</item>
     <item quantity="other">%1$d Schlüssel erfolgreich aktualisiert: %2$s.</item>
   </plurals>
+  <plurals name="import_keys_with_errors">
+    <item quantity="one">Importieren von einen Schlüssel fehlgeschlagen!</item>
+    <item quantity="other">Importieren von %d Schlüsseln fehlgeschlagen!</item>
+  </plurals>
   <string name="view_log">Log ansehen</string>
   <string name="import_error_nothing">Nichts zu importieren.</string>
   <string name="import_error_nothing_cancelled">Import abgebrochen.</string>
   <string name="import_with_warnings">, mit Warnungen</string>
   <string name="import_with_cancelled">. bis abgebrochen wurde</string>
+  <plurals name="import_error">
+    <item quantity="one">Importieren fehlgeschlagen!</item>
+    <item quantity="other">Importieren von %d Schlüsseln fehlgeschlagen!</item>
+  </plurals>
   <!--Intent labels-->
   <string name="intent_decrypt_file">Datei entschlüsseln mit OpenKeychain</string>
   <string name="intent_import_key">Schlüssel importieren mit OpenKeychain</string>
@@ -382,6 +390,7 @@
   <string name="api_settings_select_key">Schlüssel auswählen</string>
   <string name="api_settings_create_key">Einen neuen Schlüssel für diesen Account erzeugen</string>
   <string name="api_settings_save">Speichern</string>
+  <string name="api_settings_save_msg">Benutzerkonto wurde gespeichert</string>
   <string name="api_settings_cancel">Abbrechen</string>
   <string name="api_settings_revoke">Zugriff widerufen</string>
   <string name="api_settings_start">Starte Anwendung</string>
@@ -513,9 +522,43 @@
   <string name="msg_ip_master">Hauptschlüssel %s wird verarbeitet</string>
   <string name="msg_ip_master_expired">Schlüsselbund abgelaufen am %s</string>
   <string name="msg_ip_master_expires">Schlüsselbund läuft ab am %s</string>
+  <string name="msg_ip_master_flags_unspecified">Haupt-Attribute: Unspezifiziert (alle angenommen)</string>
+  <string name="msg_ip_master_flags_cesa">Haupt-Attribute: beglaubigen, verschlüsseln, signieren, authentifizieren</string>
+  <string name="msg_ip_master_flags_cesx">Haupt-Attribute: beglaubigen, verschlüsseln, signieren</string>
+  <string name="msg_ip_master_flags_cexa">Haupt-Attribute: beglaubigen, verschlüsseln, authentifizieren</string>
+  <string name="msg_ip_master_flags_cexx">Haupt-Attribute: beglaubigen, verschlüsseln</string>
+  <string name="msg_ip_master_flags_cxsa">Haupt-Attribute: beglaubigen, signieren, authentifizieren</string>
+  <string name="msg_ip_master_flags_cxsx">Haupt-Attribute: beglaubigen, signieren</string>
+  <string name="msg_ip_master_flags_cxxa">Haupt-Attribute: beglaubigen, authentifizieren</string>
+  <string name="msg_ip_master_flags_cxxx">Haupt-Attribute: beglaubigen</string>
+  <string name="msg_ip_master_flags_xesa">Haupt-Attribute: verschlüsseln, signieren, authentifizieren</string>
+  <string name="msg_ip_master_flags_xesx">Haupt-Attribute: verschlüsseln, signieren</string>
+  <string name="msg_ip_master_flags_xexa">Haupt-Attribute: verschlüsseln, authentifizieren</string>
+  <string name="msg_ip_master_flags_xexx">Haupt-Attribute: verschlüsseln</string>
+  <string name="msg_ip_master_flags_xxsa">Haupt-Attribute: signieren, authentifizieren</string>
+  <string name="msg_ip_master_flags_xxsx">Haupt-Attribute: signieren</string>
+  <string name="msg_ip_master_flags_xxxa">Haupt-Attribute: authentifizieren</string>
+  <string name="msg_ip_master_flags_xxxx">Haupt-Attribute: Keine</string>
   <string name="msg_ip_subkey">Unterschlüssel %s wird bearbeitet</string>
   <string name="msg_ip_subkey_expired">Unterschlüssel am %s abgelaufen</string>
   <string name="msg_ip_subkey_expires">Unterschlüssel läuft am %s ab</string>
+  <string name="msg_ip_subkey_flags_unspecified">Unterschlüssel Attribute: Unspezifiziert (alle angenommen)</string>
+  <string name="msg_ip_subkey_flags_cesa">Unterschlüssel Attribute: beglaubigen, verschlüsseln, signieren, authentifizieren</string>
+  <string name="msg_ip_subkey_flags_cesx">Unterschlüssel Attribute: beglaubigen, verschlüsseln, signieren</string>
+  <string name="msg_ip_subkey_flags_cexa">Unterschlüssel Attribute: beglaubigen, verschlüsseln, authentifizieren</string>
+  <string name="msg_ip_subkey_flags_cexx">Unterschlüssel Attribute: beglaubigen, verschlüsseln</string>
+  <string name="msg_ip_subkey_flags_cxsa">Unterschlüssel Attribute: beglaubigen, signieren, authentifizieren</string>
+  <string name="msg_ip_subkey_flags_cxsx">Unterschlüssel Attribute: beglaubigen, signieren</string>
+  <string name="msg_ip_subkey_flags_cxxa">Unterschlüssel Attribute: beglaubigen, authentifizieren</string>
+  <string name="msg_ip_subkey_flags_cxxx">Unterschlüssel Attribute: beglaubigen</string>
+  <string name="msg_ip_subkey_flags_xesa">Unterschlüssel Attribute: verschlüsseln, signieren, authentifizieren</string>
+  <string name="msg_ip_subkey_flags_xesx">Unterschlüssel Attribute: verschlüsseln, signieren</string>
+  <string name="msg_ip_subkey_flags_xexa">Unterschlüssel Attribute: verschlüsseln, authentifizieren</string>
+  <string name="msg_ip_subkey_flags_xexx">Unterschlüssel Attribute: verschlüsseln</string>
+  <string name="msg_ip_subkey_flags_xxsa">Unterschlüssel Attribute: signieren, authentifizieren</string>
+  <string name="msg_ip_subkey_flags_xxsx">Unterschlüssel Attribute: signieren</string>
+  <string name="msg_ip_subkey_flags_xxxa">Unterschlüssel Attribute: authentifizieren</string>
+  <string name="msg_ip_subkey_flags_xxxx">Unterschlüssel Attribute: Keine</string>
   <string name="msg_ip_success">Öffentlicher Schlüsselbund erfolgreich importiert</string>
   <string name="msg_ip_success_identical">Schlüsselbund enthält keine neuen Daten, es gibt nichts zu tun.</string>
   <string name="msg_ip_reinsert_secret">Geheimen Schlüssel wiedereinfügen</string>
@@ -782,6 +825,7 @@
   <string name="info_no_manual_account_creation">Erstelle keine OpenKeychain-Accounts manuell.\n Für mehr Informationen sieh in die Hilfe.</string>
   <string name="contact_show_key">Schlüssel anzeigen (%s)</string>
   <string name="swipe_to_update">Nach unten wischen um von Schlüsselserver zu aktualisieren</string>
+  <string name="error_no_file_selected">Mindestens eine Datei zum Verschlüsseln auswählen!</string>
   <!--First Time-->
   <string name="first_time_text1">Hol dir deine Privatsphäre mit OpenKeychain zurück!</string>
   <string name="first_time_create_key">Erzeuge meinen Schlüssel</string>

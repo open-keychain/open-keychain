@@ -44,6 +44,8 @@
   <string name="section_key_server">Keyserver</string>
   <string name="section_fingerprint">Otisk</string>
   <string name="section_key_to_certify">Klíče k ověření</string>
+  <string name="section_decrypt_files">Soubory</string>
+  <string name="section_decrypt_text">Text</string>
   <!--button-->
   <string name="btn_decrypt_verify_file">Dešifrovat, ověřit a uložit soubor</string>
   <string name="btn_decrypt_verify_message">Dešifrovat a ověřit zpávu</string>
@@ -62,6 +64,10 @@
   <string name="btn_view_cert_key">Zobrazit klíč certifikátu</string>
   <string name="btn_create_key">Vytvořit klíč</string>
   <string name="btn_add_files">Přidat soubor(y)</string>
+  <string name="btn_add_share_decrypted_text">Sdílet dešifrovaný text</string>
+  <string name="btn_decrypt_clipboard">Dešifrovat ze schránky</string>
+  <string name="btn_decrypt_and_verify">a ověřit podpisy</string>
+  <string name="btn_decrypt_files">Dešifrovat soubory</string>
   <!--menu-->
   <string name="menu_preferences">Nastavení</string>
   <string name="menu_help">Nápověda</string>
@@ -90,6 +96,7 @@
   <string name="label_ascii_armor">Soubor ASCII armor</string>
   <string name="label_file_ascii_armor">Povolit ASCII armor</string>
   <string name="label_write_version_header">Dát ostatním vědět, že používáte OpenKeychain</string>
+  <string name="label_write_version_header_summary">Zapisovat \'OpenKeychain v2.7\' do OpenPGP podpisů, šifrovaného textu a exportovaných klíčů</string>
   <string name="label_use_default_yubikey_pin">Použít výchozí Yubikey PIN</string>
   <string name="label_label_use_default_yubikey_pin_summary">Používá základní PIN (123456) pro přístup k Yubikey přes NFC</string>
   <string name="label_asymmetric_from">Podepsáno:</string>
@@ -193,6 +200,7 @@
   <string name="fingerprint_copied_to_clipboard">Fingerprint byl zkopírován do schránky!</string>
   <string name="select_key_to_certify">Prosím vyberte klíč pro ověření!</string>
   <string name="key_too_big_for_sharing">Klíč je příliš velký aby byl sdílen pomocí této metody!</string>
+  <string name="text_copied_to_clipboard">Text byl zkopírován do schránky!</string>
   <!--errors
          no punctuation, all lowercase,
          they will be put after "error_message", e.g. "Error: file not found"-->
@@ -322,6 +330,11 @@
   <string name="import_error_nothing">Nic k importu</string>
   <string name="import_error_nothing_cancelled">Import zrušen.</string>
   <string name="import_with_warnings">, s varováními</string>
+  <plurals name="import_error">
+    <item quantity="one">Import selhal!</item>
+    <item quantity="few">Import %d klíčů selhal!</item>
+    <item quantity="other">Import %d klíčů selhal!</item>
+  </plurals>
   <!--Intent labels-->
   <string name="intent_decrypt_file">Dešifrovat soubor pomocí OpenKeychain</string>
   <string name="intent_import_key">Importovat kíč pomocí OpenKeychain</string>
@@ -336,6 +349,7 @@
   <string name="api_settings_select_key">Vybrat klíč</string>
   <string name="api_settings_create_key">Vytvořit nový klíč pro tento účet</string>
   <string name="api_settings_save">Uložit</string>
+  <string name="api_settings_save_msg">Účet byl uložen</string>
   <string name="api_settings_cancel">Zrušit</string>
   <string name="api_settings_revoke">Zneplatnit přístup</string>
   <string name="api_settings_start">Spustit aplikaci</string>
@@ -403,6 +417,7 @@
   </string-array>
   <string name="edit_key_edit_user_id_revoked">Tato identity byla zneplatněna. Toto není možné vzít zpět.</string>
   <string name="edit_key_edit_subkey_title">Vyberte akci!</string>
+  <string name="edit_key_new_subkey">nový podklíč</string>
   <!--Create key-->
   <string name="create_key_upload">Aktualizovat klíč na keyserver</string>
   <string name="create_key_empty">Toto pole je vyžadováno</string>
