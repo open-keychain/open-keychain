@@ -21,6 +21,10 @@
     android:layout_height="match_parent"
     android:layout_weight="1">
 
+    <!--
+        android:filterTouchesWhenObscured="true" to prevent Touch-Event Hijacking
+        https://blog.lookout.com/blog/2010/12/09/android-touch-event-hijacking/
+    -->
     <TextView
         android:id="@+id/actionbar_cancel_text"
         android:layout_width="wrap_content"
@@ -30,6 +34,7 @@
         android:drawablePadding="8dp"
         android:gravity="center_vertical"
         android:paddingRight="20dp"
+        android:filterTouchesWhenObscured="true"
         style="@style/Widget.AppCompat.Light.ActionBar.TabText"
         android:text="Cancel (set in-code!)" />
 
