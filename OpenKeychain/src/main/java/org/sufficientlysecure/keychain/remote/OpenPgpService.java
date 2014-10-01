@@ -184,13 +184,14 @@ public class OpenPgpService extends RemoteService {
         }
     }
 
-    private Intent getNfcSignIntent(Intent data, String pin, byte[] hashToSign, int hashAlgo) {
+    private Intent getNfcSignIntent(Intent data, long keyId, String pin, byte[] hashToSign, int hashAlgo) {
         // build PendingIntent for Yubikey NFC operations
         Intent intent = new Intent(getBaseContext(), NfcActivity.class);
         intent.setAction(NfcActivity.ACTION_SIGN_HASH);
         // pass params through to activity that it can be returned again later to repeat pgp operation
         intent.putExtra(NfcActivity.EXTRA_DATA, data);
         intent.putExtra(NfcActivity.EXTRA_PIN, pin);
+        intent.putExtra(NfcActivity.EXTRA_KEY_ID, keyId);
 
         intent.putExtra(NfcActivity.EXTRA_NFC_HASH_TO_SIGN, hashToSign);
         intent.putExtra(NfcActivity.EXTRA_NFC_HASH_ALGO, hashAlgo);
@@ -205,13 +206,14 @@ public class OpenPgpService extends RemoteService {
         return result;
     }
 
-    private Intent getNfcDecryptIntent(Intent data, String pin, byte[] encryptedSessionKey) {
+    private Intent getNfcDecryptIntent(Intent data, long subKeyId, String pin, byte[] encryptedSessionKey) {
         // build PendingIntent for Yubikey NFC operations
         Intent intent = new Intent(getBaseContext(), NfcActivity.class);
         intent.setAction(NfcActivity.ACTION_DECRYPT_SESSION_KEY);
         // pass params through to activity that it can be returned again later to repeat pgp operation
         intent.putExtra(NfcActivity.EXTRA_DATA, data);
         intent.putExtra(NfcActivity.EXTRA_PIN, pin);
+        intent.putExtra(NfcActivity.EXTRA_KEY_ID, subKeyId);
 
         intent.putExtra(NfcActivity.EXTRA_NFC_ENC_SESSION_KEY, encryptedSessionKey);
         PendingIntent pi = PendingIntent.getActivity(getBaseContext(), 0,
@@ -322,7 +324,7 @@ public class OpenPgpService extends RemoteService {
                         // pass through the signature creation timestamp to be used again on second execution
                         // of PgpSignEncrypt when we have the signed hash!
                         data.putExtra(OpenPgpApi.EXTRA_NFC_SIG_CREATION_TIMESTAMP, pgpResult.getNfcTimestamp().getTime());
-                        return getNfcSignIntent(data, passphrase, pgpResult.getNfcHash(), pgpResult.getNfcAlgo());
+                        return getNfcSignIntent(data, pgpResult.getNfcKeyId(), pgpResult.getNfcPassphrase(), pgpResult.getNfcHash(), pgpResult.getNfcAlgo());
                     } else {
                         throw new PgpGeneralException(
                                 "Encountered unhandled type of pending action not supported by API!");
@@ -398,7 +400,6 @@ public class OpenPgpService extends RemoteService {
                         .setOriginalFilename(originalFilename)
                         .setAdditionalEncryptId(accSettings.getKeyId()); // add acc key for encryption
 
-                String passphrase = null;
                 if (sign) {
 
                     // Find the appropriate subkey to sign with
@@ -406,6 +407,7 @@ public class OpenPgpService extends RemoteService {
                             new ProviderHelper(this).getCachedPublicKeyRing(accSettings.getKeyId());
                     final long sigSubKeyId = signingRing.getSignId();
 
+                    String passphrase;
                     if (data.hasExtra(OpenPgpApi.EXTRA_PASSPHRASE)) {
                         passphrase = data.getStringExtra(OpenPgpApi.EXTRA_PASSPHRASE);
                     } else {
@@ -446,7 +448,7 @@ public class OpenPgpService extends RemoteService {
                         // pass through the signature creation timestamp to be used again on second execution
                         // of PgpSignEncrypt when we have the signed hash!
                         data.putExtra(OpenPgpApi.EXTRA_NFC_SIG_CREATION_TIMESTAMP, pgpResult.getNfcTimestamp().getTime());
-                        return getNfcSignIntent(data, passphrase, pgpResult.getNfcHash(), pgpResult.getNfcAlgo());
+                        return getNfcSignIntent(data, pgpResult.getNfcKeyId(), pgpResult.getNfcPassphrase(), pgpResult.getNfcHash(), pgpResult.getNfcAlgo());
                     } else {
                         throw new PgpGeneralException(
                                 "Encountered unhandled type of pending action not supported by API!");
@@ -525,7 +527,7 @@ public class OpenPgpService extends RemoteService {
                     } else if ((pgpResult.getResult() & DecryptVerifyResult.RESULT_PENDING_NFC) ==
                             DecryptVerifyResult.RESULT_PENDING_NFC) {
                         return getNfcDecryptIntent(
-                                data, pgpResult.getNfcPassphrase(), pgpResult.getNfcEncryptedSessionKey());
+                                data, pgpResult.getNfcSubKeyId(), pgpResult.getNfcPassphrase(), pgpResult.getNfcEncryptedSessionKey());
                     } else {
                         throw new PgpGeneralException(
                                 "Encountered unhandled type of pending action not supported by API!");
