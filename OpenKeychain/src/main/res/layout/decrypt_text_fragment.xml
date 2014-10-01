@@ -1,89 +1,78 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fillViewport="true">
+    android:orientation="vertical">
 
-    <LinearLayout
+    <include layout="@layout/decrypt_result_include" />
+
+    <ScrollView
+        android:fillViewport="true"
+        android:paddingTop="8dp"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:scrollbars="vertical"
+        android:layout_height="0dp"
+        android:layout_weight="1">
 
-        <include layout="@layout/decrypt_result_include" />
-
-        <View
-            android:id="@+id/status_divider"
-            android:layout_height="1dip"
-            android:layout_width="match_parent"
-            android:background="?android:attr/listDivider" />
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:paddingTop="4dp"
+        <TextView
+            android:id="@+id/decrypt_text_plaintext"
             android:paddingLeft="16dp"
             android:paddingRight="16dp"
-            android:orientation="vertical">
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="top"
+            android:hint=""
+            android:textIsSelectable="true" />
 
-            <TextView
-                android:id="@+id/decrypt_text_plaintext"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:layout_width="match_parent"
-                android:layout_height="0dip"
-                android:gravity="top"
-                android:hint=""
-                android:scrollHorizontally="true"
-                android:layout_weight="1"
-                android:textIsSelectable="true" />
+    </ScrollView>
 
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dip"
-                android:background="?android:attr/listDivider" />
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dip"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:background="?android:attr/listDivider" />
 
+    <LinearLayout
+        android:id="@+id/action_decrypt_share_plaintext"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:clickable="true"
+        style="@style/SelectableItem"
+        android:orientation="horizontal">
 
-            <LinearLayout
-                android:id="@+id/action_decrypt_share_plaintext"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:clickable="true"
-                style="@style/SelectableItem"
-                android:orientation="horizontal">
+        <TextView
+            android:paddingLeft="8dp"
+            android:paddingRight="8dp"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:minHeight="?android:attr/listPreferredItemHeight"
+            android:text="@string/btn_add_share_decrypted_text"
+            android:drawableRight="@drawable/ic_action_share"
+            android:drawablePadding="8dp"
+            android:gravity="center_vertical"
+            android:layout_weight="1" />
 
-                <TextView
-                    android:paddingLeft="8dp"
-                    android:paddingRight="8dp"
-                    android:textAppearance="?android:attr/textAppearanceMedium"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:minHeight="?android:attr/listPreferredItemHeight"
-                    android:text="@string/btn_add_share_decrypted_text"
-                    android:drawableRight="@drawable/ic_action_share"
-                    android:drawablePadding="8dp"
-                    android:gravity="center_vertical"
-                    android:layout_weight="1" />
+        <View
+            android:layout_width="1dip"
+            android:layout_height="match_parent"
+            android:gravity="right"
+            android:layout_marginBottom="8dp"
+            android:layout_marginTop="8dp"
+            android:background="?android:attr/listDivider" />
 
-                <View
-                    android:layout_width="1dip"
-                    android:layout_height="match_parent"
-                    android:gravity="right"
-                    android:layout_marginBottom="8dp"
-                    android:layout_marginTop="8dp"
-                    android:background="?android:attr/listDivider" />
-
-                <ImageButton
-                    android:id="@+id/action_decrypt_copy_plaintext"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:padding="8dp"
-                    android:src="@drawable/ic_action_copy"
-                    android:layout_gravity="center_vertical"
-                    style="@style/SelectableItem" />
-
-            </LinearLayout>
-
-        </LinearLayout>
+        <ImageButton
+            android:id="@+id/action_decrypt_copy_plaintext"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:padding="8dp"
+            android:src="@drawable/ic_action_copy"
+            android:layout_gravity="center_vertical"
+            style="@style/SelectableItem" />
 
     </LinearLayout>
-
-</ScrollView>
+</LinearLayout>

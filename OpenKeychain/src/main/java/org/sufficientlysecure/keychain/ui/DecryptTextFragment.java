@@ -23,6 +23,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Message;
 import android.os.Messenger;
+import android.text.method.ScrollingMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -181,7 +182,6 @@ public class DecryptTextFragment extends DecryptFragment {
                         byte[] decryptedMessage = returnData
                                 .getByteArray(KeychainIntentService.RESULT_DECRYPTED_BYTES);
                         mText.setText(new String(decryptedMessage));
-                        mText.setHorizontallyScrolling(false);
 
                         pgpResult.createNotify(getActivity()).show();
 

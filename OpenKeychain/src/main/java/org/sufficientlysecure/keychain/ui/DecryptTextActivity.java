@@ -32,9 +32,7 @@ import org.sufficientlysecure.keychain.service.results.SingletonResult;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 
-import java.io.StreamTokenizer;
 import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class DecryptTextActivity extends ActionBarActivity {
 
@@ -58,21 +56,33 @@ public class DecryptTextActivity extends ActionBarActivity {
     }
 
     /**
-     * Fix the message a bit, trailing spaces and newlines break stuff,
-     * because GMail sends as HTML and such things break ASCII Armor
-     * TODO: things like "<" and ">" also make problems
-     * <p/>
-     * NOTE: Do not use on cleartext signatures, only on ASCII-armored ciphertext,
-     * it would change the signed message
+     * Fixing broken PGP MESSAGE Strings coming from GMail/AOSP Mail
      */
-    private String fixAsciiArmoredCiphertext(String message) {
+    private String fixPgpMessage(String message) {
+        // windows newline -> unix newline
+        message = message.replaceAll("\r\n", "\n");
+        // Mac OS before X newline -> unix newline
+        message = message.replaceAll("\r", "\n");
+
+        // remove whitespaces before newline
         message = message.replaceAll(" +\n", "\n");
+        // only two consecutive newlines are allowed
         message = message.replaceAll("\n\n+", "\n\n");
-        message = message.replaceFirst("^\n+", "");
-        // make sure there'll be exactly one newline at the end
-        message = message.replaceFirst("\n*$", "\n");
+
         // replace non breakable spaces
         message = message.replaceAll("\\xa0", " ");
+
+        return message;
+    }
+
+    /**
+     * Fixing broken PGP SIGNED MESSAGE Strings coming from GMail/AOSP Mail
+     */
+    private String fixPgpCleartextSignature(String message) {
+        // windows newline -> unix newline
+        message = message.replaceAll("\r\n", "\n");
+        // Mac OS before X newline -> unix newline
+        message = message.replaceAll("\r", "\n");
 
         return message;
     }
@@ -83,13 +93,14 @@ public class DecryptTextActivity extends ActionBarActivity {
             Matcher matcher = PgpHelper.PGP_MESSAGE.matcher(input);
             if (matcher.matches()) {
                 String message = matcher.group(1);
-                message = fixAsciiArmoredCiphertext(message);
+                message = fixPgpMessage(message);
                 return message;
             } else {
                 matcher = PgpHelper.PGP_CLEARTEXT_SIGNATURE.matcher(input);
                 if (matcher.matches()) {
-                    // return cleartext signature
-                    return matcher.group(1);
+                    String message = matcher.group(1);
+                    message = fixPgpCleartextSignature(message);
+                    return message;
                 } else {
                     return null;
                 }
