@@ -199,10 +199,12 @@ public class PgpDecryptVerify {
 
             return decryptVerify(in, 0);
         } catch (PGPException e) {
+            Log.d(Constants.TAG, "PGPException", e);
             OperationLog log = new OperationLog();
             log.add(LogType.MSG_DC_ERROR_PGP_EXCEPTION, 1);
             return new DecryptVerifyResult(DecryptVerifyResult.RESULT_ERROR, log);
         } catch (IOException e) {
+            Log.d(Constants.TAG, "IOException", e);
             OperationLog log = new OperationLog();
             log.add(LogType.MSG_DC_ERROR_IO, 1);
             return new DecryptVerifyResult(DecryptVerifyResult.RESULT_ERROR, log);
@@ -754,38 +756,41 @@ public class PgpDecryptVerify {
             }
         }
 
-        if (signature != null) try {
-            updateProgress(R.string.progress_verifying_signature, 90, 100);
-            log.add(LogType.MSG_DC_CLEAR_SIGNATURE_CHECK, indent);
+        if (signature != null) {
+            try {
+                updateProgress(R.string.progress_verifying_signature, 90, 100);
+                log.add(LogType.MSG_DC_CLEAR_SIGNATURE_CHECK, indent);
 
-            InputStream sigIn = new BufferedInputStream(new ByteArrayInputStream(clearText));
+                InputStream sigIn = new BufferedInputStream(new ByteArrayInputStream(clearText));
 
-            lookAhead = readInputLine(lineOut, sigIn);
+                lookAhead = readInputLine(lineOut, sigIn);
 
-            processLine(signature, lineOut.toByteArray());
+                processLine(signature, lineOut.toByteArray());
 
-            if (lookAhead != -1) {
-                do {
-                    lookAhead = readInputLine(lineOut, lookAhead, sigIn);
+                if (lookAhead != -1) {
+                    do {
+                        lookAhead = readInputLine(lineOut, lookAhead, sigIn);
 
-                    signature.update((byte) '\r');
-                    signature.update((byte) '\n');
+                        signature.update((byte) '\r');
+                        signature.update((byte) '\n');
 
-                    processLine(signature, lineOut.toByteArray());
-                } while (lookAhead != -1);
+                        processLine(signature, lineOut.toByteArray());
+                    } while (lookAhead != -1);
+                }
+
+                // Verify signature and check binding signatures
+                boolean validSignature = signature.verify();
+                if (validSignature) {
+                    log.add(LogType.MSG_DC_CLEAR_SIGNATURE_OK, indent + 1);
+                } else {
+                    log.add(LogType.MSG_DC_CLEAR_SIGNATURE_BAD, indent + 1);
+                }
+                signatureResultBuilder.setValidSignature(validSignature);
+
+            } catch (SignatureException e) {
+                Log.d(Constants.TAG, "SignatureException", e);
+                return new DecryptVerifyResult(DecryptVerifyResult.RESULT_ERROR, log);
             }
-
-            // Verify signature and check binding signatures
-            boolean validSignature = signature.verify();
-            if (validSignature) {
-                log.add(LogType.MSG_DC_CLEAR_SIGNATURE_OK, indent +1);
-            } else {
-                log.add(LogType.MSG_DC_CLEAR_SIGNATURE_BAD, indent +1);
-            }
-            signatureResultBuilder.setValidSignature(validSignature);
-
-        } catch (SignatureException e) {
-            return new DecryptVerifyResult(DecryptVerifyResult.RESULT_ERROR, log);
         }
 
         updateProgress(R.string.progress_done, 100, 100);

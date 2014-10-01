@@ -21,6 +21,9 @@ import android.os.Bundle;
 
 import org.sufficientlysecure.keychain.Constants;
 
+import java.io.IOException;
+import java.io.StreamTokenizer;
+import java.io.StringReader;
 import java.util.Iterator;
 import java.util.Set;
 
@@ -50,6 +53,18 @@ public final class Log {
     public static void d(String tag, String msg, Throwable tr) {
         if (Constants.DEBUG) {
             android.util.Log.d(tag, msg, tr);
+        }
+    }
+
+    public static void dEscaped(String tag, String msg) {
+        if (Constants.DEBUG) {
+            android.util.Log.d(tag, removeUnicodeAndEscapeChars(msg));
+        }
+    }
+
+    public static void dEscaped(String tag, String msg, Throwable tr) {
+        if (Constants.DEBUG) {
+            android.util.Log.d(tag, removeUnicodeAndEscapeChars(msg), tr);
         }
     }
 
@@ -115,5 +130,35 @@ public final class Log {
                 Log.d(Constants.TAG, "Bundle " + bundleName + ": null");
             }
         }
+    }
+
+    public static String removeUnicodeAndEscapeChars(String input) {
+        StringBuilder buffer = new StringBuilder(input.length());
+        for (int i = 0; i < input.length(); i++) {
+            if ((int) input.charAt(i) > 256) {
+                buffer.append("\\u").append(Integer.toHexString((int) input.charAt(i)));
+            } else {
+                if (input.charAt(i) == '\n') {
+                    buffer.append("\\n");
+                } else if (input.charAt(i) == '\t') {
+                    buffer.append("\\t");
+                } else if (input.charAt(i) == '\r') {
+                    buffer.append("\\r");
+                } else if (input.charAt(i) == '\b') {
+                    buffer.append("\\b");
+                } else if (input.charAt(i) == '\f') {
+                    buffer.append("\\f");
+                } else if (input.charAt(i) == '\'') {
+                    buffer.append("\\'");
+                } else if (input.charAt(i) == '\"') {
+                    buffer.append("\\");
+                } else if (input.charAt(i) == '\\') {
+                    buffer.append("\\\\");
+                } else {
+                    buffer.append(input.charAt(i));
+                }
+            }
+        }
+        return buffer.toString();
     }
 }

@@ -32,7 +32,9 @@ import org.sufficientlysecure.keychain.service.results.SingletonResult;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 
+import java.io.StreamTokenizer;
 import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class DecryptTextActivity extends ActionBarActivity {
 
@@ -117,7 +119,9 @@ public class DecryptTextActivity extends ActionBarActivity {
             // When sending to Keychain Decrypt via share menu
             if ("text/plain".equals(type)) {
                 String sharedText = extras.getString(Intent.EXTRA_TEXT);
+                Log.dEscaped(Constants.TAG, "sharedText incoming: " + sharedText);
                 sharedText = getPgpContent(sharedText);
+                Log.dEscaped(Constants.TAG, "sharedText fixed: " + sharedText);
 
                 if (sharedText != null) {
                     loadFragment(savedInstanceState, sharedText);

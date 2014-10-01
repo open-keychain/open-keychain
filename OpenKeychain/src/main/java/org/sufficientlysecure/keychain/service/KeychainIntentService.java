@@ -782,7 +782,7 @@ public class KeychainIntentService extends IntentService implements Progressable
             message = e.getMessage();
         }
 
-        Log.e(Constants.TAG, "KeychainIntentService Exception: ", e);
+        Log.d(Constants.TAG, "KeychainIntentService Exception: ", e);
 
         Bundle data = new Bundle();
         data.putString(KeychainIntentServiceHandler.DATA_ERROR, message);
