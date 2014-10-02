@@ -145,7 +145,8 @@ public class CanonicalizedSecretKey extends CanonicalizedPublicKey {
      */
     public boolean unlock(String passphrase) throws PgpGeneralException {
         // handle keys on OpenPGP cards like they were unlocked
-        if (mSecretKey.getS2K().getType() == S2K.GNU_DUMMY_S2K
+        if (mSecretKey.getS2K() != null
+                && mSecretKey.getS2K().getType() == S2K.GNU_DUMMY_S2K
                 && mSecretKey.getS2K().getProtectionMode() == S2K.GNU_PROTECTION_MODE_DIVERT_TO_CARD) {
             mPrivateKeyState = PRIVATE_KEY_STATE_DIVERT_TO_CARD;
             return true;
