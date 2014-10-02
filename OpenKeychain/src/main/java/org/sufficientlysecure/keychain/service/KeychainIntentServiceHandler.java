@@ -88,6 +88,11 @@ public class KeychainIntentServiceHandler extends Handler {
     public void handleMessage(Message message) {
         Bundle data = message.getData();
 
+        if (mProgressDialogFragment == null) {
+            Log.e(Constants.TAG, "Progress has not been updated because mProgressDialogFragment was null!");
+            return;
+        }
+
         switch (message.arg1) {
             case MESSAGE_OKAY:
                 mProgressDialogFragment.dismissAllowingStateLoss();
