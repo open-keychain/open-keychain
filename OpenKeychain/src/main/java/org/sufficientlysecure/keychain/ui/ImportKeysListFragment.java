@@ -106,12 +106,12 @@ public class ImportKeysListFragment extends ListFragment implements
     }
 
     static public class BytesLoaderState extends LoaderState {
-        byte[] keyBytes;
-        Uri dataUri;
+        byte[] mKeyBytes;
+        Uri mDataUri;
 
         BytesLoaderState(byte[] keyBytes, Uri dataUri) {
-            this.keyBytes = keyBytes;
-            this.dataUri = dataUri;
+            mKeyBytes = keyBytes;
+            mDataUri = dataUri;
         }
     }
 
@@ -218,7 +218,7 @@ public class ImportKeysListFragment extends ListFragment implements
         switch (id) {
             case LOADER_ID_BYTES: {
                 BytesLoaderState ls = (BytesLoaderState) mLoaderState;
-                InputData inputData = getInputData(ls.keyBytes, ls.dataUri);
+                InputData inputData = getInputData(ls.mKeyBytes, ls.mDataUri);
                 return new ImportKeysListLoader(mActivity, inputData);
             }
             case LOADER_ID_CLOUD: {
