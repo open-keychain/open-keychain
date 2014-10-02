@@ -56,10 +56,6 @@ public abstract class KeyRing {
 
     abstract public boolean hasEncrypt() throws PgpGeneralException;
 
-    abstract public long getSignId() throws PgpGeneralException;
-
-    abstract public boolean hasSign() throws PgpGeneralException;
-
     abstract public int getVerified() throws PgpGeneralException;
 
     private static final Pattern USER_ID_PATTERN = Pattern.compile("^(.*?)(?: \\((.*)\\))?(?: <(.*)>)?$");

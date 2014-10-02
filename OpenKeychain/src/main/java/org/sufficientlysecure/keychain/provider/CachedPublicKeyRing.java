@@ -136,64 +136,32 @@ public class CachedPublicKeyRing extends KeyRing {
     @Override
     public long getEncryptId() throws PgpGeneralException {
         try {
-            Cursor subkeys = getSubkeys();
-            if (subkeys != null) {
-                try {
-                    while (subkeys.moveToNext()) {
-                        if (subkeys.getInt(subkeys.getColumnIndexOrThrow(KeychainContract.Keys.CAN_ENCRYPT)) != 0) {
-                            return subkeys.getLong(subkeys.getColumnIndexOrThrow(KeychainContract.Keys.KEY_ID));
-                        }
-                    }
-                } finally {
-                    subkeys.close();
-                }
-            }
-        } catch(Exception e) {
-            throw new PgpGeneralException(e);
-        }
-        throw new PgpGeneralException("No encrypt key found");
-    }
-
-    @Override
-    public boolean hasEncrypt() throws PgpGeneralException {
-        try {
             Object data = mProviderHelper.getGenericData(mUri,
-                    KeychainContract.KeyRings.HAS_ENCRYPT,
+                    KeyRings.HAS_ENCRYPT,
                     ProviderHelper.FIELD_TYPE_INTEGER);
-            return (Long) data > 0;
+            return (Long) data;
         } catch(ProviderHelper.NotFoundException e) {
             throw new PgpGeneralException(e);
         }
     }
 
     @Override
-    public long getSignId() throws PgpGeneralException {
-        try {
-            Cursor subkeys = getSubkeys();
-            if (subkeys != null) {
-                try {
-                    while (subkeys.moveToNext()) {
-                        if (subkeys.getInt(subkeys.getColumnIndexOrThrow(KeychainContract.Keys.CAN_SIGN)) != 0) {
-                            return subkeys.getLong(subkeys.getColumnIndexOrThrow(KeychainContract.Keys.KEY_ID));
-                        }
-                    }
-                } finally {
-                    subkeys.close();
-                }
-            }
-        } catch(Exception e) {
-            throw new PgpGeneralException(e);
-        }
-        throw new PgpGeneralException("No sign key found");
+    public boolean hasEncrypt() throws PgpGeneralException {
+        return getEncryptId() != 0;
     }
 
-    @Override
-    public boolean hasSign() throws PgpGeneralException {
+    /** Returns the key id which should be used for signing.
+     *
+     * This method returns keys which are actually available (ie. secret available, and not stripped,
+     * revoked, or expired), hence only works on keyrings where a secret key is available!
+     *
+     */
+    public long getSecretSignId() throws PgpGeneralException {
         try {
             Object data = mProviderHelper.getGenericData(mUri,
-                    KeychainContract.KeyRings.HAS_SIGN,
+                    KeyRings.HAS_SIGN,
                     ProviderHelper.FIELD_TYPE_INTEGER);
-            return (Long) data > 0;
+            return (Long) data;
         } catch(ProviderHelper.NotFoundException e) {
             throw new PgpGeneralException(e);
         }

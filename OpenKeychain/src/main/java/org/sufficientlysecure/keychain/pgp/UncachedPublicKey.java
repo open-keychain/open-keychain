@@ -51,12 +51,9 @@ public class UncachedPublicKey {
 
     /** The revocation signature is NOT checked here, so this may be false! */
     public boolean isRevoked() {
-        for (PGPSignature sig : new IterableIterator<PGPSignature>(
-                mPublicKey.getSignaturesOfType(isMasterKey() ? PGPSignature.KEY_REVOCATION
-                                                             : PGPSignature.SUBKEY_REVOCATION))) {
-            return true;
-        }
-        return false;
+        return mPublicKey.getSignaturesOfType(isMasterKey()
+                ? PGPSignature.KEY_REVOCATION
+                : PGPSignature.SUBKEY_REVOCATION).hasNext();
     }
 
     public Date getCreationTime() {
