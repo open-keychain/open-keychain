@@ -89,14 +89,12 @@ public class ProviderHelperSaveTest {
         CachedPublicKeyRing cachedRing = mProviderHelper.getCachedPublicKeyRing(keyId);
         CanonicalizedPublicKeyRing pubRing = mProviderHelper.getCanonicalizedPublicKeyRing(keyId);
 
-        Assert.assertEquals("master key should be signing key", pubRing.getSignId(), keyId);
-        Assert.assertEquals("master key should be signing key (cached)", cachedRing.getSignId(), keyId);
-        Assert.assertEquals("master key should be encryption key", pubRing.getEncryptId(), keyId);
-        Assert.assertEquals("master key should be signing key (cached)", cachedRing.getEncryptId(), keyId);
+        Assert.assertEquals("master key should be encryption key", keyId, pubRing.getEncryptId());
+        Assert.assertEquals("master key should be encryption key (cached)", keyId, cachedRing.getEncryptId());
 
         Assert.assertNull("canonicalized key flags should be null", pubRing.getPublicKey().getKeyUsage());
         Assert.assertTrue("master key should be able to certify", pubRing.getPublicKey().canCertify());
-        Assert.assertTrue("master key should be able to sign", pubRing.getPublicKey().canSign());
+        Assert.assertTrue("master key should be allowed to sign", pubRing.getPublicKey().canSign());
         Assert.assertTrue("master key should be able to encrypt", pubRing.getPublicKey().canEncrypt());
 
     }
@@ -186,6 +184,38 @@ public class ProviderHelperSaveTest {
         }
 
         Assert.assertTrue("import of the badly encoded user id should succeed", found);
+    }
+
+    @Test
+    /** Tests a master key which may sign, but is stripped. In this case, if there is a different
+     * subkey available which can sign, that one should be selected.
+     */
+    public void testImportStrippedFlags() throws Exception {
+
+        UncachedKeyRing key = readRingFromResource("/test-keys/stripped_flags.asc");
+        long masterKeyId = key.getMasterKeyId();
+
+        SaveKeyringResult result;
+
+        result = mProviderHelper.saveSecretKeyRing(key, new ProgressScaler());
+        Assert.assertTrue("import of keyring should succeed", result.success());
+
+        long signId;
+        {
+            CanonicalizedSecretKeyRing ring = mProviderHelper.getCanonicalizedSecretKeyRing(masterKeyId);
+            Assert.assertTrue("master key should have sign flag", ring.getPublicKey().canSign());
+            Assert.assertTrue("master key should have encrypt flag", ring.getPublicKey().canEncrypt());
+
+            signId = ring.getSecretSignId();
+            Assert.assertNotEquals("encrypt id should not be 0", 0, signId);
+            Assert.assertNotEquals("encrypt key should be different from master key", masterKeyId, signId);
+        }
+
+        {
+            CachedPublicKeyRing ring = mProviderHelper.getCachedPublicKeyRing(masterKeyId);
+            Assert.assertEquals("signing key should be same id cached as uncached", signId, ring.getSecretSignId());
+        }
+
     }
 
     UncachedKeyRing readRingFromResource(String name) throws Exception {
