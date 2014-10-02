@@ -209,6 +209,10 @@ public class PassphraseDialogFragment extends DialogFragment implements OnEditor
                 mPassphraseEditText.post(new Runnable() {
                     @Override
                     public void run() {
+                        // The activity might already be gone! Nvm in that case.
+                        if (getActivity() == null) {
+                            return;
+                        }
                         InputMethodManager imm = (InputMethodManager) getActivity()
                                 .getSystemService(Context.INPUT_METHOD_SERVICE);
                         imm.showSoftInput(mPassphraseEditText, InputMethodManager.SHOW_IMPLICIT);
@@ -342,13 +346,18 @@ public class PassphraseDialogFragment extends DialogFragment implements OnEditor
     }
 
     private void hideKeyboard() {
+        // The activity which called the dialog might no longer exist. Nvm in that case...
+        if (getActivity() == null) {
+            return;
+        }
         InputMethodManager inputManager = (InputMethodManager) getActivity()
                 .getSystemService(Context.INPUT_METHOD_SERVICE);
 
         //check if no view has focus:
         View v = getActivity().getCurrentFocus();
-        if (v == null)
+        if (v == null) {
             return;
+        }
 
         inputManager.hideSoftInputFromWindow(v.getWindowToken(), 0);
     }
