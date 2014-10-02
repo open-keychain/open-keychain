@@ -45,6 +45,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
@@ -151,6 +152,12 @@ public class ViewKeyActivity extends ActionBarActivity implements
         }
         if (mDataUri.getHost().equals(ContactsContract.AUTHORITY)) {
             mDataUri = ContactHelper.dataUriFromContactUri(this, mDataUri);
+            if (mDataUri == null) {
+                Log.e(Constants.TAG, "Contact Data missing. Should be uri of key!");
+                Toast.makeText(this, R.string.error_contacts_key_id_missing, Toast.LENGTH_LONG).show();
+                finish();
+                return;
+            }
         }
 
         Log.i(Constants.TAG, "mDataUri: " + mDataUri.toString());

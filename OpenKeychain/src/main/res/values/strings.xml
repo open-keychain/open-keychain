@@ -261,6 +261,7 @@
     <string name="error_searching_keys">"An error occurred when searching for keys."</string>
     <string name="error_too_many_responses">"Key search query returned too many candidates. Please refine your query!"</string>
     <string name="error_too_short_or_too_many_responses">"Either no keys or too many have been found. Please improve your query!"</string>
+    <string name="error_contacts_key_id_missing">"Retrieving the key ID from contacts failed!"</string>
 
     <string name="error_import_no_valid_keys">"No valid keys found in File/Clipboard!"</string>
     <string name="error_generic_report_bug">"A generic error occurred, please create a new bug report for OpenKeychain."</string>
