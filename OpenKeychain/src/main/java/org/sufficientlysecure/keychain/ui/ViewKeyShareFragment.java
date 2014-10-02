@@ -408,17 +408,20 @@ public class ViewKeyShareFragment extends LoaderFragment implements
                     }
 
                     protected void onPostExecute(Bitmap qrCode) {
-                        mFingerprintQrCode.setImageBitmap(qrCode);
+                        // only change view, if fragment is attached to activity
+                        if (ViewKeyShareFragment.this.isAdded()) {
+                            mFingerprintQrCode.setImageBitmap(qrCode);
 
-                        // Transition drawable with a transparent drawable and the final bitmap
-                        final TransitionDrawable td =
-                                new TransitionDrawable(new Drawable[]{
-                                        new ColorDrawable(Color.TRANSPARENT),
-                                        new BitmapDrawable(getResources(), qrCode)
-                                });
+                            // Transition drawable with a transparent drawable and the final bitmap
+                            final TransitionDrawable td =
+                                    new TransitionDrawable(new Drawable[]{
+                                            new ColorDrawable(Color.TRANSPARENT),
+                                            new BitmapDrawable(getResources(), qrCode)
+                                    });
 
-                        mFingerprintQrCode.setImageDrawable(td);
-                        td.startTransition(200);
+                            mFingerprintQrCode.setImageDrawable(td);
+                            td.startTransition(200);
+                        }
                     }
                 };
 
