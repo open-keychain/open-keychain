@@ -200,6 +200,9 @@ public class SetPassphraseDialogFragment extends DialogFragment implements OnEdi
     }
 
     private void hideKeyboard() {
+        if (getActivity() == null) {
+            return;
+        }
         InputMethodManager inputManager = (InputMethodManager) getActivity()
                 .getSystemService(Context.INPUT_METHOD_SERVICE);
 
