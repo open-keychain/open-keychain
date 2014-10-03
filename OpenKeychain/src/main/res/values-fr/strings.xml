@@ -384,8 +384,6 @@
   <string name="api_settings_settings">Paramètres</string>
   <string name="api_settings_key">Clef du compte :</string>
   <string name="api_settings_accounts_empty">Aucun compte n\'est attaché à cette appli.</string>
-  <string name="api_create_account_text">L\'appli demande la création d\'un nouveau compte. Veuillez choisir une de vos clefs existantes ou en créer une nouvelle.\nLes applis ne peuvent utiliser que les clefs que vous choisissez ici !</string>
-  <string name="api_update_account_text">La clef enregistrée pour ce compte a été supprimée. Veuillez en choisir une différente !\nLes applis sont restreintes à l\'utilisation de clefs choisies ici.</string>
   <string name="api_register_text">L\'application affichée veut chiffrer/déchiffrer des messages et les signer en votre nom.\nPermettre l\'accès ?\n\nAVERTISSEMENT : si vous ne savez pas pourquoi cet écran est apparu, refusez l\'accès ! Vous pourrez révoquer l\'accès plus tard en utilisant l\'écran « Applis ».</string>
   <string name="api_register_allow">Permettre l\'accès</string>
   <string name="api_register_disallow">Enlever l\'accès</string>
@@ -708,10 +706,6 @@
   <string name="msg_con_error_io_secret">Erreur E/S lors de l\'écriture des clefs secrètes vers le cache !</string>
   <string name="msg_con_error_public">Erreur lors de la réimportation des clefs publiques !</string>
   <string name="msg_con_error_secret">Erreur lors de la réimportation des clefs secrètes !</string>
-  <plurals name="msg_con_recover">
-    <item quantity="one">Consolidation de récupération avec %1$d clef secrète et %2$d publique</item>
-    <item quantity="other">Consolidation de récupération avec %1$d clefs secrètes et %2$d publiques</item>
-  </plurals>
   <string name="msg_con_recover_unknown">Récupération à partir d\'un état inconnu</string>
   <plurals name="msg_con_reimport_public">
     <item quantity="one">Réimportation d\'une clef publique</item>

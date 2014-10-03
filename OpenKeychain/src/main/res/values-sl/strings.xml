@@ -44,6 +44,8 @@
   <string name="section_key_server">Strežnik</string>
   <string name="section_fingerprint">Prstni odtis</string>
   <string name="section_key_to_certify">Ključi za overjanje</string>
+  <string name="section_decrypt_files">Datoteke</string>
+  <string name="section_decrypt_text">Besedilo</string>
   <!--button-->
   <string name="btn_decrypt_verify_file">Dešifriraj, preveri in shrani</string>
   <string name="btn_decrypt_verify_message">Dešifriraj in preveri sporočilo</string>

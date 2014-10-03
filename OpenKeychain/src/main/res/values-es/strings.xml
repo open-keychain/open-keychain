@@ -384,8 +384,6 @@
   <string name="api_settings_settings">Configuración</string>
   <string name="api_settings_key">Clave de la cuenta:</string>
   <string name="api_settings_accounts_empty">No hay cuentas adjuntas a esta aplicación</string>
-  <string name="api_create_account_text">La aplicación solicita la creación de una cuenta nueva. Por favor seleccione una de su claves existentes o cree una nueva.\n¡Las aplicaciones están restringidas al uso de las claves que seleccione aquí!</string>
-  <string name="api_update_account_text">La clave guardada para esta cuenta ha sido eliminada. ¡Por favor seleccione una distinta!\n¡Las aplicaciones están restringidas al uso de las claves que seleccione aquí!.</string>
   <string name="api_register_text">La aplicación mostrada quiere cifrar/descifrar mensajes y firmarlos en su nombre.\n¿Permitir acceso?\n\nADVERTENCIA: Si no sabe por qué apareció esta pantalla, ¡no permita el acceso! Puede revocar el acceso más tarde usando la pantalla \'Aplicaciones\'.</string>
   <string name="api_register_allow">Permitir el acceso</string>
   <string name="api_register_disallow">Denegar el acceso</string>
@@ -708,10 +706,6 @@
   <string name="msg_con_error_io_secret">¡Error de E/S al escribir claves secretas (privadas) en caché!</string>
   <string name="msg_con_error_public">¡Error al reimportar claves públicas!</string>
   <string name="msg_con_error_secret">¡Error reimportando claves secretas (privadas)!</string>
-  <plurals name="msg_con_recover">
-    <item quantity="one">Recuperando consolidación con %1$d clave secreta (privada) y %2$d pública</item>
-    <item quantity="other">Recuperando consolidación con %1$d claves secretas (privadas) y %2$d públicas</item>
-  </plurals>
   <string name="msg_con_recover_unknown">Recuperando desde un estado desconocido</string>
   <plurals name="msg_con_reimport_public">
     <item quantity="one">Reimportando una clave pública</item>

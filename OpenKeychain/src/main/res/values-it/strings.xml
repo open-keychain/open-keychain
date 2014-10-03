@@ -388,8 +388,6 @@ Non potrai annullare!</string>
   <string name="api_settings_settings">Impostazioni</string>
   <string name="api_settings_key">Chiave account:</string>
   <string name="api_settings_accounts_empty">Nessun account collegato a questa applicazione</string>
-  <string name="api_create_account_text">L\'applicazione richiede la creazione di un nuovo account. Si prega di selezionare una chiave esistente o crearne una nuova.\nLe applicazioni sono limitate all\'utilizzo delle chiavi selezionate qui!</string>
-  <string name="api_update_account_text">La chiave salvata per questo account è stata cancellata. Perfavore selezionane una diversa!\nLe applicazioni sono limitate all\'utilizzo delle chiavi qui selezionate!</string>
   <string name="api_register_text">Le app visualizzate hanno richiesto l\'accesso a OpenKeychain.
 Permetti accesso?\n\nATTENZIONE: Se non sai perche\' questo schermata e\' apparsa, nega l\'accesso! Puoi revocare l\'accesso dopo, usando la schermata \'App Registrate\'.</string>
   <string name="api_register_allow">Permetti accesso</string>
@@ -673,10 +671,6 @@ Permetti accesso?\n\nATTENZIONE: Se non sai perche\' questo schermata e\' appars
   <string name="msg_con_error_io_secret">Errore di IO durante la scrittura delle chiavi private nella cache!</string>
   <string name="msg_con_error_public">Errore nella re-importazione delle chiavi pubbliche!</string>
   <string name="msg_con_error_secret">Errore nella re-importazione delle chiavi private!</string>
-  <plurals name="msg_con_recover">
-    <item quantity="one">Recupero consolidamento con %1$d chiavi segrete e %2$d chiavi pubbliche</item>
-    <item quantity="other">Recupero consolidamento con %1$d chiavi segrete e %2$d chiavi pubbliche</item>
-  </plurals>
   <string name="msg_con_recover_unknown">Recupero da situazione ignota</string>
   <plurals name="msg_con_reimport_public">
     <item quantity="one">Reimportazione di una chiave pubblica</item>
