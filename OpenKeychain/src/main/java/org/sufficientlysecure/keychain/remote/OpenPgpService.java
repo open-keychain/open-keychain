@@ -249,25 +249,6 @@ public class OpenPgpService extends RemoteService {
         try {
             boolean asciiArmor = data.getBooleanExtra(OpenPgpApi.EXTRA_REQUEST_ASCII_ARMOR, true);
 
-            // get passphrase from cache, if key has "no" passphrase, this returns an empty String
-            String passphrase;
-            if (data.hasExtra(OpenPgpApi.EXTRA_PASSPHRASE)) {
-                passphrase = data.getStringExtra(OpenPgpApi.EXTRA_PASSPHRASE);
-            } else {
-                try {
-                    passphrase = PassphraseCacheService.getCachedPassphrase(getContext(),
-                            accSettings.getKeyId(), accSettings.getKeyId());
-                } catch (PassphraseCacheService.KeyNotFoundException e) {
-                    // secret key that is set for this account is deleted?
-                    // show account config again!
-                    return getCreateAccountIntent(data, getAccountName(data));
-                }
-            }
-            if (passphrase == null) {
-                // get PendingIntent for passphrase input, add it to given params and return to client
-                return getPassphraseIntent(data, accSettings.getKeyId());
-            }
-
             byte[] nfcSignedHash = data.getByteArrayExtra(OpenPgpApi.EXTRA_NFC_SIGNED_HASH);
             if (nfcSignedHash != null) {
                 Log.d(Constants.TAG, "nfcSignedHash:" + Hex.toHexString(nfcSignedHash));
@@ -294,6 +275,25 @@ public class OpenPgpService extends RemoteService {
                 CachedPublicKeyRing signingRing =
                         new ProviderHelper(this).getCachedPublicKeyRing(accSettings.getKeyId());
                 final long sigSubKeyId = signingRing.getSecretSignId();
+
+                // get passphrase from cache, if key has "no" passphrase, this returns an empty String
+                String passphrase;
+                if (data.hasExtra(OpenPgpApi.EXTRA_PASSPHRASE)) {
+                    passphrase = data.getStringExtra(OpenPgpApi.EXTRA_PASSPHRASE);
+                } else {
+                    try {
+                        passphrase = PassphraseCacheService.getCachedPassphrase(getContext(),
+                                accSettings.getKeyId(), sigSubKeyId);
+                    } catch (PassphraseCacheService.KeyNotFoundException e) {
+                        // secret key that is set for this account is deleted?
+                        // show account config again!
+                        return getCreateAccountIntent(data, getAccountName(data));
+                    }
+                }
+                if (passphrase == null) {
+                    // get PendingIntent for passphrase input, add it to given params and return to client
+                    return getPassphraseIntent(data, sigSubKeyId);
+                }
 
                 // sign-only
                 PgpSignEncrypt.Builder builder = new PgpSignEncrypt.Builder(
