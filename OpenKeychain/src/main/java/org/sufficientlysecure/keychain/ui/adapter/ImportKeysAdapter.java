@@ -91,6 +91,9 @@ public class ImportKeysAdapter extends ArrayAdapter<ImportKeysListEntry> {
 
     public ArrayList<ImportKeysListEntry> getSelectedEntries() {
         ArrayList<ImportKeysListEntry> result = new ArrayList<ImportKeysListEntry>();
+        if (mData == null) {
+            return result;
+        }
         for (ImportKeysListEntry entry : mData) {
             if (entry.isSelected()) {
                 result.add(entry);
