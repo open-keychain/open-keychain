@@ -41,7 +41,6 @@ import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -91,17 +90,13 @@ public class ImportKeysAdapter extends ArrayAdapter<ImportKeysListEntry> {
     }
 
     public ArrayList<ImportKeysListEntry> getSelectedEntries() {
-        ArrayList<ImportKeysListEntry> selectedData = new ArrayList<ImportKeysListEntry>();
-        // Nothing to select, nvm.
-        if (mData == null) {
-            return selectedData;
-        }
+        ArrayList<ImportKeysListEntry> result = new ArrayList<ImportKeysListEntry>();
         for (ImportKeysListEntry entry : mData) {
             if (entry.isSelected()) {
-                selectedData.add(entry);
+                result.add(entry);
             }
         }
-        return selectedData;
+        return result;
     }
 
     @Override

@@ -55,6 +55,10 @@ public class ParcelableFileCache<E extends Parcelable> {
         mFilename = filename;
     }
 
+    /** This method returns the number of entries as valid for the iterator
+     * received by the latest readCache operation. Yes, it is slightly
+     * peculiar.
+     */
     public int getNumEntries() {
         return mNumEntries;
     }
@@ -107,7 +111,7 @@ public class ParcelableFileCache<E extends Parcelable> {
             throw new IOException(e);
         }
 
-        // yes this is slightly sloppy data flow. WE WOULDN'T NEED THIS WITH TUPLE RETURN TYPES
+        // yes this is sloppy data flow. WE WOULDN'T NEED THIS WITH TUPLE RETURN TYPES
         mNumEntries = ois.readInt();
 
         return new Iterator<E>() {

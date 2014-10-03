@@ -48,6 +48,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 public class ImportKeysListFragment extends ListFragment implements
@@ -74,12 +75,42 @@ public class ImportKeysListFragment extends ListFragment implements
         return mAdapter.getData();
     }
 
-    public ArrayList<ParcelableKeyRing> getSelectedData() {
-        ArrayList<ParcelableKeyRing> result = new ArrayList<ParcelableKeyRing>();
-        for (ImportKeysListEntry entry : getSelectedEntries()) {
-            result.add(mCachedKeyData.get(entry.hashCode()));
-        }
-        return result;
+    // Tuples would make this easier...
+    public static interface IteratorWithSize<E> extends Iterator<E> {
+        int getSize();
+    }
+
+    /** Returns an Iterator (with size) of the selected data items.
+     * This iterator is sort of a tradeoff, it's slightly more complex than an
+     * ArrayList would have been, but we save some memory by just returning
+     * relevant elements on demand.
+     */
+    public IteratorWithSize<ParcelableKeyRing> getSelectedData() {
+        final ArrayList<ImportKeysListEntry> entries = getSelectedEntries();
+        final Iterator<ImportKeysListEntry> it = entries.iterator();
+        return new IteratorWithSize<ParcelableKeyRing>() {
+
+            @Override
+            public int getSize() {
+                return entries.size();
+            }
+
+            @Override
+            public boolean hasNext() {
+                return it.hasNext();
+            }
+
+            @Override
+            public ParcelableKeyRing next() {
+                // throws NoSuchElementException if it doesn't exist, but that's not our problem
+                return mCachedKeyData.get(it.next().hashCode());
+            }
+
+            @Override
+            public void remove() {
+                it.remove();
+            }
+        };
     }
 
     public ArrayList<ImportKeysListEntry> getSelectedEntries() {
