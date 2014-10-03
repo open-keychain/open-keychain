@@ -31,6 +31,7 @@ import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.provider.ProviderHelper.NotFoundException;
 import org.sufficientlysecure.keychain.util.FileHelper;
+import org.sufficientlysecure.keychain.util.ParcelableFileCache.IteratorWithSize;
 import org.sufficientlysecure.keychain.util.Preferences;
 import org.sufficientlysecure.keychain.keyimport.HkpKeyserver;
 import org.sufficientlysecure.keychain.keyimport.ImportKeysListEntry;
@@ -523,8 +524,9 @@ public class KeychainIntentService extends IntentService implements Progressable
                     // get entries from cached file
                     ParcelableFileCache<ParcelableKeyRing> cache =
                             new ParcelableFileCache<ParcelableKeyRing>(this, "key_import.pcl");
-                    entries = cache.readCache();
-                    numEntries = cache.getNumEntries();
+                    IteratorWithSize<ParcelableKeyRing> it = cache.readCache();
+                    entries = it;
+                    numEntries = it.getSize();
                 }
 
                 ProviderHelper providerHelper = new ProviderHelper(this);

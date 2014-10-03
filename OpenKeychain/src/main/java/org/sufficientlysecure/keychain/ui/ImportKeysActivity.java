@@ -39,9 +39,9 @@ import android.view.ViewGroup;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.api.OpenKeychainIntents;
-import org.sufficientlysecure.keychain.ui.ImportKeysListFragment.IteratorWithSize;
 import org.sufficientlysecure.keychain.ui.util.FormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
+import org.sufficientlysecure.keychain.util.ParcelableFileCache.IteratorWithSize;
 import org.sufficientlysecure.keychain.util.Preferences;
 import org.sufficientlysecure.keychain.keyimport.ImportKeysListEntry;
 import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
@@ -492,7 +492,7 @@ public class ImportKeysActivity extends ActionBarActivity {
                 // display here, we should be able to import.
                 ParcelableFileCache<ParcelableKeyRing> cache =
                         new ParcelableFileCache<ParcelableKeyRing>(this, "key_import.pcl");
-                cache.writeCache(selectedEntries.getSize(), selectedEntries);
+                cache.writeCache(selectedEntries);
 
                 intent.putExtra(KeychainIntentService.EXTRA_DATA, data);
 

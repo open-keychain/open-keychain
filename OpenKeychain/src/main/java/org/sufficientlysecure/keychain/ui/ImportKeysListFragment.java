@@ -31,6 +31,7 @@ import android.widget.ListView;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.util.ParcelableFileCache.IteratorWithSize;
 import org.sufficientlysecure.keychain.util.Preferences;
 import org.sufficientlysecure.keychain.keyimport.ImportKeysListEntry;
 import org.sufficientlysecure.keychain.keyimport.Keyserver;
@@ -73,11 +74,6 @@ public class ImportKeysListFragment extends ListFragment implements
 
     public List<ImportKeysListEntry> getData() {
         return mAdapter.getData();
-    }
-
-    // Tuples would make this easier...
-    public static interface IteratorWithSize<E> extends Iterator<E> {
-        int getSize();
     }
 
     /** Returns an Iterator (with size) of the selected data items.

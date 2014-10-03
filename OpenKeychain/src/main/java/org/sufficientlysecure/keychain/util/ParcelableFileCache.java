@@ -48,19 +48,14 @@ public class ParcelableFileCache<E extends Parcelable> {
     private Context mContext;
 
     private final String mFilename;
-    private int mNumEntries;
 
     public ParcelableFileCache(Context context, String filename) {
         mContext = context;
         mFilename = filename;
     }
 
-    /** This method returns the number of entries as valid for the iterator
-     * received by the latest readCache operation. Yes, it is slightly
-     * peculiar.
-     */
-    public int getNumEntries() {
-        return mNumEntries;
+    public void writeCache(IteratorWithSize<E> it) throws IOException {
+        writeCache(it.getSize(), it);
     }
 
     public void writeCache(int numEntries, Iterator<E> it) throws IOException {
@@ -90,11 +85,11 @@ public class ParcelableFileCache<E extends Parcelable> {
 
     }
 
-    public Iterator<E> readCache() throws IOException {
+    public IteratorWithSize<E> readCache() throws IOException {
         return readCache(true);
     }
 
-    public Iterator<E> readCache(final boolean deleteAfterRead) throws IOException {
+    public IteratorWithSize<E> readCache(final boolean deleteAfterRead) throws IOException {
 
         File cacheDir = mContext.getCacheDir();
         if (cacheDir == null) {
@@ -112,13 +107,17 @@ public class ParcelableFileCache<E extends Parcelable> {
         }
 
         // yes this is sloppy data flow. WE WOULDN'T NEED THIS WITH TUPLE RETURN TYPES
-        mNumEntries = ois.readInt();
+        final int numEntries = ois.readInt();
 
-        return new Iterator<E>() {
+        return new IteratorWithSize<E>() {
 
             E mRing = null;
             boolean closed = false;
             byte[] buf = new byte[512];
+
+            public int getSize() {
+                return numEntries;
+            }
 
             private void readNext() {
                 if (mRing != null || closed) {
@@ -203,6 +202,14 @@ public class ParcelableFileCache<E extends Parcelable> {
 
         final File tempFile = new File(cacheDir, mFilename);
         return tempFile.delete();
+    }
+
+    /** As the name implies, this is an extended iterator interface, which
+     * knows the total number of its entries beforehand.
+     */
+    public static interface IteratorWithSize<E> extends Iterator<E> {
+        /** Returns the number of total entries in this iterator. */
+        int getSize();
     }
 
 }
