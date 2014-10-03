@@ -489,7 +489,7 @@ public class ImportKeysActivity extends ActionBarActivity {
             try {
                 ParcelableFileCache<ParcelableKeyRing> cache =
                         new ParcelableFileCache<ParcelableKeyRing>(this, "key_import.pcl");
-                cache.writeCache(selectedEntries);
+                cache.writeCache(selectedEntries.size(), selectedEntries.iterator());
 
                 intent.putExtra(KeychainIntentService.EXTRA_DATA, data);
 

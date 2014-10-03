@@ -29,6 +29,7 @@ import org.robolectric.RobolectricTestRunner;
 import org.robolectric.shadows.ShadowLog;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 @RunWith(RobolectricTestRunner.class)
@@ -55,16 +56,19 @@ public class ParcelableFileCacheTest {
         }
 
         // write to cache file
-        cache.writeCache(list);
+        cache.writeCache(list.size(), list.iterator());
 
         // read back
-        List<Bundle> last = cache.readCacheIntoList();
+        Iterator<Bundle> it = cache.readCache();
 
-        for (int i = 0; i < list.size(); i++) {
+        Assert.assertEquals("number of entries must be correct", list.size(), cache.getNumEntries());
+
+        while (it.hasNext()) {
+            Bundle b = it.next();
             Assert.assertEquals("input values should be equal to output values",
-                    list.get(i).getInt("key1"), last.get(i).getInt("key1"));
+                    b.getInt("key1"), b.getInt("key1"));
             Assert.assertEquals("input values should be equal to output values",
-                    list.get(i).getString("key2"), last.get(i).getString("key2"));
+                    b.getString("key2"), b.getString("key2"));
         }
 
     }

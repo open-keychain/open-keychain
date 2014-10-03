@@ -78,6 +78,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -511,21 +512,25 @@ public class KeychainIntentService extends IntentService implements Progressable
         } else if (ACTION_IMPORT_KEYRING.equals(action)) {
             try {
 
-                List<ParcelableKeyRing> entries;
+                Iterator<ParcelableKeyRing> entries;
+                int numEntries;
                 if (data.containsKey(IMPORT_KEY_LIST)) {
                     // get entries from intent
-                    entries = data.getParcelableArrayList(IMPORT_KEY_LIST);
+                    ArrayList<ParcelableKeyRing> list = data.getParcelableArrayList(IMPORT_KEY_LIST);
+                    entries = list.iterator();
+                    numEntries = list.size();
                 } else {
                     // get entries from cached file
                     ParcelableFileCache<ParcelableKeyRing> cache =
                             new ParcelableFileCache<ParcelableKeyRing>(this, "key_import.pcl");
-                    entries = cache.readCacheIntoList();
+                    entries = cache.readCache();
+                    numEntries = cache.getNumEntries();
                 }
 
                 ProviderHelper providerHelper = new ProviderHelper(this);
                 PgpImportExport pgpImportExport = new PgpImportExport(
                         this, providerHelper, this, mActionCanceled);
-                ImportKeyResult result = pgpImportExport.importKeyRings(entries);
+                ImportKeyResult result = pgpImportExport.importKeyRings(entries, numEntries);
 
                 // we do this even on failure or cancellation!
                 if (result.mSecret > 0) {

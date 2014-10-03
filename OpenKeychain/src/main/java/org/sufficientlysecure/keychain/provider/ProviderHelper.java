@@ -929,7 +929,7 @@ public class ProviderHelper {
 
             ParcelableFileCache<ParcelableKeyRing> cache =
                     new ParcelableFileCache<ParcelableKeyRing>(mContext, "consolidate_secret.pcl");
-            cache.writeCache(new Iterator<ParcelableKeyRing>() {
+            cache.writeCache(cursor.getCount(), new Iterator<ParcelableKeyRing>() {
                 ParcelableKeyRing ring;
 
                 @Override
@@ -991,7 +991,7 @@ public class ProviderHelper {
 
             ParcelableFileCache<ParcelableKeyRing> cache =
                     new ParcelableFileCache<ParcelableKeyRing>(mContext, "consolidate_public.pcl");
-            cache.writeCache(new Iterator<ParcelableKeyRing>() {
+            cache.writeCache(cursor.getCount(), new Iterator<ParcelableKeyRing>() {
                 ParcelableKeyRing ring;
 
                 @Override

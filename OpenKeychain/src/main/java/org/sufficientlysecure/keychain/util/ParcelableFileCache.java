@@ -48,17 +48,18 @@ public class ParcelableFileCache<E extends Parcelable> {
     private Context mContext;
 
     private final String mFilename;
+    private int mNumEntries;
 
     public ParcelableFileCache(Context context, String filename) {
         mContext = context;
         mFilename = filename;
     }
 
-    public void writeCache(ArrayList<E> selectedEntries) throws IOException {
-        writeCache(selectedEntries.iterator());
+    public int getNumEntries() {
+        return mNumEntries;
     }
 
-    public void writeCache(Iterator<E> it) throws IOException {
+    public void writeCache(int numEntries, Iterator<E> it) throws IOException {
 
         File cacheDir = mContext.getCacheDir();
         if (cacheDir == null) {
@@ -69,6 +70,8 @@ public class ParcelableFileCache<E extends Parcelable> {
         File tempFile = new File(mContext.getCacheDir(), mFilename);
 
         DataOutputStream oos = new DataOutputStream(new FileOutputStream(tempFile));
+
+        oos.writeInt(numEntries);
 
         while (it.hasNext()) {
             Parcel p = Parcel.obtain(); // creating empty parcel object
@@ -81,15 +84,6 @@ public class ParcelableFileCache<E extends Parcelable> {
 
         oos.close();
 
-    }
-
-    public List<E> readCacheIntoList() throws IOException {
-        ArrayList<E> result = new ArrayList<E>();
-        Iterator<E> it = readCache();
-        while (it.hasNext()) {
-            result.add(it.next());
-        }
-        return result;
     }
 
     public Iterator<E> readCache() throws IOException {
@@ -112,6 +106,9 @@ public class ParcelableFileCache<E extends Parcelable> {
             Log.e(Constants.TAG, "parcel import file not existing", e);
             throw new IOException(e);
         }
+
+        // yes this is slightly sloppy data flow. WE WOULDN'T NEED THIS WITH TUPLE RETURN TYPES
+        mNumEntries = ois.readInt();
 
         return new Iterator<E>() {
 
