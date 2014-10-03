@@ -27,6 +27,7 @@ import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.shadows.ShadowLog;
+import org.sufficientlysecure.keychain.util.ParcelableFileCache.IteratorWithSize;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -59,9 +60,9 @@ public class ParcelableFileCacheTest {
         cache.writeCache(list.size(), list.iterator());
 
         // read back
-        Iterator<Bundle> it = cache.readCache();
+        IteratorWithSize<Bundle> it = cache.readCache();
 
-        Assert.assertEquals("number of entries must be correct", list.size(), cache.getNumEntries());
+        Assert.assertEquals("number of entries must be correct", list.size(), it.getSize());
 
         while (it.hasNext()) {
             Bundle b = it.next();
