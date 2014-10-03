@@ -31,6 +31,7 @@ import android.support.v4.util.LongSparseArray;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
+import org.sufficientlysecure.keychain.util.ParcelableFileCache.IteratorWithSize;
 import org.sufficientlysecure.keychain.util.Preferences;
 import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedPublicKey;
@@ -1074,8 +1075,8 @@ public class ProviderHelper {
 
             // Set flag that we have a cached consolidation here
             try {
-                Iterator<ParcelableKeyRing> itSecrets = cacheSecret.readCache(false);
-                int numSecrets = cacheSecret.getNumEntries();
+                IteratorWithSize<ParcelableKeyRing> itSecrets = cacheSecret.readCache(false);
+                int numSecrets = itSecrets.getSize();
 
                 log(LogType.MSG_CON_REIMPORT_SECRET, numSecrets);
                 mIndent += 1;
@@ -1100,8 +1101,8 @@ public class ProviderHelper {
 
             try {
 
-                Iterator<ParcelableKeyRing> itPublics = cachePublic.readCache();
-                int numPublics = cachePublic.getNumEntries();
+                IteratorWithSize<ParcelableKeyRing> itPublics = cachePublic.readCache();
+                int numPublics = itPublics.getSize();
 
                 log(LogType.MSG_CON_REIMPORT_PUBLIC, numPublics);
                 mIndent += 1;
