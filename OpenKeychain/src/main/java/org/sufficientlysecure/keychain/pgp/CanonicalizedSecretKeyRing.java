@@ -30,6 +30,8 @@ import org.spongycastle.openpgp.operator.PBESecretKeyDecryptor;
 import org.spongycastle.openpgp.operator.jcajce.JcePBESecretKeyDecryptorBuilder;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
+import org.sufficientlysecure.keychain.provider.KeychainContract;
+import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.util.IterableIterator;
 import org.sufficientlysecure.keychain.util.Log;
 
@@ -74,43 +76,18 @@ public class CanonicalizedSecretKeyRing extends CanonicalizedKeyRing {
         return new CanonicalizedSecretKey(this, mRing.getSecretKey(id));
     }
 
-    /** Getter that returns the subkey that should be used for signing. */
-    CanonicalizedSecretKey getSigningSubKey() throws PgpGeneralException {
-        PGPSecretKey key = mRing.getSecretKey(getSignId());
-        if(key != null) {
-            CanonicalizedSecretKey cKey = new CanonicalizedSecretKey(this, key);
-            if(!cKey.canSign()) {
-                throw new PgpGeneralException("key error");
-            }
-            return cKey;
-        }
-        // TODO handle with proper exception
-        throw new PgpGeneralException("no signing key available");
-    }
-
-    public boolean hasPassphrase() {
-        PGPSecretKey secretKey = null;
-        boolean foundValidKey = false;
-        for (Iterator keys = mRing.getSecretKeys(); keys.hasNext(); ) {
-            secretKey = (PGPSecretKey) keys.next();
-            if (!secretKey.isPrivateKeyEmpty()) {
-                foundValidKey = true;
-                break;
+    /** Returns the key id which should be used for signing.
+     *
+     * This method returns keys which are actually available (ie. secret available, and not stripped,
+     * revoked, or expired), hence only works on keyrings where a secret key is available!
+     */
+    public long getSecretSignId() throws PgpGeneralException {
+        for(CanonicalizedSecretKey key : secretKeyIterator()) {
+            if (key.canSign() && key.isValid() && key.getSecretKeyType().isUsable()) {
+                return key.getKeyId();
             }
         }
-        if(!foundValidKey) {
-            return false;
-        }
-
-        try {
-            PBESecretKeyDecryptor keyDecryptor = new JcePBESecretKeyDecryptorBuilder()
-                    .setProvider("SC").build("".toCharArray());
-            PGPPrivateKey testKey = secretKey.extractPrivateKey(keyDecryptor);
-            return testKey == null;
-        } catch(PGPException e) {
-            // this means the crc check failed -> passphrase required
-            return true;
-        }
+        throw new PgpGeneralException("no valid signing key available");
     }
 
     public IterableIterator<CanonicalizedSecretKey> secretKeyIterator() {

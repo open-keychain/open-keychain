@@ -294,7 +294,7 @@ public class KeychainIntentService extends IntentService implements Progressable
                         // Find the appropriate subkey to sign with
                         CachedPublicKeyRing signingRing =
                                 new ProviderHelper(this).getCachedPublicKeyRing(sigMasterKeyId);
-                        long sigSubKeyId = signingRing.getSignId();
+                        long sigSubKeyId = signingRing.getSecretSignId();
 
                         // Set signature settings
                         builder.setSignatureMasterKeyId(sigMasterKeyId)

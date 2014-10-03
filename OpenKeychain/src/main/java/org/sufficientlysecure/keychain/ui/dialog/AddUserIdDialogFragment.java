@@ -206,6 +206,9 @@ public class AddUserIdDialogFragment extends DialogFragment implements OnEditorA
     }
 
     private void hideKeyboard() {
+        if (getActivity() == null) {
+            return;
+        }
         InputMethodManager inputManager = (InputMethodManager) getActivity()
                 .getSystemService(Context.INPUT_METHOD_SERVICE);
 

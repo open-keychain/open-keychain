@@ -104,4 +104,10 @@ public class CanonicalizedPublicKey extends UncachedPublicKey {
     public Integer getKeyUsage() {
         return super.getKeyUsage();
     }
+
+    /** Returns whether this key is valid, ie not expired or revoked. */
+    public boolean isValid() {
+        return !isRevoked() && !isExpired();
+    }
+
 }

@@ -78,7 +78,7 @@ public abstract class CanonicalizedKeyRing extends KeyRing {
 
     public long getEncryptId() throws PgpGeneralException {
         for(CanonicalizedPublicKey key : publicKeyIterator()) {
-            if(key.canEncrypt()) {
+            if (key.canEncrypt() && key.isValid()) {
                 return key.getKeyId();
             }
         }
@@ -90,24 +90,6 @@ public abstract class CanonicalizedKeyRing extends KeyRing {
             getEncryptId();
             return true;
         } catch(PgpGeneralException e) {
-            return false;
-        }
-    }
-
-    public long getSignId() throws PgpGeneralException {
-        for(CanonicalizedPublicKey key : publicKeyIterator()) {
-            if(key.canSign()) {
-                return key.getKeyId();
-            }
-        }
-        throw new PgpGeneralException("No valid signing key found!");
-    }
-
-    public boolean hasSign() throws PgpGeneralException {
-        try {
-            getSignId();
-            return true;
-        } catch (PgpGeneralException e) {
             return false;
         }
     }

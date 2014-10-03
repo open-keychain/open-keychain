@@ -293,7 +293,7 @@ public class OpenPgpService extends RemoteService {
                 // Find the appropriate subkey to sign with
                 CachedPublicKeyRing signingRing =
                         new ProviderHelper(this).getCachedPublicKeyRing(accSettings.getKeyId());
-                final long sigSubKeyId = signingRing.getSignId();
+                final long sigSubKeyId = signingRing.getSecretSignId();
 
                 // sign-only
                 PgpSignEncrypt.Builder builder = new PgpSignEncrypt.Builder(
@@ -405,7 +405,7 @@ public class OpenPgpService extends RemoteService {
                     // Find the appropriate subkey to sign with
                     CachedPublicKeyRing signingRing =
                             new ProviderHelper(this).getCachedPublicKeyRing(accSettings.getKeyId());
-                    final long sigSubKeyId = signingRing.getSignId();
+                    final long sigSubKeyId = signingRing.getSecretSignId();
 
                     String passphrase;
                     if (data.hasExtra(OpenPgpApi.EXTRA_PASSPHRASE)) {
