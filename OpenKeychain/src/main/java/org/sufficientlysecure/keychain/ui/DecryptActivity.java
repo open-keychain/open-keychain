@@ -76,10 +76,15 @@ public class DecryptActivity extends DrawerActivity {
         if (Build.VERSION.SDK_INT >= VERSION_CODES.ICE_CREAM_SANDWICH) {
 
             // get text from clipboard
-            final String clipboardText =
-                    ClipboardReflection.getClipboardText(DecryptActivity.this).toString();
+            final CharSequence clipboardText =
+                    ClipboardReflection.getClipboardText(DecryptActivity.this);
 
-            AsyncTask<Void, Void, Boolean> tadaTask = new AsyncTask<Void, Void, Boolean>() {
+            // if it's null, nothing to do here /o/
+            if (clipboardText == null) {
+                return;
+            }
+
+            new AsyncTask<Void, Void, Boolean>() {
                 @Override
                 protected Boolean doInBackground(Void... params) {
 
@@ -104,11 +109,7 @@ public class DecryptActivity extends DrawerActivity {
                         SubtleAttentionSeeker.tada(findViewById(R.id.clipboard_icon), 1.5f).start();
                     }
                 }
-            };
-
-            if (clipboardText != null) {
-                tadaTask.execute();
-            }
+            }.execute();
         }
     }
 
