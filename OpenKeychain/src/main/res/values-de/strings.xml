@@ -401,8 +401,6 @@
   <string name="api_settings_settings">Einstellungen</string>
   <string name="api_settings_key">Account Schlüssel:</string>
   <string name="api_settings_accounts_empty">Keine Konten mit dieser Anwendung verknüpft.</string>
-  <string name="api_create_account_text">Die App verlangt die Erstellung eines neuen Accounts. Bitte wähle einen deiner existierenden Schlüssel aus oder erstelle einen neuen.\nApps können nur hier ausgewählte Schlüssel nutzen.</string>
-  <string name="api_update_account_text">Der Schlüssel für diesen Account wurde gelöscht. Bitte wähle einen anderen aus!\nApps können nur hier ausgewählte Schlüssel nutzen.</string>
   <string name="api_register_text">Folgende Anwendung möchte Nachrichten ver-/entschlüsseln und in Ihrem Namen signieren. Zugriff erlauben?\n\nVORSICHT: Sollten Sie nicht wissen warum dieses Fenster erscheint, sollten Sie den Zugriff verbieten! Sie können Zugriffe später über das Menü \'Apps\' widerrufen.</string>
   <string name="api_register_allow">Zugriff erlauben</string>
   <string name="api_register_disallow">Zugriff verbieten</string>
@@ -712,10 +710,6 @@
   <string name="msg_con_error_io_secret">Ein-/Ausgabefehler beim Schreiben von geheimen Schlüsseln in den Cache!</string>
   <string name="msg_con_error_public">Fehler beim wieder importieren der öffentlichen Schlüssel!</string>
   <string name="msg_con_error_secret">Fehler beim wieder importieren der geheimen Schlüssel!</string>
-  <plurals name="msg_con_recover">
-    <item quantity="one">Wiederherstellung der Zusammenführung mit %1$d geheimen und %2$d öffentlichen Schlüssel</item>
-    <item quantity="other">Wiederherstellung der Zusammenführung mit %1$d geheimen und %2$d öffentlichen Schlüsseln</item>
-  </plurals>
   <string name="msg_con_recover_unknown">Wiederherstellung aus unbekanntem Zustand</string>
   <plurals name="msg_con_reimport_public">
     <item quantity="one">Wiederimport eines öffentlichen Schlüssels </item>

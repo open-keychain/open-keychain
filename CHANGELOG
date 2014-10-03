@@ -1,3 +1,7 @@
+## 3.0.1
+  * Better handling of large key imports
+  * Improved subkey selection
+
 ## 3.0
   * Full support for Yubikey signature generation and decryption!
   * Propose installable compatible apps in apps list

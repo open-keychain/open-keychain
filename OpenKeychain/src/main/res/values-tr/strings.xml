@@ -79,6 +79,7 @@
   <string name="menu_search">Ara</string>
   <string name="menu_beam_preferences">Beam ayarları</string>
   <string name="menu_key_edit_cancel">İptal</string>
+  <string name="menu_encrypt_to">Buraya şifrele...</string>
   <string name="menu_select_all">Hepsini seç</string>
   <string name="menu_add_keys">Anahtar ekle</string>
   <string name="menu_export_all_keys">Tüm anahtarları ver</string>
@@ -118,6 +119,7 @@
   <string name="label_send_key">Sertifikalamadan sonra anahtarı seçilen anahtar sunucusuna yükle</string>
   <string name="label_fingerprint">Parmakizi</string>
   <string name="expiry_date_dialog_title">Son kullanma tarihini ayarla</string>
+  <string name="label_preferred">tercih edilen</string>
   <string name="can_encrypt">şifreleyebilir</string>
   <string name="can_sign">imzalayabilir</string>
   <string name="can_certify">tasdikleyebilir</string>
