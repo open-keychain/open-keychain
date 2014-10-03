@@ -84,17 +84,17 @@ public class DecryptActivity extends DrawerActivity {
                 return;
             }
 
-            new AsyncTask<Void, Void, Boolean>() {
+            new AsyncTask<String, Void, Boolean>() {
                 @Override
-                protected Boolean doInBackground(Void... params) {
+                protected Boolean doInBackground(String... clipboardText) {
 
                     // see if it looks like a pgp thing
-                    Matcher matcher = PgpHelper.PGP_MESSAGE.matcher(clipboardText);
+                    Matcher matcher = PgpHelper.PGP_MESSAGE.matcher(clipboardText[0]);
                     boolean animate = matcher.matches();
 
                     // see if it looks like another pgp thing
                     if (!animate) {
-                        matcher = PgpHelper.PGP_CLEARTEXT_SIGNATURE.matcher(clipboardText);
+                        matcher = PgpHelper.PGP_CLEARTEXT_SIGNATURE.matcher(clipboardText[0]);
                         animate = matcher.matches();
                     }
                     return animate;
@@ -109,7 +109,7 @@ public class DecryptActivity extends DrawerActivity {
                         SubtleAttentionSeeker.tada(findViewById(R.id.clipboard_icon), 1.5f).start();
                     }
                 }
-            }.execute();
+            }.execute(clipboardText.toString());
         }
     }
 

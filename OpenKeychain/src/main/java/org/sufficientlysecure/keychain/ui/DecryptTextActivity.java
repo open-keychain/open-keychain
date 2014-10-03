@@ -156,11 +156,11 @@ public class DecryptTextActivity extends ActionBarActivity {
         } else if (ACTION_DECRYPT_FROM_CLIPBOARD.equals(action)) {
             Log.d(Constants.TAG, "ACTION_DECRYPT_FROM_CLIPBOARD");
 
-            String clipboardText = ClipboardReflection.getClipboardText(this).toString();
-            clipboardText = getPgpContent(clipboardText);
+            CharSequence clipboardText = ClipboardReflection.getClipboardText(this);
 
             if (clipboardText != null) {
-                loadFragment(savedInstanceState, clipboardText);
+                String text = getPgpContent(clipboardText.toString());
+                loadFragment(savedInstanceState, text);
             } else {
                 returnInvalidResult();
             }

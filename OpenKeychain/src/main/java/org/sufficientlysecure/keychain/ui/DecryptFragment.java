@@ -122,8 +122,7 @@ public abstract class DecryptFragment extends Fragment {
             if (userIdSplit[1] != null) {
                 mUserIdRest.setText(userIdSplit[1]);
             } else {
-                mUserIdRest.setText(getString(R.string.label_key_id) + ": "
-                        + KeyFormattingUtils.convertKeyIdToHex(mSignatureKeyId));
+                mUserIdRest.setText(KeyFormattingUtils.beautifyKeyIdWithPrefix(getActivity(), mSignatureKeyId));
             }
 
             switch (signatureResult.getStatus()) {
