@@ -177,26 +177,6 @@ public class Preferences {
         editor.commit();
     }
 
-    public int getCachedConsolidateNumPublics() {
-        return mSharedPreferences.getInt(Pref.CACHED_CONSOLIDATE_PUBLICS, -1);
-    }
-
-    public void setCachedConsolidateNumPublics(int value) {
-        SharedPreferences.Editor editor = mSharedPreferences.edit();
-        editor.putInt(Pref.CACHED_CONSOLIDATE_PUBLICS, value);
-        editor.commit();
-    }
-
-    public int getCachedConsolidateNumSecrets() {
-        return mSharedPreferences.getInt(Pref.CACHED_CONSOLIDATE_SECRETS, -1);
-    }
-
-    public void setCachedConsolidateNumSecrets(int value) {
-        SharedPreferences.Editor editor = mSharedPreferences.edit();
-        editor.putInt(Pref.CACHED_CONSOLIDATE_SECRETS, value);
-        editor.commit();
-    }
-
     public boolean isFirstTime() {
         return mSharedPreferences.getBoolean(Constants.Pref.FIRST_TIME, true);
     }

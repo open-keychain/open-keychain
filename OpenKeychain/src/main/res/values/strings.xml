@@ -790,10 +790,7 @@
     <string name="msg_con_error_io_secret">"IO error writing secret keys to cache!"</string>
     <string name="msg_con_error_public">"Error reimporting public keys!"</string>
     <string name="msg_con_error_secret">"Error reimporting secret keys!"</string>
-    <plurals name="msg_con_recover">
-        <item quantity="one">"Recovering consolidation with %1$d secret and %2$d public keys"</item>
-        <item quantity="other">"Recovering consolidation with %1$d secret and %2$d public keys"</item>
-    </plurals>
+    <string name="msg_con_recover">"Recovering consolidation"</string>
     <string name="msg_con_recover_unknown">"Recovering from unknown state"</string>
     <plurals name="msg_con_reimport_public">
         <item quantity="one">"Reimporting one public key"</item>

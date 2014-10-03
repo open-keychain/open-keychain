@@ -925,8 +925,6 @@ public class ProviderHelper {
                 return new ConsolidateResult(ConsolidateResult.RESULT_ERROR, mLog);
             }
 
-            Preferences.getPreferences(mContext).setCachedConsolidateNumSecrets(cursor.getCount());
-
             ParcelableFileCache<ParcelableKeyRing> cache =
                     new ParcelableFileCache<ParcelableKeyRing>(mContext, "consolidate_secret.pcl");
             cache.writeCache(cursor.getCount(), new Iterator<ParcelableKeyRing>() {
@@ -986,8 +984,6 @@ public class ProviderHelper {
                 log(LogType.MSG_CON_ERROR_DB);
                 return new ConsolidateResult(ConsolidateResult.RESULT_ERROR, mLog);
             }
-
-            Preferences.getPreferences(mContext).setCachedConsolidateNumPublics(cursor.getCount());
 
             ParcelableFileCache<ParcelableKeyRing> cache =
                     new ParcelableFileCache<ParcelableKeyRing>(mContext, "consolidate_public.pcl");
@@ -1057,16 +1053,8 @@ public class ProviderHelper {
         try {
             Preferences prefs = Preferences.getPreferences(mContext);
 
-            // Set flag that we have a cached consolidation here
-            int numSecrets = prefs.getCachedConsolidateNumSecrets();
-            int numPublics = prefs.getCachedConsolidateNumPublics();
-
             if (recovery) {
-                if (numSecrets >= 0 && numPublics >= 0) {
-                    log(LogType.MSG_CON_RECOVER, numSecrets, numPublics);
-                } else {
-                    log(LogType.MSG_CON_RECOVER_UNKNOWN);
-                }
+                log(LogType.MSG_CON_RECOVER);
                 mIndent += 1;
             }
 
@@ -1084,14 +1072,24 @@ public class ProviderHelper {
             ParcelableFileCache<ParcelableKeyRing> cachePublic =
                     new ParcelableFileCache<ParcelableKeyRing>(mContext, "consolidate_public.pcl");
 
-            // 3. Re-Import secret keyrings from cache
-            if (numSecrets > 0) try {
+            // Set flag that we have a cached consolidation here
+            try {
+                Iterator<ParcelableKeyRing> itSecrets = cacheSecret.readCache(false);
+                int numSecrets = cacheSecret.getNumEntries();
+
                 log(LogType.MSG_CON_REIMPORT_SECRET, numSecrets);
                 mIndent += 1;
 
-                new PgpImportExport(mContext, this,
-                        new ProgressFixedScaler(progress, 10, 25, 100, R.string.progress_con_reimport))
-                        .importKeyRings(cacheSecret.readCache(false), numSecrets);
+                // 3. Re-Import secret keyrings from cache
+                if (numSecrets > 0) {
+
+                    new PgpImportExport(mContext, this,
+                            new ProgressFixedScaler(progress, 10, 25, 100, R.string.progress_con_reimport))
+                            .importKeyRings(itSecrets, numSecrets);
+                } else {
+                    log(LogType.MSG_CON_REIMPORT_SECRET_SKIP);
+                }
+
             } catch (IOException e) {
                 Log.e(Constants.TAG, "error importing secret", e);
                 log(LogType.MSG_CON_ERROR_SECRET);
@@ -1099,27 +1097,31 @@ public class ProviderHelper {
             } finally {
                 mIndent -= 1;
             }
-            else {
-                log(LogType.MSG_CON_REIMPORT_SECRET_SKIP);
-            }
 
-            // 4. Re-Import public keyrings from cache
-            if (numPublics > 0) try {
+            try {
+
+                Iterator<ParcelableKeyRing> itPublics = cachePublic.readCache();
+                int numPublics = cachePublic.getNumEntries();
+
                 log(LogType.MSG_CON_REIMPORT_PUBLIC, numPublics);
                 mIndent += 1;
 
-                new PgpImportExport(mContext, this,
-                        new ProgressFixedScaler(progress, 25, 99, 100, R.string.progress_con_reimport))
-                        .importKeyRings(cachePublic.readCache(false), numPublics);
+                // 4. Re-Import public keyrings from cache
+                if (numPublics > 0) {
+
+                    new PgpImportExport(mContext, this,
+                            new ProgressFixedScaler(progress, 25, 99, 100, R.string.progress_con_reimport))
+                            .importKeyRings(itPublics, numPublics);
+                } else {
+                    log(LogType.MSG_CON_REIMPORT_PUBLIC_SKIP);
+                }
+
             } catch (IOException e) {
                 Log.e(Constants.TAG, "error importing public", e);
                 log(LogType.MSG_CON_ERROR_PUBLIC);
                 return new ConsolidateResult(ConsolidateResult.RESULT_ERROR, mLog);
             } finally {
                 mIndent -= 1;
-            }
-            else {
-                log(LogType.MSG_CON_REIMPORT_PUBLIC_SKIP);
             }
 
             log(LogType.MSG_CON_CRITICAL_OUT);
