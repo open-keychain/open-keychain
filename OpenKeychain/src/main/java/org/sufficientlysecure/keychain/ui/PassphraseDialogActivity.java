@@ -157,8 +157,8 @@ public class PassphraseDialogActivity extends FragmentActivity {
 
                 /* Get key type for message */
                     // find a master key id for our key
-                    long masterKeyId = new ProviderHelper(getActivity()).getMasterKeyId(mSubKeyId);
-                    CachedPublicKeyRing keyRing = new ProviderHelper(getActivity()).getCachedPublicKeyRing(masterKeyId);
+                    long masterKeyId = new ProviderHelper(activity).getMasterKeyId(mSubKeyId);
+                    CachedPublicKeyRing keyRing = new ProviderHelper(activity).getCachedPublicKeyRing(masterKeyId);
                     // get the type of key (from the database)
                     CanonicalizedSecretKey.SecretKeyType keyType = keyRing.getSecretKeyType(mSubKeyId);
                     switch (keyType) {
@@ -324,6 +324,11 @@ public class PassphraseDialogActivity extends FragmentActivity {
         }
 
         private void finishCaching(String passphrase) {
+            // any indication this isn't needed anymore, don't do it.
+            if (mIsCancelled || getActivity() == null) {
+                return;
+            }
+
             if (mServiceIntent != null) {
                 // TODO: Not routing passphrase through OpenPGP API currently
                 // due to security concerns...
@@ -351,6 +356,10 @@ public class PassphraseDialogActivity extends FragmentActivity {
         @Override
         public void onDismiss(DialogInterface dialog) {
             super.onDismiss(dialog);
+
+            if (getActivity() == null) {
+                return;
+            }
 
             hideKeyboard();
 
