@@ -362,18 +362,18 @@ public class UncachedKeyRing {
                 }
             }
 
-            ArrayList<byte[]> processedUserIds = new ArrayList<byte[]>();
+            ArrayList<String> processedUserIds = new ArrayList<String>();
             for (byte[] rawUserId : new IterableIterator<byte[]>(masterKey.getRawUserIDs())) {
                 String userId = Utf8Util.fromUTF8ByteArrayReplaceBadEncoding(rawUserId);
 
                 // check for duplicate user ids
-                if (processedUserIds.contains(rawUserId)) {
+                if (processedUserIds.contains(userId)) {
                     log.add(LogType.MSG_KC_UID_DUP,
                             indent, userId);
                     // strip out the first found user id with this name
                     modified = PGPPublicKey.removeCertification(modified, rawUserId);
                 }
-                processedUserIds.add(rawUserId);
+                processedUserIds.add(userId);
 
                 PGPSignature selfCert = null;
                 revocation = null;
