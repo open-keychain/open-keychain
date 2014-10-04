@@ -25,6 +25,8 @@ import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.keyimport.ImportKeysListEntry;
 import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
+import org.sufficientlysecure.keychain.service.results.GetKeyResult;
+import org.sufficientlysecure.keychain.service.results.OperationResult;
 import org.sufficientlysecure.keychain.util.InputData;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.PositionAwareInputStream;
@@ -36,9 +38,6 @@ import java.util.Iterator;
 
 public class ImportKeysListLoader
         extends AsyncTaskLoader<AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>>> {
-
-    public static class NoValidKeysException extends Exception {
-    }
 
     public static class NonPgpPartException extends Exception {
         private int mCount;
@@ -72,7 +71,8 @@ public class ImportKeysListLoader
             return mEntryListWrapper;
         }
 
-        mEntryListWrapper = new AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>>(mData, null);
+        GetKeyResult getKeyResult = new GetKeyResult(GetKeyResult.RESULT_OK, null);
+        mEntryListWrapper = new AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>>(mData, getKeyResult);
 
         if (mInputData == null) {
             Log.e(Constants.TAG, "Input data is null!");
@@ -136,13 +136,11 @@ public class ImportKeysListLoader
             }
         } catch (IOException e) {
             Log.e(Constants.TAG, "IOException on parsing key file! Return NoValidKeysException!", e);
-
-            NoValidKeysException e1 = new NoValidKeysException();
+            OperationResult.OperationLog log = new OperationResult.OperationLog();
+            log.add(OperationResult.LogType.MSG_GET_NO_VALID_KEYS, 0);
+            GetKeyResult getKeyResult = new GetKeyResult(GetKeyResult.RESULT_ERROR_NO_VALID_KEYS, log);
             mEntryListWrapper = new AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>>
-                    (mData, e1);
-        } catch (Exception e) {
-            Log.e(Constants.TAG, "Other Exception on parsing key file!", e);
-            mEntryListWrapper = new AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>>(mData, e);
+                    (mData, getKeyResult);
         }
     }
 

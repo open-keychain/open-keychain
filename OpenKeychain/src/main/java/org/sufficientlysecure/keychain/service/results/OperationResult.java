@@ -538,8 +538,16 @@ public abstract class OperationResult implements Parcelable {
 
         MSG_ACC_SAVED (LogLevel.INFO, R.string.api_settings_save_msg),
 
-        MSG_NO_VALID_ENC (LogLevel.ERROR, R.string.error_invalid_data)
+        MSG_NO_VALID_ENC (LogLevel.ERROR, R.string.error_invalid_data),
 
+        // get key
+        MSG_GET_SUCCESS(LogLevel.OK, R.string.msg_download_success),
+        MSG_GET_NO_VALID_KEYS(LogLevel.ERROR, R.string.msg_download_no_valid_keys),
+        MSG_GET_NO_PGP_PARTS(LogLevel.ERROR, R.string.msg_download_no_pgp_parts),
+        MSG_GET_QUERY_TOO_SHORT(LogLevel.ERROR, R.string.msg_download_query_too_short),
+        MSG_GET_TOO_MANY_RESPONSES(LogLevel.ERROR, R.string.msg_download_too_many_responses),
+        MSG_GET_QUERY_TOO_SHORT_OR_TOO_MANY_RESPONSES(LogLevel.ERROR, R.string.msg_download_query_too_short_or_too_many_responses),
+        MSG_GET_QUERY_FAILED(LogLevel.ERROR, R.string.msg_download_query_failed)
         ;
 
         public final int mMsgId;

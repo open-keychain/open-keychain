@@ -43,10 +43,10 @@ import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
 import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
+import org.sufficientlysecure.keychain.service.results.GetKeyResult;
 import org.sufficientlysecure.keychain.service.results.ImportKeyResult;
 import org.sufficientlysecure.keychain.service.results.OperationResult;
 import org.sufficientlysecure.keychain.ui.adapter.AsyncTaskResultWrapper;
-import org.sufficientlysecure.keychain.ui.adapter.ImportKeysListCloudLoader;
 import org.sufficientlysecure.keychain.ui.adapter.ImportKeysListLoader;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.ui.widget.ExchangeKeySpinner;
@@ -61,7 +61,6 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.Locale;
 
 import edu.cmu.cylab.starslinger.exchange.ExchangeActivity;
@@ -306,7 +305,9 @@ public class AddKeysActivity extends ActionBarActivity implements
                                AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>> data) {
         Log.d(Constants.TAG, "data: " + data.getResult());
 
-        Exception error = data.getError();
+//        Exception error = data.getError();
+
+        GetKeyResult getKeyResult = (GetKeyResult) data.getOperationResult();
 
         LongSparseArray<ParcelableKeyRing> cachedKeyData = null;
 
@@ -314,42 +315,55 @@ public class AddKeysActivity extends ActionBarActivity implements
         switch (loader.getId()) {
             case LOADER_ID_BYTES:
 
-                if (error == null) {
+                if (getKeyResult.success()) {
                     // No error
                     cachedKeyData = ((ImportKeysListLoader) loader).getParcelableRings();
-                    Log.d(Constants.TAG, "no error!:" + cachedKeyData);
-
-                } else if (error instanceof ImportKeysListLoader.NoValidKeysException) {
-                    Notify.showNotify(this, R.string.error_import_no_valid_keys, Notify.Style.ERROR);
-                } else if (error instanceof ImportKeysListLoader.NonPgpPartException) {
-                    Notify.showNotify(this,
-                            ((ImportKeysListLoader.NonPgpPartException) error).getCount() + " " + getResources().
-                                    getQuantityString(R.plurals.error_import_non_pgp_part,
-                                            ((ImportKeysListLoader.NonPgpPartException) error).getCount()),
-                            Notify.Style.OK
-                    );
                 } else {
-                    Notify.showNotify(this, R.string.error_generic_report_bug, Notify.Style.ERROR);
+                    getKeyResult.createNotify(this).show();
                 }
+
+//                if (error == null) {
+//                    // No error
+//                    cachedKeyData = ((ImportKeysListLoader) loader).getParcelableRings();
+//                    Log.d(Constants.TAG, "no error!:" + cachedKeyData);
+//
+//                } else if (error instanceof ImportKeysListLoader.NoValidKeysException) {
+//                    Notify.showNotify(this, R.string.error_import_no_valid_keys, Notify.Style.ERROR);
+//                } else if (error instanceof ImportKeysListLoader.NonPgpPartException) {
+//                    Notify.showNotify(this,
+//                            ((ImportKeysListLoader.NonPgpPartException) error).getCount() + " " + getResources().
+//                                    getQuantityString(R.plurals.error_import_non_pgp_part,
+//                                            ((ImportKeysListLoader.NonPgpPartException) error).getCount()),
+//                            Notify.Style.OK
+//                    );
+//                } else {
+//                    Notify.showNotify(this, R.string.error_generic_report_bug, Notify.Style.ERROR);
+//                }
                 break;
 
             case LOADER_ID_CLOUD:
 
-                if (error == null) {
+                if (getKeyResult.success()) {
                     // No error
-                } else if (error instanceof Keyserver.QueryTooShortException) {
-                    Notify.showNotify(this, R.string.error_query_too_short, Notify.Style.ERROR);
-                } else if (error instanceof Keyserver.TooManyResponsesException) {
-                    Notify.showNotify(this, R.string.error_too_many_responses, Notify.Style.ERROR);
-                } else if (error instanceof Keyserver.QueryTooShortOrTooManyResponsesException) {
-                    Notify.showNotify(this, R.string.error_too_short_or_too_many_responses, Notify.Style.ERROR);
-                } else if (error instanceof Keyserver.QueryFailedException) {
-                    Log.d(Constants.TAG,
-                            "Unrecoverable keyserver query error: " + error.getLocalizedMessage());
-                    String alert = this.getString(R.string.error_searching_keys);
-                    alert = alert + " (" + error.getLocalizedMessage() + ")";
-                    Notify.showNotify(this, alert, Notify.Style.ERROR);
+                } else {
+                    getKeyResult.createNotify(this).show();
                 }
+
+//                if (error == null) {
+//                    // No error
+//                } else if (error instanceof Keyserver.QueryTooShortException) {
+//                    Notify.showNotify(this, R.string.error_query_too_short, Notify.Style.ERROR);
+//                } else if (error instanceof Keyserver.TooManyResponsesException) {
+//                    Notify.showNotify(this, R.string.error_too_many_responses, Notify.Style.ERROR);
+//                } else if (error instanceof Keyserver.QueryTooShortOrTooManyResponsesException) {
+//                    Notify.showNotify(this, R.string.error_too_short_or_too_many_responses, Notify.Style.ERROR);
+//                } else if (error instanceof Keyserver.QueryFailedException) {
+//                    Log.d(Constants.TAG,
+//                            "Unrecoverable keyserver query error: " + error.getLocalizedMessage());
+//                    String alert = this.getString(R.string.error_searching_keys);
+//                    alert = alert + " (" + error.getLocalizedMessage() + ")";
+//                    Notify.showNotify(this, alert, Notify.Style.ERROR);
+//                }
                 break;
 
             default:
