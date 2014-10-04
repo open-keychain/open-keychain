@@ -37,6 +37,7 @@ import org.sufficientlysecure.keychain.ui.LogDisplayFragment;
 public class ImportKeyResult extends OperationResult {
 
     public final int mNewKeys, mUpdatedKeys, mBadKeys, mSecret;
+    public final long[] mImportedMasterKeyIds;
 
     // At least one new key
     public static final int RESULT_OK_NEWKEYS = 8;
@@ -69,21 +70,28 @@ public class ImportKeyResult extends OperationResult {
         return (mResult & RESULT_FAIL_NOTHING) == RESULT_FAIL_NOTHING;
     }
 
+    public long[] getImportedMasterKeyIds() {
+        return mImportedMasterKeyIds;
+    }
+
     public ImportKeyResult(Parcel source) {
         super(source);
         mNewKeys = source.readInt();
         mUpdatedKeys = source.readInt();
         mBadKeys = source.readInt();
         mSecret = source.readInt();
+        mImportedMasterKeyIds = source.createLongArray();
     }
 
     public ImportKeyResult(int result, OperationLog log,
-                           int newKeys, int updatedKeys, int badKeys, int secret) {
+                           int newKeys, int updatedKeys, int badKeys, int secret,
+                           long[] importedMasterKeyIds) {
         super(result, log);
         mNewKeys = newKeys;
         mUpdatedKeys = updatedKeys;
         mBadKeys = badKeys;
         mSecret = secret;
+        mImportedMasterKeyIds = importedMasterKeyIds;
     }
 
     @Override
@@ -93,6 +101,7 @@ public class ImportKeyResult extends OperationResult {
         dest.writeInt(mUpdatedKeys);
         dest.writeInt(mBadKeys);
         dest.writeInt(mSecret);
+        dest.writeLongArray(mImportedMasterKeyIds);
     }
 
     public static Creator<ImportKeyResult> CREATOR = new Creator<ImportKeyResult>() {
@@ -162,8 +171,8 @@ public class ImportKeyResult extends OperationResult {
             color = Style.RED;
             if (isFailNothing()) {
                 str = activity.getString((resultType & ImportKeyResult.RESULT_CANCELLED) > 0
-                                ? R.string.import_error_nothing_cancelled
-                                : R.string.import_error_nothing);
+                        ? R.string.import_error_nothing_cancelled
+                        : R.string.import_error_nothing);
             } else {
                 str = activity.getResources().getQuantityString(R.plurals.import_error, mBadKeys);
             }
