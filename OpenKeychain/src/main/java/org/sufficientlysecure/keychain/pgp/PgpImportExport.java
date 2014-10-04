@@ -38,7 +38,6 @@ import org.sufficientlysecure.keychain.service.results.OperationResult.Operation
 import org.sufficientlysecure.keychain.service.results.ImportKeyResult;
 import org.sufficientlysecure.keychain.service.results.SaveKeyringResult;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
-import org.sufficientlysecure.keychain.util.IterableIterator;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.ProgressScaler;
 

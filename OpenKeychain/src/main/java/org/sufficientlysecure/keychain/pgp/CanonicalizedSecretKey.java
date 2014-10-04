@@ -278,13 +278,12 @@ public class CanonicalizedSecretKey extends CanonicalizedPublicKey {
      * Certify the given pubkeyid with the given masterkeyid.
      *
      * @param publicKeyRing Keyring to add certification to.
-     * @param userIds       User IDs to certify, must not be null or empty
+     * @param userIds       User IDs to certify, or all if null
      * @return A keyring with added certifications
      */
     public UncachedKeyRing certifyUserIds(CanonicalizedPublicKeyRing publicKeyRing, List<String> userIds,
                                           byte[] nfcSignedHash, Date nfcCreationTimestamp)
-            throws PgpGeneralMsgIdException, NoSuchAlgorithmException, NoSuchProviderException,
-            PGPException, SignatureException {
+            throws PGPException {
         if (mPrivateKeyState == PRIVATE_KEY_STATE_LOCKED) {
             throw new PrivateKeyNotUnlockedException();
         }
@@ -314,7 +313,9 @@ public class CanonicalizedSecretKey extends CanonicalizedPublicKey {
         PGPPublicKey publicKey = publicKeyRing.getPublicKey().getPublicKey();
 
         // fetch public key ring, add the certification and return it
-        for (String userId : new IterableIterator<String>(userIds.iterator())) {
+        Iterable<String> it = userIds != null ? userIds
+                : new IterableIterator<String>(publicKey.getUserIDs());
+        for (String userId : it) {
             PGPSignature sig = signatureGenerator.generateCertification(userId, publicKey);
             publicKey = PGPPublicKey.addCertification(publicKey, userId, sig);
         }

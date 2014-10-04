@@ -517,8 +517,23 @@ public abstract class OperationResult implements Parcelable {
         MSG_SE_SIGCRYPTING (LogLevel.DEBUG, R.string.msg_se_sigcrypting),
         MSG_SE_SYMMETRIC (LogLevel.INFO, R.string.msg_se_symmetric),
 
-        MSG_CRT_UPLOAD_SUCCESS (LogLevel.OK, R.string.msg_crt_upload_success),
+        MSG_CRT_CERTIFYING (LogLevel.DEBUG, R.string.msg_crt_certifying),
+        MSG_CRT_CERTIFY_ALL (LogLevel.DEBUG, R.string.msg_crt_certify_all),
+        MSG_CRT_CERTIFY_SOME (LogLevel.DEBUG, R.plurals.msg_crt_certify_some),
+        MSG_CRT_ERROR_MASTER_NOT_FOUND (LogLevel.ERROR, R.string.msg_crt_error_master_not_found),
+        MSG_CRT_ERROR_UNLOCK (LogLevel.ERROR, R.string.msg_crt_error_unlock),
+        MSG_CRT_FP_MISMATCH (LogLevel.WARN, R.string.msg_crt_fp_mismatch),
+        MSG_CRT (LogLevel.START, R.string.msg_crt),
+        MSG_CRT_MASTER_FETCH (LogLevel.DEBUG, R.string.msg_crt_master_fetch),
+        MSG_CRT_SAVE (LogLevel.DEBUG, R.string.msg_crt_save),
+        MSG_CRT_SAVING (LogLevel.DEBUG, R.string.msg_crt_saving),
         MSG_CRT_SUCCESS (LogLevel.OK, R.string.msg_crt_success),
+        MSG_CRT_UNLOCK (LogLevel.DEBUG, R.string.msg_crt_unlock),
+        MSG_CRT_WARN_NOT_FOUND (LogLevel.WARN, R.string.msg_crt_warn_not_found),
+        MSG_CRT_WARN_CERT_FAILED (LogLevel.WARN, R.string.msg_crt_warn_cert_failed),
+        MSG_CRT_WARN_SAVE_FAILED (LogLevel.WARN, R.string.msg_crt_warn_save_failed),
+
+        MSG_CRT_UPLOAD_SUCCESS (LogLevel.OK, R.string.msg_crt_upload_success),
 
         MSG_ACC_SAVED (LogLevel.INFO, R.string.api_settings_save_msg),
 

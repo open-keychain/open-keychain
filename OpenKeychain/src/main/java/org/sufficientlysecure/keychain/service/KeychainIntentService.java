@@ -29,7 +29,9 @@ import android.os.RemoteException;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.pgp.PgpCertifyOperation;
 import org.sufficientlysecure.keychain.provider.ProviderHelper.NotFoundException;
+import org.sufficientlysecure.keychain.service.results.CertifyResult;
 import org.sufficientlysecure.keychain.util.FileHelper;
 import org.sufficientlysecure.keychain.util.ParcelableFileCache.IteratorWithSize;
 import org.sufficientlysecure.keychain.util.Preferences;
@@ -39,7 +41,6 @@ import org.sufficientlysecure.keychain.keyimport.KeybaseKeyserver;
 import org.sufficientlysecure.keychain.keyimport.Keyserver;
 import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedPublicKeyRing;
-import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKeyRing;
 import org.sufficientlysecure.keychain.pgp.PassphraseCacheInterface;
 import org.sufficientlysecure.keychain.pgp.PgpDecryptVerify;
@@ -80,7 +81,6 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
-import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -183,10 +183,8 @@ public class KeychainIntentService extends IntentService implements Progressable
     public static final String DOWNLOAD_KEY_SERVER = "query_key_server";
     public static final String DOWNLOAD_KEY_LIST = "query_key_id";
 
-    // sign key
-    public static final String CERTIFY_KEY_MASTER_KEY_ID = "sign_key_master_key_id";
-    public static final String CERTIFY_KEY_PUB_KEY_ID = "sign_key_pub_key_id";
-    public static final String CERTIFY_KEY_UIDS = "sign_key_uids";
+    // certify key
+    public static final String CERTIFY_PARCEL = "certify_parcel";
 
     // consolidate
     public static final String CONSOLIDATE_RECOVERY = "consolidate_recovery";
@@ -258,30 +256,21 @@ public class KeychainIntentService extends IntentService implements Progressable
             try {
 
                 /* Input */
-                long masterKeyId = data.getLong(CERTIFY_KEY_MASTER_KEY_ID);
-                long pubKeyId = data.getLong(CERTIFY_KEY_PUB_KEY_ID);
-                ArrayList<String> userIds = data.getStringArrayList(CERTIFY_KEY_UIDS);
+                CertifyActionsParcel parcel = data.getParcelable(CERTIFY_PARCEL);
 
                 /* Operation */
-                String signaturePassphrase = PassphraseCacheService.getCachedPassphrase(this,
-                        masterKeyId, masterKeyId);
-                if (signaturePassphrase == null) {
+                String passphrase = PassphraseCacheService.getCachedPassphrase(this,
+                        // certification is always with the master key id, so use that one
+                        parcel.mMasterKeyId, parcel.mMasterKeyId);
+                if (passphrase == null) {
                     throw new PgpGeneralException("Unable to obtain passphrase");
                 }
 
                 ProviderHelper providerHelper = new ProviderHelper(this);
-                CanonicalizedPublicKeyRing publicRing = providerHelper.getCanonicalizedPublicKeyRing(pubKeyId);
-                CanonicalizedSecretKeyRing secretKeyRing = providerHelper.getCanonicalizedSecretKeyRing(masterKeyId);
-                CanonicalizedSecretKey certificationKey = secretKeyRing.getSecretKey();
-                if (!certificationKey.unlock(signaturePassphrase)) {
-                    throw new PgpGeneralException("Error extracting key (bad passphrase?)");
-                }
-                // TODO: supply nfc stuff
-                UncachedKeyRing newRing = certificationKey.certifyUserIds(publicRing, userIds, null, null);
+                PgpCertifyOperation op = new PgpCertifyOperation(providerHelper, mActionCanceled);
+                CertifyResult result = op.certify(parcel, passphrase);
 
-                // store the signed key in our local cache
-                providerHelper.savePublicKeyRing(newRing);
-                sendMessageToHandler(KeychainIntentServiceHandler.MESSAGE_OKAY);
+                sendMessageToHandler(KeychainIntentServiceHandler.MESSAGE_OKAY, result);
 
             } catch (Exception e) {
                 sendErrorToHandler(e);
