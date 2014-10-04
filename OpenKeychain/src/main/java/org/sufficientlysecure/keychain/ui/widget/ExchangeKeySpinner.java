@@ -26,30 +26,20 @@ import android.support.v4.content.Loader;
 import android.util.AttributeSet;
 import android.widget.ImageView;
 
-import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
-import org.sufficientlysecure.keychain.provider.KeychainDatabase;
-import org.sufficientlysecure.keychain.provider.KeychainDatabase.Tables;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 
-public class CertifyKeySpinner extends KeySpinner {
-    private long mHiddenMasterKeyId = Constants.key.none;
-
-    public CertifyKeySpinner(Context context) {
+public class ExchangeKeySpinner extends KeySpinner {
+    public ExchangeKeySpinner(Context context) {
         super(context);
     }
 
-    public CertifyKeySpinner(Context context, AttributeSet attrs) {
+    public ExchangeKeySpinner(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
 
-    public CertifyKeySpinner(Context context, AttributeSet attrs, int defStyle) {
+    public ExchangeKeySpinner(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
-    }
-
-    public void setHiddenMasterKeyId(long hiddenMasterKeyId) {
-        this.mHiddenMasterKeyId = hiddenMasterKeyId;
-        reload();
     }
 
     @Override
@@ -66,20 +56,17 @@ public class CertifyKeySpinner extends KeySpinner {
                 KeychainContract.KeyRings.USER_ID,
                 KeychainContract.KeyRings.IS_REVOKED,
                 KeychainContract.KeyRings.IS_EXPIRED,
-                KeychainContract.KeyRings.HAS_CERTIFY,
                 KeychainContract.KeyRings.HAS_ANY_SECRET
         };
 
-        String where = KeychainContract.KeyRings.HAS_ANY_SECRET + " = 1 AND "
-                + KeychainDatabase.Tables.KEYS + "." + KeychainContract.KeyRings.MASTER_KEY_ID
-                + " != " + mHiddenMasterKeyId;
+        String where = KeychainContract.KeyRings.HAS_ANY_SECRET + " = 1";
 
         // Now create and return a CursorLoader that will take care of
         // creating a Cursor for the data being displayed.
         return new CursorLoader(getContext(), baseUri, projection, where, null, null);
     }
 
-    private int mIndexHasCertify, mIndexIsRevoked, mIndexIsExpired;
+    private int mIndexIsRevoked, mIndexIsExpired;
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
@@ -90,7 +77,6 @@ public class CertifyKeySpinner extends KeySpinner {
             if (mAdapter.getCount() == 2) {
                 setSelection(1);
             }
-            mIndexHasCertify = data.getColumnIndex(KeychainContract.KeyRings.HAS_CERTIFY);
             mIndexIsRevoked = data.getColumnIndex(KeychainContract.KeyRings.IS_REVOKED);
             mIndexIsExpired = data.getColumnIndex(KeychainContract.KeyRings.IS_EXPIRED);
         }
@@ -104,11 +90,6 @@ public class CertifyKeySpinner extends KeySpinner {
         }
         if (cursor.getInt(mIndexIsExpired) != 0) {
             KeyFormattingUtils.setStatusImage(getContext(), statusView, KeyFormattingUtils.STATE_EXPIRED);
-            return false;
-        }
-        // don't invalidate the "None" entry, which is also null!
-        if (cursor.getPosition() != 0 && cursor.isNull(mIndexHasCertify)) {
-            KeyFormattingUtils.setStatusImage(getContext(), statusView, KeyFormattingUtils.STATE_UNAVAILABLE);
             return false;
         }
 

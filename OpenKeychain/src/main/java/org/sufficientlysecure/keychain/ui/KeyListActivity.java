@@ -84,7 +84,7 @@ public class KeyListActivity extends DrawerActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menu_key_list_add:
-                importKeys();
+                addKeys();
                 return true;
 
             case R.id.menu_key_list_create:
@@ -139,8 +139,8 @@ public class KeyListActivity extends DrawerActivity {
         }
     }
 
-    private void importKeys() {
-        Intent intent = new Intent(this, ImportKeysActivity.class);
+    private void addKeys() {
+        Intent intent = new Intent(this, AddKeysActivity.class);
         startActivityForResult(intent, 0);
     }
 

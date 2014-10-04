@@ -12,7 +12,7 @@
     <item
         android:id="@+id/menu_key_list_add"
         app:showAsAction="ifRoom|withText"
-        android:icon="@drawable/ic_action_add_person"
+        android:icon="@drawable/ic_action_new_account"
         android:title="@string/menu_add_keys" />
 
     <item

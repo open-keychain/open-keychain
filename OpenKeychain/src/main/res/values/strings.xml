@@ -29,6 +29,7 @@
     <string name="title_encrypt_to_file">"Encrypt To File"</string>
     <string name="title_decrypt_to_file">"Decrypt To File"</string>
     <string name="title_import_keys">"Import Keys"</string>
+    <string name="title_add_keys">"Add Keys"</string>
     <string name="title_export_key">"Export Key"</string>
     <string name="title_export_keys">"Export Keys"</string>
     <string name="title_key_not_found">"Key Not Found"</string>
@@ -234,6 +235,7 @@
     <string name="select_key_to_certify">"Please select a key to be used for certification!"</string>
     <string name="key_too_big_for_sharing">"Key is too big to be shared this way!"</string>
     <string name="text_copied_to_clipboard">"Text has been copied to the clipboard!"</string>
+    <string name="select_key_for_exchange">"Please select a key to be used for secure exchange!"</string>
 
     <!--
          errors
