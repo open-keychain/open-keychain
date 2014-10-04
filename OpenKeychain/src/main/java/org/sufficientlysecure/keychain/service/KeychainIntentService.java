@@ -253,7 +253,437 @@ public class KeychainIntentService extends IntentService implements Progressable
         String action = intent.getAction();
 
         // executeServiceMethod action from extra bundle
-        if (ACTION_SIGN_ENCRYPT.equals(action)) {
+        if (ACTION_CERTIFY_KEYRING.equals(action)) {
+
+            try {
+
+                /* Input */
+                long masterKeyId = data.getLong(CERTIFY_KEY_MASTER_KEY_ID);
+                long pubKeyId = data.getLong(CERTIFY_KEY_PUB_KEY_ID);
+                ArrayList<String> userIds = data.getStringArrayList(CERTIFY_KEY_UIDS);
+
+                /* Operation */
+                String signaturePassphrase = PassphraseCacheService.getCachedPassphrase(this,
+                        masterKeyId, masterKeyId);
+                if (signaturePassphrase == null) {
+                    throw new PgpGeneralException("Unable to obtain passphrase");
+                }
+
+                ProviderHelper providerHelper = new ProviderHelper(this);
+                CanonicalizedPublicKeyRing publicRing = providerHelper.getCanonicalizedPublicKeyRing(pubKeyId);
+                CanonicalizedSecretKeyRing secretKeyRing = providerHelper.getCanonicalizedSecretKeyRing(masterKeyId);
+                CanonicalizedSecretKey certificationKey = secretKeyRing.getSecretKey();
+                if (!certificationKey.unlock(signaturePassphrase)) {
+                    throw new PgpGeneralException("Error extracting key (bad passphrase?)");
+                }
+                // TODO: supply nfc stuff
+                UncachedKeyRing newRing = certificationKey.certifyUserIds(publicRing, userIds, null, null);
+
+                // store the signed key in our local cache
+                providerHelper.savePublicKeyRing(newRing);
+                sendMessageToHandler(KeychainIntentServiceHandler.MESSAGE_OKAY);
+
+            } catch (Exception e) {
+                sendErrorToHandler(e);
+            }
+
+        } else if (ACTION_CONSOLIDATE.equals(action)) {
+
+            ConsolidateResult result;
+            if (data.containsKey(CONSOLIDATE_RECOVERY) && data.getBoolean(CONSOLIDATE_RECOVERY)) {
+                result = new ProviderHelper(this).consolidateDatabaseStep2(this);
+            } else {
+                result = new ProviderHelper(this).consolidateDatabaseStep1(this);
+            }
+            sendMessageToHandler(KeychainIntentServiceHandler.MESSAGE_OKAY, result);
+
+        } else if (ACTION_DECRYPT_METADATA.equals(action)) {
+
+            try {
+                /* Input */
+                String passphrase = data.getString(DECRYPT_PASSPHRASE);
+                byte[] nfcDecryptedSessionKey = data.getByteArray(DECRYPT_NFC_DECRYPTED_SESSION_KEY);
+
+                InputData inputData = createDecryptInputData(data);
+
+                /* Operation */
+
+                Bundle resultData = new Bundle();
+
+                // verifyText and decrypt returning additional resultData values for the
+                // verification of signatures
+                PgpDecryptVerify.Builder builder = new PgpDecryptVerify.Builder(
+                        new ProviderHelper(this),
+                        this, inputData, null
+                );
+                builder.setProgressable(this)
+                        .setAllowSymmetricDecryption(true)
+                        .setPassphrase(passphrase)
+                        .setDecryptMetadataOnly(true)
+                        .setNfcState(nfcDecryptedSessionKey);
+
+                DecryptVerifyResult decryptVerifyResult = builder.build().execute();
+
+                resultData.putParcelable(DecryptVerifyResult.EXTRA_RESULT, decryptVerifyResult);
+
+                /* Output */
+                Log.logDebugBundle(resultData, "resultData");
+
+                sendMessageToHandler(KeychainIntentServiceHandler.MESSAGE_OKAY, resultData);
+            } catch (Exception e) {
+                sendErrorToHandler(e);
+            }
+
+        } else if (ACTION_DECRYPT_VERIFY.equals(action)) {
+
+            try {
+                /* Input */
+                String passphrase = data.getString(DECRYPT_PASSPHRASE);
+                byte[] nfcDecryptedSessionKey = data.getByteArray(DECRYPT_NFC_DECRYPTED_SESSION_KEY);
+
+                InputData inputData = createDecryptInputData(data);
+                OutputStream outStream = createCryptOutputStream(data);
+
+                /* Operation */
+
+                Bundle resultData = new Bundle();
+
+                // verifyText and decrypt returning additional resultData values for the
+                // verification of signatures
+                PgpDecryptVerify.Builder builder = new PgpDecryptVerify.Builder(
+                        new ProviderHelper(this), this,
+                        inputData, outStream
+                );
+                builder.setProgressable(this)
+                        .setAllowSymmetricDecryption(true)
+                        .setPassphrase(passphrase)
+                        .setNfcState(nfcDecryptedSessionKey);
+
+                DecryptVerifyResult decryptVerifyResult = builder.build().execute();
+
+                outStream.close();
+
+                resultData.putParcelable(DecryptVerifyResult.EXTRA_RESULT, decryptVerifyResult);
+
+                /* Output */
+
+                finalizeDecryptOutputStream(data, resultData, outStream);
+
+                Log.logDebugBundle(resultData, "resultData");
+
+                sendMessageToHandler(KeychainIntentServiceHandler.MESSAGE_OKAY, resultData);
+            } catch (Exception e) {
+                sendErrorToHandler(e);
+            }
+
+        } else if (ACTION_DELETE.equals(action)) {
+
+            try {
+
+                long[] masterKeyIds = data.getLongArray(DELETE_KEY_LIST);
+                boolean isSecret = data.getBoolean(DELETE_IS_SECRET);
+
+                if (masterKeyIds.length == 0) {
+                    throw new PgpGeneralException("List of keys to delete is empty");
+                }
+
+                if (isSecret && masterKeyIds.length > 1) {
+                    throw new PgpGeneralException("Secret keys can only be deleted individually!");
+                }
+
+                boolean success = false;
+                for (long masterKeyId : masterKeyIds) {
+                    int count = getContentResolver().delete(
+                            KeyRingData.buildPublicKeyRingUri(masterKeyId), null, null
+                    );
+                    success |= count > 0;
+                }
+
+                if (isSecret && success) {
+                    new ProviderHelper(this).consolidateDatabaseStep1(this);
+                }
+
+                if (success) {
+                    // make sure new data is synced into contacts
+                    ContactSyncAdapterService.requestSync();
+
+                    sendMessageToHandler(KeychainIntentServiceHandler.MESSAGE_OKAY);
+                }
+            } catch (Exception e) {
+                sendErrorToHandler(e);
+            }
+
+        } else if (ACTION_DELETE_FILE_SECURELY.equals(action)) {
+
+            try {
+                /* Input */
+                String deleteFile = data.getString(DELETE_FILE);
+
+                /* Operation */
+                try {
+                    PgpHelper.deleteFileSecurely(this, this, new File(deleteFile));
+                } catch (FileNotFoundException e) {
+                    throw new PgpGeneralException(
+                            getString(R.string.error_file_not_found, deleteFile));
+                } catch (IOException e) {
+                    throw new PgpGeneralException(getString(R.string.error_file_delete_failed,
+                            deleteFile));
+                }
+
+                /* Output */
+                sendMessageToHandler(KeychainIntentServiceHandler.MESSAGE_OKAY);
+            } catch (Exception e) {
+                sendErrorToHandler(e);
+            }
+
+        } else if (ACTION_DOWNLOAD_AND_IMPORT_KEYS.equals(action) || ACTION_IMPORT_KEYBASE_KEYS.equals(action)) {
+
+            ArrayList<ImportKeysListEntry> entries = data.getParcelableArrayList(DOWNLOAD_KEY_LIST);
+
+            // this downloads the keys and places them into the ImportKeysListEntry entries
+            String keyServer = data.getString(DOWNLOAD_KEY_SERVER);
+
+            ArrayList<ParcelableKeyRing> keyRings = new ArrayList<ParcelableKeyRing>(entries.size());
+            for (ImportKeysListEntry entry : entries) {
+                try {
+                    Keyserver server;
+                    ArrayList<String> origins = entry.getOrigins();
+                    if (origins == null) {
+                        origins = new ArrayList<String>();
+                    }
+                    if (origins.isEmpty()) {
+                        origins.add(keyServer);
+                    }
+                    for (String origin : origins) {
+                        if (KeybaseKeyserver.ORIGIN.equals(origin)) {
+                            server = new KeybaseKeyserver();
+                        } else {
+                            server = new HkpKeyserver(origin);
+                        }
+                        Log.d(Constants.TAG, "IMPORTING " + entry.getKeyIdHex() + " FROM: " + server);
+
+                        // if available use complete fingerprint for get request
+                        byte[] downloadedKeyBytes;
+                        if (KeybaseKeyserver.ORIGIN.equals(origin)) {
+                            downloadedKeyBytes = server.get(entry.getExtraData()).getBytes();
+                        } else if (entry.getFingerprintHex() != null) {
+                            downloadedKeyBytes = server.get("0x" + entry.getFingerprintHex()).getBytes();
+                        } else {
+                            downloadedKeyBytes = server.get(entry.getKeyIdHex()).getBytes();
+                        }
+
+                        // save key bytes in entry object for doing the
+                        // actual import afterwards
+                        keyRings.add(new ParcelableKeyRing(downloadedKeyBytes, entry.getFingerprintHex()));
+                    }
+                } catch (Exception e) {
+                    sendErrorToHandler(e);
+                }
+            }
+
+            Intent importIntent = new Intent(this, KeychainIntentService.class);
+            importIntent.setAction(ACTION_IMPORT_KEYRING);
+
+            Bundle importData = new Bundle();
+            // This is not going through binder, nothing to fear of
+            importData.putParcelableArrayList(IMPORT_KEY_LIST, keyRings);
+            importIntent.putExtra(EXTRA_DATA, importData);
+            importIntent.putExtra(EXTRA_MESSENGER, mMessenger);
+
+            // now import it with this service
+            onHandleIntent(importIntent);
+
+            // result is handled in ACTION_IMPORT_KEYRING
+
+        } else if (ACTION_EDIT_KEYRING.equals(action)) {
+
+            try {
+                /* Input */
+                SaveKeyringParcel saveParcel = data.getParcelable(EDIT_KEYRING_PARCEL);
+                if (saveParcel == null) {
+                    Log.e(Constants.TAG, "bug: missing save_keyring_parcel in data!");
+                    return;
+                }
+
+                /* Operation */
+                PgpKeyOperation keyOperations =
+                        new PgpKeyOperation(new ProgressScaler(this, 10, 60, 100), mActionCanceled);
+                EditKeyResult modifyResult;
+
+                if (saveParcel.mMasterKeyId != null) {
+                    String passphrase = data.getString(EDIT_KEYRING_PASSPHRASE);
+                    CanonicalizedSecretKeyRing secRing =
+                            new ProviderHelper(this).getCanonicalizedSecretKeyRing(saveParcel.mMasterKeyId);
+
+                    modifyResult = keyOperations.modifySecretKeyRing(secRing, saveParcel, passphrase);
+                } else {
+                    modifyResult = keyOperations.createSecretKeyRing(saveParcel);
+                }
+
+                // If the edit operation didn't succeed, exit here
+                if (!modifyResult.success()) {
+                    // always return SaveKeyringResult, so create one out of the EditKeyResult
+                    SaveKeyringResult saveResult = new SaveKeyringResult(
+                            SaveKeyringResult.RESULT_ERROR,
+                            modifyResult.getLog(),
+                            null);
+                    sendMessageToHandler(KeychainIntentServiceHandler.MESSAGE_OKAY, saveResult);
+                    return;
+                }
+
+                UncachedKeyRing ring = modifyResult.getRing();
+
+                // Check if the action was cancelled
+                if (mActionCanceled.get()) {
+                    OperationLog log = modifyResult.getLog();
+                    // If it wasn't added before, add log entry
+                    if (!modifyResult.cancelled()) {
+                        log.add(LogType.MSG_OPERATION_CANCELLED, 0);
+                    }
+                    // If so, just stop without saving
+                    SaveKeyringResult saveResult = new SaveKeyringResult(
+                            SaveKeyringResult.RESULT_CANCELLED, log, null);
+                    sendMessageToHandler(KeychainIntentServiceHandler.MESSAGE_OKAY, saveResult);
+                    return;
+                }
+
+                // Save the keyring. The ProviderHelper is initialized with the previous log
+                SaveKeyringResult saveResult = new ProviderHelper(this, modifyResult.getLog())
+                        .saveSecretKeyRing(ring, new ProgressScaler(this, 60, 95, 100));
+
+                // If the edit operation didn't succeed, exit here
+                if (!saveResult.success()) {
+                    sendMessageToHandler(KeychainIntentServiceHandler.MESSAGE_OKAY, saveResult);
+                    return;
+                }
+
+                // cache new passphrase
+                if (saveParcel.mNewPassphrase != null) {
+                    PassphraseCacheService.addCachedPassphrase(this, ring.getMasterKeyId(), ring.getMasterKeyId(),
+                            saveParcel.mNewPassphrase, ring.getPublicKey().getPrimaryUserIdWithFallback());
+                }
+
+                setProgress(R.string.progress_done, 100, 100);
+
+                // make sure new data is synced into contacts
+                ContactSyncAdapterService.requestSync();
+
+                /* Output */
+                sendMessageToHandler(KeychainIntentServiceHandler.MESSAGE_OKAY, saveResult);
+            } catch (Exception e) {
+                sendErrorToHandler(e);
+            }
+
+        } else if (ACTION_EXPORT_KEYRING.equals(action)) {
+
+            try {
+
+                boolean exportSecret = data.getBoolean(EXPORT_SECRET, false);
+                long[] masterKeyIds = data.getLongArray(EXPORT_KEY_RING_MASTER_KEY_ID);
+                String outputFile = data.getString(EXPORT_FILENAME);
+                Uri outputUri = data.getParcelable(EXPORT_URI);
+
+                // If not exporting all keys get the masterKeyIds of the keys to export from the intent
+                boolean exportAll = data.getBoolean(EXPORT_ALL);
+
+                if (outputFile != null) {
+                    // check if storage is ready
+                    if (!FileHelper.isStorageMounted(outputFile)) {
+                        throw new PgpGeneralException(getString(R.string.error_external_storage_not_ready));
+                    }
+                }
+
+                ArrayList<Long> publicMasterKeyIds = new ArrayList<Long>();
+                ArrayList<Long> secretMasterKeyIds = new ArrayList<Long>();
+
+                String selection = null;
+                if (!exportAll) {
+                    selection = KeychainDatabase.Tables.KEYS + "." + KeyRings.MASTER_KEY_ID + " IN( ";
+                    for (long l : masterKeyIds) {
+                        selection += Long.toString(l) + ",";
+                    }
+                    selection = selection.substring(0, selection.length() - 1) + " )";
+                }
+
+                Cursor cursor = getContentResolver().query(KeyRings.buildUnifiedKeyRingsUri(),
+                        new String[]{KeyRings.MASTER_KEY_ID, KeyRings.HAS_ANY_SECRET},
+                        selection, null, null);
+                try {
+                    if (cursor != null && cursor.moveToFirst()) do {
+                        // export public either way
+                        publicMasterKeyIds.add(cursor.getLong(0));
+                        // add secret if available (and requested)
+                        if (exportSecret && cursor.getInt(1) != 0)
+                            secretMasterKeyIds.add(cursor.getLong(0));
+                    } while (cursor.moveToNext());
+                } finally {
+                    if (cursor != null) {
+                        cursor.close();
+                    }
+                }
+
+                OutputStream outStream;
+                if (outputFile != null) {
+                    outStream = new FileOutputStream(outputFile);
+                } else {
+                    outStream = getContentResolver().openOutputStream(outputUri);
+                }
+
+                PgpImportExport pgpImportExport = new PgpImportExport(this, new ProviderHelper(this), this);
+                Bundle resultData = pgpImportExport
+                        .exportKeyRings(publicMasterKeyIds, secretMasterKeyIds, outStream);
+
+                if (mActionCanceled.get() && outputFile != null) {
+                    new File(outputFile).delete();
+                }
+
+                sendMessageToHandler(KeychainIntentServiceHandler.MESSAGE_OKAY, resultData);
+            } catch (Exception e) {
+                sendErrorToHandler(e);
+            }
+
+        } else if (ACTION_IMPORT_KEYRING.equals(action)) {
+
+            try {
+
+                Iterator<ParcelableKeyRing> entries;
+                int numEntries;
+                if (data.containsKey(IMPORT_KEY_LIST)) {
+                    // get entries from intent
+                    ArrayList<ParcelableKeyRing> list = data.getParcelableArrayList(IMPORT_KEY_LIST);
+                    entries = list.iterator();
+                    numEntries = list.size();
+                } else {
+                    // get entries from cached file
+                    ParcelableFileCache<ParcelableKeyRing> cache =
+                            new ParcelableFileCache<ParcelableKeyRing>(this, "key_import.pcl");
+                    IteratorWithSize<ParcelableKeyRing> it = cache.readCache();
+                    entries = it;
+                    numEntries = it.getSize();
+                }
+
+                ProviderHelper providerHelper = new ProviderHelper(this);
+                PgpImportExport pgpImportExport = new PgpImportExport(
+                        this, providerHelper, this, mActionCanceled);
+                ImportKeyResult result = pgpImportExport.importKeyRings(entries, numEntries);
+
+                // we do this even on failure or cancellation!
+                if (result.mSecret > 0) {
+                    // cannot cancel from here on out!
+                    sendMessageToHandler(KeychainIntentServiceHandler.MESSAGE_PREVENT_CANCEL);
+                    providerHelper.consolidateDatabaseStep1(this);
+                }
+
+                // make sure new data is synced into contacts
+                ContactSyncAdapterService.requestSync();
+
+                sendMessageToHandler(KeychainIntentServiceHandler.MESSAGE_OKAY, result);
+            } catch (Exception e) {
+                sendErrorToHandler(e);
+            }
+
+        } else if (ACTION_SIGN_ENCRYPT.equals(action)) {
+
             try {
                 /* Input */
                 int source = data.get(SOURCE) != null ? data.getInt(SOURCE) : data.getInt(TARGET);
@@ -336,285 +766,9 @@ public class KeychainIntentService extends IntentService implements Progressable
             } catch (Exception e) {
                 sendErrorToHandler(e);
             }
-        } else if (ACTION_DECRYPT_VERIFY.equals(action)) {
-            try {
-                /* Input */
-                String passphrase = data.getString(DECRYPT_PASSPHRASE);
-                byte[] nfcDecryptedSessionKey = data.getByteArray(DECRYPT_NFC_DECRYPTED_SESSION_KEY);
 
-                InputData inputData = createDecryptInputData(data);
-                OutputStream outStream = createCryptOutputStream(data);
-
-                /* Operation */
-
-                Bundle resultData = new Bundle();
-
-                // verifyText and decrypt returning additional resultData values for the
-                // verification of signatures
-                PgpDecryptVerify.Builder builder = new PgpDecryptVerify.Builder(
-                        new ProviderHelper(this), this,
-                        inputData, outStream
-                );
-                builder.setProgressable(this)
-                        .setAllowSymmetricDecryption(true)
-                        .setPassphrase(passphrase)
-                        .setNfcState(nfcDecryptedSessionKey);
-
-                DecryptVerifyResult decryptVerifyResult = builder.build().execute();
-
-                outStream.close();
-
-                resultData.putParcelable(DecryptVerifyResult.EXTRA_RESULT, decryptVerifyResult);
-
-                /* Output */
-
-                finalizeDecryptOutputStream(data, resultData, outStream);
-
-                Log.logDebugBundle(resultData, "resultData");
-
-                sendMessageToHandler(KeychainIntentServiceHandler.MESSAGE_OKAY, resultData);
-            } catch (Exception e) {
-                sendErrorToHandler(e);
-            }
-        } else if (ACTION_DECRYPT_METADATA.equals(action)) {
-            try {
-                /* Input */
-                String passphrase = data.getString(DECRYPT_PASSPHRASE);
-                byte[] nfcDecryptedSessionKey = data.getByteArray(DECRYPT_NFC_DECRYPTED_SESSION_KEY);
-
-                InputData inputData = createDecryptInputData(data);
-
-                /* Operation */
-
-                Bundle resultData = new Bundle();
-
-                // verifyText and decrypt returning additional resultData values for the
-                // verification of signatures
-                PgpDecryptVerify.Builder builder = new PgpDecryptVerify.Builder(
-                        new ProviderHelper(this),
-                        this, inputData, null
-                );
-                builder.setProgressable(this)
-                        .setAllowSymmetricDecryption(true)
-                        .setPassphrase(passphrase)
-                        .setDecryptMetadataOnly(true)
-                        .setNfcState(nfcDecryptedSessionKey);
-
-                DecryptVerifyResult decryptVerifyResult = builder.build().execute();
-
-                resultData.putParcelable(DecryptVerifyResult.EXTRA_RESULT, decryptVerifyResult);
-
-                /* Output */
-                Log.logDebugBundle(resultData, "resultData");
-
-                sendMessageToHandler(KeychainIntentServiceHandler.MESSAGE_OKAY, resultData);
-            } catch (Exception e) {
-                sendErrorToHandler(e);
-            }
-        } else if (ACTION_EDIT_KEYRING.equals(action)) {
-            try {
-                /* Input */
-                SaveKeyringParcel saveParcel = data.getParcelable(EDIT_KEYRING_PARCEL);
-                if (saveParcel == null) {
-                    Log.e(Constants.TAG, "bug: missing save_keyring_parcel in data!");
-                    return;
-                }
-
-                /* Operation */
-                PgpKeyOperation keyOperations =
-                        new PgpKeyOperation(new ProgressScaler(this, 10, 60, 100), mActionCanceled);
-                EditKeyResult modifyResult;
-
-                if (saveParcel.mMasterKeyId != null) {
-                    String passphrase = data.getString(EDIT_KEYRING_PASSPHRASE);
-                    CanonicalizedSecretKeyRing secRing =
-                            new ProviderHelper(this).getCanonicalizedSecretKeyRing(saveParcel.mMasterKeyId);
-
-                    modifyResult = keyOperations.modifySecretKeyRing(secRing, saveParcel, passphrase);
-                } else {
-                    modifyResult = keyOperations.createSecretKeyRing(saveParcel);
-                }
-
-                // If the edit operation didn't succeed, exit here
-                if (!modifyResult.success()) {
-                    // always return SaveKeyringResult, so create one out of the EditKeyResult
-                    SaveKeyringResult saveResult = new SaveKeyringResult(
-                            SaveKeyringResult.RESULT_ERROR,
-                            modifyResult.getLog(),
-                            null);
-                    sendMessageToHandler(KeychainIntentServiceHandler.MESSAGE_OKAY, saveResult);
-                    return;
-                }
-
-                UncachedKeyRing ring = modifyResult.getRing();
-
-                // Check if the action was cancelled
-                if (mActionCanceled.get()) {
-                    OperationLog log = modifyResult.getLog();
-                    // If it wasn't added before, add log entry
-                    if (!modifyResult.cancelled()) {
-                        log.add(LogType.MSG_OPERATION_CANCELLED, 0);
-                    }
-                    // If so, just stop without saving
-                    SaveKeyringResult saveResult = new SaveKeyringResult(
-                            SaveKeyringResult.RESULT_CANCELLED, log, null);
-                    sendMessageToHandler(KeychainIntentServiceHandler.MESSAGE_OKAY, saveResult);
-                    return;
-                }
-
-                // Save the keyring. The ProviderHelper is initialized with the previous log
-                SaveKeyringResult saveResult = new ProviderHelper(this, modifyResult.getLog())
-                        .saveSecretKeyRing(ring, new ProgressScaler(this, 60, 95, 100));
-
-                // If the edit operation didn't succeed, exit here
-                if (!saveResult.success()) {
-                    sendMessageToHandler(KeychainIntentServiceHandler.MESSAGE_OKAY, saveResult);
-                    return;
-                }
-
-                // cache new passphrase
-                if (saveParcel.mNewPassphrase != null) {
-                    PassphraseCacheService.addCachedPassphrase(this, ring.getMasterKeyId(), ring.getMasterKeyId(),
-                            saveParcel.mNewPassphrase, ring.getPublicKey().getPrimaryUserIdWithFallback());
-                }
-
-                setProgress(R.string.progress_done, 100, 100);
-
-                // make sure new data is synced into contacts
-                ContactSyncAdapterService.requestSync();
-
-                /* Output */
-                sendMessageToHandler(KeychainIntentServiceHandler.MESSAGE_OKAY, saveResult);
-            } catch (Exception e) {
-                sendErrorToHandler(e);
-            }
-
-        } else if (ACTION_DELETE_FILE_SECURELY.equals(action)) {
-            try {
-                /* Input */
-                String deleteFile = data.getString(DELETE_FILE);
-
-                /* Operation */
-                try {
-                    PgpHelper.deleteFileSecurely(this, this, new File(deleteFile));
-                } catch (FileNotFoundException e) {
-                    throw new PgpGeneralException(
-                            getString(R.string.error_file_not_found, deleteFile));
-                } catch (IOException e) {
-                    throw new PgpGeneralException(getString(R.string.error_file_delete_failed,
-                            deleteFile));
-                }
-
-                /* Output */
-                sendMessageToHandler(KeychainIntentServiceHandler.MESSAGE_OKAY);
-            } catch (Exception e) {
-                sendErrorToHandler(e);
-            }
-        } else if (ACTION_IMPORT_KEYRING.equals(action)) {
-            try {
-
-                Iterator<ParcelableKeyRing> entries;
-                int numEntries;
-                if (data.containsKey(IMPORT_KEY_LIST)) {
-                    // get entries from intent
-                    ArrayList<ParcelableKeyRing> list = data.getParcelableArrayList(IMPORT_KEY_LIST);
-                    entries = list.iterator();
-                    numEntries = list.size();
-                } else {
-                    // get entries from cached file
-                    ParcelableFileCache<ParcelableKeyRing> cache =
-                            new ParcelableFileCache<ParcelableKeyRing>(this, "key_import.pcl");
-                    IteratorWithSize<ParcelableKeyRing> it = cache.readCache();
-                    entries = it;
-                    numEntries = it.getSize();
-                }
-
-                ProviderHelper providerHelper = new ProviderHelper(this);
-                PgpImportExport pgpImportExport = new PgpImportExport(
-                        this, providerHelper, this, mActionCanceled);
-                ImportKeyResult result = pgpImportExport.importKeyRings(entries, numEntries);
-
-                // we do this even on failure or cancellation!
-                if (result.mSecret > 0) {
-                    // cannot cancel from here on out!
-                    sendMessageToHandler(KeychainIntentServiceHandler.MESSAGE_PREVENT_CANCEL);
-                    providerHelper.consolidateDatabaseStep1(this);
-                }
-
-                // make sure new data is synced into contacts
-                ContactSyncAdapterService.requestSync();
-
-                sendMessageToHandler(KeychainIntentServiceHandler.MESSAGE_OKAY, result);
-            } catch (Exception e) {
-                sendErrorToHandler(e);
-            }
-        } else if (ACTION_EXPORT_KEYRING.equals(action)) {
-            try {
-
-                boolean exportSecret = data.getBoolean(EXPORT_SECRET, false);
-                long[] masterKeyIds = data.getLongArray(EXPORT_KEY_RING_MASTER_KEY_ID);
-                String outputFile = data.getString(EXPORT_FILENAME);
-                Uri outputUri = data.getParcelable(EXPORT_URI);
-
-                // If not exporting all keys get the masterKeyIds of the keys to export from the intent
-                boolean exportAll = data.getBoolean(EXPORT_ALL);
-
-                if (outputFile != null) {
-                    // check if storage is ready
-                    if (!FileHelper.isStorageMounted(outputFile)) {
-                        throw new PgpGeneralException(getString(R.string.error_external_storage_not_ready));
-                    }
-                }
-
-                ArrayList<Long> publicMasterKeyIds = new ArrayList<Long>();
-                ArrayList<Long> secretMasterKeyIds = new ArrayList<Long>();
-
-                String selection = null;
-                if (!exportAll) {
-                    selection = KeychainDatabase.Tables.KEYS + "." + KeyRings.MASTER_KEY_ID + " IN( ";
-                    for (long l : masterKeyIds) {
-                        selection += Long.toString(l) + ",";
-                    }
-                    selection = selection.substring(0, selection.length() - 1) + " )";
-                }
-
-                Cursor cursor = getContentResolver().query(KeyRings.buildUnifiedKeyRingsUri(),
-                        new String[]{KeyRings.MASTER_KEY_ID, KeyRings.HAS_ANY_SECRET},
-                        selection, null, null);
-                try {
-                    if (cursor != null && cursor.moveToFirst()) do {
-                        // export public either way
-                        publicMasterKeyIds.add(cursor.getLong(0));
-                        // add secret if available (and requested)
-                        if (exportSecret && cursor.getInt(1) != 0)
-                            secretMasterKeyIds.add(cursor.getLong(0));
-                    } while (cursor.moveToNext());
-                } finally {
-                    if (cursor != null) {
-                        cursor.close();
-                    }
-                }
-
-                OutputStream outStream;
-                if (outputFile != null) {
-                    outStream = new FileOutputStream(outputFile);
-                } else {
-                    outStream = getContentResolver().openOutputStream(outputUri);
-                }
-
-                PgpImportExport pgpImportExport = new PgpImportExport(this, new ProviderHelper(this), this);
-                Bundle resultData = pgpImportExport
-                        .exportKeyRings(publicMasterKeyIds, secretMasterKeyIds, outStream);
-
-                if (mActionCanceled.get() && outputFile != null) {
-                    new File(outputFile).delete();
-                }
-
-                sendMessageToHandler(KeychainIntentServiceHandler.MESSAGE_OKAY, resultData);
-            } catch (Exception e) {
-                sendErrorToHandler(e);
-            }
         } else if (ACTION_UPLOAD_KEYRING.equals(action)) {
+
             try {
 
                 /* Input */
@@ -638,142 +792,6 @@ public class KeychainIntentService extends IntentService implements Progressable
             } catch (Exception e) {
                 sendErrorToHandler(e);
             }
-        } else if (ACTION_DOWNLOAD_AND_IMPORT_KEYS.equals(action) || ACTION_IMPORT_KEYBASE_KEYS.equals(action)) {
-            ArrayList<ImportKeysListEntry> entries = data.getParcelableArrayList(DOWNLOAD_KEY_LIST);
-
-                // this downloads the keys and places them into the ImportKeysListEntry entries
-                String keyServer = data.getString(DOWNLOAD_KEY_SERVER);
-
-                ArrayList<ParcelableKeyRing> keyRings = new ArrayList<ParcelableKeyRing>(entries.size());
-                for (ImportKeysListEntry entry : entries) {
-                    try {
-                        Keyserver server;
-                        ArrayList<String> origins = entry.getOrigins();
-                        if (origins == null) {
-                            origins = new ArrayList<String>();
-                        }
-                        if (origins.isEmpty()) {
-                            origins.add(keyServer);
-                        }
-                        for (String origin : origins) {
-                            if (KeybaseKeyserver.ORIGIN.equals(origin)) {
-                                server = new KeybaseKeyserver();
-                            } else {
-                                server = new HkpKeyserver(origin);
-                            }
-                            Log.d(Constants.TAG, "IMPORTING " + entry.getKeyIdHex() + " FROM: " + server);
-
-                            // if available use complete fingerprint for get request
-                            byte[] downloadedKeyBytes;
-                            if (KeybaseKeyserver.ORIGIN.equals(origin)) {
-                                downloadedKeyBytes = server.get(entry.getExtraData()).getBytes();
-                            } else if (entry.getFingerprintHex() != null) {
-                                downloadedKeyBytes = server.get("0x" + entry.getFingerprintHex()).getBytes();
-                            } else {
-                                downloadedKeyBytes = server.get(entry.getKeyIdHex()).getBytes();
-                            }
-
-                            // save key bytes in entry object for doing the
-                            // actual import afterwards
-                            keyRings.add(new ParcelableKeyRing(downloadedKeyBytes, entry.getFingerprintHex()));
-                        }
-                    } catch (Exception e) {
-                        sendErrorToHandler(e);
-                    }
-                }
-
-                Intent importIntent = new Intent(this, KeychainIntentService.class);
-                importIntent.setAction(ACTION_IMPORT_KEYRING);
-
-                Bundle importData = new Bundle();
-                // This is not going through binder, nothing to fear of
-                importData.putParcelableArrayList(IMPORT_KEY_LIST, keyRings);
-                importIntent.putExtra(EXTRA_DATA, importData);
-                importIntent.putExtra(EXTRA_MESSENGER, mMessenger);
-
-                // now import it with this service
-                onHandleIntent(importIntent);
-
-                // result is handled in ACTION_IMPORT_KEYRING
-        } else if (ACTION_CERTIFY_KEYRING.equals(action)) {
-            try {
-
-                /* Input */
-                long masterKeyId = data.getLong(CERTIFY_KEY_MASTER_KEY_ID);
-                long pubKeyId = data.getLong(CERTIFY_KEY_PUB_KEY_ID);
-                ArrayList<String> userIds = data.getStringArrayList(CERTIFY_KEY_UIDS);
-
-                /* Operation */
-                String signaturePassphrase = PassphraseCacheService.getCachedPassphrase(this,
-                        masterKeyId, masterKeyId);
-                if (signaturePassphrase == null) {
-                    throw new PgpGeneralException("Unable to obtain passphrase");
-                }
-
-                ProviderHelper providerHelper = new ProviderHelper(this);
-                CanonicalizedPublicKeyRing publicRing = providerHelper.getCanonicalizedPublicKeyRing(pubKeyId);
-                CanonicalizedSecretKeyRing secretKeyRing = providerHelper.getCanonicalizedSecretKeyRing(masterKeyId);
-                CanonicalizedSecretKey certificationKey = secretKeyRing.getSecretKey();
-                if (!certificationKey.unlock(signaturePassphrase)) {
-                    throw new PgpGeneralException("Error extracting key (bad passphrase?)");
-                }
-                // TODO: supply nfc stuff
-                UncachedKeyRing newRing = certificationKey.certifyUserIds(publicRing, userIds, null, null);
-
-                // store the signed key in our local cache
-                providerHelper.savePublicKeyRing(newRing);
-                sendMessageToHandler(KeychainIntentServiceHandler.MESSAGE_OKAY);
-
-            } catch (Exception e) {
-                sendErrorToHandler(e);
-            }
-
-        } else if (ACTION_DELETE.equals(action)) {
-
-            try {
-
-                long[] masterKeyIds = data.getLongArray(DELETE_KEY_LIST);
-                boolean isSecret = data.getBoolean(DELETE_IS_SECRET);
-
-                if (masterKeyIds.length == 0) {
-                    throw new PgpGeneralException("List of keys to delete is empty");
-                }
-
-                if (isSecret && masterKeyIds.length > 1) {
-                    throw new PgpGeneralException("Secret keys can only be deleted individually!");
-                }
-
-                boolean success = false;
-                for (long masterKeyId : masterKeyIds) {
-                    int count = getContentResolver().delete(
-                            KeyRingData.buildPublicKeyRingUri(masterKeyId), null, null
-                    );
-                    success |= count > 0;
-                }
-
-                if (isSecret && success) {
-                    new ProviderHelper(this).consolidateDatabaseStep1(this);
-                }
-
-                if (success) {
-                    // make sure new data is synced into contacts
-                    ContactSyncAdapterService.requestSync();
-
-                    sendMessageToHandler(KeychainIntentServiceHandler.MESSAGE_OKAY);
-                }
-
-            } catch (Exception e) {
-                sendErrorToHandler(e);
-            }
-
-        } else if (ACTION_CONSOLIDATE.equals(action)) {
-            ConsolidateResult result;
-            if (data.containsKey(CONSOLIDATE_RECOVERY) && data.getBoolean(CONSOLIDATE_RECOVERY)) {
-                result = new ProviderHelper(this).consolidateDatabaseStep2(this);
-            } else {
-                result = new ProviderHelper(this).consolidateDatabaseStep1(this);
-            }
-            sendMessageToHandler(KeychainIntentServiceHandler.MESSAGE_OKAY, result);
         }
 
     }
