@@ -45,8 +45,11 @@ import android.widget.ScrollView;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
+import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
+import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UserIds;
 import org.sufficientlysecure.keychain.provider.KeychainDatabase.Tables;
+import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.CertifyActionsParcel;
 import org.sufficientlysecure.keychain.service.CertifyActionsParcel.CertifyAction;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
@@ -106,10 +109,17 @@ public class MultiCertifyKeyFragment extends LoaderFragment
             return;
         }
 
-        OperationResult result = mActivity.getIntent().getParcelableExtra(MultiCertifyKeyActivity.EXTRA_RESULT);
-        if (result != null) {
-            // display result from import
-            result.createNotify(mActivity).show();
+        // preselect certify key id if given
+        long certifyKeyId = mActivity.getIntent().getLongExtra(MultiCertifyKeyActivity.EXTRA_CERTIFY_KEY_ID, Constants.key.none);
+        if (certifyKeyId != Constants.key.none) {
+            try {
+                CachedPublicKeyRing key = (new ProviderHelper(getActivity())).getCachedPublicKeyRing(certifyKeyId);
+                if (key.canCertify()) {
+                    mCertifyKeySpinner.setSelectedKeyId(certifyKeyId);
+                }
+            } catch (PgpGeneralException e) {
+                Log.e(Constants.TAG, "certify certify check failed", e);
+            }
         }
 
         mUserIdsAdapter = new MultiUserIdsAdapter(mActivity, null, 0);
@@ -117,6 +127,11 @@ public class MultiCertifyKeyFragment extends LoaderFragment
 
         getLoaderManager().initLoader(0, null, this);
 
+        OperationResult result = mActivity.getIntent().getParcelableExtra(MultiCertifyKeyActivity.EXTRA_RESULT);
+        if (result != null) {
+            // display result from import
+            result.createNotify(mActivity).show();
+        }
     }
 
     @Override
@@ -196,14 +211,15 @@ public class MultiCertifyKeyFragment extends LoaderFragment
         return new CursorLoader(mActivity, uri,
                 USER_IDS_PROJECTION, selection, ids,
                 Tables.USER_IDS + "." + UserIds.MASTER_KEY_ID + " ASC"
-                        + "," + Tables.USER_IDS + "." + UserIds.USER_ID + " ASC");
+                        + "," + Tables.USER_IDS + "." + UserIds.USER_ID + " ASC"
+        );
     }
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
 
-        MatrixCursor matrix = new MatrixCursor(new String[] {
-            "_id", "user_data", "grouped"
+        MatrixCursor matrix = new MatrixCursor(new String[]{
+                "_id", "user_data", "grouped"
         });
         data.moveToFirst();
 
@@ -236,7 +252,7 @@ public class MultiCertifyKeyFragment extends LoaderFragment
                 byte[] d = p.marshall();
                 p.recycle();
 
-                matrix.addRow(new Object[] {
+                matrix.addRow(new Object[]{
                         lastMasterKeyId, d, header ? 1 : 0
                 });
                 // indicate that we have a header for this masterKeyId
