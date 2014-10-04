@@ -189,7 +189,7 @@ public class MultiCertifyKeyFragment extends LoaderFragment
         return new CursorLoader(mActivity, uri,
                 USER_IDS_PROJECTION, selection, ids,
                 Tables.USER_IDS + "." + UserIds.MASTER_KEY_ID + " ASC"
-                        + "," + Tables.USER_IDS + "." + UserIds.USER_ID + " ASC");
+                        + ", " + Tables.USER_IDS + "." + UserIds.USER_ID + " ASC");
     }
 
     @Override
