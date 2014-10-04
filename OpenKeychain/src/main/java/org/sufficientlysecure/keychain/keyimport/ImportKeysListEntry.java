@@ -73,7 +73,10 @@ public class ImportKeysListEntry implements Serializable, Parcelable {
         }
         dest.writeString(mFingerprintHex);
         dest.writeString(mKeyIdHex);
-        dest.writeInt(mBitStrength);
+        dest.writeInt(mBitStrength == null ? 0 : 1);
+        if (mBitStrength != null) {
+            dest.writeInt(mBitStrength);
+        }
         dest.writeString(mAlgorithm);
         dest.writeByte((byte) (mSecretKey ? 1 : 0));
         dest.writeByte((byte) (mSelected ? 1 : 0));
@@ -94,7 +97,7 @@ public class ImportKeysListEntry implements Serializable, Parcelable {
             vr.mDate = source.readInt() != 0 ? new Date(source.readLong()) : null;
             vr.mFingerprintHex = source.readString();
             vr.mKeyIdHex = source.readString();
-            vr.mBitStrength = source.readInt();
+            vr.mBitStrength = source.readInt() != 0 ? source.readInt() : null;
             vr.mAlgorithm = source.readString();
             vr.mSecretKey = source.readByte() == 1;
             vr.mSelected = source.readByte() == 1;

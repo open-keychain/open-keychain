@@ -59,7 +59,6 @@ public class KeyUpdateHelper {
                 for (String fprint : providerHelper.getAllFingerprints(KeychainContract.KeyRings.buildUnifiedKeyRingsUri())) {
                     ImportKeysListEntry key = new ImportKeysListEntry();
                     key.setFingerprintHex(fprint);
-                    key.setBitStrength(1337);
                     key.addOrigin(servers[0]);
                     keys.add(key);
                 }

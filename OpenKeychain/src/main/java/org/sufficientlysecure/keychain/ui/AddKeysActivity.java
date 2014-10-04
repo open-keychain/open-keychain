@@ -389,8 +389,6 @@ public class AddKeysActivity extends ActionBarActivity implements
                     certifyIntent.putExtra(MultiCertifyKeyActivity.EXTRA_KEY_IDS, result.getImportedMasterKeyIds());
                     certifyIntent.putExtra(MultiCertifyKeyActivity.EXTRA_CERTIFY_KEY_ID, mExchangeMasterKeyId);
                     startActivity(certifyIntent);
-
-                    result.createNotify(AddKeysActivity.this).show();
                 }
             }
         };
@@ -449,7 +447,6 @@ public class AddKeysActivity extends ActionBarActivity implements
 
             final ImportKeysListEntry keyEntry = new ImportKeysListEntry();
             keyEntry.setFingerprintHex(fingerprint);
-            keyEntry.setBitStrength(1337); // TODO: make optional!
             keyEntry.addOrigin(cloudPrefs.keyserver);
             ArrayList<ImportKeysListEntry> selectedEntries = new ArrayList<ImportKeysListEntry>();
             selectedEntries.add(keyEntry);
