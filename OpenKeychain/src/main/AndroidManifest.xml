@@ -424,6 +424,10 @@
                 android:value=".ui.ViewKeyActivity" />
         </activity>
         <activity
+            android:name=".ui.MultiCertifyKeyActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
+            android:label="@string/title_certify_key" />
+        <activity
             android:name=".ui.ImportKeysActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
             android:label="@string/title_import_keys"

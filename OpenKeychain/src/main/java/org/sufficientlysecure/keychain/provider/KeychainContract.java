@@ -89,7 +89,6 @@ public class KeychainContract {
             .parse("content://" + CONTENT_AUTHORITY);
 
     public static final String BASE_KEY_RINGS = "key_rings";
-    public static final String BASE_DATA = "data";
 
     public static final String PATH_UNIFIED = "unified";
 
@@ -242,6 +241,10 @@ public class KeychainContract {
          */
         public static final String CONTENT_ITEM_TYPE
                 = "vnd.android.cursor.item/vnd.org.sufficientlysecure.keychain.provider.user_ids";
+
+        public static Uri buildUserIdsUri() {
+            return CONTENT_URI.buildUpon().appendPath(PATH_USER_IDS).build();
+        }
 
         public static Uri buildUserIdsUri(long masterKeyId) {
             return CONTENT_URI.buildUpon().appendPath(Long.toString(masterKeyId)).appendPath(PATH_USER_IDS).build();

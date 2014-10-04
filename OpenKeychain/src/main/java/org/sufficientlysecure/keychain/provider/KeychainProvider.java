@@ -51,6 +51,7 @@ public class KeychainProvider extends ContentProvider {
     private static final int KEY_RINGS_UNIFIED = 101;
     private static final int KEY_RINGS_PUBLIC = 102;
     private static final int KEY_RINGS_SECRET = 103;
+    private static final int KEY_RINGS_USER_IDS = 104;
 
     private static final int KEY_RING_UNIFIED = 200;
     private static final int KEY_RING_KEYS = 201;
@@ -85,17 +86,22 @@ public class KeychainProvider extends ContentProvider {
          * <pre>
          * key_rings/unified
          * key_rings/public
+         * key_rings/secret
+         * key_rings/user_ids
          * </pre>
          */
         matcher.addURI(authority, KeychainContract.BASE_KEY_RINGS
-                + "/" + KeychainContract.PATH_UNIFIED,
+                        + "/" + KeychainContract.PATH_UNIFIED,
                 KEY_RINGS_UNIFIED);
         matcher.addURI(authority, KeychainContract.BASE_KEY_RINGS
-                + "/" + KeychainContract.PATH_PUBLIC,
+                        + "/" + KeychainContract.PATH_PUBLIC,
                 KEY_RINGS_PUBLIC);
         matcher.addURI(authority, KeychainContract.BASE_KEY_RINGS
-                + "/" + KeychainContract.PATH_SECRET,
+                        + "/" + KeychainContract.PATH_SECRET,
                 KEY_RINGS_SECRET);
+        matcher.addURI(authority, KeychainContract.BASE_KEY_RINGS
+                        + "/" + KeychainContract.PATH_USER_IDS,
+                KEY_RINGS_USER_IDS);
 
         /**
          * find by criteria other than master key id
@@ -450,6 +456,7 @@ public class KeychainProvider extends ContentProvider {
                 break;
             }
 
+            case KEY_RINGS_USER_IDS:
             case KEY_RING_USER_IDS: {
                 HashMap<String, String> projectionMap = new HashMap<String, String>();
                 projectionMap.put(UserIds._ID, Tables.USER_IDS + ".oid AS _id");
@@ -470,13 +477,18 @@ public class KeychainProvider extends ContentProvider {
                                 + Tables.CERTS + "." + Certs.RANK
                             + " AND " + Tables.CERTS + "." + Certs.VERIFIED + " > 0"
                         + ")");
-                groupBy = Tables.USER_IDS + "." + UserIds.RANK;
+                groupBy = Tables.USER_IDS + "." + UserIds.MASTER_KEY_ID
+                        + ", " + Tables.USER_IDS + "." + UserIds.RANK;
 
-                qb.appendWhere(Tables.USER_IDS + "." + UserIds.MASTER_KEY_ID + " = ");
-                qb.appendWhereEscapeString(uri.getPathSegments().get(1));
+                // If we are searching for a particular keyring's ids, add where
+                if (match == KEY_RING_USER_IDS) {
+                    qb.appendWhere(Tables.USER_IDS + "." + UserIds.MASTER_KEY_ID + " = ");
+                    qb.appendWhereEscapeString(uri.getPathSegments().get(1));
+                }
 
                 if (TextUtils.isEmpty(sortOrder)) {
-                    sortOrder = Tables.USER_IDS + "." + UserIds.RANK + " ASC";
+                    sortOrder = Tables.USER_IDS + "." + UserIds.MASTER_KEY_ID + " ASC"
+                            + "," + Tables.USER_IDS + "." + UserIds.RANK + " ASC";
                 }
 
                 break;
