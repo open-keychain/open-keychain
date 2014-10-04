@@ -88,7 +88,7 @@ public class MultiUserIdsAdapter extends CursorAdapter {
         if (isHeader == 1) {
             long masterKeyId = cursor.getLong(0);
             vHeader.setVisibility(View.VISIBLE);
-            vHeaderId.setText(KeyFormattingUtils.beautifyKeyId(masterKeyId));
+            vHeaderId.setText(KeyFormattingUtils.beautifyKeyIdWithPrefix(mContext, masterKeyId));
         } else {
             vHeader.setVisibility(View.GONE);
         }

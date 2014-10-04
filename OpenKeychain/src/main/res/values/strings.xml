@@ -964,6 +964,7 @@
     <string name="swipe_to_update">"Swipe down to update from keyserver"</string>
     <string name="error_no_file_selected">"Select at least one file to encrypt!"</string>
     <string name="error_multi_not_supported">"Saving of multiple files not supported. This is a limitation on current Android."</string>
+    <string name="key_colon">"Key:"</string>
 
     <!-- First Time -->
     <string name="first_time_text1">"Take back your privacy with OpenKeychain!"</string>
