@@ -48,6 +48,10 @@ import android.widget.TextView;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.service.CertifyActionsParcel;
+import org.sufficientlysecure.keychain.service.CertifyActionsParcel.CertifyAction;
+import org.sufficientlysecure.keychain.service.results.CertifyResult;
+import org.sufficientlysecure.keychain.service.results.SingletonResult;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.Preferences;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
@@ -55,9 +59,7 @@ import org.sufficientlysecure.keychain.provider.KeychainContract.UserIds;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
 import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
 import org.sufficientlysecure.keychain.service.PassphraseCacheService;
-import org.sufficientlysecure.keychain.service.results.OperationResult.LogLevel;
 import org.sufficientlysecure.keychain.service.results.OperationResult.LogType;
-import org.sufficientlysecure.keychain.service.results.SingletonResult;
 import org.sufficientlysecure.keychain.ui.adapter.UserIdsAdapter;
 import org.sufficientlysecure.keychain.ui.dialog.PassphraseDialogFragment;
 import org.sufficientlysecure.keychain.ui.widget.CertifyKeySpinner;
@@ -83,6 +85,7 @@ public class CertifyKeyFragment extends LoaderFragment
 
     private Uri mDataUri;
     private long mPubKeyId = Constants.key.none;
+    private byte[] mPubFingerprint;
     private long mMasterKeyId = Constants.key.none;
 
     private UserIdsAdapter mUserIdsAdapter;
@@ -243,8 +246,8 @@ public class CertifyKeyFragment extends LoaderFragment
                     String mainUserId = data.getString(INDEX_USER_ID);
                     mInfoPrimaryUserId.setText(mainUserId);
 
-                    byte[] fingerprintBlob = data.getBlob(INDEX_FINGERPRINT);
-                    String fingerprint = KeyFormattingUtils.convertFingerprintToHex(fingerprintBlob);
+                    mPubFingerprint = data.getBlob(INDEX_FINGERPRINT);
+                    String fingerprint = KeyFormattingUtils.convertFingerprintToHex(mPubFingerprint);
                     mInfoFingerprint.setText(KeyFormattingUtils.colorizeFingerprint(fingerprint));
                 }
                 break;
@@ -312,27 +315,27 @@ public class CertifyKeyFragment extends LoaderFragment
         intent.setAction(KeychainIntentService.ACTION_CERTIFY_KEYRING);
 
         // fill values for this action
+        CertifyActionsParcel parcel = new CertifyActionsParcel(mMasterKeyId);
+        parcel.add(new CertifyAction(mPubKeyId, mPubFingerprint, userIds));
+
         Bundle data = new Bundle();
-
-        data.putLong(KeychainIntentService.CERTIFY_KEY_MASTER_KEY_ID, mMasterKeyId);
-        data.putLong(KeychainIntentService.CERTIFY_KEY_PUB_KEY_ID, mPubKeyId);
-        data.putStringArrayList(KeychainIntentService.CERTIFY_KEY_UIDS, userIds);
-
+        data.putParcelable(KeychainIntentService.CERTIFY_PARCEL, parcel);
         intent.putExtra(KeychainIntentService.EXTRA_DATA, data);
 
         // Message is received after signing is done in KeychainIntentService
         KeychainIntentServiceHandler saveHandler = new KeychainIntentServiceHandler(mActivity,
-                getString(R.string.progress_certifying), ProgressDialog.STYLE_SPINNER) {
+                getString(R.string.progress_certifying), ProgressDialog.STYLE_SPINNER, true) {
             public void handleMessage(Message message) {
                 // handle messages by standard KeychainIntentServiceHandler first
                 super.handleMessage(message);
 
                 if (message.arg1 == KeychainIntentServiceHandler.MESSAGE_OKAY) {
 
-                    SingletonResult result = new SingletonResult(
-                            SingletonResult.RESULT_OK, LogType.MSG_CRT_SUCCESS);
+                    Bundle data = message.getData();
+                    CertifyResult result = data.getParcelable(CertifyResult.EXTRA_RESULT);
+
                     Intent intent = new Intent();
-                    intent.putExtra(SingletonResult.EXTRA_RESULT, result);
+                    intent.putExtra(CertifyResult.EXTRA_RESULT, result);
                     mActivity.setResult(CertifyKeyActivity.RESULT_OK, intent);
 
                     // check if we need to send the key to the server or not

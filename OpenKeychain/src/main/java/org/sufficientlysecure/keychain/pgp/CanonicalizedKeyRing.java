@@ -51,6 +51,10 @@ public abstract class CanonicalizedKeyRing extends KeyRing {
         return mVerified;
     }
 
+    public byte[] getFingerprint() {
+        return getRing().getPublicKey().getFingerprint();
+    }
+
     public String getPrimaryUserId() throws PgpGeneralException {
         return getPublicKey().getPrimaryUserId();
     }
