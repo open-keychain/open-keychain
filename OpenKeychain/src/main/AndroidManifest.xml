@@ -615,6 +615,16 @@
                 android:value=".ui.KeyListActivity" />
         </activity>
         <activity
+            android:name=".ui.AddKeysActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
+            android:label="@string/title_add_keys"
+            android:windowSoftInputMode="stateHidden"
+            android:parentActivityName=".ui.KeyListActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".ui.KeyListActivity" />
+        </activity>
+        <activity
             android:name=".ui.ConsolidateDialogActivity"
             android:theme="@android:style/Theme.NoDisplay" />
         <activity
@@ -634,14 +644,14 @@
             android:allowTaskReparenting="true" />
 
         <!--<activity-->
-            <!--android:name=".ui.NfcIntentActivity"-->
-            <!--android:launchMode="singleTop">-->
-            <!--<intent-filter>-->
-                <!--<action android:name="android.nfc.action.NDEF_DISCOVERED" />-->
+        <!--android:name=".ui.NfcIntentActivity"-->
+        <!--android:launchMode="singleTop">-->
+        <!--<intent-filter>-->
+        <!--<action android:name="android.nfc.action.NDEF_DISCOVERED" />-->
 
-                <!--<category android:name="android.intent.category.DEFAULT" />-->
-                <!--<data android:host="my.yubico.com" android:scheme="https"/>-->
-            <!--</intent-filter>-->
+        <!--<category android:name="android.intent.category.DEFAULT" />-->
+        <!--<data android:host="my.yubico.com" android:scheme="https"/>-->
+        <!--</intent-filter>-->
         <!--</activity>-->
 
         <activity
