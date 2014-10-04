@@ -36,9 +36,7 @@ import com.google.zxing.integration.android.IntentResult;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.keyimport.ImportKeysList;
 import org.sufficientlysecure.keychain.keyimport.ImportKeysListEntry;
-import org.sufficientlysecure.keychain.keyimport.Keyserver;
 import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
@@ -93,7 +91,7 @@ public class AddKeysActivity extends ActionBarActivity implements
 
         mProviderHelper = new ProviderHelper(this);
 
-        setContentView(R.layout.add_key_activity);
+        setContentView(R.layout.add_keys_activity);
 
         mSafeSlingerKeySpinner = (ExchangeKeySpinner) findViewById(R.id.add_keys_safeslinger_key_spinner);
         mActionSafeSlinger = findViewById(R.id.add_keys_safeslinger);
