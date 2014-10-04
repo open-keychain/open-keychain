@@ -74,6 +74,7 @@ public class AddKeysActivity extends ActionBarActivity implements
     View mActionSafeSlinger;
     ImageView mActionSafeSlingerIcon;
     View mActionQrCode;
+    View mActionNfc;
     View mActionSearchCloud;
 
     ProviderHelper mProviderHelper;
@@ -103,6 +104,7 @@ public class AddKeysActivity extends ActionBarActivity implements
         mActionSafeSlingerIcon.setColorFilter(getResources().getColor(R.color.tertiary_text_light),
                 PorterDuff.Mode.SRC_IN);
         mActionQrCode = findViewById(R.id.add_keys_qr_code);
+        mActionNfc = findViewById(R.id.add_keys_nfc);
         mActionSearchCloud = findViewById(R.id.add_keys_search_cloud);
 
         mSafeSlingerKeySpinner.setOnKeyChangedListener(new KeySpinner.OnKeyChangedListener() {
@@ -123,6 +125,16 @@ public class AddKeysActivity extends ActionBarActivity implements
             @Override
             public void onClick(View v) {
                 startQrCode();
+            }
+        });
+
+        mActionNfc.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // show nfc help
+                Intent intent = new Intent(AddKeysActivity.this, HelpActivity.class);
+                intent.putExtra(HelpActivity.EXTRA_SELECTED_TAB, HelpActivity.TAB_NFC);
+                startActivityForResult(intent, 0);
             }
         });
 
@@ -183,8 +195,7 @@ public class AddKeysActivity extends ActionBarActivity implements
                             getSupportLoaderManager().restartLoader(LOADER_ID_BYTES, null, this);
                             break;
                         case ExchangeActivity.RESULT_EXCHANGE_CANCELED:
-                            // handle canceled result
-                            // ...
+                            // do nothing
                             break;
                     }
                     break;
@@ -291,29 +302,13 @@ public class AddKeysActivity extends ActionBarActivity implements
     }
 
     @Override
-    public void onLoadFinished(Loader<AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>>> loader, AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>> data) {
-
+    public void onLoadFinished(Loader<AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>>> loader,
+                               AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>> data) {
         Log.d(Constants.TAG, "data: " + data.getResult());
-
-        // swap in the real data!
-//        mAdapter.setData(data.getResult());
-//        mAdapter.notifyDataSetChanged();
-//
-//        setListAdapter(mAdapter);
-//
-//        // The list should now be shown.
-//        if (isResumed()) {
-//            setListShown(true);
-//        } else {
-//            setListShownNoAnimation(true);
-//        }
 
         Exception error = data.getError();
 
-        // free old cached key data
-//        mCachedKeyData = null;
-        LongSparseArray<ParcelableKeyRing> mCachedKeyData = null;
-
+        LongSparseArray<ParcelableKeyRing> cachedKeyData = null;
 
         // TODO: Use parcels!!!!!!!!!!!!!!!
         switch (loader.getId()) {
@@ -321,8 +316,8 @@ public class AddKeysActivity extends ActionBarActivity implements
 
                 if (error == null) {
                     // No error
-                    mCachedKeyData = ((ImportKeysListLoader) loader).getParcelableRings();
-                    Log.d(Constants.TAG, "no error!:" + mCachedKeyData);
+                    cachedKeyData = ((ImportKeysListLoader) loader).getParcelableRings();
+                    Log.d(Constants.TAG, "no error!:" + cachedKeyData);
 
                 } else if (error instanceof ImportKeysListLoader.NoValidKeysException) {
                     Notify.showNotify(this, R.string.error_import_no_valid_keys, Notify.Style.ERROR);
@@ -361,7 +356,7 @@ public class AddKeysActivity extends ActionBarActivity implements
                 break;
         }
 
-        importKeys(mCachedKeyData);
+        importKeys(cachedKeyData);
     }
 
     @Override
@@ -434,21 +429,11 @@ public class AddKeysActivity extends ActionBarActivity implements
                         return;
                     }
 
-                    // TODO: start certify with received keys
-
-//                    if (ACTION_IMPORT_KEY_FROM_KEYSERVER_AND_RETURN_RESULT.equals(getIntent().getAction())
-//                            || ACTION_IMPORT_KEY_FROM_FILE_AND_RETURN.equals(getIntent().getAction())) {
-//                        Intent intent = new Intent();
-//                        intent.putExtra(ImportKeyResult.EXTRA_RESULT, result);
-//                        ImportKeysActivity.this.setResult(RESULT_OK, intent);
-//                        ImportKeysActivity.this.finish();
-//                        return;
-//                    }
-//                    if (ACTION_IMPORT_KEY_FROM_KEYSERVER_AND_RETURN_TO_SERVICE.equals(getIntent().getAction())) {
-//                        ImportKeysActivity.this.setResult(RESULT_OK, mPendingIntentData);
-//                        ImportKeysActivity.this.finish();
-//                        return;
-//                    }
+                    finish();
+                    Intent certifyIntent = new Intent(); // TODO: certify
+                    certifyIntent.putExtra(ImportKeyResult.EXTRA_RESULT, result);
+                    certifyIntent.putExtra("key ids", result.getImportedMasterKeyIds()); // TODO: extra
+                    startActivity(certifyIntent);
 
                     result.createNotify(AddKeysActivity.this).show();
                 }
