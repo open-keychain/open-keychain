@@ -66,17 +66,20 @@ public class ExchangeKeySpinner extends KeySpinner {
         return new CursorLoader(getContext(), baseUri, projection, where, null, null);
     }
 
-    private int mIndexHasSign, mIndexIsRevoked, mIndexIsExpired;
+    private int mIndexIsRevoked, mIndexIsExpired;
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         super.onLoadFinished(loader, data);
-        // If there is only one choice, pick it by default
-        if (mAdapter.getCount() == 2) {
-            setSelection(1);
+
+        if (loader.getId() == LOADER_ID) {
+            // If there is only one choice, pick it by default
+            if (mAdapter.getCount() == 2) {
+                setSelection(1);
+            }
+            mIndexIsRevoked = data.getColumnIndex(KeychainContract.KeyRings.IS_REVOKED);
+            mIndexIsExpired = data.getColumnIndex(KeychainContract.KeyRings.IS_EXPIRED);
         }
-        mIndexIsRevoked = data.getColumnIndex(KeychainContract.KeyRings.IS_REVOKED);
-        mIndexIsExpired = data.getColumnIndex(KeychainContract.KeyRings.IS_EXPIRED);
     }
 
     @Override

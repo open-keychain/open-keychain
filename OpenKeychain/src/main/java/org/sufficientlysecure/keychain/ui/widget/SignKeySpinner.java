@@ -73,9 +73,12 @@ public class SignKeySpinner extends KeySpinner {
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         super.onLoadFinished(loader, data);
-        mIndexHasSign = data.getColumnIndex(KeychainContract.KeyRings.HAS_SIGN);
-        mIndexIsRevoked = data.getColumnIndex(KeychainContract.KeyRings.IS_REVOKED);
-        mIndexIsExpired = data.getColumnIndex(KeychainContract.KeyRings.IS_EXPIRED);
+
+        if (loader.getId() == LOADER_ID) {
+            mIndexHasSign = data.getColumnIndex(KeychainContract.KeyRings.HAS_SIGN);
+            mIndexIsRevoked = data.getColumnIndex(KeychainContract.KeyRings.IS_REVOKED);
+            mIndexIsExpired = data.getColumnIndex(KeychainContract.KeyRings.IS_EXPIRED);
+        }
     }
 
     @Override

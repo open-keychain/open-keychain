@@ -97,7 +97,6 @@ public class ImportKeysActivity extends ActionBarActivity {
     private SlidingTabLayout mSlidingTabLayout;
     private PagerTabStripAdapter mTabsAdapter;
 
-    public static final int VIEW_PAGER_HEIGHT = 64; // dp
 
     private static final int ALL_TABS = -1;
     private static final int TAB_CLOUD = 0;
@@ -270,10 +269,6 @@ public class ImportKeysActivity extends ActionBarActivity {
         mSlidingTabLayout.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-                // resize view pager back to 64 if keyserver settings have been collapsed
-                if (getViewPagerHeight() > VIEW_PAGER_HEIGHT) {
-                    resizeViewPager(VIEW_PAGER_HEIGHT);
-                }
             }
 
             @Override
@@ -337,18 +332,6 @@ public class ImportKeysActivity extends ActionBarActivity {
                 .commitAllowingStateLoss();
         // do it immediately!
         getSupportFragmentManager().executePendingTransactions();
-    }
-
-    public void resizeViewPager(int dp) {
-        ViewGroup.LayoutParams params = mViewPager.getLayoutParams();
-        params.height = FormattingUtils.dpToPx(this, dp);
-        // update layout after operations
-        mSlidingTabLayout.setViewPager(mViewPager);
-    }
-
-    public int getViewPagerHeight() {
-        ViewGroup.LayoutParams params = mViewPager.getLayoutParams();
-        return FormattingUtils.pxToDp(this, params.height);
     }
 
     private String getFingerprintFromUri(Uri dataUri) {

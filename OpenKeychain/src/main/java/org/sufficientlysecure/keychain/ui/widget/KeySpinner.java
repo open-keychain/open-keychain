@@ -50,6 +50,9 @@ public abstract class KeySpinner extends Spinner implements LoaderManager.Loader
     protected SelectKeyAdapter mAdapter = new SelectKeyAdapter();
     protected OnKeyChangedListener mListener;
 
+    // this shall note collide with other loaders inside the activity
+    protected int LOADER_ID = 2343;
+
     public KeySpinner(Context context) {
         super(context);
         initView();
@@ -101,7 +104,7 @@ public abstract class KeySpinner extends Spinner implements LoaderManager.Loader
 
     public void reload() {
         if (getContext() instanceof FragmentActivity) {
-            ((FragmentActivity) getContext()).getSupportLoaderManager().restartLoader(0, null, this);
+            ((FragmentActivity) getContext()).getSupportLoaderManager().restartLoader(LOADER_ID, null, this);
         } else {
             Log.e(Constants.TAG, "KeySpinner must be attached to FragmentActivity, this is " + getContext().getClass());
         }
@@ -109,12 +112,16 @@ public abstract class KeySpinner extends Spinner implements LoaderManager.Loader
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        mAdapter.swapCursor(data);
+        if (loader.getId() == LOADER_ID) {
+            mAdapter.swapCursor(data);
+        }
     }
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
-        mAdapter.swapCursor(null);
+        if (loader.getId() == LOADER_ID) {
+            mAdapter.swapCursor(null);
+        }
     }
 
     public long getSelectedKeyId() {
