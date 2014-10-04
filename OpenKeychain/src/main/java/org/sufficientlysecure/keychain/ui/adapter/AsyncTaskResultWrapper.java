@@ -17,6 +17,8 @@
 
 package org.sufficientlysecure.keychain.ui.adapter;
 
+import org.sufficientlysecure.keychain.service.results.OperationResult;
+
 /**
  * The AsyncTaskResultWrapper is used to wrap a result from a AsyncTask (for example: Loader).
  * You can pass the result and an exception in it if an error occurred.
@@ -28,19 +30,19 @@ package org.sufficientlysecure.keychain.ui.adapter;
 public class AsyncTaskResultWrapper<T> {
 
     private final T mResult;
-    private final Exception mError;
+    private final OperationResult mOperationResult;
 
-    public AsyncTaskResultWrapper(T result, Exception error) {
+    public AsyncTaskResultWrapper(T result, OperationResult operationResult) {
         this.mResult = result;
-        this.mError = error;
+        this.mOperationResult = operationResult;
     }
 
     public T getResult() {
         return mResult;
     }
 
-    public Exception getError() {
-        return mError;
+    public OperationResult getOperationResult() {
+        return mOperationResult;
     }
 
 }

@@ -21,6 +21,9 @@ import android.content.Context;
 import android.support.v4.content.AsyncTaskLoader;
 
 import org.sufficientlysecure.keychain.Constants;
+import org.sufficientlysecure.keychain.keyimport.Keyserver;
+import org.sufficientlysecure.keychain.service.results.GetKeyResult;
+import org.sufficientlysecure.keychain.service.results.OperationResult;
 import org.sufficientlysecure.keychain.util.Preferences;
 import org.sufficientlysecure.keychain.keyimport.CloudSearch;
 import org.sufficientlysecure.keychain.keyimport.ImportKeysListEntry;
@@ -93,7 +96,8 @@ public class ImportKeysListCloudLoader
      */
     private void queryServer(boolean enforceFingerprint) {
         try {
-            ArrayList<ImportKeysListEntry> searchResult = CloudSearch.search(mServerQuery, mCloudPrefs);
+            ArrayList<ImportKeysListEntry> searchResult
+                    = CloudSearch.search(mServerQuery, mCloudPrefs);
 
             mEntryList.clear();
             // add result to data
@@ -114,9 +118,29 @@ public class ImportKeysListCloudLoader
             } else {
                 mEntryList.addAll(searchResult);
             }
-            mEntryListWrapper = new AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>>(mEntryList, null);
-        } catch (Exception e) {
-            mEntryListWrapper = new AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>>(mEntryList, e);
+            GetKeyResult getKeyResult = new GetKeyResult(GetKeyResult.RESULT_OK, null);
+            mEntryListWrapper = new AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>>(mEntryList, getKeyResult);
+        } catch (Keyserver.CloudSearchFailureException e) {
+            // convert exception to result parcel
+            int error = GetKeyResult.RESULT_ERROR;
+            OperationResult.LogType logType = null;
+            if (e instanceof Keyserver.QueryFailedException) {
+                error = GetKeyResult.RESULT_ERROR_QUERY_FAILED;
+                logType = OperationResult.LogType.MSG_GET_QUERY_FAILED;
+            } else if (e instanceof Keyserver.TooManyResponsesException) {
+                error = GetKeyResult.RESULT_ERROR_TOO_MANY_RESPONSES;
+                logType = OperationResult.LogType.MSG_GET_TOO_MANY_RESPONSES;
+            } else if (e instanceof Keyserver.QueryTooShortException) {
+                error = GetKeyResult.RESULT_ERROR_QUERY_TOO_SHORT;
+                logType = OperationResult.LogType.MSG_GET_QUERY_TOO_SHORT;
+            } else if (e instanceof Keyserver.QueryTooShortOrTooManyResponsesException) {
+                error = GetKeyResult.RESULT_ERROR_TOO_SHORT_OR_TOO_MANY_RESPONSES;
+                logType = OperationResult.LogType.MSG_GET_QUERY_TOO_SHORT_OR_TOO_MANY_RESPONSES;
+            }
+            OperationResult.OperationLog log = new OperationResult.OperationLog();
+            log.add(logType, 0);
+            GetKeyResult getKeyResult = new GetKeyResult(error, log);
+            mEntryListWrapper = new AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>>(mEntryList, getKeyResult);
         }
     }
 }

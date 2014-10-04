@@ -21,7 +21,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:text="Secure Exchange" />
+            android:text="@string/add_keys_section_secure_exchange" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -35,7 +35,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:textAppearance="?android:attr/textAppearanceMedium"
-                android:text="My key:"
+                android:text="@string/add_keys_my_key"
                 android:paddingRight="8dp" />
 
             <org.sufficientlysecure.keychain.ui.widget.ExchangeKeySpinner
@@ -61,7 +61,7 @@
                 android:textAppearance="?android:attr/textAppearanceMedium"
                 android:layout_width="0dip"
                 android:layout_height="match_parent"
-                android:text="Start exchange"
+                android:text="@string/add_keys_start_exchange"
                 android:layout_weight="1"
                 android:gravity="center_vertical" />
 
@@ -87,7 +87,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="32dp"
-            android:text="Secure add" />
+            android:text="@string/add_keys_section_secure_add" />
 
         <TextView
             android:id="@+id/add_keys_qr_code"
@@ -99,8 +99,29 @@
             android:minHeight="?android:attr/listPreferredItemHeight"
             android:clickable="true"
             style="@style/SelectableItem"
-            android:text="QR Code"
+            android:text="@string/add_keys_qr_code"
             android:drawableRight="@drawable/ic_action_qr_code"
+            android:drawablePadding="8dp"
+            android:gravity="center_vertical" />
+
+        <View
+            android:id="@+id/view_key_action_certify_divider"
+            android:layout_width="match_parent"
+            android:layout_height="1dip"
+            android:background="?android:attr/listDivider" />
+
+        <TextView
+            android:id="@+id/add_keys_nfc"
+            android:paddingLeft="8dp"
+            android:paddingRight="8dp"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="?android:attr/listPreferredItemHeight"
+            android:clickable="true"
+            style="@style/SelectableItem"
+            android:text="@string/add_keys_nfc"
+            android:drawableRight="@drawable/ic_action_nfc"
             android:drawablePadding="8dp"
             android:gravity="center_vertical" />
 
@@ -115,7 +136,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="32dp"
-            android:text="Import (untrusted)" />
+            android:text="@string/add_keys_section_import" />
 
         <TextView
             android:id="@+id/add_keys_search_cloud"
@@ -127,10 +148,16 @@
             android:minHeight="?android:attr/listPreferredItemHeight"
             android:clickable="true"
             style="@style/SelectableItem"
-            android:text="Search cloud"
+            android:text="@string/add_keys_cloud"
             android:drawableRight="@drawable/ic_action_search"
             android:drawablePadding="8dp"
             android:gravity="center_vertical" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dip"
+            android:background="?android:attr/listDivider"
+            android:layout_marginBottom="8dp" />
 
     </LinearLayout>
 

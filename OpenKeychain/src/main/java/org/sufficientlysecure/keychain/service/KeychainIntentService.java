@@ -465,7 +465,7 @@ public class KeychainIntentService extends IntentService implements Progressable
                         // actual import afterwards
                         keyRings.add(new ParcelableKeyRing(downloadedKeyBytes, entry.getFingerprintHex()));
                     }
-                } catch (Exception e) {
+                } catch (Keyserver.QueryFailedException e) {
                     sendErrorToHandler(e);
                 }
             }

@@ -120,10 +120,12 @@ public class PgpImportExport {
         // If there aren't even any keys, do nothing here.
         if (entries == null || !entries.hasNext()) {
             return new ImportKeyResult(
-                    ImportKeyResult.RESULT_FAIL_NOTHING, mProviderHelper.getLog(), 0, 0, 0, 0);
+                    ImportKeyResult.RESULT_FAIL_NOTHING, mProviderHelper.getLog(), 0, 0, 0, 0,
+                    new long[]{});
         }
 
         int newKeys = 0, oldKeys = 0, badKeys = 0, secret = 0;
+        ArrayList<Long> importedMasterKeyIds = new ArrayList<Long>();
 
         int position = 0;
         double progSteps = 100.0 / num;
@@ -165,11 +167,13 @@ public class PgpImportExport {
                     badKeys += 1;
                 } else if (result.updated()) {
                     oldKeys += 1;
+                    importedMasterKeyIds.add(key.getMasterKeyId());
                 } else {
                     newKeys += 1;
                     if (key.isSecret()) {
                         secret += 1;
                     }
+                    importedMasterKeyIds.add(key.getMasterKeyId());
                 }
 
             } catch (IOException e) {
@@ -210,8 +214,14 @@ public class PgpImportExport {
             resultType |= ImportKeyResult.RESULT_CANCELLED;
         }
 
-        return new ImportKeyResult(resultType, log, newKeys, oldKeys, badKeys, secret);
+        // convert to long array
+        long[] importedMasterKeyIdsArray = new long[importedMasterKeyIds.size()];
+        for (int i = 0; i < importedMasterKeyIds.size(); ++i) {
+            importedMasterKeyIdsArray[i] = importedMasterKeyIds.get(i);
+        }
 
+        return new ImportKeyResult(resultType, log, newKeys, oldKeys, badKeys, secret,
+                importedMasterKeyIdsArray);
     }
 
     public Bundle exportKeyRings(ArrayList<Long> publicKeyRingMasterIds,
