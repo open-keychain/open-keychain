@@ -31,6 +31,9 @@ import android.support.v7.app.ActionBarActivity;
 import android.view.View;
 import android.widget.ImageView;
 
+import com.google.zxing.integration.android.IntentIntegrator;
+import com.google.zxing.integration.android.IntentResult;
+
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.keyimport.ImportKeysListEntry;
@@ -49,14 +52,17 @@ import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.ui.widget.ExchangeKeySpinner;
 import org.sufficientlysecure.keychain.ui.widget.KeySpinner;
 import org.sufficientlysecure.keychain.util.InputData;
+import org.sufficientlysecure.keychain.util.IntentIntegratorSupportV4;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.ParcelableFileCache;
+import org.sufficientlysecure.keychain.util.Preferences;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.Locale;
 
 import edu.cmu.cylab.starslinger.exchange.ExchangeActivity;
 import edu.cmu.cylab.starslinger.exchange.ExchangeConfig;
@@ -75,8 +81,6 @@ public class AddKeysActivity extends ActionBarActivity implements
     long mExchangeMasterKeyId = Constants.key.none;
 
     byte[] mImportBytes;
-    private LongSparseArray<ParcelableKeyRing> mCachedKeyData;
-
 
     private static final int REQUEST_CODE_SAFE_SLINGER = 1;
 
@@ -153,10 +157,12 @@ public class AddKeysActivity extends ActionBarActivity implements
     }
 
     private void startQrCode() {
-
+        // scan using xzing's Barcode Scanner
+        new IntentIntegrator(this).initiateScan();
     }
 
     private void searchCloud() {
+        finish();
         Intent importIntent = new Intent(this, ImportKeysActivity.class);
         startActivity(importIntent);
     }
@@ -169,16 +175,12 @@ public class AddKeysActivity extends ActionBarActivity implements
             result.createNotify(this).show();
         } else {
             switch (requestCode) {
-                case REQUEST_CODE_SAFE_SLINGER:
+                case REQUEST_CODE_SAFE_SLINGER: {
                     switch (resultCode) {
                         case ExchangeActivity.RESULT_EXCHANGE_OK:
                             // import exchanged keys
                             mImportBytes = getSlingedKeys(data);
                             getSupportLoaderManager().restartLoader(LOADER_ID_BYTES, null, this);
-//                            Intent importIntent = new Intent(this, ImportKeysActivity.class);
-//                            importIntent.setAction(ImportKeysActivity.ACTION_IMPORT_KEY);
-//                            importIntent.putExtra(ImportKeysActivity.EXTRA_KEY_BYTES, getSlingedKeys(data));
-//                            startActivity(importIntent);
                             break;
                         case ExchangeActivity.RESULT_EXCHANGE_CANCELED:
                             // handle canceled result
@@ -186,9 +188,66 @@ public class AddKeysActivity extends ActionBarActivity implements
                             break;
                     }
                     break;
+                }
+                case IntentIntegratorSupportV4.REQUEST_CODE: {
+                    IntentResult scanResult = IntentIntegratorSupportV4.parseActivityResult(requestCode,
+                            resultCode, data);
+                    if (scanResult != null && scanResult.getFormatName() != null) {
+                        String scannedContent = scanResult.getContents();
+
+                        Log.d(Constants.TAG, "scannedContent: " + scannedContent);
+
+                        // look if it's fingerprint only
+                        if (scannedContent.toLowerCase(Locale.ENGLISH).startsWith(Constants.FINGERPRINT_SCHEME)) {
+                            loadFromFingerprintUri(Uri.parse(scanResult.getContents()));
+                            return;
+                        }
+
+                        // is this a full key encoded as qr code?
+                        if (scannedContent.startsWith("-----BEGIN PGP")) {
+                            // TODO
+//                            mImportActivity.loadCallback(new ImportKeysListFragment.BytesLoaderState(scannedContent.getBytes(), null));
+                            return;
+                        }
+
+                        // fail...
+                        Notify.showNotify(this, R.string.import_qr_code_wrong, Notify.Style.ERROR);
+                    }
+
+                    break;
+                }
             }
             super.onActivityResult(requestCode, resultCode, data);
         }
+    }
+
+
+    public void loadFromFingerprintUri(Uri dataUri) {
+        String query = "0x" + getFingerprintFromUri(dataUri);
+
+        // setCurrentItem does not work directly after onResume (from qr code scanner)
+        // see http://stackoverflow.com/q/19316729
+        // so, reset adapter completely!
+//        if (mViewPager.getAdapter() != null)
+//            mViewPager.setAdapter(null);
+//        mViewPager.setAdapter(mTabsAdapter);
+//        mViewPager.setCurrentItem(TAB_CLOUD);
+
+//        ImportKeysCloudFragment f = (ImportKeysCloudFragment)
+//                getActiveFragment(mViewPager, TAB_CLOUD);
+
+        // search config
+        Preferences prefs = Preferences.getPreferences(this);
+        Preferences.CloudSearchPrefs cloudPrefs = new Preferences.CloudSearchPrefs(true, true, prefs.getPreferredKeyserver());
+
+        // search directly
+//        loadCallback(new ImportKeysListFragment.CloudLoaderState(query, cloudPrefs));
+    }
+
+    private String getFingerprintFromUri(Uri dataUri) {
+        String fingerprint = dataUri.toString().split(":")[1].toLowerCase(Locale.ENGLISH);
+        Log.d(Constants.TAG, "fingerprint: " + fingerprint);
+        return fingerprint;
     }
 
     private static byte[] getSlingedKeys(Intent data) {
@@ -252,7 +311,8 @@ public class AddKeysActivity extends ActionBarActivity implements
         Exception error = data.getError();
 
         // free old cached key data
-        mCachedKeyData = null;
+//        mCachedKeyData = null;
+        LongSparseArray<ParcelableKeyRing> mCachedKeyData = null;
 
 
         // TODO: Use parcels!!!!!!!!!!!!!!!
@@ -262,6 +322,8 @@ public class AddKeysActivity extends ActionBarActivity implements
                 if (error == null) {
                     // No error
                     mCachedKeyData = ((ImportKeysListLoader) loader).getParcelableRings();
+                    Log.d(Constants.TAG, "no error!:" + mCachedKeyData);
+
                 } else if (error instanceof ImportKeysListLoader.NoValidKeysException) {
                     Notify.showNotify(this, R.string.error_import_no_valid_keys, Notify.Style.ERROR);
                 } else if (error instanceof ImportKeysListLoader.NonPgpPartException) {
@@ -299,7 +361,7 @@ public class AddKeysActivity extends ActionBarActivity implements
                 break;
         }
 
-        importKeys();
+        importKeys(mCachedKeyData);
     }
 
     @Override
@@ -318,35 +380,37 @@ public class AddKeysActivity extends ActionBarActivity implements
         }
     }
 
-    public ParcelableFileCache.IteratorWithSize<ParcelableKeyRing> getSelectedData() {
+    public ParcelableFileCache.IteratorWithSize<ParcelableKeyRing>
+    getSelectedData(final LongSparseArray<ParcelableKeyRing> keyData) {
         return new ParcelableFileCache.IteratorWithSize<ParcelableKeyRing>() {
             int i = 0;
 
             @Override
             public int getSize() {
-                return mCachedKeyData.size();
+                return keyData.size();
             }
 
             @Override
             public boolean hasNext() {
-                return (mCachedKeyData.get(i + 1) != null);
+                return (i < getSize());
             }
 
             @Override
             public ParcelableKeyRing next() {
-                ParcelableKeyRing key = mCachedKeyData.get(i);
+                // get the object by the key.
+                ParcelableKeyRing key = keyData.valueAt(i);
                 i++;
                 return key;
             }
 
             @Override
             public void remove() {
-                mCachedKeyData.remove(i);
+                keyData.remove(i);
             }
         };
     }
 
-    public void importKeys() {
+    public void importKeys(final LongSparseArray<ParcelableKeyRing> keyData) {
         // Message is received after importing is done in KeychainIntentService
         KeychainIntentServiceHandler saveHandler = new KeychainIntentServiceHandler(
                 this,
@@ -370,6 +434,8 @@ public class AddKeysActivity extends ActionBarActivity implements
                         return;
                     }
 
+                    // TODO: start certify with received keys
+
 //                    if (ACTION_IMPORT_KEY_FROM_KEYSERVER_AND_RETURN_RESULT.equals(getIntent().getAction())
 //                            || ACTION_IMPORT_KEY_FROM_FILE_AND_RETURN.equals(getIntent().getAction())) {
 //                        Intent intent = new Intent();
@@ -390,45 +456,45 @@ public class AddKeysActivity extends ActionBarActivity implements
         };
 
 //        ImportKeysListFragment.LoaderState ls = mListFragment.getLoaderState();
-//        if (importBytes != null) {
-            Log.d(Constants.TAG, "importKeys started");
+//        if (importMethod == IMPORT_SAFE_SLINGER) {
+        Log.d(Constants.TAG, "importKeys started");
 
-            // Send all information needed to service to import key in other thread
-            Intent intent = new Intent(this, KeychainIntentService.class);
+        // Send all information needed to service to import key in other thread
+        Intent intent = new Intent(this, KeychainIntentService.class);
 
-            intent.setAction(KeychainIntentService.ACTION_IMPORT_KEYRING);
+        intent.setAction(KeychainIntentService.ACTION_IMPORT_KEYRING);
 
-            // fill values for this action
-            Bundle data = new Bundle();
+        // fill values for this action
+        Bundle data = new Bundle();
 
-            // get DATA from selected key entries
-//            ParcelableFileCache.IteratorWithSize<ParcelableKeyRing> selectedEntries = mListFragment.getSelectedData();
+        // instead of giving the entries by Intent extra, cache them into a
+        // file to prevent Java Binder problems on heavy imports
+        // read FileImportCache for more info.
+        try {
+            // We parcel this iteratively into a file - anything we can
+            // display here, we should be able to import.
+            ParcelableFileCache<ParcelableKeyRing> cache =
+                    new ParcelableFileCache<ParcelableKeyRing>(this, "key_import.pcl");
+            cache.writeCache(getSelectedData(keyData));
 
-            // instead of giving the entries by Intent extra, cache them into a
-            // file to prevent Java Binder problems on heavy imports
-            // read FileImportCache for more info.
-            try {
-                // We parcel this iteratively into a file - anything we can
-                // display here, we should be able to import.
-                ParcelableFileCache<ParcelableKeyRing> cache =
-                        new ParcelableFileCache<ParcelableKeyRing>(this, "key_import.pcl");
-                cache.writeCache(getSelectedData());
+            intent.putExtra(KeychainIntentService.EXTRA_DATA, data);
 
-                intent.putExtra(KeychainIntentService.EXTRA_DATA, data);
+            // Create a new Messenger for the communication back
+            Messenger messenger = new Messenger(saveHandler);
+            intent.putExtra(KeychainIntentService.EXTRA_MESSENGER, messenger);
 
-                // Create a new Messenger for the communication back
-                Messenger messenger = new Messenger(saveHandler);
-                intent.putExtra(KeychainIntentService.EXTRA_MESSENGER, messenger);
+            // show progress dialog
+            saveHandler.showProgressDialog(this);
 
-                // show progress dialog
-                saveHandler.showProgressDialog(this);
+            // start service with intent
+            startService(intent);
+        } catch (IOException e) {
+            Log.e(Constants.TAG, "Problem writing cache file", e);
+            Notify.showNotify(this, "Problem writing cache file!", Notify.Style.ERROR);
+        }
+//        } else if () {
 
-                // start service with intent
-                startService(intent);
-            } catch (IOException e) {
-                Log.e(Constants.TAG, "Problem writing cache file", e);
-                Notify.showNotify(this, "Problem writing cache file!", Notify.Style.ERROR);
-            }
+//        }
 //        } else if (ls instanceof ImportKeysListFragment.CloudLoaderState) {
 //            ImportKeysListFragment.CloudLoaderState sls = (ImportKeysListFragment.CloudLoaderState) ls;
 //
