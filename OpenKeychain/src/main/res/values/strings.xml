@@ -387,6 +387,11 @@
     <string name="import_qr_code_too_short_fingerprint">"Fingerprint is too short (&lt; 16 characters)"</string>
     <string name="import_qr_code_button">"Scan QR Code…"</string>
 
+    <!-- Generic result toast -->
+    <string name="view_log">"View Log"</string>
+    <string name="with_warnings">", with warnings"</string>
+    <string name="with_cancelled">", until cancelled"</string>
+
     <!-- Import result toast -->
     <plurals name="import_keys_added_and_updated_1">
         <item quantity="one">"Successfully imported key"</item>
@@ -408,14 +413,25 @@
         <item quantity="one">"Import failed for one key!"</item>
         <item quantity="other">"Import failed for %d keys!"</item>
     </plurals>
-    <string name="view_log">"View Log"</string>
-    <string name="import_error_nothing">"Nothing to import."</string>
-    <string name="import_error_nothing_cancelled">"Import cancelled."</string>
-    <string name="import_with_warnings">", with warnings"</string>
-    <string name="import_with_cancelled">", until cancelled"</string>
     <plurals name="import_error">
         <item quantity="one">"Import failed!"</item>
         <item quantity="other">"Import of %d keys failed!"</item>
+    </plurals>
+    <string name="import_error_nothing">"Nothing to import."</string>
+    <string name="import_error_nothing_cancelled">"Import cancelled."</string>
+
+    <!-- Certify result toast -->
+    <plurals name="certify_keys_ok">
+        <item quantity="one">"Successfully certified key%2$s."</item>
+        <item quantity="other">"Successfully certified %1$d keys%2$s."</item>
+    </plurals>
+    <plurals name="certify_keys_with_errors">
+        <item quantity="one">"Certification failed!"</item>
+        <item quantity="other">"Certification failed for %d keys!"</item>
+    </plurals>
+    <plurals name="certify_error">
+        <item quantity="one">"Certification failed!"</item>
+        <item quantity="other">"Certification of %d keys failed!"</item>
     </plurals>
 
     <!-- Intent labels -->
@@ -882,6 +898,7 @@
         <item quantity="other">"Certifying %1$d user ids for key %2$s"</item>
     </plurals>
     <string name="msg_crt_error_master_not_found">"Master key not found!"</string>
+    <string name="msg_crt_error_nothing">"No keys certified!"</string>
     <string name="msg_crt_error_unlock">"Error unlocking master key!"</string>
     <string name="msg_crt_fp_mismatch">"Fingerprint mismatch, not certifying!"</string>
     <string name="msg_crt">"Certifying keyrings"</string>

@@ -371,8 +371,8 @@
   <string name="view_log">ログを見る</string>
   <string name="import_error_nothing">インポートするものがありません。</string>
   <string name="import_error_nothing_cancelled">インポートをキャンセルしました。</string>
-  <string name="import_with_warnings">、とワーニング</string>
-  <string name="import_with_cancelled">、キャンセルされるまで</string>
+  <string name="with_warnings">、とワーニング</string>
+  <string name="with_cancelled">、キャンセルされるまで</string>
   <plurals name="import_error">
     <item quantity="other">%d 個の鍵のインポート失敗!</item>
   </plurals>

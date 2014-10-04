@@ -319,8 +319,8 @@
   <string name="view_log">Poglej dnevnik</string>
   <string name="import_error_nothing">Nič za uvoziti.</string>
   <string name="import_error_nothing_cancelled">Uvoz preklican.</string>
-  <string name="import_with_warnings">, z opozorilom</string>
-  <string name="import_with_cancelled"> do preklica</string>
+  <string name="with_warnings">, z opozorilom</string>
+  <string name="with_cancelled"> do preklica</string>
   <!--Intent labels-->
   <string name="intent_decrypt_file">Dešifriraj datoteko z OpenKeychain</string>
   <string name="intent_import_key">Uvozi ključ z OpenKeychain</string>

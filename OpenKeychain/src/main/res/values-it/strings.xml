@@ -362,7 +362,7 @@ Non potrai annullare!</string>
   <string name="view_log">Mostra registro</string>
   <string name="import_error_nothing">Niente da importare</string>
   <string name="import_error_nothing_cancelled">Importazione cancellata.</string>
-  <string name="import_with_warnings">, con avvisi</string>
+  <string name="with_warnings">, con avvisi</string>
   <!--Intent labels-->
   <string name="intent_decrypt_file">Decodifica File con OpenKeychain</string>
   <string name="intent_import_key">Importa Chiave con OpenKeychain</string>

@@ -327,7 +327,7 @@
   </plurals>
   <string name="view_log">Переглянути журнал</string>
   <string name="import_error_nothing">Нема що імпортувати.</string>
-  <string name="import_with_warnings">, із застереженнями</string>
+  <string name="with_warnings">, із застереженнями</string>
   <!--Intent labels-->
   <string name="intent_decrypt_file">Розшифрувати файл з OpenKeychain</string>
   <string name="intent_import_key">Імпортувати ключ з OpenKeychain</string>

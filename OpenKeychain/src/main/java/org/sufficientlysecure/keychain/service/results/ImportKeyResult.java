@@ -124,12 +124,12 @@ public class ImportKeyResult extends OperationResult {
             if ((resultType & ImportKeyResult.RESULT_WARNINGS) > 0) {
                 duration = 0;
                 color = Style.ORANGE;
-                withWarnings += activity.getString(R.string.import_with_warnings);
+                withWarnings += activity.getString(R.string.with_warnings);
             }
             if ((resultType & ImportKeyResult.RESULT_CANCELLED) > 0) {
                 duration = 0;
                 color = Style.ORANGE;
-                withWarnings += activity.getString(R.string.import_with_cancelled);
+                withWarnings += activity.getString(R.string.with_cancelled);
             }
 
             // New and updated keys

@@ -1,7 +1,5 @@
 package org.sufficientlysecure.keychain.pgp;
 
-import android.content.Context;
-
 import org.spongycastle.openpgp.PGPException;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
@@ -10,7 +8,6 @@ import org.sufficientlysecure.keychain.provider.ProviderHelper.NotFoundException
 import org.sufficientlysecure.keychain.service.CertifyActionsParcel;
 import org.sufficientlysecure.keychain.service.CertifyActionsParcel.CertifyAction;
 import org.sufficientlysecure.keychain.service.results.CertifyResult;
-import org.sufficientlysecure.keychain.service.results.EditKeyResult;
 import org.sufficientlysecure.keychain.service.results.OperationResult.LogType;
 import org.sufficientlysecure.keychain.service.results.OperationResult.OperationLog;
 import org.sufficientlysecure.keychain.service.results.SaveKeyringResult;
@@ -139,6 +136,11 @@ public class PgpCertifyOperation {
 
             // TODO do something with import results
 
+        }
+
+        if (certifyOk == 0) {
+            log.add(LogType.MSG_CRT_ERROR_NOTHING, 0);
+            return new CertifyResult(CertifyResult.RESULT_ERROR, log, certifyOk, certifyError);
         }
 
         log.add(LogType.MSG_CRT_SUCCESS, 0);

@@ -369,8 +369,8 @@
   <string name="view_log">Log ansehen</string>
   <string name="import_error_nothing">Nichts zu importieren.</string>
   <string name="import_error_nothing_cancelled">Import abgebrochen.</string>
-  <string name="import_with_warnings">, mit Warnungen</string>
-  <string name="import_with_cancelled">. bis abgebrochen wurde</string>
+  <string name="with_warnings">, mit Warnungen</string>
+  <string name="with_cancelled">. bis abgebrochen wurde</string>
   <plurals name="import_error">
     <item quantity="one">Importieren fehlgeschlagen!</item>
     <item quantity="other">Importieren von %d Schlüsseln fehlgeschlagen!</item>

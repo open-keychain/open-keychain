@@ -357,8 +357,8 @@
   <string name="view_log">Ver registro (log)</string>
   <string name="import_error_nothing">No hay nada que importar.</string>
   <string name="import_error_nothing_cancelled">Importación cancelada.</string>
-  <string name="import_with_warnings">, con advertencias</string>
-  <string name="import_with_cancelled">, hasta que este cancelada</string>
+  <string name="with_warnings">, con advertencias</string>
+  <string name="with_cancelled">, hasta que este cancelada</string>
   <!--Intent labels-->
   <string name="intent_decrypt_file">Descifrar archivo con OpenKeychain</string>
   <string name="intent_import_key">Importar clave con OpenKeychain</string>

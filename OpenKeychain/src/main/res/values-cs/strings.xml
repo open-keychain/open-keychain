@@ -329,7 +329,7 @@
   <string name="view_log">Zobrazit log</string>
   <string name="import_error_nothing">Nic k importu</string>
   <string name="import_error_nothing_cancelled">Import zrušen.</string>
-  <string name="import_with_warnings">, s varováními</string>
+  <string name="with_warnings">, s varováními</string>
   <plurals name="import_error">
     <item quantity="one">Import selhal!</item>
     <item quantity="few">Import %d klíčů selhal!</item>

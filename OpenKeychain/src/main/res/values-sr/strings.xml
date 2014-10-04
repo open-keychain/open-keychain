@@ -330,8 +330,8 @@
   <string name="view_log">Прикажи дневник</string>
   <string name="import_error_nothing">Нема ништа за увоз.</string>
   <string name="import_error_nothing_cancelled">Увоз је отказан.</string>
-  <string name="import_with_warnings">, са упозорењима</string>
-  <string name="import_with_cancelled">, док није отказано</string>
+  <string name="with_warnings">, са упозорењима</string>
+  <string name="with_cancelled">, док није отказано</string>
   <!--Intent labels-->
   <string name="intent_decrypt_file">Дешифруј фајл помоћу Отвореног кључарника</string>
   <string name="intent_import_key">Увези кључ у Отворени кључарник</string>
