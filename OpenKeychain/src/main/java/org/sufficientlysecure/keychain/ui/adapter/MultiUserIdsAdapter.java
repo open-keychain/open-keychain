@@ -20,6 +20,7 @@ package org.sufficientlysecure.keychain.ui.adapter;
 import android.content.Context;
 import android.database.Cursor;
 import android.os.Parcel;
+import android.support.v4.util.LongSparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -33,6 +34,7 @@ import android.widget.TextView;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
+import org.sufficientlysecure.keychain.service.CertifyActionsParcel.CertifyAction;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.Log;
 
@@ -147,13 +149,33 @@ public class MultiUserIdsAdapter extends CursorAdapter {
 
     }
 
-    public ArrayList<String> getSelectedUserIds() {
-        ArrayList<String> result = new ArrayList<String>();
+    public ArrayList<CertifyAction> getSelectedCertifyActions() {
+        LongSparseArray<CertifyAction> actions = new LongSparseArray<CertifyAction>();
         for (int i = 0; i < mCheckStates.size(); i++) {
             if (mCheckStates.get(i)) {
                 mCursor.moveToPosition(i);
-                result.add(mCursor.getString(0));
+
+                long keyId = mCursor.getLong(0);
+                byte[] data = mCursor.getBlob(1);
+
+                Parcel p = Parcel.obtain();
+                p.unmarshall(data, 0, data.length);
+                p.setDataPosition(0);
+                ArrayList<String> uids = p.createStringArrayList();
+                p.recycle();
+
+                CertifyAction action = actions.get(keyId);
+                if (actions.get(keyId) == null) {
+                    actions.put(keyId, new CertifyAction(keyId, uids));
+                } else {
+                    action.mUserIds.addAll(uids);
+                }
             }
+        }
+
+        ArrayList<CertifyAction> result = new ArrayList<CertifyAction>(actions.size());
+        for (int i = 0; i < actions.size(); i++) {
+            result.add(actions.valueAt(i));
         }
         return result;
     }

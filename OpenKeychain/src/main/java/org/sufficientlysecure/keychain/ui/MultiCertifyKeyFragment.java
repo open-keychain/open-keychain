@@ -18,7 +18,6 @@
 
 package org.sufficientlysecure.keychain.ui;
 
-import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.database.Cursor;
@@ -32,28 +31,20 @@ import android.os.Messenger;
 import android.os.Parcel;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.LoaderManager;
-import android.support.v4.app.NavUtils;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
-import android.widget.CompoundButton;
-import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.ScrollView;
-import android.widget.Spinner;
-import android.widget.TextView;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
-import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UserIds;
 import org.sufficientlysecure.keychain.provider.KeychainDatabase.Tables;
 import org.sufficientlysecure.keychain.service.CertifyActionsParcel;
@@ -62,20 +53,14 @@ import org.sufficientlysecure.keychain.service.KeychainIntentService;
 import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
 import org.sufficientlysecure.keychain.service.PassphraseCacheService;
 import org.sufficientlysecure.keychain.service.results.CertifyResult;
-import org.sufficientlysecure.keychain.service.results.OperationResult.LogType;
-import org.sufficientlysecure.keychain.service.results.SingletonResult;
 import org.sufficientlysecure.keychain.ui.adapter.MultiUserIdsAdapter;
-import org.sufficientlysecure.keychain.ui.adapter.UserIdsAdapter;
 import org.sufficientlysecure.keychain.ui.dialog.PassphraseDialogFragment;
-import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.ui.widget.CertifyKeySpinner;
 import org.sufficientlysecure.keychain.ui.widget.KeySpinner;
 import org.sufficientlysecure.keychain.util.Log;
-import org.sufficientlysecure.keychain.util.Preferences;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 public class MultiCertifyKeyFragment extends LoaderFragment
         implements LoaderManager.LoaderCallbacks<Cursor> {
@@ -327,8 +312,8 @@ public class MultiCertifyKeyFragment extends LoaderFragment
      */
     private void startCertifying() {
         // Bail out if there is not at least one user id selected
-        ArrayList<String> userIds = mUserIdsAdapter.getSelectedUserIds();
-        if (userIds.isEmpty()) {
+        ArrayList<CertifyAction> certifyActions = mUserIdsAdapter.getSelectedCertifyActions();
+        if (certifyActions.isEmpty()) {
             Notify.showNotify(mActivity, "No identities selected!",
                     Notify.Style.ERROR);
             return;
@@ -341,10 +326,7 @@ public class MultiCertifyKeyFragment extends LoaderFragment
 
         // fill values for this action
         CertifyActionsParcel parcel = new CertifyActionsParcel(mSignMasterKeyId);
-
-        for (long keyId : mPubMasterKeyIds) {
-            parcel.add(new CertifyAction(keyId, null));
-        }
+        parcel.mCertifyActions.addAll(certifyActions);
 
         Bundle data = new Bundle();
         data.putParcelable(KeychainIntentService.CERTIFY_PARCEL, parcel);
