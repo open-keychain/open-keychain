@@ -28,6 +28,7 @@ import org.sufficientlysecure.keychain.R;
  */
 public class MultiCertifyKeyActivity extends ActionBarActivity {
 
+    public static final String EXTRA_RESULT = "operation_result";
     public static final String EXTRA_KEY_IDS = "extra_key_ids";
 
     @Override

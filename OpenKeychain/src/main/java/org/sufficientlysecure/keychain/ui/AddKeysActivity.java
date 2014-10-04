@@ -385,7 +385,7 @@ public class AddKeysActivity extends ActionBarActivity implements
 
                     finish();
                     Intent certifyIntent = new Intent(AddKeysActivity.this, MultiCertifyKeyActivity.class);
-                    certifyIntent.putExtra(ImportKeyResult.EXTRA_RESULT, result);
+                    certifyIntent.putExtra(MultiCertifyKeyActivity.EXTRA_RESULT, result);
                     certifyIntent.putExtra(MultiCertifyKeyActivity.EXTRA_KEY_IDS, result.getImportedMasterKeyIds());
                     startActivity(certifyIntent);
 

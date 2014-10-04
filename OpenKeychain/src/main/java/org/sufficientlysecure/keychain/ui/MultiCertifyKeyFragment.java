@@ -53,6 +53,7 @@ import org.sufficientlysecure.keychain.service.KeychainIntentService;
 import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
 import org.sufficientlysecure.keychain.service.PassphraseCacheService;
 import org.sufficientlysecure.keychain.service.results.CertifyResult;
+import org.sufficientlysecure.keychain.service.results.OperationResult;
 import org.sufficientlysecure.keychain.ui.adapter.MultiUserIdsAdapter;
 import org.sufficientlysecure.keychain.ui.dialog.PassphraseDialogFragment;
 import org.sufficientlysecure.keychain.ui.util.Notify;
@@ -103,6 +104,12 @@ public class MultiCertifyKeyFragment extends LoaderFragment
             Log.e(Constants.TAG, "List of key ids to certify missing!");
             mActivity.finish();
             return;
+        }
+
+        OperationResult result = mActivity.getIntent().getParcelableExtra(MultiCertifyKeyActivity.EXTRA_RESULT);
+        if (result != null) {
+            // display result from import
+            result.createNotify(mActivity).show();
         }
 
         mUserIdsAdapter = new MultiUserIdsAdapter(mActivity, null, 0);
