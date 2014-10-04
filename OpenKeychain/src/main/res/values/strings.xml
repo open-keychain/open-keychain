@@ -50,7 +50,7 @@
     <string name="section_actions">"Actions"</string>
     <string name="section_share_key">"Whole key"</string>
     <string name="section_certification_key">"Your Key used for certification"</string>
-    <string name="section_upload_key">"Upload Key"</string>
+    <string name="section_upload_key">"Synchronize Key"</string>
     <string name="section_key_server">"Keyserver"</string>
     <string name="section_fingerprint">"Fingerprint"</string>
     <string name="section_key_to_certify">"Key to be certified"</string>

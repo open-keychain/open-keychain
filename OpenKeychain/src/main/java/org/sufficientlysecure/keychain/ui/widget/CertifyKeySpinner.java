@@ -88,7 +88,10 @@ public class CertifyKeySpinner extends KeySpinner {
         if (loader.getId() == LOADER_ID) {
             // If there is only one choice, pick it by default
             if (mAdapter.getCount() == 2) {
-                setSelection(1);
+                // preselect if key can certify
+                if (data.moveToPosition(1) && data.isNull(mIndexHasCertify)) {
+                    setSelection(1);
+                }
             }
             mIndexHasCertify = data.getColumnIndex(KeychainContract.KeyRings.HAS_CERTIFY);
             mIndexIsRevoked = data.getColumnIndex(KeychainContract.KeyRings.IS_REVOKED);

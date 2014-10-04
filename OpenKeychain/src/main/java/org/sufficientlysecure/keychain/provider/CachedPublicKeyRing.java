@@ -125,9 +125,9 @@ public class CachedPublicKeyRing extends KeyRing {
     public boolean canCertify() throws PgpGeneralException {
         try {
             Object data = mProviderHelper.getGenericData(mUri,
-                    KeychainContract.KeyRings.CAN_CERTIFY,
-                    ProviderHelper.FIELD_TYPE_INTEGER);
-            return (Long) data > 0;
+                    KeychainContract.KeyRings.HAS_CERTIFY,
+                    ProviderHelper.FIELD_TYPE_NULL);
+            return !((Boolean) data);
         } catch(ProviderHelper.NotFoundException e) {
             throw new PgpGeneralException(e);
         }
