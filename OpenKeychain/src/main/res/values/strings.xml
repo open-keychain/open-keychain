@@ -902,7 +902,6 @@
     <string name="msg_crt_error_master_not_found">"Master key not found!"</string>
     <string name="msg_crt_error_nothing">"No keys certified!"</string>
     <string name="msg_crt_error_unlock">"Error unlocking master key!"</string>
-    <string name="msg_crt_fp_mismatch">"Fingerprint mismatch, not certifying!"</string>
     <string name="msg_crt">"Certifying keyrings"</string>
     <string name="msg_crt_master_fetch">"Fetching certifying master key"</string>
     <string name="msg_crt_save">"Saving certified key %s"</string>

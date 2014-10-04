@@ -85,7 +85,6 @@ public class CertifyKeyFragment extends LoaderFragment
 
     private Uri mDataUri;
     private long mPubKeyId = Constants.key.none;
-    private byte[] mPubFingerprint;
     private long mMasterKeyId = Constants.key.none;
 
     private UserIdsAdapter mUserIdsAdapter;
@@ -246,8 +245,8 @@ public class CertifyKeyFragment extends LoaderFragment
                     String mainUserId = data.getString(INDEX_USER_ID);
                     mInfoPrimaryUserId.setText(mainUserId);
 
-                    mPubFingerprint = data.getBlob(INDEX_FINGERPRINT);
-                    String fingerprint = KeyFormattingUtils.convertFingerprintToHex(mPubFingerprint);
+                    byte[] fp = data.getBlob(INDEX_FINGERPRINT);
+                    String fingerprint = KeyFormattingUtils.convertFingerprintToHex(fp);
                     mInfoFingerprint.setText(KeyFormattingUtils.colorizeFingerprint(fingerprint));
                 }
                 break;
@@ -316,7 +315,7 @@ public class CertifyKeyFragment extends LoaderFragment
 
         // fill values for this action
         CertifyActionsParcel parcel = new CertifyActionsParcel(mMasterKeyId);
-        parcel.add(new CertifyAction(mPubKeyId, mPubFingerprint, userIds));
+        parcel.add(new CertifyAction(mPubKeyId, userIds));
 
         Bundle data = new Bundle();
         data.putParcelable(KeychainIntentService.CERTIFY_PARCEL, parcel);

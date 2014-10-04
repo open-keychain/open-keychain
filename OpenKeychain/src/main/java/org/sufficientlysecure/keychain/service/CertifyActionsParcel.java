@@ -74,17 +74,15 @@ public class CertifyActionsParcel implements Parcelable {
     // TODO make this parcelable
     public static class CertifyAction implements Serializable {
         final public long mMasterKeyId;
-        final public byte[] mFingerprint;
 
         final public ArrayList<String> mUserIds;
 
-        public CertifyAction(long masterKeyId, byte[] fingerprint) {
-            this(masterKeyId, fingerprint, null);
+        public CertifyAction(long masterKeyId) {
+            this(masterKeyId, null);
         }
 
-        public CertifyAction(long masterKeyId, byte[] fingerprint, ArrayList<String> userIds) {
+        public CertifyAction(long masterKeyId, ArrayList<String> userIds) {
             mMasterKeyId = masterKeyId;
-            mFingerprint = fingerprint;
             mUserIds = userIds;
         }
     }

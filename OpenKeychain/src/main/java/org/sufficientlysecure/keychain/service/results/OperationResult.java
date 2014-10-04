@@ -523,7 +523,6 @@ public abstract class OperationResult implements Parcelable {
         MSG_CRT_ERROR_MASTER_NOT_FOUND (LogLevel.ERROR, R.string.msg_crt_error_master_not_found),
         MSG_CRT_ERROR_NOTHING (LogLevel.ERROR, R.string.msg_crt_error_nothing),
         MSG_CRT_ERROR_UNLOCK (LogLevel.ERROR, R.string.msg_crt_error_unlock),
-        MSG_CRT_FP_MISMATCH (LogLevel.WARN, R.string.msg_crt_fp_mismatch),
         MSG_CRT (LogLevel.START, R.string.msg_crt),
         MSG_CRT_MASTER_FETCH (LogLevel.DEBUG, R.string.msg_crt_master_fetch),
         MSG_CRT_SAVE (LogLevel.DEBUG, R.string.msg_crt_save),

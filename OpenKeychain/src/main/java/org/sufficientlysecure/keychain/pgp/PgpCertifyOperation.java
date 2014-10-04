@@ -86,11 +86,6 @@ public class PgpCertifyOperation {
 
                 CanonicalizedPublicKeyRing publicRing =
                         mProviderHelper.getCanonicalizedPublicKeyRing(action.mMasterKeyId);
-                if ( ! Arrays.equals(publicRing.getFingerprint(), action.mFingerprint)) {
-                    log.add(LogType.MSG_CRT_FP_MISMATCH, 3);
-                    certifyError += 1;
-                    continue;
-                }
 
                 UncachedKeyRing certifiedKey = certificationKey.certifyUserIds(publicRing, action.mUserIds, null, null);
                 certifiedKeys.add(certifiedKey);
