@@ -239,12 +239,6 @@ public class MultiCertifyKeyFragment extends LoaderFragment
             if (!subGrouped) {
                 // 1. This name should NOT be grouped with the previous, so we flush the buffer
 
-                /*/ Special case: only a single user id (first && last)
-                if (data.isFirst()) {
-                    lastMasterKeyId = masterKeyId;
-                    uids.add(userId);
-                }*/
-
                 Parcel p = Parcel.obtain();
                 p.writeStringList(uids);
                 byte[] d = p.marshall();
