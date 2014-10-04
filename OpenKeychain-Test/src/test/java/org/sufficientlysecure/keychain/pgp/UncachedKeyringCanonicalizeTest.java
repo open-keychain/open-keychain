@@ -133,27 +133,27 @@ public class UncachedKeyringCanonicalizeTest {
 
         Iterator<RawPacket> it = KeyringTestingHelper.parseKeyring(ring.getEncoded());
 
-        Assert.assertEquals("packet #1 should be secret key",
+        Assert.assertEquals("packet #0 should be secret key",
                 PacketTags.SECRET_KEY, it.next().tag);
 
-        Assert.assertEquals("packet #2 should be user id",
+        Assert.assertEquals("packet #1 should be user id",
                 PacketTags.USER_ID, it.next().tag);
-        Assert.assertEquals("packet #3 should be signature",
+        Assert.assertEquals("packet #2 should be signature",
                 PacketTags.SIGNATURE, it.next().tag);
 
-        Assert.assertEquals("packet #4 should be user id",
+        Assert.assertEquals("packet #3 should be user id",
                 PacketTags.USER_ID, it.next().tag);
-        Assert.assertEquals("packet #5 should be signature",
+        Assert.assertEquals("packet #4 should be signature",
                 PacketTags.SIGNATURE, it.next().tag);
 
-        Assert.assertEquals("packet #6 should be secret subkey",
+        Assert.assertEquals("packet #5 should be secret subkey",
                 PacketTags.SECRET_SUBKEY, it.next().tag);
-        Assert.assertEquals("packet #7 should be signature",
+        Assert.assertEquals("packet #6 should be signature",
                 PacketTags.SIGNATURE, it.next().tag);
 
-        Assert.assertEquals("packet #8 should be secret subkey",
+        Assert.assertEquals("packet #7 should be secret subkey",
                 PacketTags.SECRET_SUBKEY, it.next().tag);
-        Assert.assertEquals("packet #9 should be signature",
+        Assert.assertEquals("packet #8 should be signature",
                 PacketTags.SIGNATURE, it.next().tag);
 
         Assert.assertFalse("exactly 9 packets total", it.hasNext());
@@ -294,6 +294,36 @@ public class UncachedKeyringCanonicalizeTest {
                 secretKey, PGPSignature.CERTIFICATION_REVOCATION, subHashedPacketsGen, "twi", secretKey.getPublicKey());
 
         injectEverywhere(modified, revocation.getEncoded());
+
+    }
+
+    @Test public void testDuplicateUid() throws Exception {
+
+        // get subkey packets
+        Iterator<RawPacket> it = KeyringTestingHelper.parseKeyring(ring.getEncoded());
+        RawPacket uidPacket = KeyringTestingHelper.getNth(it, 3);
+        RawPacket uidSig = it.next();
+
+        // inject at a second position
+        UncachedKeyRing modified = ring;
+        modified = KeyringTestingHelper.injectPacket(modified, uidPacket.buf, 5);
+        modified = KeyringTestingHelper.injectPacket(modified, uidSig.buf, 6);
+
+        // canonicalize, and check if we lose the bad signature
+        OperationLog log = new OperationLog();
+        CanonicalizedKeyRing canonicalized = modified.canonicalize(log, 0);
+        Assert.assertNotNull("canonicalization with duplicate user id should succeed", canonicalized);
+        Assert.assertTrue("log should contain uid_dup event", log.containsType(LogType.MSG_KC_UID_DUP));
+        /* TODO actually test ths, and fix behavior
+        Assert.assertTrue("duplicate user id packets should be gone after canonicalization",
+                KeyringTestingHelper.diffKeyrings(modified.getEncoded(), canonicalized.getEncoded(),
+                        onlyA, onlyB)
+        );
+        Assert.assertEquals("canonicalized keyring should have lost the two duplicate packets",
+                2, onlyA.size());
+        Assert.assertTrue("canonicalized keyring should still contain the user id",
+                canonicalized.getUnorderedUserIds().contains(new UserIDPacket(uidPacket.buf).getID()));
+        */
 
     }
 
