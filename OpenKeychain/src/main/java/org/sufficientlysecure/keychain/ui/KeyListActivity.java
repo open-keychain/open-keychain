@@ -49,6 +49,8 @@ public class KeyListActivity extends DrawerActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        setTitle(R.string.nav_keys);
+
         // if this is the first time show first time activity
         Preferences prefs = Preferences.getPreferences(this);
         if (prefs.isFirstTime()) {
