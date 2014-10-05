@@ -163,12 +163,16 @@ public class LogDisplayFragment extends ListFragment implements OnTouchListener,
         }
 
         private class ItemHolder {
-            final TextView mText;
-            final ImageView mImg, mSub;
-            public ItemHolder(TextView text, ImageView image, ImageView sub) {
+            final View mSecond;
+            final TextView mText, mSecondText;
+            final ImageView mImg, mSecondImg, mSub;
+            public ItemHolder(TextView text, ImageView image, ImageView sub, View second, TextView secondText, ImageView secondImg) {
                 mText = text;
                 mImg = image;
                 mSub = sub;
+                mSecond = second;
+                mSecondText = secondText;
+                mSecondImg = secondImg;
             }
         }
 
@@ -181,7 +185,10 @@ public class LogDisplayFragment extends ListFragment implements OnTouchListener,
                 ih = new ItemHolder(
                         (TextView) convertView.findViewById(R.id.log_text),
                         (ImageView) convertView.findViewById(R.id.log_img),
-                        (ImageView) convertView.findViewById(R.id.log_sub)
+                        (ImageView) convertView.findViewById(R.id.log_sub),
+                        convertView.findViewById(R.id.log_second),
+                        (TextView) convertView.findViewById(R.id.log_second_text),
+                        (ImageView) convertView.findViewById(R.id.log_second_img)
                 );
                 convertView.setTag(ih);
             } else {
@@ -191,8 +198,38 @@ public class LogDisplayFragment extends ListFragment implements OnTouchListener,
             if (entry instanceof SubLogEntryParcel) {
                 ih.mSub.setVisibility(View.VISIBLE);
                 convertView.setClickable(false);
+
+                OperationResult result = ((SubLogEntryParcel) entry).getSubResult();
+                LogEntryParcel subEntry = result.getLog().getLast();
+                if (subEntry != null) {
+                    ih.mSecond.setVisibility(View.VISIBLE);
+                    // special case: first parameter may be a quantity
+                    if (subEntry.mParameters != null && subEntry.mParameters.length > 0
+                            && subEntry.mParameters[0] instanceof Integer) {
+                        ih.mSecondText.setText(getResources().getQuantityString(subEntry.mType.getMsgId(),
+                                (Integer) subEntry.mParameters[0],
+                                subEntry.mParameters));
+                    } else {
+                        ih.mSecondText.setText(getResources().getString(subEntry.mType.getMsgId(),
+                                subEntry.mParameters));
+                    }
+                    ih.mSecondText.setTextColor(subEntry.mType.mLevel == LogLevel.DEBUG ? Color.GRAY : Color.BLACK);
+                    switch (subEntry.mType.mLevel) {
+                        case DEBUG: ih.mSecondImg.setBackgroundColor(Color.GRAY); break;
+                        case INFO: ih.mSecondImg.setBackgroundColor(Color.BLACK); break;
+                        case WARN: ih.mSecondImg.setBackgroundColor(Color.YELLOW); break;
+                        case ERROR: ih.mSecondImg.setBackgroundColor(Color.RED); break;
+                        case START: ih.mSecondImg.setBackgroundColor(getResources().getColor(R.color.emphasis)); break;
+                        case OK: ih.mSecondImg.setBackgroundColor(Color.GREEN); break;
+                        case CANCELLED: ih.mSecondImg.setBackgroundColor(Color.RED); break;
+                    }
+                } else {
+                    ih.mSecond.setVisibility(View.GONE);
+                }
+
             } else {
                 ih.mSub.setVisibility(View.GONE);
+                ih.mSecond.setVisibility(View.GONE);
                 convertView.setClickable(true);
             }
 
@@ -206,14 +243,14 @@ public class LogDisplayFragment extends ListFragment implements OnTouchListener,
                 ih.mText.setText(getResources().getString(entry.mType.getMsgId(),
                         entry.mParameters));
             }
-            ih.mText.setTextColor(entry.mType.mLevel == LogLevel.DEBUG ? Color.GRAY : Color.BLACK);
             convertView.setPadding((entry.mIndent) * dipFactor, 0, 0, 0);
+            ih.mText.setTextColor(entry.mType.mLevel == LogLevel.DEBUG ? Color.GRAY : Color.BLACK);
             switch (entry.mType.mLevel) {
                 case DEBUG: ih.mImg.setBackgroundColor(Color.GRAY); break;
                 case INFO: ih.mImg.setBackgroundColor(Color.BLACK); break;
                 case WARN: ih.mImg.setBackgroundColor(Color.YELLOW); break;
                 case ERROR: ih.mImg.setBackgroundColor(Color.RED); break;
-                case START: ih.mImg.setBackgroundColor(Color.GREEN); break;
+                case START: ih.mImg.setBackgroundColor(getResources().getColor(R.color.emphasis)); break;
                 case OK: ih.mImg.setBackgroundColor(Color.GREEN); break;
                 case CANCELLED: ih.mImg.setBackgroundColor(Color.RED); break;
             }

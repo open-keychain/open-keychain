@@ -121,6 +121,7 @@ public class PgpCertifyOperation {
             log.add(LogType.MSG_CRT_SAVE, 2,
                     KeyFormattingUtils.convertKeyIdToHex(certifiedKey.getMasterKeyId()));
             // store the signed key in our local cache
+            mProviderHelper.clearLog();
             SaveKeyringResult result = mProviderHelper.savePublicKeyRing(certifiedKey);
 
             if (result.success()) {
@@ -128,6 +129,8 @@ public class PgpCertifyOperation {
             } else {
                 log.add(LogType.MSG_CRT_WARN_SAVE_FAILED, 3);
             }
+
+            log.add(result, 2);
 
             // TODO do something with import results
 

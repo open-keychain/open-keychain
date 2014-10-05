@@ -133,6 +133,12 @@ public class ProviderHelper {
         }
     }
 
+    public void clearLog() {
+        if (mLog != null) {
+            mLog.clear();
+        }
+    }
+
     // If we ever switch to api level 11, we can ditch this whole mess!
     public static final int FIELD_TYPE_NULL = 1;
     // this is called integer to stay coherent with the constants in Cursor (api level 11)
