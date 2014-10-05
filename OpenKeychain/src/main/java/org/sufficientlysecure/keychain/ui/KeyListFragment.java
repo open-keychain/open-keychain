@@ -224,6 +224,7 @@ public class KeyListFragment extends LoaderFragment
          */
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
             mStickyList.setFastScrollAlwaysVisible(true);
+            mStickyList.addHeaderView();
 
             mStickyList.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
             mStickyList.getWrappedList().setMultiChoiceModeListener(new MultiChoiceModeListener() {
