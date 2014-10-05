@@ -31,6 +31,8 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -40,11 +42,12 @@ import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.service.results.OperationResult;
 import org.sufficientlysecure.keychain.service.results.OperationResult.LogEntryParcel;
 import org.sufficientlysecure.keychain.service.results.OperationResult.LogLevel;
+import org.sufficientlysecure.keychain.service.results.OperationResult.SubLogEntryParcel;
 import org.sufficientlysecure.keychain.util.Log;
 
 import java.util.HashMap;
 
-public class LogDisplayFragment extends ListFragment implements OnTouchListener {
+public class LogDisplayFragment extends ListFragment implements OnTouchListener, OnItemClickListener {
 
     HashMap<LogLevel,LogAdapter> mAdapters = new HashMap<LogLevel, LogAdapter>();
     LogAdapter mAdapter;
@@ -89,6 +92,8 @@ public class LogDisplayFragment extends ListFragment implements OnTouchListener 
             }
         });
 
+        getListView().setOnItemClickListener(this);
+
         getListView().setFastScrollEnabled(true);
         getListView().setDividerHeight(0);
         getListView().setOnTouchListener(this);
@@ -126,6 +131,18 @@ public class LogDisplayFragment extends ListFragment implements OnTouchListener 
         return false;
     }
 
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        LogEntryParcel parcel = mAdapter.getItem(position);
+        if ( ! (parcel instanceof SubLogEntryParcel)) {
+            return;
+        }
+        Intent intent = new Intent(
+                getActivity(), LogDisplayActivity.class);
+        intent.putExtra(LogDisplayFragment.EXTRA_RESULT, ((SubLogEntryParcel) parcel).getSubResult());
+        startActivity(intent);
+    }
+
     private class LogAdapter extends ArrayAdapter<LogEntryParcel> {
 
         private LayoutInflater mInflater;
@@ -147,10 +164,11 @@ public class LogDisplayFragment extends ListFragment implements OnTouchListener 
 
         private class ItemHolder {
             final TextView mText;
-            final ImageView mImg;
-            public ItemHolder(TextView text, ImageView image) {
+            final ImageView mImg, mSub;
+            public ItemHolder(TextView text, ImageView image, ImageView sub) {
                 mText = text;
                 mImg = image;
+                mSub = sub;
             }
         }
 
@@ -162,11 +180,20 @@ public class LogDisplayFragment extends ListFragment implements OnTouchListener 
                 convertView = mInflater.inflate(R.layout.log_display_item, parent, false);
                 ih = new ItemHolder(
                         (TextView) convertView.findViewById(R.id.log_text),
-                        (ImageView) convertView.findViewById(R.id.log_img)
+                        (ImageView) convertView.findViewById(R.id.log_img),
+                        (ImageView) convertView.findViewById(R.id.log_sub)
                 );
                 convertView.setTag(ih);
             } else {
                 ih = (ItemHolder) convertView.getTag();
+            }
+
+            if (entry instanceof SubLogEntryParcel) {
+                ih.mSub.setVisibility(View.VISIBLE);
+                convertView.setClickable(false);
+            } else {
+                ih.mSub.setVisibility(View.GONE);
+                convertView.setClickable(true);
             }
 
             // special case: first parameter may be a quantity

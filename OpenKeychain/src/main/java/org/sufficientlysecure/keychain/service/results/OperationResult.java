@@ -106,7 +106,7 @@ public abstract class OperationResult implements Parcelable {
             mType = type;
             mParameters = parameters;
             mIndent = indent;
-            Log.v(Constants.TAG, "log: " + this.toString());
+            Log.v(Constants.TAG, "log: " + this);
         }
 
         public LogEntryParcel(Parcel source) {
@@ -122,6 +122,7 @@ public abstract class OperationResult implements Parcelable {
 
         @Override
         public void writeToParcel(Parcel dest, int flags) {
+            dest.writeInt(0);
             dest.writeInt(mType.ordinal());
             dest.writeSerializable(mParameters);
             dest.writeInt(mIndent);
@@ -129,7 +130,12 @@ public abstract class OperationResult implements Parcelable {
 
         public static final Creator<LogEntryParcel> CREATOR = new Creator<LogEntryParcel>() {
             public LogEntryParcel createFromParcel(final Parcel source) {
-                return new LogEntryParcel(source);
+                // Actually create LogEntryParcel or SubLogEntryParcel depending on type indicator
+                if (source.readInt() == 0) {
+                    return new LogEntryParcel(source);
+                } else {
+                    return new SubLogEntryParcel(source);
+                }
             }
 
             public LogEntryParcel[] newArray(final int size) {
@@ -139,13 +145,49 @@ public abstract class OperationResult implements Parcelable {
 
         @Override
         public String toString() {
-            return "LogEntryParcel{" +
+            return getClass().getSimpleName() + "{" +
                     "mLevel=" + mType.mLevel +
                     ", mType=" + mType +
                     ", mParameters=" + Arrays.toString(mParameters) +
                     ", mIndent=" + mIndent +
                     '}';
         }
+    }
+
+    public static class SubLogEntryParcel extends LogEntryParcel {
+
+        OperationResult mSubResult;
+
+        public SubLogEntryParcel(OperationResult subResult, LogType type, int indent, Object... parameters) {
+            super(type, indent, parameters);
+            mSubResult = subResult;
+
+            Log.v(Constants.TAG, "log: " + this);
+        }
+
+        public SubLogEntryParcel(Parcel source) {
+            super(source);
+            mSubResult = source.readParcelable(SubLogEntryParcel.class.getClassLoader());
+        }
+
+        public OperationResult getSubResult() {
+            return mSubResult;
+        }
+
+        @Override
+        public int describeContents() {
+            return 0;
+        }
+
+        @Override
+        public void writeToParcel(Parcel dest, int flags) {
+            dest.writeInt(1);
+            dest.writeInt(mType.ordinal());
+            dest.writeSerializable(mParameters);
+            dest.writeInt(mIndent);
+            dest.writeParcelable(mSubResult, 0);
+        }
+
     }
 
     public SuperCardToast createNotify(final Activity activity) {
@@ -595,6 +637,15 @@ public abstract class OperationResult implements Parcelable {
 
         public void add(LogType type, int indent) {
             mParcels.add(new OperationResult.LogEntryParcel(type, indent, (Object[]) null));
+        }
+
+        public void add(OperationResult subResult, int indent) {
+            OperationLog subLog = subResult.getLog();
+            mParcels.add(new SubLogEntryParcel(subResult, subLog.getLast().mType, indent, subLog.getLast().mParameters));
+        }
+
+        public void clear() {
+            mParcels.clear();
         }
 
         public boolean containsType(LogType type) {
