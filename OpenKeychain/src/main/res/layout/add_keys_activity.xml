@@ -135,34 +135,6 @@
                 android:background="?android:attr/listDivider"
                 android:layout_marginBottom="8dp" />
 
-            <TextView
-                style="@style/SectionHeader"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="32dp"
-                android:text="@string/add_keys_section_import" />
-
-            <TextView
-                android:id="@+id/add_keys_search_cloud"
-                android:paddingLeft="8dp"
-                android:paddingRight="8dp"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:minHeight="?android:attr/listPreferredItemHeight"
-                android:clickable="true"
-                style="@style/SelectableItem"
-                android:text="@string/add_keys_cloud"
-                android:drawableRight="@drawable/ic_action_search"
-                android:drawablePadding="8dp"
-                android:gravity="center_vertical" />
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dip"
-                android:background="?android:attr/listDivider"
-                android:layout_marginBottom="8dp" />
-
         </LinearLayout>
     </LinearLayout>
 </ScrollView>

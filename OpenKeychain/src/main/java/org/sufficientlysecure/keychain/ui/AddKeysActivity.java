@@ -73,7 +73,6 @@ public class AddKeysActivity extends ActionBarActivity implements
     ImageView mActionSafeSlingerIcon;
     View mActionQrCode;
     View mActionNfc;
-    View mActionSearchCloud;
 
     ProviderHelper mProviderHelper;
 
@@ -103,7 +102,6 @@ public class AddKeysActivity extends ActionBarActivity implements
                 PorterDuff.Mode.SRC_IN);
         mActionQrCode = findViewById(R.id.add_keys_qr_code);
         mActionNfc = findViewById(R.id.add_keys_nfc);
-        mActionSearchCloud = findViewById(R.id.add_keys_search_cloud);
 
         mSafeSlingerKeySpinner.setOnKeyChangedListener(new KeySpinner.OnKeyChangedListener() {
             @Override
@@ -135,14 +133,6 @@ public class AddKeysActivity extends ActionBarActivity implements
                 startActivityForResult(intent, REQUEST_CODE_RESULT);
             }
         });
-
-        mActionSearchCloud.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                searchCloud();
-            }
-        });
-
     }
 
     private void startExchange() {
@@ -169,12 +159,6 @@ public class AddKeysActivity extends ActionBarActivity implements
     private void startQrCode() {
         // scan using xzing's Barcode Scanner
         new IntentIntegrator(this).initiateScan();
-    }
-
-    private void searchCloud() {
-        finish();
-        Intent importIntent = new Intent(this, ImportKeysActivity.class);
-        startActivity(importIntent);
     }
 
     @Override

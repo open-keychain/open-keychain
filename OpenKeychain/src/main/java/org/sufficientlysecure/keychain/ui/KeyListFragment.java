@@ -470,6 +470,11 @@ public class KeyListFragment extends LoaderFragment
         MenuItemCompat.setOnActionExpandListener(searchItem, new MenuItemCompat.OnActionExpandListener() {
             @Override
             public boolean onMenuItemActionExpand(MenuItem item) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+                    hideMenu = true;
+                    getActivity().invalidateOptionsMenu();
+                }
+
                 // disable swipe-to-refresh
                 // mSwipeRefreshLayout.setIsLocked(true);
                 return true;
@@ -479,6 +484,11 @@ public class KeyListFragment extends LoaderFragment
             public boolean onMenuItemActionCollapse(MenuItem item) {
                 mQuery = null;
                 getLoaderManager().restartLoader(0, null, KeyListFragment.this);
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+                    hideMenu = false;
+                    getActivity().invalidateOptionsMenu();
+                }
                 // enable swipe-to-refresh
                 // mSwipeRefreshLayout.setIsLocked(false);
                 return true;

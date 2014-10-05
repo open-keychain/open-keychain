@@ -31,8 +31,6 @@ import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.compatibility.ClipboardReflection;
 import org.sufficientlysecure.keychain.util.FileHelper;
 
-import java.util.Locale;
-
 public class ImportKeysFileFragment extends Fragment {
     private ImportKeysActivity mImportActivity;
     private View mBrowse;
@@ -80,12 +78,8 @@ public class ImportKeysFileFragment extends Fragment {
                 String sendText = "";
                 if (clipboardText != null) {
                     sendText = clipboardText.toString();
-                    if (sendText.toLowerCase(Locale.ENGLISH).startsWith(Constants.FINGERPRINT_SCHEME)) {
-                        mImportActivity.loadFromFingerprintUri(Uri.parse(sendText));
-                        return;
-                    }
+                    mImportActivity.loadCallback(new ImportKeysListFragment.BytesLoaderState(sendText.getBytes(), null));
                 }
-                mImportActivity.loadCallback(new ImportKeysListFragment.BytesLoaderState(sendText.getBytes(), null));
             }
         });
 

@@ -87,6 +87,10 @@ public class KeyListActivity extends DrawerActivity {
                 addKeys();
                 return true;
 
+            case R.id.menu_key_list_search_cloud:
+                searchCloud();
+                return true;
+
             case R.id.menu_key_list_create:
                 createKey();
                 return true;
@@ -142,6 +146,12 @@ public class KeyListActivity extends DrawerActivity {
     private void addKeys() {
         Intent intent = new Intent(this, AddKeysActivity.class);
         startActivityForResult(intent, 0);
+    }
+
+    private void searchCloud() {
+        Intent importIntent = new Intent(this, ImportKeysActivity.class);
+        importIntent.putExtra(ImportKeysActivity.EXTRA_QUERY, (String) null); // hack to show only cloud tab
+        startActivity(importIntent);
     }
 
     private void createKey() {
