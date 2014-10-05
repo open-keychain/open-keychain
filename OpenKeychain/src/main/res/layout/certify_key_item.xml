@@ -6,31 +6,45 @@
     android:orientation="vertical"
     android:singleLine="true">
 
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                  android:id="@+id/user_id_header"
+    <LinearLayout android:id="@+id/user_id_header"
                   android:layout_width="match_parent"
                   android:layout_height="wrap_content"
-                  android:orientation="horizontal"
-                  android:singleLine="true"
-                  android:clickable="true">
+                  android:orientation="vertical"
+                  android:clickable="true"
+                  android:layout_marginLeft="8dip"
+                  android:layout_marginTop="16dip">
 
-        <TextView
-            android:id="@+id/user_id_header_id"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="0123 4567 890a bcde"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
+        <LinearLayout android:layout_width="match_parent"
+                      android:layout_height="wrap_content"
+                      android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/user_id_header_id"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="ID: 0123 4567 890a bcde"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                />
+
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dip"
+            android:background="?android:attr/listDivider"
+            android:paddingLeft="24dip"
+            android:paddingRight="24dip"
+            android:layout_marginBottom="4dip"/>
 
     </LinearLayout>
 
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                  android:id="@+id/user_id_body"
+    <LinearLayout android:id="@+id/user_id_body"
                   android:layout_width="match_parent"
                   android:layout_height="wrap_content"
-                  android:minHeight="?android:attr/listPreferredItemHeight"
                   android:orientation="horizontal"
                   android:singleLine="true"
-                  android:layout_marginLeft="15dip">
+                  android:layout_marginLeft="8dip"
+                  android:layout_marginTop="4dip">
 
         <CheckBox
             android:id="@+id/user_id_item_check_box"
@@ -47,14 +61,17 @@
             android:layout_marginTop="4dp"
             android:layout_marginBottom="4dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1">
+            android:layout_weight="1"
+            android:minHeight="48dip">
 
             <TextView
                 android:id="@+id/user_id_item_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="alice@example.com"
-                android:textAppearance="?android:attr/textAppearanceMedium" />
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:layout_weight="1"
+                android:gravity="center_vertical"/>
 
             <TextView
                 android:id="@+id/user_id_item_addresses"

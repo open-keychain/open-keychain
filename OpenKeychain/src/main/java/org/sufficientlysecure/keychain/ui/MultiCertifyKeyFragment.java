@@ -124,6 +124,7 @@ public class MultiCertifyKeyFragment extends LoaderFragment
 
         mUserIdsAdapter = new MultiUserIdsAdapter(mActivity, null, 0);
         mUserIds.setAdapter(mUserIdsAdapter);
+        mUserIds.setDividerHeight(0);
 
         getLoaderManager().initLoader(0, null, this);
 
