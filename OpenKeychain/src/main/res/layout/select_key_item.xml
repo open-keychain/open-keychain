@@ -42,22 +42,16 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="0xBBBBBBBBBBBBBBB"
-            android:textAppearance="?android:attr/textAppearanceSmall"
-            android:typeface="monospace" />
+            android:textAppearance="?android:attr/textAppearanceSmall" />
     </LinearLayout>
 
-
-    <TextView
-        android:gravity="right"
-        android:paddingLeft="4dp"
-        android:minWidth="90dip"
-        android:id="@+id/status"
-        android:paddingTop="4dp"
+    <ImageView
+        android:id="@+id/status_icon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="expired"
-        android:textAppearance="?android:attr/textAppearanceSmall"
-        android:textStyle="italic"
-        android:layout_gravity="right" />
+        android:layout_gravity="center"
+        android:src="@drawable/status_signature_revoked_cutout"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp" />
 
 </LinearLayout>

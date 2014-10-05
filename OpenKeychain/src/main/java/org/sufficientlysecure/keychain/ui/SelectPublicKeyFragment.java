@@ -42,9 +42,11 @@ import android.widget.TextView;
 
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.compatibility.ListFragmentWorkaround;
+import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.KeychainDatabase.Tables;
 import org.sufficientlysecure.keychain.ui.adapter.SelectKeyCursorAdapter;
+import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 
 import java.util.Vector;
 
@@ -257,9 +259,10 @@ public class SelectPublicKeyFragment extends ListFragmentWorkaround implements T
                 KeyRings._ID,
                 KeyRings.MASTER_KEY_ID,
                 KeyRings.USER_ID,
-                KeyRings.EXPIRY,
+                KeyRings.IS_EXPIRED,
                 KeyRings.IS_REVOKED,
                 KeyRings.HAS_ENCRYPT,
+                KeyRings.VERIFIED,
         };
 
         String inMasterKeyList = null;
@@ -344,7 +347,7 @@ public class SelectPublicKeyFragment extends ListFragmentWorkaround implements T
 
     private class SelectPublicKeyCursorAdapter extends SelectKeyCursorAdapter {
 
-        private int mIndexHasEncrypt;
+        private int mIndexHasEncrypt, mIndexIsVerified;
 
         public SelectPublicKeyCursorAdapter(Context context, Cursor c, int flags, ListView listView) {
             super(context, c, flags, listView);
@@ -355,6 +358,7 @@ public class SelectPublicKeyFragment extends ListFragmentWorkaround implements T
             super.initIndex(cursor);
             if (cursor != null) {
                 mIndexHasEncrypt = cursor.getColumnIndexOrThrow(KeyRings.HAS_ENCRYPT);
+                mIndexIsVerified = cursor.getColumnIndexOrThrow(KeyRings.VERIFIED);
             }
         }
 
@@ -369,12 +373,18 @@ public class SelectPublicKeyFragment extends ListFragmentWorkaround implements T
             h.selected.setChecked(getListView().isItemChecked(cursor.getPosition()));
 
             boolean enabled = false;
-            if((Boolean) h.status.getTag()) {
+            if((Boolean) h.statusIcon.getTag()) {
                 // Check if key is viable for our purposes
                 if (cursor.getInt(mIndexHasEncrypt) == 0) {
-                    h.status.setText(R.string.no_key);
+                    h.statusIcon.setVisibility(View.VISIBLE);
+                    KeyFormattingUtils.setStatusImage(mContext, h.statusIcon, KeyFormattingUtils.STATE_UNAVAILABLE);
+                    enabled = false;
+                } else if (cursor.getInt(mIndexIsVerified) != 0) {
+                    h.statusIcon.setVisibility(View.VISIBLE);
+                    KeyFormattingUtils.setStatusImage(mContext, h.statusIcon, KeyFormattingUtils.STATE_VERIFIED);
+                    enabled = true;
                 } else {
-                    h.status.setText(R.string.can_encrypt);
+                    h.statusIcon.setVisibility(View.GONE);
                     enabled = true;
                 }
             }

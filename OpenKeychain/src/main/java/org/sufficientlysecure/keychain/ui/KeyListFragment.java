@@ -59,7 +59,6 @@ import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.ExportHelper;
 import org.sufficientlysecure.keychain.util.KeyUpdateHelper;
-import org.sufficientlysecure.keychain.util.Preferences;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
@@ -224,7 +223,6 @@ public class KeyListFragment extends LoaderFragment
          */
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
             mStickyList.setFastScrollAlwaysVisible(true);
-            mStickyList.addHeaderView();
 
             mStickyList.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
             mStickyList.getWrappedList().setMultiChoiceModeListener(new MultiChoiceModeListener() {
@@ -554,7 +552,7 @@ public class KeyListFragment extends LoaderFragment
             ItemViewHolder holder = new ItemViewHolder();
             holder.mMainUserId = (TextView) view.findViewById(R.id.mainUserId);
             holder.mMainUserIdRest = (TextView) view.findViewById(R.id.mainUserIdRest);
-            holder.mStatus = (ImageView) view.findViewById(R.id.status_image);
+            holder.mStatus = (ImageView) view.findViewById(R.id.status_icon);
             view.setTag(holder);
             return view;
         }

@@ -17,8 +17,7 @@
         android:focusable="true"
         android:orientation="vertical"
         android:paddingLeft="8dp"
-        android:paddingRight="4dp"
-        >
+        android:paddingRight="4dp">
 
         <TextView
             android:id="@+id/keyspinner_key_name"
@@ -43,7 +42,7 @@
             android:layout_height="wrap_content"
             android:singleLine="true"
             android:ellipsize="end"
-            android:textAppearance="?android:attr/textAppearanceSmall"/>
+            android:textAppearance="?android:attr/textAppearanceSmall" />
     </LinearLayout>
 
     <ImageView
@@ -53,6 +52,6 @@
         android:layout_gravity="center"
         android:src="@drawable/status_signature_revoked_cutout"
         android:paddingLeft="16dp"
-        android:paddingRight="16dp"/>
+        android:paddingRight="16dp" />
 
 </LinearLayout>

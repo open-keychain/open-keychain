@@ -24,6 +24,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -32,8 +33,6 @@ import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.ui.util.Highlighter;
-
-import java.util.Date;
 
 
 /**
@@ -44,7 +43,7 @@ abstract public class SelectKeyCursorAdapter extends CursorAdapter {
     private String mQuery;
     private LayoutInflater mInflater;
 
-    protected int mIndexUserId, mIndexMasterKeyId, mIndexRevoked, mIndexExpiry;
+    protected int mIndexUserId, mIndexMasterKeyId, mIndexIsExpiry, mIndexIsRevoked;
 
     public SelectKeyCursorAdapter(Context context, Cursor c, int flags, ListView listView) {
         super(context, c, flags);
@@ -73,8 +72,8 @@ abstract public class SelectKeyCursorAdapter extends CursorAdapter {
         if (cursor != null) {
             mIndexUserId = cursor.getColumnIndexOrThrow(KeyRings.USER_ID);
             mIndexMasterKeyId = cursor.getColumnIndexOrThrow(KeyRings.MASTER_KEY_ID);
-            mIndexExpiry = cursor.getColumnIndexOrThrow(KeyRings.EXPIRY);
-            mIndexRevoked = cursor.getColumnIndexOrThrow(KeyRings.IS_REVOKED);
+            mIndexIsExpiry = cursor.getColumnIndexOrThrow(KeyRings.IS_EXPIRED);
+            mIndexIsRevoked = cursor.getColumnIndexOrThrow(KeyRings.IS_REVOKED);
         }
     }
 
@@ -90,7 +89,8 @@ abstract public class SelectKeyCursorAdapter extends CursorAdapter {
 
     public static class ViewHolderItem {
         public View view;
-        public TextView mainUserId, mainUserIdRest, keyId, status;
+        public TextView mainUserId, mainUserIdRest, keyId;
+        public ImageView statusIcon;
         public CheckBox selected;
 
         public void setEnabled(boolean enabled) {
@@ -99,7 +99,7 @@ abstract public class SelectKeyCursorAdapter extends CursorAdapter {
             mainUserId.setEnabled(enabled);
             mainUserIdRest.setEnabled(enabled);
             keyId.setEnabled(enabled);
-            status.setEnabled(enabled);
+            statusIcon.setEnabled(enabled);
 
             // Sorta special: We set an item as clickable to disable it in the ListView. This works
             // because the list item will handle the clicks itself (which is a nop)
@@ -130,19 +130,21 @@ abstract public class SelectKeyCursorAdapter extends CursorAdapter {
         long masterKeyId = cursor.getLong(mIndexMasterKeyId);
         h.keyId.setText(KeyFormattingUtils.beautifyKeyIdWithPrefix(mContext, masterKeyId));
 
-        boolean enabled = true;
-        if (cursor.getInt(mIndexRevoked) != 0) {
-            h.status.setText(R.string.revoked);
+        boolean enabled;
+        if (cursor.getInt(mIndexIsRevoked) != 0) {
+            h.statusIcon.setVisibility(View.VISIBLE);
+            KeyFormattingUtils.setStatusImage(mContext, h.statusIcon, KeyFormattingUtils.STATE_REVOKED);
             enabled = false;
-        } else if (!cursor.isNull(mIndexExpiry)
-                && new Date(cursor.getLong(mIndexExpiry) * 1000).before(new Date())) {
-            h.status.setText(R.string.expired);
+        } else if (cursor.getInt(mIndexIsExpiry) != 0) {
+            h.statusIcon.setVisibility(View.VISIBLE);
+            KeyFormattingUtils.setStatusImage(mContext, h.statusIcon, KeyFormattingUtils.STATE_EXPIRED);
             enabled = false;
         } else {
-            h.status.setText("");
+            h.statusIcon.setVisibility(View.GONE);
+            enabled = true;
         }
 
-        h.status.setTag(enabled);
+        h.statusIcon.setTag(enabled);
     }
 
     @Override
@@ -153,7 +155,7 @@ abstract public class SelectKeyCursorAdapter extends CursorAdapter {
         holder.mainUserId = (TextView) view.findViewById(R.id.mainUserId);
         holder.mainUserIdRest = (TextView) view.findViewById(R.id.mainUserIdRest);
         holder.keyId = (TextView) view.findViewById(R.id.subkey_item_key_id);
-        holder.status = (TextView) view.findViewById(R.id.status);
+        holder.statusIcon = (ImageView) view.findViewById(R.id.status_icon);
         holder.selected = (CheckBox) view.findViewById(R.id.selected);
         view.setTag(holder);
         return view;
