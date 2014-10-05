@@ -81,7 +81,9 @@ public class AddKeysActivity extends ActionBarActivity implements
 
     byte[] mImportBytes;
 
-    private static final int REQUEST_CODE_SAFE_SLINGER = 1;
+    private static final int REQUEST_CODE_RESULT = 0;
+    private static final int REQUEST_CODE_RESULT_TO_LIST = 1;
+    private static final int REQUEST_CODE_SAFE_SLINGER = 2;
 
     private static final int LOADER_ID_BYTES = 0;
 
@@ -130,7 +132,7 @@ public class AddKeysActivity extends ActionBarActivity implements
                 // show nfc help
                 Intent intent = new Intent(AddKeysActivity.this, HelpActivity.class);
                 intent.putExtra(HelpActivity.EXTRA_SELECTED_TAB, HelpActivity.TAB_NFC);
-                startActivityForResult(intent, 0);
+                startActivityForResult(intent, REQUEST_CODE_RESULT);
             }
         });
 
@@ -177,55 +179,62 @@ public class AddKeysActivity extends ActionBarActivity implements
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        // if a result has been returned, display a notify
-        if (data != null && data.hasExtra(OperationResult.EXTRA_RESULT)) {
-            OperationResult result = data.getParcelableExtra(OperationResult.EXTRA_RESULT);
-            result.createNotify(this).show();
-        } else {
-            switch (requestCode) {
-                case REQUEST_CODE_SAFE_SLINGER: {
-                    switch (resultCode) {
-                        case ExchangeActivity.RESULT_EXCHANGE_OK:
-                            // import exchanged keys
-                            mImportBytes = getSlingedKeys(data);
-                            getSupportLoaderManager().restartLoader(LOADER_ID_BYTES, null, this);
-                            break;
-                        case ExchangeActivity.RESULT_EXCHANGE_CANCELED:
-                            // do nothing
-                            break;
-                    }
-                    break;
+        switch (requestCode) {
+            case REQUEST_CODE_RESULT: {
+                if (data != null && data.hasExtra(OperationResult.EXTRA_RESULT)) {
+                    OperationResult result = data.getParcelableExtra(OperationResult.EXTRA_RESULT);
+                    result.createNotify(this).show();
                 }
-                case IntentIntegratorSupportV4.REQUEST_CODE: {
-                    IntentResult scanResult = IntentIntegratorSupportV4.parseActivityResult(requestCode,
-                            resultCode, data);
-                    if (scanResult != null && scanResult.getFormatName() != null) {
-                        String scannedContent = scanResult.getContents();
-
-                        Log.d(Constants.TAG, "scannedContent: " + scannedContent);
-
-                        // look if it's fingerprint only
-                        if (scannedContent.toLowerCase(Locale.ENGLISH).startsWith(Constants.FINGERPRINT_SCHEME)) {
-                            importKeys(null, getFingerprintFromUri(Uri.parse(scanResult.getContents())));
-                            return;
-                        }
-
-                        // is this a full key encoded as qr code?
-                        if (scannedContent.startsWith("-----BEGIN PGP")) {
-                            // TODO
-//                            mImportActivity.loadCallback(new ImportKeysListFragment.BytesLoaderState(scannedContent.getBytes(), null));
-                            return;
-                        }
-
-                        // fail...
-                        Notify.showNotify(this, R.string.import_qr_code_wrong, Notify.Style.ERROR);
-                    }
-
-                    break;
-                }
+                break;
             }
-            super.onActivityResult(requestCode, resultCode, data);
+            case REQUEST_CODE_RESULT_TO_LIST: {
+                // give it down...
+                setResult(0, data);
+                finish();
+                break;
+            }
+            case REQUEST_CODE_SAFE_SLINGER: {
+                switch (resultCode) {
+                    case ExchangeActivity.RESULT_EXCHANGE_OK:
+                        // import exchanged keys
+                        mImportBytes = getSlingedKeys(data);
+                        getSupportLoaderManager().restartLoader(LOADER_ID_BYTES, null, this);
+                        break;
+                    case ExchangeActivity.RESULT_EXCHANGE_CANCELED:
+                        // do nothing
+                        break;
+                }
+                break;
+            }
+            case IntentIntegratorSupportV4.REQUEST_CODE: {
+                IntentResult scanResult = IntentIntegratorSupportV4.parseActivityResult(requestCode,
+                        resultCode, data);
+                if (scanResult != null && scanResult.getFormatName() != null) {
+                    String scannedContent = scanResult.getContents();
+
+                    Log.d(Constants.TAG, "scannedContent: " + scannedContent);
+
+                    // look if it's fingerprint only
+                    if (scannedContent.toLowerCase(Locale.ENGLISH).startsWith(Constants.FINGERPRINT_SCHEME)) {
+                        importKeys(null, getFingerprintFromUri(Uri.parse(scanResult.getContents())));
+                        return;
+                    }
+
+                    // is this a full key encoded as qr code?
+                    if (scannedContent.startsWith("-----BEGIN PGP")) {
+                        // TODO
+//                            mImportActivity.loadCallback(new ImportKeysListFragment.BytesLoaderState(scannedContent.getBytes(), null));
+                        return;
+                    }
+
+                    // fail...
+                    Notify.showNotify(this, R.string.import_qr_code_wrong, Notify.Style.ERROR);
+                }
+
+                break;
+            }
         }
+        super.onActivityResult(requestCode, resultCode, data);
     }
 
     private String getFingerprintFromUri(Uri dataUri) {
@@ -383,12 +392,11 @@ public class AddKeysActivity extends ActionBarActivity implements
                         return;
                     }
 
-                    finish();
                     Intent certifyIntent = new Intent(AddKeysActivity.this, MultiCertifyKeyActivity.class);
                     certifyIntent.putExtra(MultiCertifyKeyActivity.EXTRA_RESULT, result);
                     certifyIntent.putExtra(MultiCertifyKeyActivity.EXTRA_KEY_IDS, result.getImportedMasterKeyIds());
                     certifyIntent.putExtra(MultiCertifyKeyActivity.EXTRA_CERTIFY_KEY_ID, mExchangeMasterKeyId);
-                    startActivity(certifyIntent);
+                    startActivityForResult(certifyIntent, REQUEST_CODE_RESULT_TO_LIST);
                 }
             }
         };
