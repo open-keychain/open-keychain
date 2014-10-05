@@ -641,7 +641,7 @@ public abstract class OperationResult implements Parcelable {
 
         public void add(OperationResult subResult, int indent) {
             OperationLog subLog = subResult.getLog();
-            mParcels.add(new SubLogEntryParcel(subResult, subLog.getLast().mType, indent, subLog.getLast().mParameters));
+            mParcels.add(new SubLogEntryParcel(subResult, subLog.getFirst().mType, indent, subLog.getFirst().mParameters));
         }
 
         public void clear() {
@@ -676,6 +676,13 @@ public abstract class OperationResult implements Parcelable {
 
         public boolean isEmpty() {
             return mParcels.isEmpty();
+        }
+
+        public LogEntryParcel getFirst() {
+            if (mParcels.isEmpty()) {
+                return null;
+            }
+            return mParcels.get(0);
         }
 
         public LogEntryParcel getLast() {

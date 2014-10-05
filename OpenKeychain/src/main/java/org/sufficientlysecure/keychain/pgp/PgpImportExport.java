@@ -117,10 +117,12 @@ public class PgpImportExport {
     public ImportKeyResult importKeyRings(Iterator<ParcelableKeyRing> entries, int num) {
         updateProgress(R.string.progress_importing, 0, 100);
 
+        OperationLog log = new OperationLog();
+
         // If there aren't even any keys, do nothing here.
         if (entries == null || !entries.hasNext()) {
             return new ImportKeyResult(
-                    ImportKeyResult.RESULT_FAIL_NOTHING, mProviderHelper.getLog(), 0, 0, 0, 0,
+                    ImportKeyResult.RESULT_FAIL_NOTHING, log, 0, 0, 0, 0,
                     new long[]{});
         }
 
@@ -156,6 +158,7 @@ public class PgpImportExport {
                 }
 
                 SaveKeyringResult result;
+                mProviderHelper.clearLog();
                 if (key.isSecret()) {
                     result = mProviderHelper.saveSecretKeyRing(key,
                             new ProgressScaler(mProgressable, (int)(position*progSteps), (int)((position+1)*progSteps), 100));
@@ -176,6 +179,8 @@ public class PgpImportExport {
                     importedMasterKeyIds.add(key.getMasterKeyId());
                 }
 
+                log.add(result, 1);
+
             } catch (IOException e) {
                 Log.e(Constants.TAG, "Encountered bad key on import!", e);
                 ++badKeys;
@@ -187,7 +192,6 @@ public class PgpImportExport {
             position++;
         }
 
-        OperationLog log = mProviderHelper.getLog();
         int resultType = 0;
         // special return case: no new keys at all
         if (badKeys == 0 && newKeys == 0 && oldKeys == 0) {
