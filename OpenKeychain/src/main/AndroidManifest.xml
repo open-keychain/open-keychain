@@ -80,7 +80,7 @@
         <activity
             android:name=".ui.KeyListActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
-            android:label="@string/app_name"
+            android:label="@string/nav_keys"
             android:launchMode="singleTop">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

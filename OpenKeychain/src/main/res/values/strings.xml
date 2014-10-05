@@ -277,13 +277,10 @@
     <!-- Add keys -->
     <string name="add_keys_section_secure_exchange">"Secure Exchange"</string>
     <string name="add_keys_section_secure_add">"Secure Add"</string>
-    <string name="add_keys_section_import">"Import (untrusted)"</string>
     <string name="add_keys_my_key">"My key:"</string>
     <string name="add_keys_start_exchange">"Start exchange"</string>
     <string name="add_keys_qr_code">"Scan QR Code"</string>
     <string name="add_keys_nfc">"Receive via NFC"</string>
-    <string name="add_keys_cloud">"Search cloud"</string>
-
 
     <!-- progress dialogs, usually ending in '…' -->
     <string name="progress_done">"Done."</string>

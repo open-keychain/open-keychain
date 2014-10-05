@@ -150,12 +150,13 @@ public class ImportKeysActivity extends ActionBarActivity {
         }
 
         Bundle serverBundle = null;
-        int showTabOnly = ALL_TABS;
+        int showTabOnly = TAB_CLOUD;
         if (ACTION_IMPORT_KEY.equals(action)) {
             /* Keychain's own Actions */
 
             // display file fragment
-            mViewPager.setCurrentItem(TAB_FILE);
+            showTabOnly = TAB_FILE;
+            mSwitchToTab = TAB_FILE;
 
             if (dataUri != null) {
                 // action: directly load data
@@ -229,6 +230,7 @@ public class ImportKeysActivity extends ActionBarActivity {
             }
         } else if (ACTION_IMPORT_KEY_FROM_FILE.equals(action)) {
             // NOTE: this only displays the appropriate fragment, no actions are taken
+            showTabOnly = TAB_FILE;
             mSwitchToTab = TAB_FILE;
 
             // no immediate actions!
@@ -243,14 +245,14 @@ public class ImportKeysActivity extends ActionBarActivity {
             startListFragment(savedInstanceState, null, null, null);
         } else if (ACTION_IMPORT_KEY_FROM_QR_CODE.equals(action)) {
             // also exposed in AndroidManifest
-
+            showTabOnly = ALL_TABS;
             // NOTE: this only displays the appropriate fragment, no actions are taken
             mSwitchToTab = TAB_QR_CODE;
 
             // no immediate actions!
             startListFragment(savedInstanceState, null, null, null);
         } else if (ACTION_IMPORT_KEY_FROM_NFC.equals(action)) {
-
+            showTabOnly = ALL_TABS;
             // NOTE: this only displays the appropriate fragment, no actions are taken
             mSwitchToTab = TAB_QR_CODE;
 
@@ -334,32 +336,36 @@ public class ImportKeysActivity extends ActionBarActivity {
         getSupportFragmentManager().executePendingTransactions();
     }
 
-    private String getFingerprintFromUri(Uri dataUri) {
+    public static String getFingerprintFromUri(Uri dataUri) {
         String fingerprint = dataUri.toString().split(":")[1].toLowerCase(Locale.ENGLISH);
         Log.d(Constants.TAG, "fingerprint: " + fingerprint);
         return fingerprint;
     }
 
-    public void loadFromFingerprintUri(Uri dataUri) {
-        String query = "0x" + getFingerprintFromUri(dataUri);
+    public void loadFromFingerprint(String fingerprint) {
+//        String fingerprint = "0x" + getFingerprintFromUri(dataUri);
 
         // setCurrentItem does not work directly after onResume (from qr code scanner)
         // see http://stackoverflow.com/q/19316729
         // so, reset adapter completely!
-        if (mViewPager.getAdapter() != null)
-            mViewPager.setAdapter(null);
-        mViewPager.setAdapter(mTabsAdapter);
-        mViewPager.setCurrentItem(TAB_CLOUD);
+//        if (mViewPager.getAdapter() != null)
+//            mViewPager.setAdapter(null);
+//        mViewPager.setAdapter(mTabsAdapter);
+//        mViewPager.setCurrentItem(TAB_CLOUD);
 
-        ImportKeysCloudFragment f = (ImportKeysCloudFragment)
-                getActiveFragment(mViewPager, TAB_CLOUD);
+//        ImportKeysCloudFragment f = (ImportKeysCloudFragment)
+//                getActiveFragment(mViewPager, TAB_CLOUD);
 
-        // search config
-        Preferences prefs = Preferences.getPreferences(ImportKeysActivity.this);
-        Preferences.CloudSearchPrefs cloudPrefs = new Preferences.CloudSearchPrefs(true, true, prefs.getPreferredKeyserver());
+        Intent searchIntent = new Intent(this, ImportKeysActivity.class);
+        searchIntent.putExtra(ImportKeysActivity.EXTRA_FINGERPRINT, fingerprint);
+        startActivity(searchIntent);
 
-        // search directly
-        loadCallback(new ImportKeysListFragment.CloudLoaderState(query, cloudPrefs));
+//        // search config
+//        Preferences prefs = Preferences.getPreferences(ImportKeysActivity.this);
+//        Preferences.CloudSearchPrefs cloudPrefs = new Preferences.CloudSearchPrefs(true, true, prefs.getPreferredKeyserver());
+//
+//        // search directly
+//        loadCallback(new ImportKeysListFragment.CloudLoaderState(query, cloudPrefs));
     }
 
     // http://stackoverflow.com/a/9293207
