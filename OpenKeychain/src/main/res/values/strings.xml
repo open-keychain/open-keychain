@@ -47,6 +47,7 @@
     <string name="section_general">"General"</string>
     <string name="section_defaults">"Defaults"</string>
     <string name="section_advanced">"Advanced"</string>
+    <string name="section_certify">"Certify"</string>
     <string name="section_actions">"Actions"</string>
     <string name="section_share_key">"Whole key"</string>
     <string name="section_certification_key">"Your Key used for certification"</string>
