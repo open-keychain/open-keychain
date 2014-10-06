@@ -42,13 +42,14 @@
                 >
 
                 <TextView
+                    android:id="@+id/label_my_key"
                     android:paddingLeft="8dp"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
+                    android:layout_height="match_parent"
                     android:textAppearance="?android:attr/textAppearanceMedium"
                     android:text="@string/add_keys_my_key"
-                    android:paddingRight="8dp" />
+                    android:paddingRight="8dp"
+                    android:gravity="center_vertical"/>
 
                 <org.sufficientlysecure.keychain.ui.widget.CertifyKeySpinner
                     android:id="@+id/certify_key_spinner"
@@ -91,6 +92,7 @@
                     android:layout_weight="1"
                     android:gravity="center_vertical" />
 
+                <!-- separate ImageView required for recoloring -->
                 <ImageView
                     android:id="@+id/certify_key_action_certify_image"
                     android:layout_width="wrap_content"
