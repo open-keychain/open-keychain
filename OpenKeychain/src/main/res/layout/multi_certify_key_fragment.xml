@@ -31,23 +31,6 @@
             <TextView
                 style="@style/SectionHeader"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="4dp"
-                android:layout_marginTop="14dp"
-                android:text="@string/section_upload_key" />
-
-            <CheckBox
-                android:id="@+id/sign_key_upload_checkbox"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="4dp"
-                android:layout_marginTop="4dp"
-                android:checked="false"
-                android:text="@string/label_send_key" />
-
-            <TextView
-                style="@style/SectionHeader"
-                android:layout_width="wrap_content"
                 android:layout_height="0dp"
                 android:layout_marginTop="14dp"
                 android:text="@string/section_certify"
@@ -75,6 +58,20 @@
                     android:layout_gravity="center_vertical" />
 
             </LinearLayout>
+
+            <CheckBox
+                android:id="@+id/sign_key_upload_checkbox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="4dp"
+                android:layout_marginTop="4dp"
+                android:checked="false"
+                android:text="@string/label_send_key" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dip"
+                android:background="?android:attr/listDivider"/>
 
             <LinearLayout
                 android:id="@+id/certify_key_certify_button"
