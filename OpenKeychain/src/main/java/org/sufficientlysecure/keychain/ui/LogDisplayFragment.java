@@ -24,12 +24,8 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
 import android.util.TypedValue;
-import android.view.GestureDetector;
-import android.view.GestureDetector.SimpleOnGestureListener;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
-import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -37,25 +33,17 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.service.results.OperationResult;
 import org.sufficientlysecure.keychain.service.results.OperationResult.LogEntryParcel;
 import org.sufficientlysecure.keychain.service.results.OperationResult.LogLevel;
 import org.sufficientlysecure.keychain.service.results.OperationResult.SubLogEntryParcel;
-import org.sufficientlysecure.keychain.util.Log;
 
-import java.util.HashMap;
+public class LogDisplayFragment extends ListFragment implements OnItemClickListener {
 
-public class LogDisplayFragment extends ListFragment implements OnTouchListener, OnItemClickListener {
-
-    HashMap<LogLevel,LogAdapter> mAdapters = new HashMap<LogLevel, LogAdapter>();
     LogAdapter mAdapter;
-    LogLevel mLevel = LogLevel.DEBUG;
 
     OperationResult mResult;
-
-    GestureDetector mDetector;
 
     public static final String EXTRA_RESULT = "log";
 
@@ -75,60 +63,13 @@ public class LogDisplayFragment extends ListFragment implements OnTouchListener,
             return;
         }
 
-        mAdapter = new LogAdapter(getActivity(), mResult.getLog(), LogLevel.DEBUG);
-        mAdapters.put(LogLevel.DEBUG, mAdapter);
+        mAdapter = new LogAdapter(getActivity(), mResult.getLog());
         setListAdapter(mAdapter);
-
-        mDetector = new GestureDetector(getActivity(), new SimpleOnGestureListener() {
-            @Override
-            public boolean onFling(MotionEvent e1, MotionEvent e2, float vx, float vy) {
-                Log.d(Constants.TAG, "x: " + vx + ", y: " + vy);
-                if (vx < -2000) {
-                    decreaseLogLevel();
-                } else if (vx > 2000) {
-                    increaseLogLevel();
-                }
-                return true;
-            }
-        });
 
         getListView().setOnItemClickListener(this);
 
         getListView().setFastScrollEnabled(true);
         getListView().setDividerHeight(0);
-        getListView().setOnTouchListener(this);
-    }
-
-    public void decreaseLogLevel() {
-        switch (mLevel) {
-            case DEBUG: mLevel = LogLevel.INFO; break;
-            case INFO:  mLevel = LogLevel.WARN; break;
-        }
-        refreshLevel();
-    }
-
-    public void increaseLogLevel() {
-        switch (mLevel) {
-            case INFO: mLevel = LogLevel.DEBUG; break;
-            case WARN: mLevel = LogLevel.INFO; break;
-        }
-        refreshLevel();
-    }
-
-    private void refreshLevel() {
-        /* TODO not sure if this is a good idea
-        if (!mAdapters.containsKey(mLevel)) {
-            mAdapters.put(mLevel, new LogAdapter(getActivity(), mResult.getLog(), mLevel));
-        }
-        mAdapter = mAdapters.get(mLevel);
-        setListAdapter(mAdapter);
-        */
-    }
-
-    @Override
-    public boolean onTouch(View v, MotionEvent event) {
-        mDetector.onTouchEvent(event);
-        return false;
     }
 
     @Override
@@ -148,18 +89,11 @@ public class LogDisplayFragment extends ListFragment implements OnTouchListener,
         private LayoutInflater mInflater;
         private int dipFactor;
 
-        public LogAdapter(Context context, OperationResult.OperationLog log, LogLevel level) {
-            super(context, R.layout.log_display_item);
+        public LogAdapter(Context context, OperationResult.OperationLog log) {
+            super(context, R.layout.log_display_item, log.toList());
             mInflater = LayoutInflater.from(getContext());
             dipFactor = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
                     (float) 8, getResources().getDisplayMetrics());
-            // we can't use addAll for a LogLevel.DEBUG shortcut here, unfortunately :(
-            for (LogEntryParcel e : log) {
-                if (e.mType.mLevel.ordinal() >= level.ordinal()) {
-                    add(e);
-                }
-            }
-            notifyDataSetChanged();
         }
 
         private class ItemHolder {
