@@ -40,7 +40,6 @@ import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.ScrollView;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
@@ -72,7 +71,6 @@ public class MultiCertifyKeyFragment extends LoaderFragment
     private FragmentActivity mActivity;
 
     private CheckBox mUploadKeyCheckbox;
-    private ScrollView mScrollView;
     ListView mUserIds;
 
     private CertifyKeySpinner mCertifyKeySpinner;
@@ -146,7 +144,6 @@ public class MultiCertifyKeyFragment extends LoaderFragment
 
         mCertifyKeySpinner = (CertifyKeySpinner) view.findViewById(R.id.certify_key_spinner);
         mUploadKeyCheckbox = (CheckBox) view.findViewById(R.id.sign_key_upload_checkbox);
-        mScrollView = (ScrollView) view.findViewById(R.id.certify_scroll_view);
         mUserIds = (ListView) view.findViewById(R.id.view_key_user_ids);
 
         // make certify image gray, like action icons
@@ -170,7 +167,6 @@ public class MultiCertifyKeyFragment extends LoaderFragment
                 if (mSignMasterKeyId == Constants.key.none) {
                     Notify.showNotify(mActivity, getString(R.string.select_key_to_certify),
                             Notify.Style.ERROR);
-                    scrollUp();
                 } else {
                     initiateCertifying();
                 }
@@ -188,14 +184,6 @@ public class MultiCertifyKeyFragment extends LoaderFragment
         });
 
         return root;
-    }
-
-    private void scrollUp() {
-        mScrollView.post(new Runnable() {
-            public void run() {
-                mScrollView.fullScroll(ScrollView.FOCUS_UP);
-            }
-        });
     }
 
     @Override

@@ -135,7 +135,7 @@
     <string name="label_name">"Name"</string>
     <string name="label_comment">"Comment"</string>
     <string name="label_email">"Email"</string>
-    <string name="label_send_key">"Synchronize key with public keyservers"</string>
+    <string name="label_send_key">"Synchronize with public keyservers"</string>
     <string name="label_fingerprint">"Fingerprint"</string>
     <string name="expiry_date_dialog_title">"Set expiry date"</string>
     <string name="label_first_keyserver_is_used">"(First keyserver listed is preferred)"</string>
@@ -276,8 +276,8 @@
     <string name="decrypt_result_decrypted_and_signature_certified">"Successfully decrypted and valid signature (certified)"</string>
 
     <!-- Add keys -->
-    <string name="add_keys_section_secure_exchange">"Secure Exchange"</string>
-    <string name="add_keys_section_secure_add">"Secure Add"</string>
+    <string name="add_keys_section_secure_exchange">"Exchange"</string>
+    <string name="add_keys_section_secure_add">"Add"</string>
     <string name="add_keys_my_key">"My key:"</string>
     <string name="add_keys_start_exchange">"Start exchange"</string>
     <string name="add_keys_qr_code">"Scan QR Code"</string>
@@ -942,7 +942,8 @@
     <string name="unknown_uid">"&lt;unknown&gt;"</string>
     <string name="empty_certs">"No certificates for this key"</string>
     <string name="certs_text">"Only validated self-certificates and validated certificates created with your keys are displayed here."</string>
-    <string name="section_uids_to_certify">"Identities to certify"</string>
+    <string name="section_uids_to_certify">"Identities"</string>
+    <string name="certify_text">"Are the selected identities corresponding to the persons you are exchanging keys with?\nDeselect any unknown to you."</string>
     <string name="label_revocation">"Revocation Reason"</string>
     <string name="label_verify_status">"Verification Status"</string>
     <string name="label_cert_type">"Type"</string>

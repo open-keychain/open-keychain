@@ -1,115 +1,132 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <ScrollView
-        android:id="@+id/certify_scroll_view"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:orientation="vertical">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingLeft="16dp"
-            android:paddingRight="16dp"
-            android:orientation="vertical">
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="8dp"
+            android:orientation="horizontal">
 
-            <TextView
-                style="@style/SectionHeader"
+            <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="14dp"
-                android:text="@string/section_uids_to_certify" />
-
-            <org.sufficientlysecure.keychain.ui.widget.FixedListView
-                android:id="@+id/view_key_user_ids"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:id="@+id/imageView"
+                android:src="@drawable/ic_action_person"
+                android:layout_gravity="center_vertical" />
 
             <TextView
-                style="@style/SectionHeader"
-                android:layout_width="wrap_content"
-                android:layout_height="0dp"
-                android:layout_marginTop="14dp"
-                android:text="@string/section_certify"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="8dp"
+                android:layout_marginRight="8dp"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="@string/certify_text"
+                android:id="@+id/textView"
                 android:layout_weight="1" />
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                >
-
-                <TextView
-                    android:id="@+id/label_my_key"
-                    android:paddingLeft="8dp"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:textAppearance="?android:attr/textAppearanceMedium"
-                    android:text="@string/add_keys_my_key"
-                    android:paddingRight="8dp"
-                    android:gravity="center_vertical"/>
-
-                <org.sufficientlysecure.keychain.ui.widget.CertifyKeySpinner
-                    android:id="@+id/certify_key_spinner"
-                    android:minHeight="56dip"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical" />
-
-            </LinearLayout>
-
-            <CheckBox
-                android:id="@+id/sign_key_upload_checkbox"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="4dp"
-                android:layout_marginTop="4dp"
-                android:checked="false"
-                android:text="@string/label_send_key" />
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dip"
-                android:background="?android:attr/listDivider"/>
-
-            <LinearLayout
-                android:id="@+id/certify_key_certify_button"
-                android:layout_width="match_parent"
-                android:layout_height="?android:attr/listPreferredItemHeight"
-                android:clickable="true"
-                android:paddingRight="4dp"
-                style="@style/SelectableItem"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:paddingLeft="8dp"
-                    android:textAppearance="?android:attr/textAppearanceMedium"
-                    android:layout_width="0dip"
-                    android:layout_height="match_parent"
-                    android:text="@string/key_view_action_certify"
-                    android:layout_weight="1"
-                    android:gravity="center_vertical" />
-
-                <!-- separate ImageView required for recoloring -->
-                <ImageView
-                    android:id="@+id/certify_key_action_certify_image"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:padding="8dp"
-                    android:src="@drawable/status_signature_verified_cutout"
-                    android:layout_gravity="center_vertical" />
-
-            </LinearLayout>
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dip"
-                android:background="?android:attr/listDivider"/>
 
         </LinearLayout>
 
-    </ScrollView>
+        <TextView
+            style="@style/SectionHeader"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/section_uids_to_certify" />
 
-</LinearLayout>
+        <org.sufficientlysecure.keychain.ui.widget.FixedListView
+            android:id="@+id/view_key_user_ids"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            style="@style/SectionHeader"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:layout_marginTop="14dp"
+            android:text="@string/section_certify"
+            android:layout_weight="1" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/label_my_key"
+                android:paddingLeft="8dp"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="@string/add_keys_my_key"
+                android:paddingRight="8dp"
+                android:gravity="center_vertical" />
+
+            <org.sufficientlysecure.keychain.ui.widget.CertifyKeySpinner
+                android:id="@+id/certify_key_spinner"
+                android:minHeight="56dip"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical" />
+
+        </LinearLayout>
+
+        <CheckBox
+            android:id="@+id/sign_key_upload_checkbox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:layout_marginTop="8dp"
+            android:checked="false"
+            android:text="@string/label_send_key" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dip"
+            android:background="?android:attr/listDivider" />
+
+        <LinearLayout
+            android:id="@+id/certify_key_certify_button"
+            android:layout_width="match_parent"
+            android:layout_height="?android:attr/listPreferredItemHeight"
+            android:clickable="true"
+            android:paddingRight="4dp"
+            style="@style/SelectableItem"
+            android:orientation="horizontal">
+
+            <TextView
+                android:paddingLeft="8dp"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:layout_width="0dip"
+                android:layout_height="match_parent"
+                android:text="@string/key_view_action_certify"
+                android:layout_weight="1"
+                android:gravity="center_vertical" />
+
+            <!-- separate ImageView required for recoloring -->
+            <ImageView
+                android:id="@+id/certify_key_action_certify_image"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:padding="8dp"
+                android:src="@drawable/status_signature_verified_cutout"
+                android:layout_gravity="center_vertical" />
+
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dip"
+            android:layout_marginBottom="4dp"
+            android:background="?android:attr/listDivider" />
+
+    </LinearLayout>
+
+</ScrollView>
