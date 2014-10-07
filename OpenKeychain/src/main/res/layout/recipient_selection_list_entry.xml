@@ -43,7 +43,6 @@
             android:paddingLeft="16dip"
             android:singleLine="true"
             android:ellipsize="end"
-            android:typeface="monospace"
             android:layout_marginTop="-4dip" />
     </LinearLayout>
 
