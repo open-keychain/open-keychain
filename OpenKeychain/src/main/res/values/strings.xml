@@ -786,7 +786,7 @@
     <string name="msg_mf_subkey_strip">"Stripping subkey %s"</string>
     <string name="msg_mf_success">"Keyring successfully modified"</string>
     <string name="msg_mf_uid_add">"Adding user id %s"</string>
-    <string name="msg_mf_uid_primary">"Changing primary uid to %s"</string>
+    <string name="msg_mf_uid_primary">"Changing primary user id to %s"</string>
     <string name="msg_mf_uid_revoke">"Revoking user id %s"</string>
     <string name="msg_mf_uid_error_empty">"User ID must not be empty!"</string>
     <string name="msg_mf_unlock_error">"Error unlocking keyring!"</string>

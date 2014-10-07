@@ -557,7 +557,7 @@ public class PgpKeyOperation {
 
                     // keep track if we actually changed one
                     boolean ok = false;
-                    log.add(LogType.MSG_MF_UID_PRIMARY, indent);
+                    log.add(LogType.MSG_MF_UID_PRIMARY, indent, saveParcel.mChangePrimaryUserId);
                     indent += 1;
 
                     // we work on the modifiedPublicKey here, to respect new or newly revoked uids
