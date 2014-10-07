@@ -21,6 +21,7 @@ package org.sufficientlysecure.keychain.ui;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+import android.text.TextUtils;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
@@ -78,29 +79,41 @@ public class DecryptTextActivity extends ActionBarActivity {
     /**
      * Fixing broken PGP SIGNED MESSAGE Strings coming from GMail/AOSP Mail
      */
-    private String fixPgpCleartextSignature(String message) {
-        // windows newline -> unix newline
-        message = message.replaceAll("\r\n", "\n");
-        // Mac OS before X newline -> unix newline
-        message = message.replaceAll("\r", "\n");
+    private String fixPgpCleartextSignature(CharSequence input) {
+        if (!TextUtils.isEmpty(input)) {
+            String text = input.toString();
 
-        return message;
+            // windows newline -> unix newline
+            text = text.replaceAll("\r\n", "\n");
+            // Mac OS before X newline -> unix newline
+            text = text.replaceAll("\r", "\n");
+
+            return text;
+        } else {
+            return null;
+        }
     }
 
-    private String getPgpContent(String input) {
+    private String getPgpContent(CharSequence input) {
         // only decrypt if clipboard content is available and a pgp message or cleartext signature
-        if (input != null) {
+        if (!TextUtils.isEmpty(input)) {
+            Log.dEscaped(Constants.TAG, "input: " + input);
+
             Matcher matcher = PgpHelper.PGP_MESSAGE.matcher(input);
             if (matcher.matches()) {
-                String message = matcher.group(1);
-                message = fixPgpMessage(message);
-                return message;
+                String text = matcher.group(1);
+                text = fixPgpMessage(text);
+
+                Log.dEscaped(Constants.TAG, "input fixed: " + text);
+                return text;
             } else {
                 matcher = PgpHelper.PGP_CLEARTEXT_SIGNATURE.matcher(input);
                 if (matcher.matches()) {
-                    String message = matcher.group(1);
-                    message = fixPgpCleartextSignature(message);
-                    return message;
+                    String text = matcher.group(1);
+                    text = fixPgpCleartextSignature(text);
+
+                    Log.dEscaped(Constants.TAG, "input fixed: " + text);
+                    return text;
                 } else {
                     return null;
                 }
@@ -125,14 +138,13 @@ public class DecryptTextActivity extends ActionBarActivity {
         }
 
         if (Intent.ACTION_SEND.equals(action) && type != null) {
-            Log.logDebugBundle(extras, "extras");
+            Log.d(Constants.TAG, "ACTION_SEND");
+            Log.logDebugBundle(extras, "SEND extras");
 
             // When sending to Keychain Decrypt via share menu
             if ("text/plain".equals(type)) {
                 String sharedText = extras.getString(Intent.EXTRA_TEXT);
-                Log.dEscaped(Constants.TAG, "sharedText incoming: " + sharedText);
                 sharedText = getPgpContent(sharedText);
-                Log.dEscaped(Constants.TAG, "sharedText fixed: " + sharedText);
 
                 if (sharedText != null) {
                     loadFragment(savedInstanceState, sharedText);
@@ -143,7 +155,7 @@ public class DecryptTextActivity extends ActionBarActivity {
                 Log.e(Constants.TAG, "ACTION_SEND received non-plaintext, this should not happen in this activity!");
             }
         } else if (ACTION_DECRYPT_TEXT.equals(action)) {
-            Log.d(Constants.TAG, "ACTION_DECRYPT_TEXT textData not null, matching text...");
+            Log.d(Constants.TAG, "ACTION_DECRYPT_TEXT");
 
             String extraText = extras.getString(EXTRA_TEXT);
             extraText = getPgpContent(extraText);
@@ -157,9 +169,9 @@ public class DecryptTextActivity extends ActionBarActivity {
             Log.d(Constants.TAG, "ACTION_DECRYPT_FROM_CLIPBOARD");
 
             CharSequence clipboardText = ClipboardReflection.getClipboardText(this);
+            String text = getPgpContent(clipboardText);
 
-            if (clipboardText != null) {
-                String text = getPgpContent(clipboardText.toString());
+            if (text != null) {
                 loadFragment(savedInstanceState, text);
             } else {
                 returnInvalidResult();
