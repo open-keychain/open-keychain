@@ -366,6 +366,11 @@ public class UncachedKeyRing {
             for (byte[] rawUserId : new IterableIterator<byte[]>(masterKey.getRawUserIDs())) {
                 String userId = Utf8Util.fromUTF8ByteArrayReplaceBadEncoding(rawUserId);
 
+                // warn if user id was made with bad encoding
+                if (!Utf8Util.isValidUTF8(rawUserId)) {
+                    log.add(LogType.MSG_KC_UID_WARN_ENCODING, indent);
+                }
+
                 // check for duplicate user ids
                 if (processedUserIds.contains(userId)) {
                     log.add(LogType.MSG_KC_UID_DUP,
@@ -436,10 +441,6 @@ public class UncachedKeyRing {
                                 modified = PGPPublicKey.removeCertification(modified, rawUserId, zert);
                                 badCerts += 1;
                                 continue;
-                            }
-                            // warn user if the signature was made with bad encoding
-                            if (!Utf8Util.isValidUTF8(rawUserId)) {
-                                log.add(LogType.MSG_KC_UID_WARN_ENCODING, indent);
                             }
                         } catch (PgpGeneralException e) {
                             log.add(LogType.MSG_KC_UID_BAD_ERR,
