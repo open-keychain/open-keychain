@@ -6,17 +6,42 @@
 
     <include layout="@layout/notify_area" />
 
-    <FrameLayout
+    <LinearLayout
         android:id="@+id/content_frame"
         android:layout_marginLeft="@dimen/drawer_content_padding"
+        android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:background="@color/holo_gray_bright"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <Spinner
+                android:id="@+id/key_list_filter_spinner"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="12dp"
+                android:layout_marginRight="12dp"
+                android:layout_marginTop="4dp"
+                android:layout_marginBottom="4dp" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dip"
+                android:background="?android:attr/listDivider" />
+
+        </LinearLayout>
 
         <fragment
             android:id="@+id/key_list_fragment"
             android:name="org.sufficientlysecure.keychain.ui.KeyListFragment"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
-    </FrameLayout>
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
+    </LinearLayout>
 
 </LinearLayout>

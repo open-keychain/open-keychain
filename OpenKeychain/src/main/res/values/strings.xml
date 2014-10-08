@@ -489,6 +489,8 @@
     <string name="key_list_empty_text3">"or"</string>
     <string name="key_list_empty_button_create">"creating your own key"</string>
     <string name="key_list_empty_button_import">"importing an existing key."</string>
+    <string name="key_list_filter_show_all">"Show all keys"</string>
+    <string name="key_list_filter_show_certified">"Show certified keys only"</string>
 
     <!-- Key view -->
     <string name="key_view_action_edit">"Edit key"</string>

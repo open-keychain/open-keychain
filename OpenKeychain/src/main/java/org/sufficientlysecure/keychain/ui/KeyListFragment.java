@@ -49,9 +49,11 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.AbsListView.MultiChoiceModeListener;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import org.sufficientlysecure.keychain.Constants;
@@ -68,8 +70,10 @@ import org.sufficientlysecure.keychain.ui.util.Highlighter;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 
 import se.emilsjolander.stickylistheaders.StickyListHeadersAdapter;
 import se.emilsjolander.stickylistheaders.StickyListHeadersListView;
@@ -85,9 +89,12 @@ public class KeyListFragment extends LoaderFragment
     private KeyListAdapter mAdapter;
     private StickyListHeadersListView mStickyList;
     private ListAwareSwipeRefreshLayout mSwipeRefreshLayout;
+    private Spinner mFilterSpinner;
 
     // saves the mode object for multiselect, needed for reset at some point
     private ActionMode mActionMode = null;
+
+    private boolean mShowAllKeys = false;
 
     private String mQuery;
     private SearchView mSearchView;
@@ -212,6 +219,42 @@ public class KeyListFragment extends LoaderFragment
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+
+        mFilterSpinner = (Spinner) getActivity().findViewById(R.id.key_list_filter_spinner);
+        List<String> list = new ArrayList<String>();
+        list.add(getString(R.string.key_list_filter_show_certified));
+        list.add(getString(R.string.key_list_filter_show_all));
+
+        ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>
+                (getActivity(), android.R.layout.simple_spinner_item, list);
+
+        dataAdapter.setDropDownViewResource
+                (android.R.layout.simple_spinner_dropdown_item);
+
+        mFilterSpinner.setAdapter(dataAdapter);
+
+        mFilterSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                switch (position) {
+                    case 0: {
+                        mShowAllKeys = false;
+                        getLoaderManager().restartLoader(0, null, KeyListFragment.this);
+                        break;
+                    }
+                    case 1: {
+                        mShowAllKeys = true;
+                        getLoaderManager().restartLoader(0, null, KeyListFragment.this);
+                        break;
+                    }
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
 
         mStickyList.setOnItemClickListener(this);
         mStickyList.setAreHeadersSticky(true);
@@ -354,6 +397,14 @@ public class KeyListFragment extends LoaderFragment
                 where += KeyRings.USER_ID + " LIKE ?";
                 whereArgs[i] = "%" + words[i] + "%";
             }
+        }
+        if (!mShowAllKeys) {
+            if (where == null) {
+                where = "";
+            } else {
+                where += " AND ";
+            }
+            where += KeyRings.VERIFIED + " != 0";
         }
 
         // Now create and return a CursorLoader that will take care of
