@@ -139,7 +139,7 @@ public class EncryptAsymmetricFragment extends Fragment implements EncryptActivi
                     setSignatureKeyId(keyring.getMasterKeyId());
                     mSign.setSelectedKeyId(mEncryptInterface.getSignatureKey());
                 }
-            } catch (ProviderHelper.NotFoundException e) {
+            } catch (PgpGeneralException e) {
                 Log.e(Constants.TAG, "key not found!", e);
             }
         }
@@ -151,7 +151,7 @@ public class EncryptAsymmetricFragment extends Fragment implements EncryptActivi
                     CachedPublicKeyRing ring = mProviderHelper.getCachedPublicKeyRing(
                             KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(preselectedId));
                     mEncryptKeyView.addObject(mEncryptKeyView.new EncryptionKey(ring));
-                } catch (ProviderHelper.NotFoundException e) {
+                } catch (PgpGeneralException e) {
                     Log.e(Constants.TAG, "key not found!", e);
                 }
             }

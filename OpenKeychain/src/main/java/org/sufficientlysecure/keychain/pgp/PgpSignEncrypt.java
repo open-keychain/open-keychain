@@ -385,21 +385,18 @@ public class PgpSignEncrypt {
 
                 // Asymmetric encryption
                 for (long id : mEncryptionMasterKeyIds) {
-                    CanonicalizedPublicKeyRing keyRing = null;
                     try {
-                        keyRing = mProviderHelper.getCanonicalizedPublicKeyRing(
+                        CanonicalizedPublicKeyRing keyRing = mProviderHelper.getCanonicalizedPublicKeyRing(
                                 KeyRings.buildUnifiedKeyRingUri(id));
-                    } catch (ProviderHelper.NotFoundException e) {
-                        log.add(LogType.MSG_SE_KEY_UNKNOWN, indent + 1,
-                                KeyFormattingUtils.convertKeyIdToHex(id));
-                    }
-                    try {
                         CanonicalizedPublicKey key = keyRing.getEncryptionSubKey();
                         cPk.addMethod(key.getPubKeyEncryptionGenerator());
                         log.add(LogType.MSG_SE_KEY_OK, indent + 1,
                                 KeyFormattingUtils.convertKeyIdToHex(id));
-                    } catch (ProviderHelper.NotFoundException e) {
+                    } catch (PgpGeneralException e) {
                         log.add(LogType.MSG_SE_KEY_WARN, indent + 1,
+                                KeyFormattingUtils.convertKeyIdToHex(id));
+                    } catch (ProviderHelper.NotFoundException e) {
+                        log.add(LogType.MSG_SE_KEY_UNKNOWN, indent + 1,
                                 KeyFormattingUtils.convertKeyIdToHex(id));
                     }
                 }

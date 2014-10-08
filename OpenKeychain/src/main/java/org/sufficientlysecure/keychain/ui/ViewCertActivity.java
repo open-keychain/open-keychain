@@ -185,7 +185,7 @@ public class ViewCertActivity extends ActionBarActivity
                             KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(mCertifierKeyId)).getMasterKeyId();
                     viewIntent.setData(KeyRings.buildGenericKeyRingUri(signerMasterKeyId));
                     startActivity(viewIntent);
-                } catch (ProviderHelper.NotFoundException e) {
+                } catch (PgpGeneralException e) {
                     // TODO notify user of this, maybe offer download?
                     Log.e(Constants.TAG, "key not found!", e);
                 }

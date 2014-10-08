@@ -41,7 +41,6 @@ import org.spongycastle.openpgp.operator.jcajce.NfcSyncPGPContentSignerBuilder;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralMsgIdException;
-import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.util.IterableIterator;
 import org.sufficientlysecure.keychain.util.Log;
 
@@ -255,10 +254,8 @@ public class CanonicalizedSecretKey extends CanonicalizedPublicKey {
             spGen.setSignatureCreationTime(false, nfcCreationTimestamp);
             signatureGenerator.setHashedSubpackets(spGen.generate());
             return signatureGenerator;
-        } catch (ProviderHelper.NotFoundException e) {
-            // TODO: simply throw PGPException!
-            throw new PgpGeneralException("Error initializing signature!", e);
         } catch (PGPException e) {
+            // TODO: simply throw PGPException!
             throw new PgpGeneralException("Error initializing signature!", e);
         }
     }

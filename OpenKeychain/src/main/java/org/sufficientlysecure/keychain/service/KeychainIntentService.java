@@ -719,7 +719,7 @@ public class KeychainIntentService extends IntentService implements Progressable
                             builder.setNfcState(nfcHash, nfcTimestamp);
                         }
 
-                    } catch (NotFoundException e) {
+                    } catch (PgpGeneralException e) {
                         // encrypt-only
                         // TODO Just silently drop the requested signature? Shouldn't we throw here?
                     }

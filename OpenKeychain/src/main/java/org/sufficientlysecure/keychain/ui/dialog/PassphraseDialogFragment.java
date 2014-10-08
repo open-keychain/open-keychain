@@ -145,7 +145,7 @@ public class PassphraseDialogFragment extends DialogFragment implements OnEditor
                 // the catch clause doesn't return.
                 try {
                     userId = mSecretRing.getPrimaryUserIdWithFallback();
-                } catch (ProviderHelper.NotFoundException e) {
+                } catch (PgpGeneralException e) {
                     userId = null;
                 }
 
@@ -308,7 +308,7 @@ public class PassphraseDialogFragment extends DialogFragment implements OnEditor
                             PassphraseCacheService.addCachedPassphrase(getActivity(),
                                     mSecretRing.getMasterKeyId(), mSubKeyId, passphrase,
                                     mSecretRing.getPrimaryUserIdWithFallback());
-                        } catch (ProviderHelper.NotFoundException e) {
+                        } catch (PgpGeneralException e) {
                             Log.e(Constants.TAG, "adding of a passphrase failed", e);
                         }
 

@@ -115,7 +115,7 @@ public class MultiCertifyKeyFragment extends LoaderFragment
                 if (key.canCertify()) {
                     mCertifyKeySpinner.setSelectedKeyId(certifyKeyId);
                 }
-            } catch (ProviderHelper.NotFoundException e) {
+            } catch (PgpGeneralException e) {
                 Log.e(Constants.TAG, "certify certify check failed", e);
             }
         }

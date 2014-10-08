@@ -19,7 +19,7 @@
 package org.sufficientlysecure.keychain.pgp;
 
 import org.spongycastle.openpgp.PGPKeyRing;
-import org.sufficientlysecure.keychain.provider.ProviderHelper.NotFoundException;
+import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.util.IterableIterator;
 
 import java.io.IOException;
@@ -56,11 +56,11 @@ public abstract class CanonicalizedKeyRing extends KeyRing {
         return getRing().getPublicKey().getFingerprint();
     }
 
-    public String getPrimaryUserId() throws NotFoundException {
+    public String getPrimaryUserId() throws PgpGeneralException {
         return getPublicKey().getPrimaryUserId();
     }
 
-    public String getPrimaryUserIdWithFallback() throws NotFoundException {
+    public String getPrimaryUserIdWithFallback() throws PgpGeneralException {
         return getPublicKey().getPrimaryUserIdWithFallback();
     }
 
@@ -87,24 +87,24 @@ public abstract class CanonicalizedKeyRing extends KeyRing {
         return creationDate.after(now) || (expiryDate != null && expiryDate.before(now));
     }
 
-    public boolean canCertify() throws NotFoundException {
+    public boolean canCertify() throws PgpGeneralException {
         return getRing().getPublicKey().isEncryptionKey();
     }
 
-    public long getEncryptId() throws NotFoundException {
+    public long getEncryptId() throws PgpGeneralException {
         for(CanonicalizedPublicKey key : publicKeyIterator()) {
             if (key.canEncrypt() && key.isValid()) {
                 return key.getKeyId();
             }
         }
-        throw new NotFoundException("No valid encryption key found!");
+        throw new PgpGeneralException("No valid encryption key found!");
     }
 
-    public boolean hasEncrypt() throws NotFoundException {
+    public boolean hasEncrypt() throws PgpGeneralException {
         try {
             getEncryptId();
             return true;
-        } catch(NotFoundException e) {
+        } catch(PgpGeneralException e) {
             return false;
         }
     }

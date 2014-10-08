@@ -67,7 +67,7 @@ public class AccountSettingsFragment extends Fragment {
     }
 
     public void setAccSettings(AccountSettings accountSettings) {
-        mAccSettings = accountSettings;
+        this.mAccSettings = accountSettings;
 
         mAccNameView.setText(accountSettings.getAccountName());
         mSelectKeySpinner.setSelectedKeyId(accountSettings.getKeyId());

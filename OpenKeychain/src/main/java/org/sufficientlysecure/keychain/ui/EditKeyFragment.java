@@ -229,6 +229,9 @@ public class EditKeyFragment extends LoaderFragment implements
         } catch (NotFoundException e) {
             finishWithError(LogType.MSG_EK_ERROR_NOT_FOUND);
             return;
+        } catch (PgpGeneralException e) {
+            finishWithError(LogType.MSG_EK_ERROR_NOT_FOUND);
+            return;
         }
 
         try {
