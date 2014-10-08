@@ -945,7 +945,7 @@
     <string name="empty_certs">"No certificates for this key"</string>
     <string name="certs_text">"Only validated self-certificates and validated certificates created with your keys are displayed here."</string>
     <string name="section_uids_to_certify">"Identities"</string>
-    <string name="certify_text">"Are the selected identities corresponding to the persons you are exchanging keys with?\nDeselect all unknown ones."</string>
+    <string name="certify_text">"Do the selected identities match the persons you are exchanging keys with? Deselect all unknown ones."</string>
     <string name="label_revocation">"Revocation Reason"</string>
     <string name="label_verify_status">"Verification Status"</string>
     <string name="label_cert_type">"Type"</string>
