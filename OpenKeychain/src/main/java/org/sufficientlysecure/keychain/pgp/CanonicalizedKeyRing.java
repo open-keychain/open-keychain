@@ -25,6 +25,7 @@ import org.sufficientlysecure.keychain.util.IterableIterator;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Date;
 
 /** A generic wrapped PGPKeyRing object.
  *
@@ -74,6 +75,16 @@ public abstract class CanonicalizedKeyRing extends KeyRing {
     public boolean isRevoked() throws PgpGeneralException {
         // Is the master key revoked?
         return getRing().getPublicKey().isRevoked();
+    }
+
+    public boolean isExpired() throws PgpGeneralException {
+        // Is the master key expired?
+        Date creationDate = getRing().getPublicKey().getCreationTime();
+        Date expiryDate = getRing().getPublicKey().getValidSeconds() > 0
+                ? new Date(creationDate.getTime() + getRing().getPublicKey().getValidSeconds() * 1000) : null;
+
+        Date now = new Date();
+        return creationDate.after(now) || (expiryDate != null && expiryDate.before(now));
     }
 
     public boolean canCertify() throws PgpGeneralException {

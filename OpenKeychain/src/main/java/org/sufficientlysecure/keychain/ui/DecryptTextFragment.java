@@ -27,6 +27,8 @@ import android.text.method.ScrollingMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import org.openintents.openpgp.util.OpenPgpApi;
@@ -44,6 +46,9 @@ public class DecryptTextFragment extends DecryptFragment {
     public static final String ARG_CIPHERTEXT = "ciphertext";
 
     // view
+    private LinearLayout mValidLayout;
+    private LinearLayout mInvalidLayout;
+    private Button mInvalidButton;
     private TextView mText;
     private View mShareButton;
     private View mCopyButton;
@@ -71,7 +76,9 @@ public class DecryptTextFragment extends DecryptFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.decrypt_text_fragment, container, false);
-
+        mValidLayout = (LinearLayout) view.findViewById(R.id.decrypt_text_valid);
+        mInvalidLayout = (LinearLayout) view.findViewById(R.id.decrypt_text_invalid);
+        mInvalidButton = (Button) view.findViewById(R.id.decrypt_text_invalid_button);
         mText = (TextView) view.findViewById(R.id.decrypt_text_plaintext);
         mShareButton = view.findViewById(R.id.action_decrypt_share_plaintext);
         mCopyButton = view.findViewById(R.id.action_decrypt_copy_plaintext);
@@ -85,6 +92,13 @@ public class DecryptTextFragment extends DecryptFragment {
             @Override
             public void onClick(View v) {
                 copyToClipboard(mText.getText().toString());
+            }
+        });
+        mInvalidButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mInvalidLayout.setVisibility(View.GONE);
+                mValidLayout.setVisibility(View.VISIBLE);
             }
         });
 
@@ -186,9 +200,18 @@ public class DecryptTextFragment extends DecryptFragment {
                         pgpResult.createNotify(getActivity()).show();
 
                         // display signature result in activity
-                        onResult(pgpResult);
+                        boolean valid = onResult(pgpResult);
+
+                        if (valid) {
+                            mInvalidLayout.setVisibility(View.GONE);
+                            mValidLayout.setVisibility(View.VISIBLE);
+                        } else {
+                            mInvalidLayout.setVisibility(View.VISIBLE);
+                            mValidLayout.setVisibility(View.GONE);
+                        }
                     } else {
                         pgpResult.createNotify(getActivity()).show();
+                        // TODO: show also invalid layout with different text?
                     }
                 }
             }

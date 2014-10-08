@@ -112,8 +112,14 @@ public abstract class DecryptFragment extends Fragment {
         startActivityForResult(intent, REQUEST_CODE_NFC_DECRYPT);
     }
 
-    protected void onResult(DecryptVerifyResult decryptVerifyResult) {
+    /**
+     *
+     * @return returns false if signature is invalid, key is revoked or expired.
+     */
+    protected boolean onResult(DecryptVerifyResult decryptVerifyResult) {
         final OpenPgpSignatureResult signatureResult = decryptVerifyResult.getSignatureResult();
+
+        boolean valid = false;
 
         mSignatureKeyId = 0;
         mResultLayout.setVisibility(View.VISIBLE);
@@ -147,14 +153,9 @@ public abstract class DecryptFragment extends Fragment {
                     KeyFormattingUtils.setStatusImage(getActivity(), mSignatureIcon, mSignatureText, KeyFormattingUtils.STATE_VERIFIED);
 
                     setSignatureLayoutVisibility(View.VISIBLE);
-                    mSignatureAction.setText(R.string.decrypt_result_action_show);
-                    mSignatureAction.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_action_accounts, 0);
-                    mSignatureLayout.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            showKey(mSignatureKeyId);
-                        }
-                    });
+                    setShowAction(mSignatureKeyId);
+
+                    valid = true;
                     break;
                 }
 
@@ -163,25 +164,9 @@ public abstract class DecryptFragment extends Fragment {
                     KeyFormattingUtils.setStatusImage(getActivity(), mSignatureIcon, mSignatureText, KeyFormattingUtils.STATE_UNVERIFIED);
 
                     setSignatureLayoutVisibility(View.VISIBLE);
-                    setShowAction(mSignatureAction, mSignatureKeyId);
-                    break;
-                }
+                    setShowAction(mSignatureKeyId);
 
-                case OpenPgpSignatureResult.SIGNATURE_KEY_EXPIRED: {
-                    mSignatureText.setText(R.string.decrypt_result_signature_expired_key);
-                    KeyFormattingUtils.setStatusImage(getActivity(), mSignatureIcon, mSignatureText, KeyFormattingUtils.STATE_EXPIRED);
-
-                    setSignatureLayoutVisibility(View.VISIBLE);
-                    setShowAction(mSignatureAction, mSignatureKeyId);
-                    break;
-                }
-
-                case OpenPgpSignatureResult.SIGNATURE_KEY_REVOKED: {
-                    mSignatureText.setText(R.string.decrypt_result_signature_revoked_key);
-                    KeyFormattingUtils.setStatusImage(getActivity(), mSignatureIcon, mSignatureText, KeyFormattingUtils.STATE_REVOKED);
-
-                    setSignatureLayoutVisibility(View.VISIBLE);
-                    setShowAction(mSignatureAction, mSignatureKeyId);
+                    valid = true;
                     break;
                 }
 
@@ -198,6 +183,30 @@ public abstract class DecryptFragment extends Fragment {
                             lookupUnknownKey(mSignatureKeyId);
                         }
                     });
+
+                    valid = true;
+                    break;
+                }
+
+                case OpenPgpSignatureResult.SIGNATURE_KEY_EXPIRED: {
+                    mSignatureText.setText(R.string.decrypt_result_signature_expired_key);
+                    KeyFormattingUtils.setStatusImage(getActivity(), mSignatureIcon, mSignatureText, KeyFormattingUtils.STATE_EXPIRED);
+
+                    setSignatureLayoutVisibility(View.VISIBLE);
+                    setShowAction(mSignatureKeyId);
+
+                    valid = false;
+                    break;
+                }
+
+                case OpenPgpSignatureResult.SIGNATURE_KEY_REVOKED: {
+                    mSignatureText.setText(R.string.decrypt_result_signature_revoked_key);
+                    KeyFormattingUtils.setStatusImage(getActivity(), mSignatureIcon, mSignatureText, KeyFormattingUtils.STATE_REVOKED);
+
+                    setSignatureLayoutVisibility(View.VISIBLE);
+                    setShowAction(mSignatureKeyId);
+
+                    valid = false;
                     break;
                 }
 
@@ -206,6 +215,8 @@ public abstract class DecryptFragment extends Fragment {
                     KeyFormattingUtils.setStatusImage(getActivity(), mSignatureIcon, mSignatureText, KeyFormattingUtils.STATE_INVALID);
 
                     setSignatureLayoutVisibility(View.GONE);
+
+                    valid = false;
                     break;
                 }
             }
@@ -216,7 +227,11 @@ public abstract class DecryptFragment extends Fragment {
             KeyFormattingUtils.setStatusImage(getActivity(), mSignatureIcon, mSignatureText, KeyFormattingUtils.STATE_NOT_SIGNED);
             mEncryptionText.setText(R.string.decrypt_result_encrypted);
             KeyFormattingUtils.setStatusImage(getActivity(), mEncryptionIcon, mEncryptionText, KeyFormattingUtils.STATE_ENCRYPTED);
+
+            valid = true;
         }
+
+        return valid;
     }
 
     private void setSignatureLayoutVisibility(int visibility) {
@@ -225,10 +240,10 @@ public abstract class DecryptFragment extends Fragment {
         mSignatureDivider2.setVisibility(visibility);
     }
 
-    private void setShowAction(TextView signatureAction, final long signatureKeyId) {
-        signatureAction.setText(R.string.decrypt_result_action_show);
-        signatureAction.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_action_accounts, 0);
-        signatureAction.setOnClickListener(new View.OnClickListener() {
+    private void setShowAction(final long signatureKeyId) {
+        mSignatureAction.setText(R.string.decrypt_result_action_show);
+        mSignatureAction.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_action_accounts, 0);
+        mSignatureLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 showKey(signatureKeyId);

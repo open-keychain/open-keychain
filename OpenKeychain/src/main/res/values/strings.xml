@@ -277,6 +277,8 @@
     <string name="decrypt_result_not_encrypted">"Not Encrypted"</string>
     <string name="decrypt_result_action_show">"Show"</string>
     <string name="decrypt_result_action_Lookup">"Lookup"</string>
+    <string name="decrypt_invalid_text">"Either the signature is invalid or the key has been revoked/is expired. You can not be sure who wrote the text. Do you still want to display it?"</string>
+    <string name="decrypt_invalid_button">"I understand the risks, display it!"</string>
 
     <!-- Add keys -->
     <string name="add_keys_section_secure_exchange">"Exchange"</string>

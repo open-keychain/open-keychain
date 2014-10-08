@@ -103,9 +103,14 @@ public class OpenPgpSignatureResultBuilder {
         Log.d(Constants.TAG, "signingRing.getUnorderedUserIds(): " + signingRing.getUnorderedUserIds());
         setUserIds(signingRing.getUnorderedUserIds());
 
-        // from KEY
-        setKeyExpired(signingKey.isExpired());
-        setKeyRevoked(signingKey.isRevoked());
+        // either master key is expired/revoked or this specific subkey is expired/revoked
+        try {
+            setKeyExpired(signingRing.isExpired() || signingKey.isExpired());
+            setKeyRevoked(signingRing.isRevoked() || signingKey.isRevoked());
+        } catch (PgpGeneralException e) {
+            Log.e(Constants.TAG, "shouldn't happen!");
+            setKeyRevoked(true);
+        }
     }
 
     public OpenPgpSignatureResult build() {
