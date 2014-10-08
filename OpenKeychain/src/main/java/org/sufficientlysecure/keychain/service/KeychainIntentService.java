@@ -313,12 +313,7 @@ public class KeychainIntentService extends IntentService implements Progressable
 
                 DecryptVerifyResult decryptVerifyResult = builder.build().execute();
 
-                resultData.putParcelable(DecryptVerifyResult.EXTRA_RESULT, decryptVerifyResult);
-
-                /* Output */
-                Log.logDebugBundle(resultData, "resultData");
-
-                sendMessageToHandler(KeychainIntentServiceHandler.MESSAGE_OKAY, resultData);
+                sendMessageToHandler(KeychainIntentServiceHandler.MESSAGE_OKAY, decryptVerifyResult);
             } catch (Exception e) {
                 sendErrorToHandler(e);
             }
@@ -512,11 +507,7 @@ public class KeychainIntentService extends IntentService implements Progressable
                 // If the edit operation didn't succeed, exit here
                 if (!modifyResult.success()) {
                     // always return SaveKeyringResult, so create one out of the EditKeyResult
-                    SaveKeyringResult saveResult = new SaveKeyringResult(
-                            SaveKeyringResult.RESULT_ERROR,
-                            modifyResult.getLog(),
-                            null);
-                    sendMessageToHandler(KeychainIntentServiceHandler.MESSAGE_OKAY, saveResult);
+                    sendMessageToHandler(KeychainIntentServiceHandler.MESSAGE_OKAY, modifyResult);
                     return;
                 }
 
@@ -530,9 +521,9 @@ public class KeychainIntentService extends IntentService implements Progressable
                         log.add(LogType.MSG_OPERATION_CANCELLED, 0);
                     }
                     // If so, just stop without saving
-                    SaveKeyringResult saveResult = new SaveKeyringResult(
-                            SaveKeyringResult.RESULT_CANCELLED, log, null);
-                    sendMessageToHandler(KeychainIntentServiceHandler.MESSAGE_OKAY, saveResult);
+                    modifyResult = new EditKeyResult(
+                            EditKeyResult.RESULT_CANCELLED, log, null);
+                    sendMessageToHandler(KeychainIntentServiceHandler.MESSAGE_OKAY, modifyResult);
                     return;
                 }
 

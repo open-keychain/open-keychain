@@ -93,6 +93,11 @@ public abstract class OperationResult implements Parcelable {
     }
 
     public OperationLog getLog() {
+        // If there is only a single entry, and it's a compound one, return that log
+        if (mLog.isSingleCompound()) {
+            return ((SubLogEntryParcel) mLog.getFirst()).getSubResult().getLog();
+        }
+        // Otherwse, return our regular log
         return mLog;
     }
 
@@ -642,6 +647,10 @@ public abstract class OperationResult implements Parcelable {
         public void add(OperationResult subResult, int indent) {
             OperationLog subLog = subResult.getLog();
             mParcels.add(new SubLogEntryParcel(subResult, subLog.getFirst().mType, indent, subLog.getFirst().mParameters));
+        }
+
+        boolean isSingleCompound() {
+            return mParcels.size() == 1 && getFirst() instanceof SubLogEntryParcel;
         }
 
         public void clear() {
