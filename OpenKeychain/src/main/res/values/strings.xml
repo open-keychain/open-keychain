@@ -266,14 +266,15 @@
     <string name="error_generic_report_bug">"A generic error occurred, please create a new bug report for OpenKeychain."</string>
 
     <!-- results shown after decryption/verification -->
+    <string name="decrypt_result_no_signature">"Not Signed"</string>
     <string name="decrypt_result_invalid_signature">"Invalid signature!"</string>
     <string name="decrypt_result_signature_unknown_pub_key">"Unknown public key"</string>
-    <string name="decrypt_result_signature_uncertified">"Valid signature (uncertified)"</string>
-    <string name="decrypt_result_signature_certified">"Valid signature (certified)"</string>
-    <string name="decrypt_result_decrypted">"Successfully decrypted"</string>
-    <string name="decrypt_result_decrypted_unknown_pub_key">"Successfully decrypted but unknown public key"</string>
-    <string name="decrypt_result_decrypted_and_signature_uncertified">"Successfully decrypted and valid signature (uncertified)"</string>
-    <string name="decrypt_result_decrypted_and_signature_certified">"Successfully decrypted and valid signature (certified)"</string>
+    <string name="decrypt_result_signature_uncertified">"Signed by (not certified!)"</string>
+    <string name="decrypt_result_signature_certified">"Signed by"</string>
+    <string name="decrypt_result_encrypted">"Encrypted"</string>
+    <string name="decrypt_result_not_encrypted">"Not Encrypted"</string>
+    <string name="decrypt_result_action_show">"Show"</string>
+    <string name="decrypt_result_action_Lookup">"Lookup"</string>
 
     <!-- Add keys -->
     <string name="add_keys_section_secure_exchange">"Exchange"</string>
@@ -507,10 +508,10 @@
     <string name="key_view_tab_certs">"Certificates"</string>
     <string name="user_id_info_revoked_title">"Revoked"</string>
     <string name="user_id_info_revoked_text">"This identity has been revoked by the key owner. It is no longer valid."</string>
-    <string name="user_id_info_verified_title">"Verified"</string>
-    <string name="user_id_info_verified_text">"This identity has been verified."</string>
-    <string name="user_id_info_not_verified_title">"Not verified"</string>
-    <string name="user_id_info_not_verified_text">"This identity has not been verified yet. You cannot be sure if the identity really corresponds to a specific person."</string>
+    <string name="user_id_info_certified_title">"Certified"</string>
+    <string name="user_id_info_certified_text">"This identity has been certified by you."</string>
+    <string name="user_id_info_uncertified_title">"Not certified"</string>
+    <string name="user_id_info_uncertified_text">"This identity has not been certified yet. You cannot be sure if the identity really corresponds to a specific person."</string>
     <string name="user_id_info_invalid_title">"Invalid"</string>
     <string name="user_id_info_invalid_text">"Something is wrong with this identity!"</string>
 

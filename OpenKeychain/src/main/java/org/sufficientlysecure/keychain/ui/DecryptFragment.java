@@ -21,16 +21,14 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.View;
-import android.view.View.OnClickListener;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import org.openintents.openpgp.OpenPgpSignatureResult;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
+import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.service.results.DecryptVerifyResult;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 
@@ -43,14 +41,19 @@ public abstract class DecryptFragment extends Fragment {
     protected long mSignatureKeyId = 0;
 
     protected LinearLayout mResultLayout;
-    protected RelativeLayout mSignatureLayout;
-    protected TextView mResultText;
 
-    protected ImageView mSignatureStatusImage;
-    protected TextView mUserId;
-    protected TextView mUserIdRest;
+    protected ImageView mEncryptionIcon;
+    protected TextView mEncryptionText;
+    protected ImageView mSignatureIcon;
+    protected TextView mSignatureText;
 
-    protected Button mLookupKey;
+    protected View mSignatureLayout;
+    protected View mSignatureDivider1;
+    protected View mSignatureDivider2;
+    protected TextView mSignatureName;
+    protected TextView mSignatureEmail;
+    protected TextView mSignatureAction;
+
 
     // State
     protected String mPassphrase;
@@ -60,20 +63,20 @@ public abstract class DecryptFragment extends Fragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        mResultLayout = (LinearLayout) getView().findViewById(R.id.result);
-        mResultText = (TextView) getView().findViewById(R.id.result_text);
-        mSignatureLayout = (RelativeLayout) getView().findViewById(R.id.result_signature);
-        mSignatureStatusImage = (ImageView) getView().findViewById(R.id.ic_signature_status);
-        mUserId = (TextView) getView().findViewById(R.id.mainUserId);
-        mUserIdRest = (TextView) getView().findViewById(R.id.mainUserIdRest);
-        mLookupKey = (Button) getView().findViewById(R.id.lookup_key);
-        mLookupKey.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                lookupUnknownKey(mSignatureKeyId);
-            }
-        });
+        mResultLayout = (LinearLayout) getView().findViewById(R.id.result_main_layout);
         mResultLayout.setVisibility(View.GONE);
+
+        mEncryptionIcon = (ImageView) getView().findViewById(R.id.result_encryption_icon);
+        mEncryptionText = (TextView) getView().findViewById(R.id.result_encryption_text);
+        mSignatureIcon = (ImageView) getView().findViewById(R.id.result_signature_icon);
+        mSignatureText = (TextView) getView().findViewById(R.id.result_signature_text);
+        mSignatureLayout = getView().findViewById(R.id.result_signature_layout);
+        mSignatureDivider1 = getView().findViewById(R.id.result_signature_divider1);
+        mSignatureDivider2 = getView().findViewById(R.id.result_signature_divider2);
+        mSignatureName = (TextView) getView().findViewById(R.id.result_signature_name);
+        mSignatureEmail = (TextView) getView().findViewById(R.id.result_signature_email);
+        mSignatureAction = (TextView) getView().findViewById(R.id.result_signature_action);
+
     }
 
     private void lookupUnknownKey(long unknownKeyId) {
@@ -103,99 +106,112 @@ public abstract class DecryptFragment extends Fragment {
     }
 
     protected void onResult(DecryptVerifyResult decryptVerifyResult) {
-        OpenPgpSignatureResult signatureResult = decryptVerifyResult.getSignatureResult();
+        final OpenPgpSignatureResult signatureResult = decryptVerifyResult.getSignatureResult();
 
         mSignatureKeyId = 0;
         mResultLayout.setVisibility(View.VISIBLE);
         if (signatureResult != null) {
-            mSignatureStatusImage.setVisibility(View.VISIBLE);
-
             mSignatureKeyId = signatureResult.getKeyId();
 
             String userId = signatureResult.getPrimaryUserId();
             String[] userIdSplit = KeyRing.splitUserId(userId);
             if (userIdSplit[0] != null) {
-                mUserId.setText(userIdSplit[0]);
+                mSignatureName.setText(userIdSplit[0]);
             } else {
-                mUserId.setText(R.string.user_id_no_name);
+                mSignatureName.setText(R.string.user_id_no_name);
             }
             if (userIdSplit[1] != null) {
-                mUserIdRest.setText(userIdSplit[1]);
+                mSignatureEmail.setText(userIdSplit[1]);
             } else {
-                mUserIdRest.setText(KeyFormattingUtils.beautifyKeyIdWithPrefix(getActivity(), mSignatureKeyId));
+                mSignatureEmail.setText(KeyFormattingUtils.beautifyKeyIdWithPrefix(getActivity(), mSignatureKeyId));
+            }
+
+            if (signatureResult.isSignatureOnly()) {
+                mEncryptionText.setText(R.string.decrypt_result_not_encrypted);
+                KeyFormattingUtils.setStatusImage(getActivity(), mEncryptionIcon, mEncryptionText, KeyFormattingUtils.STATE_NOT_ENCRYPTED);
+            } else {
+                mEncryptionText.setText(R.string.decrypt_result_encrypted);
+                KeyFormattingUtils.setStatusImage(getActivity(), mEncryptionIcon, mEncryptionText, KeyFormattingUtils.STATE_ENCRYPTED);
             }
 
             switch (signatureResult.getStatus()) {
                 case OpenPgpSignatureResult.SIGNATURE_SUCCESS_CERTIFIED: {
-                    if (signatureResult.isSignatureOnly()) {
-                        mResultText.setText(R.string.decrypt_result_signature_certified);
-                    } else {
-                        mResultText.setText(R.string.decrypt_result_decrypted_and_signature_certified);
-                    }
+                    mSignatureText.setText(R.string.decrypt_result_signature_certified);
+                    KeyFormattingUtils.setStatusImage(getActivity(), mSignatureIcon, mSignatureText, KeyFormattingUtils.STATE_VERIFIED);
 
-                    mResultLayout.setBackgroundColor(getResources().getColor(R.color.android_green_light));
-                    mSignatureStatusImage.setImageResource(R.drawable.overlay_ok);
-                    mSignatureLayout.setVisibility(View.VISIBLE);
-                    mLookupKey.setVisibility(View.GONE);
+                    setSignatureLayoutVisibility(View.VISIBLE);
+                    mSignatureAction.setText(R.string.decrypt_result_action_show);
+                    mSignatureAction.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_action_accounts, 0);
+                    mSignatureLayout.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            Intent viewKeyIntent = new Intent(getActivity(), ViewKeyActivity.class);
+                            viewKeyIntent.setData(KeychainContract.KeyRings
+                                    .buildGenericKeyRingUri(mSignatureKeyId));
+                            startActivity(viewKeyIntent);
+                        }
+                    });
                     break;
                 }
 
                 case OpenPgpSignatureResult.SIGNATURE_SUCCESS_UNCERTIFIED: {
-                    if (signatureResult.isSignatureOnly()) {
-                        mResultText.setText(R.string.decrypt_result_signature_uncertified);
-                    } else {
-                        mResultText.setText(R.string.decrypt_result_decrypted_and_signature_uncertified);
-                    }
+                    mSignatureText.setText(R.string.decrypt_result_signature_uncertified);
+                    KeyFormattingUtils.setStatusImage(getActivity(), mSignatureIcon, mSignatureText, KeyFormattingUtils.STATE_UNVERIFIED);
 
-                    mResultLayout.setBackgroundColor(getResources().getColor(R.color.android_orange_light));
-                    mSignatureStatusImage.setImageResource(R.drawable.overlay_ok);
-                    mSignatureLayout.setVisibility(View.VISIBLE);
-                    mLookupKey.setVisibility(View.GONE);
+                    setSignatureLayoutVisibility(View.VISIBLE);
+                    mSignatureAction.setText(R.string.decrypt_result_action_show);
+                    mSignatureAction.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_action_accounts, 0);
+                    mSignatureLayout.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            Intent viewKeyIntent = new Intent(getActivity(), ViewKeyActivity.class);
+                            viewKeyIntent.setData(KeychainContract.KeyRings
+                                    .buildGenericKeyRingUri(mSignatureKeyId));
+                            startActivity(viewKeyIntent);
+                        }
+                    });
                     break;
                 }
 
                 case OpenPgpSignatureResult.SIGNATURE_KEY_MISSING: {
-                    if (signatureResult.isSignatureOnly()) {
-                        mResultText.setText(R.string.decrypt_result_signature_unknown_pub_key);
-                    } else {
-                        mResultText.setText(R.string.decrypt_result_decrypted_unknown_pub_key);
-                    }
+                    mSignatureText.setText(R.string.decrypt_result_signature_unknown_pub_key);
+                    KeyFormattingUtils.setStatusImage(getActivity(), mSignatureIcon, mSignatureText, KeyFormattingUtils.STATE_UNKNOWN_KEY);
 
-                    mResultLayout.setBackgroundColor(getResources().getColor(R.color.android_orange_light));
-                    mSignatureStatusImage.setImageResource(R.drawable.overlay_error);
-                    mSignatureLayout.setVisibility(View.VISIBLE);
-                    mLookupKey.setVisibility(View.VISIBLE);
+                    setSignatureLayoutVisibility(View.VISIBLE);
+                    mSignatureAction.setText(R.string.decrypt_result_action_Lookup);
+                    mSignatureAction.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_action_download, 0);
+                    mSignatureLayout.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            lookupUnknownKey(mSignatureKeyId);
+                        }
+                    });
                     break;
                 }
 
+                // TODO: Maybe this should be part of the Result parcel, it is an error, not a valid status!
                 case OpenPgpSignatureResult.SIGNATURE_ERROR: {
-                    mResultText.setText(R.string.decrypt_result_invalid_signature);
+                    mSignatureText.setText(R.string.decrypt_result_invalid_signature);
+                    KeyFormattingUtils.setStatusImage(getActivity(), mSignatureIcon, mSignatureText, KeyFormattingUtils.STATE_INVALID);
 
-                    mResultLayout.setBackgroundColor(getResources().getColor(R.color.android_red_light));
-                    mSignatureStatusImage.setImageResource(R.drawable.overlay_error);
-                    mSignatureLayout.setVisibility(View.GONE);
-                    mLookupKey.setVisibility(View.GONE);
-                    break;
-                }
-
-                default: {
-                    mResultText.setText(R.string.error);
-
-                    mResultLayout.setBackgroundColor(getResources().getColor(R.color.android_red_light));
-                    mSignatureStatusImage.setImageResource(R.drawable.overlay_error);
-                    mSignatureLayout.setVisibility(View.GONE);
-                    mLookupKey.setVisibility(View.GONE);
+                    setSignatureLayoutVisibility(View.GONE);
                     break;
                 }
             }
         } else {
-            mSignatureLayout.setVisibility(View.GONE);
-            mLookupKey.setVisibility(View.GONE);
+            setSignatureLayoutVisibility(View.GONE);
 
-            // successful decryption-only
-            mResultLayout.setBackgroundColor(getResources().getColor(R.color.android_purple_light));
-            mResultText.setText(R.string.decrypt_result_decrypted);
+            mSignatureText.setText(R.string.decrypt_result_no_signature);
+            KeyFormattingUtils.setStatusImage(getActivity(), mSignatureIcon, mSignatureText, KeyFormattingUtils.STATE_NOT_SIGNED);
+            mEncryptionText.setText(R.string.decrypt_result_encrypted);
+            KeyFormattingUtils.setStatusImage(getActivity(), mEncryptionIcon, mEncryptionText, KeyFormattingUtils.STATE_ENCRYPTED);
         }
+    }
+
+    private void setSignatureLayoutVisibility(int visibility) {
+        mSignatureLayout.setVisibility(visibility);
+        mSignatureDivider1.setVisibility(visibility);
+        mSignatureDivider2.setVisibility(visibility);
     }
 
     /**

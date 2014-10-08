@@ -380,9 +380,9 @@
   <string name="key_view_tab_certs">Certifikati</string>
   <string name="user_id_info_revoked_title">Preklican</string>
   <string name="user_id_info_revoked_text">Lastnik ključa je preklical to identiteto. Ta ni več veljavna.</string>
-  <string name="user_id_info_verified_title">Preverjen</string>
-  <string name="user_id_info_verified_text">Identiteta je bila preverjena</string>
-  <string name="user_id_info_not_verified_title">Nepreverjen</string>
+  <string name="user_id_info_certified_title">Preverjen</string>
+  <string name="user_id_info_certified_text">Identiteta je bila preverjena</string>
+  <string name="user_id_info_uncertified_title">Nepreverjen</string>
   <string name="user_id_info_invalid_title">Neveljaven</string>
   <!--Edit key-->
   <string name="edit_key_action_change_passphrase">Zamenjaj geslo</string>

@@ -397,10 +397,10 @@
   <string name="key_view_tab_certs">Certifikáty</string>
   <string name="user_id_info_revoked_title">Zneplatněno</string>
   <string name="user_id_info_revoked_text">Tato identity byla zneplatněna vlastníkem klíče. Klíč již není platný.</string>
-  <string name="user_id_info_verified_title">Ověřeno</string>
-  <string name="user_id_info_verified_text">Tato identita byla ověřena.</string>
-  <string name="user_id_info_not_verified_title">Neověřeno</string>
-  <string name="user_id_info_not_verified_text">Tato identita nebyla ještě ověřena. Nemůžete si být jisti, jestli identita opravdu odpovídá určité osobě.</string>
+  <string name="user_id_info_certified_title">Ověřeno</string>
+  <string name="user_id_info_certified_text">Tato identita byla ověřena.</string>
+  <string name="user_id_info_uncertified_title">Neověřeno</string>
+  <string name="user_id_info_uncertified_text">Tato identita nebyla ještě ověřena. Nemůžete si být jisti, jestli identita opravdu odpovídá určité osobě.</string>
   <string name="user_id_info_invalid_title">Neplatná</string>
   <string name="user_id_info_invalid_text">S touto identitou je něco v nepořádku!</string>
   <!--Edit key-->

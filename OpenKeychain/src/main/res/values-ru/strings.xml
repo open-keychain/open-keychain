@@ -361,9 +361,9 @@
   <string name="key_view_tab_keys">Доп. ключи</string>
   <string name="key_view_tab_certs">Сертификация</string>
   <string name="user_id_info_revoked_title">Аннулировано</string>
-  <string name="user_id_info_verified_title">Подтверждено</string>
-  <string name="user_id_info_not_verified_title">Не подтверждено</string>
-  <string name="user_id_info_not_verified_text">Этот идентификатор не был заверен. Нет гарантии, что он принадлежит этому человеку.</string>
+  <string name="user_id_info_certified_title">Подтверждено</string>
+  <string name="user_id_info_uncertified_title">Не подтверждено</string>
+  <string name="user_id_info_uncertified_text">Этот идентификатор не был заверен. Нет гарантии, что он принадлежит этому человеку.</string>
   <string name="user_id_info_invalid_title">Недействительно</string>
   <string name="user_id_info_invalid_text">Что-то не так с идентификатором!</string>
   <!--Edit key-->

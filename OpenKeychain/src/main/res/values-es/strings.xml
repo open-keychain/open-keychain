@@ -421,10 +421,10 @@
   <string name="key_view_tab_certs">Certificados</string>
   <string name="user_id_info_revoked_title">Revocada</string>
   <string name="user_id_info_revoked_text">Esta identidad ha sido revocada por el propietario de la clave. En adelante no es válida.</string>
-  <string name="user_id_info_verified_title">Verificada</string>
-  <string name="user_id_info_verified_text">Esta identidad ha sido verificada</string>
-  <string name="user_id_info_not_verified_title">No verificada</string>
-  <string name="user_id_info_not_verified_text">Esta identidad no se ha verificado aún. No puede estar seguro de si la identidad realmente corresponde a una persona en concreto.</string>
+  <string name="user_id_info_certified_title">Verificada</string>
+  <string name="user_id_info_certified_text">Esta identidad ha sido verificada</string>
+  <string name="user_id_info_uncertified_title">No verificada</string>
+  <string name="user_id_info_uncertified_text">Esta identidad no se ha verificado aún. No puede estar seguro de si la identidad realmente corresponde a una persona en concreto.</string>
   <string name="user_id_info_invalid_title">No válido</string>
   <string name="user_id_info_invalid_text">¡Algo está mal con esta identidad!</string>
   <!--Edit key-->

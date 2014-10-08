@@ -353,10 +353,10 @@
   <string name="key_view_tab_share">Paylaş</string>
   <string name="key_view_tab_keys">Alt anahtarlar</string>
   <string name="key_view_tab_certs">Sertifikalar</string>
-  <string name="user_id_info_verified_title">Doğrulanmış</string>
-  <string name="user_id_info_verified_text">Kimlik doğrulandı.</string>
-  <string name="user_id_info_not_verified_title">Doğrulanmamış</string>
-  <string name="user_id_info_not_verified_text">Bu kimlik henüz doğrulanmadı. Bu kimliğin belirli bir kişiye ait olduğundan emin olamazsınız.</string>
+  <string name="user_id_info_certified_title">Doğrulanmış</string>
+  <string name="user_id_info_certified_text">Kimlik doğrulandı.</string>
+  <string name="user_id_info_uncertified_title">Doğrulanmamış</string>
+  <string name="user_id_info_uncertified_text">Bu kimlik henüz doğrulanmadı. Bu kimliğin belirli bir kişiye ait olduğundan emin olamazsınız.</string>
   <string name="user_id_info_invalid_title">Geçersiz</string>
   <string name="user_id_info_invalid_text">Bu kimlikle ilgili yanlış olan bazı şeyler var!</string>
   <!--Edit key-->

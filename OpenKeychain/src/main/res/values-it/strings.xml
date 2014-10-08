@@ -426,10 +426,10 @@ Permetti accesso?\n\nATTENZIONE: Se non sai perche\' questo schermata e\' appars
   <string name="key_view_tab_certs">Certificati</string>
   <string name="user_id_info_revoked_title">Revocato</string>
   <string name="user_id_info_revoked_text">Questa identità è stata revocata dal suo proprietario. Non è più valida.</string>
-  <string name="user_id_info_verified_title">Verificato</string>
-  <string name="user_id_info_verified_text">Questa identità è stata verificata.</string>
-  <string name="user_id_info_not_verified_title">Non verificato</string>
-  <string name="user_id_info_not_verified_text">Questa identità non è stata ancora verificata. Non puoi esser sicuro che l\'identità corrisponda veramente ad una specifica persona.</string>
+  <string name="user_id_info_certified_title">Verificato</string>
+  <string name="user_id_info_certified_text">Questa identità è stata verificata.</string>
+  <string name="user_id_info_uncertified_title">Non verificato</string>
+  <string name="user_id_info_uncertified_text">Questa identità non è stata ancora verificata. Non puoi esser sicuro che l\'identità corrisponda veramente ad una specifica persona.</string>
   <string name="user_id_info_invalid_title">Non valido</string>
   <string name="user_id_info_invalid_text">C\'è qualcosa che non va con questa identità!</string>
   <!--Edit key-->

@@ -1,97 +1,144 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/result"
+    android:id="@+id/result_main_layout"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingLeft="16dp"
-    android:paddingRight="16dp"
-    android:paddingTop="4dp"
-    android:paddingBottom="4dp"
-    android:background="@color/android_purple_light">
+    android:background="@color/holo_gray_bright">
 
-    <View
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/result_main_layout"
+        android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="1dip"
-        android:background="?android:attr/listDivider"
-        android:layout_marginTop="4dp" />
-
-    <TextView
-        android:id="@+id/result_text"
-        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="result text"
-        android:textColor="@color/white"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="8dp"
-        android:layout_marginBottom="8dp" />
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:paddingTop="4dp"
+        android:paddingBottom="4dp">
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:id="@+id/result_encryption_icon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/status_lock_open"
+                android:layout_gravity="center_vertical" />
+
+            <TextView
+                android:id="@+id/result_encryption_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="Not Encrypted (set in-code)"
+                android:layout_marginLeft="8dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:id="@+id/result_signature_icon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/status_signature_unverified_cutout"
+                android:layout_gravity="center_vertical" />
+
+            <TextView
+                android:id="@+id/result_signature_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="Signed by (set in-code)"
+                android:layout_marginLeft="8dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp" />
+        </LinearLayout>
+
+        <View
+            android:id="@+id/result_signature_divider1"
+            android:layout_width="match_parent"
+            android:layout_height="1dip"
+            android:layout_marginLeft="32dp"
+            android:background="?android:attr/listDivider" />
+
+        <LinearLayout
+            android:id="@+id/result_signature_layout"
+            android:layout_width="match_parent"
+            android:layout_height="?android:attr/listPreferredItemHeight"
+            android:clickable="true"
+            android:layout_marginLeft="32dp"
+            android:paddingRight="4dp"
+            style="@style/SelectableItem"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:paddingRight="4dp"
+                android:gravity="center_vertical"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/result_signature_name"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Alice (set in-code)" />
+
+                <TextView
+                    android:id="@+id/result_signature_email"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/tertiary_text_light"
+                    android:text="alice@example.com (set in-code)"
+                    android:gravity="center_vertical" />
+
+            </LinearLayout>
+
+            <View
+                android:layout_width="1dip"
+                android:layout_height="match_parent"
+                android:gravity="right"
+                android:layout_marginBottom="8dp"
+                android:layout_marginTop="8dp"
+                android:background="?android:attr/listDivider" />
+
+            <TextView
+                android:id="@+id/result_signature_action"
+                android:paddingLeft="8dp"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="Show"
+                android:drawableRight="@drawable/ic_action_accounts"
+                android:drawablePadding="8dp"
+                android:gravity="center_vertical"
+                style="@style/SelectableItem" />
+
+        </LinearLayout>
+
+        <View
+            android:id="@+id/result_signature_divider2"
+            android:layout_width="match_parent"
+            android:layout_height="1dip"
+            android:layout_marginLeft="32dp"
+            android:background="?android:attr/listDivider" />
+
+    </LinearLayout>
 
     <View
         android:layout_width="match_parent"
         android:layout_height="1dip"
         android:background="?android:attr/listDivider" />
-
-    <RelativeLayout
-        android:id="@+id/result_signature"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:clickable="true"
-        android:orientation="horizontal"
-        android:layout_marginBottom="8dp"
-        android:layout_marginTop="8dp">
-
-        <RelativeLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/result_signature_image">
-
-            <ImageView
-                android:id="@+id/ic_signature"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/signed_large" />
-
-            <ImageView
-                android:id="@+id/ic_signature_status"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/overlay_error" />
-        </RelativeLayout>
-
-        <TextView
-            android:id="@+id/mainUserId"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="4dp"
-            android:layout_gravity="left"
-            android:text="@string/label_main_user_id"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:layout_toRightOf="@+id/result_signature_image"
-            android:textColor="@color/white" />
-
-        <TextView
-            android:id="@+id/mainUserIdRest"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="4dp"
-            android:layout_gravity="left"
-            android:text="Main User Id Rest"
-            android:textAppearance="?android:attr/textAppearanceSmall"
-            android:layout_below="@+id/mainUserId"
-            android:layout_toRightOf="@+id/result_signature_image"
-            android:textColor="@color/white" />
-
-        <Button
-            android:id="@+id/lookup_key"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/btn_lookup_key"
-            android:drawableRight="@drawable/ic_action_download"
-            android:layout_alignParentRight="true"
-            android:layout_centerVertical="true"
-            android:background="@drawable/button_edgy"/>
-
-    </RelativeLayout>
 
 </LinearLayout>

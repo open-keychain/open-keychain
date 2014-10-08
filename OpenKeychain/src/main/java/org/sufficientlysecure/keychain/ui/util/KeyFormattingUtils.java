@@ -19,18 +19,13 @@
 package org.sufficientlysecure.keychain.ui.util;
 
 import android.content.Context;
-import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
-import android.graphics.Typeface;
 import android.text.Spannable;
-import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
 import android.text.style.ForegroundColorSpan;
-import android.text.style.StyleSpan;
-import android.text.style.TypefaceSpan;
-import android.view.View;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import org.spongycastle.asn1.ASN1ObjectIdentifier;
 import org.spongycastle.asn1.nist.NISTNamedCurves;
@@ -386,36 +381,126 @@ public class KeyFormattingUtils {
     public static final int STATE_EXPIRED = 2;
     public static final int STATE_VERIFIED = 3;
     public static final int STATE_UNAVAILABLE = 4;
+    public static final int STATE_ENCRYPTED = 5;
+    public static final int STATE_NOT_ENCRYPTED = 6;
+    public static final int STATE_UNVERIFIED = 7;
+    public static final int STATE_UNKNOWN_KEY = 8;
+    public static final int STATE_INVALID = 9;
+    public static final int STATE_NOT_SIGNED = 10;
+
+    public static void setStatusImage(Context context, ImageView statusIcon, int state) {
+        setStatusImage(context, statusIcon, null, state);
+    }
 
     /**
      * Sets status image based on constant
      */
-    public static void setStatusImage(Context context, ImageView statusView, int state) {
+    public static void setStatusImage(Context context, ImageView statusIcon, TextView statusText, int state) {
         switch (state) {
-            case STATE_REVOKED:
-                statusView.setImageDrawable(
-                        context.getResources().getDrawable(R.drawable.status_signature_revoked_cutout));
-                statusView.setColorFilter(context.getResources().getColor(R.color.android_red_dark),
-                        PorterDuff.Mode.SRC_ATOP);
-                break;
-            case STATE_EXPIRED:
-                statusView.setImageDrawable(
-                        context.getResources().getDrawable(R.drawable.status_signature_expired_cutout));
-                statusView.setColorFilter(context.getResources().getColor(R.color.android_orange_dark),
-                        PorterDuff.Mode.SRC_ATOP);
-                break;
-            case STATE_UNAVAILABLE:
-                statusView.setImageDrawable(
-                        context.getResources().getDrawable(R.drawable.status_signature_invalid_cutout));
-                statusView.setColorFilter(context.getResources().getColor(R.color.bg_gray),
-                        PorterDuff.Mode.SRC_ATOP);
-                break;
-            case STATE_VERIFIED:
-                statusView.setImageDrawable(
+            /** GREEN: everything is good **/
+            case STATE_VERIFIED: {
+                statusIcon.setImageDrawable(
                         context.getResources().getDrawable(R.drawable.status_signature_verified_cutout));
-                statusView.setColorFilter(context.getResources().getColor(R.color.android_green_dark),
+                statusIcon.setColorFilter(context.getResources().getColor(R.color.android_green_dark),
                         PorterDuff.Mode.SRC_ATOP);
+                if (statusText != null) {
+                    statusText.setTextColor(context.getResources().getColor(R.color.android_green_dark));
+                }
                 break;
+            }
+            case STATE_ENCRYPTED: {
+                statusIcon.setImageDrawable(
+                        context.getResources().getDrawable(R.drawable.status_lock_closed));
+                statusIcon.setColorFilter(context.getResources().getColor(R.color.android_green_dark),
+                        PorterDuff.Mode.SRC_ATOP);
+                if (statusText != null) {
+                    statusText.setTextColor(context.getResources().getColor(R.color.android_green_dark));
+                }
+                break;
+            }
+            /** ORANGE: mostly bad... **/
+            case STATE_UNVERIFIED: {
+                statusIcon.setImageDrawable(
+                        context.getResources().getDrawable(R.drawable.status_signature_unverified_cutout));
+                statusIcon.setColorFilter(context.getResources().getColor(R.color.android_orange_dark),
+                        PorterDuff.Mode.SRC_ATOP);
+                if (statusText != null) {
+                    statusText.setTextColor(context.getResources().getColor(R.color.android_orange_dark));
+                }
+                break;
+            }
+            case STATE_EXPIRED: {
+                statusIcon.setImageDrawable(
+                        context.getResources().getDrawable(R.drawable.status_signature_expired_cutout));
+                statusIcon.setColorFilter(context.getResources().getColor(R.color.android_orange_dark),
+                        PorterDuff.Mode.SRC_ATOP);
+                if (statusText != null) {
+                    statusText.setTextColor(context.getResources().getColor(R.color.android_orange_dark));
+                }
+                break;
+            }
+            case STATE_UNKNOWN_KEY: {
+                statusIcon.setImageDrawable(
+                        context.getResources().getDrawable(R.drawable.status_signature_unknown_cutout));
+                statusIcon.setColorFilter(context.getResources().getColor(R.color.android_orange_dark),
+                        PorterDuff.Mode.SRC_ATOP);
+                if (statusText != null) {
+                    statusText.setTextColor(context.getResources().getColor(R.color.android_orange_dark));
+                }
+                break;
+            }
+            /** RED: really bad... **/
+            case STATE_REVOKED: {
+                statusIcon.setImageDrawable(
+                        context.getResources().getDrawable(R.drawable.status_signature_revoked_cutout));
+                statusIcon.setColorFilter(context.getResources().getColor(R.color.android_red_dark),
+                        PorterDuff.Mode.SRC_ATOP);
+                if (statusText != null) {
+                    statusText.setTextColor(context.getResources().getColor(R.color.android_red_dark));
+                }
+                break;
+            }
+            case STATE_NOT_ENCRYPTED: {
+                statusIcon.setImageDrawable(
+                        context.getResources().getDrawable(R.drawable.status_lock_open));
+                statusIcon.setColorFilter(context.getResources().getColor(R.color.android_red_dark),
+                        PorterDuff.Mode.SRC_ATOP);
+                if (statusText != null) {
+                    statusText.setTextColor(context.getResources().getColor(R.color.android_red_dark));
+                }
+                break;
+            }
+            case STATE_NOT_SIGNED: {
+                statusIcon.setImageDrawable(
+                        context.getResources().getDrawable(R.drawable.status_signature_unknown_cutout));
+                statusIcon.setColorFilter(context.getResources().getColor(R.color.android_red_dark),
+                        PorterDuff.Mode.SRC_ATOP);
+                if (statusText != null) {
+                    statusText.setTextColor(context.getResources().getColor(R.color.android_red_dark));
+                }
+                break;
+            }
+            case STATE_INVALID: {
+                statusIcon.setImageDrawable(
+                        context.getResources().getDrawable(R.drawable.status_signature_invalid_cutout));
+                statusIcon.setColorFilter(context.getResources().getColor(R.color.android_red_dark),
+                        PorterDuff.Mode.SRC_ATOP);
+                if (statusText != null) {
+                    statusText.setTextColor(context.getResources().getColor(R.color.android_red_dark));
+                }
+                break;
+            }
+            /** special **/
+            case STATE_UNAVAILABLE: {
+                statusIcon.setImageDrawable(
+                        context.getResources().getDrawable(R.drawable.status_signature_invalid_cutout));
+                statusIcon.setColorFilter(context.getResources().getColor(R.color.bg_gray),
+                        PorterDuff.Mode.SRC_ATOP);
+                if (statusText != null) {
+                    statusText.setTextColor(context.getResources().getColor(R.color.bg_gray));
+                }
+                break;
+            }
         }
     }
 

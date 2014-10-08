@@ -393,10 +393,10 @@
   <string name="key_view_tab_certs">Сертификати</string>
   <string name="user_id_info_revoked_title">Опозван</string>
   <string name="user_id_info_revoked_text">Власник кључа је опозвао овај идентитет. Више није исправан.</string>
-  <string name="user_id_info_verified_title">Оверен</string>
-  <string name="user_id_info_verified_text">Овај идентитет није оверен.</string>
-  <string name="user_id_info_not_verified_title">Није оверен</string>
-  <string name="user_id_info_not_verified_text">Овај идентитет још није оверен. Не можете бити сигурни да идентитет заиста одговара одређеној особи.</string>
+  <string name="user_id_info_certified_title">Оверен</string>
+  <string name="user_id_info_certified_text">Овај идентитет није оверен.</string>
+  <string name="user_id_info_uncertified_title">Није оверен</string>
+  <string name="user_id_info_uncertified_text">Овај идентитет још није оверен. Не можете бити сигурни да идентитет заиста одговара одређеној особи.</string>
   <string name="user_id_info_invalid_title">Неисправан</string>
   <string name="user_id_info_invalid_text">Нешто није у реду са овим идентитетом!</string>
   <!--Edit key-->

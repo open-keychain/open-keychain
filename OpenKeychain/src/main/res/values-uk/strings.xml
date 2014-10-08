@@ -383,10 +383,10 @@
   <string name="key_view_tab_certs">Сертифікати</string>
   <string name="user_id_info_revoked_title">Відхилено</string>
   <string name="user_id_info_revoked_text">Ця сутність вже відкликана власником ключа. Вона більше не дійсна.</string>
-  <string name="user_id_info_verified_title">Перевірено</string>
-  <string name="user_id_info_verified_text">Не перевірено</string>
-  <string name="user_id_info_not_verified_title">Не перевірено</string>
-  <string name="user_id_info_not_verified_text">Ця сутність ще не перевірена. Ви не можете переконатися, чи сутність справді відповідає вказаній особі.</string>
+  <string name="user_id_info_certified_title">Перевірено</string>
+  <string name="user_id_info_certified_text">Не перевірено</string>
+  <string name="user_id_info_uncertified_title">Не перевірено</string>
+  <string name="user_id_info_uncertified_text">Ця сутність ще не перевірена. Ви не можете переконатися, чи сутність справді відповідає вказаній особі.</string>
   <string name="user_id_info_invalid_title">Недійсна</string>
   <string name="user_id_info_invalid_text">Щось неправильне у цій сутності!</string>
   <!--Edit key-->

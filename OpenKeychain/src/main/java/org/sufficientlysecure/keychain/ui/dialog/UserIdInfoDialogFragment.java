@@ -64,12 +64,12 @@ public class UserIdInfoDialogFragment extends DialogFragment {
         } else {
             switch (isVerified) {
                 case KeychainContract.Certs.VERIFIED_SECRET:
-                    title = getString(R.string.user_id_info_verified_title);
-                    message = getString(R.string.user_id_info_verified_text);
+                    title = getString(R.string.user_id_info_certified_title);
+                    message = getString(R.string.user_id_info_certified_text);
                     break;
                 case KeychainContract.Certs.VERIFIED_SELF:
-                    title = getString(R.string.user_id_info_not_verified_title);
-                    message = getString(R.string.user_id_info_not_verified_text);
+                    title = getString(R.string.user_id_info_uncertified_title);
+                    message = getString(R.string.user_id_info_uncertified_text);
                     break;
                 default:
                     title = getString(R.string.user_id_info_invalid_title);

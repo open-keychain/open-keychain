@@ -443,10 +443,10 @@
   <string name="key_view_tab_certs">証明</string>
   <string name="user_id_info_revoked_title">破棄</string>
   <string name="user_id_info_revoked_text">このIDは鍵の所有者により破棄されています。もう適正ではありません。</string>
-  <string name="user_id_info_verified_title">検証</string>
-  <string name="user_id_info_verified_text">このIDは検証されています。</string>
-  <string name="user_id_info_not_verified_title">未検証</string>
-  <string name="user_id_info_not_verified_text">このIDはまだ検証されていません。IDが本当に特定の人に対応している場合を、あなたは確認することができません。</string>
+  <string name="user_id_info_certified_title">検証</string>
+  <string name="user_id_info_certified_text">このIDは検証されています。</string>
+  <string name="user_id_info_uncertified_title">未検証</string>
+  <string name="user_id_info_uncertified_text">このIDはまだ検証されていません。IDが本当に特定の人に対応している場合を、あなたは確認することができません。</string>
   <string name="user_id_info_invalid_title">不適正</string>
   <string name="user_id_info_invalid_text">このIDではなにかしら問題があります!</string>
   <!--Edit key-->
