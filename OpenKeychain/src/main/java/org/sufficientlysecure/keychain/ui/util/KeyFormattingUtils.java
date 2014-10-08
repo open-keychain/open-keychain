@@ -286,7 +286,7 @@ public class KeyFormattingUtils {
     }
 
     public static String beautifyKeyIdWithPrefix(Context context, String idHex) {
-        return "ID: " + beautifyKeyId(idHex);
+        return "Key ID: " + beautifyKeyId(idHex);
     }
 
     public static String beautifyKeyIdWithPrefix(Context context, long keyId) {

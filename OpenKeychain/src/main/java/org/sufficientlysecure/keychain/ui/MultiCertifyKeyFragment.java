@@ -173,16 +173,6 @@ public class MultiCertifyKeyFragment extends LoaderFragment
             }
         });
 
-        // UI tidbit: "my key" is the area above the checkbox, if the user clicks there he
-        // probably actually wants to hit the checkbox
-        View vMyKeyLabel = view.findViewById(R.id.label_my_key);
-        vMyKeyLabel.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mUploadKeyCheckbox.performClick();
-            }
-        });
-
         return root;
     }
 
