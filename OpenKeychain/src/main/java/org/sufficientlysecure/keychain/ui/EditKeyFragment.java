@@ -40,6 +40,7 @@ import android.widget.ListView;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.compatibility.DialogFragmentWorkaround;
+import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.ui.util.ActionBarHelper;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
@@ -226,10 +227,10 @@ public class EditKeyFragment extends LoaderFragment implements
             mSaveKeyringParcel = new SaveKeyringParcel(masterKeyId, keyRing.getFingerprint());
             mPrimaryUserId = keyRing.getPrimaryUserIdWithFallback();
 
-        } catch (NotFoundException e) {
+        } catch (PgpKeyNotFoundException e) {
             finishWithError(LogType.MSG_EK_ERROR_NOT_FOUND);
             return;
-        } catch (PgpGeneralException e) {
+        } catch (NotFoundException e) {
             finishWithError(LogType.MSG_EK_ERROR_NOT_FOUND);
             return;
         }

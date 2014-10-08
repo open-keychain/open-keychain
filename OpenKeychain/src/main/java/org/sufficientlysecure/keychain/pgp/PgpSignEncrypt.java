@@ -35,6 +35,7 @@ import org.spongycastle.util.encoders.Hex;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
+import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.results.OperationResult.LogType;
@@ -392,7 +393,7 @@ public class PgpSignEncrypt {
                         cPk.addMethod(key.getPubKeyEncryptionGenerator());
                         log.add(LogType.MSG_SE_KEY_OK, indent + 1,
                                 KeyFormattingUtils.convertKeyIdToHex(id));
-                    } catch (PgpGeneralException e) {
+                    } catch (PgpKeyNotFoundException e) {
                         log.add(LogType.MSG_SE_KEY_WARN, indent + 1,
                                 KeyFormattingUtils.convertKeyIdToHex(id));
                     } catch (ProviderHelper.NotFoundException e) {

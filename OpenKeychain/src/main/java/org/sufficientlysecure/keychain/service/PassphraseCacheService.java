@@ -39,11 +39,11 @@ import android.support.v4.util.LongSparseArray;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.util.Preferences;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey.SecretKeyType;
 import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
-import org.sufficientlysecure.keychain.provider.ProviderHelper.NotFoundException;
 import org.sufficientlysecure.keychain.util.Log;
 
 import java.util.Date;
@@ -239,9 +239,9 @@ public class PassphraseCacheService extends Service {
             case PASSPHRASE_EMPTY:
                 return "";
             case UNAVAILABLE:
-                throw new NotFoundException("secret key for this subkey is not available");
+                throw new ProviderHelper.NotFoundException("secret key for this subkey is not available");
             case GNU_DUMMY:
-                throw new NotFoundException("secret key for stripped subkey is not available");
+                throw new ProviderHelper.NotFoundException("secret key for stripped subkey is not available");
         }
 
         // get cached passphrase

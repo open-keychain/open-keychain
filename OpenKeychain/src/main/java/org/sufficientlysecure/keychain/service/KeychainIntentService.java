@@ -30,6 +30,7 @@ import android.os.RemoteException;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.PgpCertifyOperation;
+import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.ProviderHelper.NotFoundException;
 import org.sufficientlysecure.keychain.service.results.CertifyResult;
 import org.sufficientlysecure.keychain.util.FileHelper;
@@ -719,7 +720,7 @@ public class KeychainIntentService extends IntentService implements Progressable
                             builder.setNfcState(nfcHash, nfcTimestamp);
                         }
 
-                    } catch (PgpGeneralException e) {
+                    } catch (PgpKeyNotFoundException e) {
                         // encrypt-only
                         // TODO Just silently drop the requested signature? Shouldn't we throw here?
                     }
