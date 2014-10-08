@@ -231,7 +231,7 @@
   <string name="error_generic_report_bug">Дошло је до опште грешке, направите нови извештај о грешци за Отворени кључарник.</string>
   <!--results shown after decryption/verification-->
   <string name="decrypt_result_invalid_signature">Неисправан потпис!</string>
-  <string name="decrypt_result_signature_unknown_pub_key">Непознат јавни кључ</string>
+  <string name="decrypt_result_signature_missing_key">Непознат јавни кључ</string>
   <string name="decrypt_result_signature_uncertified">Исправан потпис (неоверен)</string>
   <string name="decrypt_result_signature_certified">Исправан потпис (оверен)</string>
   <string name="decrypt_result_decrypted">Успешно дешифровано</string>

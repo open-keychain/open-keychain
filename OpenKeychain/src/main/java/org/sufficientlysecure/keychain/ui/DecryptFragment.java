@@ -86,6 +86,13 @@ public abstract class DecryptFragment extends Fragment {
         startActivityForResult(intent, RESULT_CODE_LOOKUP_KEY);
     }
 
+    private void showKey(long keyId) {
+        Intent viewKeyIntent = new Intent(getActivity(), ViewKeyActivity.class);
+        viewKeyIntent.setData(KeychainContract.KeyRings
+                .buildGenericKeyRingUri(keyId));
+        startActivity(viewKeyIntent);
+    }
+
     protected void startPassphraseDialog(long subkeyId) {
         Intent intent = new Intent(getActivity(), PassphraseDialogActivity.class);
         intent.putExtra(PassphraseDialogActivity.EXTRA_SUBKEY_ID, subkeyId);
@@ -145,10 +152,7 @@ public abstract class DecryptFragment extends Fragment {
                     mSignatureLayout.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            Intent viewKeyIntent = new Intent(getActivity(), ViewKeyActivity.class);
-                            viewKeyIntent.setData(KeychainContract.KeyRings
-                                    .buildGenericKeyRingUri(mSignatureKeyId));
-                            startActivity(viewKeyIntent);
+                            showKey(mSignatureKeyId);
                         }
                     });
                     break;
@@ -159,22 +163,30 @@ public abstract class DecryptFragment extends Fragment {
                     KeyFormattingUtils.setStatusImage(getActivity(), mSignatureIcon, mSignatureText, KeyFormattingUtils.STATE_UNVERIFIED);
 
                     setSignatureLayoutVisibility(View.VISIBLE);
-                    mSignatureAction.setText(R.string.decrypt_result_action_show);
-                    mSignatureAction.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_action_accounts, 0);
-                    mSignatureLayout.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            Intent viewKeyIntent = new Intent(getActivity(), ViewKeyActivity.class);
-                            viewKeyIntent.setData(KeychainContract.KeyRings
-                                    .buildGenericKeyRingUri(mSignatureKeyId));
-                            startActivity(viewKeyIntent);
-                        }
-                    });
+                    setShowAction(mSignatureAction, mSignatureKeyId);
+                    break;
+                }
+
+                case OpenPgpSignatureResult.SIGNATURE_KEY_EXPIRED: {
+                    mSignatureText.setText(R.string.decrypt_result_signature_expired_key);
+                    KeyFormattingUtils.setStatusImage(getActivity(), mSignatureIcon, mSignatureText, KeyFormattingUtils.STATE_EXPIRED);
+
+                    setSignatureLayoutVisibility(View.VISIBLE);
+                    setShowAction(mSignatureAction, mSignatureKeyId);
+                    break;
+                }
+
+                case OpenPgpSignatureResult.SIGNATURE_KEY_REVOKED: {
+                    mSignatureText.setText(R.string.decrypt_result_signature_revoked_key);
+                    KeyFormattingUtils.setStatusImage(getActivity(), mSignatureIcon, mSignatureText, KeyFormattingUtils.STATE_REVOKED);
+
+                    setSignatureLayoutVisibility(View.VISIBLE);
+                    setShowAction(mSignatureAction, mSignatureKeyId);
                     break;
                 }
 
                 case OpenPgpSignatureResult.SIGNATURE_KEY_MISSING: {
-                    mSignatureText.setText(R.string.decrypt_result_signature_unknown_pub_key);
+                    mSignatureText.setText(R.string.decrypt_result_signature_missing_key);
                     KeyFormattingUtils.setStatusImage(getActivity(), mSignatureIcon, mSignatureText, KeyFormattingUtils.STATE_UNKNOWN_KEY);
 
                     setSignatureLayoutVisibility(View.VISIBLE);
@@ -189,7 +201,6 @@ public abstract class DecryptFragment extends Fragment {
                     break;
                 }
 
-                // TODO: Maybe this should be part of the Result parcel, it is an error, not a valid status!
                 case OpenPgpSignatureResult.SIGNATURE_ERROR: {
                     mSignatureText.setText(R.string.decrypt_result_invalid_signature);
                     KeyFormattingUtils.setStatusImage(getActivity(), mSignatureIcon, mSignatureText, KeyFormattingUtils.STATE_INVALID);
@@ -212,6 +223,17 @@ public abstract class DecryptFragment extends Fragment {
         mSignatureLayout.setVisibility(visibility);
         mSignatureDivider1.setVisibility(visibility);
         mSignatureDivider2.setVisibility(visibility);
+    }
+
+    private void setShowAction(TextView signatureAction, final long signatureKeyId) {
+        signatureAction.setText(R.string.decrypt_result_action_show);
+        signatureAction.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_action_accounts, 0);
+        signatureAction.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showKey(signatureKeyId);
+            }
+        });
     }
 
     /**

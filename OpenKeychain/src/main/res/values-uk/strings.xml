@@ -208,7 +208,7 @@
   </plurals>
   <!--results shown after decryption/verification-->
   <string name="decrypt_result_invalid_signature">Невірний підпис!</string>
-  <string name="decrypt_result_signature_unknown_pub_key">Невідомий відкритий ключ</string>
+  <string name="decrypt_result_signature_missing_key">Невідомий відкритий ключ</string>
   <string name="decrypt_result_signature_uncertified">Дійсний підпис (несертифікований)</string>
   <string name="decrypt_result_signature_certified">Дійсний підпис (сертифікований)</string>
   <string name="decrypt_result_decrypted">Успішно розшифровано.</string>

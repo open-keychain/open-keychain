@@ -245,7 +245,7 @@ Non potrai annullare!</string>
   </plurals>
   <!--results shown after decryption/verification-->
   <string name="decrypt_result_invalid_signature">Firma non valida!</string>
-  <string name="decrypt_result_signature_unknown_pub_key">Chiave pubblica sconosciuta</string>
+  <string name="decrypt_result_signature_missing_key">Chiave pubblica sconosciuta</string>
   <string name="decrypt_result_signature_uncertified">Firma valida (non certificata)</string>
   <string name="decrypt_result_signature_certified">Firma valida (certificata)</string>
   <string name="decrypt_result_decrypted">Decodificato correttamente</string>

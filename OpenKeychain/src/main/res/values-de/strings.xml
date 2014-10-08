@@ -246,7 +246,7 @@
   </plurals>
   <!--results shown after decryption/verification-->
   <string name="decrypt_result_invalid_signature">Ungültige Signatur!</string>
-  <string name="decrypt_result_signature_unknown_pub_key">Unbekannter öffentlicher Schlüssel</string>
+  <string name="decrypt_result_signature_missing_key">Unbekannter öffentlicher Schlüssel</string>
   <string name="decrypt_result_signature_uncertified">Gültige Signatur (nicht beglaubigt)</string>
   <string name="decrypt_result_signature_certified">Gültige Signatur (beglaubigt)</string>
   <string name="decrypt_result_decrypted">Erfolgreich entschlüsselt</string>

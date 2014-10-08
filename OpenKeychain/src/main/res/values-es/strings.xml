@@ -238,7 +238,7 @@
   </plurals>
   <!--results shown after decryption/verification-->
   <string name="decrypt_result_invalid_signature">¡Firma no válida!</string>
-  <string name="decrypt_result_signature_unknown_pub_key">Clave pública desconocida</string>
+  <string name="decrypt_result_signature_missing_key">Clave pública desconocida</string>
   <string name="decrypt_result_signature_uncertified">Firma válida (no certificada)</string>
   <string name="decrypt_result_signature_certified">Firma válida (certificada)</string>
   <string name="decrypt_result_decrypted">Descifrado con éxito</string>

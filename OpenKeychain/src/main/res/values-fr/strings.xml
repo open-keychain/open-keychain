@@ -238,7 +238,7 @@
   </plurals>
   <!--results shown after decryption/verification-->
   <string name="decrypt_result_invalid_signature">Signature invalide !</string>
-  <string name="decrypt_result_signature_unknown_pub_key">Clef publique inconnue</string>
+  <string name="decrypt_result_signature_missing_key">Clef publique inconnue</string>
   <string name="decrypt_result_signature_uncertified">Signature valide (non certifiée)</string>
   <string name="decrypt_result_signature_certified">Signature valide (certifiée)</string>
   <string name="decrypt_result_decrypted">Déchiffré avec succès</string>

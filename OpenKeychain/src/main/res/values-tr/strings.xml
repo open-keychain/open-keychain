@@ -214,7 +214,7 @@
   <string name="error_generic_report_bug">Genel bir hata oluştu. Lütfen OpenKeychain için bir hata raporu oluşturun.</string>
   <!--results shown after decryption/verification-->
   <string name="decrypt_result_invalid_signature">Geçersiz imza!</string>
-  <string name="decrypt_result_signature_unknown_pub_key">Bilinmeyen açık anahtar</string>
+  <string name="decrypt_result_signature_missing_key">Bilinmeyen açık anahtar</string>
   <string name="decrypt_result_signature_uncertified">Geçerli imza (sertifikasız)</string>
   <string name="decrypt_result_signature_certified">Geçerli imza (sertifalı)</string>
   <string name="decrypt_result_decrypted">Başarıyla çözümlendi</string>

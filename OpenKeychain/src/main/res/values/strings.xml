@@ -268,9 +268,11 @@
     <!-- results shown after decryption/verification -->
     <string name="decrypt_result_no_signature">"Not Signed"</string>
     <string name="decrypt_result_invalid_signature">"Invalid signature!"</string>
-    <string name="decrypt_result_signature_unknown_pub_key">"Unknown public key"</string>
     <string name="decrypt_result_signature_uncertified">"Signed by (not certified!)"</string>
     <string name="decrypt_result_signature_certified">"Signed by"</string>
+    <string name="decrypt_result_signature_expired_key">"Key is expired!"</string>
+    <string name="decrypt_result_signature_revoked_key">"Key has been revoked!"</string>
+    <string name="decrypt_result_signature_missing_key">"Unknown public key"</string>
     <string name="decrypt_result_encrypted">"Encrypted"</string>
     <string name="decrypt_result_not_encrypted">"Not Encrypted"</string>
     <string name="decrypt_result_action_show">"Show"</string>

@@ -226,7 +226,7 @@
   </plurals>
   <!--results shown after decryption/verification-->
   <string name="decrypt_result_invalid_signature">Neveljaven podpis!</string>
-  <string name="decrypt_result_signature_unknown_pub_key">Neznan javni ključ</string>
+  <string name="decrypt_result_signature_missing_key">Neznan javni ključ</string>
   <string name="decrypt_result_signature_uncertified">Veljaven podpis (neoverjen)</string>
   <string name="decrypt_result_signature_certified">Veljaven podpis (overjen)</string>
   <string name="decrypt_result_decrypted">Uspešno dešifrirano</string>

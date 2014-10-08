@@ -174,7 +174,7 @@
   </plurals>
   <!--results shown after decryption/verification-->
   <string name="decrypt_result_invalid_signature">Ongeldige handtekening!</string>
-  <string name="decrypt_result_signature_unknown_pub_key">Onbekende publieke sleutel</string>
+  <string name="decrypt_result_signature_missing_key">Onbekende publieke sleutel</string>
   <string name="decrypt_result_signature_uncertified">Geldige handtekening (ongecertificeerd)</string>
   <string name="decrypt_result_signature_certified">Geldige handtekening (gecertificeerd)</string>
   <string name="decrypt_result_decrypted">Succesvol gedecodeerd</string>

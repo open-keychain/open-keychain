@@ -161,7 +161,7 @@
   </plurals>
   <!--results shown after decryption/verification-->
   <string name="decrypt_result_invalid_signature">Nieprawidłowy podpis!</string>
-  <string name="decrypt_result_signature_unknown_pub_key">Nieznany klucz publiczny</string>
+  <string name="decrypt_result_signature_missing_key">Nieznany klucz publiczny</string>
   <string name="decrypt_result_signature_uncertified">Podpis prawidłowy (bez certyfikatu)</string>
   <string name="decrypt_result_signature_certified">Podpis prawidłowy (z certyfikatem)</string>
   <string name="decrypt_result_decrypted">Odszyfrowano pomyślnie</string>

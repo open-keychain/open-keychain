@@ -229,7 +229,7 @@
   <string name="error_generic_report_bug">Nastala obecná chyba, prosím vytvořte nový bug report pro OpenKeychain.</string>
   <!--results shown after decryption/verification-->
   <string name="decrypt_result_invalid_signature">Špatný podpis!</string>
-  <string name="decrypt_result_signature_unknown_pub_key">Neznámý veřejný klíč</string>
+  <string name="decrypt_result_signature_missing_key">Neznámý veřejný klíč</string>
   <string name="decrypt_result_signature_uncertified">Validní podpis (neověřen)</string>
   <string name="decrypt_result_signature_certified">Validní podpis (ověřen)</string>
   <string name="decrypt_result_decrypted">Úspěšně rozšifrováno</string>

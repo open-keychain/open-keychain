@@ -209,7 +209,7 @@
   </plurals>
   <!--results shown after decryption/verification-->
   <string name="decrypt_result_invalid_signature">Неверная подпись!</string>
-  <string name="decrypt_result_signature_unknown_pub_key">Неизвестный ключ</string>
+  <string name="decrypt_result_signature_missing_key">Неизвестный ключ</string>
   <string name="decrypt_result_signature_uncertified">Верная подпись (не сертифицирована)</string>
   <string name="decrypt_result_signature_certified">Верная подпись (сертифицирована)</string>
   <string name="decrypt_result_decrypted">Успешно расшифровано</string>
