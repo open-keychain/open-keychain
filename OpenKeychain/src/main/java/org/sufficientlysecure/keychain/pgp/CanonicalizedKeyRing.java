@@ -72,12 +72,12 @@ public abstract class CanonicalizedKeyRing extends KeyRing {
         return getPublicKey().getUnorderedUserIds();
     }
 
-    public boolean isRevoked() throws PgpGeneralException {
+    public boolean isRevoked() {
         // Is the master key revoked?
         return getRing().getPublicKey().isRevoked();
     }
 
-    public boolean isExpired() throws PgpGeneralException {
+    public boolean isExpired() {
         // Is the master key expired?
         Date creationDate = getRing().getPublicKey().getCreationTime();
         Date expiryDate = getRing().getPublicKey().getValidSeconds() > 0
