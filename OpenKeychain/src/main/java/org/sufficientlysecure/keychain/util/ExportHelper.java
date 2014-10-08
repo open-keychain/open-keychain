@@ -57,7 +57,7 @@ public class ExportHelper {
             DeleteKeyDialogFragment deleteKeyDialog = DeleteKeyDialogFragment.newInstance(messenger,
                     new long[]{ masterKeyId });
             deleteKeyDialog.show(mActivity.getSupportFragmentManager(), "deleteKeyDialog");
-        } catch (PgpGeneralException e) {
+        } catch (ProviderHelper.NotFoundException e) {
             Log.e(Constants.TAG, "key not found!", e);
         }
     }

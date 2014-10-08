@@ -272,23 +272,24 @@ public class OpenPgpService extends RemoteService {
                 InputData inputData = new InputData(is, inputLength);
 
                 // Find the appropriate subkey to sign with
-                CachedPublicKeyRing signingRing =
-                        new ProviderHelper(this).getCachedPublicKeyRing(accSettings.getKeyId());
-                final long sigSubKeyId = signingRing.getSecretSignId();
+                final long sigSubKeyId;
+                try {
+                    CachedPublicKeyRing signingRing =
+                            new ProviderHelper(this).getCachedPublicKeyRing(accSettings.getKeyId());
+                    sigSubKeyId = signingRing.getSecretSignId();
+                } catch (NotFoundException e) {
+                    // secret key that is set for this account is deleted?
+                    // show account config again!
+                    return getCreateAccountIntent(data, getAccountName(data));
+                }
 
                 // get passphrase from cache, if key has "no" passphrase, this returns an empty String
                 String passphrase;
                 if (data.hasExtra(OpenPgpApi.EXTRA_PASSPHRASE)) {
                     passphrase = data.getStringExtra(OpenPgpApi.EXTRA_PASSPHRASE);
                 } else {
-                    try {
-                        passphrase = PassphraseCacheService.getCachedPassphrase(getContext(),
-                                accSettings.getKeyId(), sigSubKeyId);
-                    } catch (PassphraseCacheService.KeyNotFoundException e) {
-                        // secret key that is set for this account is deleted?
-                        // show account config again!
-                        return getCreateAccountIntent(data, getAccountName(data));
-                    }
+                    passphrase = PassphraseCacheService.getCachedPassphrase(getContext(),
+                            accSettings.getKeyId(), sigSubKeyId);
                 }
                 if (passphrase == null) {
                     // get PendingIntent for passphrase input, add it to given params and return to client

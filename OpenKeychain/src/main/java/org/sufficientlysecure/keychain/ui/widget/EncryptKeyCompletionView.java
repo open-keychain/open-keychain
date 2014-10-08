@@ -42,6 +42,7 @@ import com.tokenautocomplete.TokenCompleteTextView;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.ContactHelper;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
@@ -198,7 +199,7 @@ public class EncryptKeyCompletionView extends TokenCompleteTextView {
 
         }
 
-        public EncryptionKey(CachedPublicKeyRing ring) throws PgpGeneralException {
+        public EncryptionKey(CachedPublicKeyRing ring) throws ProviderHelper.NotFoundException {
             this(ring.getPrimaryUserId(), ring.extractOrGetMasterKeyId(),
                     KeyFormattingUtils.convertFingerprintToHex(ring.getFingerprint()));
         }

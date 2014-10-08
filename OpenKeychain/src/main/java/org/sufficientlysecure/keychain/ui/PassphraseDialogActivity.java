@@ -151,7 +151,7 @@ public class PassphraseDialogActivity extends FragmentActivity {
                     // the catch clause doesn't return.
                     try {
                         userId = mSecretRing.getPrimaryUserIdWithFallback();
-                    } catch (PgpGeneralException e) {
+                    } catch (ProviderHelper.NotFoundException e) {
                         userId = null;
                     }
 
@@ -312,7 +312,7 @@ public class PassphraseDialogActivity extends FragmentActivity {
                                 PassphraseCacheService.addCachedPassphrase(getActivity(),
                                         mSecretRing.getMasterKeyId(), mSubKeyId, passphrase,
                                         mSecretRing.getPrimaryUserIdWithFallback());
-                            } catch (PgpGeneralException e) {
+                            } catch (ProviderHelper.NotFoundException e) {
                                 Log.e(Constants.TAG, "adding of a passphrase failed", e);
                             }
 

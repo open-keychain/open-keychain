@@ -308,7 +308,7 @@ public class ViewKeyMainFragment extends LoaderFragment implements
             }
             // used instead of startActivity set actionbar based on callingPackage
             startActivityForResult(intent, 0);
-        } catch (PgpGeneralException e) {
+        } catch (NotFoundException e) {
             Log.e(Constants.TAG, "key not found!", e);
         }
     }
