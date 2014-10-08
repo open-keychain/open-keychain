@@ -410,9 +410,16 @@ public class OpenPgpService extends RemoteService {
                 if (sign) {
 
                     // Find the appropriate subkey to sign with
-                    CachedPublicKeyRing signingRing =
-                            new ProviderHelper(this).getCachedPublicKeyRing(accSettings.getKeyId());
-                    final long sigSubKeyId = signingRing.getSecretSignId();
+                    long sigSubKeyId;
+                    try {
+                        CachedPublicKeyRing signingRing =
+                                new ProviderHelper(this).getCachedPublicKeyRing(accSettings.getKeyId());
+                        sigSubKeyId = signingRing.getSecretSignId();
+                    } catch (PgpKeyNotFoundException e) {
+                        // secret key that is set for this account is deleted?
+                        // show account config again!
+                        return getCreateAccountIntent(data, getAccountName(data));
+                    }
 
                     String passphrase;
                     if (data.hasExtra(OpenPgpApi.EXTRA_PASSPHRASE)) {

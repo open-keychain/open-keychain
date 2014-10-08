@@ -31,7 +31,6 @@ import android.text.style.ForegroundColorSpan;
 import android.text.style.StyleSpan;
 import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import org.openintents.openpgp.util.OpenPgpApi;
 import org.sufficientlysecure.keychain.Constants;
@@ -42,6 +41,7 @@ import org.sufficientlysecure.keychain.remote.AccountSettings;
 import org.sufficientlysecure.keychain.remote.AppSettings;
 import org.sufficientlysecure.keychain.ui.SelectPublicKeyFragment;
 import org.sufficientlysecure.keychain.ui.util.ActionBarHelper;
+import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.util.Log;
 
 import java.util.ArrayList;
@@ -176,10 +176,9 @@ public class RemoteServiceActivity extends ActionBarActivity {
                         public void onClick(View v) {
                             // Save
 
-                            // user needs to select a key!
-                            if (mAccSettingsFragment.getAccSettings().getKeyId() == Constants.key.none) {
-                                // TODO
-                                Toast.makeText(RemoteServiceActivity.this, getString(R.string.api_register_error_select_key), Toast.LENGTH_LONG).show();
+                            // user needs to select a key, but also allow None for mUpdateExistingAccount
+                            if (mUpdateExistingAccount && mAccSettingsFragment.getAccSettings().getKeyId() == Constants.key.none) {
+                                Notify.showNotify(RemoteServiceActivity.this, getString(R.string.api_register_error_select_key), Notify.Style.ERROR);
                             } else {
                                 if (mUpdateExistingAccount) {
                                     Uri baseUri = KeychainContract.ApiAccounts.buildBaseUri(packageName);
