@@ -17,10 +17,12 @@
 
 package org.sufficientlysecure.keychain.ui;
 
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.View;
+import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.widget.ImageView;
 
 import org.sufficientlysecure.keychain.Constants;
@@ -37,8 +39,6 @@ import org.sufficientlysecure.keychain.ui.util.QrCodeUtils;
 public class QrCodeActivity extends ActionBarActivity {
 
     private ImageView mFingerprintQrCode;
-
-    private static final int QR_CODE_SIZE = 1000;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -87,7 +87,20 @@ public class QrCodeActivity extends ActionBarActivity {
 
             String fingerprint = KeyFormattingUtils.convertFingerprintToHex(blob);
             String qrCodeContent = Constants.FINGERPRINT_SCHEME + ":" + fingerprint;
-            mFingerprintQrCode.setImageBitmap(QrCodeUtils.getQRCodeBitmap(qrCodeContent, QR_CODE_SIZE));
+
+            // create a minimal size qr code, we can keep this in ram no problem
+            final Bitmap qrCode = QrCodeUtils.getQRCodeBitmap(qrCodeContent, 0);
+
+            mFingerprintQrCode.getViewTreeObserver().addOnGlobalLayoutListener(
+                    new OnGlobalLayoutListener() {
+                @Override
+                public void onGlobalLayout() {
+                    // create actual bitmap in display dimensions
+                    Bitmap scaled = Bitmap.createScaledBitmap(qrCode,
+                            mFingerprintQrCode.getWidth(), mFingerprintQrCode.getWidth(), false);
+                    mFingerprintQrCode.setImageBitmap(scaled);
+                }
+            });
         } catch (ProviderHelper.NotFoundException e) {
             Log.e(Constants.TAG, "key not found!", e);
             Notify.showNotify(this, R.string.error_key_not_found, Style.ERROR);
