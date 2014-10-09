@@ -37,7 +37,6 @@ import java.util.Hashtable;
  * Copied from Bitcoin Wallet
  */
 public class QrCodeUtils {
-    public static final QRCodeWriter QR_CODE_WRITER = new QRCodeWriter();
 
     /**
      * Generate Bitmap with QR Code based on input.
@@ -50,7 +49,7 @@ public class QrCodeUtils {
         try {
             final Hashtable<EncodeHintType, Object> hints = new Hashtable<EncodeHintType, Object>();
             hints.put(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.M);
-            final BitMatrix result = QR_CODE_WRITER.encode(input, BarcodeFormat.QR_CODE, size,
+            final BitMatrix result = new QRCodeWriter().encode(input, BarcodeFormat.QR_CODE, size,
                     size, hints);
 
             final int width = result.getWidth();
@@ -60,7 +59,7 @@ public class QrCodeUtils {
             for (int y = 0; y < height; y++) {
                 final int offset = y * width;
                 for (int x = 0; x < width; x++) {
-                    pixels[offset + x] = result.get(x, y) ? Color.BLACK : Color.TRANSPARENT;
+                    pixels[offset + x] = result.get(x, y) ? Color.BLACK : Color.WHITE;
                 }
             }
 

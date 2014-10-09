@@ -21,11 +21,6 @@ import android.annotation.TargetApi;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
-import android.graphics.Color;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.Drawable;
-import android.graphics.drawable.TransitionDrawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -37,6 +32,7 @@ import android.support.v4.content.Loader;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AlphaAnimation;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -404,21 +400,25 @@ public class ViewKeyShareFragment extends LoaderFragment implements
                 new AsyncTask<Void, Void, Bitmap>() {
                     protected Bitmap doInBackground(Void... unused) {
                         String qrCodeContent = Constants.FINGERPRINT_SCHEME + ":" + fingerprint;
-                        return QrCodeUtils.getQRCodeBitmap(qrCodeContent, QR_CODE_SIZE);
+                        // render with minimal size
+                        return QrCodeUtils.getQRCodeBitmap(qrCodeContent, 0);
                     }
 
                     protected void onPostExecute(Bitmap qrCode) {
                         // only change view, if fragment is attached to activity
                         if (ViewKeyShareFragment.this.isAdded()) {
-                            // Transition drawable with a transparent drawable and the final bitmap
-                            final TransitionDrawable td =
-                                    new TransitionDrawable(new Drawable[]{
-                                            new ColorDrawable(Color.TRANSPARENT),
-                                            new BitmapDrawable(getResources(), qrCode)
-                                    });
 
-                            mFingerprintQrCode.setImageDrawable(td);
-                            td.startTransition(200);
+                            // scale the image up to our actual size. we do this in code rather
+                            // than let the ImageView do this because we don't require filtering.
+                            Bitmap scaled = Bitmap.createScaledBitmap(qrCode,
+                                    mFingerprintQrCode.getHeight(), mFingerprintQrCode.getHeight(),
+                                    false);
+                            mFingerprintQrCode.setImageBitmap(scaled);
+
+                            // simple fade-in animation
+                            AlphaAnimation anim = new AlphaAnimation(0.0f, 1.0f);
+                            anim.setDuration(200);
+                            mFingerprintQrCode.startAnimation(anim);
                         }
                     }
                 };
