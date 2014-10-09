@@ -21,7 +21,7 @@ package org.sufficientlysecure.keychain.pgp;
 import org.spongycastle.openpgp.PGPObjectFactory;
 import org.spongycastle.openpgp.PGPPublicKey;
 import org.spongycastle.openpgp.PGPPublicKeyRing;
-import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
+import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.util.IterableIterator;
 
 import java.io.IOException;
@@ -61,16 +61,16 @@ public class CanonicalizedPublicKeyRing extends CanonicalizedKeyRing {
     }
 
     /** Getter that returns the subkey that should be used for signing. */
-    CanonicalizedPublicKey getEncryptionSubKey() throws PgpGeneralException {
+    CanonicalizedPublicKey getEncryptionSubKey() throws PgpKeyNotFoundException {
         PGPPublicKey key = getRing().getPublicKey(getEncryptId());
         if(key != null) {
             CanonicalizedPublicKey cKey = new CanonicalizedPublicKey(this, key);
             if(!cKey.canEncrypt()) {
-                throw new PgpGeneralException("key error");
+                throw new PgpKeyNotFoundException("key error");
             }
             return cKey;
         }
-        throw new PgpGeneralException("no encryption key available");
+        throw new PgpKeyNotFoundException("no encryption key available");
     }
 
     public IterableIterator<CanonicalizedPublicKey> publicKeyIterator() {

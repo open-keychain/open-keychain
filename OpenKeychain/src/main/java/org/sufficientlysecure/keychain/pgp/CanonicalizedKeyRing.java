@@ -20,6 +20,7 @@ package org.sufficientlysecure.keychain.pgp;
 
 import org.spongycastle.openpgp.PGPKeyRing;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
+import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.util.IterableIterator;
 
 import java.io.IOException;
@@ -56,11 +57,11 @@ public abstract class CanonicalizedKeyRing extends KeyRing {
         return getRing().getPublicKey().getFingerprint();
     }
 
-    public String getPrimaryUserId() throws PgpGeneralException {
+    public String getPrimaryUserId() throws PgpKeyNotFoundException {
         return getPublicKey().getPrimaryUserId();
     }
 
-    public String getPrimaryUserIdWithFallback() throws PgpGeneralException {
+    public String getPrimaryUserIdWithFallback() throws PgpKeyNotFoundException {
         return getPublicKey().getPrimaryUserIdWithFallback();
     }
 
@@ -87,24 +88,24 @@ public abstract class CanonicalizedKeyRing extends KeyRing {
         return creationDate.after(now) || (expiryDate != null && expiryDate.before(now));
     }
 
-    public boolean canCertify() throws PgpGeneralException {
+    public boolean canCertify() throws PgpKeyNotFoundException {
         return getRing().getPublicKey().isEncryptionKey();
     }
 
-    public long getEncryptId() throws PgpGeneralException {
+    public long getEncryptId() throws PgpKeyNotFoundException {
         for(CanonicalizedPublicKey key : publicKeyIterator()) {
             if (key.canEncrypt() && key.isValid()) {
                 return key.getKeyId();
             }
         }
-        throw new PgpGeneralException("No valid encryption key found!");
+        throw new PgpKeyNotFoundException("No valid encryption key found!");
     }
 
-    public boolean hasEncrypt() throws PgpGeneralException {
+    public boolean hasEncrypt() throws PgpKeyNotFoundException {
         try {
             getEncryptId();
             return true;
-        } catch(PgpGeneralException e) {
+        } catch(PgpKeyNotFoundException e) {
             return false;
         }
     }

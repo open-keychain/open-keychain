@@ -48,6 +48,7 @@ import org.sufficientlysecure.keychain.compatibility.DialogFragmentWorkaround;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKeyRing;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
+import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
@@ -145,7 +146,7 @@ public class PassphraseDialogFragment extends DialogFragment implements OnEditor
                 // the catch clause doesn't return.
                 try {
                     userId = mSecretRing.getPrimaryUserIdWithFallback();
-                } catch (PgpGeneralException e) {
+                } catch (PgpKeyNotFoundException e) {
                     userId = null;
                 }
 
@@ -308,7 +309,7 @@ public class PassphraseDialogFragment extends DialogFragment implements OnEditor
                             PassphraseCacheService.addCachedPassphrase(getActivity(),
                                     mSecretRing.getMasterKeyId(), mSubKeyId, passphrase,
                                     mSecretRing.getPrimaryUserIdWithFallback());
-                        } catch (PgpGeneralException e) {
+                        } catch (PgpKeyNotFoundException e) {
                             Log.e(Constants.TAG, "adding of a passphrase failed", e);
                         }
 

@@ -20,7 +20,7 @@ package org.sufficientlysecure.keychain.pgp;
 
 import android.text.TextUtils;
 
-import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
+import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -38,25 +38,25 @@ import java.util.regex.Pattern;
  */
 public abstract class KeyRing {
 
-    abstract public long getMasterKeyId() throws PgpGeneralException;
+    abstract public long getMasterKeyId() throws PgpKeyNotFoundException;
 
-    abstract public String getPrimaryUserId() throws PgpGeneralException;
+    abstract public String getPrimaryUserId() throws PgpKeyNotFoundException;
 
-    abstract public String getPrimaryUserIdWithFallback() throws PgpGeneralException;
+    abstract public String getPrimaryUserIdWithFallback() throws PgpKeyNotFoundException;
 
-    public String[] getSplitPrimaryUserIdWithFallback() throws PgpGeneralException {
+    public String[] getSplitPrimaryUserIdWithFallback() throws PgpKeyNotFoundException {
         return splitUserId(getPrimaryUserIdWithFallback());
     }
 
-    abstract public boolean isRevoked() throws PgpGeneralException;
+    abstract public boolean isRevoked() throws PgpKeyNotFoundException;
 
-    abstract public boolean canCertify() throws PgpGeneralException;
+    abstract public boolean canCertify() throws PgpKeyNotFoundException;
 
-    abstract public long getEncryptId() throws PgpGeneralException;
+    abstract public long getEncryptId() throws PgpKeyNotFoundException;
 
-    abstract public boolean hasEncrypt() throws PgpGeneralException;
+    abstract public boolean hasEncrypt() throws PgpKeyNotFoundException;
 
-    abstract public int getVerified() throws PgpGeneralException;
+    abstract public int getVerified() throws PgpKeyNotFoundException;
 
     private static final Pattern USER_ID_PATTERN = Pattern.compile("^(.*?)(?: \\((.*)\\))?(?: <(.*)>)?$");
 

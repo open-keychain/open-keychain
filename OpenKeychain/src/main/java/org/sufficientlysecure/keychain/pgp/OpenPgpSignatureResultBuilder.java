@@ -20,6 +20,7 @@ package org.sufficientlysecure.keychain.pgp;
 import org.openintents.openpgp.OpenPgpSignatureResult;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
+import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.util.Log;
 
 import java.util.ArrayList;
@@ -96,7 +97,7 @@ public class OpenPgpSignatureResultBuilder {
         setKeyId(signingRing.getMasterKeyId());
         try {
             setPrimaryUserId(signingRing.getPrimaryUserIdWithFallback());
-        } catch (PgpGeneralException e) {
+        } catch (PgpKeyNotFoundException e) {
             Log.d(Constants.TAG, "No primary user id in keyring with master key id " + signingRing.getMasterKeyId());
         }
         setSignatureKeyCertified(signingRing.getVerified() > 0);

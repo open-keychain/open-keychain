@@ -29,6 +29,7 @@ import com.tokenautocomplete.TokenCompleteTextView;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
+import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
@@ -139,7 +140,7 @@ public class EncryptAsymmetricFragment extends Fragment implements EncryptActivi
                     setSignatureKeyId(keyring.getMasterKeyId());
                     mSign.setSelectedKeyId(mEncryptInterface.getSignatureKey());
                 }
-            } catch (PgpGeneralException e) {
+            } catch (PgpKeyNotFoundException e) {
                 Log.e(Constants.TAG, "key not found!", e);
             }
         }
@@ -151,7 +152,7 @@ public class EncryptAsymmetricFragment extends Fragment implements EncryptActivi
                     CachedPublicKeyRing ring = mProviderHelper.getCachedPublicKeyRing(
                             KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(preselectedId));
                     mEncryptKeyView.addObject(mEncryptKeyView.new EncryptionKey(ring));
-                } catch (PgpGeneralException e) {
+                } catch (PgpKeyNotFoundException e) {
                     Log.e(Constants.TAG, "key not found!", e);
                 }
             }

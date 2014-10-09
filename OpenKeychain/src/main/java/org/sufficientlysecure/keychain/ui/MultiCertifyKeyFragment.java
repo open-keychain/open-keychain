@@ -45,6 +45,7 @@ import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
+import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UserIds;
 import org.sufficientlysecure.keychain.provider.KeychainDatabase.Tables;
@@ -115,7 +116,7 @@ public class MultiCertifyKeyFragment extends LoaderFragment
                 if (key.canCertify()) {
                     mCertifyKeySpinner.setSelectedKeyId(certifyKeyId);
                 }
-            } catch (PgpGeneralException e) {
+            } catch (PgpKeyNotFoundException e) {
                 Log.e(Constants.TAG, "certify certify check failed", e);
             }
         }

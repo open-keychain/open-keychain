@@ -1,29 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
-    <LinearLayout
+    <include layout="@layout/notify_area" />
+
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="16dp"
-        android:orientation="vertical">
+        android:layout_height="wrap_content">
 
-        <TextView
-            android:id="@+id/api_remote_create_account_text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:paddingBottom="3dip"
-            android:text="@string/api_create_account_text"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
-
-        <fragment
-            android:id="@+id/api_account_settings_fragment"
-            android:name="org.sufficientlysecure.keychain.remote.ui.AccountSettingsFragment"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            tools:layout="@layout/api_app_settings_fragment" />
+            android:padding="16dp"
+            android:orientation="vertical">
 
-    </LinearLayout>
-</ScrollView>
+            <TextView
+                android:id="@+id/api_remote_create_account_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingBottom="3dip"
+                android:text="@string/api_create_account_text"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+
+            <fragment
+                android:id="@+id/api_account_settings_fragment"
+                android:name="org.sufficientlysecure.keychain.remote.ui.AccountSettingsFragment"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                tools:layout="@layout/api_app_settings_fragment" />
+
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>

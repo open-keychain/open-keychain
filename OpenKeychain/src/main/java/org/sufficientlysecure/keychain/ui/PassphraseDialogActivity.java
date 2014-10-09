@@ -45,6 +45,7 @@ import org.sufficientlysecure.keychain.compatibility.DialogFragmentWorkaround;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKeyRing;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
+import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
@@ -151,11 +152,11 @@ public class PassphraseDialogActivity extends FragmentActivity {
                     // the catch clause doesn't return.
                     try {
                         userId = mSecretRing.getPrimaryUserIdWithFallback();
-                    } catch (PgpGeneralException e) {
+                    } catch (PgpKeyNotFoundException e) {
                         userId = null;
                     }
 
-                /* Get key type for message */
+                    /* Get key type for message */
                     // find a master key id for our key
                     long masterKeyId = new ProviderHelper(activity).getMasterKeyId(mSubKeyId);
                     CachedPublicKeyRing keyRing = new ProviderHelper(activity).getCachedPublicKeyRing(masterKeyId);
@@ -312,7 +313,7 @@ public class PassphraseDialogActivity extends FragmentActivity {
                                 PassphraseCacheService.addCachedPassphrase(getActivity(),
                                         mSecretRing.getMasterKeyId(), mSubKeyId, passphrase,
                                         mSecretRing.getPrimaryUserIdWithFallback());
-                            } catch (PgpGeneralException e) {
+                            } catch (PgpKeyNotFoundException e) {
                                 Log.e(Constants.TAG, "adding of a passphrase failed", e);
                             }
 
