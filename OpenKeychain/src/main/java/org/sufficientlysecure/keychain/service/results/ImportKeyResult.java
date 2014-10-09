@@ -163,7 +163,7 @@ public class ImportKeyResult extends OperationResult {
                 duration = 0;
                 color = Style.RED;
                 str += " " + activity.getResources().getQuantityString(
-                        R.plurals.import_keys_with_errors, mBadKeys);
+                        R.plurals.import_keys_with_errors, mBadKeys, mBadKeys);
             }
 
         } else {
