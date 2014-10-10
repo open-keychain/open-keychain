@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.sufficientlysecure.keychain.pgp.ops;
+package org.sufficientlysecure.keychain.operations;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -38,10 +38,10 @@ import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
-import org.sufficientlysecure.keychain.service.results.OperationResult.LogType;
-import org.sufficientlysecure.keychain.service.results.OperationResult.OperationLog;
-import org.sufficientlysecure.keychain.service.results.ImportKeyResult;
-import org.sufficientlysecure.keychain.service.results.SaveKeyringResult;
+import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
+import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
+import org.sufficientlysecure.keychain.operations.results.ImportKeyResult;
+import org.sufficientlysecure.keychain.operations.results.SaveKeyringResult;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.ProgressScaler;

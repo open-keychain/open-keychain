@@ -28,8 +28,8 @@ import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.api.OpenKeychainIntents;
 import org.sufficientlysecure.keychain.compatibility.ClipboardReflection;
 import org.sufficientlysecure.keychain.pgp.PgpHelper;
-import org.sufficientlysecure.keychain.service.results.OperationResult;
-import org.sufficientlysecure.keychain.service.results.SingletonResult;
+import org.sufficientlysecure.keychain.operations.results.OperationResult;
+import org.sufficientlysecure.keychain.operations.results.SingletonResult;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 

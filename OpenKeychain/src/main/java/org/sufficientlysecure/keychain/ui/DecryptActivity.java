@@ -22,7 +22,6 @@ import android.annotation.TargetApi;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Build;
-import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
 import android.view.View;
@@ -30,7 +29,7 @@ import android.view.View;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.compatibility.ClipboardReflection;
 import org.sufficientlysecure.keychain.pgp.PgpHelper;
-import org.sufficientlysecure.keychain.service.results.OperationResult;
+import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.ui.util.SubtleAttentionSeeker;
 
 import java.util.regex.Matcher;

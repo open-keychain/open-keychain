@@ -30,10 +30,9 @@ import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.ui.util.ActionBarHelper;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.remote.AccountSettings;
-import org.sufficientlysecure.keychain.service.results.OperationResult;
-import org.sufficientlysecure.keychain.service.results.OperationResult.LogLevel;
-import org.sufficientlysecure.keychain.service.results.OperationResult.LogType;
-import org.sufficientlysecure.keychain.service.results.SingletonResult;
+import org.sufficientlysecure.keychain.operations.results.OperationResult;
+import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
+import org.sufficientlysecure.keychain.operations.results.SingletonResult;
 import org.sufficientlysecure.keychain.util.Log;
 
 public class AccountSettingsActivity extends ActionBarActivity {

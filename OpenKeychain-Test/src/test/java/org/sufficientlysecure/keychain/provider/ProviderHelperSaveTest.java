@@ -32,8 +32,8 @@ import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey.SecretKeyType;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKeyRing;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
-import org.sufficientlysecure.keychain.service.results.OperationResult.OperationLog;
-import org.sufficientlysecure.keychain.service.results.SaveKeyringResult;
+import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
+import org.sufficientlysecure.keychain.operations.results.SaveKeyringResult;
 import org.sufficientlysecure.keychain.util.IterableIterator;
 import org.sufficientlysecure.keychain.util.ProgressScaler;
 

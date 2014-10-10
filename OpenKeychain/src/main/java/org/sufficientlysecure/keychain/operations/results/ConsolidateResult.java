@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.sufficientlysecure.keychain.service.results;
+package org.sufficientlysecure.keychain.operations.results;
 
 import android.os.Parcel;
 

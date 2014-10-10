@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.sufficientlysecure.keychain.service.results;
+package org.sufficientlysecure.keychain.operations.results;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -34,41 +34,83 @@ import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.ui.LogDisplayActivity;
 import org.sufficientlysecure.keychain.ui.LogDisplayFragment;
 
-public class CertifyResult extends OperationResult {
+public class ImportKeyResult extends OperationResult {
 
-    int mCertifyOk, mCertifyError;
+    public final int mNewKeys, mUpdatedKeys, mBadKeys, mSecret;
+    public final long[] mImportedMasterKeyIds;
 
-    public CertifyResult(int result, OperationLog log) {
-        super(result, log);
+    // At least one new key
+    public static final int RESULT_OK_NEWKEYS = 8;
+    // At least one updated key
+    public static final int RESULT_OK_UPDATED = 16;
+    // At least one key failed (might still be an overall success)
+    public static final int RESULT_WITH_ERRORS = 32;
+
+    // No keys to import...
+    public static final int RESULT_FAIL_NOTHING = 64 + 1;
+
+    public boolean isOkBoth() {
+        return (mResult & (RESULT_OK_NEWKEYS | RESULT_OK_UPDATED))
+                == (RESULT_OK_NEWKEYS | RESULT_OK_UPDATED);
     }
 
-    public CertifyResult(int result, OperationLog log, int certifyOk, int certifyError) {
-        this(result, log);
-        mCertifyOk = certifyOk;
-        mCertifyError = certifyError;
+    public boolean isOkNew() {
+        return (mResult & RESULT_OK_NEWKEYS) == RESULT_OK_NEWKEYS;
     }
 
-    /** Construct from a parcel - trivial because we have no extra data. */
-    public CertifyResult(Parcel source) {
+    public boolean isOkUpdated() {
+        return (mResult & RESULT_OK_UPDATED) == RESULT_OK_UPDATED;
+    }
+
+    public boolean isOkWithErrors() {
+        return (mResult & RESULT_WITH_ERRORS) == RESULT_WITH_ERRORS;
+    }
+
+    public boolean isFailNothing() {
+        return (mResult & RESULT_FAIL_NOTHING) == RESULT_FAIL_NOTHING;
+    }
+
+    public long[] getImportedMasterKeyIds() {
+        return mImportedMasterKeyIds;
+    }
+
+    public ImportKeyResult(Parcel source) {
         super(source);
-        mCertifyOk = source.readInt();
-        mCertifyError = source.readInt();
+        mNewKeys = source.readInt();
+        mUpdatedKeys = source.readInt();
+        mBadKeys = source.readInt();
+        mSecret = source.readInt();
+        mImportedMasterKeyIds = source.createLongArray();
+    }
+
+    public ImportKeyResult(int result, OperationLog log,
+                           int newKeys, int updatedKeys, int badKeys, int secret,
+                           long[] importedMasterKeyIds) {
+        super(result, log);
+        mNewKeys = newKeys;
+        mUpdatedKeys = updatedKeys;
+        mBadKeys = badKeys;
+        mSecret = secret;
+        mImportedMasterKeyIds = importedMasterKeyIds;
     }
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         super.writeToParcel(dest, flags);
-        dest.writeInt(mCertifyOk);
-        dest.writeInt(mCertifyError);
+        dest.writeInt(mNewKeys);
+        dest.writeInt(mUpdatedKeys);
+        dest.writeInt(mBadKeys);
+        dest.writeInt(mSecret);
+        dest.writeLongArray(mImportedMasterKeyIds);
     }
 
-    public static Creator<CertifyResult> CREATOR = new Creator<CertifyResult>() {
-        public CertifyResult createFromParcel(final Parcel source) {
-            return new CertifyResult(source);
+    public static Creator<ImportKeyResult> CREATOR = new Creator<ImportKeyResult>() {
+        public ImportKeyResult createFromParcel(final Parcel source) {
+            return new ImportKeyResult(source);
         }
 
-        public CertifyResult[] newArray(final int size) {
-            return new CertifyResult[size];
+        public ImportKeyResult[] newArray(final int size) {
+            return new ImportKeyResult[size];
         }
     };
 
@@ -100,21 +142,40 @@ public class CertifyResult extends OperationResult {
             }
 
             // New and updated keys
-            str = activity.getResources().getQuantityString(
-                    R.plurals.certify_keys_ok, mCertifyOk, mCertifyOk, withWarnings);
-            if (mCertifyError > 0) {
+            if (isOkBoth()) {
+                str = activity.getResources().getQuantityString(
+                        R.plurals.import_keys_added_and_updated_1, mNewKeys, mNewKeys);
+                str += " " + activity.getResources().getQuantityString(
+                        R.plurals.import_keys_added_and_updated_2, mUpdatedKeys, mUpdatedKeys, withWarnings);
+            } else if (isOkUpdated()) {
+                str = activity.getResources().getQuantityString(
+                        R.plurals.import_keys_updated, mUpdatedKeys, mUpdatedKeys, withWarnings);
+            } else if (isOkNew()) {
+                str = activity.getResources().getQuantityString(
+                        R.plurals.import_keys_added, mNewKeys, mNewKeys, withWarnings);
+            } else {
+                duration = 0;
+                color = Style.RED;
+                str = "internal error";
+            }
+            if (isOkWithErrors()) {
                 // definitely switch to warning-style message in this case!
                 duration = 0;
                 color = Style.RED;
                 str += " " + activity.getResources().getQuantityString(
-                        R.plurals.certify_keys_with_errors, mCertifyError, mCertifyError);
+                        R.plurals.import_keys_with_errors, mBadKeys, mBadKeys);
             }
 
         } else {
             duration = 0;
             color = Style.RED;
-            str = activity.getResources().getQuantityString(R.plurals.certify_error,
-                    mCertifyError, mCertifyError);
+            if (isFailNothing()) {
+                str = activity.getString((resultType & ImportKeyResult.RESULT_CANCELLED) > 0
+                        ? R.string.import_error_nothing_cancelled
+                        : R.string.import_error_nothing);
+            } else {
+                str = activity.getResources().getQuantityString(R.plurals.import_error, mBadKeys);
+            }
         }
 
         boolean button = getLog() != null && !getLog().isEmpty();
@@ -137,7 +198,7 @@ public class CertifyResult extends OperationResult {
                         public void onClick(View view, Parcelable token) {
                             Intent intent = new Intent(
                                     activity, LogDisplayActivity.class);
-                            intent.putExtra(LogDisplayFragment.EXTRA_RESULT, CertifyResult.this);
+                            intent.putExtra(LogDisplayFragment.EXTRA_RESULT, ImportKeyResult.this);
                             activity.startActivity(intent);
                         }
                     }

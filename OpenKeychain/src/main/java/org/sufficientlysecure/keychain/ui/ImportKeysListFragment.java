@@ -31,11 +31,10 @@ import android.widget.ListView;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.service.results.GetKeyResult;
+import org.sufficientlysecure.keychain.operations.results.GetKeyResult;
 import org.sufficientlysecure.keychain.util.ParcelableFileCache.IteratorWithSize;
 import org.sufficientlysecure.keychain.util.Preferences;
 import org.sufficientlysecure.keychain.keyimport.ImportKeysListEntry;
-import org.sufficientlysecure.keychain.keyimport.Keyserver;
 import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
 import org.sufficientlysecure.keychain.ui.adapter.AsyncTaskResultWrapper;
 import org.sufficientlysecure.keychain.ui.adapter.ImportKeysAdapter;
@@ -43,7 +42,6 @@ import org.sufficientlysecure.keychain.ui.adapter.ImportKeysListCloudLoader;
 import org.sufficientlysecure.keychain.ui.adapter.ImportKeysListLoader;
 import org.sufficientlysecure.keychain.util.InputData;
 import org.sufficientlysecure.keychain.util.Log;
-import org.sufficientlysecure.keychain.ui.util.Notify;
 
 import java.io.ByteArrayInputStream;
 import java.io.FileNotFoundException;

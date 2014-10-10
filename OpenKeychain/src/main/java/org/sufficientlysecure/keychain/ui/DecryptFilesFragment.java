@@ -36,7 +36,7 @@ import org.openintents.openpgp.util.OpenPgpApi;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.util.FileHelper;
-import org.sufficientlysecure.keychain.service.results.DecryptVerifyResult;
+import org.sufficientlysecure.keychain.operations.results.DecryptVerifyResult;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
 import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
 import org.sufficientlysecure.keychain.ui.dialog.DeleteFileDialogFragment;

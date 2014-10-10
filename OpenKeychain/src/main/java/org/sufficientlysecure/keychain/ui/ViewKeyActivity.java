@@ -57,7 +57,7 @@ import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
-import org.sufficientlysecure.keychain.service.results.OperationResult;
+import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.ui.adapter.PagerTabStripAdapter;
 import org.sufficientlysecure.keychain.ui.widget.SlidingTabLayout;
 import org.sufficientlysecure.keychain.ui.widget.SlidingTabLayout.TabColorizer;

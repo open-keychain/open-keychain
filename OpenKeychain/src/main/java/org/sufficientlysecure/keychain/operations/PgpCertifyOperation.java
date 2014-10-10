@@ -1,4 +1,4 @@
-package org.sufficientlysecure.keychain.pgp.ops;
+package org.sufficientlysecure.keychain.operations;
 
 import android.content.Context;
 
@@ -14,10 +14,10 @@ import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.provider.ProviderHelper.NotFoundException;
 import org.sufficientlysecure.keychain.service.CertifyActionsParcel;
 import org.sufficientlysecure.keychain.service.CertifyActionsParcel.CertifyAction;
-import org.sufficientlysecure.keychain.service.results.CertifyResult;
-import org.sufficientlysecure.keychain.service.results.OperationResult.LogType;
-import org.sufficientlysecure.keychain.service.results.OperationResult.OperationLog;
-import org.sufficientlysecure.keychain.service.results.SaveKeyringResult;
+import org.sufficientlysecure.keychain.operations.results.CertifyResult;
+import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
+import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
+import org.sufficientlysecure.keychain.operations.results.SaveKeyringResult;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.Log;
 

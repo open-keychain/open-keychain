@@ -1,4 +1,4 @@
-package org.sufficientlysecure.keychain.pgp.ops;
+package org.sufficientlysecure.keychain.operations;
 
 import android.content.Context;
 

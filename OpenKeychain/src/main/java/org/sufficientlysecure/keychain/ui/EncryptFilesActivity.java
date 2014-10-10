@@ -33,7 +33,7 @@ import org.sufficientlysecure.keychain.util.Preferences;
 import org.sufficientlysecure.keychain.util.ShareHelper;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
-import org.sufficientlysecure.keychain.service.results.SignEncryptResult;
+import org.sufficientlysecure.keychain.operations.results.SignEncryptResult;
 import org.sufficientlysecure.keychain.ui.dialog.DeleteFileDialogFragment;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.ui.util.Notify;

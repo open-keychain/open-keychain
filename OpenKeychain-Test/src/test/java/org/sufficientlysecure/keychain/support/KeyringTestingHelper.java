@@ -24,7 +24,7 @@ import org.spongycastle.util.Arrays;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
-import org.sufficientlysecure.keychain.service.results.SaveKeyringResult;
+import org.sufficientlysecure.keychain.operations.results.SaveKeyringResult;
 import org.sufficientlysecure.keychain.util.ProgressScaler;
 
 import java.io.ByteArrayInputStream;

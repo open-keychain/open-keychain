@@ -16,36 +16,30 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.sufficientlysecure.keychain.service.results;
+package org.sufficientlysecure.keychain.operations.results;
 
 import android.os.Parcel;
 
 import org.sufficientlysecure.keychain.Constants;
-import org.sufficientlysecure.keychain.pgp.CanonicalizedKeyRing;
+import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
 
-public class SaveKeyringResult extends OperationResult {
+public class EditKeyResult extends OperationResult {
 
+    private transient UncachedKeyRing mRing;
     public final long mRingMasterKeyId;
 
-    public SaveKeyringResult(int result, OperationLog log,
-                             CanonicalizedKeyRing ring) {
+    public EditKeyResult(int result, OperationLog log,
+                         UncachedKeyRing ring) {
         super(result, log);
+        mRing = ring;
         mRingMasterKeyId = ring != null ? ring.getMasterKeyId() : Constants.key.none;
     }
 
-    // Some old key was updated
-    public static final int UPDATED = 4;
-
-    // Public key was saved
-    public static final int SAVED_PUBLIC = 8;
-    // Secret key was saved (not exclusive with public!)
-    public static final int SAVED_SECRET = 16;
-
-    public boolean updated() {
-        return (mResult & UPDATED) == UPDATED;
+    public UncachedKeyRing getRing() {
+        return mRing;
     }
 
-    public SaveKeyringResult(Parcel source) {
+    public EditKeyResult(Parcel source) {
         super(source);
         mRingMasterKeyId = source.readLong();
     }
@@ -56,13 +50,14 @@ public class SaveKeyringResult extends OperationResult {
         dest.writeLong(mRingMasterKeyId);
     }
 
-    public static Creator<SaveKeyringResult> CREATOR = new Creator<SaveKeyringResult>() {
-        public SaveKeyringResult createFromParcel(final Parcel source) {
-            return new SaveKeyringResult(source);
+    public static Creator<EditKeyResult> CREATOR = new Creator<EditKeyResult>() {
+        public EditKeyResult createFromParcel(final Parcel source) {
+            return new EditKeyResult(source);
         }
 
-        public SaveKeyringResult[] newArray(final int size) {
-            return new SaveKeyringResult[size];
+        public EditKeyResult[] newArray(final int size) {
+            return new EditKeyResult[size];
         }
     };
+
 }

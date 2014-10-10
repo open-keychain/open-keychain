@@ -17,7 +17,7 @@
 
 package org.sufficientlysecure.keychain.ui.adapter;
 
-import org.sufficientlysecure.keychain.service.results.OperationResult;
+import org.sufficientlysecure.keychain.operations.results.OperationResult;
 
 /**
  * The AsyncTaskResultWrapper is used to wrap a result from a AsyncTask (for example: Loader).

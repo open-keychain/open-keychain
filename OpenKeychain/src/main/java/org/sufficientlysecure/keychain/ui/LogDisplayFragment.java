@@ -34,10 +34,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.service.results.OperationResult;
-import org.sufficientlysecure.keychain.service.results.OperationResult.LogEntryParcel;
-import org.sufficientlysecure.keychain.service.results.OperationResult.LogLevel;
-import org.sufficientlysecure.keychain.service.results.OperationResult.SubLogEntryParcel;
+import org.sufficientlysecure.keychain.operations.results.OperationResult;
+import org.sufficientlysecure.keychain.operations.results.OperationResult.LogEntryParcel;
+import org.sufficientlysecure.keychain.operations.results.OperationResult.LogLevel;
+import org.sufficientlysecure.keychain.operations.results.OperationResult.SubLogEntryParcel;
 
 public class LogDisplayFragment extends ListFragment implements OnItemClickListener {
 
