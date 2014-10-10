@@ -71,7 +71,7 @@
             android:id="@+id/view_key_fingerprint_qr_code_image"
             android:paddingTop="8dp"
             android:paddingBottom="8dp"
-            android:layout_width="match_parent"
+            android:layout_width="200dp"
             android:layout_height="200dp"
             android:layout_gravity="center_horizontal"
             android:layout_weight="1"
