@@ -29,7 +29,7 @@ import android.os.RemoteException;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.pgp.PgpCertifyOperation;
+import org.sufficientlysecure.keychain.pgp.ops.PgpCertifyOperation;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.ProviderHelper.NotFoundException;
 import org.sufficientlysecure.keychain.service.results.CertifyResult;
@@ -47,7 +47,7 @@ import org.sufficientlysecure.keychain.pgp.PassphraseCacheInterface;
 import org.sufficientlysecure.keychain.pgp.PgpDecryptVerify;
 import org.sufficientlysecure.keychain.service.results.DecryptVerifyResult;
 import org.sufficientlysecure.keychain.pgp.PgpHelper;
-import org.sufficientlysecure.keychain.pgp.PgpImportExport;
+import org.sufficientlysecure.keychain.pgp.ops.ImportExportOperation;
 import org.sufficientlysecure.keychain.pgp.PgpKeyOperation;
 import org.sufficientlysecure.keychain.pgp.PgpSignEncrypt;
 import org.sufficientlysecure.keychain.pgp.Progressable;
@@ -268,7 +268,7 @@ public class KeychainIntentService extends IntentService implements Progressable
                 }
 
                 ProviderHelper providerHelper = new ProviderHelper(this);
-                PgpCertifyOperation op = new PgpCertifyOperation(providerHelper, mActionCanceled);
+                PgpCertifyOperation op = new PgpCertifyOperation(this, providerHelper, this, mActionCanceled);
                 CertifyResult result = op.certify(parcel, passphrase);
 
                 sendMessageToHandler(KeychainIntentServiceHandler.MESSAGE_OKAY, result);
@@ -610,8 +610,8 @@ public class KeychainIntentService extends IntentService implements Progressable
                     outStream = getContentResolver().openOutputStream(outputUri);
                 }
 
-                PgpImportExport pgpImportExport = new PgpImportExport(this, new ProviderHelper(this), this);
-                Bundle resultData = pgpImportExport
+                ImportExportOperation importExportOperation = new ImportExportOperation(this, new ProviderHelper(this), this);
+                Bundle resultData = importExportOperation
                         .exportKeyRings(publicMasterKeyIds, secretMasterKeyIds, outStream);
 
                 if (mActionCanceled.get() && outputFile != null) {
@@ -644,9 +644,9 @@ public class KeychainIntentService extends IntentService implements Progressable
                 }
 
                 ProviderHelper providerHelper = new ProviderHelper(this);
-                PgpImportExport pgpImportExport = new PgpImportExport(
+                ImportExportOperation importExportOperation = new ImportExportOperation(
                         this, providerHelper, this, mActionCanceled);
-                ImportKeyResult result = pgpImportExport.importKeyRings(entries, numEntries);
+                ImportKeyResult result = importExportOperation.importKeyRings(entries, numEntries);
 
                 // we do this even on failure or cancellation!
                 if (result.mSecret > 0) {
@@ -761,10 +761,10 @@ public class KeychainIntentService extends IntentService implements Progressable
 
                 ProviderHelper providerHelper = new ProviderHelper(this);
                 CanonicalizedPublicKeyRing keyring = providerHelper.getCanonicalizedPublicKeyRing(dataUri);
-                PgpImportExport pgpImportExport = new PgpImportExport(this, new ProviderHelper(this), this);
+                ImportExportOperation importExportOperation = new ImportExportOperation(this, new ProviderHelper(this), this);
 
                 try {
-                    pgpImportExport.uploadKeyRingToServer(server, keyring);
+                    importExportOperation.uploadKeyRingToServer(server, keyring);
                 } catch (Keyserver.AddKeyException e) {
                     throw new PgpGeneralException("Unable to export key to selected server");
                 }

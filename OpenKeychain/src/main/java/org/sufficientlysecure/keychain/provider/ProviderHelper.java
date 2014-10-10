@@ -41,7 +41,7 @@ import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey.SecretKeyType;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKeyRing;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.pgp.PgpHelper;
-import org.sufficientlysecure.keychain.pgp.PgpImportExport;
+import org.sufficientlysecure.keychain.pgp.ops.ImportExportOperation;
 import org.sufficientlysecure.keychain.pgp.Progressable;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
 import org.sufficientlysecure.keychain.pgp.UncachedPublicKey;
@@ -1090,7 +1090,7 @@ public class ProviderHelper {
                 // 3. Re-Import secret keyrings from cache
                 if (numSecrets > 0) {
 
-                    new PgpImportExport(mContext, this,
+                    new ImportExportOperation(mContext, this,
                             new ProgressFixedScaler(progress, 10, 25, 100, R.string.progress_con_reimport))
                             .importKeyRings(itSecrets, numSecrets);
                 } else {
@@ -1116,7 +1116,7 @@ public class ProviderHelper {
                 // 4. Re-Import public keyrings from cache
                 if (numPublics > 0) {
 
-                    new PgpImportExport(mContext, this,
+                    new ImportExportOperation(mContext, this,
                             new ProgressFixedScaler(progress, 25, 99, 100, R.string.progress_con_reimport))
                             .importKeyRings(itPublics, numPublics);
                 } else {

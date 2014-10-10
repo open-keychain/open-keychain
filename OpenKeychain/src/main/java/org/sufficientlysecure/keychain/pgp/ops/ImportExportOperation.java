@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.sufficientlysecure.keychain.pgp;
+package org.sufficientlysecure.keychain.pgp.ops;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -29,6 +29,11 @@ import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.keyimport.HkpKeyserver;
 import org.sufficientlysecure.keychain.keyimport.Keyserver.AddKeyException;
 import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
+import org.sufficientlysecure.keychain.pgp.CanonicalizedPublicKeyRing;
+import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKeyRing;
+import org.sufficientlysecure.keychain.pgp.PgpHelper;
+import org.sufficientlysecure.keychain.pgp.Progressable;
+import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
@@ -48,45 +53,14 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-public class PgpImportExport {
+public class ImportExportOperation extends BaseOperation {
 
-    private Context mContext;
-    private Progressable mProgressable;
-    private AtomicBoolean mCancelled;
-
-    private ProviderHelper mProviderHelper;
-
-    public PgpImportExport(Context context, ProviderHelper providerHelper, Progressable progressable) {
-        super();
-        this.mContext = context;
-        this.mProgressable = progressable;
-        this.mProviderHelper = providerHelper;
+    public ImportExportOperation(Context context, ProviderHelper providerHelper, Progressable progressable) {
+        super(context, providerHelper, progressable);
     }
 
-    public PgpImportExport(Context context, ProviderHelper providerHelper, Progressable progressable, AtomicBoolean cancelled) {
-        super();
-        mContext = context;
-        mProgressable = progressable;
-        mProviderHelper = providerHelper;
-        mCancelled = cancelled;
-    }
-
-    public void updateProgress(int message, int current, int total) {
-        if (mProgressable != null) {
-            mProgressable.setProgress(message, current, total);
-        }
-    }
-
-    public void updateProgress(String message, int current, int total) {
-        if (mProgressable != null) {
-            mProgressable.setProgress(message, current, total);
-        }
-    }
-
-    public void updateProgress(int current, int total) {
-        if (mProgressable != null) {
-            mProgressable.setProgress(current, total);
-        }
+    public ImportExportOperation(Context context, ProviderHelper providerHelper, Progressable progressable, AtomicBoolean cancelled) {
+        super(context, providerHelper, progressable, cancelled);
     }
 
     public void uploadKeyRingToServer(HkpKeyserver server, CanonicalizedPublicKeyRing keyring) throws AddKeyException {

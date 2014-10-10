@@ -1,7 +1,14 @@
-package org.sufficientlysecure.keychain.pgp;
+package org.sufficientlysecure.keychain.pgp.ops;
+
+import android.content.Context;
 
 import org.spongycastle.openpgp.PGPException;
 import org.sufficientlysecure.keychain.Constants;
+import org.sufficientlysecure.keychain.pgp.CanonicalizedPublicKeyRing;
+import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey;
+import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKeyRing;
+import org.sufficientlysecure.keychain.pgp.Progressable;
+import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.provider.ProviderHelper.NotFoundException;
@@ -15,23 +22,12 @@ import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.Log;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-public class PgpCertifyOperation {
+public class PgpCertifyOperation extends BaseOperation {
 
-    private AtomicBoolean mCancelled;
-
-    private ProviderHelper mProviderHelper;
-
-    public PgpCertifyOperation(ProviderHelper providerHelper, AtomicBoolean cancelled) {
-        mProviderHelper = providerHelper;
-
-        mCancelled = cancelled;
-    }
-
-    private boolean checkCancelled() {
-        return mCancelled != null && mCancelled.get();
+    public PgpCertifyOperation(Context context, ProviderHelper providerHelper, Progressable progressable, AtomicBoolean cancelled) {
+        super(context, providerHelper, progressable, cancelled);
     }
 
     public CertifyResult certify(CertifyActionsParcel parcel, String passphrase) {
