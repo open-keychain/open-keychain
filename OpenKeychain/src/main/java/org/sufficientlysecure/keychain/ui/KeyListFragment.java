@@ -19,6 +19,7 @@
 package org.sufficientlysecure.keychain.ui;
 
 import android.annotation.TargetApi;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
@@ -29,6 +30,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.os.Messenger;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
@@ -58,6 +60,12 @@ import android.widget.TextView;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
+import org.sufficientlysecure.keychain.provider.KeychainContract;
+import org.sufficientlysecure.keychain.provider.ProviderHelper;
+import org.sufficientlysecure.keychain.service.KeychainIntentService;
+import org.sufficientlysecure.keychain.service.results.ImportKeyResult;
+import org.sufficientlysecure.keychain.service.results.OperationResult;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.ExportHelper;
 import org.sufficientlysecure.keychain.util.KeyUpdateHelper;
@@ -69,12 +77,16 @@ import org.sufficientlysecure.keychain.ui.widget.ListAwareSwipeRefreshLayout;
 import org.sufficientlysecure.keychain.ui.util.Highlighter;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.ui.util.Notify;
+import org.sufficientlysecure.keychain.util.ParcelableFileCache;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
+import edu.cmu.cylab.starslinger.exchange.ExchangeActivity;
+import edu.cmu.cylab.starslinger.exchange.ExchangeConfig;
 import se.emilsjolander.stickylistheaders.StickyListHeadersAdapter;
 import se.emilsjolander.stickylistheaders.StickyListHeadersListView;
 
@@ -103,6 +115,11 @@ public class KeyListFragment extends LoaderFragment
     private Button mButtonEmptyImport;
 
     boolean hideMenu = false;
+
+    Long mExchangeMasterKeyId = null;
+
+    private static final int REQUEST_CODE_RESULT_TO_LIST = 1;
+    private static final int REQUEST_CODE_SAFE_SLINGER = 2;
 
     /**
      * Load custom layout with StickyListView from library
@@ -602,19 +619,30 @@ public class KeyListFragment extends LoaderFragment
         }
 
         private class ItemViewHolder {
+            Long mMasterKeyId;
             TextView mMainUserId;
             TextView mMainUserIdRest;
             ImageView mStatus;
+            View mSlinger;
         }
 
         @Override
         public View newView(Context context, Cursor cursor, ViewGroup parent) {
             View view = mInflater.inflate(R.layout.key_list_item, parent, false);
-            ItemViewHolder holder = new ItemViewHolder();
+            final ItemViewHolder holder = new ItemViewHolder();
             holder.mMainUserId = (TextView) view.findViewById(R.id.mainUserId);
             holder.mMainUserIdRest = (TextView) view.findViewById(R.id.mainUserIdRest);
             holder.mStatus = (ImageView) view.findViewById(R.id.status_icon);
+            holder.mSlinger = view.findViewById(R.id.slinger_view);
             view.setTag(holder);
+            view.findViewById(R.id.slinger_button).setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (holder.mMasterKeyId != null) {
+                        startExchange(holder.mMasterKeyId);
+                    }
+                }
+            });
             return view;
         }
 
@@ -647,29 +675,41 @@ public class KeyListFragment extends LoaderFragment
 
             { // set edit button and status, specific by key type
 
+                long masterKeyId = cursor.getLong(INDEX_MASTER_KEY_ID);
+                boolean isSecret = cursor.getInt(INDEX_HAS_ANY_SECRET) != 0;
                 boolean isRevoked = cursor.getInt(INDEX_IS_REVOKED) > 0;
                 boolean isExpired = !cursor.isNull(INDEX_EXPIRY)
                         && new Date(cursor.getLong(INDEX_EXPIRY) * 1000).before(new Date());
                 boolean isVerified = cursor.getInt(INDEX_VERIFIED) > 0;
 
+                h.mMasterKeyId = masterKeyId;
+
                 // Note: order is important!
                 if (isRevoked) {
                     KeyFormattingUtils.setStatusImage(getActivity(), h.mStatus, KeyFormattingUtils.STATE_REVOKED);
                     h.mStatus.setVisibility(View.VISIBLE);
+                    h.mSlinger.setVisibility(View.GONE);
                 } else if (isExpired) {
                     KeyFormattingUtils.setStatusImage(getActivity(), h.mStatus, KeyFormattingUtils.STATE_EXPIRED);
                     h.mStatus.setVisibility(View.VISIBLE);
-                } else if (isVerified) {
-                    if (cursor.getInt(KeyListFragment.INDEX_HAS_ANY_SECRET) != 0) {
-                        // this is a secret key
-                        h.mStatus.setVisibility(View.GONE);
-                    } else {
-                        // this is a public key - show if it's verified
-                        KeyFormattingUtils.setStatusImage(getActivity(), h.mStatus, KeyFormattingUtils.STATE_VERIFIED);
-                        h.mStatus.setVisibility(View.VISIBLE);
-                    }
-                } else {
+                    h.mSlinger.setVisibility(View.GONE);
+                } else if (isSecret) {
                     h.mStatus.setVisibility(View.GONE);
+                    h.mSlinger.setVisibility(View.VISIBLE);
+                } else {
+                    if (isVerified) {
+                        if (cursor.getInt(KeyListFragment.INDEX_HAS_ANY_SECRET) != 0) {
+                            // this is a secret key
+                            h.mStatus.setVisibility(View.GONE);
+                        } else {
+                            // this is a public key - show if it's verified
+                            KeyFormattingUtils.setStatusImage(getActivity(), h.mStatus, KeyFormattingUtils.STATE_VERIFIED);
+                            h.mStatus.setVisibility(View.VISIBLE);
+                        }
+                    } else {
+                        h.mStatus.setVisibility(View.GONE);
+                    }
+                    h.mSlinger.setVisibility(View.GONE);
                 }
             }
 
@@ -833,5 +873,137 @@ public class KeyListFragment extends LoaderFragment
         }
 
     }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == REQUEST_CODE_SAFE_SLINGER) {
+            if (resultCode == ExchangeActivity.RESULT_EXCHANGE_CANCELED) {
+                return;
+            }
+
+            final FragmentActivity activity = getActivity();
+
+            // Message is received after importing is done in KeychainIntentService
+            KeychainIntentServiceHandler saveHandler = new KeychainIntentServiceHandler(
+                    activity,
+                    getString(R.string.progress_importing),
+                    ProgressDialog.STYLE_HORIZONTAL,
+                    true) {
+                public void handleMessage(Message message) {
+                    // handle messages by standard KeychainIntentServiceHandler first
+                    super.handleMessage(message);
+
+                    if (message.arg1 == KeychainIntentServiceHandler.MESSAGE_OKAY) {
+                        // get returned data bundle
+                        Bundle returnData = message.getData();
+                        if (returnData == null) {
+                            return;
+                        }
+                        final ImportKeyResult result =
+                                returnData.getParcelable(OperationResult.EXTRA_RESULT);
+                        if (result == null) {
+                            Log.e(Constants.TAG, "result == null");
+                            return;
+                        }
+
+                        if ( ! result.success()) {
+                            result.createNotify(activity).show();
+                            return;
+                        }
+
+                        if (mExchangeMasterKeyId == null) {
+                            return;
+                        }
+
+                        Intent certifyIntent = new Intent(activity, MultiCertifyKeyActivity.class);
+                        certifyIntent.putExtra(MultiCertifyKeyActivity.EXTRA_RESULT, result);
+                        certifyIntent.putExtra(MultiCertifyKeyActivity.EXTRA_KEY_IDS, result.getImportedMasterKeyIds());
+                        certifyIntent.putExtra(MultiCertifyKeyActivity.EXTRA_CERTIFY_KEY_ID, mExchangeMasterKeyId);
+                        startActivityForResult(certifyIntent, REQUEST_CODE_RESULT_TO_LIST);
+
+                        mExchangeMasterKeyId = null;
+                    }
+                }
+            };
+
+            Log.d(Constants.TAG, "importKeys started");
+
+            // Send all information needed to service to import key in other thread
+            Intent intent = new Intent(activity, KeychainIntentService.class);
+
+            intent.setAction(KeychainIntentService.ACTION_IMPORT_KEYRING);
+
+            // instead of giving the entries by Intent extra, cache them into a
+            // file to prevent Java Binder problems on heavy imports
+            // read FileImportCache for more info.
+            try {
+                // import exchanged keys
+                ArrayList<ParcelableKeyRing> it = getSlingedKeys(data.getExtras());
+
+                // We parcel this iteratively into a file - anything we can
+                // display here, we should be able to import.
+                ParcelableFileCache<ParcelableKeyRing> cache =
+                        new ParcelableFileCache<ParcelableKeyRing>(activity, "key_import.pcl");
+                cache.writeCache(it.size(), it.iterator());
+
+                // fill values for this action
+                Bundle bundle = new Bundle();
+                intent.putExtra(KeychainIntentService.EXTRA_DATA, bundle);
+
+                // Create a new Messenger for the communication back
+                Messenger messenger = new Messenger(saveHandler);
+                intent.putExtra(KeychainIntentService.EXTRA_MESSENGER, messenger);
+
+                // show progress dialog
+                saveHandler.showProgressDialog(activity);
+
+                // start service with intent
+                activity.startService(intent);
+            } catch (IOException e) {
+                Log.e(Constants.TAG, "Problem writing cache file", e);
+                Notify.showNotify(activity, "Problem writing cache file!", Notify.Style.ERROR);
+            }
+        }
+
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    private static ArrayList<ParcelableKeyRing> getSlingedKeys(Bundle extras) {
+
+        ArrayList<ParcelableKeyRing> list = new ArrayList<ParcelableKeyRing>();
+
+        if (extras != null) {
+            byte[] d;
+            int i = 0;
+            do {
+                d = extras.getByteArray(ExchangeConfig.extra.MEMBER_DATA + i);
+                if (d != null) {
+                    list.add(new ParcelableKeyRing(d));
+                    i++;
+                }
+            } while (d != null);
+        }
+
+        return list;
+
+    }
+
+    private void startExchange(long masterKeyId) {
+        mExchangeMasterKeyId = masterKeyId;
+        // retrieve public key blob and start SafeSlinger
+        Uri uri = KeychainContract.KeyRingData.buildPublicKeyRingUri(masterKeyId);
+        try {
+            byte[] keyBlob = (byte[]) new ProviderHelper(getActivity()).getGenericData(
+                    uri, KeychainContract.KeyRingData.KEY_RING_DATA, ProviderHelper.FIELD_TYPE_BLOB);
+
+            Intent slingerIntent = new Intent(getActivity(), ExchangeActivity.class);
+            slingerIntent.putExtra(ExchangeConfig.extra.USER_DATA, keyBlob);
+            slingerIntent.putExtra(ExchangeConfig.extra.HOST_NAME, Constants.SAFESLINGER_SERVER);
+            startActivityForResult(slingerIntent, REQUEST_CODE_SAFE_SLINGER);
+        } catch (ProviderHelper.NotFoundException e) {
+            Log.e(Constants.TAG, "personal key not found", e);
+        }
+    }
+
 
 }

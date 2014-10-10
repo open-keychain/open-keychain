@@ -38,6 +38,32 @@
             android:textAppearance="?android:attr/textAppearanceSmall" />
     </LinearLayout>
 
+    <LinearLayout
+        android:id="@+id/slinger_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <View
+            android:layout_width="1dip"
+            android:layout_height="match_parent"
+            android:gravity="right"
+            android:layout_marginBottom="8dp"
+            android:layout_marginTop="8dp"
+            android:background="?android:attr/listDivider" />
+
+        <ImageButton
+            android:id="@+id/slinger_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:src="@drawable/ic_action_safeslinger"
+            android:padding="16dp"
+            style="@style/SelectableItem" />
+
+    </LinearLayout>
+
     <ImageView
         android:id="@+id/status_icon"
         android:layout_width="wrap_content"
