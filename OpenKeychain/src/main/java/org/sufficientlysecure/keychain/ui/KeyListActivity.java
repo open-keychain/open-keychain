@@ -20,28 +20,42 @@ package org.sufficientlysecure.keychain.ui;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Message;
 import android.os.Messenger;
+import android.support.v4.util.LongSparseArray;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.google.zxing.integration.android.IntentIntegrator;
+import com.google.zxing.integration.android.IntentResult;
+
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.keyimport.ImportKeysListEntry;
+import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainDatabase;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
 import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
 import org.sufficientlysecure.keychain.service.results.ConsolidateResult;
+import org.sufficientlysecure.keychain.service.results.ImportKeyResult;
 import org.sufficientlysecure.keychain.service.results.OperationResult;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.util.ExportHelper;
+import org.sufficientlysecure.keychain.util.IntentIntegratorSupportV4;
 import org.sufficientlysecure.keychain.util.Log;
+import org.sufficientlysecure.keychain.util.ParcelableFileCache;
 import org.sufficientlysecure.keychain.util.Preferences;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Locale;
 
 public class KeyListActivity extends DrawerActivity {
+
+    public static final int REQUEST_CODE_RESULT_TO_LIST = 1;
 
     ExportHelper mExportHelper;
 
@@ -86,7 +100,8 @@ public class KeyListActivity extends DrawerActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menu_key_list_add:
-                addKeys();
+                // scan using xzing's Barcode Scanner
+                new IntentIntegrator(this).initiateScan();
                 return true;
 
             case R.id.menu_key_list_search_cloud:
@@ -143,11 +158,6 @@ public class KeyListActivity extends DrawerActivity {
             default:
                 return super.onOptionsItemSelected(item);
         }
-    }
-
-    private void addKeys() {
-        Intent intent = new Intent(this, AddKeysActivity.class);
-        startActivityForResult(intent, 0);
     }
 
     private void searchCloud() {
@@ -212,6 +222,35 @@ public class KeyListActivity extends DrawerActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == IntentIntegratorSupportV4.REQUEST_CODE) {
+            IntentResult scanResult = IntentIntegratorSupportV4.parseActivityResult(requestCode,
+                    resultCode, data);
+            if (scanResult != null && scanResult.getFormatName() != null) {
+                String scannedContent = scanResult.getContents();
+
+                Log.d(Constants.TAG, "scannedContent: " + scannedContent);
+
+                // look if it's fingerprint only
+                if (scannedContent.toLowerCase(Locale.ENGLISH).startsWith(Constants.FINGERPRINT_SCHEME)) {
+                    String fingerprint =
+                            Uri.parse(scanResult.getContents()).toString().split(":")[1].toLowerCase(Locale.ENGLISH);
+                    importKeys(fingerprint);
+                    return;
+                }
+
+                // is this a full key encoded as qr code?
+                if (scannedContent.startsWith("-----BEGIN PGP")) {
+                    // TODO
+                    // mImportActivity.loadCallback(new ImportKeysListFragment.BytesLoaderState(scannedContent.getBytes(), null));
+                    return;
+                }
+
+                // fail...
+                Notify.showNotify(this, R.string.import_qr_code_wrong, Notify.Style.ERROR);
+            }
+
+            return;
+        }
         // if a result has been returned, display a notify
         if (data != null && data.hasExtra(OperationResult.EXTRA_RESULT)) {
             OperationResult result = data.getParcelableExtra(OperationResult.EXTRA_RESULT);
@@ -219,6 +258,78 @@ public class KeyListActivity extends DrawerActivity {
         } else {
             super.onActivityResult(requestCode, resultCode, data);
         }
+    }
+
+    public void importKeys(String fingerprint) {
+        // Message is received after importing is done in KeychainIntentService
+        KeychainIntentServiceHandler saveHandler = new KeychainIntentServiceHandler(
+                this,
+                getString(R.string.progress_importing),
+                ProgressDialog.STYLE_HORIZONTAL,
+                true) {
+            public void handleMessage(Message message) {
+                // handle messages by standard KeychainIntentServiceHandler first
+                super.handleMessage(message);
+
+                if (message.arg1 == KeychainIntentServiceHandler.MESSAGE_OKAY) {
+                    // get returned data bundle
+                    Bundle returnData = message.getData();
+                    if (returnData == null) {
+                        return;
+                    }
+                    final ImportKeyResult result =
+                            returnData.getParcelable(OperationResult.EXTRA_RESULT);
+                    if (result == null) {
+                        Log.e(Constants.TAG, "result == null");
+                        return;
+                    }
+
+                    if ( ! result.success()) {
+                        result.createNotify(KeyListActivity.this).show();
+                        return;
+                    }
+
+                    Intent certifyIntent = new Intent(KeyListActivity.this, MultiCertifyKeyActivity.class);
+                    certifyIntent.putExtra(MultiCertifyKeyActivity.EXTRA_RESULT, result);
+                    certifyIntent.putExtra(MultiCertifyKeyActivity.EXTRA_KEY_IDS, result.getImportedMasterKeyIds());
+                    startActivityForResult(certifyIntent, REQUEST_CODE_RESULT_TO_LIST);
+                }
+            }
+        };
+
+        // search config
+        Preferences prefs = Preferences.getPreferences(this);
+        Preferences.CloudSearchPrefs cloudPrefs = new Preferences.CloudSearchPrefs(true, true, prefs.getPreferredKeyserver());
+
+        // Send all information needed to service to query keys in other thread
+        Intent intent = new Intent(this, KeychainIntentService.class);
+
+        intent.setAction(KeychainIntentService.ACTION_DOWNLOAD_AND_IMPORT_KEYS);
+
+        // fill values for this action
+        Bundle data = new Bundle();
+
+        data.putString(KeychainIntentService.DOWNLOAD_KEY_SERVER, cloudPrefs.keyserver);
+
+        final ImportKeysListEntry keyEntry = new ImportKeysListEntry();
+        keyEntry.setFingerprintHex(fingerprint);
+        keyEntry.addOrigin(cloudPrefs.keyserver);
+        ArrayList<ImportKeysListEntry> selectedEntries = new ArrayList<ImportKeysListEntry>();
+        selectedEntries.add(keyEntry);
+
+        data.putParcelableArrayList(KeychainIntentService.DOWNLOAD_KEY_LIST, selectedEntries);
+
+        intent.putExtra(KeychainIntentService.EXTRA_DATA, data);
+
+        // Create a new Messenger for the communication back
+        Messenger messenger = new Messenger(saveHandler);
+        intent.putExtra(KeychainIntentService.EXTRA_MESSENGER, messenger);
+
+        // show progress dialog
+        saveHandler.showProgressDialog(this);
+
+        // start service with intent
+        startService(intent);
     }
 
 }

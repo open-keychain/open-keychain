@@ -18,7 +18,7 @@
     <item
         android:id="@+id/menu_key_list_add"
         app:showAsAction="always|withText"
-        android:icon="@drawable/ic_action_new_account"
+        android:icon="@drawable/ic_action_qr_code"
         android:title="@string/menu_add_keys" />
 
     <item

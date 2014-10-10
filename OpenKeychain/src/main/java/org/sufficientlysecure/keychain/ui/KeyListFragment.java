@@ -118,7 +118,6 @@ public class KeyListFragment extends LoaderFragment
 
     Long mExchangeMasterKeyId = null;
 
-    private static final int REQUEST_CODE_RESULT_TO_LIST = 1;
     private static final int REQUEST_CODE_SAFE_SLINGER = 2;
 
     /**
@@ -919,7 +918,7 @@ public class KeyListFragment extends LoaderFragment
                         certifyIntent.putExtra(MultiCertifyKeyActivity.EXTRA_RESULT, result);
                         certifyIntent.putExtra(MultiCertifyKeyActivity.EXTRA_KEY_IDS, result.getImportedMasterKeyIds());
                         certifyIntent.putExtra(MultiCertifyKeyActivity.EXTRA_CERTIFY_KEY_ID, mExchangeMasterKeyId);
-                        startActivityForResult(certifyIntent, REQUEST_CODE_RESULT_TO_LIST);
+                        startActivityForResult(certifyIntent, KeyListActivity.REQUEST_CODE_RESULT_TO_LIST);
 
                         mExchangeMasterKeyId = null;
                     }
