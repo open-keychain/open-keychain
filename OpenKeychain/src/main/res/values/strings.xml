@@ -920,6 +920,24 @@
 
     <string name="msg_crt_upload_success">"Successfully uploaded key to server"</string>
 
+    <string name="msg_del_error_empty">"Nothing to delete!"</string>
+    <string name="msg_del_error_multi_secret">"Secret keys can only be deleted individually!"</string>
+    <plurals name="msg_del">
+        <item quantity="one">"Deleting one key"</item>
+        <item quantity="other">"Deleting %d keys"</item>
+    </plurals>
+    <string name="msg_del_key">"Deleting key %s"</string>
+    <string name="msg_del_key_fail">"Failed deleting key %s"</string>
+    <string name="msg_del_consolidate">"Consolidating database after deletion of secret key"</string>
+    <plurals name="msg_del_ok">
+        <item quantity="one">"Successfully deleted key"</item>
+        <item quantity="other">"Successfully deleted %d keys"</item>
+    </plurals>
+    <plurals name="msg_del_fail">
+        <item quantity="one">"Failed to delete one key"</item>
+        <item quantity="other">"Failed to delete %d keys"</item>
+    </plurals>
+
     <string name="msg_acc_saved">"Account saved"</string>
 
     <string name="msg_download_success">"Downloaded successfully!"</string>

@@ -29,7 +29,9 @@ import android.os.RemoteException;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.operations.DeleteOperation;
 import org.sufficientlysecure.keychain.operations.PgpCertifyOperation;
+import org.sufficientlysecure.keychain.operations.results.DeleteResult;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.ProviderHelper.NotFoundException;
 import org.sufficientlysecure.keychain.operations.results.CertifyResult;
@@ -362,40 +364,13 @@ public class KeychainIntentService extends IntentService implements Progressable
 
         } else if (ACTION_DELETE.equals(action)) {
 
-            try {
+            long[] masterKeyIds = data.getLongArray(DELETE_KEY_LIST);
+            boolean isSecret = data.getBoolean(DELETE_IS_SECRET);
 
-                long[] masterKeyIds = data.getLongArray(DELETE_KEY_LIST);
-                boolean isSecret = data.getBoolean(DELETE_IS_SECRET);
+            DeleteOperation op = new DeleteOperation(this, new ProviderHelper(this), this);
+            DeleteResult result = op.execute(masterKeyIds, isSecret);
 
-                if (masterKeyIds.length == 0) {
-                    throw new PgpGeneralException("List of keys to delete is empty");
-                }
-
-                if (isSecret && masterKeyIds.length > 1) {
-                    throw new PgpGeneralException("Secret keys can only be deleted individually!");
-                }
-
-                boolean success = false;
-                for (long masterKeyId : masterKeyIds) {
-                    int count = getContentResolver().delete(
-                            KeyRingData.buildPublicKeyRingUri(masterKeyId), null, null
-                    );
-                    success |= count > 0;
-                }
-
-                if (isSecret && success) {
-                    new ProviderHelper(this).consolidateDatabaseStep1(this);
-                }
-
-                if (success) {
-                    // make sure new data is synced into contacts
-                    ContactSyncAdapterService.requestSync();
-
-                    sendMessageToHandler(KeychainIntentServiceHandler.MESSAGE_OKAY);
-                }
-            } catch (Exception e) {
-                sendErrorToHandler(e);
-            }
+            sendMessageToHandler(KeychainIntentServiceHandler.MESSAGE_OKAY, result);
 
         } else if (ACTION_DELETE_FILE_SECURELY.equals(action)) {
 

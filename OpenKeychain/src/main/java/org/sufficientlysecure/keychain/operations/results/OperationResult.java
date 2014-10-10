@@ -593,7 +593,16 @@ public abstract class OperationResult implements Parcelable {
         MSG_GET_QUERY_TOO_SHORT(LogLevel.ERROR, R.string.msg_download_query_too_short),
         MSG_GET_TOO_MANY_RESPONSES(LogLevel.ERROR, R.string.msg_download_too_many_responses),
         MSG_GET_QUERY_TOO_SHORT_OR_TOO_MANY_RESPONSES(LogLevel.ERROR, R.string.msg_download_query_too_short_or_too_many_responses),
-        MSG_GET_QUERY_FAILED(LogLevel.ERROR, R.string.msg_download_query_failed)
+        MSG_GET_QUERY_FAILED(LogLevel.ERROR, R.string.msg_download_query_failed),
+
+        MSG_DEL_ERROR_EMPTY (LogLevel.ERROR, R.string.msg_del_error_empty),
+        MSG_DEL_ERROR_MULTI_SECRET (LogLevel.DEBUG, R.string.msg_del_error_multi_secret),
+        MSG_DEL (LogLevel.START, R.plurals.msg_del),
+        MSG_DEL_KEY (LogLevel.DEBUG, R.string.msg_del_key),
+        MSG_DEL_KEY_FAIL (LogLevel.WARN, R.string.msg_del_key_fail),
+        MSG_DEL_CONSOLIDATE (LogLevel.DEBUG, R.string.msg_del_consolidate),
+        MSG_DEL_OK (LogLevel.OK, R.plurals.msg_del_ok),
+        MSG_DEL_FAIL (LogLevel.WARN, R.plurals.msg_del_fail),
         ;
 
         public final int mMsgId;
