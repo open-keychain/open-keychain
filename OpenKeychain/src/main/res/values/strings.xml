@@ -49,7 +49,7 @@
     <string name="section_advanced">"Advanced"</string>
     <string name="section_certify">"Certify"</string>
     <string name="section_actions">"Actions"</string>
-    <string name="section_share_key">"Whole key"</string>
+    <string name="section_share_key">"Public key"</string>
     <string name="section_certification_key">"Your Key used for certification"</string>
     <string name="section_upload_key">"Synchronize Key"</string>
     <string name="section_key_server">"Keyserver"</string>
