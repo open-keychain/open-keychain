@@ -30,6 +30,7 @@ import android.support.v4.util.LongSparseArray;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.operations.results.ImportKeyResult;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.ParcelableFileCache.IteratorWithSize;
 import org.sufficientlysecure.keychain.util.Preferences;
@@ -853,7 +854,7 @@ public class ProviderHelper {
                 if (Arrays.hashCode(secretRing.getEncoded())
                         == Arrays.hashCode(oldSecretRing.getEncoded())) {
                     log(LogType.MSG_IS_SUCCESS_IDENTICAL,
-                            KeyFormattingUtils.convertKeyIdToHex(masterKeyId) );
+                            KeyFormattingUtils.convertKeyIdToHex(masterKeyId));
                     return new SaveKeyringResult(SaveKeyringResult.UPDATED, mLog, null);
                 }
             } catch (NotFoundException e) {
@@ -932,7 +933,7 @@ public class ProviderHelper {
 
             if (cursor == null || !cursor.moveToFirst()) {
                 log.add(LogType.MSG_CON_ERROR_DB, indent);
-                return new ConsolidateResult(ConsolidateResult.RESULT_ERROR, mLog);
+                return new ConsolidateResult(ConsolidateResult.RESULT_ERROR, log);
             }
 
             ParcelableFileCache<ParcelableKeyRing> cache =
@@ -973,7 +974,7 @@ public class ProviderHelper {
         } catch (IOException e) {
             Log.e(Constants.TAG, "error saving secret", e);
             log.add(LogType.MSG_CON_ERROR_IO_SECRET, indent);
-            return new ConsolidateResult(ConsolidateResult.RESULT_ERROR, mLog);
+            return new ConsolidateResult(ConsolidateResult.RESULT_ERROR, log);
         } finally {
             indent -= 1;
         }
@@ -992,7 +993,7 @@ public class ProviderHelper {
 
             if (cursor == null || !cursor.moveToFirst()) {
                 log.add(LogType.MSG_CON_ERROR_DB, indent);
-                return new ConsolidateResult(ConsolidateResult.RESULT_ERROR, mLog);
+                return new ConsolidateResult(ConsolidateResult.RESULT_ERROR, log);
             }
 
             ParcelableFileCache<ParcelableKeyRing> cache =
@@ -1033,7 +1034,7 @@ public class ProviderHelper {
         } catch (IOException e) {
             Log.e(Constants.TAG, "error saving public", e);
             log.add(LogType.MSG_CON_ERROR_IO_PUBLIC, indent);
-            return new ConsolidateResult(ConsolidateResult.RESULT_ERROR, mLog);
+            return new ConsolidateResult(ConsolidateResult.RESULT_ERROR, log);
         } finally {
             indent -= 1;
         }
@@ -1056,7 +1057,7 @@ public class ProviderHelper {
         synchronized (ProviderHelper.class) {
             if (mConsolidateCritical) {
                 log.add(LogType.MSG_CON_ERROR_CONCURRENT, indent);
-                return new ConsolidateResult(ConsolidateResult.RESULT_ERROR, mLog);
+                return new ConsolidateResult(ConsolidateResult.RESULT_ERROR, log);
             }
             mConsolidateCritical = true;
         }
@@ -1071,7 +1072,7 @@ public class ProviderHelper {
 
             if (!prefs.getCachedConsolidate()) {
                 log.add(LogType.MSG_CON_ERROR_BAD_STATE, indent);
-                return new ConsolidateResult(ConsolidateResult.RESULT_ERROR, mLog);
+                return new ConsolidateResult(ConsolidateResult.RESULT_ERROR, log);
             }
 
             // 2. wipe database (IT'S DANGEROUS)
@@ -1094,9 +1095,10 @@ public class ProviderHelper {
                 // 3. Re-Import secret keyrings from cache
                 if (numSecrets > 0) {
 
-                    new ImportExportOperation(mContext, this,
+                    ImportKeyResult result = new ImportExportOperation(mContext, this,
                             new ProgressFixedScaler(progress, 10, 25, 100, R.string.progress_con_reimport))
                             .importKeyRings(itSecrets, numSecrets);
+                    log.add(result, indent);
                 } else {
                     log.add(LogType.MSG_CON_REIMPORT_SECRET_SKIP, indent);
                 }
@@ -1104,7 +1106,7 @@ public class ProviderHelper {
             } catch (IOException e) {
                 Log.e(Constants.TAG, "error importing secret", e);
                 log.add(LogType.MSG_CON_ERROR_SECRET, indent);
-                return new ConsolidateResult(ConsolidateResult.RESULT_ERROR, mLog);
+                return new ConsolidateResult(ConsolidateResult.RESULT_ERROR, log);
             } finally {
                 indent -= 1;
             }
@@ -1120,9 +1122,10 @@ public class ProviderHelper {
                 // 4. Re-Import public keyrings from cache
                 if (numPublics > 0) {
 
-                    new ImportExportOperation(mContext, this,
+                    ImportKeyResult result = new ImportExportOperation(mContext, this,
                             new ProgressFixedScaler(progress, 25, 99, 100, R.string.progress_con_reimport))
                             .importKeyRings(itPublics, numPublics);
+                    log.add(result, indent);
                 } else {
                     log.add(LogType.MSG_CON_REIMPORT_PUBLIC_SKIP, indent);
                 }
@@ -1130,7 +1133,7 @@ public class ProviderHelper {
             } catch (IOException e) {
                 Log.e(Constants.TAG, "error importing public", e);
                 log.add(LogType.MSG_CON_ERROR_PUBLIC, indent);
-                return new ConsolidateResult(ConsolidateResult.RESULT_ERROR, mLog);
+                return new ConsolidateResult(ConsolidateResult.RESULT_ERROR, log);
             } finally {
                 indent -= 1;
             }
