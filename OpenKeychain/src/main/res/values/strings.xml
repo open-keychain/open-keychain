@@ -426,6 +426,26 @@
     <string name="import_error_nothing">"Nothing to import."</string>
     <string name="import_error_nothing_cancelled">"Import cancelled."</string>
 
+    <!-- Delete result toast -->
+    <plurals name="delete_ok_but_fail_1">
+        <item quantity="one">"Successfully deleted one key"</item>
+        <item quantity="other">"Successfully deleted %1$d keys"</item>
+    </plurals>
+    <plurals name="delete_ok_but_fail_2">
+        <item quantity="one">", but failed deleting one key%2$s."</item>
+        <item quantity="other">", but failed deleting %1$d keys%2$s."</item>
+    </plurals>
+    <plurals name="delete_ok">
+        <item quantity="one">"Successfully deleted key%2$s."</item>
+        <item quantity="other">"Successfully deleted %1$d keys%2$s."</item>
+    </plurals>
+    <plurals name="delete_fail">
+        <item quantity="one">"Error deleting one key%2$s."</item>
+        <item quantity="other">"Error deleting %1$d keys."</item>
+    </plurals>
+    <string name="delete_nothing">"Nothing to delete."</string>
+    <string name="delete_cancelled">"Delete operation cancelled."</string>
+
     <!-- Certify result toast -->
     <plurals name="certify_keys_ok">
         <item quantity="one">"Successfully certified key%2$s."</item>

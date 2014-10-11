@@ -130,18 +130,20 @@ public class DeleteKeyDialogFragment extends DialogFragment {
 
                 // Message is received after importing is done in KeychainIntentService
                 KeychainIntentServiceHandler saveHandler = new KeychainIntentServiceHandler(
-                        getActivity(),
-                        getString(R.string.progress_deleting),
-                        ProgressDialog.STYLE_HORIZONTAL) {
+                        getActivity(), getString(R.string.progress_deleting),
+                        ProgressDialog.STYLE_HORIZONTAL, true) {
+                    @Override
                     public void handleMessage(Message message) {
-                        // handle messages by standard KeychainIntentServiceHandler first
                         super.handleMessage(message);
-                        try {
-                            Message msg = Message.obtain();
-                            msg.copyFrom(message);
-                            messenger.send(msg);
-                        } catch (RemoteException e) {
-                            Log.e(Constants.TAG, "messenger error", e);
+                        // handle messages by standard KeychainIntentServiceHandler first
+                        if (message.arg1 == MESSAGE_OKAY) {
+                            try {
+                                Message msg = Message.obtain();
+                                msg.copyFrom(message);
+                                messenger.send(msg);
+                            } catch (RemoteException e) {
+                                Log.e(Constants.TAG, "messenger error", e);
+                            }
                         }
                     }
                 };

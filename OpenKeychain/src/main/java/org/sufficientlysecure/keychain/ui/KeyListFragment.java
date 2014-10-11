@@ -61,6 +61,7 @@ import android.widget.TextView;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
+import org.sufficientlysecure.keychain.operations.results.DeleteResult;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
@@ -504,7 +505,14 @@ public class KeyListFragment extends LoaderFragment
         Handler returnHandler = new Handler() {
             @Override
             public void handleMessage(Message message) {
-                if (message.what == DeleteKeyDialogFragment.MESSAGE_OKAY) {
+                if (message.arg1 == DeleteKeyDialogFragment.MESSAGE_OKAY) {
+                    Bundle data = message.getData();
+                    if (data != null) {
+                        DeleteResult result = data.getParcelable(DeleteResult.EXTRA_RESULT);
+                        if (result != null) {
+                            result.createNotify(getActivity()).show();
+                        }
+                    }
                     mode.finish();
                 }
             }
