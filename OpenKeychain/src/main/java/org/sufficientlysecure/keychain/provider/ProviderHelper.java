@@ -912,23 +912,26 @@ public class ProviderHelper {
 
     public ConsolidateResult consolidateDatabaseStep1(Progressable progress) {
 
+        OperationLog log = new OperationLog();
+        int indent = 0;
+
         // 1a. fetch all secret keyrings into a cache file
-        log(LogType.MSG_CON);
-        mIndent += 1;
+        log.add(LogType.MSG_CON, indent);
+        indent += 1;
 
         progress.setProgress(R.string.progress_con_saving, 0, 100);
 
         try {
 
-            log(LogType.MSG_CON_SAVE_SECRET);
-            mIndent += 1;
+            log.add(LogType.MSG_CON_SAVE_SECRET, indent);
+            indent += 1;
 
             final Cursor cursor = mContentResolver.query(KeyRings.buildUnifiedKeyRingsUri(), new String[]{
                     KeyRings.PRIVKEY_DATA, KeyRings.FINGERPRINT, KeyRings.HAS_ANY_SECRET
             }, KeyRings.HAS_ANY_SECRET + " = 1", null, null);
 
             if (cursor == null || !cursor.moveToFirst()) {
-                log(LogType.MSG_CON_ERROR_DB);
+                log.add(LogType.MSG_CON_ERROR_DB, indent);
                 return new ConsolidateResult(ConsolidateResult.RESULT_ERROR, mLog);
             }
 
@@ -969,10 +972,10 @@ public class ProviderHelper {
 
         } catch (IOException e) {
             Log.e(Constants.TAG, "error saving secret", e);
-            log(LogType.MSG_CON_ERROR_IO_SECRET);
+            log.add(LogType.MSG_CON_ERROR_IO_SECRET, indent);
             return new ConsolidateResult(ConsolidateResult.RESULT_ERROR, mLog);
         } finally {
-            mIndent -= 1;
+            indent -= 1;
         }
 
         progress.setProgress(R.string.progress_con_saving, 3, 100);
@@ -980,15 +983,15 @@ public class ProviderHelper {
         // 1b. fetch all public keyrings into a cache file
         try {
 
-            log(LogType.MSG_CON_SAVE_PUBLIC);
-            mIndent += 1;
+            log.add(LogType.MSG_CON_SAVE_PUBLIC, indent);
+            indent += 1;
 
             final Cursor cursor = mContentResolver.query(KeyRings.buildUnifiedKeyRingsUri(), new String[]{
                     KeyRings.PUBKEY_DATA, KeyRings.FINGERPRINT
             }, null, null, null);
 
             if (cursor == null || !cursor.moveToFirst()) {
-                log(LogType.MSG_CON_ERROR_DB);
+                log.add(LogType.MSG_CON_ERROR_DB, indent);
                 return new ConsolidateResult(ConsolidateResult.RESULT_ERROR, mLog);
             }
 
@@ -1029,29 +1032,30 @@ public class ProviderHelper {
 
         } catch (IOException e) {
             Log.e(Constants.TAG, "error saving public", e);
-            log(LogType.MSG_CON_ERROR_IO_PUBLIC);
+            log.add(LogType.MSG_CON_ERROR_IO_PUBLIC, indent);
             return new ConsolidateResult(ConsolidateResult.RESULT_ERROR, mLog);
         } finally {
-            mIndent -= 1;
+            indent -= 1;
         }
 
-        log(LogType.MSG_CON_CRITICAL_IN);
+        log.add(LogType.MSG_CON_CRITICAL_IN, indent);
         Preferences.getPreferences(mContext).setCachedConsolidate(true);
 
-        return consolidateDatabaseStep2(progress, false);
+        return consolidateDatabaseStep2(log, indent, progress, false);
     }
 
     public ConsolidateResult consolidateDatabaseStep2(Progressable progress) {
-        return consolidateDatabaseStep2(progress, true);
+        return consolidateDatabaseStep2(new OperationLog(), 0, progress, true);
     }
 
     private static boolean mConsolidateCritical = false;
 
-    private ConsolidateResult consolidateDatabaseStep2(Progressable progress, boolean recovery) {
+    private ConsolidateResult consolidateDatabaseStep2(
+            OperationLog log, int indent, Progressable progress, boolean recovery) {
 
         synchronized (ProviderHelper.class) {
             if (mConsolidateCritical) {
-                log(LogType.MSG_CON_ERROR_CONCURRENT);
+                log.add(LogType.MSG_CON_ERROR_CONCURRENT, indent);
                 return new ConsolidateResult(ConsolidateResult.RESULT_ERROR, mLog);
             }
             mConsolidateCritical = true;
@@ -1061,17 +1065,17 @@ public class ProviderHelper {
             Preferences prefs = Preferences.getPreferences(mContext);
 
             if (recovery) {
-                log(LogType.MSG_CON_RECOVER);
-                mIndent += 1;
+                log.add(LogType.MSG_CON_RECOVER, indent);
+                indent += 1;
             }
 
             if (!prefs.getCachedConsolidate()) {
-                log(LogType.MSG_CON_ERROR_BAD_STATE);
+                log.add(LogType.MSG_CON_ERROR_BAD_STATE, indent);
                 return new ConsolidateResult(ConsolidateResult.RESULT_ERROR, mLog);
             }
 
             // 2. wipe database (IT'S DANGEROUS)
-            log(LogType.MSG_CON_DB_CLEAR);
+            log.add(LogType.MSG_CON_DB_CLEAR, indent);
             mContentResolver.delete(KeyRings.buildUnifiedKeyRingsUri(), null, null);
 
             ParcelableFileCache<ParcelableKeyRing> cacheSecret =
@@ -1084,8 +1088,8 @@ public class ProviderHelper {
                 IteratorWithSize<ParcelableKeyRing> itSecrets = cacheSecret.readCache(false);
                 int numSecrets = itSecrets.getSize();
 
-                log(LogType.MSG_CON_REIMPORT_SECRET, numSecrets);
-                mIndent += 1;
+                log.add(LogType.MSG_CON_REIMPORT_SECRET, indent, numSecrets);
+                indent += 1;
 
                 // 3. Re-Import secret keyrings from cache
                 if (numSecrets > 0) {
@@ -1094,15 +1098,15 @@ public class ProviderHelper {
                             new ProgressFixedScaler(progress, 10, 25, 100, R.string.progress_con_reimport))
                             .importKeyRings(itSecrets, numSecrets);
                 } else {
-                    log(LogType.MSG_CON_REIMPORT_SECRET_SKIP);
+                    log.add(LogType.MSG_CON_REIMPORT_SECRET_SKIP, indent);
                 }
 
             } catch (IOException e) {
                 Log.e(Constants.TAG, "error importing secret", e);
-                log(LogType.MSG_CON_ERROR_SECRET);
+                log.add(LogType.MSG_CON_ERROR_SECRET, indent);
                 return new ConsolidateResult(ConsolidateResult.RESULT_ERROR, mLog);
             } finally {
-                mIndent -= 1;
+                indent -= 1;
             }
 
             try {
@@ -1110,8 +1114,8 @@ public class ProviderHelper {
                 IteratorWithSize<ParcelableKeyRing> itPublics = cachePublic.readCache();
                 int numPublics = itPublics.getSize();
 
-                log(LogType.MSG_CON_REIMPORT_PUBLIC, numPublics);
-                mIndent += 1;
+                log.add(LogType.MSG_CON_REIMPORT_PUBLIC, indent, numPublics);
+                indent += 1;
 
                 // 4. Re-Import public keyrings from cache
                 if (numPublics > 0) {
@@ -1120,50 +1124,50 @@ public class ProviderHelper {
                             new ProgressFixedScaler(progress, 25, 99, 100, R.string.progress_con_reimport))
                             .importKeyRings(itPublics, numPublics);
                 } else {
-                    log(LogType.MSG_CON_REIMPORT_PUBLIC_SKIP);
+                    log.add(LogType.MSG_CON_REIMPORT_PUBLIC_SKIP, indent);
                 }
 
             } catch (IOException e) {
                 Log.e(Constants.TAG, "error importing public", e);
-                log(LogType.MSG_CON_ERROR_PUBLIC);
+                log.add(LogType.MSG_CON_ERROR_PUBLIC, indent);
                 return new ConsolidateResult(ConsolidateResult.RESULT_ERROR, mLog);
             } finally {
-                mIndent -= 1;
+                indent -= 1;
             }
 
-            log(LogType.MSG_CON_CRITICAL_OUT);
+            log.add(LogType.MSG_CON_CRITICAL_OUT, indent);
             Preferences.getPreferences(mContext).setCachedConsolidate(false);
 
             // 5. Delete caches
             try {
-                log(LogType.MSG_CON_DELETE_SECRET);
-                mIndent += 1;
+                log.add(LogType.MSG_CON_DELETE_SECRET, indent);
+                indent += 1;
                 cacheSecret.delete();
             } catch (IOException e) {
                 // doesn't /really/ matter
                 Log.e(Constants.TAG, "IOException during delete of secret cache", e);
-                log(LogType.MSG_CON_WARN_DELETE_SECRET);
+                log.add(LogType.MSG_CON_WARN_DELETE_SECRET, indent);
             } finally {
-                mIndent -= 1;
+                indent -= 1;
             }
 
             try {
-                log(LogType.MSG_CON_DELETE_PUBLIC);
-                mIndent += 1;
+                log.add(LogType.MSG_CON_DELETE_PUBLIC, indent);
+                indent += 1;
                 cachePublic.delete();
             } catch (IOException e) {
                 // doesn't /really/ matter
                 Log.e(Constants.TAG, "IOException during deletion of public cache", e);
-                log(LogType.MSG_CON_WARN_DELETE_PUBLIC);
+                log.add(LogType.MSG_CON_WARN_DELETE_PUBLIC, indent);
             } finally {
-                mIndent -= 1;
+                indent -= 1;
             }
 
             progress.setProgress(100, 100);
-            log(LogType.MSG_CON_SUCCESS);
-            mIndent -= 1;
+            log.add(LogType.MSG_CON_SUCCESS, indent);
+            indent -= 1;
 
-            return new ConsolidateResult(ConsolidateResult.RESULT_OK, mLog);
+            return new ConsolidateResult(ConsolidateResult.RESULT_OK, log);
 
         } finally {
             mConsolidateCritical = false;
