@@ -19,34 +19,37 @@
 package org.sufficientlysecure.keychain.operations;
 
 import android.content.Context;
-import android.os.Bundle;
-import android.os.Environment;
+import android.database.Cursor;
+import android.net.Uri;
 
 import org.spongycastle.bcpg.ArmoredOutputStream;
-import org.spongycastle.openpgp.PGPException;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.keyimport.HkpKeyserver;
 import org.sufficientlysecure.keychain.keyimport.Keyserver.AddKeyException;
 import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
+import org.sufficientlysecure.keychain.operations.results.ExportResult;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedPublicKeyRing;
-import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKeyRing;
 import org.sufficientlysecure.keychain.pgp.PgpHelper;
 import org.sufficientlysecure.keychain.pgp.Progressable;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
-import org.sufficientlysecure.keychain.provider.KeychainContract;
+import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
+import org.sufficientlysecure.keychain.provider.KeychainDatabase.Tables;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
-import org.sufficientlysecure.keychain.service.KeychainIntentService;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
 import org.sufficientlysecure.keychain.operations.results.ImportKeyResult;
 import org.sufficientlysecure.keychain.operations.results.SaveKeyringResult;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
+import org.sufficientlysecure.keychain.util.FileHelper;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.ProgressScaler;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
@@ -92,6 +95,7 @@ public class ImportExportOperation extends BaseOperation {
         updateProgress(R.string.progress_importing, 0, 100);
 
         OperationLog log = new OperationLog();
+        log.add(LogType.MSG_IMPORT, 0, num);
 
         // If there aren't even any keys, do nothing here.
         if (entries == null || !entries.hasNext()) {
@@ -103,6 +107,7 @@ public class ImportExportOperation extends BaseOperation {
         int newKeys = 0, oldKeys = 0, badKeys = 0, secret = 0;
         ArrayList<Long> importedMasterKeyIds = new ArrayList<Long>();
 
+        boolean cancelled = false;
         int position = 0;
         double progSteps = 100.0 / num;
 
@@ -111,7 +116,8 @@ public class ImportExportOperation extends BaseOperation {
             ParcelableKeyRing entry = entries.next();
 
             // Has this action been cancelled? If so, don't proceed any further
-            if (mCancelled != null && mCancelled.get()) {
+            if (checkCancelled()) {
+                cancelled = true;
                 break;
             }
 
@@ -166,7 +172,18 @@ public class ImportExportOperation extends BaseOperation {
             position++;
         }
 
+        // convert to long array
+        long[] importedMasterKeyIdsArray = new long[importedMasterKeyIds.size()];
+        for (int i = 0; i < importedMasterKeyIds.size(); ++i) {
+            importedMasterKeyIdsArray[i] = importedMasterKeyIds.get(i);
+        }
+
         int resultType = 0;
+        if (cancelled) {
+            log.add(LogType.MSG_OPERATION_CANCELLED, 1);
+            resultType |= ImportKeyResult.RESULT_CANCELLED;
+        }
+
         // special return case: no new keys at all
         if (badKeys == 0 && newKeys == 0 && oldKeys == 0) {
             resultType = ImportKeyResult.RESULT_FAIL_NOTHING;
@@ -187,93 +204,178 @@ public class ImportExportOperation extends BaseOperation {
                 resultType |= ImportKeyResult.RESULT_WARNINGS;
             }
         }
-        if (mCancelled != null && mCancelled.get()) {
-            log.add(LogType.MSG_OPERATION_CANCELLED, 0);
-            resultType |= ImportKeyResult.RESULT_CANCELLED;
-        }
 
-        // convert to long array
-        long[] importedMasterKeyIdsArray = new long[importedMasterKeyIds.size()];
-        for (int i = 0; i < importedMasterKeyIds.size(); ++i) {
-            importedMasterKeyIdsArray[i] = importedMasterKeyIds.get(i);
+        // Final log entry, it's easier to do this individually
+        if ( (newKeys > 0 || oldKeys > 0) && badKeys > 0) {
+            log.add(LogType.MSG_IMPORT_PARTIAL, 1);
+        } else if (newKeys > 0 || oldKeys > 0) {
+            log.add(LogType.MSG_IMPORT_SUCCESS, 1);
+        } else {
+            log.add(LogType.MSG_IMPORT_ERROR, 1);
         }
 
         return new ImportKeyResult(resultType, log, newKeys, oldKeys, badKeys, secret,
                 importedMasterKeyIdsArray);
     }
 
-    public Bundle exportKeyRings(ArrayList<Long> publicKeyRingMasterIds,
-                                 ArrayList<Long> secretKeyRingMasterIds,
-                                 OutputStream outStream) throws PgpGeneralException,
-            PGPException, IOException {
-        Bundle returnData = new Bundle();
+    public ExportResult exportToFile(long[] masterKeyIds, boolean exportSecret, String outputFile) {
 
-        int masterKeyIdsSize = publicKeyRingMasterIds.size() + secretKeyRingMasterIds.size();
-        int progress = 0;
+        OperationLog log = new OperationLog();
+        if (masterKeyIds != null) {
+            log.add(LogType.MSG_EXPORT, 0, masterKeyIds.length);
+        } else {
+            log.add(LogType.MSG_EXPORT_ALL, 0);
+        }
 
-        updateProgress(
-                mContext.getResources().getQuantityString(R.plurals.progress_exporting_key,
-                        masterKeyIdsSize), 0, 100);
+        // do we have a file name?
+        if (outputFile == null) {
+            log.add(LogType.MSG_EXPORT_ERROR_NO_FILE, 1);
+            return new ExportResult(ExportResult.RESULT_ERROR, log);
+        }
 
+        // check if storage is ready
+        if (!FileHelper.isStorageMounted(outputFile)) {
+            log.add(LogType.MSG_EXPORT_ERROR_STORAGE, 1);
+            return new ExportResult(ExportResult.RESULT_ERROR, log);
+        }
+
+        try {
+            OutputStream outStream = new FileOutputStream(outputFile);
+            ExportResult result = exportKeyRings(log, masterKeyIds, exportSecret, outStream);
+            if (result.cancelled()) {
+                //noinspection ResultOfMethodCallIgnored
+                new File(outputFile).delete();
+            }
+            return result;
+        } catch (FileNotFoundException e) {
+            log.add(LogType.MSG_EXPORT_ERROR_FOPEN, 1);
+            return new ExportResult(ExportResult.RESULT_ERROR, log);
+        }
+
+    }
+
+    public ExportResult exportToUri(long[] masterKeyIds, boolean exportSecret, Uri outputUri) {
+
+        OperationLog log = new OperationLog();
+        if (masterKeyIds != null) {
+            log.add(LogType.MSG_EXPORT, 0, masterKeyIds.length);
+        } else {
+            log.add(LogType.MSG_EXPORT_ALL, 0);
+        }
+
+        // do we have a file name?
+        if (outputUri == null) {
+            log.add(LogType.MSG_EXPORT_ERROR_NO_URI, 1);
+            return new ExportResult(ExportResult.RESULT_ERROR, log);
+        }
+
+        try {
+            OutputStream outStream = mProviderHelper.getContentResolver().openOutputStream(outputUri);
+            return exportKeyRings(log, masterKeyIds, exportSecret, outStream);
+        } catch (FileNotFoundException e) {
+            log.add(LogType.MSG_EXPORT_ERROR_URI_OPEN, 1);
+            return new ExportResult(ExportResult.RESULT_ERROR, log);
+        }
+
+    }
+
+    private ExportResult exportKeyRings(OperationLog log, long[] masterKeyIds, boolean exportSecret,
+                                 OutputStream outStream) {
+
+        /* TODO isn't this checked above, with the isStorageMounted call?
         if (!Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
-            throw new PgpGeneralException(
-                    mContext.getString(R.string.error_external_storage_not_ready));
+            log.add(LogType.MSG_EXPORT_ERROR_STORAGE, 1);
+            return new ExportResult(ExportResult.RESULT_ERROR, log);
         }
-        // For each public masterKey id
-        for (long pubKeyMasterId : publicKeyRingMasterIds) {
-            progress++;
-            // Create an output stream
-            ArmoredOutputStream arOutStream = new ArmoredOutputStream(outStream);
-            String version = PgpHelper.getVersionForHeader(mContext);
-            if (version != null) {
-                arOutStream.setHeader("Version", version);
+        */
+
+        int okSecret = 0, okPublic = 0, progress = 0;
+
+        try {
+
+            String selection = null, ids[] = null;
+
+            if (masterKeyIds != null) {
+                // generate placeholders and string selection args
+                ids = new String[masterKeyIds.length];
+                StringBuilder placeholders = new StringBuilder("?");
+                for (int i = 0; i < masterKeyIds.length; i++) {
+                    ids[i] = Long.toString(masterKeyIds[i]);
+                    if (i != 0) {
+                        placeholders.append(",?");
+                    }
+                }
+
+                // put together selection string
+                selection = Tables.KEY_RINGS_PUBLIC + "." + KeyRings.MASTER_KEY_ID
+                        + " IN (" + placeholders + ")";
             }
 
-            updateProgress(progress * 100 / masterKeyIdsSize, 100);
+            Cursor cursor = mProviderHelper.getContentResolver().query(
+                    KeyRings.buildUnifiedKeyRingsUri(), new String[]{
+                            KeyRings.MASTER_KEY_ID, KeyRings.PUBKEY_DATA,
+                            KeyRings.PRIVKEY_DATA, KeyRings.HAS_ANY_SECRET
+                    }, selection, ids, Tables.KEYS + "." + KeyRings.MASTER_KEY_ID
+            );
 
-            try {
-                CanonicalizedPublicKeyRing ring = mProviderHelper.getCanonicalizedPublicKeyRing(
-                        KeychainContract.KeyRings.buildUnifiedKeyRingUri(pubKeyMasterId)
-                );
-
-                ring.encode(arOutStream);
-            } catch (ProviderHelper.NotFoundException e) {
-                Log.e(Constants.TAG, "key not found!", e);
-                // TODO: inform user?
+            if (cursor == null || !cursor.moveToFirst()) {
+                log.add(LogType.MSG_EXPORT_ERROR_DB, 1);
+                return new ExportResult(ExportResult.RESULT_ERROR, log, okPublic, okSecret);
             }
 
-            arOutStream.close();
+            int numKeys = cursor.getCount();
+
+            updateProgress(
+                    mContext.getResources().getQuantityString(R.plurals.progress_exporting_key,
+                            numKeys), 0, numKeys);
+
+            // For each public masterKey id
+            while (!cursor.isAfterLast()) {
+
+                // Create an output stream
+                ArmoredOutputStream arOutStream = new ArmoredOutputStream(outStream);
+                String version = PgpHelper.getVersionForHeader(mContext);
+                if (version != null) {
+                    arOutStream.setHeader("Version", version);
+                }
+
+                long keyId = cursor.getLong(0);
+
+                log.add(LogType.MSG_EXPORT_PUBLIC, 1, KeyFormattingUtils.beautifyKeyId(keyId));
+
+                { // export public key part
+                    byte[] data = cursor.getBlob(1);
+                    arOutStream.write(data);
+                    arOutStream.close();
+
+                    okPublic += 1;
+                }
+
+                // export secret key part
+                if (exportSecret && cursor.getInt(3) > 0) {
+                    log.add(LogType.MSG_EXPORT_SECRET, 2, KeyFormattingUtils.beautifyKeyId(keyId));
+                    byte[] data = cursor.getBlob(2);
+                    arOutStream.write(data);
+
+                    okSecret += 1;
+                }
+
+                updateProgress(progress++, numKeys);
+
+                cursor.moveToNext();
+            }
+
+            updateProgress(R.string.progress_done, numKeys, numKeys);
+
+        } catch (IOException e) {
+            log.add(LogType.MSG_EXPORT_ERROR_IO, 1);
+            return new ExportResult(ExportResult.RESULT_ERROR, log, okPublic, okSecret);
         }
 
-        // For each secret masterKey id
-        for (long secretKeyMasterId : secretKeyRingMasterIds) {
-            progress++;
-            // Create an output stream
-            ArmoredOutputStream arOutStream = new ArmoredOutputStream(outStream);
-            String version = PgpHelper.getVersionForHeader(mContext);
-            if (version != null) {
-                arOutStream.setHeader("Version", version);
-            }
 
-            updateProgress(progress * 100 / masterKeyIdsSize, 100);
+        log.add(LogType.MSG_EXPORT_SUCCESS, 1);
+        return new ExportResult(ExportResult.RESULT_OK, log, okPublic, okSecret);
 
-            try {
-                CanonicalizedSecretKeyRing secretKeyRing =
-                        mProviderHelper.getCanonicalizedSecretKeyRing(secretKeyMasterId);
-                secretKeyRing.encode(arOutStream);
-            } catch (ProviderHelper.NotFoundException e) {
-                Log.e(Constants.TAG, "key not found!", e);
-                // TODO: inform user?
-            }
-
-            arOutStream.close();
-        }
-
-        returnData.putInt(KeychainIntentService.RESULT_EXPORT, masterKeyIdsSize);
-
-        updateProgress(R.string.progress_done, 100, 100);
-
-        return returnData;
     }
 
 }

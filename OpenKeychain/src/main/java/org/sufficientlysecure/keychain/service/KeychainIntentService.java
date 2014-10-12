@@ -32,6 +32,7 @@ import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.CertifyOperation;
 import org.sufficientlysecure.keychain.operations.DeleteOperation;
 import org.sufficientlysecure.keychain.operations.results.DeleteResult;
+import org.sufficientlysecure.keychain.operations.results.ExportResult;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.ProviderHelper.NotFoundException;
 import org.sufficientlysecure.keychain.operations.results.CertifyResult;
@@ -356,12 +357,15 @@ public class KeychainIntentService extends IntentService implements Progressable
 
         } else if (ACTION_DELETE.equals(action)) {
 
+            // Input
             long[] masterKeyIds = data.getLongArray(DELETE_KEY_LIST);
             boolean isSecret = data.getBoolean(DELETE_IS_SECRET);
 
+            // Operation
             DeleteOperation op = new DeleteOperation(this, new ProviderHelper(this), this);
             DeleteResult result = op.execute(masterKeyIds, isSecret);
 
+            // Result
             sendMessageToHandler(KeychainIntentServiceHandler.MESSAGE_OKAY, result);
 
         } else if (ACTION_DELETE_FILE_SECURELY.equals(action)) {
@@ -523,71 +527,26 @@ public class KeychainIntentService extends IntentService implements Progressable
 
         } else if (ACTION_EXPORT_KEYRING.equals(action)) {
 
-            try {
+            // Input
+            boolean exportSecret = data.getBoolean(EXPORT_SECRET, false);
+            String outputFile = data.getString(EXPORT_FILENAME);
+            Uri outputUri = data.getParcelable(EXPORT_URI);
 
-                boolean exportSecret = data.getBoolean(EXPORT_SECRET, false);
-                long[] masterKeyIds = data.getLongArray(EXPORT_KEY_RING_MASTER_KEY_ID);
-                String outputFile = data.getString(EXPORT_FILENAME);
-                Uri outputUri = data.getParcelable(EXPORT_URI);
+            boolean exportAll = data.getBoolean(EXPORT_ALL);
+            long[] masterKeyIds = exportAll ? null : data.getLongArray(EXPORT_KEY_RING_MASTER_KEY_ID);
 
-                // If not exporting all keys get the masterKeyIds of the keys to export from the intent
-                boolean exportAll = data.getBoolean(EXPORT_ALL);
 
-                if (outputFile != null) {
-                    // check if storage is ready
-                    if (!FileHelper.isStorageMounted(outputFile)) {
-                        throw new PgpGeneralException(getString(R.string.error_external_storage_not_ready));
-                    }
-                }
-
-                ArrayList<Long> publicMasterKeyIds = new ArrayList<Long>();
-                ArrayList<Long> secretMasterKeyIds = new ArrayList<Long>();
-
-                String selection = null;
-                if (!exportAll) {
-                    selection = KeychainDatabase.Tables.KEYS + "." + KeyRings.MASTER_KEY_ID + " IN( ";
-                    for (long l : masterKeyIds) {
-                        selection += Long.toString(l) + ",";
-                    }
-                    selection = selection.substring(0, selection.length() - 1) + " )";
-                }
-
-                Cursor cursor = getContentResolver().query(KeyRings.buildUnifiedKeyRingsUri(),
-                        new String[]{KeyRings.MASTER_KEY_ID, KeyRings.HAS_ANY_SECRET},
-                        selection, null, null);
-                try {
-                    if (cursor != null && cursor.moveToFirst()) do {
-                        // export public either way
-                        publicMasterKeyIds.add(cursor.getLong(0));
-                        // add secret if available (and requested)
-                        if (exportSecret && cursor.getInt(1) != 0)
-                            secretMasterKeyIds.add(cursor.getLong(0));
-                    } while (cursor.moveToNext());
-                } finally {
-                    if (cursor != null) {
-                        cursor.close();
-                    }
-                }
-
-                OutputStream outStream;
-                if (outputFile != null) {
-                    outStream = new FileOutputStream(outputFile);
-                } else {
-                    outStream = getContentResolver().openOutputStream(outputUri);
-                }
-
-                ImportExportOperation importExportOperation = new ImportExportOperation(this, new ProviderHelper(this), this);
-                Bundle resultData = importExportOperation
-                        .exportKeyRings(publicMasterKeyIds, secretMasterKeyIds, outStream);
-
-                if (mActionCanceled.get() && outputFile != null) {
-                    new File(outputFile).delete();
-                }
-
-                sendMessageToHandler(KeychainIntentServiceHandler.MESSAGE_OKAY, resultData);
-            } catch (Exception e) {
-                sendErrorToHandler(e);
+            // Operation
+            ImportExportOperation importExportOperation = new ImportExportOperation(this, new ProviderHelper(this), this);
+            ExportResult result;
+            if (outputFile != null) {
+                result = importExportOperation.exportToFile(masterKeyIds, exportSecret, outputFile);
+            } else {
+                result = importExportOperation.exportToUri(masterKeyIds, exportSecret, outputUri);
             }
+
+            // Result
+            sendMessageToHandler(KeychainIntentServiceHandler.MESSAGE_OKAY, result);
 
         } else if (ACTION_IMPORT_KEYRING.equals(action)) {
 

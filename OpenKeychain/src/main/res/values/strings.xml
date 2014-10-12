@@ -940,6 +940,30 @@
 
     <string name="msg_crt_upload_success">"Successfully uploaded key to server"</string>
 
+    <plurals name="msg_import">
+        <item quantity="one">"Importing key"</item>
+        <item quantity="other">"Importing %d keys"</item>
+    </plurals>
+    <string name="msg_import_error">"Import operation failed!"</string>
+    <string name="msg_import_partial">"Import operation successful, with errors!"</string>
+    <string name="msg_import_success">"Import operation successful"</string>
+
+    <plurals name="msg_export">
+        <item quantity="one">"Exporting one keys"</item>
+        <item quantity="other">"Exporting %d keys"</item>
+    </plurals>
+    <string name="msg_export_all">"Exporting all keys"</string>
+    <string name="msg_export_public">"Exporting public key %s"</string>
+    <string name="msg_export_secret">"Exporting secret key %s"</string>
+    <string name="msg_export_error_no_file">"No filename specified!"</string>
+    <string name="msg_export_error_fopen">"Error opening File!"</string>
+    <string name="msg_export_error_no_uri">"No URI specified!"</string>
+    <string name="msg_export_error_uri_open">"Error opening URI stream!"</string>
+    <string name="msg_export_error_storage">"Storage is not ready for writing!"</string>
+    <string name="msg_export_error_db">"Database error!"</string>
+    <string name="msg_export_error_io">"Input/output error!"</string>
+    <string name="msg_export_success">"Export operation successful"</string>
+
     <string name="msg_del_error_empty">"Nothing to delete!"</string>
     <string name="msg_del_error_multi_secret">"Secret keys can only be deleted individually!"</string>
     <plurals name="msg_del">

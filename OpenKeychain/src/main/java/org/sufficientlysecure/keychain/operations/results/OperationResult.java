@@ -580,6 +580,24 @@ public abstract class OperationResult implements Parcelable {
         MSG_CRT_WARN_CERT_FAILED (LogLevel.WARN, R.string.msg_crt_warn_cert_failed),
         MSG_CRT_WARN_SAVE_FAILED (LogLevel.WARN, R.string.msg_crt_warn_save_failed),
 
+        MSG_IMPORT (LogLevel.START, R.plurals.msg_import),
+        MSG_IMPORT_ERROR (LogLevel.ERROR, R.string.msg_import_error),
+        MSG_IMPORT_PARTIAL (LogLevel.ERROR, R.string.msg_import_partial),
+        MSG_IMPORT_SUCCESS (LogLevel.OK, R.string.msg_import_success),
+
+        MSG_EXPORT (LogLevel.START, R.plurals.msg_export),
+        MSG_EXPORT_PUBLIC (LogLevel.DEBUG, R.string.msg_export_public),
+        MSG_EXPORT_SECRET (LogLevel.DEBUG, R.string.msg_export_secret),
+        MSG_EXPORT_ALL (LogLevel.START, R.string.msg_export_all),
+        MSG_EXPORT_ERROR_NO_FILE (LogLevel.ERROR, R.string.msg_export_error_no_file),
+        MSG_EXPORT_ERROR_FOPEN (LogLevel.ERROR, R.string.msg_export_error_fopen),
+        MSG_EXPORT_ERROR_NO_URI (LogLevel.ERROR, R.string.msg_export_error_no_uri),
+        MSG_EXPORT_ERROR_URI_OPEN (LogLevel.ERROR, R.string.msg_export_error_uri_open),
+        MSG_EXPORT_ERROR_STORAGE (LogLevel.ERROR, R.string.msg_export_error_storage),
+        MSG_EXPORT_ERROR_DB (LogLevel.ERROR, R.string.msg_export_error_db),
+        MSG_EXPORT_ERROR_IO (LogLevel.ERROR, R.string.msg_export_error_io),
+        MSG_EXPORT_SUCCESS (LogLevel.OK, R.string.msg_export_success),
+
         MSG_CRT_UPLOAD_SUCCESS (LogLevel.OK, R.string.msg_crt_upload_success),
 
         MSG_ACC_SAVED (LogLevel.INFO, R.string.api_settings_save_msg),

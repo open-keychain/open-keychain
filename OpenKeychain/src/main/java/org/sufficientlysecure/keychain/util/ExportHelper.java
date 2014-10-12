@@ -29,6 +29,7 @@ import android.widget.Toast;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.operations.results.ExportResult;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
@@ -127,19 +128,10 @@ public class ExportHelper {
 
                 if (message.arg1 == KeychainIntentServiceHandler.MESSAGE_OKAY) {
                     // get returned data bundle
-                    Bundle returnData = message.getData();
+                    Bundle data = message.getData();
 
-                    int exported = returnData.getInt(KeychainIntentService.RESULT_EXPORT);
-                    String toastMessage;
-                    if (exported == 1) {
-                        toastMessage = mActivity.getString(R.string.key_exported);
-                    } else if (exported > 0) {
-                        toastMessage = mActivity.getString(R.string.keys_exported, exported);
-                    } else {
-                        toastMessage = mActivity.getString(R.string.no_keys_exported);
-                    }
-                    Toast.makeText(mActivity, toastMessage, Toast.LENGTH_SHORT).show();
-
+                    ExportResult result = data.getParcelable(ExportResult.EXTRA_RESULT);
+                    result.createNotify(mActivity).show();
                 }
             }
         };
