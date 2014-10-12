@@ -29,8 +29,8 @@ import android.os.RemoteException;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.operations.CertifyOperation;
 import org.sufficientlysecure.keychain.operations.DeleteOperation;
-import org.sufficientlysecure.keychain.operations.PgpCertifyOperation;
 import org.sufficientlysecure.keychain.operations.results.DeleteResult;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.ProviderHelper.NotFoundException;
@@ -250,42 +250,34 @@ public class KeychainIntentService extends IntentService implements Progressable
 
         Log.logDebugBundle(data, "EXTRA_DATA");
 
+        ProviderHelper providerHelper = new ProviderHelper(this);
+
         String action = intent.getAction();
 
         // executeServiceMethod action from extra bundle
         if (ACTION_CERTIFY_KEYRING.equals(action)) {
 
-            try {
+            // Input
+            CertifyActionsParcel parcel = data.getParcelable(CERTIFY_PARCEL);
 
-                /* Input */
-                CertifyActionsParcel parcel = data.getParcelable(CERTIFY_PARCEL);
+            // Operation
+            CertifyOperation op = new CertifyOperation(this, providerHelper, this, mActionCanceled);
+            CertifyResult result = op.certify(parcel);
 
-                /* Operation */
-                String passphrase = PassphraseCacheService.getCachedPassphrase(this,
-                        // certification is always with the master key id, so use that one
-                        parcel.mMasterKeyId, parcel.mMasterKeyId);
-                if (passphrase == null) {
-                    throw new PgpGeneralException("Unable to obtain passphrase");
-                }
-
-                ProviderHelper providerHelper = new ProviderHelper(this);
-                PgpCertifyOperation op = new PgpCertifyOperation(this, providerHelper, this, mActionCanceled);
-                CertifyResult result = op.certify(parcel, passphrase);
-
-                sendMessageToHandler(KeychainIntentServiceHandler.MESSAGE_OKAY, result);
-
-            } catch (Exception e) {
-                sendErrorToHandler(e);
-            }
+            // Result
+            sendMessageToHandler(KeychainIntentServiceHandler.MESSAGE_OKAY, result);
 
         } else if (ACTION_CONSOLIDATE.equals(action)) {
 
+            // Operation
             ConsolidateResult result;
             if (data.containsKey(CONSOLIDATE_RECOVERY) && data.getBoolean(CONSOLIDATE_RECOVERY)) {
                 result = new ProviderHelper(this).consolidateDatabaseStep2(this);
             } else {
                 result = new ProviderHelper(this).consolidateDatabaseStep1(this);
             }
+
+            // Result
             sendMessageToHandler(KeychainIntentServiceHandler.MESSAGE_OKAY, result);
 
         } else if (ACTION_DECRYPT_METADATA.equals(action)) {
@@ -617,7 +609,6 @@ public class KeychainIntentService extends IntentService implements Progressable
                     numEntries = it.getSize();
                 }
 
-                ProviderHelper providerHelper = new ProviderHelper(this);
                 ImportExportOperation importExportOperation = new ImportExportOperation(
                         this, providerHelper, this, mActionCanceled);
                 ImportKeyResult result = importExportOperation.importKeyRings(entries, numEntries);
@@ -733,7 +724,6 @@ public class KeychainIntentService extends IntentService implements Progressable
                 /* Operation */
                 HkpKeyserver server = new HkpKeyserver(keyServer);
 
-                ProviderHelper providerHelper = new ProviderHelper(this);
                 CanonicalizedPublicKeyRing keyring = providerHelper.getCanonicalizedPublicKeyRing(dataUri);
                 ImportExportOperation importExportOperation = new ImportExportOperation(this, new ProviderHelper(this), this);
 

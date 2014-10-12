@@ -285,8 +285,7 @@ public class CanonicalizedSecretKey extends CanonicalizedPublicKey {
      * @return A keyring with added certifications
      */
     public UncachedKeyRing certifyUserIds(CanonicalizedPublicKeyRing publicKeyRing, List<String> userIds,
-                                          byte[] nfcSignedHash, Date nfcCreationTimestamp)
-            throws PGPException {
+                                          byte[] nfcSignedHash, Date nfcCreationTimestamp) {
         if (mPrivateKeyState == PRIVATE_KEY_STATE_LOCKED) {
             throw new PrivateKeyNotUnlockedException();
         }
@@ -299,7 +298,12 @@ public class CanonicalizedSecretKey extends CanonicalizedPublicKey {
                     nfcSignedHash, nfcCreationTimestamp);
 
             signatureGenerator = new PGPSignatureGenerator(contentSignerBuilder);
-            signatureGenerator.init(PGPSignature.DEFAULT_CERTIFICATION, mPrivateKey);
+            try {
+                signatureGenerator.init(PGPSignature.DEFAULT_CERTIFICATION, mPrivateKey);
+            } catch (PGPException e) {
+                Log.e(Constants.TAG, "signing error", e);
+                return null;
+            }
         }
 
         { // supply signatureGenerator with a SubpacketVector
@@ -318,9 +322,14 @@ public class CanonicalizedSecretKey extends CanonicalizedPublicKey {
         // fetch public key ring, add the certification and return it
         Iterable<String> it = userIds != null ? userIds
                 : new IterableIterator<String>(publicKey.getUserIDs());
-        for (String userId : it) {
-            PGPSignature sig = signatureGenerator.generateCertification(userId, publicKey);
-            publicKey = PGPPublicKey.addCertification(publicKey, userId, sig);
+        try {
+            for (String userId : it) {
+                PGPSignature sig = signatureGenerator.generateCertification(userId, publicKey);
+                publicKey = PGPPublicKey.addCertification(publicKey, userId, sig);
+            }
+        } catch (PGPException e) {
+            Log.e(Constants.TAG, "signing error", e);
+            return null;
         }
 
         PGPPublicKeyRing ring = PGPPublicKeyRing.insertPublicKey(publicKeyRing.getRing(), publicKey);

@@ -2,12 +2,15 @@ package org.sufficientlysecure.keychain.operations;
 
 import android.content.Context;
 
+import org.sufficientlysecure.keychain.pgp.PassphraseCacheInterface;
 import org.sufficientlysecure.keychain.pgp.Progressable;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
+import org.sufficientlysecure.keychain.provider.ProviderHelper.NotFoundException;
+import org.sufficientlysecure.keychain.service.PassphraseCacheService;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
-public class BaseOperation {
+public class BaseOperation implements PassphraseCacheInterface {
 
     final public Context mContext;
     final public Progressable mProgressable;
@@ -50,6 +53,26 @@ public class BaseOperation {
 
     protected boolean checkCancelled() {
         return mCancelled != null && mCancelled.get();
+    }
+
+    @Override
+    public String getCachedPassphrase(long subKeyId) throws NoSecretKeyException {
+        try {
+            long masterKeyId = mProviderHelper.getMasterKeyId(subKeyId);
+            return getCachedPassphrase(masterKeyId, subKeyId);
+        } catch (NotFoundException e) {
+            throw new PassphraseCacheInterface.NoSecretKeyException();
+        }
+    }
+
+    @Override
+    public String getCachedPassphrase(long masterKeyId, long subKeyId) throws NoSecretKeyException {
+        try {
+            return PassphraseCacheService.getCachedPassphrase(
+                    mContext, masterKeyId, subKeyId);
+        } catch (PassphraseCacheService.KeyNotFoundException e) {
+            throw new PassphraseCacheInterface.NoSecretKeyException();
+        }
     }
 
 }

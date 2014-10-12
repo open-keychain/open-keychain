@@ -2,8 +2,6 @@ package org.sufficientlysecure.keychain.operations;
 
 import android.content.Context;
 
-import org.spongycastle.openpgp.PGPException;
-import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedPublicKeyRing;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKeyRing;
@@ -19,18 +17,17 @@ import org.sufficientlysecure.keychain.operations.results.OperationResult.LogTyp
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
 import org.sufficientlysecure.keychain.operations.results.SaveKeyringResult;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
-import org.sufficientlysecure.keychain.util.Log;
 
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-public class PgpCertifyOperation extends BaseOperation {
+public class CertifyOperation extends BaseOperation {
 
-    public PgpCertifyOperation(Context context, ProviderHelper providerHelper, Progressable progressable, AtomicBoolean cancelled) {
+    public CertifyOperation(Context context, ProviderHelper providerHelper, Progressable progressable, AtomicBoolean cancelled) {
         super(context, providerHelper, progressable, cancelled);
     }
 
-    public CertifyResult certify(CertifyActionsParcel parcel, String passphrase) {
+    public CertifyResult certify(CertifyActionsParcel parcel) {
 
         OperationLog log = new OperationLog();
         log.add(LogType.MSG_CRT, 0);
@@ -38,6 +35,10 @@ public class PgpCertifyOperation extends BaseOperation {
         // Retrieve and unlock secret key
         CanonicalizedSecretKey certificationKey;
         try {
+
+            // certification is always with the master key id, so use that one
+            String passphrase = getCachedPassphrase(parcel.mMasterKeyId, parcel.mMasterKeyId);
+
             log.add(LogType.MSG_CRT_MASTER_FETCH, 1);
             CanonicalizedSecretKeyRing secretKeyRing =
                     mProviderHelper.getCanonicalizedSecretKeyRing(parcel.mMasterKeyId);
@@ -51,6 +52,9 @@ public class PgpCertifyOperation extends BaseOperation {
             log.add(LogType.MSG_CRT_ERROR_UNLOCK, 2);
             return new CertifyResult(CertifyResult.RESULT_ERROR, log);
         } catch (NotFoundException e) {
+            log.add(LogType.MSG_CRT_ERROR_MASTER_NOT_FOUND, 2);
+            return new CertifyResult(CertifyResult.RESULT_ERROR, log);
+        } catch (NoSecretKeyException e) {
             log.add(LogType.MSG_CRT_ERROR_MASTER_NOT_FOUND, 2);
             return new CertifyResult(CertifyResult.RESULT_ERROR, log);
         }
@@ -84,15 +88,15 @@ public class PgpCertifyOperation extends BaseOperation {
                         mProviderHelper.getCanonicalizedPublicKeyRing(action.mMasterKeyId);
 
                 UncachedKeyRing certifiedKey = certificationKey.certifyUserIds(publicRing, action.mUserIds, null, null);
+                if (certifiedKey == null) {
+                    certifyError += 1;
+                    log.add(LogType.MSG_CRT_WARN_CERT_FAILED, 3);
+                }
                 certifiedKeys.add(certifiedKey);
 
             } catch (NotFoundException e) {
                 certifyError += 1;
                 log.add(LogType.MSG_CRT_WARN_NOT_FOUND, 3);
-            } catch (PGPException e) {
-                certifyError += 1;
-                log.add(LogType.MSG_CRT_WARN_CERT_FAILED, 3);
-                Log.e(Constants.TAG, "Encountered PGPException during certification", e);
             }
 
         }
@@ -127,8 +131,6 @@ public class PgpCertifyOperation extends BaseOperation {
             }
 
             log.add(result, 2);
-
-            // TODO do something with import results
 
         }
 
