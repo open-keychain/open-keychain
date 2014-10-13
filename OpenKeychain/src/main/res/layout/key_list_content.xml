@@ -13,7 +13,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <LinearLayout
+        <!--<LinearLayout
             android:orientation="vertical"
             android:background="@color/holo_gray_bright"
             android:layout_width="match_parent"
@@ -33,7 +33,7 @@
                 android:layout_height="1dip"
                 android:background="?android:attr/listDivider" />
 
-        </LinearLayout>
+        </LinearLayout>-->
 
         <fragment
             android:id="@+id/key_list_fragment"

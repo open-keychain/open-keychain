@@ -102,12 +102,12 @@ public class KeyListFragment extends LoaderFragment
     private KeyListAdapter mAdapter;
     private StickyListHeadersListView mStickyList;
     private ListAwareSwipeRefreshLayout mSwipeRefreshLayout;
-    private Spinner mFilterSpinner;
+//    private Spinner mFilterSpinner;
 
     // saves the mode object for multiselect, needed for reset at some point
     private ActionMode mActionMode = null;
 
-    private boolean mShowAllKeys = false;
+    private boolean mShowAllKeys = true;
 
     private String mQuery;
     private SearchView mSearchView;
@@ -237,7 +237,7 @@ public class KeyListFragment extends LoaderFragment
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        mFilterSpinner = (Spinner) getActivity().findViewById(R.id.key_list_filter_spinner);
+//        mFilterSpinner = (Spinner) getActivity().findViewById(R.id.key_list_filter_spinner);
         List<String> list = new ArrayList<String>();
         list.add(getString(R.string.key_list_filter_show_certified));
         list.add(getString(R.string.key_list_filter_show_all));
@@ -248,30 +248,30 @@ public class KeyListFragment extends LoaderFragment
         dataAdapter.setDropDownViewResource
                 (android.R.layout.simple_spinner_dropdown_item);
 
-        mFilterSpinner.setAdapter(dataAdapter);
+//        mFilterSpinner.setAdapter(dataAdapter);
 
-        mFilterSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                switch (position) {
-                    case 0: {
-                        mShowAllKeys = false;
-                        getLoaderManager().restartLoader(0, null, KeyListFragment.this);
-                        break;
-                    }
-                    case 1: {
-                        mShowAllKeys = true;
-                        getLoaderManager().restartLoader(0, null, KeyListFragment.this);
-                        break;
-                    }
-                }
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
-        });
+//        mFilterSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+//            @Override
+//            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+//                switch (position) {
+//                    case 0: {
+//                        mShowAllKeys = false;
+//                        getLoaderManager().restartLoader(0, null, KeyListFragment.this);
+//                        break;
+//                    }
+//                    case 1: {
+//                        mShowAllKeys = true;
+//                        getLoaderManager().restartLoader(0, null, KeyListFragment.this);
+//                        break;
+//                    }
+//                }
+//            }
+//
+//            @Override
+//            public void onNothingSelected(AdapterView<?> parent) {
+//
+//            }
+//        });
 
         mStickyList.setOnItemClickListener(this);
         mStickyList.setAreHeadersSticky(true);
