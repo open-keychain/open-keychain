@@ -368,29 +368,6 @@ public class KeychainIntentService extends IntentService implements Progressable
             // Result
             sendMessageToHandler(KeychainIntentServiceHandler.MESSAGE_OKAY, result);
 
-        } else if (ACTION_DELETE_FILE_SECURELY.equals(action)) {
-
-            try {
-                /* Input */
-                String deleteFile = data.getString(DELETE_FILE);
-
-                /* Operation */
-                try {
-                    PgpHelper.deleteFileSecurely(this, this, new File(deleteFile));
-                } catch (FileNotFoundException e) {
-                    throw new PgpGeneralException(
-                            getString(R.string.error_file_not_found, deleteFile));
-                } catch (IOException e) {
-                    throw new PgpGeneralException(getString(R.string.error_file_delete_failed,
-                            deleteFile));
-                }
-
-                /* Output */
-                sendMessageToHandler(KeychainIntentServiceHandler.MESSAGE_OKAY);
-            } catch (Exception e) {
-                sendErrorToHandler(e);
-            }
-
         } else if (ACTION_DOWNLOAD_AND_IMPORT_KEYS.equals(action) || ACTION_IMPORT_KEYBASE_KEYS.equals(action)) {
 
             ArrayList<ImportKeysListEntry> entries = data.getParcelableArrayList(DOWNLOAD_KEY_LIST);
