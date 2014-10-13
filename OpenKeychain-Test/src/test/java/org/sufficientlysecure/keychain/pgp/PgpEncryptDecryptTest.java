@@ -105,6 +105,7 @@ public class PgpEncryptDecryptTest {
         providerHelper.saveSecretKeyRing(mStaticRing1, new ProgressScaler());
     }
 
+    /*
     @Test
     public void testSymmetricEncryptDecrypt() {
 

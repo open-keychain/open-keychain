@@ -20,7 +20,6 @@ package org.sufficientlysecure.keychain.service;
 
 import android.app.IntentService;
 import android.content.Intent;
-import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Message;
@@ -58,8 +57,6 @@ import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralMsgIdException;
 import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
-import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
-import org.sufficientlysecure.keychain.provider.KeychainDatabase;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
@@ -78,7 +75,6 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
@@ -91,7 +87,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * data from the activities or other apps, queues these intents, executes them, and stops itself
  * after doing them.
  */
-public class KeychainIntentService extends IntentService implements Progressable, PassphraseCacheInterface {
+public class KeychainIntentService extends IntentService implements Progressable {
 
     /* extras that can be given by intent */
     public static final String EXTRA_MESSENGER = "messenger";
@@ -297,11 +293,9 @@ public class KeychainIntentService extends IntentService implements Progressable
                 // verifyText and decrypt returning additional resultData values for the
                 // verification of signatures
                 PgpDecryptVerify.Builder builder = new PgpDecryptVerify.Builder(
-                        new ProviderHelper(this),
-                        this, inputData, null
+                        this, new ProviderHelper(this), this, inputData, null
                 );
-                builder.setProgressable(this)
-                        .setAllowSymmetricDecryption(true)
+                builder.setAllowSymmetricDecryption(true)
                         .setPassphrase(passphrase)
                         .setDecryptMetadataOnly(true)
                         .setNfcState(nfcDecryptedSessionKey);
@@ -330,11 +324,10 @@ public class KeychainIntentService extends IntentService implements Progressable
                 // verifyText and decrypt returning additional resultData values for the
                 // verification of signatures
                 PgpDecryptVerify.Builder builder = new PgpDecryptVerify.Builder(
-                        new ProviderHelper(this), this,
+                        this, new ProviderHelper(this), this,
                         inputData, outStream
                 );
-                builder.setProgressable(this)
-                        .setAllowSymmetricDecryption(true)
+                builder.setAllowSymmetricDecryption(true)
                         .setPassphrase(passphrase)
                         .setNfcState(nfcDecryptedSessionKey);
 
@@ -591,10 +584,9 @@ public class KeychainIntentService extends IntentService implements Progressable
 
                     /* Operation */
                     PgpSignEncrypt.Builder builder = new PgpSignEncrypt.Builder(
-                            new ProviderHelper(this), this, inputData, outStream
+                            this, new ProviderHelper(this), this, inputData, outStream
                     );
-                    builder.setProgressable(this)
-                            .setEnableAsciiArmorOutput(useAsciiArmor)
+                    builder.setEnableAsciiArmorOutput(useAsciiArmor)
                             .setVersionHeader(PgpHelper.getVersionForHeader(this))
                             .setCompressionId(compressionId)
                             .setSymmetricEncryptionAlgorithm(
@@ -784,26 +776,6 @@ public class KeychainIntentService extends IntentService implements Progressable
 
             default:
                 throw new PgpGeneralException("No target choosen!");
-        }
-    }
-
-    @Override
-    public String getCachedPassphrase(long subKeyId) throws NoSecretKeyException {
-        try {
-            long masterKeyId = new ProviderHelper(this).getMasterKeyId(subKeyId);
-            return getCachedPassphrase(masterKeyId, subKeyId);
-        } catch (NotFoundException e) {
-            throw new PassphraseCacheInterface.NoSecretKeyException();
-        }
-    }
-
-    @Override
-    public String getCachedPassphrase(long masterKeyId, long subKeyId) throws NoSecretKeyException {
-        try {
-            return PassphraseCacheService.getCachedPassphrase(
-                    KeychainIntentService.this, masterKeyId, subKeyId);
-        } catch (PassphraseCacheService.KeyNotFoundException e) {
-            throw new PassphraseCacheInterface.NoSecretKeyException();
         }
     }
 

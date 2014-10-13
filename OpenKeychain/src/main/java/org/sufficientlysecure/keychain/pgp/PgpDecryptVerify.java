@@ -18,6 +18,7 @@
 
 package org.sufficientlysecure.keychain.pgp;
 
+import android.content.Context;
 import android.webkit.MimeTypeMap;
 
 import org.openintents.openpgp.OpenPgpMetadata;
@@ -45,6 +46,7 @@ import org.spongycastle.openpgp.operator.jcajce.JcePBEDataDecryptorFactoryBuilde
 import org.spongycastle.openpgp.operator.jcajce.NfcSyncPublicKeyDataDecryptorFactoryBuilder;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.operations.BaseOperation;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
@@ -71,13 +73,11 @@ import java.util.Set;
 /**
  * This class uses a Builder pattern!
  */
-public class PgpDecryptVerify {
-    private ProviderHelper mProviderHelper;
-    private PassphraseCacheInterface mPassphraseCache;
+public class PgpDecryptVerify extends BaseOperation {
+
     private InputData mData;
     private OutputStream mOutStream;
 
-    private Progressable mProgressable;
     private boolean mAllowSymmetricDecryption;
     private String mPassphrase;
     private Set<Long> mAllowedKeyIds;
@@ -85,13 +85,12 @@ public class PgpDecryptVerify {
     private byte[] mDecryptedSessionKey;
 
     private PgpDecryptVerify(Builder builder) {
+        super(builder.mContext, builder.mProviderHelper, builder.mProgressable);
+
         // private Constructor can only be called from Builder
-        this.mProviderHelper = builder.mProviderHelper;
-        this.mPassphraseCache = builder.mPassphraseCache;
         this.mData = builder.mData;
         this.mOutStream = builder.mOutStream;
 
-        this.mProgressable = builder.mProgressable;
         this.mAllowSymmetricDecryption = builder.mAllowSymmetricDecryption;
         this.mPassphrase = builder.mPassphrase;
         this.mAllowedKeyIds = builder.mAllowedKeyIds;
@@ -101,6 +100,7 @@ public class PgpDecryptVerify {
 
     public static class Builder {
         // mandatory parameter
+        private Context mContext;
         private ProviderHelper mProviderHelper;
         private PassphraseCacheInterface mPassphraseCache;
         private InputData mData;
@@ -114,17 +114,14 @@ public class PgpDecryptVerify {
         private boolean mDecryptMetadataOnly = false;
         private byte[] mDecryptedSessionKey = null;
 
-        public Builder(ProviderHelper providerHelper, PassphraseCacheInterface passphraseCache,
+        public Builder(Context context, ProviderHelper providerHelper,
+                       Progressable progressable,
                        InputData data, OutputStream outStream) {
+            mContext = context;
             mProviderHelper = providerHelper;
-            mPassphraseCache = passphraseCache;
+            mProgressable = progressable;
             mData = data;
             mOutStream = outStream;
-        }
-
-        public Builder setProgressable(Progressable progressable) {
-            mProgressable = progressable;
-            return this;
         }
 
         public Builder setAllowSymmetricDecryption(boolean allowSymmetricDecryption) {
@@ -162,18 +159,6 @@ public class PgpDecryptVerify {
 
         public PgpDecryptVerify build() {
             return new PgpDecryptVerify(this);
-        }
-    }
-
-    public void updateProgress(int message, int current, int total) {
-        if (mProgressable != null) {
-            mProgressable.setProgress(message, current, total);
-        }
-    }
-
-    public void updateProgress(int current, int total) {
-        if (mProgressable != null) {
-            mProgressable.setProgress(current, total);
         }
     }
 
@@ -313,7 +298,7 @@ public class PgpDecryptVerify {
                 if (mPassphrase == null) {
                     try {
                         // returns "" if key has no passphrase
-                        mPassphrase = mPassphraseCache.getCachedPassphrase(subKeyId);
+                        mPassphrase = getCachedPassphrase(subKeyId);
                         log.add(LogType.MSG_DC_PASS_CACHED, indent +1);
                     } catch (PassphraseCacheInterface.NoSecretKeyException e) {
                         log.add(LogType.MSG_DC_ERROR_NO_KEY, indent +1);

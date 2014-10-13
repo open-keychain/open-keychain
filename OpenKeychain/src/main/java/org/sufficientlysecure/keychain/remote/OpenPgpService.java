@@ -34,11 +34,9 @@ import org.spongycastle.util.encoders.Hex;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.ui.NfcActivity;
 import org.sufficientlysecure.keychain.Constants;
-import org.sufficientlysecure.keychain.pgp.PassphraseCacheInterface;
 import org.sufficientlysecure.keychain.pgp.PgpDecryptVerify;
 import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
 import org.sufficientlysecure.keychain.provider.KeychainDatabase.Tables;
-import org.sufficientlysecure.keychain.provider.ProviderHelper.NotFoundException;
 import org.sufficientlysecure.keychain.operations.results.DecryptVerifyResult;
 import org.sufficientlysecure.keychain.pgp.PgpHelper;
 import org.sufficientlysecure.keychain.pgp.PgpSignEncrypt;
@@ -75,28 +73,6 @@ public class OpenPgpService extends RemoteService {
     // do not pre-select revoked or expired keys
     static final String EMAIL_SEARCH_WHERE = Tables.KEYS + "." + KeychainContract.KeyRings.IS_REVOKED
             + " = 0 AND " + KeychainContract.KeyRings.IS_EXPIRED + " = 0";
-
-    private PassphraseCacheInterface passphraseCacheInterface = new PassphraseCacheInterface() {
-        @Override
-        public String getCachedPassphrase(long subKeyId) throws NoSecretKeyException {
-            try {
-                long masterKeyId = new ProviderHelper(getContext()).getMasterKeyId(subKeyId);
-                return getCachedPassphrase(masterKeyId, subKeyId);
-            } catch (NotFoundException e) {
-                throw new PassphraseCacheInterface.NoSecretKeyException();
-            }
-        }
-
-        @Override
-        public String getCachedPassphrase(long masterKeyId, long subKeyId) throws NoSecretKeyException {
-            try {
-                return PassphraseCacheService.getCachedPassphrase(
-                        getContext(), masterKeyId, subKeyId);
-            } catch (PassphraseCacheService.KeyNotFoundException e) {
-                throw new PassphraseCacheInterface.NoSecretKeyException();
-            }
-        }
-    };
 
     /**
      * Search database for key ids based on emails.
@@ -304,7 +280,7 @@ public class OpenPgpService extends RemoteService {
 
                 // sign-only
                 PgpSignEncrypt.Builder builder = new PgpSignEncrypt.Builder(
-                        new ProviderHelper(getContext()), passphraseCacheInterface,
+                        this, new ProviderHelper(getContext()), null,
                         inputData, os
                 );
                 builder.setEnableAsciiArmorOutput(asciiArmor)
@@ -396,8 +372,7 @@ public class OpenPgpService extends RemoteService {
                 InputData inputData = new InputData(is, inputLength);
 
                 PgpSignEncrypt.Builder builder = new PgpSignEncrypt.Builder(
-                        new ProviderHelper(getContext()), passphraseCacheInterface,
-                        inputData, os
+                        this, new ProviderHelper(getContext()), null, inputData, os
                 );
                 builder.setEnableAsciiArmorOutput(asciiArmor)
                         .setVersionHeader(PgpHelper.getVersionForHeader(this))
@@ -513,8 +488,7 @@ public class OpenPgpService extends RemoteService {
                 InputData inputData = new InputData(is, inputLength);
 
                 PgpDecryptVerify.Builder builder = new PgpDecryptVerify.Builder(
-                        new ProviderHelper(getContext()), passphraseCacheInterface,
-                        inputData, os
+                        this, new ProviderHelper(getContext()), null, inputData, os
                 );
 
                 byte[] nfcDecryptedSessionKey = data.getByteArrayExtra(OpenPgpApi.EXTRA_NFC_DECRYPTED_SESSION_KEY);

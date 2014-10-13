@@ -19,6 +19,8 @@
 
 package org.sufficientlysecure.keychain.pgp;
 
+import android.content.Context;
+
 import org.spongycastle.bcpg.ArmoredOutputStream;
 import org.spongycastle.bcpg.BCPGOutputStream;
 import org.spongycastle.bcpg.CompressionAlgorithmTags;
@@ -34,6 +36,7 @@ import org.spongycastle.openpgp.operator.jcajce.NfcSyncPGPContentSignerBuilder;
 import org.spongycastle.util.encoders.Hex;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.operations.BaseOperation;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
@@ -60,14 +63,11 @@ import java.util.LinkedList;
 /**
  * This class uses a Builder pattern!
  */
-public class PgpSignEncrypt {
-    private ProviderHelper mProviderHelper;
-    private PassphraseCacheInterface mPassphraseCache;
+public class PgpSignEncrypt extends BaseOperation {
     private String mVersionHeader;
     private InputData mData;
     private OutputStream mOutStream;
 
-    private Progressable mProgressable;
     private boolean mEnableAsciiArmorOutput;
     private int mCompressionId;
     private long[] mEncryptionMasterKeyIds;
@@ -95,14 +95,13 @@ public class PgpSignEncrypt {
     }
 
     private PgpSignEncrypt(Builder builder) {
+        super(builder.mContext, builder.mProviderHelper, builder.mProgressable);
+
         // private Constructor can only be called from Builder
-        this.mProviderHelper = builder.mProviderHelper;
-        this.mPassphraseCache = builder.mPassphraseCache;
         this.mVersionHeader = builder.mVersionHeader;
         this.mData = builder.mData;
         this.mOutStream = builder.mOutStream;
 
-        this.mProgressable = builder.mProgressable;
         this.mEnableAsciiArmorOutput = builder.mEnableAsciiArmorOutput;
         this.mCompressionId = builder.mCompressionId;
         this.mEncryptionMasterKeyIds = builder.mEncryptionMasterKeyIds;
@@ -121,14 +120,14 @@ public class PgpSignEncrypt {
 
     public static class Builder {
         // mandatory parameter
+        private Context mContext;
         private ProviderHelper mProviderHelper;
-        private PassphraseCacheInterface mPassphraseCache;
+        private Progressable mProgressable;
         private InputData mData;
         private OutputStream mOutStream;
 
         // optional
         private String mVersionHeader = null;
-        private Progressable mProgressable = null;
         private boolean mEnableAsciiArmorOutput = false;
         private int mCompressionId = CompressionAlgorithmTags.UNCOMPRESSED;
         private long[] mEncryptionMasterKeyIds = null;
@@ -144,21 +143,18 @@ public class PgpSignEncrypt {
         private byte[] mNfcSignedHash = null;
         private Date mNfcCreationTimestamp = null;
 
-        public Builder(ProviderHelper providerHelper, PassphraseCacheInterface passphraseCache,
+        public Builder(Context context, ProviderHelper providerHelper, Progressable progressable,
                        InputData data, OutputStream outStream) {
+            mContext = context;
             mProviderHelper = providerHelper;
-            mPassphraseCache = passphraseCache;
+            mProgressable = progressable;
+
             mData = data;
             mOutStream = outStream;
         }
 
         public Builder setVersionHeader(String versionHeader) {
             mVersionHeader = versionHeader;
-            return this;
-        }
-
-        public Builder setProgressable(Progressable progressable) {
-            mProgressable = progressable;
             return this;
         }
 
@@ -245,18 +241,6 @@ public class PgpSignEncrypt {
         }
     }
 
-    public void updateProgress(int message, int current, int total) {
-        if (mProgressable != null) {
-            mProgressable.setProgress(message, current, total);
-        }
-    }
-
-    public void updateProgress(int current, int total) {
-        if (mProgressable != null) {
-            mProgressable.setProgress(current, total);
-        }
-    }
-
     /**
      * Signs and/or encrypts data based on parameters of class
      */
@@ -324,7 +308,7 @@ public class PgpSignEncrypt {
             if (mSignaturePassphrase == null) {
                 try {
                     // returns "" if key has no passphrase
-                    mSignaturePassphrase = mPassphraseCache.getCachedPassphrase(signKeyId);
+                    mSignaturePassphrase = getCachedPassphrase(signKeyId);
                     // TODO
 //                    log.add(LogType.MSG_DC_PASS_CACHED, indent + 1);
                 } catch (PassphraseCacheInterface.NoSecretKeyException e) {
