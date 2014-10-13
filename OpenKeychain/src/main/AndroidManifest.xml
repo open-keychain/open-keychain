@@ -427,7 +427,6 @@
             android:name=".ui.MultiCertifyKeyActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
             android:label="@string/title_certify_key"
-            android:parentActivityName=".ui.AddKeysActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".ui.KeyListActivity" />
@@ -619,16 +618,6 @@
 
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".ui.KeyListActivity" />
-        </activity>
-        <activity
-            android:name=".ui.AddKeysActivity"
-            android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
-            android:label="@string/title_add_keys"
-            android:windowSoftInputMode="stateHidden"
-            android:parentActivityName=".ui.KeyListActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".ui.KeyListActivity" />
