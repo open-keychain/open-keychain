@@ -127,6 +127,9 @@ public class PreferencesActivity extends PreferenceActivity {
             initializeUseDefaultYubikeyPin(
                     (CheckBoxPreference) findPreference(Constants.Pref.USE_DEFAULT_YUBIKEY_PIN));
 
+            initializeUseNumKeypadForYubikeyPin(
+                    (CheckBoxPreference) findPreference(Constants.Pref.USE_NUMKEYPAD_FOR_YUBIKEY_PIN));
+
         } else if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
             // Load the legacy preferences headers
             addPreferencesFromResource(R.xml.preference_headers_legacy);
@@ -278,6 +281,9 @@ public class PreferencesActivity extends PreferenceActivity {
 
             initializeUseDefaultYubikeyPin(
                     (CheckBoxPreference) findPreference(Constants.Pref.USE_DEFAULT_YUBIKEY_PIN));
+
+            initializeUseNumKeypadForYubikeyPin(
+                    (CheckBoxPreference) findPreference(Constants.Pref.USE_NUMKEYPAD_FOR_YUBIKEY_PIN));
         }
     }
 
@@ -463,4 +469,14 @@ public class PreferencesActivity extends PreferenceActivity {
         });
     }
 
+    private static void initializeUseNumKeypadForYubikeyPin(final CheckBoxPreference mUseNumKeypadForYubikeyPin) {
+        mUseNumKeypadForYubikeyPin.setChecked(sPreferences.useNumKeypadForYubikeyPin());
+        mUseNumKeypadForYubikeyPin.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+            public boolean onPreferenceChange(Preference preference, Object newValue) {
+                mUseNumKeypadForYubikeyPin.setChecked((Boolean) newValue);
+                sPreferences.setUseNumKeypadForYubikeyPin((Boolean) newValue);
+                return false;
+            }
+        });
+    }
 }

@@ -191,6 +191,16 @@ public class Preferences {
         editor.commit();
     }
 
+    public boolean useNumKeypadForYubikeyPin() {
+        return mSharedPreferences.getBoolean(Pref.USE_NUMKEYPAD_FOR_YUBIKEY_PIN, false);
+    }
+
+    public void setUseNumKeypadForYubikeyPin(boolean useNumKeypadForYubikeyPin) {
+        SharedPreferences.Editor editor = mSharedPreferences.edit();
+        editor.putBoolean(Pref.USE_NUMKEYPAD_FOR_YUBIKEY_PIN, useNumKeypadForYubikeyPin);
+        editor.commit();
+    }
+
     public void setFirstTime(boolean value) {
         SharedPreferences.Editor editor = mSharedPreferences.edit();
         editor.putBoolean(Constants.Pref.FIRST_TIME, value);

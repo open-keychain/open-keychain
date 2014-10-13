@@ -27,6 +27,8 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
+import android.text.InputType;
+import android.text.method.PasswordTransformationMethod;
 import android.view.ContextThemeWrapper;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -52,6 +54,7 @@ import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.PassphraseCacheService;
 import org.sufficientlysecure.keychain.ui.dialog.CustomAlertDialogBuilder;
 import org.sufficientlysecure.keychain.util.Log;
+import org.sufficientlysecure.keychain.util.Preferences;
 
 /**
  * We can not directly create a dialog on the application context.
@@ -138,6 +141,7 @@ public class PassphraseDialogActivity extends FragmentActivity {
             alert.setTitle(R.string.title_authentication);
 
             String userId;
+            CanonicalizedSecretKey.SecretKeyType keyType = CanonicalizedSecretKey.SecretKeyType.PASSPHRASE;
 
             if (mSubKeyId == Constants.key.symmetric || mSubKeyId == Constants.key.none) {
                 alert.setMessage(R.string.passphrase_for_symmetric_encryption);
@@ -161,7 +165,7 @@ public class PassphraseDialogActivity extends FragmentActivity {
                     long masterKeyId = new ProviderHelper(activity).getMasterKeyId(mSubKeyId);
                     CachedPublicKeyRing keyRing = new ProviderHelper(activity).getCachedPublicKeyRing(masterKeyId);
                     // get the type of key (from the database)
-                    CanonicalizedSecretKey.SecretKeyType keyType = keyRing.getSecretKeyType(mSubKeyId);
+                    keyType = keyRing.getSecretKeyType(mSubKeyId);
                     switch (keyType) {
                         case PASSPHRASE:
                             message = getString(R.string.passphrase_for, userId);
@@ -230,6 +234,14 @@ public class PassphraseDialogActivity extends FragmentActivity {
 
             mPassphraseEditText.setImeActionLabel(getString(android.R.string.ok), EditorInfo.IME_ACTION_DONE);
             mPassphraseEditText.setOnEditorActionListener(this);
+
+            if (keyType == CanonicalizedSecretKey.SecretKeyType.DIVERT_TO_CARD && Preferences.getPreferences(activity).useNumKeypadForYubikeyPin()) {
+                mPassphraseEditText.setRawInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+            } else {
+                mPassphraseEditText.setRawInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+            }
+
+            mPassphraseEditText.setTransformationMethod(PasswordTransformationMethod.getInstance());
 
             AlertDialog dialog = alert.create();
             dialog.setButton(DialogInterface.BUTTON_POSITIVE,
