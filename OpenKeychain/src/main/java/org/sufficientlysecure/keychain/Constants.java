@@ -83,6 +83,7 @@ public final class Constants {
         public static final String SEARCH_KEYSERVER = "search_keyserver_pref";
         public static final String SEARCH_KEYBASE = "search_keybase_pref";
         public static final String USE_DEFAULT_YUBIKEY_PIN = "useDefaultYubikeyPin";
+        public static final String USE_NUMKEYPAD_FOR_YUBIKEY_PIN="useNumKeypadForYubikeyPin";
     }
 
     public static final class Defaults {

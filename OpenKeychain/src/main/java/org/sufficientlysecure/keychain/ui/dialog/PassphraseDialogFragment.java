@@ -31,6 +31,8 @@ import android.os.Messenger;
 import android.os.RemoteException;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
+import android.text.InputType;
+import android.text.method.PasswordTransformationMethod;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -54,6 +56,7 @@ import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.PassphraseCacheService;
 import org.sufficientlysecure.keychain.util.Log;
+import org.sufficientlysecure.keychain.util.Preferences;
 
 public class PassphraseDialogFragment extends DialogFragment implements OnEditorActionListener {
     private static final String ARG_MESSENGER = "messenger";
@@ -132,6 +135,7 @@ public class PassphraseDialogFragment extends DialogFragment implements OnEditor
         alert.setTitle(R.string.title_authentication);
 
         String userId;
+        CanonicalizedSecretKey.SecretKeyType keyType = CanonicalizedSecretKey.SecretKeyType.PASSPHRASE;
 
         if (mSubKeyId == Constants.key.symmetric || mSubKeyId == Constants.key.none) {
             alert.setMessage(R.string.passphrase_for_symmetric_encryption);
@@ -155,7 +159,7 @@ public class PassphraseDialogFragment extends DialogFragment implements OnEditor
                 long masterKeyId = new ProviderHelper(getActivity()).getMasterKeyId(mSubKeyId);
                 CachedPublicKeyRing keyRing = new ProviderHelper(getActivity()).getCachedPublicKeyRing(masterKeyId);
                 // get the type of key (from the database)
-                CanonicalizedSecretKey.SecretKeyType keyType = keyRing.getSecretKeyType(mSubKeyId);
+                keyType = keyRing.getSecretKeyType(mSubKeyId);
                 switch (keyType) {
                     case PASSPHRASE:
                         message = getString(R.string.passphrase_for, userId);
@@ -225,6 +229,13 @@ public class PassphraseDialogFragment extends DialogFragment implements OnEditor
 
         mPassphraseEditText.setImeActionLabel(getString(android.R.string.ok), EditorInfo.IME_ACTION_DONE);
         mPassphraseEditText.setOnEditorActionListener(this);
+
+        if (keyType == CanonicalizedSecretKey.SecretKeyType.DIVERT_TO_CARD && Preferences.getPreferences(activity).useNumKeypadForYubikeyPin()) {
+            mPassphraseEditText.setRawInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+        } else {
+            mPassphraseEditText.setRawInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+        }
+        mPassphraseEditText.setTransformationMethod(PasswordTransformationMethod.getInstance());
 
         AlertDialog dialog = alert.create();
         dialog.setButton(DialogInterface.BUTTON_POSITIVE,
