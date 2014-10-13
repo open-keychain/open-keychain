@@ -112,6 +112,7 @@
     <string name="label_write_version_header">"Let others know that you're using OpenKeychain"</string>
     <string name="label_write_version_header_summary">"Writes 'OpenKeychain v2.7' to OpenPGP signatures, ciphertext, and exported keys"</string>
     <string name="label_use_default_yubikey_pin">"Use default Yubikey PIN"</string>
+    <string name="label_use_num_keypad_for_yubikey_pin">Use number keypad for Yubikey PIN</string>
     <string name="label_label_use_default_yubikey_pin_summary">"Uses default PIN (123456) to access Yubikeys over NFC"</string>
     <string name="label_asymmetric_from">"Signed by:"</string>
     <string name="label_to">"Encrypt to:"</string>
