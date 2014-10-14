@@ -145,7 +145,8 @@ public class PassphraseCacheService extends Service {
      * @return passphrase or null (if no passphrase is cached for this keyId)
      */
     public static String getCachedPassphrase(Context context, long masterKeyId, long subKeyId) throws KeyNotFoundException {
-        Log.d(Constants.TAG, "PassphraseCacheService.getCachedPassphrase() get masterKeyId for " + masterKeyId);
+        Log.d(Constants.TAG, "PassphraseCacheService.getCachedPassphrase() for masterKeyId "
+                + masterKeyId + ", subKeyId " + subKeyId);
 
         Intent intent = new Intent(context, PassphraseCacheService.class);
         intent.setAction(ACTION_PASSPHRASE_CACHE_GET);
@@ -194,6 +195,7 @@ public class PassphraseCacheService extends Service {
             case MSG_PASSPHRASE_CACHE_GET_KEY_NOT_FOUND:
                 throw new KeyNotFoundException();
             default:
+                Log.e(Constants.TAG, "timeout case!");
                 throw new KeyNotFoundException("should not happen!");
         }
     }
