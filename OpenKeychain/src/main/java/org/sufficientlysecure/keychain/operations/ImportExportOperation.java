@@ -46,6 +46,7 @@ import org.sufficientlysecure.keychain.util.FileHelper;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.ProgressScaler;
 
+import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -288,6 +289,10 @@ public class ImportExportOperation extends BaseOperation {
             return new ExportResult(ExportResult.RESULT_ERROR, log);
         }
         */
+
+        if ( ! BufferedOutputStream.class.isInstance(outStream)) {
+            outStream = new BufferedOutputStream(outStream);
+        }
 
         int okSecret = 0, okPublic = 0, progress = 0;
 
