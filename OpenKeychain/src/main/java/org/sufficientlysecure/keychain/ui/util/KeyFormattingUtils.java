@@ -392,29 +392,36 @@ public class KeyFormattingUtils {
         setStatusImage(context, statusIcon, null, state);
     }
 
+    public static void setStatusImage(Context context, ImageView statusIcon, TextView statusText, int state) {
+        setStatusImage(context, statusIcon, statusText, state, false);
+    }
+
     /**
      * Sets status image based on constant
      */
-    public static void setStatusImage(Context context, ImageView statusIcon, TextView statusText, int state) {
+    public static void setStatusImage(Context context, ImageView statusIcon, TextView statusText,
+                                      int state, boolean unobtrusive) {
         switch (state) {
             /** GREEN: everything is good **/
             case STATE_VERIFIED: {
                 statusIcon.setImageDrawable(
                         context.getResources().getDrawable(R.drawable.status_signature_verified_cutout));
-                statusIcon.setColorFilter(context.getResources().getColor(R.color.android_green_dark),
-                        PorterDuff.Mode.SRC_ATOP);
+                int color = R.color.android_green_light;
+                statusIcon.setColorFilter(context.getResources().getColor(color),
+                        PorterDuff.Mode.SRC_IN);
                 if (statusText != null) {
-                    statusText.setTextColor(context.getResources().getColor(R.color.android_green_dark));
+                    statusText.setTextColor(context.getResources().getColor(color));
                 }
                 break;
             }
             case STATE_ENCRYPTED: {
                 statusIcon.setImageDrawable(
                         context.getResources().getDrawable(R.drawable.status_lock_closed));
-                statusIcon.setColorFilter(context.getResources().getColor(R.color.android_green_dark),
-                        PorterDuff.Mode.SRC_ATOP);
+                int color = R.color.android_green_light;
+                statusIcon.setColorFilter(context.getResources().getColor(color),
+                        PorterDuff.Mode.SRC_IN);
                 if (statusText != null) {
-                    statusText.setTextColor(context.getResources().getColor(R.color.android_green_dark));
+                    statusText.setTextColor(context.getResources().getColor(color));
                 }
                 break;
             }
@@ -422,30 +429,22 @@ public class KeyFormattingUtils {
             case STATE_UNVERIFIED: {
                 statusIcon.setImageDrawable(
                         context.getResources().getDrawable(R.drawable.status_signature_unverified_cutout));
-                statusIcon.setColorFilter(context.getResources().getColor(R.color.android_orange_dark),
-                        PorterDuff.Mode.SRC_ATOP);
+                int color = R.color.android_orange_light;
+                statusIcon.setColorFilter(context.getResources().getColor(color),
+                        PorterDuff.Mode.SRC_IN);
                 if (statusText != null) {
-                    statusText.setTextColor(context.getResources().getColor(R.color.android_orange_dark));
-                }
-                break;
-            }
-            case STATE_EXPIRED: {
-                statusIcon.setImageDrawable(
-                        context.getResources().getDrawable(R.drawable.status_signature_expired_cutout));
-                statusIcon.setColorFilter(context.getResources().getColor(R.color.android_orange_dark),
-                        PorterDuff.Mode.SRC_ATOP);
-                if (statusText != null) {
-                    statusText.setTextColor(context.getResources().getColor(R.color.android_orange_dark));
+                    statusText.setTextColor(context.getResources().getColor(color));
                 }
                 break;
             }
             case STATE_UNKNOWN_KEY: {
                 statusIcon.setImageDrawable(
                         context.getResources().getDrawable(R.drawable.status_signature_unknown_cutout));
-                statusIcon.setColorFilter(context.getResources().getColor(R.color.android_orange_dark),
-                        PorterDuff.Mode.SRC_ATOP);
+                int color = R.color.android_orange_light;
+                statusIcon.setColorFilter(context.getResources().getColor(color),
+                        PorterDuff.Mode.SRC_IN);
                 if (statusText != null) {
-                    statusText.setTextColor(context.getResources().getColor(R.color.android_orange_dark));
+                    statusText.setTextColor(context.getResources().getColor(color));
                 }
                 break;
             }
@@ -453,40 +452,61 @@ public class KeyFormattingUtils {
             case STATE_REVOKED: {
                 statusIcon.setImageDrawable(
                         context.getResources().getDrawable(R.drawable.status_signature_revoked_cutout));
-                statusIcon.setColorFilter(context.getResources().getColor(R.color.android_red_dark),
-                        PorterDuff.Mode.SRC_ATOP);
+                int color = R.color.android_red_light;
+                if (unobtrusive) {
+                    color = R.color.bg_gray;
+                }
+                statusIcon.setColorFilter(context.getResources().getColor(color),
+                        PorterDuff.Mode.SRC_IN);
                 if (statusText != null) {
-                    statusText.setTextColor(context.getResources().getColor(R.color.android_red_dark));
+                    statusText.setTextColor(context.getResources().getColor(color));
+                }
+                break;
+            }
+            case STATE_EXPIRED: {
+                statusIcon.setImageDrawable(
+                        context.getResources().getDrawable(R.drawable.status_signature_expired_cutout));
+                int color = R.color.android_red_light;
+                if (unobtrusive) {
+                    color = R.color.bg_gray;
+                }
+                statusIcon.setColorFilter(context.getResources().getColor(color),
+                        PorterDuff.Mode.SRC_IN);
+                if (statusText != null) {
+                    statusText.setTextColor(context.getResources().getColor(color));
                 }
                 break;
             }
             case STATE_NOT_ENCRYPTED: {
                 statusIcon.setImageDrawable(
                         context.getResources().getDrawable(R.drawable.status_lock_open));
-                statusIcon.setColorFilter(context.getResources().getColor(R.color.android_red_dark),
-                        PorterDuff.Mode.SRC_ATOP);
+                int color = R.color.android_red_light;
+                statusIcon.setColorFilter(context.getResources().getColor(color),
+                        PorterDuff.Mode.SRC_IN);
                 if (statusText != null) {
-                    statusText.setTextColor(context.getResources().getColor(R.color.android_red_dark));
+                    statusText.setTextColor(context.getResources().getColor(color));
                 }
                 break;
             }
             case STATE_NOT_SIGNED: {
                 statusIcon.setImageDrawable(
                         context.getResources().getDrawable(R.drawable.status_signature_unknown_cutout));
-                statusIcon.setColorFilter(context.getResources().getColor(R.color.android_red_dark),
-                        PorterDuff.Mode.SRC_ATOP);
+                int color = R.color.android_red_light;
+                statusIcon.setColorFilter(context.getResources().getColor(color),
+                        PorterDuff.Mode.SRC_IN);
                 if (statusText != null) {
-                    statusText.setTextColor(context.getResources().getColor(R.color.android_red_dark));
+                    statusText.setTextColor(context.getResources().getColor(color));
                 }
                 break;
             }
             case STATE_INVALID: {
                 statusIcon.setImageDrawable(
                         context.getResources().getDrawable(R.drawable.status_signature_invalid_cutout));
-                statusIcon.setColorFilter(context.getResources().getColor(R.color.android_red_dark),
-                        PorterDuff.Mode.SRC_ATOP);
+                int color = R.color.android_red_light;
+                statusIcon.setColorFilter(context.getResources().getColor(color),
+                        PorterDuff.Mode.SRC_IN);
                 if (statusText != null) {
-                    statusText.setTextColor(context.getResources().getColor(R.color.android_red_dark));
+                    statusText.setTextColor(context.getResources().getColor(color));
                 }
                 break;
             }
@@ -494,10 +514,11 @@ public class KeyFormattingUtils {
             case STATE_UNAVAILABLE: {
                 statusIcon.setImageDrawable(
                         context.getResources().getDrawable(R.drawable.status_signature_invalid_cutout));
-                statusIcon.setColorFilter(context.getResources().getColor(R.color.bg_gray),
-                        PorterDuff.Mode.SRC_ATOP);
+                int color = R.color.bg_gray;
+                statusIcon.setColorFilter(context.getResources().getColor(color),
+                        PorterDuff.Mode.SRC_IN);
                 if (statusText != null) {
-                    statusText.setTextColor(context.getResources().getColor(R.color.bg_gray));
+                    statusText.setTextColor(context.getResources().getColor(color));
                 }
                 break;
             }

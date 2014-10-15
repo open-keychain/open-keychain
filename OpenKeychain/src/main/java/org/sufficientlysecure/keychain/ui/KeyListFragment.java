@@ -647,30 +647,34 @@ public class KeyListFragment extends LoaderFragment
 
                 // Note: order is important!
                 if (isRevoked) {
-                    KeyFormattingUtils.setStatusImage(getActivity(), h.mStatus, KeyFormattingUtils.STATE_REVOKED);
+                    KeyFormattingUtils.setStatusImage(getActivity(), h.mStatus, null, KeyFormattingUtils.STATE_REVOKED, true);
                     h.mStatus.setVisibility(View.VISIBLE);
                     h.mSlinger.setVisibility(View.GONE);
+                    h.mMainUserId.setTextColor(context.getResources().getColor(R.color.bg_gray));
+                    h.mMainUserIdRest.setTextColor(context.getResources().getColor(R.color.bg_gray));
                 } else if (isExpired) {
-                    KeyFormattingUtils.setStatusImage(getActivity(), h.mStatus, KeyFormattingUtils.STATE_EXPIRED);
+                    KeyFormattingUtils.setStatusImage(getActivity(), h.mStatus, null, KeyFormattingUtils.STATE_EXPIRED, true);
                     h.mStatus.setVisibility(View.VISIBLE);
                     h.mSlinger.setVisibility(View.GONE);
+                    h.mMainUserId.setTextColor(context.getResources().getColor(R.color.bg_gray));
+                    h.mMainUserIdRest.setTextColor(context.getResources().getColor(R.color.bg_gray));
                 } else if (isSecret) {
                     h.mStatus.setVisibility(View.GONE);
                     h.mSlinger.setVisibility(View.VISIBLE);
+                    h.mMainUserId.setTextColor(context.getResources().getColor(R.color.black));
+                    h.mMainUserIdRest.setTextColor(context.getResources().getColor(R.color.black));
                 } else {
+                    // this is a public key - show if it's verified
                     if (isVerified) {
-                        if (cursor.getInt(KeyListFragment.INDEX_HAS_ANY_SECRET) != 0) {
-                            // this is a secret key
-                            h.mStatus.setVisibility(View.GONE);
-                        } else {
-                            // this is a public key - show if it's verified
-                            KeyFormattingUtils.setStatusImage(getActivity(), h.mStatus, KeyFormattingUtils.STATE_VERIFIED);
-                            h.mStatus.setVisibility(View.VISIBLE);
-                        }
+                        KeyFormattingUtils.setStatusImage(getActivity(), h.mStatus, KeyFormattingUtils.STATE_VERIFIED);
+                        h.mStatus.setVisibility(View.VISIBLE);
                     } else {
-                        h.mStatus.setVisibility(View.GONE);
+                        KeyFormattingUtils.setStatusImage(getActivity(), h.mStatus, KeyFormattingUtils.STATE_UNVERIFIED);
+                        h.mStatus.setVisibility(View.VISIBLE);
                     }
                     h.mSlinger.setVisibility(View.GONE);
+                    h.mMainUserId.setTextColor(context.getResources().getColor(R.color.black));
+                    h.mMainUserIdRest.setTextColor(context.getResources().getColor(R.color.black));
                 }
             }
 
@@ -867,7 +871,7 @@ public class KeyListFragment extends LoaderFragment
                             return;
                         }
 
-                        if ( ! result.success()) {
+                        if (!result.success()) {
                             result.createNotify(activity).show();
                             return;
                         }

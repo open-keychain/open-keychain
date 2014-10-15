@@ -37,6 +37,7 @@ import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.provider.KeychainContract.Certs;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UserIds;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
+import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 
 import java.util.ArrayList;
 
@@ -163,10 +164,7 @@ public class UserIdsAdapter extends CursorAdapter implements AdapterView.OnItemC
 
         if (isRevoked) {
             // set revocation icon (can this even be primary?)
-            vVerified.setImageResource(R.drawable.status_signature_revoked_cutout);
-            vVerified.setColorFilter(
-                    mContext.getResources().getColor(R.color.bg_gray),
-                    PorterDuff.Mode.SRC_IN);
+            KeyFormattingUtils.setStatusImage(mContext, vVerified, null, KeyFormattingUtils.STATE_REVOKED, true);
 
             // disable and strike through text for revoked user ids
             vName.setEnabled(false);
@@ -191,22 +189,13 @@ public class UserIdsAdapter extends CursorAdapter implements AdapterView.OnItemC
             int isVerified = cursor.getInt(INDEX_VERIFIED);
             switch (isVerified) {
                 case Certs.VERIFIED_SECRET:
-                    vVerified.setImageResource(R.drawable.status_signature_verified_cutout);
-                    vVerified.setColorFilter(
-                            mContext.getResources().getColor(R.color.android_green_dark),
-                            PorterDuff.Mode.SRC_IN);
+                    KeyFormattingUtils.setStatusImage(mContext, vVerified, null, KeyFormattingUtils.STATE_VERIFIED, false);
                     break;
                 case Certs.VERIFIED_SELF:
-                    vVerified.setImageResource(R.drawable.status_signature_unverified_cutout);
-                    vVerified.setColorFilter(
-                            mContext.getResources().getColor(R.color.bg_gray),
-                            PorterDuff.Mode.SRC_IN);
+                    KeyFormattingUtils.setStatusImage(mContext, vVerified, null, KeyFormattingUtils.STATE_UNVERIFIED, false);
                     break;
                 default:
-                    vVerified.setImageResource(R.drawable.status_signature_invalid_cutout);
-                    vVerified.setColorFilter(
-                            mContext.getResources().getColor(R.color.android_red_dark),
-                            PorterDuff.Mode.SRC_IN);
+                    KeyFormattingUtils.setStatusImage(mContext, vVerified, null, KeyFormattingUtils.STATE_INVALID, false);
                     break;
             }
         }
