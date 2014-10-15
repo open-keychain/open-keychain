@@ -102,16 +102,16 @@ public class CertifyKeySpinner extends KeySpinner {
     @Override
     boolean setStatus(Context context, Cursor cursor, ImageView statusView) {
         if (cursor.getInt(mIndexIsRevoked) != 0) {
-            KeyFormattingUtils.setStatusImage(getContext(), statusView, KeyFormattingUtils.STATE_REVOKED);
+            KeyFormattingUtils.setStatusImage(getContext(), statusView, null, KeyFormattingUtils.STATE_REVOKED, false);
             return false;
         }
         if (cursor.getInt(mIndexIsExpired) != 0) {
-            KeyFormattingUtils.setStatusImage(getContext(), statusView, KeyFormattingUtils.STATE_EXPIRED);
+            KeyFormattingUtils.setStatusImage(getContext(), statusView, null, KeyFormattingUtils.STATE_EXPIRED, false);
             return false;
         }
         // don't invalidate the "None" entry, which is also null!
         if (cursor.getPosition() != 0 && cursor.isNull(mIndexHasCertify)) {
-            KeyFormattingUtils.setStatusImage(getContext(), statusView, KeyFormattingUtils.STATE_UNAVAILABLE);
+            KeyFormattingUtils.setStatusImage(getContext(), statusView, null, KeyFormattingUtils.STATE_UNAVAILABLE, false);
             return false;
         }
 

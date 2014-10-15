@@ -41,7 +41,7 @@
     <LinearLayout
         android:id="@+id/key_list_item_slinger_view"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="?android:attr/listPreferredItemHeight"
         android:layout_gravity="center_vertical"
         android:orientation="horizontal">
 
@@ -56,10 +56,10 @@
         <ImageButton
             android:id="@+id/key_list_item_slinger_button"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_gravity="center"
             android:src="@drawable/ic_action_safeslinger"
-            android:padding="16dp"
+            android:padding="12dp"
             style="@style/SelectableItem" />
 
     </LinearLayout>

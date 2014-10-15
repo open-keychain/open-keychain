@@ -98,7 +98,7 @@
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:text="@string/decrypt_invalid_text"
-            android:padding="8dp"
+            android:padding="16dp"
             android:layout_gravity="center"
             android:textColor="@color/android_red_light" />
 
