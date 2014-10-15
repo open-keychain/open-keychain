@@ -57,13 +57,30 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+/** An operation class which implements high level import and export
+ * operations.
+ *
+ * This class receivs a source and/or destination of keys as input and performs
+ * all steps for this import or export.
+ *
+ * For the import operation, the only valid source is an Iterator of
+ * ParcelableKeyRing, each of which must contain exactly a single keyring
+ * encoded as bytes.
+ *
+ * For the export operation, the input consists of a set of key ids and
+ * either the name of a file or an output uri to write to.
+ *
+ * TODO rework uploadKeyRingToServer
+ *
+ */
 public class ImportExportOperation extends BaseOperation {
 
     public ImportExportOperation(Context context, ProviderHelper providerHelper, Progressable progressable) {
         super(context, providerHelper, progressable);
     }
 
-    public ImportExportOperation(Context context, ProviderHelper providerHelper, Progressable progressable, AtomicBoolean cancelled) {
+    public ImportExportOperation(Context context, ProviderHelper providerHelper,
+                                 Progressable progressable, AtomicBoolean cancelled) {
         super(context, providerHelper, progressable, cancelled);
     }
 

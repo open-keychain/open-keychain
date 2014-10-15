@@ -21,6 +21,15 @@ import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+/** An operation which implements a high level user id certification operation.
+ *
+ * This operation takes a specific CertifyActionsParcel as its input. These
+ * contain a masterKeyId to be used for certification, and a list of
+ * masterKeyIds and related user ids to certify.
+ *
+ * @see CertifyActionsParcel
+ *
+ */
 public class CertifyOperation extends BaseOperation {
 
     public CertifyOperation(Context context, ProviderHelper providerHelper, Progressable progressable, AtomicBoolean cancelled) {

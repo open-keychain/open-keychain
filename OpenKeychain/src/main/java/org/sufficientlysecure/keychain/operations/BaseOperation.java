@@ -10,7 +10,7 @@ import org.sufficientlysecure.keychain.service.PassphraseCacheService;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
-public class BaseOperation implements PassphraseCacheInterface {
+public abstract class BaseOperation implements PassphraseCacheInterface {
 
     final public Context mContext;
     final public Progressable mProgressable;
@@ -18,7 +18,28 @@ public class BaseOperation implements PassphraseCacheInterface {
 
     final public ProviderHelper mProviderHelper;
 
-    // TODO do we really need the context in these operations?
+    /** An abstract base class for all *Operation classes. It provides a number
+     * of common methods for progress, cancellation and passphrase cache handling.
+     *
+     * An "operation" in this sense is a high level operation which is called
+     * by the KeychainIntentService or OpenPgpService services. Concrete
+     * subclasses of this class should implement either a single or a group of
+     * related operations. An operation must rely solely on its input
+     * parameters for operation specifics. It should also write a log of its
+     * operation using the OperationLog class, and return an OperationResult
+     * subclass of its specific type.
+     *
+     * An operation must *not* throw exceptions of any kind, errors should be
+     * handled as part of the OperationResult! Consequently, all handling of
+     * errors in KeychainIntentService and OpenPgpService should consist of
+     * informational rather than operational means.
+     *
+     * Note that subclasses of this class should be either Android- or
+     * BouncyCastle-related, and use as few imports from the other type as
+     * possible.  A class with Pgp- prefix is considered BouncyCastle-related,
+     * if there is no prefix it is considered Android-related.
+     *
+     */
     public BaseOperation(Context context, ProviderHelper providerHelper, Progressable progressable) {
         this.mContext = context;
         this.mProgressable = progressable;
@@ -26,7 +47,8 @@ public class BaseOperation implements PassphraseCacheInterface {
         mCancelled = null;
     }
 
-    public BaseOperation(Context context, ProviderHelper providerHelper, Progressable progressable, AtomicBoolean cancelled) {
+    public BaseOperation(Context context, ProviderHelper providerHelper,
+                         Progressable progressable, AtomicBoolean cancelled) {
         mContext = context;
         mProgressable = progressable;
         mProviderHelper = providerHelper;

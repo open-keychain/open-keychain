@@ -102,7 +102,6 @@ public class PgpDecryptVerify extends BaseOperation {
         // mandatory parameter
         private Context mContext;
         private ProviderHelper mProviderHelper;
-        private PassphraseCacheInterface mPassphraseCache;
         private InputData mData;
         private OutputStream mOutStream;
 
