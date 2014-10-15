@@ -100,14 +100,14 @@
             android:text="@string/decrypt_invalid_text"
             android:padding="8dp"
             android:layout_gravity="center"
-            android:textColor="@color/android_red_dark" />
+            android:textColor="@color/android_red_light" />
 
         <Button
             android:id="@+id/decrypt_text_invalid_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@drawable/button_edgy"
-            android:textColor="@color/android_red_dark"
+            android:textColor="@color/android_red_light"
             android:text="@string/decrypt_invalid_button"
             android:layout_gravity="center_horizontal" />
     </LinearLayout>
