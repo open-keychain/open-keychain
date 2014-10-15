@@ -12,6 +12,14 @@ import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.ContactSyncAdapterService;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 
+/** An operation which implements a high level keyring delete operation.
+ *
+ * This operation takes a list of masterKeyIds as input, deleting all
+ * corresponding public keyrings from the database. Secret keys can
+ * be deleted as well, but only explicitly and individually, not as
+ * a list.
+ *
+ */
 public class DeleteOperation extends BaseOperation {
 
     public DeleteOperation(Context context, ProviderHelper providerHelper, Progressable progressable) {
