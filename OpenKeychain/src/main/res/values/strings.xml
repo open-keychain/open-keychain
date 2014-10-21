@@ -137,7 +137,7 @@
     <string name="label_name">"Name"</string>
     <string name="label_comment">"Comment"</string>
     <string name="label_email">"Email"</string>
-    <string name="label_send_key">"Synchronize with public keyservers"</string>
+    <string name="label_send_key">"Share your certification with the cloud"</string>
     <string name="label_fingerprint">"Fingerprint"</string>
     <string name="expiry_date_dialog_title">"Set expiry date"</string>
     <string name="label_first_keyserver_is_used">"(First keyserver listed is preferred)"</string>
@@ -1013,8 +1013,8 @@
     <string name="unknown_uid">"&lt;unknown&gt;"</string>
     <string name="empty_certs">"No certificates for this key"</string>
     <string name="certs_text">"Only validated self-certificates and validated certificates created with your keys are displayed here."</string>
-    <string name="section_uids_to_certify">"Identities"</string>
-    <string name="certify_text">"Do the selected identities match the persons you are exchanging keys with? Deselect all unknown ones."</string>
+    <string name="section_uids_to_certify">"Identities for "</string>
+    <string name="certify_text">"The keys you’re importing contain “identities”: names and emails. If these match what you expected, you can say so by “certifying” them. If they don’t match, you probably shouldn’t use these keys."</string>
     <string name="label_revocation">"Revocation Reason"</string>
     <string name="label_verify_status">"Verification Status"</string>
     <string name="label_cert_type">"Type"</string>

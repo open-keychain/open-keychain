@@ -10,37 +10,17 @@
         android:paddingRight="16dp"
         android:orientation="vertical">
 
-        <LinearLayout
+        <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:layout_marginBottom="8dp"
-            android:orientation="horizontal">
-
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/imageView"
-                android:src="@drawable/ic_action_person"
-                android:layout_gravity="center_vertical" />
-
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="8dp"
-                android:layout_marginRight="8dp"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:text="@string/certify_text"
-                android:id="@+id/textView"
-                android:layout_weight="1" />
-
-        </LinearLayout>
-
-        <TextView
-            style="@style/SectionHeader"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/section_uids_to_certify" />
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="@string/certify_text"
+            android:id="@+id/textView"
+            android:layout_weight="1" />
 
         <org.sufficientlysecure.keychain.ui.widget.FixedListView
             android:id="@+id/view_key_user_ids"
