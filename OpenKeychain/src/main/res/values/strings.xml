@@ -137,7 +137,7 @@
     <string name="label_name">"Name"</string>
     <string name="label_comment">"Comment"</string>
     <string name="label_email">"Email"</string>
-    <string name="label_send_key">"Share your certification with the cloud"</string>
+    <string name="label_send_key">"Synchronize with the cloud"</string>
     <string name="label_fingerprint">"Fingerprint"</string>
     <string name="expiry_date_dialog_title">"Set expiry date"</string>
     <string name="label_first_keyserver_is_used">"(First keyserver listed is preferred)"</string>
