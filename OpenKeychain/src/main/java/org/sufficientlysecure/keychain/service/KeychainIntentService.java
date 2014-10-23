@@ -38,8 +38,6 @@ import org.sufficientlysecure.keychain.util.FileHelper;
 import org.sufficientlysecure.keychain.util.ParcelableFileCache.IteratorWithSize;
 import org.sufficientlysecure.keychain.util.Preferences;
 import org.sufficientlysecure.keychain.keyimport.HkpKeyserver;
-import org.sufficientlysecure.keychain.keyimport.ImportKeysListEntry;
-import org.sufficientlysecure.keychain.keyimport.KeybaseKeyserver;
 import org.sufficientlysecure.keychain.keyimport.Keyserver;
 import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedPublicKeyRing;
@@ -99,15 +97,10 @@ public class KeychainIntentService extends IntentService implements Progressable
 
     public static final String ACTION_EDIT_KEYRING = Constants.INTENT_PREFIX + "EDIT_KEYRING";
 
-    public static final String ACTION_DELETE_FILE_SECURELY = Constants.INTENT_PREFIX
-            + "DELETE_FILE_SECURELY";
-
     public static final String ACTION_IMPORT_KEYRING = Constants.INTENT_PREFIX + "IMPORT_KEYRING";
     public static final String ACTION_EXPORT_KEYRING = Constants.INTENT_PREFIX + "EXPORT_KEYRING";
 
     public static final String ACTION_UPLOAD_KEYRING = Constants.INTENT_PREFIX + "UPLOAD_KEYRING";
-    public static final String ACTION_DOWNLOAD_AND_IMPORT_KEYS = Constants.INTENT_PREFIX + "QUERY_KEYRING";
-    public static final String ACTION_IMPORT_KEYBASE_KEYS = Constants.INTENT_PREFIX + "DOWNLOAD_KEYBASE";
 
     public static final String ACTION_CERTIFY_KEYRING = Constants.INTENT_PREFIX + "SIGN_KEYRING";
 
@@ -153,16 +146,13 @@ public class KeychainIntentService extends IntentService implements Progressable
     public static final String EDIT_KEYRING_PARCEL = "save_parcel";
     public static final String EDIT_KEYRING_PASSPHRASE = "passphrase";
 
-    // delete file securely
-    public static final String DELETE_FILE = "deleteFile";
-
     // delete keyring(s)
     public static final String DELETE_KEY_LIST = "delete_list";
     public static final String DELETE_IS_SECRET = "delete_is_secret";
 
     // import key
     public static final String IMPORT_KEY_LIST = "import_key_list";
-    public static final String IMPORT_KEY_FILE = "import_key_file";
+    public static final String IMPORT_KEY_SERVER = "import_key_server";
 
     // export key
     public static final String EXPORT_OUTPUT_STREAM = "export_output_stream";
@@ -174,10 +164,6 @@ public class KeychainIntentService extends IntentService implements Progressable
 
     // upload key
     public static final String UPLOAD_KEY_SERVER = "upload_key_server";
-
-    // query key
-    public static final String DOWNLOAD_KEY_SERVER = "query_key_server";
-    public static final String DOWNLOAD_KEY_LIST = "query_key_id";
 
     // certify key
     public static final String CERTIFY_PARCEL = "certify_parcel";
@@ -358,65 +344,6 @@ public class KeychainIntentService extends IntentService implements Progressable
             // Result
             sendMessageToHandler(KeychainIntentServiceHandler.MESSAGE_OKAY, result);
 
-        } else if (ACTION_DOWNLOAD_AND_IMPORT_KEYS.equals(action) || ACTION_IMPORT_KEYBASE_KEYS.equals(action)) {
-
-            ArrayList<ImportKeysListEntry> entries = data.getParcelableArrayList(DOWNLOAD_KEY_LIST);
-
-            // this downloads the keys and places them into the ImportKeysListEntry entries
-            String keyServer = data.getString(DOWNLOAD_KEY_SERVER);
-
-            ArrayList<ParcelableKeyRing> keyRings = new ArrayList<ParcelableKeyRing>(entries.size());
-            for (ImportKeysListEntry entry : entries) {
-                try {
-                    Keyserver server;
-                    ArrayList<String> origins = entry.getOrigins();
-                    if (origins == null) {
-                        origins = new ArrayList<String>();
-                    }
-                    if (origins.isEmpty()) {
-                        origins.add(keyServer);
-                    }
-                    for (String origin : origins) {
-                        if (KeybaseKeyserver.ORIGIN.equals(origin)) {
-                            server = new KeybaseKeyserver();
-                        } else {
-                            server = new HkpKeyserver(origin);
-                        }
-                        Log.d(Constants.TAG, "IMPORTING " + entry.getKeyIdHex() + " FROM: " + server);
-
-                        // if available use complete fingerprint for get request
-                        byte[] downloadedKeyBytes;
-                        if (KeybaseKeyserver.ORIGIN.equals(origin)) {
-                            downloadedKeyBytes = server.get(entry.getExtraData()).getBytes();
-                        } else if (entry.getFingerprintHex() != null) {
-                            downloadedKeyBytes = server.get("0x" + entry.getFingerprintHex()).getBytes();
-                        } else {
-                            downloadedKeyBytes = server.get(entry.getKeyIdHex()).getBytes();
-                        }
-
-                        // save key bytes in entry object for doing the
-                        // actual import afterwards
-                        keyRings.add(new ParcelableKeyRing(downloadedKeyBytes, entry.getFingerprintHex()));
-                    }
-                } catch (Keyserver.QueryFailedException e) {
-                    sendErrorToHandler(e);
-                }
-            }
-
-            Intent importIntent = new Intent(this, KeychainIntentService.class);
-            importIntent.setAction(ACTION_IMPORT_KEYRING);
-
-            Bundle importData = new Bundle();
-            // This is not going through binder, nothing to fear of
-            importData.putParcelableArrayList(IMPORT_KEY_LIST, keyRings);
-            importIntent.putExtra(EXTRA_DATA, importData);
-            importIntent.putExtra(EXTRA_MESSENGER, mMessenger);
-
-            // now import it with this service
-            onHandleIntent(importIntent);
-
-            // result is handled in ACTION_IMPORT_KEYRING
-
         } else if (ACTION_EDIT_KEYRING.equals(action)) {
 
             try {
@@ -519,6 +446,8 @@ public class KeychainIntentService extends IntentService implements Progressable
 
             try {
 
+                // Input
+                String keyServer = data.getString(IMPORT_KEY_SERVER);
                 Iterator<ParcelableKeyRing> entries;
                 int numEntries;
                 if (data.containsKey(IMPORT_KEY_LIST)) {
@@ -535,20 +464,22 @@ public class KeychainIntentService extends IntentService implements Progressable
                     numEntries = it.getSize();
                 }
 
+                // Operation
                 ImportExportOperation importExportOperation = new ImportExportOperation(
                         this, providerHelper, this, mActionCanceled);
-                ImportKeyResult result = importExportOperation.importKeyRings(entries, numEntries);
+                ImportKeyResult result = importExportOperation.importKeyRings(entries, numEntries, keyServer);
 
-                // we do this even on failure or cancellation!
+                // Special: consolidate on secret key import (cannot be cancelled!)
                 if (result.mSecret > 0) {
                     // cannot cancel from here on out!
                     sendMessageToHandler(KeychainIntentServiceHandler.MESSAGE_PREVENT_CANCEL);
                     providerHelper.consolidateDatabaseStep1(this);
                 }
 
-                // make sure new data is synced into contacts
+                // Special: make sure new data is synced into contacts
                 ContactSyncAdapterService.requestSync();
 
+                // Result
                 sendMessageToHandler(KeychainIntentServiceHandler.MESSAGE_OKAY, result);
             } catch (Exception e) {
                 sendErrorToHandler(e);

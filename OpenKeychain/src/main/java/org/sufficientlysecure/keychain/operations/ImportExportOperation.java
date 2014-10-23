@@ -26,6 +26,8 @@ import org.spongycastle.bcpg.ArmoredOutputStream;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.keyimport.HkpKeyserver;
+import org.sufficientlysecure.keychain.keyimport.KeybaseKeyserver;
+import org.sufficientlysecure.keychain.keyimport.Keyserver;
 import org.sufficientlysecure.keychain.keyimport.Keyserver.AddKeyException;
 import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
 import org.sufficientlysecure.keychain.operations.results.ExportResult;
@@ -109,7 +111,7 @@ public class ImportExportOperation extends BaseOperation {
         }
     }
 
-    public ImportKeyResult importKeyRings(Iterator<ParcelableKeyRing> entries, int num) {
+    public ImportKeyResult importKeyRings(Iterator<ParcelableKeyRing> entries, int num, String keyServerUri) {
         updateProgress(R.string.progress_importing, 0, 100);
 
         OperationLog log = new OperationLog();
@@ -129,6 +131,9 @@ public class ImportExportOperation extends BaseOperation {
         int position = 0;
         double progSteps = 100.0 / num;
 
+        KeybaseKeyserver keybaseServer = null;
+        HkpKeyserver keyServer = null;
+
         // iterate over all entries
         while (entries.hasNext()) {
             ParcelableKeyRing entry = entries.next();
@@ -140,19 +145,89 @@ public class ImportExportOperation extends BaseOperation {
             }
 
             try {
-                UncachedKeyRing key = UncachedKeyRing.decodeFromData(entry.getBytes());
 
-                String expectedFp = entry.getExpectedFingerprint();
-                if(expectedFp != null) {
-                    if(!KeyFormattingUtils.convertFingerprintToHex(key.getFingerprint()).equals(expectedFp)) {
+                UncachedKeyRing key = null;
+
+                // If there is already byte data, use that
+                if (entry.mBytes != null) {
+                    key = UncachedKeyRing.decodeFromData(entry.mBytes);
+                }
+                // Otherwise, we need to fetch the data from a server first
+                else {
+
+                    // If we have a keybase name, try to fetch from there
+                    if (entry.mKeybaseName != null) {
+                        // Make sure we have this cached
+                        if (keybaseServer == null) {
+                            keybaseServer = new KeybaseKeyserver();
+                        }
+
+                        try {
+                            byte[] data = keyServer.get(entry.mKeybaseName).getBytes();
+                            key = UncachedKeyRing.decodeFromData(data);
+                        } catch (Keyserver.QueryFailedException e) {
+                            // download failed, too bad. just proceed
+                        }
+
+                    }
+
+                    // If we have a keyServerUri and a fingerprint or at least a keyId,
+                    // download from HKP
+                    if (keyServerUri != null
+                            && (entry.mKeyIdHex != null || entry.mExpectedFingerprint != null)) {
+                        // Make sure we have the keyserver instance cached
+                        if (keyServer == null) {
+                            keyServer = new HkpKeyserver(keyServerUri);
+                        }
+
+                        try {
+                            byte[] data;
+                            // Download by fingerprint, or keyId - whichever is available
+                            if (entry.mExpectedFingerprint != null) {
+                                data = keyServer.get("0x" + entry.mExpectedFingerprint).getBytes();
+                            } else {
+                                data = keyServer.get(entry.mKeyIdHex).getBytes();
+                            }
+                            // If there already is a key (of keybase origin), merge the two
+                            if (key != null) {
+                                UncachedKeyRing merged = UncachedKeyRing.decodeFromData(data);
+                                // TODO log pollution?
+                                merged = key.merge(merged, log, 2);
+                                // If the merge didn't fail, use the new merged key
+                                if (merged != null) {
+                                    key = merged;
+                                }
+                            } else {
+                                key = UncachedKeyRing.decodeFromData(data);
+                            }
+                        } catch (Keyserver.QueryFailedException e) {
+                            break;
+                        }
+                    }
+                }
+
+                if (key == null) {
+                    badKeys += 1;
+                    continue;
+                }
+
+                // If we have an expected fingerprint, make sure it matches
+                if (entry.mExpectedFingerprint != null) {
+                    if(!KeyFormattingUtils.convertFingerprintToHex(key.getFingerprint()).equals(entry.mExpectedFingerprint)) {
                         Log.d(Constants.TAG, "fingerprint: " + KeyFormattingUtils.convertFingerprintToHex(key.getFingerprint()));
-                        Log.d(Constants.TAG, "expected fingerprint: " + expectedFp);
+                        Log.d(Constants.TAG, "expected fingerprint: " + entry.mExpectedFingerprint);
                         Log.e(Constants.TAG, "Actual key fingerprint is not the same as expected!");
                         badKeys += 1;
                         continue;
                     } else {
                         Log.d(Constants.TAG, "Actual key fingerprint matches expected one.");
                     }
+                }
+
+                // Another check if we have been cancelled
+                if (checkCancelled()) {
+                    cancelled = true;
+                    break;
                 }
 
                 SaveKeyringResult result;

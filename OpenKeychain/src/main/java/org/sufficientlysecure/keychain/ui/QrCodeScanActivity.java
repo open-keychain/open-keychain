@@ -33,6 +33,7 @@ import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.api.OpenKeychainIntents;
 import org.sufficientlysecure.keychain.keyimport.ImportKeysListEntry;
+import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
 import org.sufficientlysecure.keychain.operations.results.ImportKeyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.operations.results.SingletonResult;
@@ -142,7 +143,7 @@ public class QrCodeScanActivity extends FragmentActivity {
         }
     }
 
-    public void importKeys(final String fingerprint) {
+    public void importKeys(String fingerprint) {
         // Message is received after importing is done in KeychainIntentService
         KeychainIntentServiceHandler saveHandler = new KeychainIntentServiceHandler(
                 this,
@@ -168,7 +169,7 @@ public class QrCodeScanActivity extends FragmentActivity {
                         return;
                     }
 
-                    if (!result.success()) {
+                    if ( ! result.success()) {
                         // only return if no success...
                         Intent data = new Intent();
                         data.putExtras(returnData);
@@ -191,20 +192,18 @@ public class QrCodeScanActivity extends FragmentActivity {
         // Send all information needed to service to query keys in other thread
         Intent intent = new Intent(this, KeychainIntentService.class);
 
-        intent.setAction(KeychainIntentService.ACTION_DOWNLOAD_AND_IMPORT_KEYS);
+        intent.setAction(KeychainIntentService.ACTION_IMPORT_KEYRING);
 
         // fill values for this action
         Bundle data = new Bundle();
 
-        data.putString(KeychainIntentService.DOWNLOAD_KEY_SERVER, cloudPrefs.keyserver);
+        data.putString(KeychainIntentService.IMPORT_KEY_SERVER, cloudPrefs.keyserver);
 
-        final ImportKeysListEntry keyEntry = new ImportKeysListEntry();
-        keyEntry.setFingerprintHex(fingerprint);
-        keyEntry.addOrigin(cloudPrefs.keyserver);
-        ArrayList<ImportKeysListEntry> selectedEntries = new ArrayList<ImportKeysListEntry>();
+        ParcelableKeyRing keyEntry = new ParcelableKeyRing(fingerprint, null, null);
+        ArrayList<ParcelableKeyRing> selectedEntries = new ArrayList<ParcelableKeyRing>();
         selectedEntries.add(keyEntry);
 
-        data.putParcelableArrayList(KeychainIntentService.DOWNLOAD_KEY_LIST, selectedEntries);
+        data.putParcelableArrayList(KeychainIntentService.IMPORT_KEY_LIST, selectedEntries);
 
         intent.putExtra(KeychainIntentService.EXTRA_DATA, data);
 
@@ -218,6 +217,5 @@ public class QrCodeScanActivity extends FragmentActivity {
         // start service with intent
         startService(intent);
     }
-
 
 }

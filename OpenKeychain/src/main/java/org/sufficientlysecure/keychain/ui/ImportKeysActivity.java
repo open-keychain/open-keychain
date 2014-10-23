@@ -501,16 +501,25 @@ public class ImportKeysActivity extends ActionBarActivity {
             // Send all information needed to service to query keys in other thread
             Intent intent = new Intent(this, KeychainIntentService.class);
 
-            intent.setAction(KeychainIntentService.ACTION_DOWNLOAD_AND_IMPORT_KEYS);
+            intent.setAction(KeychainIntentService.ACTION_IMPORT_KEYRING);
 
             // fill values for this action
             Bundle data = new Bundle();
 
-            data.putString(KeychainIntentService.DOWNLOAD_KEY_SERVER, sls.mCloudPrefs.keyserver);
+            data.putString(KeychainIntentService.IMPORT_KEY_SERVER, sls.mCloudPrefs.keyserver);
 
             // get selected key entries
-            ArrayList<ImportKeysListEntry> selectedEntries = mListFragment.getSelectedEntries();
-            data.putParcelableArrayList(KeychainIntentService.DOWNLOAD_KEY_LIST, selectedEntries);
+            ArrayList<ParcelableKeyRing> keys = new ArrayList<ParcelableKeyRing>();
+            {
+                // change the format into ParcelableKeyRing
+                ArrayList<ImportKeysListEntry> entries = mListFragment.getSelectedEntries();
+                for (ImportKeysListEntry entry : entries) {
+                    keys.add(new ParcelableKeyRing(
+                            entry.getFingerprintHex(), entry.getKeyIdHex(), entry.getExtraData())
+                    );
+                }
+            }
+            data.putParcelableArrayList(KeychainIntentService.IMPORT_KEY_LIST, keys);
 
             intent.putExtra(KeychainIntentService.EXTRA_DATA, data);
 

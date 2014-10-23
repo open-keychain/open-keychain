@@ -25,6 +25,7 @@ import android.os.Messenger;
 import org.sufficientlysecure.keychain.keyimport.HkpKeyserver;
 import org.sufficientlysecure.keychain.keyimport.ImportKeysListEntry;
 import org.sufficientlysecure.keychain.keyimport.Keyserver;
+import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
 
 import java.util.ArrayList;
@@ -40,14 +41,21 @@ public class EmailKeyHelper {
     }
 
     public static void importAll(Context context, Messenger messenger, List<String> mails) {
-        Set<ImportKeysListEntry> keys = new HashSet<ImportKeysListEntry>();
+        // Collect all candidates as ImportKeysListEntry (set for deduplication)
+        Set<ImportKeysListEntry> entries = new HashSet<ImportKeysListEntry>();
         for (String mail : mails) {
-            keys.addAll(getEmailKeys(context, mail));
+            entries.addAll(getEmailKeys(context, mail));
         }
-        importKeys(context, messenger, new ArrayList<ImportKeysListEntry>(keys));
+
+        // Put them in a list and import
+        ArrayList<ParcelableKeyRing> keys = new ArrayList<ParcelableKeyRing>(entries.size());
+        for (ImportKeysListEntry entry : entries) {
+            keys.add(new ParcelableKeyRing(entry.getFingerprintHex(), entry.getKeyIdHex(), null));
+        }
+        importKeys(context, messenger, keys);
     }
 
-    public static List<ImportKeysListEntry> getEmailKeys(Context context, String mail) {
+    public static Set<ImportKeysListEntry> getEmailKeys(Context context, String mail) {
         Set<ImportKeysListEntry> keys = new HashSet<ImportKeysListEntry>();
 
         // Try _hkp._tcp SRV record first
@@ -67,15 +75,14 @@ public class EmailKeyHelper {
                 keys.addAll(getEmailKeys(mail, hkp));
             }
         }
-        return new ArrayList<ImportKeysListEntry>(keys);
+        return keys;
     }
 
-    private static void importKeys(Context context, Messenger messenger, List<ImportKeysListEntry> keys) {
+    private static void importKeys(Context context, Messenger messenger, ArrayList<ParcelableKeyRing> keys) {
         Intent importIntent = new Intent(context, KeychainIntentService.class);
-        importIntent.setAction(KeychainIntentService.ACTION_DOWNLOAD_AND_IMPORT_KEYS);
+        importIntent.setAction(KeychainIntentService.ACTION_IMPORT_KEYRING);
         Bundle importData = new Bundle();
-        importData.putParcelableArrayList(KeychainIntentService.DOWNLOAD_KEY_LIST,
-                new ArrayList<ImportKeysListEntry>(keys));
+        importData.putParcelableArrayList(KeychainIntentService.IMPORT_KEY_LIST, keys);
         importIntent.putExtra(KeychainIntentService.EXTRA_DATA, importData);
         importIntent.putExtra(KeychainIntentService.EXTRA_MESSENGER, messenger);
 
