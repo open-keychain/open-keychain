@@ -163,7 +163,7 @@ public class ImportExportOperation extends BaseOperation {
                         }
 
                         try {
-                            byte[] data = keyServer.get(entry.mKeybaseName).getBytes();
+                            byte[] data = keybaseServer.get(entry.mKeybaseName).getBytes();
                             key = UncachedKeyRing.decodeFromData(data);
                         } catch (Keyserver.QueryFailedException e) {
                             // download failed, too bad. just proceed
