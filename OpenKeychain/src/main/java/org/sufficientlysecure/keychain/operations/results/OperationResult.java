@@ -602,6 +602,8 @@ public abstract class OperationResult implements Parcelable {
 
         MSG_ACC_SAVED (LogLevel.INFO, R.string.api_settings_save_msg),
 
+        MSG_WRONG_QR_CODE (LogLevel.INFO, R.string.import_qr_code_wrong),
+
         MSG_NO_VALID_ENC (LogLevel.ERROR, R.string.error_invalid_data),
 
         // get key

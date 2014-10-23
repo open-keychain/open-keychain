@@ -291,7 +291,7 @@ public class ViewKeyShareFragment extends LoaderFragment implements
 
 
     private void showQrCodeDialog() {
-        Intent qrCodeIntent = new Intent(getActivity(), QrCodeActivity.class);
+        Intent qrCodeIntent = new Intent(getActivity(), QrCodeViewActivity.class);
         qrCodeIntent.setData(mDataUri);
         startActivity(qrCodeIntent);
     }

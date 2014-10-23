@@ -108,7 +108,7 @@
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
             android:label="@string/title_edit_key" />
         <activity
-            android:name=".ui.QrCodeActivity"
+            android:name=".ui.QrCodeViewActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
             android:label="@string/share_qr_code_dialog_title" />
         <activity
@@ -441,10 +441,10 @@
                 android:value=".ui.KeyListActivity" />
         </activity>
         <activity
-            android:name=".ui.ImportKeysActivity"
+            android:name=".ui.QrCodeScanActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
-            android:label="@string/title_import_keys"
-            android:launchMode="singleTop"
+            android:label="@string/app_name"
+            android:theme="@android:style/Theme.NoDisplay"
             android:windowSoftInputMode="stateHidden">
 
             <!-- VIEW with fingerprint scheme:
@@ -462,6 +462,21 @@
                 <data android:scheme="OpenPGP4Fpr" />
                 <data android:scheme="OpenPGP4fpr" />
             </intent-filter>
+            <!-- IMPORT_KEY without mimeType to allow import with extras Bundle -->
+            <intent-filter android:label="@string/intent_import_key">
+                <action android:name="org.sufficientlysecure.keychain.action.IMPORT_KEY_FROM_QR_CODE" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".ui.ImportKeysActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
+            android:label="@string/title_import_keys"
+            android:launchMode="singleTop"
+            android:windowSoftInputMode="stateHidden">
+
             <!-- VIEW with mimeType: Allows to import keys (attached to emails) from email apps  -->
             <intent-filter android:label="@string/intent_import_key">
                 <action android:name="android.intent.action.VIEW" />
@@ -625,7 +640,6 @@
             <!-- IMPORT_KEY without mimeType to allow import with extras Bundle -->
             <intent-filter android:label="@string/intent_import_key">
                 <action android:name="org.sufficientlysecure.keychain.action.IMPORT_KEY" />
-                <action android:name="org.sufficientlysecure.keychain.action.IMPORT_KEY_FROM_QR_CODE" />
                 <action android:name="org.sufficientlysecure.keychain.action.IMPORT_KEY_FROM_KEYSERVER" />
 
                 <category android:name="android.intent.category.DEFAULT" />

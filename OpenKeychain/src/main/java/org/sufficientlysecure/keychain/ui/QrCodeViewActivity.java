@@ -36,7 +36,7 @@ import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.ui.util.Notify.Style;
 import org.sufficientlysecure.keychain.ui.util.QrCodeUtils;
 
-public class QrCodeActivity extends ActionBarActivity {
+public class QrCodeViewActivity extends ActionBarActivity {
 
     private ImageView mFingerprintQrCode;
 
