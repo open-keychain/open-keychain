@@ -69,8 +69,7 @@ public class MultiUserIdsAdapter extends CursorAdapter {
 
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
-        View vHeader = view.findViewById(R.id.user_id_header);
-        TextView vHeaderId = (TextView) view.findViewById(R.id.user_id_header_id);
+        TextView vHeaderId = (TextView) view.findViewById(R.id.user_id_header);
         TextView vName = (TextView) view.findViewById(R.id.user_id_item_name);
         TextView vAddresses = (TextView) view.findViewById(R.id.user_id_item_addresses);
 
@@ -84,10 +83,12 @@ public class MultiUserIdsAdapter extends CursorAdapter {
 
         if (isHeader == 1) {
             long masterKeyId = cursor.getLong(0);
-            vHeader.setVisibility(View.VISIBLE);
-            vHeaderId.setText(KeyFormattingUtils.beautifyKeyIdWithPrefix(mContext, masterKeyId));
+            vHeaderId.setVisibility(View.VISIBLE);
+            String message = mContext.getString(R.string.section_uids_to_certify) +
+                    KeyFormattingUtils.beautifyKeyIdWithPrefix(mContext, masterKeyId);
+            vHeaderId.setText(message);
         } else {
-            vHeader.setVisibility(View.GONE);
+            vHeaderId.setVisibility(View.GONE);
         }
 
         { // first one
