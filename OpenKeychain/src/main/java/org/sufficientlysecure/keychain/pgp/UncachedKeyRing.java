@@ -41,6 +41,7 @@ import org.sufficientlysecure.keychain.util.IterableIterator;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Utf8Util;
 
+import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -160,11 +161,15 @@ public class UncachedKeyRing {
                 }
 
                 try {
-                    while(stream.available() > 0) {
+                    while (stream.available() > 0) {
                         // if there are no objects left from the last factory, create a new one
                         if (mObjectFactory == null) {
-                            mObjectFactory = new PGPObjectFactory(PGPUtil.getDecoderStream(stream),
-                                    new JcaKeyFingerprintCalculator());
+                            InputStream in = PGPUtil.getDecoderStream(stream);
+                            if (!BufferedInputStream.class.isInstance(in)) {
+                                in = new BufferedInputStream(in);
+                            }
+
+                            mObjectFactory = new PGPObjectFactory(in, new JcaKeyFingerprintCalculator());
                         }
 
                         // go through all objects in this block
@@ -184,9 +189,10 @@ public class UncachedKeyRing {
                         mObjectFactory = null;
                     }
                 } catch (IOException e) {
-                    Log.e(Constants.TAG, "IOException while processing stream", e);
+                    Log.e(Constants.TAG, "IOException while processing stream. ArmoredInputStream CRC check failed?", e);
+                } catch (ArrayIndexOutOfBoundsException e) {
+                    Log.e(Constants.TAG, "ArmoredInputStream decode failed, symbol is not in decodingTable!", e);
                 }
-
             }
 
             @Override

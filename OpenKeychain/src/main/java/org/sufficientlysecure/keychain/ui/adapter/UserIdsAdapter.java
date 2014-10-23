@@ -166,13 +166,10 @@ public class UserIdsAdapter extends CursorAdapter implements AdapterView.OnItemC
             // set revocation icon (can this even be primary?)
             KeyFormattingUtils.setStatusImage(mContext, vVerified, null, KeyFormattingUtils.STATE_REVOKED, true);
 
-            // disable and strike through text for revoked user ids
+            // disable revoked user ids
             vName.setEnabled(false);
             vAddress.setEnabled(false);
             vComment.setEnabled(false);
-            vName.setText(FormattingUtils.strikeOutText(vName.getText()));
-            vAddress.setText(FormattingUtils.strikeOutText(vAddress.getText()));
-            vComment.setText(FormattingUtils.strikeOutText(vComment.getText()));
         } else {
             vName.setEnabled(true);
             vAddress.setEnabled(true);

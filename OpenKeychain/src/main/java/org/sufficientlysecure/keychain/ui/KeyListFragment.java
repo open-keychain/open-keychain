@@ -24,6 +24,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -51,11 +52,10 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.AbsListView.MultiChoiceModeListener;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.Spinner;
 import android.widget.TextView;
 
 import org.sufficientlysecure.keychain.Constants;
@@ -84,7 +84,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 
 import edu.cmu.cylab.starslinger.exchange.ExchangeActivity;
 import edu.cmu.cylab.starslinger.exchange.ExchangeConfig;
@@ -585,18 +584,22 @@ public class KeyListFragment extends LoaderFragment
             TextView mMainUserIdRest;
             ImageView mStatus;
             View mSlinger;
+            ImageButton mSlingerButton;
         }
 
         @Override
         public View newView(Context context, Cursor cursor, ViewGroup parent) {
             View view = mInflater.inflate(R.layout.key_list_item, parent, false);
             final ItemViewHolder holder = new ItemViewHolder();
-            holder.mMainUserId = (TextView) view.findViewById(R.id.mainUserId);
-            holder.mMainUserIdRest = (TextView) view.findViewById(R.id.mainUserIdRest);
-            holder.mStatus = (ImageView) view.findViewById(R.id.status_icon);
-            holder.mSlinger = view.findViewById(R.id.slinger_view);
+            holder.mMainUserId = (TextView) view.findViewById(R.id.key_list_item_name);
+            holder.mMainUserIdRest = (TextView) view.findViewById(R.id.key_list_item_email);
+            holder.mStatus = (ImageView) view.findViewById(R.id.key_list_item_status_icon);
+            holder.mSlinger = view.findViewById(R.id.key_list_item_slinger_view);
+            holder.mSlingerButton = (ImageButton) view.findViewById(R.id.key_list_item_slinger_button);
+            holder.mSlingerButton.setColorFilter(context.getResources().getColor(R.color.tertiary_text_light),
+                    PorterDuff.Mode.SRC_IN);
             view.setTag(holder);
-            view.findViewById(R.id.slinger_button).setOnClickListener(new OnClickListener() {
+            view.findViewById(R.id.key_list_item_slinger_button).setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     if (holder.mMasterKeyId != null) {

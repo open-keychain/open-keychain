@@ -84,15 +84,15 @@ public class SignKeySpinner extends KeySpinner {
     @Override
     boolean setStatus(Context context, Cursor cursor, ImageView statusView) {
         if (cursor.getInt(mIndexIsRevoked) != 0) {
-            KeyFormattingUtils.setStatusImage(getContext(), statusView, KeyFormattingUtils.STATE_REVOKED);
+            KeyFormattingUtils.setStatusImage(getContext(), statusView, null, KeyFormattingUtils.STATE_REVOKED, true);
             return false;
         }
         if (cursor.getInt(mIndexIsExpired) != 0) {
-            KeyFormattingUtils.setStatusImage(getContext(), statusView, KeyFormattingUtils.STATE_EXPIRED);
+            KeyFormattingUtils.setStatusImage(getContext(), statusView, null, KeyFormattingUtils.STATE_EXPIRED, true);
             return false;
         }
         if (cursor.getInt(mIndexHasSign) == 0) {
-            KeyFormattingUtils.setStatusImage(getContext(), statusView, KeyFormattingUtils.STATE_UNAVAILABLE);
+            KeyFormattingUtils.setStatusImage(getContext(), statusView, null, KeyFormattingUtils.STATE_UNAVAILABLE, true);
             return false;
         }
 

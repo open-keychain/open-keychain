@@ -6,8 +6,7 @@
     android:layout_height="wrap_content"
     android:background="@color/holo_gray_bright">
 
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/result_main_layout"
+    <LinearLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -99,7 +98,6 @@
                     android:textAppearance="?android:attr/textAppearanceSmall"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/tertiary_text_light"
                     android:text="alice@example.com (set in-code)"
                     android:gravity="center_vertical" />
 

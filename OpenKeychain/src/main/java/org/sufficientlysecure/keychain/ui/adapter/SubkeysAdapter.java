@@ -249,14 +249,10 @@ public class SubkeysAdapter extends CursorAdapter {
             vKeyExpiry.setText(context.getString(R.string.label_expiry) + ": " + context.getString(R.string.none));
         }
 
-        // if key is expired or revoked, strike through text
+        // if key is expired or revoked...
         boolean isInvalid = isRevoked || isExpired;
         if (isInvalid) {
             vStatus.setVisibility(View.VISIBLE);
-
-            vKeyId.setText(FormattingUtils.strikeOutText(vKeyId.getText()));
-            vKeyDetails.setText(FormattingUtils.strikeOutText(vKeyDetails.getText()));
-            vKeyExpiry.setText(FormattingUtils.strikeOutText(vKeyExpiry.getText()));
 
             vCertifyIcon.setColorFilter(
                     mContext.getResources().getColor(R.color.bg_gray),

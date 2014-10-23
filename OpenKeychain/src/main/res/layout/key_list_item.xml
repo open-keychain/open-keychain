@@ -22,14 +22,14 @@
         android:paddingBottom="4dp">
 
         <TextView
-            android:id="@+id/mainUserId"
+            android:id="@+id/key_list_item_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/label_main_user_id"
             android:textAppearance="?android:attr/textAppearanceMedium" />
 
         <TextView
-            android:id="@+id/mainUserIdRest"
+            android:id="@+id/key_list_item_email"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:singleLine="true"
@@ -39,9 +39,9 @@
     </LinearLayout>
 
     <LinearLayout
-        android:id="@+id/slinger_view"
+        android:id="@+id/key_list_item_slinger_view"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="?android:attr/listPreferredItemHeight"
         android:layout_gravity="center_vertical"
         android:orientation="horizontal">
 
@@ -54,18 +54,18 @@
             android:background="?android:attr/listDivider" />
 
         <ImageButton
-            android:id="@+id/slinger_button"
+            android:id="@+id/key_list_item_slinger_button"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_gravity="center"
             android:src="@drawable/ic_action_safeslinger"
-            android:padding="16dp"
+            android:padding="12dp"
             style="@style/SelectableItem" />
 
     </LinearLayout>
 
     <ImageView
-        android:id="@+id/status_icon"
+        android:id="@+id/key_list_item_status_icon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"

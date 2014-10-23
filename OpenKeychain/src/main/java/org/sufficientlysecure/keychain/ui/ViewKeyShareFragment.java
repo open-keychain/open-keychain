@@ -21,6 +21,7 @@ import android.annotation.TargetApi;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.PorterDuff;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -33,6 +34,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AlphaAnimation;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -68,7 +70,7 @@ public class ViewKeyShareFragment extends LoaderFragment implements
     private View mFingerprintClipboardButton;
     private View mKeyShareButton;
     private View mKeyClipboardButton;
-    private View mKeySafeSlingerButton;
+    private ImageButton mKeySafeSlingerButton;
     private View mNfcHelpButton;
     private View mNfcPrefsButton;
     private View mKeyUploadButton;
@@ -96,10 +98,13 @@ public class ViewKeyShareFragment extends LoaderFragment implements
         mFingerprintClipboardButton = view.findViewById(R.id.view_key_action_fingerprint_clipboard);
         mKeyShareButton = view.findViewById(R.id.view_key_action_key_share);
         mKeyClipboardButton = view.findViewById(R.id.view_key_action_key_clipboard);
-        mKeySafeSlingerButton = view.findViewById(R.id.view_key_action_key_safeslinger);
+        mKeySafeSlingerButton = (ImageButton) view.findViewById(R.id.view_key_action_key_safeslinger);
         mNfcHelpButton = view.findViewById(R.id.view_key_action_nfc_help);
         mNfcPrefsButton = view.findViewById(R.id.view_key_action_nfc_prefs);
         mKeyUploadButton = view.findViewById(R.id.view_key_action_upload);
+
+        mKeySafeSlingerButton.setColorFilter(getResources().getColor(R.color.tertiary_text_light),
+                PorterDuff.Mode.SRC_IN);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
             mNfcPrefsButton.setVisibility(View.VISIBLE);
