@@ -32,7 +32,7 @@ import com.google.zxing.integration.android.IntentResult;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.keyimport.ImportKeysListEntry;
+import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainDatabase;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
@@ -301,20 +301,18 @@ public class KeyListActivity extends DrawerActivity {
         // Send all information needed to service to query keys in other thread
         Intent intent = new Intent(this, KeychainIntentService.class);
 
-        intent.setAction(KeychainIntentService.ACTION_DOWNLOAD_AND_IMPORT_KEYS);
+        intent.setAction(KeychainIntentService.ACTION_IMPORT_KEYRING);
 
         // fill values for this action
         Bundle data = new Bundle();
 
-        data.putString(KeychainIntentService.DOWNLOAD_KEY_SERVER, cloudPrefs.keyserver);
+        data.putString(KeychainIntentService.IMPORT_KEY_SERVER, cloudPrefs.keyserver);
 
-        final ImportKeysListEntry keyEntry = new ImportKeysListEntry();
-        keyEntry.setFingerprintHex(fingerprint);
-        keyEntry.addOrigin(cloudPrefs.keyserver);
-        ArrayList<ImportKeysListEntry> selectedEntries = new ArrayList<ImportKeysListEntry>();
+        ParcelableKeyRing keyEntry = new ParcelableKeyRing(fingerprint, null, null);
+        ArrayList<ParcelableKeyRing> selectedEntries = new ArrayList<ParcelableKeyRing>();
         selectedEntries.add(keyEntry);
 
-        data.putParcelableArrayList(KeychainIntentService.DOWNLOAD_KEY_LIST, selectedEntries);
+        data.putParcelableArrayList(KeychainIntentService.IMPORT_KEY_LIST, selectedEntries);
 
         intent.putExtra(KeychainIntentService.EXTRA_DATA, data);
 

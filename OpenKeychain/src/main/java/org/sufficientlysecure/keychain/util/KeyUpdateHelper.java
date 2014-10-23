@@ -34,6 +34,8 @@ import java.util.List;
 
 public class KeyUpdateHelper {
 
+    /*
+
     public void updateAllKeys(Context context, KeychainIntentServiceHandler finishedHandler) {
         UpdateTask updateTask = new UpdateTask(context, finishedHandler);
         updateTask.execute();
@@ -79,4 +81,6 @@ public class KeyUpdateHelper {
             return null;
         }
     }
+    */
+
 }

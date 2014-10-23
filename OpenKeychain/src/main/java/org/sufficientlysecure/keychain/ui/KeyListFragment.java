@@ -163,7 +163,7 @@ public class KeyListFragment extends LoaderFragment
                         }
                     }
                 };
-                new KeyUpdateHelper().updateAllKeys(getActivity(), finishedHandler);
+                // new KeyUpdateHelper().updateAllKeys(getActivity(), finishedHandler);
                 updateActionbarForSwipe(false);
             }
         });

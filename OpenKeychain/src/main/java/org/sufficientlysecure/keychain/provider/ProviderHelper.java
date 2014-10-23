@@ -949,8 +949,8 @@ public class ProviderHelper {
                     if (cursor.isAfterLast()) {
                         return false;
                     }
-                    ring = new ParcelableKeyRing(cursor.getBlob(0),
-                            KeyFormattingUtils.convertFingerprintToHex(cursor.getBlob(1)));
+                    ring = new ParcelableKeyRing(KeyFormattingUtils.convertFingerprintToHex(cursor.getBlob(1)), cursor.getBlob(0)
+                    );
                     cursor.moveToNext();
                     return true;
                 }
@@ -1009,8 +1009,8 @@ public class ProviderHelper {
                     if (cursor.isAfterLast()) {
                         return false;
                     }
-                    ring = new ParcelableKeyRing(cursor.getBlob(0),
-                            KeyFormattingUtils.convertFingerprintToHex(cursor.getBlob(1)));
+                    ring = new ParcelableKeyRing(KeyFormattingUtils.convertFingerprintToHex(cursor.getBlob(1)), cursor.getBlob(0)
+                    );
                     cursor.moveToNext();
                     return true;
                 }
@@ -1097,7 +1097,7 @@ public class ProviderHelper {
 
                     ImportKeyResult result = new ImportExportOperation(mContext, this,
                             new ProgressFixedScaler(progress, 10, 25, 100, R.string.progress_con_reimport))
-                            .importKeyRings(itSecrets, numSecrets);
+                            .importKeyRings(itSecrets, numSecrets, null);
                     log.add(result, indent);
                 } else {
                     log.add(LogType.MSG_CON_REIMPORT_SECRET_SKIP, indent);
@@ -1124,7 +1124,7 @@ public class ProviderHelper {
 
                     ImportKeyResult result = new ImportExportOperation(mContext, this,
                             new ProgressFixedScaler(progress, 25, 99, 100, R.string.progress_con_reimport))
-                            .importKeyRings(itPublics, numPublics);
+                            .importKeyRings(itPublics, numPublics, null);
                     log.add(result, indent);
                 } else {
                     log.add(LogType.MSG_CON_REIMPORT_PUBLIC_SKIP, indent);
