@@ -393,7 +393,7 @@
     <string name="import_import">"Import selected keys"</string>
     <string name="import_qr_code_wrong">"QR Code malformed! Please try again!"</string>
     <string name="import_qr_code_too_short_fingerprint">"Fingerprint is too short (&lt; 16 characters)"</string>
-    <string name="import_qr_code_button">"Scan QR Code…"</string>
+    <string name="import_qr_code_button">"Scan QR Code"</string>
 
     <!-- Generic result toast -->
     <string name="view_log">"View Log"</string>
