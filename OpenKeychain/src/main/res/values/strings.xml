@@ -946,6 +946,16 @@
         <item quantity="one">"Importing key"</item>
         <item quantity="other">"Importing %d keys"</item>
     </plurals>
+    <string name="msg_import_fetch_error_decode">"Error decoding retrieved keyring!"</string>
+    <string name="msg_import_fetch_error">"Key could not be fetched! (Network problems?)"</string>
+    <string name="msg_import_fetch_keybase">"Fetching from keybase.io: %s"</string>
+    <string name="msg_import_fetch_keyserver_error">"Could not fetch key from keybase!"</string>
+    <string name="msg_import_fetch_keyserver">"Fetching from keyserver: %s"</string>
+    <string name="msg_import_fetch_keyserver_ok">"Fingerprint of fetched key didn't match expected!"</string>
+    <string name="msg_import_keyserver">"Using keyserver %s"</string>
+    <string name="msg_import_fingerprint_error">"Fingerprint of fetched key didn't match expected!"</string>
+    <string name="msg_import_fingerprint_ok">"Fingerprint check OK"</string>
+    <string name="msg_import_merge">"Merging keys…"</string>
     <string name="msg_import_error">"Import operation failed!"</string>
     <string name="msg_import_partial">"Import operation successful, with errors!"</string>
     <string name="msg_import_success">"Import operation successful"</string>

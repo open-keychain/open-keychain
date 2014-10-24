@@ -155,6 +155,41 @@ public class ImportExportOperation extends BaseOperation {
                 // Otherwise, we need to fetch the data from a server first
                 else {
 
+                    // We fetch from keyservers first, because we tend to get more certificates
+                    // from there, so the number of certificates which are merged in later is smaller.
+
+                    // If we have a keyServerUri and a fingerprint or at least a keyId,
+                    // download from HKP
+                    if (keyServerUri != null
+                            && (entry.mKeyIdHex != null || entry.mExpectedFingerprint != null)) {
+                        // Make sure we have the keyserver instance cached
+                        if (keyServer == null) {
+                            log.add(LogType.MSG_IMPORT_KEYSERVER, 1, keyServerUri);
+                            keyServer = new HkpKeyserver(keyServerUri);
+                        }
+
+                        try {
+                            byte[] data;
+                            // Download by fingerprint, or keyId - whichever is available
+                            if (entry.mExpectedFingerprint != null) {
+                                log.add(LogType.MSG_IMPORT_FETCH_KEYSERVER, 1, "0x" + entry.mExpectedFingerprint);
+                                data = keyServer.get("0x" + entry.mExpectedFingerprint).getBytes();
+                            } else {
+                                log.add(LogType.MSG_IMPORT_FETCH_KEYSERVER, 1, entry.mKeyIdHex);
+                                data = keyServer.get(entry.mKeyIdHex).getBytes();
+                            }
+                            key = UncachedKeyRing.decodeFromData(data);
+                            if (key != null) {
+                                log.add(LogType.MSG_IMPORT_FETCH_KEYSERVER_OK, 2);
+                            } else {
+                                log.add(LogType.MSG_IMPORT_FETCH_ERROR_DECODE, 2);
+                            }
+                        } catch (Keyserver.QueryFailedException e) {
+                            Log.e(Constants.TAG, "query failed", e);
+                            log.add(LogType.MSG_IMPORT_FETCH_KEYSERVER_ERROR, 2);
+                        }
+                    }
+
                     // If we have a keybase name, try to fetch from there
                     if (entry.mKeybaseName != null) {
                         // Make sure we have this cached
@@ -163,36 +198,15 @@ public class ImportExportOperation extends BaseOperation {
                         }
 
                         try {
+                            log.add(LogType.MSG_IMPORT_FETCH_KEYBASE, 1, entry.mKeybaseName);
                             byte[] data = keybaseServer.get(entry.mKeybaseName).getBytes();
                             key = UncachedKeyRing.decodeFromData(data);
-                        } catch (Keyserver.QueryFailedException e) {
-                            // download failed, too bad. just proceed
-                        }
 
-                    }
-
-                    // If we have a keyServerUri and a fingerprint or at least a keyId,
-                    // download from HKP
-                    if (keyServerUri != null
-                            && (entry.mKeyIdHex != null || entry.mExpectedFingerprint != null)) {
-                        // Make sure we have the keyserver instance cached
-                        if (keyServer == null) {
-                            keyServer = new HkpKeyserver(keyServerUri);
-                        }
-
-                        try {
-                            byte[] data;
-                            // Download by fingerprint, or keyId - whichever is available
-                            if (entry.mExpectedFingerprint != null) {
-                                data = keyServer.get("0x" + entry.mExpectedFingerprint).getBytes();
-                            } else {
-                                data = keyServer.get(entry.mKeyIdHex).getBytes();
-                            }
                             // If there already is a key (of keybase origin), merge the two
                             if (key != null) {
+                                log.add(LogType.MSG_IMPORT_MERGE, 2);
                                 UncachedKeyRing merged = UncachedKeyRing.decodeFromData(data);
-                                // TODO log pollution?
-                                merged = key.merge(merged, log, 2);
+                                merged = key.merge(merged, log, 3);
                                 // If the merge didn't fail, use the new merged key
                                 if (merged != null) {
                                     key = merged;
@@ -201,12 +215,15 @@ public class ImportExportOperation extends BaseOperation {
                                 key = UncachedKeyRing.decodeFromData(data);
                             }
                         } catch (Keyserver.QueryFailedException e) {
-                            break;
+                            // download failed, too bad. just proceed
+                            Log.e(Constants.TAG, "query failed", e);
+                            log.add(LogType.MSG_IMPORT_FETCH_KEYSERVER_ERROR, 2);
                         }
                     }
                 }
 
                 if (key == null) {
+                    log.add(LogType.MSG_IMPORT_FETCH_ERROR, 2);
                     badKeys += 1;
                     continue;
                 }
@@ -214,13 +231,11 @@ public class ImportExportOperation extends BaseOperation {
                 // If we have an expected fingerprint, make sure it matches
                 if (entry.mExpectedFingerprint != null) {
                     if(!KeyFormattingUtils.convertFingerprintToHex(key.getFingerprint()).equals(entry.mExpectedFingerprint)) {
-                        Log.d(Constants.TAG, "fingerprint: " + KeyFormattingUtils.convertFingerprintToHex(key.getFingerprint()));
-                        Log.d(Constants.TAG, "expected fingerprint: " + entry.mExpectedFingerprint);
-                        Log.e(Constants.TAG, "Actual key fingerprint is not the same as expected!");
+                        log.add(LogType.MSG_IMPORT_FINGERPRINT_ERROR, 2);
                         badKeys += 1;
                         continue;
                     } else {
-                        Log.d(Constants.TAG, "Actual key fingerprint matches expected one.");
+                        log.add(LogType.MSG_IMPORT_FINGERPRINT_OK, 2);
                     }
                 }
 
@@ -252,7 +267,7 @@ public class ImportExportOperation extends BaseOperation {
                     importedMasterKeyIds.add(key.getMasterKeyId());
                 }
 
-                log.add(result, 1);
+                log.add(result, 2);
 
             } catch (IOException e) {
                 Log.e(Constants.TAG, "Encountered bad key on import!", e);
