@@ -80,6 +80,7 @@ public class PgpSignEncrypt extends BaseOperation {
     private long mAdditionalEncryptId;
     private boolean mCleartextInput;
     private String mOriginalFilename;
+    private boolean mFailOnMissingEncryptionKeyIds;
 
     private byte[] mNfcSignedHash = null;
     private Date mNfcCreationTimestamp = null;
@@ -116,6 +117,7 @@ public class PgpSignEncrypt extends BaseOperation {
         this.mNfcSignedHash = builder.mNfcSignedHash;
         this.mNfcCreationTimestamp = builder.mNfcCreationTimestamp;
         this.mOriginalFilename = builder.mOriginalFilename;
+        this.mFailOnMissingEncryptionKeyIds = builder.mFailOnMissingEncryptionKeyIds;
     }
 
     public static class Builder {
@@ -142,6 +144,7 @@ public class PgpSignEncrypt extends BaseOperation {
         private String mOriginalFilename = "";
         private byte[] mNfcSignedHash = null;
         private Date mNfcCreationTimestamp = null;
+        private boolean mFailOnMissingEncryptionKeyIds = false;
 
         public Builder(Context context, ProviderHelper providerHelper, Progressable progressable,
                        InputData data, OutputStream outStream) {
@@ -200,6 +203,11 @@ public class PgpSignEncrypt extends BaseOperation {
 
         public Builder setSignaturePassphrase(String signaturePassphrase) {
             mSignaturePassphrase = signaturePassphrase;
+            return this;
+        }
+
+        public Builder setFailOnMissingEncryptionKeyIds(boolean failOnMissingEncryptionKeyIds) {
+            mFailOnMissingEncryptionKeyIds = failOnMissingEncryptionKeyIds;
             return this;
         }
 
@@ -380,9 +388,15 @@ public class PgpSignEncrypt extends BaseOperation {
                     } catch (PgpKeyNotFoundException e) {
                         log.add(LogType.MSG_SE_KEY_WARN, indent + 1,
                                 KeyFormattingUtils.convertKeyIdToHex(id));
+                        if (mFailOnMissingEncryptionKeyIds) {
+                            return new SignEncryptResult(SignEncryptResult.RESULT_ERROR, log);
+                        }
                     } catch (ProviderHelper.NotFoundException e) {
                         log.add(LogType.MSG_SE_KEY_UNKNOWN, indent + 1,
                                 KeyFormattingUtils.convertKeyIdToHex(id));
+                        if (mFailOnMissingEncryptionKeyIds) {
+                            return new SignEncryptResult(SignEncryptResult.RESULT_ERROR, log);
+                        }
                     }
                 }
             }

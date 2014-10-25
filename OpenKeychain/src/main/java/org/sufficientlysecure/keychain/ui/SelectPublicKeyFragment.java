@@ -384,7 +384,8 @@ public class SelectPublicKeyFragment extends ListFragmentWorkaround implements T
                     KeyFormattingUtils.setStatusImage(mContext, h.statusIcon, KeyFormattingUtils.STATE_VERIFIED);
                     enabled = true;
                 } else {
-                    h.statusIcon.setVisibility(View.GONE);
+                    h.statusIcon.setVisibility(View.VISIBLE);
+                    KeyFormattingUtils.setStatusImage(mContext, h.statusIcon, KeyFormattingUtils.STATE_UNVERIFIED);
                     enabled = true;
                 }
             }
