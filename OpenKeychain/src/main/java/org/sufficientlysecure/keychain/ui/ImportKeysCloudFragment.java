@@ -50,7 +50,6 @@ public class ImportKeysCloudFragment extends Fragment {
     private View mSearchButton;
     private AutoCompleteTextView mQueryEditText;
     private View mConfigButton;
-    private ArrayAdapter<String> mServerAdapter;
 
     /**
      * Creates new instance of this fragment
@@ -136,11 +135,7 @@ public class ImportKeysCloudFragment extends Fragment {
             } else {
                 // open keyboard
                 mQueryEditText.requestFocus();
-                InputMethodManager inputMethodManager = (InputMethodManager)
-                        getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-                if (inputMethodManager != null) {
-                    inputMethodManager.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
-                }
+                toggleKeyboard(true);
             }
 
             if (getArguments().getBoolean(ARG_DISABLE_QUERY_EDIT, false)) {
@@ -159,10 +154,10 @@ public class ImportKeysCloudFragment extends Fragment {
     private void search(String query) {
         Preferences prefs = Preferences.getPreferences(getActivity());
         mImportActivity.loadCallback(new ImportKeysListFragment.CloudLoaderState(query, prefs.getCloudSearchPrefs()));
-        hideKeyboard();
+        toggleKeyboard(false);
     }
 
-    private void hideKeyboard() {
+    private void toggleKeyboard(boolean show) {
         if (getActivity() == null) {
             return;
         }
@@ -171,10 +166,15 @@ public class ImportKeysCloudFragment extends Fragment {
 
         // check if no view has focus
         View v = getActivity().getCurrentFocus();
-        if (v == null)
+        if (v == null) {
             return;
+        }
 
-        inputManager.hideSoftInputFromWindow(v.getWindowToken(), 0);
+        if (show) {
+            inputManager.showSoftInput(v, InputMethodManager.SHOW_IMPLICIT);
+        } else {
+            inputManager.hideSoftInputFromWindow(v.getWindowToken(), 0);
+        }
     }
 
 }
