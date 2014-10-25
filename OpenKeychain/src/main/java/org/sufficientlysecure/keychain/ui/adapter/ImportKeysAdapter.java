@@ -70,6 +70,7 @@ public class ImportKeysAdapter extends ArrayAdapter<ImportKeysListEntry> {
 
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     public void setData(List<ImportKeysListEntry> data) {
+
         clear();
         if (data != null) {
             this.mData = data;
@@ -89,16 +90,24 @@ public class ImportKeysAdapter extends ArrayAdapter<ImportKeysListEntry> {
         return mData;
     }
 
+    /** This method returns a list of all selected entries, with public keys sorted
+     * before secret keys, see ImportExportOperation for specifics.
+     * @see org.sufficientlysecure.keychain.operations.ImportExportOperation
+     */
     public ArrayList<ImportKeysListEntry> getSelectedEntries() {
         ArrayList<ImportKeysListEntry> result = new ArrayList<ImportKeysListEntry>();
+        ArrayList<ImportKeysListEntry> secrets = new ArrayList<ImportKeysListEntry>();
         if (mData == null) {
             return result;
         }
         for (ImportKeysListEntry entry : mData) {
             if (entry.isSelected()) {
-                result.add(entry);
+                // add this entry to either the secret or the public list
+                (entry.isSecretKey() ? secrets : result).add(entry);
             }
         }
+        // add secret keys at the end of the list
+        result.addAll(secrets);
         return result;
     }
 
