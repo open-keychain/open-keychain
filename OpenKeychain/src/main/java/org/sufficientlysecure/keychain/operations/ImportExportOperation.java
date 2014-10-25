@@ -62,12 +62,19 @@ import java.util.concurrent.atomic.AtomicBoolean;
 /** An operation class which implements high level import and export
  * operations.
  *
- * This class receivs a source and/or destination of keys as input and performs
+ * This class receives a source and/or destination of keys as input and performs
  * all steps for this import or export.
  *
  * For the import operation, the only valid source is an Iterator of
- * ParcelableKeyRing, each of which must contain exactly a single keyring
- * encoded as bytes.
+ * ParcelableKeyRing, each of which must contain either a single
+ * keyring encoded as bytes, or a unique reference to a keyring
+ * on keyservers and/or keybase.io.
+ * It is important to note that public keys should generally be imported before
+ * secret keys, because some implementations (notably Symantec PGP Desktop) do
+ * not include self certificates for user ids in the secret keyring. The import
+ * method here will generally import keyrings in the order given by the
+ * iterator. so this should be ensured beforehand.
+ * @see org.sufficientlysecure.keychain.ui.adapter.ImportKeysAdapter#getSelectedEntries()
  *
  * For the export operation, the input consists of a set of key ids and
  * either the name of a file or an output uri to write to.
