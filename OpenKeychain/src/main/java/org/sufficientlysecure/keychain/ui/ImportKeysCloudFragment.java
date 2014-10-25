@@ -55,11 +55,12 @@ public class ImportKeysCloudFragment extends Fragment {
     /**
      * Creates new instance of this fragment
      */
-    public static ImportKeysCloudFragment newInstance(String query, String keyserver, boolean doKeyserver, boolean doKeybase) {
+    public static ImportKeysCloudFragment newInstance(String query, boolean disableQueryEdit) {
         ImportKeysCloudFragment frag = new ImportKeysCloudFragment();
 
         Bundle args = new Bundle();
         args.putString(ARG_QUERY, query);
+        args.putBoolean(ARG_DISABLE_QUERY_EDIT, disableQueryEdit);
 
         frag.setArguments(args);
 
@@ -91,11 +92,6 @@ public class ImportKeysCloudFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 search(mQueryEditText.getText().toString());
-
-                // close keyboard after pressing search
-                InputMethodManager imm =
-                        (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-                imm.hideSoftInputFromWindow(mQueryEditText.getWindowToken(), 0);
             }
         });
 
@@ -132,11 +128,19 @@ public class ImportKeysCloudFragment extends Fragment {
 
         // set displayed values
         if (getArguments() != null) {
-            if (getArguments().containsKey(ARG_QUERY)) {
-                String query = getArguments().getString(ARG_QUERY);
+            String query = getArguments().getString(ARG_QUERY);
+            if (query != null) {
                 mQueryEditText.setText(query, TextView.BufferType.EDITABLE);
 
                 Log.d(Constants.TAG, "query: " + query);
+            } else {
+                // open keyboard
+                mQueryEditText.requestFocus();
+                InputMethodManager inputMethodManager = (InputMethodManager)
+                        getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+                if (inputMethodManager != null) {
+                    inputMethodManager.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
+                }
             }
 
             if (getArguments().getBoolean(ARG_DISABLE_QUERY_EDIT, false)) {
