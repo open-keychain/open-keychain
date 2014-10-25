@@ -120,7 +120,7 @@ public class SafeSlingerActivity extends ActionBarActivity {
         buttonIcon.setColorFilter(getResources().getColor(R.color.tertiary_text_light),
                 PorterDuff.Mode.SRC_IN);
 
-        ImageView button = (ImageView) findViewById(R.id.safe_slinger_button);
+        View button = findViewById(R.id.safe_slinger_button);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
