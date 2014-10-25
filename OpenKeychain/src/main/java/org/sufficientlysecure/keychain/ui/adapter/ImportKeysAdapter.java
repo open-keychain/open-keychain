@@ -138,13 +138,10 @@ public class ImportKeysAdapter extends ArrayAdapter<ImportKeysListEntry> {
             if (entry.isSecretKey()) {
                 holder.mainUserId.setText(mActivity.getString(R.string.secret_key)
                         + " " + userIdSplit[0]);
-                holder.mainUserId.setTextColor(Color.RED);
             } else {
                 holder.mainUserId.setText(highlighter.highlight(userIdSplit[0]));
-                holder.mainUserId.setTextColor(Color.BLACK);
             }
         } else {
-            holder.mainUserId.setTextColor(Color.BLACK);
             holder.mainUserId.setText(R.string.user_id_no_name);
         }
 
@@ -187,9 +184,14 @@ public class ImportKeysAdapter extends ArrayAdapter<ImportKeysListEntry> {
             holder.status.setVisibility(View.GONE);
             holder.algorithm.setVisibility(View.VISIBLE);
 
-            holder.mainUserId.setTextColor(getContext().getResources().getColor(R.color.black));
-            holder.mainUserIdRest.setTextColor(getContext().getResources().getColor(R.color.black));
-            holder.keyId.setTextColor(getContext().getResources().getColor(R.color.black));
+            if (entry.isSecretKey()) {
+                holder.mainUserId.setTextColor(Color.RED);
+            } else {
+                holder.mainUserId.setTextColor(Color.BLACK);
+            }
+
+            holder.mainUserIdRest.setTextColor(Color.BLACK);
+            holder.keyId.setTextColor(Color.BLACK);
         }
 
         if (entry.getUserIds().size() == 1) {
