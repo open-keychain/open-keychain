@@ -116,9 +116,11 @@ public class SafeSlingerActivity extends ActionBarActivity {
             });
         }
 
-        ImageView button = (ImageView) findViewById(R.id.safe_slinger_button_image);
-        button.setColorFilter(getResources().getColor(R.color.tertiary_text_light),
+        ImageView buttonIcon = (ImageView) findViewById(R.id.safe_slinger_button_image);
+        buttonIcon.setColorFilter(getResources().getColor(R.color.tertiary_text_light),
                 PorterDuff.Mode.SRC_IN);
+
+        ImageView button = (ImageView) findViewById(R.id.safe_slinger_button);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
