@@ -77,6 +77,28 @@ public class ProviderHelperSaveTest {
 
     }
 
+    @Test public void testImportSymantec() throws Exception {
+
+        // insert two keys with same long key id, make sure the second one gets rejected either way!
+        UncachedKeyRing seckey =
+                readRingFromResource("/test-keys/symantec_secret.asc");
+        UncachedKeyRing pubkey =
+                readRingFromResource("/test-keys/symantec_public.asc");
+
+        SaveKeyringResult result;
+
+        // insert secret, this should fail because of missing self-cert
+        result = new ProviderHelper(Robolectric.application).saveSecretKeyRing(seckey, new ProgressScaler());
+        Assert.assertFalse("secret keyring import before pubring import should fail", result.success());
+
+        // insert pubkey, then seckey - both should succeed
+        result = new ProviderHelper(Robolectric.application).savePublicKeyRing(pubkey);
+        Assert.assertTrue("public keyring import should succeed", result.success());
+        result = new ProviderHelper(Robolectric.application).saveSecretKeyRing(seckey, new ProgressScaler());
+        Assert.assertTrue("secret keyring import after pubring import should succeed", result.success());
+
+    }
+
     @Test public void testImportNoFlagKey() throws Exception {
 
         UncachedKeyRing pub = readRingFromResource("/test-keys/mailvelope_07_no_key_flags.asc");
