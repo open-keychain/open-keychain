@@ -638,6 +638,8 @@
     <string name="msg_ip_master_flags_xxsx">"Master flags: sign"</string>
     <string name="msg_ip_master_flags_xxxa">"Master flags: authenticate"</string>
     <string name="msg_ip_master_flags_xxxx">"Master flags: none"</string>
+    <string name="msg_ip_merge_public">"Merging new data into public keyring"</string>
+    <string name="msg_ip_merge_secret">"Merging new data into secret keyring"</string>
     <string name="msg_ip_subkey">"Processing subkey %s"</string>
     <string name="msg_ip_subkey_expired">"Subkey expired on %s"</string>
     <string name="msg_ip_subkey_expires">"Subkey expires on %s"</string>
@@ -688,6 +690,8 @@
     <string name="msg_is_db_exception">"Database error!"</string>
     <string name="msg_is_importing_subkeys">"Processing secret subkeys"</string>
     <string name="msg_is_error_io_exc">"Error encoding keyring"</string>
+    <string name="msg_is_merge_public">"Merging new data into public keyring"</string>
+    <string name="msg_is_merge_secret">"Merging new data into secret keyring"</string>
     <string name="msg_is_pubring_generate">"Generating public keyring from secret keyring"</string>
     <string name="msg_is_subkey_nonexistent">"Subkey %s unavailable in secret key"</string>
     <string name="msg_is_subkey_ok">"Marked secret subkey %s as available"</string>
@@ -762,7 +766,7 @@
     <string name="msg_mg_secret">"Merging into secret keyring %s"</string>
     <string name="msg_mg_new_subkey">"Adding new subkey %s"</string>
     <string name="msg_mg_found_new">"Found %s new certificates in keyring"</string>
-    <string name="msg_mg_unchanged">"No new certificates"</string>
+    <string name="msg_mg_unchanged">"Nothing to merge"</string>
 
     <!-- createSecretKeyRing -->
     <string name="msg_cr">"Generating new master key"</string>
@@ -950,7 +954,7 @@
     <string name="msg_import_keyserver">"Using keyserver %s"</string>
     <string name="msg_import_fingerprint_error">"Fingerprint of fetched key didn't match expected!"</string>
     <string name="msg_import_fingerprint_ok">"Fingerprint check OK"</string>
-    <string name="msg_import_merge">"Merging keys…"</string>
+    <string name="msg_import_merge">"Merging retrieved data"</string>
     <string name="msg_import_error">"Import operation failed!"</string>
     <string name="msg_import_partial">"Import operation successful, with errors!"</string>
     <string name="msg_import_success">"Import operation successful"</string>

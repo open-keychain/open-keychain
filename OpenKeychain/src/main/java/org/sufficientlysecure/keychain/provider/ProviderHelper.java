@@ -744,6 +744,7 @@ public class ProviderHelper {
                 UncachedKeyRing oldPublicRing = getCanonicalizedPublicKeyRing(masterKeyId).getUncachedKeyRing();
 
                 // Merge data from new public ring into the old one
+                log(LogType.MSG_IP_MERGE_PUBLIC);
                 publicRing = oldPublicRing.merge(publicRing, mLog, mIndent);
 
                 // If this is null, there is an error in the log so we can just return
@@ -780,6 +781,7 @@ public class ProviderHelper {
                 UncachedKeyRing secretRing = getCanonicalizedSecretKeyRing(publicRing.getMasterKeyId()).getUncachedKeyRing();
 
                 // Merge data from new public ring into secret one
+                log(LogType.MSG_IP_MERGE_SECRET);
                 secretRing = secretRing.merge(publicRing, mLog, mIndent);
                 if (secretRing == null) {
                     return new SaveKeyringResult(SaveKeyringResult.RESULT_ERROR, mLog, null);
@@ -836,6 +838,7 @@ public class ProviderHelper {
                 UncachedKeyRing oldSecretRing = getCanonicalizedSecretKeyRing(masterKeyId).getUncachedKeyRing();
 
                 // Merge data from new secret ring into old one
+                log(LogType.MSG_IS_MERGE_SECRET);
                 secretRing = secretRing.merge(oldSecretRing, mLog, mIndent);
 
                 // If this is null, there is an error in the log so we can just return
@@ -875,6 +878,7 @@ public class ProviderHelper {
                 UncachedKeyRing oldPublicRing = getCanonicalizedPublicKeyRing(masterKeyId).getUncachedKeyRing();
 
                 // Merge data from new secret ring into public one
+                log(LogType.MSG_IS_MERGE_PUBLIC);
                 publicRing = oldPublicRing.merge(secretRing, mLog, mIndent);
                 if (publicRing == null) {
                     return new SaveKeyringResult(SaveKeyringResult.RESULT_ERROR, mLog, null);
