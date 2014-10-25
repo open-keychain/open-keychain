@@ -787,8 +787,8 @@ public class UncachedKeyRing {
      */
     public UncachedKeyRing merge(UncachedKeyRing other, OperationLog log, int indent) {
 
-        log.add(isSecret() ? LogType.MSG_MG_SECRET : LogType.MSG_MG_PUBLIC,
-                indent, KeyFormattingUtils.convertKeyIdToHex(getMasterKeyId()));
+        // log.add(isSecret() ? LogType.MSG_MG_SECRET : LogType.MSG_MG_PUBLIC,
+                // indent, KeyFormattingUtils.convertKeyIdToHex(getMasterKeyId()));
         indent += 1;
 
         long masterKeyId = other.getMasterKeyId();
