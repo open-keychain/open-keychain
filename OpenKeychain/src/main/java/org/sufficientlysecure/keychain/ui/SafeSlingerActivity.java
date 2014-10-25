@@ -64,7 +64,7 @@ public class SafeSlingerActivity extends ActionBarActivity {
     public static final String EXTRA_MASTER_KEY_ID = "master_key_id";
 
     private long mMasterKeyId;
-    private int mSelectedNumber;
+    private int mSelectedNumber = 2;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -124,12 +124,13 @@ public class SafeSlingerActivity extends ActionBarActivity {
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startExchange(mMasterKeyId);
+                startExchange(mMasterKeyId, mSelectedNumber);
             }
         });
     }
 
-    private void startExchange(long masterKeyId) {
+    private void startExchange(long masterKeyId, int number) {
+        Log.d(Constants.TAG, "number: " + number);
         // retrieve public key blob and start SafeSlinger
         Uri uri = KeychainContract.KeyRingData.buildPublicKeyRingUri(masterKeyId);
         try {
@@ -137,7 +138,8 @@ public class SafeSlingerActivity extends ActionBarActivity {
                     uri, KeychainContract.KeyRingData.KEY_RING_DATA, ProviderHelper.FIELD_TYPE_BLOB);
 
             Intent slingerIntent = new Intent(this, ExchangeActivity.class);
-            slingerIntent.putExtra(ExchangeConfig.extra.NUM_USERS, mSelectedNumber);
+
+            slingerIntent.putExtra(ExchangeConfig.extra.NUM_USERS, number);
             slingerIntent.putExtra(ExchangeConfig.extra.USER_DATA, keyBlob);
             slingerIntent.putExtra(ExchangeConfig.extra.HOST_NAME, Constants.SAFESLINGER_SERVER);
             startActivityForResult(slingerIntent, REQUEST_CODE_SAFE_SLINGER);
