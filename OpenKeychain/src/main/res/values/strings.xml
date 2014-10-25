@@ -638,8 +638,8 @@
     <string name="msg_ip_master_flags_xxsx">"Master flags: sign"</string>
     <string name="msg_ip_master_flags_xxxa">"Master flags: authenticate"</string>
     <string name="msg_ip_master_flags_xxxx">"Master flags: none"</string>
-    <string name="msg_ip_merge_public">"Merging new data into public keyring"</string>
-    <string name="msg_ip_merge_secret">"Merging new data into secret keyring"</string>
+    <string name="msg_ip_merge_public">"Merging imported data into existing public keyring"</string>
+    <string name="msg_ip_merge_secret">"Merging imported data into existing public keyring"</string>
     <string name="msg_ip_subkey">"Processing subkey %s"</string>
     <string name="msg_ip_subkey_expired">"Subkey expired on %s"</string>
     <string name="msg_ip_subkey_expires">"Subkey expires on %s"</string>
@@ -690,8 +690,8 @@
     <string name="msg_is_db_exception">"Database error!"</string>
     <string name="msg_is_importing_subkeys">"Processing secret subkeys"</string>
     <string name="msg_is_error_io_exc">"Error encoding keyring"</string>
-    <string name="msg_is_merge_public">"Merging new data into public keyring"</string>
-    <string name="msg_is_merge_secret">"Merging new data into secret keyring"</string>
+    <string name="msg_is_merge_public">"Merging imported data into existing public keyring"</string>
+    <string name="msg_is_merge_secret">"Merging imported data into existing public keyring"</string>
     <string name="msg_is_pubring_generate">"Generating public keyring from secret keyring"</string>
     <string name="msg_is_subkey_nonexistent">"Subkey %s unavailable in secret key"</string>
     <string name="msg_is_subkey_ok">"Marked secret subkey %s as available"</string>
@@ -1023,7 +1023,7 @@
     <string name="empty_certs">"No certificates for this key"</string>
     <string name="certs_text">"Only validated self-certificates and validated certificates created with your keys are displayed here."</string>
     <string name="section_uids_to_certify">"Identities for "</string>
-    <string name="certify_text">"The keys you’re importing contain “identities”: names and emails. If these match what you expected, you can say so by “certifying” them. If they don’t match, you probably shouldn’t use these keys."</string>
+    <string name="certify_text">"The keys you are importing contain “identities”: names and emails. Select exactly those for certification which match what you expected."</string>
     <string name="label_revocation">"Revocation Reason"</string>
     <string name="label_verify_status">"Verification Status"</string>
     <string name="label_cert_type">"Type"</string>
