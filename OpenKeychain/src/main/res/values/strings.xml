@@ -1023,7 +1023,7 @@
     <string name="empty_certs">"No certificates for this key"</string>
     <string name="certs_text">"Only validated self-certificates and validated certificates created with your keys are displayed here."</string>
     <string name="section_uids_to_certify">"Identities for "</string>
-    <string name="certify_text">"The keys you’re importing contain “identities”: names and emails. If these match what you expected, you can say so by “certifying” them. If they don’t match, you probably shouldn’t use these keys."</string>
+    <string name="certify_text">"The keys you are importing contain “identities”: names and emails. Select exactly those for certification which match what you expected."</string>
     <string name="label_revocation">"Revocation Reason"</string>
     <string name="label_verify_status">"Verification Status"</string>
     <string name="label_cert_type">"Type"</string>
