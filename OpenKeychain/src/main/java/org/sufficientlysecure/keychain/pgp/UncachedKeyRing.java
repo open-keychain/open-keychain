@@ -787,6 +787,7 @@ public class UncachedKeyRing {
      */
     public UncachedKeyRing merge(UncachedKeyRing other, OperationLog log, int indent) {
 
+        // This is logged in the calling method to provide more meta info
         // log.add(isSecret() ? LogType.MSG_MG_SECRET : LogType.MSG_MG_PUBLIC,
                 // indent, KeyFormattingUtils.convertKeyIdToHex(getMasterKeyId()));
         indent += 1;
