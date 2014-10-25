@@ -61,7 +61,7 @@
             android:id="@+id/sign_key_upload_checkbox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:checked="false"
+            android:checked="true"
             android:text="@string/label_send_key"
             android:paddingTop="12dp"
             android:paddingBottom="12dp"/>

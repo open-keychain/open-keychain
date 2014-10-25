@@ -94,6 +94,10 @@ public class ImportExportOperation extends BaseOperation {
     }
 
     public void uploadKeyRingToServer(HkpKeyserver server, CanonicalizedPublicKeyRing keyring) throws AddKeyException {
+        uploadKeyRingToServer(server, keyring.getUncachedKeyRing());
+    }
+
+    public void uploadKeyRingToServer(HkpKeyserver server, UncachedKeyRing keyring) throws AddKeyException {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         ArmoredOutputStream aos = null;
         try {

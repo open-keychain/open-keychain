@@ -121,6 +121,10 @@ public class UncachedKeyRing {
         return mRing.getEncoded();
     }
 
+    public void encode(OutputStream out) throws IOException {
+        mRing.encode(out);
+    }
+
     public byte[] getFingerprint() {
         return mRing.getPublicKey().getFingerprint();
     }
