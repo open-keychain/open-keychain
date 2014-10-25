@@ -379,6 +379,7 @@ public class OpenPgpService extends RemoteService {
                         .setCompressionId(accSettings.getCompression())
                         .setSymmetricEncryptionAlgorithm(accSettings.getEncryptionAlgorithm())
                         .setEncryptionMasterKeyIds(keyIds)
+                        .setFailOnMissingEncryptionKeyIds(true)
                         .setOriginalFilename(originalFilename)
                         .setAdditionalEncryptId(accSettings.getKeyId()); // add acc key for encryption
 
