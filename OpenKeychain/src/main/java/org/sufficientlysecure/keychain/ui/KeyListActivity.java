@@ -206,7 +206,6 @@ public class KeyListActivity extends DrawerActivity {
 
         // start service with intent
         startService(intent);
-
     }
 
     @Override
