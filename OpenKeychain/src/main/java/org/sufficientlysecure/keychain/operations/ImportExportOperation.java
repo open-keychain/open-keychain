@@ -172,21 +172,21 @@ public class ImportExportOperation extends BaseOperation {
                             byte[] data;
                             // Download by fingerprint, or keyId - whichever is available
                             if (entry.mExpectedFingerprint != null) {
-                                log.add(LogType.MSG_IMPORT_FETCH_KEYSERVER, 1, "0x" + entry.mExpectedFingerprint.substring(24));
+                                log.add(LogType.MSG_IMPORT_FETCH_KEYSERVER, 2, "0x" + entry.mExpectedFingerprint.substring(24));
                                 data = keyServer.get("0x" + entry.mExpectedFingerprint).getBytes();
                             } else {
-                                log.add(LogType.MSG_IMPORT_FETCH_KEYSERVER, 1, entry.mKeyIdHex);
+                                log.add(LogType.MSG_IMPORT_FETCH_KEYSERVER, 2, entry.mKeyIdHex);
                                 data = keyServer.get(entry.mKeyIdHex).getBytes();
                             }
                             key = UncachedKeyRing.decodeFromData(data);
                             if (key != null) {
-                                log.add(LogType.MSG_IMPORT_FETCH_KEYSERVER_OK, 2);
+                                log.add(LogType.MSG_IMPORT_FETCH_KEYSERVER_OK, 3);
                             } else {
-                                log.add(LogType.MSG_IMPORT_FETCH_ERROR_DECODE, 2);
+                                log.add(LogType.MSG_IMPORT_FETCH_ERROR_DECODE, 3);
                             }
                         } catch (Keyserver.QueryFailedException e) {
                             Log.e(Constants.TAG, "query failed", e);
-                            log.add(LogType.MSG_IMPORT_FETCH_KEYSERVER_ERROR, 2);
+                            log.add(LogType.MSG_IMPORT_FETCH_KEYSERVER_ERROR, 3);
                         }
                     }
 
@@ -198,27 +198,27 @@ public class ImportExportOperation extends BaseOperation {
                         }
 
                         try {
-                            log.add(LogType.MSG_IMPORT_FETCH_KEYBASE, 1, entry.mKeybaseName);
+                            log.add(LogType.MSG_IMPORT_FETCH_KEYBASE, 2, entry.mKeybaseName);
                             byte[] data = keybaseServer.get(entry.mKeybaseName).getBytes();
                             key = UncachedKeyRing.decodeFromData(data);
 
                             // If there already is a key (of keybase origin), merge the two
                             if (key != null) {
-                                log.add(LogType.MSG_IMPORT_MERGE, 2);
+                                log.add(LogType.MSG_IMPORT_MERGE, 3);
                                 UncachedKeyRing merged = UncachedKeyRing.decodeFromData(data);
-                                merged = key.merge(merged, log, 3);
+                                merged = key.merge(merged, log, 4);
                                 // If the merge didn't fail, use the new merged key
                                 if (merged != null) {
                                     key = merged;
                                 }
                             } else {
-                                log.add(LogType.MSG_IMPORT_FETCH_ERROR_DECODE, 2);
+                                log.add(LogType.MSG_IMPORT_FETCH_ERROR_DECODE, 3);
                                 key = UncachedKeyRing.decodeFromData(data);
                             }
                         } catch (Keyserver.QueryFailedException e) {
                             // download failed, too bad. just proceed
                             Log.e(Constants.TAG, "query failed", e);
-                            log.add(LogType.MSG_IMPORT_FETCH_KEYSERVER_ERROR, 2);
+                            log.add(LogType.MSG_IMPORT_FETCH_KEYSERVER_ERROR, 3);
                         }
                     }
                 }
