@@ -135,9 +135,7 @@ public class ProviderHelper {
     }
 
     public void clearLog() {
-        if (mLog != null) {
-            mLog.clear();
-        }
+        mLog = new OperationLog();
     }
 
     // If we ever switch to api level 11, we can ditch this whole mess!
@@ -867,7 +865,21 @@ public class ProviderHelper {
                 // This is a safe cast, because we made sure this is a secret ring above
                 canSecretRing = (CanonicalizedSecretKeyRing) secretRing.canonicalize(mLog, mIndent);
                 if (canSecretRing == null) {
-                    return new SaveKeyringResult(SaveKeyringResult.RESULT_ERROR, mLog, null);
+
+                    // Special case: If keyring canonicalization failed, try again after adding
+                    // all self-certificates from the public key.
+                    try {
+                        log(LogType.MSG_IS_MERGE_SPECIAL);
+                        UncachedKeyRing oldPublicRing = getCanonicalizedPublicKeyRing(masterKeyId).getUncachedKeyRing();
+                        secretRing = secretRing.merge(oldPublicRing, mLog, mIndent);
+                        canSecretRing = (CanonicalizedSecretKeyRing) secretRing.canonicalize(mLog, mIndent);
+                    } catch (NotFoundException e2) {
+                        // nothing, this is handled right in the next line
+                    }
+
+                    if (canSecretRing == null) {
+                        return new SaveKeyringResult(SaveKeyringResult.RESULT_ERROR, mLog, null);
+                    }
                 }
 
             }
