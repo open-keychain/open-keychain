@@ -133,6 +133,8 @@ public class LogDisplayFragment extends ListFragment implements OnItemClickListe
                 ih.mSub.setVisibility(View.VISIBLE);
                 convertView.setClickable(false);
 
+                convertView.setPadding((entry.mIndent) * dipFactor, 0, 0, 0);
+
                 OperationResult result = ((SubLogEntryParcel) entry).getSubResult();
                 LogEntryParcel subEntry = result.getLog().getLast();
                 if (subEntry != null) {
