@@ -152,10 +152,10 @@ abstract public class SelectKeyCursorAdapter extends CursorAdapter {
         View view = mInflater.inflate(R.layout.select_key_item, null);
         ViewHolderItem holder = new ViewHolderItem();
         holder.view = view;
-        holder.mainUserId = (TextView) view.findViewById(R.id.key_list_item_name);
-        holder.mainUserIdRest = (TextView) view.findViewById(R.id.mainUserIdRest);
-        holder.keyId = (TextView) view.findViewById(R.id.subkey_item_key_id);
-        holder.statusIcon = (ImageView) view.findViewById(R.id.status_icon);
+        holder.mainUserId = (TextView) view.findViewById(R.id.select_key_item_name);
+        holder.mainUserIdRest = (TextView) view.findViewById(R.id.select_key_item_email);
+        holder.keyId = (TextView) view.findViewById(R.id.select_key_item_key_id);
+        holder.statusIcon = (ImageView) view.findViewById(R.id.select_key_item_status_icon);
         holder.selected = (CheckBox) view.findViewById(R.id.selected);
         view.setTag(holder);
         return view;
