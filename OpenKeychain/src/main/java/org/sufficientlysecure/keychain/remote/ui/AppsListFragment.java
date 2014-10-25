@@ -120,6 +120,7 @@ public class AppsListFragment extends ListFragment implements
     private static final String TEMP_COLUMN_NAME = "NAME";
     private static final String TEMP_COLUMN_INSTALLED = "INSTALLED";
     private static final String TEMP_COLUMN_REGISTERED = "REGISTERED";
+    private static final String TEMP_COLUMN_ICON_RES_ID = "ICON_RES_ID";
 
     // These are the Contacts rows that we will retrieve.
     static final String[] PROJECTION = new String[]{
@@ -127,7 +128,8 @@ public class AppsListFragment extends ListFragment implements
             ApiApps.PACKAGE_NAME, // 1
             "null as " + TEMP_COLUMN_NAME, // installed apps can retrieve app name from Android OS
             "0 as " + TEMP_COLUMN_INSTALLED, // changed later in cursor joiner
-            "1 as " + TEMP_COLUMN_REGISTERED // if it is in db it is registered
+            "1 as " + TEMP_COLUMN_REGISTERED, // if it is in db it is registered
+            "0 as " + TEMP_COLUMN_ICON_RES_ID // not used
     };
 
     private static final int INDEX_ID = 0;
@@ -135,6 +137,7 @@ public class AppsListFragment extends ListFragment implements
     private static final int INDEX_NAME = 2;
     private static final int INDEX_INSTALLED = 3;
     private static final int INDEX_REGISTERED = 4;
+    private static final int INDEX_ICON_RES_ID = 5;
 
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         // This is called when a new Loader needs to be created. This
@@ -155,18 +158,22 @@ public class AppsListFragment extends ListFragment implements
                 ApiApps.PACKAGE_NAME,
                 TEMP_COLUMN_NAME,
                 TEMP_COLUMN_INSTALLED,
-                TEMP_COLUMN_REGISTERED
+                TEMP_COLUMN_REGISTERED,
+                TEMP_COLUMN_ICON_RES_ID
         });
-        availableAppsCursor.addRow(new Object[]{1, "com.fsck.k9", "K-9 Mail", 0, 0});
-        availableAppsCursor.addRow(new Object[]{1, "eu.siacs.conversations", "Conversations (Instant Messaging)", 0, 0});
-//        availableAppsCursor.addRow(new Object[]{1, "org.sufficientlysecure.keychain.demo", "API Example", 0, 0});
+        // NOTE: SORT ascending by package name, this is REQUIRED for CursorJoiner!
+        // Drawables taken from projects res/drawables-xxhdpi/ic_launcher.png
+        availableAppsCursor.addRow(new Object[]{1, "com.fsck.k9", "K-9 Mail", 0, 0, R.drawable.apps_k9});
+        availableAppsCursor.addRow(new Object[]{1, "com.zeapo.pwdstore", "Password Store", 0, 0, R.drawable.apps_password_store});
+        availableAppsCursor.addRow(new Object[]{1, "eu.siacs.conversations", "Conversations (Instant Messaging)", 0, 0, R.drawable.apps_conversations});
 
         MatrixCursor mergedCursor = new MatrixCursor(new String[]{
                 ApiApps._ID,
                 ApiApps.PACKAGE_NAME,
                 TEMP_COLUMN_NAME,
                 TEMP_COLUMN_INSTALLED,
-                TEMP_COLUMN_REGISTERED
+                TEMP_COLUMN_REGISTERED,
+                TEMP_COLUMN_ICON_RES_ID
         });
 
         CursorJoiner joiner = new CursorJoiner(
@@ -181,11 +188,12 @@ public class AppsListFragment extends ListFragment implements
                     String packageName = availableAppsCursor.getString(INDEX_PACKAGE_NAME);
 
                     mergedCursor.addRow(new Object[]{
-                            availableAppsCursor.getLong(INDEX_ID),
+                            1, // no need for unique _ID
                             packageName,
                             availableAppsCursor.getString(INDEX_NAME),
                             isInstalled(packageName),
-                            0
+                            0,
+                            availableAppsCursor.getInt(INDEX_ICON_RES_ID)
                     });
                     break;
                 }
@@ -194,11 +202,12 @@ public class AppsListFragment extends ListFragment implements
                     String packageName = data.getString(INDEX_PACKAGE_NAME);
 
                     mergedCursor.addRow(new Object[]{
-                            data.getLong(INDEX_ID),
+                            1, // no need for unique _ID
                             packageName,
                             null,
                             isInstalled(packageName),
-                            1
+                            1, // registered!
+                            0 // icon is retrieved later
                     });
                     break;
                 }
@@ -215,11 +224,12 @@ public class AppsListFragment extends ListFragment implements
                     }
 
                     mergedCursor.addRow(new Object[]{
-                            data.getLong(INDEX_ID),
+                            1, // no need for unique _ID
                             packageName,
                             name,
                             isInstalled(packageName),
-                            1
+                            1, // registered!
+                            0 // icon is retrieved later
                     });
                     break;
                 }
@@ -309,8 +319,10 @@ public class AppsListFragment extends ListFragment implements
             ImageView installIcon = (ImageView) view.findViewById(R.id.api_apps_adapter_install_icon);
 
             String packageName = cursor.getString(INDEX_PACKAGE_NAME);
+            Log.d(Constants.TAG, "packageName: " + packageName);
             int installed = cursor.getInt(INDEX_INSTALLED);
             String name = cursor.getString(INDEX_NAME);
+            int iconResName = cursor.getInt(INDEX_ICON_RES_ID);
 
             // get application name and icon
             try {
@@ -324,6 +336,7 @@ public class AppsListFragment extends ListFragment implements
                     text.setText(packageName);
                 } else {
                     text.setText(name);
+                    icon.setImageDrawable(getResources().getDrawable(iconResName));
                 }
             }
 
