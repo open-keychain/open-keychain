@@ -79,7 +79,10 @@ public class ProviderHelperSaveTest {
 
     @Test public void testImportSymantec() throws Exception {
 
-        // insert two keys with same long key id, make sure the second one gets rejected either way!
+        // symantec pgp desktop exports secret keys without self certificates. we don't support
+        // those on their own, but if they are imported together with their public key (or if
+        // the public key is already known), the self certs info will be merged in as a special
+        // case.
         UncachedKeyRing seckey =
                 readRingFromResource("/test-keys/symantec_secret.asc");
         UncachedKeyRing pubkey =
