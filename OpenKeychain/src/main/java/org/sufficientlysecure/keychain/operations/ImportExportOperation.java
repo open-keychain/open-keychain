@@ -172,7 +172,7 @@ public class ImportExportOperation extends BaseOperation {
                             byte[] data;
                             // Download by fingerprint, or keyId - whichever is available
                             if (entry.mExpectedFingerprint != null) {
-                                log.add(LogType.MSG_IMPORT_FETCH_KEYSERVER, 1, "0x" + entry.mExpectedFingerprint);
+                                log.add(LogType.MSG_IMPORT_FETCH_KEYSERVER, 1, "0x" + entry.mExpectedFingerprint.substring(24));
                                 data = keyServer.get("0x" + entry.mExpectedFingerprint).getBytes();
                             } else {
                                 log.add(LogType.MSG_IMPORT_FETCH_KEYSERVER, 1, entry.mKeyIdHex);
@@ -212,6 +212,7 @@ public class ImportExportOperation extends BaseOperation {
                                     key = merged;
                                 }
                             } else {
+                                log.add(LogType.MSG_IMPORT_FETCH_ERROR_DECODE, 2);
                                 key = UncachedKeyRing.decodeFromData(data);
                             }
                         } catch (Keyserver.QueryFailedException e) {
