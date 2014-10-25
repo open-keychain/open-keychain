@@ -601,7 +601,7 @@ public class KeyListFragment extends LoaderFragment
                     if (holder.mMasterKeyId != null) {
                         Intent safeSlingerIntent = new Intent(getActivity(), SafeSlingerActivity.class);
                         safeSlingerIntent.putExtra(SafeSlingerActivity.EXTRA_MASTER_KEY_ID, holder.mMasterKeyId);
-                        startActivity(safeSlingerIntent);
+                        startActivityForResult(safeSlingerIntent, 0);
                     }
                 }
             });

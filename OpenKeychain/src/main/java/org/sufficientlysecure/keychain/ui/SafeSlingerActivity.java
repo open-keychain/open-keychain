@@ -130,7 +130,6 @@ public class SafeSlingerActivity extends ActionBarActivity {
     }
 
     private void startExchange(long masterKeyId, int number) {
-        Log.d(Constants.TAG, "number: " + number);
         // retrieve public key blob and start SafeSlinger
         Uri uri = KeychainContract.KeyRingData.buildPublicKeyRingUri(masterKeyId);
         try {
