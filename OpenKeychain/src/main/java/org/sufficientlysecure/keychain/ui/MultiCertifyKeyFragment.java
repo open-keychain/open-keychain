@@ -18,6 +18,7 @@
 
 package org.sufficientlysecure.keychain.ui;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.database.Cursor;
@@ -67,6 +68,8 @@ import java.util.ArrayList;
 
 public class MultiCertifyKeyFragment extends LoaderFragment
         implements LoaderManager.LoaderCallbacks<Cursor> {
+
+    public static final int REQUEST_CODE_PASSPHRASE = 0x00008001;
 
     private FragmentActivity mActivity;
 
@@ -303,19 +306,30 @@ public class MultiCertifyKeyFragment extends LoaderFragment
             return;
         }
         if (passphrase == null) {
-            PassphraseDialogFragment.show(mActivity, mSignMasterKeyId,
-                    new Handler() {
-                        @Override
-                        public void handleMessage(Message message) {
-                            if (message.what == PassphraseDialogFragment.MESSAGE_OKAY) {
-                                startCertifying();
-                            }
-                        }
-                    }
-            );
+            Intent intent = new Intent(getActivity(), PassphraseDialogActivity.class);
+            intent.putExtra(PassphraseDialogActivity.EXTRA_SUBKEY_ID, mSignMasterKeyId);
+            startActivityForResult(intent, REQUEST_CODE_PASSPHRASE);
             // bail out; need to wait until the user has entered the passphrase before trying again
         } else {
             startCertifying();
+        }
+    }
+
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode) {
+            case REQUEST_CODE_PASSPHRASE: {
+                if (resultCode == Activity.RESULT_OK && data != null) {
+                    String passphrase = data.getStringExtra(PassphraseDialogActivity.MESSAGE_DATA_PASSPHRASE);
+                    startCertifying();
+                }
+                return;
+            }
+
+            default: {
+                super.onActivityResult(requestCode, resultCode, data);
+            }
         }
     }
 

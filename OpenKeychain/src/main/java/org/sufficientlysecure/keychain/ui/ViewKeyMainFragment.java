@@ -329,9 +329,17 @@ public class ViewKeyMainFragment extends LoaderFragment implements
     }
 
     private void certify(Uri dataUri) {
-        Intent signIntent = new Intent(getActivity(), CertifyKeyActivity.class);
-        signIntent.setData(dataUri);
-        startActivityForResult(signIntent, 0);
+        long keyId = 0;
+        try {
+            keyId = new ProviderHelper(getActivity())
+                    .getCachedPublicKeyRing(dataUri)
+                    .extractOrGetMasterKeyId();
+        } catch (PgpKeyNotFoundException e) {
+            Log.e(Constants.TAG, "key not found!", e);
+        }
+        Intent certifyIntent = new Intent(getActivity(), MultiCertifyKeyActivity.class);
+        certifyIntent.putExtra(MultiCertifyKeyActivity.EXTRA_KEY_IDS, new long[]{keyId});
+        startActivityForResult(certifyIntent, 0);
     }
 
     private void editKey(Uri dataUri) {

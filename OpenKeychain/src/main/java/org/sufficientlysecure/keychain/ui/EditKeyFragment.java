@@ -40,18 +40,17 @@ import android.widget.ListView;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.compatibility.DialogFragmentWorkaround;
-import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
-import org.sufficientlysecure.keychain.ui.util.ActionBarHelper;
+import org.sufficientlysecure.keychain.operations.results.OperationResult;
+import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
+import org.sufficientlysecure.keychain.operations.results.SingletonResult;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
+import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.provider.ProviderHelper.NotFoundException;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
 import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
-import org.sufficientlysecure.keychain.operations.results.OperationResult;
-import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
-import org.sufficientlysecure.keychain.operations.results.SingletonResult;
 import org.sufficientlysecure.keychain.service.PassphraseCacheService;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
 import org.sufficientlysecure.keychain.ui.adapter.SubkeysAdapter;
@@ -63,8 +62,8 @@ import org.sufficientlysecure.keychain.ui.dialog.AddUserIdDialogFragment;
 import org.sufficientlysecure.keychain.ui.dialog.EditSubkeyDialogFragment;
 import org.sufficientlysecure.keychain.ui.dialog.EditSubkeyExpiryDialogFragment;
 import org.sufficientlysecure.keychain.ui.dialog.EditUserIdDialogFragment;
-import org.sufficientlysecure.keychain.ui.dialog.PassphraseDialogFragment;
 import org.sufficientlysecure.keychain.ui.dialog.SetPassphraseDialogFragment;
+import org.sufficientlysecure.keychain.ui.util.ActionBarHelper;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.util.Log;
 
@@ -73,6 +72,8 @@ public class EditKeyFragment extends LoaderFragment implements
 
     public static final String ARG_DATA_URI = "uri";
     public static final String ARG_SAVE_KEYRING_PARCEL = "save_keyring_parcel";
+
+    public static final int REQUEST_CODE_PASSPHRASE = 0x00008001;
 
     private ListView mUserIdsList;
     private ListView mSubkeysList;
@@ -242,23 +243,9 @@ public class EditKeyFragment extends LoaderFragment implements
         }
 
         if (mCurrentPassphrase == null) {
-            PassphraseDialogFragment.show(getActivity(), mSaveKeyringParcel.mMasterKeyId,
-                    new Handler() {
-                        @Override
-                        public void handleMessage(Message message) {
-                            if (message.what == PassphraseDialogFragment.MESSAGE_OKAY) {
-                                mCurrentPassphrase = message.getData().getString(
-                                        PassphraseDialogFragment.MESSAGE_DATA_PASSPHRASE);
-                                // Prepare the loaders. Either re-connect with an existing ones,
-                                // or start new ones.
-                                getLoaderManager().initLoader(LOADER_ID_USER_IDS, null, EditKeyFragment.this);
-                                getLoaderManager().initLoader(LOADER_ID_SUBKEYS, null, EditKeyFragment.this);
-                            } else {
-                                EditKeyFragment.this.getActivity().finish();
-                            }
-                        }
-                    }
-            );
+            Intent intent = new Intent(getActivity(), PassphraseDialogActivity.class);
+            intent.putExtra(PassphraseDialogActivity.EXTRA_SUBKEY_ID, mSaveKeyringParcel.mMasterKeyId);
+            startActivityForResult(intent, REQUEST_CODE_PASSPHRASE);
         } else {
             // Prepare the loaders. Either re-connect with an existing ones,
             // or start new ones.
@@ -278,6 +265,28 @@ public class EditKeyFragment extends LoaderFragment implements
 
         mSubkeysAddedAdapter = new SubkeysAddedAdapter(getActivity(), mSaveKeyringParcel.mAddSubKeys, false);
         mSubkeysAddedList.setAdapter(mSubkeysAddedAdapter);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode) {
+            case REQUEST_CODE_PASSPHRASE: {
+                if (resultCode == Activity.RESULT_OK && data != null) {
+                    mCurrentPassphrase = data.getStringExtra(PassphraseDialogActivity.MESSAGE_DATA_PASSPHRASE);
+                    // Prepare the loaders. Either re-connect with an existing ones,
+                    // or start new ones.
+                    getLoaderManager().initLoader(LOADER_ID_USER_IDS, null, EditKeyFragment.this);
+                    getLoaderManager().initLoader(LOADER_ID_SUBKEYS, null, EditKeyFragment.this);
+                } else {
+                    getActivity().finish();
+                }
+                return;
+            }
+
+            default: {
+                super.onActivityResult(requestCode, resultCode, data);
+            }
+        }
     }
 
     private void initView() {
