@@ -109,9 +109,6 @@ public class KeyListFragment extends LoaderFragment
 
     private String mQuery;
     private SearchView mSearchView;
-    // empty list layout
-    private Button mButtonEmptyCreate;
-    private Button mButtonEmptyImport;
 
     boolean hideMenu = false;
 
@@ -125,27 +122,6 @@ public class KeyListFragment extends LoaderFragment
 
         mStickyList = (StickyListHeadersListView) view.findViewById(R.id.key_list_list);
         mStickyList.setOnItemClickListener(this);
-
-        // empty view
-        mButtonEmptyCreate = (Button) view.findViewById(R.id.key_list_empty_button_create);
-        mButtonEmptyCreate.setOnClickListener(new OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getActivity(), CreateKeyActivity.class);
-                startActivityForResult(intent, 0);
-            }
-        });
-        mButtonEmptyImport = (Button) view.findViewById(R.id.key_list_empty_button_import);
-        mButtonEmptyImport.setOnClickListener(new OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getActivity(), ImportKeysActivity.class);
-                intent.setAction(ImportKeysActivity.ACTION_IMPORT_KEY_FROM_FILE_AND_RETURN);
-                startActivityForResult(intent, 0);
-            }
-        });
 
         mSwipeRefreshLayout = (ListAwareSwipeRefreshLayout) view.findViewById(R.id.key_list_swipe_container);
         mSwipeRefreshLayout.setOnRefreshListener(new NoScrollableSwipeRefreshLayout.OnRefreshListener() {
