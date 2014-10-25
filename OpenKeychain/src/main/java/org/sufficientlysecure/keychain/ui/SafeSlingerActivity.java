@@ -135,6 +135,7 @@ public class SafeSlingerActivity extends ActionBarActivity {
                     uri, KeychainContract.KeyRingData.KEY_RING_DATA, ProviderHelper.FIELD_TYPE_BLOB);
 
             Intent slingerIntent = new Intent(this, ExchangeActivity.class);
+            slingerIntent.putExtra(ExchangeConfig.extra.NUM_USERS, mSelectedNumber);
             slingerIntent.putExtra(ExchangeConfig.extra.USER_DATA, keyBlob);
             slingerIntent.putExtra(ExchangeConfig.extra.HOST_NAME, Constants.SAFESLINGER_SERVER);
             startActivityForResult(slingerIntent, REQUEST_CODE_SAFE_SLINGER);
