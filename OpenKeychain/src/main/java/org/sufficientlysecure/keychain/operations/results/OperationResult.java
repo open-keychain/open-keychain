@@ -581,6 +581,17 @@ public abstract class OperationResult implements Parcelable {
         MSG_CRT_WARN_SAVE_FAILED (LogLevel.WARN, R.string.msg_crt_warn_save_failed),
 
         MSG_IMPORT (LogLevel.START, R.plurals.msg_import),
+
+        MSG_IMPORT_FETCH_ERROR (LogLevel.ERROR, R.string.msg_import_fetch_error),
+        MSG_IMPORT_FETCH_ERROR_DECODE (LogLevel.ERROR, R.string.msg_import_fetch_error_decode),
+        MSG_IMPORT_FETCH_KEYSERVER (LogLevel.INFO, R.string.msg_import_fetch_keyserver),
+        MSG_IMPORT_FETCH_KEYSERVER_OK (LogLevel.DEBUG, R.string.msg_import_fetch_keyserver_ok),
+        MSG_IMPORT_FETCH_KEYSERVER_ERROR (LogLevel.ERROR, R.string.msg_import_fetch_keyserver_error),
+        MSG_IMPORT_FETCH_KEYBASE (LogLevel.INFO, R.string.msg_import_fetch_keybase),
+        MSG_IMPORT_KEYSERVER (LogLevel.DEBUG, R.string.msg_import_keyserver),
+        MSG_IMPORT_MERGE (LogLevel.DEBUG, R.string.msg_import_merge),
+        MSG_IMPORT_FINGERPRINT_ERROR (LogLevel.ERROR, R.string.msg_import_fingerprint_error),
+        MSG_IMPORT_FINGERPRINT_OK (LogLevel.DEBUG, R.string.msg_import_fingerprint_ok),
         MSG_IMPORT_ERROR (LogLevel.ERROR, R.string.msg_import_error),
         MSG_IMPORT_PARTIAL (LogLevel.ERROR, R.string.msg_import_partial),
         MSG_IMPORT_SUCCESS (LogLevel.OK, R.string.msg_import_success),
