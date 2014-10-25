@@ -362,8 +362,8 @@ public abstract class OperationResult implements Parcelable {
         MSG_IS_SUCCESS (LogLevel.OK, R.string.msg_is_success),
 
         // keyring canonicalization
-        MSG_KC_PUBLIC (LogLevel.DEBUG, R.string.msg_kc_public),
-        MSG_KC_SECRET (LogLevel.DEBUG, R.string.msg_kc_secret),
+        MSG_KC_PUBLIC (LogLevel.START, R.string.msg_kc_public),
+        MSG_KC_SECRET (LogLevel.START, R.string.msg_kc_secret),
         MSG_KC_ERROR_V3 (LogLevel.ERROR, R.string.msg_kc_error_v3),
         MSG_KC_ERROR_NO_UID (LogLevel.ERROR, R.string.msg_kc_error_no_uid),
         MSG_KC_ERROR_MASTER_ALGO (LogLevel.ERROR, R.string.msg_kc_error_master_algo),
