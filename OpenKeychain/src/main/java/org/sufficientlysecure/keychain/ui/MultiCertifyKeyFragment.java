@@ -372,7 +372,7 @@ public class MultiCertifyKeyFragment extends LoaderFragment
 
                     Intent intent = new Intent();
                     intent.putExtra(CertifyResult.EXTRA_RESULT, result);
-                    mActivity.setResult(CertifyKeyActivity.RESULT_OK, intent);
+                    mActivity.setResult(Activity.RESULT_OK, intent);
 
                     // check if we need to send the key to the server or not
                     if (mUploadKeyCheckbox.isChecked()) {
