@@ -31,17 +31,17 @@ import android.widget.ListView;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.operations.results.GetKeyResult;
-import org.sufficientlysecure.keychain.util.ParcelableFileCache.IteratorWithSize;
-import org.sufficientlysecure.keychain.util.Preferences;
 import org.sufficientlysecure.keychain.keyimport.ImportKeysListEntry;
 import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
+import org.sufficientlysecure.keychain.operations.results.GetKeyResult;
 import org.sufficientlysecure.keychain.ui.adapter.AsyncTaskResultWrapper;
 import org.sufficientlysecure.keychain.ui.adapter.ImportKeysAdapter;
 import org.sufficientlysecure.keychain.ui.adapter.ImportKeysListCloudLoader;
 import org.sufficientlysecure.keychain.ui.adapter.ImportKeysListLoader;
 import org.sufficientlysecure.keychain.util.InputData;
 import org.sufficientlysecure.keychain.util.Log;
+import org.sufficientlysecure.keychain.util.ParcelableFileCache.IteratorWithSize;
+import org.sufficientlysecure.keychain.util.Preferences;
 
 import java.io.ByteArrayInputStream;
 import java.io.FileNotFoundException;
@@ -297,21 +297,6 @@ public class ImportKeysListFragment extends ListFragment implements
                 } else {
                     getKeyResult.createNotify(getActivity()).show();
                 }
-//                if (error == null) {
-//                    // No error
-//                    mCachedKeyData = ((ImportKeysListLoader) loader).getParcelableRings();
-//                } else if (error instanceof ImportKeysListLoader.NoValidKeysException) {
-//                    Notify.showNotify(getActivity(), R.string.error_import_no_valid_keys, Notify.Style.ERROR);
-//                } else if (error instanceof ImportKeysListLoader.NonPgpPartException) {
-//                    Notify.showNotify(getActivity(),
-//                            ((ImportKeysListLoader.NonPgpPartException) error).getCount() + " " + getResources().
-//                                    getQuantityString(R.plurals.error_import_non_pgp_part,
-//                                            ((ImportKeysListLoader.NonPgpPartException) error).getCount()),
-//                            Notify.Style.OK
-//                    );
-//                } else {
-//                    Notify.showNotify(getActivity(), R.string.error_generic_report_bug, Notify.Style.ERROR);
-//                }
                 break;
 
             case LOADER_ID_CLOUD:
@@ -321,23 +306,6 @@ public class ImportKeysListFragment extends ListFragment implements
                 } else {
                     getKeyResult.createNotify(getActivity()).show();
                 }
-
-
-//                if (error == null) {
-//                    // No error
-//                } else if (error instanceof Keyserver.QueryTooShortException) {
-//                    Notify.showNotify(getActivity(), R.string.error_query_too_short, Notify.Style.ERROR);
-//                } else if (error instanceof Keyserver.TooManyResponsesException) {
-//                    Notify.showNotify(getActivity(), R.string.error_too_many_responses, Notify.Style.ERROR);
-//                } else if (error instanceof Keyserver.QueryTooShortOrTooManyResponsesException) {
-//                    Notify.showNotify(getActivity(), R.string.error_too_short_or_too_many_responses, Notify.Style.ERROR);
-//                } else if (error instanceof Keyserver.QueryFailedException) {
-//                    Log.d(Constants.TAG,
-//                            "Unrecoverable keyserver query error: " + error.getLocalizedMessage());
-//                    String alert = getActivity().getString(R.string.error_searching_keys);
-//                    alert = alert + " (" + error.getLocalizedMessage() + ")";
-//                    Notify.showNotify(getActivity(), alert, Notify.Style.ERROR);
-//                }
                 break;
 
             default:
