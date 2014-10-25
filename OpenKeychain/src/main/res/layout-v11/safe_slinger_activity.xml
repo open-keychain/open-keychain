@@ -16,10 +16,10 @@
             android:layout_marginTop="14dp"
             android:text="bla" />
 
-        <Spinner
-            android:layout_width="match_parent"
+        <NumberPicker
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/safe_slinger_spinner" />
+            android:id="@+id/safe_slinger_picker" />
 
         <View
             android:layout_width="match_parent"

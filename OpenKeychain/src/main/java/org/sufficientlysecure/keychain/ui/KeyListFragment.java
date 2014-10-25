@@ -115,10 +115,6 @@ public class KeyListFragment extends LoaderFragment
 
     boolean hideMenu = false;
 
-    Long mExchangeMasterKeyId = null;
-
-    private static final int REQUEST_CODE_SAFE_SLINGER = 2;
-
     /**
      * Load custom layout with StickyListView from library
      */
@@ -603,7 +599,9 @@ public class KeyListFragment extends LoaderFragment
                 @Override
                 public void onClick(View v) {
                     if (holder.mMasterKeyId != null) {
-                        startExchange(holder.mMasterKeyId);
+                        Intent safeSlingerIntent = new Intent(getActivity(), SafeSlingerActivity.class);
+                        safeSlingerIntent.putExtra(SafeSlingerActivity.EXTRA_MASTER_KEY_ID, holder.mMasterKeyId);
+                        startActivity(safeSlingerIntent);
                     }
                 }
             });
@@ -842,136 +840,6 @@ public class KeyListFragment extends LoaderFragment
 
     }
 
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == REQUEST_CODE_SAFE_SLINGER) {
-            if (resultCode == ExchangeActivity.RESULT_EXCHANGE_CANCELED) {
-                return;
-            }
-
-            final FragmentActivity activity = getActivity();
-
-            // Message is received after importing is done in KeychainIntentService
-            KeychainIntentServiceHandler saveHandler = new KeychainIntentServiceHandler(
-                    activity,
-                    getString(R.string.progress_importing),
-                    ProgressDialog.STYLE_HORIZONTAL,
-                    true) {
-                public void handleMessage(Message message) {
-                    // handle messages by standard KeychainIntentServiceHandler first
-                    super.handleMessage(message);
-
-                    if (message.arg1 == KeychainIntentServiceHandler.MESSAGE_OKAY) {
-                        // get returned data bundle
-                        Bundle returnData = message.getData();
-                        if (returnData == null) {
-                            return;
-                        }
-                        final ImportKeyResult result =
-                                returnData.getParcelable(OperationResult.EXTRA_RESULT);
-                        if (result == null) {
-                            Log.e(Constants.TAG, "result == null");
-                            return;
-                        }
-
-                        if (!result.success()) {
-                            result.createNotify(activity).show();
-                            return;
-                        }
-
-                        if (mExchangeMasterKeyId == null) {
-                            return;
-                        }
-
-                        Intent certifyIntent = new Intent(activity, MultiCertifyKeyActivity.class);
-                        certifyIntent.putExtra(MultiCertifyKeyActivity.EXTRA_RESULT, result);
-                        certifyIntent.putExtra(MultiCertifyKeyActivity.EXTRA_KEY_IDS, result.getImportedMasterKeyIds());
-                        certifyIntent.putExtra(MultiCertifyKeyActivity.EXTRA_CERTIFY_KEY_ID, mExchangeMasterKeyId);
-                        startActivityForResult(certifyIntent, KeyListActivity.REQUEST_CODE_RESULT_TO_LIST);
-
-                        mExchangeMasterKeyId = null;
-                    }
-                }
-            };
-
-            Log.d(Constants.TAG, "importKeys started");
-
-            // Send all information needed to service to import key in other thread
-            Intent intent = new Intent(activity, KeychainIntentService.class);
-
-            intent.setAction(KeychainIntentService.ACTION_IMPORT_KEYRING);
-
-            // instead of giving the entries by Intent extra, cache them into a
-            // file to prevent Java Binder problems on heavy imports
-            // read FileImportCache for more info.
-            try {
-                // import exchanged keys
-                ArrayList<ParcelableKeyRing> it = getSlingedKeys(data.getExtras());
-
-                // We parcel this iteratively into a file - anything we can
-                // display here, we should be able to import.
-                ParcelableFileCache<ParcelableKeyRing> cache =
-                        new ParcelableFileCache<ParcelableKeyRing>(activity, "key_import.pcl");
-                cache.writeCache(it.size(), it.iterator());
-
-                // fill values for this action
-                Bundle bundle = new Bundle();
-                intent.putExtra(KeychainIntentService.EXTRA_DATA, bundle);
-
-                // Create a new Messenger for the communication back
-                Messenger messenger = new Messenger(saveHandler);
-                intent.putExtra(KeychainIntentService.EXTRA_MESSENGER, messenger);
-
-                // show progress dialog
-                saveHandler.showProgressDialog(activity);
-
-                // start service with intent
-                activity.startService(intent);
-            } catch (IOException e) {
-                Log.e(Constants.TAG, "Problem writing cache file", e);
-                Notify.showNotify(activity, "Problem writing cache file!", Notify.Style.ERROR);
-            }
-        }
-
-        super.onActivityResult(requestCode, resultCode, data);
-    }
-
-    private static ArrayList<ParcelableKeyRing> getSlingedKeys(Bundle extras) {
-
-        ArrayList<ParcelableKeyRing> list = new ArrayList<ParcelableKeyRing>();
-
-        if (extras != null) {
-            byte[] d;
-            int i = 0;
-            do {
-                d = extras.getByteArray(ExchangeConfig.extra.MEMBER_DATA + i);
-                if (d != null) {
-                    list.add(new ParcelableKeyRing(d));
-                    i++;
-                }
-            } while (d != null);
-        }
-
-        return list;
-
-    }
-
-    private void startExchange(long masterKeyId) {
-        mExchangeMasterKeyId = masterKeyId;
-        // retrieve public key blob and start SafeSlinger
-        Uri uri = KeychainContract.KeyRingData.buildPublicKeyRingUri(masterKeyId);
-        try {
-            byte[] keyBlob = (byte[]) new ProviderHelper(getActivity()).getGenericData(
-                    uri, KeychainContract.KeyRingData.KEY_RING_DATA, ProviderHelper.FIELD_TYPE_BLOB);
-
-            Intent slingerIntent = new Intent(getActivity(), ExchangeActivity.class);
-            slingerIntent.putExtra(ExchangeConfig.extra.USER_DATA, keyBlob);
-            slingerIntent.putExtra(ExchangeConfig.extra.HOST_NAME, Constants.SAFESLINGER_SERVER);
-            startActivityForResult(slingerIntent, REQUEST_CODE_SAFE_SLINGER);
-        } catch (ProviderHelper.NotFoundException e) {
-            Log.e(Constants.TAG, "personal key not found", e);
-        }
-    }
 
 
 }

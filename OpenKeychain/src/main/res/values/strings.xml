@@ -39,6 +39,7 @@
     <string name="title_help">"Help"</string>
     <string name="title_log_display">"Log"</string>
     <string name="title_create_key">"Create Key"</string>
+    <string name="title_exchange_keys">"Exchange Keys"</string>
 
     <!-- section -->
     <string name="section_user_ids">"Identities"</string>
@@ -238,7 +239,6 @@
     <string name="select_key_to_certify">"Please select a key to be used for certification!"</string>
     <string name="key_too_big_for_sharing">"Key is too big to be shared this way!"</string>
     <string name="text_copied_to_clipboard">"Text has been copied to the clipboard!"</string>
-    <string name="select_key_for_exchange">"Please select a key to be used for secure exchange!"</string>
 
     <!--
          errors
@@ -283,12 +283,7 @@
     <string name="decrypt_invalid_button">"I understand the risks, display it!"</string>
 
     <!-- Add keys -->
-    <string name="add_keys_section_secure_exchange">"Exchange"</string>
-    <string name="add_keys_section_secure_add">"Add"</string>
     <string name="add_keys_my_key">"My key:"</string>
-    <string name="add_keys_start_exchange">"Start exchange"</string>
-    <string name="add_keys_qr_code">"Scan QR Code"</string>
-    <string name="add_keys_nfc">"Receive via NFC"</string>
 
     <!-- progress dialogs, usually ending in '…' -->
     <string name="progress_done">"Done."</string>
