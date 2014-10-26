@@ -1,0 +1,224 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<resources>
+  <!--GENERAL: Please put all strings inside quotes as described in example 1 on
+    http://developer.android.com/guide/topics/resources/string-resource.html (scroll down to "Escaping apostrophes and quotes").-->
+  <string name="app_name">OpenKeychain</string>
+  <!--title-->
+  <string name="title_select_recipients">選擇金鑰</string>
+  <string name="title_select_secret_key">選擇私鑰</string>
+  <string name="title_encrypt_text">加密文字</string>
+  <string name="title_encrypt_files">加密檔案</string>
+  <string name="title_decrypt">解密</string>
+  <string name="title_authentication">口令</string>
+  <string name="title_add_subkey">新增子金鑰</string>
+  <string name="title_edit_key">編輯金鑰</string>
+  <string name="title_preferences">偏好設定</string>
+  <string name="title_cloud_search_preferences">雲端檢索設定</string>
+  <string name="title_api_registered_apps">應用程式</string>
+  <string name="title_key_server_preference">金鑰伺服器設定</string>
+  <string name="title_change_passphrase">變更口令</string>
+  <string name="title_share_fingerprint_with">分享指紋…</string>
+  <string name="title_share_key">分享金鑰…</string>
+  <string name="title_share_file">分享檔案…</string>
+  <string name="title_share_message">分享訊息…</string>
+  <string name="title_encrypt_to_file">加密到檔案</string>
+  <string name="title_decrypt_to_file">解密到檔案</string>
+  <string name="title_import_keys">匯入金鑰</string>
+  <string name="title_export_key">匯出金鑰</string>
+  <string name="title_export_keys">匯出所有金鑰</string>
+  <string name="title_key_not_found">找不到金鑰</string>
+  <string name="title_send_key">上傳到金鑰伺服器</string>
+  <string name="title_certify_key">簽署身份</string>
+  <string name="title_key_details">金鑰內容</string>
+  <string name="title_help">說明</string>
+  <string name="title_log_display">紀錄</string>
+  <string name="title_create_key">建立金鑰</string>
+  <!--section-->
+  <string name="section_user_ids">身份</string>
+  <string name="section_keys">子金鑰</string>
+  <string name="section_cloud_search">雲端檢索</string>
+  <string name="section_general">一般</string>
+  <string name="section_defaults">預設</string>
+  <string name="section_advanced">進階</string>
+  <string name="section_certification_key">用來簽署的私鑰</string>
+  <string name="section_key_server">金鑰伺服器</string>
+  <string name="section_fingerprint">指紋</string>
+  <string name="section_key_to_certify">要簽署的金鑰</string>
+  <string name="section_decrypt_files">檔案</string>
+  <string name="section_decrypt_text">文字</string>
+  <!--button-->
+  <string name="btn_decrypt_verify_file">解密並驗證檔案</string>
+  <string name="btn_decrypt_verify_message">解密並驗證訊息</string>
+  <string name="btn_encrypt_file">加密檔案</string>
+  <string name="btn_encrypt_share_file">加密並分享檔案</string>
+  <string name="btn_save">儲存</string>
+  <string name="btn_do_not_save">取消</string>
+  <string name="btn_delete">刪除</string>
+  <string name="btn_no_date">永不過期</string>
+  <string name="btn_okay">確定</string>
+  <string name="btn_export_to_server">上傳到金鑰伺服器</string>
+  <string name="btn_next">下一步</string>
+  <string name="btn_back">返回</string>
+  <string name="btn_lookup_key">尋找金鑰</string>
+  <string name="btn_share_encrypted_signed">加密並分享訊息</string>
+  <string name="btn_view_cert_key">檢視簽署的金鑰</string>
+  <string name="btn_create_key">建立金鑰</string>
+  <string name="btn_add_files">加入檔案</string>
+  <string name="btn_add_share_decrypted_text">解密並分享訊息</string>
+  <string name="btn_decrypt_clipboard">解密剪貼簿的內容</string>
+  <string name="btn_decrypt_and_verify">並且驗證簽名</string>
+  <string name="btn_decrypt_files">解密檔案</string>
+  <!--menu-->
+  <string name="menu_preferences">設定</string>
+  <string name="menu_help">說明</string>
+  <string name="menu_export_key">匯出到檔案</string>
+  <string name="menu_delete_key">刪除金鑰</string>
+  <string name="menu_create_key">建立金鑰</string>
+  <string name="menu_search">搜尋</string>
+  <string name="menu_beam_preferences">Beam 設定</string>
+  <string name="menu_key_edit_cancel">取消</string>
+  <string name="menu_select_all">全選</string>
+  <string name="menu_add_keys">加入金鑰</string>
+  <string name="menu_export_all_keys">匯出所有金鑰</string>
+  <string name="menu_advanced">顯示進階資訊</string>
+  <!--label-->
+  <string name="label_message">訊息</string>
+  <string name="label_file">檔案</string>
+  <string name="label_files">檔案</string>
+  <string name="label_no_passphrase">沒有口令</string>
+  <string name="label_passphrase">口令</string>
+  <string name="label_passphrase_again">再次輸入口令</string>
+  <string name="label_algorithm">演算法</string>
+  <string name="label_write_version_header">讓別人知道我在使用OpenKeychain</string>
+  <string name="label_write_version_header_summary">在簽名、密文與匯出的金鑰裡寫入\'OpenKeychain v2.7\'</string>
+  <string name="label_use_default_yubikey_pin">使用預設的Yubikey PIN</string>
+  <string name="label_label_use_default_yubikey_pin_summary">使用預設的PIN (123456)來通過NFC存取Yubikeys</string>
+  <string name="label_asymmetric_from">簽名自:</string>
+  <string name="label_to">加密給:</string>
+  <string name="label_delete_after_encryption">加密後刪除檔案</string>
+  <string name="label_delete_after_decryption">解密後刪除檔案</string>
+  <string name="label_encryption_algorithm">加密演算法</string>
+  <string name="label_hash_algorithm">雜湊演算法</string>
+  <string name="label_symmetric">使用口令加密</string>
+  <string name="label_message_compression">訊息壓縮</string>
+  <string name="label_file_compression">檔案壓縮</string>
+  <string name="label_keyservers">金鑰伺服器</string>
+  <string name="label_key_id">金鑰ID</string>
+  <string name="label_creation">建立</string>
+  <string name="label_expiry">效期</string>
+  <string name="label_usage">用途</string>
+  <string name="label_key_size">金鑰長度</string>
+  <string name="label_ecc_curve">橢圓曲線</string>
+  <string name="label_main_user_id">主身份</string>
+  <string name="label_name">名字</string>
+  <string name="label_comment">註記</string>
+  <string name="label_email">Email</string>
+  <string name="label_fingerprint">指紋</string>
+  <string name="expiry_date_dialog_title">設定效期</string>
+  <string name="can_encrypt">可以加密</string>
+  <string name="can_sign">可以簽名</string>
+  <string name="can_certify">可以簽署</string>
+  <string name="can_certify_not">無法簽署</string>
+  <string name="expired">已過期</string>
+  <string name="revoked">已撤銷</string>
+  <string name="secret_key">密鑰:</string>
+  <!--choice-->
+  <string name="choice_15secs">15秒</string>
+  <string name="choice_1min">1分鐘</string>
+  <string name="choice_3mins">3分鐘</string>
+  <string name="choice_5mins">5分鐘</string>
+  <string name="choice_10mins">10分鐘</string>
+  <string name="choice_20mins">20分鐘</string>
+  <string name="choice_40mins">40分鐘</string>
+  <string name="choice_1hour">1小時</string>
+  <string name="choice_2hours">2小時</string>
+  <string name="choice_4hours">4小時</string>
+  <string name="choice_8hours">8小時</string>
+  <string name="choice_forever">永久</string>
+  <string name="dsa">DSA</string>
+  <string name="elgamal">ElGamal</string>
+  <string name="rsa">RSA</string>
+  <string name="ecdh">ECDH</string>
+  <string name="ecdsa">ECDSA</string>
+  <string name="filemanager_title_open">開啟…</string>
+  <string name="warning">警告</string>
+  <string name="error">錯誤</string>
+  <string name="error_message">錯誤: %s</string>
+  <!--key flags-->
+  <string name="flag_certify">簽署</string>
+  <string name="flag_sign">簽名</string>
+  <string name="flag_encrypt">加密</string>
+  <string name="flag_authenticate">驗證</string>
+  <!--sentences-->
+  <string name="wrong_passphrase">口令錯誤。</string>
+  <string name="passphrase_for_symmetric_encryption">對稱加密。</string>
+  <string name="file_delete_successful">刪除成功。</string>
+  <string name="also_export_secret_keys">一併匯出私鑰</string>
+  <string name="key_exported">成功匯出 1 把金鑰。</string>
+  <string name="keys_exported">成功匯出 %d 把金鑰。</string>
+  <string name="nfc_successful">NFC Beam發送金鑰成功!</string>
+  <string name="key_copied_to_clipboard">金鑰已複製到剪貼簿!</string>
+  <string name="fingerprint_copied_to_clipboard">指紋已複製到剪貼簿!</string>
+  <string name="key_too_big_for_sharing">金鑰太大無法使用此方式分享!</string>
+  <string name="text_copied_to_clipboard">文字已複製到剪貼簿!</string>
+  <!--errors
+         no punctuation, all lowercase,
+         they will be put after "error_message", e.g. "Error: file not found"-->
+  <string name="error_file_not_found">找不到檔案</string>
+  <string name="error_no_secret_key_found">沒有適合的私鑰</string>
+  <string name="error_external_storage_not_ready">外部儲存空間尚未就緒</string>
+  <string name="error_key_size_minimum512bit">金鑰長度必須大於512位元</string>
+  <string name="error_wrong_passphrase">口令錯誤</string>
+  <!--errors without preceeding Error:-->
+  <string name="error_nfc_needed">您的裝置不支援NFC!</string>
+  <!--results shown after decryption/verification-->
+  <string name="decrypt_result_invalid_signature">無效的簽章!</string>
+  <!--Add keys-->
+  <!--progress dialogs, usually ending in '…'-->
+  <string name="progress_done">完成。</string>
+  <string name="progress_cancel">取消</string>
+  <string name="progress_cancelling">正在取消…</string>
+  <string name="progress_saving">正在儲存…</string>
+  <string name="progress_importing">匯入中…</string>
+  <string name="progress_exporting">匯出中…</string>
+  <string name="progress_uploading">正在上傳…</string>
+  <!--action strings-->
+  <!--key bit length selections-->
+  <!--elliptic curve names-->
+  <!--not in for now, see SaveKeyringParcel
+    <string name="key_curve_bp_p256">"Brainpool P-256"</string>
+    <string name="key_curve_bp_p384">"Brainpool P-384"</string>
+    <string name="key_curve_bp_p512">"Brainpool P-512"</string>-->
+  <!--compression-->
+  <!--Help-->
+  <!--Import-->
+  <!--Generic result toast-->
+  <!--Import result toast-->
+  <!--Delete result toast-->
+  <!--Certify result toast-->
+  <!--Intent labels-->
+  <!--Remote API-->
+  <!--Share-->
+  <!--Key list-->
+  <!--Key view-->
+  <!--Edit key-->
+  <!--Create key-->
+  <!--View key-->
+  <!--Navigation Drawer-->
+  <!--hints-->
+  <!--certs-->
+  <!--LogType log messages. Errors should have _ERROR_ in their name and end with a !-->
+  <!--Import Public log entries-->
+  <!--Import Secret log entries-->
+  <!--Keyring Canonicalization log entries-->
+  <!--Keyring merging log entries-->
+  <!--createSecretKeyRing-->
+  <!--modifySecretKeyRing-->
+  <!--Consolidate-->
+  <!--Other messages used in OperationLogs-->
+  <!--Messages for DecryptVerify operation-->
+  <!--Messages for SignEncrypt operation-->
+  <!--PassphraseCache-->
+  <!--unsorted-->
+  <!--First Time-->
+</resources>

@@ -2,6 +2,7 @@
 <resources>
   <!--GENERAL: Please put all strings inside quotes as described in example 1 on
     http://developer.android.com/guide/topics/resources/string-resource.html (scroll down to "Escaping apostrophes and quotes").-->
+  <string name="app_name">OpenKeychain</string>
   <!--title-->
   <string name="title_select_recipients">Anahtarları Seç</string>
   <string name="title_select_secret_key">Anahtarını Seç</string>
@@ -23,11 +24,12 @@
   <string name="title_encrypt_to_file">Dosyaya Şifrele</string>
   <string name="title_decrypt_to_file">Dosyaya Çözümle</string>
   <string name="title_import_keys">Anahtarları Al</string>
+  <string name="title_add_keys">Anahtarlar Ekle</string>
   <string name="title_export_key">Anahtarı Ver</string>
   <string name="title_export_keys">Anahtarları Ver</string>
   <string name="title_key_not_found">Anahtar Bulunamadı</string>
   <string name="title_send_key">Anahtar Sunucusuna Yükle</string>
-  <string name="title_certify_key">Kimlikleri Tasdikle</string>
+  <string name="title_certify_key">Kimlikleri Doğrula</string>
   <string name="title_key_details">Anahtar Detayları</string>
   <string name="title_help">Yardım</string>
   <string name="title_log_display">Günlük</string>
@@ -39,13 +41,15 @@
   <string name="section_general">Genel</string>
   <string name="section_defaults">Varsayılanlar</string>
   <string name="section_advanced">Gelişmiş</string>
+  <string name="section_passphrase_cache">Parola Önbelleği</string>
+  <string name="section_certify">Doğrula</string>
   <string name="section_actions">Eylemler</string>
-  <string name="section_share_key">Bütün anahtar</string>
-  <string name="section_certification_key">Sertifikalama için kullanılan anahtarınız</string>
-  <string name="section_upload_key">Anahtar Yükle</string>
+  <string name="section_share_key">Anahtar</string>
+  <string name="section_certification_key">Anahtarınız sertifikalama için kullanıldı</string>
+  <string name="section_upload_key">Anahtarı Eşitle</string>
   <string name="section_key_server">Anahtar Sunucusu</string>
   <string name="section_fingerprint">Parmakizi</string>
-  <string name="section_key_to_certify">Tasdiklenecek anahtar</string>
+  <string name="section_key_to_certify">Doğrulanacak anahtar</string>
   <string name="section_decrypt_files">Dosyalar</string>
   <string name="section_decrypt_text">Metin</string>
   <!--button-->
@@ -56,6 +60,7 @@
   <string name="btn_save">Kaydet</string>
   <string name="btn_do_not_save">İptal</string>
   <string name="btn_delete">Sil</string>
+  <string name="btn_no_date">Zaman Aşımı Yok</string>
   <string name="btn_okay">Tamam</string>
   <string name="btn_export_to_server">Anahtar Sunucusuna Yükle</string>
   <string name="btn_next">İleri</string>
@@ -64,7 +69,7 @@
   <string name="btn_share_encrypted_signed">Mesajı şifrele ve paylaş</string>
   <string name="btn_view_cert_key">Sertifikalama anahtarını görüntüle</string>
   <string name="btn_create_key">Anahtar oluştur</string>
-  <string name="btn_add_files">Dosya(ları) ekle</string>
+  <string name="btn_add_files">Dosya(lar) ekle</string>
   <string name="btn_add_share_decrypted_text">Çözümlenmiş metni paylaş</string>
   <string name="btn_decrypt_clipboard">Panodan çözümle</string>
   <string name="btn_decrypt_and_verify">ve imzaları doğrula</string>
@@ -75,9 +80,8 @@
   <string name="menu_export_key">Dosyaya ver</string>
   <string name="menu_delete_key">Anahtar sil</string>
   <string name="menu_create_key">Anahtarımı oluştur</string>
-  <string name="menu_import_existing_key">Varolan anahtarı al</string>
   <string name="menu_search">Ara</string>
-  <string name="menu_beam_preferences">Beam ayarları</string>
+  <string name="menu_beam_preferences">Huzme ayarları</string>
   <string name="menu_key_edit_cancel">İptal</string>
   <string name="menu_encrypt_to">Buraya şifrele...</string>
   <string name="menu_select_all">Hepsini seç</string>
@@ -91,10 +95,13 @@
   <string name="label_file_colon">Dosya:</string>
   <string name="label_no_passphrase">Parola Yok</string>
   <string name="label_passphrase">Parola</string>
+  <string name="label_unlock">Kilit Açılıyor...</string>
   <string name="label_passphrase_again">Parolayı Tekrarla</string>
   <string name="label_algorithm">Algoritma</string>
   <string name="label_write_version_header">Diğerlerinin OpenKeychain kullandığını bilmesine izin ver</string>
-  <string name="label_use_default_yubikey_pin">Varsayılan Yubikey PIN\'i kullan</string>
+  <string name="label_use_default_yubikey_pin">Yubikey PIN\'i varsayılan kullan</string>
+  <string name="label_use_num_keypad_for_yubikey_pin">Yubikey PIN için numerik tuş takımını kullan</string>
+  <string name="label_label_use_default_yubikey_pin_summary">NFC üzerinden Yunikeys\'e ulaşmak için varsayılan PIN (123456) kullanılıyor</string>
   <string name="label_asymmetric_from">İmzalayan:</string>
   <string name="label_to">Buraya şifrele:</string>
   <string name="label_delete_after_encryption">Şifreleme sonrası dosyayı sil</string>
@@ -102,7 +109,8 @@
   <string name="label_encryption_algorithm">Şifreleme algoritması</string>
   <string name="label_hash_algorithm">Hash algoritması</string>
   <string name="label_symmetric">Parolayla şifrele</string>
-  <string name="label_passphrase_cache_ttl">Parola önbelleği</string>
+  <string name="label_passphrase_cache_ttl">Önbellek zamanı</string>
+  <string name="label_passphrase_cache_subs">Altanahtar parola önbelleği</string>
   <string name="label_message_compression">Mesaj sıkıştırma</string>
   <string name="label_file_compression">Dosya sıkıştırma</string>
   <string name="label_keyservers">Anahtar Sunucuları</string>
@@ -116,14 +124,16 @@
   <string name="label_name">İsim</string>
   <string name="label_comment">Yorum</string>
   <string name="label_email">Eposta</string>
-  <string name="label_send_key">Sertifikalamadan sonra anahtarı seçilen anahtar sunucusuna yükle</string>
   <string name="label_fingerprint">Parmakizi</string>
   <string name="expiry_date_dialog_title">Son kullanma tarihini ayarla</string>
   <string name="label_preferred">tercih edilen</string>
+  <string name="user_id_no_name">&lt;isimsiz&gt;</string>
+  <string name="none">&lt;hiçbiri&gt;</string>
+  <string name="no_key">&lt;anahtar yok&gt;</string>
   <string name="can_encrypt">şifreleyebilir</string>
   <string name="can_sign">imzalayabilir</string>
   <string name="can_certify">tasdikleyebilir</string>
-  <string name="can_certify_not">tasdikleyemez</string>
+  <string name="can_certify_not">doğrulanamaz</string>
   <string name="expired">tarihi geçmiş</string>
   <string name="revoked">yürürlükten kaldırılmış</string>
   <plurals name="n_keys">
@@ -159,7 +169,7 @@
   <string name="error">Hata</string>
   <string name="error_message">Hata: %s</string>
   <!--key flags-->
-  <string name="flag_certify">Tasdikle</string>
+  <string name="flag_certify">Doğrula</string>
   <string name="flag_sign">İmzala</string>
   <string name="flag_encrypt">Şifrele</string>
   <string name="flag_authenticate">Yetkilendir</string>
@@ -209,15 +219,18 @@
   <string name="error_jelly_bean_needed">Android\'in NFC Beam özelliğini kullanabilmek için Android 4.1 kullanmalısınız!</string>
   <string name="error_nfc_needed">Cihazınız NFC desteklemiyor!</string>
   <string name="error_nothing_import">Anahtar bulunamadı!</string>
-  <string name="error_searching_keys">Anahtarlar aranırken bir hata oluştu.</string>
-  <string name="error_import_no_valid_keys">Dosya/Panoda geçerli anahtar bulunamadı!</string>
   <string name="error_generic_report_bug">Genel bir hata oluştu. Lütfen OpenKeychain için bir hata raporu oluşturun.</string>
   <!--results shown after decryption/verification-->
+  <string name="decrypt_result_no_signature">İmzalanmadı</string>
   <string name="decrypt_result_invalid_signature">Geçersiz imza!</string>
-  <string name="decrypt_result_signature_missing_key">Bilinmeyen açık anahtar</string>
-  <string name="decrypt_result_signature_uncertified">Geçerli imza (sertifikasız)</string>
-  <string name="decrypt_result_signature_certified">Geçerli imza (sertifalı)</string>
-  <string name="decrypt_result_decrypted">Başarıyla çözümlendi</string>
+  <string name="decrypt_result_signature_uncertified">İmzalayan (doğrulanmadı!):</string>
+  <string name="decrypt_result_signature_certified">İmzalayan:</string>
+  <string name="decrypt_result_encrypted">Şifrelendi</string>
+  <string name="decrypt_result_not_encrypted">Şifrelenmedi</string>
+  <string name="decrypt_result_action_show">Göster</string>
+  <string name="decrypt_result_action_Lookup">Araştır</string>
+  <!--Add keys-->
+  <string name="add_keys_my_key">Anahtarım:</string>
   <!--progress dialogs, usually ending in '…'-->
   <string name="progress_done">Bitti.</string>
   <string name="progress_cancel">İptal</string>
@@ -247,7 +260,7 @@
   <string name="progress_processing_signature">imza işleniyor...</string>
   <string name="progress_verifying_signature">imza doğrulanıyor...</string>
   <string name="progress_signing">imzalanıyor...</string>
-  <string name="progress_certifying">tasdikleniyor...</string>
+  <string name="progress_certifying">doğrulanıyor...</string>
   <string name="progress_reading_data">veri okunuyor...</string>
   <string name="progress_finding_key">anahtar bulunuyor...</string>
   <string name="progress_verifying_integrity">bütünlük doğrulanıyor...</string>
@@ -281,14 +294,18 @@
   <string name="help_tab_faq">SSS</string>
   <string name="help_tab_wot">Web of Trust</string>
   <string name="help_tab_nfc_beam">NFC Beam</string>
+  <string name="help_tab_changelog">Sürüm Notları</string>
   <string name="help_tab_about">Hakkında</string>
   <string name="help_about_version">Sürüm:</string>
   <!--Import-->
   <string name="import_tab_keyserver">Anahtar Sunucusu</string>
+  <string name="import_tab_cloud">Bulut Arama</string>
   <string name="import_tab_direct">Dosya/Pano</string>
   <string name="import_tab_qr_code">QR Kod/NFC</string>
   <string name="import_import">Seçili anahtarları al</string>
-  <string name="import_qr_code_button">QR Kod Tara</string>
+  <string name="import_qr_code_too_short_fingerprint">Parmak izi çok kısa (&lt; 16 karakter)</string>
+  <!--Generic result toast-->
+  <string name="view_log">Günlüğü Görüntüle</string>
   <!--Import result toast-->
   <plurals name="import_keys_added_and_updated_1">
     <item quantity="one">Anahtar başarıyla alındı</item>
@@ -298,9 +315,12 @@
     <item quantity="one">Bir anahtar için alma başarısız.</item>
     <item quantity="other">%d anahtar için alma başarısız!</item>
   </plurals>
-  <string name="view_log">Günlüğü Görüntüle</string>
   <string name="import_error_nothing">Alınacak bir şey yok.</string>
   <string name="import_error_nothing_cancelled">Alma iptal edildi.</string>
+  <!--Delete result toast-->
+  <string name="delete_nothing">Silinecek bir şey yok.</string>
+  <string name="delete_cancelled">Silme işlemi iptal edildi.</string>
+  <!--Certify result toast-->
   <!--Intent labels-->
   <string name="intent_decrypt_file">OpenKeychain ile Dosya Çözümle</string>
   <string name="intent_import_key">OpenKeychain ile Anahtar Al</string>
@@ -338,8 +358,8 @@
     <item quantity="one">1 anahtar seçildi.</item>
     <item quantity="other">%d anahtar seçildi.</item>
   </plurals>
-  <string name="key_list_empty_text3">ya da</string>
-  <string name="key_list_empty_button_import">varolan bir anahtar alınıyor.</string>
+  <string name="key_list_filter_show_all">Tüm anahtarları göster</string>
+  <string name="key_list_filter_show_certified">Sadece sertifikalı anahtarları göster</string>
   <!--Key view-->
   <string name="key_view_action_edit">Anahtarı düzenle</string>
   <string name="key_view_action_encrypt">Metni şifrele</string>
@@ -353,10 +373,6 @@
   <string name="key_view_tab_share">Paylaş</string>
   <string name="key_view_tab_keys">Alt anahtarlar</string>
   <string name="key_view_tab_certs">Sertifikalar</string>
-  <string name="user_id_info_certified_title">Doğrulanmış</string>
-  <string name="user_id_info_certified_text">Kimlik doğrulandı.</string>
-  <string name="user_id_info_uncertified_title">Doğrulanmamış</string>
-  <string name="user_id_info_uncertified_text">Bu kimlik henüz doğrulanmadı. Bu kimliğin belirli bir kişiye ait olduğundan emin olamazsınız.</string>
   <string name="user_id_info_invalid_title">Geçersiz</string>
   <string name="user_id_info_invalid_text">Bu kimlikle ilgili yanlış olan bazı şeyler var!</string>
   <!--Edit key-->
@@ -378,6 +394,7 @@
   <string name="create_key_rsa">(3 alt anahtar, RSA, 4096 bit)</string>
   <string name="create_key_text">Tam isminizi, e-posta adresinizi girin ve bir parola seçin.</string>
   <string name="create_key_hint_full_name">Tam Ad, örneğin: Max Mustermann</string>
+  <string name="create_key_edit">Anahtar yapılandırmasını değiştir.</string>
   <!--View key-->
   <string name="view_key_expired">Bu anahtarın son kullanma tarihi geçmiş!</string>
   <!--Navigation Drawer-->
@@ -397,6 +414,8 @@
   <string name="cert_verify_error">hata!</string>
   <string name="cert_verify_unavailable">anahtar mevcut değil</string>
   <!--LogType log messages. Errors should have _ERROR_ in their name and end with a !-->
+  <string name="msg_internal_error">İç hata!</string>
+  <string name="msg_cancelled">İşlem iptal edildi.</string>
   <!--Import Public log entries-->
   <string name="msg_ip_delete_old_ok">Eski anahtarları veritabanından sil</string>
   <string name="msg_ip_prepare">Veritabanı işlemleri hazırlanıyor</string>
@@ -408,7 +427,6 @@
   <string name="msg_kc_sub">Alt anahtar %s işleniyor</string>
   <string name="msg_kc_sub_bad_type">Bilinmeyen alt anahtar sertifika tipi: %s</string>
   <!--Keyring merging log entries-->
-  <string name="msg_mg_unchanged">Yeni sertifika yok</string>
   <!--createSecretKeyRing-->
   <string name="msg_cr">Yeni ana anahtar oluşturuluyor</string>
   <!--modifySecretKeyRing-->
@@ -418,19 +436,32 @@
   <string name="msg_ek_error_not_found">Anahtar bulunamadı!</string>
   <!--Messages for DecryptVerify operation-->
   <!--Messages for SignEncrypt operation-->
+  <string name="msg_crt_warn_not_found">Anahtar bulunamadı!</string>
+  <string name="msg_export_all">Tüm anahtarları dışa aktarma</string>
+  <string name="msg_export_error_db">Veritabanı hatası!</string>
+  <string name="msg_export_error_io">Giriş/çıkış hatası!</string>
+  <string name="msg_export_success">Dışa aktarma işlemi başarılı</string>
+  <string name="msg_del_error_empty">Silinecek bir şey yok!</string>
+  <string name="msg_acc_saved">Hesap kaydedildi</string>
+  <string name="msg_download_success">Başarıyla indirildi!</string>
   <!--PassphraseCache-->
+  <string name="passp_cache_notif_clear">Önbelleği Temizle</string>
   <string name="passp_cache_notif_pwd">Parola</string>
   <!--unsorted-->
   <string name="section_cert">Sertifika Detayları</string>
-  <string name="label_user_id">Kimli</string>
+  <string name="label_user_id">Kimlik</string>
   <string name="unknown_uid">&lt;bilinmeyen&gt;</string>
+  <string name="empty_certs">Bu anahtar için sertifika yok</string>
   <string name="label_verify_status">Doğrulama Durumu</string>
   <string name="label_cert_type">Tip</string>
   <string name="error_key_not_found">Anahtar bulunamadı!</string>
   <string name="key_no_passphrase">parola yok</string>
+  <string name="key_unavailable">mevcut değil</string>
+  <string name="title_view_cert">Sertifika Ayrıntılarını Görüntüle</string>
   <string name="unknown_algorithm">bilinmeyen</string>
   <string name="can_sign_not">imzalanamadı</string>
   <string name="contact_show_key">Anahtarı göster (%s)</string>
+  <string name="key_colon">Anahtar:</string>
   <!--First Time-->
   <string name="first_time_create_key">Anahtarımı oluştur</string>
   <string name="first_time_skip">Kurulumu Atla</string>

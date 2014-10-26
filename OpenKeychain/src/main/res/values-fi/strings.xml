@@ -15,6 +15,7 @@
          they will be put after "error_message", e.g. "Error: file not found"-->
   <!--errors without preceeding Error:-->
   <!--results shown after decryption/verification-->
+  <!--Add keys-->
   <!--progress dialogs, usually ending in '…'-->
   <!--action strings-->
   <!--key bit length selections-->
@@ -26,7 +27,10 @@
   <!--compression-->
   <!--Help-->
   <!--Import-->
+  <!--Generic result toast-->
   <!--Import result toast-->
+  <!--Delete result toast-->
+  <!--Certify result toast-->
   <!--Intent labels-->
   <!--Remote API-->
   <!--Share-->

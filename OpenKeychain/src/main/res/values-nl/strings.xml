@@ -29,9 +29,7 @@
   <string name="section_defaults">Standaard</string>
   <string name="section_advanced">Geavanceerd</string>
   <string name="section_actions">Acties</string>
-  <string name="section_share_key">Hele sleutel</string>
   <string name="section_certification_key">Uw Sleutel die u gebruikt voor certificatie</string>
-  <string name="section_upload_key">Upload Sleutel</string>
   <string name="section_key_server">Sleutelserver</string>
   <string name="section_fingerprint">Vingerafdruk</string>
   <string name="section_key_to_certify">Sleutel om te certificeren</string>
@@ -76,7 +74,6 @@
   <string name="label_name">Naam</string>
   <string name="label_comment">Opmerking</string>
   <string name="label_email">E-mailadres</string>
-  <string name="label_send_key">Upload sleutel naar geselecteerde sleutelserver na bevestiging</string>
   <string name="label_fingerprint">Vingerafdruk</string>
   <string name="expiry_date_dialog_title">Bepaal verloopdatum</string>
   <string name="user_id_no_name">&lt;no naam&gt;</string>
@@ -168,19 +165,9 @@
   <string name="error_jelly_bean_needed">U heeft minstens Android 4.1 nodig om Androids NFC Beam eigenschap te gebruiken!</string>
   <string name="error_nfc_needed">Uw apparaat biedt geen ondersteuning voor NFC</string>
   <string name="error_generic_report_bug">Een algemene fout is opgetreden, maak alstublieft een nieuwe bug report voor OpenKeychain.</string>
-  <plurals name="error_import_non_pgp_part">
-    <item quantity="one">Deel van het geladen bestand is geldig OpenPGP object maar niet een OpenPGP sleutel</item>
-    <item quantity="other">Delen van het geladen bestand zijn geldige OpenPGP objecten maar niet OpenPGP sleutels</item>
-  </plurals>
   <!--results shown after decryption/verification-->
   <string name="decrypt_result_invalid_signature">Ongeldige handtekening!</string>
-  <string name="decrypt_result_signature_missing_key">Onbekende publieke sleutel</string>
-  <string name="decrypt_result_signature_uncertified">Geldige handtekening (ongecertificeerd)</string>
-  <string name="decrypt_result_signature_certified">Geldige handtekening (gecertificeerd)</string>
-  <string name="decrypt_result_decrypted">Succesvol gedecodeerd</string>
-  <string name="decrypt_result_decrypted_unknown_pub_key">Succesvol gedecodeerd maar onbekende publieke sleutel</string>
-  <string name="decrypt_result_decrypted_and_signature_uncertified">Succesvol gedecodeerd en geldige handtekening (ongecertificeerd)</string>
-  <string name="decrypt_result_decrypted_and_signature_certified">Succesvol gedecodeerd en geldige handtekening (gecertificeerd)</string>
+  <!--Add keys-->
   <!--progress dialogs, usually ending in '…'-->
   <string name="progress_done">Gereed.</string>
   <string name="progress_cancel">Annuleren</string>
@@ -241,7 +228,10 @@
   <string name="import_import">Geselecteerde sleutels importeren</string>
   <string name="import_qr_code_wrong">QR-code ongeldig. Probeer het opnieuw</string>
   <string name="import_qr_code_too_short_fingerprint">Vingerafdruk is te kort (&lt; 16 tekens)</string>
+  <!--Generic result toast-->
   <!--Import result toast-->
+  <!--Delete result toast-->
+  <!--Certify result toast-->
   <!--Intent labels-->
   <string name="intent_decrypt_file">Decodeer bestand met OpenKeychain</string>
   <string name="intent_import_key">Importeer Sleutel met OpenKeychain</string>
@@ -276,10 +266,6 @@
     <item quantity="one">1 sleutel geselecteerd.</item>
     <item quantity="other">%d sleutels geselecteerd.</item>
   </plurals>
-  <string name="key_list_empty_text1">Nog geen sleutels beschikbaar...</string>
-  <string name="key_list_empty_text2">U kunt beginnen door</string>
-  <string name="key_list_empty_text3">of</string>
-  <string name="key_list_empty_button_create">uw eigen sleutel aanmaken</string>
   <!--Key view-->
   <string name="key_view_action_edit">Sleutel bewerken</string>
   <string name="key_view_action_certify">Certifiëer identiteiten</string>
@@ -317,6 +303,10 @@
   <!--Other messages used in OperationLogs-->
   <!--Messages for DecryptVerify operation-->
   <!--Messages for SignEncrypt operation-->
+  <plurals name="error_import_non_pgp_part">
+    <item quantity="one">Deel van het geladen bestand is geldig OpenPGP object maar niet een OpenPGP sleutel</item>
+    <item quantity="other">Delen van het geladen bestand zijn geldige OpenPGP objecten maar niet OpenPGP sleutels</item>
+  </plurals>
   <!--PassphraseCache-->
   <!--unsorted-->
   <string name="section_certifier_id">Certificeer</string>
@@ -324,7 +314,6 @@
   <string name="label_user_id">Identiteit</string>
   <string name="unknown_uid">&lt;onbekend&gt;</string>
   <string name="empty_certs">Geen certificaten voor deze sleutel</string>
-  <string name="section_uids_to_certify">Identiteiten om te certificeren</string>
   <string name="label_revocation">Intrek Reden</string>
   <string name="label_verify_status">Verificatie Status</string>
   <string name="label_cert_type">Type</string>

@@ -2,6 +2,7 @@
 <resources>
   <!--GENERAL: Please put all strings inside quotes as described in example 1 on
     http://developer.android.com/guide/topics/resources/string-resource.html (scroll down to "Escaping apostrophes and quotes").-->
+  <string name="app_name">OpenKeychain</string>
   <!--title-->
   <string name="title_select_recipients">Choisir des clefs</string>
   <string name="title_select_secret_key">Choisir ma clef</string>
@@ -23,6 +24,7 @@
   <string name="title_encrypt_to_file">Chiffrer vers un fichier</string>
   <string name="title_decrypt_to_file">Déchiffrer vers un fichier</string>
   <string name="title_import_keys">importer des clefs</string>
+  <string name="title_add_keys">Ajouter des clefs</string>
   <string name="title_export_key">Exporter la clef</string>
   <string name="title_export_keys">Exporter les clefs</string>
   <string name="title_key_not_found">Clef introuvable</string>
@@ -39,13 +41,17 @@
   <string name="section_general">Général</string>
   <string name="section_defaults">Valeurs par défaut</string>
   <string name="section_advanced">Avancé</string>
+  <string name="section_passphrase_cache">Cache de la phrase de passe</string>
+  <string name="section_certify">Certifier</string>
   <string name="section_actions">Actions</string>
-  <string name="section_share_key">Clef entière</string>
+  <string name="section_share_key">Clef</string>
   <string name="section_certification_key">Votre clef utilisée pour la certification</string>
-  <string name="section_upload_key">Téléverser la clef</string>
+  <string name="section_upload_key">Synchroniser la clef</string>
   <string name="section_key_server">Serveur de clefs</string>
   <string name="section_fingerprint">Empreinte</string>
   <string name="section_key_to_certify">Clef à certifier !</string>
+  <string name="section_decrypt_files">Fichiers</string>
+  <string name="section_decrypt_text">Texte</string>
   <!--button-->
   <string name="btn_decrypt_verify_file">Déchiffrer, vérifier et enregistrer le fichier</string>
   <string name="btn_decrypt_verify_message">Déchiffrer et enregistrer le message</string>
@@ -64,13 +70,16 @@
   <string name="btn_view_cert_key">Voir la clef de certification</string>
   <string name="btn_create_key">Créer la clef</string>
   <string name="btn_add_files">Ajouter un/des fichier(s)</string>
+  <string name="btn_add_share_decrypted_text">Partager le texte déchiffrer</string>
+  <string name="btn_decrypt_clipboard">Déchiffrer à partir du presse-papiers</string>
+  <string name="btn_decrypt_and_verify">et vérifier les signatures</string>
+  <string name="btn_decrypt_files">Déchiffrer les fichiers</string>
   <!--menu-->
   <string name="menu_preferences">Paramètres</string>
   <string name="menu_help">Aide</string>
   <string name="menu_export_key">Exporter vers un fichier</string>
   <string name="menu_delete_key">Supprimer la clef</string>
   <string name="menu_create_key">Créer ma clef</string>
-  <string name="menu_import_existing_key">Importer une clef existante</string>
   <string name="menu_search">Rechercher</string>
   <string name="menu_beam_preferences">Paramètres Beam</string>
   <string name="menu_key_edit_cancel">Annuler</string>
@@ -94,6 +103,7 @@
   <string name="label_write_version_header">Faire savoir aux autres que vous utilisez OpenKeychain</string>
   <string name="label_write_version_header_summary">Ajoute « OpenKeychain v2.7 » aux signatures OpenPGP, aux cryptogrammes et aux clefs exportées</string>
   <string name="label_use_default_yubikey_pin">Utiliser le NIP par défaut de la Yubikey</string>
+  <string name="label_use_num_keypad_for_yubikey_pin">Utiliser le pavé numérique pour le NIP Yubikey</string>
   <string name="label_label_use_default_yubikey_pin_summary">Utilise le NIP par défaut (123456) pour accéder aux Yubikeys par la NFC</string>
   <string name="label_asymmetric_from">Signé par :</string>
   <string name="label_to">Chiffrer pour :</string>
@@ -102,7 +112,8 @@
   <string name="label_encryption_algorithm">Algorithme de chiffrement</string>
   <string name="label_hash_algorithm">Algorithme de hachage</string>
   <string name="label_symmetric">Chiffrer avec une phrase de passe</string>
-  <string name="label_passphrase_cache_ttl">Cache de la phrase de passe</string>
+  <string name="label_passphrase_cache_ttl">Durée du cache</string>
+  <string name="label_passphrase_cache_subs">Mettre en cache une phrase de passe par sous-clef</string>
   <string name="label_message_compression">Compression des messages</string>
   <string name="label_file_compression">Compression des fichiers</string>
   <string name="label_keyservers">Serveurs de clefs</string>
@@ -116,7 +127,6 @@
   <string name="label_name">Nom</string>
   <string name="label_comment">Commentaire</string>
   <string name="label_email">Courriel</string>
-  <string name="label_send_key">Téléverser la clef vers le serveur de clefs choisi après certification</string>
   <string name="label_fingerprint">Empreinte</string>
   <string name="expiry_date_dialog_title">Définir une date d\'expiration</string>
   <string name="label_first_keyserver_is_used">(Le premier serveur de clefs listé est préféré)</string>
@@ -206,6 +216,7 @@
   <string name="fingerprint_copied_to_clipboard">L\'empreinte a été copié vers le presse-papiers !</string>
   <string name="select_key_to_certify">Veuillez choisir une clef à utiliser pour la certification !</string>
   <string name="key_too_big_for_sharing">La clef est trop grosse pour être partagée ainsi !</string>
+  <string name="text_copied_to_clipboard">La texte a été copié vers le presse-papiers !</string>
   <!--errors
          no punctuation, all lowercase,
          they will be put after "error_message", e.g. "Error: file not found"-->
@@ -219,6 +230,7 @@
   <string name="error_key_needs_a_user_id">au moins une identité est nécessaire</string>
   <string name="error_no_signature_passphrase">aucune phrase de passe n\'a été donnée</string>
   <string name="error_no_signature_key">aucune clef de signature n\'a été donnée</string>
+  <string name="error_invalid_data">Aucun contenu OpenPGP valide chiffré ou signé !</string>
   <string name="error_integrity_check_failed">la vérification de l\'intégrité a échoué ! Les données ont été modifiées !</string>
   <string name="error_wrong_passphrase">phrase de passe erronnée</string>
   <string name="error_could_not_extract_private_key">impossible d\'extraire la clef privée</string>
@@ -226,25 +238,21 @@
   <string name="error_jelly_bean_needed">Il vous faut Android 4.1 pour utiliser la fonction Beam NFC d\'Android !</string>
   <string name="error_nfc_needed">La NFC n\'est pas disponible sur votre appareil !</string>
   <string name="error_nothing_import">Aucune clef trouvée !</string>
-  <string name="error_query_too_short">La demande de recherche est trop courte. Veuillez la préciser !</string>
-  <string name="error_searching_keys">Une erreur est survenue lors de la recherche de clefs.</string>
-  <string name="error_too_many_responses">La demande de recherche de clef a retourné trop de candidats.  Veuillez la préciser !</string>
-  <string name="error_too_short_or_too_many_responses">Soit aucune clef n\'a été trouvée, soit trop de clefs. Veuillez améliorer votre demande !</string>
-  <string name="error_import_no_valid_keys">Aucune clef valide n\'a été trouvée dans le fichier/presse-papiers |</string>
+  <string name="error_contacts_key_id_missing">Échec lors de la récupération de l\'ID de clef à partir des contacts !</string>
   <string name="error_generic_report_bug">Une erreur générique est survenue, veuillez créer un nouveau rapport de bogue pour OpenKeychain.</string>
-  <plurals name="error_import_non_pgp_part">
-    <item quantity="one">une partie du fichier chargé est un objet OpenPGP valide mais pas une clef OpenPGP</item>
-    <item quantity="other">certaines parties du fichier chargé sont des objets OpenPGP valides mais pas des clefs OpenPGP</item>
-  </plurals>
   <!--results shown after decryption/verification-->
+  <string name="decrypt_result_no_signature">Non signé</string>
   <string name="decrypt_result_invalid_signature">Signature invalide !</string>
+  <string name="decrypt_result_signature_uncertified">Signé par (non certifié)</string>
+  <string name="decrypt_result_signature_certified">Signé par</string>
+  <string name="decrypt_result_signature_expired_key">La clef est expirée !</string>
+  <string name="decrypt_result_signature_revoked_key">La clef a été révoquée !</string>
   <string name="decrypt_result_signature_missing_key">Clef publique inconnue</string>
-  <string name="decrypt_result_signature_uncertified">Signature valide (non certifiée)</string>
-  <string name="decrypt_result_signature_certified">Signature valide (certifiée)</string>
-  <string name="decrypt_result_decrypted">Déchiffré avec succès</string>
-  <string name="decrypt_result_decrypted_unknown_pub_key">Déchiffré avec succès, mais la clef publique est inconnue</string>
-  <string name="decrypt_result_decrypted_and_signature_uncertified">Déchiffré avec succès et la signature est valide (non certifiée)</string>
-  <string name="decrypt_result_decrypted_and_signature_certified">Déchiffré avec succès et la signature est valide (certifiée)</string>
+  <string name="decrypt_result_action_show">Montrer</string>
+  <string name="decrypt_result_action_Lookup">Rechercher</string>
+  <string name="decrypt_invalid_button">Je comprends les risques, affichez-le !</string>
+  <!--Add keys-->
+  <string name="add_keys_my_key">Ma clef :</string>
   <!--progress dialogs, usually ending in '…'-->
   <string name="progress_done">Terminé.</string>
   <string name="progress_cancel">Annuler</string>
@@ -264,7 +272,7 @@
   <string name="progress_modify_unlock">déverrouillage du trousseau...</string>
   <string name="progress_modify_adduid">ajout des ID d\'utilisateur...</string>
   <string name="progress_modify_revokeuid">révocation des ID d\'utilisateur...</string>
-  <string name="progress_modify_primaryuid">changement de l\'ID d\'utilisateur principale...</string>
+  <string name="progress_modify_primaryuid">changement de l\'ID d\'utilisateur principal...</string>
   <string name="progress_modify_subkeychange">modification des sous-clefs...</string>
   <string name="progress_modify_subkeyrevoke">révocation des sous-clefs...</string>
   <string name="progress_modify_subkeystrip">dépouillement des sous-clefs...</string>
@@ -336,7 +344,10 @@
   <string name="import_import">Importer les clefs choisies</string>
   <string name="import_qr_code_wrong">Code QR incorrecte ! Veuillez réessayer !</string>
   <string name="import_qr_code_too_short_fingerprint">L\'empreinte est trop courte (&lt; 16 caractères)</string>
-  <string name="import_qr_code_button">Balayer le code QR...</string>
+  <!--Generic result toast-->
+  <string name="view_log">Consulter le journal</string>
+  <string name="with_warnings">, avec des avertissements</string>
+  <string name="with_cancelled">, jusqu\'à l\'annulation</string>
   <!--Import result toast-->
   <plurals name="import_keys_added_and_updated_1">
     <item quantity="one">Clef importée avec succès</item>
@@ -354,11 +365,48 @@
     <item quantity="one">Une clef%2$s mise à jour avec succès.</item>
     <item quantity="other">%1$d clefs%2$s mises à jour avec succès</item>
   </plurals>
-  <string name="view_log">Consulter le journal</string>
+  <plurals name="import_keys_with_errors">
+    <item quantity="one">Échec d\'importation pour une clef !</item>
+    <item quantity="other">Échec d\'importation pour %d clefs !</item>
+  </plurals>
+  <plurals name="import_error">
+    <item quantity="one">Échec de l\'importation !</item>
+    <item quantity="other">Échec d\'importation pour %d clefs !</item>
+  </plurals>
   <string name="import_error_nothing">Rien à importer.</string>
   <string name="import_error_nothing_cancelled">Importation annulée.</string>
-  <string name="with_warnings">, avec des avertissements</string>
-  <string name="with_cancelled">, jusqu\'à l\'annulation</string>
+  <!--Delete result toast-->
+  <plurals name="delete_ok_but_fail_1">
+    <item quantity="one">Une clef a été supprimée avec succès</item>
+    <item quantity="other">%1$d clefs ont été supprimées avec succès</item>
+  </plurals>
+  <plurals name="delete_ok_but_fail_2">
+    <item quantity="one">, mais échec lors de la suppression d\'une key%2$s.</item>
+    <item quantity="other">, mais échec lors de la suppression de %1$d key%2$s.</item>
+  </plurals>
+  <plurals name="delete_ok">
+    <item quantity="one">Une key%2$s supprimée avec succès.</item>
+    <item quantity="other">%1$d key%2$s supprimées avec succès.</item>
+  </plurals>
+  <plurals name="delete_fail">
+    <item quantity="one">Erreur lors de la suppression d\'une key%2$s.</item>
+    <item quantity="other">Erreur lors de la suppression de %1$d clefs.</item>
+  </plurals>
+  <string name="delete_nothing">Rien à supprimer.</string>
+  <string name="delete_cancelled">Opération de suppression annulée.</string>
+  <!--Certify result toast-->
+  <plurals name="certify_keys_ok">
+    <item quantity="one">Une key%2$s certifiée avec succès.</item>
+    <item quantity="other">%1$d key%2$s certifiées avec succès.</item>
+  </plurals>
+  <plurals name="certify_keys_with_errors">
+    <item quantity="one">La certification a échoué !</item>
+    <item quantity="other">La certification de %d clefs a échoué !</item>
+  </plurals>
+  <plurals name="certify_error">
+    <item quantity="one">La certification a échoué !</item>
+    <item quantity="other">La certification de %d clefs a échoué !</item>
+  </plurals>
   <!--Intent labels-->
   <string name="intent_decrypt_file">Déchiffrer le fichier avec OpenKeychain</string>
   <string name="intent_import_key">Importer la clef avec OpenKeychain</string>
@@ -374,6 +422,7 @@
   <string name="api_settings_select_key">Choisir une clef</string>
   <string name="api_settings_create_key">Créer une nouvelle clef pour ce compte</string>
   <string name="api_settings_save">Enregistrer</string>
+  <string name="api_settings_save_msg">Le compte a été enregistré</string>
   <string name="api_settings_cancel">Annuler</string>
   <string name="api_settings_revoke">Révoquer l\'accès</string>
   <string name="api_settings_start">Lancer l\'application</string>
@@ -384,6 +433,8 @@
   <string name="api_settings_settings">Paramètres</string>
   <string name="api_settings_key">Clef du compte :</string>
   <string name="api_settings_accounts_empty">Aucun compte n\'est attaché à cette appli.</string>
+  <string name="api_create_account_text">Aucune clef n\'est configurée pour ce compte. Veuillez choisir une de vos clefs existantes ou en créer une nouvelle.\nLes applis ne peuvent que déchiffrer/signer avec les clefs choisies ici !</string>
+  <string name="api_update_account_text">La clef enregistrée pour ce compte a été supprimée. Veuillez en choisir une autre !\nLes applis ne peuvent que déchiffrer/signer avec les clefs choisies ici !</string>
   <string name="api_register_text">L\'application affichée veut chiffrer/déchiffrer des messages et les signer en votre nom.\nPermettre l\'accès ?\n\nAVERTISSEMENT : si vous ne savez pas pourquoi cet écran est apparu, refusez l\'accès ! Vous pourrez révoquer l\'accès plus tard en utilisant l\'écran « Applis ».</string>
   <string name="api_register_allow">Permettre l\'accès</string>
   <string name="api_register_disallow">Enlever l\'accès</string>
@@ -401,11 +452,8 @@
     <item quantity="one">1 clef choisie</item>
     <item quantity="other">%d clefs choisies</item>
   </plurals>
-  <string name="key_list_empty_text1">Aucune clef encore disponible...</string>
-  <string name="key_list_empty_text2">Vous pouvez commencer par</string>
-  <string name="key_list_empty_text3">ou</string>
-  <string name="key_list_empty_button_create">créer votre propre clef</string>
-  <string name="key_list_empty_button_import">importation d\'une clef existante.</string>
+  <string name="key_list_filter_show_all">Montrer toutes les clefs</string>
+  <string name="key_list_filter_show_certified">Montrer seulement les clefs certifiées</string>
   <!--Key view-->
   <string name="key_view_action_edit">Modifier la clef</string>
   <string name="key_view_action_encrypt">Chiffrer un texte</string>
@@ -421,10 +469,8 @@
   <string name="key_view_tab_certs">Certificats</string>
   <string name="user_id_info_revoked_title">Révoquée</string>
   <string name="user_id_info_revoked_text">Cette identité a été révoquée par le propriétaire de la clef. Elle n\'est plus valide.</string>
-  <string name="user_id_info_certified_title">Vérifiée</string>
-  <string name="user_id_info_certified_text">Cette identité a été vérifiée.</string>
-  <string name="user_id_info_uncertified_title">Non vérifiée</string>
-  <string name="user_id_info_uncertified_text">Cette identité n\'a pas encore été vérifiée. Vous ne pouvez pas être certain si l\'identité corresponds vraiment à une personne spécifique.</string>
+  <string name="user_id_info_certified_text">Vous avez certifié cette identité.</string>
+  <string name="user_id_info_uncertified_text">Cette identité n\'a pas encore été certifiée. Vous ne pouvez pas être sûr que l\'identité correspond vraiment à une personne spécifique.</string>
   <string name="user_id_info_invalid_title">Invalide</string>
   <string name="user_id_info_invalid_text">Quelque chose ne va pas avec cette identité !</string>
   <!--Edit key-->
@@ -511,6 +557,7 @@
   <string name="msg_ip_master_flags_cexx">Drapeaux maîtres : certifier, chiffrer</string>
   <string name="msg_ip_master_flags_cxsa">Drapeaux maîtres : certifier, signer, authentifier</string>
   <string name="msg_ip_master_flags_cxsx">Drapeaux maîtres : certifier, signer</string>
+  <string name="msg_ip_master_flags_cxxa">Drapeaux maîtres : certifier, authentifier</string>
   <string name="msg_ip_master_flags_cxxx">Drapeaux maîtres : certifier</string>
   <string name="msg_ip_master_flags_xesa">Drapeaux maîtres : chiffrer, signer, authentifier</string>
   <string name="msg_ip_master_flags_xesx">Drapeaux maîtres : chiffrer, signer</string>
@@ -530,6 +577,7 @@
   <string name="msg_ip_subkey_flags_cexx">Drapeaux de sous-clef : certifier, chiffrer</string>
   <string name="msg_ip_subkey_flags_cxsa">Drapeaux de sous-clef : certifier, signer, authentifier</string>
   <string name="msg_ip_subkey_flags_cxsx">Drapeaux de sous-clef : certifier, signer</string>
+  <string name="msg_ip_subkey_flags_cxxa">Drapeaux de sous-clef : certifier, authentifier</string>
   <string name="msg_ip_subkey_flags_cxxx">Drapeaux de sous-clef : certifier</string>
   <string name="msg_ip_subkey_flags_xesa">Drapeaux de sous-clef : chiffrer, signer, authentifier</string>
   <string name="msg_ip_subkey_flags_xesx">Drapeaux de sous-clef : chiffrer, signer</string>
@@ -553,14 +601,6 @@
     <item quantity="one">Un certificat ignoré provenant d\'une clef publique inconnue</item>
     <item quantity="other">%s certificats ignorés provenant de clefs publiques inconnues</item>
   </plurals>
-  <string name="msg_ip_uid_classifying_zero">Classification des ID d\'utilisateurs (aucune clef de confiance disponible)</string>
-  <plurals name="msg_ip_uid_classifying">
-    <item quantity="one">Classification des ID d\'utilisateurs (en utilisant une clef de confiance)</item>
-    <item quantity="other">Classification des ID d\'utilisateurs (en utilisant %s clefs de confiance)</item>
-  </plurals>
-  <string name="msg_ip_uid_reorder">Réorganisation des ID d\'utilisateurs</string>
-  <string name="msg_ip_uid_processing">Traitement de l\'ID d\'utilisateur %s</string>
-  <string name="msg_ip_uid_revoked">L\'ID d\'utilisateur est révoqué</string>
   <string name="msg_is_bad_type_public">Tentative d\'importer le trousseau public comme secret. Ceci est un bogue, veuillez remplir un rapport !</string>
   <string name="msg_is_bad_type_uncanon">Tentative d\'importer un trousseau sans canonicalisation. Ceci est un bogue, veuillez remplir un rapport !</string>
   <!--Import Secret log entries-->
@@ -580,7 +620,6 @@
   <string name="msg_kc_public">Canonicalisation du trousseau public %s</string>
   <string name="msg_kc_secret">Canonicalisation du trousseau secret %s</string>
   <string name="msg_kc_error_v3">Ceci est une clef OpenPGP version 3, qui a été déprécié et n\'est plus pris en charge !</string>
-  <string name="msg_kc_error_no_uid">Le trousseau n\'a pas d\'ID d\'utilisateur valide !</string>
   <string name="msg_kc_error_master_algo">La clef maîtresse utilise un algorithme (%s) inconnu ! </string>
   <string name="msg_kc_error_dup_key">La sous-clef %s se présente deux fois dans le trousseau. Le trousseau est mal formé, pas d\'importation ! </string>
   <string name="msg_kc_master">Traitement de la clef maîtresse</string>
@@ -588,7 +627,6 @@
   <string name="msg_kc_revoke_bad_local">Suppression du certificat de révocation du trousseau ayant le drapeau « local »</string>
   <string name="msg_kc_revoke_bad_time">Suppression du certificat de révocation du trousseau ayant une estampille temporelle dans le futur</string>
   <string name="msg_kc_revoke_bad_type">Suppression du certificat de clef maîtresse de type inconnu (%s)</string>
-  <string name="msg_kc_revoke_bad_type_uid">Suppression du certificat de l\'ID d\'utilisateur en mauvaise position</string>
   <string name="msg_kc_revoke_bad">Suppression du mauvais certificat de révocation du trousseau</string>
   <string name="msg_kc_revoke_dup"> Suppression du certificat redondant de révocation du trousseau</string>
   <string name="msg_kc_sub">Traitement de la sous-clef %s</string>
@@ -607,6 +645,8 @@
   <string name="msg_kc_sub_revoke_bad">Suppression du certificat de révocation de la mauvaise sous-clef</string>
   <string name="msg_kc_sub_revoke_dup">Suppression du certificat de révocation de la sous-clef redondante</string>
   <string name="msg_kc_sub_unknown_algo">La sous-clef utilise un algorithme inconnu et n\'est pas importée...</string>
+  <string name="msg_kc_sub_algo_bad_encrpyt">La sous-clef a le drapeau de chiffrement, mais l\'algorithme n\'est pas adéquat pour le chiffrement.</string>
+  <string name="msg_kc_sub_algo_bad_sign">La sous-clef a le drapeau de signature, mais l\'algorithme n\'est pas adéquat pour la signature.</string>
   <string name="msg_kc_success">Canonicalisation du trousseau réussie, aucun changement</string>
   <plurals name="msg_kc_success_bad">
     <item quantity="one">Canonicalisation du trousseau réussie, un certificat erroné supprimé</item>
@@ -617,18 +657,6 @@
     <item quantity="one">Canonicalisation du trousseau réussie, un certificat redondant supprimé</item>
     <item quantity="other">Canonicalisation du trousseau réussie, %d certificats redondants supprimés</item>
   </plurals>
-  <string name="msg_kc_uid_bad_err">Suppression du mauvais auto-certificat pour l\'ID d\'utilisateur « %s »</string>
-  <string name="msg_kc_uid_bad_local">Suppression du certificat d\'ID d\'utilisateur ayant le drapeau « local »</string>
-  <string name="msg_kc_uid_bad_time">Suppression de l\'ID d\'utilisateur ayant une estampille temporelle dans le futur</string>
-  <string name="msg_kc_uid_bad_type">Suppression du certificat d\'ID d\'utilisateur de type inconnu (%s)</string>
-  <string name="msg_kc_uid_bad">Suppression du mauvais auto-certificat pour l\'ID d\'utilisateur « %s »</string>
-  <string name="msg_kc_uid_cert_dup">Suppression de l\'auto-certificat périmé pour l\'ID d\'utilisateur « %s »</string>
-  <string name="msg_kc_uid_foreign">Suppression du certificat d\'ID d\'utilisateur étranger par « %s »</string>
-  <string name="msg_kc_uid_revoke_dup">Suppression du certificat de révocation redondant pour l\'ID d\'utilisateur « %s »</string>
-  <string name="msg_kc_uid_revoke_old">Suppression du certificat de révocation périmé pour l\'ID d\'utilisateur « %s »</string>
-  <string name="msg_kc_uid_no_cert">Aucun auto-certificat valide trouvé pour l\'ID d\'utilisateur « %s », qui est maintenant enlevé du trousseau</string>
-  <string name="msg_kc_uid_remove">Suppression de l\'ID d\'utilisateur invalide « %s »</string>
-  <string name="msg_kc_uid_dup">Suppression de l\'ID d\'utilisateur en double « %s ». La clef secrète en contenait deux. Ceci pourrait entraîner des certificats manquants !</string>
   <string name="msg_kc_uid_warn_encoding">L\'ID d\'utilisateur ne passe pas le test UTF-8 !</string>
   <!--Keyring merging log entries-->
   <string name="msg_mg_error_secret_dummy">Une nouvelle sous-clef publique a été trouvée, mais la génération de sous-clef secrète factice n\'est pas prise en charge !</string>
@@ -638,11 +666,9 @@
   <string name="msg_mg_secret">Fusion vers le trousseau secret %s</string>
   <string name="msg_mg_new_subkey">Ajout de la nouvelle sous-clef %s</string>
   <string name="msg_mg_found_new">%s nouveaux certificats trouvés dans le trousseau</string>
-  <string name="msg_mg_unchanged">Aucun nouveau certificat</string>
   <!--createSecretKeyRing-->
   <string name="msg_cr">Génération d\'une nouvelle clef maîtresse</string>
   <string name="msg_cr_error_no_master">Aucune option de clef maîtresse n\'a été spécifiée !</string>
-  <string name="msg_cr_error_no_user_id">Les trousseaux doivent être créés avec au moins un ID d\'utilisateur !</string>
   <string name="msg_cr_error_no_certify">La clef maîtresse doit avoir le drapeau « certifié » !</string>
   <string name="msg_cr_error_null_expiry">L\'expiration ne peut pas être « pareille qu\'avant » à la création de la clef. Ceci est une erreur du programme, veuillez remplir un rapport de bogue !</string>
   <string name="msg_cr_error_keysize_512">La taille de la clef doit être supérieure ou égale à 512 !</string>
@@ -661,9 +687,6 @@
   <string name="msg_mf_error_keyid">Aucune ID de clef. Ceci est une erreur interne, veuillez remplir un rapport de bogue !</string>
   <string name="msg_mf_error_integrity">Erreur interne, le contrôle d\'intégrité a échoué !</string>
   <string name="msg_mf_error_master_none">Aucun certificat maître sur lequel se basé n\'a été trouvé ! (Tous révoqués ?)</string>
-  <string name="msg_mf_error_noexist_primary">Mauvais ID d\'utilisateur principal spécifié !</string>
-  <string name="msg_mf_error_noexist_revoke">Mauvais ID d\'utilisateur spécifié pour la révocation !</string>
-  <string name="msg_mf_error_revoked_primary">Les ID d\'utilisateurs révoqués ne peuvent pas être principaux !</string>
   <string name="msg_mf_error_null_expiry">L\'expiration ne peut pas être « pareille qu\'avant » lors de la création de sous-clefs. Ceci est une erreur de programmation, veuillez remplir un rapport de bogue !</string>
   <string name="msg_mf_error_passphrase_master">Erreur fatale lors du déchiffrement de la clef maîtresse ! Ceci est probablement une erreur de programmation, veuillez remplir un rapport de bogue !</string>
   <string name="msg_mf_error_pgp">Erreur interne de PGP !</string>
@@ -673,8 +696,6 @@
   <string name="msg_mf_passphrase_key">Rechiffrement de la sous-clef %s avec la nouvelle phrase de passe</string>
   <string name="msg_mf_passphrase_empty_retry">Échec lors de la définition de la nouvelle phrase de passe, nouvel essai avec une ancienne phrase de passe vide</string>
   <string name="msg_mf_passphrase_fail">La phrase de passe de la sous-clef n\'a pas pu être changée ! (Est-elle différente des autres clefs ?)</string>
-  <string name="msg_mf_primary_replace_old">Remplacement du certificat de l\'ID d\'utilisateur principal précédent</string>
-  <string name="msg_mf_primary_new">Génération d\'un nouveau certificat pour le nouvel ID d\'utilisateur principal</string>
   <string name="msg_mf_subkey_change">Modification de la sous-clef %s</string>
   <string name="msg_mf_error_subkey_missing">Une action a été tentée sur la sous-clef manquante %s !</string>
   <string name="msg_mf_subkey_new">Ajout d\'une nouvelle sous-clef de type %s</string>
@@ -683,9 +704,6 @@
   <string name="msg_mf_subkey_revoke">Révocation de la sous-clef %s</string>
   <string name="msg_mf_subkey_strip">Dépouillement de la sous-clef %s</string>
   <string name="msg_mf_success">Trousseau modifié avec succès</string>
-  <string name="msg_mf_uid_add">Ajout de l\'ID d\'utilisateur %s</string>
-  <string name="msg_mf_uid_primary">Changement de l\'UID principal en %s</string>
-  <string name="msg_mf_uid_revoke">Révocation de l\'ID d\'utilisateur %s</string>
   <string name="msg_mf_uid_error_empty">L\'ID d\'utilisateur ne peut pas être vide !</string>
   <string name="msg_mf_unlock_error">Erreur lors du déverrouillage du trousseau !</string>
   <string name="msg_mf_unlock">Déverrouillage du trousseau</string>
@@ -706,7 +724,8 @@
   <string name="msg_con_error_io_secret">Erreur E/S lors de l\'écriture des clefs secrètes vers le cache !</string>
   <string name="msg_con_error_public">Erreur lors de la réimportation des clefs publiques !</string>
   <string name="msg_con_error_secret">Erreur lors de la réimportation des clefs secrètes !</string>
-  <string name="msg_con_recover_unknown">Récupération à partir d\'un état inconnu</string>
+  <string name="msg_con_recover">Reprise du processus de consolidation</string>
+  <string name="msg_con_recover_unknown">Reprise du processus de consolidation à partir d\'un état inconnu</string>
   <plurals name="msg_con_reimport_public">
     <item quantity="one">Réimportation d\'une clef publique</item>
     <item quantity="other">Réimportation de %d clefs publiques</item>
@@ -784,9 +803,64 @@
   <string name="msg_se_sigcrypting">Chiffrement des données avec signature</string>
   <string name="msg_se">Début de l\'opération de signature et/ou de chiffrement</string>
   <string name="msg_se_symmetric">Préparation du chiffrement symétrique</string>
-  <string name="msg_crt_upload_success">Clef téléversée vers le serveur avec succès</string>
+  <string name="msg_crt_certifying">Générations des certifications</string>
+  <string name="msg_crt_error_master_not_found">Clef maîtresse introuvable !</string>
+  <string name="msg_crt_error_nothing">Aucune clef certifiée !</string>
+  <string name="msg_crt_error_unlock">Erreur lors du déverrouillage de la clef maîtresse !</string>
+  <string name="msg_crt">Certification des trousseaux</string>
+  <string name="msg_crt_master_fetch">Récupération de la clef maîtresse de certification</string>
+  <string name="msg_crt_save">Enregistrement de la clef certifiée %s</string>
+  <string name="msg_crt_saving">Enregistrement des trousseaux</string>
+  <string name="msg_crt_unlock">Déverrouillage de la clef maîtresse</string>
   <string name="msg_crt_success">Identités certifiées avec succès</string>
+  <string name="msg_crt_warn_not_found">Clef introuvable !</string>
+  <string name="msg_crt_warn_cert_failed">Échec lors de la génération du certificat !</string>
+  <string name="msg_crt_warn_save_failed">Échec lors de l\'opération d\'enregistrement !</string>
+  <string name="msg_crt_upload_success">Clef téléversée vers le serveur avec succès</string>
+  <plurals name="msg_import">
+    <item quantity="one">Importation de la clef</item>
+    <item quantity="other">Importation de %d clefs</item>
+  </plurals>
+  <string name="msg_import_error">Échec lors de l\'opération d\'importation !</string>
+  <string name="msg_import_partial">Opération d\'importation réussie, avec des erreurs !</string>
+  <string name="msg_export_all">Exportation de toutes les clefs</string>
+  <string name="msg_export_public">Exportation de la clef publique %s</string>
+  <string name="msg_export_secret">Exportation de la clef secrète %s</string>
+  <string name="msg_export_error_no_file">Aucun nom de fichier spécifié !</string>
+  <string name="msg_export_error_no_uri">Aucun URI spécifié !</string>
+  <string name="msg_export_error_uri_open">Erreur lors de l\'ouverture du flux de l\'URI !</string>
+  <string name="msg_export_error_storage">Le stockage n\'est pas prêt pour l\'écriture !</string>
+  <string name="msg_export_error_db">Erreur de base de données !</string>
+  <string name="msg_export_error_io">Erreur d\'entrée/sortie !</string>
+  <string name="msg_export_success">Opération d\'exportation réussie !</string>
+  <string name="msg_del_error_empty">Rien à supprimer !</string>
+  <string name="msg_del_error_multi_secret">Les clefs secrètes ne peuvent être supprimées qu\'individuellement !</string>
+  <plurals name="msg_del">
+    <item quantity="one">Suppression d\'une clef</item>
+    <item quantity="other">Suppression de %d clefs</item>
+  </plurals>
+  <string name="msg_del_key">Suppression de la clef %s</string>
+  <string name="msg_del_key_fail">Échec lors de la suppression de la clef %s</string>
+  <string name="msg_del_consolidate">Consolidation de la base de données après la suppression de la clef secrète</string>
+  <plurals name="msg_del_ok">
+    <item quantity="one">Suppression de la clef réussie</item>
+    <item quantity="other">Suppression de %d clefs réussie</item>
+  </plurals>
+  <plurals name="msg_del_fail">
+    <item quantity="one">Échec lors de la suppression d\'une clef</item>
+    <item quantity="other">Échec lors de la suppression de %d clefs</item>
+  </plurals>
   <string name="msg_acc_saved">Compte enregistré</string>
+  <string name="msg_download_success">Téléchargement réussi !</string>
+  <string name="msg_download_no_pgp_parts">À FAIRE : pluriels !</string>
+  <plurals name="error_import_non_pgp_part">
+    <item quantity="one">une partie du fichier chargé est un objet OpenPGP valide mais pas une clef OpenPGP</item>
+    <item quantity="other">certaines parties du fichier chargé sont des objets OpenPGP valides mais pas des clefs OpenPGP</item>
+  </plurals>
+  <string name="msg_download_query_too_short">La requête de recherche est trop courte. Veuillez raffiner votre requête !</string>
+  <string name="msg_download_too_many_responses">La requête de recherche de clef a retourné trop de candidats. Veuillez raffiner votre requête !</string>
+  <string name="msg_download_query_too_short_or_too_many_responses">Soit aucune clef ou trop de clefs ont été trouvées. Veuillez améliorer votre requête !</string>
+  <string name="msg_download_query_failed">Une erreur est survenue lors de la recherche de clefs.</string>
   <!--PassphraseCache-->
   <string name="passp_cache_notif_click_to_clear">Cliquer ici pour effacer les phrases de passe mises en cache</string>
   <string name="passp_cache_notif_n_keys">OpenKeychain a mis en cache %d phrases de passe</string>
@@ -800,7 +874,6 @@
   <string name="unknown_uid">&lt;inconnu&gt;</string>
   <string name="empty_certs">Aucun certificat pour cette clef</string>
   <string name="certs_text">Seuls les auto-certificats et les certificats validés créés avec vos clefs sont affichés ici.</string>
-  <string name="section_uids_to_certify">Identités à certifier</string>
   <string name="label_revocation">Raison de la révocation</string>
   <string name="label_verify_status">État de vérification</string>
   <string name="label_cert_type">Type</string>
@@ -818,9 +891,11 @@
   <string name="info_no_manual_account_creation">Ne pas créer de comptes-OpenKeychain manuellement.\nPour plus d\'informations, consultez l\'Aide.</string>
   <string name="contact_show_key">Montrer la clef (%s)</string>
   <string name="swipe_to_update">Glisser vers le bas pour mettre à jour à partir du serveur de clefs</string>
+  <string name="error_no_file_selected">Choisir au moins un fichier à chiffrer !</string>
+  <string name="error_multi_not_supported">L\'enregistrement des fichiers multiples n\'est pas pris en charge. Ceci est actuellement une limitation d\'Android.</string>
+  <string name="key_colon">Clef :</string>
   <!--First Time-->
   <string name="first_time_text1">Reprenez le contrôle de votre confidentialité avec OpenKeychain |</string>
   <string name="first_time_create_key">Créer ma clef</string>
-  <string name="first_time_import_key">Importer une clef existante</string>
   <string name="first_time_skip">Ignorer le paramétrage</string>
 </resources>

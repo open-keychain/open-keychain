@@ -38,9 +38,7 @@
   <string name="section_defaults">Privzeto</string>
   <string name="section_advanced">Napredno</string>
   <string name="section_actions">Ravnanja</string>
-  <string name="section_share_key">Cel ključ</string>
   <string name="section_certification_key">Vaš ključ, uporabljan za overitev</string>
-  <string name="section_upload_key">Naloži ključ</string>
   <string name="section_key_server">Strežnik</string>
   <string name="section_fingerprint">Prstni odtis</string>
   <string name="section_key_to_certify">Ključi za overjanje</string>
@@ -70,7 +68,6 @@
   <string name="menu_export_key">Izvozi v datoteko</string>
   <string name="menu_delete_key">Izbriši ključ</string>
   <string name="menu_create_key">Ustvari zasebni ključ</string>
-  <string name="menu_import_existing_key">Uvoz obstoječega ključa</string>
   <string name="menu_search">Išči</string>
   <string name="menu_beam_preferences">Nastavitve Beam</string>
   <string name="menu_key_edit_cancel">Prekliči</string>
@@ -100,7 +97,6 @@
   <string name="label_encryption_algorithm">Šifrirni algoritem</string>
   <string name="label_hash_algorithm">Zgostitveni algoritem</string>
   <string name="label_symmetric">Šifriranje z geslom</string>
-  <string name="label_passphrase_cache_ttl">Hranjenje gesla v spominu</string>
   <string name="label_message_compression">Stiskanje sporočil</string>
   <string name="label_file_compression">Stiskanje datotek</string>
   <string name="label_keyservers">Strežniki</string>
@@ -114,7 +110,6 @@
   <string name="label_name">Ime</string>
   <string name="label_comment">Komentar</string>
   <string name="label_email">E-pošta</string>
-  <string name="label_send_key">Po overitvi naloži ključ na izbrani strežnik</string>
   <string name="label_fingerprint">Prstni odtis</string>
   <string name="expiry_date_dialog_title">Določi datum poteka veljavnosti</string>
   <string name="user_id_no_name">&lt;brez imena&gt;</string>
@@ -216,23 +211,10 @@
   <string name="error_jelly_bean_needed">Za uporabo storitve NFC Beam potrebujete najmanj Android 4.1!</string>
   <string name="error_nfc_needed">NFC ni na voljo na vaši napravi!</string>
   <string name="error_nothing_import">Najden ni bil noben ključ!</string>
-  <string name="error_import_no_valid_keys">V datoteki/odložišču ni veljavnih ključev!</string>
   <string name="error_generic_report_bug">Pripetila se je splošna napaka, prosimo ustvarite poročilo o \'hrošču\'.</string>
-  <plurals name="error_import_non_pgp_part">
-    <item quantity="one">Del naložene datoteke je veljavnen objekt OpenPGP a ni ključ.</item>
-    <item quantity="two">Deli naložene datoteke so veljavni objekti OpenPGP a niso ključi.</item>
-    <item quantity="few">Deli naložene datoteke so veljavni objekti OpenPGP a niso ključi.</item>
-    <item quantity="other">Deli naložene datoteke so veljavni objekti OpenPGP a niso ključi.</item>
-  </plurals>
   <!--results shown after decryption/verification-->
   <string name="decrypt_result_invalid_signature">Neveljaven podpis!</string>
-  <string name="decrypt_result_signature_missing_key">Neznan javni ključ</string>
-  <string name="decrypt_result_signature_uncertified">Veljaven podpis (neoverjen)</string>
-  <string name="decrypt_result_signature_certified">Veljaven podpis (overjen)</string>
-  <string name="decrypt_result_decrypted">Uspešno dešifrirano</string>
-  <string name="decrypt_result_decrypted_unknown_pub_key">Uspešno dešifrirano a neznan javni ključ</string>
-  <string name="decrypt_result_decrypted_and_signature_uncertified">Uspešno dešifrirano in veljaven podpis (neoverjen)</string>
-  <string name="decrypt_result_decrypted_and_signature_certified">Uspešno dešifrirano in veljaven podpis (overjen)</string>
+  <!--Add keys-->
   <!--progress dialogs, usually ending in '…'-->
   <string name="progress_done">Opravljeno.</string>
   <string name="progress_cancel">Prekliči</string>
@@ -315,12 +297,13 @@
   <string name="import_import">Uvozi izbrane ključe</string>
   <string name="import_qr_code_wrong">Koda QR je deformirana! Poskusite znova!</string>
   <string name="import_qr_code_too_short_fingerprint">Prstni odtis je prekratek (&lt; 16 znakov)</string>
-  <!--Import result toast-->
+  <!--Generic result toast-->
   <string name="view_log">Poglej dnevnik</string>
+  <!--Import result toast-->
   <string name="import_error_nothing">Nič za uvoziti.</string>
   <string name="import_error_nothing_cancelled">Uvoz preklican.</string>
-  <string name="with_warnings">, z opozorilom</string>
-  <string name="with_cancelled"> do preklica</string>
+  <!--Delete result toast-->
+  <!--Certify result toast-->
   <!--Intent labels-->
   <string name="intent_decrypt_file">Dešifriraj datoteko z OpenKeychain</string>
   <string name="intent_import_key">Uvozi ključ z OpenKeychain</string>
@@ -360,11 +343,6 @@
     <item quantity="few">Izbrani %d ključi.</item>
     <item quantity="other">Izbranih %d ključev.</item>
   </plurals>
-  <string name="key_list_empty_text1">Na voljo še ni nobenega ključa...</string>
-  <string name="key_list_empty_text2">Lahko začnete z</string>
-  <string name="key_list_empty_text3">ali</string>
-  <string name="key_list_empty_button_create">stvaritvijo lastnega ključa</string>
-  <string name="key_list_empty_button_import">uvažanje obstoječega ključa.</string>
   <!--Key view-->
   <string name="key_view_action_edit">Uredi ključ</string>
   <string name="key_view_action_encrypt">Šifriraj besedilo</string>
@@ -380,9 +358,6 @@
   <string name="key_view_tab_certs">Certifikati</string>
   <string name="user_id_info_revoked_title">Preklican</string>
   <string name="user_id_info_revoked_text">Lastnik ključa je preklical to identiteto. Ta ni več veljavna.</string>
-  <string name="user_id_info_certified_title">Preverjen</string>
-  <string name="user_id_info_certified_text">Identiteta je bila preverjena</string>
-  <string name="user_id_info_uncertified_title">Nepreverjen</string>
   <string name="user_id_info_invalid_title">Neveljaven</string>
   <!--Edit key-->
   <string name="edit_key_action_change_passphrase">Zamenjaj geslo</string>
@@ -440,9 +415,6 @@
   <string name="msg_ip_reinsert_secret">Ponovno vnašam zasebni ključ</string>
   <string name="msg_ip_uid_cert_bad">Naleteli ste na slab certifikat!</string>
   <string name="msg_ip_uid_cert_error">Napaka pri obdelavi certifikata!</string>
-  <string name="msg_ip_uid_reorder">Prerazporejam uporabniške ID-je</string>
-  <string name="msg_ip_uid_processing">Procesiram uporabniško identiteto %s</string>
-  <string name="msg_ip_uid_revoked">Uporabniški ID je preklican</string>
   <string name="msg_is_bad_type_public">Poskus uvoza javne zbirke ključev kot zasebne. Prosimo prijavite dogodek kot \'hrošč\' (napako).</string>
   <!--Import Secret log entries-->
   <string name="msg_is">Uvažam zasebni ključ %s</string>
@@ -472,6 +444,12 @@
   <string name="msg_ek_error_not_found">Ključ ni bil najden!</string>
   <!--Messages for DecryptVerify operation-->
   <!--Messages for SignEncrypt operation-->
+  <plurals name="error_import_non_pgp_part">
+    <item quantity="one">Del naložene datoteke je veljavnen objekt OpenPGP a ni ključ.</item>
+    <item quantity="two">Deli naložene datoteke so veljavni objekti OpenPGP a niso ključi.</item>
+    <item quantity="few">Deli naložene datoteke so veljavni objekti OpenPGP a niso ključi.</item>
+    <item quantity="other">Deli naložene datoteke so veljavni objekti OpenPGP a niso ključi.</item>
+  </plurals>
   <!--PassphraseCache-->
   <string name="passp_cache_notif_click_to_clear">Kliknite za izbris zapomnjenih gesel</string>
   <string name="passp_cache_notif_n_keys">OpenKeychain pomni gesla: %d</string>
@@ -483,7 +461,6 @@
   <string name="label_user_id">Identiteta</string>
   <string name="unknown_uid">&lt;neznan&gt;</string>
   <string name="empty_certs">Ni potrdil za ta ključ</string>
-  <string name="section_uids_to_certify">Identitete za overitev</string>
   <string name="label_revocation">Razlog za preklic</string>
   <string name="label_verify_status">Status preverjanja</string>
   <string name="label_cert_type">Vrsta</string>
@@ -501,6 +478,5 @@
   <!--First Time-->
   <string name="first_time_text1">Vzemite si svojo zasebnost nazaj v svoje roke z OpenKeychain!</string>
   <string name="first_time_create_key">Ustvari zasebni ključ</string>
-  <string name="first_time_import_key">Uvoz obstoječega ključa</string>
   <string name="first_time_skip">Preskoči nastavitev</string>
 </resources>
