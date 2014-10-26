@@ -138,6 +138,7 @@
             android:name=".ui.SafeSlingerActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
             android:label="@string/title_exchange_keys"
+            android:windowSoftInputMode="stateHidden"
             android:parentActivityName=".ui.KeyListActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
