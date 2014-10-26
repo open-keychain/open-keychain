@@ -32,7 +32,6 @@ import com.google.zxing.integration.android.IntentResult;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.api.OpenKeychainIntents;
-import org.sufficientlysecure.keychain.keyimport.ImportKeysListEntry;
 import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
 import org.sufficientlysecure.keychain.operations.results.ImportKeyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
@@ -177,9 +176,9 @@ public class QrCodeScanActivity extends FragmentActivity {
                         return;
                     }
 
-                    Intent certifyIntent = new Intent(QrCodeScanActivity.this, MultiCertifyKeyActivity.class);
-                    certifyIntent.putExtra(MultiCertifyKeyActivity.EXTRA_RESULT, result);
-                    certifyIntent.putExtra(MultiCertifyKeyActivity.EXTRA_KEY_IDS, result.getImportedMasterKeyIds());
+                    Intent certifyIntent = new Intent(QrCodeScanActivity.this, CertifyKeyActivity.class);
+                    certifyIntent.putExtra(CertifyKeyActivity.EXTRA_RESULT, result);
+                    certifyIntent.putExtra(CertifyKeyActivity.EXTRA_KEY_IDS, result.getImportedMasterKeyIds());
                     startActivityForResult(certifyIntent, 0);
                 }
             }

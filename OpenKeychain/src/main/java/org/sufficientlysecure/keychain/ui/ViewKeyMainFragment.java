@@ -38,7 +38,6 @@ import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.compatibility.DialogFragmentWorkaround;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
-import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UserIds;
@@ -337,8 +336,8 @@ public class ViewKeyMainFragment extends LoaderFragment implements
         } catch (PgpKeyNotFoundException e) {
             Log.e(Constants.TAG, "key not found!", e);
         }
-        Intent certifyIntent = new Intent(getActivity(), MultiCertifyKeyActivity.class);
-        certifyIntent.putExtra(MultiCertifyKeyActivity.EXTRA_KEY_IDS, new long[]{keyId});
+        Intent certifyIntent = new Intent(getActivity(), CertifyKeyActivity.class);
+        certifyIntent.putExtra(CertifyKeyActivity.EXTRA_KEY_IDS, new long[]{keyId});
         startActivityForResult(certifyIntent, 0);
     }
 

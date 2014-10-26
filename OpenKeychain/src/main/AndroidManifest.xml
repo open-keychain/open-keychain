@@ -439,7 +439,7 @@
             android:label="@string/title_key_server_preference"
             android:windowSoftInputMode="stateHidden" />
         <activity
-            android:name=".ui.MultiCertifyKeyActivity"
+            android:name=".ui.CertifyKeyActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
             android:label="@string/title_certify_key">
             <meta-data

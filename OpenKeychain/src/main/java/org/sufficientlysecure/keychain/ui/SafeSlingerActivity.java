@@ -31,7 +31,6 @@ import android.support.v7.app.ActionBarActivity;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.NumberPicker;
 import android.widget.Spinner;
@@ -194,10 +193,10 @@ public class SafeSlingerActivity extends ActionBarActivity {
 //                            return;
 //                        }
 
-                        Intent certifyIntent = new Intent(activity, MultiCertifyKeyActivity.class);
-                        certifyIntent.putExtra(MultiCertifyKeyActivity.EXTRA_RESULT, result);
-                        certifyIntent.putExtra(MultiCertifyKeyActivity.EXTRA_KEY_IDS, result.getImportedMasterKeyIds());
-                        certifyIntent.putExtra(MultiCertifyKeyActivity.EXTRA_CERTIFY_KEY_ID, mMasterKeyId);
+                        Intent certifyIntent = new Intent(activity, CertifyKeyActivity.class);
+                        certifyIntent.putExtra(CertifyKeyActivity.EXTRA_RESULT, result);
+                        certifyIntent.putExtra(CertifyKeyActivity.EXTRA_KEY_IDS, result.getImportedMasterKeyIds());
+                        certifyIntent.putExtra(CertifyKeyActivity.EXTRA_CERTIFY_KEY_ID, mMasterKeyId);
                         startActivityForResult(certifyIntent, KeyListActivity.REQUEST_CODE_RESULT_TO_LIST);
 
 //                        mExchangeMasterKeyId = null;

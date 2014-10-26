@@ -12,7 +12,7 @@
         android:layout_height="match_parent">
 
         <fragment
-            android:id="@+id/certify_key_fragment"
+            android:id="@+id/multi_certify_key_fragment"
             android:name="org.sufficientlysecure.keychain.ui.CertifyKeyFragment"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />

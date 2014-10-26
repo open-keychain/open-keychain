@@ -26,7 +26,7 @@ import org.sufficientlysecure.keychain.R;
 /**
  * Signs the specified public key with the specified secret master key
  */
-public class MultiCertifyKeyActivity extends ActionBarActivity {
+public class CertifyKeyActivity extends ActionBarActivity {
 
     public static final String EXTRA_RESULT = "operation_result";
     public static final String EXTRA_KEY_IDS = "extra_key_ids";
@@ -36,7 +36,7 @@ public class MultiCertifyKeyActivity extends ActionBarActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.multi_certify_key_activity);
+        setContentView(R.layout.certify_key_activity);
     }
 
 }

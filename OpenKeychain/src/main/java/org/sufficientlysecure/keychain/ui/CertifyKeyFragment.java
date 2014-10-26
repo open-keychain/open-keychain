@@ -29,7 +29,6 @@ import android.os.Bundle;
 import android.os.Message;
 import android.os.Messenger;
 import android.os.Parcel;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
@@ -65,7 +64,7 @@ import org.sufficientlysecure.keychain.util.Preferences;
 
 import java.util.ArrayList;
 
-public class MultiCertifyKeyFragment extends LoaderFragment
+public class CertifyKeyFragment extends LoaderFragment
         implements LoaderManager.LoaderCallbacks<Cursor> {
 
     public static final int REQUEST_CODE_PASSPHRASE = 0x00008001;
@@ -100,7 +99,7 @@ public class MultiCertifyKeyFragment extends LoaderFragment
         // Start out with a progress indicator.
         setContentShown(false);
 
-        mPubMasterKeyIds = getActivity().getIntent().getLongArrayExtra(MultiCertifyKeyActivity.EXTRA_KEY_IDS);
+        mPubMasterKeyIds = getActivity().getIntent().getLongArrayExtra(CertifyKeyActivity.EXTRA_KEY_IDS);
         if (mPubMasterKeyIds == null) {
             Log.e(Constants.TAG, "List of key ids to certify missing!");
             getActivity().finish();
@@ -108,7 +107,7 @@ public class MultiCertifyKeyFragment extends LoaderFragment
         }
 
         // preselect certify key id if given
-        long certifyKeyId = getActivity().getIntent().getLongExtra(MultiCertifyKeyActivity.EXTRA_CERTIFY_KEY_ID, Constants.key.none);
+        long certifyKeyId = getActivity().getIntent().getLongExtra(CertifyKeyActivity.EXTRA_CERTIFY_KEY_ID, Constants.key.none);
         if (certifyKeyId != Constants.key.none) {
             try {
                 CachedPublicKeyRing key = (new ProviderHelper(getActivity())).getCachedPublicKeyRing(certifyKeyId);
@@ -126,7 +125,7 @@ public class MultiCertifyKeyFragment extends LoaderFragment
 
         getLoaderManager().initLoader(0, null, this);
 
-        OperationResult result = getActivity().getIntent().getParcelableExtra(MultiCertifyKeyActivity.EXTRA_RESULT);
+        OperationResult result = getActivity().getIntent().getParcelableExtra(CertifyKeyActivity.EXTRA_RESULT);
         if (result != null) {
             // display result from import
             result.createNotify(getActivity()).show();
@@ -137,7 +136,7 @@ public class MultiCertifyKeyFragment extends LoaderFragment
     public View onCreateView(LayoutInflater inflater, ViewGroup superContainer, Bundle savedInstanceState) {
         View root = super.onCreateView(inflater, superContainer, savedInstanceState);
 
-        View view = inflater.inflate(R.layout.multi_certify_key_fragment, getContainer());
+        View view = inflater.inflate(R.layout.certify_key_fragment, getContainer());
 
         mCertifyKeySpinner = (CertifyKeySpinner) view.findViewById(R.id.certify_key_spinner);
         mUploadKeyCheckbox = (CheckBox) view.findViewById(R.id.sign_key_upload_checkbox);
@@ -369,7 +368,6 @@ public class MultiCertifyKeyFragment extends LoaderFragment
                 super.handleMessage(message);
 
                 if (message.arg1 == KeychainIntentServiceHandler.MESSAGE_OKAY) {
-
                     Bundle data = message.getData();
                     CertifyResult result = data.getParcelable(CertifyResult.EXTRA_RESULT);
 
