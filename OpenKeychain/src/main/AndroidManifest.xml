@@ -267,7 +267,7 @@
             <!-- Keychain's own Actions -->
             <!-- DECRYPT with data Uri -->
             <intent-filter>
-                <action android:name="org.sufficientlysecure.keychain.action.DECRYPT" />
+                <action android:name="org.sufficientlysecure.keychain.action.DECRYPT_DATA" />
 
                 <category android:name="android.intent.category.DEFAULT" />
 
