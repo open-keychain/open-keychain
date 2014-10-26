@@ -145,7 +145,7 @@ public class ProgressDialogFragment extends DialogFragment {
 
         mPreventCancel = preventCancel;
         final Button negative = ((ProgressDialog) getDialog()).getButton(DialogInterface.BUTTON_NEGATIVE);
-        negative.setVisibility(preventCancel ? View.GONE : View.VISIBLE);
+        negative.setEnabled(mIsCancelled && !preventCancel);
     }
 
     @Override

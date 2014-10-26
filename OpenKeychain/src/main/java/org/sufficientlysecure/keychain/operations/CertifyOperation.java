@@ -7,6 +7,7 @@ import org.sufficientlysecure.keychain.keyimport.HkpKeyserver;
 import org.sufficientlysecure.keychain.keyimport.Keyserver.AddKeyException;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedPublicKeyRing;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey;
+import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey.SecretKeyType;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKeyRing;
 import org.sufficientlysecure.keychain.pgp.Progressable;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
@@ -57,6 +58,10 @@ public class CertifyOperation extends BaseOperation {
                     mProviderHelper.getCanonicalizedSecretKeyRing(parcel.mMasterKeyId);
             log.add(LogType.MSG_CRT_UNLOCK, 1);
             certificationKey = secretKeyRing.getSecretKey();
+            if (certificationKey.getSecretKeyType() == SecretKeyType.DIVERT_TO_CARD) {
+                log.add(LogType.MSG_CRT_ERROR_DIVERT, 2);
+                return new CertifyResult(CertifyResult.RESULT_ERROR, log);
+            }
             if (!certificationKey.unlock(passphrase)) {
                 log.add(LogType.MSG_CRT_ERROR_UNLOCK, 2);
                 return new CertifyResult(CertifyResult.RESULT_ERROR, log);
