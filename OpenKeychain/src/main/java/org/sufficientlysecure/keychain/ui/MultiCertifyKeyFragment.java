@@ -70,8 +70,6 @@ public class MultiCertifyKeyFragment extends LoaderFragment
 
     public static final int REQUEST_CODE_PASSPHRASE = 0x00008001;
 
-    private FragmentActivity mActivity;
-
     private CheckBox mUploadKeyCheckbox;
     ListView mUserIds;
 
@@ -102,15 +100,15 @@ public class MultiCertifyKeyFragment extends LoaderFragment
         // Start out with a progress indicator.
         setContentShown(false);
 
-        mPubMasterKeyIds = mActivity.getIntent().getLongArrayExtra(MultiCertifyKeyActivity.EXTRA_KEY_IDS);
+        mPubMasterKeyIds = getActivity().getIntent().getLongArrayExtra(MultiCertifyKeyActivity.EXTRA_KEY_IDS);
         if (mPubMasterKeyIds == null) {
             Log.e(Constants.TAG, "List of key ids to certify missing!");
-            mActivity.finish();
+            getActivity().finish();
             return;
         }
 
         // preselect certify key id if given
-        long certifyKeyId = mActivity.getIntent().getLongExtra(MultiCertifyKeyActivity.EXTRA_CERTIFY_KEY_ID, Constants.key.none);
+        long certifyKeyId = getActivity().getIntent().getLongExtra(MultiCertifyKeyActivity.EXTRA_CERTIFY_KEY_ID, Constants.key.none);
         if (certifyKeyId != Constants.key.none) {
             try {
                 CachedPublicKeyRing key = (new ProviderHelper(getActivity())).getCachedPublicKeyRing(certifyKeyId);
@@ -122,25 +120,22 @@ public class MultiCertifyKeyFragment extends LoaderFragment
             }
         }
 
-        mUserIdsAdapter = new MultiUserIdsAdapter(mActivity, null, 0);
+        mUserIdsAdapter = new MultiUserIdsAdapter(getActivity(), null, 0);
         mUserIds.setAdapter(mUserIdsAdapter);
         mUserIds.setDividerHeight(0);
 
         getLoaderManager().initLoader(0, null, this);
 
-        OperationResult result = mActivity.getIntent().getParcelableExtra(MultiCertifyKeyActivity.EXTRA_RESULT);
+        OperationResult result = getActivity().getIntent().getParcelableExtra(MultiCertifyKeyActivity.EXTRA_RESULT);
         if (result != null) {
             // display result from import
-            result.createNotify(mActivity).show();
+            result.createNotify(getActivity()).show();
         }
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup superContainer, Bundle savedInstanceState) {
         View root = super.onCreateView(inflater, superContainer, savedInstanceState);
-
-        // is this "the android way"?
-        mActivity = getActivity();
 
         View view = inflater.inflate(R.layout.multi_certify_key_fragment, getContainer());
 
@@ -167,7 +162,7 @@ public class MultiCertifyKeyFragment extends LoaderFragment
             @Override
             public void onClick(View v) {
                 if (mSignMasterKeyId == Constants.key.none) {
-                    Notify.showNotify(mActivity, getString(R.string.select_key_to_certify),
+                    Notify.showNotify(getActivity(), getString(R.string.select_key_to_certify),
                             Notify.Style.ERROR);
                 } else {
                     initiateCertifying();
@@ -204,7 +199,7 @@ public class MultiCertifyKeyFragment extends LoaderFragment
                     + " IN (" + placeholders + ")";
         }
 
-        return new CursorLoader(mActivity, uri,
+        return new CursorLoader(getActivity(), uri,
                 USER_IDS_PROJECTION, selection, ids,
                 Tables.USER_IDS + "." + UserIds.MASTER_KEY_ID + " ASC"
                         + ", " + Tables.USER_IDS + "." + UserIds.USER_ID + " ASC"
@@ -303,10 +298,10 @@ public class MultiCertifyKeyFragment extends LoaderFragment
         // get the user's passphrase for this key (if required)
         String passphrase;
         try {
-            passphrase = PassphraseCacheService.getCachedPassphrase(mActivity, mSignMasterKeyId, mSignMasterKeyId);
+            passphrase = PassphraseCacheService.getCachedPassphrase(getActivity(), mSignMasterKeyId, mSignMasterKeyId);
         } catch (PassphraseCacheService.KeyNotFoundException e) {
             Log.e(Constants.TAG, "Key not found!", e);
-            mActivity.finish();
+            getActivity().finish();
             return;
         }
         if (passphrase == null) {
@@ -344,13 +339,13 @@ public class MultiCertifyKeyFragment extends LoaderFragment
         // Bail out if there is not at least one user id selected
         ArrayList<CertifyAction> certifyActions = mUserIdsAdapter.getSelectedCertifyActions();
         if (certifyActions.isEmpty()) {
-            Notify.showNotify(mActivity, "No identities selected!",
+            Notify.showNotify(getActivity(), "No identities selected!",
                     Notify.Style.ERROR);
             return;
         }
 
         // Send all information needed to service to sign key in other thread
-        Intent intent = new Intent(mActivity, KeychainIntentService.class);
+        Intent intent = new Intent(getActivity(), KeychainIntentService.class);
 
         intent.setAction(KeychainIntentService.ACTION_CERTIFY_KEYRING);
 
@@ -367,7 +362,7 @@ public class MultiCertifyKeyFragment extends LoaderFragment
         intent.putExtra(KeychainIntentService.EXTRA_DATA, data);
 
         // Message is received after signing is done in KeychainIntentService
-        KeychainIntentServiceHandler saveHandler = new KeychainIntentServiceHandler(mActivity,
+        KeychainIntentServiceHandler saveHandler = new KeychainIntentServiceHandler(getActivity(),
                 getString(R.string.progress_certifying), ProgressDialog.STYLE_SPINNER, true) {
             public void handleMessage(Message message) {
                 // handle messages by standard KeychainIntentServiceHandler first
@@ -380,9 +375,8 @@ public class MultiCertifyKeyFragment extends LoaderFragment
 
                     Intent intent = new Intent();
                     intent.putExtra(CertifyResult.EXTRA_RESULT, result);
-                    mActivity.setResult(Activity.RESULT_OK, intent);
-                    mActivity.finish();
-
+                    getActivity().setResult(Activity.RESULT_OK, intent);
+                    getActivity().finish();
                 }
             }
         };
@@ -392,10 +386,10 @@ public class MultiCertifyKeyFragment extends LoaderFragment
         intent.putExtra(KeychainIntentService.EXTRA_MESSENGER, messenger);
 
         // show progress dialog
-        saveHandler.showProgressDialog(mActivity);
+        saveHandler.showProgressDialog(getActivity());
 
         // start service with intent
-        mActivity.startService(intent);
+        getActivity().startService(intent);
     }
 
 }

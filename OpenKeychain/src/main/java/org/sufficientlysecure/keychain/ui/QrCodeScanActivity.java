@@ -145,7 +145,7 @@ public class QrCodeScanActivity extends FragmentActivity {
 
     public void importKeys(String fingerprint) {
         // Message is received after importing is done in KeychainIntentService
-        KeychainIntentServiceHandler saveHandler = new KeychainIntentServiceHandler(
+        KeychainIntentServiceHandler serviceHandler = new KeychainIntentServiceHandler(
                 this,
                 getString(R.string.progress_importing),
                 ProgressDialog.STYLE_HORIZONTAL,
@@ -208,11 +208,11 @@ public class QrCodeScanActivity extends FragmentActivity {
         intent.putExtra(KeychainIntentService.EXTRA_DATA, data);
 
         // Create a new Messenger for the communication back
-        Messenger messenger = new Messenger(saveHandler);
+        Messenger messenger = new Messenger(serviceHandler);
         intent.putExtra(KeychainIntentService.EXTRA_MESSENGER, messenger);
 
         // show progress dialog
-        saveHandler.showProgressDialog(this);
+        serviceHandler.showProgressDialog(this);
 
         // start service with intent
         startService(intent);
