@@ -2,6 +2,9 @@ package org.sufficientlysecure.keychain.operations;
 
 import android.content.Context;
 
+import org.sufficientlysecure.keychain.Constants;
+import org.sufficientlysecure.keychain.keyimport.HkpKeyserver;
+import org.sufficientlysecure.keychain.keyimport.Keyserver.AddKeyException;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedPublicKeyRing;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKeyRing;
@@ -17,6 +20,7 @@ import org.sufficientlysecure.keychain.operations.results.OperationResult.LogTyp
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
 import org.sufficientlysecure.keychain.operations.results.SaveKeyringResult;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
+import org.sufficientlysecure.keychain.util.Log;
 
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -36,7 +40,7 @@ public class CertifyOperation extends BaseOperation {
         super(context, providerHelper, progressable, cancelled);
     }
 
-    public CertifyResult certify(CertifyActionsParcel parcel) {
+    public CertifyResult certify(CertifyActionsParcel parcel, String keyServerUri) {
 
         OperationLog log = new OperationLog();
         log.add(LogType.MSG_CRT, 0);
@@ -72,7 +76,7 @@ public class CertifyOperation extends BaseOperation {
 
         log.add(LogType.MSG_CRT_CERTIFYING, 1);
 
-        int certifyOk = 0, certifyError = 0;
+        int certifyOk = 0, certifyError = 0, uploadOk = 0, uploadError = 0;
 
         // Work through all requested certifications
         for (CertifyAction action : parcel.mCertifyActions) {
@@ -118,13 +122,20 @@ public class CertifyOperation extends BaseOperation {
             return new CertifyResult(CertifyResult.RESULT_CANCELLED, log);
         }
 
+        HkpKeyserver keyServer = null;
+        ImportExportOperation importExportOperation = null;
+        if (keyServerUri != null) {
+            keyServer = new HkpKeyserver(keyServerUri);
+            importExportOperation = new ImportExportOperation(mContext, mProviderHelper, mProgressable);
+        }
+
         // Write all certified keys into the database
         for (UncachedKeyRing certifiedKey : certifiedKeys) {
 
             // Check if we were cancelled
             if (checkCancelled()) {
                 log.add(LogType.MSG_OPERATION_CANCELLED, 0);
-                return new CertifyResult(CertifyResult.RESULT_CANCELLED, log, certifyOk, certifyError);
+                return new CertifyResult(CertifyResult.RESULT_CANCELLED, log, certifyOk, certifyError, uploadOk, uploadError);
             }
 
             log.add(LogType.MSG_CRT_SAVE, 2,
@@ -132,6 +143,17 @@ public class CertifyOperation extends BaseOperation {
             // store the signed key in our local cache
             mProviderHelper.clearLog();
             SaveKeyringResult result = mProviderHelper.savePublicKeyRing(certifiedKey);
+
+            if (importExportOperation != null) {
+                // TODO use subresult, get rid of try/catch!
+                try {
+                    importExportOperation.uploadKeyRingToServer(keyServer, certifiedKey);
+                    uploadOk += 1;
+                } catch (AddKeyException e) {
+                    Log.e(Constants.TAG, "error uploading key", e);
+                    uploadError += 1;
+                }
+            }
 
             if (result.success()) {
                 certifyOk += 1;
@@ -145,11 +167,11 @@ public class CertifyOperation extends BaseOperation {
 
         if (certifyOk == 0) {
             log.add(LogType.MSG_CRT_ERROR_NOTHING, 0);
-            return new CertifyResult(CertifyResult.RESULT_ERROR, log, certifyOk, certifyError);
+            return new CertifyResult(CertifyResult.RESULT_ERROR, log, certifyOk, certifyError, uploadOk, uploadError);
         }
 
         log.add(LogType.MSG_CRT_SUCCESS, 0);
-        return new CertifyResult(CertifyResult.RESULT_OK, log, certifyOk, certifyError);
+        return new CertifyResult(CertifyResult.RESULT_OK, log, certifyOk, certifyError, uploadOk, uploadError);
 
     }
 

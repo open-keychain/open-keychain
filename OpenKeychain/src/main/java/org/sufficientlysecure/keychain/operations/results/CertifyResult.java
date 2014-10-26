@@ -36,16 +36,18 @@ import org.sufficientlysecure.keychain.ui.LogDisplayFragment;
 
 public class CertifyResult extends OperationResult {
 
-    int mCertifyOk, mCertifyError;
+    int mCertifyOk, mCertifyError, mUploadOk, mUploadError;
 
     public CertifyResult(int result, OperationLog log) {
         super(result, log);
     }
 
-    public CertifyResult(int result, OperationLog log, int certifyOk, int certifyError) {
+    public CertifyResult(int result, OperationLog log, int certifyOk, int certifyError, int uploadOk, int uploadError) {
         this(result, log);
         mCertifyOk = certifyOk;
         mCertifyError = certifyError;
+        mUploadOk = uploadOk;
+        mUploadError = uploadError;
     }
 
     /** Construct from a parcel - trivial because we have no extra data. */
@@ -53,6 +55,8 @@ public class CertifyResult extends OperationResult {
         super(source);
         mCertifyOk = source.readInt();
         mCertifyError = source.readInt();
+        mUploadOk = source.readInt();
+        mUploadError = source.readInt();
     }
 
     @Override
@@ -60,6 +64,8 @@ public class CertifyResult extends OperationResult {
         super.writeToParcel(dest, flags);
         dest.writeInt(mCertifyOk);
         dest.writeInt(mCertifyError);
+        dest.writeInt(mUploadOk);
+        dest.writeInt(mUploadError);
     }
 
     public static Creator<CertifyResult> CREATOR = new Creator<CertifyResult>() {

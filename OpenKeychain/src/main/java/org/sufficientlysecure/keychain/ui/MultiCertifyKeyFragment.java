@@ -61,6 +61,7 @@ import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.ui.widget.CertifyKeySpinner;
 import org.sufficientlysecure.keychain.ui.widget.KeySpinner;
 import org.sufficientlysecure.keychain.util.Log;
+import org.sufficientlysecure.keychain.util.Preferences;
 
 import java.util.ArrayList;
 
@@ -173,6 +174,11 @@ public class MultiCertifyKeyFragment extends LoaderFragment
                 }
             }
         });
+
+        // If this is a debug build, don't upload by default
+        if (Constants.DEBUG) {
+            mUploadKeyCheckbox.setChecked(false);
+        }
 
         return root;
     }
@@ -354,6 +360,10 @@ public class MultiCertifyKeyFragment extends LoaderFragment
 
         Bundle data = new Bundle();
         data.putParcelable(KeychainIntentService.CERTIFY_PARCEL, parcel);
+        if (mUploadKeyCheckbox.isChecked()) {
+            String keyserver = Preferences.getPreferences(getActivity()).getPreferredKeyserver();
+            data.putString(KeychainIntentService.UPLOAD_KEY_SERVER, keyserver);
+        }
         intent.putExtra(KeychainIntentService.EXTRA_DATA, data);
 
         // Message is received after signing is done in KeychainIntentService
@@ -371,15 +381,8 @@ public class MultiCertifyKeyFragment extends LoaderFragment
                     Intent intent = new Intent();
                     intent.putExtra(CertifyResult.EXTRA_RESULT, result);
                     mActivity.setResult(Activity.RESULT_OK, intent);
+                    mActivity.finish();
 
-                    // check if we need to send the key to the server or not
-                    if (mUploadKeyCheckbox.isChecked()) {
-                        // upload the newly signed key to the keyserver
-                        // TODO implement
-                        // uploadKey();
-                    } else {
-                        mActivity.finish();
-                    }
                 }
             }
         };
