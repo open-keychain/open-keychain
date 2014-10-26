@@ -138,6 +138,7 @@
             android:name=".ui.SafeSlingerActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
             android:label="@string/title_exchange_keys"
+            android:windowSoftInputMode="stateHidden"
             android:parentActivityName=".ui.KeyListActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -266,7 +267,7 @@
             <!-- Keychain's own Actions -->
             <!-- DECRYPT with data Uri -->
             <intent-filter>
-                <action android:name="org.sufficientlysecure.keychain.action.DECRYPT" />
+                <action android:name="org.sufficientlysecure.keychain.action.DECRYPT_DATA" />
 
                 <category android:name="android.intent.category.DEFAULT" />
 
