@@ -950,11 +950,13 @@ public class ProviderHelper {
                     KeyRings.PRIVKEY_DATA, KeyRings.FINGERPRINT, KeyRings.HAS_ANY_SECRET
             }, KeyRings.HAS_ANY_SECRET + " = 1", null, null);
 
-            if (cursor == null || !cursor.moveToFirst()) {
+            if (cursor == null) {
                 log.add(LogType.MSG_CON_ERROR_DB, indent);
                 return new ConsolidateResult(ConsolidateResult.RESULT_ERROR, log);
             }
 
+            // No keys existing might be a legitimate option, we write an empty file in that case
+            cursor.moveToFirst();
             ParcelableFileCache<ParcelableKeyRing> cache =
                     new ParcelableFileCache<ParcelableKeyRing>(mContext, "consolidate_secret.pcl");
             cache.writeCache(cursor.getCount(), new Iterator<ParcelableKeyRing>() {
@@ -1010,11 +1012,13 @@ public class ProviderHelper {
                     KeyRings.PUBKEY_DATA, KeyRings.FINGERPRINT
             }, null, null, null);
 
-            if (cursor == null || !cursor.moveToFirst()) {
+            if (cursor == null) {
                 log.add(LogType.MSG_CON_ERROR_DB, indent);
                 return new ConsolidateResult(ConsolidateResult.RESULT_ERROR, log);
             }
 
+            // No keys existing might be a legitimate option, we write an empty file in that case
+            cursor.moveToFirst();
             ParcelableFileCache<ParcelableKeyRing> cache =
                     new ParcelableFileCache<ParcelableKeyRing>(mContext, "consolidate_public.pcl");
             cache.writeCache(cursor.getCount(), new Iterator<ParcelableKeyRing>() {
