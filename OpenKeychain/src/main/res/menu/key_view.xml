@@ -17,7 +17,6 @@
     <item
         android:id="@+id/menu_key_view_advanced"
         app:showAsAction="never"
-        android:checkable="true"
         android:title="@string/menu_advanced" />
 
 </menu>

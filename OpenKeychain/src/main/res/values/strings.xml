@@ -40,6 +40,7 @@
     <string name="title_log_display">"Log"</string>
     <string name="title_create_key">"Create Key"</string>
     <string name="title_exchange_keys">"Exchange Keys"</string>
+    <string name="title_advanced_key_info">"Advanced Key Info"</string>
 
     <!-- section -->
     <string name="section_user_ids">"Identities"</string>
@@ -59,6 +60,7 @@
     <string name="section_key_to_certify">"Key to be certified"</string>
     <string name="section_decrypt_files">"Files"</string>
     <string name="section_decrypt_text">"Text"</string>
+    <string name="section_certs">"Certificates"</string>
 
     <!-- button -->
     <string name="btn_decrypt_verify_file">"Decrypt, verify, and save file"</string>

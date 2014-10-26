@@ -1,6 +1,5 @@
 /*
  * Copyright (C) 2014 Dominik Schürmann <dominik@dominikschuermann.de>
- * Copyright (C) 2014 Vincent Breitmoser <v.breitmoser@mugenguild.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,70 +21,88 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.widget.CursorAdapter;
-import android.text.SpannableStringBuilder;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
-import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.pgp.WrappedSignature;
-import org.sufficientlysecure.keychain.provider.KeychainContract.Certs;
-import org.sufficientlysecure.keychain.provider.KeychainDatabase.Tables;
+import org.sufficientlysecure.keychain.provider.KeychainContract;
+import org.sufficientlysecure.keychain.provider.KeychainDatabase;
+import org.sufficientlysecure.keychain.ui.adapter.SubkeysAdapter;
+import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.Log;
 
 import se.emilsjolander.stickylistheaders.StickyListHeadersAdapter;
 import se.emilsjolander.stickylistheaders.StickyListHeadersListView;
 
 
-public class ViewKeyCertsFragment extends LoaderFragment
-        implements LoaderManager.LoaderCallbacks<Cursor>, AdapterView.OnItemClickListener {
-
-    // These are the rows that we will retrieve.
-    static final String[] PROJECTION = new String[]{
-            Certs._ID,
-            Certs.MASTER_KEY_ID,
-            Certs.VERIFIED,
-            Certs.TYPE,
-            Certs.RANK,
-            Certs.KEY_ID_CERTIFIER,
-            Certs.USER_ID,
-            Certs.SIGNER_UID
-    };
-
-    // sort by our user id,
-    static final String SORT_ORDER =
-            Tables.CERTS + "." + Certs.RANK + " ASC, "
-                    + Certs.VERIFIED + " DESC, "
-                    + Certs.TYPE + " DESC, "
-                    + Certs.SIGNER_UID + " ASC";
+public class ViewKeyAdvancedFragment extends LoaderFragment implements
+        LoaderManager.LoaderCallbacks<Cursor>, AdapterView.OnItemClickListener {
 
     public static final String ARG_DATA_URI = "data_uri";
 
+    private ListView mSubkeysList;
+    private SubkeysAdapter mSubkeysAdapter;
+
     private StickyListHeadersListView mStickyList;
-    private CertListAdapter mAdapter;
+    private CertListAdapter mCertsAdapter;
 
-    private Uri mDataUri;
+    private Uri mDataUriSubkeys;
+    private Uri mDataUriCerts;
 
-    // starting with 4 for this fragment
-    private static final int LOADER_ID = 4;
+    private static final int LOADER_SUBKEYS = 1;
+    private static final int LOADER_CERTS = 2;
+
+    // These are the rows that we will retrieve.
+    static final String[] CERTS_PROJECTION = new String[]{
+            KeychainContract.Certs._ID,
+            KeychainContract.Certs.MASTER_KEY_ID,
+            KeychainContract.Certs.VERIFIED,
+            KeychainContract.Certs.TYPE,
+            KeychainContract.Certs.RANK,
+            KeychainContract.Certs.KEY_ID_CERTIFIER,
+            KeychainContract.Certs.USER_ID,
+            KeychainContract.Certs.SIGNER_UID
+    };
+
+    // sort by our user id,
+    static final String CERTS_SORT_ORDER =
+            KeychainDatabase.Tables.CERTS + "." + KeychainContract.Certs.RANK + " ASC, "
+                    + KeychainContract.Certs.VERIFIED + " DESC, "
+                    + KeychainContract.Certs.TYPE + " DESC, "
+                    + KeychainContract.Certs.SIGNER_UID + " ASC";
+
+    /**
+     * Creates new instance of this fragment
+     */
+    public static ViewKeyAdvancedFragment newInstance(Uri dataUri) {
+        ViewKeyAdvancedFragment frag = new ViewKeyAdvancedFragment();
+
+        Bundle args = new Bundle();
+        args.putParcelable(ARG_DATA_URI, dataUri);
+
+        frag.setArguments(args);
+        return frag;
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup superContainer, Bundle savedInstanceState) {
         View root = super.onCreateView(inflater, superContainer, savedInstanceState);
-        View view = inflater.inflate(R.layout.view_key_certs_fragment, getContainer());
+        View view = inflater.inflate(R.layout.view_key_advanced_fragment, getContainer());
 
-        mStickyList = (StickyListHeadersListView) view.findViewById(R.id.list);
+        mSubkeysList = (ListView) view.findViewById(R.id.keys);
+        mStickyList = (StickyListHeadersListView) view.findViewById(R.id.certs_list);
 
         return root;
     }
@@ -94,50 +111,92 @@ public class ViewKeyCertsFragment extends LoaderFragment
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        if (!getArguments().containsKey(ARG_DATA_URI)) {
+        Uri dataUri = getArguments().getParcelable(ARG_DATA_URI);
+        if (dataUri == null) {
             Log.e(Constants.TAG, "Data missing. Should be Uri of key!");
             getActivity().finish();
             return;
         }
 
-        Uri uri = getArguments().getParcelable(ARG_DATA_URI);
-        mDataUri = Certs.buildCertsUri(uri);
+        loadData(dataUri);
+    }
+
+    private void loadData(Uri dataUri) {
+        mDataUriSubkeys = KeychainContract.Keys.buildKeysUri(dataUri);
+        mDataUriCerts = KeychainContract.Certs.buildCertsUri(dataUri);
 
         mStickyList.setAreHeadersSticky(true);
         mStickyList.setDrawingListUnderStickyHeader(false);
-        mStickyList.setFastScrollEnabled(true);
         mStickyList.setOnItemClickListener(this);
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-            mStickyList.setFastScrollAlwaysVisible(true);
-        }
 
         mStickyList.setEmptyView(getActivity().findViewById(R.id.empty));
 
         // Create an empty adapter we will use to display the loaded data.
-        mAdapter = new CertListAdapter(getActivity(), null);
-        mStickyList.setAdapter(mAdapter);
+        mSubkeysAdapter = new SubkeysAdapter(getActivity(), null, 0);
+        mSubkeysList.setAdapter(mSubkeysAdapter);
 
-        getLoaderManager().initLoader(LOADER_ID, null, this);
+        mCertsAdapter = new CertListAdapter(getActivity(), null);
+        mStickyList.setAdapter(mCertsAdapter);
+
+        // Prepare the loaders. Either re-connect with an existing ones,
+        // or start new ones.
+        getLoaderManager().initLoader(LOADER_SUBKEYS, null, this);
+        getLoaderManager().initLoader(LOADER_CERTS, null, this);
     }
 
-    @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         setContentShown(false);
-        // Now create and return a CursorLoader that will take care of
-        // creating a Cursor for the data being displayed.
-        return new CursorLoader(getActivity(), mDataUri, PROJECTION, null, null, SORT_ORDER);
+        switch (id) {
+            case LOADER_SUBKEYS:
+                return new CursorLoader(getActivity(), mDataUriSubkeys,
+                        SubkeysAdapter.SUBKEYS_PROJECTION, null, null, null);
+
+            case LOADER_CERTS:
+                // Now create and return a CursorLoader that will take care of
+                // creating a Cursor for the data being displayed.
+                return new CursorLoader(getActivity(), mDataUriCerts,
+                        CERTS_PROJECTION, null, null, CERTS_SORT_ORDER);
+
+            default:
+                return null;
+        }
     }
 
-    @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+        // Avoid NullPointerExceptions, if we get an empty result set.
+        if (data.getCount() == 0) {
+            return;
+        }
+
         // Swap the new cursor in. (The framework will take care of closing the
         // old cursor once we return.)
-        mAdapter.swapCursor(data);
+        switch (loader.getId()) {
+            case LOADER_SUBKEYS:
+                mSubkeysAdapter.swapCursor(data);
+                break;
+            case LOADER_CERTS:
+                mCertsAdapter.swapCursor(data);
+                mStickyList.setAdapter(mCertsAdapter);
+                break;
+        }
 
-        mStickyList.setAdapter(mAdapter);
-
+        // TODO: maybe show not before both are loaded!
         setContentShown(true);
+    }
+
+    /**
+     * This is called when the last Cursor provided to onLoadFinished() above is about to be closed.
+     * We need to make sure we are no longer using it.
+     */
+    public void onLoaderReset(Loader<Cursor> loader) {
+        switch (loader.getId()) {
+            case LOADER_SUBKEYS:
+                mSubkeysAdapter.swapCursor(null);
+                break;
+            case LOADER_CERTS:
+                mCertsAdapter.swapCursor(null);
+                break;
+        }
     }
 
     /**
@@ -151,19 +210,12 @@ public class ViewKeyCertsFragment extends LoaderFragment
             long certifierId = (Long) view.getTag(R.id.tag_certifierId);
 
             Intent viewIntent = new Intent(getActivity(), ViewCertActivity.class);
-            viewIntent.setData(Certs.buildCertsSpecificUri(
+            viewIntent.setData(KeychainContract.Certs.buildCertsSpecificUri(
                     masterKeyId, rank, certifierId));
             startActivity(viewIntent);
         }
     }
 
-    @Override
-    public void onLoaderReset(Loader<Cursor> loader) {
-        // This is called when the last Cursor provided to onLoadFinished()
-        // above is about to be closed. We need to make sure we are no
-        // longer using it.
-        mAdapter.swapCursor(null);
-    }
 
     /**
      * Implements StickyListHeadersAdapter from library
@@ -196,13 +248,13 @@ public class ViewKeyCertsFragment extends LoaderFragment
          */
         private void initIndex(Cursor cursor) {
             if (cursor != null) {
-                mIndexMasterKeyId = cursor.getColumnIndexOrThrow(Certs.MASTER_KEY_ID);
-                mIndexUserId = cursor.getColumnIndexOrThrow(Certs.USER_ID);
-                mIndexRank = cursor.getColumnIndexOrThrow(Certs.RANK);
-                mIndexType = cursor.getColumnIndexOrThrow(Certs.TYPE);
-                mIndexVerified = cursor.getColumnIndexOrThrow(Certs.VERIFIED);
-                mIndexSignerKeyId = cursor.getColumnIndexOrThrow(Certs.KEY_ID_CERTIFIER);
-                mIndexSignerUserId = cursor.getColumnIndexOrThrow(Certs.SIGNER_UID);
+                mIndexMasterKeyId = cursor.getColumnIndexOrThrow(KeychainContract.Certs.MASTER_KEY_ID);
+                mIndexUserId = cursor.getColumnIndexOrThrow(KeychainContract.Certs.USER_ID);
+                mIndexRank = cursor.getColumnIndexOrThrow(KeychainContract.Certs.RANK);
+                mIndexType = cursor.getColumnIndexOrThrow(KeychainContract.Certs.TYPE);
+                mIndexVerified = cursor.getColumnIndexOrThrow(KeychainContract.Certs.VERIFIED);
+                mIndexSignerKeyId = cursor.getColumnIndexOrThrow(KeychainContract.Certs.KEY_ID_CERTIFIER);
+                mIndexSignerUserId = cursor.getColumnIndexOrThrow(KeychainContract.Certs.SIGNER_UID);
             }
         }
 
@@ -323,5 +375,4 @@ public class ViewKeyCertsFragment extends LoaderFragment
         }
 
     }
-
 }

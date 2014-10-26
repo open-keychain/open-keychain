@@ -78,8 +78,6 @@ public class ViewKeyActivity extends ActionBarActivity implements
     public static final String EXTRA_SELECTED_TAB = "selected_tab";
     public static final int TAB_MAIN = 0;
     public static final int TAB_SHARE = 1;
-    public static final int TAB_KEYS = 2;
-    public static final int TAB_CERTS = 3;
 
     // view
     private ViewPager mViewPager;
@@ -99,9 +97,6 @@ public class ViewKeyActivity extends ActionBarActivity implements
     private static final int NFC_SENT = 1;
 
     private static final int LOADER_ID_UNIFIED = 0;
-
-    private boolean mShowAdvancedTabs;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -129,7 +124,7 @@ public class ViewKeyActivity extends ActionBarActivity implements
         mSlidingTabLayout.setCustomTabColorizer(new TabColorizer() {
             @Override
             public int getIndicatorColor(int position) {
-                return position == TAB_CERTS || position == TAB_KEYS ? 0xFFFF4444 : 0xFFAA66CC;
+                return 0xFFAA66CC;
             }
 
             @Override
@@ -168,12 +163,7 @@ public class ViewKeyActivity extends ActionBarActivity implements
 
         initNfc(mDataUri);
 
-        mShowAdvancedTabs = Preferences.getPreferences(this).getShowAdvancedTabs();
-
         initTabs(mDataUri);
-        if (mShowAdvancedTabs) {
-            addAdvancedTabs(mDataUri);
-        }
 
         // switch to tab selected by extra
         mViewPager.setCurrentItem(switchToTab);
@@ -197,66 +187,11 @@ public class ViewKeyActivity extends ActionBarActivity implements
         mSlidingTabLayout.setViewPager(mViewPager);
     }
 
-    private void addAdvancedTabs(Uri dataUri) {
-        Bundle keyDetailsBundle = new Bundle();
-        keyDetailsBundle.putParcelable(ViewKeyKeysFragment.ARG_DATA_URI, dataUri);
-        mTabsAdapter.addTab(ViewKeyKeysFragment.class,
-                keyDetailsBundle, getString(R.string.key_view_tab_keys));
-
-        Bundle certBundle = new Bundle();
-        certBundle.putParcelable(ViewKeyCertsFragment.ARG_DATA_URI, dataUri);
-        mTabsAdapter.addTab(ViewKeyCertsFragment.class,
-                certBundle, getString(R.string.key_view_tab_certs));
-
-        // update layout after operations
-        mSlidingTabLayout.setViewPager(mViewPager);
-    }
-
-    private void removeAdvancedTabs() {
-        // before removing, switch to the first tab if necessary
-        if (mViewPager.getCurrentItem() >= TAB_KEYS) {
-            // remove _after_ switching to the main tab
-            mViewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-                @Override
-                public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-                }
-
-                @Override
-                public void onPageSelected(int position) {
-                }
-
-                @Override
-                public void onPageScrollStateChanged(int state) {
-                    if (ViewPager.SCROLL_STATE_SETTLING == state) {
-                        mTabsAdapter.removeTab(TAB_CERTS);
-                        mTabsAdapter.removeTab(TAB_KEYS);
-
-                        // update layout after operations
-                        mSlidingTabLayout.setViewPager(mViewPager);
-
-                        // remove this listener again
-//                        mViewPager.setOnPageChangeListener(null);
-                    }
-                }
-            });
-
-            mViewPager.setCurrentItem(TAB_MAIN);
-        } else {
-            mTabsAdapter.removeTab(TAB_CERTS);
-            mTabsAdapter.removeTab(TAB_KEYS);
-        }
-
-        // update layout after operations
-        mSlidingTabLayout.setViewPager(mViewPager);
-    }
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
         getMenuInflater().inflate(R.menu.key_view, menu);
 
-        MenuItem showAdvancedInfoItem = menu.findItem(R.id.menu_key_view_advanced);
-        showAdvancedInfoItem.setChecked(mShowAdvancedTabs);
         return true;
     }
 
@@ -279,14 +214,9 @@ public class ViewKeyActivity extends ActionBarActivity implements
                     return true;
                 }
                 case R.id.menu_key_view_advanced: {
-                    mShowAdvancedTabs = !mShowAdvancedTabs;
-                    Preferences.getPreferences(this).setShowAdvancedTabs(mShowAdvancedTabs);
-                    item.setChecked(mShowAdvancedTabs);
-                    if (mShowAdvancedTabs) {
-                        addAdvancedTabs(mDataUri);
-                    } else {
-                        removeAdvancedTabs();
-                    }
+                    Intent advancedIntent = new Intent(this, ViewKeyAdvancedActivity.class);
+                    advancedIntent.setData(mDataUri);
+                    startActivity(advancedIntent);
                 }
             }
         } catch (ProviderHelper.NotFoundException e) {
