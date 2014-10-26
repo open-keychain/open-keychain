@@ -938,6 +938,9 @@ public class ProviderHelper {
 
         progress.setProgress(R.string.progress_con_saving, 0, 100);
 
+        // The consolidate operation can never be cancelled!
+        progress.setPreventCancel();
+
         try {
 
             log.add(LogType.MSG_CON_SAVE_SECRET, indent);

@@ -472,8 +472,7 @@ public class KeychainIntentService extends IntentService implements Progressable
 
                 // Special: consolidate on secret key import (cannot be cancelled!)
                 if (result.mSecret > 0) {
-                    // cannot cancel from here on out!
-                    sendMessageToHandler(KeychainIntentServiceHandler.MESSAGE_PREVENT_CANCEL);
+                    // TODO move this into the import operation
                     providerHelper.consolidateDatabaseStep1(this);
                 }
 
@@ -674,6 +673,11 @@ public class KeychainIntentService extends IntentService implements Progressable
 
     public void setProgress(int progress, int max) {
         setProgress(null, progress, max);
+    }
+
+    @Override
+    public void setPreventCancel() {
+        sendMessageToHandler(KeychainIntentServiceHandler.MESSAGE_PREVENT_CANCEL);
     }
 
     private InputData createDecryptInputData(Bundle data) throws IOException, PgpGeneralException {

@@ -60,4 +60,10 @@ public class ProgressScaler implements Progressable {
         }
     }
 
+    @Override
+    public void setPreventCancel() {
+        if (mWrapped != null) {
+            mWrapped.setPreventCancel();
+        }
+    }
 }
