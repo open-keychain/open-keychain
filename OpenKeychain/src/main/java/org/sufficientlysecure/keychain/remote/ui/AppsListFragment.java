@@ -22,6 +22,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
+import android.content.res.Resources;
 import android.database.Cursor;
 import android.database.CursorJoiner;
 import android.database.MatrixCursor;
@@ -207,7 +208,7 @@ public class AppsListFragment extends ListFragment implements
                             null,
                             isInstalled(packageName),
                             1, // registered!
-                            0 // icon is retrieved later
+                            R.drawable.ic_launcher // icon is retrieved later
                     });
                     break;
                 }
@@ -229,7 +230,7 @@ public class AppsListFragment extends ListFragment implements
                             name,
                             isInstalled(packageName),
                             1, // registered!
-                            0 // icon is retrieved later
+                            R.drawable.ic_launcher // icon is retrieved later
                     });
                     break;
                 }
@@ -336,7 +337,11 @@ public class AppsListFragment extends ListFragment implements
                     text.setText(packageName);
                 } else {
                     text.setText(name);
-                    icon.setImageDrawable(getResources().getDrawable(iconResName));
+                    try {
+                        icon.setImageDrawable(getResources().getDrawable(iconResName));
+                    } catch (Resources.NotFoundException e1) {
+                        // silently fail
+                    }
                 }
             }
 
