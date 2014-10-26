@@ -41,22 +41,19 @@ import android.widget.TextView;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.compatibility.ClipboardReflection;
-import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
+import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.KeychainContract.Keys;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.ui.dialog.ShareNfcDialogFragment;
-import org.sufficientlysecure.keychain.util.Log;
+import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.ui.util.QrCodeUtils;
+import org.sufficientlysecure.keychain.util.Log;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-
-import edu.cmu.cylab.starslinger.exchange.ExchangeActivity;
-import edu.cmu.cylab.starslinger.exchange.ExchangeConfig;
 
 
 public class ViewKeyShareFragment extends LoaderFragment implements
@@ -77,11 +74,7 @@ public class ViewKeyShareFragment extends LoaderFragment implements
 
     ProviderHelper mProviderHelper;
 
-    private static final int QR_CODE_SIZE = 1000;
-
     private static final int LOADER_ID_UNIFIED = 0;
-
-    private static final int REQUEST_CODE_SAFESLINGER = 1;
 
     private Uri mDataUri;
 
@@ -122,31 +115,31 @@ public class ViewKeyShareFragment extends LoaderFragment implements
         mFingerprintShareButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                share(mDataUri, mProviderHelper, true, false, false);
+                share(mDataUri, mProviderHelper, true, false);
             }
         });
         mFingerprintClipboardButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                share(mDataUri, mProviderHelper, true, true, false);
+                share(mDataUri, mProviderHelper, true, true);
             }
         });
         mKeyShareButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                share(mDataUri, mProviderHelper, false, false, false);
+                share(mDataUri, mProviderHelper, false, false);
             }
         });
         mKeyClipboardButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                share(mDataUri, mProviderHelper, false, true, false);
+                share(mDataUri, mProviderHelper, false, true);
             }
         });
         mKeySafeSlingerButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                share(mDataUri, mProviderHelper, false, false, true);
+                startSafeSlinger(mDataUri);
             }
         });
         mNfcHelpButton.setOnClickListener(new View.OnClickListener() {
@@ -171,11 +164,24 @@ public class ViewKeyShareFragment extends LoaderFragment implements
         return root;
     }
 
-    private void share(Uri dataUri, ProviderHelper providerHelper, boolean fingerprintOnly,
-                       boolean toClipboard, boolean toSafeSlinger) {
+    private void startSafeSlinger(Uri dataUri) {
+        long keyId = 0;
         try {
-            String content = null;
-            byte[] keyBlob = null;
+            keyId = new ProviderHelper(getActivity())
+                    .getCachedPublicKeyRing(dataUri)
+                    .extractOrGetMasterKeyId();
+        } catch (PgpKeyNotFoundException e) {
+            Log.e(Constants.TAG, "key not found!", e);
+        }
+        Intent safeSlingerIntent = new Intent(getActivity(), SafeSlingerActivity.class);
+        safeSlingerIntent.putExtra(SafeSlingerActivity.EXTRA_MASTER_KEY_ID, keyId);
+        startActivityForResult(safeSlingerIntent, 0);
+    }
+
+    private void share(Uri dataUri, ProviderHelper providerHelper, boolean fingerprintOnly,
+                       boolean toClipboard) {
+        try {
+            String content;
             if (fingerprintOnly) {
                 byte[] data = (byte[]) providerHelper.getGenericData(
                         KeyRings.buildUnifiedKeyRingUri(dataUri),
@@ -188,13 +194,8 @@ public class ViewKeyShareFragment extends LoaderFragment implements
                 }
             } else {
                 Uri uri = KeychainContract.KeyRingData.buildPublicKeyRingUri(dataUri);
-                if (toSafeSlinger) {
-                    keyBlob = (byte[]) providerHelper.getGenericData(
-                            uri, KeychainContract.KeyRingData.KEY_RING_DATA, ProviderHelper.FIELD_TYPE_BLOB);
-                } else {
-                    // get public keyring as ascii armored string
-                    content = providerHelper.getKeyRingAsArmoredString(uri);
-                }
+                // get public keyring as ascii armored string
+                content = providerHelper.getKeyRingAsArmoredString(uri);
             }
 
             if (toClipboard) {
@@ -206,11 +207,6 @@ public class ViewKeyShareFragment extends LoaderFragment implements
                     message = getResources().getString(R.string.key_copied_to_clipboard);
                 }
                 Notify.showNotify(getActivity(), message, Notify.Style.OK);
-            } else if (toSafeSlinger) {
-                Intent slingerIntent = new Intent(getActivity(), ExchangeActivity.class);
-                slingerIntent.putExtra(ExchangeConfig.extra.USER_DATA, keyBlob);
-                slingerIntent.putExtra(ExchangeConfig.extra.HOST_NAME, Constants.SAFESLINGER_SERVER);
-                startActivityForResult(slingerIntent, REQUEST_CODE_SAFESLINGER);
             } else {
                 // Android will fail with android.os.TransactionTooLargeException if key is too big
                 // see http://www.lonestarprod.com/?p=34
@@ -243,52 +239,6 @@ public class ViewKeyShareFragment extends LoaderFragment implements
             Notify.showNotify(getActivity(), R.string.error_key_not_found, Notify.Style.ERROR);
         }
     }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        switch (requestCode) {
-            case REQUEST_CODE_SAFESLINGER:
-                switch (resultCode) {
-                    case ExchangeActivity.RESULT_EXCHANGE_OK:
-                        // import exchanged keys
-                        Intent importIntent = new Intent(getActivity(), ImportKeysActivity.class);
-                        importIntent.setAction(ImportKeysActivity.ACTION_IMPORT_KEY);
-                        importIntent.putExtra(ImportKeysActivity.EXTRA_KEY_BYTES, getSlingedKeys(data));
-                        startActivity(importIntent);
-                        break;
-                    case ExchangeActivity.RESULT_EXCHANGE_CANCELED:
-                        // handle canceled result
-                        // ...
-                        break;
-                }
-                break;
-        }
-        super.onActivityResult(requestCode, resultCode, data);
-    }
-
-    private static byte[] getSlingedKeys(Intent data) {
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-
-        Bundle extras = data.getExtras();
-        if (extras != null) {
-            byte[] d;
-            int i = 0;
-            do {
-                d = extras.getByteArray(ExchangeConfig.extra.MEMBER_DATA + i);
-                if (d != null) {
-                    try {
-                        out.write(d);
-                    } catch (IOException e) {
-                        Log.e(Constants.TAG, "IOException", e);
-                    }
-                    i++;
-                }
-            } while (d != null);
-        }
-
-        return out.toByteArray();
-    }
-
 
     private void showQrCodeDialog() {
         Intent qrCodeIntent = new Intent(getActivity(), QrCodeViewActivity.class);
