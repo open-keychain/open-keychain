@@ -89,7 +89,7 @@ public class CertifyKeySpinner extends KeySpinner {
             // If there is only one choice, pick it by default
             if (mAdapter.getCount() == 2) {
                 // preselect if key can certify
-                if (data.moveToPosition(1) && data.isNull(mIndexHasCertify)) {
+                if (data.moveToPosition(1) && !data.isNull(mIndexHasCertify)) {
                     setSelection(1);
                 }
             }
