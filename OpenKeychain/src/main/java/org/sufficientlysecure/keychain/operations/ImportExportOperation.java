@@ -458,30 +458,36 @@ public class ImportExportOperation extends BaseOperation {
 
                 // Create an output stream
                 ArmoredOutputStream arOutStream = new ArmoredOutputStream(outStream);
-                String version = PgpHelper.getVersionForHeader(mContext);
-                if (version != null) {
-                    arOutStream.setHeader("Version", version);
-                }
+                try {
+                    String version = PgpHelper.getVersionForHeader(mContext);
+                    if (version != null) {
+                        arOutStream.setHeader("Version", version);
+                    }
 
-                long keyId = cursor.getLong(0);
+                    long keyId = cursor.getLong(0);
 
-                log.add(LogType.MSG_EXPORT_PUBLIC, 1, KeyFormattingUtils.beautifyKeyId(keyId));
+                    log.add(LogType.MSG_EXPORT_PUBLIC, 1, KeyFormattingUtils.beautifyKeyId(keyId));
 
-                { // export public key part
-                    byte[] data = cursor.getBlob(1);
-                    arOutStream.write(data);
-                    arOutStream.close();
+                    { // export public key part
+                        byte[] data = cursor.getBlob(1);
+                        arOutStream.write(data);
 
-                    okPublic += 1;
-                }
+                        okPublic += 1;
+                    }
 
-                // export secret key part
-                if (exportSecret && cursor.getInt(3) > 0) {
-                    log.add(LogType.MSG_EXPORT_SECRET, 2, KeyFormattingUtils.beautifyKeyId(keyId));
-                    byte[] data = cursor.getBlob(2);
-                    arOutStream.write(data);
+                    // export secret key part
+                    if (exportSecret && cursor.getInt(3) > 0) {
+                        log.add(LogType.MSG_EXPORT_SECRET, 2, KeyFormattingUtils.beautifyKeyId(keyId));
+                        byte[] data = cursor.getBlob(2);
+                        arOutStream.write(data);
 
-                    okSecret += 1;
+                        okSecret += 1;
+                    }
+                } finally {
+                    // make sure this is closed
+                    if (arOutStream != null) {
+                        arOutStream.close();
+                    }
                 }
 
                 updateProgress(progress++, numKeys);
