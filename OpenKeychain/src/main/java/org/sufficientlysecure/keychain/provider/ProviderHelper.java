@@ -658,7 +658,7 @@ public class ProviderHelper {
 
                 // first, mark all keys as not available
                 ContentValues values = new ContentValues();
-                values.put(Keys.HAS_SECRET, 0);
+                values.put(Keys.HAS_SECRET, SecretKeyType.UNAVAILABLE.getNum());
                 mContentResolver.update(uri, values, null, null);
 
                 // then, mark exactly the keys we have available

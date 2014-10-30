@@ -49,8 +49,6 @@ import java.io.IOException;
  * - REAL. The value is a floating point value, stored as an 8-byte IEEE floating point number.
  * - TEXT. The value is a text string, stored using the database encoding (UTF-8, UTF-16BE or UTF-16LE).
  * - BLOB. The value is a blob of data, stored exactly as it was input.
- *
- * Adding BOOLEAN results in an INTEGER, but we keep BOOLEAN to indicate the usage!
  */
 public class KeychainDatabase extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "openkeychain.db";
@@ -93,12 +91,12 @@ public class KeychainDatabase extends SQLiteOpenHelper {
                 + KeysColumns.ALGORITHM + " INTEGER, "
                 + KeysColumns.FINGERPRINT + " BLOB, "
 
-                + KeysColumns.CAN_CERTIFY + " BOOLEAN, "
-                + KeysColumns.CAN_SIGN + " BOOLEAN, "
-                + KeysColumns.CAN_ENCRYPT + " BOOLEAN, "
-                + KeysColumns.CAN_AUTHENTICATE + " BOOLEAN, "
-                + KeysColumns.IS_REVOKED + " BOOLEAN, "
-                + KeysColumns.HAS_SECRET + " BOOLEAN, "
+                + KeysColumns.CAN_CERTIFY + " INTEGER, "
+                + KeysColumns.CAN_SIGN + " INTEGER, "
+                + KeysColumns.CAN_ENCRYPT + " INTEGER, "
+                + KeysColumns.CAN_AUTHENTICATE + " INTEGER, "
+                + KeysColumns.IS_REVOKED + " INTEGER, "
+                + KeysColumns.HAS_SECRET + " INTEGER, "
 
                 + KeysColumns.CREATION + " INTEGER, "
                 + KeysColumns.EXPIRY + " INTEGER, "
@@ -113,8 +111,8 @@ public class KeychainDatabase extends SQLiteOpenHelper {
                 + UserIdsColumns.MASTER_KEY_ID + " INTEGER, "
                 + UserIdsColumns.USER_ID + " TEXT, "
 
-                + UserIdsColumns.IS_PRIMARY + " BOOLEAN, "
-                + UserIdsColumns.IS_REVOKED + " BOOLEAN, "
+                + UserIdsColumns.IS_PRIMARY + " INTEGER, "
+                + UserIdsColumns.IS_REVOKED + " INTEGER, "
                 + UserIdsColumns.RANK+ " INTEGER, "
 
                 + "PRIMARY KEY(" + UserIdsColumns.MASTER_KEY_ID + ", " + UserIdsColumns.USER_ID + "), "
@@ -214,7 +212,7 @@ public class KeychainDatabase extends SQLiteOpenHelper {
             case 1:
                 // add has_secret for all who are upgrading from a beta version
                 try {
-                    db.execSQL("ALTER TABLE keys ADD COLUMN has_secret BOOLEAN");
+                    db.execSQL("ALTER TABLE keys ADD COLUMN has_secret INTEGER");
                 } catch (Exception e) {
                     // never mind, the column probably already existed
                 }
@@ -232,7 +230,7 @@ public class KeychainDatabase extends SQLiteOpenHelper {
                 // fall through
             case 4:
                 try {
-                    db.execSQL("ALTER TABLE keys ADD COLUMN can_authenticate BOOLEAN");
+                    db.execSQL("ALTER TABLE keys ADD COLUMN can_authenticate INTEGER");
                 } catch (Exception e) {
                     // never mind, the column probably already existed
                 }

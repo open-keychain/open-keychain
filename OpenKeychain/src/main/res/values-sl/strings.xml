@@ -2,6 +2,7 @@
 <resources>
   <!--GENERAL: Please put all strings inside quotes as described in example 1 on
     http://developer.android.com/guide/topics/resources/string-resource.html (scroll down to "Escaping apostrophes and quotes").-->
+  <string name="app_name">OpenKeychain</string>
   <!--title-->
   <string name="title_select_recipients">Izberi ključe</string>
   <string name="title_select_secret_key">Izberi zasebni ključ</string>
@@ -22,6 +23,7 @@
   <string name="title_encrypt_to_file">Šifriraj v datoteko</string>
   <string name="title_decrypt_to_file">Dešifriraj v datoteko</string>
   <string name="title_import_keys">Uvozi ključe</string>
+  <string name="title_add_keys">Dodaj ključe</string>
   <string name="title_export_key">Izvozi kluč</string>
   <string name="title_export_keys">Izvozi ključe</string>
   <string name="title_key_not_found">Ključ ni bil najden</string>
@@ -31,6 +33,7 @@
   <string name="title_help">Pomoč</string>
   <string name="title_log_display">Dnevnik</string>
   <string name="title_create_key">Ustvari kluč</string>
+  <string name="title_exchange_keys">Izmenjava ključev</string>
   <!--section-->
   <string name="section_user_ids">Identitete</string>
   <string name="section_keys">Podključi</string>
@@ -38,6 +41,7 @@
   <string name="section_defaults">Privzeto</string>
   <string name="section_advanced">Napredno</string>
   <string name="section_actions">Ravnanja</string>
+  <string name="section_share_key">Ključ</string>
   <string name="section_certification_key">Vaš ključ, uporabljan za overitev</string>
   <string name="section_key_server">Strežnik</string>
   <string name="section_fingerprint">Prstni odtis</string>
@@ -213,8 +217,13 @@
   <string name="error_nothing_import">Najden ni bil noben ključ!</string>
   <string name="error_generic_report_bug">Pripetila se je splošna napaka, prosimo ustvarite poročilo o \'hrošču\'.</string>
   <!--results shown after decryption/verification-->
+  <string name="decrypt_result_no_signature">Ni podpisano</string>
   <string name="decrypt_result_invalid_signature">Neveljaven podpis!</string>
+  <string name="decrypt_result_signature_expired_key">Ključ je pretekel!</string>
+  <string name="decrypt_result_action_show">Prikaži</string>
+  <string name="decrypt_result_action_Lookup">Poišči</string>
   <!--Add keys-->
+  <string name="add_keys_my_key">Moj ključ:</string>
   <!--progress dialogs, usually ending in '…'-->
   <string name="progress_done">Opravljeno.</string>
   <string name="progress_cancel">Prekliči</string>
