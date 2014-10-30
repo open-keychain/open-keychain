@@ -2,6 +2,7 @@
 <resources>
   <!--GENERAL: Please put all strings inside quotes as described in example 1 on
     http://developer.android.com/guide/topics/resources/string-resource.html (scroll down to "Escaping apostrophes and quotes").-->
+  <string name="app_name">OpenKeychain</string>
   <!--title-->
   <string name="title_select_recipients">Vybrat klíče</string>
   <string name="title_select_secret_key">Vybrat svůj klíč</string>
@@ -22,6 +23,7 @@
   <string name="title_encrypt_to_file">Zašifrovat do souboru</string>
   <string name="title_decrypt_to_file">Rozšifrovat do souboru</string>
   <string name="title_import_keys">Importovat klíče</string>
+  <string name="title_add_keys">Přidat klíče</string>
   <string name="title_export_key">Exportovat klíče</string>
   <string name="title_export_keys">Exportovat klíče</string>
   <string name="title_key_not_found">Klíč nebyl nalezen</string>
@@ -31,6 +33,7 @@
   <string name="title_help">Nápověda</string>
   <string name="title_log_display">Log</string>
   <string name="title_create_key">Vytvořit klíč</string>
+  <string name="title_advanced_key_info">Další informace ke klíči</string>
   <!--section-->
   <string name="section_user_ids">Identity</string>
   <string name="section_keys">Podklíče</string>
@@ -39,12 +42,15 @@
   <string name="section_defaults">Výchozí hodnoty</string>
   <string name="section_advanced">Pokročilé</string>
   <string name="section_actions">Akce</string>
+  <string name="section_share_key">Klíč</string>
   <string name="section_certification_key">Klíč použitý pro certifikaci</string>
+  <string name="section_upload_key">Synchronizovat klíč</string>
   <string name="section_key_server">Keyserver</string>
   <string name="section_fingerprint">Otisk</string>
   <string name="section_key_to_certify">Klíče k ověření</string>
   <string name="section_decrypt_files">Soubory</string>
   <string name="section_decrypt_text">Text</string>
+  <string name="section_certs">Certifikáty</string>
   <!--button-->
   <string name="btn_decrypt_verify_file">Dešifrovat, ověřit a uložit soubor</string>
   <string name="btn_decrypt_verify_message">Dešifrovat a ověřit zpávu</string>
@@ -73,6 +79,7 @@
   <string name="menu_export_key">Exportovat do souboru</string>
   <string name="menu_delete_key">Smazat klíč</string>
   <string name="menu_create_key">Vytvořit moje klíče</string>
+  <string name="menu_import_existing_key">Importovat ze souboru</string>
   <string name="menu_search">Hledat</string>
   <string name="menu_beam_preferences">Beam settings</string>
   <string name="menu_key_edit_cancel">Zrušit</string>
@@ -117,6 +124,7 @@
   <string name="label_name">Jméno</string>
   <string name="label_comment">Komentář</string>
   <string name="label_email">Email</string>
+  <string name="label_send_key">Synchronizovat s cloudem</string>
   <string name="label_fingerprint">Otisk</string>
   <string name="expiry_date_dialog_title">Nastavit datum expirace</string>
   <string name="label_preferred">upřednostněno</string>
@@ -219,8 +227,16 @@
   <string name="error_nothing_import">Žádný klíč nenalezen!</string>
   <string name="error_generic_report_bug">Nastala obecná chyba, prosím vytvořte nový bug report pro OpenKeychain.</string>
   <!--results shown after decryption/verification-->
+  <string name="decrypt_result_no_signature">Nepodepsáno</string>
   <string name="decrypt_result_invalid_signature">Špatný podpis!</string>
+  <string name="decrypt_result_signature_certified">Podepsáno</string>
+  <string name="decrypt_result_signature_missing_key">Neznámý veřejný klíč</string>
+  <string name="decrypt_result_encrypted">Zašifrováno</string>
+  <string name="decrypt_result_not_encrypted">Nezašifrováno</string>
+  <string name="decrypt_result_action_show">Zobrazit</string>
+  <string name="decrypt_result_action_Lookup">Vyhledat</string>
   <!--Add keys-->
+  <string name="add_keys_my_key">Můj klíč:</string>
   <!--progress dialogs, usually ending in '…'-->
   <string name="progress_done">Hotovo.</string>
   <string name="progress_cancel">Zrušit</string>
@@ -309,6 +325,7 @@
   <string name="import_import">Importovat vybrané klíče</string>
   <string name="import_qr_code_wrong">QR kód nerozpoznán! Zkuste to znovu prosím!</string>
   <string name="import_qr_code_too_short_fingerprint">Fingerprint je příliš krátký (&lt; 16 znaků)</string>
+  <string name="import_qr_code_button">Naskenovat QR kód</string>
   <!--Generic result toast-->
   <string name="view_log">Zobrazit log</string>
   <!--Import result toast-->

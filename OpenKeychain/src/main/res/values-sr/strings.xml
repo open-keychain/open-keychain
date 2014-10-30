@@ -35,6 +35,7 @@
   <string name="title_log_display">Дневник</string>
   <string name="title_create_key">Направи кључ</string>
   <string name="title_exchange_keys">Размена кључева</string>
+  <string name="title_advanced_key_info">Напредни подаци о кључу</string>
   <!--section-->
   <string name="section_user_ids">Идентитети</string>
   <string name="section_keys">Поткључеви</string>
@@ -53,6 +54,7 @@
   <string name="section_key_to_certify">Кључ за оверавање</string>
   <string name="section_decrypt_files">Фајлови</string>
   <string name="section_decrypt_text">Текст</string>
+  <string name="section_certs">Сертификати</string>
   <!--button-->
   <string name="btn_decrypt_verify_file">Дешифруј, овери и сачувај фајл</string>
   <string name="btn_decrypt_verify_message">Дешифруј и овери поруку</string>
@@ -81,6 +83,7 @@
   <string name="menu_export_key">Извези у фајл</string>
   <string name="menu_delete_key">Обриши кључ</string>
   <string name="menu_create_key">Направи ми кључ</string>
+  <string name="menu_import_existing_key">Увези из фајла</string>
   <string name="menu_search">Претрага</string>
   <string name="menu_beam_preferences">Поставке Снопа</string>
   <string name="menu_key_edit_cancel">Одустани</string>
@@ -257,6 +260,7 @@
   <string name="decrypt_result_not_encrypted">Није шифровано</string>
   <string name="decrypt_result_action_show">Прикажи</string>
   <string name="decrypt_result_action_Lookup">Потражи</string>
+  <string name="decrypt_invalid_text">Или је потпис неисправан или је кључ опозван/истекао. Не можете бити сигурни ко је написао текст. Желите ли свеједно да га прикажете?</string>
   <string name="decrypt_invalid_button">Свестан сам ризика, прикажи!</string>
   <!--Add keys-->
   <string name="add_keys_my_key">Мој кључ:</string>
@@ -475,6 +479,7 @@
     <item quantity="few">%d кључа изабрана.</item>
     <item quantity="other">%d кључева изабрано.</item>
   </plurals>
+  <string name="key_list_empty_text1">Нема нађених кључева!</string>
   <string name="key_list_filter_show_all">Прикажи све кључеве</string>
   <string name="key_list_filter_show_certified">Прикажи само оверене кључеве</string>
   <!--Key view-->
@@ -629,6 +634,15 @@
     <item quantity="few">Игноришем %s сертификата издата од непознатих јавних кључева</item>
     <item quantity="other">Игноришем %s сертификата издатих од непознатих јавних кључева</item>
   </plurals>
+  <string name="msg_ip_uid_classifying_zero">Разврставам корисничке ИД-ове (нису доступни поуздани кључеви)</string>
+  <plurals name="msg_ip_uid_classifying">
+    <item quantity="one">Разврставам корисничке ИД-ове (користим један поуздан кључ)</item>
+    <item quantity="few">Разврставам корисничке ИД-ове (користим %s поуздана кључа)</item>
+    <item quantity="other">Разврставам корисничке ИД-ове (користим %s поузданих кључева)</item>
+  </plurals>
+  <string name="msg_ip_uid_reorder">Поново разврставам корисничке ИД-ове</string>
+  <string name="msg_ip_uid_processing">Обрађујем кориснички ИД %s</string>
+  <string name="msg_ip_uid_revoked">Кориснички ИД је опозван</string>
   <string name="msg_is_bad_type_public">Покушај увоза јавног привеска као тајног. Ово је грешка, поднесите извештај!</string>
   <string name="msg_is_bad_type_uncanon">Покушај увоза привеска без каноникализације. Ово је грешка, поднесите извештај!</string>
   <!--Import Secret log entries-->
@@ -638,6 +652,7 @@
   <string name="msg_is_error_io_exc">Грешка кодирања привеска</string>
   <string name="msg_is_merge_public">Спајам увезене податке у постојећи јавни привезак</string>
   <string name="msg_is_merge_secret">Спајам увезене податке у постојећи јавни привезак</string>
+  <string name="msg_is_merge_special">Спајам податке сопствених сертификата из јавног привеска</string>
   <string name="msg_is_pubring_generate">Генеришем јавни привезак од тајног привеска</string>
   <string name="msg_is_subkey_nonexistent">Поткључ %s није доступан у тајном кључу</string>
   <string name="msg_is_subkey_ok">Тајни поткључ %d означен као доступан</string>
@@ -650,6 +665,7 @@
   <string name="msg_kc_public">Каноникализујем јавни привезак %s</string>
   <string name="msg_kc_secret">Каноникализујем тајни привезак %s</string>
   <string name="msg_kc_error_v3">Ово је кључ издања 3 ОпенПГП-а, које је застарело и више није подржано!</string>
+  <string name="msg_kc_error_no_uid">Привезак нема исправних корисничких ИД-ова!</string>
   <string name="msg_kc_error_master_algo">Главни кључ користи непознат алгоритам (%s)!</string>
   <string name="msg_kc_error_dup_key">Поткључ %s се појављује два пута у привеску. Привезак је деформисан, не увозим!</string>
   <string name="msg_kc_master">Обрађујем главни кључ</string>
@@ -657,6 +673,7 @@
   <string name="msg_kc_revoke_bad_local">Уклањам сертификат опозива привеска са заставицом „локални“</string>
   <string name="msg_kc_revoke_bad_time">Уклањам сертификат опозива привеска са временском ознаком у будућности</string>
   <string name="msg_kc_revoke_bad_type">Уклањам сертификат главног кључа непознатог типа (%s)</string>
+  <string name="msg_kc_revoke_bad_type_uid">Уклањам сертификат корисничког ИД-а са погрешног места</string>
   <string name="msg_kc_revoke_bad">Уклањам лош сертификат опозива привеска</string>
   <string name="msg_kc_revoke_dup">Уклањам сувишни сертификат опозива привеска</string>
   <string name="msg_kc_sub">Обрађујем поткључ %s</string>
@@ -689,6 +706,18 @@
     <item quantity="few">Каноникализација привеска је успела, уклоњена %d сувишна сертификата</item>
     <item quantity="other">Каноникализација привеска је успела, уклоњено %d сувишних сертификата</item>
   </plurals>
+  <string name="msg_kc_uid_bad_err">Уклањам лош сопствени сертификат за кориснички ИД „%s“</string>
+  <string name="msg_kc_uid_bad_local">Уклањам сертификат корисничког ИД-а са заставицом „локални“</string>
+  <string name="msg_kc_uid_bad_time">Уклањам кориснички ИД са временском ознаком у будућности</string>
+  <string name="msg_kc_uid_bad_type">Уклањам сертификат корисничког ИД-а непознатог типа (%s)</string>
+  <string name="msg_kc_uid_bad">Уклањам лош сопствени сертификат за кориснички ИД „%s“</string>
+  <string name="msg_kc_uid_cert_dup">Уклањам застарели сопствени сертификат за кориснички ИД „%s“</string>
+  <string name="msg_kc_uid_foreign">Уклањам страни сертификат корисничког ИД-а од „%s“</string>
+  <string name="msg_kc_uid_revoke_dup">Уклањам сувишни сертификат опозива за кориснички ИД „%s“</string>
+  <string name="msg_kc_uid_revoke_old">Уклањам застарели сертификат опозива за кориснички ИД „%s“</string>
+  <string name="msg_kc_uid_no_cert">Није нађен исправан сопствени сертификат за кориснички ИД „%s“, уклањам из прстена</string>
+  <string name="msg_kc_uid_remove">Уклањам неисправан кориснички ИД „%s“</string>
+  <string name="msg_kc_uid_dup">Уклањам дупли кориснички ИД „%s“. Тајни кључ је садржао два. Ово може да доведе до недостајућих сертификата!</string>
   <string name="msg_kc_uid_warn_encoding">ИД корисника није потврђен као УТФ-8!</string>
   <!--Keyring merging log entries-->
   <string name="msg_mg_error_secret_dummy">Нађен је нови јавни поткључ, али генерисање лажног тајног поткључа није подржано!</string>
@@ -702,6 +731,7 @@
   <!--createSecretKeyRing-->
   <string name="msg_cr">Генеришем нови главни кључ</string>
   <string name="msg_cr_error_no_master">Нису наведени аргументи за главни кључ!</string>
+  <string name="msg_cr_error_no_user_id">Привесци морају садржати бар један кориснички ИД!</string>
   <string name="msg_cr_error_no_certify">Главни кључ мора имати заставицу овере!</string>
   <string name="msg_cr_error_null_expiry">Датум истицања не може бити „исти као пре“ на стварању кључа. Ово је грешка у програмирању, поднесите извештај о грешци!</string>
   <string name="msg_cr_error_keysize_512">Величина кључа мора бити већа или једнака 512!</string>
@@ -720,6 +750,9 @@
   <string name="msg_mf_error_keyid">Нема ИД-а кључа. Ово је унутрашња грешка, поднесите извештај о грешци!</string>
   <string name="msg_mf_error_integrity">Унутрашња грешка, провера интегритета није успела!</string>
   <string name="msg_mf_error_master_none">Нема главног сертификата на којем треба да се изврши радња! (Сви су опозвани?)</string>
+  <string name="msg_mf_error_noexist_primary">Наведен је лош примарни кориснички ИД!</string>
+  <string name="msg_mf_error_noexist_revoke">Наведен је лош кориснички ИД за опозив!</string>
+  <string name="msg_mf_error_revoked_primary">Опозвани кориснички ИД-ови не могу бити примарни!</string>
   <string name="msg_mf_error_null_expiry">Датум истицања не може бити „исти као пре“ на стварању поткључа. Ово је грешка у програмирању, поднесите извештај о грешци!</string>
   <string name="msg_mf_error_passphrase_master">Кобна грешка дешифровања главног кључа! Ово је вероватно грешка у програмирању, поднесите извештај о грешци!</string>
   <string name="msg_mf_error_pgp">Унутрашња ПГП грешка!</string>
@@ -729,6 +762,8 @@
   <string name="msg_mf_passphrase_key">Поново шифрујем поткључ %s новом лозинком</string>
   <string name="msg_mf_passphrase_empty_retry">Постављање нове лозинке није успело, покушавам поново са празном старом лозинком</string>
   <string name="msg_mf_passphrase_fail">Не могу да променим лозинку за поткључ! (Да ли се разликује од оне у осталим кључевима?)</string>
+  <string name="msg_mf_primary_replace_old">Замењујем сертификат претходног примарног корисничког ИД-а</string>
+  <string name="msg_mf_primary_new">Генеришем нови сертификат за нови примарни кориснички ИД</string>
   <string name="msg_mf_subkey_change">Модификујем поткључ %s</string>
   <string name="msg_mf_error_subkey_missing">Покушај радње на недостајућем поткључу %s!</string>
   <string name="msg_mf_subkey_new">Додајем нови поткључ типа %s</string>
@@ -737,6 +772,9 @@
   <string name="msg_mf_subkey_revoke">Опозивам поткључ %s</string>
   <string name="msg_mf_subkey_strip">Огољавам поткључ %s</string>
   <string name="msg_mf_success">Привезак успешно модификован</string>
+  <string name="msg_mf_uid_add">Додајем кориснички ИД %s</string>
+  <string name="msg_mf_uid_primary">Постављам примарни кориснички ИД на %s</string>
+  <string name="msg_mf_uid_revoke">Опозивам кориснички ИД %s</string>
   <string name="msg_mf_uid_error_empty">Кориснички ИД не смије бити празан!</string>
   <string name="msg_mf_unlock_error">Грешка откључавања привеска!</string>
   <string name="msg_mf_unlock">Откључавам привезак</string>
@@ -839,9 +877,16 @@
   <string name="msg_se">Почињем радњу потписивања и/или шифровања</string>
   <string name="msg_se_symmetric">Припремам симетрично шифровање</string>
   <string name="msg_crt_certifying">Генеришем сертификате</string>
+  <string name="msg_crt_certify_all">Оверавам све корисничке ИД-ове за кључ %s</string>
+  <plurals name="msg_crt_certify_some">
+    <item quantity="one">Оверавам један кориснички ИД за кључ %2$s</item>
+    <item quantity="few">Оверавам %1$d корисничка ИД-а за кључ %2$s</item>
+    <item quantity="other">Оверавам %1$d корисничких ИД-ова за кључ %2$s</item>
+  </plurals>
   <string name="msg_crt_error_master_not_found">Главни кључ није нађен!</string>
   <string name="msg_crt_error_nothing">Нема оверених кључева!</string>
   <string name="msg_crt_error_unlock">Грешка откључавања главног кључа!</string>
+  <string name="msg_crt_error_divert">Оверавање помоћу НФЦ-а (још) није подржано!</string>
   <string name="msg_crt">Оверавам привеске</string>
   <string name="msg_crt_master_fetch">Добављам главни кључ за оверавање</string>
   <string name="msg_crt_save">Уписујем оверени кључ %s</string>
@@ -869,10 +914,17 @@
   <string name="msg_import_merge">Спајам добављене податке</string>
   <string name="msg_import_error">Радња увоза није успела!</string>
   <string name="msg_import_partial">Радња увоза је успела, са грешкама!</string>
+  <string name="msg_import_success">Радња увоза је успела!</string>
+  <plurals name="msg_export">
+    <item quantity="one">Извозим један кључ</item>
+    <item quantity="few">Извозим %d кључа</item>
+    <item quantity="other">Извозим %d кључева</item>
+  </plurals>
   <string name="msg_export_all">Извозим све кључеве</string>
   <string name="msg_export_public">Извозим јавни кључ %s</string>
   <string name="msg_export_secret">Извозим тајни кључ %s</string>
   <string name="msg_export_error_no_file">Није наведено име фајла!</string>
+  <string name="msg_export_error_fopen">Грешка отварања фајла!</string>
   <string name="msg_export_error_no_uri">Није наведен УРИ!</string>
   <string name="msg_export_error_uri_open">Грешка отварања УРИ тока!</string>
   <string name="msg_export_error_storage">Складиште није спремно за уписивање!</string>
@@ -901,6 +953,7 @@
   </plurals>
   <string name="msg_acc_saved">Налог је сачуван</string>
   <string name="msg_download_success">Успешно преузето!</string>
+  <string name="msg_download_no_valid_keys">Нема исправних кључева у фајлу/клипборду!</string>
   <string name="msg_download_no_pgp_parts">УРАДИТИ: множине!</string>
   <plurals name="error_import_non_pgp_part">
     <item quantity="one">део учитаног фајла је исправан ОпенПГП објекат али није ОпенПГП кључ</item>
@@ -946,8 +999,10 @@
   <string name="error_no_file_selected">Изаберите бар један фајл за шифровање!</string>
   <string name="error_multi_not_supported">Упис више фајлова није подржан. Ово је ограничење у текућем издању Андроида.</string>
   <string name="key_colon">Кључ:</string>
+  <string name="exchange_description">Да бисте почели размену кључева, са десне стране изаберите број учесника и додирните дугме „Почни размену“.\n\nБиће вам постављено још два питања да би се осигурало да су само исправни учесници у размени и да су њихови отисци тачни.</string>
   <!--First Time-->
   <string name="first_time_text1">Преузмите вашу приватност помоћу Отвореног кључарника!</string>
   <string name="first_time_create_key">Направи ми кључ</string>
+  <string name="first_time_import_key">Увези из фајла</string>
   <string name="first_time_skip">Прескочи поставу</string>
 </resources>

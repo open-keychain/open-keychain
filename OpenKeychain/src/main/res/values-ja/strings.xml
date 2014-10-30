@@ -24,6 +24,7 @@
   <string name="title_encrypt_to_file">暗号化してファイルに</string>
   <string name="title_decrypt_to_file">復号化してファイルに</string>
   <string name="title_import_keys">鍵のインポート</string>
+  <string name="title_add_keys">鍵の追加</string>
   <string name="title_export_key">鍵のエクスポート</string>
   <string name="title_export_keys">複数鍵のエクスポート</string>
   <string name="title_key_not_found">鍵が見当りません</string>
@@ -33,6 +34,8 @@
   <string name="title_help">ヘルプ</string>
   <string name="title_log_display">ログ</string>
   <string name="title_create_key">鍵の生成</string>
+  <string name="title_exchange_keys">鍵の交換</string>
+  <string name="title_advanced_key_info">鍵の詳細情報</string>
   <!--section-->
   <string name="section_user_ids">ユーザID</string>
   <string name="section_keys">副鍵</string>
@@ -40,13 +43,18 @@
   <string name="section_general">一般</string>
   <string name="section_defaults">デフォルト</string>
   <string name="section_advanced">拡張</string>
+  <string name="section_passphrase_cache">パスフレーズキャッシュ</string>
+  <string name="section_certify">検証</string>
   <string name="section_actions">アクション</string>
+  <string name="section_share_key">鍵</string>
   <string name="section_certification_key">あなたの鍵を証明に利用します</string>
+  <string name="section_upload_key">鍵の同期</string>
   <string name="section_key_server">鍵サーバ</string>
   <string name="section_fingerprint">指紋</string>
   <string name="section_key_to_certify">鍵は検証されています。</string>
   <string name="section_decrypt_files">ファイル</string>
   <string name="section_decrypt_text">テキスト</string>
+  <string name="section_certs">証明</string>
   <!--button-->
   <string name="btn_decrypt_verify_file">復号化と検証、そしてファイルの保存</string>
   <string name="btn_decrypt_verify_message">メッセージの復号化と検証</string>
@@ -75,6 +83,7 @@
   <string name="menu_export_key">ファイルへのエクスポート</string>
   <string name="menu_delete_key">鍵の削除</string>
   <string name="menu_create_key">自分の鍵の生成</string>
+  <string name="menu_import_existing_key">ファイルからインポート</string>
   <string name="menu_search">検索</string>
   <string name="menu_beam_preferences">Beamの設定</string>
   <string name="menu_key_edit_cancel">キャンセル</string>
@@ -98,6 +107,7 @@
   <string name="label_write_version_header">他の人にあなたがOpenKeychain使用していることを知ってもらいましょう</string>
   <string name="label_write_version_header_summary">OpenPGPの 署名、暗号文、そしてエクスポートした鍵に  \'OpenKeychain v2.7\' と書くようになりました</string>
   <string name="label_use_default_yubikey_pin">Yubikey PINをデフォルトで使用する</string>
+  <string name="label_use_num_keypad_for_yubikey_pin">Yubikey PINで数字キーパッドを使う</string>
   <string name="label_label_use_default_yubikey_pin_summary"> NFC越しにYubikeyにアクセスするためデフォルトのPIN (123456) を使用する</string>
   <string name="label_asymmetric_from">署名:</string>
   <string name="label_to">暗号化:</string>
@@ -106,6 +116,7 @@
   <string name="label_encryption_algorithm">暗号化アルゴリズム</string>
   <string name="label_hash_algorithm">ハッシュアルゴリズム</string>
   <string name="label_symmetric">パスフレーズで暗号化</string>
+  <string name="label_passphrase_cache_ttl">キャッシュ時間</string>
   <string name="label_passphrase_cache_subs">副鍵のパスフレーズをキャッシュ</string>
   <string name="label_message_compression">メッセージの圧縮</string>
   <string name="label_file_compression">ファイルの圧縮</string>
@@ -120,6 +131,7 @@
   <string name="label_name">名前</string>
   <string name="label_comment">コメント</string>
   <string name="label_email">Eメールアドレス</string>
+  <string name="label_send_key">クラウドによる同期</string>
   <string name="label_fingerprint">指紋</string>
   <string name="expiry_date_dialog_title">期限日時を設定</string>
   <string name="label_first_keyserver_is_used">(リストの最初の鍵サーバが優先されます)</string>
@@ -242,7 +254,16 @@
   <string name="error_contacts_key_id_missing">連絡帳から鍵IDの回収が失敗しました!</string>
   <string name="error_generic_report_bug">一般エラーが発生しました、この新しいバグの情報をOpenKeychainプロジェクトに送ってください</string>
   <!--results shown after decryption/verification-->
+  <string name="decrypt_result_no_signature">未署名</string>
   <string name="decrypt_result_invalid_signature">不正な署名です!</string>
+  <string name="decrypt_result_signature_uncertified">署名(未検証!)</string>
+  <string name="decrypt_result_signature_certified">署名</string>
+  <string name="decrypt_result_signature_expired_key">鍵が期限切れ!</string>
+  <string name="decrypt_result_signature_revoked_key">鍵が破棄されています!</string>
+  <string name="decrypt_result_signature_missing_key">不明な公開鍵</string>
+  <string name="decrypt_result_encrypted">暗号化</string>
+  <string name="decrypt_result_not_encrypted">未暗号化</string>
+  <string name="decrypt_result_action_show">表示</string>
   <!--Add keys-->
   <!--progress dialogs, usually ending in '…'-->
   <string name="progress_done">完了。</string>

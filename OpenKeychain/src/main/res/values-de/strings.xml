@@ -34,6 +34,8 @@
   <string name="title_help">Hilfe</string>
   <string name="title_log_display">Log</string>
   <string name="title_create_key">Schlüssel erzeugen</string>
+  <string name="title_exchange_keys">Schlüssel austauschen</string>
+  <string name="title_advanced_key_info">Erweiterte Schlüsselinformation</string>
   <!--section-->
   <string name="section_user_ids">Identitäten</string>
   <string name="section_keys">Unterschlüssel</string>
@@ -52,6 +54,7 @@
   <string name="section_key_to_certify">Zu beglaubigender Schlüssel</string>
   <string name="section_decrypt_files">Dateien</string>
   <string name="section_decrypt_text">Text</string>
+  <string name="section_certs">Zertifikate</string>
   <!--button-->
   <string name="btn_decrypt_verify_file">Datei entschlüsseln, verifizieren und speichern</string>
   <string name="btn_decrypt_verify_message">Entschlüsseln und verifizieren</string>
@@ -80,6 +83,7 @@
   <string name="menu_export_key">In Datei exportieren</string>
   <string name="menu_delete_key">Schlüssel löschen</string>
   <string name="menu_create_key">Erzeuge meinen Schlüssel</string>
+  <string name="menu_import_existing_key">Von Datei importieren</string>
   <string name="menu_search">Suchen</string>
   <string name="menu_beam_preferences">Beam-Einstellungen</string>
   <string name="menu_key_edit_cancel">Abbrechen</string>
@@ -127,6 +131,7 @@
   <string name="label_name">Name</string>
   <string name="label_comment">Kommentar</string>
   <string name="label_email">E-Mail</string>
+  <string name="label_send_key">Mit der Cloud synchronisieren</string>
   <string name="label_fingerprint">Fingerabdruck</string>
   <string name="expiry_date_dialog_title">Ablaufdatum festsetzen</string>
   <string name="label_first_keyserver_is_used">(Oberster Schlüsselserver wird bevorzugt)</string>
@@ -302,7 +307,7 @@
   <string name="progress_deleting_securely">\'%s\' wird sicher gelöscht…</string>
   <string name="progress_deleting">Lösche Schlüssel</string>
   <string name="progress_con_saving">Zusammenführung: Speiche in Cache...</string>
-  <string name="progress_con_reimport">Zusammenfühung: Am wieder importieren...</string>
+  <string name="progress_con_reimport">Zusammenführung: Reimportiere...</string>
   <!--action strings-->
   <string name="hint_keyserver_search_hint">Name/Email/Schlüssel ID...</string>
   <string name="hint_cloud_search_hint">Name/Email/Nachweis/Schlüssel...</string>
@@ -346,6 +351,7 @@
   <string name="import_import">Ausgewählte Schlüssel importieren</string>
   <string name="import_qr_code_wrong">Falsch formatierter QR-Code! Bitte erneut versuchen!</string>
   <string name="import_qr_code_too_short_fingerprint">Der Fingerabdruck ist zu kurz (&lt; 16 Zeichen)</string>
+  <string name="import_qr_code_button">QR-Code scannen</string>
   <!--Generic result toast-->
   <string name="view_log">Log ansehen</string>
   <string name="with_warnings">, mit Warnungen</string>
@@ -428,6 +434,7 @@
     <item quantity="one">1 Schlüssel ausgewählt.</item>
     <item quantity="other">%d Schlüssel ausgewählt.</item>
   </plurals>
+  <string name="key_list_empty_text1">Keine Schlüssel gefunden!</string>
   <string name="key_list_filter_show_all">Alle Schlüssel anzeigen</string>
   <string name="key_list_filter_show_certified">Nur beglaubigte Schlüssel anzeigen</string>
   <!--Key view-->
@@ -543,6 +550,7 @@
   <string name="msg_ip_master_flags_xxsx">Haupt-Attribute: signieren</string>
   <string name="msg_ip_master_flags_xxxa">Haupt-Attribute: authentifizieren</string>
   <string name="msg_ip_master_flags_xxxx">Haupt-Attribute: Keine</string>
+  <string name="msg_ip_merge_public">Füge importierte Daten in existierend öffentlichen Schlüsselbund ein</string>
   <string name="msg_ip_subkey">Unterschlüssel %s wird bearbeitet</string>
   <string name="msg_ip_subkey_expired">Unterschlüssel am %s abgelaufen</string>
   <string name="msg_ip_subkey_expires">Unterschlüssel läuft am %s ab</string>
@@ -593,6 +601,7 @@
   <string name="msg_is_success">Geheimer Schlüsselbund erfolgreich importiert</string>
   <!--Keyring Canonicalization log entries-->
   <string name="msg_kc_error_v3">Dies ist ein OpenPGP Schlüssel der Version 3, welche hinfällig sind und nicht weiter unterstützt werden!</string>
+  <string name="msg_kc_error_no_uid">Schlüsselbund hat keine gültigen Benutzerkennungen!</string>
   <string name="msg_kc_error_master_algo">Der Hauptschlüssel verwendet einen unbekannten (%s) Algorithmus!</string>
   <string name="msg_kc_master">Verarbeite Hauptschlüssel</string>
   <string name="msg_kc_revoke_bad_err">Entferne fehlerhaftes Schlüsselbund Widerrufszertifikat</string>
@@ -626,6 +635,7 @@
   <string name="msg_mg_secret">Vereine in geheimen Schlüsselring %s</string>
   <string name="msg_mg_new_subkey">Neuer Unterschlüssel %s wird hinzugefügt</string>
   <string name="msg_mg_found_new">%s neue Beglaubigungen in Schlüsselbund gefunden</string>
+  <string name="msg_mg_unchanged">Nichts zum zusammenführen</string>
   <!--createSecretKeyRing-->
   <string name="msg_cr">Neuer Masterschlüssel wird erzeugt</string>
   <string name="msg_cr_error_no_master">Keine Hauptschlüsseloptionen definiert!</string>
@@ -647,6 +657,7 @@
   <string name="msg_mf_error_keyid">Keine Schlüssel ID. Dies ist ein interner Fehler, bitte reiche einen Fehlerbericht ein.</string>
   <string name="msg_mf_error_integrity">Interner Fehler, Integritätsprüfung fehlgeschlagen!</string>
   <string name="msg_mf_error_master_none">Keine Hauptbeglaubigung zum arbeiten gefunden! (Alle widerrufen?)</string>
+  <string name="msg_mf_error_noexist_primary">Falsche primäre Benutzerkennung festgelegt!</string>
   <string name="msg_mf_error_null_expiry">Ablaufdatum kann bei Unterschlüsselerstellung nicht \'gleiche wie vorher\' sein. Das ist ein Programmierfehler, bitte reiche einen Fehlerbericht ein.</string>
   <string name="msg_mf_error_passphrase_master">Schwerer Fehler beim Entschlüsseln des Hauptschlüssels! Dies ist wahrscheinlich ein Programmierfehler, bitte reiche einen Fehlerbericht ein.</string>
   <string name="msg_mf_error_pgp">Interner PGP-Fehler!</string>
@@ -682,18 +693,18 @@
   <string name="msg_con_error_db">Fehler bei der Öffnung der Datenbank!</string>
   <string name="msg_con_error_io_public">Ein-/Ausgabefehler beim Schreiben von öffentlichen Schlüsseln in den Cache!</string>
   <string name="msg_con_error_io_secret">Ein-/Ausgabefehler beim Schreiben von geheimen Schlüsseln in den Cache!</string>
-  <string name="msg_con_error_public">Fehler beim wieder importieren der öffentlichen Schlüssel!</string>
-  <string name="msg_con_error_secret">Fehler beim wieder importieren der geheimen Schlüssel!</string>
+  <string name="msg_con_error_public">Fehler beim reimportieren der öffentlichen Schlüssel!</string>
+  <string name="msg_con_error_secret">Fehler beim reimportieren der geheimen Schlüssel!</string>
   <plurals name="msg_con_reimport_public">
     <item quantity="one">Wiederimport eines öffentlichen Schlüssels </item>
-    <item quantity="other">Wiederimport von %d öffentlichen Schlüsseln</item>
+    <item quantity="other">Reimport von %d öffentlichen Schlüsseln</item>
   </plurals>
-  <string name="msg_con_reimport_public_skip">Keine öffentlichen Schlüssel für wiederimport, überspringe...</string>
+  <string name="msg_con_reimport_public_skip">Keine öffentlichen Schlüssel für reimport, überspringe...</string>
   <plurals name="msg_con_reimport_secret">
     <item quantity="one">Wiederimport eines geheimen Schlüssels</item>
-    <item quantity="other">Wiederimport von %d geheimen Schlüsseln</item>
+    <item quantity="other">Reimport von %d geheimen Schlüsseln</item>
   </plurals>
-  <string name="msg_con_reimport_secret_skip">Keine geheimen Schlüssel für Wiederimport, überspringe...</string>
+  <string name="msg_con_reimport_secret_skip">Keine geheimen Schlüssel für reimport, überspringe...</string>
   <string name="msg_con_warn_delete_public">Fehler beim Löschen der Öffentlichen Cache-Datei</string>
   <string name="msg_con_warn_delete_secret">Fehler beim Löschen der Geheimen Cache-Datei</string>
   <!--Other messages used in OperationLogs-->
@@ -758,6 +769,8 @@
   <string name="msg_se_sigcrypting">Verschlüssele Daten mit Signatur</string>
   <string name="msg_se">Starte Signier- und/oder Verschlüsselungsvorgang</string>
   <string name="msg_se_symmetric">Bereite symmetrische Verschlüsselung vor</string>
+  <string name="msg_crt_certifying">Zertifizierungen werden erzeugt</string>
+  <string name="msg_crt_error_master_not_found">Hauptschlüssel nicht gefunden!</string>
   <string name="msg_crt_error_nothing">Keine beglaubigten Schlüssel!</string>
   <string name="msg_crt">Schlüsselbund wird beglaubigt</string>
   <string name="msg_crt_success">Identitäten erfolgreich beglaubigt</string>
@@ -769,6 +782,7 @@
     <item quantity="one">Schlüssel wird importiert</item>
     <item quantity="other">%d Schlüssel werden importiert</item>
   </plurals>
+  <string name="msg_import_keyserver">Schlüsselserver %s wird verwendet</string>
   <string name="msg_import_error">Importieren fehlgeschlagen!</string>
   <string name="msg_import_partial">Importvorgang erfolgreich, mit Fehlern!</string>
   <string name="msg_export_all">Exportiere alle Schlüssel</string>
@@ -810,6 +824,7 @@
   <string name="unknown_uid">&lt;unbekannt&gt;</string>
   <string name="empty_certs">Keine Beglaubigungen für diesen Schlüssel</string>
   <string name="certs_text">Nur geprüfte Eigenbeglaubigungen und geprüfte Beglaubigungen welche mit deinen Schlüsseln erstellt wurden werden hier angezeigt.</string>
+  <string name="section_uids_to_certify">Identitäten für</string>
   <string name="label_revocation">Widerrufsgrund</string>
   <string name="label_verify_status">Verifikationsstatus</string>
   <string name="label_cert_type">Typ</string>
@@ -833,5 +848,6 @@
   <!--First Time-->
   <string name="first_time_text1">Hol dir deine Privatsphäre mit OpenKeychain zurück!</string>
   <string name="first_time_create_key">Erzeuge meinen Schlüssel</string>
+  <string name="first_time_import_key">Von Datei importieren</string>
   <string name="first_time_skip">Setup überspringen</string>
 </resources>

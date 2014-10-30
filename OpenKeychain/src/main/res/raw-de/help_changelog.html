@@ -2,9 +2,14 @@
 <head></head>
 <body>
 
+<h2>3.1.1</h2>
+<ul>
+<li>Fix key export to files (they were written partially)</li>
+<li>Fix crash on Android 2.3</li>
+</ul>
 <h2>3.1</h2>
 <ul>
-<li>Fix crash on Android 5</li>
+<li>Absturz auf Android 5 behoben</li>
 <li>New certify screen</li>
 <li>Secure Exchange directly from key list (SafeSlinger library)</li>
 <li>New QR Code program flow</li>
@@ -20,20 +25,20 @@
 </ul>
 <h2>3.0</h2>
 <ul>
-<li>Volle Unterstützung für Yubikey Signatur Generierung und Entschlüsselung!</li>
+<li>Volle Unterstützung für Yubikey-Signaturerzeugung und Entschlüsselung!</li>
 <li>Kompatible, installierbare Apps in der Apps Liste anzeigen.</li>
 <li>Neues Design der Entschlüsselungsseite</li>
 <li>Many fixes for key import, also fixes stripped keys</li>
 <li>Honor and display key authenticate flags</li>
 <li>Benutzeroberfläche zum Erzeugen benutzerdefinierter Schlüssel</li>
 <li>Fixing user id revocation certificates</li>
-<li>Neue Suche in der Cloud (sucht über traditionelle Keyserver und über keybase.io)</li>
+<li>Neue Suche in der Cloud (sucht über traditionelle Schlüsselserver und über keybase.io)</li>
 <li>Support for stripping keys inside OpenKeychain</li>
 </ul>
 <h2>2.9.2</h2>
 <ul>
 <li>Defekte Schlüssel aus 2.9.1 behoben</li>
-<li>Yubikey Entschlüsselung funktioniert nun durch die API</li>
+<li>Yubikey-Entschlüsselung funktioniert nun über die API</li>
 </ul>
 <h2>2.9.1</h2>
 <ul>
@@ -45,72 +50,72 @@
 <li>Verwendung von gekürzten Schlüsseln behoben</li>
 <li>Standardmäßig SHA256 aufgrund von Kompatibilität</li>
 <li>Änderungen an der Intent API, siehe https://github.com/open-keychain/open-keychain/wiki/Intent-API</li>
-<li>Das OpenPGP API kann nun mit widerrufenen/abgelaufenen Schlüsseln umgehen und liefert alle User IDs zurück</li>
+<li>Das OpenPGP-API kann nun mit widerrufenen/abgelaufenen Schlüsseln umgehen und liefert alle Benutzerkennungen zurück</li>
 </ul>
 <h2>2.9</h2>
 <ul>
-<li>Abstürze, welche mit v2.8 eingeführt wurden, behoben</li>
-<li>Experimentelle ECC Unterstützung</li>
+<li>Mit v2.8 eingeführte Abstürze behoben</li>
+<li>Experimentelle ECC-Unterstützung</li>
 <li>Experimentelle Yubikey Unterstützung (Nur Signieren mit importierten Schlüsseln)</li>
 </ul>
 <h2>2.8</h2>
 <ul>
-<li>Es wurden in diesem Release so viele Bugs ausgebessert, sodass wir uns besser auf die neuen Funktionen konzentrieren</li>
+<li>Es wurden in dieser Version so viele Fehler behoben, dass wir uns besser auf die neuen Funktionen konzentrieren</li>
 <li>Schlüsselbearbeitung: tolles neues Design und Schlüsselrückruf</li>
 <li>Schlüsselimport: tolles neues Design, gesicherte Verbindungen zum Schlüsselserver über HKPS, Schlüsselserver [?] über DNS SRV Einträge</li>
 <li>Neuer Bildschirm bei der ersten Öffnung</li>
-<li>New key creation screen: autocompletion of name and email based on your personal Android accounts</li>
+<li>Neuer Schlüsselerzeugungsbildschirm: Automatische Vorschläge für Name und E-Mail basierend auf Ihren persönlichen Android-Konten</li>
 <li>Dateiverschlüsselung: tolles neues Design, Unterstützung für mehrere Dateien</li>
-<li>Neue Icons zum Anzeigen des Schlüsselstatus' (von Brennan Novak)</li>
-<li>Wichtige Ausbesserung eines Bugs: Importieren größerer Schlüsselsammlungen aus einer Datei ist nun möglich</li>
+<li>Neue Symbole zum Anzeigen des Schlüsselstatus' (von Brennan Novak)</li>
+<li>Wichtige Fehlerbehebung: Importieren größerer Schlüsselsammlungen aus einer Datei ist nun möglich</li>
 <li>Benachrichtigung, die die Passphrasen im Cache anzeigt</li>
-<li>Keys are connected to Android's contacts</li>
+<li>Schlüssel sind mit den Android-Kontakten verbunden</li>
 </ul>
-<p>Dieser Release wäre ohne die Arbeit von Vincent Breitmoser (GSoC 2014), mar-v-in (GSoC 2014), Daniel Albert, Art O Cathain, Daniel Haß, Tim Bray und Thialfihar nicht möglich</p>
+<p>Diese Version wäre ohne die Arbeit von Vincent Breitmoser (GSoC 2014), mar-v-in (GSoC 2014), Daniel Albert, Art O Cathain, Daniel Haß, Tim Bray und Thialfihar nicht möglich</p>
 
 <h2>2.7</h2>
 <ul>
 <li>Lila! (Dominik, Vincent)</li>
-<li>Neues Schlüsselansicht Design (Dominik, Vincent)</li>
-<li>Neue flache Android Buttons (Dominik, Vincent)</li>
-<li>API Fehler behoben (Dominik)</li>
+<li>Neues Schlüsselansicht-Design (Dominik, Vincent)</li>
+<li>Neue flache Android-Schaltflächen (Dominik, Vincent)</li>
+<li>API-Fehler behoben (Dominik)</li>
 <li>Import aus keybase.io (Tim Bray)</li>
 </ul>
 <h2>2.6.1</h2>
 <ul>
-<li>Some fixes for regression bugs</li>
+<li>Einige Behebungen für Regressionsfehler</li>
 </ul>
 <h2>2.6</h2>
 <ul>
 <li>Schlüsselzertifizierungen (danke an Vincent Breitmoser)</li>
-<li>Unterstützung für GnuPG-Teilschlüssel (danke an Vincent Breitmoser)</li>
+<li>Unterstützung für GnuPG-Teilschlüssel (Dank an Vincent Breitmoser)</li>
 <li>Neues Design für Signaturverifikation</li>
 <li>Benutzerdefinierte Schlüssellänge (Dank an Greg Witczak)</li>
-<li>Fehler behoben bei der Teilen-Funktion von anderen Apps</li>
+<li>Fehler bei der Teilen-Funktion von anderen Apps behoben</li>
 </ul>
 <h2>2.5</h2>
 <ul>
 <li>Fehler bei der Entschlüsselung symmetrischer PGP Nachrichten/Dateien behoben</li>
-<li>Refactored key edit screen (thanks to Ash Hughes)</li>
+<li>Refaktorisierter Schlüsselbearbeitungsbildschirm (Dank an Ash Hughes)</li>
 <li>Neues modernes Design für Verschlüsselungs-/Entschlüsselungs-Bildschirme</li>
-<li>OpenPGP API Version 3 (mehrfache api accounts, interne fehlerbehebungen, schlüssel suche)</li>
+<li>OpenPGP API Version 3 (mehrfache API-Konten, interne Fehlerbehebungen, Schlüsselsuche)</li>
 </ul>
 <h2>2.4</h2>
 <p>Danke an alle Bewerber beim Google Summer of Code 2014, die diese Version funktionsreich und fehlerfrei gemacht haben.
 Neben mehreren kleinen Updates sind eine beachtliche Anzahl von Updates von den folgenden Personen gemacht worden (in alphabetischer Reihenfolge):
 Daniel Hammann, Daniel Haß, Greg Witczak, Miroojin Bakshi, Nikhil Peter Raj, Paul Sarbinowski, Sreeram Boyapati, Vincent Breitmoser.</p>
 <ul>
-<li>New unified key list</li>
-<li>Colorized key fingerprint</li>
-<li>Support for keyserver ports</li>
-<li>Deactivate possibility to generate weak keys</li>
-<li>Much more internal work on the API</li>
-<li>Certify user ids</li>
-<li>Keyserver query based on machine-readable output</li>
+<li>Neue einheitliche Schlüsselliste</li>
+<li>Eingefärbter Schlüsselfingerabdruck</li>
+<li>Unterstützung für Schlüsselserverports</li>
+<li>Möglichkeit zum Erzeugen von schwachen Schlüssels deaktiviert</li>
+<li>Viel mehr interne Arbeit an der API</li>
+<li>Benutzerkennungen zertifizieren</li>
+<li>Schlüsselserver-Suchanfrage basierend auf maschinenlesbarer Ausgabe</li>
 <li>Lock navigation drawer on tablets</li>
 <li>Suggestions for emails on creation of keys</li>
-<li>Search in public key lists</li>
-<li>And much more improvements and fixes…</li>
+<li>Suche in öffentlichen Schlüssellisten</li>
+<li>Und viele weitere Verbesserungen und Fehlerbehebungen...</li>
 </ul>
 <h2>2.3.1</h2>
 <ul>
@@ -122,8 +127,8 @@ Daniel Hammann, Daniel Haß, Greg Witczak, Miroojin Bakshi, Nikhil Peter Raj, Pa
 <li>Fix setting expiry dates on keys (thanks to Ash Hughes)</li>
 <li>More internal fixes when editing keys (thanks to Ash Hughes)</li>
 <li>Querying keyservers directly from the import screen</li>
-<li>Fix layout and dialog style on Android 2.2-3.0</li>
-<li>Fix crash on keys with empty user ids</li>
+<li>Anordnung und Dialogstil auf Android 2.2-3.0 behoben</li>
+<li>Absturz bei leeren Benutzerkennungen behoben</li>
 <li>Fix crash and empty lists when coming back from signing screen</li>
 <li>Bouncy Castle (Kryptographie Bibliothek) upgedatet von 1.47 auf 1.50 und vom Quellcode kompiliert.</li>
 <li>Fix upload of key from signing screen</li>
@@ -132,8 +137,8 @@ Daniel Hammann, Daniel Haß, Greg Witczak, Miroojin Bakshi, Nikhil Peter Raj, Pa
 <ul>
 <li>New design with navigation drawer</li>
 <li>New public key list design</li>
-<li>New public key view</li>
-<li>Bug fixes for importing of keys</li>
+<li>Neue Ansicht für öffentliche Schlüssel</li>
+<li>Fehler beim Schlüsselimport behoben</li>
 <li>Key cross-certification (thanks to Ash Hughes)</li>
 <li>Handle UTF-8 passwords properly (thanks to Ash Hughes)</li>
 <li>First version with new languages (thanks to the contributors on Transifex)</li>
@@ -142,31 +147,31 @@ Daniel Hammann, Daniel Haß, Greg Witczak, Miroojin Bakshi, Nikhil Peter Raj, Pa
 </ul>
 <h2>2.1.1</h2>
 <ul>
-<li>API Updates, vorbereitung für die K-9 Mail integration.</li>
+<li>API-Aktualisierungen, Vorbereitung für die K-9 Mail-Integration</li>
 </ul>
 <h2>2.1</h2>
 <ul>
-<li>Lots of bug fixes</li>
-<li>New API for developers</li>
-<li>PRNG Bugfix von Google</li>
+<li>Viele Fehlerbehebungen</li>
+<li>Neue API für Entwickler</li>
+<li>PRNG-Fehlerbehebungen von Google</li>
 </ul>
 <h2>2.0</h2>
 <ul>
 <li>Complete redesign</li>
 <li>Öffentliche Schlüssel mit QR Codes oder NFC Beam teilen</li>
-<li>Sign keys</li>
-<li>Upload keys to server</li>
-<li>Fixes import issues</li>
-<li>New AIDL API</li>
+<li>Schlüssel signieren</li>
+<li>Schlüssel auf den Server hochladen</li>
+<li>Importprobleme behoben</li>
+<li>Neue AIDL-API</li>
 </ul>
 <h2>1.0.8</h2>
 <ul>
-<li>Basic keyserver support</li>
+<li>Grundlegende Schlüsselserverunterstützung</li>
 <li>App2sd</li>
-<li>More choices for passphrase cache: 1, 2, 4, 8, hours</li>
+<li>Mehr Auswahlmöglichkeiten für den Passphrasencache: 1, 2, 4, 8, Stunden</li>
 <li>Translations: Norwegian (thanks, Sander Danielsen), Chinese (thanks, Zhang Fredrick)</li>
-<li>Bugfixes</li>
-<li>Optimizations</li>
+<li>Fehlerbehebungen</li>
+<li>Optimierungen</li>
 </ul>
 <h2>1.0.7</h2>
 <ul>
@@ -176,12 +181,12 @@ Daniel Hammann, Daniel Haß, Greg Witczak, Miroojin Bakshi, Nikhil Peter Raj, Pa
 <h2>1.0.6</h2>
 <ul>
 <li>Account adding crash on Froyo fixed</li>
-<li>Secure file deletion</li>
-<li>Option to delete key file after import</li>
-<li>Stream encryption/decryption (gallery, etc.)</li>
-<li>New options (language, force v3 signatures)</li>
-<li>Interface changes</li>
-<li>Bugfixes</li>
+<li>Sichere Dateilöschung</li>
+<li>Option zum Löschen der Schlüsseldatei nach dem Import</li>
+<li>Streamverschlüsselung/-entschlüsselung (Galerie, usw.)</li>
+<li>Neue Optionen (Sprache, v3-Signaturen erzwingen)</li>
+<li>Schnittstellenänderungen</li>
+<li>Fehlerbehebungen</li>
 </ul>
 <h2>1.0.5</h2>
 <ul>
@@ -189,7 +194,7 @@ Daniel Hammann, Daniel Haß, Greg Witczak, Miroojin Bakshi, Nikhil Peter Raj, Pa
 <li>Much smaller package, due to reduced BC sources</li>
 <li>New preferences GUI</li>
 <li>Layout adjustment for localization</li>
-<li>Signature bugfix</li>
+<li>Fehler bei Signatur behoben</li>
 </ul>
 <h2>1.0.4</h2>
 <ul>
@@ -217,7 +222,7 @@ Daniel Hammann, Daniel Haß, Greg Witczak, Miroojin Bakshi, Nikhil Peter Raj, Pa
 <li>Slowenische Übersetzung</li>
 <li>New database, much faster, less memory usage</li>
 <li>Defined Intents and content provider for other apps</li>
-<li>Bugfixes</li>
+<li>Fehlerbehebungen</li>
 </ul>
 </body>
 </html>
