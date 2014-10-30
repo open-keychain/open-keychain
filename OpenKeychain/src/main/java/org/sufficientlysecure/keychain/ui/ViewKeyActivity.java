@@ -78,6 +78,7 @@ public class ViewKeyActivity extends ActionBarActivity implements
     public static final String EXTRA_SELECTED_TAB = "selected_tab";
     public static final int TAB_MAIN = 0;
     public static final int TAB_SHARE = 1;
+    public static final int TAB_TRUST = 2;
 
     // view
     private ViewPager mViewPager;
@@ -182,6 +183,11 @@ public class ViewKeyActivity extends ActionBarActivity implements
         shareBundle.putParcelable(ViewKeyMainFragment.ARG_DATA_URI, dataUri);
         mTabsAdapter.addTab(ViewKeyShareFragment.class,
                 shareBundle, getString(R.string.key_view_tab_share));
+
+        Bundle trustBundle = new Bundle();
+        trustBundle.putParcelable(ViewKeyMainFragment.ARG_DATA_URI, dataUri);
+        mTabsAdapter.addTab(ViewKeyTrustFragment.class, trustBundle,
+                getString(R.string.key_view_tab_trust));
 
         // update layout after operations
         mSlidingTabLayout.setViewPager(mViewPager);
