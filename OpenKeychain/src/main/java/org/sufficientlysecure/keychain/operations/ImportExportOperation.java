@@ -494,6 +494,13 @@ public class ImportExportOperation extends BaseOperation {
         } catch (IOException e) {
             log.add(LogType.MSG_EXPORT_ERROR_IO, 1);
             return new ExportResult(ExportResult.RESULT_ERROR, log, okPublic, okSecret);
+        } finally {
+            // Make sure the stream is closed
+            if (outStream != null) try {
+                outStream.close();
+            } catch (Exception e) {
+                Log.e(Constants.TAG, "error closing stream", e);
+            }
         }
 
 
