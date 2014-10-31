@@ -456,15 +456,16 @@ public class ImportExportOperation extends BaseOperation {
             // For each public masterKey id
             while (!cursor.isAfterLast()) {
 
+                long keyId = cursor.getLong(0);
+                ArmoredOutputStream arOutStream = null;
+
                 // Create an output stream
-                ArmoredOutputStream arOutStream = new ArmoredOutputStream(outStream);
                 try {
+                    arOutStream = new ArmoredOutputStream(outStream);
                     String version = PgpHelper.getVersionForHeader(mContext);
                     if (version != null) {
                         arOutStream.setHeader("Version", version);
                     }
-
-                    long keyId = cursor.getLong(0);
 
                     log.add(LogType.MSG_EXPORT_PUBLIC, 1, KeyFormattingUtils.beautifyKeyId(keyId));
 
@@ -474,19 +475,33 @@ public class ImportExportOperation extends BaseOperation {
 
                         okPublic += 1;
                     }
+                } finally {
+                    // make sure this is closed
+                    if (arOutStream != null) {
+                        arOutStream.close();
+                    }
+                    arOutStream = null;
+                }
+
+                if (exportSecret && cursor.getInt(3) > 0) {
+                    try {
+                        arOutStream = new ArmoredOutputStream(outStream);
+                        String version = PgpHelper.getVersionForHeader(mContext);
+                        if (version != null) {
+                            arOutStream.setHeader("Version", version);
+                        }
 
                     // export secret key part
-                    if (exportSecret && cursor.getInt(3) > 0) {
                         log.add(LogType.MSG_EXPORT_SECRET, 2, KeyFormattingUtils.beautifyKeyId(keyId));
                         byte[] data = cursor.getBlob(2);
                         arOutStream.write(data);
 
                         okSecret += 1;
-                    }
-                } finally {
-                    // make sure this is closed
-                    if (arOutStream != null) {
-                        arOutStream.close();
+                    } finally {
+                        // make sure this is closed
+                        if (arOutStream != null) {
+                            arOutStream.close();
+                        }
                     }
                 }
 
