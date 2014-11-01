@@ -26,6 +26,10 @@ import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
 
+import com.textuality.keybase.lib.Proof;
+import com.textuality.keybase.lib.prover.Prover;
+
+import org.json.JSONObject;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.CertifyOperation;
@@ -93,6 +97,8 @@ public class KeychainIntentService extends IntentService implements Progressable
 
     public static final String ACTION_DECRYPT_VERIFY = Constants.INTENT_PREFIX + "DECRYPT_VERIFY";
 
+    public static final String ACTION_VERIFY_KEYBASE_PROOF = Constants.INTENT_PREFIX + "VERIFY_KEYBASE_PROOF";
+
     public static final String ACTION_DECRYPT_METADATA = Constants.INTENT_PREFIX + "DECRYPT_METADATA";
 
     public static final String ACTION_EDIT_KEYRING = Constants.INTENT_PREFIX + "EDIT_KEYRING";
@@ -141,6 +147,10 @@ public class KeychainIntentService extends IntentService implements Progressable
     public static final String DECRYPT_CIPHERTEXT_BYTES = "ciphertext_bytes";
     public static final String DECRYPT_PASSPHRASE = "passphrase";
     public static final String DECRYPT_NFC_DECRYPTED_SESSION_KEY = "nfc_decrypted_session_key";
+
+    // keybase proof
+    public static final String KEYBASE_REQUIRED_FINGERPRINT = "keybase_required_fingerprint";
+    public static final String KEYBASE_PROOF = "keybase_proof";
 
     // save keyring
     public static final String EDIT_KEYRING_PARCEL = "save_parcel";
@@ -287,6 +297,68 @@ public class KeychainIntentService extends IntentService implements Progressable
                 DecryptVerifyResult decryptVerifyResult = builder.build().execute();
 
                 sendMessageToHandler(KeychainIntentServiceHandler.MESSAGE_OKAY, decryptVerifyResult);
+            } catch (Exception e) {
+                sendErrorToHandler(e);
+            }
+
+        } else if (ACTION_VERIFY_KEYBASE_PROOF.equals(action)) {
+            try {
+                Proof proof = new Proof(new JSONObject(data.getString(KEYBASE_PROOF)));
+                setProgress(R.string.keybase_message_fetching_data, 0, 100);
+
+                Prover prover = Prover.findProverFor(proof);
+
+                if (prover == null) {
+                    sendProofError(getString(R.string.keybase_no_prover_found) + ": " + proof.getPrettyName());
+                    return;
+                }
+
+                if (!prover.fetchProofData()) {
+                    String msg = null;
+                    for (String m : prover.getLog()) {
+                        Log.e(Constants.TAG, "Prover fetch: " + m);
+                        msg = m;
+                    }
+                    sendProofError(getString(R.string.keybase_problem_fetching_evidence) + ": " + msg);
+                    return;
+                }
+
+                // kind of awkward, but this whole class wants to pull bytes out of “data”
+                data.putInt(KeychainIntentService.TARGET, KeychainIntentService.IO_BYTES);
+                data.putByteArray(KeychainIntentService.DECRYPT_CIPHERTEXT_BYTES, prover.getPgpMessage().getBytes());
+
+                InputData inputData = createDecryptInputData(data);
+                OutputStream outStream = createCryptOutputStream(data);
+                String fingerprint = data.getString(KEYBASE_REQUIRED_FINGERPRINT);
+
+
+                PgpDecryptVerify.Builder builder = new PgpDecryptVerify.Builder(
+                        this, new ProviderHelper(this), this,
+                        inputData, outStream
+                );
+                builder.setSignedLiteralData(true).setRequiredSignerFingerprint(fingerprint);
+
+                DecryptVerifyResult decryptVerifyResult = builder.build().execute();
+                outStream.close();
+
+                if (!decryptVerifyResult.success()) {
+                    OperationLog log = decryptVerifyResult.getLog();
+                    OperationResult.LogEntryParcel lastEntry = null;
+                    for (OperationResult.LogEntryParcel entry : log) {
+                        lastEntry = entry;
+                    }
+                    sendProofError(getString(lastEntry.mType.getMsgId()));
+                    return;
+                }
+
+                if (!prover.validate(outStream.toString())) {
+                    sendProofError(getString(R.string.keybase_message_payload_mismatch));
+                    return;
+                }
+
+                Bundle resultData = new Bundle();
+                resultData.putString(KeychainIntentServiceHandler.DATA_MESSAGE, "OK");
+                sendMessageToHandler(KeychainIntentServiceHandler.MESSAGE_OKAY, resultData);
             } catch (Exception e) {
                 sendErrorToHandler(e);
             }
@@ -597,6 +669,12 @@ public class KeychainIntentService extends IntentService implements Progressable
 
     }
 
+    private void sendProofError(String msg) {
+        Bundle bundle = new Bundle();
+        bundle.putString(KeychainIntentServiceHandler.DATA_ERROR, msg);
+        sendMessageToHandler(KeychainIntentServiceHandler.MESSAGE_OKAY, bundle);
+    }
+
     private void sendErrorToHandler(Exception e) {
         // TODO: Implement a better exception handling here
         // contextualize the exception, if necessary
@@ -607,7 +685,6 @@ public class KeychainIntentService extends IntentService implements Progressable
         } else {
             message = e.getMessage();
         }
-
         Log.d(Constants.TAG, "KeychainIntentService Exception: ", e);
 
         Bundle data = new Bundle();

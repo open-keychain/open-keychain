@@ -17,11 +17,14 @@
 
 package org.sufficientlysecure.keychain.ui;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Message;
+import android.os.Messenger;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
@@ -36,9 +39,13 @@ import com.textuality.keybase.lib.KeybaseException;
 import com.textuality.keybase.lib.Proof;
 import com.textuality.keybase.lib.User;
 
+import org.spongycastle.i18n.MessageBundle;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.operations.results.DecryptVerifyResult;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
+import org.sufficientlysecure.keychain.service.KeychainIntentService;
+import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.Log;
 
@@ -310,7 +317,7 @@ public class ViewKeyTrustFragment extends LoaderFragment implements
     private boolean haveProofFor(int proofType) {
         switch (proofType) {
             case Proof.PROOF_TYPE_TWITTER: return false;
-            case Proof.PROOF_TYPE_GITHUB: return false;
+            case Proof.PROOF_TYPE_GITHUB: return true;
             case Proof.PROOF_TYPE_DNS: return false;
             case Proof.PROOF_TYPE_WEB_SITE: return false;
             case Proof.PROOF_TYPE_HACKERNEWS: return false;
@@ -331,11 +338,8 @@ public class ViewKeyTrustFragment extends LoaderFragment implements
                 if (path.startsWith(PROVE_PATH)) {
                     String[] pieces = path.substring(PROVE_PATH.length()).split("/");
                     String fingerprint = pieces[0];
-                    String proofId = pieces[1];
-                    String html = "<html><body><p>AAAOOOGAH: " + proofId + "</p>" +
-                            evidenceLink(fingerprint) +
-                            "</body></html>";
-                    view.loadDataWithBaseURL("file:///android_res/drawable/", html, "text/html", "UTF-8", null);
+                    Proof proof = mProofs.get(pieces[1]);
+                    verify(proof, fingerprint);
                 } else if (path.startsWith(EVIDENCE_PATH)) {
 
                     // back to the evidence screen from a proof readout
@@ -358,5 +362,92 @@ public class ViewKeyTrustFragment extends LoaderFragment implements
                 return true;
             }
         }
+    }
+
+    private void verify(final Proof proof, final String fingerprint) {
+        Intent intent = new Intent(getActivity(), KeychainIntentService.class);
+        Bundle data = new Bundle();
+        intent.setAction(KeychainIntentService.ACTION_VERIFY_KEYBASE_PROOF);
+
+        data.putString(KeychainIntentService.KEYBASE_PROOF, proof.toString());
+        data.putString(KeychainIntentService.KEYBASE_REQUIRED_FINGERPRINT, fingerprint);
+        intent.putExtra(KeychainIntentService.EXTRA_DATA, data);
+
+        // Create a new Messenger for the communication back after proof work is done
+        // TODO: make progress_proving
+        KeychainIntentServiceHandler handler = new KeychainIntentServiceHandler(getActivity(),
+                getString(R.string.progress_decrypting), ProgressDialog.STYLE_HORIZONTAL) {
+            public void handleMessage(Message message) {
+                // handle messages by standard KeychainIntentServiceHandler first
+                super.handleMessage(message);
+
+                if (message.arg1 == KeychainIntentServiceHandler.MESSAGE_OKAY) {
+                    Bundle returnData = message.getData();
+                    String msg = returnData.getString(KeychainIntentServiceHandler.DATA_MESSAGE);
+                    StringBuilder html = new StringBuilder();
+
+                    if ((msg != null) && msg.equals("OK")) {
+                        //yay
+                        String serviceUrl = null;
+                        String urlLabel = null;
+                        String postUrl = null;
+                        try {
+                            serviceUrl = proof.getServiceUrl();
+                            if (serviceUrl.startsWith("https://")) {
+                                urlLabel = serviceUrl.substring("https://".length());
+                            } else if (serviceUrl.startsWith("https://")) {
+                                urlLabel = serviceUrl.substring("http://".length());
+                            } else {
+                                urlLabel = serviceUrl;
+                            }
+                            postUrl = proof.getHumanUrl();
+
+                        } catch (KeybaseException e) {
+                            throw new RuntimeException(e);
+                        }
+                        html.append("<html><body><p><strong>")
+                                .append(getString(R.string.keybase_proof_succeeded))
+                                .append("</strong></p><p><a href=\"")
+                                .append(postUrl)
+                                .append("\">")
+                                .append(getString(R.string.keybase_a_post))
+                                .append("</a> ")
+                                .append(getString(R.string.keybase_fetched_from))
+                                .append(" <a href=\"")
+                                .append(serviceUrl)
+                                .append("\">")
+                                .append(urlLabel)
+                                .append("</a> ")
+                                .append(getString(R.string.keybase_contained_signature))
+                                .append("</p>")
+                                .append(evidenceLink(fingerprint))
+                                .append("</body></html>");
+
+                    } else {
+                        msg = returnData.getString(KeychainIntentServiceHandler.DATA_ERROR);
+                        if (msg == null) {
+                            msg = getString(R.string.keybase_unknown_proof_failure);
+                        }
+                        html.append("<html><body><p><strong>")
+                                .append(getString(R.string.keybase_proof_failure))
+                                .append("</strong></p><p>")
+                                .append(msg)
+                                .append(evidenceLink(fingerprint))
+                                .append("</p></body></html>");
+                    }
+                    mSearchReport.loadDataWithBaseURL("file:///android_res/drawable/", html.toString(), "text/html", "UTF-8", null);
+                }
+            }
+        };
+
+        // Create a new Messenger for the communication back
+        Messenger messenger = new Messenger(handler);
+        intent.putExtra(KeychainIntentService.EXTRA_MESSENGER, messenger);
+
+        // show progress dialog
+        handler.showProgressDialog(getActivity());
+
+        // start service with intent
+        getActivity().startService(intent);
     }
 }

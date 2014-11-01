@@ -557,6 +557,16 @@
     <string name="keybase_narrative_coinbase">"Is known on Coinbase as"</string>
     <string name="keybase_narrative_hackernews">"Posts to Hacker News as"</string>
     <string name="keybase_narrative_unknown">"Unknown proof type"</string>
+    <string name="keybase_proof_failure">"Unfortunately this proof cannot be verified."</string>
+    <string name="keybase_unknown_proof_failure">"Unrecognized problem with proof checker"</string>
+    <string name="keybase_problem_fetching_evidence">"Problem with proof evidence"</string>
+    <string name="keybase_no_prover_found">"No proof checker found for"</string>
+    <string name="keybase_message_payload_mismatch">"Decrypted proof post does not match expected value"</string>
+    <string name="keybase_message_fetching_data">"Fetching proof evidence"</string>
+    <string name="keybase_proof_succeeded">"This proof has been verified!"</string>
+    <string name="keybase_a_post">"A post"</string>
+    <string name="keybase_fetched_from">"fetched from"</string>
+    <string name="keybase_contained_signature">"contains text signed cryptographically by the owner of this key."</string>
 
     <!-- Edit key -->
     <string name="edit_key_action_change_passphrase">"Change Passphrase"</string>
@@ -917,6 +927,19 @@
     <string name="msg_dc_trail_sym">"Encountered trailing, symmetrically encrypted data"</string>
     <string name="msg_dc_trail_unknown">"Encountered trailing data of unknown type"</string>
     <string name="msg_dc_unlocking">"Unlocking secret key"</string>
+
+    <!-- Messages for VerifySignedLiteralData operation -->
+    <string name="msg_vl">"Starting signature check"</string>
+    <string name="msg_vl_error_no_siglist">"No signature list in signed literal data"</string>
+    <string name="msg_vl_error_wrong_key">"Message not signed with right key"</string>
+    <string name="msg_vl_error_missing_literal">"No payload in signed literal data"</string>
+    <string name="msg_vl_clear_meta_file">"Filename: %s"</string>
+    <string name="msg_vl_clear_meta_mime">"MIME type: %s"</string>
+    <string name="msg_vl_clear_meta_time">"Modification time: %s"</string>
+    <string name="msg_vl_clear_meta_size">"Filesize: %s"</string>
+    <string name="msg_vl_clear_signature_check">"Verifying signature data"</string>
+    <string name="msg_vl_error_integrity_check">"Integrity check error!"</string>
+    <string name="msg_vl_ok">"OK"</string>
 
     <!-- Messages for SignEncrypt operation -->
     <string name="msg_se_asymmetric">"Preparing public keys for encryption"</string>
