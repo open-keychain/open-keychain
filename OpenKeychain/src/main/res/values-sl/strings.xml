@@ -13,6 +13,7 @@
   <string name="title_add_subkey">Dodaj podključ</string>
   <string name="title_edit_key">Uredi ključ</string>
   <string name="title_preferences">Nastavitve</string>
+  <string name="title_cloud_search_preferences">Nastavitve iskanja v oblaku</string>
   <string name="title_api_registered_apps">Aplikacije</string>
   <string name="title_key_server_preference">Nastavitve strežnikov</string>
   <string name="title_change_passphrase">Spremeni geslo</string>
@@ -34,12 +35,15 @@
   <string name="title_log_display">Dnevnik</string>
   <string name="title_create_key">Ustvari kluč</string>
   <string name="title_exchange_keys">Izmenjava ključev</string>
+  <string name="title_advanced_key_info">Napredne informacije o ključu</string>
   <!--section-->
   <string name="section_user_ids">Identitete</string>
   <string name="section_keys">Podključi</string>
+  <string name="section_cloud_search">Iskanje v oblaku</string>
   <string name="section_general">Splošno</string>
   <string name="section_defaults">Privzeto</string>
   <string name="section_advanced">Napredno</string>
+  <string name="section_certify">Overjanje</string>
   <string name="section_actions">Ravnanja</string>
   <string name="section_share_key">Ključ</string>
   <string name="section_certification_key">Vaš ključ, uporabljan za overitev</string>
@@ -48,6 +52,7 @@
   <string name="section_key_to_certify">Ključi za overjanje</string>
   <string name="section_decrypt_files">Datoteke</string>
   <string name="section_decrypt_text">Besedilo</string>
+  <string name="section_certs">Certifikati</string>
   <!--button-->
   <string name="btn_decrypt_verify_file">Dešifriraj, preveri in shrani</string>
   <string name="btn_decrypt_verify_message">Dešifriraj in preveri sporočilo</string>
@@ -66,12 +71,14 @@
   <string name="btn_view_cert_key">Poglej ključ za overjanje</string>
   <string name="btn_create_key">Ustvari ključ</string>
   <string name="btn_add_files">Dodaj datoteko</string>
+  <string name="btn_decrypt_files">Dešifriraj datoteke</string>
   <!--menu-->
   <string name="menu_preferences">Nastavitve</string>
   <string name="menu_help">Pomoč</string>
   <string name="menu_export_key">Izvozi v datoteko</string>
   <string name="menu_delete_key">Izbriši ključ</string>
   <string name="menu_create_key">Ustvari zasebni ključ</string>
+  <string name="menu_import_existing_key">Uvozi iz datoteke</string>
   <string name="menu_search">Išči</string>
   <string name="menu_beam_preferences">Nastavitve Beam</string>
   <string name="menu_key_edit_cancel">Prekliči</string>
@@ -195,6 +202,7 @@
   <string name="fingerprint_copied_to_clipboard">Prstni odtis je bil prekopiran v odložišče!</string>
   <string name="select_key_to_certify">Izberite ključ, ki ga boste uporabljali za overjanje!</string>
   <string name="key_too_big_for_sharing">Ključ je prevelik za delitev na ta način!</string>
+  <string name="text_copied_to_clipboard">Besedilo je bilo prekopirano v odložišče!</string>
   <!--errors
          no punctuation, all lowercase,
          they will be put after "error_message", e.g. "Error: file not found"-->
@@ -219,7 +227,13 @@
   <!--results shown after decryption/verification-->
   <string name="decrypt_result_no_signature">Ni podpisano</string>
   <string name="decrypt_result_invalid_signature">Neveljaven podpis!</string>
+  <string name="decrypt_result_signature_uncertified">Podpisal (ne overjen!)</string>
+  <string name="decrypt_result_signature_certified">Podpisal</string>
   <string name="decrypt_result_signature_expired_key">Ključ je pretekel!</string>
+  <string name="decrypt_result_signature_revoked_key">Ključ je bil preklican!</string>
+  <string name="decrypt_result_signature_missing_key">Neznan javni ključ</string>
+  <string name="decrypt_result_encrypted">Šifrirano</string>
+  <string name="decrypt_result_not_encrypted">Nešifrirano</string>
   <string name="decrypt_result_action_show">Prikaži</string>
   <string name="decrypt_result_action_Lookup">Poišči</string>
   <!--Add keys-->
@@ -268,6 +282,7 @@
   <string name="progress_deleting">brisanje ključev...</string>
   <!--action strings-->
   <string name="hint_keyserver_search_hint">Ime/e-pošta/ID ključa</string>
+  <string name="hint_cloud_search_hint">Ime/E-pošta/Dokaz/Ključ...</string>
   <!--key bit length selections-->
   <string name="key_size_512">512</string>
   <string name="key_size_768">768</string>
@@ -302,6 +317,7 @@
   <string name="help_about_version">Različica:</string>
   <!--Import-->
   <string name="import_tab_keyserver">Strežnik</string>
+  <string name="import_tab_cloud">Iskanje v oblaku</string>
   <string name="import_tab_direct">Datoteka/odložišče</string>
   <string name="import_import">Uvozi izbrane ključe</string>
   <string name="import_qr_code_wrong">Koda QR je deformirana! Poskusite znova!</string>
@@ -453,6 +469,7 @@
   <string name="msg_ek_error_not_found">Ključ ni bil najden!</string>
   <!--Messages for DecryptVerify operation-->
   <!--Messages for SignEncrypt operation-->
+  <string name="msg_crt_warn_not_found">Ključ ni bil najden!</string>
   <plurals name="error_import_non_pgp_part">
     <item quantity="one">Del naložene datoteke je veljavnen objekt OpenPGP a ni ključ.</item>
     <item quantity="two">Deli naložene datoteke so veljavni objekti OpenPGP a niso ključi.</item>
@@ -484,8 +501,10 @@
   <string name="can_sign_not">ne more podpisati</string>
   <string name="error_no_encrypt_subkey">Ni nobenega podključa za šifriranje!</string>
   <string name="contact_show_key">Prikaži ključ (%s)</string>
+  <string name="key_colon">Ključ:</string>
   <!--First Time-->
   <string name="first_time_text1">Vzemite si svojo zasebnost nazaj v svoje roke z OpenKeychain!</string>
   <string name="first_time_create_key">Ustvari zasebni ključ</string>
+  <string name="first_time_import_key">Uvozi iz datoteke</string>
   <string name="first_time_skip">Preskoči nastavitev</string>
 </resources>
