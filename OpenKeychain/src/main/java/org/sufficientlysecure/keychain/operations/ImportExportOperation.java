@@ -456,32 +456,53 @@ public class ImportExportOperation extends BaseOperation {
             // For each public masterKey id
             while (!cursor.isAfterLast()) {
 
-                // Create an output stream
-                ArmoredOutputStream arOutStream = new ArmoredOutputStream(outStream);
-                String version = PgpHelper.getVersionForHeader(mContext);
-                if (version != null) {
-                    arOutStream.setHeader("Version", version);
-                }
-
                 long keyId = cursor.getLong(0);
+                ArmoredOutputStream arOutStream = null;
 
-                log.add(LogType.MSG_EXPORT_PUBLIC, 1, KeyFormattingUtils.beautifyKeyId(keyId));
+                // Create an output stream
+                try {
+                    arOutStream = new ArmoredOutputStream(outStream);
+                    String version = PgpHelper.getVersionForHeader(mContext);
+                    if (version != null) {
+                        arOutStream.setHeader("Version", version);
+                    }
 
-                { // export public key part
-                    byte[] data = cursor.getBlob(1);
-                    arOutStream.write(data);
-                    arOutStream.close();
+                    log.add(LogType.MSG_EXPORT_PUBLIC, 1, KeyFormattingUtils.beautifyKeyId(keyId));
 
-                    okPublic += 1;
+                    { // export public key part
+                        byte[] data = cursor.getBlob(1);
+                        arOutStream.write(data);
+
+                        okPublic += 1;
+                    }
+                } finally {
+                    // make sure this is closed
+                    if (arOutStream != null) {
+                        arOutStream.close();
+                    }
+                    arOutStream = null;
                 }
 
-                // export secret key part
                 if (exportSecret && cursor.getInt(3) > 0) {
-                    log.add(LogType.MSG_EXPORT_SECRET, 2, KeyFormattingUtils.beautifyKeyId(keyId));
-                    byte[] data = cursor.getBlob(2);
-                    arOutStream.write(data);
+                    try {
+                        arOutStream = new ArmoredOutputStream(outStream);
+                        String version = PgpHelper.getVersionForHeader(mContext);
+                        if (version != null) {
+                            arOutStream.setHeader("Version", version);
+                        }
 
-                    okSecret += 1;
+                    // export secret key part
+                        log.add(LogType.MSG_EXPORT_SECRET, 2, KeyFormattingUtils.beautifyKeyId(keyId));
+                        byte[] data = cursor.getBlob(2);
+                        arOutStream.write(data);
+
+                        okSecret += 1;
+                    } finally {
+                        // make sure this is closed
+                        if (arOutStream != null) {
+                            arOutStream.close();
+                        }
+                    }
                 }
 
                 updateProgress(progress++, numKeys);
