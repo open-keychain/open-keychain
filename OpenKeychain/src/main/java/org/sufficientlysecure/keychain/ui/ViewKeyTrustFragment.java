@@ -319,7 +319,7 @@ public class ViewKeyTrustFragment extends LoaderFragment implements
             case Proof.PROOF_TYPE_TWITTER: return true;
             case Proof.PROOF_TYPE_GITHUB: return true;
             case Proof.PROOF_TYPE_DNS: return false;
-            case Proof.PROOF_TYPE_WEB_SITE: return false;
+            case Proof.PROOF_TYPE_WEB_SITE: return true;
             case Proof.PROOF_TYPE_HACKERNEWS: return false;
             case Proof.PROOF_TYPE_COINBASE: return false;
             case Proof.PROOF_TYPE_REDDIT: return false;
@@ -340,8 +340,8 @@ public class ViewKeyTrustFragment extends LoaderFragment implements
                     String fingerprint = pieces[0];
                     Proof proof = mProofs.get(pieces[1]);
                     verify(proof, fingerprint);
-                } else if (path.startsWith(EVIDENCE_PATH)) {
 
+                } else if (path.startsWith(EVIDENCE_PATH)) {
                     // back to the evidence screen from a proof readout
                     String fingerprint = path.substring(EVIDENCE_PATH.length());
                     String html = mHTML.get(fingerprint);
@@ -395,7 +395,7 @@ public class ViewKeyTrustFragment extends LoaderFragment implements
                             serviceUrl = proof.getServiceUrl();
                             if (serviceUrl.startsWith("https://")) {
                                 urlLabel = serviceUrl.substring("https://".length());
-                            } else if (serviceUrl.startsWith("https://")) {
+                            } else if (serviceUrl.startsWith("http://")) {
                                 urlLabel = serviceUrl.substring("http://".length());
                             } else {
                                 urlLabel = serviceUrl;

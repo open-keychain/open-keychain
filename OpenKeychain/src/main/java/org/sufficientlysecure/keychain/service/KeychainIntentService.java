@@ -339,7 +339,6 @@ public class KeychainIntentService extends IntentService implements Progressable
                 OutputStream outStream = createCryptOutputStream(data);
                 String fingerprint = data.getString(KEYBASE_REQUIRED_FINGERPRINT);
 
-
                 PgpDecryptVerify.Builder builder = new PgpDecryptVerify.Builder(
                         this, new ProviderHelper(this), this,
                         inputData, outStream
