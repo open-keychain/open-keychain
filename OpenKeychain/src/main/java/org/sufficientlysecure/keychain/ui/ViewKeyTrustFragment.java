@@ -320,7 +320,7 @@ public class ViewKeyTrustFragment extends LoaderFragment implements
             case Proof.PROOF_TYPE_GITHUB: return true;
             case Proof.PROOF_TYPE_DNS: return false;
             case Proof.PROOF_TYPE_WEB_SITE: return true;
-            case Proof.PROOF_TYPE_HACKERNEWS: return false;
+            case Proof.PROOF_TYPE_HACKERNEWS: return true;
             case Proof.PROOF_TYPE_COINBASE: return false;
             case Proof.PROOF_TYPE_REDDIT: return false;
             default: return false;
