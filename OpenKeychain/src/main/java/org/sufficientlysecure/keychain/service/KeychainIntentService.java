@@ -30,55 +30,58 @@ import com.textuality.keybase.lib.Proof;
 import com.textuality.keybase.lib.prover.Prover;
 
 import org.json.JSONObject;
+import org.spongycastle.openpgp.PGPUtil;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.operations.CertifyOperation;
-import org.sufficientlysecure.keychain.operations.DeleteOperation;
-import org.sufficientlysecure.keychain.operations.results.DeleteResult;
-import org.sufficientlysecure.keychain.operations.results.ExportResult;
-import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
-import org.sufficientlysecure.keychain.operations.results.CertifyResult;
-import org.sufficientlysecure.keychain.util.FileHelper;
-import org.sufficientlysecure.keychain.util.ParcelableFileCache.IteratorWithSize;
-import org.sufficientlysecure.keychain.util.Preferences;
 import org.sufficientlysecure.keychain.keyimport.HkpKeyserver;
 import org.sufficientlysecure.keychain.keyimport.Keyserver;
 import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
+import org.sufficientlysecure.keychain.operations.CertifyOperation;
+import org.sufficientlysecure.keychain.operations.DeleteOperation;
+import org.sufficientlysecure.keychain.operations.ImportExportOperation;
+import org.sufficientlysecure.keychain.operations.results.CertifyResult;
+import org.sufficientlysecure.keychain.operations.results.ConsolidateResult;
+import org.sufficientlysecure.keychain.operations.results.DecryptVerifyResult;
+import org.sufficientlysecure.keychain.operations.results.DeleteResult;
+import org.sufficientlysecure.keychain.operations.results.EditKeyResult;
+import org.sufficientlysecure.keychain.operations.results.ExportResult;
+import org.sufficientlysecure.keychain.operations.results.ImportKeyResult;
+import org.sufficientlysecure.keychain.operations.results.OperationResult;
+import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
+import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
+import org.sufficientlysecure.keychain.operations.results.SaveKeyringResult;
+import org.sufficientlysecure.keychain.operations.results.SignEncryptResult;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedPublicKeyRing;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKeyRing;
 import org.sufficientlysecure.keychain.pgp.PgpDecryptVerify;
-import org.sufficientlysecure.keychain.operations.results.DecryptVerifyResult;
 import org.sufficientlysecure.keychain.pgp.PgpHelper;
-import org.sufficientlysecure.keychain.operations.ImportExportOperation;
 import org.sufficientlysecure.keychain.pgp.PgpKeyOperation;
 import org.sufficientlysecure.keychain.pgp.PgpSignEncrypt;
 import org.sufficientlysecure.keychain.pgp.Progressable;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralMsgIdException;
+import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
-import org.sufficientlysecure.keychain.operations.results.OperationResult;
-import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
-import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
-import org.sufficientlysecure.keychain.operations.results.ConsolidateResult;
-import org.sufficientlysecure.keychain.operations.results.EditKeyResult;
-import org.sufficientlysecure.keychain.operations.results.ImportKeyResult;
-import org.sufficientlysecure.keychain.operations.results.SaveKeyringResult;
-import org.sufficientlysecure.keychain.operations.results.SignEncryptResult;
-import org.sufficientlysecure.keychain.util.ParcelableFileCache;
+import org.sufficientlysecure.keychain.util.FileHelper;
 import org.sufficientlysecure.keychain.util.InputData;
 import org.sufficientlysecure.keychain.util.Log;
+import org.sufficientlysecure.keychain.util.ParcelableFileCache;
+import org.sufficientlysecure.keychain.util.ParcelableFileCache.IteratorWithSize;
+import org.sufficientlysecure.keychain.util.Preferences;
 import org.sufficientlysecure.keychain.util.ProgressScaler;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -314,18 +317,23 @@ public class KeychainIntentService extends IntentService implements Progressable
                 }
 
                 if (!prover.fetchProofData()) {
-                    String msg = null;
-                    for (String m : prover.getLog()) {
-                        Log.e(Constants.TAG, "Prover fetch: " + m);
-                        msg = m;
-                    }
-                    sendProofError(getString(R.string.keybase_problem_fetching_evidence) + ": " + msg);
+                    sendProofError(prover.getLog(), getString(R.string.keybase_problem_fetching_evidence));
                     return;
+                }
+
+                byte[] messageBytes = prover.getPgpMessage().getBytes();
+                if (prover.rawMessageCheckRequired()) {
+                    InputStream messageByteStream = PGPUtil.getDecoderStream(new ByteArrayInputStream(messageBytes));
+                    String problem = prover.checkRawMessageBytes(messageByteStream);
+                    if (problem != null) {
+                        sendProofError(prover.getLog(), problem);
+                        return;
+                    }
                 }
 
                 // kind of awkward, but this whole class wants to pull bytes out of “data”
                 data.putInt(KeychainIntentService.TARGET, KeychainIntentService.IO_BYTES);
-                data.putByteArray(KeychainIntentService.DECRYPT_CIPHERTEXT_BYTES, prover.getPgpMessage().getBytes());
+                data.putByteArray(KeychainIntentService.DECRYPT_CIPHERTEXT_BYTES, messageBytes);
 
                 InputData inputData = createDecryptInputData(data);
                 OutputStream outStream = createCryptOutputStream(data);
@@ -667,6 +675,15 @@ public class KeychainIntentService extends IntentService implements Progressable
             }
         }
 
+    }
+
+    private void sendProofError(List<String> log, String label) {
+        String msg = null;
+        for (String m : log) {
+            Log.e(Constants.TAG, label + ": " + m);
+            msg = m;
+        }
+        sendProofError(label + ": " + msg);
     }
 
     private void sendProofError(String msg) {

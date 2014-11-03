@@ -566,7 +566,7 @@
     <string name="keybase_proof_succeeded">"This proof has been verified!"</string>
     <string name="keybase_a_post">"A post"</string>
     <string name="keybase_fetched_from">"fetched from"</string>
-    <string name="keybase_contained_signature">"contains text signed cryptographically by the owner of this key."</string>
+    <string name="keybase_contained_signature">"contains a message which could only have been created by the owner of this key."</string>
 
     <!-- Edit key -->
     <string name="edit_key_action_change_passphrase">"Change Passphrase"</string>

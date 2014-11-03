@@ -316,7 +316,7 @@ public class ViewKeyTrustFragment extends LoaderFragment implements
     // which proofs do we have working verifiers for?
     private boolean haveProofFor(int proofType) {
         switch (proofType) {
-            case Proof.PROOF_TYPE_TWITTER: return false;
+            case Proof.PROOF_TYPE_TWITTER: return true;
             case Proof.PROOF_TYPE_GITHUB: return true;
             case Proof.PROOF_TYPE_DNS: return false;
             case Proof.PROOF_TYPE_WEB_SITE: return false;
