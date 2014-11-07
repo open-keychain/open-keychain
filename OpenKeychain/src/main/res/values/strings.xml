@@ -44,6 +44,9 @@
 
     <!-- section -->
     <string name="section_user_ids">"Identities"</string>
+    <string name="section_should_you_trust">"Should you trust this key?"</string>
+    <string name="section_proof_details">Proof verification</string>
+    <string name="section_cloud_evidence">"Evidence from the cloud"</string>
     <string name="section_keys">"Subkeys"</string>
     <string name="section_cloud_search">"Cloud search"</string>
     <string name="section_general">"General"</string>
@@ -525,6 +528,7 @@
     <string name="key_view_tab_share">"Share"</string>
     <string name="key_view_tab_keys">"Subkeys"</string>
     <string name="key_view_tab_certs">"Certificates"</string>
+    <string name="key_view_tab_trust">"Trust this key?"</string>
     <string name="user_id_info_revoked_title">"Revoked"</string>
     <string name="user_id_info_revoked_text">"This identity has been revoked by the key owner. It is no longer valid."</string>
     <string name="user_id_info_certified_title">"Certified"</string>
@@ -533,6 +537,37 @@
     <string name="user_id_info_uncertified_text">"This identity has not been certified yet. You cannot be sure if the identity really corresponds to a specific person."</string>
     <string name="user_id_info_invalid_title">"Invalid"</string>
     <string name="user_id_info_invalid_text">"Something is wrong with this identity!"</string>
+
+    <!-- Key trust -->
+    <string name="key_trust_already_verified">"You have already certified this key!"</string>
+    <string name="key_trust_it_is_yours">"This is one of your keys!"</string>
+    <string name="key_trust_maybe">"This key is neither revoked nor expired.\nYou haven’t certified it, but you may choose to trust it."</string>
+    <string name="key_trust_revoked">"This key has been revoked by its owner. You should not trust it."</string>
+    <string name="key_trust_expired">"This key has expired. You should not trust it."</string>
+    <string name="key_trust_old_keys">" It may be OK to use this to decrypt an old message dating from the time when this key was valid."</string>
+    <string name="key_trust_no_cloud_evidence">"No evidence from the cloud on this key’s trustworthiness."</string>
+    <string name="key_trust_start_cloud_search">"Start search"</string>
+    <string name="key_trust_results_prefix">"Keybase.io offers “proofs” which assert that the owner of this key: "</string>
+
+    <!-- keybase proof stuff -->
+    <string name="keybase_narrative_twitter">"Posts to Twitter as"</string>
+    <string name="keybase_narrative_github">"Is known on GitHub as"</string>
+    <string name="keybase_narrative_dns">"Controls the domain name(s)"</string>
+    <string name="keybase_narrative_web_site">"Can post to the Web site(s)"</string>
+    <string name="keybase_narrative_reddit">"Posts to Reddit as"</string>
+    <string name="keybase_narrative_coinbase">"Is known on Coinbase as"</string>
+    <string name="keybase_narrative_hackernews">"Posts to Hacker News as"</string>
+    <string name="keybase_narrative_unknown">"Unknown proof type"</string>
+    <string name="keybase_proof_failure">"Unfortunately this proof cannot be verified."</string>
+    <string name="keybase_unknown_proof_failure">"Unrecognized problem with proof checker"</string>
+    <string name="keybase_problem_fetching_evidence">"Problem with proof evidence"</string>
+    <string name="keybase_no_prover_found">"No proof checker found for"</string>
+    <string name="keybase_message_payload_mismatch">"Decrypted proof post does not match expected value"</string>
+    <string name="keybase_message_fetching_data">"Fetching proof evidence"</string>
+    <string name="keybase_proof_succeeded">"This proof has been verified!"</string>
+    <string name="keybase_a_post">"A post"</string>
+    <string name="keybase_fetched_from">"fetched from"</string>
+    <string name="keybase_contained_signature">"contains a message which could only have been created by the owner of this key."</string>
 
     <!-- Edit key -->
     <string name="edit_key_action_change_passphrase">"Change Passphrase"</string>
@@ -893,6 +928,19 @@
     <string name="msg_dc_trail_sym">"Encountered trailing, symmetrically encrypted data"</string>
     <string name="msg_dc_trail_unknown">"Encountered trailing data of unknown type"</string>
     <string name="msg_dc_unlocking">"Unlocking secret key"</string>
+
+    <!-- Messages for VerifySignedLiteralData operation -->
+    <string name="msg_vl">"Starting signature check"</string>
+    <string name="msg_vl_error_no_siglist">"No signature list in signed literal data"</string>
+    <string name="msg_vl_error_wrong_key">"Message not signed with right key"</string>
+    <string name="msg_vl_error_missing_literal">"No payload in signed literal data"</string>
+    <string name="msg_vl_clear_meta_file">"Filename: %s"</string>
+    <string name="msg_vl_clear_meta_mime">"MIME type: %s"</string>
+    <string name="msg_vl_clear_meta_time">"Modification time: %s"</string>
+    <string name="msg_vl_clear_meta_size">"Filesize: %s"</string>
+    <string name="msg_vl_clear_signature_check">"Verifying signature data"</string>
+    <string name="msg_vl_error_integrity_check">"Integrity check error!"</string>
+    <string name="msg_vl_ok">"OK"</string>
 
     <!-- Messages for SignEncrypt operation -->
     <string name="msg_se_asymmetric">"Preparing public keys for encryption"</string>
