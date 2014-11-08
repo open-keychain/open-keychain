@@ -284,7 +284,7 @@ public class ViewKeyTrustFragment extends LoaderFragment implements
         @Override
         protected void onPostExecute(ResultPage result) {
             super.onPostExecute(result);
-            if (result.mHeader == null) {
+            if (result.mProofs.isEmpty()) {
                 result.mHeader = getActivity().getString(R.string.key_trust_no_cloud_evidence);
             }
 
@@ -425,6 +425,7 @@ public class ViewKeyTrustFragment extends LoaderFragment implements
                     }
                     mProofVerifyHeader.setVisibility(View.VISIBLE);
                     mProofVerifyDetail.setVisibility(View.VISIBLE);
+                    mProofVerifyDetail.setMovementMethod(LinkMovementMethod.getInstance());
                     mProofVerifyDetail.setText(ssb);
                 }
             }
