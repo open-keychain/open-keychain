@@ -48,6 +48,7 @@ import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.BaseOperation;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
+import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.operations.results.DecryptVerifyResult;
@@ -83,6 +84,8 @@ public class PgpDecryptVerify extends BaseOperation {
     private Set<Long> mAllowedKeyIds;
     private boolean mDecryptMetadataOnly;
     private byte[] mDecryptedSessionKey;
+    private String mRequiredSignerFingerprint;
+    private boolean mSignedLiteralData;
 
     private PgpDecryptVerify(Builder builder) {
         super(builder.mContext, builder.mProviderHelper, builder.mProgressable);
@@ -96,6 +99,8 @@ public class PgpDecryptVerify extends BaseOperation {
         this.mAllowedKeyIds = builder.mAllowedKeyIds;
         this.mDecryptMetadataOnly = builder.mDecryptMetadataOnly;
         this.mDecryptedSessionKey = builder.mDecryptedSessionKey;
+        this.mSignedLiteralData = builder.mSignedLiteralData;
+        this.mRequiredSignerFingerprint = builder.mRequiredSignerFingerprint;
     }
 
     public static class Builder {
@@ -112,6 +117,8 @@ public class PgpDecryptVerify extends BaseOperation {
         private Set<Long> mAllowedKeyIds = null;
         private boolean mDecryptMetadataOnly = false;
         private byte[] mDecryptedSessionKey = null;
+        private String mRequiredSignerFingerprint = null;
+        private boolean mSignedLiteralData = false;
 
         public Builder(Context context, ProviderHelper providerHelper,
                        Progressable progressable,
@@ -121,6 +128,24 @@ public class PgpDecryptVerify extends BaseOperation {
             mProgressable = progressable;
             mData = data;
             mOutStream = outStream;
+        }
+
+        /**
+         * This is used when verifying signed literals to check that they are signed with
+         *  the required key
+         */
+        public Builder setRequiredSignerFingerprint(String fingerprint) {
+            mRequiredSignerFingerprint = fingerprint;
+            return this;
+        }
+
+        /**
+         * This is to force a mode where the message is just the signature key id and
+         *  then a literal data packet; used in Keybase.io proofs
+         */
+        public Builder setSignedLiteralData(boolean signedLiteralData) {
+            mSignedLiteralData = signedLiteralData;
+            return this;
         }
 
         public Builder setAllowSymmetricDecryption(boolean allowSymmetricDecryption) {
@@ -174,7 +199,9 @@ public class PgpDecryptVerify extends BaseOperation {
                 // it is ascii armored
                 Log.d(Constants.TAG, "ASCII Armor Header Line: " + aIn.getArmorHeaderLine());
 
-                if (aIn.isClearText()) {
+                if (mSignedLiteralData) {
+                    return verifySignedLiteralData(aIn, 0);
+                } else if (aIn.isClearText()) {
                     // a cleartext signature, verify it with the other method
                     return verifyCleartextSignature(aIn, 0);
                 }
@@ -194,6 +221,139 @@ public class PgpDecryptVerify extends BaseOperation {
             return new DecryptVerifyResult(DecryptVerifyResult.RESULT_ERROR, log);
         }
     }
+
+    /**
+     * Verify Keybase.io style signed literal data
+     */
+    private DecryptVerifyResult verifySignedLiteralData(InputStream in, int indent) throws IOException, PGPException {
+        OperationLog log = new OperationLog();
+        log.add(LogType.MSG_VL, indent);
+
+        // thinking that the proof-fetching operation is going to take most of the time
+        updateProgress(R.string.progress_reading_data, 75, 100);
+
+        PGPObjectFactory pgpF = new PGPObjectFactory(in, new JcaKeyFingerprintCalculator());
+        Object o = pgpF.nextObject();
+        if (o instanceof PGPCompressedData) {
+            log.add(LogType.MSG_DC_CLEAR_DECOMPRESS, indent + 1);
+
+            pgpF = new PGPObjectFactory(((PGPCompressedData) o).getDataStream(), new JcaKeyFingerprintCalculator());
+            o = pgpF.nextObject();
+            updateProgress(R.string.progress_decompressing_data, 80, 100);
+        }
+
+        // all we want to see is a OnePassSignatureList followed by LiteralData
+        if (!(o instanceof PGPOnePassSignatureList)) {
+            log.add(LogType.MSG_VL_ERROR_MISSING_SIGLIST, indent);
+            return new DecryptVerifyResult(DecryptVerifyResult.RESULT_ERROR, log);
+        }
+        PGPOnePassSignatureList sigList = (PGPOnePassSignatureList) o;
+
+        // go through all signatures (should be just one), make sure we have
+        //  the key and it matches the one we’re looking for
+        CanonicalizedPublicKeyRing signingRing = null;
+        CanonicalizedPublicKey signingKey = null;
+        int signatureIndex = -1;
+        for (int i = 0; i < sigList.size(); ++i) {
+            try {
+                long sigKeyId = sigList.get(i).getKeyID();
+                signingRing = mProviderHelper.getCanonicalizedPublicKeyRing(
+                        KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(sigKeyId)
+                );
+                signingKey = signingRing.getPublicKey(sigKeyId);
+                signatureIndex = i;
+            } catch (ProviderHelper.NotFoundException e) {
+                Log.d(Constants.TAG, "key not found, trying next signature...");
+            }
+        }
+
+        // there has to be a key, and it has to be the right one
+        if (signingKey == null) {
+            log.add(LogType.MSG_VL_ERROR_MISSING_KEY, indent);
+            Log.d(Constants.TAG, "Failed to find key in signed-literal message");
+            return new DecryptVerifyResult(DecryptVerifyResult.RESULT_ERROR, log);
+        }
+
+        CanonicalizedPublicKey encryptKey = signingKey;
+        try {
+            encryptKey = signingRing.getEncryptionSubKey();
+        } catch (PgpKeyNotFoundException e) {
+        }
+        String fingerprint = KeyFormattingUtils.convertFingerprintToHex(signingKey.getFingerprint());
+        String cryptFingerprint = KeyFormattingUtils.convertFingerprintToHex(encryptKey.getFingerprint());
+        if (!(mRequiredSignerFingerprint.equals(fingerprint) || mRequiredSignerFingerprint.equals(cryptFingerprint))) {
+            log.add(LogType.MSG_VL_ERROR_MISSING_KEY, indent);
+            Log.d(Constants.TAG, "Key mismatch; wanted " + mRequiredSignerFingerprint +
+                    " got " + fingerprint + "/" + cryptFingerprint);
+            return new DecryptVerifyResult(DecryptVerifyResult.RESULT_ERROR, log);
+        }
+
+        OpenPgpSignatureResultBuilder signatureResultBuilder = new OpenPgpSignatureResultBuilder();
+
+        PGPOnePassSignature signature = sigList.get(signatureIndex);
+        signatureResultBuilder.initValid(signingRing, signingKey);
+
+        JcaPGPContentVerifierBuilderProvider contentVerifierBuilderProvider =
+                new JcaPGPContentVerifierBuilderProvider()
+                        .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME);
+        signature.init(contentVerifierBuilderProvider, signingKey.getPublicKey());
+
+        o = pgpF.nextObject();
+
+        if (!(o instanceof PGPLiteralData)) {
+            log.add(LogType.MSG_VL_ERROR_MISSING_LITERAL, indent);
+            return new DecryptVerifyResult(DecryptVerifyResult.RESULT_ERROR, log);
+        }
+
+        PGPLiteralData literalData = (PGPLiteralData) o;
+
+        log.add(LogType.MSG_DC_CLEAR_DATA, indent + 1);
+        updateProgress(R.string.progress_decrypting, 85, 100);
+
+        InputStream dataIn = literalData.getInputStream();
+
+        int length;
+        byte[] buffer = new byte[1 << 16];
+        while ((length = dataIn.read(buffer)) > 0) {
+            mOutStream.write(buffer, 0, length);
+            signature.update(buffer, 0, length);
+        }
+
+        updateProgress(R.string.progress_verifying_signature, 95, 100);
+        log.add(LogType.MSG_VL_CLEAR_SIGNATURE_CHECK, indent + 1);
+
+        PGPSignatureList signatureList = (PGPSignatureList) pgpF.nextObject();
+        PGPSignature messageSignature = signatureList.get(signatureIndex);
+
+        // these are not cleartext signatures!
+        // TODO: what about binary signatures?
+        signatureResultBuilder.setSignatureOnly(false);
+
+        // Verify signature and check binding signatures
+        boolean validSignature = signature.verify(messageSignature);
+        if (validSignature) {
+            log.add(LogType.MSG_DC_CLEAR_SIGNATURE_OK, indent + 1);
+        } else {
+            log.add(LogType.MSG_DC_CLEAR_SIGNATURE_BAD, indent + 1);
+        }
+        signatureResultBuilder.setValidSignature(validSignature);
+
+        if (!signatureResultBuilder.isValidSignature()) {
+            log.add(LogType.MSG_VL_ERROR_INTEGRITY_CHECK, indent);
+            return new DecryptVerifyResult(DecryptVerifyResult.RESULT_ERROR, log);
+        }
+
+        updateProgress(R.string.progress_done, 100, 100);
+
+        log.add(LogType.MSG_VL_OK, indent);
+
+        // Return a positive result, with metadata and verification info
+        DecryptVerifyResult result =
+                new DecryptVerifyResult(DecryptVerifyResult.RESULT_OK, log);
+        result.setSignatureResult(signatureResultBuilder.build());
+        return result;
+    }
+
 
     /**
      * Decrypt and/or verifies binary or ascii armored pgp
