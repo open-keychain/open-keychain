@@ -45,6 +45,11 @@ public class KeychainIntentServiceHandler extends Handler {
     public static final String DATA_MESSAGE = "message";
     public static final String DATA_MESSAGE_ID = "message_id";
 
+    // keybase proof specific
+    public static final String KEYBASE_PROOF_URL = "keybase_proof_url";
+    public static final String KEYBASE_PRESENCE_URL = "keybase_presence_url";
+    public static final String KEYBASE_PRESENCE_LABEL = "keybase_presence_label";
+
     Activity mActivity;
     ProgressDialogFragment mProgressDialogFragment;
 

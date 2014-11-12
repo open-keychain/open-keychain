@@ -84,6 +84,12 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import de.measite.minidns.Client;
+import de.measite.minidns.Question;
+import de.measite.minidns.Record;
+import de.measite.minidns.record.Data;
+import de.measite.minidns.record.TXT;
+
 /**
  * This Service contains all important long lasting operations for APG. It receives Intents with
  * data from the activities or other apps, queues these intents, executes them, and stops itself
@@ -124,6 +130,7 @@ public class KeychainIntentService extends IntentService implements Progressable
     // encrypt, decrypt, import export
     public static final String TARGET = "target";
     public static final String SOURCE = "source";
+
     // possible targets:
     public static final int IO_BYTES = 1;
     public static final int IO_URI = 2;
@@ -321,12 +328,27 @@ public class KeychainIntentService extends IntentService implements Progressable
                     return;
                 }
 
+                String domain = prover.dnsTxtCheckRequired();
+                if (domain != null) {
+                    Record[] records = new Client().query(new Question(domain, Record.TYPE.TXT)).getAnswers();
+                    List<List<byte[]>> extents = new ArrayList<List<byte[]>>();
+                    for (Record r : records) {
+                        Data d = r.getPayload();
+                        if (d instanceof TXT) {
+                            extents.add(((TXT) d).getExtents());
+                        }
+                    }
+                    if (!prover.checkDnsTxt(extents)) {
+                        sendProofError(prover.getLog(), null);
+                        return;
+                    }
+                }
+
                 byte[] messageBytes = prover.getPgpMessage().getBytes();
                 if (prover.rawMessageCheckRequired()) {
                     InputStream messageByteStream = PGPUtil.getDecoderStream(new ByteArrayInputStream(messageBytes));
-                    String problem = prover.checkRawMessageBytes(messageByteStream);
-                    if (problem != null) {
-                        sendProofError(prover.getLog(), problem);
+                    if (!prover.checkRawMessageBytes(messageByteStream)) {
+                        sendProofError(prover.getLog(), null);
                         return;
                     }
                 }
@@ -365,6 +387,11 @@ public class KeychainIntentService extends IntentService implements Progressable
 
                 Bundle resultData = new Bundle();
                 resultData.putString(KeychainIntentServiceHandler.DATA_MESSAGE, "OK");
+
+                // these help the handler construct a useful human-readable message
+                resultData.putString(KeychainIntentServiceHandler.KEYBASE_PROOF_URL, prover.getProofUrl());
+                resultData.putString(KeychainIntentServiceHandler.KEYBASE_PRESENCE_URL, prover.getPresenceUrl());
+                resultData.putString(KeychainIntentServiceHandler.KEYBASE_PRESENCE_LABEL, prover.getPresenceLabel());
                 sendMessageToHandler(KeychainIntentServiceHandler.MESSAGE_OKAY, resultData);
             } catch (Exception e) {
                 sendErrorToHandler(e);
@@ -678,11 +705,12 @@ public class KeychainIntentService extends IntentService implements Progressable
 
     private void sendProofError(List<String> log, String label) {
         String msg = null;
+        label = (label == null) ? "" : label + ": ";
         for (String m : log) {
-            Log.e(Constants.TAG, label + ": " + m);
+            Log.e(Constants.TAG, label + m);
             msg = m;
         }
-        sendProofError(label + ": " + msg);
+        sendProofError(label + msg);
     }
 
     private void sendProofError(String msg) {

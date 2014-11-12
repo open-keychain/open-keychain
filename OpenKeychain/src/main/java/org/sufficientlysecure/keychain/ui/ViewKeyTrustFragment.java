@@ -324,9 +324,6 @@ public class ViewKeyTrustFragment extends LoaderFragment implements
     }
 
     private void appendIfOK(Hashtable<Integer, ArrayList<Proof>> table, Integer proofType, Proof proof) throws KeybaseException {
-        if (!proofIsOK(proof)) {
-            return;
-        }
         ArrayList<Proof> list = table.get(proofType);
         if (list == null) {
             list = new ArrayList<Proof>();
@@ -335,23 +332,16 @@ public class ViewKeyTrustFragment extends LoaderFragment implements
         list.add(proof);
     }
 
-    // We only accept http & https proofs. Maybe whitelist later?
-    private boolean proofIsOK(Proof proof) throws KeybaseException {
-        Uri uri = Uri.parse(proof.getServiceUrl());
-        String scheme = uri.getScheme();
-        return ("https".equalsIgnoreCase(scheme) || "http".equalsIgnoreCase(scheme));
-    }
-
     // which proofs do we have working verifiers for?
     private boolean haveProofFor(int proofType) {
         switch (proofType) {
             case Proof.PROOF_TYPE_TWITTER: return true;
             case Proof.PROOF_TYPE_GITHUB: return true;
-            case Proof.PROOF_TYPE_DNS: return false;
+            case Proof.PROOF_TYPE_DNS: return true;
             case Proof.PROOF_TYPE_WEB_SITE: return true;
             case Proof.PROOF_TYPE_HACKERNEWS: return true;
-            case Proof.PROOF_TYPE_COINBASE: return false;
-            case Proof.PROOF_TYPE_REDDIT: return false;
+            case Proof.PROOF_TYPE_COINBASE: return true;
+            case Proof.PROOF_TYPE_REDDIT: return true;
             default: return false;
         }
     }
@@ -381,47 +371,69 @@ public class ViewKeyTrustFragment extends LoaderFragment implements
                     SpannableStringBuilder ssb = new SpannableStringBuilder();
 
                     if ((msg != null) && msg.equals("OK")) {
-                        //yay
-                        String serviceUrl, urlLabel, postUrl;
-                        try {
-                            serviceUrl = proof.getServiceUrl();
-                            if (serviceUrl.startsWith("https://")) {
-                                urlLabel = serviceUrl.substring("https://".length());
-                            } else if (serviceUrl.startsWith("http://")) {
-                                urlLabel = serviceUrl.substring("http://".length());
-                            } else {
-                                urlLabel = serviceUrl;
-                            }
-                            postUrl = proof.getHumanUrl();
 
-                        } catch (KeybaseException e) {
-                            throw new RuntimeException(e);
+                        //yay
+                        String proofUrl = returnData.getString(KeychainIntentServiceHandler.KEYBASE_PROOF_URL);
+                        String presenceUrl = returnData.getString(KeychainIntentServiceHandler.KEYBASE_PRESENCE_URL);
+                        String presenceLabel = returnData.getString(KeychainIntentServiceHandler.KEYBASE_PRESENCE_LABEL);
+
+                        String proofLabel;
+                        switch (proof.getType()) {
+                            case Proof.PROOF_TYPE_TWITTER:
+                                proofLabel = getString(R.string.keybase_twitter_proof);
+                                break;
+                            case Proof.PROOF_TYPE_DNS:
+                                proofLabel = getString(R.string.keybase_dns_proof);
+                                break;
+                            case Proof.PROOF_TYPE_WEB_SITE:
+                                proofLabel = getString(R.string.keybase_web_site_proof);
+                                break;
+                            case Proof.PROOF_TYPE_GITHUB:
+                                proofLabel = getString(R.string.keybase_github_proof);
+                                break;
+                            case Proof.PROOF_TYPE_REDDIT:
+                                proofLabel = getString(R.string.keybase_reddit_proof);
+                                break;
+                            default:
+                                proofLabel = getString(R.string.keybase_a_post);
+                                break;
                         }
+
                         ssb.append(getString(R.string.keybase_proof_succeeded));
                         StyleSpan bold = new StyleSpan(Typeface.BOLD);
                         ssb.setSpan(bold, 0, ssb.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
                         ssb.append("\n\n");
                         int length = ssb.length();
-                        String segment = getString(R.string.keybase_a_post);
-                        ssb.append(segment);
-                        URLSpan postLink = new URLSpan(postUrl);
-                        ssb.setSpan(postLink, length, length + segment.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                        ssb.append(" ").append(getString(R.string.keybase_fetched_from)).append(" ");
-                        URLSpan serviceLink = new URLSpan(serviceUrl);
+                        ssb.append(proofLabel);
+                        if (proofUrl != null) {
+                            URLSpan postLink = new URLSpan(proofUrl);
+                            ssb.setSpan(postLink, length, length + proofLabel.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                        }
+                        if (Proof.PROOF_TYPE_DNS == proof.getType()) {
+                            ssb.append(" ").append(getString(R.string.keybase_for_the_domain)).append(" ");
+                        } else {
+                            ssb.append(" ").append(getString(R.string.keybase_fetched_from)).append(" ");
+                        }
                         length = ssb.length();
-                        ssb.append(urlLabel);
-                        ssb.setSpan(serviceLink, length, length + urlLabel.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                        URLSpan presenceLink = new URLSpan(presenceUrl);
+                        ssb.append(presenceLabel);
+                        ssb.setSpan(presenceLink, length, length + presenceLabel.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                        if (Proof.PROOF_TYPE_REDDIT == proof.getType()) {
+                            ssb.append(", ").
+                                    append(getString(R.string.keybase_reddit_attribution)).
+                                    append(" “").append(proof.getHandle()).append("”, ");
+                        }
                         ssb.append(" ").append(getString(R.string.keybase_contained_signature));
-
                     } else {
+                        // verification failed!
                         msg = returnData.getString(KeychainIntentServiceHandler.DATA_ERROR);
                         ssb.append(getString(R.string.keybase_proof_failure));
                         if (msg == null) {
                             msg = getString(R.string.keybase_unknown_proof_failure);
-                            StyleSpan bold = new StyleSpan(Typeface.BOLD);
-                            ssb.setSpan(bold, 0, ssb.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                            ssb.append("\n\n").append(msg);
                         }
+                        StyleSpan bold = new StyleSpan(Typeface.BOLD);
+                        ssb.setSpan(bold, 0, ssb.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                        ssb.append("\n\n").append(msg);
                     }
                     mProofVerifyHeader.setVisibility(View.VISIBLE);
                     mProofVerifyDetail.setVisibility(View.VISIBLE);
