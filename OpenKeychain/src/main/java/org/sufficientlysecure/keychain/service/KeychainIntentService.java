@@ -85,6 +85,7 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import de.measite.minidns.Client;
+import de.measite.minidns.DNSMessage;
 import de.measite.minidns.Question;
 import de.measite.minidns.Record;
 import de.measite.minidns.record.Data;
@@ -330,7 +331,12 @@ public class KeychainIntentService extends IntentService implements Progressable
 
                 String domain = prover.dnsTxtCheckRequired();
                 if (domain != null) {
-                    Record[] records = new Client().query(new Question(domain, Record.TYPE.TXT)).getAnswers();
+                    DNSMessage dnsQuery =  new Client().query(new Question(domain, Record.TYPE.TXT));
+                    if (dnsQuery == null) {
+                        sendProofError(prover.getLog(), getString(R.string.keybase_dns_query_failure));
+                        return;
+                    }
+                    Record[] records = dnsQuery.getAnswers();
                     List<List<byte[]>> extents = new ArrayList<List<byte[]>>();
                     for (Record r : records) {
                         Data d = r.getPayload();

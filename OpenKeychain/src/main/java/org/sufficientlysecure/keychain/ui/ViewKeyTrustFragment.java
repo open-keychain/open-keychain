@@ -190,6 +190,7 @@ public class ViewKeyTrustFragment extends LoaderFragment implements
                 mStartSearch.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
+                        mStartSearch.setEnabled(false);
                         new DescribeKey().execute(fingerprint);
                     }
                 });
