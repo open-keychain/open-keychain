@@ -268,14 +268,15 @@ public class ViewKeyTrustFragment extends LoaderFragment implements
             if (haveProofFor(proof.getType())) {
                 ssb.append("\u00a0[");
                 startAt = ssb.length();
-                ssb.append("Verify");
+                String verify = getString(R.string.keybase_verify);
+                ssb.append(verify);
                 ClickableSpan clicker = new ClickableSpan() {
                     @Override
                     public void onClick(View view) {
                         verify(proof, fingerprint);
                     }
                 };
-                ssb.setSpan(clicker, startAt, startAt + "Verify".length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                ssb.setSpan(clicker, startAt, startAt + verify.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
                 ssb.append("]");
             }
             return ssb;

@@ -575,6 +575,7 @@
     <string name="keybase_github_proof">"A gist"</string>
     <string name="keybase_reddit_proof">"A JSON file"</string>
     <string name="keybase_reddit_attribution">"attributed by Reddit to"</string>
+    <string name="keybase_verify">"Verify"</string>
 
     <!-- Edit key -->
     <string name="edit_key_action_change_passphrase">"Change Passphrase"</string>
