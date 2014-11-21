@@ -274,17 +274,11 @@ public class PgpDecryptVerify extends BaseOperation {
             return new DecryptVerifyResult(DecryptVerifyResult.RESULT_ERROR, log);
         }
 
-        CanonicalizedPublicKey encryptKey = signingKey;
-        try {
-            encryptKey = signingRing.getEncryptionSubKey();
-        } catch (PgpKeyNotFoundException e) {
-        }
-        String fingerprint = KeyFormattingUtils.convertFingerprintToHex(signingKey.getFingerprint());
-        String cryptFingerprint = KeyFormattingUtils.convertFingerprintToHex(encryptKey.getFingerprint());
-        if (!(mRequiredSignerFingerprint.equals(fingerprint) || mRequiredSignerFingerprint.equals(cryptFingerprint))) {
+        String fingerprint = KeyFormattingUtils.convertFingerprintToHex(signingRing.getFingerprint());
+        if (!(mRequiredSignerFingerprint.equals(fingerprint))) {
             log.add(LogType.MSG_VL_ERROR_MISSING_KEY, indent);
-            Log.d(Constants.TAG, "Key mismatch; wanted " + mRequiredSignerFingerprint +
-                    " got " + fingerprint + "/" + cryptFingerprint);
+            Log.d(Constants.TAG, "Fingerprint mismatch; wanted " + mRequiredSignerFingerprint +
+                    " got " + fingerprint + "!");
             return new DecryptVerifyResult(DecryptVerifyResult.RESULT_ERROR, log);
         }
 
