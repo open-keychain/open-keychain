@@ -1,10 +1,3 @@
-package org.sufficientlysecure.keychain.util;
-
-import android.content.Context;
-import android.content.Intent;
-import android.content.pm.LabeledIntent;
-import android.content.pm.ResolveInfo;
-import android.os.Build;
 /*
  * Copyright (C) 2014 Dominik Schürmann <dominik@dominikschuermann.de>
  *
@@ -22,6 +15,13 @@ import android.os.Build;
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+package org.sufficientlysecure.keychain.util;
+
+import android.content.Context;
+import android.content.Intent;
+import android.content.pm.LabeledIntent;
+import android.content.pm.ResolveInfo;
+import android.os.Build;
 import android.os.Parcelable;
 
 import java.util.ArrayList;
@@ -38,7 +38,7 @@ public class ShareHelper {
     }
 
     /**
-     * Create Intent Chooser but exclude OK's EncryptActivity.
+     * Create Intent Chooser but exclude specific activites, e.g., EncryptActivity to prevent encrypting again
      * <p/>
      * Put together from some stackoverflow posts...
      */

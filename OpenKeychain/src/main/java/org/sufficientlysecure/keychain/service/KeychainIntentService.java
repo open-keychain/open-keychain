@@ -78,7 +78,7 @@ import java.util.Iterator;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
- * This Service contains all important long lasting operations for APG. It receives Intents with
+ * This Service contains all important long lasting operations for OpenKeychain. It receives Intents with
  * data from the activities or other apps, queues these intents, executes them, and stops itself
  * after doing them.
  */

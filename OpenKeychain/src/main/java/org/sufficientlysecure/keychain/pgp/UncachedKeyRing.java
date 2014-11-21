@@ -330,7 +330,7 @@ public class UncachedKeyRing {
                 }
 
                 if (cert.isLocal()) {
-                    // Creation date in the future? No way!
+                    // Remove revocation certs with "local" flag
                     log.add(LogType.MSG_KC_REVOKE_BAD_LOCAL, indent);
                     modified = PGPPublicKey.removeCertification(modified, zert);
                     badCerts += 1;
