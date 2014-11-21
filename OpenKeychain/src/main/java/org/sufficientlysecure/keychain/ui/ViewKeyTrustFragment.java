@@ -362,7 +362,7 @@ public class ViewKeyTrustFragment extends LoaderFragment implements
         // Create a new Messenger for the communication back after proof work is done
         //
         KeychainIntentServiceHandler handler = new KeychainIntentServiceHandler(getActivity(),
-                getString(R.string.progress_decrypting), ProgressDialog.STYLE_HORIZONTAL) {
+                getString(R.string.progress_verifying_signature), ProgressDialog.STYLE_HORIZONTAL) {
             public void handleMessage(Message message) {
                 // handle messages by standard KeychainIntentServiceHandler first
                 super.handleMessage(message);

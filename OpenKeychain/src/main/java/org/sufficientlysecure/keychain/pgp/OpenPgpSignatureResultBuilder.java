@@ -84,10 +84,6 @@ public class OpenPgpSignatureResultBuilder {
         this.mUserIds = userIds;
     }
 
-    public boolean isValidSignature() {
-        return mValidSignature;
-    }
-
     public void initValid(CanonicalizedPublicKeyRing signingRing,
                           CanonicalizedPublicKey signingKey) {
         setSignatureAvailable(true);

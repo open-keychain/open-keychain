@@ -30,6 +30,7 @@ import com.textuality.keybase.lib.Proof;
 import com.textuality.keybase.lib.prover.Prover;
 
 import org.json.JSONObject;
+import org.openintents.openpgp.OpenPgpSignatureResult;
 import org.spongycastle.openpgp.PGPUtil;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;

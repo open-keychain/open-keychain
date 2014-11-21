@@ -22,6 +22,7 @@ import android.content.Context;
 import android.webkit.MimeTypeMap;
 
 import org.openintents.openpgp.OpenPgpMetadata;
+import org.openintents.openpgp.OpenPgpSignatureResult;
 import org.spongycastle.bcpg.ArmoredInputStream;
 import org.spongycastle.openpgp.PGPCompressedData;
 import org.spongycastle.openpgp.PGPEncryptedData;
@@ -332,7 +333,10 @@ public class PgpDecryptVerify extends BaseOperation {
         }
         signatureResultBuilder.setValidSignature(validSignature);
 
-        if (!signatureResultBuilder.isValidSignature()) {
+        OpenPgpSignatureResult signatureResult = signatureResultBuilder.build();
+
+        if (signatureResult.getStatus() != OpenPgpSignatureResult.SIGNATURE_SUCCESS_CERTIFIED
+                || signatureResult.getStatus() != OpenPgpSignatureResult.SIGNATURE_SUCCESS_UNCERTIFIED) {
             log.add(LogType.MSG_VL_ERROR_INTEGRITY_CHECK, indent);
             return new DecryptVerifyResult(DecryptVerifyResult.RESULT_ERROR, log);
         }
@@ -344,7 +348,7 @@ public class PgpDecryptVerify extends BaseOperation {
         // Return a positive result, with metadata and verification info
         DecryptVerifyResult result =
                 new DecryptVerifyResult(DecryptVerifyResult.RESULT_OK, log);
-        result.setSignatureResult(signatureResultBuilder.build());
+        result.setSignatureResult(signatureResult);
         return result;
     }
 
@@ -773,6 +777,8 @@ public class PgpDecryptVerify extends BaseOperation {
             metadata = null;
         }
 
+        OpenPgpSignatureResult signatureResult = signatureResultBuilder.build();
+
         if (encryptedData.isIntegrityProtected()) {
             updateProgress(R.string.progress_verifying_integrity, 95, 100);
 
@@ -786,7 +792,8 @@ public class PgpDecryptVerify extends BaseOperation {
             // If no valid signature is present:
             // Handle missing integrity protection like failed integrity protection!
             // The MDC packet can be stripped by an attacker!
-            if (!signatureResultBuilder.isValidSignature()) {
+            if (signatureResult.getStatus() != OpenPgpSignatureResult.SIGNATURE_SUCCESS_CERTIFIED
+                    || signatureResult.getStatus() != OpenPgpSignatureResult.SIGNATURE_SUCCESS_UNCERTIFIED) {
                 log.add(LogType.MSG_DC_ERROR_INTEGRITY_CHECK, indent);
                 return new DecryptVerifyResult(DecryptVerifyResult.RESULT_ERROR, log);
             }
@@ -800,7 +807,7 @@ public class PgpDecryptVerify extends BaseOperation {
         DecryptVerifyResult result =
                 new DecryptVerifyResult(DecryptVerifyResult.RESULT_OK, log);
         result.setDecryptMetadata(metadata);
-        result.setSignatureResult(signatureResultBuilder.build());
+        result.setSignatureResult(signatureResult);
         return result;
 
     }
