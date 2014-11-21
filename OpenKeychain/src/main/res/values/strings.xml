@@ -115,9 +115,9 @@
     <string name="label_file_ascii_armor">"Enable ASCII Armor"</string>
     <string name="label_write_version_header">"Let others know that you're using OpenKeychain"</string>
     <string name="label_write_version_header_summary">"Writes 'OpenKeychain v2.7' to OpenPGP signatures, ciphertext, and exported keys"</string>
-    <string name="label_use_default_yubikey_pin">"Use default Yubikey PIN"</string>
-    <string name="label_use_num_keypad_for_yubikey_pin">Use number keypad for Yubikey PIN</string>
-    <string name="label_label_use_default_yubikey_pin_summary">"Uses default PIN (123456) to access Yubikeys over NFC"</string>
+    <string name="label_use_default_yubikey_pin">"Use default YubiKey PIN"</string>
+    <string name="label_use_num_keypad_for_yubikey_pin">Use number keypad for YubiKey PIN</string>
+    <string name="label_label_use_default_yubikey_pin_summary">"Uses default PIN (123456) to access YubiKeys over NFC"</string>
     <string name="label_asymmetric_from">"Signed by:"</string>
     <string name="label_to">"Encrypt to:"</string>
     <string name="label_delete_after_encryption">"Delete file after encryption"</string>
@@ -205,7 +205,8 @@
     <string name="passphrase_must_not_be_empty">"Please enter a passphrase."</string>
     <string name="passphrase_for_symmetric_encryption">"Symmetric encryption."</string>
     <string name="passphrase_for">"Enter passphrase for '%s'"</string>
-    <string name="yubikey_pin">"Enter PIN to access Yubikey for '%s'"</string>
+    <string name="yubikey_pin">"Enter PIN to access YubiKey for '%s'"</string>
+    <string name="nfc_text">"Hold YubiKey against the back of your device."</string>
     <string name="file_delete_confirmation">"Are you sure you want to delete\n%s?"</string>
     <string name="file_delete_successful">"Successfully deleted."</string>
     <string name="no_file_selected">"Select a file first."</string>

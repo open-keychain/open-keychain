@@ -1,30 +1,24 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     android:paddingLeft="16dp"
     android:paddingRight="16dp"
-    android:paddingTop="8dp"
-    android:paddingBottom="8dp"
-    android:background="#FFFFFFFF"
-    tools:context="org.sufficientlysecure.keychain.nfc.NfcActivityFull">
+    android:paddingTop="16dp"
+    android:paddingBottom="16dp">
 
     <TextView
-        android:text="Hold Yubikey against the back of your device!"
+        android:text="@string/nfc_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="@android:style/TextAppearance.Large"
-        android:id="@+id/textView"
+        android:id="@+id/nfc_text"
         android:gravity="center"
         android:layout_gravity="center" />
 
     <ImageView
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/imageView"
-        android:src="@drawable/yubikey_neo"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        android:layout_below="@+id/textView" />
+        android:src="@drawable/yubikey_phone" />
 
-</RelativeLayout>
+</LinearLayout>
