@@ -77,7 +77,7 @@ public class KeychainApplication extends Application {
         }
         */
 
-        // Create APG directory on sdcard if not existing
+        // Create OpenKeychain directory on sdcard if not existing
         if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
             if (!Constants.Path.APP_DIR.exists() && !Constants.Path.APP_DIR.mkdirs()) {
                 // ignore this for now, it's not crucial

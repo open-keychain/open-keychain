@@ -6,7 +6,6 @@
 
 <suppressions>
   <suppress files="(Constants|Id|R|PgpConversionHelper)\.java" checks=".*NameCheck"/>
-  <suppress files="Apg.java" checks="LineLength"/>
   <suppress files="FileDialog.java" checks="StaticVariableNameCheck"/>
   <suppress files="PRNGFixes.java" checks=".*"/>
 </suppressions>
