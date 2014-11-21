@@ -155,7 +155,6 @@ public class KeychainIntentService extends IntentService implements Progressable
     public static final String IMPORT_KEY_SERVER = "import_key_server";
 
     // export key
-    public static final String EXPORT_OUTPUT_STREAM = "export_output_stream";
     public static final String EXPORT_FILENAME = "export_filename";
     public static final String EXPORT_URI = "export_uri";
     public static final String EXPORT_SECRET = "export_secret";
@@ -181,10 +180,6 @@ public class KeychainIntentService extends IntentService implements Progressable
 
     // decrypt/verify
     public static final String RESULT_DECRYPTED_BYTES = "decrypted_data";
-    public static final String RESULT_DECRYPT_VERIFY_RESULT = "signature";
-
-    // export
-    public static final String RESULT_EXPORT = "exported";
 
     Messenger mMessenger;
 
@@ -712,15 +707,6 @@ public class KeychainIntentService extends IntentService implements Progressable
         }
     }
 
-    @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
-        if (ACTION_CANCEL.equals(intent.getAction())) {
-            mActionCanceled.set(true);
-            return START_NOT_STICKY;
-        }
-        return super.onStartCommand(intent, flags, startId);
-    }
-
     private String getOriginalFilename(Bundle data) throws PgpGeneralException, FileNotFoundException {
         int target = data.getInt(TARGET);
         switch (target) {
@@ -784,5 +770,14 @@ public class KeychainIntentService extends IntentService implements Progressable
 
                 break;
         }
+    }
+
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        if (ACTION_CANCEL.equals(intent.getAction())) {
+            mActionCanceled.set(true);
+            return START_NOT_STICKY;
+        }
+        return super.onStartCommand(intent, flags, startId);
     }
 }
