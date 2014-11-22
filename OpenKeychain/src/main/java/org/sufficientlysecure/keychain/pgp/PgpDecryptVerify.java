@@ -336,7 +336,7 @@ public class PgpDecryptVerify extends BaseOperation {
         OpenPgpSignatureResult signatureResult = signatureResultBuilder.build();
 
         if (signatureResult.getStatus() != OpenPgpSignatureResult.SIGNATURE_SUCCESS_CERTIFIED
-                || signatureResult.getStatus() != OpenPgpSignatureResult.SIGNATURE_SUCCESS_UNCERTIFIED) {
+                && signatureResult.getStatus() != OpenPgpSignatureResult.SIGNATURE_SUCCESS_UNCERTIFIED) {
             log.add(LogType.MSG_VL_ERROR_INTEGRITY_CHECK, indent);
             return new DecryptVerifyResult(DecryptVerifyResult.RESULT_ERROR, log);
         }
@@ -793,7 +793,7 @@ public class PgpDecryptVerify extends BaseOperation {
             // Handle missing integrity protection like failed integrity protection!
             // The MDC packet can be stripped by an attacker!
             if (signatureResult.getStatus() != OpenPgpSignatureResult.SIGNATURE_SUCCESS_CERTIFIED
-                    || signatureResult.getStatus() != OpenPgpSignatureResult.SIGNATURE_SUCCESS_UNCERTIFIED) {
+                    && signatureResult.getStatus() != OpenPgpSignatureResult.SIGNATURE_SUCCESS_UNCERTIFIED) {
                 log.add(LogType.MSG_DC_ERROR_INTEGRITY_CHECK, indent);
                 return new DecryptVerifyResult(DecryptVerifyResult.RESULT_ERROR, log);
             }
