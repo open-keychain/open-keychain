@@ -336,7 +336,8 @@ public class PgpDecryptVerify extends BaseOperation {
         OpenPgpSignatureResult signatureResult = signatureResultBuilder.build();
 
         if (signatureResult.getStatus() != OpenPgpSignatureResult.SIGNATURE_SUCCESS_CERTIFIED
-                || signatureResult.getStatus() != OpenPgpSignatureResult.SIGNATURE_SUCCESS_UNCERTIFIED) {
+                && signatureResult.getStatus() != OpenPgpSignatureResult.SIGNATURE_SUCCESS_UNCERTIFIED) {
+            Log.d(Constants.TAG, "STATUS IS " + signatureResult.getStatus());
             log.add(LogType.MSG_VL_ERROR_INTEGRITY_CHECK, indent);
             return new DecryptVerifyResult(DecryptVerifyResult.RESULT_ERROR, log);
         }

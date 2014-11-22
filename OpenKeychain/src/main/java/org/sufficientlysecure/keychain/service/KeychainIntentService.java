@@ -30,7 +30,6 @@ import com.textuality.keybase.lib.Proof;
 import com.textuality.keybase.lib.prover.Prover;
 
 import org.json.JSONObject;
-import org.openintents.openpgp.OpenPgpSignatureResult;
 import org.spongycastle.openpgp.PGPUtil;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
@@ -324,6 +323,11 @@ public class KeychainIntentService extends IntentService implements Progressable
                     sendProofError(prover.getLog(), getString(R.string.keybase_problem_fetching_evidence));
                     return;
                 }
+                String requiredFingerprint = data.getString(KEYBASE_REQUIRED_FINGERPRINT);
+                if (!prover.checkFingerprint(requiredFingerprint)) {
+                    sendProofError(getString(R.string.keybase_key_mismatch));
+                    return;
+                }
 
                 String domain = prover.dnsTxtCheckRequired();
                 if (domain != null) {
@@ -361,13 +365,12 @@ public class KeychainIntentService extends IntentService implements Progressable
 
                 InputData inputData = createDecryptInputData(data);
                 OutputStream outStream = createCryptOutputStream(data);
-                String fingerprint = data.getString(KEYBASE_REQUIRED_FINGERPRINT);
 
                 PgpDecryptVerify.Builder builder = new PgpDecryptVerify.Builder(
                         this, new ProviderHelper(this), this,
                         inputData, outStream
                 );
-                builder.setSignedLiteralData(true).setRequiredSignerFingerprint(fingerprint);
+                builder.setSignedLiteralData(true).setRequiredSignerFingerprint(requiredFingerprint);
 
                 DecryptVerifyResult decryptVerifyResult = builder.build().execute();
                 outStream.close();
