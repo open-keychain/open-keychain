@@ -562,6 +562,7 @@
     <string name="keybase_proof_failure">"Unfortunately this proof cannot be verified."</string>
     <string name="keybase_unknown_proof_failure">"Unrecognized problem with proof checker"</string>
     <string name="keybase_problem_fetching_evidence">"Problem with proof evidence"</string>
+    <string name="keybase_key_mismatch">"Key fingerprint doesn’t match that in proof post"</string>
     <string name="keybase_dns_query_failure">"DNS TXT Record retrieval failed"</string>
     <string name="keybase_no_prover_found">"No proof checker found for"</string>
     <string name="keybase_message_payload_mismatch">"Decrypted proof post does not match expected value"</string>
