@@ -19,7 +19,6 @@
     android:layout_height="match_parent"
     android:dividerPadding="12dp"
     android:orientation="horizontal"
-    android:divider="@drawable/abc_list_divider_holo_light"
     android:showDividers="end" >
 
     <include layout="@layout/actionbar_include_done_button" />
