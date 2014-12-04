@@ -3,8 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="org.sufficientlysecure.keychain"
     android:installLocation="auto"
-    android:versionCode="31200"
-    android:versionName="3.1.2">
+    android:versionCode="31201"
+    android:versionName="3.2beta1">
 
     <!--
         General remarks
@@ -15,7 +15,7 @@
         Association of file types to Keychain
         =====================================
         General remarks about file ending conventions:
-        - *.gpg for binary files 
+        - *.gpg for binary files
         - *.asc for ascii armored files The actual content can be anything.
         
         The file ending only shows if it is binary or ascii encoded.
