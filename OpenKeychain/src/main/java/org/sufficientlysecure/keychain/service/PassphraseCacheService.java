@@ -456,7 +456,7 @@ public class PassphraseCacheService extends Service {
             Intent intent = new Intent(getApplicationContext(), PassphraseCacheService.class);
             intent.setAction(ACTION_PASSPHRASE_CACHE_CLEAR);
             builder.addAction(
-                    R.drawable.abc_ic_clear_normal,
+                    R.drawable.abc_ic_clear_mtrl_alpha,
                     getString(R.string.passp_cache_notif_clear),
                     PendingIntent.getService(
                             getApplicationContext(),

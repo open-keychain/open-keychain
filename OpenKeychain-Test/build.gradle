@@ -1,14 +1,11 @@
 buildscript {
     repositories {
-        mavenCentral()
-        // need this for com.novoda:gradle-android-test-plugin:0.9.9-SNAPSHOT below (0.9.3 in repos doesn't work!)
-        // run ./install-custom-gradle-test-plugin.sh to pull the thing into the local repository
-        mavenLocal()
+        jcenter()
     }
 
     dependencies {
         // NOTE: Always use fixed version codes not dynamic ones, e.g. 0.7.3 instead of 0.7.+, see README for more information
-        classpath 'com.novoda:gradle-android-test-plugin:0.9.9-SNAPSHOT'
+        classpath 'com.novoda:gradle-android-test-plugin:0.10.0'
     }
 }
 
@@ -51,16 +48,17 @@ android {
 }
 
 jacoco {
-    toolVersion = "0.7.0.201403182114"
+    toolVersion = "0.7.2.201409121644"
 }
 
-coverageSourceDirs = [
+
+def coverageSourceDirs = [
         '../OpenKeychain/src/main/java',
         '../OpenKeychain/src/gen',
         '../OpenKeychain/build/source/apt/debug',
         '../OpenKeychain/build/source/generated/buildConfig/debug',
         '../OpenKeychain/build/source/generated/r/debug'
-        ]
+    ]
 
 jacocoTestReport {
     reports {

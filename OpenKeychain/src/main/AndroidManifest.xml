@@ -15,7 +15,7 @@
         Association of file types to Keychain
         =====================================
         General remarks about file ending conventions:
-        - *.gpg for binary files 
+        - *.gpg for binary files
         - *.asc for ascii armored files The actual content can be anything.
         
         The file ending only shows if it is binary or ascii encoded.
