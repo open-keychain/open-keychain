@@ -39,9 +39,9 @@ public class FirstTimeActivity extends ActionBarActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
         supportRequestWindowFeature(Window.FEATURE_NO_TITLE);
+
+        super.onCreate(savedInstanceState);
 
         setContentView(R.layout.first_time_activity);
 
