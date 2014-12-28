@@ -49,11 +49,13 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
+import java.util.TimeZone;
 import java.util.TreeSet;
 
 /** Wrapper around PGPKeyRing class, to be constructed from bytes.
@@ -276,7 +278,10 @@ public class UncachedKeyRing {
             return null;
         }
 
-        final Date now = new Date();
+        Calendar nowCal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+        // allow for diverging clocks up to one day when checking creation time
+        nowCal.add(Calendar.DAY_OF_YEAR, 1);
+        final Date nowPlusOneDay = nowCal.getTime();
 
         int redundantCerts = 0, badCerts = 0;
 
@@ -321,7 +326,7 @@ public class UncachedKeyRing {
                     continue;
                 }
 
-                if (cert.getCreationTime().after(now)) {
+                if (cert.getCreationTime().after(nowPlusOneDay)) {
                     // Creation date in the future? No way!
                     log.add(LogType.MSG_KC_REVOKE_BAD_TIME, indent);
                     modified = PGPPublicKey.removeCertification(modified, zert);
@@ -410,7 +415,7 @@ public class UncachedKeyRing {
                             continue;
                         }
 
-                        if (cert.getCreationTime().after(now)) {
+                        if (cert.getCreationTime().after(nowPlusOneDay)) {
                             // Creation date in the future? No way!
                             log.add(LogType.MSG_KC_UID_BAD_TIME, indent);
                             modified = PGPPublicKey.removeCertification(modified, rawUserId, zert);
@@ -592,7 +597,7 @@ public class UncachedKeyRing {
                     continue;
                 }
 
-                if (cert.getCreationTime().after(now)) {
+                if (cert.getCreationTime().after(nowPlusOneDay)) {
                     // Creation date in the future? No way!
                     log.add(LogType.MSG_KC_SUB_BAD_TIME, indent);
                     badCerts += 1;
