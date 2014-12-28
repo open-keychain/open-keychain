@@ -64,6 +64,7 @@ import org.sufficientlysecure.keychain.support.KeyringTestingHelper.RawPacket;
 import java.io.ByteArrayInputStream;
 import java.security.Security;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Iterator;
 
@@ -355,18 +356,18 @@ public class UncachedKeyringCanonicalizeTest {
 
     @Test public void testSignatureFuture() throws Exception {
 
-        // generate future
-        subHashedPacketsGen.setSignatureCreationTime(false, new Date(new Date().getTime() + 1000 * 1000));
+        // generate future timestamp (we allow up to one day future timestamps)
+        Calendar cal = Calendar.getInstance();
+        cal.add(Calendar.DAY_OF_YEAR, 2);
+        subHashedPacketsGen.setSignatureCreationTime(false, cal.getTime());
 
         injectEverytype(secretKey, ring, subHashedPacketsGen);
-
 
     }
 
     @Test public void testSignatureLocal() throws Exception {
 
-        // generate future
-        subHashedPacketsGen.setSignatureCreationTime(false, new Date());
+        // make key local only
         subHashedPacketsGen.setExportable(false, false);
 
         injectEverytype(secretKey, ring, subHashedPacketsGen);
