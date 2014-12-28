@@ -33,17 +33,16 @@ Development mailinglist at http://groups.google.com/d/forum/openpgp-keychain-dev
 1. Get all external submodules with ``git submodule update --init --recursive``
 2. Have Android SDK "tools", "platform-tools", and "build-tools" directories in your PATH (http://developer.android.com/sdk/index.html)
 3. Open the Android SDK Manager (shell command: ``android``).  
-Expand the Tools directory and select "Android SDK Build-tools (Version 19.1)".  
+Expand the Tools directory and select "Android SDK Build-tools (Version 21.1.1)".  
 Expand the Extras directory and install "Android Support Repository"  
-Select everything for the newest SDK Platform (API-Level 19)
+Select everything for the newest SDK Platform (API-Level 21)
 4. Export ANDROID_HOME pointing to your Android SDK
 5. Execute ``./gradlew build``
 6. You can install the app with ``adb install -r OpenKeychain/build/outputs/apk/OpenKeychain-debug-unaligned.apk``
 
 ### Run Tests
 1. Use OpenJDK instead of Oracle JDK
-2. Execute ``./prepare-tests.sh``
-3. Execute ``./gradlew build``
+3. Execute ``./gradlew test``
 
 ### Build API Demo with Gradle
 
