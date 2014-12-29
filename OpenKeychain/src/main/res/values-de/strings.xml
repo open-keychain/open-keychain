@@ -607,7 +607,7 @@
   <string name="msg_kc_revoke_bad_err">Entferne fehlerhaftes Schlüsselbund Widerrufszertifikat</string>
   <string name="msg_kc_revoke_bad_local">Entferne Schlüsselbund Widerrufszertifikat mit \"Lokal\" Attribut</string>
   <string name="msg_kc_revoke_bad_time">Entferne Schlüsselbund Widerrufszertifikat mit zukünftigem Zeitstempel</string>
-  <string name="msg_kc_revoke_bad_type">Entferne Hauptschlüsselbeglaubigung unbekannter Art (%s)</string>
+  <string name="msg_kc_bad_type">Entferne Hauptschlüsselbeglaubigung unbekannter Art (%s)</string>
   <string name="msg_kc_revoke_bad">Entferne fehlerhaftes Schlüsselbund Widerrufszertifikat</string>
   <string name="msg_kc_revoke_dup">Entferne redundantes Schlüsselbund Widerrufszertifikat</string>
   <string name="msg_kc_sub">Verarbeite Unterschlüssel %s</string>

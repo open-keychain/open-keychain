@@ -652,7 +652,7 @@
   <string name="msg_kc_revoke_bad_err">Eliminando certificado defectuoso de revocación de juego de claves</string>
   <string name="msg_kc_revoke_bad_local">Eliminando certificado de revocación de juego de claves, con distintivo \"local\"</string>
   <string name="msg_kc_revoke_bad_time">Eliminando certificado de revocación de juego de claves, con marca de tiempo futura</string>
-  <string name="msg_kc_revoke_bad_type">Eliminando certificado de clave maestra, de tipo desconocido (%s)</string>
+  <string name="msg_kc_bad_type">Eliminando certificado de clave maestra, de tipo desconocido (%s)</string>
   <string name="msg_kc_revoke_bad_type_uid">Eliminando certificado de identificación de usuario en posición incorrecta</string>
   <string name="msg_kc_revoke_bad">Eliminando certificado defectuoso de revocación de juego de claves</string>
   <string name="msg_kc_revoke_dup">Eliminando certificado redundante de revocación de juego de claves </string>

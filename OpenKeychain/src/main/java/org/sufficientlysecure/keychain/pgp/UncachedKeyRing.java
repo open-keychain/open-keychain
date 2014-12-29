@@ -41,7 +41,6 @@ import org.sufficientlysecure.keychain.util.IterableIterator;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Utf8Util;
 
-import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -302,6 +301,7 @@ public class UncachedKeyRing {
 
             PGPPublicKey modified = masterKey;
             PGPSignature revocation = null;
+            PGPSignature notation = null;
             for (PGPSignature zert : new IterableIterator<PGPSignature>(masterKey.getKeySignatures())) {
                 int type = zert.getSignatureType();
 
@@ -318,9 +318,9 @@ public class UncachedKeyRing {
                 }
                 WrappedSignature cert = new WrappedSignature(zert);
 
-                if (type != PGPSignature.KEY_REVOCATION) {
+                if (type != PGPSignature.KEY_REVOCATION && type != PGPSignature.DIRECT_KEY) {
                     // Unknown type, just remove
-                    log.add(LogType.MSG_KC_REVOKE_BAD_TYPE, indent, "0x" + Integer.toString(type, 16));
+                    log.add(LogType.MSG_KC_BAD_TYPE, indent, "0x" + Integer.toString(type, 16));
                     modified = PGPPublicKey.removeCertification(modified, zert);
                     badCerts += 1;
                     continue;
@@ -329,14 +329,6 @@ public class UncachedKeyRing {
                 if (cert.getCreationTime().after(nowPlusOneDay)) {
                     // Creation date in the future? No way!
                     log.add(LogType.MSG_KC_REVOKE_BAD_TIME, indent);
-                    modified = PGPPublicKey.removeCertification(modified, zert);
-                    badCerts += 1;
-                    continue;
-                }
-
-                if (cert.isLocal()) {
-                    // Remove revocation certs with "local" flag
-                    log.add(LogType.MSG_KC_REVOKE_BAD_LOCAL, indent);
                     modified = PGPPublicKey.removeCertification(modified, zert);
                     badCerts += 1;
                     continue;
@@ -357,6 +349,41 @@ public class UncachedKeyRing {
                     continue;
                 }
 
+                if (cert.isLocal()) {
+                    // Remove revocation certs with "local" flag
+                    log.add(LogType.MSG_KC_REVOKE_BAD_LOCAL, indent);
+                    modified = PGPPublicKey.removeCertification(modified, zert);
+                    badCerts += 1;
+                    continue;
+                }
+
+                // special case: direct key signatures!
+                if (cert.getSignatureType() == PGPSignature.DIRECT_KEY) {
+                    // must be local, otherwise strip!
+                    if (!cert.isLocal()) {
+                        log.add(LogType.MSG_KC_BAD_TYPE, indent);
+                        modified = PGPPublicKey.removeCertification(modified, zert);
+                        badCerts += 1;
+                        continue;
+                    }
+
+                    // first notation? fine then.
+                    if (notation == null) {
+                        notation = zert;
+                        // more notations? at least one is superfluous, then.
+                    } else if (notation.getCreationTime().before(zert.getCreationTime())) {
+                        log.add(LogType.MSG_KC_NOTATION_DUP, indent);
+                        modified = PGPPublicKey.removeCertification(modified, notation);
+                        redundantCerts += 1;
+                        notation = zert;
+                    } else {
+                        log.add(LogType.MSG_KC_NOTATION_DUP, indent);
+                        modified = PGPPublicKey.removeCertification(modified, zert);
+                        redundantCerts += 1;
+                    }
+                    continue;
+                }
+
                 // first revocation? fine then.
                 if (revocation == null) {
                     revocation = zert;
@@ -369,6 +396,16 @@ public class UncachedKeyRing {
                 } else {
                     log.add(LogType.MSG_KC_REVOKE_DUP, indent);
                     modified = PGPPublicKey.removeCertification(modified, zert);
+                    redundantCerts += 1;
+                }
+            }
+
+            // If we have a notation packet, check if there is even any data in it?
+            if (notation != null) {
+                // If there isn't, might as well strip it
+                if (new WrappedSignature(notation).getNotation().isEmpty()) {
+                    log.add(LogType.MSG_KC_NOTATION_EMPTY, indent);
+                    modified = PGPPublicKey.removeCertification(modified, notation);
                     redundantCerts += 1;
                 }
             }

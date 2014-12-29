@@ -709,13 +709,15 @@
     <string name="msg_kc_error_master_algo">"The master key uses an unknown (%s) algorithm!"</string>
     <string name="msg_kc_error_dup_key">"Subkey %s occurs twice in keyring. Keyring is malformed, not importing!"</string>
     <string name="msg_kc_master">"Processing master key"</string>
+    <string name="msg_kc_bad_type">"Removing master key certificate of unknown type (%s)"</string>
     <string name="msg_kc_revoke_bad_err">"Removing bad keyring revocation certificate"</string>
     <string name="msg_kc_revoke_bad_local">"Removing keyring revocation certificate with "local" flag"</string>
     <string name="msg_kc_revoke_bad_time">"Removing keyring revocation certificate with future timestamp"</string>
-    <string name="msg_kc_revoke_bad_type">"Removing master key certificate of unknown type (%s)"</string>
     <string name="msg_kc_revoke_bad_type_uid">"Removing user ID certificate in bad position"</string>
     <string name="msg_kc_revoke_bad">"Removing bad keyring revocation certificate"</string>
     <string name="msg_kc_revoke_dup">"Removing redundant keyring revocation certificate"</string>
+    <string name="msg_kc_notation_dup">"Removing redundant notation certificate"</string>
+    <string name="msg_kc_notation_empty">"Removing empty notation certificate"</string>
     <string name="msg_kc_sub">"Processing subkey %s"</string>
     <string name="msg_kc_sub_bad">"Removing invalid subkey binding certificate"</string>
     <string name="msg_kc_sub_bad_err">"Removing bad subkey binding certificate"</string>

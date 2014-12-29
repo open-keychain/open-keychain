@@ -34,6 +34,7 @@ import org.spongycastle.openpgp.PGPSecretKeyRing;
 import org.spongycastle.openpgp.PGPSignature;
 import org.spongycastle.openpgp.PGPSignatureGenerator;
 import org.spongycastle.openpgp.PGPSignatureSubpacketGenerator;
+import org.spongycastle.openpgp.PGPSignatureSubpacketVector;
 import org.spongycastle.openpgp.operator.PBESecretKeyDecryptor;
 import org.spongycastle.openpgp.operator.PBESecretKeyEncryptor;
 import org.spongycastle.openpgp.operator.PGPContentSignerBuilder;
@@ -877,7 +878,8 @@ public class PgpKeyOperation {
                 log.add(LogType.MSG_MF_PASSPHRASE, indent);
                 indent += 1;
 
-                sKR = applyNewUnlock(sKR, masterPublicKey, passphrase, saveParcel.mNewUnlock, log, indent);
+                sKR = applyNewUnlock(sKR, masterPublicKey, masterPrivateKey,
+                        passphrase, saveParcel.mNewUnlock, log, indent);
                 if (sKR == null) {
                     // The error has been logged above, just return a bad state
                     return new EditKeyResult(EditKeyResult.RESULT_ERROR, log, null);
@@ -909,18 +911,59 @@ public class PgpKeyOperation {
     private static PGPSecretKeyRing applyNewUnlock(
             PGPSecretKeyRing sKR,
             PGPPublicKey masterPublicKey,
+            PGPPrivateKey masterPrivateKey,
             String passphrase,
             ChangeUnlockParcel newUnlock,
             OperationLog log, int indent) throws PGPException {
 
         if (newUnlock.mNewPassphrase != null) {
-            return applyNewPassphrase(sKR, masterPublicKey, passphrase, newUnlock.mNewPassphrase, log, indent);
+            sKR = applyNewPassphrase(sKR, masterPublicKey, passphrase, newUnlock.mNewPassphrase, log, indent);
+
+            // add packet with EMPTY notation data (updates old one, but will be stripped later)
+            PGPContentSignerBuilder signerBuilder = new JcaPGPContentSignerBuilder(
+                    masterPrivateKey.getPublicKeyPacket().getAlgorithm(), HashAlgorithmTags.SHA512)
+                    .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME);
+            PGPSignatureGenerator sGen = new PGPSignatureGenerator(signerBuilder);
+            { // set subpackets
+                PGPSignatureSubpacketGenerator hashedPacketsGen = new PGPSignatureSubpacketGenerator();
+                hashedPacketsGen.setExportable(false, false);
+                sGen.setHashedSubpackets(hashedPacketsGen.generate());
+            }
+            sGen.init(PGPSignature.DIRECT_KEY, masterPrivateKey);
+            PGPSignature emptySig = sGen.generateCertification(masterPublicKey);
+
+            masterPublicKey = PGPPublicKey.addCertification(masterPublicKey, emptySig);
+            PGPSecretKey.replacePublicKey(sKR.getSecretKey(), masterPublicKey);
+
+            return sKR;
+        }
+
+        if (newUnlock.mNewPin != null) {
+            sKR = applyNewPassphrase(sKR, masterPublicKey, passphrase, newUnlock.mNewPin, log, indent);
+
+            // add packet with EMPTY notation data (updates old one, but will be stripped later)
+            PGPContentSignerBuilder signerBuilder = new JcaPGPContentSignerBuilder(
+                    masterPrivateKey.getPublicKeyPacket().getAlgorithm(), HashAlgorithmTags.SHA512)
+                    .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME);
+            PGPSignatureGenerator sGen = new PGPSignatureGenerator(signerBuilder);
+            { // set subpackets
+                PGPSignatureSubpacketGenerator hashedPacketsGen = new PGPSignatureSubpacketGenerator();
+                hashedPacketsGen.setExportable(false, false);
+                hashedPacketsGen.setNotationData(false, false, "pin@unlock.sufficientlysecure.org", "1");
+                sGen.setHashedSubpackets(hashedPacketsGen.generate());
+            }
+            sGen.init(PGPSignature.DIRECT_KEY, masterPrivateKey);
+            PGPSignature emptySig = sGen.generateCertification(masterPublicKey);
+
+            masterPublicKey = PGPPublicKey.addCertification(masterPublicKey, emptySig);
+            PGPSecretKey.replacePublicKey(sKR.getSecretKey(), masterPublicKey);
+
+            return sKR;
         }
 
         throw new UnsupportedOperationException("PIN passphrases not yet implemented!");
 
     }
-
 
     private static PGPSecretKeyRing applyNewPassphrase(
             PGPSecretKeyRing sKR,

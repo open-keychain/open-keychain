@@ -652,7 +652,7 @@
   <string name="msg_kc_revoke_bad_err">Suppression du mauvais certificat de révocation du trousseau</string>
   <string name="msg_kc_revoke_bad_local">Suppression du certificat de révocation du trousseau ayant le drapeau « local »</string>
   <string name="msg_kc_revoke_bad_time">Suppression du certificat de révocation du trousseau ayant une estampille temporelle dans le futur</string>
-  <string name="msg_kc_revoke_bad_type">Suppression du certificat de clef maîtresse de type inconnu (%s)</string>
+  <string name="msg_kc_bad_type">Suppression du certificat de clef maîtresse de type inconnu (%s)</string>
   <string name="msg_kc_revoke_bad_type_uid">Suppression du certificat de l\'ID d\'utilisateur en mauvaise position</string>
   <string name="msg_kc_revoke_bad">Suppression du mauvais certificat de révocation du trousseau</string>
   <string name="msg_kc_revoke_dup"> Suppression du certificat redondant de révocation du trousseau</string>

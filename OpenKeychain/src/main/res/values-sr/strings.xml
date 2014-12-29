@@ -672,7 +672,7 @@
   <string name="msg_kc_revoke_bad_err">Уклањам лош сертификат опозива привеска</string>
   <string name="msg_kc_revoke_bad_local">Уклањам сертификат опозива привеска са заставицом „локални“</string>
   <string name="msg_kc_revoke_bad_time">Уклањам сертификат опозива привеска са временском ознаком у будућности</string>
-  <string name="msg_kc_revoke_bad_type">Уклањам сертификат главног кључа непознатог типа (%s)</string>
+  <string name="msg_kc_bad_type">Уклањам сертификат главног кључа непознатог типа (%s)</string>
   <string name="msg_kc_revoke_bad_type_uid">Уклањам сертификат корисничког ИД-а са погрешног места</string>
   <string name="msg_kc_revoke_bad">Уклањам лош сертификат опозива привеска</string>
   <string name="msg_kc_revoke_dup">Уклањам сувишни сертификат опозива привеска</string>
