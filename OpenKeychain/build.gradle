@@ -20,6 +20,7 @@ dependencies {
     compile project(':extern:KeybaseLib:Lib')
     compile project(':extern:TokenAutoComplete:library')
     compile project(':extern:safeslinger-exchange')
+    compile project(':extern:android-lockpattern:code')
 }
 
 android {
