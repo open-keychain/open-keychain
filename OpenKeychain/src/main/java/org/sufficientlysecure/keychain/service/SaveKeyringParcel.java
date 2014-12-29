@@ -46,7 +46,7 @@ public class SaveKeyringParcel implements Parcelable {
     // the key fingerprint, for safety. MUST be null for a new key.
     public byte[] mFingerprint;
 
-    public String mNewPassphrase;
+    public ChangeUnlockParcel mNewUnlock;
 
     public ArrayList<String> mAddUserIds;
     public ArrayList<SubkeyAdd> mAddSubKeys;
@@ -69,7 +69,7 @@ public class SaveKeyringParcel implements Parcelable {
     }
 
     public void reset() {
-        mNewPassphrase = null;
+        mNewUnlock = null;
         mAddUserIds = new ArrayList<String>();
         mAddSubKeys = new ArrayList<SubkeyAdd>();
         mChangePrimaryUserId = null;
@@ -159,7 +159,7 @@ public class SaveKeyringParcel implements Parcelable {
         mMasterKeyId = source.readInt() != 0 ? source.readLong() : null;
         mFingerprint = source.createByteArray();
 
-        mNewPassphrase = source.readString();
+        mNewUnlock = source.readParcelable(getClass().getClassLoader());
 
         mAddUserIds = source.createStringArrayList();
         mAddSubKeys = (ArrayList<SubkeyAdd>) source.readSerializable();
@@ -180,7 +180,8 @@ public class SaveKeyringParcel implements Parcelable {
         }
         destination.writeByteArray(mFingerprint);
 
-        destination.writeString(mNewPassphrase);
+        // yes, null values are ok for parcelables
+        destination.writeParcelable(mNewUnlock, 0);
 
         destination.writeStringList(mAddUserIds);
         destination.writeSerializable(mAddSubKeys);
@@ -211,7 +212,7 @@ public class SaveKeyringParcel implements Parcelable {
     @Override
     public String toString() {
         String out = "mMasterKeyId: " + mMasterKeyId + "\n";
-        out += "mNewPassphrase: " + mNewPassphrase + "\n";
+        out += "mNewUnlock: " + mNewUnlock + "\n";
         out += "mAddUserIds: " + mAddUserIds + "\n";
         out += "mAddSubKeys: " + mAddSubKeys + "\n";
         out += "mChangeSubKeys: " + mChangeSubKeys + "\n";
@@ -236,6 +237,66 @@ public class SaveKeyringParcel implements Parcelable {
         // these are supported by gpg, but they are not in rfc6637 and not supported by BouncyCastle yet
         // (adding support would be trivial though -> JcaPGPKeyConverter.java:190)
         // BRAINPOOL_P256, BRAINPOOL_P384, BRAINPOOL_P512
+    }
+
+    /** This subclass contains information on how the passphrase should be changed.
+     *
+     * If no changes are to be made, this class should NOT be used!
+     *
+     * At this point, there must be *exactly one* non-null value here, which specifies the type
+     * of unlocking mechanism to use.
+     *
+     */
+    public static class ChangeUnlockParcel implements Parcelable {
+
+        // The new passphrase to use
+        public final String mNewPassphrase;
+        // A new pin to use. Must only contain [0-9]+
+        public final String mNewPin;
+
+        public ChangeUnlockParcel(String newPassphrase, String newPin) {
+            if (newPassphrase == null && newPin == null) {
+                throw new RuntimeException("Cannot set both passphrase and pin. THIS IS A BUG!");
+            }
+            if (newPin != null && !newPin.matches("[0-9]+")) {
+                throw new RuntimeException("Pin must be numeric digits only. THIS IS A BUG!");
+            }
+            mNewPassphrase = newPassphrase;
+            mNewPin = newPin;
+        }
+
+        public ChangeUnlockParcel(Parcel source) {
+            mNewPassphrase = source.readString();
+            mNewPin = source.readString();
+        }
+
+        @Override
+        public void writeToParcel(Parcel destination, int flags) {
+            destination.writeString(mNewPassphrase);
+            destination.writeString(mNewPin);
+        }
+
+        @Override
+        public int describeContents() {
+            return 0;
+        }
+
+        public static final Creator<ChangeUnlockParcel> CREATOR = new Creator<ChangeUnlockParcel>() {
+            public ChangeUnlockParcel createFromParcel(final Parcel source) {
+                return new ChangeUnlockParcel(source);
+            }
+
+            public ChangeUnlockParcel[] newArray(final int size) {
+                return new ChangeUnlockParcel[size];
+            }
+        };
+
+        public String toString() {
+            return mNewPassphrase != null
+                    ? ("passphrase (" + mNewPassphrase + ")")
+                    : ("pin (" + mNewPin + ")");
+        }
+
     }
 
 }

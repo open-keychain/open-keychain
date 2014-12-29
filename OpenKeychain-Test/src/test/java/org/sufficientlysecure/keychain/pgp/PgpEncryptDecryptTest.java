@@ -68,7 +68,7 @@ public class PgpEncryptDecryptTest {
             parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
                     Algorithm.ELGAMAL, 1024, null, KeyFlags.ENCRYPT_COMMS, 0L));
             parcel.mAddUserIds.add("bloom");
-            parcel.mNewPassphrase = mKeyPhrase1;
+            parcel.mNewUnlock = mKeyPhrase1;
 
             EditKeyResult result = op.createSecretKeyRing(parcel);
             Assert.assertTrue("initial test key creation must succeed", result.success());
@@ -86,7 +86,7 @@ public class PgpEncryptDecryptTest {
             parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
                     Algorithm.ELGAMAL, 1024, null, KeyFlags.ENCRYPT_COMMS, 0L));
             parcel.mAddUserIds.add("belle");
-            parcel.mNewPassphrase = mKeyPhrase2;
+            parcel.mNewUnlock = mKeyPhrase2;
 
             EditKeyResult result = op.createSecretKeyRing(parcel);
             Assert.assertTrue("initial test key creation must succeed", result.success());

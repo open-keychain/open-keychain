@@ -96,7 +96,7 @@ public class UncachedKeyringMergeTest {
             parcel.mAddUserIds.add("twi");
             parcel.mAddUserIds.add("pink");
             // passphrase is tested in PgpKeyOperationTest, just use empty here
-            parcel.mNewPassphrase = "";
+            parcel.mNewUnlock = "";
             PgpKeyOperation op = new PgpKeyOperation(null);
 
             OperationResult.OperationLog log = new OperationResult.OperationLog();
@@ -112,7 +112,7 @@ public class UncachedKeyringMergeTest {
 
             parcel.mAddUserIds.add("shy");
             // passphrase is tested in PgpKeyOperationTest, just use empty here
-            parcel.mNewPassphrase = "";
+            parcel.mNewUnlock = "";
             PgpKeyOperation op = new PgpKeyOperation(null);
 
             OperationResult.OperationLog log = new OperationResult.OperationLog();

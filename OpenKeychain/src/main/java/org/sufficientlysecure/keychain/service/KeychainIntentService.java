@@ -399,9 +399,14 @@ public class KeychainIntentService extends IntentService implements Progressable
                 }
 
                 // cache new passphrase
-                if (saveParcel.mNewPassphrase != null) {
-                    PassphraseCacheService.addCachedPassphrase(this, ring.getMasterKeyId(), ring.getMasterKeyId(),
-                            saveParcel.mNewPassphrase, ring.getPublicKey().getPrimaryUserIdWithFallback());
+                if (saveParcel.mNewUnlock != null) {
+                    PassphraseCacheService.addCachedPassphrase(this,
+                            ring.getMasterKeyId(),
+                            ring.getMasterKeyId(),
+                            saveParcel.mNewUnlock.mNewPassphrase != null
+                                    ? saveParcel.mNewUnlock.mNewPassphrase
+                                    : saveParcel.mNewUnlock.mNewPin,
+                            ring.getPublicKey().getPrimaryUserIdWithFallback());
                 }
 
                 setProgress(R.string.progress_done, 100, 100);
