@@ -9,7 +9,7 @@
   <string name="title_encrypt_text">Zašifrovat text</string>
   <string name="title_encrypt_files">Zašifrovat soubory</string>
   <string name="title_decrypt">Rozšifrovat</string>
-  <string name="title_authentication">Heslo</string>
+  <string name="title_unlock">Heslo</string>
   <string name="title_add_subkey">Přidat podklíč</string>
   <string name="title_edit_key">Editovat klíč</string>
   <string name="title_preferences">Možnosti</string>
@@ -183,7 +183,7 @@
   <string name="passphrase_must_not_be_empty">Prosím zadejte heslo.</string>
   <string name="passphrase_for_symmetric_encryption">Symetrická šifra.</string>
   <string name="passphrase_for">Zadejte heslo pro \'%s\'</string>
-  <string name="yubikey_pin">Zadejte PIN pro přístup k Yubikey pro \'%s\'</string>
+  <string name="yubikey_pin_for">Zadejte PIN pro přístup k Yubikey pro \'%s\'</string>
   <string name="file_delete_confirmation">Chcete opravdu smazat\n%s?</string>
   <string name="file_delete_successful">Úspěšně smazáno.</string>
   <string name="no_file_selected">Nejprve vyberte soubor.</string>

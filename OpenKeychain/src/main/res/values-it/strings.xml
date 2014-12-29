@@ -9,7 +9,7 @@
   <string name="title_encrypt_text">Testo Cifrato</string>
   <string name="title_encrypt_files">File Cifrati</string>
   <string name="title_decrypt">Decodifica</string>
-  <string name="title_authentication">Frase di accesso</string>
+  <string name="title_unlock">Frase di accesso</string>
   <string name="title_add_subkey">Aggiungi Sottochiave</string>
   <string name="title_edit_key">Modifica Chiave</string>
   <string name="title_preferences">Preferenze</string>
@@ -183,7 +183,7 @@
   <string name="passphrase_must_not_be_empty">Si prega di inserire una frase di accesso.</string>
   <string name="passphrase_for_symmetric_encryption">Codifica Simmetrica.</string>
   <string name="passphrase_for">Inserisci la frase di accesso per \'%s\'</string>
-  <string name="yubikey_pin">Inserisci il PIN per accedere a Yubikey con \'%s\'</string>
+  <string name="yubikey_pin_for">Inserisci il PIN per accedere a Yubikey con \'%s\'</string>
   <string name="file_delete_confirmation">Sei sicuro di voler eliminare\n%s?</string>
   <string name="file_delete_successful">Eliminato correttamente.</string>
   <string name="no_file_selected">Seleziona un file prima.</string>

@@ -83,7 +83,8 @@ public class CanonicalizedSecretKey extends CanonicalizedPublicKey {
     }
 
     public enum SecretKeyType {
-        UNAVAILABLE(0), GNU_DUMMY(1), PASSPHRASE(2), PASSPHRASE_EMPTY(3), DIVERT_TO_CARD(4);
+        UNAVAILABLE(0), GNU_DUMMY(1), PASSPHRASE(2), PASSPHRASE_EMPTY(3), DIVERT_TO_CARD(4), PIN(5),
+        PATTERN(6);
 
         final int mNum;
 
@@ -101,6 +102,10 @@ public class CanonicalizedSecretKey extends CanonicalizedPublicKey {
                     return PASSPHRASE_EMPTY;
                 case 4:
                     return DIVERT_TO_CARD;
+                case 5:
+                    return PIN;
+                case 6:
+                    return PATTERN;
                 // if this case happens, it's probably a check from a database value
                 default:
                     return UNAVAILABLE;

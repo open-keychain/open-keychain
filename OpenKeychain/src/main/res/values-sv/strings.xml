@@ -9,7 +9,7 @@
   <string name="title_encrypt_text">Kryptera text</string>
   <string name="title_encrypt_files">Kryptera filer</string>
   <string name="title_decrypt">Dekryptera</string>
-  <string name="title_authentication">Lösenordsfras</string>
+  <string name="title_unlock">Lösenordsfras</string>
   <string name="title_add_subkey">Lägg till undernyckel</string>
   <string name="title_edit_key">Redigera nyckel</string>
   <string name="title_preferences">Inställningar</string>
@@ -180,7 +180,7 @@
   <string name="passphrase_must_not_be_empty">Ange en lösenordsfras.</string>
   <string name="passphrase_for_symmetric_encryption">Symmetrisk kryptering.</string>
   <string name="passphrase_for">Ange lösenordsfras för \'%s\'</string>
-  <string name="yubikey_pin">Ange PIN för att få åtkomst till Yubikey för \'%s\'</string>
+  <string name="yubikey_pin_for">Ange PIN för att få åtkomst till Yubikey för \'%s\'</string>
   <string name="file_delete_confirmation">Vill du verkligen radera\n%s?</string>
   <string name="file_delete_successful">Raderades.</string>
   <string name="no_file_selected">Välj en nyckel först.</string>

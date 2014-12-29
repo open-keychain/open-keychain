@@ -41,6 +41,8 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.haibison.android.lockpattern.LockPatternActivity;
+
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.compatibility.DialogFragmentWorkaround;
@@ -68,6 +70,8 @@ public class PassphraseDialogActivity extends FragmentActivity {
     // special extra for OpenPgpService
     public static final String EXTRA_DATA = "data";
 
+    private static final int REQUEST_CODE_ENTER_PATTERN = 2;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -88,6 +92,40 @@ public class PassphraseDialogActivity extends FragmentActivity {
         Intent serviceIntent = getIntent().getParcelableExtra(EXTRA_DATA);
 
         show(this, keyId, serviceIntent);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode) {
+            case REQUEST_CODE_ENTER_PATTERN: {
+                /*
+                 * NOTE that there are 4 possible result codes!!!
+                 */
+                switch (resultCode) {
+                    case RESULT_OK:
+                        // The user passed
+                        break;
+                    case RESULT_CANCELED:
+                        // The user cancelled the task
+                        break;
+                    case LockPatternActivity.RESULT_FAILED:
+                        // The user failed to enter the pattern
+                        break;
+                    case LockPatternActivity.RESULT_FORGOT_PATTERN:
+                        // The user forgot the pattern and invoked your recovery Activity.
+                        break;
+                }
+
+                /*
+                 * In any case, there's always a key EXTRA_RETRY_COUNT, which holds
+                 * the number of tries that the user did.
+                 */
+                int retryCount = data.getIntExtra(
+                        LockPatternActivity.EXTRA_RETRY_COUNT, 0);
+
+                break;
+            }
+        }
     }
 
     /**
@@ -138,7 +176,7 @@ public class PassphraseDialogActivity extends FragmentActivity {
 
             CustomAlertDialogBuilder alert = new CustomAlertDialogBuilder(theme);
 
-            alert.setTitle(R.string.title_authentication);
+            alert.setTitle(R.string.title_unlock);
 
             String userId;
             CanonicalizedSecretKey.SecretKeyType keyType = CanonicalizedSecretKey.SecretKeyType.PASSPHRASE;
@@ -171,7 +209,10 @@ public class PassphraseDialogActivity extends FragmentActivity {
                             message = getString(R.string.passphrase_for, userId);
                             break;
                         case DIVERT_TO_CARD:
-                            message = getString(R.string.yubikey_pin, userId);
+                            message = getString(R.string.yubikey_pin_for, userId);
+                            break;
+                        case PIN:
+                            message = getString(R.string.pin_for, userId);
                             break;
                         default:
                             message = "This should not happen!";
@@ -209,39 +250,51 @@ public class PassphraseDialogActivity extends FragmentActivity {
                 }
             });
 
-            // Hack to open keyboard.
-            // This is the only method that I found to work across all Android versions
-            // http://turbomanage.wordpress.com/2012/05/02/show-soft-keyboard-automatically-when-edittext-receives-focus/
-            // Notes: * onCreateView can't be used because we want to add buttons to the dialog
-            //        * opening in onActivityCreated does not work on Android 4.4
-            mPassphraseEditText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-                @Override
-                public void onFocusChange(View v, boolean hasFocus) {
-                    mPassphraseEditText.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            if (getActivity() == null || mPassphraseEditText == null) {
-                                return;
-                            }
-                            InputMethodManager imm = (InputMethodManager) getActivity()
-                                    .getSystemService(Context.INPUT_METHOD_SERVICE);
-                            imm.showSoftInput(mPassphraseEditText, InputMethodManager.SHOW_IMPLICIT);
-                        }
-                    });
-                }
-            });
-            mPassphraseEditText.requestFocus();
 
-            mPassphraseEditText.setImeActionLabel(getString(android.R.string.ok), EditorInfo.IME_ACTION_DONE);
-            mPassphraseEditText.setOnEditorActionListener(this);
-
-            if (keyType == CanonicalizedSecretKey.SecretKeyType.DIVERT_TO_CARD && Preferences.getPreferences(activity).useNumKeypadForYubikeyPin()) {
-                mPassphraseEditText.setRawInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+            if (keyType == CanonicalizedSecretKey.SecretKeyType.PATTERN) {
+                // start pattern dialog and show progress circle here...
+                Intent patternActivity = new Intent(getActivity(), LockPatternActivity.class);
+                patternActivity.putExtra(LockPatternActivity.EXTRA_PATTERN, "123");
+                startActivityForResult(patternActivity, REQUEST_CODE_ENTER_PATTERN);
+                mInput.setVisibility(View.GONE);
+                mProgress.setVisibility(View.VISIBLE);
             } else {
-                mPassphraseEditText.setRawInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
-            }
+                // Hack to open keyboard.
+                // This is the only method that I found to work across all Android versions
+                // http://turbomanage.wordpress.com/2012/05/02/show-soft-keyboard-automatically-when-edittext-receives-focus/
+                // Notes: * onCreateView can't be used because we want to add buttons to the dialog
+                //        * opening in onActivityCreated does not work on Android 4.4
+                mPassphraseEditText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+                    @Override
+                    public void onFocusChange(View v, boolean hasFocus) {
+                        mPassphraseEditText.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                if (getActivity() == null || mPassphraseEditText == null) {
+                                    return;
+                                }
+                                InputMethodManager imm = (InputMethodManager) getActivity()
+                                        .getSystemService(Context.INPUT_METHOD_SERVICE);
+                                imm.showSoftInput(mPassphraseEditText, InputMethodManager.SHOW_IMPLICIT);
+                            }
+                        });
+                    }
+                });
+                mPassphraseEditText.requestFocus();
 
-            mPassphraseEditText.setTransformationMethod(PasswordTransformationMethod.getInstance());
+                mPassphraseEditText.setImeActionLabel(getString(android.R.string.ok), EditorInfo.IME_ACTION_DONE);
+                mPassphraseEditText.setOnEditorActionListener(this);
+
+                if (keyType == CanonicalizedSecretKey.SecretKeyType.DIVERT_TO_CARD && Preferences.getPreferences(activity).useNumKeypadForYubikeyPin()) {
+                    mPassphraseEditText.setRawInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+                } else if (keyType == CanonicalizedSecretKey.SecretKeyType.PIN) {
+                    mPassphraseEditText.setRawInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+                } else {
+                    mPassphraseEditText.setRawInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+                }
+
+                mPassphraseEditText.setTransformationMethod(PasswordTransformationMethod.getInstance());
+            }
 
             AlertDialog dialog = alert.create();
             dialog.setButton(DialogInterface.BUTTON_POSITIVE,
@@ -264,7 +317,7 @@ public class PassphraseDialogActivity extends FragmentActivity {
                     // Early breakout if we are dealing with a symmetric key
                     if (mSecretRing == null) {
                         PassphraseCacheService.addCachedPassphrase(getActivity(),
-                                Constants.key.symmetric, Constants.key.symmetric,  passphrase,
+                                Constants.key.symmetric, Constants.key.symmetric, passphrase,
                                 getString(R.string.passp_cache_notif_pwd));
 
                         finishCaching(passphrase);

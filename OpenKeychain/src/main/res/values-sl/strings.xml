@@ -9,7 +9,7 @@
   <string name="title_encrypt_text">Šifriraj besedilo</string>
   <string name="title_encrypt_files">Šifriraj datoteko</string>
   <string name="title_decrypt">Dešifriraj</string>
-  <string name="title_authentication">Geslo</string>
+  <string name="title_unlock">Geslo</string>
   <string name="title_add_subkey">Dodaj podključ</string>
   <string name="title_edit_key">Uredi ključ</string>
   <string name="title_preferences">Nastavitve</string>

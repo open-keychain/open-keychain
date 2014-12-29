@@ -9,7 +9,7 @@
   <string name="title_encrypt_text">Text Verschlüsseln</string>
   <string name="title_encrypt_files">Dateien verschlüsseln</string>
   <string name="title_decrypt">Entschlüsseln</string>
-  <string name="title_authentication">Passwort</string>
+  <string name="title_unlock">Passwort</string>
   <string name="title_add_subkey">Unterschlüssel hinzufügen</string>
   <string name="title_edit_key">Schlüssel bearbeiten</string>
   <string name="title_preferences">Einstellungen</string>
@@ -189,7 +189,7 @@
   <string name="passphrase_must_not_be_empty">Bitte ein Passwort eingeben.</string>
   <string name="passphrase_for_symmetric_encryption">Symmetrische Verschlüsselung.</string>
   <string name="passphrase_for">Passwort für \'%s\' eingeben</string>
-  <string name="yubikey_pin">PIN für Zugriff auf Yubikey für \'%s\' eingeben</string>
+  <string name="yubikey_pin_for">PIN für Zugriff auf Yubikey für \'%s\' eingeben</string>
   <string name="file_delete_confirmation">%s wirklich löschen?</string>
   <string name="file_delete_successful">Erfolgreich gelöscht.</string>
   <string name="no_file_selected">Zuerst eine Datei auswählen.</string>

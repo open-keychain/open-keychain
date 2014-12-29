@@ -9,7 +9,7 @@
   <string name="title_encrypt_text">Шифруј текст</string>
   <string name="title_encrypt_files">Шифруј фајлове</string>
   <string name="title_decrypt">Дешифруј</string>
-  <string name="title_authentication">Лозинка</string>
+  <string name="title_unlock">Лозинка</string>
   <string name="title_add_subkey">Додај поткључ</string>
   <string name="title_edit_key">Уреди кључ</string>
   <string name="title_preferences">Поставке</string>
@@ -191,7 +191,7 @@
   <string name="passphrase_must_not_be_empty">Унесите лозинку.</string>
   <string name="passphrase_for_symmetric_encryption">Симетрично шифровање.</string>
   <string name="passphrase_for">Унесите лозинку за „%s“</string>
-  <string name="yubikey_pin">Унесите ПИН за приступ Јубикључу за „%s“</string>
+  <string name="yubikey_pin_for">Унесите ПИН за приступ Јубикључу за „%s“</string>
   <string name="file_delete_confirmation">Желите ли заиста да обришете\n%s?</string>
   <string name="file_delete_successful">Брисање је успело.</string>
   <string name="no_file_selected">Најпре изаберите фајл.</string>
