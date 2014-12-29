@@ -53,6 +53,7 @@ import org.sufficientlysecure.keychain.service.KeychainIntentService;
 import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
 import org.sufficientlysecure.keychain.service.PassphraseCacheService;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
+import org.sufficientlysecure.keychain.service.SaveKeyringParcel.ChangeUnlockParcel;
 import org.sufficientlysecure.keychain.ui.adapter.SubkeysAdapter;
 import org.sufficientlysecure.keychain.ui.adapter.SubkeysAddedAdapter;
 import org.sufficientlysecure.keychain.ui.adapter.UserIdsAdapter;
@@ -189,7 +190,9 @@ public class EditKeyFragment extends LoaderFragment implements
     private void loadSaveKeyringParcel(SaveKeyringParcel saveKeyringParcel) {
         mSaveKeyringParcel = saveKeyringParcel;
         mPrimaryUserId = saveKeyringParcel.mChangePrimaryUserId;
-        mCurrentPassphrase = saveKeyringParcel.mNewPassphrase;
+        if (saveKeyringParcel.mNewUnlock != null) {
+            mCurrentPassphrase = saveKeyringParcel.mNewUnlock.mNewPassphrase;
+        }
 
         mUserIdsAddedAdapter = new UserIdsAddedAdapter(getActivity(), mSaveKeyringParcel.mAddUserIds, true);
         mUserIdsAddedList.setAdapter(mUserIdsAddedAdapter);
@@ -387,8 +390,10 @@ public class EditKeyFragment extends LoaderFragment implements
                     Bundle data = message.getData();
 
                     // cache new returned passphrase!
-                    mSaveKeyringParcel.mNewPassphrase = data
-                            .getString(SetPassphraseDialogFragment.MESSAGE_NEW_PASSPHRASE);
+                    mSaveKeyringParcel.mNewUnlock = new ChangeUnlockParcel(
+                        data.getString(SetPassphraseDialogFragment.MESSAGE_NEW_PASSPHRASE),
+                        null
+                    );
                 }
             }
         };

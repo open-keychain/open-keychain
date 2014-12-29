@@ -57,7 +57,7 @@ public class UncachedKeyringTest {
         parcel.mAddUserIds.add("twi");
         parcel.mAddUserIds.add("pink");
         // passphrase is tested in PgpKeyOperationTest, just use empty here
-        parcel.mNewPassphrase = "";
+        parcel.mNewUnlock = "";
         PgpKeyOperation op = new PgpKeyOperation(null);
 
         EditKeyResult result = op.createSecretKeyRing(parcel);

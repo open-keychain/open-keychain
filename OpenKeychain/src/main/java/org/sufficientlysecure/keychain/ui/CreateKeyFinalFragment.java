@@ -34,6 +34,7 @@ import android.widget.TextView;
 import org.spongycastle.bcpg.sig.KeyFlags;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.service.SaveKeyringParcel.ChangeUnlockParcel;
 import org.sufficientlysecure.keychain.util.Preferences;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
@@ -165,7 +166,9 @@ public class CreateKeyFinalFragment extends Fragment {
             String userId = KeyRing.createUserId(mName, mEmail, null);
             mSaveKeyringParcel.mAddUserIds.add(userId);
             mSaveKeyringParcel.mChangePrimaryUserId = userId;
-            mSaveKeyringParcel.mNewPassphrase = mPassphrase;
+            mSaveKeyringParcel.mNewUnlock = mPassphrase != null
+                    ? new ChangeUnlockParcel(mPassphrase, null)
+                    : null;
         }
     }
 
