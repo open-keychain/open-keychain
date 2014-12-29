@@ -19,6 +19,12 @@ task wrapper(type: Wrapper) {
     gradleVersion = '2.2.1'
 }
 
+subprojects {
+    tasks.withType(Test) {
+        maxParallelForks = 5
+    }
+}
+
 // Ignore tests for external dependency
 project(':extern:spongycastle') {
     subprojects {

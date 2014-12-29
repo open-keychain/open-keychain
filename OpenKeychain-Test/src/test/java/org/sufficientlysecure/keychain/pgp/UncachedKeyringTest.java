@@ -26,15 +26,13 @@ import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.shadows.ShadowLog;
 import org.spongycastle.bcpg.sig.KeyFlags;
-import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.operations.results.EditKeyResult;
+import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel.Algorithm;
-import org.sufficientlysecure.keychain.support.KeyringTestingHelper.RawPacket;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.util.ArrayList;
 import java.util.Iterator;
 
 @RunWith(RobolectricTestRunner.class)
@@ -43,10 +41,6 @@ public class UncachedKeyringTest {
 
     static UncachedKeyRing staticRing, staticPubRing;
     UncachedKeyRing ring, pubRing;
-    ArrayList<RawPacket> onlyA = new ArrayList<RawPacket>();
-    ArrayList<RawPacket> onlyB = new ArrayList<RawPacket>();
-    PgpKeyOperation op;
-    SaveKeyringParcel parcel;
 
     @BeforeClass
     public static void setUpOnce() throws Exception {
