@@ -214,9 +214,6 @@ public class PassphraseDialogActivity extends FragmentActivity {
                         case DIVERT_TO_CARD:
                             message = getString(R.string.yubikey_pin_for, userId);
                             break;
-                        case PIN:
-                            message = getString(R.string.pin_for, userId);
-                            break;
                         default:
                             message = "This should not happen!";
                             break;
