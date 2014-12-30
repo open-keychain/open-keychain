@@ -254,6 +254,9 @@ public class SaveKeyringParcel implements Parcelable {
         // A new pin to use. Must only contain [0-9]+
         public final String mNewPin;
 
+        public ChangeUnlockParcel(String newPassphrase) {
+            this(newPassphrase, null);
+        }
         public ChangeUnlockParcel(String newPassphrase, String newPin) {
             if (newPassphrase == null && newPin == null) {
                 throw new RuntimeException("Cannot set both passphrase and pin. THIS IS A BUG!");

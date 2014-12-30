@@ -58,6 +58,7 @@ import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel.Algorithm;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
+import org.sufficientlysecure.keychain.service.SaveKeyringParcel.ChangeUnlockParcel;
 import org.sufficientlysecure.keychain.support.KeyringTestingHelper;
 import org.sufficientlysecure.keychain.support.KeyringTestingHelper.RawPacket;
 
@@ -104,7 +105,7 @@ public class UncachedKeyringCanonicalizeTest {
         parcel.mAddUserIds.add("twi");
         parcel.mAddUserIds.add("pink");
         // passphrase is tested in PgpKeyOperationTest, just use empty here
-        parcel.mNewUnlock = "";
+        parcel.mNewUnlock = new ChangeUnlockParcel("");
         PgpKeyOperation op = new PgpKeyOperation(null);
 
         EditKeyResult result = op.createSecretKeyRing(parcel);

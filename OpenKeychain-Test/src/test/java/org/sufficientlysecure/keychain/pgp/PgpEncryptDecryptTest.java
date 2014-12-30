@@ -34,6 +34,7 @@ import org.sufficientlysecure.keychain.service.SaveKeyringParcel.Algorithm;
 import org.sufficientlysecure.keychain.operations.results.DecryptVerifyResult;
 import org.sufficientlysecure.keychain.operations.results.EditKeyResult;
 import org.sufficientlysecure.keychain.operations.results.SignEncryptResult;
+import org.sufficientlysecure.keychain.service.SaveKeyringParcel.ChangeUnlockParcel;
 import org.sufficientlysecure.keychain.util.InputData;
 import org.sufficientlysecure.keychain.util.ProgressScaler;
 import org.sufficientlysecure.keychain.util.TestingUtils;
@@ -68,7 +69,7 @@ public class PgpEncryptDecryptTest {
             parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
                     Algorithm.ELGAMAL, 1024, null, KeyFlags.ENCRYPT_COMMS, 0L));
             parcel.mAddUserIds.add("bloom");
-            parcel.mNewUnlock = mKeyPhrase1;
+            parcel.mNewUnlock = new ChangeUnlockParcel(mKeyPhrase1);
 
             EditKeyResult result = op.createSecretKeyRing(parcel);
             Assert.assertTrue("initial test key creation must succeed", result.success());
@@ -86,7 +87,7 @@ public class PgpEncryptDecryptTest {
             parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
                     Algorithm.ELGAMAL, 1024, null, KeyFlags.ENCRYPT_COMMS, 0L));
             parcel.mAddUserIds.add("belle");
-            parcel.mNewUnlock = mKeyPhrase2;
+            parcel.mNewUnlock = new ChangeUnlockParcel(mKeyPhrase2);
 
             EditKeyResult result = op.createSecretKeyRing(parcel);
             Assert.assertTrue("initial test key creation must succeed", result.success());

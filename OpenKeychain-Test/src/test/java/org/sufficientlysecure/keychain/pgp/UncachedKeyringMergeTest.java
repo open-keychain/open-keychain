@@ -36,6 +36,7 @@ import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.operations.results.EditKeyResult;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel.Algorithm;
+import org.sufficientlysecure.keychain.service.SaveKeyringParcel.ChangeUnlockParcel;
 import org.sufficientlysecure.keychain.support.KeyringTestingHelper;
 import org.sufficientlysecure.keychain.support.KeyringTestingHelper.RawPacket;
 import org.sufficientlysecure.keychain.util.ProgressScaler;
@@ -96,7 +97,7 @@ public class UncachedKeyringMergeTest {
             parcel.mAddUserIds.add("twi");
             parcel.mAddUserIds.add("pink");
             // passphrase is tested in PgpKeyOperationTest, just use empty here
-            parcel.mNewUnlock = "";
+            parcel.mNewUnlock = new ChangeUnlockParcel("");
             PgpKeyOperation op = new PgpKeyOperation(null);
 
             OperationResult.OperationLog log = new OperationResult.OperationLog();
@@ -112,7 +113,7 @@ public class UncachedKeyringMergeTest {
 
             parcel.mAddUserIds.add("shy");
             // passphrase is tested in PgpKeyOperationTest, just use empty here
-            parcel.mNewUnlock = "";
+            parcel.mNewUnlock = new ChangeUnlockParcel("");
             PgpKeyOperation op = new PgpKeyOperation(null);
 
             OperationResult.OperationLog log = new OperationResult.OperationLog();

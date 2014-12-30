@@ -43,6 +43,7 @@ import org.sufficientlysecure.keychain.operations.results.OperationResult.Operat
 import org.sufficientlysecure.keychain.operations.results.EditKeyResult;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel.Algorithm;
+import org.sufficientlysecure.keychain.service.SaveKeyringParcel.ChangeUnlockParcel;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel.SubkeyAdd;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel.SubkeyChange;
 import org.sufficientlysecure.keychain.support.KeyringBuilder;
@@ -91,7 +92,7 @@ public class PgpKeyOperationTest {
 
         parcel.mAddUserIds.add("twi");
         parcel.mAddUserIds.add("pink");
-        parcel.mNewUnlock = passphrase;
+        parcel.mNewUnlock = new ChangeUnlockParcel(passphrase);
         PgpKeyOperation op = new PgpKeyOperation(null);
 
         EditKeyResult result = op.createSecretKeyRing(parcel);
@@ -127,7 +128,7 @@ public class PgpKeyOperationTest {
             parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
                     Algorithm.RSA, new Random().nextInt(256)+255, null, KeyFlags.CERTIFY_OTHER, 0L));
             parcel.mAddUserIds.add("shy");
-            parcel.mNewUnlock = passphrase;
+            parcel.mNewUnlock = new ChangeUnlockParcel(passphrase);
 
             assertFailure("creating ring with < 512 bytes keysize should fail", parcel,
                     LogType.MSG_CR_ERROR_KEYSIZE_512);
@@ -138,7 +139,7 @@ public class PgpKeyOperationTest {
             parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
                     Algorithm.ELGAMAL, 1024, null, KeyFlags.CERTIFY_OTHER, 0L));
             parcel.mAddUserIds.add("shy");
-            parcel.mNewUnlock = passphrase;
+            parcel.mNewUnlock = new ChangeUnlockParcel(passphrase);
 
             assertFailure("creating ring with ElGamal master key should fail", parcel,
                     LogType.MSG_CR_ERROR_FLAGS_ELGAMAL);
@@ -149,7 +150,7 @@ public class PgpKeyOperationTest {
             parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
                     Algorithm.RSA, 1024, null, KeyFlags.CERTIFY_OTHER, null));
             parcel.mAddUserIds.add("lotus");
-            parcel.mNewUnlock = passphrase;
+            parcel.mNewUnlock = new ChangeUnlockParcel(passphrase);
 
             assertFailure("creating master key with null expiry should fail", parcel,
                     LogType.MSG_CR_ERROR_NULL_EXPIRY);
@@ -160,7 +161,7 @@ public class PgpKeyOperationTest {
             parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
                     Algorithm.RSA, 1024, null, KeyFlags.SIGN_DATA, 0L));
             parcel.mAddUserIds.add("shy");
-            parcel.mNewUnlock = passphrase;
+            parcel.mNewUnlock = new ChangeUnlockParcel(passphrase);
 
             assertFailure("creating ring with non-certifying master key should fail", parcel,
                     LogType.MSG_CR_ERROR_NO_CERTIFY);
@@ -170,7 +171,7 @@ public class PgpKeyOperationTest {
             parcel.reset();
             parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
                     Algorithm.RSA, 1024, null, KeyFlags.CERTIFY_OTHER, 0L));
-            parcel.mNewUnlock = passphrase;
+            parcel.mNewUnlock = new ChangeUnlockParcel(passphrase);
 
             assertFailure("creating ring without user ids should fail", parcel,
                     LogType.MSG_CR_ERROR_NO_USER_ID);
@@ -179,7 +180,7 @@ public class PgpKeyOperationTest {
         {
             parcel.reset();
             parcel.mAddUserIds.add("shy");
-            parcel.mNewUnlock = passphrase;
+            parcel.mNewUnlock = new ChangeUnlockParcel(passphrase);
 
             assertFailure("creating ring with no master key should fail", parcel,
                     LogType.MSG_CR_ERROR_NO_MASTER);
@@ -910,7 +911,7 @@ public class PgpKeyOperationTest {
     public void testPassphraseChange() throws Exception {
 
         // change passphrase to empty
-        parcel.mNewUnlock = "";
+        parcel.mNewUnlock = new ChangeUnlockParcel("");
         UncachedKeyRing modified = applyModificationWithChecks(parcel, ring, onlyA, onlyB);
 
         Assert.assertEquals("exactly three packets should have been modified (the secret keys)",
@@ -923,7 +924,7 @@ public class PgpKeyOperationTest {
 
         // modify keyring, change to non-empty passphrase
         String otherPassphrase = TestingUtils.genPassphrase(true);
-        parcel.mNewUnlock = otherPassphrase;
+        parcel.mNewUnlock = new ChangeUnlockParcel(otherPassphrase);
         modified = applyModificationWithChecks(parcel, modified, onlyA, onlyB, "");
 
         Assert.assertEquals("exactly three packets should have been modified (the secret keys)",
@@ -948,7 +949,7 @@ public class PgpKeyOperationTest {
                 PacketTags.SECRET_SUBKEY, sKeyNoPassphrase.tag);
 
         String otherPassphrase2 = TestingUtils.genPassphrase(true);
-        parcel.mNewUnlock = otherPassphrase2;
+        parcel.mNewUnlock = new ChangeUnlockParcel(otherPassphrase2);
         {
             // if we replace a secret key with one without passphrase
             modified = KeyringTestingHelper.removePacket(modified, sKeyNoPassphrase.position);

@@ -30,6 +30,7 @@ import org.sufficientlysecure.keychain.operations.results.EditKeyResult;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel.Algorithm;
+import org.sufficientlysecure.keychain.service.SaveKeyringParcel.ChangeUnlockParcel;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -57,7 +58,7 @@ public class UncachedKeyringTest {
         parcel.mAddUserIds.add("twi");
         parcel.mAddUserIds.add("pink");
         // passphrase is tested in PgpKeyOperationTest, just use empty here
-        parcel.mNewUnlock = "";
+        parcel.mNewUnlock = new ChangeUnlockParcel("");
         PgpKeyOperation op = new PgpKeyOperation(null);
 
         EditKeyResult result = op.createSecretKeyRing(parcel);
