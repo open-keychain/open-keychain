@@ -49,6 +49,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.security.SignatureException;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -83,7 +84,7 @@ public class CanonicalizedSecretKey extends CanonicalizedPublicKey {
     }
 
     public enum SecretKeyType {
-        UNAVAILABLE(0), GNU_DUMMY(1), PASSPHRASE(2), PASSPHRASE_EMPTY(3), DIVERT_TO_CARD(4);
+        UNAVAILABLE(0), GNU_DUMMY(1), PASSPHRASE(2), PASSPHRASE_EMPTY(3), DIVERT_TO_CARD(4), PIN(5);
 
         final int mNum;
 
@@ -101,6 +102,8 @@ public class CanonicalizedSecretKey extends CanonicalizedPublicKey {
                     return PASSPHRASE_EMPTY;
                 case 4:
                     return DIVERT_TO_CARD;
+                case 5:
+                    return PIN;
                 // if this case happens, it's probably a check from a database value
                 default:
                     return UNAVAILABLE;
@@ -135,6 +138,11 @@ public class CanonicalizedSecretKey extends CanonicalizedPublicKey {
             // It means the passphrase is empty
             return SecretKeyType.PASSPHRASE_EMPTY;
         } catch (PGPException e) {
+            HashMap<String,String> notation = getRing().getLocalNotationData();
+            if (notation.containsKey("unlock.pin@sufficientlysecure.org")
+                    && "1".equals(notation.get("unlock.pin@sufficientlysecure.org"))) {
+                return SecretKeyType.PIN;
+            }
             // Otherwise, it's just a regular ol' passphrase
             return SecretKeyType.PASSPHRASE;
         }

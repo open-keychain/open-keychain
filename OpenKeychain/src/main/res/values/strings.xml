@@ -205,6 +205,7 @@
     <string name="passphrase_must_not_be_empty">"Please enter a passphrase."</string>
     <string name="passphrase_for_symmetric_encryption">"Symmetric encryption."</string>
     <string name="passphrase_for">"Enter passphrase for '%s'"</string>
+    <string name="pin_for">"Enter pin for '%s'"</string>
     <string name="yubikey_pin">"Enter PIN to access YubiKey for '%s'"</string>
     <string name="nfc_text">"Hold YubiKey against the back of your device."</string>
     <string name="file_delete_confirmation">"Are you sure you want to delete\n%s?"</string>
@@ -696,6 +697,7 @@
     <string name="msg_is_subkey_nonexistent">"Subkey %s unavailable in secret key"</string>
     <string name="msg_is_subkey_ok">"Marked secret subkey %s as available"</string>
     <string name="msg_is_subkey_empty">"Marked secret subkey %s as available, with empty passphrase"</string>
+    <string name="msg_is_subkey_pin">"Marked secret subkey %s as available, with pin passphrase"</string>
     <string name="msg_is_subkey_stripped">"Marked secret subkey %s as stripped"</string>
     <string name="msg_is_subkey_divert">"Marked secret subkey %s as 'divert to smartcard/NFC'"</string>
     <string name="msg_is_success_identical">"Keyring contains no new data, nothing to do"</string>

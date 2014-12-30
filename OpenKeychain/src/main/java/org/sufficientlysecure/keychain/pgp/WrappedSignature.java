@@ -242,15 +242,15 @@ public class WrappedSignature {
         return ! ((Exportable) p).isExportable();
     }
 
-    public HashMap<String,byte[]> getNotation() {
-        HashMap<String,byte[]> result = new HashMap<String,byte[]>();
+    public HashMap<String,String> getNotation() {
+        HashMap<String,String> result = new HashMap<String,String>();
 
         // If there is any notation data
         if (mSig.getHashedSubPackets() != null
                 && mSig.getHashedSubPackets().hasSubpacket(SignatureSubpacketTags.NOTATION_DATA)) {
             // Iterate over notation data
             for (NotationData data : mSig.getHashedSubPackets().getNotationDataOccurrences()) {
-                result.put(data.getNotationName(), data.getNotationValueBytes());
+                result.put(data.getNotationName(), data.getNotationValue());
             }
         }
 

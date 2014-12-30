@@ -170,6 +170,9 @@ public class PassphraseDialogActivity extends FragmentActivity {
                         case PASSPHRASE:
                             message = getString(R.string.passphrase_for, userId);
                             break;
+                        case PIN:
+                            message = getString(R.string.pin_for, userId);
+                            break;
                         case DIVERT_TO_CARD:
                             message = getString(R.string.yubikey_pin, userId);
                             break;

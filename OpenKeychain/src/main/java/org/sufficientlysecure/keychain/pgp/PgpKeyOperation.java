@@ -949,7 +949,7 @@ public class PgpKeyOperation {
             { // set subpackets
                 PGPSignatureSubpacketGenerator hashedPacketsGen = new PGPSignatureSubpacketGenerator();
                 hashedPacketsGen.setExportable(false, false);
-                hashedPacketsGen.setNotationData(false, false, "pin@unlock.sufficientlysecure.org", "1");
+                hashedPacketsGen.setNotationData(false, true, "unlock.pin@sufficientlysecure.org", "1");
                 sGen.setHashedSubpackets(hashedPacketsGen.generate());
             }
             sGen.init(PGPSignature.DIRECT_KEY, masterPrivateKey);

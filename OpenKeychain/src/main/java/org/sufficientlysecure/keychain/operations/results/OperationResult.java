@@ -359,6 +359,7 @@ public abstract class OperationResult implements Parcelable {
         MSG_IS_SUBKEY_STRIPPED (LogLevel.DEBUG, R.string.msg_is_subkey_stripped),
         MSG_IS_SUBKEY_DIVERT (LogLevel.DEBUG, R.string.msg_is_subkey_divert),
         MSG_IS_SUBKEY_EMPTY (LogLevel.DEBUG, R.string.msg_is_subkey_empty),
+        MSG_IS_SUBKEY_PIN (LogLevel.DEBUG, R.string.msg_is_subkey_pin),
         MSG_IS_SUCCESS_IDENTICAL (LogLevel.OK, R.string.msg_is_success_identical),
         MSG_IS_SUCCESS (LogLevel.OK, R.string.msg_is_success),
 
