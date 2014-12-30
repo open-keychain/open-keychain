@@ -933,7 +933,8 @@ public class PgpKeyOperation {
             PGPSignature emptySig = sGen.generateCertification(masterPublicKey);
 
             masterPublicKey = PGPPublicKey.addCertification(masterPublicKey, emptySig);
-            PGPSecretKey.replacePublicKey(sKR.getSecretKey(), masterPublicKey);
+            sKR = PGPSecretKeyRing.insertSecretKey(sKR,
+                    PGPSecretKey.replacePublicKey(sKR.getSecretKey(), masterPublicKey));
 
             return sKR;
         }
@@ -956,7 +957,8 @@ public class PgpKeyOperation {
             PGPSignature emptySig = sGen.generateCertification(masterPublicKey);
 
             masterPublicKey = PGPPublicKey.addCertification(masterPublicKey, emptySig);
-            PGPSecretKey.replacePublicKey(sKR.getSecretKey(), masterPublicKey);
+            sKR = PGPSecretKeyRing.insertSecretKey(sKR,
+                    PGPSecretKey.replacePublicKey(sKR.getSecretKey(), masterPublicKey));
 
             return sKR;
         }

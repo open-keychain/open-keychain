@@ -349,14 +349,6 @@ public class UncachedKeyRing {
                     continue;
                 }
 
-                if (cert.isLocal()) {
-                    // Remove revocation certs with "local" flag
-                    log.add(LogType.MSG_KC_REVOKE_BAD_LOCAL, indent);
-                    modified = PGPPublicKey.removeCertification(modified, zert);
-                    badCerts += 1;
-                    continue;
-                }
-
                 // special case: direct key signatures!
                 if (cert.getSignatureType() == PGPSignature.DIRECT_KEY) {
                     // must be local, otherwise strip!
@@ -381,6 +373,12 @@ public class UncachedKeyRing {
                         modified = PGPPublicKey.removeCertification(modified, zert);
                         redundantCerts += 1;
                     }
+                    continue;
+                } else if (cert.isLocal()) {
+                    // Remove revocation certs with "local" flag
+                    log.add(LogType.MSG_KC_REVOKE_BAD_LOCAL, indent);
+                    modified = PGPPublicKey.removeCertification(modified, zert);
+                    badCerts += 1;
                     continue;
                 }
 
