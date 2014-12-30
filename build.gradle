@@ -21,7 +21,7 @@ task wrapper(type: Wrapper) {
 
 subprojects {
     tasks.withType(Test) {
-        maxParallelForks = 5
+        maxParallelForks = 1
     }
 }
 
