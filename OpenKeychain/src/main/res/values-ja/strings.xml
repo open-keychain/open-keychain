@@ -9,7 +9,7 @@
   <string name="title_encrypt_text">テキスト暗号化</string>
   <string name="title_encrypt_files">ファイル暗号化</string>
   <string name="title_decrypt">復号化</string>
-  <string name="title_authentication">パスフレーズ</string>
+  <string name="title_unlock">パスフレーズ</string>
   <string name="title_add_subkey">副鍵の追加</string>
   <string name="title_edit_key">鍵の編集</string>
   <string name="title_preferences">設定</string>
@@ -187,7 +187,7 @@
   <string name="passphrase_must_not_be_empty">パスフレーズを入れてください。</string>
   <string name="passphrase_for_symmetric_encryption">対称暗号。</string>
   <string name="passphrase_for">\'%s\' にパスフレーズを入れてください。</string>
-  <string name="yubikey_pin">\'%s\' の Yubikey にアクセスするためのPINを入力してください</string>
+  <string name="yubikey_pin_for">\'%s\' の Yubikey にアクセスするためのPINを入力してください</string>
   <string name="file_delete_confirmation">%s
 を削除してもかまいませんか?</string>
   <string name="file_delete_successful">削除に成功しました。</string>

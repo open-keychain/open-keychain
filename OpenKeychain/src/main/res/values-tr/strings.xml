@@ -9,7 +9,7 @@
   <string name="title_encrypt_text">Metni Şifrele</string>
   <string name="title_encrypt_files">Dosyaları Şifrele</string>
   <string name="title_decrypt">Çözümle</string>
-  <string name="title_authentication">Parola</string>
+  <string name="title_unlock">Parola</string>
   <string name="title_add_subkey">Alt anahtar ekle</string>
   <string name="title_edit_key">Anahtarı düzenle</string>
   <string name="title_preferences">Seçenekler</string>

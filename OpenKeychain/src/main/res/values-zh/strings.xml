@@ -7,7 +7,7 @@
   <string name="title_encrypt_text">加密文本</string>
   <string name="title_encrypt_files">加密文件</string>
   <string name="title_decrypt">解密</string>
-  <string name="title_authentication">密码</string>
+  <string name="title_unlock">密码</string>
   <string name="title_edit_key">编辑密钥</string>
   <string name="title_preferences">参数</string>
   <string name="title_api_registered_apps">已注册应用</string>

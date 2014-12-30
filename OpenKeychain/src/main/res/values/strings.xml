@@ -14,7 +14,7 @@
     <string name="title_encrypt_text">"Encrypt Text"</string>
     <string name="title_encrypt_files">"Encrypt Files"</string>
     <string name="title_decrypt">"Decrypt"</string>
-    <string name="title_authentication">"Passphrase"</string>
+    <string name="title_unlock">"Unlock Key"</string>
     <string name="title_add_subkey">"Add subkey"</string>
     <string name="title_edit_key">"Edit Key"</string>
     <string name="title_preferences">"Preferences"</string>
@@ -205,8 +205,8 @@
     <string name="passphrase_must_not_be_empty">"Please enter a passphrase."</string>
     <string name="passphrase_for_symmetric_encryption">"Symmetric encryption."</string>
     <string name="passphrase_for">"Enter passphrase for '%s'"</string>
-    <string name="pin_for">"Enter pin for '%s'"</string>
-    <string name="yubikey_pin">"Enter PIN to access YubiKey for '%s'"</string>
+    <string name="pin_for">"Enter PIN for '%s'"</string>
+    <string name="yubikey_pin_for">"Enter PIN to access YubiKey for '%s'"</string>
     <string name="nfc_text">"Hold YubiKey against the back of your device."</string>
     <string name="file_delete_confirmation">"Are you sure you want to delete\n%s?"</string>
     <string name="file_delete_successful">"Successfully deleted."</string>

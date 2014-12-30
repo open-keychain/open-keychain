@@ -4,7 +4,7 @@
     http://developer.android.com/guide/topics/resources/string-resource.html (scroll down to "Escaping apostrophes and quotes").-->
   <!--title-->
   <string name="title_decrypt">Dekrüpteeri</string>
-  <string name="title_authentication">Salasõne</string>
+  <string name="title_unlock">Salasõne</string>
   <string name="title_edit_key">Muuda võtit</string>
   <string name="title_preferences">Seaded</string>
   <string name="title_key_server_preference">Võtmeserveri seaded</string>

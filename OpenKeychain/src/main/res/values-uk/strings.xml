@@ -6,7 +6,7 @@
   <string name="title_select_recipients">Вибрати ключі</string>
   <string name="title_select_secret_key">Виберіть ваш ключ</string>
   <string name="title_decrypt">Розшифрувати</string>
-  <string name="title_authentication">Парольна фраза</string>
+  <string name="title_unlock">Парольна фраза</string>
   <string name="title_add_subkey">Додати підключ</string>
   <string name="title_edit_key">Редагувати ключ</string>
   <string name="title_preferences">Налаштування</string>

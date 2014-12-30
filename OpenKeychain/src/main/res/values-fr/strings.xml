@@ -9,7 +9,7 @@
   <string name="title_encrypt_text">Chiffrer un texte</string>
   <string name="title_encrypt_files">Chiffrer des fichiers</string>
   <string name="title_decrypt">Déchiffrer</string>
-  <string name="title_authentication">Phrase de passe</string>
+  <string name="title_unlock">Phrase de passe</string>
   <string name="title_add_subkey">Ajouter une sous-clef</string>
   <string name="title_edit_key">Modifier une clef</string>
   <string name="title_preferences">Préférences</string>
@@ -189,7 +189,7 @@
   <string name="passphrase_must_not_be_empty">Veuillez saisir une phrase de passe</string>
   <string name="passphrase_for_symmetric_encryption">Chriffrement symétrique.</string>
   <string name="passphrase_for">Saisir une phrase de passe pour « %s »</string>
-  <string name="yubikey_pin">Saisir le NIP pour accéder à la Yubikey pour « %s »</string>
+  <string name="yubikey_pin_for">Saisir le NIP pour accéder à la Yubikey pour « %s »</string>
   <string name="file_delete_confirmation">Êtes-vous certain de vouloir supprimer\n%s?</string>
   <string name="file_delete_successful">Supprimé avec succès.</string>
   <string name="no_file_selected">Choisir d\'abord un fichier.</string>

@@ -4,7 +4,7 @@
     http://developer.android.com/guide/topics/resources/string-resource.html (scroll down to "Escaping apostrophes and quotes").-->
   <!--title-->
   <string name="title_decrypt">Ontsleutelen</string>
-  <string name="title_authentication">Wachtwoord</string>
+  <string name="title_unlock">Wachtwoord</string>
   <string name="title_edit_key">Sleutel bewerken</string>
   <string name="title_preferences">Instellingen</string>
   <string name="title_key_server_preference">Sleutelserver Voorkeur</string>

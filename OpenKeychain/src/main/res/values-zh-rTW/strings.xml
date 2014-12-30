@@ -9,7 +9,7 @@
   <string name="title_encrypt_text">加密文字</string>
   <string name="title_encrypt_files">加密檔案</string>
   <string name="title_decrypt">解密</string>
-  <string name="title_authentication">口令</string>
+  <string name="title_unlock">口令</string>
   <string name="title_add_subkey">新增子金鑰</string>
   <string name="title_edit_key">編輯金鑰</string>
   <string name="title_preferences">偏好設定</string>

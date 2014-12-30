@@ -659,6 +659,12 @@
         <activity
             android:name=".ui.PassphraseDialogActivity"
             android:theme="@android:style/Theme.NoDisplay" />
+        <activity
+            android:name="com.haibison.android.lockpattern.LockPatternActivity"
+            android:label="@string/title_unlock"
+            android:configChanges="orientation|screenSize|keyboard|keyboardHidden"
+            android:screenOrientation="user"
+            android:theme="@style/Alp.42447968.Theme.Dialog.Light" />
         <!--
         NOTE: singleTop is set to get NFC foreground dispatch to work.
               Then, all NFC intents will be broadcasted to onNewIntent() of this activity!
