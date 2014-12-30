@@ -41,6 +41,7 @@ import org.spongycastle.openpgp.PGPSignature;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
 import org.sufficientlysecure.keychain.operations.results.EditKeyResult;
+import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey.SecretKeyType;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel.Algorithm;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel.ChangeUnlockParcel;
@@ -100,6 +101,7 @@ public class PgpKeyOperationTest {
         Assert.assertNotNull("initial test key creation must succeed", result.getRing());
 
         staticRing = result.getRing();
+        staticRing = staticRing.canonicalize(new OperationLog(), 0).getUncachedKeyRing();
 
         // we sleep here for a second, to make sure all new certificates have different timestamps
         Thread.sleep(1000);
@@ -912,7 +914,9 @@ public class PgpKeyOperationTest {
 
         // change passphrase to empty
         parcel.mNewUnlock = new ChangeUnlockParcel("");
-        UncachedKeyRing modified = applyModificationWithChecks(parcel, ring, onlyA, onlyB);
+        // note that canonicalization here necessarily strips the empty notation packet
+        UncachedKeyRing modified = applyModificationWithChecks(parcel, ring, onlyA, onlyB,
+                passphrase, true, false);
 
         Assert.assertEquals("exactly three packets should have been modified (the secret keys)",
                 3, onlyB.size());
@@ -925,7 +929,7 @@ public class PgpKeyOperationTest {
         // modify keyring, change to non-empty passphrase
         String otherPassphrase = TestingUtils.genPassphrase(true);
         parcel.mNewUnlock = new ChangeUnlockParcel(otherPassphrase);
-        modified = applyModificationWithChecks(parcel, modified, onlyA, onlyB, "");
+        modified = applyModificationWithChecks(parcel, modified, onlyA, onlyB, "", true, false);
 
         Assert.assertEquals("exactly three packets should have been modified (the secret keys)",
                 3, onlyB.size());
@@ -979,6 +983,28 @@ public class PgpKeyOperationTest {
             Assert.assertTrue("log must contain a failed passphrase change warning",
                     result.getLog().containsType(LogType.MSG_MF_PASSPHRASE_FAIL));
         }
+
+    }
+
+    @Test
+    public void testUnlockPin() throws Exception {
+
+        // change passphrase to a pin type
+        parcel.mNewUnlock = new ChangeUnlockParcel(null, "52351");
+        UncachedKeyRing modified = applyModificationWithChecks(parcel, ring, onlyA, onlyB);
+
+        Assert.assertEquals("exactly four packets should have been modified (the secret keys + notation packet)",
+                4, onlyB.size());
+
+        RawPacket dkSig = onlyB.get(1);
+        Assert.assertEquals("second modified packet should be notation data",
+                PacketTags.SIGNATURE, dkSig.tag);
+
+        // check that notation data contains pin
+        CanonicalizedSecretKeyRing secretRing = new CanonicalizedSecretKeyRing(modified.getEncoded(), false, 0);
+        Assert.assertEquals("secret key type should be 'pin' after this",
+                SecretKeyType.PIN,
+                secretRing.getSecretKey().getSecretKeyType());
 
     }
 
