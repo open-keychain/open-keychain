@@ -571,10 +571,10 @@
   <string name="msg_kc_error_v3">Den här nyckeln är skapad med OpenPGP version 3, vilken är en föråldrad version som inte längre stöds!</string>
   <string name="msg_kc_error_master_algo">Den här huvudnyckeln använder en okänd (%s) algoritm!</string>
   <string name="msg_kc_master">Bearbetar huvudnyckel</string>
-  <string name="msg_kc_revoke_bad_err">Tar bort dåligt återkallelsecertifikat för nyckelring</string>
-  <string name="msg_kc_revoke_bad_time">Tar bort återkallelsecertifikat för nyckelring med framtida tidstämpel</string>
-  <string name="msg_kc_bad_type">Tar bort huvudnyckelcertifikat av okänd typ (%s)</string>
-  <string name="msg_kc_revoke_bad">Tar bort dåligt återkallelsecertifikat för nyckelring</string>
+  <string name="msg_kc_master_bad_err">Tar bort dåligt återkallelsecertifikat för nyckelring</string>
+  <string name="msg_kc_master_bad_time">Tar bort återkallelsecertifikat för nyckelring med framtida tidstämpel</string>
+  <string name="msg_kc_master_bad_type">Tar bort huvudnyckelcertifikat av okänd typ (%s)</string>
+  <string name="msg_kc_master_bad">Tar bort dåligt återkallelsecertifikat för nyckelring</string>
   <string name="msg_kc_revoke_dup">Tar bort överflödigt återkallelsecertifikat för nyckelring</string>
   <string name="msg_kc_sub">Bearbetar undernyckel %s</string>
   <string name="msg_kc_sub_no_cert">Inget giltigt certifikat hittades för %s, tar bort från nyckelring</string>

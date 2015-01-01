@@ -711,12 +711,13 @@
     <string name="msg_kc_error_master_algo">"The master key uses an unknown (%s) algorithm!"</string>
     <string name="msg_kc_error_dup_key">"Subkey %s occurs twice in keyring. Keyring is malformed, not importing!"</string>
     <string name="msg_kc_master">"Processing master key"</string>
-    <string name="msg_kc_bad_type">"Removing master key certificate of unknown type (%s)"</string>
-    <string name="msg_kc_revoke_bad_err">"Removing bad keyring revocation certificate"</string>
-    <string name="msg_kc_revoke_bad_local">"Removing keyring revocation certificate with "local" flag"</string>
-    <string name="msg_kc_revoke_bad_time">"Removing keyring revocation certificate with future timestamp"</string>
-    <string name="msg_kc_revoke_bad_type_uid">"Removing user ID certificate in bad position"</string>
-    <string name="msg_kc_revoke_bad">"Removing bad keyring revocation certificate"</string>
+    <string name="msg_kc_master_bad_type">"Removing master key certificate of unknown type (%s)"</string>
+    <string name="msg_kc_master_bad_local">"Removing master key certificate with "local" flag"</string>
+    <string name="msg_kc_master_bad_err">"Removing bad master key certificate"</string>
+    <string name="msg_kc_master_bad_time">"Removing keyring revocation certificate with future timestamp"</string>
+    <string name="msg_kc_master_bad_type_uid">"Removing user ID certificate in bad position"</string>
+    <string name="msg_kc_master_bad">"Removing bad master key certificate"</string>
+    <string name="msg_kc_master_local">"Removing master key certificate with "local" flag"</string>
     <string name="msg_kc_revoke_dup">"Removing redundant keyring revocation certificate"</string>
     <string name="msg_kc_notation_dup">"Removing redundant notation certificate"</string>
     <string name="msg_kc_notation_empty">"Removing empty notation certificate"</string>
@@ -980,6 +981,7 @@
     <string name="msg_export_error_storage">"Storage is not ready for writing!"</string>
     <string name="msg_export_error_db">"Database error!"</string>
     <string name="msg_export_error_io">"Input/output error!"</string>
+    <string name="msg_export_error_key">"Error preprocessing key data!"</string>
     <string name="msg_export_success">"Export operation successful"</string>
 
     <string name="msg_del_error_empty">"Nothing to delete!"</string>

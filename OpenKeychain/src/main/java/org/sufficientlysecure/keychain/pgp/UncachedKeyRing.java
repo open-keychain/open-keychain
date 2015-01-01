@@ -266,6 +266,35 @@ public class UncachedKeyRing {
      */
     @SuppressWarnings("ConstantConditions")
     public CanonicalizedKeyRing canonicalize(OperationLog log, int indent) {
+        return canonicalize(log, indent, false);
+    }
+
+
+    /** "Canonicalizes" a public key, removing inconsistencies in the process.
+     *
+     * More specifically:
+     *  - Remove all non-verifying self-certificates
+     *  - Remove all "future" self-certificates
+     *  - Remove all certificates flagged as "local"
+     *  - Remove all certificates which are superseded by a newer one on the same target,
+     *      including revocations with later re-certifications.
+     *  - Remove all certificates in other positions if not of known type:
+     *   - key revocation signatures on the master key
+     *   - subkey binding signatures for subkeys
+     *   - certifications and certification revocations for user ids
+     *  - If a subkey retains no valid subkey binding certificate, remove it
+     *  - If a user id retains no valid self certificate, remove it
+     *  - If the key is a secret key, remove all certificates by foreign keys
+     *  - If no valid user id remains, log an error and return null
+     *
+     * This operation writes an OperationLog which can be used as part of an OperationResultParcel.
+     *
+     * @param forExport if this is true, non-exportable signatures will be removed
+     * @return A canonicalized key, or null on fatal error (log will include a message in this case)
+     *
+     */
+    @SuppressWarnings("ConstantConditions")
+    public CanonicalizedKeyRing canonicalize(OperationLog log, int indent, boolean forExport) {
 
         log.add(isSecret() ? LogType.MSG_KC_SECRET : LogType.MSG_KC_PUBLIC,
                 indent, KeyFormattingUtils.convertKeyIdToHex(getMasterKeyId()));
@@ -311,7 +340,7 @@ public class UncachedKeyRing {
                         || type == PGPSignature.CASUAL_CERTIFICATION
                         || type == PGPSignature.POSITIVE_CERTIFICATION
                         || type == PGPSignature.CERTIFICATION_REVOCATION) {
-                    log.add(LogType.MSG_KC_REVOKE_BAD_TYPE_UID, indent);
+                    log.add(LogType.MSG_KC_MASTER_BAD_TYPE_UID, indent);
                     modified = PGPPublicKey.removeCertification(modified, zert);
                     badCerts += 1;
                     continue;
@@ -320,7 +349,7 @@ public class UncachedKeyRing {
 
                 if (type != PGPSignature.KEY_REVOCATION && type != PGPSignature.DIRECT_KEY) {
                     // Unknown type, just remove
-                    log.add(LogType.MSG_KC_BAD_TYPE, indent, "0x" + Integer.toString(type, 16));
+                    log.add(LogType.MSG_KC_MASTER_BAD_TYPE, indent, "0x" + Integer.toString(type, 16));
                     modified = PGPPublicKey.removeCertification(modified, zert);
                     badCerts += 1;
                     continue;
@@ -328,7 +357,7 @@ public class UncachedKeyRing {
 
                 if (cert.getCreationTime().after(nowPlusOneDay)) {
                     // Creation date in the future? No way!
-                    log.add(LogType.MSG_KC_REVOKE_BAD_TIME, indent);
+                    log.add(LogType.MSG_KC_MASTER_BAD_TIME, indent);
                     modified = PGPPublicKey.removeCertification(modified, zert);
                     badCerts += 1;
                     continue;
@@ -337,23 +366,31 @@ public class UncachedKeyRing {
                 try {
                     cert.init(masterKey);
                     if (!cert.verifySignature(masterKey)) {
-                        log.add(LogType.MSG_KC_REVOKE_BAD, indent);
+                        log.add(LogType.MSG_KC_MASTER_BAD, indent);
                         modified = PGPPublicKey.removeCertification(modified, zert);
                         badCerts += 1;
                         continue;
                     }
                 } catch (PgpGeneralException e) {
-                    log.add(LogType.MSG_KC_REVOKE_BAD_ERR, indent);
+                    log.add(LogType.MSG_KC_MASTER_BAD_ERR, indent);
                     modified = PGPPublicKey.removeCertification(modified, zert);
                     badCerts += 1;
                     continue;
                 }
 
-                // special case: direct key signatures!
+                // if this is for export, we always remove any non-exportable certs
+                if (forExport && cert.isLocal()) {
+                    // Remove revocation certs with "local" flag
+                    log.add(LogType.MSG_KC_MASTER_LOCAL, indent);
+                    modified = PGPPublicKey.removeCertification(modified, zert);
+                    continue;
+                }
+
+                // special case: non-exportable, direct key signatures for notations!
                 if (cert.getSignatureType() == PGPSignature.DIRECT_KEY) {
                     // must be local, otherwise strip!
                     if (!cert.isLocal()) {
-                        log.add(LogType.MSG_KC_BAD_TYPE, indent);
+                        log.add(LogType.MSG_KC_MASTER_BAD_TYPE, indent);
                         modified = PGPPublicKey.removeCertification(modified, zert);
                         badCerts += 1;
                         continue;
@@ -376,7 +413,7 @@ public class UncachedKeyRing {
                     continue;
                 } else if (cert.isLocal()) {
                     // Remove revocation certs with "local" flag
-                    log.add(LogType.MSG_KC_REVOKE_BAD_LOCAL, indent);
+                    log.add(LogType.MSG_KC_MASTER_BAD_LOCAL, indent);
                     modified = PGPPublicKey.removeCertification(modified, zert);
                     badCerts += 1;
                     continue;

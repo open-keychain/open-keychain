@@ -604,11 +604,11 @@
   <string name="msg_kc_error_no_uid">Schlüsselbund hat keine gültigen Benutzerkennungen!</string>
   <string name="msg_kc_error_master_algo">Der Hauptschlüssel verwendet einen unbekannten (%s) Algorithmus!</string>
   <string name="msg_kc_master">Verarbeite Hauptschlüssel</string>
-  <string name="msg_kc_revoke_bad_err">Entferne fehlerhaftes Schlüsselbund Widerrufszertifikat</string>
-  <string name="msg_kc_revoke_bad_local">Entferne Schlüsselbund Widerrufszertifikat mit \"Lokal\" Attribut</string>
-  <string name="msg_kc_revoke_bad_time">Entferne Schlüsselbund Widerrufszertifikat mit zukünftigem Zeitstempel</string>
-  <string name="msg_kc_bad_type">Entferne Hauptschlüsselbeglaubigung unbekannter Art (%s)</string>
-  <string name="msg_kc_revoke_bad">Entferne fehlerhaftes Schlüsselbund Widerrufszertifikat</string>
+  <string name="msg_kc_master_bad_err">Entferne fehlerhaftes Schlüsselbund Widerrufszertifikat</string>
+  <string name="msg_kc_master_bad_local">Entferne Schlüsselbund Widerrufszertifikat mit \"Lokal\" Attribut</string>
+  <string name="msg_kc_master_bad_time">Entferne Schlüsselbund Widerrufszertifikat mit zukünftigem Zeitstempel</string>
+  <string name="msg_kc_master_bad_type">Entferne Hauptschlüsselbeglaubigung unbekannter Art (%s)</string>
+  <string name="msg_kc_master_bad">Entferne fehlerhaftes Schlüsselbund Widerrufszertifikat</string>
   <string name="msg_kc_revoke_dup">Entferne redundantes Schlüsselbund Widerrufszertifikat</string>
   <string name="msg_kc_sub">Verarbeite Unterschlüssel %s</string>
   <string name="msg_kc_sub_bad">Entferne ungültige Unterschlüssel Zwischenbeglaubigung</string>

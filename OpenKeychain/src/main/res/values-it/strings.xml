@@ -599,11 +599,11 @@ Permetti accesso?\n\nATTENZIONE: Se non sai perche\' questo schermata e\' appars
   <string name="msg_kc_secret">Canonicalizzazione portachiavi segreto %s</string>
   <string name="msg_kc_error_v3">Questa è una chiave OpenPGP versione 3, è deprecata e non più supportata!</string>
   <string name="msg_kc_master">Elaborazione chiave principale</string>
-  <string name="msg_kc_revoke_bad_err">Rimozione di certificato di revoca del portachiavi corrotto</string>
-  <string name="msg_kc_revoke_bad_local">Rimozione certificato di revoca del portachiavi con caratteristica \"locale\"</string>
-  <string name="msg_kc_revoke_bad_time">Rimozione certificato di revoca del portachiavi con marca temporale futura</string>
-  <string name="msg_kc_bad_type">Rimozione certificato della chiave principale di tipo sconosciuto (%s)</string>
-  <string name="msg_kc_revoke_bad">Rimozione certificato di revoca del portachiavi corrotto</string>
+  <string name="msg_kc_master_bad_err">Rimozione di certificato di revoca del portachiavi corrotto</string>
+  <string name="msg_kc_master_bad_local">Rimozione certificato di revoca del portachiavi con caratteristica \"locale\"</string>
+  <string name="msg_kc_master_bad_time">Rimozione certificato di revoca del portachiavi con marca temporale futura</string>
+  <string name="msg_kc_master_bad_type">Rimozione certificato della chiave principale di tipo sconosciuto (%s)</string>
+  <string name="msg_kc_master_bad">Rimozione certificato di revoca del portachiavi corrotto</string>
   <string name="msg_kc_revoke_dup">Rimozione certificato di revoca del portachiavi ridondante</string>
   <string name="msg_kc_sub">Elaborazione sottochiave %s</string>
   <string name="msg_kc_sub_bad">Rimozione certificato vincolante di sottochiave non valido</string>

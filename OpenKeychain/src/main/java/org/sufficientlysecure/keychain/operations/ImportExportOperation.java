@@ -31,6 +31,7 @@ import org.sufficientlysecure.keychain.keyimport.Keyserver;
 import org.sufficientlysecure.keychain.keyimport.Keyserver.AddKeyException;
 import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
 import org.sufficientlysecure.keychain.operations.results.ExportResult;
+import org.sufficientlysecure.keychain.pgp.CanonicalizedKeyRing;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedPublicKeyRing;
 import org.sufficientlysecure.keychain.pgp.PgpHelper;
 import org.sufficientlysecure.keychain.pgp.Progressable;
@@ -399,7 +400,7 @@ public class ImportExportOperation extends BaseOperation {
 
     }
 
-    private ExportResult exportKeyRings(OperationLog log, long[] masterKeyIds, boolean exportSecret,
+    ExportResult exportKeyRings(OperationLog log, long[] masterKeyIds, boolean exportSecret,
                                  OutputStream outStream) {
 
         /* TODO isn't this checked above, with the isStorageMounted call?
@@ -469,12 +470,16 @@ public class ImportExportOperation extends BaseOperation {
 
                     log.add(LogType.MSG_EXPORT_PUBLIC, 1, KeyFormattingUtils.beautifyKeyId(keyId));
 
-                    { // export public key part
-                        byte[] data = cursor.getBlob(1);
-                        arOutStream.write(data);
+                    byte[] data = cursor.getBlob(1);
+                    CanonicalizedKeyRing ring =
+                            UncachedKeyRing.decodeFromData(data).canonicalize(log, 2, true);
+                    ring.encode(arOutStream);
 
-                        okPublic += 1;
-                    }
+                    okPublic += 1;
+                } catch (PgpGeneralException e) {
+                    log.add(LogType.MSG_EXPORT_ERROR_KEY, 2);
+                    updateProgress(progress++, numKeys);
+                    continue;
                 } finally {
                     // make sure this is closed
                     if (arOutStream != null) {
@@ -491,12 +496,18 @@ public class ImportExportOperation extends BaseOperation {
                             arOutStream.setHeader("Version", version);
                         }
 
-                    // export secret key part
+                        // export secret key part
                         log.add(LogType.MSG_EXPORT_SECRET, 2, KeyFormattingUtils.beautifyKeyId(keyId));
                         byte[] data = cursor.getBlob(2);
-                        arOutStream.write(data);
+                        CanonicalizedKeyRing ring =
+                                UncachedKeyRing.decodeFromData(data).canonicalize(log, 2, true);
+                        ring.encode(arOutStream);
 
                         okSecret += 1;
+                    } catch (PgpGeneralException e) {
+                        log.add(LogType.MSG_EXPORT_ERROR_KEY, 2);
+                        updateProgress(progress++, numKeys);
+                        continue;
                     } finally {
                         // make sure this is closed
                         if (arOutStream != null) {

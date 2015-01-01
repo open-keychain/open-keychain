@@ -447,11 +447,11 @@
   <string name="msg_is_success">Zasebna zbirka ključev uspešno uvožena</string>
   <!--Keyring Canonicalization log entries-->
   <string name="msg_kc_master">Obdelujem glavni ključ...</string>
-  <string name="msg_kc_revoke_bad_err">Umikam slab certifikat za preklic zbirk ključev</string>
-  <string name="msg_kc_revoke_bad_local">Umikam certifikat za preklic zbirk ključev z oznako \"lokalno\"</string>
-  <string name="msg_kc_revoke_bad_time">Umikam certifikat za preklic zbirk ključev s časovno znamko v prihodnosti</string>
-  <string name="msg_kc_bad_type">Umikam certifikat glavnega ključa neznanega tipa (%s)</string>
-  <string name="msg_kc_revoke_bad">Umikam slab certifikat za preklic zbirk ključev</string>
+  <string name="msg_kc_master_bad_err">Umikam slab certifikat za preklic zbirk ključev</string>
+  <string name="msg_kc_master_bad_local">Umikam certifikat za preklic zbirk ključev z oznako \"lokalno\"</string>
+  <string name="msg_kc_master_bad_time">Umikam certifikat za preklic zbirk ključev s časovno znamko v prihodnosti</string>
+  <string name="msg_kc_master_bad_type">Umikam certifikat glavnega ključa neznanega tipa (%s)</string>
+  <string name="msg_kc_master_bad">Umikam slab certifikat za preklic zbirk ključev</string>
   <string name="msg_kc_revoke_dup">Umikam odvečen certifikat za preklic zbirk ključev</string>
   <string name="msg_kc_sub">Obdelujem podključ %s</string>
   <string name="msg_kc_sub_bad">Umikam neveljaven certifikat za povezovanje podključev</string>
