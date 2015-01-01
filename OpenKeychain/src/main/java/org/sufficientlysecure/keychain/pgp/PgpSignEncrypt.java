@@ -95,7 +95,7 @@ public class PgpSignEncrypt extends BaseOperation {
         }
     }
 
-    private PgpSignEncrypt(Builder builder) {
+    protected PgpSignEncrypt(Builder builder) {
         super(builder.mContext, builder.mProviderHelper, builder.mProgressable);
 
         // private Constructor can only be called from Builder

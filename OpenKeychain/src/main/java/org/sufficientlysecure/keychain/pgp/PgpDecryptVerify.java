@@ -84,7 +84,7 @@ public class PgpDecryptVerify extends BaseOperation {
     private boolean mDecryptMetadataOnly;
     private byte[] mDecryptedSessionKey;
 
-    private PgpDecryptVerify(Builder builder) {
+    protected PgpDecryptVerify(Builder builder) {
         super(builder.mContext, builder.mProviderHelper, builder.mProgressable);
 
         // private Constructor can only be called from Builder
