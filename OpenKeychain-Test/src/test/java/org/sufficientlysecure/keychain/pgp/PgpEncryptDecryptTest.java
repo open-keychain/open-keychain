@@ -28,6 +28,7 @@ import org.spongycastle.bcpg.sig.KeyFlags;
 import org.spongycastle.jce.provider.BouncyCastleProvider;
 import org.spongycastle.openpgp.PGPEncryptedData;
 import org.sufficientlysecure.keychain.pgp.PgpSignEncrypt.Builder;
+import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRingData;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel.Algorithm;
@@ -41,7 +42,10 @@ import org.sufficientlysecure.keychain.util.TestingUtils;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.OutputStream;
+import java.io.PrintStream;
 import java.security.Security;
+import java.util.HashSet;
 
 @RunWith(RobolectricTestRunner.class)
 @org.robolectric.annotation.Config(emulateSdk = 18) // Robolectric doesn't yet support 19
@@ -53,10 +57,13 @@ public class PgpEncryptDecryptTest {
     static String mKeyPhrase1 = TestingUtils.genPassphrase(true);
     static String mKeyPhrase2 = TestingUtils.genPassphrase(true);
 
+    static PrintStream oldShadowStream;
+
     @BeforeClass
     public static void setUpOnce() throws Exception {
         Security.insertProviderAt(new BouncyCastleProvider(), 1);
-        ShadowLog.stream = System.out;
+        oldShadowStream = ShadowLog.stream;
+        // ShadowLog.stream = System.out;
 
         PgpKeyOperation op = new PgpKeyOperation(null);
 
@@ -102,8 +109,14 @@ public class PgpEncryptDecryptTest {
     public void setUp() {
         ProviderHelper providerHelper = new ProviderHelper(Robolectric.application);
 
+        // don't log verbosely here, we're not here to test imports
+        ShadowLog.stream = oldShadowStream;
+
         providerHelper.saveSecretKeyRing(mStaticRing1, new ProgressScaler());
-        providerHelper.saveSecretKeyRing(mStaticRing1, new ProgressScaler());
+        providerHelper.saveSecretKeyRing(mStaticRing2, new ProgressScaler());
+
+        // ok NOW log verbosely!
+        ShadowLog.stream = System.out;
     }
 
     @Test
