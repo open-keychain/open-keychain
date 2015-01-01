@@ -803,7 +803,9 @@
     <string name="msg_mf_error_pgp">"Internal PGP error!"</string>
     <string name="msg_mf_error_sig">"Signature exception!"</string>
     <string name="msg_mf_master">"Modifying master certifications"</string>
-    <string name="msg_mf_passphrase">"Changing passphrase for keyring…"</string>
+    <string name="msg_mf_notation_empty">"Adding empty notation packet"</string>
+    <string name="msg_mf_notation_pin">"Adding PIN notation packet"</string>
+    <string name="msg_mf_passphrase">"Changing passphrase for keyring"</string>
     <string name="msg_mf_passphrase_key">"Re-encrypting subkey %s with new passphrase"</string>
     <string name="msg_mf_passphrase_empty_retry">"Setting new passphrase failed, trying again with empty old passphrase"</string>
     <string name="msg_mf_passphrase_fail">"Passphrase for subkey could not be changed! (Does it have a different one from the other keys?)"</string>

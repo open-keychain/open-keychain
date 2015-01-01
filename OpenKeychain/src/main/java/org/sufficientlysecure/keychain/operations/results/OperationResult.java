@@ -461,6 +461,8 @@ public abstract class OperationResult implements Parcelable {
         MSG_MF_ERROR_SIG (LogLevel.ERROR, R.string.msg_mf_error_sig),
         MSG_MF_ERROR_SUBKEY_MISSING(LogLevel.ERROR, R.string.msg_mf_error_subkey_missing),
         MSG_MF_MASTER (LogLevel.DEBUG, R.string.msg_mf_master),
+        MSG_MF_NOTATION_PIN (LogLevel.DEBUG, R.string.msg_mf_notation_pin),
+        MSG_MF_NOTATION_EMPTY (LogLevel.DEBUG, R.string.msg_mf_notation_empty),
         MSG_MF_PASSPHRASE (LogLevel.INFO, R.string.msg_mf_passphrase),
         MSG_MF_PASSPHRASE_KEY (LogLevel.DEBUG, R.string.msg_mf_passphrase_key),
         MSG_MF_PASSPHRASE_EMPTY_RETRY (LogLevel.DEBUG, R.string.msg_mf_passphrase_empty_retry),

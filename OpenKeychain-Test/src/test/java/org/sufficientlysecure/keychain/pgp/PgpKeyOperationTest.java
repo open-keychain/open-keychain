@@ -916,7 +916,7 @@ public class PgpKeyOperationTest {
         parcel.mNewUnlock = new ChangeUnlockParcel("");
         // note that canonicalization here necessarily strips the empty notation packet
         UncachedKeyRing modified = applyModificationWithChecks(parcel, ring, onlyA, onlyB,
-                passphrase, true, false);
+                passphrase);
 
         Assert.assertEquals("exactly three packets should have been modified (the secret keys)",
                 3, onlyB.size());
@@ -929,7 +929,7 @@ public class PgpKeyOperationTest {
         // modify keyring, change to non-empty passphrase
         String otherPassphrase = TestingUtils.genPassphrase(true);
         parcel.mNewUnlock = new ChangeUnlockParcel(otherPassphrase);
-        modified = applyModificationWithChecks(parcel, modified, onlyA, onlyB, "", true, false);
+        modified = applyModificationWithChecks(parcel, modified, onlyA, onlyB, "");
 
         Assert.assertEquals("exactly three packets should have been modified (the secret keys)",
                 3, onlyB.size());
@@ -989,11 +989,15 @@ public class PgpKeyOperationTest {
     @Test
     public void testUnlockPin() throws Exception {
 
+        String pin = "5235125";
+
         // change passphrase to a pin type
-        parcel.mNewUnlock = new ChangeUnlockParcel(null, "52351");
+        parcel.mNewUnlock = new ChangeUnlockParcel(null, pin);
         UncachedKeyRing modified = applyModificationWithChecks(parcel, ring, onlyA, onlyB);
 
-        Assert.assertEquals("exactly four packets should have been modified (the secret keys + notation packet)",
+        Assert.assertEquals("exactly three packets should have been added (the secret keys + notation packet)",
+                3, onlyA.size());
+        Assert.assertEquals("exactly four packets should have been added (the secret keys + notation packet)",
                 4, onlyB.size());
 
         RawPacket dkSig = onlyB.get(1);
@@ -1001,10 +1005,24 @@ public class PgpKeyOperationTest {
                 PacketTags.SIGNATURE, dkSig.tag);
 
         // check that notation data contains pin
-        CanonicalizedSecretKeyRing secretRing = new CanonicalizedSecretKeyRing(modified.getEncoded(), false, 0);
+        CanonicalizedSecretKeyRing secretRing = new CanonicalizedSecretKeyRing(
+                modified.getEncoded(), false, 0);
         Assert.assertEquals("secret key type should be 'pin' after this",
                 SecretKeyType.PIN,
                 secretRing.getSecretKey().getSecretKeyType());
+
+        // need to sleep for a sec, so the timestamp changes for notation data
+        Thread.sleep(1000);
+
+        {
+            parcel.mNewUnlock = new ChangeUnlockParcel("phrayse", null);
+            applyModificationWithChecks(parcel, modified, onlyA, onlyB, pin, true, false);
+
+            Assert.assertEquals("exactly four packets should have been removed (the secret keys + notation packet)",
+                    4, onlyA.size());
+            Assert.assertEquals("exactly three packets should have been added (no more notation packet)",
+                    3, onlyB.size());
+        }
 
     }
 

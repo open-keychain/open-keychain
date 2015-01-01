@@ -921,6 +921,9 @@ public class PgpKeyOperation {
 
             // if there is any old packet with notation data
             if (hasNotationData(sKR)) {
+
+                log.add(LogType.MSG_MF_NOTATION_EMPTY, indent);
+
                 // add packet with EMPTY notation data (updates old one, but will be stripped later)
                 PGPContentSignerBuilder signerBuilder = new JcaPGPContentSignerBuilder(
                         masterPrivateKey.getPublicKeyPacket().getAlgorithm(), HashAlgorithmTags.SHA512)
@@ -944,6 +947,8 @@ public class PgpKeyOperation {
 
         if (newUnlock.mNewPin != null) {
             sKR = applyNewPassphrase(sKR, masterPublicKey, passphrase, newUnlock.mNewPin, log, indent);
+
+            log.add(LogType.MSG_MF_NOTATION_PIN, indent);
 
             // add packet with "pin" notation data
             PGPContentSignerBuilder signerBuilder = new JcaPGPContentSignerBuilder(
