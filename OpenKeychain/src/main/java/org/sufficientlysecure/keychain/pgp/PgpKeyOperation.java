@@ -919,22 +919,25 @@ public class PgpKeyOperation {
         if (newUnlock.mNewPassphrase != null) {
             sKR = applyNewPassphrase(sKR, masterPublicKey, passphrase, newUnlock.mNewPassphrase, log, indent);
 
-            // add packet with EMPTY notation data (updates old one, but will be stripped later)
-            PGPContentSignerBuilder signerBuilder = new JcaPGPContentSignerBuilder(
-                    masterPrivateKey.getPublicKeyPacket().getAlgorithm(), HashAlgorithmTags.SHA512)
-                    .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME);
-            PGPSignatureGenerator sGen = new PGPSignatureGenerator(signerBuilder);
-            { // set subpackets
-                PGPSignatureSubpacketGenerator hashedPacketsGen = new PGPSignatureSubpacketGenerator();
-                hashedPacketsGen.setExportable(false, false);
-                sGen.setHashedSubpackets(hashedPacketsGen.generate());
-            }
-            sGen.init(PGPSignature.DIRECT_KEY, masterPrivateKey);
-            PGPSignature emptySig = sGen.generateCertification(masterPublicKey);
+            // if there is any old packet with notation data
+            if (hasNotationData(sKR)) {
+                // add packet with EMPTY notation data (updates old one, but will be stripped later)
+                PGPContentSignerBuilder signerBuilder = new JcaPGPContentSignerBuilder(
+                        masterPrivateKey.getPublicKeyPacket().getAlgorithm(), HashAlgorithmTags.SHA512)
+                        .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME);
+                PGPSignatureGenerator sGen = new PGPSignatureGenerator(signerBuilder);
+                { // set subpackets
+                    PGPSignatureSubpacketGenerator hashedPacketsGen = new PGPSignatureSubpacketGenerator();
+                    hashedPacketsGen.setExportable(false, false);
+                    sGen.setHashedSubpackets(hashedPacketsGen.generate());
+                }
+                sGen.init(PGPSignature.DIRECT_KEY, masterPrivateKey);
+                PGPSignature emptySig = sGen.generateCertification(masterPublicKey);
 
-            masterPublicKey = PGPPublicKey.addCertification(masterPublicKey, emptySig);
-            sKR = PGPSecretKeyRing.insertSecretKey(sKR,
-                    PGPSecretKey.replacePublicKey(sKR.getSecretKey(), masterPublicKey));
+                masterPublicKey = PGPPublicKey.addCertification(masterPublicKey, emptySig);
+                sKR = PGPSecretKeyRing.insertSecretKey(sKR,
+                        PGPSecretKey.replacePublicKey(sKR.getSecretKey(), masterPublicKey));
+            }
 
             return sKR;
         }
@@ -942,7 +945,7 @@ public class PgpKeyOperation {
         if (newUnlock.mNewPin != null) {
             sKR = applyNewPassphrase(sKR, masterPublicKey, passphrase, newUnlock.mNewPin, log, indent);
 
-            // add packet with EMPTY notation data (updates old one, but will be stripped later)
+            // add packet with "pin" notation data
             PGPContentSignerBuilder signerBuilder = new JcaPGPContentSignerBuilder(
                     masterPrivateKey.getPublicKeyPacket().getAlgorithm(), HashAlgorithmTags.SHA512)
                     .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME);
@@ -965,6 +968,22 @@ public class PgpKeyOperation {
 
         throw new UnsupportedOperationException("PIN passphrases not yet implemented!");
 
+    }
+
+    /** This method returns true iff the provided keyring has a local direct key signature
+     * with notation data.
+     */
+    private static boolean hasNotationData(PGPSecretKeyRing sKR) {
+        // noinspection unchecked
+        Iterator<PGPSignature> sigs = sKR.getPublicKey().getKeySignatures();
+        while (sigs.hasNext()) {
+            WrappedSignature sig = new WrappedSignature(sigs.next());
+            if (sig.getSignatureType() == PGPSignature.DIRECT_KEY
+                    && sig.isLocal() && !sig.getNotation().isEmpty()) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private static PGPSecretKeyRing applyNewPassphrase(
