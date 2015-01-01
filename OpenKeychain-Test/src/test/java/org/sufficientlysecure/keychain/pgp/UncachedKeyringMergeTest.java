@@ -34,6 +34,7 @@ import org.spongycastle.jce.provider.BouncyCastleProvider;
 import org.spongycastle.util.Strings;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.operations.results.EditKeyResult;
+import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel.Algorithm;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel.ChangeUnlockParcel;
@@ -104,6 +105,7 @@ public class UncachedKeyringMergeTest {
 
             EditKeyResult result = op.createSecretKeyRing(parcel);
             staticRingA = result.getRing();
+            staticRingA = staticRingA.canonicalize(new OperationLog(), 0).getUncachedKeyRing();
         }
 
         {
@@ -119,6 +121,7 @@ public class UncachedKeyringMergeTest {
             OperationResult.OperationLog log = new OperationResult.OperationLog();
             EditKeyResult result = op.createSecretKeyRing(parcel);
             staticRingB = result.getRing();
+            staticRingB = staticRingB.canonicalize(new OperationLog(), 0).getUncachedKeyRing();
         }
 
         Assert.assertNotNull("initial test key creation must succeed", staticRingA);

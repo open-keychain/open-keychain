@@ -113,6 +113,8 @@ public class UncachedKeyringCanonicalizeTest {
         staticRing = result.getRing();
         Assert.assertNotNull("initial test key creation must succeed", staticRing);
 
+        staticRing = staticRing.canonicalize(new OperationLog(), 0).getUncachedKeyRing();
+
         // just for later reference
         totalPackets = 9;
 
