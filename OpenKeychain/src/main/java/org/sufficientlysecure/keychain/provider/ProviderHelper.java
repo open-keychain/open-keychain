@@ -192,6 +192,9 @@ public class ProviderHelper {
                     }
                     pos += 1;
                 }
+            } else {
+                // If no data was found, throw an appropriate exception
+                throw new NotFoundException();
             }
 
             return result;
