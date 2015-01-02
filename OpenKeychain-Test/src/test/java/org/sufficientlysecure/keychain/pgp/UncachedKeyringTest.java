@@ -34,6 +34,7 @@ import org.sufficientlysecure.keychain.service.SaveKeyringParcel.ChangeUnlockPar
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.Iterator;
 
 @RunWith(RobolectricTestRunner.class)
@@ -127,6 +128,22 @@ public class UncachedKeyringTest {
     public void testPublicExtractPublic() throws Exception {
         // can't do this, either!
         pubRing.extractPublicKeyRing();
+    }
+
+    @Test(expected = IOException.class)
+    public void testBrokenVersionCert() throws Throwable {
+        // this is a test for one of the patches we use on top of stock bouncycastle, which
+        // returns an IOException rather than a RuntimeException in case of a bad certificate
+        // version byte
+        readRingFromResource("/test-keys/broken_cert_version.asc");
+    }
+
+    UncachedKeyRing readRingFromResource(String name) throws Throwable {
+        try {
+            return UncachedKeyRing.fromStream(UncachedKeyringTest.class.getResourceAsStream(name)).next();
+        } catch (RuntimeException e) {
+            throw e.getCause();
+        }
     }
 
 }

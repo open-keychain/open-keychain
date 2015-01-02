@@ -143,17 +143,22 @@ public class UncachedKeyRing {
             throw new PgpGeneralException("Object not recognized as PGPKeyRing!");
         }
 
-        UncachedKeyRing ring = parsed.next();
+        try {
+            UncachedKeyRing ring = parsed.next();
 
-        if (parsed.hasNext()) {
-            throw new PgpGeneralException("Expected single keyring in stream, found at least two");
+            if (parsed.hasNext()) {
+                throw new PgpGeneralException("Expected single keyring in stream, found at least two");
+            }
+
+            return ring;
+
+        } catch (RuntimeException e) {
+            // yes this is bad style. we should rework this in a better way
+            throw new PgpGeneralException(e.getCause());
         }
-
-        return ring;
-
     }
 
-    public static Iterator<UncachedKeyRing> fromStream(final InputStream stream) throws IOException {
+    public static Iterator<UncachedKeyRing> fromStream(final InputStream stream) {
 
         return new Iterator<UncachedKeyRing>() {
 
@@ -190,7 +195,8 @@ public class UncachedKeyRing {
                         mObjectFactory = null;
                     }
                 } catch (IOException e) {
-                    Log.e(Constants.TAG, "IOException while processing stream. ArmoredInputStream CRC check failed?", e);
+                    throw new RuntimeException(e);
+                    // Log.e(Constants.TAG, "IOException while processing stream. ArmoredInputStream CRC check failed?", e);
                 } catch (ArrayIndexOutOfBoundsException e) {
                     Log.e(Constants.TAG, "ArmoredInputStream decode failed, symbol is not in decodingTable!", e);
                 }
