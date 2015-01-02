@@ -1024,6 +1024,12 @@
     <string name="passp_cache_notif_clear">"Clear Cache"</string>
     <string name="passp_cache_notif_pwd">"Passphrase"</string>
 
+    <!-- First Time -->
+    <string name="first_time_text1">"Take back your privacy with OpenKeychain!"</string>
+    <string name="first_time_create_key">"Create my key"</string>
+    <string name="first_time_import_key">"Import from file"</string>
+    <string name="first_time_skip">"Skip Setup"</string>
+
     <!-- unsorted -->
     <string name="section_certifier_id">"Certifier"</string>
     <string name="section_cert">"Certificate Details"</string>
@@ -1054,11 +1060,6 @@
     <string name="error_multi_not_supported">"Saving of multiple files not supported. This is a limitation on current Android."</string>
     <string name="key_colon">"Key:"</string>
     <string name="exchange_description">"To start a key exchange, choose the number of participants on the right side, then hit the “Start exchange” button.\n\nYou will be asked two more questions to make sure only the right participants are in the exchange and their fingerprints are correct."</string>
-
-    <!-- First Time -->
-    <string name="first_time_text1">"Take back your privacy with OpenKeychain!"</string>
-    <string name="first_time_create_key">"Create my key"</string>
-    <string name="first_time_import_key">"Import from file"</string>
-    <string name="first_time_skip">"Skip Setup"</string>
+    <string name="user_id_none"><![CDATA[<none>]]></string>
 
 </resources>
