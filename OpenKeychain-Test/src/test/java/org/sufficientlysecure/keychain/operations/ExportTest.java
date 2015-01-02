@@ -120,9 +120,12 @@ public class ExportTest {
     }
 
     @Test
-    public void testExportAllPublic() throws Exception {
+    public void testExportAll() throws Exception {
         ImportExportOperation op = new ImportExportOperation(Robolectric.application,
                 new ProviderHelper(Robolectric.application), null);
+
+        // make sure there is a local cert (so the later checks that there are none are meaningful)
+        Assert.assertTrue("second keyring has local certification", checkForLocal(mStaticRing2));
 
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         ExportResult result = op.exportKeyRings(new OperationLog(), null, false, out);
@@ -147,7 +150,8 @@ public class ExportTest {
             Assert.assertEquals("first exported key has correct masterkeyid",
                     masterKeyId1, ring.getMasterKeyId());
             Assert.assertFalse("first exported key must not be secret", ring.isSecret());
-            checkForLocal(ring);
+            Assert.assertFalse("there must be no local signatures in an exported keyring",
+                    checkForLocal(ring));
         }
 
         {
@@ -156,7 +160,8 @@ public class ExportTest {
             Assert.assertEquals("second exported key has correct masterkeyid",
                     masterKeyId2, ring.getMasterKeyId());
             Assert.assertFalse("second exported key must not be secret", ring.isSecret());
-            checkForLocal(ring);
+            Assert.assertFalse("there must be no local signatures in an exported keyring",
+                    checkForLocal(ring));
         }
 
         out = new ByteArrayOutputStream();
@@ -172,14 +177,16 @@ public class ExportTest {
             Assert.assertEquals("1/4 exported key has correct masterkeyid",
                     masterKeyId1, ring.getMasterKeyId());
             Assert.assertFalse("1/4 exported key must not be public", ring.isSecret());
-            checkForLocal(ring);
+            Assert.assertFalse("there must be no local signatures in an exported keyring",
+                    checkForLocal(ring));
 
             Assert.assertTrue("export must have four keys (2/4)", unc.hasNext());
             ring = unc.next();
             Assert.assertEquals("2/4 exported key has correct masterkeyid",
                     masterKeyId1, ring.getMasterKeyId());
             Assert.assertTrue("2/4 exported key must be public", ring.isSecret());
-            checkForLocal(ring);
+            Assert.assertFalse("there must be no local signatures in an exported keyring",
+                    checkForLocal(ring));
         }
 
         {
@@ -188,24 +195,29 @@ public class ExportTest {
             Assert.assertEquals("3/4 exported key has correct masterkeyid",
                     masterKeyId2, ring.getMasterKeyId());
             Assert.assertFalse("3/4 exported key must not be public", ring.isSecret());
-            checkForLocal(ring);
+            Assert.assertFalse("there must be no local signatures in an exported keyring",
+                    checkForLocal(ring));
 
             Assert.assertTrue("export must have four keys (4/4)", unc.hasNext());
             ring = unc.next();
             Assert.assertEquals("4/4 exported key has correct masterkeyid",
                     masterKeyId2, ring.getMasterKeyId());
             Assert.assertTrue("4/4 exported key must be public", ring.isSecret());
-            checkForLocal(ring);
+            Assert.assertFalse("there must be no local signatures in an exported keyring",
+                    checkForLocal(ring));
         }
 
     }
 
-    private void checkForLocal(UncachedKeyRing ring) {
+    /** This function checks whether or not there are any local signatures in a keyring. */
+    private boolean checkForLocal(UncachedKeyRing ring) {
         Iterator<WrappedSignature> sigs = ring.getPublicKey().getSignatures();
         while (sigs.hasNext()) {
-            Assert.assertFalse("there must be no local signatures in an exported keyring",
-                    sigs.next().isLocal());
+            if (sigs.next().isLocal()) {
+                return true;
+            }
         }
+        return false;
     }
 
 }
