@@ -33,6 +33,7 @@ import org.sufficientlysecure.keychain.operations.results.OperationResult.Operat
 import org.sufficientlysecure.keychain.pgp.CanonicalizedPublicKeyRing;
 import org.sufficientlysecure.keychain.pgp.PgpKeyOperation;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
+import org.sufficientlysecure.keychain.pgp.UncachedKeyRing.IteratorWithIOThrow;
 import org.sufficientlysecure.keychain.pgp.WrappedSignature;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
@@ -141,7 +142,7 @@ public class ExportTest {
             masterKeyId1 = mStaticRing2.getMasterKeyId();
         }
 
-        Iterator<UncachedKeyRing> unc =
+        IteratorWithIOThrow<UncachedKeyRing> unc =
                 UncachedKeyRing.fromStream(new ByteArrayInputStream(out.toByteArray()));
 
         {

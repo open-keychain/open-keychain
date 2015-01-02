@@ -137,35 +137,30 @@ public class UncachedKeyRing {
     public static UncachedKeyRing decodeFromData(byte[] data)
             throws PgpGeneralException, IOException {
 
-        Iterator<UncachedKeyRing> parsed = fromStream(new ByteArrayInputStream(data));
+        IteratorWithIOThrow<UncachedKeyRing> parsed = fromStream(new ByteArrayInputStream(data));
 
         if ( ! parsed.hasNext()) {
             throw new PgpGeneralException("Object not recognized as PGPKeyRing!");
         }
 
-        try {
-            UncachedKeyRing ring = parsed.next();
+        UncachedKeyRing ring = parsed.next();
 
-            if (parsed.hasNext()) {
-                throw new PgpGeneralException("Expected single keyring in stream, found at least two");
-            }
-
-            return ring;
-
-        } catch (RuntimeException e) {
-            // yes this is bad style. we should rework this in a better way
-            throw new PgpGeneralException(e.getCause());
+        if (parsed.hasNext()) {
+            throw new PgpGeneralException("Expected single keyring in stream, found at least two");
         }
+
+        return ring;
+
     }
 
-    public static Iterator<UncachedKeyRing> fromStream(final InputStream stream) {
+    public static IteratorWithIOThrow<UncachedKeyRing> fromStream(final InputStream stream) {
 
-        return new Iterator<UncachedKeyRing>() {
+        return new IteratorWithIOThrow<UncachedKeyRing>() {
 
             UncachedKeyRing mNext = null;
             PGPObjectFactory mObjectFactory = null;
 
-            private void cacheNext() {
+            private void cacheNext() throws IOException {
                 if (mNext != null) {
                     return;
                 }
@@ -194,22 +189,19 @@ public class UncachedKeyRing {
                         // if we are past the while loop, that means the objectFactory had no next
                         mObjectFactory = null;
                     }
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                    // Log.e(Constants.TAG, "IOException while processing stream. ArmoredInputStream CRC check failed?", e);
                 } catch (ArrayIndexOutOfBoundsException e) {
-                    Log.e(Constants.TAG, "ArmoredInputStream decode failed, symbol is not in decodingTable!", e);
+                    throw new IOException(e);
                 }
             }
 
             @Override
-            public boolean hasNext() {
+            public boolean hasNext() throws IOException {
                 cacheNext();
                 return mNext != null;
             }
 
             @Override
-            public UncachedKeyRing next() {
+            public UncachedKeyRing next() throws IOException {
                 try {
                     cacheNext();
                     return mNext;
@@ -217,13 +209,13 @@ public class UncachedKeyRing {
                     mNext = null;
                 }
             }
-
-            @Override
-            public void remove() {
-                throw new UnsupportedOperationException();
-            }
         };
 
+    }
+
+    public interface IteratorWithIOThrow<E> {
+        public boolean hasNext() throws IOException;
+        public E next() throws IOException;
     }
 
     public void encodeArmored(OutputStream out, String version) throws IOException {

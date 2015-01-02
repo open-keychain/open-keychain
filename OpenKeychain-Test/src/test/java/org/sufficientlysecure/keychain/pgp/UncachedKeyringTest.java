@@ -27,6 +27,7 @@ import org.robolectric.RobolectricTestRunner;
 import org.robolectric.shadows.ShadowLog;
 import org.spongycastle.bcpg.sig.KeyFlags;
 import org.sufficientlysecure.keychain.operations.results.EditKeyResult;
+import org.sufficientlysecure.keychain.pgp.UncachedKeyRing.IteratorWithIOThrow;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel.Algorithm;
@@ -110,7 +111,7 @@ public class UncachedKeyringTest {
         ring.encodeArmored(out, "OpenKeychain");
         pubRing.encodeArmored(out, "OpenKeychain");
 
-        Iterator<UncachedKeyRing> it =
+        IteratorWithIOThrow<UncachedKeyRing> it =
                 UncachedKeyRing.fromStream(new ByteArrayInputStream(out.toByteArray()));
         Assert.assertTrue("there should be two rings in the stream", it.hasNext());
         Assert.assertArrayEquals("first ring should be the first we put in",
@@ -139,11 +140,7 @@ public class UncachedKeyringTest {
     }
 
     UncachedKeyRing readRingFromResource(String name) throws Throwable {
-        try {
-            return UncachedKeyRing.fromStream(UncachedKeyringTest.class.getResourceAsStream(name)).next();
-        } catch (RuntimeException e) {
-            throw e.getCause();
-        }
+        return UncachedKeyRing.fromStream(UncachedKeyringTest.class.getResourceAsStream(name)).next();
     }
 
 }
