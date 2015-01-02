@@ -22,6 +22,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.openintents.openpgp.OpenPgpSignatureResult;
 import org.robolectric.*;
 import org.robolectric.shadows.ShadowLog;
 import org.spongycastle.bcpg.sig.KeyFlags;
@@ -36,6 +37,7 @@ import org.sufficientlysecure.keychain.operations.results.DecryptVerifyResult;
 import org.sufficientlysecure.keychain.operations.results.EditKeyResult;
 import org.sufficientlysecure.keychain.operations.results.SignEncryptResult;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel.ChangeUnlockParcel;
+import org.sufficientlysecure.keychain.support.KeyringTestingHelper;
 import org.sufficientlysecure.keychain.util.InputData;
 import org.sufficientlysecure.keychain.util.ProgressScaler;
 import org.sufficientlysecure.keychain.util.TestingUtils;
@@ -359,6 +361,79 @@ public class PgpEncryptDecryptTest {
             Assert.assertArrayEquals("decrypted ciphertext with cached passphrase  should equal plaintext",
                     out.toByteArray(), plaintext.getBytes());
             Assert.assertNull("signature should be empty", result.getSignatureResult());
+        }
+
+    }
+
+    @Test
+    public void testMultiAsymmetricSignEncryptDecryptVerify() {
+
+        String plaintext = "dies ist ein plaintext ☭" + TestingUtils.genPassphrase(true);
+        byte[] ciphertext;
+
+        { // encrypt data with a given passphrase
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            ByteArrayInputStream in = new ByteArrayInputStream(plaintext.getBytes());
+
+            InputData data = new InputData(in, in.available());
+            Builder b = new PgpSignEncrypt.Builder(
+                    Robolectric.application,
+                    new ProviderHelper(Robolectric.application),
+                    null, // new DummyPassphraseCache(mPassphrase, 0L),
+                    data, out);
+
+            b.setEncryptionMasterKeyIds(new long[] {
+                    mStaticRing1.getMasterKeyId(),
+                    mStaticRing2.getMasterKeyId()
+            });
+            b.setSignatureMasterKeyId(mStaticRing1.getMasterKeyId());
+            b.setSignatureSubKeyId(KeyringTestingHelper.getSubkeyId(mStaticRing1, 1));
+            b.setSignaturePassphrase(mKeyPhrase1);
+            b.setSymmetricEncryptionAlgorithm(PGPEncryptedData.AES_128);
+            SignEncryptResult result = b.build().execute();
+            Assert.assertTrue("encryption must succeed", result.success());
+
+            ciphertext = out.toByteArray();
+        }
+
+        { // decryption with passphrase cached should succeed for the first key
+
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            ByteArrayInputStream in = new ByteArrayInputStream(ciphertext);
+            InputData data = new InputData(in, in.available());
+
+            PgpDecryptVerify.Builder b = builderWithFakePassphraseCache(data, out,
+                    mKeyPhrase1, mStaticRing1.getMasterKeyId(), null);
+
+            DecryptVerifyResult result = b.build().execute();
+            Assert.assertTrue("decryption with cached passphrase must succeed for the first key", result.success());
+            Assert.assertArrayEquals("decrypted ciphertext with cached passphrase  should equal plaintext",
+                    out.toByteArray(), plaintext.getBytes());
+            Assert.assertEquals("signature should be verified and certified",
+                    OpenPgpSignatureResult.SIGNATURE_SUCCESS_CERTIFIED, result.getSignatureResult().getStatus());
+        }
+
+        { // decryption with passphrase cached should succeed for the other key if first is gone
+
+            // delete first key from database
+            new ProviderHelper(Robolectric.application).getContentResolver().delete(
+                    KeyRingData.buildPublicKeyRingUri(mStaticRing1.getMasterKeyId()), null, null
+            );
+
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            ByteArrayInputStream in = new ByteArrayInputStream(ciphertext);
+            InputData data = new InputData(in, in.available());
+
+            PgpDecryptVerify.Builder b = builderWithFakePassphraseCache(data, out,
+                    mKeyPhrase2, mStaticRing2.getMasterKeyId(), null);
+
+            DecryptVerifyResult result = b.build().execute();
+            Assert.assertTrue("decryption with cached passphrase must succeed", result.success());
+            Assert.assertArrayEquals("decrypted ciphertext with cached passphrase  should equal plaintext",
+                    out.toByteArray(), plaintext.getBytes());
+            Assert.assertEquals("signature key should be missing",
+                    OpenPgpSignatureResult.SIGNATURE_KEY_MISSING,
+                    result.getSignatureResult().getStatus());
         }
 
     }
