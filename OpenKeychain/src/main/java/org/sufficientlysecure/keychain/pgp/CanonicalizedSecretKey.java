@@ -300,6 +300,12 @@ public class CanonicalizedSecretKey extends CanonicalizedPublicKey {
         if (mPrivateKeyState == PRIVATE_KEY_STATE_LOCKED) {
             throw new PrivateKeyNotUnlockedException();
         }
+        if (!isMasterKey()) {
+            throw new AssertionError("tried to certify with non-master key, this is a programming error!");
+        }
+        if (publicKeyRing.getMasterKeyId() == getKeyId()) {
+            throw new AssertionError("key tried to self-certify, this is a programming error!");
+        }
 
         // create a signatureGenerator from the supplied masterKeyId and passphrase
         PGPSignatureGenerator signatureGenerator;

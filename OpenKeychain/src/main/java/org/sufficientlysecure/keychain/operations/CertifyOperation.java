@@ -94,6 +94,12 @@ public class CertifyOperation extends BaseOperation {
 
             try {
 
+                if (action.mMasterKeyId == parcel.mMasterKeyId) {
+                    log.add(LogType.MSG_CRT_ERROR_SELF, 2);
+                    certifyError += 1;
+                    continue;
+                }
+
                 if (action.mUserIds == null) {
                     log.add(LogType.MSG_CRT_CERTIFY_ALL, 2,
                             KeyFormattingUtils.convertKeyIdToHex(action.mMasterKeyId));
