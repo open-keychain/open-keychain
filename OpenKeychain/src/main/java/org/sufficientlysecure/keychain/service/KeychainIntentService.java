@@ -27,11 +27,13 @@ import android.os.Messenger;
 import android.os.RemoteException;
 
 import org.sufficientlysecure.keychain.Constants;
-import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.CertifyOperation;
 import org.sufficientlysecure.keychain.operations.DeleteOperation;
+import org.sufficientlysecure.keychain.operations.EditKeyOperation;
 import org.sufficientlysecure.keychain.operations.results.DeleteResult;
+import org.sufficientlysecure.keychain.operations.results.EditKeyResult;
 import org.sufficientlysecure.keychain.operations.results.ExportResult;
+import org.sufficientlysecure.keychain.operations.results.PgpEditKeyResult;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.operations.results.CertifyResult;
 import org.sufficientlysecure.keychain.util.FileHelper;
@@ -41,31 +43,23 @@ import org.sufficientlysecure.keychain.keyimport.HkpKeyserver;
 import org.sufficientlysecure.keychain.keyimport.Keyserver;
 import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedPublicKeyRing;
-import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKeyRing;
 import org.sufficientlysecure.keychain.pgp.PgpDecryptVerify;
 import org.sufficientlysecure.keychain.operations.results.DecryptVerifyResult;
 import org.sufficientlysecure.keychain.pgp.PgpHelper;
 import org.sufficientlysecure.keychain.operations.ImportExportOperation;
-import org.sufficientlysecure.keychain.pgp.PgpKeyOperation;
 import org.sufficientlysecure.keychain.pgp.PgpSignEncrypt;
 import org.sufficientlysecure.keychain.pgp.Progressable;
-import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralMsgIdException;
 import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
-import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
-import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
 import org.sufficientlysecure.keychain.operations.results.ConsolidateResult;
-import org.sufficientlysecure.keychain.operations.results.EditKeyResult;
 import org.sufficientlysecure.keychain.operations.results.ImportKeyResult;
-import org.sufficientlysecure.keychain.operations.results.SaveKeyringResult;
 import org.sufficientlysecure.keychain.operations.results.SignEncryptResult;
 import org.sufficientlysecure.keychain.util.ParcelableFileCache;
 import org.sufficientlysecure.keychain.util.InputData;
 import org.sufficientlysecure.keychain.util.Log;
-import org.sufficientlysecure.keychain.util.ProgressScaler;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -342,83 +336,16 @@ public class KeychainIntentService extends IntentService implements Progressable
 
         } else if (ACTION_EDIT_KEYRING.equals(action)) {
 
-            try {
-                /* Input */
-                SaveKeyringParcel saveParcel = data.getParcelable(EDIT_KEYRING_PARCEL);
-                if (saveParcel == null) {
-                    Log.e(Constants.TAG, "bug: missing save_keyring_parcel in data!");
-                    return;
-                }
+            // Input
+            SaveKeyringParcel saveParcel = data.getParcelable(EDIT_KEYRING_PARCEL);
+            String passphrase = data.getString(EDIT_KEYRING_PASSPHRASE);
 
-                /* Operation */
-                PgpKeyOperation keyOperations =
-                        new PgpKeyOperation(new ProgressScaler(this, 10, 60, 100), mActionCanceled);
-                EditKeyResult modifyResult;
+            // Operation
+            EditKeyOperation op = new EditKeyOperation(this, providerHelper, this, mActionCanceled);
+            EditKeyResult result = op.execute(saveParcel, passphrase);
 
-                if (saveParcel.mMasterKeyId != null) {
-                    String passphrase = data.getString(EDIT_KEYRING_PASSPHRASE);
-                    CanonicalizedSecretKeyRing secRing =
-                            new ProviderHelper(this).getCanonicalizedSecretKeyRing(saveParcel.mMasterKeyId);
-
-                    modifyResult = keyOperations.modifySecretKeyRing(secRing, saveParcel, passphrase);
-                } else {
-                    modifyResult = keyOperations.createSecretKeyRing(saveParcel);
-                }
-
-                // If the edit operation didn't succeed, exit here
-                if (!modifyResult.success()) {
-                    // always return SaveKeyringResult, so create one out of the EditKeyResult
-                    sendMessageToHandler(KeychainIntentServiceHandler.MESSAGE_OKAY, modifyResult);
-                    return;
-                }
-
-                UncachedKeyRing ring = modifyResult.getRing();
-
-                // Check if the action was cancelled
-                if (mActionCanceled.get()) {
-                    OperationLog log = modifyResult.getLog();
-                    // If it wasn't added before, add log entry
-                    if (!modifyResult.cancelled()) {
-                        log.add(LogType.MSG_OPERATION_CANCELLED, 0);
-                    }
-                    // If so, just stop without saving
-                    modifyResult = new EditKeyResult(
-                            EditKeyResult.RESULT_CANCELLED, log, null);
-                    sendMessageToHandler(KeychainIntentServiceHandler.MESSAGE_OKAY, modifyResult);
-                    return;
-                }
-
-                // Save the keyring. The ProviderHelper is initialized with the previous log
-                SaveKeyringResult saveResult = new ProviderHelper(this, modifyResult.getLog())
-                        .saveSecretKeyRing(ring, new ProgressScaler(this, 60, 95, 100));
-
-                // If the edit operation didn't succeed, exit here
-                if (!saveResult.success()) {
-                    sendMessageToHandler(KeychainIntentServiceHandler.MESSAGE_OKAY, saveResult);
-                    return;
-                }
-
-                // cache new passphrase
-                if (saveParcel.mNewUnlock != null) {
-                    PassphraseCacheService.addCachedPassphrase(this,
-                            ring.getMasterKeyId(),
-                            ring.getMasterKeyId(),
-                            saveParcel.mNewUnlock.mNewPassphrase != null
-                                    ? saveParcel.mNewUnlock.mNewPassphrase
-                                    : saveParcel.mNewUnlock.mNewPin,
-                            ring.getPublicKey().getPrimaryUserIdWithFallback());
-                }
-
-                setProgress(R.string.progress_done, 100, 100);
-
-                // make sure new data is synced into contacts
-                ContactSyncAdapterService.requestSync();
-
-                /* Output */
-                sendMessageToHandler(KeychainIntentServiceHandler.MESSAGE_OKAY, saveResult);
-            } catch (Exception e) {
-                sendErrorToHandler(e);
-            }
+            // Result
+            sendMessageToHandler(KeychainIntentServiceHandler.MESSAGE_OKAY, result);
 
         } else if (ACTION_EXPORT_KEYRING.equals(action)) {
 
@@ -429,7 +356,6 @@ public class KeychainIntentService extends IntentService implements Progressable
 
             boolean exportAll = data.getBoolean(EXPORT_ALL);
             long[] masterKeyIds = exportAll ? null : data.getLongArray(EXPORT_KEY_RING_MASTER_KEY_ID);
-
 
             // Operation
             ImportExportOperation importExportOperation = new ImportExportOperation(this, new ProviderHelper(this), this);

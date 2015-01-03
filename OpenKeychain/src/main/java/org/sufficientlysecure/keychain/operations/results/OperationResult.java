@@ -508,6 +508,14 @@ public abstract class OperationResult implements Parcelable {
         MSG_CON_WARN_DELETE_PUBLIC (LogLevel.WARN, R.string.msg_con_warn_delete_public),
         MSG_CON_WARN_DELETE_SECRET (LogLevel.WARN, R.string.msg_con_warn_delete_secret),
 
+        // edit key (higher level operation than modify)
+        MSG_ED (LogLevel.START, R.string.msg_ed),
+        MSG_ED_CACHING_NEW (LogLevel.DEBUG, R.string.msg_ed_caching_new),
+        MSG_ED_ERROR_NO_PARCEL (LogLevel.ERROR, R.string.msg_ed_error_no_parcel),
+        MSG_ED_ERROR_KEY_NOT_FOUND (LogLevel.ERROR, R.string.msg_ed_error_key_not_found),
+        MSG_ED_FETCHING (LogLevel.DEBUG, R.string.msg_ed_fetching),
+        MSG_ED_SUCCESS (LogLevel.OK, R.string.msg_ed_success),
+
         // messages used in UI code
         MSG_EK_ERROR_DIVERT (LogLevel.ERROR, R.string.msg_ek_error_divert),
         MSG_EK_ERROR_DUMMY (LogLevel.ERROR, R.string.msg_ek_error_dummy),

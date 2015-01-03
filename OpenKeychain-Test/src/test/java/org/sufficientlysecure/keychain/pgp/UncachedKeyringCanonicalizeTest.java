@@ -53,7 +53,7 @@ import org.spongycastle.openpgp.operator.jcajce.JcePBESecretKeyEncryptorBuilder;
 import org.spongycastle.util.Strings;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
-import org.sufficientlysecure.keychain.operations.results.EditKeyResult;
+import org.sufficientlysecure.keychain.operations.results.PgpEditKeyResult;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel.Algorithm;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
@@ -108,7 +108,7 @@ public class UncachedKeyringCanonicalizeTest {
         parcel.mNewUnlock = new ChangeUnlockParcel("");
         PgpKeyOperation op = new PgpKeyOperation(null);
 
-        EditKeyResult result = op.createSecretKeyRing(parcel);
+        PgpEditKeyResult result = op.createSecretKeyRing(parcel);
         Assert.assertTrue("initial test key creation must succeed", result.success());
         staticRing = result.getRing();
         Assert.assertNotNull("initial test key creation must succeed", staticRing);

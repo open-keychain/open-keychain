@@ -34,6 +34,7 @@ import android.widget.TextView;
 import org.spongycastle.bcpg.sig.KeyFlags;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.operations.results.EditKeyResult;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel.ChangeUnlockParcel;
 import org.sufficientlysecure.keychain.util.Preferences;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
@@ -190,14 +191,14 @@ public class CreateKeyFinalFragment extends Fragment {
                     if (returnData == null) {
                         return;
                     }
-                    final SaveKeyringResult result =
+                    final EditKeyResult result =
                             returnData.getParcelable(OperationResult.EXTRA_RESULT);
                     if (result == null) {
                         Log.e(Constants.TAG, "result == null");
                         return;
                     }
 
-                    if (mUploadCheckbox.isChecked()) {
+                    if (result.mMasterKeyId != null && mUploadCheckbox.isChecked()) {
                         // result will be displayed after upload
                         uploadKey(result);
                     } else {
@@ -227,7 +228,8 @@ public class CreateKeyFinalFragment extends Fragment {
         getActivity().startService(intent);
     }
 
-    private void uploadKey(final SaveKeyringResult saveKeyResult) {
+    // TODO move into EditKeyOperation
+    private void uploadKey(final EditKeyResult saveKeyResult) {
         // Send all information needed to service to upload key in other thread
         final Intent intent = new Intent(getActivity(), KeychainIntentService.class);
 
@@ -235,7 +237,7 @@ public class CreateKeyFinalFragment extends Fragment {
 
         // set data uri as path to keyring
         Uri blobUri = KeychainContract.KeyRings.buildUnifiedKeyRingUri(
-                saveKeyResult.mRingMasterKeyId);
+                saveKeyResult.mMasterKeyId);
         intent.setData(blobUri);
 
         // fill values for this action

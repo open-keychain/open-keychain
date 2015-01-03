@@ -859,6 +859,14 @@
     <string name="msg_con_warn_delete_public">"Exception deleting public cache file"</string>
     <string name="msg_con_warn_delete_secret">"Exception deleting secret cache file"</string>
 
+    <!-- Edit Key (higher level than modify) -->
+    <string name="msg_ed">"Performing key operation"</string>
+    <string name="msg_ed_caching_new">"Caching new passphrase"</string>
+    <string name="msg_ed_error_no_parcel">"Missing SaveKeyringParcel! (this is a bug, please report)"</string>
+    <string name="msg_ed_error_key_not_found">"Key not found!"</string>
+    <string name="msg_ed_fetching">"Fetching key to modify (%s)"</string>
+    <string name="msg_ed_success">"Key operation successful"</string>
+
     <!-- Other messages used in OperationLogs -->
     <string name="msg_ek_error_divert">"Editing of NFC keys is not (yet) supported!"</string>
     <string name="msg_ek_error_dummy">"Cannot edit keyring with stripped master key!"</string>

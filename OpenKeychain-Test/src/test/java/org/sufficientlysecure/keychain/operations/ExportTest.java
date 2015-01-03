@@ -27,10 +27,9 @@ import org.robolectric.RobolectricTestRunner;
 import org.robolectric.shadows.ShadowLog;
 import org.spongycastle.bcpg.sig.KeyFlags;
 import org.spongycastle.jce.provider.BouncyCastleProvider;
-import org.sufficientlysecure.keychain.operations.results.EditKeyResult;
+import org.sufficientlysecure.keychain.operations.results.PgpEditKeyResult;
 import org.sufficientlysecure.keychain.operations.results.ExportResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
-import org.sufficientlysecure.keychain.pgp.CanonicalizedPublicKeyRing;
 import org.sufficientlysecure.keychain.pgp.PgpKeyOperation;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing.IteratorWithIOThrow;
@@ -79,7 +78,7 @@ public class ExportTest {
             parcel.mAddUserIds.add("snips");
             parcel.mNewUnlock = new ChangeUnlockParcel(mKeyPhrase1);
 
-            EditKeyResult result = op.createSecretKeyRing(parcel);
+            PgpEditKeyResult result = op.createSecretKeyRing(parcel);
             Assert.assertTrue("initial test key creation must succeed", result.success());
             Assert.assertNotNull("initial test key creation must succeed", result.getRing());
 
@@ -97,7 +96,7 @@ public class ExportTest {
             parcel.mAddUserIds.add("snails");
             parcel.mNewUnlock = new ChangeUnlockParcel(null, "1234");
 
-            EditKeyResult result = op.createSecretKeyRing(parcel);
+            PgpEditKeyResult result = op.createSecretKeyRing(parcel);
             Assert.assertTrue("initial test key creation must succeed", result.success());
             Assert.assertNotNull("initial test key creation must succeed", result.getRing());
 

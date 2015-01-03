@@ -40,7 +40,7 @@ import org.spongycastle.jce.provider.BouncyCastleProvider;
 import org.spongycastle.openpgp.PGPSignature;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
-import org.sufficientlysecure.keychain.operations.results.EditKeyResult;
+import org.sufficientlysecure.keychain.operations.results.PgpEditKeyResult;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey.SecretKeyType;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel.Algorithm;
@@ -96,7 +96,7 @@ public class PgpKeyOperationTest {
         parcel.mNewUnlock = new ChangeUnlockParcel(passphrase);
         PgpKeyOperation op = new PgpKeyOperation(null);
 
-        EditKeyResult result = op.createSecretKeyRing(parcel);
+        PgpEditKeyResult result = op.createSecretKeyRing(parcel);
         Assert.assertTrue("initial test key creation must succeed", result.success());
         Assert.assertNotNull("initial test key creation must succeed", result.getRing());
 
@@ -962,7 +962,7 @@ public class PgpKeyOperationTest {
             // we should still be able to modify it (and change its passphrase) without errors
             PgpKeyOperation op = new PgpKeyOperation(null);
             CanonicalizedSecretKeyRing secretRing = new CanonicalizedSecretKeyRing(modified.getEncoded(), false, 0);
-            EditKeyResult result = op.modifySecretKeyRing(secretRing, parcel, otherPassphrase);
+            PgpEditKeyResult result = op.modifySecretKeyRing(secretRing, parcel, otherPassphrase);
             Assert.assertTrue("key modification must succeed", result.success());
             Assert.assertFalse("log must not contain a warning",
                     result.getLog().containsWarnings());
@@ -978,7 +978,7 @@ public class PgpKeyOperationTest {
 
             PgpKeyOperation op = new PgpKeyOperation(null);
             CanonicalizedSecretKeyRing secretRing = new CanonicalizedSecretKeyRing(modified.getEncoded(), false, 0);
-            EditKeyResult result = op.modifySecretKeyRing(secretRing, parcel, otherPassphrase2);
+            PgpEditKeyResult result = op.modifySecretKeyRing(secretRing, parcel, otherPassphrase2);
             Assert.assertTrue("key modification must succeed", result.success());
             Assert.assertTrue("log must contain a failed passphrase change warning",
                     result.getLog().containsType(LogType.MSG_MF_PASSPHRASE_FAIL));
@@ -1056,7 +1056,7 @@ public class PgpKeyOperationTest {
             CanonicalizedSecretKeyRing secretRing = new CanonicalizedSecretKeyRing(ring.getEncoded(), false, 0);
 
             PgpKeyOperation op = new PgpKeyOperation(null);
-            EditKeyResult result = op.modifySecretKeyRing(secretRing, parcel, passphrase);
+            PgpEditKeyResult result = op.modifySecretKeyRing(secretRing, parcel, passphrase);
             Assert.assertTrue("key modification must succeed", result.success());
             UncachedKeyRing rawModified = result.getRing();
             Assert.assertNotNull("key modification must not return null", rawModified);
@@ -1113,7 +1113,7 @@ public class PgpKeyOperationTest {
 
     private void assertFailure(String reason, SaveKeyringParcel parcel, LogType expected) {
 
-        EditKeyResult result = op.createSecretKeyRing(parcel);
+        PgpEditKeyResult result = op.createSecretKeyRing(parcel);
 
         Assert.assertFalse(reason, result.success());
         Assert.assertNull(reason, result.getRing());
@@ -1127,7 +1127,7 @@ public class PgpKeyOperationTest {
             throws Exception {
 
         CanonicalizedSecretKeyRing secretRing = new CanonicalizedSecretKeyRing(ring.getEncoded(), false, 0);
-        EditKeyResult result = op.modifySecretKeyRing(secretRing, parcel, passphrase);
+        PgpEditKeyResult result = op.modifySecretKeyRing(secretRing, parcel, passphrase);
 
         Assert.assertFalse(reason, result.success());
         Assert.assertNull(reason, result.getRing());
@@ -1141,7 +1141,7 @@ public class PgpKeyOperationTest {
             throws Exception {
 
         CanonicalizedSecretKeyRing secretRing = new CanonicalizedSecretKeyRing(ring.getEncoded(), false, 0);
-        EditKeyResult result = op.modifySecretKeyRing(secretRing, parcel, passphrase);
+        PgpEditKeyResult result = op.modifySecretKeyRing(secretRing, parcel, passphrase);
 
         Assert.assertFalse(reason, result.success());
         Assert.assertNull(reason, result.getRing());
@@ -1152,7 +1152,7 @@ public class PgpKeyOperationTest {
 
     private UncachedKeyRing assertCreateSuccess(String reason, SaveKeyringParcel parcel) {
 
-        EditKeyResult result = op.createSecretKeyRing(parcel);
+        PgpEditKeyResult result = op.createSecretKeyRing(parcel);
 
         Assert.assertTrue(reason, result.success());
         Assert.assertNotNull(reason, result.getRing());

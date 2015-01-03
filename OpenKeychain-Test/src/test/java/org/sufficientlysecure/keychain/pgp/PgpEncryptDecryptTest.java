@@ -28,13 +28,13 @@ import org.robolectric.shadows.ShadowLog;
 import org.spongycastle.bcpg.sig.KeyFlags;
 import org.spongycastle.jce.provider.BouncyCastleProvider;
 import org.spongycastle.openpgp.PGPEncryptedData;
+import org.sufficientlysecure.keychain.operations.results.PgpEditKeyResult;
 import org.sufficientlysecure.keychain.pgp.PgpSignEncrypt.Builder;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRingData;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel.Algorithm;
 import org.sufficientlysecure.keychain.operations.results.DecryptVerifyResult;
-import org.sufficientlysecure.keychain.operations.results.EditKeyResult;
 import org.sufficientlysecure.keychain.operations.results.SignEncryptResult;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel.ChangeUnlockParcel;
 import org.sufficientlysecure.keychain.support.KeyringTestingHelper;
@@ -80,7 +80,7 @@ public class PgpEncryptDecryptTest {
             parcel.mAddUserIds.add("bloom");
             parcel.mNewUnlock = new ChangeUnlockParcel(mKeyPhrase1);
 
-            EditKeyResult result = op.createSecretKeyRing(parcel);
+            PgpEditKeyResult result = op.createSecretKeyRing(parcel);
             Assert.assertTrue("initial test key creation must succeed", result.success());
             Assert.assertNotNull("initial test key creation must succeed", result.getRing());
 
@@ -98,7 +98,7 @@ public class PgpEncryptDecryptTest {
             parcel.mAddUserIds.add("belle");
             parcel.mNewUnlock = new ChangeUnlockParcel(mKeyPhrase2);
 
-            EditKeyResult result = op.createSecretKeyRing(parcel);
+            PgpEditKeyResult result = op.createSecretKeyRing(parcel);
             Assert.assertTrue("initial test key creation must succeed", result.success());
             Assert.assertNotNull("initial test key creation must succeed", result.getRing());
 

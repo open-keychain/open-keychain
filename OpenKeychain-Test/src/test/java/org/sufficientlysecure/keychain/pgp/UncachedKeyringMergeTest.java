@@ -33,7 +33,7 @@ import org.spongycastle.bcpg.sig.KeyFlags;
 import org.spongycastle.jce.provider.BouncyCastleProvider;
 import org.spongycastle.util.Strings;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
-import org.sufficientlysecure.keychain.operations.results.EditKeyResult;
+import org.sufficientlysecure.keychain.operations.results.PgpEditKeyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel.Algorithm;
@@ -103,7 +103,7 @@ public class UncachedKeyringMergeTest {
 
             OperationResult.OperationLog log = new OperationResult.OperationLog();
 
-            EditKeyResult result = op.createSecretKeyRing(parcel);
+            PgpEditKeyResult result = op.createSecretKeyRing(parcel);
             staticRingA = result.getRing();
             staticRingA = staticRingA.canonicalize(new OperationLog(), 0).getUncachedKeyRing();
         }
@@ -119,7 +119,7 @@ public class UncachedKeyringMergeTest {
             PgpKeyOperation op = new PgpKeyOperation(null);
 
             OperationResult.OperationLog log = new OperationResult.OperationLog();
-            EditKeyResult result = op.createSecretKeyRing(parcel);
+            PgpEditKeyResult result = op.createSecretKeyRing(parcel);
             staticRingB = result.getRing();
             staticRingB = staticRingB.canonicalize(new OperationLog(), 0).getUncachedKeyRing();
         }

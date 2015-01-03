@@ -26,7 +26,7 @@ import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.shadows.ShadowLog;
 import org.spongycastle.bcpg.sig.KeyFlags;
-import org.sufficientlysecure.keychain.operations.results.EditKeyResult;
+import org.sufficientlysecure.keychain.operations.results.PgpEditKeyResult;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing.IteratorWithIOThrow;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
@@ -63,7 +63,7 @@ public class UncachedKeyringTest {
         parcel.mNewUnlock = new ChangeUnlockParcel("");
         PgpKeyOperation op = new PgpKeyOperation(null);
 
-        EditKeyResult result = op.createSecretKeyRing(parcel);
+        PgpEditKeyResult result = op.createSecretKeyRing(parcel);
         staticRing = result.getRing();
         staticPubRing = staticRing.extractPublicKeyRing();
 
