@@ -543,6 +543,7 @@ public class ProviderHelper {
                 UserIdItem item = uids.get(userIdRank);
                 operations.add(buildUserIdOperations(masterKeyId, item, userIdRank));
                 if (item.selfCert != null) {
+                    // TODO get rid of "self verified" status? this cannot even happen anymore!
                     operations.add(buildCertOperations(masterKeyId, userIdRank, item.selfCert,
                             selfCertsAreTrusted ? Certs.VERIFIED_SECRET : Certs.VERIFIED_SELF));
                 }
