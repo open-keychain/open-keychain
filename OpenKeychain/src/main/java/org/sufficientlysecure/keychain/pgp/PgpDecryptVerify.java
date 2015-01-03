@@ -633,7 +633,7 @@ public class PgpDecryptVerify extends BaseOperation {
             // Handle missing integrity protection like failed integrity protection!
             // The MDC packet can be stripped by an attacker!
             if (!signatureResultBuilder.isValidSignature()) {
-                log.add(LogType.MSG_DC_ERROR_INTEGRITY_CHECK, indent);
+                log.add(LogType.MSG_DC_ERROR_INTEGRITY_MISSING, indent);
                 return new DecryptVerifyResult(DecryptVerifyResult.RESULT_ERROR, log);
             }
         }
