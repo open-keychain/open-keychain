@@ -98,6 +98,7 @@ public class CanonicalizedSecretKey extends CanonicalizedPublicKey {
                     return GNU_DUMMY;
                 case 2:
                     return PASSPHRASE;
+//                return PATTERN;
                 case 3:
                     return PASSPHRASE_EMPTY;
                 case 4:

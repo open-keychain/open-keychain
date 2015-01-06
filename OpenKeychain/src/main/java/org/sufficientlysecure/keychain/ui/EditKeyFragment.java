@@ -382,29 +382,32 @@ public class EditKeyFragment extends LoaderFragment implements
     }
 
     private void changePassphrase() {
+        Intent passIntent = new Intent(getActivity(), PassphraseWizardActivity.class);
+        passIntent.setAction(PassphraseWizardActivity.CREATE_METHOD);
+        startActivityForResult(passIntent, 12);
         // Message is received after passphrase is cached
-        Handler returnHandler = new Handler() {
-            @Override
-            public void handleMessage(Message message) {
-                if (message.what == SetPassphraseDialogFragment.MESSAGE_OKAY) {
-                    Bundle data = message.getData();
-
-                    // cache new returned passphrase!
-                    mSaveKeyringParcel.mNewUnlock = new ChangeUnlockParcel(
-                        data.getString(SetPassphraseDialogFragment.MESSAGE_NEW_PASSPHRASE),
-                        null
-                    );
-                }
-            }
-        };
-
-        // Create a new Messenger for the communication back
-        Messenger messenger = new Messenger(returnHandler);
-
-        SetPassphraseDialogFragment setPassphraseDialog = SetPassphraseDialogFragment.newInstance(
-                messenger, mCurrentPassphrase, R.string.title_change_passphrase);
-
-        setPassphraseDialog.show(getActivity().getSupportFragmentManager(), "setPassphraseDialog");
+//        Handler returnHandler = new Handler() {
+//            @Override
+//            public void handleMessage(Message message) {
+//                if (message.what == SetPassphraseDialogFragment.MESSAGE_OKAY) {
+//                    Bundle data = message.getData();
+//
+//                    // cache new returned passphrase!
+//                    mSaveKeyringParcel.mNewUnlock = new ChangeUnlockParcel(
+//                        data.getString(SetPassphraseDialogFragment.MESSAGE_NEW_PASSPHRASE),
+//                        null
+//                    );
+//                }
+//            }
+//        };
+//
+//        // Create a new Messenger for the communication back
+//        Messenger messenger = new Messenger(returnHandler);
+//
+//        SetPassphraseDialogFragment setPassphraseDialog = SetPassphraseDialogFragment.newInstance(
+//                messenger, mCurrentPassphrase, R.string.title_change_passphrase);
+//
+//        setPassphraseDialog.show(getActivity().getSupportFragmentManager(), "setPassphraseDialog");
     }
 
     private void editUserId(final int position) {

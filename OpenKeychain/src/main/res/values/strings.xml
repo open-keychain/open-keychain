@@ -1054,4 +1054,31 @@
     <string name="first_time_import_key">"Import from file"</string>
     <string name="first_time_skip">"Skip Setup"</string>
 
+    <!-- Passphrase wizard -->
+    <!-- TODO: rename all the things! -->
+    <string name="title_unlock_method">Choose an unlock method</string>
+    <!--<string name="enter_passphrase_twice">Enter passphrase twice</string>-->
+    <string name="enter_passphrase">Enter passphrase</string>
+    <string name="passphrase">Passphrase</string>
+    <string name="noPassphrase">No passphrase</string>
+    <string name="no_passphrase_set">No passphrase set</string>
+    <string name="passphrases_match">Passphrases do match</string>
+    <string name="passphrase_saved">Passphrase saved</string>
+    <string name="passphrase_invalid">Passphrase invalid</string>
+    <string name="missing_passphrase">Missing passphrase</string>
+    <string name="passphrase_again">Again</string>
+    <string name="lockpattern">Lockpattern</string>
+    <string name="lockpatternNFC">NFC + Lockpattern</string>
+    <string name="unlock_method">Unlock method</string>
+    <string name="set_passphrase">Set passphrase</string>
+    <string name="draw_lockpattern">Draw lockpattern</string>
+    <string name="nfc_title">NFC</string>
+    <!--<string name="nfc_text">Please place a NFC tag near your device</string>-->
+    <string name="nfc_wrong_tag">Wrong Tag. Please try again.</string>
+    <string name="enable_nfc">Please activate NFC in your settings</string>
+    <string name="no_nfc_support">This device does not support NFC</string>
+    <string name="nfc_write_succesful">Successfully written on NFC tag</string>
+    <string name="unlocked">Unlocked</string>
+    <string name="nfc_settings">Settings</string>
+
 </resources>

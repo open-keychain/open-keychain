@@ -1,0 +1,89 @@
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp"
+    tools:context="pSontag.testopenkeychain.SelectMethods">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:padding="8dp"
+            android:text="@string/title_unlock_method"
+            android:textAppearance="?android:attr/textAppearanceMedium"/>
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dip"
+            android:background="?android:attr/listDivider" />
+
+        <TextView
+            android:id="@+id/selectNoPassphrase"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:text="@string/noPassphrase"
+            android:minHeight="?android:attr/listPreferredItemHeight"
+            android:padding="8dp"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:clickable="true"
+            android:onClick="noPassphrase"
+            style="@style/SelectableItem"/>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dip"
+            android:background="?android:attr/listDivider" />
+
+        <TextView
+            android:id="@+id/selectPassphrase"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:text="@string/passphrase"
+            android:minHeight="?android:attr/listPreferredItemHeight"
+            android:padding="8dp"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:clickable="true"
+            android:onClick="passphrase"
+            style="@style/SelectableItem"/>
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dip"
+            android:background="?android:attr/listDivider" />
+        <TextView
+            android:id="@+id/selectLockpattern"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:text="@string/lockpattern"
+            android:minHeight="?android:attr/listPreferredItemHeight"
+            android:padding="8dp"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:clickable="true"
+            android:onClick="startLockpattern"
+            style="@style/SelectableItem"/>
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dip"
+            android:background="?android:attr/listDivider" />
+        <TextView
+            android:id="@+id/selectLockpatternNFC"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:text="@string/lockpatternNFC"
+            android:minHeight="?android:attr/listPreferredItemHeight"
+            android:padding="8dp"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:clickable="true"
+            android:onClick="NFC"
+            style="@style/SelectableItem"/>
+
+    </LinearLayout>
+</ScrollView>

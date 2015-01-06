@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/topLayout"
+    android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content">
+
+    <com.haibison.android.lockpattern.widget.LockPatternView_v14
+        android:id="@+id/lockPattern"
+        android:layout_width="@dimen/alp_42447968_separator_size"
+        android:layout_height="@dimen/alp_42447968_separator_size"
+        android:layout_marginTop="@dimen/alp_42447968_separator_size"
+        android:layout_marginBottom="@dimen/alp_42447968_separator_size"
+        android:layout_gravity="center_horizontal" />
+</LinearLayout> 
