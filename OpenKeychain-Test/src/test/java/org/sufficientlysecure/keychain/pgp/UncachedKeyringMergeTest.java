@@ -33,9 +33,11 @@ import org.spongycastle.bcpg.sig.KeyFlags;
 import org.spongycastle.jce.provider.BouncyCastleProvider;
 import org.spongycastle.util.Strings;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
-import org.sufficientlysecure.keychain.operations.results.EditKeyResult;
+import org.sufficientlysecure.keychain.operations.results.PgpEditKeyResult;
+import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel.Algorithm;
+import org.sufficientlysecure.keychain.service.SaveKeyringParcel.ChangeUnlockParcel;
 import org.sufficientlysecure.keychain.support.KeyringTestingHelper;
 import org.sufficientlysecure.keychain.support.KeyringTestingHelper.RawPacket;
 import org.sufficientlysecure.keychain.util.ProgressScaler;
@@ -96,13 +98,14 @@ public class UncachedKeyringMergeTest {
             parcel.mAddUserIds.add("twi");
             parcel.mAddUserIds.add("pink");
             // passphrase is tested in PgpKeyOperationTest, just use empty here
-            parcel.mNewUnlock = "";
+            parcel.mNewUnlock = new ChangeUnlockParcel("");
             PgpKeyOperation op = new PgpKeyOperation(null);
 
             OperationResult.OperationLog log = new OperationResult.OperationLog();
 
-            EditKeyResult result = op.createSecretKeyRing(parcel);
+            PgpEditKeyResult result = op.createSecretKeyRing(parcel);
             staticRingA = result.getRing();
+            staticRingA = staticRingA.canonicalize(new OperationLog(), 0).getUncachedKeyRing();
         }
 
         {
@@ -112,12 +115,13 @@ public class UncachedKeyringMergeTest {
 
             parcel.mAddUserIds.add("shy");
             // passphrase is tested in PgpKeyOperationTest, just use empty here
-            parcel.mNewUnlock = "";
+            parcel.mNewUnlock = new ChangeUnlockParcel("");
             PgpKeyOperation op = new PgpKeyOperation(null);
 
             OperationResult.OperationLog log = new OperationResult.OperationLog();
-            EditKeyResult result = op.createSecretKeyRing(parcel);
+            PgpEditKeyResult result = op.createSecretKeyRing(parcel);
             staticRingB = result.getRing();
+            staticRingB = staticRingB.canonicalize(new OperationLog(), 0).getUncachedKeyRing();
         }
 
         Assert.assertNotNull("initial test key creation must succeed", staticRingA);

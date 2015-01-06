@@ -192,6 +192,9 @@ public class ProviderHelper {
                     }
                     pos += 1;
                 }
+            } else {
+                // If no data was found, throw an appropriate exception
+                throw new NotFoundException();
             }
 
             return result;
@@ -540,6 +543,7 @@ public class ProviderHelper {
                 UserIdItem item = uids.get(userIdRank);
                 operations.add(buildUserIdOperations(masterKeyId, item, userIdRank));
                 if (item.selfCert != null) {
+                    // TODO get rid of "self verified" status? this cannot even happen anymore!
                     operations.add(buildCertOperations(masterKeyId, userIdRank, item.selfCert,
                             selfCertsAreTrusted ? Certs.VERIFIED_SECRET : Certs.VERIFIED_SELF));
                 }
@@ -679,6 +683,11 @@ public class ProviderHelper {
                                 break;
                             case PASSPHRASE_EMPTY:
                                 log(LogType.MSG_IS_SUBKEY_EMPTY,
+                                        KeyFormattingUtils.convertKeyIdToHex(id)
+                                );
+                                break;
+                            case PIN:
+                                log(LogType.MSG_IS_SUBKEY_PIN,
                                         KeyFormattingUtils.convertKeyIdToHex(id)
                                 );
                                 break;

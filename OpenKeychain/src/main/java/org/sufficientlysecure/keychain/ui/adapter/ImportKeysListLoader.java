@@ -27,6 +27,7 @@ import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
 import org.sufficientlysecure.keychain.operations.results.GetKeyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
+import org.sufficientlysecure.keychain.pgp.UncachedKeyRing.IteratorWithIOThrow;
 import org.sufficientlysecure.keychain.util.InputData;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.PositionAwareInputStream;
@@ -127,7 +128,7 @@ public class ImportKeysListLoader
         BufferedInputStream bufferedInput = new BufferedInputStream(progressIn);
         try {
             // parse all keyrings
-            Iterator<UncachedKeyRing> it = UncachedKeyRing.fromStream(bufferedInput);
+            IteratorWithIOThrow<UncachedKeyRing> it = UncachedKeyRing.fromStream(bufferedInput);
             while (it.hasNext()) {
                 UncachedKeyRing ring = it.next();
                 ImportKeysListEntry item = new ImportKeysListEntry(getContext(), ring);

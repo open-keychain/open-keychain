@@ -49,6 +49,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.security.SignatureException;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -141,6 +142,11 @@ public class CanonicalizedSecretKey extends CanonicalizedPublicKey {
             // It means the passphrase is empty
             return SecretKeyType.PASSPHRASE_EMPTY;
         } catch (PGPException e) {
+            HashMap<String,String> notation = getRing().getLocalNotationData();
+            if (notation.containsKey("unlock.pin@sufficientlysecure.org")
+                    && "1".equals(notation.get("unlock.pin@sufficientlysecure.org"))) {
+                return SecretKeyType.PIN;
+            }
             // Otherwise, it's just a regular ol' passphrase
             return SecretKeyType.PASSPHRASE;
         }
@@ -294,6 +300,12 @@ public class CanonicalizedSecretKey extends CanonicalizedPublicKey {
                                           byte[] nfcSignedHash, Date nfcCreationTimestamp) {
         if (mPrivateKeyState == PRIVATE_KEY_STATE_LOCKED) {
             throw new PrivateKeyNotUnlockedException();
+        }
+        if (!isMasterKey()) {
+            throw new AssertionError("tried to certify with non-master key, this is a programming error!");
+        }
+        if (publicKeyRing.getMasterKeyId() == getKeyId()) {
+            throw new AssertionError("key tried to self-certify, this is a programming error!");
         }
 
         // create a signatureGenerator from the supplied masterKeyId and passphrase

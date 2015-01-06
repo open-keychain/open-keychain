@@ -26,13 +26,16 @@ import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.shadows.ShadowLog;
 import org.spongycastle.bcpg.sig.KeyFlags;
-import org.sufficientlysecure.keychain.operations.results.EditKeyResult;
+import org.sufficientlysecure.keychain.operations.results.PgpEditKeyResult;
+import org.sufficientlysecure.keychain.pgp.UncachedKeyRing.IteratorWithIOThrow;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel.Algorithm;
+import org.sufficientlysecure.keychain.service.SaveKeyringParcel.ChangeUnlockParcel;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.Iterator;
 
 @RunWith(RobolectricTestRunner.class)
@@ -57,10 +60,10 @@ public class UncachedKeyringTest {
         parcel.mAddUserIds.add("twi");
         parcel.mAddUserIds.add("pink");
         // passphrase is tested in PgpKeyOperationTest, just use empty here
-        parcel.mNewUnlock = "";
+        parcel.mNewUnlock = new ChangeUnlockParcel("");
         PgpKeyOperation op = new PgpKeyOperation(null);
 
-        EditKeyResult result = op.createSecretKeyRing(parcel);
+        PgpEditKeyResult result = op.createSecretKeyRing(parcel);
         staticRing = result.getRing();
         staticPubRing = staticRing.extractPublicKeyRing();
 
@@ -108,7 +111,7 @@ public class UncachedKeyringTest {
         ring.encodeArmored(out, "OpenKeychain");
         pubRing.encodeArmored(out, "OpenKeychain");
 
-        Iterator<UncachedKeyRing> it =
+        IteratorWithIOThrow<UncachedKeyRing> it =
                 UncachedKeyRing.fromStream(new ByteArrayInputStream(out.toByteArray()));
         Assert.assertTrue("there should be two rings in the stream", it.hasNext());
         Assert.assertArrayEquals("first ring should be the first we put in",
@@ -126,6 +129,18 @@ public class UncachedKeyringTest {
     public void testPublicExtractPublic() throws Exception {
         // can't do this, either!
         pubRing.extractPublicKeyRing();
+    }
+
+    @Test(expected = IOException.class)
+    public void testBrokenVersionCert() throws Throwable {
+        // this is a test for one of the patches we use on top of stock bouncycastle, which
+        // returns an IOException rather than a RuntimeException in case of a bad certificate
+        // version byte
+        readRingFromResource("/test-keys/broken_cert_version.asc");
+    }
+
+    UncachedKeyRing readRingFromResource(String name) throws Throwable {
+        return UncachedKeyRing.fromStream(UncachedKeyringTest.class.getResourceAsStream(name)).next();
     }
 
 }

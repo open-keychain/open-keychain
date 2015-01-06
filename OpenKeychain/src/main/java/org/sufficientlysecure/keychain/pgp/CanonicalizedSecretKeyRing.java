@@ -26,6 +26,7 @@ import org.spongycastle.openpgp.PGPPrivateKey;
 import org.spongycastle.openpgp.PGPPublicKey;
 import org.spongycastle.openpgp.PGPSecretKey;
 import org.spongycastle.openpgp.PGPSecretKeyRing;
+import org.spongycastle.openpgp.PGPSignature;
 import org.spongycastle.openpgp.operator.PBESecretKeyDecryptor;
 import org.spongycastle.openpgp.operator.jcajce.JcePBESecretKeyDecryptorBuilder;
 import org.sufficientlysecure.keychain.Constants;
@@ -36,6 +37,7 @@ import org.sufficientlysecure.keychain.util.IterableIterator;
 import org.sufficientlysecure.keychain.util.Log;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 
@@ -128,6 +130,18 @@ public class CanonicalizedSecretKeyRing extends CanonicalizedKeyRing {
                 it.remove();
             }
         });
+    }
+
+    public HashMap<String,String> getLocalNotationData() {
+        HashMap<String,String> result = new HashMap<String,String>();
+        Iterator<PGPSignature> it = getRing().getPublicKey().getKeySignatures();
+        while (it.hasNext()) {
+            WrappedSignature sig = new WrappedSignature(it.next());
+            if (sig.isLocal()) {
+                result.putAll(sig.getNotation());
+            }
+        }
+        return result;
     }
 
 }

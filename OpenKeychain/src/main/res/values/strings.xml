@@ -697,6 +697,7 @@
     <string name="msg_is_subkey_nonexistent">"Subkey %s unavailable in secret key"</string>
     <string name="msg_is_subkey_ok">"Marked secret subkey %s as available"</string>
     <string name="msg_is_subkey_empty">"Marked secret subkey %s as available, with empty passphrase"</string>
+    <string name="msg_is_subkey_pin">"Marked secret subkey %s as available, with pin passphrase"</string>
     <string name="msg_is_subkey_stripped">"Marked secret subkey %s as stripped"</string>
     <string name="msg_is_subkey_divert">"Marked secret subkey %s as 'divert to smartcard/NFC'"</string>
     <string name="msg_is_success_identical">"Keyring contains no new data, nothing to do"</string>
@@ -710,13 +711,16 @@
     <string name="msg_kc_error_master_algo">"The master key uses an unknown (%s) algorithm!"</string>
     <string name="msg_kc_error_dup_key">"Subkey %s occurs twice in keyring. Keyring is malformed, not importing!"</string>
     <string name="msg_kc_master">"Processing master key"</string>
-    <string name="msg_kc_revoke_bad_err">"Removing bad keyring revocation certificate"</string>
-    <string name="msg_kc_revoke_bad_local">"Removing keyring revocation certificate with "local" flag"</string>
-    <string name="msg_kc_revoke_bad_time">"Removing keyring revocation certificate with future timestamp"</string>
-    <string name="msg_kc_revoke_bad_type">"Removing master key certificate of unknown type (%s)"</string>
-    <string name="msg_kc_revoke_bad_type_uid">"Removing user ID certificate in bad position"</string>
-    <string name="msg_kc_revoke_bad">"Removing bad keyring revocation certificate"</string>
+    <string name="msg_kc_master_bad_type">"Removing master key certificate of unknown type (%s)"</string>
+    <string name="msg_kc_master_bad_local">"Removing master key certificate with "local" flag"</string>
+    <string name="msg_kc_master_bad_err">"Removing bad master key certificate"</string>
+    <string name="msg_kc_master_bad_time">"Removing keyring revocation certificate with future timestamp"</string>
+    <string name="msg_kc_master_bad_type_uid">"Removing user ID certificate in bad position"</string>
+    <string name="msg_kc_master_bad">"Removing bad master key certificate"</string>
+    <string name="msg_kc_master_local">"Removing master key certificate with "local" flag"</string>
     <string name="msg_kc_revoke_dup">"Removing redundant keyring revocation certificate"</string>
+    <string name="msg_kc_notation_dup">"Removing redundant notation certificate"</string>
+    <string name="msg_kc_notation_empty">"Removing empty notation certificate"</string>
     <string name="msg_kc_sub">"Processing subkey %s"</string>
     <string name="msg_kc_sub_bad">"Removing invalid subkey binding certificate"</string>
     <string name="msg_kc_sub_bad_err">"Removing bad subkey binding certificate"</string>
@@ -800,7 +804,9 @@
     <string name="msg_mf_error_pgp">"Internal PGP error!"</string>
     <string name="msg_mf_error_sig">"Signature exception!"</string>
     <string name="msg_mf_master">"Modifying master certifications"</string>
-    <string name="msg_mf_passphrase">"Changing passphrase for keyring…"</string>
+    <string name="msg_mf_notation_empty">"Adding empty notation packet"</string>
+    <string name="msg_mf_notation_pin">"Adding PIN notation packet"</string>
+    <string name="msg_mf_passphrase">"Changing passphrase for keyring"</string>
     <string name="msg_mf_passphrase_key">"Re-encrypting subkey %s with new passphrase"</string>
     <string name="msg_mf_passphrase_empty_retry">"Setting new passphrase failed, trying again with empty old passphrase"</string>
     <string name="msg_mf_passphrase_fail">"Passphrase for subkey could not be changed! (Does it have a different one from the other keys?)"</string>
@@ -853,6 +859,14 @@
     <string name="msg_con_warn_delete_public">"Exception deleting public cache file"</string>
     <string name="msg_con_warn_delete_secret">"Exception deleting secret cache file"</string>
 
+    <!-- Edit Key (higher level than modify) -->
+    <string name="msg_ed">"Performing key operation"</string>
+    <string name="msg_ed_caching_new">"Caching new passphrase"</string>
+    <string name="msg_ed_error_no_parcel">"Missing SaveKeyringParcel! (this is a bug, please report)"</string>
+    <string name="msg_ed_error_key_not_found">"Key not found!"</string>
+    <string name="msg_ed_fetching">"Fetching key to modify (%s)"</string>
+    <string name="msg_ed_success">"Key operation successful"</string>
+
     <!-- Other messages used in OperationLogs -->
     <string name="msg_ek_error_divert">"Editing of NFC keys is not (yet) supported!"</string>
     <string name="msg_ek_error_dummy">"Cannot edit keyring with stripped master key!"</string>
@@ -876,6 +890,7 @@
     <string name="msg_dc_error_bad_passphrase">"Error unlocking key, bad passphrase!"</string>
     <string name="msg_dc_error_extract_key">"Unknown error unlocking key!"</string>
     <string name="msg_dc_error_integrity_check">"Integrity check error!"</string>
+    <string name="msg_dc_error_integrity_missing">"Missing integrity check! This can happen because the encrypting application is out of date, or from a downgrade attack."</string>
     <string name="msg_dc_error_invalid_siglist">"No valid signature data found!"</string>
     <string name="msg_dc_error_io">"Encountered IO Exception during operation!"</string>
     <string name="msg_dc_error_no_data">"No encrypted data found in stream!"</string>
@@ -927,6 +942,7 @@
         <item quantity="one">"Certifying one user ID for key %2$s"</item>
         <item quantity="other">"Certifying %1$d user IDs for key %2$s"</item>
     </plurals>
+    <string name="msg_crt_error_self">"Cannot issue self-certificate like this!"</string>
     <string name="msg_crt_error_master_not_found">"Master key not found!"</string>
     <string name="msg_crt_error_nothing">"No keys certified!"</string>
     <string name="msg_crt_error_unlock">"Error unlocking master key!"</string>
@@ -975,6 +991,7 @@
     <string name="msg_export_error_storage">"Storage is not ready for writing!"</string>
     <string name="msg_export_error_db">"Database error!"</string>
     <string name="msg_export_error_io">"Input/output error!"</string>
+    <string name="msg_export_error_key">"Error preprocessing key data!"</string>
     <string name="msg_export_success">"Export operation successful"</string>
 
     <string name="msg_del_error_empty">"Nothing to delete!"</string>
@@ -1017,6 +1034,12 @@
     <string name="passp_cache_notif_clear">"Clear Cache"</string>
     <string name="passp_cache_notif_pwd">"Passphrase"</string>
 
+    <!-- First Time -->
+    <string name="first_time_text1">"Take back your privacy with OpenKeychain!"</string>
+    <string name="first_time_create_key">"Create my key"</string>
+    <string name="first_time_import_key">"Import from file"</string>
+    <string name="first_time_skip">"Skip Setup"</string>
+
     <!-- unsorted -->
     <string name="section_certifier_id">"Certifier"</string>
     <string name="section_cert">"Certificate Details"</string>
@@ -1047,12 +1070,7 @@
     <string name="error_multi_not_supported">"Saving of multiple files not supported. This is a limitation on current Android."</string>
     <string name="key_colon">"Key:"</string>
     <string name="exchange_description">"To start a key exchange, choose the number of participants on the right side, then hit the “Start exchange” button.\n\nYou will be asked two more questions to make sure only the right participants are in the exchange and their fingerprints are correct."</string>
-
-    <!-- First Time -->
-    <string name="first_time_text1">"Take back your privacy with OpenKeychain!"</string>
-    <string name="first_time_create_key">"Create my key"</string>
-    <string name="first_time_import_key">"Import from file"</string>
-    <string name="first_time_skip">"Skip Setup"</string>
+    <string name="user_id_none"><![CDATA[<none>]]></string>
 
     <!-- Passphrase wizard -->
     <!-- TODO: rename all the things! -->

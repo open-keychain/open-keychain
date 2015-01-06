@@ -20,33 +20,43 @@ package org.sufficientlysecure.keychain.operations.results;
 
 import android.os.Parcel;
 
-public class EditKeyResult extends OperationResult {
+import org.sufficientlysecure.keychain.Constants;
+import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
 
-    public final Long mMasterKeyId;
+public class PgpEditKeyResult extends OperationResult {
 
-    public EditKeyResult(int result, OperationLog log, Long masterKeyId) {
+    private transient UncachedKeyRing mRing;
+    public final long mRingMasterKeyId;
+
+    public PgpEditKeyResult(int result, OperationLog log,
+                            UncachedKeyRing ring) {
         super(result, log);
-        mMasterKeyId = masterKeyId;
+        mRing = ring;
+        mRingMasterKeyId = ring != null ? ring.getMasterKeyId() : Constants.key.none;
     }
 
-    public EditKeyResult(Parcel source) {
+    public UncachedKeyRing getRing() {
+        return mRing;
+    }
+
+    public PgpEditKeyResult(Parcel source) {
         super(source);
-        mMasterKeyId = source.readLong();
+        mRingMasterKeyId = source.readLong();
     }
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         super.writeToParcel(dest, flags);
-        dest.writeLong(mMasterKeyId);
+        dest.writeLong(mRingMasterKeyId);
     }
 
-    public static Creator<EditKeyResult> CREATOR = new Creator<EditKeyResult>() {
-        public EditKeyResult createFromParcel(final Parcel source) {
-            return new EditKeyResult(source);
+    public static Creator<PgpEditKeyResult> CREATOR = new Creator<PgpEditKeyResult>() {
+        public PgpEditKeyResult createFromParcel(final Parcel source) {
+            return new PgpEditKeyResult(source);
         }
 
-        public EditKeyResult[] newArray(final int size) {
-            return new EditKeyResult[size];
+        public PgpEditKeyResult[] newArray(final int size) {
+            return new PgpEditKeyResult[size];
         }
     };
 

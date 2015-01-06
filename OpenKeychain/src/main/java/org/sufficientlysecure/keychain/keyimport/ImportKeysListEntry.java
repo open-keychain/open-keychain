@@ -21,6 +21,7 @@ import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
@@ -287,7 +288,7 @@ public class ImportKeysListEntry implements Serializable, Parcelable {
 
         // if there was no user id flagged as primary, use the first one
         if (mPrimaryUserId == null) {
-            mPrimaryUserId = mUserIds.get(0);
+            mPrimaryUserId = context.getString(R.string.user_id_none);
         }
 
         mKeyId = key.getKeyId();

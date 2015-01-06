@@ -307,6 +307,7 @@ public class KeychainContract {
         public static final String USER_ID = UserIdsColumns.USER_ID;
         public static final String SIGNER_UID = "signer_user_id";
 
+        public static final int UNVERIFIED = 0;
         public static final int VERIFIED_SECRET = 1;
         public static final int VERIFIED_SELF = 2;
 

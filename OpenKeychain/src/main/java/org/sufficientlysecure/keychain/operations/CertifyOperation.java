@@ -50,9 +50,6 @@ public class CertifyOperation extends BaseOperation {
         CanonicalizedSecretKey certificationKey;
         try {
 
-            // certification is always with the master key id, so use that one
-            String passphrase = getCachedPassphrase(parcel.mMasterKeyId, parcel.mMasterKeyId);
-
             log.add(LogType.MSG_CRT_MASTER_FETCH, 1);
             CanonicalizedSecretKeyRing secretKeyRing =
                     mProviderHelper.getCanonicalizedSecretKeyRing(parcel.mMasterKeyId);
@@ -62,6 +59,10 @@ public class CertifyOperation extends BaseOperation {
                 log.add(LogType.MSG_CRT_ERROR_DIVERT, 2);
                 return new CertifyResult(CertifyResult.RESULT_ERROR, log);
             }
+
+            // certification is always with the master key id, so use that one
+            String passphrase = getCachedPassphrase(parcel.mMasterKeyId, parcel.mMasterKeyId);
+
             if (!certificationKey.unlock(passphrase)) {
                 log.add(LogType.MSG_CRT_ERROR_UNLOCK, 2);
                 return new CertifyResult(CertifyResult.RESULT_ERROR, log);
@@ -93,6 +94,12 @@ public class CertifyOperation extends BaseOperation {
             }
 
             try {
+
+                if (action.mMasterKeyId == parcel.mMasterKeyId) {
+                    log.add(LogType.MSG_CRT_ERROR_SELF, 2);
+                    certifyError += 1;
+                    continue;
+                }
 
                 if (action.mUserIds == null) {
                     log.add(LogType.MSG_CRT_CERTIFY_ALL, 2,

@@ -21,6 +21,7 @@ package org.sufficientlysecure.keychain.pgp;
 import org.spongycastle.bcpg.SignatureSubpacket;
 import org.spongycastle.bcpg.SignatureSubpacketTags;
 import org.spongycastle.bcpg.sig.Exportable;
+import org.spongycastle.bcpg.sig.NotationData;
 import org.spongycastle.bcpg.sig.Revocable;
 import org.spongycastle.bcpg.sig.RevocationReason;
 import org.spongycastle.openpgp.PGPException;
@@ -37,6 +38,7 @@ import java.io.IOException;
 import java.security.SignatureException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 
 /** OpenKeychain wrapper around PGPSignature objects.
  *
@@ -239,4 +241,20 @@ public class WrappedSignature {
         SignatureSubpacket p = mSig.getHashedSubPackets().getSubpacket(SignatureSubpacketTags.EXPORTABLE);
         return ! ((Exportable) p).isExportable();
     }
+
+    public HashMap<String,String> getNotation() {
+        HashMap<String,String> result = new HashMap<String,String>();
+
+        // If there is any notation data
+        if (mSig.getHashedSubPackets() != null
+                && mSig.getHashedSubPackets().hasSubpacket(SignatureSubpacketTags.NOTATION_DATA)) {
+            // Iterate over notation data
+            for (NotationData data : mSig.getHashedSubPackets().getNotationDataOccurrences()) {
+                result.put(data.getNotationName(), data.getNotationValue());
+            }
+        }
+
+        return result;
+    }
+
 }

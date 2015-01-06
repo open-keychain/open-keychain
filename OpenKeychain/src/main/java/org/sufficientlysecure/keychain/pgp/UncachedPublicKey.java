@@ -186,12 +186,14 @@ public class UncachedPublicKey {
     }
 
     /**
-     * Returns primary user id if existing. If not, return first encountered user id.
+     * Returns primary user id if existing. If not, return first encountered user id. If there
+     * is no user id, return null (this can only happen for not yet canonicalized keys during import)
      */
     public String getPrimaryUserIdWithFallback()  {
         String userId = getPrimaryUserId();
         if (userId == null) {
-            userId = (String) mPublicKey.getUserIDs().next();
+            Iterator<String> it = mPublicKey.getUserIDs();
+            userId = it.hasNext() ? it.next() : null;
         }
         return userId;
     }
