@@ -697,7 +697,7 @@
     <string name="msg_is_subkey_nonexistent">"Subkey %s unavailable in secret key"</string>
     <string name="msg_is_subkey_ok">"Marked secret subkey %s as available"</string>
     <string name="msg_is_subkey_empty">"Marked secret subkey %s as available, with empty passphrase"</string>
-    <string name="msg_is_subkey_pin">"Marked secret subkey %s as available, with pin passphrase"</string>
+    <string name="msg_is_subkey_pin">"Marked secret subkey %s as available, with PIN"</string>
     <string name="msg_is_subkey_stripped">"Marked secret subkey %s as stripped"</string>
     <string name="msg_is_subkey_divert">"Marked secret subkey %s as 'divert to smartcard/NFC'"</string>
     <string name="msg_is_success_identical">"Keyring contains no new data, nothing to do"</string>
