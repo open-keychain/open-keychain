@@ -543,8 +543,7 @@ public class PgpSignEncrypt extends BaseOperation {
                 int length;
                 byte[] buffer = new byte[1 << 16];
                 while ((length = in.read(buffer)) > 0) {
-                    // pipe input stream directly into output stream, no changes to data
-                    mOutStream.write(buffer, 0, length);
+                    // no output stream is written, no changed to original data!
 
                     signatureGenerator.update(buffer, 0, length);
 
