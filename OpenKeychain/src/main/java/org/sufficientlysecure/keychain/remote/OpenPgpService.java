@@ -222,9 +222,10 @@ public class OpenPgpService extends RemoteService {
     }
 
     private Intent signImpl(Intent data, ParcelFileDescriptor input,
-                            ParcelFileDescriptor output, AccountSettings accSettings) {
+                            ParcelFileDescriptor output, AccountSettings accSettings,
+                            boolean cleartextSign) {
         try {
-            boolean asciiArmor = data.getBooleanExtra(OpenPgpApi.EXTRA_REQUEST_ASCII_ARMOR, true);
+            boolean asciiArmor = cleartextSign || data.getBooleanExtra(OpenPgpApi.EXTRA_REQUEST_ASCII_ARMOR, true);
 
             byte[] nfcSignedHash = data.getByteArrayExtra(OpenPgpApi.EXTRA_NFC_SIGNED_HASH);
             if (nfcSignedHash != null) {
@@ -284,15 +285,14 @@ public class OpenPgpService extends RemoteService {
                         inputData, os
                 );
                 builder.setEnableAsciiArmorOutput(asciiArmor)
+                        .setCleartextSignature(cleartextSign)
+                        .setDetachedSignature(!cleartextSign)
                         .setVersionHeader(PgpHelper.getVersionForHeader(this))
                         .setSignatureHashAlgorithm(accSettings.getHashAlgorithm())
                         .setSignatureMasterKeyId(accSettings.getKeyId())
                         .setSignatureSubKeyId(sigSubKeyId)
                         .setSignaturePassphrase(passphrase)
                         .setNfcState(nfcSignedHash, nfcCreationDate);
-
-                // TODO: currently always assume cleartext input, no sign-only of binary currently!
-                builder.setCleartextInput(true);
 
                 // execute PGP operation!
                 SignEncryptResult pgpResult = builder.build().execute();
@@ -313,20 +313,20 @@ public class OpenPgpService extends RemoteService {
                                 "Encountered unhandled type of pending action not supported by API!");
                     }
                 } else if (pgpResult.success()) {
-                    // see end of method
+                    Intent result = new Intent();
+                    if (!cleartextSign) {
+                        result.putExtra(OpenPgpApi.RESULT_DETACHED_SIGNATURE, pgpResult.getDetachedSignature());
+                    }
+                    result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_SUCCESS);
+                    return result;
                 } else {
                     LogEntryParcel errorMsg = pgpResult.getLog().getLast();
                     throw new Exception(getString(errorMsg.mType.getMsgId()));
                 }
-
             } finally {
                 is.close();
                 os.close();
             }
-
-            Intent result = new Intent();
-            result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_SUCCESS);
-            return result;
         } catch (Exception e) {
             Log.d(Constants.TAG, "signImpl", e);
             Intent result = new Intent();
@@ -444,7 +444,9 @@ public class OpenPgpService extends RemoteService {
                                 "Encountered unhandled type of pending action not supported by API!");
                     }
                 } else if (pgpResult.success()) {
-                    // see end of method
+                    Intent result = new Intent();
+                    result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_SUCCESS);
+                    return result;
                 } else {
                     LogEntryParcel errorMsg = pgpResult.getLog().getLast();
                     throw new Exception(getString(errorMsg.mType.getMsgId()));
@@ -454,10 +456,6 @@ public class OpenPgpService extends RemoteService {
                 is.close();
                 os.close();
             }
-
-            Intent result = new Intent();
-            result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_SUCCESS);
-            return result;
         } catch (Exception e) {
             Log.d(Constants.TAG, "encryptAndSignImpl", e);
             Intent result = new Intent();
@@ -482,7 +480,6 @@ public class OpenPgpService extends RemoteService {
                 os = new ParcelFileDescriptor.AutoCloseOutputStream(output);
             }
 
-            Intent result = new Intent();
             try {
                 String passphrase = data.getStringExtra(OpenPgpApi.EXTRA_PASSPHRASE);
                 long inputLength = is.available();
@@ -522,6 +519,7 @@ public class OpenPgpService extends RemoteService {
                                 "Encountered unhandled type of pending action not supported by API!");
                     }
                 } else if (pgpResult.success()) {
+                    Intent result = new Intent();
 
                     OpenPgpSignatureResult signatureResult = pgpResult.getSignatureResult();
                     if (signatureResult != null) {
@@ -557,6 +555,9 @@ public class OpenPgpService extends RemoteService {
                             result.putExtra(OpenPgpApi.RESULT_METADATA, metadata);
                         }
                     }
+
+                    result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_SUCCESS);
+                    return result;
                 } else {
                     LogEntryParcel errorMsg = pgpResult.getLog().getLast();
                     throw new Exception(getString(errorMsg.mType.getMsgId()));
@@ -567,9 +568,6 @@ public class OpenPgpService extends RemoteService {
                     os.close();
                 }
             }
-
-            result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_SUCCESS);
-            return result;
         } catch (Exception e) {
             Log.d(Constants.TAG, "decryptAndVerifyImpl", e);
             Intent result = new Intent();
@@ -718,8 +716,13 @@ public class OpenPgpService extends RemoteService {
             }
 
             String action = data.getAction();
-            if (OpenPgpApi.ACTION_SIGN.equals(action)) {
-                return signImpl(data, input, output, accSettings);
+            if (OpenPgpApi.ACTION_CLEARTEXT_SIGN.equals(action)) {
+                return signImpl(data, input, output, accSettings, true);
+            } else if (OpenPgpApi.ACTION_SIGN.equals(action)) {
+                // DEPRECATED: same as ACTION_CLEARTEXT_SIGN
+                return signImpl(data, input, output, accSettings, true);
+            } else if (OpenPgpApi.ACTION_DETACHED_SIGN.equals(action)) {
+                return signImpl(data, input, output, accSettings, false);
             } else if (OpenPgpApi.ACTION_ENCRYPT.equals(action)) {
                 return encryptAndSignImpl(data, input, output, accSettings, false);
             } else if (OpenPgpApi.ACTION_SIGN_AND_ENCRYPT.equals(action)) {

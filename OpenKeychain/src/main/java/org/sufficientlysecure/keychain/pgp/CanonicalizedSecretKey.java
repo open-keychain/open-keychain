@@ -247,7 +247,7 @@ public class CanonicalizedSecretKey extends CanonicalizedPublicKey {
 
         int signatureType;
         if (cleartext) {
-            // for sign-only ascii text
+            // for sign-only ascii text (cleartext signature)
             signatureType = PGPSignature.CANONICAL_TEXT_DOCUMENT;
         } else {
             signatureType = PGPSignature.BINARY_DOCUMENT;

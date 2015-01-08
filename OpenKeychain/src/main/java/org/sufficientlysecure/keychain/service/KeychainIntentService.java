@@ -33,7 +33,6 @@ import org.sufficientlysecure.keychain.operations.EditKeyOperation;
 import org.sufficientlysecure.keychain.operations.results.DeleteResult;
 import org.sufficientlysecure.keychain.operations.results.EditKeyResult;
 import org.sufficientlysecure.keychain.operations.results.ExportResult;
-import org.sufficientlysecure.keychain.operations.results.PgpEditKeyResult;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.operations.results.CertifyResult;
 import org.sufficientlysecure.keychain.util.FileHelper;
@@ -474,7 +473,7 @@ public class KeychainIntentService extends IntentService implements Progressable
 
                     // this assumes that the bytes are cleartext (valid for current implementation!)
                     if (source == IO_BYTES) {
-                        builder.setCleartextInput(true);
+                        builder.setCleartextSignature(true);
                     }
 
                     SignEncryptResult result = builder.build().execute();
