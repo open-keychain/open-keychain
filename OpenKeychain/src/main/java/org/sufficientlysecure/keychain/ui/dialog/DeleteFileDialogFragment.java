@@ -18,6 +18,7 @@
 package org.sufficientlysecure.keychain.ui.dialog;
 
 import android.app.Dialog;
+import android.content.ContentResolver;
 import android.content.DialogInterface;
 import android.net.Uri;
 import android.os.Build;
@@ -27,8 +28,11 @@ import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
 import android.widget.Toast;
 
+import org.apache.http.conn.scheme.Scheme;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.util.FileHelper;
+
+import java.io.File;
 
 public class DeleteFileDialogFragment extends DialogFragment {
     private static final String ARG_DELETE_URI = "delete_uri";
@@ -69,21 +73,38 @@ public class DeleteFileDialogFragment extends DialogFragment {
             @Override
             public void onClick(DialogInterface dialog, int id) {
                 dismiss();
+                String scheme = deleteUri.getScheme();
 
-                // We can not securely delete Uris, so just use usual delete on them
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                    if (DocumentsContract.deleteDocument(getActivity().getContentResolver(), deleteUri)) {
+                if(scheme.equals(ContentResolver.SCHEME_FILE)) {
+                    if(new File(deleteUri.getPath()).delete()) {
+                        Toast.makeText(getActivity(), R.string.file_delete_successful, Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                }
+                else if(scheme.equals(ContentResolver.SCHEME_CONTENT)) {
+                    // We can not securely delete Uris, so just use usual delete on them
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                        if (DocumentsContract.deleteDocument(getActivity().getContentResolver(), deleteUri)) {
+                            Toast.makeText(getActivity(), R.string.file_delete_successful, Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+                    }
+
+                    if (getActivity().getContentResolver().delete(deleteUri, null, null) > 0) {
+                        Toast.makeText(getActivity(), R.string.file_delete_successful, Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
+                    // some Uri's a ContentResolver fails to delete is handled by the java.io.File's delete
+                    // via the path of the Uri
+                    if(new File(deleteUri.getPath()).delete()) {
                         Toast.makeText(getActivity(), R.string.file_delete_successful, Toast.LENGTH_SHORT).show();
                         return;
                     }
                 }
 
-                if (getActivity().getContentResolver().delete(deleteUri, null, null) > 0) {
-                    Toast.makeText(getActivity(), R.string.file_delete_successful, Toast.LENGTH_SHORT).show();
-                    return;
-                }
-
-                Toast.makeText(getActivity(), getActivity().getString(R.string.error_file_delete_failed, deleteFilename), Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(), getActivity().getString(R.string.error_file_delete_failed,
+                        deleteFilename), Toast.LENGTH_SHORT).show();
 
                 // Note: We can't delete every file...
                 // If possible we should find out if deletion is possible before even showing the option to do so.
