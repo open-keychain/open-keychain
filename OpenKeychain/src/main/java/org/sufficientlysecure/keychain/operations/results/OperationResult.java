@@ -495,6 +495,8 @@ public abstract class OperationResult implements Parcelable {
         MSG_MF_UID_PRIMARY (LogLevel.INFO, R.string.msg_mf_uid_primary),
         MSG_MF_UID_REVOKE (LogLevel.INFO, R.string.msg_mf_uid_revoke),
         MSG_MF_UID_ERROR_EMPTY (LogLevel.ERROR, R.string.msg_mf_uid_error_empty),
+        MSG_MF_UAT_ADD_IMAGE (LogLevel.INFO, R.string.msg_mf_uat_add_image),
+        MSG_MF_UAT_ADD_UNKNOWN (LogLevel.INFO, R.string.msg_mf_uat_add_unknown),
         MSG_MF_UNLOCK_ERROR (LogLevel.ERROR, R.string.msg_mf_unlock_error),
         MSG_MF_UNLOCK (LogLevel.DEBUG, R.string.msg_mf_unlock),
 

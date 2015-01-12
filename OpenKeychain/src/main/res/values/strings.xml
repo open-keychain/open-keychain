@@ -309,6 +309,7 @@
 
     <string name="progress_modify_unlock">"unlocking keyring…"</string>
     <string name="progress_modify_adduid">"adding user IDs…"</string>
+    <string name="progress_modify_adduat">"adding user attributes…"</string>
     <string name="progress_modify_revokeuid">"revoking user IDs…"</string>
     <string name="progress_modify_primaryuid">"changing primary user ID…"</string>
     <string name="progress_modify_subkeychange">"modifying subkeys…"</string>
@@ -839,6 +840,8 @@
     <string name="msg_mf_uid_primary">"Changing primary user ID to %s"</string>
     <string name="msg_mf_uid_revoke">"Revoking user ID %s"</string>
     <string name="msg_mf_uid_error_empty">"User ID must not be empty!"</string>
+    <string name="msg_mf_uat_add_image">"Adding user attribute of type image"</string>
+    <string name="msg_mf_uat_add_unknown">"Adding user attribute of unknown type"</string>
     <string name="msg_mf_unlock_error">"Error unlocking keyring!"</string>
     <string name="msg_mf_unlock">"Unlocking keyring"</string>
 
