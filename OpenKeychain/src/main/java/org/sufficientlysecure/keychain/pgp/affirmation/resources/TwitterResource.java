@@ -1,7 +1,7 @@
 package org.sufficientlysecure.keychain.pgp.affirmation.resources;
 
+import android.content.Context;
 import android.util.Base64;
-import android.util.JsonReader;
 
 import com.textuality.keybase.lib.JWalk;
 
@@ -33,6 +33,11 @@ public class TwitterResource extends AffirmationResource {
 
     TwitterResource(Set<String> flags, HashMap<String,String> params, URI uri) {
         super(flags, params, uri);
+    }
+
+    public static String generateText (Context context, byte[] fingerprint, String nonce) {
+        // nothing special here for now, might change this later
+        return AffirmationResource.generate(context, fingerprint, nonce);
     }
 
     private String getTwitterStream(String screenName) {

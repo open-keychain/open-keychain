@@ -1134,14 +1134,29 @@
     <string name="unlocked">Unlocked</string>
     <string name="nfc_settings">Settings</string>
 
-    <string name="aff_create_https_1_1">"You can connect your key to a website you own. This website must support https! Please enter a url where you are able to place a text file for proof:"</string>
-    <string name="aff_create_https_1_2">"Example: https://example.com/pgpkey.txt"</string>
-    <string name="aff_create_https_1_3">"In the next step, a proof text file will be generated and signed with your key. After that, you will then be asked to upload the proof file for verification."</string>
+    <string name="aff_create_https_1_1">"You can link your key to a website you control. Note that your server must have a valid https certificate!"</string>
+    <string name="aff_create_https_1_2">"Please enter the url where you are able to place a text file for proof:"</string>
+    <string name="aff_create_https_1_3">"Example: https://example.com/pgpkey.txt"</string>
+    <string name="aff_create_https_1_4">"In the next step, a text file will be generated, which you will be asked to upload to the uri. This file links back to your pgp key, to make the connection verifiable in both directions."</string>
+
     <string name="aff_create_https_created">"The proof file has been created. For the next step, you should save and upload it to the URI you indicated:"</string>
     <string name="aff_create_https_2_1">"A proof file for this URI has been created:"</string>
     <string name="aff_create_https_2_2">"For the next step, you should save and upload this file."</string>
     <string name="aff_create_https_2_3">"Make sure the file is reachable at the correct URI, then verify your setup."</string>
     <string name="aff_create_https_2_4">"After verification is successful, hit next to add the linked identity to your keyring and finish the process."</string>
+
+    <string name="linked_create_twitter_1_1">"You can link your pgp key to your account on Twitter. Please enter your username:"</string>
+    <string name="linked_create_twitter_1_2">"A message will be generated in the next step, which you can then customize and finally publish to your timeline."</string>
+    <string name="linked_create_twitter_1_3">"This tweet links back to your pgp key, to make the connection verifiable in both directions."</string>
+    <string name="linked_create_twitter_handle">Twitter Handle</string>
+    <string name="linked_create_twitter_2_1">"A message for this Twitter account has been created. You can add some text in front if you like."</string>
+    <string name="linked_create_twitter_2_2">"Here's a preview of the full tweet:"</string>
+    <string name="linked_create_twitter_2_3">"Once you are happy with the tweet, click next to proceed."</string>
+    <string name="linked_create_twitter_3_1">"Alright, here's the finished text:"</string>
+    <string name="linked_create_twitter_3_2">"Tweet the message using either method."</string>
+    <string name="linked_create_twitter_3_3">"After the tweet is published, hit the button to verify that everything is correct"</string>
+    <string name="linked_create_twitter_3_4">"Next"</string>
+
     <string name="linked_id_generic_text">"This file claims ownership of the OpenPGP key with long id %2$s.\n\nCookie for proof:\n%1$s"</string>
     <string name="linked_verifying">Verifying…</string>
     <string name="linked_verify_success">Verification successful!</string>

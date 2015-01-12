@@ -16,27 +16,30 @@
             android:paddingRight="16dp"
             android:orientation="vertical">
 
-            <LinearLayout
-                android:layout_width="match_parent"
+            <TextView
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                android:orientation="horizontal">
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="@string/aff_create_https_1_1" />
 
-                <ImageView
-                    android:id="@+id/certify_key_action_certify_image"
-                    android:layout_width="60dip"
-                    android:layout_height="60dip"
-                    android:padding="8dp"
-                    android:src="@drawable/ssl_lock"
-                    android:layout_gravity="center_vertical" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:orientation="horizontal">
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textAppearance="?android:attr/textAppearanceMedium"
-                    android:text="@string/aff_create_https_1_1" />
+            <org.sufficientlysecure.keychain.ui.widget.HttpsPrefixedText
+                android:id="@+id/affirmation_create_https_uri"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:imeOptions="actionNext"
+                android:ems="10"
+                android:inputType="textUri"
+                android:layout_gravity="center_horizontal"
+                />
 
-                </LinearLayout>
+        </LinearLayout>
 
             <TextView
                 android:layout_width="wrap_content"
@@ -45,30 +48,12 @@
                 android:textAppearance="?android:attr/textAppearanceMedium"
                 android:text="@string/aff_create_https_1_2" />
 
-            <org.sufficientlysecure.keychain.ui.widget.HttpsPrefixedText
-                android:id="@+id/affirmation_create_https_uri"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:imeOptions="actionNext"
-                android:layout_marginTop="16dp"
-                android:ems="10"
-                android:inputType="textUri"
-                android:layout_gravity="center_horizontal"
-                />
-
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:textAppearance="?android:attr/textAppearanceMedium"
                 android:text="@string/aff_create_https_1_3" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:text="@string/aff_create_https_1_4" />
 
         </LinearLayout>
 

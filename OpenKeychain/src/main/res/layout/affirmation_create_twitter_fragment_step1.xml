@@ -17,9 +17,9 @@
             android:orientation="vertical">
 
             <LinearLayout
+                android:layout_marginTop="16dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
                 android:orientation="horizontal">
 
                 <ImageView
@@ -27,48 +27,40 @@
                     android:layout_width="60dip"
                     android:layout_height="60dip"
                     android:padding="8dp"
-                    android:src="@drawable/ssl_lock"
+                    android:src="@drawable/twitter"
                     android:layout_gravity="center_vertical" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textAppearance="?android:attr/textAppearanceMedium"
-                    android:text="@string/aff_create_https_1_1" />
+                    android:text="@string/linked_create_twitter_1_1" />
 
-                </LinearLayout>
+            </LinearLayout>
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:text="@string/aff_create_https_1_2" />
-
-            <org.sufficientlysecure.keychain.ui.widget.HttpsPrefixedText
-                android:id="@+id/affirmation_create_https_uri"
+            <EditText
+                android:id="@+id/linked_create_twitter_handle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:imeOptions="actionNext"
                 android:layout_marginTop="16dp"
                 android:ems="10"
-                android:inputType="textUri"
                 android:layout_gravity="center_horizontal"
-                />
+                android:hint="@string/linked_create_twitter_handle"/>
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:textAppearance="?android:attr/textAppearanceMedium"
-                android:text="@string/aff_create_https_1_3" />
+                android:text="@string/linked_create_twitter_1_2" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:textAppearance="?android:attr/textAppearanceMedium"
-                android:text="@string/aff_create_https_1_4" />
+                android:text="@string/linked_create_twitter_1_3" />
 
         </LinearLayout>
 

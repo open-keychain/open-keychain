@@ -56,6 +56,28 @@ public class AffirmationSelectFragment extends Fragment {
                     }
                 });
 
+        view.findViewById(R.id.affirmation_create_dns_button)
+                .setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        AffirmationCreateDnsStep1Fragment frag =
+                                AffirmationCreateDnsStep1Fragment.newInstance();
+
+                        mAffirmationWizard.loadFragment(null, frag, AffirmationWizard.FRAG_ACTION_TO_RIGHT);
+                    }
+                });
+
+        view.findViewById(R.id.affirmation_create_twitter_button)
+                .setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        AffirmationCreateTwitterStep1Fragment frag =
+                                AffirmationCreateTwitterStep1Fragment.newInstance();
+
+                        mAffirmationWizard.loadFragment(null, frag, AffirmationWizard.FRAG_ACTION_TO_RIGHT);
+                    }
+                });
+
         return view;
     }
 
