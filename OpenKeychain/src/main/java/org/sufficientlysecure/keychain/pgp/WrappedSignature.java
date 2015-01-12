@@ -29,6 +29,7 @@ import org.spongycastle.openpgp.PGPObjectFactory;
 import org.spongycastle.openpgp.PGPPublicKey;
 import org.spongycastle.openpgp.PGPSignature;
 import org.spongycastle.openpgp.PGPSignatureList;
+import org.spongycastle.openpgp.PGPUserAttributeSubpacketVector;
 import org.spongycastle.openpgp.operator.jcajce.JcaPGPContentVerifierBuilderProvider;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
@@ -194,6 +195,14 @@ public class WrappedSignature {
     boolean verifySignature(PGPPublicKey key, byte[] rawUserId) throws PgpGeneralException {
         try {
             return mSig.verifyCertification(rawUserId, key);
+        } catch (PGPException e) {
+            throw new PgpGeneralException("Error!", e);
+        }
+    }
+
+    boolean verifySignature(PGPPublicKey key, PGPUserAttributeSubpacketVector attribute) throws PgpGeneralException {
+        try {
+            return mSig.verifyCertification(attribute, key);
         } catch (PGPException e) {
             throw new PgpGeneralException("Error!", e);
         }

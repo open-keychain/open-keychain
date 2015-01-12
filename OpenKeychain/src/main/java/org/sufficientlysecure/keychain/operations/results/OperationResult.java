@@ -416,6 +416,21 @@ public abstract class OperationResult implements Parcelable {
         MSG_KC_UID_REVOKE_OLD (LogLevel.DEBUG, R.string.msg_kc_uid_revoke_old),
         MSG_KC_UID_REMOVE (LogLevel.DEBUG, R.string.msg_kc_uid_remove),
         MSG_KC_UID_WARN_ENCODING (LogLevel.WARN, R.string.msg_kc_uid_warn_encoding),
+        MSG_KC_UAT_JPEG (LogLevel.DEBUG, R.string.msg_kc_uat_jpeg),
+        MSG_KC_UAT_UNKNOWN (LogLevel.DEBUG, R.string.msg_kc_uat_unknown),
+        MSG_KC_UAT_BAD_ERR (LogLevel.WARN, R.string.msg_kc_uat_bad_err),
+        MSG_KC_UAT_BAD_LOCAL (LogLevel.WARN, R.string.msg_kc_uat_bad_local),
+        MSG_KC_UAT_BAD_TIME (LogLevel.WARN, R.string.msg_kc_uat_bad_time),
+        MSG_KC_UAT_BAD_TYPE (LogLevel.WARN, R.string.msg_kc_uat_bad_type),
+        MSG_KC_UAT_BAD (LogLevel.WARN, R.string.msg_kc_uat_bad),
+        MSG_KC_UAT_CERT_DUP (LogLevel.DEBUG, R.string.msg_kc_uat_cert_dup),
+        MSG_KC_UAT_DUP (LogLevel.DEBUG, R.string.msg_kc_uat_dup),
+        MSG_KC_UAT_FOREIGN (LogLevel.DEBUG, R.string.msg_kc_uat_foreign),
+        MSG_KC_UAT_NO_CERT (LogLevel.DEBUG, R.string.msg_kc_uat_no_cert),
+        MSG_KC_UAT_REVOKE_DUP (LogLevel.DEBUG, R.string.msg_kc_uat_revoke_dup),
+        MSG_KC_UAT_REVOKE_OLD (LogLevel.DEBUG, R.string.msg_kc_uat_revoke_old),
+        MSG_KC_UAT_REMOVE (LogLevel.DEBUG, R.string.msg_kc_uat_remove),
+        MSG_KC_UAT_WARN_ENCODING (LogLevel.WARN, R.string.msg_kc_uat_warn_encoding),
 
 
         // keyring consolidation
