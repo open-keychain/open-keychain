@@ -21,6 +21,8 @@ package org.sufficientlysecure.keychain.service;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import org.sufficientlysecure.keychain.pgp.affirmation.Affi;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 

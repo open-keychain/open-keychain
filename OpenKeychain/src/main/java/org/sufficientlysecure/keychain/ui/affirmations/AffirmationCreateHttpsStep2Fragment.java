@@ -31,20 +31,18 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TextView;
 
-import org.openintents.openpgp.OpenPgpSignatureResult;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.operations.results.DecryptVerifyResult;
+import org.sufficientlysecure.keychain.operations.results.LinkedVerifyResult;
 import org.sufficientlysecure.keychain.pgp.affirmation.resources.GenericHttpsResource;
-import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.ui.util.Notify.Style;
 import org.sufficientlysecure.keychain.util.FileHelper;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -53,25 +51,29 @@ public class AffirmationCreateHttpsStep2Fragment extends Fragment {
 
     private static final int REQUEST_CODE_OUTPUT = 0x00007007;
 
-    public static final String URI = "uri", TEXT = "text";
+    public static final String URI = "uri", NONCE = "nonce", TEXT = "text";
 
     AffirmationWizard mAffirmationWizard;
 
     EditText mEditUri;
     ImageView mVerifyImage;
     View mVerifyProgress;
+    TextView mVerifyStatus;
 
     String mResourceUri;
-    String mProofString;
+    String mResourceNonce, mResourceString;
 
     /**
      * Creates new instance of this fragment
      */
-    public static AffirmationCreateHttpsStep2Fragment newInstance(String uri, String proofText) {
+    public static AffirmationCreateHttpsStep2Fragment newInstance
+            (String uri, String proofNonce, String proofText) {
+
         AffirmationCreateHttpsStep2Fragment frag = new AffirmationCreateHttpsStep2Fragment();
 
         Bundle args = new Bundle();
         args.putString(URI, uri);
+        args.putString(NONCE, proofNonce);
         args.putString(TEXT, proofText);
         frag.setArguments(args);
 
@@ -83,7 +85,8 @@ public class AffirmationCreateHttpsStep2Fragment extends Fragment {
         final View view = inflater.inflate(R.layout.affirmation_create_https_fragment_step2, container, false);
 
         mResourceUri = getArguments().getString(URI);
-        mProofString = getArguments().getString(TEXT);
+        mResourceNonce = getArguments().getString(NONCE);
+        mResourceString = getArguments().getString(TEXT);
 
         view.findViewById(R.id.next_button).setOnClickListener(new OnClickListener() {
             @Override
@@ -98,6 +101,7 @@ public class AffirmationCreateHttpsStep2Fragment extends Fragment {
 
         mVerifyImage = (ImageView) view.findViewById(R.id.verify_image);
         mVerifyProgress = view.findViewById(R.id.verify_progress);
+        mVerifyStatus = (TextView) view.findViewById(R.id.verify_status);
 
         view.findViewById(R.id.button_send).setOnClickListener(new OnClickListener() {
             @Override
@@ -124,6 +128,7 @@ public class AffirmationCreateHttpsStep2Fragment extends Fragment {
         mEditUri.setText(mResourceUri);
 
         setVerifyProgress(false, null);
+        mVerifyStatus.setText(R.string.linked_verify_pending);
 
         return view;
     }
@@ -139,14 +144,17 @@ public class AffirmationCreateHttpsStep2Fragment extends Fragment {
         mVerifyProgress.setVisibility(on ? View.VISIBLE : View.GONE);
         mVerifyImage.setVisibility(on ?  View.GONE : View.VISIBLE);
         if (success == null) {
+            mVerifyStatus.setText(R.string.linked_verifying);
             mVerifyImage.setImageResource(R.drawable.status_signature_unverified_cutout);
             mVerifyImage.setColorFilter(getResources().getColor(R.color.tertiary_text_light),
                     PorterDuff.Mode.SRC_IN);
         } else if (success) {
+            mVerifyStatus.setText(R.string.linked_verify_success);
             mVerifyImage.setImageResource(R.drawable.status_signature_verified_cutout);
             mVerifyImage.setColorFilter(getResources().getColor(R.color.android_green_dark),
                     PorterDuff.Mode.SRC_IN);
         } else {
+            mVerifyStatus.setText(R.string.linked_verify_error);
             mVerifyImage.setImageResource(R.drawable.status_signature_unknown_cutout);
             mVerifyImage.setColorFilter(getResources().getColor(R.color.android_red_dark),
                     PorterDuff.Mode.SRC_IN);
@@ -159,33 +167,18 @@ public class AffirmationCreateHttpsStep2Fragment extends Fragment {
         try {
             final GenericHttpsResource resource = GenericHttpsResource.createNew(new URI(mResourceUri));
 
-            new AsyncTask<Void,Void,DecryptVerifyResult>() {
+            new AsyncTask<Void,Void,LinkedVerifyResult>() {
 
                 @Override
-                protected DecryptVerifyResult doInBackground(Void... params) {
-
-                    try {
-                        return resource.verify(getActivity(), new ProviderHelper(getActivity()), null);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-
-                    return null;
+                protected LinkedVerifyResult doInBackground(Void... params) {
+                    return resource.verify(mAffirmationWizard.mFingerprint, mResourceNonce);
                 }
 
                 @Override
-                protected void onPostExecute(DecryptVerifyResult result) {
+                protected void onPostExecute(LinkedVerifyResult result) {
                     super.onPostExecute(result);
                     if (result.success()) {
-                        switch (result.getSignatureResult().getStatus()) {
-                            case OpenPgpSignatureResult.SIGNATURE_SUCCESS_CERTIFIED:
-                                setVerifyProgress(false, true);
-                                break;
-                            default:
-                                setVerifyProgress(false, false);
-                                // on error, show error message
-                                result.createNotify(getActivity()).show();
-                        }
+                        setVerifyProgress(false, true);
                     } else {
                         setVerifyProgress(false, false);
                         // on error, show error message
@@ -202,7 +195,7 @@ public class AffirmationCreateHttpsStep2Fragment extends Fragment {
     private void proofSend() {
         Intent sendIntent = new Intent();
         sendIntent.setAction(Intent.ACTION_SEND);
-        sendIntent.putExtra(Intent.EXTRA_TEXT, mProofString);
+        sendIntent.putExtra(Intent.EXTRA_TEXT, mResourceString);
         sendIntent.setType("text/plain");
         startActivity(sendIntent);
     }
@@ -229,7 +222,7 @@ public class AffirmationCreateHttpsStep2Fragment extends Fragment {
         try {
             PrintWriter out =
                     new PrintWriter(getActivity().getContentResolver().openOutputStream(uri));
-            out.print(mProofString);
+            out.print(mResourceString);
             if (out.checkError()) {
                 Notify.showNotify(getActivity(), "Error writing file!", Style.ERROR);
             }

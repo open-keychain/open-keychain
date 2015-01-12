@@ -1,7 +1,9 @@
 package org.sufficientlysecure.keychain.pgp.affirmation.resources;
 
+import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
 import org.sufficientlysecure.keychain.pgp.affirmation.AffirmationResource;
 
+import java.io.IOException;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.Set;
@@ -13,8 +15,8 @@ public class UnknownResource extends AffirmationResource {
     }
 
     @Override
-    public boolean verify() {
-        return false;
+    protected String fetchResource(OperationLog log, int indent) {
+        return null;
     }
 
 }

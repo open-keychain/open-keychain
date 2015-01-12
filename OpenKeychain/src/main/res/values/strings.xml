@@ -1013,6 +1013,22 @@
         <item quantity="other">"Failed to delete %d keys"</item>
     </plurals>
 
+    <!-- Linked identity verification -->
+    <string name="msg_lv">"Verifying linked identity…"</string>
+    <string name="msg_lv_match">"Searching for cookie"</string>
+    <string name="msg_lv_match_error">"No cookie found in resource!"</string>
+    <string name="msg_lv_fp_ok">"Fingerprint ok."</string>
+    <string name="msg_lv_fp_error">"Fingerprint mismatch!"</string>
+    <string name="msg_lv_nonce_ok">"Link verified!"</string>
+    <string name="msg_lv_nonce_error">"Nonce mismatch!"</string>
+
+    <string name="msg_lv_fetch">"Fetching URI '%s'"</string>
+    <string name="msg_lv_fetch_redir">"Following redirect to '%s'"</string>
+    <string name="msg_lv_fetch_ok">"Successfully fetched (HTTP %s)"</string>
+    <string name="msg_lv_fetch_error">"Server error (HTTP %s)"</string>
+    <string name="msg_lv_fetch_error_url">"URL is malformed!"</string>
+    <string name="msg_lv_fetch_error_io">"IO Error!"</string>
+
     <string name="msg_acc_saved">"Account saved"</string>
 
     <string name="msg_download_success">"Downloaded successfully!"</string>
@@ -1108,5 +1124,10 @@
     <string name="aff_create_https_2_2">"For the next step, you should save and upload this file."</string>
     <string name="aff_create_https_2_3">"Make sure the file is reachable at the correct URI, then verify your setup."</string>
     <string name="aff_create_https_2_4">"After verification is successful, hit next to finish the process."</string>
+    <string name="linked_id_generic_text">"This file claims ownership of the OpenPGP key with long id %2$s.\n\nCookie for proof:\n%1$s"</string>
+    <string name="linked_verifying">Verifying…</string>
+    <string name="linked_verify_success">Verification successful!</string>
+    <string name="linked_verify_error">Veriication error!</string>
+    <string name="linked_verify_pending">Not yet verified</string>
 
 </resources>

@@ -657,6 +657,22 @@ public abstract class OperationResult implements Parcelable {
         MSG_DEL_CONSOLIDATE (LogLevel.DEBUG, R.string.msg_del_consolidate),
         MSG_DEL_OK (LogLevel.OK, R.plurals.msg_del_ok),
         MSG_DEL_FAIL (LogLevel.WARN, R.plurals.msg_del_fail),
+
+        MSG_LV (LogLevel.START, R.string.msg_lv),
+        MSG_LV_MATCH (LogLevel.DEBUG, R.string.msg_lv_match),
+        MSG_LV_MATCH_ERROR (LogLevel.ERROR, R.string.msg_lv_match_error),
+        MSG_LV_FP_OK (LogLevel.DEBUG, R.string.msg_lv_fp_ok),
+        MSG_LV_FP_ERROR (LogLevel.ERROR, R.string.msg_lv_fp_error),
+        MSG_LV_NONCE_OK (LogLevel.OK, R.string.msg_lv_nonce_ok),
+        MSG_LV_NONCE_ERROR (LogLevel.ERROR, R.string.msg_lv_nonce_error),
+
+        MSG_LV_FETCH (LogLevel.DEBUG, R.string.msg_lv_fetch),
+        MSG_LV_FETCH_REDIR (LogLevel.DEBUG, R.string.msg_lv_fetch_redir),
+        MSG_LV_FETCH_OK (LogLevel.DEBUG, R.string.msg_lv_fetch_ok),
+        MSG_LV_FETCH_ERROR (LogLevel.ERROR, R.string.msg_lv_fetch_error),
+        MSG_LV_FETCH_ERROR_URL (LogLevel.ERROR, R.string.msg_lv_fetch_error_url),
+        MSG_LV_FETCH_ERROR_IO (LogLevel.ERROR, R.string.msg_lv_fetch_error_io),
+
         ;
 
         public final int mMsgId;

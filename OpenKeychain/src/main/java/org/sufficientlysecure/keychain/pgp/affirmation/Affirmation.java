@@ -1,11 +1,15 @@
 package org.sufficientlysecure.keychain.pgp.affirmation;
 
 import org.spongycastle.bcpg.UserAttributeSubpacket;
+import org.spongycastle.util.BigIntegers;
 import org.spongycastle.util.Strings;
+import org.spongycastle.util.encoders.Hex;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.util.Log;
 
+import java.math.BigInteger;
 import java.net.URI;
+import java.security.SecureRandom;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -16,13 +20,17 @@ import java.util.Set;
 public class Affirmation {
 
     protected byte[] mData;
-    public final long mNonce;
+    public final String mNonce;
     public final URI mSubUri;
     final Set<String> mFlags;
     final HashMap<String,String> mParams;
 
-    protected Affirmation(byte[] data, long nonce, Set<String> flags,
+    protected Affirmation(byte[] data, String nonce, Set<String> flags,
                           HashMap<String,String> params, URI subUri) {
+        if ( ! nonce.matches("[0-9a-zA-Z]+")) {
+            throw new AssertionError("bug: nonce must be hexstring!");
+        }
+
         mData = data;
         mNonce = nonce;
         mFlags = flags;
@@ -30,7 +38,7 @@ public class Affirmation {
         mSubUri = subUri;
     }
 
-    Affirmation(long nonce, Set<String> flags,
+    Affirmation(String nonce, Set<String> flags,
                           HashMap<String,String> params, URI subUri) {
         this(null, nonce, flags, params, subUri);
     }
@@ -72,15 +80,12 @@ public class Affirmation {
         b.append("@");
         b.append(mSubUri);
 
+        byte[] nonceBytes = Hex.decode(mNonce);
         byte[] data = Strings.toUTF8ByteArray(b.toString());
 
-        byte[] result = new byte[data.length+4];
-        result[0] = (byte) (mNonce >> 24 & 255);
-        result[1] = (byte) (mNonce >> 16 & 255);
-        result[2] = (byte) (mNonce >> 8 & 255);
-        result[3] = (byte) (mNonce & 255);
-
-        System.arraycopy(data, 0, result, 4, result.length);
+        byte[] result = new byte[data.length+12];
+        System.arraycopy(nonceBytes, 0, result, 0, 12);
+        System.arraycopy(data, 0, result, 12, result.length);
 
         return result;
     }
@@ -94,11 +99,10 @@ public class Affirmation {
         }
 
         byte[] data = subpacket.getData();
-
-        long nonce = (data[0] << 24) | (data[1] << 16) |  (data[2] << 8)  | data[3];
+        String nonce = Hex.toHexString(data, 0, 12);
 
         try {
-            return parseUri(nonce, Strings.fromUTF8ByteArray(Arrays.copyOfRange(data, 4, data.length)));
+            return parseUri(nonce, Strings.fromUTF8ByteArray(Arrays.copyOfRange(data, 12, data.length)));
 
         } catch (IllegalArgumentException e) {
             Log.e(Constants.TAG, "error parsing uri in (suspected) affirmation packet");
@@ -106,11 +110,7 @@ public class Affirmation {
         }
     }
 
-    public static Affirmation generateForUri(String uri) {
-        return parseUri(generateNonce(), uri);
-    }
-
-    protected static Affirmation parseUri (long nonce, String uriString) {
+    protected static Affirmation parseUri (String nonce, String uriString) {
         URI uri = URI.create(uriString);
 
         if ("pgpid".equals(uri.getScheme())) {
@@ -146,12 +146,18 @@ public class Affirmation {
             }
         }
 
-        return new Affirmation(null, nonce, flags, params, subUri);
+        return new Affirmation(nonce, flags, params, subUri);
 
     }
 
-    public static long generateNonce() {
-        return 1234567890L; // new SecureRandom().nextLong();
+    public static String generateNonce() {
+        // TODO make this actually random
+        // byte[] data = new byte[96];
+        // new SecureRandom().nextBytes(data);
+        // return Hex.toHexString(data);
+
+        // debug for now
+        return "0123456789ABCDEF01234567";
     }
 
 }

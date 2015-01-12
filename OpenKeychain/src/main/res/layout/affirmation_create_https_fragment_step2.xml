@@ -82,7 +82,9 @@
                     android:layout_gravity="center_vertical"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="16dip"/>
+                    android:layout_marginLeft="16dip"
+                    android:layout_marginStart="16dip"
+                    />
 
                 <ProgressBar
                     android:id="@+id/verify_progress"
@@ -92,20 +94,24 @@
                     android:indeterminateOnly="true"/>
 
                 <TextView
-                    android:layout_width="fill_parent"
+                    android:id="@+id/verify_status"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:textAppearance="?android:attr/textAppearanceMedium"
-                    android:text="Not verified"
+                    android:text="@string/linked_verify_pending"
                     android:layout_marginLeft="16dip"
+                    android:layout_marginStart="16dip"
                     android:layout_weight="1"
-                    android:id="@+id/verify_status"/>
+                    />
 
                 <Button
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Verify"
                     android:id="@+id/button_verify"
-                    android:layout_marginRight="16dp"/>
+                    android:layout_marginRight="16dp"
+                    android:layout_marginEnd="16dip"
+                    />
 
             </LinearLayout>
 
