@@ -34,6 +34,7 @@ import org.spongycastle.openpgp.PGPSecretKeyRing;
 import org.spongycastle.openpgp.PGPSignature;
 import org.spongycastle.openpgp.PGPSignatureGenerator;
 import org.spongycastle.openpgp.PGPSignatureSubpacketGenerator;
+import org.spongycastle.openpgp.PGPUserAttributeSubpacketVector;
 import org.spongycastle.openpgp.operator.PBESecretKeyDecryptor;
 import org.spongycastle.openpgp.operator.PBESecretKeyEncryptor;
 import org.spongycastle.openpgp.operator.PGPContentSignerBuilder;
@@ -478,7 +479,7 @@ public class PgpKeyOperation {
                 PGPPublicKey modifiedPublicKey = masterPublicKey;
 
                 // 2a. Add certificates for new user ids
-                subProgressPush(15, 25);
+                subProgressPush(15, 23);
                 for (int i = 0; i < saveParcel.mAddUserIds.size(); i++) {
 
                     progress(R.string.progress_modify_adduid, (i - 1) * (100 / saveParcel.mAddUserIds.size()));
@@ -522,8 +523,33 @@ public class PgpKeyOperation {
                 }
                 subProgressPop();
 
-                // 2b. Add revocations for revoked user ids
-                subProgressPush(25, 40);
+                // 2b. Add certificates for new user ids
+                subProgressPush(23, 32);
+                for (int i = 0; i < saveParcel.mAddUserAttribute.size(); i++) {
+
+                    progress(R.string.progress_modify_adduat, (i - 1) * (100 / saveParcel.mAddUserAttribute.size()));
+                    WrappedUserAttribute attribute = saveParcel.mAddUserAttribute.get(i);
+
+                    switch (attribute.getType()) {
+                        case WrappedUserAttribute.UAT_UNKNOWN:
+                            log.add(LogType.MSG_MF_UAT_ADD_UNKNOWN, indent);
+                            break;
+                        case WrappedUserAttribute.UAT_IMAGE:
+                            log.add(LogType.MSG_MF_UAT_ADD_IMAGE, indent);
+                            break;
+                    }
+
+                    PGPUserAttributeSubpacketVector vector = attribute.getVector();
+
+                    // generate and add new certificate
+                    PGPSignature cert = generateUserAttributeSignature(masterPrivateKey,
+                            masterPublicKey, vector);
+                    modifiedPublicKey = PGPPublicKey.addCertification(modifiedPublicKey, vector, cert);
+                }
+                subProgressPop();
+
+                // 2c. Add revocations for revoked user ids
+                subProgressPush(32, 40);
                 for (int i = 0; i < saveParcel.mRevokeUserIds.size(); i++) {
 
                     progress(R.string.progress_modify_revokeuid, (i - 1) * (100 / saveParcel.mRevokeUserIds.size()));
@@ -1172,6 +1198,26 @@ public class PgpKeyOperation {
         sGen.setHashedSubpackets(hashedPacketsGen.generate());
         sGen.init(PGPSignature.POSITIVE_CERTIFICATION, masterPrivateKey);
         return sGen.generateCertification(userId, pKey);
+    }
+
+    private static PGPSignature generateUserAttributeSignature(
+            PGPPrivateKey masterPrivateKey, PGPPublicKey pKey,
+            PGPUserAttributeSubpacketVector vector)
+                throws IOException, PGPException, SignatureException {
+        PGPContentSignerBuilder signerBuilder = new JcaPGPContentSignerBuilder(
+                masterPrivateKey.getPublicKeyPacket().getAlgorithm(), HashAlgorithmTags.SHA512)
+                .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME);
+        PGPSignatureGenerator sGen = new PGPSignatureGenerator(signerBuilder);
+
+        PGPSignatureSubpacketGenerator hashedPacketsGen = new PGPSignatureSubpacketGenerator();
+        {
+            /* critical subpackets: we consider those important for a modern pgp implementation */
+            hashedPacketsGen.setSignatureCreationTime(true, new Date());
+        }
+
+        sGen.setHashedSubpackets(hashedPacketsGen.generate());
+        sGen.init(PGPSignature.POSITIVE_CERTIFICATION, masterPrivateKey);
+        return sGen.generateCertification(vector, pKey);
     }
 
     private static PGPSignature generateRevocationSignature(

@@ -310,6 +310,7 @@
 
     <string name="progress_modify_unlock">"unlocking keyring…"</string>
     <string name="progress_modify_adduid">"adding user IDs…"</string>
+    <string name="progress_modify_adduat">"adding user attributes…"</string>
     <string name="progress_modify_revokeuid">"revoking user IDs…"</string>
     <string name="progress_modify_primaryuid">"changing primary user ID…"</string>
     <string name="progress_modify_subkeychange">"modifying subkeys…"</string>
@@ -840,6 +841,8 @@
     <string name="msg_mf_uid_primary">"Changing primary user ID to %s"</string>
     <string name="msg_mf_uid_revoke">"Revoking user ID %s"</string>
     <string name="msg_mf_uid_error_empty">"User ID must not be empty!"</string>
+    <string name="msg_mf_uat_add_image">"Adding user attribute of type image"</string>
+    <string name="msg_mf_uat_add_unknown">"Adding user attribute of unknown type"</string>
     <string name="msg_mf_unlock_error">"Error unlocking keyring!"</string>
     <string name="msg_mf_unlock">"Unlocking keyring"</string>
 
@@ -1138,7 +1141,7 @@
     <string name="aff_create_https_2_1">"A proof file for this URI has been created:"</string>
     <string name="aff_create_https_2_2">"For the next step, you should save and upload this file."</string>
     <string name="aff_create_https_2_3">"Make sure the file is reachable at the correct URI, then verify your setup."</string>
-    <string name="aff_create_https_2_4">"After verification is successful, hit next to finish the process."</string>
+    <string name="aff_create_https_2_4">"After verification is successful, hit next to add the linked identity to your keyring and finish the process."</string>
     <string name="linked_id_generic_text">"This file claims ownership of the OpenPGP key with long id %2$s.\n\nCookie for proof:\n%1$s"</string>
     <string name="linked_verifying">Verifying…</string>
     <string name="linked_verify_success">Verification successful!</string>
