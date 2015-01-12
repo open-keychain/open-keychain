@@ -760,8 +760,23 @@
     <string name="msg_kc_uid_revoke_old">"Removing outdated revocation certificate for user ID '%s'"</string>
     <string name="msg_kc_uid_no_cert">"No valid self-certificate found for user ID '%s', removing from ring"</string>
     <string name="msg_kc_uid_remove">"Removing invalid user ID '%s'"</string>
-    <string name="msg_kc_uid_dup">"Removing duplicate user ID '%s'. The secret key contained two of them. This may result in missing certificates!"</string>
+    <string name="msg_kc_uid_dup">"Removing duplicate user ID '%s'. The keyring contained two of them. This may result in missing certificates!"</string>
     <string name="msg_kc_uid_warn_encoding">"User id does not verify as UTF-8!"</string>
+    <string name="msg_kc_uat_jpeg">"Processing user attribute of type JPEG"</string>
+    <string name="msg_kc_uat_unknown">"Processing user attribute of unknown type"</string>
+    <string name="msg_kc_uat_bad_err">"Removing bad self certificate for user attribute"</string>
+    <string name="msg_kc_uat_bad_local">"Removing user attribute certificate with 'local' flag"</string>
+    <string name="msg_kc_uat_bad_time">"Removing user attribute with future timestamp"</string>
+    <string name="msg_kc_uat_bad_type">"Removing user attribute certificate of unknown type (%s)"</string>
+    <string name="msg_kc_uat_bad">"Removing bad self certificate for user attribute"</string>
+    <string name="msg_kc_uat_cert_dup">"Removing outdated self certificate for user attribute"</string>
+    <string name="msg_kc_uat_dup">"Removing duplicate user attribute. The keyring contained two of them. This may result in missing certificates!"</string>
+    <string name="msg_kc_uat_foreign">"Removing foreign user attribute certificate by"</string>
+    <string name="msg_kc_uat_revoke_dup">"Removing redundant revocation certificate for user attribute"</string>
+    <string name="msg_kc_uat_revoke_old">"Removing outdated revocation certificate for user attribute"</string>
+    <string name="msg_kc_uat_no_cert">"No valid self-certificate found for user attribute, removing from ring"</string>
+    <string name="msg_kc_uat_remove">"Removing invalid user attribute"</string>
+    <string name="msg_kc_uat_warn_encoding">"User id does not verify as UTF-8!"</string>
 
     <!-- Keyring merging log entries -->
     <string name="msg_mg_error_secret_dummy">"New public subkey found, but secret subkey dummy generation is not supported!"</string>
