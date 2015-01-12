@@ -72,6 +72,28 @@
             android:background="?android:attr/listDivider" />
 
         <TextView
+            android:id="@+id/view_key_action_link"
+            android:paddingLeft="8dp"
+            android:paddingRight="8dp"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="?android:attr/listPreferredItemHeight"
+            android:clickable="true"
+            style="@style/SelectableItem"
+            android:text="Link to Resource"
+            android:layout_weight="1"
+            android:drawableRight="@drawable/ic_action_add_person"
+            android:drawablePadding="8dp"
+            android:gravity="center_vertical" />
+
+        <View
+            android:id="@+id/view_key_action_link_divider"
+            android:layout_width="match_parent"
+            android:layout_height="1dip"
+            android:background="?android:attr/listDivider" />
+
+        <TextView
             android:id="@+id/view_key_action_edit"
             android:paddingLeft="8dp"
             android:paddingRight="8dp"

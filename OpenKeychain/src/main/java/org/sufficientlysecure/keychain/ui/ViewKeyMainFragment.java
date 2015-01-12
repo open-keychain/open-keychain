@@ -37,6 +37,7 @@ import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.compatibility.DialogFragmentWorkaround;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
+import org.sufficientlysecure.keychain.ui.affirmations.AffirmationWizard;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
@@ -55,6 +56,7 @@ public class ViewKeyMainFragment extends LoaderFragment implements
 
     public static final String ARG_DATA_URI = "uri";
 
+    private View mActionLink, mActionLinkDivider;
     private View mActionEdit;
     private View mActionEditDivider;
     private View mActionEncryptFiles;
@@ -83,6 +85,8 @@ public class ViewKeyMainFragment extends LoaderFragment implements
         View view = inflater.inflate(R.layout.view_key_main_fragment, getContainer());
 
         mUserIds = (ListView) view.findViewById(R.id.view_key_user_ids);
+        mActionLink = view.findViewById(R.id.view_key_action_link);
+        mActionLinkDivider = view.findViewById(R.id.view_key_action_link);
         mActionEdit = view.findViewById(R.id.view_key_action_edit);
         mActionEditDivider = view.findViewById(R.id.view_key_action_edit_divider);
         mActionEncryptText = view.findViewById(R.id.view_key_action_encrypt_text);
@@ -156,6 +160,11 @@ public class ViewKeyMainFragment extends LoaderFragment implements
                 certify(mDataUri);
             }
         });
+        mActionLink.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                linkKey(mDataUri);
+            }
+        });
         mActionEdit.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
                 editKey(mDataUri);
@@ -224,10 +233,14 @@ public class ViewKeyMainFragment extends LoaderFragment implements
                 if (data.moveToFirst()) {
                     if (data.getInt(INDEX_UNIFIED_HAS_ANY_SECRET) != 0) {
                         // edit button
+                        mActionLink.setVisibility(View.VISIBLE);
+                        mActionLinkDivider.setVisibility(View.VISIBLE);
                         mActionEdit.setVisibility(View.VISIBLE);
                         mActionEditDivider.setVisibility(View.VISIBLE);
                     } else {
                         // edit button
+                        mActionLink.setVisibility(View.GONE);
+                        mActionLinkDivider.setVisibility(View.GONE);
                         mActionEdit.setVisibility(View.GONE);
                         mActionEditDivider.setVisibility(View.GONE);
                     }
@@ -344,6 +357,12 @@ public class ViewKeyMainFragment extends LoaderFragment implements
     private void editKey(Uri dataUri) {
         Intent editIntent = new Intent(getActivity(), EditKeyActivity.class);
         editIntent.setData(KeychainContract.KeyRingData.buildSecretKeyRingUri(dataUri));
+        startActivityForResult(editIntent, 0);
+    }
+
+    private void linkKey(Uri dataUri) {
+        Intent editIntent = new Intent(getActivity(), AffirmationWizard.class);
+        editIntent.setData(KeyRings.buildUnifiedKeyRingUri(dataUri));
         startActivityForResult(editIntent, 0);
     }
 

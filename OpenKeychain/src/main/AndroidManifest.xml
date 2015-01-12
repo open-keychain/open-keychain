@@ -108,6 +108,10 @@
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
             android:label="@string/title_edit_key" />
         <activity
+            android:name=".ui.affirmations.AffirmationWizard"
+            android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
+            android:label="@string/title_affirmation" />
+        <activity
             android:name=".ui.QrCodeViewActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
             android:label="@string/share_qr_code_dialog_title" />

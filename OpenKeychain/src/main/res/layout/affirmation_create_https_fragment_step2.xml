@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="match_parent">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="false"
+        android:layout_above="@+id/create_key_button_divider">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="@string/aff_create_https_2_1" />
+
+            <EditText
+                android:id="@+id/affirmation_create_https_uri"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:imeOptions="actionNext"
+                android:layout_marginTop="8dp"
+                android:hint="uri"
+                android:ems="10"
+                android:layout_gravity="center_horizontal"
+                android:inputType="textUri|none"
+                android:enabled="false"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="@string/aff_create_https_2_2" />
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_gravity="center_horizontal">
+
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Share"
+                    android:id="@+id/button_send"
+                    android:layout_marginRight="8dip"/>
+
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Save"
+                    android:id="@+id/button_save"
+                    android:layout_marginLeft="8dip"/>
+
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="@string/aff_create_https_2_3" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp">
+
+                <ImageView
+                    android:id="@+id/verify_image"
+                    android:src="@drawable/status_signature_unverified_cutout"
+                    android:layout_gravity="center_vertical"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="16dip"/>
+
+                <ProgressBar
+                    android:id="@+id/verify_progress"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:visibility="gone"
+                    android:indeterminateOnly="true"/>
+
+                <TextView
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:text="Not verified"
+                    android:layout_marginLeft="16dip"
+                    android:layout_weight="1"
+                    android:id="@+id/verify_status"/>
+
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Verify"
+                    android:id="@+id/button_verify"
+                    android:layout_marginRight="16dp"/>
+
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="@string/aff_create_https_2_4" />
+
+        </LinearLayout>
+
+    </ScrollView>
+
+    <View
+        android:id="@+id/create_key_button_divider"
+        android:layout_width="match_parent"
+        android:layout_height="1dip"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:background="?android:attr/listDivider"
+        android:layout_alignTop="@+id/create_key_buttons"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:id="@+id/create_key_buttons">
+
+        <TextView
+            android:id="@+id/create_key_back_button"
+            android:paddingLeft="8dp"
+            android:paddingRight="8dp"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text=""
+            android:minHeight="?android:attr/listPreferredItemHeight"
+            android:gravity="center_vertical"
+            android:layout_gravity="center_vertical" />
+
+        <View
+            android:layout_width="1dp"
+            android:layout_height="match_parent"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+            android:background="?android:attr/listDivider" />
+
+        <TextView
+            android:id="@+id/next_button"
+            android:paddingLeft="8dp"
+            android:paddingRight="8dp"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/btn_next"
+            android:minHeight="?android:attr/listPreferredItemHeight"
+            android:drawableRight="@drawable/ic_action_play"
+            android:drawablePadding="8dp"
+            android:gravity="center_vertical"
+            android:clickable="true"
+            style="@style/SelectableItem"
+            android:layout_gravity="center_vertical" />
+    </LinearLayout>
+</RelativeLayout>
