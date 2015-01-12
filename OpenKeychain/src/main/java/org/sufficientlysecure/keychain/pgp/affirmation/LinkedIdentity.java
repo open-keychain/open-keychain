@@ -6,6 +6,7 @@ import org.spongycastle.util.encoders.Hex;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.util.Log;
 
+import java.io.Serializable;
 import java.net.URI;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -14,7 +15,7 @@ import java.util.Iterator;
 import java.util.Map.Entry;
 import java.util.Set;
 
-public class LinkedIdentity {
+public class LinkedIdentity implements Serializable {
 
     protected byte[] mData;
     public final String mNonce;

@@ -29,7 +29,7 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.pgp.affirmation.Affirmation;
+import org.sufficientlysecure.keychain.pgp.affirmation.LinkedIdentity;
 import org.sufficientlysecure.keychain.pgp.affirmation.resources.GenericHttpsResource;
 
 public class AffirmationCreateHttpsStep1Fragment extends Fragment {
@@ -72,7 +72,7 @@ public class AffirmationCreateHttpsStep1Fragment extends Fragment {
                     return;
                 }
 
-                String proofNonce = Affirmation.generateNonce();
+                String proofNonce = LinkedIdentity.generateNonce();
                 String proofText = GenericHttpsResource.generateText(getActivity(),
                         mAffirmationWizard.mFingerprint, proofNonce);
 
