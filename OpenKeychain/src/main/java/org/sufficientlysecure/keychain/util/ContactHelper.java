@@ -35,6 +35,7 @@ import android.util.Patterns;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
+import org.sufficientlysecure.keychain.provider.KeychainContract.UserPackets;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 
@@ -57,10 +58,10 @@ public class ContactHelper {
             KeychainContract.KeyRings.EXPIRY,
             KeychainContract.KeyRings.IS_REVOKED};
     public static final String[] USER_IDS_PROJECTION = new String[]{
-            KeychainContract.UserIds.USER_ID
+            UserPackets.USER_ID
     };
 
-    public static final String NON_REVOKED_SELECTION = KeychainContract.UserIds.IS_REVOKED + "=0";
+    public static final String NON_REVOKED_SELECTION = UserPackets.IS_REVOKED + "=0";
 
     public static final String[] ID_PROJECTION = new String[]{ContactsContract.RawContacts._ID};
     public static final String[] SOURCE_ID_PROJECTION = new String[]{ContactsContract.RawContacts.SOURCE_ID};
@@ -413,7 +414,7 @@ public class ContactHelper {
                                           int rawContactId, long masterKeyId) {
         ops.add(selectByRawContactAndItemType(ContentProviderOperation.newDelete(ContactsContract.Data.CONTENT_URI),
                 rawContactId, ContactsContract.CommonDataKinds.Email.CONTENT_ITEM_TYPE).build());
-        Cursor ids = resolver.query(KeychainContract.UserIds.buildUserIdsUri(masterKeyId),
+        Cursor ids = resolver.query(UserPackets.buildUserIdsUri(masterKeyId),
                 USER_IDS_PROJECTION, NON_REVOKED_SELECTION, null, null);
         if (ids != null) {
             while (ids.moveToNext()) {

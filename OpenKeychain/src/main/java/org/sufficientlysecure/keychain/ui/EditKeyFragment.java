@@ -47,6 +47,7 @@ import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
+import org.sufficientlysecure.keychain.provider.KeychainContract.UserPackets;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.provider.ProviderHelper.NotFoundException;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
@@ -334,7 +335,7 @@ public class EditKeyFragment extends LoaderFragment implements
 
         switch (id) {
             case LOADER_ID_USER_IDS: {
-                Uri baseUri = KeychainContract.UserIds.buildUserIdsUri(mDataUri);
+                Uri baseUri = UserPackets.buildUserIdsUri(mDataUri);
                 return new CursorLoader(getActivity(), baseUri,
                         UserIdsAdapter.USER_IDS_PROJECTION, null, null, null);
             }

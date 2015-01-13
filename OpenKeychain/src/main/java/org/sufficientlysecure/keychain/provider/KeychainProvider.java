@@ -37,7 +37,8 @@ import org.sufficientlysecure.keychain.provider.KeychainContract.Certs;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRingData;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.KeychainContract.Keys;
-import org.sufficientlysecure.keychain.provider.KeychainContract.UserIds;
+import org.sufficientlysecure.keychain.provider.KeychainContract.UserPackets;
+import org.sufficientlysecure.keychain.provider.KeychainContract.UserPacketsColumns;
 import org.sufficientlysecure.keychain.provider.KeychainDatabase.Tables;
 import org.sufficientlysecure.keychain.util.Log;
 
@@ -205,7 +206,7 @@ public class KeychainProvider extends ContentProvider {
                 return Keys.CONTENT_TYPE;
 
             case KEY_RING_USER_IDS:
-                return UserIds.CONTENT_TYPE;
+                return UserPackets.CONTENT_TYPE;
 
             case KEY_RING_SECRET:
                 return KeyRings.CONTENT_ITEM_TYPE;
@@ -262,7 +263,7 @@ public class KeychainProvider extends ContentProvider {
                 projectionMap.put(KeyRings.EXPIRY, Tables.KEYS + "." + Keys.EXPIRY);
                 projectionMap.put(KeyRings.ALGORITHM, Tables.KEYS + "." + Keys.ALGORITHM);
                 projectionMap.put(KeyRings.FINGERPRINT, Tables.KEYS + "." + Keys.FINGERPRINT);
-                projectionMap.put(KeyRings.USER_ID, UserIds.USER_ID);
+                projectionMap.put(KeyRings.USER_ID, UserPackets.USER_ID);
                 projectionMap.put(KeyRings.VERIFIED, KeyRings.VERIFIED);
                 projectionMap.put(KeyRings.PUBKEY_DATA,
                         Tables.KEY_RINGS_PUBLIC + "." + KeyRingData.KEY_RING_DATA
@@ -296,11 +297,12 @@ public class KeychainProvider extends ContentProvider {
 
                 qb.setTables(
                     Tables.KEYS
-                        + " INNER JOIN " + Tables.USER_IDS + " ON ("
+                        + " INNER JOIN " + Tables.USER_PACKETS + " ON ("
                                     + Tables.KEYS + "." + Keys.MASTER_KEY_ID
                                 + " = "
-                                    + Tables.USER_IDS + "." + UserIds.MASTER_KEY_ID
-                            + " AND " + Tables.USER_IDS + "." + UserIds.RANK + " = 0"
+                                    + Tables.USER_PACKETS + "." + UserPackets.MASTER_KEY_ID
+                            // we KNOW that the rank zero user packet is a user id!
+                            + " AND " + Tables.USER_PACKETS + "." + UserPackets.RANK + " = 0"
                         + ") LEFT JOIN " + Tables.CERTS + " ON ("
                             + Tables.KEYS + "." + Keys.MASTER_KEY_ID
                                 + " = "
@@ -376,7 +378,7 @@ public class KeychainProvider extends ContentProvider {
                             String subkey = Long.valueOf(uri.getLastPathSegment()).toString();
                             qb.appendWhere(" AND EXISTS ("
                                     + " SELECT 1 FROM " + Tables.KEYS + " AS tmp"
-                                    + " WHERE tmp." + UserIds.MASTER_KEY_ID
+                                    + " WHERE tmp." + UserPackets.MASTER_KEY_ID
                                     + " = " + Tables.KEYS + "." + Keys.MASTER_KEY_ID
                                     + " AND tmp." + Keys.KEY_ID + " = " + subkey + ""
                                     + ")");
@@ -398,15 +400,15 @@ public class KeychainProvider extends ContentProvider {
                             if (i != 0) {
                                 emailWhere += " OR ";
                             }
-                            emailWhere += "tmp." + UserIds.USER_ID + " LIKE ";
+                            emailWhere += "tmp." + UserPackets.USER_ID + " LIKE ";
                             // match '*<email>', so it has to be at the *end* of the user id
                             emailWhere += DatabaseUtils.sqlEscapeString("%<" + chunks[i] + ">");
                             gotCondition = true;
                         }
                         if(gotCondition) {
                             qb.appendWhere(" AND EXISTS ("
-                                + " SELECT 1 FROM " + Tables.USER_IDS + " AS tmp"
-                                    + " WHERE tmp." + UserIds.MASTER_KEY_ID
+                                + " SELECT 1 FROM " + Tables.USER_PACKETS + " AS tmp"
+                                    + " WHERE tmp." + UserPackets.MASTER_KEY_ID
                                             + " = " + Tables.KEYS + "." + Keys.MASTER_KEY_ID
                                         + " AND (" + emailWhere + ")"
                                 + ")");
@@ -420,7 +422,7 @@ public class KeychainProvider extends ContentProvider {
                 }
 
                 if (TextUtils.isEmpty(sortOrder)) {
-                    sortOrder = Tables.USER_IDS + "." + UserIds.USER_ID + " ASC";
+                    sortOrder = Tables.USER_PACKETS + "." + UserPackets.USER_ID + " ASC";
                 }
 
                 // uri to watch is all /key_rings/
@@ -459,36 +461,42 @@ public class KeychainProvider extends ContentProvider {
             case KEY_RINGS_USER_IDS:
             case KEY_RING_USER_IDS: {
                 HashMap<String, String> projectionMap = new HashMap<String, String>();
-                projectionMap.put(UserIds._ID, Tables.USER_IDS + ".oid AS _id");
-                projectionMap.put(UserIds.MASTER_KEY_ID, Tables.USER_IDS + "." + UserIds.MASTER_KEY_ID);
-                projectionMap.put(UserIds.USER_ID, Tables.USER_IDS + "." + UserIds.USER_ID);
-                projectionMap.put(UserIds.RANK, Tables.USER_IDS + "." + UserIds.RANK);
-                projectionMap.put(UserIds.IS_PRIMARY, Tables.USER_IDS + "." + UserIds.IS_PRIMARY);
-                projectionMap.put(UserIds.IS_REVOKED, Tables.USER_IDS + "." + UserIds.IS_REVOKED);
+                projectionMap.put(UserPackets._ID, Tables.USER_PACKETS + ".oid AS _id");
+                projectionMap.put(UserPackets.MASTER_KEY_ID, Tables.USER_PACKETS + "." + UserPackets.MASTER_KEY_ID);
+                projectionMap.put(UserPackets.TYPE, Tables.USER_PACKETS + "." + UserPackets.TYPE);
+                projectionMap.put(UserPackets.USER_ID, Tables.USER_PACKETS + "." + UserPackets.USER_ID);
+                projectionMap.put(UserPackets.ATTRIBUTE_DATA, Tables.USER_PACKETS + "." + UserPackets.ATTRIBUTE_DATA);
+                projectionMap.put(UserPackets.RANK, Tables.USER_PACKETS + "." + UserPackets.RANK);
+                projectionMap.put(UserPackets.IS_PRIMARY, Tables.USER_PACKETS + "." + UserPackets.IS_PRIMARY);
+                projectionMap.put(UserPackets.IS_REVOKED, Tables.USER_PACKETS + "." + UserPackets.IS_REVOKED);
                 // we take the minimum (>0) here, where "1" is "verified by known secret key"
-                projectionMap.put(UserIds.VERIFIED, "MIN(" + Certs.VERIFIED + ") AS " + UserIds.VERIFIED);
+                projectionMap.put(UserPackets.VERIFIED, "MIN(" + Certs.VERIFIED + ") AS " + UserPackets.VERIFIED);
                 qb.setProjectionMap(projectionMap);
 
-                qb.setTables(Tables.USER_IDS
+                qb.setTables(Tables.USER_PACKETS
                         + " LEFT JOIN " + Tables.CERTS + " ON ("
-                            + Tables.USER_IDS + "." + UserIds.MASTER_KEY_ID + " = "
+                            + Tables.USER_PACKETS + "." + UserPackets.MASTER_KEY_ID + " = "
                                 + Tables.CERTS + "." + Certs.MASTER_KEY_ID
-                            + " AND " + Tables.USER_IDS + "." + UserIds.RANK + " = "
+                            + " AND " + Tables.USER_PACKETS + "." + UserPackets.RANK + " = "
                                 + Tables.CERTS + "." + Certs.RANK
                             + " AND " + Tables.CERTS + "." + Certs.VERIFIED + " > 0"
                         + ")");
-                groupBy = Tables.USER_IDS + "." + UserIds.MASTER_KEY_ID
-                        + ", " + Tables.USER_IDS + "." + UserIds.RANK;
+                groupBy = Tables.USER_PACKETS + "." + UserPackets.MASTER_KEY_ID
+                        + ", " + Tables.USER_PACKETS + "." + UserPackets.RANK;
+
+                // for now, we only respect user ids here, so TYPE must be NULL
+                // TODO expand with KEY_RING_USER_PACKETS query type which lifts this restriction
+                qb.appendWhere(Tables.USER_PACKETS + "." + UserPackets.TYPE + " IS NULL AND ");
 
                 // If we are searching for a particular keyring's ids, add where
                 if (match == KEY_RING_USER_IDS) {
-                    qb.appendWhere(Tables.USER_IDS + "." + UserIds.MASTER_KEY_ID + " = ");
+                    qb.appendWhere(Tables.USER_PACKETS + "." + UserPackets.MASTER_KEY_ID + " = ");
                     qb.appendWhereEscapeString(uri.getPathSegments().get(1));
                 }
 
                 if (TextUtils.isEmpty(sortOrder)) {
-                    sortOrder = Tables.USER_IDS + "." + UserIds.MASTER_KEY_ID + " ASC"
-                            + "," + Tables.USER_IDS + "." + UserIds.RANK + " ASC";
+                    sortOrder = Tables.USER_PACKETS + "." + UserPackets.MASTER_KEY_ID + " ASC"
+                            + "," + Tables.USER_PACKETS + "." + UserPackets.RANK + " ASC";
                 }
 
                 break;
@@ -542,20 +550,24 @@ public class KeychainProvider extends ContentProvider {
                 projectionMap.put(Certs.CREATION, Tables.CERTS + "." + Certs.CREATION);
                 projectionMap.put(Certs.KEY_ID_CERTIFIER, Tables.CERTS + "." + Certs.KEY_ID_CERTIFIER);
                 projectionMap.put(Certs.DATA, Tables.CERTS + "." + Certs.DATA);
-                projectionMap.put(Certs.USER_ID, Tables.USER_IDS + "." + UserIds.USER_ID);
-                projectionMap.put(Certs.SIGNER_UID, "signer." + UserIds.USER_ID + " AS " + Certs.SIGNER_UID);
+                projectionMap.put(Certs.USER_ID, Tables.USER_PACKETS + "." + UserPackets.USER_ID);
+                projectionMap.put(Certs.SIGNER_UID, "signer." + UserPackets.USER_ID + " AS " + Certs.SIGNER_UID);
                 qb.setProjectionMap(projectionMap);
 
                 qb.setTables(Tables.CERTS
-                    + " JOIN " + Tables.USER_IDS + " ON ("
+                    + " JOIN " + Tables.USER_PACKETS + " ON ("
                             + Tables.CERTS + "." + Certs.MASTER_KEY_ID + " = "
-                            + Tables.USER_IDS + "." + UserIds.MASTER_KEY_ID
+                            + Tables.USER_PACKETS + "." + UserPackets.MASTER_KEY_ID
                         + " AND "
                             + Tables.CERTS + "." + Certs.RANK + " = "
-                            + Tables.USER_IDS + "." + UserIds.RANK
-                    + ") LEFT JOIN " + Tables.USER_IDS + " AS signer ON ("
+                            + Tables.USER_PACKETS + "." + UserPackets.RANK
+                        // for now, we only return user ids here, so TYPE must be NULL
+                        // TODO at some point, we should lift this restriction
+                        + " AND "
+                            + Tables.USER_PACKETS + "." + UserPackets.TYPE + " IS NULL"
+                    + ") LEFT JOIN " + Tables.USER_PACKETS + " AS signer ON ("
                             + Tables.CERTS + "." + Certs.KEY_ID_CERTIFIER + " = "
-                            + "signer." + UserIds.MASTER_KEY_ID
+                            + "signer." + UserPackets.MASTER_KEY_ID
                         + " AND "
                             + "signer." + Keys.RANK + " = 0"
                     + ")");
@@ -662,8 +674,18 @@ public class KeychainProvider extends ContentProvider {
                     break;
 
                 case KEY_RING_USER_IDS:
-                    db.insertOrThrow(Tables.USER_IDS, null, values);
-                    keyId = values.getAsLong(UserIds.MASTER_KEY_ID);
+                    // iff TYPE is null, user_id MUST be null as well
+                    if ( ! (values.get(UserPacketsColumns.TYPE) == null
+                            ? (values.get(UserPacketsColumns.USER_ID) != null && values.get(UserPacketsColumns.ATTRIBUTE_DATA) == null)
+                            : (values.get(UserPacketsColumns.ATTRIBUTE_DATA) != null && values.get(UserPacketsColumns.USER_ID) == null)
+                        )) {
+                        throw new AssertionError("Incorrect type for user packet! This is a bug!");
+                    }
+                    if (values.get(UserPacketsColumns.RANK) == 0 && values.get(UserPacketsColumns.USER_ID) == null) {
+                        throw new AssertionError("Rank 0 user packet must be a user id!");
+                    }
+                    db.insertOrThrow(Tables.USER_PACKETS, null, values);
+                    keyId = values.getAsLong(UserPackets.MASTER_KEY_ID);
                     break;
 
                 case KEY_RING_CERTS:

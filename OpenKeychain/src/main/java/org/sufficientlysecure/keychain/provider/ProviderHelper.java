@@ -31,6 +31,7 @@ import android.support.v4.util.LongSparseArray;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.results.ImportKeyResult;
+import org.sufficientlysecure.keychain.provider.KeychainContract.UserPackets;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.ParcelableFileCache.IteratorWithSize;
 import org.sufficientlysecure.keychain.util.Preferences;
@@ -53,7 +54,6 @@ import org.sufficientlysecure.keychain.provider.KeychainContract.Certs;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRingData;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.KeychainContract.Keys;
-import org.sufficientlysecure.keychain.provider.KeychainContract.UserIds;
 import org.sufficientlysecure.keychain.remote.AccountSettings;
 import org.sufficientlysecure.keychain.remote.AppSettings;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
@@ -1236,13 +1236,16 @@ public class ProviderHelper {
     private ContentProviderOperation
     buildUserIdOperations(long masterKeyId, UserIdItem item, int rank) {
         ContentValues values = new ContentValues();
-        values.put(UserIds.MASTER_KEY_ID, masterKeyId);
-        values.put(UserIds.USER_ID, item.userId);
-        values.put(UserIds.IS_PRIMARY, item.isPrimary);
-        values.put(UserIds.IS_REVOKED, item.isRevoked);
-        values.put(UserIds.RANK, rank);
+        values.put(UserPackets.MASTER_KEY_ID, masterKeyId);
+        values.put(UserPackets.USER_ID, item.userId);
+        values.put(UserPackets.IS_PRIMARY, item.isPrimary);
+        values.put(UserPackets.IS_REVOKED, item.isRevoked);
+        values.put(UserPackets.RANK, rank);
+        // we explicitly set these to null here, to indicate that this is a user id, not an attribute
+        values.put(UserPackets.TYPE, (String) null);
+        values.put(UserPackets.ATTRIBUTE_DATA, (String) null);
 
-        Uri uri = UserIds.buildUserIdsUri(masterKeyId);
+        Uri uri = UserPackets.buildUserIdsUri(masterKeyId);
 
         return ContentProviderOperation.newInsert(uri).withValues(values).build();
     }
