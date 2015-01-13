@@ -214,6 +214,9 @@ public class WrappedSignature {
     public boolean verifySignature(CanonicalizedPublicKey key, String uid) throws PgpGeneralException {
         return verifySignature(key.getPublicKey(), uid);
     }
+    public boolean verifySignature(UncachedPublicKey key, WrappedUserAttribute attribute) throws PgpGeneralException {
+        return verifySignature(key.getPublicKey(), attribute.getVector());
+    }
 
     public static WrappedSignature fromBytes(byte[] data) {
         PGPObjectFactory factory = new PGPObjectFactory(data);

@@ -486,10 +486,12 @@ public class KeychainProvider extends ContentProvider {
 
                 // for now, we only respect user ids here, so TYPE must be NULL
                 // TODO expand with KEY_RING_USER_PACKETS query type which lifts this restriction
-                qb.appendWhere(Tables.USER_PACKETS + "." + UserPackets.TYPE + " IS NULL AND ");
+                qb.appendWhere(Tables.USER_PACKETS + "." + UserPackets.TYPE + " IS NULL");
 
                 // If we are searching for a particular keyring's ids, add where
                 if (match == KEY_RING_USER_IDS) {
+                    // TODO remove with the thing above
+                    qb.appendWhere(" AND ");
                     qb.appendWhere(Tables.USER_PACKETS + "." + UserPackets.MASTER_KEY_ID + " = ");
                     qb.appendWhereEscapeString(uri.getPathSegments().get(1));
                 }
