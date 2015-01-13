@@ -31,10 +31,7 @@
         For OI Filemanager it makes no difference, gpg files can't be associated
     -->
 
-    <!-- Specified in build.gradle -->
-    <!--<uses-sdk-->
-    <!--android:minSdkVersion="9"-->
-    <!--android:targetSdkVersion="19" />-->
+    <!-- SDK levels are specified in build.gradle -->
 
     <uses-feature
         android:name="android.hardware.wifi"
