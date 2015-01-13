@@ -82,14 +82,16 @@
         android:id="@+id/create_key_buttons">
 
         <TextView
-            android:id="@+id/create_key_back_button"
+            android:id="@+id/back_button"
             android:paddingLeft="8dp"
             android:paddingRight="8dp"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text=""
+            android:text="@string/btn_back"
+            android:clickable="true"
+            style="@style/SelectableItem"
             android:minHeight="?android:attr/listPreferredItemHeight"
             android:gravity="center_vertical"
             android:layout_gravity="center_vertical" />

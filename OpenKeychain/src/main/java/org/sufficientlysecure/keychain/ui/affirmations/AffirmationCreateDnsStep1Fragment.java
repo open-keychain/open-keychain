@@ -84,6 +84,13 @@ public class AffirmationCreateDnsStep1Fragment extends Fragment {
             }
         });
 
+        view.findViewById(R.id.back_button).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mAffirmationWizard.loadFragment(null, null, AffirmationWizard.FRAG_ACTION_TO_LEFT);
+            }
+        });
+
         mEditUri = (EditText) view.findViewById(R.id.affirmation_create_https_uri);
 
         mEditUri.addTextChangedListener(new TextWatcher() {

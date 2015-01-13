@@ -86,6 +86,13 @@ public class AffirmationCreateTwitterStep2Fragment extends Fragment {
             }
         });
 
+        view.findViewById(R.id.back_button).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mAffirmationWizard.loadFragment(null, null, AffirmationWizard.FRAG_ACTION_TO_LEFT);
+            }
+        });
+
         mVerifyImage = (ImageView) view.findViewById(R.id.verify_image);
         mVerifyProgress = view.findViewById(R.id.verify_progress);
         mVerifyStatus = (TextView) view.findViewById(R.id.verify_status);

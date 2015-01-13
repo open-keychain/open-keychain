@@ -111,6 +111,13 @@ public class AffirmationCreateTwitterStep1Fragment extends Fragment {
             }
         });
 
+        view.findViewById(R.id.back_button).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mAffirmationWizard.loadFragment(null, null, AffirmationWizard.FRAG_ACTION_TO_LEFT);
+            }
+        });
+
         mEditHandle = (EditText) view.findViewById(R.id.linked_create_twitter_handle);
         mEditHandle.setText("Valodim");
 
