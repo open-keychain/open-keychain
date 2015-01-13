@@ -73,47 +73,15 @@ public class SafeSlingerActivity extends ActionBarActivity {
 
         mMasterKeyId = getIntent().getLongExtra(EXTRA_MASTER_KEY_ID, 0);
 
-        // NOTE: there are two versions of this layout, for API >= 11 and one for < 11
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-            NumberPicker picker = (NumberPicker) findViewById(R.id.safe_slinger_picker);
-            picker.setMinValue(2);
-            picker.setMaxValue(10);
-            picker.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
-                @Override
-                public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
-                    mSelectedNumber = newVal;
-                }
-            });
-        } else {
-            Spinner spinner = (Spinner) findViewById(R.id.safe_slinger_spinner);
-
-            List<String> list = new ArrayList<String>();
-            list.add("2");
-            list.add("3");
-            list.add("4");
-            list.add("5");
-            list.add("6");
-            list.add("7");
-            list.add("8");
-            list.add("9");
-            list.add("10");
-
-            ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(this,
-                    android.R.layout.simple_spinner_item, list);
-            dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-            spinner.setAdapter(dataAdapter);
-            spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-                @Override
-                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                    mSelectedNumber = position + 2;
-                }
-
-                @Override
-                public void onNothingSelected(AdapterView<?> parent) {
-
-                }
-            });
-        }
+        NumberPicker picker = (NumberPicker) findViewById(R.id.safe_slinger_picker);
+        picker.setMinValue(2);
+        picker.setMaxValue(10);
+        picker.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
+            @Override
+            public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
+                mSelectedNumber = newVal;
+            }
+        });
 
         ImageView buttonIcon = (ImageView) findViewById(R.id.safe_slinger_button_image);
         buttonIcon.setColorFilter(getResources().getColor(R.color.tertiary_text_light),

@@ -42,7 +42,7 @@ import android.widget.TextView;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 
-public class DrawerActivity extends ActionBarActivity {
+public abstract class DrawerActivity extends BaseActivity {
     private FixedDrawerLayout mDrawerLayout;
     private ListView mDrawerList;
     private ActionBarDrawerToggle mDrawerToggle;
@@ -96,8 +96,9 @@ public class DrawerActivity extends ActionBarActivity {
         // enable ActionBar app icon to behave as action to toggle nav drawer
         // if the drawer is not locked
         if (!mIsDrawerLocked) {
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            getSupportActionBar().setHomeButtonEnabled(true);
+            // TODO
+//            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+//            getSupportActionBar().setHomeButtonEnabled(true);
         }
 
         // ActionBarDrawerToggle ties together the the proper interactions

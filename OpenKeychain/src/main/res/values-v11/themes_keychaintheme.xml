@@ -3,7 +3,7 @@
 <!-- Generated with http://android-holo-colors.com -->
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
 
-  <style name="KeychainTheme" parent="@style/_KeychainTheme"/>
+  <style name="KeychainThemeOLD" parent="@style/_KeychainTheme"/>
 
   <style name="_KeychainTheme" parent="Theme.AppCompat.Light">
 

@@ -288,8 +288,6 @@ public class EncryptTextActivity extends EncryptActivity implements EncryptActiv
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.encrypt_text_activity);
-
         // if called with an intent action, do not init drawer navigation
         if (ACTION_ENCRYPT_TEXT.equals(getIntent().getAction())) {
             // lock drawer
@@ -302,6 +300,11 @@ public class EncryptTextActivity extends EncryptActivity implements EncryptActiv
         // Handle intent actions
         handleActions(getIntent());
         updateModeFragment();
+    }
+
+    @Override
+    protected int getLayoutResource() {
+        return R.layout.encrypt_text_activity;
     }
 
     @Override

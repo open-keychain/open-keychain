@@ -50,6 +50,7 @@ public class KeyListActivity extends DrawerActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+//        setActionBarIcon(R.drawable.ic_ab_drawer);
 
         setTitle(R.string.nav_keys);
 
@@ -63,10 +64,13 @@ public class KeyListActivity extends DrawerActivity {
 
         mExportHelper = new ExportHelper(this);
 
-        setContentView(R.layout.key_list_activity);
-
         // now setup navigation drawer in DrawerActivity...
-        activateDrawerNavigation(savedInstanceState);
+//        activateDrawerNavigation(savedInstanceState);
+    }
+
+    @Override
+    protected int getLayoutResource() {
+        return R.layout.key_list_activity;
     }
 
     @Override

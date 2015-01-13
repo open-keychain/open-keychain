@@ -40,8 +40,6 @@ public class DecryptActivity extends DrawerActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.decrypt_activity);
-
         activateDrawerNavigation(savedInstanceState);
 
         View actionFile = findViewById(R.id.decrypt_files);
@@ -64,6 +62,11 @@ public class DecryptActivity extends DrawerActivity {
                 startActivityForResult(clipboardDecrypt, 0);
             }
         });
+    }
+
+    @Override
+    protected int getLayoutResource() {
+        return R.layout.decrypt_activity;
     }
 
     @TargetApi(VERSION_CODES.HONEYCOMB)

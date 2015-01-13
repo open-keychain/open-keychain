@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013-2014 Dominik Schürmann <dominik@dominikschuermann.de>
+ * Copyright (C) 2015 Dominik Schürmann <dominik@dominikschuermann.de>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,25 +15,34 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.sufficientlysecure.keychain.remote.ui;
+package org.sufficientlysecure.keychain.ui;
 
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
+import android.support.v7.widget.Toolbar;
 
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.ui.DrawerActivity;
 
-public class AppsListActivity extends DrawerActivity {
+/**
+ * Sets action bar
+ */
+public abstract class BaseActivity extends ActionBarActivity {
+    private Toolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        activateDrawerNavigation(savedInstanceState);
+        setContentView(getLayoutResource());
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        if (toolbar != null) {
+            setSupportActionBar(toolbar);
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
     }
 
-    @Override
-    protected int getLayoutResource() {
-        return R.layout.api_apps_list_activity;
-    }
+    protected abstract int getLayoutResource();
 
+    protected void setActionBarIcon(int iconRes) {
+        toolbar.setNavigationIcon(iconRes);
+    }
 }

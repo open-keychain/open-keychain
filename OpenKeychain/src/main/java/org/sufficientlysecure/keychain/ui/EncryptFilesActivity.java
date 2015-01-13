@@ -309,8 +309,6 @@ public class EncryptFilesActivity extends EncryptActivity implements EncryptActi
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.encrypt_files_activity);
-
         // if called with an intent action, do not init drawer navigation
         if (ACTION_ENCRYPT_DATA.equals(getIntent().getAction())) {
             // lock drawer
@@ -325,6 +323,11 @@ public class EncryptFilesActivity extends EncryptActivity implements EncryptActi
         updateModeFragment();
 
         mUseArmor = Preferences.getPreferences(this).getDefaultAsciiArmor();
+    }
+
+    @Override
+    protected int getLayoutResource() {
+        return R.layout.encrypt_files_activity;
     }
 
     @Override
