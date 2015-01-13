@@ -326,8 +326,8 @@ public class EncryptFilesActivity extends EncryptActivity implements EncryptActi
     }
 
     @Override
-    protected int getLayoutResource() {
-        return R.layout.encrypt_files_activity;
+    protected void initLayout() {
+        setContentView(R.layout.encrypt_files_activity);
     }
 
     @Override

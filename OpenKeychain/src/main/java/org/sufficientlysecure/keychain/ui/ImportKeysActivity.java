@@ -102,8 +102,8 @@ public class ImportKeysActivity extends BaseActivity {
     }
 
     @Override
-    protected int getLayoutResource() {
-        return R.layout.import_keys_activity;
+    protected void initLayout() {
+        setContentView(R.layout.import_keys_activity);
     }
 
     protected void handleActions(Bundle savedInstanceState, Intent intent) {

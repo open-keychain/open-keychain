@@ -32,8 +32,8 @@ public class AppsListActivity extends DrawerActivity {
     }
 
     @Override
-    protected int getLayoutResource() {
-        return R.layout.api_apps_list_activity;
+    protected void initLayout() {
+        setContentView(R.layout.api_apps_list_activity);
     }
 
 }

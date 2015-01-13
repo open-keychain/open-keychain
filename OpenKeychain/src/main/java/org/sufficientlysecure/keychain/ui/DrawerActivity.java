@@ -96,9 +96,8 @@ public abstract class DrawerActivity extends BaseActivity {
         // enable ActionBar app icon to behave as action to toggle nav drawer
         // if the drawer is not locked
         if (!mIsDrawerLocked) {
-            // TODO
-//            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-//            getSupportActionBar().setHomeButtonEnabled(true);
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setHomeButtonEnabled(true);
         }
 
         // ActionBarDrawerToggle ties together the the proper interactions

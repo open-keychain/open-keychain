@@ -65,8 +65,8 @@ public class DecryptActivity extends DrawerActivity {
     }
 
     @Override
-    protected int getLayoutResource() {
-        return R.layout.decrypt_activity;
+    protected void initLayout() {
+        setContentView(R.layout.decrypt_activity);
     }
 
     @TargetApi(VERSION_CODES.HONEYCOMB)

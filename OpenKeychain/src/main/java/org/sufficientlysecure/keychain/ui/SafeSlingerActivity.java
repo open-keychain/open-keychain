@@ -95,8 +95,8 @@ public class SafeSlingerActivity extends BaseActivity {
     }
 
     @Override
-    protected int getLayoutResource() {
-        return R.layout.safe_slinger_activity;
+    protected void initLayout() {
+        setContentView(R.layout.safe_slinger_activity);
     }
 
     private void startExchange(long masterKeyId, int number) {

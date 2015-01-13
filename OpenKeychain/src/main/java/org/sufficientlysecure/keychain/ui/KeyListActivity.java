@@ -65,12 +65,12 @@ public class KeyListActivity extends DrawerActivity {
         mExportHelper = new ExportHelper(this);
 
         // now setup navigation drawer in DrawerActivity...
-//        activateDrawerNavigation(savedInstanceState);
+        activateDrawerNavigation(savedInstanceState);
     }
 
     @Override
-    protected int getLayoutResource() {
-        return R.layout.key_list_activity;
+    protected void initLayout() {
+        setContentView(R.layout.key_list_activity);
     }
 
     @Override

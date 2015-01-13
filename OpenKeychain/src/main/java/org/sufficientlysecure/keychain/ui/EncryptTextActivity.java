@@ -303,8 +303,8 @@ public class EncryptTextActivity extends EncryptActivity implements EncryptActiv
     }
 
     @Override
-    protected int getLayoutResource() {
-        return R.layout.encrypt_text_activity;
+    protected void initLayout() {
+        setContentView(R.layout.encrypt_text_activity);
     }
 
     @Override

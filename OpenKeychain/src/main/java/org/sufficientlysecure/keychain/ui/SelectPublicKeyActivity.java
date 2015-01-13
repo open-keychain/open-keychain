@@ -100,8 +100,8 @@ public class SelectPublicKeyActivity extends BaseActivity {
     }
 
     @Override
-    protected int getLayoutResource() {
-        return R.layout.select_public_key_activity;
+    protected void initLayout() {
+        setContentView(R.layout.select_public_key_activity);
     }
 
     @Override

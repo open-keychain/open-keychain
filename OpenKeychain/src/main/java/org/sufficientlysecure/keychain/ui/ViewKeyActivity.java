@@ -168,8 +168,8 @@ public class ViewKeyActivity extends BaseActivity implements
     }
 
     @Override
-    protected int getLayoutResource() {
-        return R.layout.view_key_activity;
+    protected void initLayout() {
+        setContentView(R.layout.view_key_activity);
     }
 
     private void initTabs(Uri dataUri) {

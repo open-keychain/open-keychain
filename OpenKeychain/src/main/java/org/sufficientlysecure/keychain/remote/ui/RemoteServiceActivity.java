@@ -39,6 +39,7 @@ import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.remote.AccountSettings;
 import org.sufficientlysecure.keychain.remote.AppSettings;
+import org.sufficientlysecure.keychain.ui.BaseActivity;
 import org.sufficientlysecure.keychain.ui.SelectPublicKeyFragment;
 import org.sufficientlysecure.keychain.ui.util.ActionBarHelper;
 import org.sufficientlysecure.keychain.ui.util.Notify;
@@ -46,7 +47,7 @@ import org.sufficientlysecure.keychain.util.Log;
 
 import java.util.ArrayList;
 
-public class RemoteServiceActivity extends ActionBarActivity {
+public class RemoteServiceActivity extends BaseActivity {
 
     public static final String ACTION_REGISTER = Constants.INTENT_PREFIX + "API_ACTIVITY_REGISTER";
     public static final String ACTION_CREATE_ACCOUNT = Constants.INTENT_PREFIX
@@ -96,6 +97,11 @@ public class RemoteServiceActivity extends ActionBarActivity {
         handleActions(getIntent(), savedInstanceState);
     }
 
+    @Override
+    protected void initLayout() {
+        // done in handleActions()
+    }
+
     protected void handleActions(Intent intent, Bundle savedInstanceState) {
 
         String action = intent.getAction();
@@ -108,6 +114,7 @@ public class RemoteServiceActivity extends ActionBarActivity {
             Log.d(Constants.TAG, "ACTION_REGISTER packageName: " + packageName);
 
             setContentView(R.layout.api_remote_register_app);
+            initToolbar();
 
             mAppSettingsFragment = (AppSettingsFragment) getSupportFragmentManager().findFragmentById(
                     R.id.api_app_settings_fragment);
@@ -145,6 +152,7 @@ public class RemoteServiceActivity extends ActionBarActivity {
             final String accName = extras.getString(EXTRA_ACC_NAME);
 
             setContentView(R.layout.api_remote_create_account);
+            initToolbar();
 
             mAccSettingsFragment = (AccountSettingsFragment) getSupportFragmentManager().findFragmentById(
                     R.id.api_account_settings_fragment);
@@ -248,6 +256,9 @@ public class RemoteServiceActivity extends ActionBarActivity {
                 }
             }
 
+            setContentView(R.layout.api_remote_select_pub_keys);
+            initToolbar();
+
             // Inflate a "Done"/"Cancel" custom action bar view
             ActionBarHelper.setTwoButtonView(getSupportActionBar(),
                     R.string.btn_okay, R.drawable.ic_action_done,
@@ -272,7 +283,6 @@ public class RemoteServiceActivity extends ActionBarActivity {
                     }
             );
 
-            setContentView(R.layout.api_remote_select_pub_keys);
 
             // set text on view
             TextView textView = (TextView) findViewById(R.id.api_select_pub_keys_text);
@@ -303,6 +313,9 @@ public class RemoteServiceActivity extends ActionBarActivity {
             Spannable redErrorMessage = new SpannableString(errorMessage);
             redErrorMessage.setSpan(new ForegroundColorSpan(Color.RED), 0, errorMessage.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 
+            setContentView(R.layout.api_remote_error_message);
+            initToolbar();
+
             // Inflate a "Done" custom action bar view
             ActionBarHelper.setOneButtonView(getSupportActionBar(),
                     R.string.btn_okay, R.drawable.ic_action_done,
@@ -315,8 +328,6 @@ public class RemoteServiceActivity extends ActionBarActivity {
                         }
                     }
             );
-
-            setContentView(R.layout.api_remote_error_message);
 
             // set text on view
             TextView textView = (TextView) findViewById(R.id.api_app_error_message_text);

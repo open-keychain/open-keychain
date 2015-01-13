@@ -32,15 +32,19 @@ public abstract class BaseActivity extends ActionBarActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(getLayoutResource());
+        initLayout();
+        initToolbar();
+    }
+
+    protected abstract void initLayout();
+
+    protected void initToolbar() {
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         if (toolbar != null) {
             setSupportActionBar(toolbar);
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
     }
-
-    protected abstract int getLayoutResource();
 
     protected void setActionBarIcon(int iconRes) {
         toolbar.setNavigationIcon(iconRes);

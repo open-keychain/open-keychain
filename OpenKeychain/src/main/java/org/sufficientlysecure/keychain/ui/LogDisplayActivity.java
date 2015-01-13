@@ -45,8 +45,8 @@ public class LogDisplayActivity extends BaseActivity {
     }
 
     @Override
-    protected int getLayoutResource() {
-        return R.layout.log_display_activity;
+    protected void initLayout() {
+        setContentView(R.layout.log_display_activity);
     }
 
 }

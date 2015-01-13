@@ -33,8 +33,8 @@ public class CertifyKeyActivity extends BaseActivity {
     public static final String EXTRA_CERTIFY_KEY_ID = "certify_key_id";
 
     @Override
-    protected int getLayoutResource() {
-        return R.layout.certify_key_activity;
+    protected void initLayout() {
+        setContentView(R.layout.certify_key_activity);
     }
 
 }

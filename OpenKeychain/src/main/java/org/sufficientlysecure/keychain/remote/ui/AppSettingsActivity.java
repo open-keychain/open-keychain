@@ -33,9 +33,10 @@ import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.remote.AppSettings;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
+import org.sufficientlysecure.keychain.ui.BaseActivity;
 import org.sufficientlysecure.keychain.util.Log;
 
-public class AppSettingsActivity extends ActionBarActivity {
+public class AppSettingsActivity extends BaseActivity {
     private Uri mAppUri;
 
     private AppSettingsFragment mSettingsFragment;
@@ -49,12 +50,11 @@ public class AppSettingsActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
 
         // let the actionbar look like Android's contact app
-        ActionBar actionBar = getSupportActionBar();
-        actionBar.setDisplayHomeAsUpEnabled(true);
-        actionBar.setIcon(android.R.color.transparent);
-        actionBar.setHomeButtonEnabled(true);
+//        ActionBar actionBar = getSupportActionBar();
+//        actionBar.setDisplayHomeAsUpEnabled(true);
+//        actionBar.setIcon(android.R.color.transparent);
+//        actionBar.setHomeButtonEnabled(true);
 
-        setContentView(R.layout.api_app_settings_activity);
 
         mSettingsFragment = (AppSettingsFragment) getSupportFragmentManager().findFragmentById(
                 R.id.api_app_settings_fragment);
@@ -69,6 +69,11 @@ public class AppSettingsActivity extends ActionBarActivity {
             Log.d(Constants.TAG, "uri: " + mAppUri);
             loadData(savedInstanceState, mAppUri);
         }
+    }
+
+    @Override
+    protected void initLayout() {
+        setContentView(R.layout.api_app_settings_activity);
     }
 
     @Override

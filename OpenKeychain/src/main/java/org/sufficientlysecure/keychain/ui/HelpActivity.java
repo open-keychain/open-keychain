@@ -98,7 +98,7 @@ public class HelpActivity extends BaseActivity {
     }
 
     @Override
-    protected int getLayoutResource() {
-        return R.layout.help_activity;
+    protected void initLayout() {
+        setContentView(R.layout.help_activity);
     }
 }

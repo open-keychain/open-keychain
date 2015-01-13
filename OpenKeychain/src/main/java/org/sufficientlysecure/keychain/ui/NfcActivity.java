@@ -122,8 +122,8 @@ public class NfcActivity extends BaseActivity {
     }
 
     @Override
-    protected int getLayoutResource() {
-        return R.layout.nfc_activity;
+    protected void initLayout() {
+        setContentView(R.layout.nfc_activity);
     }
 
     /**

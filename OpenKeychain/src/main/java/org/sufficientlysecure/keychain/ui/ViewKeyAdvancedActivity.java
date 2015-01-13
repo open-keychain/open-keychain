@@ -68,10 +68,9 @@ public class ViewKeyAdvancedActivity extends BaseActivity {
     }
 
     @Override
-    protected int getLayoutResource() {
-        return R.layout.view_key_advanced_activity;
+    protected void initLayout() {
+        setContentView(R.layout.view_key_advanced_activity);
     }
-
 
     private void startFragment(Bundle savedInstanceState, Uri dataUri) {
         // However, if we're being restored from a previous state,

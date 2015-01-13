@@ -111,8 +111,8 @@ public class ViewCertActivity extends BaseActivity
     }
 
     @Override
-    protected int getLayoutResource() {
-        return R.layout.view_cert_activity;
+    protected void initLayout() {
+        setContentView(R.layout.view_cert_activity);
     }
 
     @Override

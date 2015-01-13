@@ -27,6 +27,7 @@ import android.view.View;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.ui.BaseActivity;
 import org.sufficientlysecure.keychain.ui.util.ActionBarHelper;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.remote.AccountSettings;
@@ -35,7 +36,7 @@ import org.sufficientlysecure.keychain.operations.results.OperationResult.LogTyp
 import org.sufficientlysecure.keychain.operations.results.SingletonResult;
 import org.sufficientlysecure.keychain.util.Log;
 
-public class AccountSettingsActivity extends ActionBarActivity {
+public class AccountSettingsActivity extends BaseActivity {
     private Uri mAccountUri;
 
     private AccountSettingsFragment mAccountSettingsFragment;
@@ -55,7 +56,6 @@ public class AccountSettingsActivity extends ActionBarActivity {
                     }
                 });
 
-        setContentView(R.layout.api_account_settings_activity);
 
         mAccountSettingsFragment = (AccountSettingsFragment) getSupportFragmentManager().findFragmentById(
                 R.id.api_account_settings_fragment);
@@ -70,6 +70,11 @@ public class AccountSettingsActivity extends ActionBarActivity {
             Log.d(Constants.TAG, "uri: " + mAccountUri);
             loadData(mAccountUri);
         }
+    }
+
+    @Override
+    protected void initLayout() {
+        setContentView(R.layout.api_account_settings_activity);
     }
 
     @Override

@@ -85,8 +85,8 @@ public class UploadKeyActivity extends BaseActivity {
     }
 
     @Override
-    protected int getLayoutResource() {
-        return R.layout.upload_key_activity;
+    protected void initLayout() {
+        setContentView(R.layout.upload_key_activity);
     }
 
     private void uploadKey() {

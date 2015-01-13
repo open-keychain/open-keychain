@@ -73,8 +73,8 @@ public class FirstTimeActivity extends BaseActivity {
     }
 
     @Override
-    protected int getLayoutResource() {
-        return R.layout.first_time_activity;
+    protected void initLayout() {
+        setContentView(R.layout.first_time_activity);
     }
 
     @Override

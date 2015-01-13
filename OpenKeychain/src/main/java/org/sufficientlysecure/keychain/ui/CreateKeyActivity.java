@@ -47,8 +47,8 @@ public class CreateKeyActivity extends BaseActivity {
     }
 
     @Override
-    protected int getLayoutResource() {
-        return R.layout.create_key_activity;
+    protected void initLayout() {
+        setContentView(R.layout.create_key_activity);
     }
 
     public void loadFragment(Bundle savedInstanceState, Fragment fragment, int action) {

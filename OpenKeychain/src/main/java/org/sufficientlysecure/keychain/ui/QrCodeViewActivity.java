@@ -107,8 +107,8 @@ public class QrCodeViewActivity extends BaseActivity {
     }
 
     @Override
-    protected int getLayoutResource() {
-        return R.layout.qr_code_activity;
+    protected void initLayout() {
+        setContentView(R.layout.qr_code_activity);
     }
 
     @Override

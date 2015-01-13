@@ -48,8 +48,8 @@ public class EditKeyActivity extends BaseActivity {
     }
 
     @Override
-    protected int getLayoutResource() {
-        return R.layout.edit_key_activity;
+    protected void initLayout() {
+        setContentView(R.layout.edit_key_activity);
     }
 
     private void loadFragment(Bundle savedInstanceState, Uri dataUri, SaveKeyringParcel saveKeyringParcel) {
