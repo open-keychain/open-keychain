@@ -19,7 +19,6 @@ package org.sufficientlysecure.keychain.ui.adapter;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.graphics.PorterDuff;
 import android.graphics.Typeface;
 import android.support.v4.widget.CursorAdapter;
 import android.view.LayoutInflater;
@@ -32,10 +31,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.ui.util.FormattingUtils;
+import org.sufficientlysecure.keychain.provider.KeychainContract.UserPackets;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.provider.KeychainContract.Certs;
-import org.sufficientlysecure.keychain.provider.KeychainContract.UserIds;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 
@@ -47,12 +45,12 @@ public class UserIdsAdapter extends CursorAdapter implements AdapterView.OnItemC
     private SaveKeyringParcel mSaveKeyringParcel;
 
     public static final String[] USER_IDS_PROJECTION = new String[]{
-            UserIds._ID,
-            UserIds.USER_ID,
-            UserIds.RANK,
-            UserIds.VERIFIED,
-            UserIds.IS_PRIMARY,
-            UserIds.IS_REVOKED
+            UserPackets._ID,
+            UserPackets.USER_ID,
+            UserPackets.RANK,
+            UserPackets.VERIFIED,
+            UserPackets.IS_PRIMARY,
+            UserPackets.IS_REVOKED
     };
     private static final int INDEX_ID = 0;
     private static final int INDEX_USER_ID = 1;

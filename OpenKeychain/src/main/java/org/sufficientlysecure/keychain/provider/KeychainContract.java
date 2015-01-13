@@ -51,9 +51,11 @@ public class KeychainContract {
         String EXPIRY = "expiry";
     }
 
-    interface UserIdsColumns {
+    interface UserPacketsColumns {
         String MASTER_KEY_ID = "master_key_id"; // foreign key to key_rings._ID
+        String TYPE = "type"; // not a database id
         String USER_ID = "user_id"; // not a database id
+        String ATTRIBUTE_DATA = "attribute_data"; // not a database id
         String RANK = "rank"; // ONLY used for sorting! no key, no nothing!
         String IS_PRIMARY = "is_primary";
         String IS_REVOKED = "is_revoked";
@@ -105,7 +107,7 @@ public class KeychainContract {
     public static final String BASE_API_APPS = "api_apps";
     public static final String PATH_ACCOUNTS = "accounts";
 
-    public static class KeyRings implements BaseColumns, KeysColumns, UserIdsColumns {
+    public static class KeyRings implements BaseColumns, KeysColumns, UserPacketsColumns {
         public static final String MASTER_KEY_ID = KeysColumns.MASTER_KEY_ID;
         public static final String IS_REVOKED = KeysColumns.IS_REVOKED;
         public static final String VERIFIED = CertsColumns.VERIFIED;
@@ -225,7 +227,7 @@ public class KeychainContract {
 
     }
 
-    public static class UserIds implements UserIdsColumns, BaseColumns {
+    public static class UserPackets implements UserPacketsColumns, BaseColumns {
         public static final String VERIFIED = "verified";
         public static final Uri CONTENT_URI = BASE_CONTENT_URI_INTERNAL.buildUpon()
                 .appendPath(BASE_KEY_RINGS).build();
@@ -304,7 +306,7 @@ public class KeychainContract {
     }
 
     public static class Certs implements CertsColumns, BaseColumns {
-        public static final String USER_ID = UserIdsColumns.USER_ID;
+        public static final String USER_ID = UserPacketsColumns.USER_ID;
         public static final String SIGNER_UID = "signer_user_id";
 
         public static final int UNVERIFIED = 0;
