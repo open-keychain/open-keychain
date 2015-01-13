@@ -1018,8 +1018,8 @@ public class UncachedKeyRing {
     /** This operation merges information from a different keyring, returning a combined
      * UncachedKeyRing.
      *
-     * The combined keyring contains the subkeys and user ids of both input keyrings, but it does
-     * not necessarily have the canonicalized property.
+     * The combined keyring contains the subkeys, user ids and user attributes of both input
+     * keyrings, but it does not necessarily have the canonicalized property.
      *
      * @param other The UncachedKeyRing to merge. Must not be empty, and of the same masterKeyId
      * @return A consolidated UncachedKeyRing with the data of both input keyrings. Same type as
@@ -1139,6 +1139,32 @@ public class UncachedKeyRing {
                         modified = PGPPublicKey.addCertification(modified, rawUserId, cert);
                     }
                 }
+
+                // Copy over all user attribute certificates
+                for (PGPUserAttributeSubpacketVector vector :
+                        new IterableIterator<PGPUserAttributeSubpacketVector>(key.getUserAttributes())) {
+                    @SuppressWarnings("unchecked")
+                    Iterator<PGPSignature> signaturesIt = key.getSignaturesForUserAttribute(vector);
+                    // no signatures for this user attribute attribute, skip it
+                    if (signaturesIt == null) {
+                        continue;
+                    }
+                    for (PGPSignature cert : new IterableIterator<PGPSignature>(signaturesIt)) {
+                        // Don't merge foreign stuff into secret keys
+                        if (cert.getKeyID() != masterKeyId && isSecret()) {
+                            continue;
+                        }
+                        byte[] encoded = cert.getEncoded();
+                        // Known cert, skip it
+                        if (certs.contains(encoded)) {
+                            continue;
+                        }
+                        newCerts += 1;
+                        certs.add(encoded);
+                        modified = PGPPublicKey.addCertification(modified, vector, cert);
+                    }
+                }
+
                 // If anything changed, save the updated (sub)key
                 if (modified != resultKey) {
                     result = replacePublicKey(result, modified);
