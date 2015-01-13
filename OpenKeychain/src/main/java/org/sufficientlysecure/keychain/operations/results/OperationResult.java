@@ -343,6 +343,18 @@ public abstract class OperationResult implements Parcelable {
         MSG_IP_UID_REORDER(LogLevel.DEBUG, R.string.msg_ip_uid_reorder),
         MSG_IP_UID_PROCESSING (LogLevel.DEBUG, R.string.msg_ip_uid_processing),
         MSG_IP_UID_REVOKED (LogLevel.DEBUG, R.string.msg_ip_uid_revoked),
+        MSG_IP_UAT_CLASSIFYING (LogLevel.DEBUG, R.string.msg_ip_uat_classifying),
+        MSG_IP_UAT_PROCESSING_IMAGE (LogLevel.DEBUG, R.string.msg_ip_uat_processing_image),
+        MSG_IP_UAT_PROCESSING_UNKNOWN (LogLevel.DEBUG, R.string.msg_ip_uat_processing_unknown),
+        MSG_IP_UAT_REVOKED (LogLevel.DEBUG, R.string.msg_ip_uat_revoked),
+        MSG_IP_UAT_CERT_BAD (LogLevel.WARN, R.string.msg_ip_uat_cert_bad),
+        MSG_IP_UAT_CERT_OLD (LogLevel.DEBUG, R.string.msg_ip_uat_cert_old),
+        MSG_IP_UAT_CERT_NONREVOKE (LogLevel.DEBUG, R.string.msg_ip_uat_cert_nonrevoke),
+        MSG_IP_UAT_CERT_NEW (LogLevel.DEBUG, R.string.msg_ip_uat_cert_new),
+        MSG_IP_UAT_CERT_ERROR (LogLevel.WARN, R.string.msg_ip_uat_cert_error),
+        MSG_IP_UAT_CERTS_UNKNOWN (LogLevel.DEBUG, R.plurals.msg_ip_uat_certs_unknown),
+        MSG_IP_UAT_CERT_GOOD_REVOKE (LogLevel.DEBUG, R.string.msg_ip_uat_cert_good_revoke),
+        MSG_IP_UAT_CERT_GOOD (LogLevel.DEBUG, R.string.msg_ip_uat_cert_good),
 
         // import secret
         MSG_IS(LogLevel.START, R.string.msg_is),

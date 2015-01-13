@@ -34,9 +34,8 @@ import java.io.Serializable;
 
 public class WrappedUserAttribute implements Serializable {
 
-    public static final int UAT_UNKNOWN = 0;
+    public static final int UAT_NONE = 0;
     public static final int UAT_IMAGE = UserAttributeSubpacketTags.IMAGE_ATTRIBUTE;
-    public static final int UAT_LINKED_ID = 100;
 
     private PGPUserAttributeSubpacketVector mVector;
 
@@ -49,8 +48,9 @@ public class WrappedUserAttribute implements Serializable {
     }
 
     public int getType() {
-        if (mVector.getSubpacket(UserAttributeSubpacketTags.IMAGE_ATTRIBUTE) != null) {
-            return UAT_IMAGE;
+        UserAttributeSubpacket[] subpackets = mVector.toSubpacketArray();
+        if (subpackets.length > 0) {
+            return subpackets[0].getType();
         }
         return 0;
     }
@@ -62,6 +62,20 @@ public class WrappedUserAttribute implements Serializable {
 
         return new WrappedUserAttribute(vector);
 
+    }
+
+    public byte[] getEncoded () throws IOException {
+        UserAttributeSubpacket[] subpackets = mVector.toSubpacketArray();
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        for (UserAttributeSubpacket subpacket : subpackets) {
+            subpacket.encode(out);
+        }
+        return out.toByteArray();
+    }
+
+    public static WrappedUserAttribute fromData (byte[] data) {
+        // TODO
+        return null;
     }
 
     /** Writes this object to an ObjectOutputStream. */
