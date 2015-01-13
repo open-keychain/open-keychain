@@ -33,6 +33,7 @@ import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.affirmation.LinkedIdentity;
 import org.sufficientlysecure.keychain.pgp.affirmation.resources.GenericHttpsResource;
 import org.sufficientlysecure.keychain.pgp.affirmation.resources.TwitterResource;
+import org.sufficientlysecure.keychain.ui.CreateKeyActivity;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 
 import java.io.IOException;

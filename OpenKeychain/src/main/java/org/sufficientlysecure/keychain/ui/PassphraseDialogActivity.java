@@ -214,6 +214,9 @@ public class PassphraseDialogActivity extends FragmentActivity {
                         case DIVERT_TO_CARD:
                             message = getString(R.string.yubikey_pin_for, userId);
                             break;
+                        // special case: empty passphrase just returns the empty passphrase
+                        case PASSPHRASE_EMPTY:
+                            finishCaching("");
                         default:
                             message = "This should not happen!";
                             break;

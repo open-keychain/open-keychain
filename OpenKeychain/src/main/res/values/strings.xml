@@ -1162,5 +1162,6 @@
     <string name="linked_verify_success">Verification successful!</string>
     <string name="linked_verify_error">Veriication error!</string>
     <string name="linked_verify_pending">Not yet verified</string>
+    <string name="linked_need_verify">The resource needs to be verified before you can proceed!</string>
 
 </resources>

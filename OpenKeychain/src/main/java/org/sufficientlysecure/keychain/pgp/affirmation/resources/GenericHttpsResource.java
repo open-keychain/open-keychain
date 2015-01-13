@@ -9,6 +9,7 @@ import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
 import org.sufficientlysecure.keychain.pgp.affirmation.AffirmationResource;
+import org.sufficientlysecure.keychain.pgp.affirmation.LinkedIdentity;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.Log;
 
@@ -38,13 +39,13 @@ public class GenericHttpsResource extends AffirmationResource {
     @Override
     protected String fetchResource (OperationLog log, int indent) {
 
-        log.add(LogType.MSG_LV_FETCH, indent, mUri.toString());
+        log.add(LogType.MSG_LV_FETCH, indent, mSubUri.toString());
         indent += 1;
 
         try {
 
             HttpsURLConnection conn = null;
-            URL url = mUri.toURL();
+            URL url = mSubUri.toURL();
             int status = 0;
             int redirects = 0;
 

@@ -1,12 +1,13 @@
 package org.sufficientlysecure.keychain.pgp.affirmation;
 
 import org.spongycastle.bcpg.UserAttributeSubpacket;
+import org.spongycastle.openpgp.PGPUserAttributeSubpacketVector;
 import org.spongycastle.util.Strings;
 import org.spongycastle.util.encoders.Hex;
 import org.sufficientlysecure.keychain.Constants;
+import org.sufficientlysecure.keychain.pgp.WrappedUserAttribute;
 import org.sufficientlysecure.keychain.util.Log;
 
-import java.io.Serializable;
 import java.net.URI;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -15,7 +16,7 @@ import java.util.Iterator;
 import java.util.Map.Entry;
 import java.util.Set;
 
-public class LinkedIdentity implements Serializable {
+public class LinkedIdentity {
 
     protected byte[] mData;
     public final String mNonce;
@@ -41,7 +42,7 @@ public class LinkedIdentity implements Serializable {
         this(null, nonce, flags, params, subUri);
     }
 
-    public byte[] encode() {
+    public byte[] getEncoded() {
         if (mData != null) {
             return mData;
         }
@@ -79,11 +80,14 @@ public class LinkedIdentity implements Serializable {
         b.append(mSubUri);
 
         byte[] nonceBytes = Hex.decode(mNonce);
+        if (nonceBytes.length != 12) {
+            throw new AssertionError("nonce must be 12 bytes");
+        }
         byte[] data = Strings.toUTF8ByteArray(b.toString());
 
         byte[] result = new byte[data.length+12];
         System.arraycopy(nonceBytes, 0, result, 0, 12);
-        System.arraycopy(data, 0, result, 12, result.length);
+        System.arraycopy(data, 0, result, 12, data.length);
 
         return result;
     }
@@ -91,7 +95,7 @@ public class LinkedIdentity implements Serializable {
     /** This method parses an affirmation from a UserAttributeSubpacket, or returns null if the
      * subpacket can not be parsed as a valid affirmation.
      */
-    public static LinkedIdentity parseAffirmation(UserAttributeSubpacket subpacket) {
+    static LinkedIdentity parseAffirmation(UserAttributeSubpacket subpacket) {
         if (subpacket.getType() != 100) {
             return null;
         }
@@ -146,6 +150,14 @@ public class LinkedIdentity implements Serializable {
 
         return new LinkedIdentity(nonce, flags, params, subUri);
 
+    }
+
+    public static LinkedIdentity fromResource (AffirmationResource res, String nonce) {
+        return new LinkedIdentity(nonce, res.getFlags(), res.getParams(), res.getSubUri());
+    }
+
+    public WrappedUserAttribute toUserAttribute () {
+        return WrappedUserAttribute.fromSubpacket(WrappedUserAttribute.UAT_LINKED_ID, getEncoded());
     }
 
     public static String generateNonce() {

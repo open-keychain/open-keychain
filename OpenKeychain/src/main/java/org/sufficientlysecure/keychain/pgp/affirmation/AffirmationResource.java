@@ -13,13 +13,14 @@ import org.sufficientlysecure.keychain.util.Log;
 
 import java.net.URI;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public abstract class AffirmationResource {
 
-    protected final URI mUri;
+    protected final URI mSubUri;
     protected final Set<String> mFlags;
     protected final HashMap<String,String> mParams;
 
@@ -29,7 +30,19 @@ public abstract class AffirmationResource {
     protected AffirmationResource(Set<String> flags, HashMap<String,String> params, URI uri) {
         mFlags = flags;
         mParams = params;
-        mUri = uri;
+        mSubUri = uri;
+    }
+
+    public Set<String> getFlags () {
+        return new HashSet<String>(mFlags);
+    }
+
+    public HashMap<String,String> getParams () {
+        return new HashMap<String,String>(mParams);
+    }
+
+    public URI getSubUri () {
+        return mSubUri;
     }
 
     public static String generate (Context context, byte[] fingerprint, String nonce) {

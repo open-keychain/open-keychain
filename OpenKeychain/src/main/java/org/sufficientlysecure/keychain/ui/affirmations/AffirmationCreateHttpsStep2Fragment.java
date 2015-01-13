@@ -17,6 +17,8 @@
 
 package org.sufficientlysecure.keychain.ui.affirmations;
 
+import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.PorterDuff;
 import android.net.Uri;
@@ -24,6 +26,8 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Message;
+import android.os.Messenger;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -36,7 +40,16 @@ import android.widget.TextView;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.results.LinkedVerifyResult;
+import org.sufficientlysecure.keychain.operations.results.OperationResult;
+import org.sufficientlysecure.keychain.pgp.WrappedUserAttribute;
+import org.sufficientlysecure.keychain.pgp.affirmation.LinkedIdentity;
 import org.sufficientlysecure.keychain.pgp.affirmation.resources.GenericHttpsResource;
+import org.sufficientlysecure.keychain.service.KeychainIntentService;
+import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
+import org.sufficientlysecure.keychain.service.PassphraseCacheService;
+import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
+import org.sufficientlysecure.keychain.ui.EditKeyActivity;
+import org.sufficientlysecure.keychain.ui.PassphraseDialogActivity;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.ui.util.Notify.Style;
 import org.sufficientlysecure.keychain.util.FileHelper;
@@ -50,6 +63,7 @@ import java.net.URISyntaxException;
 public class AffirmationCreateHttpsStep2Fragment extends Fragment {
 
     private static final int REQUEST_CODE_OUTPUT = 0x00007007;
+    private static final int REQUEST_CODE_PASSPHRASE = 0x00007008;
 
     public static final String URI = "uri", NONCE = "nonce", TEXT = "text";
 
@@ -62,6 +76,9 @@ public class AffirmationCreateHttpsStep2Fragment extends Fragment {
 
     String mResourceUri;
     String mResourceNonce, mResourceString;
+
+    // This is a resource, set AFTER it has been verified
+    GenericHttpsResource mVerifiedResource = null;
 
     /**
      * Creates new instance of this fragment
@@ -91,11 +108,7 @@ public class AffirmationCreateHttpsStep2Fragment extends Fragment {
         view.findViewById(R.id.next_button).setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                // AffirmationCreateHttpsStep2Fragment frag =
-                        // AffirmationCreateHttpsStep2Fragment.newInstance();
-
-                // mAffirmationWizard.loadFragment(null, frag, AffirmationWizard.FRAG_ACTION_TO_RIGHT);
+                startCertify();
             }
         });
 
@@ -149,7 +162,7 @@ public class AffirmationCreateHttpsStep2Fragment extends Fragment {
 
     public void setVerifyProgress(boolean on, Boolean success) {
         mVerifyProgress.setVisibility(on ? View.VISIBLE : View.GONE);
-        mVerifyImage.setVisibility(on ?  View.GONE : View.VISIBLE);
+        mVerifyImage.setVisibility(on ? View.GONE : View.VISIBLE);
         if (success == null) {
             mVerifyStatus.setText(R.string.linked_verifying);
             mVerifyImage.setImageResource(R.drawable.status_signature_unverified_cutout);
@@ -168,38 +181,7 @@ public class AffirmationCreateHttpsStep2Fragment extends Fragment {
         }
     }
 
-    public void proofVerify() {
-        setVerifyProgress(true, null);
-
-        try {
-            final GenericHttpsResource resource = GenericHttpsResource.createNew(new URI(mResourceUri));
-
-            new AsyncTask<Void,Void,LinkedVerifyResult>() {
-
-                @Override
-                protected LinkedVerifyResult doInBackground(Void... params) {
-                    return resource.verify(mAffirmationWizard.mFingerprint, mResourceNonce);
-                }
-
-                @Override
-                protected void onPostExecute(LinkedVerifyResult result) {
-                    super.onPostExecute(result);
-                    if (result.success()) {
-                        setVerifyProgress(false, true);
-                    } else {
-                        setVerifyProgress(false, false);
-                        // on error, show error message
-                        result.createNotify(getActivity()).show();
-                    }
-                }
-            }.execute();
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
-        }
-
-    }
-
-    private void proofSend() {
+    private void proofSend () {
         Intent sendIntent = new Intent();
         sendIntent.setAction(Intent.ACTION_SEND);
         sendIntent.putExtra(Intent.EXTRA_TEXT, mResourceString);
@@ -239,15 +221,145 @@ public class AffirmationCreateHttpsStep2Fragment extends Fragment {
         }
     }
 
+    public void proofVerify() {
+        setVerifyProgress(true, null);
+
+        try {
+            final GenericHttpsResource resource = GenericHttpsResource.createNew(new URI(mResourceUri));
+
+            new AsyncTask<Void,Void,LinkedVerifyResult>() {
+
+                @Override
+                protected LinkedVerifyResult doInBackground(Void... params) {
+                    return resource.verify(mAffirmationWizard.mFingerprint, mResourceNonce);
+                }
+
+                @Override
+                protected void onPostExecute(LinkedVerifyResult result) {
+                    super.onPostExecute(result);
+                    if (result.success()) {
+                        setVerifyProgress(false, true);
+                        mVerifiedResource = resource;
+                    } else {
+                        setVerifyProgress(false, false);
+                        // on error, show error message
+                        result.createNotify(getActivity()).show();
+                    }
+                }
+            }.execute();
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    public void startCertify() {
+
+        if (mVerifiedResource == null) {
+            Notify.showNotify(getActivity(), R.string.linked_need_verify, Notify.Style.ERROR);
+            return;
+        }
+
+        Intent intent = new Intent(getActivity(), PassphraseDialogActivity.class);
+        intent.putExtra(PassphraseDialogActivity.EXTRA_SUBKEY_ID, mAffirmationWizard.mMasterKeyId);
+        startActivityForResult(intent, REQUEST_CODE_PASSPHRASE);
+
+    }
+
+    public void certifyLinkedIdentity (String passphrase) {
+        KeychainIntentServiceHandler saveHandler = new KeychainIntentServiceHandler(
+                getActivity(),
+                getString(R.string.progress_saving),
+                ProgressDialog.STYLE_HORIZONTAL,
+                true) {
+            public void handleMessage(Message message) {
+                // handle messages by standard KeychainIntentServiceHandler first
+                super.handleMessage(message);
+
+                if (message.arg1 == KeychainIntentServiceHandler.MESSAGE_OKAY) {
+
+                    // get returned data bundle
+                    Bundle returnData = message.getData();
+                    if (returnData == null) {
+                        return;
+                    }
+                    final OperationResult result =
+                            returnData.getParcelable(OperationResult.EXTRA_RESULT);
+                    if (result == null) {
+                        return;
+                    }
+
+                    // if bad -> display here!
+                    if (!result.success()) {
+                        result.createNotify(getActivity()).show();
+                        return;
+                    }
+
+                    result.createNotify(getActivity()).show();
+
+                    // if good -> finish, return result to showkey and display there!
+                    // Intent intent = new Intent();
+                    // intent.putExtra(OperationResult.EXTRA_RESULT, result);
+                    // getActivity().setResult(EditKeyActivity.RESULT_OK, intent);
+
+                    // AffirmationCreateHttpsStep3Fragment frag =
+                    // AffirmationCreateHttpsStep3Fragment.newInstance(
+                    // mResourceUri, mResourceNonce, mResourceString);
+
+                    // mAffirmationWizard.loadFragment(null, frag, AffirmationWizard.FRAG_ACTION_TO_RIGHT);
+
+                }
+            }
+        };
+
+        SaveKeyringParcel skp =
+                new SaveKeyringParcel(mAffirmationWizard.mMasterKeyId, mAffirmationWizard.mFingerprint);
+
+        WrappedUserAttribute ua =
+                LinkedIdentity.fromResource(mVerifiedResource, mResourceNonce).toUserAttribute();
+
+        skp.mAddUserAttribute.add(ua);
+
+        // Send all information needed to service to import key in other thread
+        Intent intent = new Intent(getActivity(), KeychainIntentService.class);
+        intent.setAction(KeychainIntentService.ACTION_EDIT_KEYRING);
+
+        // fill values for this action
+        Bundle data = new Bundle();
+        data.putString(KeychainIntentService.EDIT_KEYRING_PASSPHRASE, passphrase);
+        data.putParcelable(KeychainIntentService.EDIT_KEYRING_PARCEL, skp);
+        intent.putExtra(KeychainIntentService.EXTRA_DATA, data);
+
+        // Create a new Messenger for the communication back
+        Messenger messenger = new Messenger(saveHandler);
+        intent.putExtra(KeychainIntentService.EXTRA_MESSENGER, messenger);
+
+        // show progress dialog
+        saveHandler.showProgressDialog(getActivity());
+
+        // start service with intent
+        getActivity().startService(intent);
+
+    }
+
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
+            // For saving a file
             case REQUEST_CODE_OUTPUT:
                 if (data == null) {
                     return;
                 }
                 Uri uri = data.getData();
                 saveFile(uri);
+                break;
+            case REQUEST_CODE_PASSPHRASE:
+                if (resultCode == Activity.RESULT_OK && data != null) {
+                    String passphrase =
+                            data.getStringExtra(PassphraseDialogActivity.MESSAGE_DATA_PASSPHRASE);
+                    certifyLinkedIdentity(passphrase);
+                }
                 break;
         }
         super.onActivityResult(requestCode, resultCode, data);
