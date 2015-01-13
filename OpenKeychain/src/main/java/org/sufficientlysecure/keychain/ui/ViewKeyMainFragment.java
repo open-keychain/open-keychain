@@ -37,10 +37,10 @@ import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.compatibility.DialogFragmentWorkaround;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
+import org.sufficientlysecure.keychain.provider.KeychainContract.UserPackets;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
-import org.sufficientlysecure.keychain.provider.KeychainContract.UserIds;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.provider.ProviderHelper.NotFoundException;
 import org.sufficientlysecure.keychain.ui.adapter.UserIdsAdapter;
@@ -199,7 +199,7 @@ public class ViewKeyMainFragment extends LoaderFragment implements
                 return new CursorLoader(getActivity(), baseUri, UNIFIED_PROJECTION, null, null, null);
             }
             case LOADER_ID_USER_IDS: {
-                Uri baseUri = UserIds.buildUserIdsUri(mDataUri);
+                Uri baseUri = UserPackets.buildUserIdsUri(mDataUri);
                 return new CursorLoader(getActivity(), baseUri,
                         UserIdsAdapter.USER_IDS_PROJECTION, null, null, null);
             }

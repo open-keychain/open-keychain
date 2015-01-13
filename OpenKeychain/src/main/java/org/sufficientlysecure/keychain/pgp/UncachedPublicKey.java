@@ -24,6 +24,7 @@ import org.spongycastle.bcpg.sig.KeyFlags;
 import org.spongycastle.openpgp.PGPPublicKey;
 import org.spongycastle.openpgp.PGPSignature;
 import org.spongycastle.openpgp.PGPSignatureSubpacketVector;
+import org.spongycastle.openpgp.PGPUserAttributeSubpacketVector;
 import org.spongycastle.openpgp.operator.jcajce.JcaPGPContentVerifierBuilderProvider;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.util.IterableIterator;
@@ -215,6 +216,15 @@ public class UncachedPublicKey {
         return userIds;
     }
 
+    public ArrayList<WrappedUserAttribute> getUnorderedUserAttributes() {
+        ArrayList<WrappedUserAttribute> userAttributes = new ArrayList<WrappedUserAttribute>();
+        for (PGPUserAttributeSubpacketVector userAttribute :
+                new IterableIterator<PGPUserAttributeSubpacketVector>(mPublicKey.getUserAttributes())) {
+            userAttributes.add(new WrappedUserAttribute(userAttribute));
+        }
+        return userAttributes;
+    }
+
     public boolean isElGamalEncrypt() {
         return getAlgorithm() == PGPPublicKey.ELGAMAL_ENCRYPT;
     }
@@ -270,6 +280,25 @@ public class UncachedPublicKey {
         }
     }
 
+    public Iterator<WrappedSignature> getSignaturesForUserAttribute(WrappedUserAttribute attribute) {
+        final Iterator<PGPSignature> it = mPublicKey.getSignaturesForUserAttribute(attribute.getVector());
+        if (it != null) {
+            return new Iterator<WrappedSignature>() {
+                public void remove() {
+                    it.remove();
+                }
+                public WrappedSignature next() {
+                    return new WrappedSignature(it.next());
+                }
+                public boolean hasNext() {
+                    return it.hasNext();
+                }
+            };
+        } else {
+            return null;
+        }
+    }
+
     /** Get all key usage flags.
      * If at least one key flag subpacket is present return these. If no
      * subpacket is present it returns null.
@@ -299,4 +328,5 @@ public class UncachedPublicKey {
         }
         return mCacheUsage;
     }
+
 }

@@ -31,6 +31,8 @@ import android.support.v4.util.LongSparseArray;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.results.ImportKeyResult;
+import org.sufficientlysecure.keychain.pgp.WrappedUserAttribute;
+import org.sufficientlysecure.keychain.provider.KeychainContract.UserPackets;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.ParcelableFileCache.IteratorWithSize;
 import org.sufficientlysecure.keychain.util.Preferences;
@@ -53,7 +55,6 @@ import org.sufficientlysecure.keychain.provider.KeychainContract.Certs;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRingData;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.KeychainContract.Keys;
-import org.sufficientlysecure.keychain.provider.KeychainContract.UserIds;
 import org.sufficientlysecure.keychain.remote.AccountSettings;
 import org.sufficientlysecure.keychain.remote.AppSettings;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
@@ -439,18 +440,18 @@ public class ProviderHelper {
 
             // classify and order user ids. primary are moved to the front, revoked to the back,
             // otherwise the order in the keyfile is preserved.
+            List<UserPacketItem> uids = new ArrayList<UserPacketItem>();
+
             if (trustedKeys.size() == 0) {
                 log(LogType.MSG_IP_UID_CLASSIFYING_ZERO);
             } else {
                 log(LogType.MSG_IP_UID_CLASSIFYING, trustedKeys.size());
             }
             mIndent += 1;
-            List<UserIdItem> uids = new ArrayList<UserIdItem>();
-            for (byte[] rawUserId : new IterableIterator<byte[]>(
-                    masterKey.getUnorderedRawUserIds().iterator())) {
+            for (byte[] rawUserId : masterKey.getUnorderedRawUserIds()) {
                 String userId = Utf8Util.fromUTF8ByteArrayReplaceBadEncoding(rawUserId);
 
-                UserIdItem item = new UserIdItem();
+                UserPacketItem item = new UserPacketItem();
                 uids.add(item);
                 item.userId = userId;
 
@@ -533,6 +534,105 @@ public class ProviderHelper {
             }
             mIndent -= 1;
 
+            ArrayList<WrappedUserAttribute> userAttributes = masterKey.getUnorderedUserAttributes();
+            // Don't spam the log if there aren't even any attributes
+            if ( ! userAttributes.isEmpty()) {
+                log(LogType.MSG_IP_UAT_CLASSIFYING);
+            }
+
+            mIndent += 1;
+            for (WrappedUserAttribute userAttribute : userAttributes) {
+
+                UserPacketItem item = new UserPacketItem();
+                uids.add(item);
+                item.type = userAttribute.getType();
+                item.attributeData = userAttribute.getEncoded();
+
+                int unknownCerts = 0;
+
+                switch (item.type) {
+                    case WrappedUserAttribute.UAT_IMAGE:
+                        log(LogType.MSG_IP_UAT_PROCESSING_IMAGE);
+                        break;
+                    default:
+                        log(LogType.MSG_IP_UAT_PROCESSING_UNKNOWN);
+                        break;
+                }
+                mIndent += 1;
+                // look through signatures for this specific key
+                for (WrappedSignature cert : new IterableIterator<WrappedSignature>(
+                        masterKey.getSignaturesForUserAttribute(userAttribute))) {
+                    long certId = cert.getKeyId();
+                    // self signature
+                    if (certId == masterKeyId) {
+
+                        // NOTE self-certificates are already verified during canonicalization,
+                        // AND we know there is at most one cert plus at most one revocation
+                        if (!cert.isRevocation()) {
+                            item.selfCert = cert;
+                        } else {
+                            item.isRevoked = true;
+                            log(LogType.MSG_IP_UAT_REVOKED);
+                        }
+                        continue;
+
+                    }
+
+                    // do we have a trusted key for this?
+                    if (trustedKeys.indexOfKey(certId) < 0) {
+                        unknownCerts += 1;
+                        continue;
+                    }
+
+                    // verify signatures from known private keys
+                    CanonicalizedPublicKey trustedKey = trustedKeys.get(certId);
+
+                    try {
+                        cert.init(trustedKey);
+                        // if it doesn't certify, leave a note and skip
+                        if ( ! cert.verifySignature(masterKey, userAttribute)) {
+                            log(LogType.MSG_IP_UAT_CERT_BAD);
+                            continue;
+                        }
+
+                        log(cert.isRevocation()
+                                        ? LogType.MSG_IP_UAT_CERT_GOOD_REVOKE
+                                        : LogType.MSG_IP_UAT_CERT_GOOD,
+                                KeyFormattingUtils.convertKeyIdToHexShort(trustedKey.getKeyId())
+                        );
+
+                        // check if there is a previous certificate
+                        WrappedSignature prev = item.trustedCerts.get(cert.getKeyId());
+                        if (prev != null) {
+                            // if it's newer, skip this one
+                            if (prev.getCreationTime().after(cert.getCreationTime())) {
+                                log(LogType.MSG_IP_UAT_CERT_OLD);
+                                continue;
+                            }
+                            // if the previous one was a non-revokable certification, no need to look further
+                            if (!prev.isRevocation() && !prev.isRevokable()) {
+                                log(LogType.MSG_IP_UAT_CERT_NONREVOKE);
+                                continue;
+                            }
+                            log(LogType.MSG_IP_UAT_CERT_NEW);
+                        }
+                        item.trustedCerts.put(cert.getKeyId(), cert);
+
+                    } catch (PgpGeneralException e) {
+                        log(LogType.MSG_IP_UAT_CERT_ERROR,
+                                KeyFormattingUtils.convertKeyIdToHex(cert.getKeyId()));
+                    }
+
+                }
+
+                if (unknownCerts > 0) {
+                    log(LogType.MSG_IP_UAT_CERTS_UNKNOWN, unknownCerts);
+                }
+                mIndent -= 1;
+
+            }
+            mIndent -= 1;
+
             progress.setProgress(LogType.MSG_IP_UID_REORDER.getMsgId(), 65, 100);
             log(LogType.MSG_IP_UID_REORDER);
             // primary before regular before revoked (see UserIdItem.compareTo)
@@ -540,7 +640,7 @@ public class ProviderHelper {
             Collections.sort(uids);
             // iterate and put into db
             for (int userIdRank = 0; userIdRank < uids.size(); userIdRank++) {
-                UserIdItem item = uids.get(userIdRank);
+                UserPacketItem item = uids.get(userIdRank);
                 operations.add(buildUserIdOperations(masterKeyId, item, userIdRank));
                 if (item.selfCert != null) {
                     // TODO get rid of "self verified" status? this cannot even happen anymore!
@@ -605,15 +705,23 @@ public class ProviderHelper {
 
     }
 
-    private static class UserIdItem implements Comparable<UserIdItem> {
+    private static class UserPacketItem implements Comparable<UserPacketItem> {
+        Integer type;
         String userId;
+        byte[] attributeData;
         boolean isPrimary = false;
         boolean isRevoked = false;
         WrappedSignature selfCert;
         LongSparseArray<WrappedSignature> trustedCerts = new LongSparseArray<WrappedSignature>();
 
         @Override
-        public int compareTo(UserIdItem o) {
+        public int compareTo(UserPacketItem o) {
+            // if one is a user id, but the other isn't, the user id always comes first.
+            // we compare for null values here, so != is the correct operator!
+            // noinspection NumberEquality
+            if (type != o.type) {
+                return type == null ? -1 : 1;
+            }
             // if one key is primary but the other isn't, the primary one always comes first
             if (isPrimary != o.isPrimary) {
                 return isPrimary ? -1 : 1;
@@ -1234,15 +1342,17 @@ public class ProviderHelper {
      * Build ContentProviderOperation to add PublicUserIds to database corresponding to a keyRing
      */
     private ContentProviderOperation
-    buildUserIdOperations(long masterKeyId, UserIdItem item, int rank) {
+    buildUserIdOperations(long masterKeyId, UserPacketItem item, int rank) {
         ContentValues values = new ContentValues();
-        values.put(UserIds.MASTER_KEY_ID, masterKeyId);
-        values.put(UserIds.USER_ID, item.userId);
-        values.put(UserIds.IS_PRIMARY, item.isPrimary);
-        values.put(UserIds.IS_REVOKED, item.isRevoked);
-        values.put(UserIds.RANK, rank);
+        values.put(UserPackets.MASTER_KEY_ID, masterKeyId);
+        values.put(UserPackets.TYPE, item.type);
+        values.put(UserPackets.USER_ID, item.userId);
+        values.put(UserPackets.ATTRIBUTE_DATA, item.attributeData);
+        values.put(UserPackets.IS_PRIMARY, item.isPrimary);
+        values.put(UserPackets.IS_REVOKED, item.isRevoked);
+        values.put(UserPackets.RANK, rank);
 
-        Uri uri = UserIds.buildUserIdsUri(masterKeyId);
+        Uri uri = UserPackets.buildUserIdsUri(masterKeyId);
 
         return ContentProviderOperation.newInsert(uri).withValues(values).build();
     }

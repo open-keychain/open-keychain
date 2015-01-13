@@ -21,6 +21,7 @@ package org.sufficientlysecure.keychain.service;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import org.sufficientlysecure.keychain.pgp.WrappedUserAttribute;
 import java.io.Serializable;
 import java.util.ArrayList;
 
@@ -49,6 +50,7 @@ public class SaveKeyringParcel implements Parcelable {
     public ChangeUnlockParcel mNewUnlock;
 
     public ArrayList<String> mAddUserIds;
+    public ArrayList<WrappedUserAttribute> mAddUserAttribute;
     public ArrayList<SubkeyAdd> mAddSubKeys;
 
     public ArrayList<SubkeyChange> mChangeSubKeys;
@@ -71,6 +73,7 @@ public class SaveKeyringParcel implements Parcelable {
     public void reset() {
         mNewUnlock = null;
         mAddUserIds = new ArrayList<String>();
+        mAddUserAttribute = new ArrayList<WrappedUserAttribute>();
         mAddSubKeys = new ArrayList<SubkeyAdd>();
         mChangePrimaryUserId = null;
         mChangeSubKeys = new ArrayList<SubkeyChange>();
@@ -162,6 +165,7 @@ public class SaveKeyringParcel implements Parcelable {
         mNewUnlock = source.readParcelable(getClass().getClassLoader());
 
         mAddUserIds = source.createStringArrayList();
+        mAddUserAttribute = (ArrayList<WrappedUserAttribute>) source.readSerializable();
         mAddSubKeys = (ArrayList<SubkeyAdd>) source.readSerializable();
 
         mChangeSubKeys = (ArrayList<SubkeyChange>) source.readSerializable();
@@ -184,6 +188,7 @@ public class SaveKeyringParcel implements Parcelable {
         destination.writeParcelable(mNewUnlock, 0);
 
         destination.writeStringList(mAddUserIds);
+        destination.writeSerializable(mAddUserAttribute);
         destination.writeSerializable(mAddSubKeys);
 
         destination.writeSerializable(mChangeSubKeys);
@@ -214,6 +219,7 @@ public class SaveKeyringParcel implements Parcelable {
         String out = "mMasterKeyId: " + mMasterKeyId + "\n";
         out += "mNewUnlock: " + mNewUnlock + "\n";
         out += "mAddUserIds: " + mAddUserIds + "\n";
+        out += "mAddUserAttribute: " + mAddUserAttribute + "\n";
         out += "mAddSubKeys: " + mAddSubKeys + "\n";
         out += "mChangeSubKeys: " + mChangeSubKeys + "\n";
         out += "mChangePrimaryUserId: " + mChangePrimaryUserId + "\n";

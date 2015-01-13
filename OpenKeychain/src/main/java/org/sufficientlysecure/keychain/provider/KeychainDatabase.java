@@ -33,7 +33,7 @@ import org.sufficientlysecure.keychain.provider.KeychainContract.ApiAppsColumns;
 import org.sufficientlysecure.keychain.provider.KeychainContract.CertsColumns;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRingsColumns;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeysColumns;
-import org.sufficientlysecure.keychain.provider.KeychainContract.UserIdsColumns;
+import org.sufficientlysecure.keychain.provider.KeychainContract.UserPacketsColumns;
 import org.sufficientlysecure.keychain.ui.ConsolidateDialogActivity;
 import org.sufficientlysecure.keychain.util.Log;
 
@@ -52,7 +52,7 @@ import java.io.IOException;
  */
 public class KeychainDatabase extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "openkeychain.db";
-    private static final int DATABASE_VERSION = 6;
+    private static final int DATABASE_VERSION = 7;
     static Boolean apgHack = false;
     private Context mContext;
 
@@ -60,7 +60,7 @@ public class KeychainDatabase extends SQLiteOpenHelper {
         String KEY_RINGS_PUBLIC = "keyrings_public";
         String KEY_RINGS_SECRET = "keyrings_secret";
         String KEYS = "keys";
-        String USER_IDS = "user_ids";
+        String USER_PACKETS = "user_ids";
         String CERTS = "certs";
         String API_APPS = "api_apps";
         String API_ACCOUNTS = "api_accounts";
@@ -106,18 +106,20 @@ public class KeychainDatabase extends SQLiteOpenHelper {
                     + Tables.KEY_RINGS_PUBLIC + "(" + KeyRingsColumns.MASTER_KEY_ID + ") ON DELETE CASCADE"
             + ")";
 
-    private static final String CREATE_USER_IDS =
-            "CREATE TABLE IF NOT EXISTS " + Tables.USER_IDS + "("
-                + UserIdsColumns.MASTER_KEY_ID + " INTEGER, "
-                + UserIdsColumns.USER_ID + " TEXT, "
+    private static final String CREATE_USER_PACKETS =
+            "CREATE TABLE IF NOT EXISTS " + Tables.USER_PACKETS + "("
+                + UserPacketsColumns.MASTER_KEY_ID + " INTEGER, "
+                + UserPacketsColumns.TYPE + " INT, "
+                + UserPacketsColumns.USER_ID + " TEXT, "
+                + UserPacketsColumns.ATTRIBUTE_DATA + " BLOB, "
 
-                + UserIdsColumns.IS_PRIMARY + " INTEGER, "
-                + UserIdsColumns.IS_REVOKED + " INTEGER, "
-                + UserIdsColumns.RANK+ " INTEGER, "
+                + UserPacketsColumns.IS_PRIMARY + " INTEGER, "
+                + UserPacketsColumns.IS_REVOKED + " INTEGER, "
+                + UserPacketsColumns.RANK+ " INTEGER, "
 
-                + "PRIMARY KEY(" + UserIdsColumns.MASTER_KEY_ID + ", " + UserIdsColumns.USER_ID + "), "
-                + "UNIQUE (" + UserIdsColumns.MASTER_KEY_ID + ", " + UserIdsColumns.RANK + "), "
-                + "FOREIGN KEY(" + UserIdsColumns.MASTER_KEY_ID + ") REFERENCES "
+                + "PRIMARY KEY(" + UserPacketsColumns.MASTER_KEY_ID + ", " + UserPacketsColumns.USER_ID + "), "
+                + "UNIQUE (" + UserPacketsColumns.MASTER_KEY_ID + ", " + UserPacketsColumns.RANK + "), "
+                + "FOREIGN KEY(" + UserPacketsColumns.MASTER_KEY_ID + ") REFERENCES "
                     + Tables.KEY_RINGS_PUBLIC + "(" + KeyRingsColumns.MASTER_KEY_ID + ") ON DELETE CASCADE"
             + ")";
 
@@ -138,7 +140,7 @@ public class KeychainDatabase extends SQLiteOpenHelper {
                 + "FOREIGN KEY(" + CertsColumns.MASTER_KEY_ID + ") REFERENCES "
                     + Tables.KEY_RINGS_PUBLIC + "(" + KeyRingsColumns.MASTER_KEY_ID + ") ON DELETE CASCADE,"
                 + "FOREIGN KEY(" + CertsColumns.MASTER_KEY_ID + ", " + CertsColumns.RANK + ") REFERENCES "
-                    + Tables.USER_IDS + "(" + UserIdsColumns.MASTER_KEY_ID + ", " + UserIdsColumns.RANK + ") ON DELETE CASCADE"
+                    + Tables.USER_PACKETS + "(" + UserPacketsColumns.MASTER_KEY_ID + ", " + UserPacketsColumns.RANK + ") ON DELETE CASCADE"
             + ")";
 
     private static final String CREATE_API_APPS =
@@ -189,7 +191,7 @@ public class KeychainDatabase extends SQLiteOpenHelper {
         db.execSQL(CREATE_KEYRINGS_PUBLIC);
         db.execSQL(CREATE_KEYRINGS_SECRET);
         db.execSQL(CREATE_KEYS);
-        db.execSQL(CREATE_USER_IDS);
+        db.execSQL(CREATE_USER_PACKETS);
         db.execSQL(CREATE_CERTS);
         db.execSQL(CREATE_API_APPS);
         db.execSQL(CREATE_API_APPS_ACCOUNTS);
@@ -238,6 +240,9 @@ public class KeychainDatabase extends SQLiteOpenHelper {
             case 5:
                 // do consolidate for 3.0 beta3
                 // fall through
+            case 6:
+                db.execSQL("ALTER TABLE user_ids ADD COLUMN type INTEGER");
+                db.execSQL("ALTER TABLE user_ids ADD COLUMN attribute_data BLOB");
         }
 
         // always do consolidate after upgrade

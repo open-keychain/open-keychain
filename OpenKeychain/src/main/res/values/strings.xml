@@ -309,6 +309,7 @@
 
     <string name="progress_modify_unlock">"unlocking keyring…"</string>
     <string name="progress_modify_adduid">"adding user IDs…"</string>
+    <string name="progress_modify_adduat">"adding user attributes…"</string>
     <string name="progress_modify_revokeuid">"revoking user IDs…"</string>
     <string name="progress_modify_primaryuid">"changing primary user ID…"</string>
     <string name="progress_modify_subkeychange">"modifying subkeys…"</string>
@@ -682,6 +683,23 @@
     <string name="msg_ip_uid_reorder">"Re-ordering user IDs"</string>
     <string name="msg_ip_uid_processing">"Processing user ID %s"</string>
     <string name="msg_ip_uid_revoked">"User ID is revoked"</string>
+
+    <string name="msg_ip_uat_processing_image">"Processing user attribute of type image"</string>
+    <string name="msg_ip_uat_processing_unknown">"Processing user attribute of unknown type"</string>
+    <string name="msg_ip_uat_cert_bad">"Encountered bad certificate!"</string>
+    <string name="msg_ip_uat_cert_error">"Error processing certificate!"</string>
+    <string name="msg_ip_uat_cert_nonrevoke">"Already have a non-revokable certificate, skipping."</string>
+    <string name="msg_ip_uat_cert_old">"Certificate is older than previous, skipping."</string>
+    <string name="msg_ip_uat_cert_new">"Certificate is more recent, replacing previous."</string>
+    <string name="msg_ip_uat_cert_good">"Found good certificate by %1$s"</string>
+    <string name="msg_ip_uat_cert_good_revoke">"Found good certificate revocation by %1$s"</string>
+    <plurals name="msg_ip_uat_certs_unknown">
+        <item quantity="one">"Ignoring one certificate issued by an unknown public key"</item>
+        <item quantity="other">"Ignoring %s certificates issued by unknown public keys"</item>
+    </plurals>
+    <string name="msg_ip_uat_classifying">"Classifying user attributes"</string>
+    <string name="msg_ip_uat_revoked">"User attribute is revoked"</string>
+
     <string name="msg_is_bad_type_public">"Tried to import public keyring as secret. This is a bug, please file a report!"</string>
     <string name="msg_is_bad_type_uncanon">"Tried to import a keyring without canonicalization. This is a bug, please file a report!"</string>
 
@@ -760,8 +778,23 @@
     <string name="msg_kc_uid_revoke_old">"Removing outdated revocation certificate for user ID '%s'"</string>
     <string name="msg_kc_uid_no_cert">"No valid self-certificate found for user ID '%s', removing from ring"</string>
     <string name="msg_kc_uid_remove">"Removing invalid user ID '%s'"</string>
-    <string name="msg_kc_uid_dup">"Removing duplicate user ID '%s'. The secret key contained two of them. This may result in missing certificates!"</string>
+    <string name="msg_kc_uid_dup">"Removing duplicate user ID '%s'. The keyring contained two of them. This may result in missing certificates!"</string>
     <string name="msg_kc_uid_warn_encoding">"User id does not verify as UTF-8!"</string>
+    <string name="msg_kc_uat_jpeg">"Processing user attribute of type JPEG"</string>
+    <string name="msg_kc_uat_unknown">"Processing user attribute of unknown type"</string>
+    <string name="msg_kc_uat_bad_err">"Removing bad self certificate for user attribute"</string>
+    <string name="msg_kc_uat_bad_local">"Removing user attribute certificate with 'local' flag"</string>
+    <string name="msg_kc_uat_bad_time">"Removing user attribute with future timestamp"</string>
+    <string name="msg_kc_uat_bad_type">"Removing user attribute certificate of unknown type (%s)"</string>
+    <string name="msg_kc_uat_bad">"Removing bad self certificate for user attribute"</string>
+    <string name="msg_kc_uat_cert_dup">"Removing outdated self certificate for user attribute"</string>
+    <string name="msg_kc_uat_dup">"Removing duplicate user attribute. The keyring contained two of them. This may result in missing certificates!"</string>
+    <string name="msg_kc_uat_foreign">"Removing foreign user attribute certificate by"</string>
+    <string name="msg_kc_uat_revoke_dup">"Removing redundant revocation certificate for user attribute"</string>
+    <string name="msg_kc_uat_revoke_old">"Removing outdated revocation certificate for user attribute"</string>
+    <string name="msg_kc_uat_no_cert">"No valid self-certificate found for user attribute, removing from ring"</string>
+    <string name="msg_kc_uat_remove">"Removing invalid user attribute"</string>
+    <string name="msg_kc_uat_warn_encoding">"User id does not verify as UTF-8!"</string>
 
     <!-- Keyring merging log entries -->
     <string name="msg_mg_error_secret_dummy">"New public subkey found, but secret subkey dummy generation is not supported!"</string>
@@ -824,6 +857,8 @@
     <string name="msg_mf_uid_primary">"Changing primary user ID to %s"</string>
     <string name="msg_mf_uid_revoke">"Revoking user ID %s"</string>
     <string name="msg_mf_uid_error_empty">"User ID must not be empty!"</string>
+    <string name="msg_mf_uat_add_image">"Adding user attribute of type image"</string>
+    <string name="msg_mf_uat_add_unknown">"Adding user attribute of unknown type"</string>
     <string name="msg_mf_unlock_error">"Error unlocking keyring!"</string>
     <string name="msg_mf_unlock">"Unlocking keyring"</string>
 
