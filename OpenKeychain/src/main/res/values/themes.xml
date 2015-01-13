@@ -3,7 +3,7 @@
 
     <style name="KeychainTheme" parent="KeychainTheme.Base" />
 
-    <style name="KeychainTheme.Base" parent="Theme.AppCompat.Light">
+    <style name="KeychainTheme.Base" parent="HoloKeychainTheme">
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimary</item>
         <item name="android:windowNoTitle">true</item>
