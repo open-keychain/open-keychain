@@ -49,7 +49,7 @@ import org.sufficientlysecure.keychain.util.Log;
 
 import java.util.Date;
 
-public class ViewCertActivity extends ActionBarActivity
+public class ViewCertActivity extends BaseActivity
         implements LoaderManager.LoaderCallbacks<Cursor> {
 
     // These are the rows that we will retrieve.
@@ -86,8 +86,6 @@ public class ViewCertActivity extends ActionBarActivity
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
 
-        setContentView(R.layout.view_cert_activity);
-
         mSigneeKey = (TextView) findViewById(R.id.signee_key);
         mSigneeUid = (TextView) findViewById(R.id.signee_uid);
         mAlgorithm = (TextView) findViewById(R.id.algorithm);
@@ -110,6 +108,11 @@ public class ViewCertActivity extends ActionBarActivity
         }
 
         getSupportLoaderManager().initLoader(0, null, this);
+    }
+
+    @Override
+    protected int getLayoutResource() {
+        return R.layout.view_cert_activity;
     }
 
     @Override

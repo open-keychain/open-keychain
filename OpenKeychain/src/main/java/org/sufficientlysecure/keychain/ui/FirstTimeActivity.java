@@ -29,7 +29,7 @@ import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.util.Preferences;
 import org.sufficientlysecure.keychain.util.Log;
 
-public class FirstTimeActivity extends ActionBarActivity {
+public class FirstTimeActivity extends BaseActivity {
 
     View mCreateKey;
     View mImportKey;
@@ -42,8 +42,6 @@ public class FirstTimeActivity extends ActionBarActivity {
         supportRequestWindowFeature(Window.FEATURE_NO_TITLE);
 
         super.onCreate(savedInstanceState);
-
-        setContentView(R.layout.first_time_activity);
 
         mCreateKey = findViewById(R.id.first_time_create_key);
         mImportKey = findViewById(R.id.first_time_import_key);
@@ -72,7 +70,11 @@ public class FirstTimeActivity extends ActionBarActivity {
                 startActivityForResult(intent, REQUEST_CODE_CREATE_OR_IMPORT_KEY);
             }
         });
+    }
 
+    @Override
+    protected int getLayoutResource() {
+        return R.layout.first_time_activity;
     }
 
     @Override

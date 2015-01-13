@@ -24,7 +24,7 @@ import android.support.v7.app.ActionBarActivity;
 
 import org.sufficientlysecure.keychain.R;
 
-public class CreateKeyActivity extends ActionBarActivity {
+public class CreateKeyActivity extends BaseActivity {
 
     public static final String EXTRA_NAME = "name";
     public static final String EXTRA_EMAIL = "email";
@@ -37,8 +37,6 @@ public class CreateKeyActivity extends ActionBarActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.create_key_activity);
-
         // pass extras into fragment
         CreateKeyInputFragment frag =
                 CreateKeyInputFragment.newInstance(
@@ -46,6 +44,11 @@ public class CreateKeyActivity extends ActionBarActivity {
                         getIntent().getStringExtra(EXTRA_EMAIL)
                 );
         loadFragment(null, frag, FRAG_ACTION_START);
+    }
+
+    @Override
+    protected int getLayoutResource() {
+        return R.layout.create_key_activity;
     }
 
     public void loadFragment(Bundle savedInstanceState, Fragment fragment, int action) {

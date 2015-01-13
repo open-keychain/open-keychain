@@ -38,7 +38,7 @@ import java.util.Locale;
  * For the full specs, see http://g10code.com/docs/openpgp-card-2.0.pdf
  */
 @TargetApi(Build.VERSION_CODES.GINGERBREAD_MR1)
-public class NfcActivity extends ActionBarActivity {
+public class NfcActivity extends BaseActivity {
 
     // actions
     public static final String ACTION_SIGN_HASH = "sign_hash";
@@ -82,8 +82,6 @@ public class NfcActivity extends ActionBarActivity {
 
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
-        setContentView(R.layout.nfc_activity);
-
         Intent intent = getIntent();
         Bundle data = intent.getExtras();
         String action = intent.getAction();
@@ -121,6 +119,11 @@ public class NfcActivity extends ActionBarActivity {
         } else {
             Log.d(Constants.TAG, "Action not supported: " + action);
         }
+    }
+
+    @Override
+    protected int getLayoutResource() {
+        return R.layout.nfc_activity;
     }
 
     /**

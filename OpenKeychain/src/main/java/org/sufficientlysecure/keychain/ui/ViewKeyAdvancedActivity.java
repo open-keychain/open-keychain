@@ -31,7 +31,7 @@ import org.sufficientlysecure.keychain.ui.util.ActionBarHelper;
 import org.sufficientlysecure.keychain.util.ExportHelper;
 import org.sufficientlysecure.keychain.util.Log;
 
-public class ViewKeyAdvancedActivity extends ActionBarActivity {
+public class ViewKeyAdvancedActivity extends BaseActivity {
 
     ExportHelper mExportHelper;
     ProviderHelper mProviderHelper;
@@ -55,8 +55,6 @@ public class ViewKeyAdvancedActivity extends ActionBarActivity {
                 }
         );
 
-        setContentView(R.layout.view_key_advanced_activity);
-
         Uri dataUri = getIntent().getData();
         if (dataUri == null) {
             Log.e(Constants.TAG, "Data missing. Should be uri of key!");
@@ -67,6 +65,11 @@ public class ViewKeyAdvancedActivity extends ActionBarActivity {
         Log.i(Constants.TAG, "mDataUri: " + dataUri.toString());
 
         startFragment(savedInstanceState, dataUri);
+    }
+
+    @Override
+    protected int getLayoutResource() {
+        return R.layout.view_key_advanced_activity;
     }
 
 

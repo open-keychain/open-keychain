@@ -67,7 +67,7 @@ import org.sufficientlysecure.keychain.ui.util.Notify;
 import java.util.Date;
 import java.util.HashMap;
 
-public class ViewKeyActivity extends ActionBarActivity implements
+public class ViewKeyActivity extends BaseActivity implements
         LoaderManager.LoaderCallbacks<Cursor> {
 
     ExportHelper mExportHelper;
@@ -111,8 +111,6 @@ public class ViewKeyActivity extends ActionBarActivity implements
         actionBar.setIcon(android.R.color.transparent);
         actionBar.setHomeButtonEnabled(true);
 
-        setContentView(R.layout.view_key_activity);
-
         mStatusLayout = (LinearLayout) findViewById(R.id.view_key_status_layout);
         mStatusText = (TextView) findViewById(R.id.view_key_status_text);
         mStatusImage = (ImageView) findViewById(R.id.view_key_status_image);
@@ -124,7 +122,7 @@ public class ViewKeyActivity extends ActionBarActivity implements
         mSlidingTabLayout.setCustomTabColorizer(new TabColorizer() {
             @Override
             public int getIndicatorColor(int position) {
-                return 0xFFAA66CC;
+                return 0xFF4caf50;
             }
 
             @Override
@@ -167,6 +165,11 @@ public class ViewKeyActivity extends ActionBarActivity implements
 
         // switch to tab selected by extra
         mViewPager.setCurrentItem(switchToTab);
+    }
+
+    @Override
+    protected int getLayoutResource() {
+        return R.layout.view_key_activity;
     }
 
     private void initTabs(Uri dataUri) {

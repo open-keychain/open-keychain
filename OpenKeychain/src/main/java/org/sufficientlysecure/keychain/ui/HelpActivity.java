@@ -27,7 +27,7 @@ import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.ui.adapter.PagerTabStripAdapter;
 import org.sufficientlysecure.keychain.ui.widget.SlidingTabLayout;
 
-public class HelpActivity extends ActionBarActivity {
+public class HelpActivity extends BaseActivity {
     public static final String EXTRA_SELECTED_TAB = "selected_tab";
 
     public static final int TAB_START = 0;
@@ -48,8 +48,6 @@ public class HelpActivity extends ActionBarActivity {
         actionBar.setDisplayShowTitleEnabled(true);
         actionBar.setDisplayHomeAsUpEnabled(false);
         actionBar.setHomeButtonEnabled(false);
-
-        setContentView(R.layout.help_activity);
 
         mViewPager = (ViewPager) findViewById(R.id.pager);
         SlidingTabLayout slidingTabLayout =
@@ -97,5 +95,10 @@ public class HelpActivity extends ActionBarActivity {
 
         // switch to tab selected by extra
         mViewPager.setCurrentItem(selectedTab);
+    }
+
+    @Override
+    protected int getLayoutResource() {
+        return R.layout.help_activity;
     }
 }

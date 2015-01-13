@@ -25,7 +25,7 @@ import android.view.View;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.ui.util.ActionBarHelper;
 
-public class LogDisplayActivity extends ActionBarActivity {
+public class LogDisplayActivity extends BaseActivity {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -42,8 +42,11 @@ public class LogDisplayActivity extends ActionBarActivity {
                     }
                 }
         );
+    }
 
-        setContentView(R.layout.log_display_activity);
+    @Override
+    protected int getLayoutResource() {
+        return R.layout.log_display_activity;
     }
 
 }

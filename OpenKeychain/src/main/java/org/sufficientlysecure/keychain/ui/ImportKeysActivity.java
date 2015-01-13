@@ -51,7 +51,7 @@ import org.sufficientlysecure.keychain.util.ParcelableFileCache.IteratorWithSize
 import java.io.IOException;
 import java.util.ArrayList;
 
-public class ImportKeysActivity extends ActionBarActivity {
+public class ImportKeysActivity extends BaseActivity {
     public static final String ACTION_IMPORT_KEY = OpenKeychainIntents.IMPORT_KEY;
     public static final String ACTION_IMPORT_KEY_FROM_KEYSERVER = OpenKeychainIntents.IMPORT_KEY_FROM_KEYSERVER;
     public static final String ACTION_IMPORT_KEY_FROM_KEYSERVER_AND_RETURN_RESULT =
@@ -90,8 +90,6 @@ public class ImportKeysActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.import_keys_activity);
-
         mImportButton = findViewById(R.id.import_import);
         mImportButton.setOnClickListener(new OnClickListener() {
             @Override
@@ -101,6 +99,11 @@ public class ImportKeysActivity extends ActionBarActivity {
         });
 
         handleActions(savedInstanceState, getIntent());
+    }
+
+    @Override
+    protected int getLayoutResource() {
+        return R.layout.import_keys_activity;
     }
 
     protected void handleActions(Bundle savedInstanceState, Intent intent) {

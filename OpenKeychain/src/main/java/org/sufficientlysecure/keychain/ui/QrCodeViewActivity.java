@@ -36,7 +36,7 @@ import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.ui.util.Notify.Style;
 import org.sufficientlysecure.keychain.ui.util.QrCodeUtils;
 
-public class QrCodeViewActivity extends ActionBarActivity {
+public class QrCodeViewActivity extends BaseActivity {
 
     private ImageView mFingerprintQrCode;
 
@@ -55,8 +55,6 @@ public class QrCodeViewActivity extends ActionBarActivity {
                     }
                 }
         );
-
-        setContentView(R.layout.qr_code_activity);
 
         Uri dataUri = getIntent().getData();
         if (dataUri == null) {
@@ -106,6 +104,11 @@ public class QrCodeViewActivity extends ActionBarActivity {
             Notify.showNotify(this, R.string.error_key_not_found, Style.ERROR);
             finish();
         }
+    }
+
+    @Override
+    protected int getLayoutResource() {
+        return R.layout.qr_code_activity;
     }
 
     @Override

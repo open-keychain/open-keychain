@@ -1,14 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <include
+        android:id="@+id/toolbar"
+        layout="@layout/toolbar" />
+
+    <FrameLayout
+        android:layout_below="@id/toolbar"
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/content_frame"
         android:layout_marginLeft="@dimen/drawer_content_padding"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-    <fragment
+        <fragment
             android:id="@+id/crypto_consumers_list_fragment"
             android:name="org.sufficientlysecure.keychain.remote.ui.AppsListFragment"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
-</FrameLayout>
+            android:layout_height="match_parent" />
+    </FrameLayout>
+</RelativeLayout>

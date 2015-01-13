@@ -26,7 +26,7 @@ import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
 import org.sufficientlysecure.keychain.util.Log;
 
-public class EditKeyActivity extends ActionBarActivity {
+public class EditKeyActivity extends BaseActivity {
 
     public static final String EXTRA_SAVE_KEYRING_PARCEL = "save_keyring_parcel";
 
@@ -35,8 +35,6 @@ public class EditKeyActivity extends ActionBarActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        setContentView(R.layout.edit_key_activity);
 
         Uri dataUri = getIntent().getData();
         SaveKeyringParcel saveKeyringParcel = getIntent().getParcelableExtra(EXTRA_SAVE_KEYRING_PARCEL);
@@ -47,6 +45,11 @@ public class EditKeyActivity extends ActionBarActivity {
         }
 
         loadFragment(savedInstanceState, dataUri, saveKeyringParcel);
+    }
+
+    @Override
+    protected int getLayoutResource() {
+        return R.layout.edit_key_activity;
     }
 
     private void loadFragment(Bundle savedInstanceState, Uri dataUri, SaveKeyringParcel saveKeyringParcel) {

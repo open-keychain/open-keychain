@@ -56,7 +56,7 @@ import edu.cmu.cylab.starslinger.exchange.ExchangeActivity;
 import edu.cmu.cylab.starslinger.exchange.ExchangeConfig;
 
 @TargetApi(Build.VERSION_CODES.HONEYCOMB)
-public class SafeSlingerActivity extends ActionBarActivity {
+public class SafeSlingerActivity extends BaseActivity {
 
     private static final int REQUEST_CODE_SAFE_SLINGER = 211;
 
@@ -68,8 +68,6 @@ public class SafeSlingerActivity extends ActionBarActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        setContentView(R.layout.safe_slinger_activity);
 
         mMasterKeyId = getIntent().getLongExtra(EXTRA_MASTER_KEY_ID, 0);
 
@@ -94,6 +92,11 @@ public class SafeSlingerActivity extends ActionBarActivity {
                 startExchange(mMasterKeyId, mSelectedNumber);
             }
         });
+    }
+
+    @Override
+    protected int getLayoutResource() {
+        return R.layout.safe_slinger_activity;
     }
 
     private void startExchange(long masterKeyId, int number) {

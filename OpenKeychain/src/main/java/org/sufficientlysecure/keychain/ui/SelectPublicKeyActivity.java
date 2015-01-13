@@ -27,7 +27,7 @@ import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.ui.util.ActionBarHelper;
 
-public class SelectPublicKeyActivity extends ActionBarActivity {
+public class SelectPublicKeyActivity extends BaseActivity {
 
     // Actions for internal use only:
     public static final String ACTION_SELECT_PUBLIC_KEYS = Constants.INTENT_PREFIX
@@ -63,8 +63,6 @@ public class SelectPublicKeyActivity extends ActionBarActivity {
                 }
         );
 
-        setContentView(R.layout.select_public_key_activity);
-
         setDefaultKeyMode(DEFAULT_KEYS_SEARCH_LOCAL);
 
         handleIntent(getIntent());
@@ -99,6 +97,11 @@ public class SelectPublicKeyActivity extends ActionBarActivity {
         // }
         // });
 
+    }
+
+    @Override
+    protected int getLayoutResource() {
+        return R.layout.select_public_key_activity;
     }
 
     @Override

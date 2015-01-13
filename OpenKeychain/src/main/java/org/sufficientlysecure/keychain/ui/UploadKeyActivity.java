@@ -44,7 +44,7 @@ import org.sufficientlysecure.keychain.util.Log;
 /**
  * Sends the selected public key to a keyserver
  */
-public class UploadKeyActivity extends ActionBarActivity {
+public class UploadKeyActivity extends BaseActivity {
     private View mUploadButton;
     private Spinner mKeyServerSpinner;
 
@@ -53,8 +53,6 @@ public class UploadKeyActivity extends ActionBarActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        setContentView(R.layout.upload_key_activity);
 
         mUploadButton = findViewById(R.id.upload_key_action_upload);
         mKeyServerSpinner = (Spinner) findViewById(R.id.upload_key_keyserver);
@@ -84,6 +82,11 @@ public class UploadKeyActivity extends ActionBarActivity {
             finish();
             return;
         }
+    }
+
+    @Override
+    protected int getLayoutResource() {
+        return R.layout.upload_key_activity;
     }
 
     private void uploadKey() {
