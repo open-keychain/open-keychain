@@ -18,16 +18,27 @@
 
 package org.sufficientlysecure.keychain.pgp;
 
+import org.spongycastle.bcpg.BCPGInputStream;
+import org.spongycastle.bcpg.BCPGOutputStream;
+import org.spongycastle.bcpg.Packet;
+import org.spongycastle.bcpg.UserAttributePacket;
+import org.spongycastle.bcpg.UserAttributeSubpacket;
 import org.spongycastle.bcpg.UserAttributeSubpacketTags;
 import org.spongycastle.openpgp.PGPUserAttributeSubpacketVector;
 
-public class WrappedUserAttribute {
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectStreamException;
+import java.io.Serializable;
+
+public class WrappedUserAttribute implements Serializable {
 
     public static final int UAT_UNKNOWN = 0;
     public static final int UAT_IMAGE = UserAttributeSubpacketTags.IMAGE_ATTRIBUTE;
     public static final int UAT_LINKED_ID = 100;
 
-    final private PGPUserAttributeSubpacketVector mVector;
+    private PGPUserAttributeSubpacketVector mVector;
 
     WrappedUserAttribute(PGPUserAttributeSubpacketVector vector) {
         mVector = vector;
@@ -42,6 +53,40 @@ public class WrappedUserAttribute {
             return UAT_IMAGE;
         }
         return 0;
+    }
+
+    public static WrappedUserAttribute fromSubpacket (int type, byte[] data) {
+        UserAttributeSubpacket subpacket = new UserAttributeSubpacket(type, data);
+        PGPUserAttributeSubpacketVector vector = new PGPUserAttributeSubpacketVector(
+                new UserAttributeSubpacket[] { subpacket });
+
+        return new WrappedUserAttribute(vector);
+
+    }
+
+    /** Writes this object to an ObjectOutputStream. */
+    private void writeObject(java.io.ObjectOutputStream out) throws IOException {
+
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        BCPGOutputStream bcpg = new BCPGOutputStream(baos);
+        bcpg.writePacket(new UserAttributePacket(mVector.toSubpacketArray()));
+        out.writeObject(baos.toByteArray());
+
+    }
+
+    private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException {
+
+        byte[] data = (byte[]) in.readObject();
+        BCPGInputStream bcpg = new BCPGInputStream(new ByteArrayInputStream(data));
+        Packet p = bcpg.readPacket();
+        if ( ! UserAttributePacket.class.isInstance(p)) {
+            throw new IOException("Could not decode UserAttributePacket!");
+        }
+        mVector = new PGPUserAttributeSubpacketVector(((UserAttributePacket) p).getSubpackets());
+
+    }
+
+    private void readObjectNoData() throws ObjectStreamException {
     }
 
 }
