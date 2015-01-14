@@ -46,6 +46,7 @@ import java.io.ByteArrayInputStream;
 import java.security.Security;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.Random;
 
 /** Tests for the UncachedKeyring.merge method.
  *
@@ -97,6 +98,12 @@ public class UncachedKeyringMergeTest {
 
             parcel.mAddUserIds.add("twi");
             parcel.mAddUserIds.add("pink");
+            {
+                WrappedUserAttribute uat = WrappedUserAttribute.fromSubpacket(100,
+                        "sunshine, sunshine, ladybugs awake~".getBytes());
+                parcel.mAddUserAttribute.add(uat);
+            }
+
             // passphrase is tested in PgpKeyOperationTest, just use empty here
             parcel.mNewUnlock = new ChangeUnlockParcel("");
             PgpKeyOperation op = new PgpKeyOperation(null);
@@ -337,6 +344,36 @@ public class UncachedKeyringMergeTest {
                     KeyringTestingHelper.diffKeyrings(merged.getEncoded(), modified.getEncoded(), onlyA, onlyB)
             );
         }
+    }
+
+    @Test
+    public void testAddedUserAttributeSignature() throws Exception {
+
+        final UncachedKeyRing modified; {
+            parcel.reset();
+
+            Random r = new Random();
+            int type = r.nextInt(110)+1;
+            byte[] data = new byte[r.nextInt(2000)];
+            new Random().nextBytes(data);
+
+            WrappedUserAttribute uat = WrappedUserAttribute.fromSubpacket(type, data);
+            parcel.mAddUserAttribute.add(uat);
+
+            CanonicalizedSecretKeyRing secretRing = new CanonicalizedSecretKeyRing(
+                    ringA.getEncoded(), false, 0);
+            modified = op.modifySecretKeyRing(secretRing, parcel, "").getRing();
+        }
+
+        {
+            UncachedKeyRing merged = ringA.merge(modified, log, 0);
+            Assert.assertNotNull("merge must succeed", merged);
+            Assert.assertFalse(
+                    "merging keyring with extra user attribute into its base should yield that same keyring",
+                    KeyringTestingHelper.diffKeyrings(merged.getEncoded(), modified.getEncoded(), onlyA, onlyB)
+            );
+        }
+
     }
 
     private UncachedKeyRing mergeWithChecks(UncachedKeyRing a, UncachedKeyRing b)
