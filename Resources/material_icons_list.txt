@@ -1,4 +1,0 @@
-https://github.com/google/material-design-icons
-
-action:
-ic_search_white_24dp.png
