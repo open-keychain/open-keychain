@@ -51,9 +51,9 @@ for NAME in "status_lock_closed" "status_lock_error" "status_lock_open" "status_
 do
 echo $NAME
 inkscape -w 24 -h 24 -e "$MDPI_DIR/$NAME.png" "$SRC_DIR/$NAME.svg"
-inkscape -w 32 -h 32 -e "$MDPI_DIR/$NAME.png" "$SRC_DIR/$NAME.svg"
-inkscape -w 48 -h 48 -e "$MDPI_DIR/$NAME.png" "$SRC_DIR/$NAME.svg"
-inkscape -w 64 -h 64 -e "$MDPI_DIR/$NAME.png" "$SRC_DIR/$NAME.svg"
+inkscape -w 32 -h 32 -e "$HDPI_DIR/$NAME.png" "$SRC_DIR/$NAME.svg"
+inkscape -w 48 -h 48 -e "$XDPI_DIR/$NAME.png" "$SRC_DIR/$NAME.svg"
+inkscape -w 64 -h 64 -e "$XXDPI_DIR/$NAME.png" "$SRC_DIR/$NAME.svg"
 done
 
 for NAME in "create_key_robot"
