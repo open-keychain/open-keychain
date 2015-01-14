@@ -80,7 +80,7 @@ public class ViewKeyAdvancedFragment extends LoaderFragment implements
     static final String CERTS_SORT_ORDER =
             KeychainDatabase.Tables.CERTS + "." + KeychainContract.Certs.RANK + " ASC, "
                     + KeychainContract.Certs.VERIFIED + " DESC, "
-                    + KeychainContract.Certs.TYPE + " DESC, "
+                    + KeychainDatabase.Tables.CERTS + "." + KeychainContract.Certs.TYPE + " DESC, "
                     + KeychainContract.Certs.SIGNER_UID + " ASC";
 
     /**
