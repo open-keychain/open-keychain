@@ -35,7 +35,7 @@ import org.sufficientlysecure.keychain.ui.widget.KeyServerEditor;
 
 import java.util.Vector;
 
-public class PreferencesKeyServerActivity extends ActionBarActivity implements OnClickListener,
+public class PreferencesKeyServerActivity extends BaseActivity implements OnClickListener,
         EditorListener {
 
     public static final String EXTRA_KEY_SERVERS = "key_servers";
@@ -68,8 +68,6 @@ public class PreferencesKeyServerActivity extends ActionBarActivity implements O
                 }
         );
 
-        setContentView(R.layout.key_server_preference);
-
         mInflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
         mTitle = (TextView) findViewById(R.id.title);
@@ -101,6 +99,11 @@ public class PreferencesKeyServerActivity extends ActionBarActivity implements O
         String servers[] = intent.getStringArrayExtra(EXTRA_KEY_SERVERS);
         makeServerList(servers);
    }
+
+    @Override
+    protected void initLayout() {
+        setContentView(R.layout.key_server_preference);
+    }
 
     private void makeServerList(String[] servers) {
         if (servers != null) {

@@ -20,7 +20,6 @@ package org.sufficientlysecure.keychain.ui;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import android.preference.CheckBoxPreference;
 import android.preference.Preference;
@@ -33,8 +32,8 @@ import org.spongycastle.bcpg.HashAlgorithmTags;
 import org.spongycastle.openpgp.PGPEncryptedData;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.util.Preferences;
 import org.sufficientlysecure.keychain.ui.widget.IntegerListPreference;
+import org.sufficientlysecure.keychain.util.Preferences;
 
 import java.util.List;
 
@@ -130,9 +129,6 @@ public class PreferencesActivity extends PreferenceActivity {
             initializeUseNumKeypadForYubikeyPin(
                     (CheckBoxPreference) findPreference(Constants.Pref.USE_NUMKEYPAD_FOR_YUBIKEY_PIN));
 
-        } else if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
-            // Load the legacy preferences headers
-            addPreferencesFromResource(R.xml.preference_headers_legacy);
         }
     }
 
