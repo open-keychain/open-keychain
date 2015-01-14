@@ -23,6 +23,7 @@ import org.spongycastle.bcpg.BCPGOutputStream;
 import org.spongycastle.bcpg.Packet;
 import org.spongycastle.bcpg.UserAttributePacket;
 import org.spongycastle.bcpg.UserAttributeSubpacket;
+import org.spongycastle.bcpg.UserAttributeSubpacketInputStream;
 import org.spongycastle.bcpg.UserAttributeSubpacketTags;
 import org.spongycastle.openpgp.PGPUserAttributeSubpacketVector;
 
@@ -31,6 +32,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectStreamException;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 public class WrappedUserAttribute implements Serializable {
 
@@ -73,9 +76,17 @@ public class WrappedUserAttribute implements Serializable {
         return out.toByteArray();
     }
 
-    public static WrappedUserAttribute fromData (byte[] data) {
-        // TODO
-        return null;
+    public static WrappedUserAttribute fromData (byte[] data) throws IOException {
+        UserAttributeSubpacketInputStream in =
+                new UserAttributeSubpacketInputStream(new ByteArrayInputStream(data));
+        ArrayList<UserAttributeSubpacket> list = new ArrayList<UserAttributeSubpacket>();
+        while (in.available() > 0) {
+            list.add(in.readPacket());
+        }
+        UserAttributeSubpacket[] result = new UserAttributeSubpacket[list.size()];
+        list.toArray(result);
+        return new WrappedUserAttribute(
+                new PGPUserAttributeSubpacketVector(result));
     }
 
     /** Writes this object to an ObjectOutputStream. */
@@ -101,6 +112,14 @@ public class WrappedUserAttribute implements Serializable {
     }
 
     private void readObjectNoData() throws ObjectStreamException {
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (!WrappedUserAttribute.class.isInstance(o)) {
+            return false;
+        }
+        return mVector.equals(((WrappedUserAttribute) o).mVector);
     }
 
 }

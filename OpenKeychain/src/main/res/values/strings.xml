@@ -858,6 +858,7 @@
     <string name="msg_mf_uid_primary">"Changing primary user ID to %s"</string>
     <string name="msg_mf_uid_revoke">"Revoking user ID %s"</string>
     <string name="msg_mf_uid_error_empty">"User ID must not be empty!"</string>
+    <string name="msg_mf_uat_error_empty">"User attribute must not be empty!"</string>
     <string name="msg_mf_uat_add_image">"Adding user attribute of type image"</string>
     <string name="msg_mf_uat_add_unknown">"Adding user attribute of unknown type"</string>
     <string name="msg_mf_unlock_error">"Error unlocking keyring!"</string>
