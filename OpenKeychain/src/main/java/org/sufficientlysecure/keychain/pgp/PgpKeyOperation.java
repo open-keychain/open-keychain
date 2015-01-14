@@ -531,11 +531,11 @@ public class PgpKeyOperation {
                     WrappedUserAttribute attribute = saveParcel.mAddUserAttribute.get(i);
 
                     switch (attribute.getType()) {
-                        case WrappedUserAttribute.UAT_NONE:
-                            log.add(LogType.MSG_MF_UAT_ADD_UNKNOWN, indent);
-                            break;
                         case WrappedUserAttribute.UAT_IMAGE:
                             log.add(LogType.MSG_MF_UAT_ADD_IMAGE, indent);
+                            break;
+                        default:
+                            log.add(LogType.MSG_MF_UAT_ADD_UNKNOWN, indent);
                             break;
                     }
 
