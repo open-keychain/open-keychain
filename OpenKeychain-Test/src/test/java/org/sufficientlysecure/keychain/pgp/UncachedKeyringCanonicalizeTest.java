@@ -104,6 +104,12 @@ public class UncachedKeyringCanonicalizeTest {
 
         parcel.mAddUserIds.add("twi");
         parcel.mAddUserIds.add("pink");
+        {
+            WrappedUserAttribute uat = WrappedUserAttribute.fromSubpacket(100,
+                    "sunshine, sunshine, ladybugs awake~".getBytes());
+            parcel.mAddUserAttribute.add(uat);
+        }
+
         // passphrase is tested in PgpKeyOperationTest, just use empty here
         parcel.mNewUnlock = new ChangeUnlockParcel("");
         PgpKeyOperation op = new PgpKeyOperation(null);
@@ -116,7 +122,7 @@ public class UncachedKeyringCanonicalizeTest {
         staticRing = staticRing.canonicalize(new OperationLog(), 0).getUncachedKeyRing();
 
         // just for later reference
-        totalPackets = 9;
+        totalPackets = 11;
 
         // we sleep here for a second, to make sure all new certificates have different timestamps
         Thread.sleep(1000);
@@ -150,8 +156,8 @@ public class UncachedKeyringCanonicalizeTest {
         Assert.assertEquals("packet #4 should be signature",
                 PacketTags.SIGNATURE, it.next().tag);
 
-        Assert.assertEquals("packet #5 should be secret subkey",
-                PacketTags.SECRET_SUBKEY, it.next().tag);
+        Assert.assertEquals("packet #5 should be user id",
+                PacketTags.USER_ATTRIBUTE, it.next().tag);
         Assert.assertEquals("packet #6 should be signature",
                 PacketTags.SIGNATURE, it.next().tag);
 
@@ -160,7 +166,12 @@ public class UncachedKeyringCanonicalizeTest {
         Assert.assertEquals("packet #8 should be signature",
                 PacketTags.SIGNATURE, it.next().tag);
 
-        Assert.assertFalse("exactly 9 packets total", it.hasNext());
+        Assert.assertEquals("packet #9 should be secret subkey",
+                PacketTags.SECRET_SUBKEY, it.next().tag);
+        Assert.assertEquals("packet #10 should be signature",
+                PacketTags.SIGNATURE, it.next().tag);
+
+        Assert.assertFalse("exactly 11 packets total", it.hasNext());
 
         Assert.assertArrayEquals("created keyring should be constant through canonicalization",
                 ring.getEncoded(), ring.canonicalize(log, 0).getEncoded());
@@ -380,7 +391,7 @@ public class UncachedKeyringCanonicalizeTest {
     @Test public void testSubkeyDestroy() throws Exception {
 
         // signature for second key (first subkey)
-        UncachedKeyRing modified = KeyringTestingHelper.removePacket(ring, 6);
+        UncachedKeyRing modified = KeyringTestingHelper.removePacket(ring, 8);
 
         // canonicalization should fail, because there are no valid uids left
         CanonicalizedKeyRing canonicalized = modified.canonicalize(log, 0);
@@ -424,7 +435,7 @@ public class UncachedKeyringCanonicalizeTest {
                     secretKey.getPublicKey(), pKey.getPublicKey());
 
             // inject in the right position
-            UncachedKeyRing modified = KeyringTestingHelper.injectPacket(ring, sig.getEncoded(), 6);
+            UncachedKeyRing modified = KeyringTestingHelper.injectPacket(ring, sig.getEncoded(), 8);
 
             // canonicalize, and check if we lose the bad signature
             CanonicalizedKeyRing canonicalized = modified.canonicalize(log, 0);
@@ -449,7 +460,7 @@ public class UncachedKeyringCanonicalizeTest {
                     secretKey.getPublicKey(), pKey.getPublicKey());
 
             // inject in the right position
-            UncachedKeyRing modified = KeyringTestingHelper.injectPacket(ring, sig.getEncoded(), 6);
+            UncachedKeyRing modified = KeyringTestingHelper.injectPacket(ring, sig.getEncoded(), 8);
 
             // canonicalize, and check if we lose the bad signature
             CanonicalizedKeyRing canonicalized = modified.canonicalize(log, 0);
@@ -481,10 +492,10 @@ public class UncachedKeyringCanonicalizeTest {
                 secretKey, PGPSignature.SUBKEY_BINDING, subHashedPacketsGen,
                 secretKey.getPublicKey(), pKey.getPublicKey());
 
-        UncachedKeyRing modified = KeyringTestingHelper.injectPacket(ring, sig1.getEncoded(), 8);
-        modified = KeyringTestingHelper.injectPacket(modified, sig2.getEncoded(), 9);
-        modified = KeyringTestingHelper.injectPacket(modified, sig1.getEncoded(), 10);
-        modified = KeyringTestingHelper.injectPacket(modified, sig3.getEncoded(), 11);
+        UncachedKeyRing modified = KeyringTestingHelper.injectPacket(ring, sig1.getEncoded(), 10);
+        modified = KeyringTestingHelper.injectPacket(modified, sig2.getEncoded(), 11);
+        modified = KeyringTestingHelper.injectPacket(modified, sig1.getEncoded(), 12);
+        modified = KeyringTestingHelper.injectPacket(modified, sig3.getEncoded(), 13);
 
         // canonicalize, and check if we lose the bad signature
         CanonicalizedKeyRing canonicalized = modified.canonicalize(log, 0);
@@ -512,13 +523,13 @@ public class UncachedKeyringCanonicalizeTest {
 
             // get subkey packets
             Iterator<RawPacket> it = KeyringTestingHelper.parseKeyring(ring.getEncoded());
-            RawPacket subKey = KeyringTestingHelper.getNth(it, 5);
+            RawPacket subKey = KeyringTestingHelper.getNth(it, 7);
             RawPacket subSig = it.next();
 
             // inject at a second position
             UncachedKeyRing modified = ring;
-            modified = KeyringTestingHelper.injectPacket(modified, subKey.buf, 7);
-            modified = KeyringTestingHelper.injectPacket(modified, subSig.buf, 8);
+            modified = KeyringTestingHelper.injectPacket(modified, subKey.buf, 9);
+            modified = KeyringTestingHelper.injectPacket(modified, subSig.buf, 10);
 
             // canonicalize, and check if we lose the bad signature
             OperationLog log = new OperationLog();
@@ -557,7 +568,7 @@ public class UncachedKeyringCanonicalizeTest {
                 sKey = new PGPSecretKey(masterSecretKey.getPrivateKey(), subPubKey, sha1Calc, false, keyEncryptor);
             }
 
-            UncachedKeyRing modified = KeyringTestingHelper.injectPacket(ring, sKey.getEncoded(), 5);
+            UncachedKeyRing modified = KeyringTestingHelper.injectPacket(ring, sKey.getEncoded(), 7);
 
             // canonicalize, and check if we lose the bad signature
             OperationLog log = new OperationLog();

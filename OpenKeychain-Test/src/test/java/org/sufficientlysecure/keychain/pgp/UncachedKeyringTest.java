@@ -37,6 +37,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Iterator;
+import java.util.Random;
 
 @RunWith(RobolectricTestRunner.class)
 @org.robolectric.annotation.Config(emulateSdk = 18) // Robolectric doesn't yet support 19
@@ -59,6 +60,15 @@ public class UncachedKeyringTest {
 
         parcel.mAddUserIds.add("twi");
         parcel.mAddUserIds.add("pink");
+        {
+            Random r = new Random();
+            int type = r.nextInt(110)+1;
+            byte[] data = new byte[r.nextInt(2000)];
+            new Random().nextBytes(data);
+
+            WrappedUserAttribute uat = WrappedUserAttribute.fromSubpacket(type, data);
+            parcel.mAddUserAttribute.add(uat);
+        }
         // passphrase is tested in PgpKeyOperationTest, just use empty here
         parcel.mNewUnlock = new ChangeUnlockParcel("");
         PgpKeyOperation op = new PgpKeyOperation(null);

@@ -531,11 +531,15 @@ public class PgpKeyOperation {
                     WrappedUserAttribute attribute = saveParcel.mAddUserAttribute.get(i);
 
                     switch (attribute.getType()) {
+                        // the 'none' type must not succeed
                         case WrappedUserAttribute.UAT_NONE:
-                            log.add(LogType.MSG_MF_UAT_ADD_UNKNOWN, indent);
-                            break;
+                            log.add(LogType.MSG_MF_UAT_ERROR_EMPTY, indent);
+                            return new PgpEditKeyResult(PgpEditKeyResult.RESULT_ERROR, log, null);
                         case WrappedUserAttribute.UAT_IMAGE:
                             log.add(LogType.MSG_MF_UAT_ADD_IMAGE, indent);
+                            break;
+                        default:
+                            log.add(LogType.MSG_MF_UAT_ADD_UNKNOWN, indent);
                             break;
                     }
 

@@ -34,6 +34,8 @@ import org.spongycastle.bcpg.S2K;
 import org.spongycastle.bcpg.SecretKeyPacket;
 import org.spongycastle.bcpg.SecretSubkeyPacket;
 import org.spongycastle.bcpg.SignaturePacket;
+import org.spongycastle.bcpg.UserAttributePacket;
+import org.spongycastle.bcpg.UserAttributeSubpacket;
 import org.spongycastle.bcpg.UserIDPacket;
 import org.spongycastle.bcpg.sig.KeyFlags;
 import org.spongycastle.jce.provider.BouncyCastleProvider;
@@ -863,6 +865,70 @@ public class PgpKeyOperationTest {
                 PGPSignature.POSITIVE_CERTIFICATION, ((SignaturePacket) p).getSignatureType());
 
     }
+
+    @Test
+    public void testUserAttributeAdd() throws Exception {
+
+        {
+            parcel.mAddUserAttribute.add(WrappedUserAttribute.fromData(new byte[0]));
+            assertModifyFailure("adding an empty user attribute should fail", ring, parcel,
+                    LogType.MSG_MF_UAT_ERROR_EMPTY);
+        }
+
+        parcel.reset();
+
+        Random r = new Random();
+        int type = r.nextInt(110)+1;
+        byte[] data = new byte[r.nextInt(2000)];
+        new Random().nextBytes(data);
+
+        WrappedUserAttribute uat = WrappedUserAttribute.fromSubpacket(type, data);
+        parcel.mAddUserAttribute.add(uat);
+
+        UncachedKeyRing modified = applyModificationWithChecks(parcel, ring, onlyA, onlyB);
+
+        Assert.assertEquals("no extra packets in original", 0, onlyA.size());
+        Assert.assertEquals("exactly two extra packets in modified", 2, onlyB.size());
+
+        Assert.assertTrue("keyring must contain added user attribute",
+                modified.getPublicKey().getUnorderedUserAttributes().contains(uat));
+
+        Packet p;
+
+        p = new BCPGInputStream(new ByteArrayInputStream(onlyB.get(0).buf)).readPacket();
+        Assert.assertTrue("first new packet must be user attribute", p instanceof UserAttributePacket);
+        {
+            UserAttributeSubpacket[] subpackets = ((UserAttributePacket) p).getSubpackets();
+            Assert.assertEquals("user attribute packet must contain one subpacket",
+                    1, subpackets.length);
+            Assert.assertEquals("user attribute subpacket type must be as specified above",
+                    type, subpackets[0].getType());
+            Assert.assertArrayEquals("user attribute subpacket data must be as specified above",
+                    data, subpackets[0].getData());
+        }
+
+        p = new BCPGInputStream(new ByteArrayInputStream(onlyB.get(1).buf)).readPacket();
+        Assert.assertTrue("second new packet must be signature", p instanceof SignaturePacket);
+        Assert.assertEquals("signature type must be positive certification",
+                PGPSignature.POSITIVE_CERTIFICATION, ((SignaturePacket) p).getSignatureType());
+
+        // make sure packets can be distinguished by timestamp
+        Thread.sleep(1000);
+
+        // applying the same modification AGAIN should not add more certifications but drop those
+        // as duplicates
+        modified = applyModificationWithChecks(parcel, modified, onlyA, onlyB, passphrase, true, false);
+
+        Assert.assertEquals("duplicate modification: one extra packet in original", 1, onlyA.size());
+        Assert.assertEquals("duplicate modification: one extra packet in modified", 1, onlyB.size());
+
+        p = new BCPGInputStream(new ByteArrayInputStream(onlyA.get(0).buf)).readPacket();
+        Assert.assertTrue("lost packet must be signature", p instanceof SignaturePacket);
+        p = new BCPGInputStream(new ByteArrayInputStream(onlyB.get(0).buf)).readPacket();
+        Assert.assertTrue("new packet must be signature", p instanceof SignaturePacket);
+
+    }
+
 
     @Test
     public void testUserIdPrimary() throws Exception {
