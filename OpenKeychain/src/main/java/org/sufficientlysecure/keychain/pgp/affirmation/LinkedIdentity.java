@@ -167,7 +167,7 @@ public class LinkedIdentity {
         // return Hex.toHexString(data);
 
         // debug for now
-        return "0123456789ABCDEF01234567";
+        return "0123456789abcdef01234567";
     }
 
 }

@@ -30,13 +30,13 @@ import android.widget.EditText;
 
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.affirmation.LinkedIdentity;
-import org.sufficientlysecure.keychain.pgp.affirmation.resources.GenericHttpsResource;
+import org.sufficientlysecure.keychain.pgp.affirmation.resources.DnsResource;
 
 public class AffirmationCreateDnsStep1Fragment extends Fragment {
 
     AffirmationWizard mAffirmationWizard;
 
-    EditText mEditUri;
+    EditText mEditDns;
 
     /**
      * Creates new instance of this fragment
@@ -66,18 +66,19 @@ public class AffirmationCreateDnsStep1Fragment extends Fragment {
             @Override
             public void onClick(View v) {
 
-                String uri = "https://" + mEditUri.getText();
+                String uri = mEditDns.getText().toString();
 
                 if (!checkUri(uri)) {
+                    mEditDns.setError("Please enter a valid domain name!");
                     return;
                 }
 
                 String proofNonce = LinkedIdentity.generateNonce();
-                String proofText = GenericHttpsResource.generateText(getActivity(),
+                String proofText = DnsResource.generateText(getActivity(),
                         mAffirmationWizard.mFingerprint, proofNonce);
 
-                AffirmationCreateHttpsStep2Fragment frag =
-                        AffirmationCreateHttpsStep2Fragment.newInstance(uri, proofNonce, proofText);
+                AffirmationCreateDnsStep2Fragment frag =
+                        AffirmationCreateDnsStep2Fragment.newInstance(uri, proofNonce, proofText);
 
                 mAffirmationWizard.loadFragment(null, frag, AffirmationWizard.FRAG_ACTION_TO_RIGHT);
 
@@ -91,9 +92,9 @@ public class AffirmationCreateDnsStep1Fragment extends Fragment {
             }
         });
 
-        mEditUri = (EditText) view.findViewById(R.id.affirmation_create_https_uri);
+        mEditDns = (EditText) view.findViewById(R.id.affirmation_create_dns_domain);
 
-        mEditUri.addTextChangedListener(new TextWatcher() {
+        mEditDns.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i2, int i3) {
             }
@@ -104,29 +105,29 @@ public class AffirmationCreateDnsStep1Fragment extends Fragment {
 
             @Override
             public void afterTextChanged(Editable editable) {
-                String uri = "https://" + editable;
+                String uri = editable.toString();
                 if (uri.length() > 0) {
                     if (checkUri(uri)) {
-                        mEditUri.setCompoundDrawablesWithIntrinsicBounds(0, 0,
+                        mEditDns.setCompoundDrawablesWithIntrinsicBounds(0, 0,
                                 R.drawable.uid_mail_ok, 0);
                     } else {
-                        mEditUri.setCompoundDrawablesWithIntrinsicBounds(0, 0,
+                        mEditDns.setCompoundDrawablesWithIntrinsicBounds(0, 0,
                                 R.drawable.uid_mail_bad, 0);
                     }
                 } else {
                     // remove drawable if email is empty
-                    mEditUri.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
+                    mEditDns.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
                 }
             }
         });
 
-        mEditUri.setText("mugenguild.com/pgpkey.txt");
+        mEditDns.setText("mugenguild.com");
 
         return view;
     }
 
     private static boolean checkUri(String uri) {
-        return Patterns.WEB_URL.matcher(uri).matches();
+        return Patterns.DOMAIN_NAME.matcher(uri).matches();
     }
 
 }

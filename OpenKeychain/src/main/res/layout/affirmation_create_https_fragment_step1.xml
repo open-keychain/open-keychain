@@ -36,7 +36,7 @@
                     android:textAppearance="?android:attr/textAppearanceMedium"
                     android:text="@string/aff_create_https_1_1" />
 
-                </LinearLayout>
+            </LinearLayout>
 
             <TextView
                 android:layout_width="wrap_content"

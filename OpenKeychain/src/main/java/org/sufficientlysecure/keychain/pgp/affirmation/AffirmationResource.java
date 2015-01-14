@@ -64,7 +64,7 @@ public abstract class AffirmationResource {
             return new LinkedVerifyResult(LinkedVerifyResult.RESULT_ERROR, log);
         }
 
-        Log.d(Constants.TAG, res);
+        Log.d(Constants.TAG, "Resource data: '" + res + "'");
 
         return verifyString(log, 1, res, nonce, fingerprint);
 
@@ -72,19 +72,23 @@ public abstract class AffirmationResource {
 
     protected abstract String fetchResource (OperationLog log, int indent);
 
+    protected Matcher matchResource (OperationLog log, int indent, String res) {
+        return magicPattern.matcher(res);
+    }
+
     protected LinkedVerifyResult verifyString (OperationLog log, int indent,
                                                String res,
                                                String nonce, byte[] fingerprint) {
 
         log.add(LogType.MSG_LV_MATCH, indent);
-        Matcher match = magicPattern.matcher(res);
+        Matcher match = matchResource(log, indent+1, res);
         if (!match.find()) {
             log.add(LogType.MSG_LV_MATCH_ERROR, 2);
             return new LinkedVerifyResult(LinkedVerifyResult.RESULT_ERROR, log);
         }
 
-        String candidateFp = match.group(1);
-        String nonceCandidate = match.group(2);
+        String candidateFp = match.group(1).toLowerCase();
+        String nonceCandidate = match.group(2).toLowerCase();
 
         String fp = KeyFormattingUtils.convertFingerprintToHex(fingerprint);
 
