@@ -110,8 +110,6 @@ public class KeyListFragment extends LoaderFragment
     private String mQuery;
     private SearchView mSearchView;
 
-    boolean hideMenu = false;
-
     /**
      * Load custom layout with StickyListView from library
      */
@@ -172,8 +170,8 @@ public class KeyListFragment extends LoaderFragment
             TextView title = (TextView) getActivity().findViewById(R.id.custom_actionbar_text);
             title.setText(R.string.swipe_to_update);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-                hideMenu = true;
-                activity.invalidateOptionsMenu();
+//                hideMenu = true;
+//                activity.invalidateOptionsMenu();
             }
         } else {
             bar.setTitle(getActivity().getTitle());
@@ -184,8 +182,8 @@ public class KeyListFragment extends LoaderFragment
             bar.setDisplayShowCustomEnabled(false);
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-                hideMenu = false;
-                activity.invalidateOptionsMenu();
+//                hideMenu = false;
+//                activity.invalidateOptionsMenu();
             }
         }
     }
@@ -470,10 +468,6 @@ public class KeyListFragment extends LoaderFragment
         MenuItemCompat.setOnActionExpandListener(searchItem, new MenuItemCompat.OnActionExpandListener() {
             @Override
             public boolean onMenuItemActionExpand(MenuItem item) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-                    hideMenu = true;
-                    getActivity().invalidateOptionsMenu();
-                }
 
                 // disable swipe-to-refresh
                 // mSwipeRefreshLayout.setIsLocked(true);
@@ -485,21 +479,11 @@ public class KeyListFragment extends LoaderFragment
                 mQuery = null;
                 getLoaderManager().restartLoader(0, null, KeyListFragment.this);
 
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-                    hideMenu = false;
-                    getActivity().invalidateOptionsMenu();
-                }
                 // enable swipe-to-refresh
                 // mSwipeRefreshLayout.setIsLocked(false);
                 return true;
             }
         });
-
-        if (hideMenu) {
-            for (int i = 0; i < menu.size(); i++) {
-                menu.getItem(i).setVisible(false);
-            }
-        }
 
         super.onCreateOptionsMenu(menu, inflater);
     }
