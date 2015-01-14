@@ -182,7 +182,7 @@ public class Preferences {
     }
 
     public boolean useNumKeypadForYubikeyPin() {
-        return mSharedPreferences.getBoolean(Pref.USE_NUMKEYPAD_FOR_YUBIKEY_PIN, false);
+        return mSharedPreferences.getBoolean(Pref.USE_NUMKEYPAD_FOR_YUBIKEY_PIN, true);
     }
 
     public void setUseNumKeypadForYubikeyPin(boolean useNumKeypadForYubikeyPin) {

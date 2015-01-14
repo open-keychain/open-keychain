@@ -17,8 +17,10 @@
 
 package org.sufficientlysecure.keychain.ui;
 
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.CheckBoxPreference;
 import android.preference.Preference;
@@ -311,6 +313,7 @@ public class SettingsActivity extends PreferenceActivity {
         }
     }
 
+    @TargetApi(Build.VERSION_CODES.KITKAT)
     protected boolean isValidFragment(String fragmentName) {
         return AdvancedPrefsFragment.class.getName().equals(fragmentName)
                 || CloudSearchPrefsFragment.class.getName().equals(fragmentName)
