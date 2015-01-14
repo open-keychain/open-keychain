@@ -17,7 +17,6 @@
 
 package org.sufficientlysecure.keychain.ui;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -26,6 +25,10 @@ import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceScreen;
+import android.support.v7.widget.Toolbar;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.LinearLayout;
 
 import org.spongycastle.bcpg.CompressionAlgorithmTags;
 import org.spongycastle.bcpg.HashAlgorithmTags;
@@ -37,8 +40,7 @@ import org.sufficientlysecure.keychain.util.Preferences;
 
 import java.util.List;
 
-@SuppressLint("NewApi")
-public class PreferencesActivity extends PreferenceActivity {
+public class SettingsActivity extends PreferenceActivity {
 
     public static final String ACTION_PREFS_CLOUD = "org.sufficientlysecure.keychain.ui.PREFS_CLOUD";
     public static final String ACTION_PREFS_ADV = "org.sufficientlysecure.keychain.ui.PREFS_ADV";
@@ -53,6 +55,8 @@ public class PreferencesActivity extends PreferenceActivity {
         sPreferences = Preferences.getPreferences(this);
         super.onCreate(savedInstanceState);
 
+        setupToolbar();
+
         String action = getIntent().getAction();
 
         if (action != null && action.equals(ACTION_PREFS_CLOUD)) {
@@ -63,9 +67,9 @@ public class PreferencesActivity extends PreferenceActivity {
             mKeyServerPreference
                     .setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
                         public boolean onPreferenceClick(Preference preference) {
-                            Intent intent = new Intent(PreferencesActivity.this,
-                                    PreferencesKeyServerActivity.class);
-                            intent.putExtra(PreferencesKeyServerActivity.EXTRA_KEY_SERVERS,
+                            Intent intent = new Intent(SettingsActivity.this,
+                                    SettingsKeyServerActivity.class);
+                            intent.putExtra(SettingsKeyServerActivity.EXTRA_KEY_SERVERS,
                                     sPreferences.getKeyServers());
                             startActivityForResult(intent, REQUEST_CODE_KEYSERVER_PREF);
                             return false;
@@ -132,6 +136,30 @@ public class PreferencesActivity extends PreferenceActivity {
         }
     }
 
+    /**
+     * Hack to get Toolbar in PreferenceActivity. See http://stackoverflow.com/a/26614696
+     */
+    private void setupToolbar() {
+        ViewGroup root = (ViewGroup) findViewById(android.R.id.content);
+        LinearLayout content = (LinearLayout) root.getChildAt(0);
+        LinearLayout toolbarContainer = (LinearLayout) View.inflate(this, R.layout.preference_toolbar_activity, null);
+
+        root.removeAllViews();
+        toolbarContainer.addView(content);
+        root.addView(toolbarContainer);
+
+        Toolbar toolbar = (Toolbar) toolbarContainer.findViewById(R.id.toolbar);
+        toolbar.setTitle(R.string.title_preferences);
+        toolbar.setNavigationIcon(getResources().getDrawable(R.drawable.ic_arrow_back_white_24dp));
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //What to do on back clicked
+                finish();
+            }
+        });
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
@@ -140,7 +168,7 @@ public class PreferencesActivity extends PreferenceActivity {
                     return;
                 }
                 String servers[] = data
-                        .getStringArrayExtra(PreferencesKeyServerActivity.EXTRA_KEY_SERVERS);
+                        .getStringArrayExtra(SettingsKeyServerActivity.EXTRA_KEY_SERVERS);
                 sPreferences.setKeyServers(servers);
                 mKeyServerPreference.setSummary(keyserverSummary(this));
                 break;
@@ -181,8 +209,8 @@ public class PreferencesActivity extends PreferenceActivity {
                     .setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
                         public boolean onPreferenceClick(Preference preference) {
                             Intent intent = new Intent(getActivity(),
-                                    PreferencesKeyServerActivity.class);
-                            intent.putExtra(PreferencesKeyServerActivity.EXTRA_KEY_SERVERS,
+                                    SettingsKeyServerActivity.class);
+                            intent.putExtra(SettingsKeyServerActivity.EXTRA_KEY_SERVERS,
                                     sPreferences.getKeyServers());
                             startActivityForResult(intent, REQUEST_CODE_KEYSERVER_PREF);
                             return false;
@@ -204,7 +232,7 @@ public class PreferencesActivity extends PreferenceActivity {
                         return;
                     }
                     String servers[] = data
-                            .getStringArrayExtra(PreferencesKeyServerActivity.EXTRA_KEY_SERVERS);
+                            .getStringArrayExtra(SettingsKeyServerActivity.EXTRA_KEY_SERVERS);
                     sPreferences.setKeyServers(servers);
                     mKeyServerPreference.setSummary(keyserverSummary(getActivity()));
                     break;

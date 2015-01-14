@@ -35,7 +35,7 @@ import org.sufficientlysecure.keychain.ui.widget.KeyServerEditor;
 
 import java.util.Vector;
 
-public class PreferencesKeyServerActivity extends BaseActivity implements OnClickListener,
+public class SettingsKeyServerActivity extends BaseActivity implements OnClickListener,
         EditorListener {
 
     public static final String EXTRA_KEY_SERVERS = "key_servers";
