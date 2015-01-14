@@ -27,7 +27,7 @@ import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.api.OpenKeychainIntents;
 import org.sufficientlysecure.keychain.util.Log;
 
-public class DecryptFilesActivity extends ActionBarActivity {
+public class DecryptFilesActivity extends BaseActivity {
 
     /* Intents */
     public static final String ACTION_DECRYPT_DATA = OpenKeychainIntents.DECRYPT_DATA;
@@ -41,10 +41,13 @@ public class DecryptFilesActivity extends ActionBarActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.decrypt_files_activity);
-
         // Handle intent actions
         handleActions(savedInstanceState, getIntent());
+    }
+
+    @Override
+    protected void initLayout() {
+        setContentView(R.layout.decrypt_files_activity);
     }
 
     /**

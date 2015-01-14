@@ -35,7 +35,7 @@ import org.sufficientlysecure.keychain.ui.util.Notify;
 
 import java.util.regex.Matcher;
 
-public class DecryptTextActivity extends ActionBarActivity {
+public class DecryptTextActivity extends BaseActivity {
 
     /* Intents */
     public static final String ACTION_DECRYPT_TEXT = OpenKeychainIntents.DECRYPT_TEXT;
@@ -50,10 +50,13 @@ public class DecryptTextActivity extends ActionBarActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.decrypt_text_activity);
-
         // Handle intent actions
         handleActions(savedInstanceState, getIntent());
+    }
+
+    @Override
+    protected void initLayout() {
+        setContentView(R.layout.decrypt_text_activity);
     }
 
     /**
