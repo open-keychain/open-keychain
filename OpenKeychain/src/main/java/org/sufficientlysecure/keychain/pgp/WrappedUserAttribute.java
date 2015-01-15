@@ -39,6 +39,7 @@ public class WrappedUserAttribute implements Serializable {
 
     public static final int UAT_NONE = 0;
     public static final int UAT_IMAGE = UserAttributeSubpacketTags.IMAGE_ATTRIBUTE;
+    public static final int UAT_LINKED_ID = 100;
 
     private PGPUserAttributeSubpacketVector mVector;
 

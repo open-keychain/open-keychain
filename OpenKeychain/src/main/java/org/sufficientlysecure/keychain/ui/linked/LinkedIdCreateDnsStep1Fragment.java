@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.sufficientlysecure.keychain.ui.affirmations;
+package org.sufficientlysecure.keychain.ui.linked;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -29,20 +29,20 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.pgp.affirmation.LinkedIdentity;
-import org.sufficientlysecure.keychain.pgp.affirmation.resources.DnsResource;
+import org.sufficientlysecure.keychain.pgp.linked.LinkedIdentity;
+import org.sufficientlysecure.keychain.pgp.linked.resources.DnsResource;
 
-public class AffirmationCreateDnsStep1Fragment extends Fragment {
+public class LinkedIdCreateDnsStep1Fragment extends Fragment {
 
-    AffirmationWizard mAffirmationWizard;
+    LinkedIdWizard mLinkedIdWizard;
 
     EditText mEditDns;
 
     /**
      * Creates new instance of this fragment
      */
-    public static AffirmationCreateDnsStep1Fragment newInstance() {
-        AffirmationCreateDnsStep1Fragment frag = new AffirmationCreateDnsStep1Fragment();
+    public static LinkedIdCreateDnsStep1Fragment newInstance() {
+        LinkedIdCreateDnsStep1Fragment frag = new LinkedIdCreateDnsStep1Fragment();
 
         Bundle args = new Bundle();
         frag.setArguments(args);
@@ -54,13 +54,13 @@ public class AffirmationCreateDnsStep1Fragment extends Fragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        mAffirmationWizard = (AffirmationWizard) getActivity();
+        mLinkedIdWizard = (LinkedIdWizard) getActivity();
 
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        final View view = inflater.inflate(R.layout.affirmation_create_dns_fragment_step1, container, false);
+        final View view = inflater.inflate(R.layout.linked_create_dns_fragment_step1, container, false);
 
         view.findViewById(R.id.next_button).setOnClickListener(new OnClickListener() {
             @Override
@@ -75,12 +75,12 @@ public class AffirmationCreateDnsStep1Fragment extends Fragment {
 
                 String proofNonce = LinkedIdentity.generateNonce();
                 String proofText = DnsResource.generateText(getActivity(),
-                        mAffirmationWizard.mFingerprint, proofNonce);
+                        mLinkedIdWizard.mFingerprint, proofNonce);
 
-                AffirmationCreateDnsStep2Fragment frag =
-                        AffirmationCreateDnsStep2Fragment.newInstance(uri, proofNonce, proofText);
+                LinkedIdCreateDnsStep2Fragment frag =
+                        LinkedIdCreateDnsStep2Fragment.newInstance(uri, proofNonce, proofText);
 
-                mAffirmationWizard.loadFragment(null, frag, AffirmationWizard.FRAG_ACTION_TO_RIGHT);
+                mLinkedIdWizard.loadFragment(null, frag, LinkedIdWizard.FRAG_ACTION_TO_RIGHT);
 
             }
         });
@@ -88,11 +88,11 @@ public class AffirmationCreateDnsStep1Fragment extends Fragment {
         view.findViewById(R.id.back_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mAffirmationWizard.loadFragment(null, null, AffirmationWizard.FRAG_ACTION_TO_LEFT);
+                mLinkedIdWizard.loadFragment(null, null, LinkedIdWizard.FRAG_ACTION_TO_LEFT);
             }
         });
 
-        mEditDns = (EditText) view.findViewById(R.id.affirmation_create_dns_domain);
+        mEditDns = (EditText) view.findViewById(R.id.linked_create_dns_domain);
 
         mEditDns.addTextChangedListener(new TextWatcher() {
             @Override

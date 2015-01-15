@@ -21,14 +21,16 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:textAppearance="?android:attr/textAppearanceMedium"
-                android:text="@string/linked_create_dns_2_1" />
+                android:text="@string/linked_create_https_2_1" />
 
             <EditText
-                android:id="@+id/affirmation_create_dns_text"
+                android:id="@+id/linked_create_https_uri"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:imeOptions="actionNext"
                 android:layout_marginTop="8dp"
+                android:hint="uri"
+                android:ems="10"
                 android:layout_gravity="center_horizontal"
                 android:inputType="textUri|none"
                 android:enabled="false"/>
@@ -38,7 +40,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:textAppearance="?android:attr/textAppearanceMedium"
-                android:text="@string/linked_create_dns_2_2" />
+                android:text="@string/linked_create_https_2_2" />
 
             <LinearLayout
                 android:layout_width="wrap_content"
@@ -67,7 +69,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:textAppearance="?android:attr/textAppearanceMedium"
-                android:text="@string/linked_create_dns_2_3" />
+                android:text="@string/linked_create_https_2_3" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -118,7 +120,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:textAppearance="?android:attr/textAppearanceMedium"
-                android:text="@string/linked_create_dns_2_4" />
+                android:text="@string/linked_create_https_2_4" />
 
         </LinearLayout>
 

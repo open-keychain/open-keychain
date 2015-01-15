@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.sufficientlysecure.keychain.ui.affirmations;
+package org.sufficientlysecure.keychain.ui.linked;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
@@ -42,13 +42,11 @@ import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.results.LinkedVerifyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.pgp.WrappedUserAttribute;
-import org.sufficientlysecure.keychain.pgp.affirmation.LinkedIdentity;
-import org.sufficientlysecure.keychain.pgp.affirmation.resources.GenericHttpsResource;
+import org.sufficientlysecure.keychain.pgp.linked.LinkedIdentity;
+import org.sufficientlysecure.keychain.pgp.linked.resources.DnsResource;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
 import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
-import org.sufficientlysecure.keychain.service.PassphraseCacheService;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
-import org.sufficientlysecure.keychain.ui.EditKeyActivity;
 import org.sufficientlysecure.keychain.ui.PassphraseDialogActivity;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.ui.util.Notify.Style;
@@ -57,39 +55,37 @@ import org.sufficientlysecure.keychain.util.FileHelper;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
-import java.net.URI;
-import java.net.URISyntaxException;
 
-public class AffirmationCreateHttpsStep2Fragment extends Fragment {
+public class LinkedIdCreateDnsStep2Fragment extends Fragment {
 
     private static final int REQUEST_CODE_OUTPUT = 0x00007007;
     private static final int REQUEST_CODE_PASSPHRASE = 0x00007008;
 
-    public static final String URI = "uri", NONCE = "nonce", TEXT = "text";
+    public static final String DOMAIN = "domain", NONCE = "nonce", TEXT = "text";
 
-    AffirmationWizard mAffirmationWizard;
+    LinkedIdWizard mLinkedIdWizard;
 
     EditText mEditUri;
     ImageView mVerifyImage;
     View mVerifyProgress;
     TextView mVerifyStatus;
 
-    String mResourceUri;
+    String mResourceDomain;
     String mResourceNonce, mResourceString;
 
     // This is a resource, set AFTER it has been verified
-    GenericHttpsResource mVerifiedResource = null;
+    DnsResource mVerifiedResource = null;
 
     /**
      * Creates new instance of this fragment
      */
-    public static AffirmationCreateHttpsStep2Fragment newInstance
+    public static LinkedIdCreateDnsStep2Fragment newInstance
             (String uri, String proofNonce, String proofText) {
 
-        AffirmationCreateHttpsStep2Fragment frag = new AffirmationCreateHttpsStep2Fragment();
+        LinkedIdCreateDnsStep2Fragment frag = new LinkedIdCreateDnsStep2Fragment();
 
         Bundle args = new Bundle();
-        args.putString(URI, uri);
+        args.putString(DOMAIN, uri);
         args.putString(NONCE, proofNonce);
         args.putString(TEXT, proofText);
         frag.setArguments(args);
@@ -99,9 +95,9 @@ public class AffirmationCreateHttpsStep2Fragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        final View view = inflater.inflate(R.layout.affirmation_create_https_fragment_step2, container, false);
+        final View view = inflater.inflate(R.layout.linked_create_dns_fragment_step2, container, false);
 
-        mResourceUri = getArguments().getString(URI);
+        mResourceDomain = getArguments().getString(DOMAIN);
         mResourceNonce = getArguments().getString(NONCE);
         mResourceString = getArguments().getString(TEXT);
 
@@ -112,10 +108,10 @@ public class AffirmationCreateHttpsStep2Fragment extends Fragment {
             }
         });
 
-        view.findViewById(R.id.back_button).setOnClickListener(new View.OnClickListener() {
+        view.findViewById(R.id.back_button).setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                mAffirmationWizard.loadFragment(null, null, AffirmationWizard.FRAG_ACTION_TO_LEFT);
+                mLinkedIdWizard.loadFragment(null, null, LinkedIdWizard.FRAG_ACTION_TO_LEFT);
             }
         });
 
@@ -144,8 +140,8 @@ public class AffirmationCreateHttpsStep2Fragment extends Fragment {
             }
         });
 
-        mEditUri = (EditText) view.findViewById(R.id.affirmation_create_https_uri);
-        mEditUri.setText(mResourceUri);
+        mEditUri = (EditText) view.findViewById(R.id.linked_create_dns_text);
+        mEditUri.setText(mResourceString);
 
         setVerifyProgress(false, null);
         mVerifyStatus.setText(R.string.linked_verify_pending);
@@ -157,7 +153,7 @@ public class AffirmationCreateHttpsStep2Fragment extends Fragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        mAffirmationWizard = (AffirmationWizard) getActivity();
+        mLinkedIdWizard = (LinkedIdWizard) getActivity();
     }
 
     public void setVerifyProgress(boolean on, Boolean success) {
@@ -224,44 +220,40 @@ public class AffirmationCreateHttpsStep2Fragment extends Fragment {
     public void proofVerify() {
         setVerifyProgress(true, null);
 
-        try {
-            final GenericHttpsResource resource = GenericHttpsResource.createNew(new URI(mResourceUri));
+        final DnsResource resource = DnsResource.createNew(mResourceDomain);
 
-            new AsyncTask<Void,Void,LinkedVerifyResult>() {
+        new AsyncTask<Void,Void,LinkedVerifyResult>() {
 
-                @Override
-                protected LinkedVerifyResult doInBackground(Void... params) {
-                    return resource.verify(mAffirmationWizard.mFingerprint, mResourceNonce);
+            @Override
+            protected LinkedVerifyResult doInBackground(Void... params) {
+                return resource.verify(mLinkedIdWizard.mFingerprint, mResourceNonce);
+            }
+
+            @Override
+            protected void onPostExecute(LinkedVerifyResult result) {
+                super.onPostExecute(result);
+                if (result.success()) {
+                    setVerifyProgress(false, true);
+                    mVerifiedResource = resource;
+                } else {
+                    setVerifyProgress(false, false);
+                    // on error, show error message
+                    result.createNotify(getActivity()).show();
                 }
-
-                @Override
-                protected void onPostExecute(LinkedVerifyResult result) {
-                    super.onPostExecute(result);
-                    if (result.success()) {
-                        setVerifyProgress(false, true);
-                        mVerifiedResource = resource;
-                    } else {
-                        setVerifyProgress(false, false);
-                        // on error, show error message
-                        result.createNotify(getActivity()).show();
-                    }
-                }
-            }.execute();
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
-        }
+            }
+        }.execute();
 
     }
 
     public void startCertify() {
 
         if (mVerifiedResource == null) {
-            Notify.showNotify(getActivity(), R.string.linked_need_verify, Notify.Style.ERROR);
+            Notify.showNotify(getActivity(), R.string.linked_need_verify, Style.ERROR);
             return;
         }
 
         Intent intent = new Intent(getActivity(), PassphraseDialogActivity.class);
-        intent.putExtra(PassphraseDialogActivity.EXTRA_SUBKEY_ID, mAffirmationWizard.mMasterKeyId);
+        intent.putExtra(PassphraseDialogActivity.EXTRA_SUBKEY_ID, mLinkedIdWizard.mMasterKeyId);
         startActivityForResult(intent, REQUEST_CODE_PASSPHRASE);
 
     }
@@ -304,7 +296,7 @@ public class AffirmationCreateHttpsStep2Fragment extends Fragment {
 
                     // AffirmationCreateHttpsStep3Fragment frag =
                     // AffirmationCreateHttpsStep3Fragment.newInstance(
-                    // mResourceUri, mResourceNonce, mResourceString);
+                    // mResourceDomain, mResourceNonce, mResourceString);
 
                     // mAffirmationWizard.loadFragment(null, frag, AffirmationWizard.FRAG_ACTION_TO_RIGHT);
 
@@ -313,7 +305,7 @@ public class AffirmationCreateHttpsStep2Fragment extends Fragment {
         };
 
         SaveKeyringParcel skp =
-                new SaveKeyringParcel(mAffirmationWizard.mMasterKeyId, mAffirmationWizard.mFingerprint);
+                new SaveKeyringParcel(mLinkedIdWizard.mMasterKeyId, mLinkedIdWizard.mFingerprint);
 
         WrappedUserAttribute ua =
                 LinkedIdentity.fromResource(mVerifiedResource, mResourceNonce).toUserAttribute();

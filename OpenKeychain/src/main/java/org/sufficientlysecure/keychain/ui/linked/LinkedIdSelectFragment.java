@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.sufficientlysecure.keychain.ui.affirmations;
+package org.sufficientlysecure.keychain.ui.linked;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -25,15 +25,15 @@ import android.view.ViewGroup;
 
 import org.sufficientlysecure.keychain.R;
 
-public class AffirmationSelectFragment extends Fragment {
+public class LinkedIdSelectFragment extends Fragment {
 
-    AffirmationWizard mAffirmationWizard;
+    LinkedIdWizard mLinkedIdWizard;
 
     /**
      * Creates new instance of this fragment
      */
-    public static AffirmationSelectFragment newInstance() {
-        AffirmationSelectFragment frag = new AffirmationSelectFragment();
+    public static LinkedIdSelectFragment newInstance() {
+        LinkedIdSelectFragment frag = new LinkedIdSelectFragment();
 
         Bundle args = new Bundle();
         frag.setArguments(args);
@@ -43,38 +43,38 @@ public class AffirmationSelectFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.affirmation_select_fragment, container, false);
+        View view = inflater.inflate(R.layout.linked_select_fragment, container, false);
 
-        view.findViewById(R.id.affirmation_create_https_button)
+        view.findViewById(R.id.linked_create_https_button)
                 .setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        AffirmationCreateHttpsStep1Fragment frag =
-                                AffirmationCreateHttpsStep1Fragment.newInstance();
+                        LinkedIdCreateHttpsStep1Fragment frag =
+                                LinkedIdCreateHttpsStep1Fragment.newInstance();
 
-                        mAffirmationWizard.loadFragment(null, frag, AffirmationWizard.FRAG_ACTION_TO_RIGHT);
+                        mLinkedIdWizard.loadFragment(null, frag, LinkedIdWizard.FRAG_ACTION_TO_RIGHT);
                     }
                 });
 
-        view.findViewById(R.id.affirmation_create_dns_button)
+        view.findViewById(R.id.linked_create_dns_button)
                 .setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        AffirmationCreateDnsStep1Fragment frag =
-                                AffirmationCreateDnsStep1Fragment.newInstance();
+                        LinkedIdCreateDnsStep1Fragment frag =
+                                LinkedIdCreateDnsStep1Fragment.newInstance();
 
-                        mAffirmationWizard.loadFragment(null, frag, AffirmationWizard.FRAG_ACTION_TO_RIGHT);
+                        mLinkedIdWizard.loadFragment(null, frag, LinkedIdWizard.FRAG_ACTION_TO_RIGHT);
                     }
                 });
 
-        view.findViewById(R.id.affirmation_create_twitter_button)
+        view.findViewById(R.id.linked_create_twitter_button)
                 .setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        AffirmationCreateTwitterStep1Fragment frag =
-                                AffirmationCreateTwitterStep1Fragment.newInstance();
+                        LinkedIdCreateTwitterStep1Fragment frag =
+                                LinkedIdCreateTwitterStep1Fragment.newInstance();
 
-                        mAffirmationWizard.loadFragment(null, frag, AffirmationWizard.FRAG_ACTION_TO_RIGHT);
+                        mLinkedIdWizard.loadFragment(null, frag, LinkedIdWizard.FRAG_ACTION_TO_RIGHT);
                     }
                 });
 
@@ -85,7 +85,7 @@ public class AffirmationSelectFragment extends Fragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        mAffirmationWizard = (AffirmationWizard) getActivity();
+        mLinkedIdWizard = (LinkedIdWizard) getActivity();
     }
 
 }

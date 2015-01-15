@@ -22,7 +22,6 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import org.sufficientlysecure.keychain.pgp.WrappedUserAttribute;
-import org.sufficientlysecure.keychain.pgp.affirmation.LinkedIdentity;
 
 import java.io.Serializable;
 import java.util.ArrayList;

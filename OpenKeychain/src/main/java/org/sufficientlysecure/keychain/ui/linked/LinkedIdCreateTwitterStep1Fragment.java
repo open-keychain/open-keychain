@@ -15,14 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.sufficientlysecure.keychain.ui.affirmations;
+package org.sufficientlysecure.keychain.ui.linked;
 
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.text.Editable;
-import android.text.TextWatcher;
-import android.util.Patterns;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -30,28 +27,25 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.pgp.affirmation.LinkedIdentity;
-import org.sufficientlysecure.keychain.pgp.affirmation.resources.GenericHttpsResource;
-import org.sufficientlysecure.keychain.pgp.affirmation.resources.TwitterResource;
-import org.sufficientlysecure.keychain.ui.CreateKeyActivity;
+import org.sufficientlysecure.keychain.pgp.linked.LinkedIdentity;
+import org.sufficientlysecure.keychain.pgp.linked.resources.TwitterResource;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.net.URLConnection;
 
-public class AffirmationCreateTwitterStep1Fragment extends Fragment {
+public class LinkedIdCreateTwitterStep1Fragment extends Fragment {
 
-    AffirmationWizard mAffirmationWizard;
+    LinkedIdWizard mLinkedIdWizard;
 
     EditText mEditHandle;
 
     /**
      * Creates new instance of this fragment
      */
-    public static AffirmationCreateTwitterStep1Fragment newInstance() {
-        AffirmationCreateTwitterStep1Fragment frag = new AffirmationCreateTwitterStep1Fragment();
+    public static LinkedIdCreateTwitterStep1Fragment newInstance() {
+        LinkedIdCreateTwitterStep1Fragment frag = new LinkedIdCreateTwitterStep1Fragment();
 
         Bundle args = new Bundle();
         frag.setArguments(args);
@@ -63,13 +57,13 @@ public class AffirmationCreateTwitterStep1Fragment extends Fragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        mAffirmationWizard = (AffirmationWizard) getActivity();
+        mLinkedIdWizard = (LinkedIdWizard) getActivity();
 
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        final View view = inflater.inflate(R.layout.affirmation_create_twitter_fragment_step1, container, false);
+        final View view = inflater.inflate(R.layout.linked_create_twitter_fragment_step1, container, false);
 
         view.findViewById(R.id.next_button).setOnClickListener(new OnClickListener() {
             @Override
@@ -100,12 +94,12 @@ public class AffirmationCreateTwitterStep1Fragment extends Fragment {
 
                         String proofNonce = LinkedIdentity.generateNonce();
                         String proofText = TwitterResource.generateText(getActivity(),
-                                mAffirmationWizard.mFingerprint, proofNonce);
+                                mLinkedIdWizard.mFingerprint, proofNonce);
 
-                        AffirmationCreateTwitterStep2Fragment frag =
-                                AffirmationCreateTwitterStep2Fragment.newInstance(handle, proofNonce, proofText);
+                        LinkedIdCreateTwitterStep2Fragment frag =
+                                LinkedIdCreateTwitterStep2Fragment.newInstance(handle, proofNonce, proofText);
 
-                        mAffirmationWizard.loadFragment(null, frag, AffirmationWizard.FRAG_ACTION_TO_RIGHT);
+                        mLinkedIdWizard.loadFragment(null, frag, LinkedIdWizard.FRAG_ACTION_TO_RIGHT);
                     }
                 }.execute();
 
@@ -115,7 +109,7 @@ public class AffirmationCreateTwitterStep1Fragment extends Fragment {
         view.findViewById(R.id.back_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mAffirmationWizard.loadFragment(null, null, AffirmationWizard.FRAG_ACTION_TO_LEFT);
+                mLinkedIdWizard.loadFragment(null, null, LinkedIdWizard.FRAG_ACTION_TO_LEFT);
             }
         });
 

@@ -17,7 +17,7 @@
     <string name="title_unlock">"Unlock Key"</string>
     <string name="title_add_subkey">"Add subkey"</string>
     <string name="title_edit_key">"Edit Key"</string>
-    <string name="title_affirmation">"Create Affirmation"</string>
+    <string name="title_linked_create">"Create a Linked Identity"</string>
     <string name="title_preferences">"Preferences"</string>
     <string name="title_cloud_search_preferences">"Cloud Search Preferences"</string>
     <string name="title_api_registered_apps">"Apps"</string>
@@ -1152,16 +1152,15 @@
     <string name="unlocked">Unlocked</string>
     <string name="nfc_settings">Settings</string>
 
-    <string name="aff_create_https_1_1">"You can link your key to a website you control. Note that your server must have a valid https certificate!"</string>
-    <string name="aff_create_https_1_2">"Please enter the url where you are able to place a text file for proof:"</string>
-    <string name="aff_create_https_1_3">"Example: https://example.com/pgpkey.txt"</string>
-    <string name="aff_create_https_1_4">"In the next step, a text file will be generated, which you will be asked to upload to the uri. This file links back to your pgp key, to make the connection verifiable in both directions."</string>
-
-    <string name="aff_create_https_created">"The proof file has been created. For the next step, you should save and upload it to the URI you indicated:"</string>
-    <string name="aff_create_https_2_1">"A proof file for this URI has been created:"</string>
-    <string name="aff_create_https_2_2">"For the next step, you should save and upload this file."</string>
-    <string name="aff_create_https_2_3">"Make sure the file is reachable at the correct URI, then verify your setup."</string>
-    <string name="aff_create_https_2_4">"After verification is successful, hit next to add the linked identity to your keyring and finish the process."</string>
+    <string name="linked_create_https_1_1">"You can link your key to a website you control. Note that your server must have a valid https certificate!"</string>
+    <string name="linked_create_https_1_2">"Please enter the url where you are able to place a text file for proof:"</string>
+    <string name="linked_create_https_1_3">"Example: https://example.com/pgpkey.txt"</string>
+    <string name="linked_create_https_1_4">"In the next step, a text file will be generated, which you will be asked to upload to the uri. This file links back to your pgp key, to make the connection verifiable in both directions."</string>
+    <string name="linked_create_https_created">"The proof file has been created. For the next step, you should save and upload it to the URI you indicated:"</string>
+    <string name="linked_create_https_2_1">"A proof file for this URI has been created:"</string>
+    <string name="linked_create_https_2_2">"For the next step, you should save and upload this file."</string>
+    <string name="linked_create_https_2_3">"Make sure the file is reachable at the correct URI, then verify your setup."</string>
+    <string name="linked_create_https_2_4">"After verification is successful, hit next to add the linked identity to your keyring and finish the process."</string>
 
     <string name="linked_create_twitter_1_1">"You can link your pgp key to your account on Twitter. Please enter your username:"</string>
     <string name="linked_create_twitter_1_2">"A message will be generated in the next step, which you can then customize and finally publish to your timeline."</string>
@@ -1185,7 +1184,8 @@
     <string name="linked_create_dns_2_3">"More bla:"</string>
     <string name="linked_create_dns_2_4">"bla bla"</string>
 
-
+    <string name="linked_select_1">"A \'linked identity\' connects your pgp key to a resource on the web."</string>
+    <string name="linked_select_2">Please select a type:</string>
     <string name="linked_id_generic_text">"This file claims ownership of the OpenPGP key with long id %2$s.\n\nCookie for proof:\n%1$s"</string>
     <string name="linked_verifying">Verifying…</string>
     <string name="linked_verify_success">Verification successful!</string>

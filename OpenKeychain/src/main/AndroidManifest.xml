@@ -108,9 +108,9 @@
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
             android:label="@string/title_edit_key" />
         <activity
-            android:name=".ui.affirmations.AffirmationWizard"
+            android:name=".ui.linked.LinkedIdWizard"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
-            android:label="@string/title_affirmation" />
+            android:label="@string/title_linked_create" />
         <activity
             android:name=".ui.QrCodeViewActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"

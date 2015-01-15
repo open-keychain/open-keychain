@@ -1,4 +1,4 @@
-package org.sufficientlysecure.keychain.pgp.affirmation;
+package org.sufficientlysecure.keychain.pgp.linked;
 
 import android.content.Context;
 
@@ -6,8 +6,8 @@ import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.operations.results.LinkedVerifyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
-import org.sufficientlysecure.keychain.pgp.affirmation.resources.GenericHttpsResource;
-import org.sufficientlysecure.keychain.pgp.affirmation.resources.UnknownResource;
+import org.sufficientlysecure.keychain.pgp.linked.resources.GenericHttpsResource;
+import org.sufficientlysecure.keychain.pgp.linked.resources.UnknownResource;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.Log;
 
@@ -18,7 +18,7 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public abstract class AffirmationResource {
+public abstract class LinkedResource {
 
     protected final URI mSubUri;
     protected final Set<String> mFlags;
@@ -27,7 +27,7 @@ public abstract class AffirmationResource {
     static Pattern magicPattern =
             Pattern.compile("\\[Verifying my PGP key: pgpid\\+cookie:([a-zA-Z0-9]+)#([a-zA-Z0-9]+)\\]");
 
-    protected AffirmationResource(Set<String> flags, HashMap<String,String> params, URI uri) {
+    protected LinkedResource(Set<String> flags, HashMap<String, String> params, URI uri) {
         mFlags = flags;
         mParams = params;
         mSubUri = uri;
@@ -108,10 +108,10 @@ public abstract class AffirmationResource {
 
     }
 
-    public static AffirmationResource findResourceType
+    public static LinkedResource findResourceType
             (Set<String> flags, HashMap<String,String> params, URI uri) {
 
-        AffirmationResource res;
+        LinkedResource res;
 
         res = GenericHttpsResource.create(flags, params, uri);
         if (res != null) {

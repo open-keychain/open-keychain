@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.sufficientlysecure.keychain.ui.affirmations;
+package org.sufficientlysecure.keychain.ui.linked;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -31,15 +31,14 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.ui.CreateKeyActivity;
 
-public class AffirmationCreateTwitterStep2Fragment extends Fragment {
+public class LinkedIdCreateTwitterStep2Fragment extends Fragment {
 
     private static final int REQUEST_CODE_OUTPUT = 0x00007007;
 
     public static final String HANDLE = "uri", NONCE = "nonce", TEXT = "text";
 
-    AffirmationWizard mAffirmationWizard;
+    LinkedIdWizard mLinkedIdWizard;
 
     EditText mEditTweetCustom, mEditTweetPreview;
     ImageView mVerifyImage;
@@ -52,10 +51,10 @@ public class AffirmationCreateTwitterStep2Fragment extends Fragment {
     /**
      * Creates new instance of this fragment
      */
-    public static AffirmationCreateTwitterStep2Fragment newInstance
+    public static LinkedIdCreateTwitterStep2Fragment newInstance
             (String handle, String proofNonce, String proofText) {
 
-        AffirmationCreateTwitterStep2Fragment frag = new AffirmationCreateTwitterStep2Fragment();
+        LinkedIdCreateTwitterStep2Fragment frag = new LinkedIdCreateTwitterStep2Fragment();
 
         Bundle args = new Bundle();
         args.putString(HANDLE, handle);
@@ -68,7 +67,7 @@ public class AffirmationCreateTwitterStep2Fragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        final View view = inflater.inflate(R.layout.affirmation_create_twitter_fragment_step2, container, false);
+        final View view = inflater.inflate(R.layout.linked_create_twitter_fragment_step2, container, false);
 
         mResourceHandle = getArguments().getString(HANDLE);
         mResourceNonce = getArguments().getString(NONCE);
@@ -78,19 +77,19 @@ public class AffirmationCreateTwitterStep2Fragment extends Fragment {
             @Override
             public void onClick(View v) {
 
-                AffirmationCreateTwitterStep3Fragment frag =
-                        AffirmationCreateTwitterStep3Fragment.newInstance(mResourceHandle,
+                LinkedIdCreateTwitterStep3Fragment frag =
+                        LinkedIdCreateTwitterStep3Fragment.newInstance(mResourceHandle,
                                 mResourceNonce, mResourceString,
                                 mEditTweetCustom.getText().toString());
 
-                mAffirmationWizard.loadFragment(null, frag, AffirmationWizard.FRAG_ACTION_TO_RIGHT);
+                mLinkedIdWizard.loadFragment(null, frag, LinkedIdWizard.FRAG_ACTION_TO_RIGHT);
             }
         });
 
         view.findViewById(R.id.back_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mAffirmationWizard.loadFragment(null, null, AffirmationWizard.FRAG_ACTION_TO_LEFT);
+                mLinkedIdWizard.loadFragment(null, null, LinkedIdWizard.FRAG_ACTION_TO_LEFT);
             }
         });
 
@@ -144,7 +143,7 @@ public class AffirmationCreateTwitterStep2Fragment extends Fragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        mAffirmationWizard = (AffirmationWizard) getActivity();
+        mLinkedIdWizard = (LinkedIdWizard) getActivity();
     }
 
 }

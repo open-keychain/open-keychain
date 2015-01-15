@@ -1,9 +1,9 @@
-package org.sufficientlysecure.keychain.pgp.affirmation.resources;
+package org.sufficientlysecure.keychain.pgp.linked.resources;
 
 import android.content.Context;
 
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
-import org.sufficientlysecure.keychain.pgp.affirmation.AffirmationResource;
+import org.sufficientlysecure.keychain.pgp.linked.LinkedResource;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 
 import java.net.URI;
@@ -20,7 +20,7 @@ import de.measite.minidns.Record;
 import de.measite.minidns.Record.TYPE;
 import de.measite.minidns.record.TXT;
 
-public class DnsResource extends AffirmationResource {
+public class DnsResource extends LinkedResource {
 
     static Pattern magicPattern =
             Pattern.compile("pgpid\\+cookie=([a-zA-Z0-9]+)(?:#|;)([a-zA-Z0-9]+)");

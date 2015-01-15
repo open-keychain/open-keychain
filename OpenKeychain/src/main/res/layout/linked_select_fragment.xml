@@ -18,7 +18,7 @@
             android:layout_marginLeft="8dp"
             android:layout_marginRight="8dp"
             android:textAppearance="?android:attr/textAppearanceMedium"
-            android:text="An 'affirmation' connects your pgp key to a resource on the web."
+            android:text="@string/linked_select_1"
             android:id="@+id/textView"
             android:layout_weight="1" />
 
@@ -29,7 +29,7 @@
             android:layout_marginLeft="8dp"
             android:layout_marginRight="8dp"
             android:textAppearance="?android:attr/textAppearanceMedium"
-            android:text="Please select a type:"
+            android:text="@string/linked_select_2"
             android:layout_weight="1" />
 
         <org.sufficientlysecure.keychain.ui.widget.FixedListView
@@ -44,7 +44,7 @@
             android:background="?android:attr/listDivider" />
 
         <LinearLayout
-            android:id="@+id/affirmation_create_https_button"
+            android:id="@+id/linked_create_https_button"
             android:layout_width="match_parent"
             android:layout_height="?android:attr/listPreferredItemHeight"
             android:clickable="true"
@@ -79,7 +79,7 @@
             android:background="?android:attr/listDivider" />
 
         <LinearLayout
-            android:id="@+id/affirmation_create_dns_button"
+            android:id="@+id/linked_create_dns_button"
             android:layout_width="match_parent"
             android:layout_height="?android:attr/listPreferredItemHeight"
             android:clickable="true"
@@ -114,7 +114,7 @@
             android:background="?android:attr/listDivider" />
 
         <LinearLayout
-            android:id="@+id/affirmation_create_twitter_button"
+            android:id="@+id/linked_create_twitter_button"
             android:layout_width="match_parent"
             android:layout_height="?android:attr/listPreferredItemHeight"
             android:clickable="true"

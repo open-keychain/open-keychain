@@ -15,17 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.sufficientlysecure.keychain.ui.affirmations;
+package org.sufficientlysecure.keychain.ui.linked;
 
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.graphics.PorterDuff;
-import android.net.Uri;
-import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -35,27 +31,16 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.operations.results.LinkedVerifyResult;
-import org.sufficientlysecure.keychain.pgp.affirmation.resources.GenericHttpsResource;
-import org.sufficientlysecure.keychain.pgp.affirmation.resources.TwitterResource;
 import org.sufficientlysecure.keychain.ui.util.Notify;
-import org.sufficientlysecure.keychain.ui.util.Notify.Style;
-import org.sufficientlysecure.keychain.util.FileHelper;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.PrintWriter;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.List;
 
-public class AffirmationCreateTwitterStep3Fragment extends Fragment {
+public class LinkedIdCreateTwitterStep3Fragment extends Fragment {
 
     public static final String HANDLE = "uri", NONCE = "nonce", TEXT = "text", CUSTOM = "custom";
 
-    AffirmationWizard mAffirmationWizard;
+    LinkedIdWizard mLinkedIdWizard;
 
     EditText mEditTweetPreview;
     ImageView mVerifyImage;
@@ -68,10 +53,10 @@ public class AffirmationCreateTwitterStep3Fragment extends Fragment {
     /**
      * Creates new instance of this fragment
      */
-    public static AffirmationCreateTwitterStep3Fragment newInstance
+    public static LinkedIdCreateTwitterStep3Fragment newInstance
             (String handle, String proofNonce, String proofText, String customText) {
 
-        AffirmationCreateTwitterStep3Fragment frag = new AffirmationCreateTwitterStep3Fragment();
+        LinkedIdCreateTwitterStep3Fragment frag = new LinkedIdCreateTwitterStep3Fragment();
 
         Bundle args = new Bundle();
         args.putString(HANDLE, handle);
@@ -85,7 +70,7 @@ public class AffirmationCreateTwitterStep3Fragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        final View view = inflater.inflate(R.layout.affirmation_create_twitter_fragment_step3, container, false);
+        final View view = inflater.inflate(R.layout.linked_create_twitter_fragment_step3, container, false);
 
         mResourceHandle = getArguments().getString(HANDLE);
         mResourceNonce = getArguments().getString(NONCE);
@@ -104,7 +89,7 @@ public class AffirmationCreateTwitterStep3Fragment extends Fragment {
         view.findViewById(R.id.back_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mAffirmationWizard.loadFragment(null, null, AffirmationWizard.FRAG_ACTION_TO_LEFT);
+                mLinkedIdWizard.loadFragment(null, null, LinkedIdWizard.FRAG_ACTION_TO_LEFT);
             }
         });
 
@@ -151,7 +136,7 @@ public class AffirmationCreateTwitterStep3Fragment extends Fragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        mAffirmationWizard = (AffirmationWizard) getActivity();
+        mLinkedIdWizard = (LinkedIdWizard) getActivity();
     }
 
     public void setVerifyProgress(boolean on, Boolean success) {

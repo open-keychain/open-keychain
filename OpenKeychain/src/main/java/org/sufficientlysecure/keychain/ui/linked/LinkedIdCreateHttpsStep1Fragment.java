@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.sufficientlysecure.keychain.ui.affirmations;
+package org.sufficientlysecure.keychain.ui.linked;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -29,20 +29,20 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.pgp.affirmation.LinkedIdentity;
-import org.sufficientlysecure.keychain.pgp.affirmation.resources.GenericHttpsResource;
+import org.sufficientlysecure.keychain.pgp.linked.LinkedIdentity;
+import org.sufficientlysecure.keychain.pgp.linked.resources.GenericHttpsResource;
 
-public class AffirmationCreateHttpsStep1Fragment extends Fragment {
+public class LinkedIdCreateHttpsStep1Fragment extends Fragment {
 
-    AffirmationWizard mAffirmationWizard;
+    LinkedIdWizard mLinkedIdWizard;
 
     EditText mEditUri;
 
     /**
      * Creates new instance of this fragment
      */
-    public static AffirmationCreateHttpsStep1Fragment newInstance() {
-        AffirmationCreateHttpsStep1Fragment frag = new AffirmationCreateHttpsStep1Fragment();
+    public static LinkedIdCreateHttpsStep1Fragment newInstance() {
+        LinkedIdCreateHttpsStep1Fragment frag = new LinkedIdCreateHttpsStep1Fragment();
 
         Bundle args = new Bundle();
         frag.setArguments(args);
@@ -54,13 +54,13 @@ public class AffirmationCreateHttpsStep1Fragment extends Fragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        mAffirmationWizard = (AffirmationWizard) getActivity();
+        mLinkedIdWizard = (LinkedIdWizard) getActivity();
 
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        final View view = inflater.inflate(R.layout.affirmation_create_https_fragment_step1, container, false);
+        final View view = inflater.inflate(R.layout.linked_create_https_fragment_step1, container, false);
 
         view.findViewById(R.id.next_button).setOnClickListener(new OnClickListener() {
             @Override
@@ -74,12 +74,12 @@ public class AffirmationCreateHttpsStep1Fragment extends Fragment {
 
                 String proofNonce = LinkedIdentity.generateNonce();
                 String proofText = GenericHttpsResource.generateText(getActivity(),
-                        mAffirmationWizard.mFingerprint, proofNonce);
+                        mLinkedIdWizard.mFingerprint, proofNonce);
 
-                AffirmationCreateHttpsStep2Fragment frag =
-                        AffirmationCreateHttpsStep2Fragment.newInstance(uri, proofNonce, proofText);
+                LinkedIdCreateHttpsStep2Fragment frag =
+                        LinkedIdCreateHttpsStep2Fragment.newInstance(uri, proofNonce, proofText);
 
-                mAffirmationWizard.loadFragment(null, frag, AffirmationWizard.FRAG_ACTION_TO_RIGHT);
+                mLinkedIdWizard.loadFragment(null, frag, LinkedIdWizard.FRAG_ACTION_TO_RIGHT);
 
             }
         });
@@ -87,11 +87,11 @@ public class AffirmationCreateHttpsStep1Fragment extends Fragment {
         view.findViewById(R.id.back_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mAffirmationWizard.loadFragment(null, null, AffirmationWizard.FRAG_ACTION_TO_LEFT);
+                mLinkedIdWizard.loadFragment(null, null, LinkedIdWizard.FRAG_ACTION_TO_LEFT);
             }
         });
 
-        mEditUri = (EditText) view.findViewById(R.id.affirmation_create_https_uri);
+        mEditUri = (EditText) view.findViewById(R.id.linked_create_https_uri);
 
         mEditUri.addTextChangedListener(new TextWatcher() {
             @Override

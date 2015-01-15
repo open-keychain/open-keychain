@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.sufficientlysecure.keychain.ui.affirmations;
+package org.sufficientlysecure.keychain.ui.linked;
 
 import android.net.Uri;
 import android.os.Bundle;
@@ -30,7 +30,7 @@ import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.util.Log;
 
-public class AffirmationWizard extends ActionBarActivity {
+public class LinkedIdWizard extends ActionBarActivity {
 
     public static final int FRAG_ACTION_START = 0;
     public static final int FRAG_ACTION_TO_RIGHT = 1;
@@ -57,7 +57,7 @@ public class AffirmationWizard extends ActionBarActivity {
         }
 
         // pass extras into fragment
-        AffirmationSelectFragment frag = AffirmationSelectFragment.newInstance();
+        LinkedIdSelectFragment frag = LinkedIdSelectFragment.newInstance();
         loadFragment(null, frag, FRAG_ACTION_START);
     }
 

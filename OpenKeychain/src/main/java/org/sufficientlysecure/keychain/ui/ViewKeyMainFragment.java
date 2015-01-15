@@ -38,7 +38,7 @@ import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.compatibility.DialogFragmentWorkaround;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UserPackets;
-import org.sufficientlysecure.keychain.ui.affirmations.AffirmationWizard;
+import org.sufficientlysecure.keychain.ui.linked.LinkedIdWizard;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
@@ -361,7 +361,7 @@ public class ViewKeyMainFragment extends LoaderFragment implements
     }
 
     private void linkKey(Uri dataUri) {
-        Intent editIntent = new Intent(getActivity(), AffirmationWizard.class);
+        Intent editIntent = new Intent(getActivity(), LinkedIdWizard.class);
         editIntent.setData(KeyRings.buildUnifiedKeyRingUri(dataUri));
         startActivityForResult(editIntent, 0);
     }

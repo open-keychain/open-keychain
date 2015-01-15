@@ -1,4 +1,4 @@
-package org.sufficientlysecure.keychain.pgp.affirmation.resources;
+package org.sufficientlysecure.keychain.pgp.linked.resources;
 
 import android.content.Context;
 import android.util.Base64;
@@ -17,7 +17,7 @@ import org.apache.http.params.BasicHttpParams;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
-import org.sufficientlysecure.keychain.pgp.affirmation.AffirmationResource;
+import org.sufficientlysecure.keychain.pgp.linked.LinkedResource;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -29,7 +29,7 @@ import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Set;
 
-public class TwitterResource extends AffirmationResource {
+public class TwitterResource extends LinkedResource {
 
     TwitterResource(Set<String> flags, HashMap<String,String> params, URI uri) {
         super(flags, params, uri);
@@ -37,7 +37,7 @@ public class TwitterResource extends AffirmationResource {
 
     public static String generateText (Context context, byte[] fingerprint, String nonce) {
         // nothing special here for now, might change this later
-        return AffirmationResource.generate(context, fingerprint, nonce);
+        return LinkedResource.generate(context, fingerprint, nonce);
     }
 
     private String getTwitterStream(String screenName) {

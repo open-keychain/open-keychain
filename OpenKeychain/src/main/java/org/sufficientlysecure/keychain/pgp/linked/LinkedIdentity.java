@@ -1,7 +1,6 @@
-package org.sufficientlysecure.keychain.pgp.affirmation;
+package org.sufficientlysecure.keychain.pgp.linked;
 
 import org.spongycastle.bcpg.UserAttributeSubpacket;
-import org.spongycastle.openpgp.PGPUserAttributeSubpacketVector;
 import org.spongycastle.util.Strings;
 import org.spongycastle.util.encoders.Hex;
 import org.sufficientlysecure.keychain.Constants;
@@ -92,10 +91,10 @@ public class LinkedIdentity {
         return result;
     }
 
-    /** This method parses an affirmation from a UserAttributeSubpacket, or returns null if the
-     * subpacket can not be parsed as a valid affirmation.
+    /** This method parses a linked id from a UserAttributeSubpacket, or returns null if the
+     * subpacket can not be parsed as a valid linked id.
      */
-    static LinkedIdentity parseAffirmation(UserAttributeSubpacket subpacket) {
+    static LinkedIdentity parseAttributeSubpacket(UserAttributeSubpacket subpacket) {
         if (subpacket.getType() != 100) {
             return null;
         }
@@ -107,7 +106,7 @@ public class LinkedIdentity {
             return parseUri(nonce, Strings.fromUTF8ByteArray(Arrays.copyOfRange(data, 12, data.length)));
 
         } catch (IllegalArgumentException e) {
-            Log.e(Constants.TAG, "error parsing uri in (suspected) affirmation packet");
+            Log.e(Constants.TAG, "error parsing uri in (suspected) linked id packet");
             return null;
         }
     }
@@ -116,18 +115,18 @@ public class LinkedIdentity {
         URI uri = URI.create(uriString);
 
         if ("pgpid".equals(uri.getScheme())) {
-            Log.e(Constants.TAG, "unknown uri scheme in (suspected) affirmation packet");
+            Log.e(Constants.TAG, "unknown uri scheme in (suspected) linked id packet");
             return null;
         }
 
         if (!uri.isOpaque()) {
-            Log.e(Constants.TAG, "non-opaque uri in (suspected) affirmation packet");
+            Log.e(Constants.TAG, "non-opaque uri in (suspected) linked id packet");
             return null;
         }
 
         String specific = uri.getSchemeSpecificPart();
         if (!specific.contains("@")) {
-            Log.e(Constants.TAG, "unknown uri scheme in affirmation packet");
+            Log.e(Constants.TAG, "unknown uri scheme in linked id packet");
             return null;
         }
 
@@ -152,7 +151,7 @@ public class LinkedIdentity {
 
     }
 
-    public static LinkedIdentity fromResource (AffirmationResource res, String nonce) {
+    public static LinkedIdentity fromResource (LinkedResource res, String nonce) {
         return new LinkedIdentity(nonce, res.getFlags(), res.getParams(), res.getSubUri());
     }
 
