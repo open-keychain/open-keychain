@@ -27,7 +27,7 @@ import org.sufficientlysecure.keychain.R;
  * Sets action bar
  */
 public abstract class BaseActivity extends ActionBarActivity {
-    private Toolbar toolbar;
+    protected Toolbar mToolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,14 +39,14 @@ public abstract class BaseActivity extends ActionBarActivity {
     protected abstract void initLayout();
 
     protected void initToolbar() {
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
-        if (toolbar != null) {
-            setSupportActionBar(toolbar);
+        mToolbar = (Toolbar) findViewById(R.id.toolbar);
+        if (mToolbar != null) {
+            setSupportActionBar(mToolbar);
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
     }
 
     protected void setActionBarIcon(int iconRes) {
-        toolbar.setNavigationIcon(iconRes);
+        mToolbar.setNavigationIcon(iconRes);
     }
 }

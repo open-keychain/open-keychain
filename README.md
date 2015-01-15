@@ -220,6 +220,10 @@ Some parts and some libraries are Apache License v2, MIT X11 License (see below)
 * StickyListHeaders  
   https://github.com/emilsjolander/StickyListHeaders  
   Apache License v2
+  
+* https://github.com/jpardogo/PagerSlidingTabStrip
+
+* https://github.com/journeyapps/zxing-android-embedded
 
 ### Images
 * icon.svg  

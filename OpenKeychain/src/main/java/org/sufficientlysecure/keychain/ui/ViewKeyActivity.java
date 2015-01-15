@@ -21,7 +21,6 @@ package org.sufficientlysecure.keychain.ui;
 import android.annotation.TargetApi;
 import android.content.Intent;
 import android.database.Cursor;
-import android.graphics.PorterDuff;
 import android.net.Uri;
 import android.nfc.NdefMessage;
 import android.nfc.NdefRecord;
@@ -38,7 +37,6 @@ import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -47,22 +45,21 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.astuetz.PagerSlidingTabStrip;
+
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
-import org.sufficientlysecure.keychain.util.ContactHelper;
-import org.sufficientlysecure.keychain.util.ExportHelper;
-import org.sufficientlysecure.keychain.util.Preferences;
+import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
-import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.ui.adapter.PagerTabStripAdapter;
-import org.sufficientlysecure.keychain.ui.widget.SlidingTabLayout;
-import org.sufficientlysecure.keychain.ui.widget.SlidingTabLayout.TabColorizer;
-import org.sufficientlysecure.keychain.util.Log;
+import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.Notify;
+import org.sufficientlysecure.keychain.util.ContactHelper;
+import org.sufficientlysecure.keychain.util.ExportHelper;
+import org.sufficientlysecure.keychain.util.Log;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -81,7 +78,7 @@ public class ViewKeyActivity extends BaseActivity implements
 
     // view
     private ViewPager mViewPager;
-    private SlidingTabLayout mSlidingTabLayout;
+    private PagerSlidingTabStrip mSlidingTabLayout;
     private PagerTabStripAdapter mTabsAdapter;
 
     private LinearLayout mStatusLayout;
@@ -117,19 +114,7 @@ public class ViewKeyActivity extends BaseActivity implements
         mStatusDivider = findViewById(R.id.view_key_status_divider);
 
         mViewPager = (ViewPager) findViewById(R.id.view_key_pager);
-        mSlidingTabLayout = (SlidingTabLayout) findViewById(R.id.view_key_sliding_tab_layout);
-
-        mSlidingTabLayout.setCustomTabColorizer(new TabColorizer() {
-            @Override
-            public int getIndicatorColor(int position) {
-                return 0xFF4caf50;
-            }
-
-            @Override
-            public int getDividerColor(int position) {
-                return 0;
-            }
-        });
+        mSlidingTabLayout = (PagerSlidingTabStrip) findViewById(R.id.view_key_sliding_tab_layout);
 
         int switchToTab = TAB_MAIN;
         Intent intent = getIntent();
