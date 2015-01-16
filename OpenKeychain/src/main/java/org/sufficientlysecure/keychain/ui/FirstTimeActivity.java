@@ -98,7 +98,7 @@ public class FirstTimeActivity extends BaseActivity {
         if (srcData != null) {
             intent.putExtras(srcData);
         }
-        startActivityForResult(intent, 0);
+        startActivity(intent);
         finish();
     }
 
@@ -107,4 +107,5 @@ public class FirstTimeActivity extends BaseActivity {
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         return keyCode == KeyEvent.KEYCODE_MENU || super.onKeyDown(keyCode, event);
     }
+
 }
