@@ -64,8 +64,6 @@ public class KeyListActivity extends DrawerActivity {
 
         mExportHelper = new ExportHelper(this);
 
-        setContentView(R.layout.key_list_activity);
-
         Intent data = getIntent();
         // If we got an EXTRA_RESULT in the intent, show the notification
         if (data != null && data.hasExtra(OperationResult.EXTRA_RESULT)) {
