@@ -121,7 +121,7 @@ public class LinkedIdCreateDnsStep1Fragment extends Fragment {
             }
         });
 
-        mEditDns.setText("mugenguild.com");
+        mEditDns.setText("test.mugenguild.com");
 
         return view;
     }
