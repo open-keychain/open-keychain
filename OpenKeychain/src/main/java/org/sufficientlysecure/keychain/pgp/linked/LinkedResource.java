@@ -52,6 +52,10 @@ public abstract class LinkedResource {
 
     }
 
+    public static String generatePreview () {
+        return "[Verifying my PGP key: pgpid+cookie:0x…]";
+    }
+
     public LinkedVerifyResult verify(byte[] fingerprint, String nonce) {
 
         OperationLog log = new OperationLog();

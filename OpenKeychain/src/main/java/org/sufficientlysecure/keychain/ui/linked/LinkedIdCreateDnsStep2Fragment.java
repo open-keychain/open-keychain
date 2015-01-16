@@ -65,7 +65,7 @@ public class LinkedIdCreateDnsStep2Fragment extends Fragment {
 
     LinkedIdWizard mLinkedIdWizard;
 
-    EditText mEditUri;
+    TextView mTextView;
     ImageView mVerifyImage;
     View mVerifyProgress;
     TextView mVerifyStatus;
@@ -140,8 +140,8 @@ public class LinkedIdCreateDnsStep2Fragment extends Fragment {
             }
         });
 
-        mEditUri = (EditText) view.findViewById(R.id.linked_create_dns_text);
-        mEditUri.setText(mResourceString);
+        mTextView = (TextView) view.findViewById(R.id.linked_create_dns_text);
+        mTextView.setText(mResourceString);
 
         setVerifyProgress(false, null);
         mVerifyStatus.setText(R.string.linked_verify_pending);

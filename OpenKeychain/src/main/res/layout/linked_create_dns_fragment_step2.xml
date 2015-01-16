@@ -23,15 +23,13 @@
                 android:textAppearance="?android:attr/textAppearanceMedium"
                 android:text="@string/linked_create_dns_2_1" />
 
-            <EditText
+            <TextView
                 android:id="@+id/linked_create_dns_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:imeOptions="actionNext"
                 android:layout_marginTop="8dp"
                 android:layout_gravity="center_horizontal"
-                android:inputType="textUri|none"
-                android:enabled="false"/>
+                android:textIsSelectable="true" />
 
             <TextView
                 android:layout_width="wrap_content"

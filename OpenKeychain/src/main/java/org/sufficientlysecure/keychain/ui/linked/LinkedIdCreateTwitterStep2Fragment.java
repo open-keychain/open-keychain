@@ -31,10 +31,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.pgp.linked.resources.TwitterResource;
 
 public class LinkedIdCreateTwitterStep2Fragment extends Fragment {
-
-    private static final int REQUEST_CODE_OUTPUT = 0x00007007;
 
     public static final String HANDLE = "uri", NONCE = "nonce", TEXT = "text";
 
@@ -47,6 +46,7 @@ public class LinkedIdCreateTwitterStep2Fragment extends Fragment {
 
     String mResourceHandle;
     String mResourceNonce, mResourceString;
+    String mCookiePreview;
 
     /**
      * Creates new instance of this fragment
@@ -68,6 +68,8 @@ public class LinkedIdCreateTwitterStep2Fragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         final View view = inflater.inflate(R.layout.linked_create_twitter_fragment_step2, container, false);
+
+        mCookiePreview = TwitterResource.generatePreview();
 
         mResourceHandle = getArguments().getString(HANDLE);
         mResourceNonce = getArguments().getString(NONCE);
@@ -98,7 +100,7 @@ public class LinkedIdCreateTwitterStep2Fragment extends Fragment {
         mVerifyStatus = (TextView) view.findViewById(R.id.verify_status);
 
         mEditTweetPreview = (EditText) view.findViewById(R.id.linked_create_twitter_preview);
-        mEditTweetPreview.setText(mResourceString);
+        mEditTweetPreview.setText(mCookiePreview);
 
         mEditTweetCustom = (EditText) view.findViewById(R.id.linked_create_twitter_custom);
         mEditTweetCustom.setFilters(new InputFilter[] {
@@ -120,17 +122,18 @@ public class LinkedIdCreateTwitterStep2Fragment extends Fragment {
             @Override
             public void afterTextChanged(Editable editable) {
                 if (editable != null && editable.length() > 0) {
-                    String str = editable + " " + mResourceString;
+                    String str = editable + " " + mCookiePreview;
                     mEditTweetPreview.setText(str);
 
-                    mEditTweetTextLen.setText(str.length() + "/140");
+                    mEditTweetTextLen.setText(
+                            (editable.length() + mResourceString.length() + 1) + "/140");
                     mEditTweetTextLen.setTextColor(getResources().getColor(str.length() == 140
                             ? R.color.android_red_dark
                             : R.color.primary_dark_material_light));
 
 
                 } else {
-                    mEditTweetPreview.setText(mResourceString);
+                    mEditTweetPreview.setText(mCookiePreview);
                     mEditTweetTextLen.setText(mResourceString.length() + "/140");
                 }
             }

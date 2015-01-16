@@ -1166,7 +1166,7 @@
     <string name="linked_create_twitter_1_2">"A message will be generated in the next step, which you can then customize and finally publish to your timeline."</string>
     <string name="linked_create_twitter_1_3">"This tweet links back to your pgp key, to make the connection verifiable in both directions."</string>
     <string name="linked_create_twitter_handle">Twitter Handle</string>
-    <string name="linked_create_twitter_2_1">"A message for this Twitter account has been created. You can add some text in front if you like."</string>
+    <string name="linked_create_twitter_2_1">"A message for this Twitter account has been created. You can add some text in front if you like, or leave it as-is."</string>
     <string name="linked_create_twitter_2_2">"Here's a preview of the full tweet:"</string>
     <string name="linked_create_twitter_2_3">"Once you are happy with the tweet, click next to proceed."</string>
     <string name="linked_create_twitter_3_1">"Alright, here's the finished text:"</string>
