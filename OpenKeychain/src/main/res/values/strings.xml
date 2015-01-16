@@ -403,11 +403,11 @@
 
     <!-- Import result toast -->
     <plurals name="import_keys_added_and_updated_1">
-        <item quantity="one">"Successfully imported key"</item>
+        <item quantity="one">"Successfully imported one key"</item>
         <item quantity="other">"Successfully imported %1$d keys"</item>
     </plurals>
     <plurals name="import_keys_added_and_updated_2">
-        <item quantity="one">"and updated key%2$s."</item>
+        <item quantity="one">"and updated one key%2$s."</item>
         <item quantity="other">"and updated %1$d keys%2$s."</item>
     </plurals>
     <plurals name="import_keys_added">

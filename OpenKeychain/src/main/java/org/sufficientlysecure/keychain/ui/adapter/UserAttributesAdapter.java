@@ -39,28 +39,32 @@ import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 
 import java.util.ArrayList;
 
-public class UserIdsAdapter extends CursorAdapter implements AdapterView.OnItemClickListener {
+public class UserAttributesAdapter extends CursorAdapter implements AdapterView.OnItemClickListener {
     private LayoutInflater mInflater;
     private final ArrayList<Boolean> mCheckStates;
     private SaveKeyringParcel mSaveKeyringParcel;
 
-    public static final String[] USER_IDS_PROJECTION = new String[]{
+    public static final String[] USER_PACKETS_PROJECTION = new String[]{
             UserPackets._ID,
+            UserPackets.TYPE,
             UserPackets.USER_ID,
+            UserPackets.ATTRIBUTE_DATA,
             UserPackets.RANK,
             UserPackets.VERIFIED,
             UserPackets.IS_PRIMARY,
             UserPackets.IS_REVOKED
     };
     private static final int INDEX_ID = 0;
-    private static final int INDEX_USER_ID = 1;
-    private static final int INDEX_RANK = 2;
-    private static final int INDEX_VERIFIED = 3;
-    private static final int INDEX_IS_PRIMARY = 4;
-    private static final int INDEX_IS_REVOKED = 5;
+    private static final int INDEX_TYPE = 1;
+    private static final int INDEX_USER_ID = 2;
+    private static final int INDEX_ATTRIBUTE_DATA = 3;
+    private static final int INDEX_RANK = 4;
+    private static final int INDEX_VERIFIED = 5;
+    private static final int INDEX_IS_PRIMARY = 6;
+    private static final int INDEX_IS_REVOKED = 7;
 
-    public UserIdsAdapter(Context context, Cursor c, int flags, boolean showCheckBoxes,
-                          SaveKeyringParcel saveKeyringParcel) {
+    public UserAttributesAdapter(Context context, Cursor c, int flags, boolean showCheckBoxes,
+                                 SaveKeyringParcel saveKeyringParcel) {
         super(context, c, flags);
         mInflater = LayoutInflater.from(context);
 
@@ -68,15 +72,15 @@ public class UserIdsAdapter extends CursorAdapter implements AdapterView.OnItemC
         mSaveKeyringParcel = saveKeyringParcel;
     }
 
-    public UserIdsAdapter(Context context, Cursor c, int flags, boolean showCheckBoxes) {
+    public UserAttributesAdapter(Context context, Cursor c, int flags, boolean showCheckBoxes) {
         this(context, c, flags, showCheckBoxes, null);
     }
 
-    public UserIdsAdapter(Context context, Cursor c, int flags, SaveKeyringParcel saveKeyringParcel) {
+    public UserAttributesAdapter(Context context, Cursor c, int flags, SaveKeyringParcel saveKeyringParcel) {
         this(context, c, flags, false, saveKeyringParcel);
     }
 
-    public UserIdsAdapter(Context context, Cursor c, int flags) {
+    public UserAttributesAdapter(Context context, Cursor c, int flags) {
         this(context, c, flags, false, null);
     }
 
