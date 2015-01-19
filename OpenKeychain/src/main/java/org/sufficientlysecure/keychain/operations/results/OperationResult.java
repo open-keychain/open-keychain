@@ -20,19 +20,24 @@ package org.sufficientlysecure.keychain.operations.results;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.view.View;
 
-import com.github.johnpersano.supertoasts.SuperCardToast;
-import com.github.johnpersano.supertoasts.SuperToast;
-import com.github.johnpersano.supertoasts.util.OnClickWrapper;
-import com.github.johnpersano.supertoasts.util.Style;
+import com.nispok.snackbar.Snackbar;
+import com.nispok.snackbar.Snackbar.SnackbarDuration;
+import com.nispok.snackbar.SnackbarManager;
+import com.nispok.snackbar.listeners.ActionClickListener;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.ui.LogDisplayActivity;
 import org.sufficientlysecure.keychain.ui.LogDisplayFragment;
+import org.sufficientlysecure.keychain.ui.util.Notify;
+import org.sufficientlysecure.keychain.ui.util.Notify.ActionListener;
+import org.sufficientlysecure.keychain.ui.util.Notify.Showable;
+import org.sufficientlysecure.keychain.ui.util.Notify.Style;
 import org.sufficientlysecure.keychain.util.IterableIterator;
 import org.sufficientlysecure.keychain.util.Log;
 
@@ -195,58 +200,44 @@ public abstract class OperationResult implements Parcelable {
 
     }
 
-    public SuperCardToast createNotify(final Activity activity) {
-
-        int color;
+    public Showable createNotify(final Activity activity) {
 
         Log.d(Constants.TAG, "mLog.getLast()"+mLog.getLast());
         Log.d(Constants.TAG, "mLog.getLast().mType"+mLog.getLast().mType);
         Log.d(Constants.TAG, "mLog.getLast().mType.getMsgId()"+mLog.getLast().mType.getMsgId());
 
         // Take the last message as string
-        String str = activity.getString(mLog.getLast().mType.getMsgId());
+        int msgId = mLog.getLast().mType.getMsgId();
+
+        Style style;
 
         // Not an overall failure
         if (cancelled()) {
-            color = Style.RED;
+            style = Style.ERROR;
         } else if (success()) {
             if (getLog().containsWarnings()) {
-                color = Style.ORANGE;
+                style = Style.WARN;
             } else {
-                color = Style.GREEN;
+                style = Style.OK;
             }
         } else {
-            color = Style.RED;
+            style = Style.ERROR;
         }
 
-        boolean button = getLog() != null && !getLog().isEmpty();
-        SuperCardToast toast = new SuperCardToast(activity,
-                button ? SuperToast.Type.BUTTON : SuperToast.Type.STANDARD,
-                Style.getStyle(color, SuperToast.Animations.POPUP));
-        toast.setText(str);
-        toast.setDuration(SuperToast.Duration.EXTRA_LONG);
-        toast.setIndeterminate(false);
-        toast.setSwipeToDismiss(true);
-        // If we have a log and it's non-empty, show a View Log button
-        if (button) {
-            toast.setButtonIcon(R.drawable.ic_action_view_as_list,
-                    activity.getResources().getString(R.string.view_log));
-            toast.setButtonTextColor(activity.getResources().getColor(R.color.black));
-            toast.setTextColor(activity.getResources().getColor(R.color.black));
-            toast.setOnClickWrapper(new OnClickWrapper("supercardtoast",
-                    new SuperToast.OnClickListener() {
-                        @Override
-                        public void onClick(View view, Parcelable token) {
-                            Intent intent = new Intent(
-                                    activity, LogDisplayActivity.class);
-                            intent.putExtra(LogDisplayFragment.EXTRA_RESULT, OperationResult.this);
-                            activity.startActivity(intent);
-                        }
-                    }
-            ));
+        if (getLog() == null || getLog().isEmpty()) {
+            return Notify.createNotify(activity, msgId, Notify.LENGTH_LONG, style);
         }
 
-        return toast;
+        return Notify.createNotify(activity, msgId, Notify.LENGTH_LONG, style,
+            new ActionListener() {
+                @Override
+                public void onAction() {
+                    Intent intent = new Intent(
+                            activity, LogDisplayActivity.class);
+                    intent.putExtra(LogDisplayFragment.EXTRA_RESULT, OperationResult.this);
+                    activity.startActivity(intent);
+                }
+            }, R.string.view_log);
 
     }
 
