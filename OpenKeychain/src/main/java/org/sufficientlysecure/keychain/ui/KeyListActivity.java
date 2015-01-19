@@ -64,6 +64,13 @@ public class KeyListActivity extends DrawerActivity {
 
         mExportHelper = new ExportHelper(this);
 
+        Intent data = getIntent();
+        // If we got an EXTRA_RESULT in the intent, show the notification
+        if (data != null && data.hasExtra(OperationResult.EXTRA_RESULT)) {
+            OperationResult result = data.getParcelableExtra(OperationResult.EXTRA_RESULT);
+            result.createNotify(this).show();
+        }
+
         // now setup navigation drawer in DrawerActivity...
         activateDrawerNavigation(savedInstanceState);
     }
