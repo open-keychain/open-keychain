@@ -716,6 +716,10 @@ public class ProviderHelper {
 
         @Override
         public int compareTo(UserPacketItem o) {
+            // revoked keys always come last!
+            if (isRevoked != o.isRevoked) {
+                return isRevoked ? 1 : -1;
+            }
             // if one is a user id, but the other isn't, the user id always comes first.
             // we compare for null values here, so != is the correct operator!
             // noinspection NumberEquality
@@ -725,10 +729,6 @@ public class ProviderHelper {
             // if one key is primary but the other isn't, the primary one always comes first
             if (isPrimary != o.isPrimary) {
                 return isPrimary ? -1 : 1;
-            }
-            // revoked keys always come last!
-            if (isRevoked != o.isRevoked) {
-                return isRevoked ? 1 : -1;
             }
             return 0;
         }
