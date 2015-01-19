@@ -305,26 +305,56 @@ public class UncachedPublicKey {
      *
      * Note that this method has package visiblity because it is used in test
      * cases. Certificates of UncachedPublicKey instances can NOT be assumed to
-     * be verified, so the result of this method should not be used in other
-     * places!
+     * be verified or even by the correct key, so the result of this method
+     * should never be used in other places!
      */
     @SuppressWarnings("unchecked")
     Integer getKeyUsage() {
         if (mCacheUsage == null) {
+            PGPSignature mostRecentSig = null;
             for (PGPSignature sig : new IterableIterator<PGPSignature>(mPublicKey.getSignatures())) {
                 if (mPublicKey.isMasterKey() && sig.getKeyID() != mPublicKey.getKeyID()) {
                     continue;
                 }
 
-                PGPSignatureSubpacketVector hashed = sig.getHashedSubPackets();
+                switch (sig.getSignatureType()) {
+                    case PGPSignature.DEFAULT_CERTIFICATION:
+                    case PGPSignature.POSITIVE_CERTIFICATION:
+                    case PGPSignature.CASUAL_CERTIFICATION:
+                    case PGPSignature.NO_CERTIFICATION:
+                    case PGPSignature.SUBKEY_BINDING:
+                        break;
+                    // if this is not one of the above types, don't care
+                    default:
+                        continue;
+                }
+
+                // If we have no sig yet, take the first we can get
+                if (mostRecentSig == null) {
+                    mostRecentSig = sig;
+                    continue;
+                }
+
+                // If the new sig is less recent, skip it
+                if (mostRecentSig.getCreationTime().after(sig.getCreationTime())) {
+                    continue;
+                }
+
+                // Otherwise, note it down as the new "most recent" one
+                mostRecentSig = sig;
+            }
+
+            // Initialize to 0 as cached but empty value, if there is no sig (can't happen
+            // for canonicalized keyring), or there is no KEY_FLAGS packet in the sig
+            mCacheUsage = 0;
+            if (mostRecentSig != null) {
+                // If a mostRecentSig has been found, (cache and) return its flags
+                PGPSignatureSubpacketVector hashed = mostRecentSig.getHashedSubPackets();
                 if (hashed != null && hashed.getSubpacket(SignatureSubpacketTags.KEY_FLAGS) != null) {
-                    // init if at least one key flag subpacket has been found
-                    if (mCacheUsage == null) {
-                        mCacheUsage = 0;
-                    }
-                    mCacheUsage |= hashed.getKeyFlags();
+                    mCacheUsage = hashed.getKeyFlags();
                 }
             }
+
         }
         return mCacheUsage;
     }
