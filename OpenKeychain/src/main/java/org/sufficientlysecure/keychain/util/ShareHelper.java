@@ -43,9 +43,11 @@ public class ShareHelper {
      * Put together from some stackoverflow posts...
      */
     public Intent createChooserExcluding(Intent prototype, String title, String[] activityBlacklist) {
-        // Produced an empty list on Huawei U8860 with Android Version 4.0.3 and weird results on 2.3
+        // Produced an empty list on Huawei U8860 with Android Version 4.0.3
         // TODO: test on 4.1, 4.2, 4.3, only tested on 4.4
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
+        // Disabled on 5.0 because using EXTRA_INITIAL_INTENTS prevents the usage based sorting
+        // introduced in 5.0: https://medium.com/@xXxXxXxXxXam/how-lollipops-share-menu-is-organized-d204888f606d
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT || Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             return Intent.createChooser(prototype, title);
         }
 

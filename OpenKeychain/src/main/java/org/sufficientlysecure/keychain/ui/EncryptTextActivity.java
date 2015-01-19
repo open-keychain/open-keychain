@@ -247,6 +247,7 @@ public class EncryptTextActivity extends EncryptActivity implements EncryptActiv
                     users.add(userId[1]);
                 }
             }
+            // pass trough email addresses as extra for email applications
             sendIntent.putExtra(Intent.EXTRA_EMAIL, users.toArray(new String[users.size()]));
         }
         return sendIntent;
