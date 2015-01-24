@@ -55,6 +55,7 @@ import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
 import org.sufficientlysecure.keychain.service.PassphraseCacheService;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel.ChangeUnlockParcel;
+import org.sufficientlysecure.keychain.service.SaveKeyringParcel.SubkeyChange;
 import org.sufficientlysecure.keychain.ui.adapter.SubkeysAdapter;
 import org.sufficientlysecure.keychain.ui.adapter.SubkeysAddedAdapter;
 import org.sufficientlysecure.keychain.ui.adapter.UserIdsAdapter;
@@ -478,12 +479,13 @@ public class EditKeyFragment extends LoaderFragment implements
                         }
                         break;
                     case EditSubkeyDialogFragment.MESSAGE_STRIP:
-                        // toggle
-                        if (mSaveKeyringParcel.mStripSubKeys.contains(keyId)) {
-                            mSaveKeyringParcel.mStripSubKeys.remove(keyId);
-                        } else {
-                            mSaveKeyringParcel.mStripSubKeys.add(keyId);
+                        SubkeyChange change = mSaveKeyringParcel.getSubkeyChange(keyId);
+                        if (change == null) {
+                            mSaveKeyringParcel.mChangeSubKeys.add(new SubkeyChange(keyId, true, false));
+                            break;
                         }
+                        // toggle
+                        change.mDummyStrip = !change.mDummyStrip;
                         break;
                 }
                 getLoaderManager().getLoader(LOADER_ID_SUBKEYS).forceLoad();

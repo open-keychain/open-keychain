@@ -58,7 +58,6 @@ public class SaveKeyringParcel implements Parcelable {
 
     public ArrayList<String> mRevokeUserIds;
     public ArrayList<Long> mRevokeSubKeys;
-    public ArrayList<Long> mStripSubKeys;
 
     public SaveKeyringParcel() {
         reset();
@@ -79,7 +78,6 @@ public class SaveKeyringParcel implements Parcelable {
         mChangeSubKeys = new ArrayList<SubkeyChange>();
         mRevokeUserIds = new ArrayList<String>();
         mRevokeSubKeys = new ArrayList<Long>();
-        mStripSubKeys = new ArrayList<Long>();
     }
 
     // performance gain for using Parcelable here would probably be negligible,
@@ -112,10 +110,14 @@ public class SaveKeyringParcel implements Parcelable {
     }
 
     public static class SubkeyChange implements Serializable {
-        public long mKeyId;
+        public final long mKeyId;
         public Integer mFlags;
         // this is a long unix timestamp, in seconds (NOT MILLISECONDS!)
         public Long mExpiry;
+        // if this flag is true, the subkey should be changed to a stripped key
+        public boolean mDummyStrip;
+        // if this flag is true, the subkey should be changed to a divert-to-card key
+        public boolean mDummyDivert;
 
         public SubkeyChange(long keyId) {
             mKeyId = keyId;
@@ -127,11 +129,25 @@ public class SaveKeyringParcel implements Parcelable {
             mExpiry = expiry;
         }
 
+        public SubkeyChange(long keyId, boolean dummyStrip, boolean dummyDivert) {
+            this(keyId, null, null);
+
+            // these flags are mutually exclusive!
+            if (dummyStrip && dummyDivert) {
+                throw new AssertionError(
+                        "cannot set strip and divert flags at the same time - this is a bug!");
+            }
+            mDummyStrip = dummyStrip;
+            mDummyDivert = dummyDivert;
+        }
+
         @Override
         public String toString() {
             String out = "mKeyId: " + mKeyId + ", ";
             out += "mFlags: " + mFlags + ", ";
-            out += "mExpiry: " + mExpiry;
+            out += "mExpiry: " + mExpiry + ", ";
+            out += "mDummyStrip: " + mDummyStrip + ", ";
+            out += "mDummyDivert: " + mDummyDivert;
 
             return out;
         }
@@ -173,7 +189,6 @@ public class SaveKeyringParcel implements Parcelable {
 
         mRevokeUserIds = source.createStringArrayList();
         mRevokeSubKeys = (ArrayList<Long>) source.readSerializable();
-        mStripSubKeys = (ArrayList<Long>) source.readSerializable();
     }
 
     @Override
@@ -196,7 +211,6 @@ public class SaveKeyringParcel implements Parcelable {
 
         destination.writeStringList(mRevokeUserIds);
         destination.writeSerializable(mRevokeSubKeys);
-        destination.writeSerializable(mStripSubKeys);
     }
 
     public static final Creator<SaveKeyringParcel> CREATOR = new Creator<SaveKeyringParcel>() {
@@ -224,8 +238,7 @@ public class SaveKeyringParcel implements Parcelable {
         out += "mChangeSubKeys: " + mChangeSubKeys + "\n";
         out += "mChangePrimaryUserId: " + mChangePrimaryUserId + "\n";
         out += "mRevokeUserIds: " + mRevokeUserIds + "\n";
-        out += "mRevokeSubKeys: " + mRevokeSubKeys + "\n";
-        out += "mStripSubKeys: " + mStripSubKeys;
+        out += "mRevokeSubKeys: " + mRevokeSubKeys;
 
         return out;
     }

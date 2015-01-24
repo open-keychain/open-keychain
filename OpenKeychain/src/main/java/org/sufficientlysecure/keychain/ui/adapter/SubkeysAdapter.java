@@ -35,6 +35,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.service.SaveKeyringParcel.SubkeyChange;
 import org.sufficientlysecure.keychain.ui.util.FormattingUtils;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey.SecretKeyType;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
@@ -160,7 +161,11 @@ public class SubkeysAdapter extends CursorAdapter {
                 cursor.getString(INDEX_KEY_CURVE_OID)
         ));
 
-        if (mSaveKeyringParcel != null && mSaveKeyringParcel.mStripSubKeys.contains(keyId)) {
+        SubkeyChange change = mSaveKeyringParcel != null
+                ? mSaveKeyringParcel.getSubkeyChange(keyId)
+                : null;
+
+        if (change.mDummyStrip) {
             algorithmStr.append(", ");
             final SpannableString boldStripped = new SpannableString(
                     context.getString(R.string.key_stripped)

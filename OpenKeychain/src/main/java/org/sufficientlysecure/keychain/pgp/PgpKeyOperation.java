@@ -20,6 +20,7 @@ package org.sufficientlysecure.keychain.pgp;
 
 import org.spongycastle.bcpg.CompressionAlgorithmTags;
 import org.spongycastle.bcpg.HashAlgorithmTags;
+import org.spongycastle.bcpg.S2K;
 import org.spongycastle.bcpg.SymmetricKeyAlgorithmTags;
 import org.spongycastle.bcpg.sig.Features;
 import org.spongycastle.bcpg.sig.KeyFlags;
@@ -715,6 +716,24 @@ public class PgpKeyOperation {
                     return new PgpEditKeyResult(PgpEditKeyResult.RESULT_ERROR, log, null);
                 }
 
+                if (change.mDummyStrip || change.mDummyDivert) {
+                    // IT'S DANGEROUS~
+                    // no really, it is. this operation irrevocably removes the private key data from the key
+                    if (change.mDummyStrip) {
+                        sKey = PGPSecretKey.constructGnuDummyKey(sKey.getPublicKey(),
+                                S2K.GNU_PROTECTION_MODE_NO_PRIVATE_KEY);
+                    } else {
+                        sKey = PGPSecretKey.constructGnuDummyKey(sKey.getPublicKey(),
+                                S2K.GNU_PROTECTION_MODE_DIVERT_TO_CARD);
+                    }
+                    sKR = PGPSecretKeyRing.insertSecretKey(sKR, sKey);
+                }
+
+                // This doesn't concern us any further
+                if (change.mExpiry == null && change.mFlags == null) {
+                    continue;
+                }
+
                 // expiry must not be in the past
                 if (change.mExpiry != null && change.mExpiry != 0 &&
                         new Date(change.mExpiry*1000).before(new Date())) {
@@ -802,30 +821,6 @@ public class PgpKeyOperation {
 
                 pKey = PGPPublicKey.addCertification(pKey, sig);
                 sKR = PGPSecretKeyRing.insertSecretKey(sKR, PGPSecretKey.replacePublicKey(sKey, pKey));
-            }
-            subProgressPop();
-
-            // 4c. For each subkey to be stripped... do so
-            subProgressPush(65, 70);
-            for (int i = 0; i < saveParcel.mStripSubKeys.size(); i++) {
-
-                progress(R.string.progress_modify_subkeystrip, (i-1) * (100 / saveParcel.mStripSubKeys.size()));
-                long strip = saveParcel.mStripSubKeys.get(i);
-                log.add(LogType.MSG_MF_SUBKEY_STRIP,
-                        indent, KeyFormattingUtils.convertKeyIdToHex(strip));
-
-                PGPSecretKey sKey = sKR.getSecretKey(strip);
-                if (sKey == null) {
-                    log.add(LogType.MSG_MF_ERROR_SUBKEY_MISSING,
-                            indent+1, KeyFormattingUtils.convertKeyIdToHex(strip));
-                    return new PgpEditKeyResult(PgpEditKeyResult.RESULT_ERROR, log, null);
-                }
-
-                // IT'S DANGEROUS~
-                // no really, it is. this operation irrevocably removes the private key data from the key
-                sKey = PGPSecretKey.constructGnuDummyKey(sKey.getPublicKey());
-                sKR = PGPSecretKeyRing.insertSecretKey(sKR, sKey);
-
             }
             subProgressPop();
 

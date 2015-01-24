@@ -701,7 +701,7 @@ public class PgpKeyOperationTest {
     public void testSubkeyStrip() throws Exception {
 
         long keyId = KeyringTestingHelper.getSubkeyId(ring, 1);
-        parcel.mStripSubKeys.add(keyId);
+        parcel.mChangeSubKeys.add(new SubkeyChange(keyId, true, false));
         applyModificationWithChecks(parcel, ring, onlyA, onlyB);
 
         Assert.assertEquals("one extra packet in original", 1, onlyA.size());
@@ -727,7 +727,7 @@ public class PgpKeyOperationTest {
     public void testMasterStrip() throws Exception {
 
         long keyId = ring.getMasterKeyId();
-        parcel.mStripSubKeys.add(keyId);
+        parcel.mChangeSubKeys.add(new SubkeyChange(keyId, true, false));
         applyModificationWithChecks(parcel, ring, onlyA, onlyB);
 
         Assert.assertEquals("one extra packet in original", 1, onlyA.size());
