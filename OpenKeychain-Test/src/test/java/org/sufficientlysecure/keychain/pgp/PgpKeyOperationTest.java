@@ -659,7 +659,8 @@ public class PgpKeyOperationTest {
         { // re-add second subkey
 
             parcel.reset();
-            parcel.mChangeSubKeys.add(new SubkeyChange(keyId, null, null));
+            // re-certify the revoked subkey
+            parcel.mChangeSubKeys.add(new SubkeyChange(keyId, true));
 
             modified = applyModificationWithChecks(parcel, modified, onlyA, onlyB);
 

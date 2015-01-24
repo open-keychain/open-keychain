@@ -118,9 +118,16 @@ public class SaveKeyringParcel implements Parcelable {
         public boolean mDummyStrip;
         // if this flag is true, the subkey should be changed to a divert-to-card key
         public boolean mDummyDivert;
+        // if this flag is true, the key will be recertified even if the above values are no-ops
+        public boolean mRecertify;
 
         public SubkeyChange(long keyId) {
             mKeyId = keyId;
+        }
+
+        public SubkeyChange(long keyId, boolean recertify) {
+            mKeyId = keyId;
+            mRecertify = recertify;
         }
 
         public SubkeyChange(long keyId, Integer flags, Long expiry) {

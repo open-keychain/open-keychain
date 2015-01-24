@@ -730,7 +730,7 @@ public class PgpKeyOperation {
                 }
 
                 // This doesn't concern us any further
-                if (change.mExpiry == null && change.mFlags == null) {
+                if (!change.mRecertify && (change.mExpiry == null && change.mFlags == null)) {
                     continue;
                 }
 
