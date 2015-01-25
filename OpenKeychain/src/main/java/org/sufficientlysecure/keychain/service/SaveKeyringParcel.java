@@ -71,13 +71,13 @@ public class SaveKeyringParcel implements Parcelable {
 
     public void reset() {
         mNewUnlock = null;
-        mAddUserIds = new ArrayList<String>();
-        mAddUserAttribute = new ArrayList<WrappedUserAttribute>();
-        mAddSubKeys = new ArrayList<SubkeyAdd>();
+        mAddUserIds = new ArrayList<>();
+        mAddUserAttribute = new ArrayList<>();
+        mAddSubKeys = new ArrayList<>();
         mChangePrimaryUserId = null;
-        mChangeSubKeys = new ArrayList<SubkeyChange>();
-        mRevokeUserIds = new ArrayList<String>();
-        mRevokeSubKeys = new ArrayList<Long>();
+        mChangeSubKeys = new ArrayList<>();
+        mRevokeUserIds = new ArrayList<>();
+        mRevokeSubKeys = new ArrayList<>();
     }
 
     /** Returns true iff this parcel does not contain any operations which require a passphrase. */
@@ -173,7 +173,7 @@ public class SaveKeyringParcel implements Parcelable {
             out += "mFlags: " + mFlags + ", ";
             out += "mExpiry: " + mExpiry + ", ";
             out += "mDummyStrip: " + mDummyStrip + ", ";
-            out += "mDummyDivert: " + mDummyDivert;
+            out += "mDummyDivert: [" + (mDummyDivert == null ? 0 : mDummyDivert.length) + " bytes]";
 
             return out;
         }

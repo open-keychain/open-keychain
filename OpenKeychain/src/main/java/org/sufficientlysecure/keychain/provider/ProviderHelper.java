@@ -170,7 +170,7 @@ public class ProviderHelper {
         Cursor cursor = mContentResolver.query(uri, proj, selection, null, null);
 
         try {
-            HashMap<String, Object> result = new HashMap<String, Object>(proj.length);
+            HashMap<String, Object> result = new HashMap<>(proj.length);
             if (cursor != null && cursor.moveToFirst()) {
                 int pos = 0;
                 for (String p : proj) {
@@ -221,7 +221,7 @@ public class ProviderHelper {
         }, KeyRings.HAS_ANY_SECRET + " = 1", null, null);
 
         try {
-            LongSparseArray<CanonicalizedPublicKey> result = new LongSparseArray<CanonicalizedPublicKey>();
+            LongSparseArray<CanonicalizedPublicKey> result = new LongSparseArray<>();
 
             if (cursor != null && cursor.moveToFirst()) do {
                 long masterKeyId = cursor.getLong(0);
@@ -350,7 +350,7 @@ public class ProviderHelper {
             mIndent += 1;
 
             // save all keys and userIds included in keyRing object in database
-            operations = new ArrayList<ContentProviderOperation>();
+            operations = new ArrayList<>();
 
             log(LogType.MSG_IP_INSERT_KEYRING);
             { // insert keyring
@@ -440,7 +440,7 @@ public class ProviderHelper {
 
             // classify and order user ids. primary are moved to the front, revoked to the back,
             // otherwise the order in the keyfile is preserved.
-            List<UserPacketItem> uids = new ArrayList<UserPacketItem>();
+            List<UserPacketItem> uids = new ArrayList<>();
 
             if (trustedKeys.size() == 0) {
                 log(LogType.MSG_IP_UID_CLASSIFYING_ZERO);
@@ -460,7 +460,7 @@ public class ProviderHelper {
                 log(LogType.MSG_IP_UID_PROCESSING, userId);
                 mIndent += 1;
                 // look through signatures for this specific key
-                for (WrappedSignature cert : new IterableIterator<WrappedSignature>(
+                for (WrappedSignature cert : new IterableIterator<>(
                         masterKey.getSignaturesForRawId(rawUserId))) {
                     long certId = cert.getKeyId();
                     // self signature
@@ -560,7 +560,7 @@ public class ProviderHelper {
                 }
                 mIndent += 1;
                 // look through signatures for this specific key
-                for (WrappedSignature cert : new IterableIterator<WrappedSignature>(
+                for (WrappedSignature cert : new IterableIterator<>(
                         masterKey.getSignaturesForUserAttribute(userAttribute))) {
                     long certId = cert.getKeyId();
                     // self signature
@@ -712,7 +712,7 @@ public class ProviderHelper {
         boolean isPrimary = false;
         boolean isRevoked = false;
         WrappedSignature selfCert;
-        LongSparseArray<WrappedSignature> trustedCerts = new LongSparseArray<WrappedSignature>();
+        LongSparseArray<WrappedSignature> trustedCerts = new LongSparseArray<>();
 
         @Override
         public int compareTo(UserPacketItem o) {
@@ -1075,7 +1075,7 @@ public class ProviderHelper {
             // No keys existing might be a legitimate option, we write an empty file in that case
             cursor.moveToFirst();
             ParcelableFileCache<ParcelableKeyRing> cache =
-                    new ParcelableFileCache<ParcelableKeyRing>(mContext, "consolidate_secret.pcl");
+                    new ParcelableFileCache<>(mContext, "consolidate_secret.pcl");
             cache.writeCache(cursor.getCount(), new Iterator<ParcelableKeyRing>() {
                 ParcelableKeyRing ring;
 
@@ -1137,7 +1137,7 @@ public class ProviderHelper {
             // No keys existing might be a legitimate option, we write an empty file in that case
             cursor.moveToFirst();
             ParcelableFileCache<ParcelableKeyRing> cache =
-                    new ParcelableFileCache<ParcelableKeyRing>(mContext, "consolidate_public.pcl");
+                    new ParcelableFileCache<>(mContext, "consolidate_public.pcl");
             cache.writeCache(cursor.getCount(), new Iterator<ParcelableKeyRing>() {
                 ParcelableKeyRing ring;
 
@@ -1220,9 +1220,9 @@ public class ProviderHelper {
             mContentResolver.delete(KeyRings.buildUnifiedKeyRingsUri(), null, null);
 
             ParcelableFileCache<ParcelableKeyRing> cacheSecret =
-                    new ParcelableFileCache<ParcelableKeyRing>(mContext, "consolidate_secret.pcl");
+                    new ParcelableFileCache<>(mContext, "consolidate_secret.pcl");
             ParcelableFileCache<ParcelableKeyRing> cachePublic =
-                    new ParcelableFileCache<ParcelableKeyRing>(mContext, "consolidate_public.pcl");
+                    new ParcelableFileCache<>(mContext, "consolidate_public.pcl");
 
             // Set flag that we have a cached consolidation here
             try {
@@ -1380,7 +1380,7 @@ public class ProviderHelper {
     public ArrayList<String> getRegisteredApiApps() {
         Cursor cursor = mContentResolver.query(ApiApps.CONTENT_URI, null, null, null, null);
 
-        ArrayList<String> packageNames = new ArrayList<String>();
+        ArrayList<String> packageNames = new ArrayList<>();
         try {
             if (cursor != null) {
                 int packageNameCol = cursor.getColumnIndex(ApiApps.PACKAGE_NAME);
@@ -1485,7 +1485,7 @@ public class ProviderHelper {
     }
 
     public Set<Long> getAllKeyIdsForApp(Uri uri) {
-        Set<Long> keyIds = new HashSet<Long>();
+        Set<Long> keyIds = new HashSet<>();
 
         Cursor cursor = mContentResolver.query(uri, null, null, null, null);
         try {
@@ -1505,7 +1505,7 @@ public class ProviderHelper {
     }
 
     public Set<String> getAllFingerprints(Uri uri) {
-         Set<String> fingerprints = new HashSet<String>();
+         Set<String> fingerprints = new HashSet<>();
          String[] projection = new String[]{KeyRings.FINGERPRINT};
          Cursor cursor = mContentResolver.query(uri, projection, null, null, null);
          try {

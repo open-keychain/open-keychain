@@ -26,7 +26,6 @@ import android.support.v4.content.Loader;
 import android.util.AttributeSet;
 import android.widget.ImageView;
 
-import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 

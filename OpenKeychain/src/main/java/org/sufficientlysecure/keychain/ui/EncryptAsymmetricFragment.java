@@ -28,7 +28,6 @@ import com.tokenautocomplete.TokenCompleteTextView;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
@@ -164,8 +163,8 @@ public class EncryptAsymmetricFragment extends Fragment implements EncryptActivi
 
     private void updateEncryptionKeys() {
         List<Object> objects = mEncryptKeyView.getObjects();
-        List<Long> keyIds = new ArrayList<Long>();
-        List<String> userIds = new ArrayList<String>();
+        List<Long> keyIds = new ArrayList<>();
+        List<String> userIds = new ArrayList<>();
         for (Object object : objects) {
             if (object instanceof EncryptKeyCompletionView.EncryptionKey) {
                 keyIds.add(((EncryptKeyCompletionView.EncryptionKey) object).getKeyId());

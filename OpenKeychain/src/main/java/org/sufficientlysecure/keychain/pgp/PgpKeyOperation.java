@@ -135,7 +135,7 @@ public class PgpKeyOperation {
     public PgpKeyOperation(Progressable progress) {
         super();
         if (progress != null) {
-            mProgress = new Stack<Progressable>();
+            mProgress = new Stack<>();
             mProgress.push(progress);
         }
     }
@@ -288,13 +288,11 @@ public class PgpKeyOperation {
             // build new key pair
             return new JcaPGPKeyPair(algorithm, keyGen.generateKeyPair(), new Date());
 
-        } catch(NoSuchProviderException e) {
+        } catch(NoSuchProviderException | InvalidAlgorithmParameterException e) {
             throw new RuntimeException(e);
         } catch(NoSuchAlgorithmException e) {
             log.add(LogType.MSG_CR_ERROR_UNKNOWN_ALGO, indent);
             return null;
-        } catch(InvalidAlgorithmParameterException e) {
-            throw new RuntimeException(e);
         } catch(PGPException e) {
             Log.e(Constants.TAG, "internal pgp error", e);
             log.add(LogType.MSG_CR_ERROR_INTERNAL_PGP, indent);
@@ -504,7 +502,7 @@ public class PgpKeyOperation {
                     @SuppressWarnings("unchecked")
                     Iterator<PGPSignature> it = modifiedPublicKey.getSignaturesForID(userId);
                     if (it != null) {
-                        for (PGPSignature cert : new IterableIterator<PGPSignature>(it)) {
+                        for (PGPSignature cert : new IterableIterator<>(it)) {
                             if (cert.getKeyID() != masterPublicKey.getKeyID()) {
                                 // foreign certificate?! error error error
                                 log.add(LogType.MSG_MF_ERROR_INTEGRITY, indent);

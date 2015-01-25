@@ -234,7 +234,7 @@ public class CertifyKeyFragment extends LoaderFragment
 
         long lastMasterKeyId = 0;
         String lastName = "";
-        ArrayList<String> uids = new ArrayList<String>();
+        ArrayList<String> uids = new ArrayList<>();
 
         boolean header = true;
 

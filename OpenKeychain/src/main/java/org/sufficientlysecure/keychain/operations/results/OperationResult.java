@@ -735,7 +735,7 @@ public abstract class OperationResult implements Parcelable {
 
     public static class OperationLog implements Iterable<LogEntryParcel> {
 
-        private final List<LogEntryParcel> mParcels = new ArrayList<LogEntryParcel>();
+        private final List<LogEntryParcel> mParcels = new ArrayList<>();
 
         /// Simple convenience method
         public void add(LogType type, int indent, Object... parameters) {
@@ -760,7 +760,7 @@ public abstract class OperationResult implements Parcelable {
         }
 
         public boolean containsType(LogType type) {
-            for(LogEntryParcel entry : new IterableIterator<LogEntryParcel>(mParcels.iterator())) {
+            for(LogEntryParcel entry : new IterableIterator<>(mParcels.iterator())) {
                 if (entry.mType == type) {
                     return true;
                 }
@@ -769,7 +769,7 @@ public abstract class OperationResult implements Parcelable {
         }
 
         public boolean containsWarnings() {
-            for(LogEntryParcel entry : new IterableIterator<LogEntryParcel>(mParcels.iterator())) {
+            for(LogEntryParcel entry : new IterableIterator<>(mParcels.iterator())) {
                 if (entry.mType.mLevel == LogLevel.WARN || entry.mType.mLevel == LogLevel.ERROR) {
                     return true;
                 }

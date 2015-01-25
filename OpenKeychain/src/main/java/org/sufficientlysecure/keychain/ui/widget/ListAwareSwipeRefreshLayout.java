@@ -20,12 +20,7 @@ package org.sufficientlysecure.keychain.ui.widget;
 import android.content.Context;
 import android.support.v4.widget.NoScrollableSwipeRefreshLayout;
 import android.util.AttributeSet;
-import android.view.InputDevice;
-import android.view.InputDevice.MotionRange;
 import android.view.MotionEvent;
-
-import org.sufficientlysecure.keychain.Constants;
-import org.sufficientlysecure.keychain.util.Log;
 
 import se.emilsjolander.stickylistheaders.StickyListHeadersListView;
 

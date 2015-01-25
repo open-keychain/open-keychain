@@ -27,13 +27,9 @@ import android.os.Bundle;
 import android.os.Message;
 import android.os.Messenger;
 import android.support.v4.app.FragmentActivity;
-import android.support.v7.app.ActionBarActivity;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.NumberPicker;
-import android.widget.Spinner;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
@@ -50,7 +46,6 @@ import org.sufficientlysecure.keychain.util.ParcelableFileCache;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
 
 import edu.cmu.cylab.starslinger.exchange.ExchangeActivity;
 import edu.cmu.cylab.starslinger.exchange.ExchangeConfig;
@@ -192,7 +187,7 @@ public class SafeSlingerActivity extends BaseActivity {
                 // We parcel this iteratively into a file - anything we can
                 // display here, we should be able to import.
                 ParcelableFileCache<ParcelableKeyRing> cache =
-                        new ParcelableFileCache<ParcelableKeyRing>(activity, "key_import.pcl");
+                        new ParcelableFileCache<>(activity, "key_import.pcl");
                 cache.writeCache(it.size(), it.iterator());
 
                 // fill values for this action
@@ -220,7 +215,7 @@ public class SafeSlingerActivity extends BaseActivity {
     }
 
     private static ArrayList<ParcelableKeyRing> getSlingedKeys(Bundle extras) {
-        ArrayList<ParcelableKeyRing> list = new ArrayList<ParcelableKeyRing>();
+        ArrayList<ParcelableKeyRing> list = new ArrayList<>();
 
         if (extras != null) {
             byte[] d;

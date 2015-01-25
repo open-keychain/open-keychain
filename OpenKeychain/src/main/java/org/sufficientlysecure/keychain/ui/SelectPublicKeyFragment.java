@@ -42,7 +42,6 @@ import android.widget.TextView;
 
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.compatibility.ListFragmentWorkaround;
-import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.KeychainDatabase.Tables;
 import org.sufficientlysecure.keychain.ui.adapter.SelectKeyCursorAdapter;
@@ -216,7 +215,7 @@ public class SelectPublicKeyFragment extends ListFragmentWorkaround implements T
     public long[] getSelectedMasterKeyIds() {
         // mListView.getCheckedItemIds() would give the row ids of the KeyRings not the master key
         // ids!
-        Vector<Long> vector = new Vector<Long>();
+        Vector<Long> vector = new Vector<>();
         for (int i = 0; i < getListView().getCount(); ++i) {
             if (getListView().isItemChecked(i)) {
                 vector.add(mAdapter.getMasterKeyId(i));
@@ -238,7 +237,7 @@ public class SelectPublicKeyFragment extends ListFragmentWorkaround implements T
      * @return
      */
     public String[] getSelectedUserIds() {
-        Vector<String> userIds = new Vector<String>();
+        Vector<String> userIds = new Vector<>();
         for (int i = 0; i < getListView().getCount(); ++i) {
             if (getListView().isItemChecked(i)) {
                 userIds.add(mAdapter.getUserId(i));

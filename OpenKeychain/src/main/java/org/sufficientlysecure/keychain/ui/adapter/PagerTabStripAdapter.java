@@ -27,7 +27,7 @@ import java.util.ArrayList;
 
 public class PagerTabStripAdapter extends FragmentPagerAdapter {
     protected final Activity mActivity;
-    protected final ArrayList<TabInfo> mTabs = new ArrayList<TabInfo>();
+    protected final ArrayList<TabInfo> mTabs = new ArrayList<>();
 
     static final class TabInfo {
         public final Class<?> clss;

@@ -221,7 +221,7 @@ public class UserIdsAdapter extends CursorAdapter implements AdapterView.OnItemC
     }
 
     public ArrayList<String> getSelectedUserIds() {
-        ArrayList<String> result = new ArrayList<String>();
+        ArrayList<String> result = new ArrayList<>();
         for (int i = 0; i < mCheckStates.size(); i++) {
             if (mCheckStates.get(i)) {
                 mCursor.moveToPosition(i);

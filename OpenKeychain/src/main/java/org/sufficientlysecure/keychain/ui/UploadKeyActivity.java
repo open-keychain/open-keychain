@@ -24,7 +24,6 @@ import android.os.Bundle;
 import android.os.Message;
 import android.os.Messenger;
 import android.support.v4.app.NavUtils;
-import android.support.v7.app.ActionBarActivity;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -57,7 +56,7 @@ public class UploadKeyActivity extends BaseActivity {
         mUploadButton = findViewById(R.id.upload_key_action_upload);
         mKeyServerSpinner = (Spinner) findViewById(R.id.upload_key_keyserver);
 
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
                 android.R.layout.simple_spinner_item, Preferences.getPreferences(this)
                 .getKeyServers()
         );

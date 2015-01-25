@@ -445,7 +445,7 @@ public class UncachedKeyRing {
                 }
             }
 
-            ArrayList<String> processedUserIds = new ArrayList<String>();
+            ArrayList<String> processedUserIds = new ArrayList<>();
             for (byte[] rawUserId : new IterableIterator<byte[]>(masterKey.getRawUserIDs())) {
                 String userId = Utf8Util.fromUTF8ByteArrayReplaceBadEncoding(rawUserId);
 
@@ -470,7 +470,7 @@ public class UncachedKeyRing {
                 @SuppressWarnings("unchecked")
                 Iterator<PGPSignature> signaturesIt = masterKey.getSignaturesForID(rawUserId);
                 if (signaturesIt != null) {
-                    for (PGPSignature zert : new IterableIterator<PGPSignature>(signaturesIt)) {
+                    for (PGPSignature zert : new IterableIterator<>(signaturesIt)) {
                         WrappedSignature cert = new WrappedSignature(zert);
                         long certId = cert.getKeyId();
 
@@ -635,7 +635,7 @@ public class UncachedKeyRing {
                     @SuppressWarnings("unchecked")
                     Iterator<PGPSignature> signaturesIt = masterKey.getSignaturesForUserAttribute(userAttribute);
                     if (signaturesIt != null) {
-                        for (PGPSignature zert : new IterableIterator<PGPSignature>(signaturesIt)) {
+                        for (PGPSignature zert : new IterableIterator<>(signaturesIt)) {
                             WrappedSignature cert = new WrappedSignature(zert);
                             long certId = cert.getKeyId();
 
@@ -778,7 +778,7 @@ public class UncachedKeyRing {
         }
 
         // Keep track of ids we encountered so far
-        Set<Long> knownIds = new HashSet<Long>();
+        Set<Long> knownIds = new HashSet<>();
 
         // Process all keys
         for (PGPPublicKey key : new IterableIterator<PGPPublicKey>(ring.getPublicKeys())) {
@@ -1042,7 +1042,7 @@ public class UncachedKeyRing {
         }
 
         // remember which certs we already added. this is cheaper than semantic deduplication
-        Set<byte[]> certs = new TreeSet<byte[]>(new Comparator<byte[]>() {
+        Set<byte[]> certs = new TreeSet<>(new Comparator<byte[]>() {
             public int compare(byte[] left, byte[] right) {
                 // check for length equality
                 if (left.length != right.length) {
@@ -1124,7 +1124,7 @@ public class UncachedKeyRing {
                     if (signaturesIt == null) {
                         continue;
                     }
-                    for (PGPSignature cert : new IterableIterator<PGPSignature>(signaturesIt)) {
+                    for (PGPSignature cert : new IterableIterator<>(signaturesIt)) {
                         // Don't merge foreign stuff into secret keys
                         if (cert.getKeyID() != masterKeyId && isSecret()) {
                             continue;
@@ -1149,7 +1149,7 @@ public class UncachedKeyRing {
                     if (signaturesIt == null) {
                         continue;
                     }
-                    for (PGPSignature cert : new IterableIterator<PGPSignature>(signaturesIt)) {
+                    for (PGPSignature cert : new IterableIterator<>(signaturesIt)) {
                         // Don't merge foreign stuff into secret keys
                         if (cert.getKeyID() != masterKeyId && isSecret()) {
                             continue;

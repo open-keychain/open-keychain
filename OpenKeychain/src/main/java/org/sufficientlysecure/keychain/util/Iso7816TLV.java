@@ -125,7 +125,7 @@ public class Iso7816TLV {
     public static Iso7816TLV[] readList(byte[] data, boolean recursive) throws IOException {
         ByteBuffer buf = ByteBuffer.wrap(data);
 
-        ArrayList<Iso7816TLV> result = new ArrayList<Iso7816TLV>();
+        ArrayList<Iso7816TLV> result = new ArrayList<>();
 
         // read while data is available. this will fail if there is trailing data!
         while (buf.hasRemaining()) {

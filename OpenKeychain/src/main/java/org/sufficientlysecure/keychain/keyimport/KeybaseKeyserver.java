@@ -36,7 +36,7 @@ public class KeybaseKeyserver extends Keyserver {
     @Override
     public ArrayList<ImportKeysListEntry> search(String query) throws QueryFailedException,
             QueryNeedsRepairException {
-        ArrayList<ImportKeysListEntry> results = new ArrayList<ImportKeysListEntry>();
+        ArrayList<ImportKeysListEntry> results = new ArrayList<>();
 
         if (query.startsWith("0x")) {
             // cut off "0x" if a user is searching for a key id
@@ -81,7 +81,7 @@ public class KeybaseKeyserver extends Keyserver {
         final int algorithmId = match.getAlgorithmId();
         entry.setAlgorithm(KeyFormattingUtils.getAlgorithmInfo(algorithmId, bitStrength, null));
 
-        ArrayList<String> userIds = new ArrayList<String>();
+        ArrayList<String> userIds = new ArrayList<>();
         String name = "<keybase.io/" + username + ">";
         if (fullName != null) {
             name = fullName + " " + name;

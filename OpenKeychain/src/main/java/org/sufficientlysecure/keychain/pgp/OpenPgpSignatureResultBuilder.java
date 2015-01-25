@@ -19,7 +19,6 @@ package org.sufficientlysecure.keychain.pgp;
 
 import org.openintents.openpgp.OpenPgpSignatureResult;
 import org.sufficientlysecure.keychain.Constants;
-import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.util.Log;
 
@@ -33,7 +32,7 @@ public class OpenPgpSignatureResultBuilder {
     // OpenPgpSignatureResult
     private boolean mSignatureOnly = false;
     private String mPrimaryUserId;
-    private ArrayList<String> mUserIds = new ArrayList<String>();
+    private ArrayList<String> mUserIds = new ArrayList<>();
     private long mKeyId;
 
     // builder

@@ -20,7 +20,6 @@ package org.sufficientlysecure.keychain.pgp;
 
 import org.spongycastle.bcpg.ECPublicBCPGKey;
 import org.spongycastle.bcpg.SignatureSubpacketTags;
-import org.spongycastle.bcpg.sig.KeyFlags;
 import org.spongycastle.openpgp.PGPPublicKey;
 import org.spongycastle.openpgp.PGPSignature;
 import org.spongycastle.openpgp.PGPSignatureSubpacketVector;
@@ -136,7 +135,7 @@ public class UncachedPublicKey {
                 continue;
             }
 
-            for (PGPSignature sig : new IterableIterator<PGPSignature>(signaturesIt)) {
+            for (PGPSignature sig : new IterableIterator<>(signaturesIt)) {
                 try {
 
                     // if this is a revocation, this is not the user id
@@ -200,7 +199,7 @@ public class UncachedPublicKey {
     }
 
     public ArrayList<String> getUnorderedUserIds() {
-        ArrayList<String> userIds = new ArrayList<String>();
+        ArrayList<String> userIds = new ArrayList<>();
         for (byte[] rawUserId : new IterableIterator<byte[]>(mPublicKey.getRawUserIDs())) {
             // use our decoding method
             userIds.add(Utf8Util.fromUTF8ByteArrayReplaceBadEncoding(rawUserId));
@@ -209,7 +208,7 @@ public class UncachedPublicKey {
     }
 
     public ArrayList<byte[]> getUnorderedRawUserIds() {
-        ArrayList<byte[]> userIds = new ArrayList<byte[]>();
+        ArrayList<byte[]> userIds = new ArrayList<>();
         for (byte[] userId : new IterableIterator<byte[]>(mPublicKey.getRawUserIDs())) {
             userIds.add(userId);
         }
@@ -217,7 +216,7 @@ public class UncachedPublicKey {
     }
 
     public ArrayList<WrappedUserAttribute> getUnorderedUserAttributes() {
-        ArrayList<WrappedUserAttribute> userAttributes = new ArrayList<WrappedUserAttribute>();
+        ArrayList<WrappedUserAttribute> userAttributes = new ArrayList<>();
         for (PGPUserAttributeSubpacketVector userAttribute :
                 new IterableIterator<PGPUserAttributeSubpacketVector>(mPublicKey.getUserAttributes())) {
             userAttributes.add(new WrappedUserAttribute(userAttribute));

@@ -231,10 +231,7 @@ public class EditKeyFragment extends LoaderFragment implements
             mSaveKeyringParcel = new SaveKeyringParcel(masterKeyId, keyRing.getFingerprint());
             mPrimaryUserId = keyRing.getPrimaryUserIdWithFallback();
 
-        } catch (PgpKeyNotFoundException e) {
-            finishWithError(LogType.MSG_EK_ERROR_NOT_FOUND);
-            return;
-        } catch (NotFoundException e) {
+        } catch (PgpKeyNotFoundException | NotFoundException e) {
             finishWithError(LogType.MSG_EK_ERROR_NOT_FOUND);
             return;
         }

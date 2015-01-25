@@ -85,9 +85,9 @@ public class OpenPgpService extends RemoteService {
         boolean missingUserIdsCheck = false;
         boolean duplicateUserIdsCheck = false;
 
-        ArrayList<Long> keyIds = new ArrayList<Long>();
-        ArrayList<String> missingUserIds = new ArrayList<String>();
-        ArrayList<String> duplicateUserIds = new ArrayList<String>();
+        ArrayList<Long> keyIds = new ArrayList<>();
+        ArrayList<String> missingUserIds = new ArrayList<>();
+        ArrayList<String> duplicateUserIds = new ArrayList<>();
         if (!noUserIdsCheck) {
             for (String email : encryptionUserIds) {
                 // try to find the key for this specific email
@@ -718,30 +718,33 @@ public class OpenPgpService extends RemoteService {
             }
 
             String action = data.getAction();
-            if (OpenPgpApi.ACTION_SIGN.equals(action)) {
-                return signImpl(data, input, output, accSettings);
-            } else if (OpenPgpApi.ACTION_ENCRYPT.equals(action)) {
-                return encryptAndSignImpl(data, input, output, accSettings, false);
-            } else if (OpenPgpApi.ACTION_SIGN_AND_ENCRYPT.equals(action)) {
-                return encryptAndSignImpl(data, input, output, accSettings, true);
-            } else if (OpenPgpApi.ACTION_DECRYPT_VERIFY.equals(action)) {
-                String currentPkg = getCurrentCallingPackage();
-                Set<Long> allowedKeyIds =
-                        mProviderHelper.getAllKeyIdsForApp(
-                                ApiAccounts.buildBaseUri(currentPkg));
-                return decryptAndVerifyImpl(data, input, output, allowedKeyIds, false);
-            } else if (OpenPgpApi.ACTION_DECRYPT_METADATA.equals(action)) {
-                String currentPkg = getCurrentCallingPackage();
-                Set<Long> allowedKeyIds =
-                        mProviderHelper.getAllKeyIdsForApp(
-                                ApiAccounts.buildBaseUri(currentPkg));
-                return decryptAndVerifyImpl(data, input, output, allowedKeyIds, true);
-            } else if (OpenPgpApi.ACTION_GET_KEY.equals(action)) {
-                return getKeyImpl(data);
-            } else if (OpenPgpApi.ACTION_GET_KEY_IDS.equals(action)) {
-                return getKeyIdsImpl(data);
-            } else {
-                return null;
+            switch (action) {
+                case OpenPgpApi.ACTION_SIGN:
+                    return signImpl(data, input, output, accSettings);
+                case OpenPgpApi.ACTION_ENCRYPT:
+                    return encryptAndSignImpl(data, input, output, accSettings, false);
+                case OpenPgpApi.ACTION_SIGN_AND_ENCRYPT:
+                    return encryptAndSignImpl(data, input, output, accSettings, true);
+                case OpenPgpApi.ACTION_DECRYPT_VERIFY: {
+                    String currentPkg = getCurrentCallingPackage();
+                    Set<Long> allowedKeyIds =
+                            mProviderHelper.getAllKeyIdsForApp(
+                                    ApiAccounts.buildBaseUri(currentPkg));
+                    return decryptAndVerifyImpl(data, input, output, allowedKeyIds, false);
+                }
+                case OpenPgpApi.ACTION_DECRYPT_METADATA: {
+                    String currentPkg = getCurrentCallingPackage();
+                    Set<Long> allowedKeyIds =
+                            mProviderHelper.getAllKeyIdsForApp(
+                                    ApiAccounts.buildBaseUri(currentPkg));
+                    return decryptAndVerifyImpl(data, input, output, allowedKeyIds, true);
+                }
+                case OpenPgpApi.ACTION_GET_KEY:
+                    return getKeyImpl(data);
+                case OpenPgpApi.ACTION_GET_KEY_IDS:
+                    return getKeyIdsImpl(data);
+                default:
+                    return null;
             }
         }
 

@@ -78,7 +78,7 @@ public class CertifyOperation extends BaseOperation {
             return new CertifyResult(CertifyResult.RESULT_ERROR, log);
         }
 
-        ArrayList<UncachedKeyRing> certifiedKeys = new ArrayList<UncachedKeyRing>();
+        ArrayList<UncachedKeyRing> certifiedKeys = new ArrayList<>();
 
         log.add(LogType.MSG_CRT_CERTIFYING, 1);
 

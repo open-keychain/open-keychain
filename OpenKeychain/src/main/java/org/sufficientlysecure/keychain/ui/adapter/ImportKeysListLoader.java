@@ -35,7 +35,6 @@ import org.sufficientlysecure.keychain.util.PositionAwareInputStream;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Iterator;
 
 public class ImportKeysListLoader
         extends AsyncTaskLoader<AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>>> {
@@ -55,8 +54,8 @@ public class ImportKeysListLoader
     final Context mContext;
     final InputData mInputData;
 
-    ArrayList<ImportKeysListEntry> mData = new ArrayList<ImportKeysListEntry>();
-    LongSparseArray<ParcelableKeyRing> mParcelableRings = new LongSparseArray<ParcelableKeyRing>();
+    ArrayList<ImportKeysListEntry> mData = new ArrayList<>();
+    LongSparseArray<ParcelableKeyRing> mParcelableRings = new LongSparseArray<>();
     AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>> mEntryListWrapper;
 
     public ImportKeysListLoader(Context context, InputData inputData) {
@@ -73,7 +72,7 @@ public class ImportKeysListLoader
         }
 
         GetKeyResult getKeyResult = new GetKeyResult(GetKeyResult.RESULT_OK, null);
-        mEntryListWrapper = new AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>>(mData, getKeyResult);
+        mEntryListWrapper = new AsyncTaskResultWrapper<>(mData, getKeyResult);
 
         if (mInputData == null) {
             Log.e(Constants.TAG, "Input data is null!");
@@ -140,7 +139,7 @@ public class ImportKeysListLoader
             OperationResult.OperationLog log = new OperationResult.OperationLog();
             log.add(OperationResult.LogType.MSG_GET_NO_VALID_KEYS, 0);
             GetKeyResult getKeyResult = new GetKeyResult(GetKeyResult.RESULT_ERROR_NO_VALID_KEYS, log);
-            mEntryListWrapper = new AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>>
+            mEntryListWrapper = new AsyncTaskResultWrapper<>
                     (mData, getKeyResult);
         }
     }

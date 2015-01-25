@@ -85,7 +85,7 @@ public class AddUserIdDialogFragment extends DialogFragment implements OnEditorA
         mMessenger = getArguments().getParcelable(ARG_MESSENGER);
         String predefinedName = getArguments().getString(ARG_NAME);
 
-        ArrayAdapter<String> autoCompleteEmailAdapter = new ArrayAdapter<String>
+        ArrayAdapter<String> autoCompleteEmailAdapter = new ArrayAdapter<>
                 (getActivity(), android.R.layout.simple_spinner_dropdown_item,
                         ContactHelper.getPossibleUserEmails(getActivity())
                 );
@@ -150,7 +150,7 @@ public class AddUserIdDialogFragment extends DialogFragment implements OnEditorA
 
         mName.setThreshold(1); // Start working from first character
         mName.setAdapter(
-                new ArrayAdapter<String>
+                new ArrayAdapter<>
                         (getActivity(), android.R.layout.simple_spinner_dropdown_item,
                                 ContactHelper.getPossibleUserNames(getActivity())
                         )

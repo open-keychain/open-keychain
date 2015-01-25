@@ -29,7 +29,6 @@ import android.widget.ImageView;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainDatabase;
-import org.sufficientlysecure.keychain.provider.KeychainDatabase.Tables;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 
 public class CertifyKeySpinner extends KeySpinner {

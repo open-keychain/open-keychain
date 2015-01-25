@@ -81,7 +81,7 @@ public class ImportKeysCloudFragment extends Fragment {
         namesAndEmails.addAll(ContactHelper.getContactMails(getActivity()));
         mQueryEditText.setThreshold(3);
         mQueryEditText.setAdapter(
-                new ArrayAdapter<String>
+                new ArrayAdapter<>
                         (getActivity(), android.R.layout.simple_spinner_dropdown_item,
                                 namesAndEmails
                         )

@@ -203,7 +203,7 @@ public class QrCodeScanActivity extends FragmentActivity {
         data.putString(KeychainIntentService.IMPORT_KEY_SERVER, cloudPrefs.keyserver);
 
         ParcelableKeyRing keyEntry = new ParcelableKeyRing(fingerprint, null, null);
-        ArrayList<ParcelableKeyRing> selectedEntries = new ArrayList<ParcelableKeyRing>();
+        ArrayList<ParcelableKeyRing> selectedEntries = new ArrayList<>();
         selectedEntries.add(keyEntry);
 
         data.putParcelableArrayList(KeychainIntentService.IMPORT_KEY_LIST, selectedEntries);

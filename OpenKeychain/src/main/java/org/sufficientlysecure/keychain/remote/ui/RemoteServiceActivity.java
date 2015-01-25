@@ -22,7 +22,6 @@ import android.graphics.Color;
 import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
@@ -108,234 +107,244 @@ public class RemoteServiceActivity extends BaseActivity {
         final Bundle extras = intent.getExtras();
 
 
-        if (ACTION_REGISTER.equals(action)) {
-            final String packageName = extras.getString(EXTRA_PACKAGE_NAME);
-            final byte[] packageSignature = extras.getByteArray(EXTRA_PACKAGE_SIGNATURE);
-            Log.d(Constants.TAG, "ACTION_REGISTER packageName: " + packageName);
+        switch (action) {
+            case ACTION_REGISTER: {
+                final String packageName = extras.getString(EXTRA_PACKAGE_NAME);
+                final byte[] packageSignature = extras.getByteArray(EXTRA_PACKAGE_SIGNATURE);
+                Log.d(Constants.TAG, "ACTION_REGISTER packageName: " + packageName);
 
-            setContentView(R.layout.api_remote_register_app);
-            initToolbar();
+                setContentView(R.layout.api_remote_register_app);
+                initToolbar();
 
-            mAppSettingsFragment = (AppSettingsFragment) getSupportFragmentManager().findFragmentById(
-                    R.id.api_app_settings_fragment);
+                mAppSettingsFragment = (AppSettingsFragment) getSupportFragmentManager().findFragmentById(
+                        R.id.api_app_settings_fragment);
 
-            AppSettings settings = new AppSettings(packageName, packageSignature);
-            mAppSettingsFragment.setAppSettings(settings);
+                AppSettings settings = new AppSettings(packageName, packageSignature);
+                mAppSettingsFragment.setAppSettings(settings);
 
-            // Inflate a "Done"/"Cancel" custom action bar view
-            ActionBarHelper.setTwoButtonView(getSupportActionBar(),
-                    R.string.api_register_allow, R.drawable.ic_action_done,
-                    new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            // Allow
+                // Inflate a "Done"/"Cancel" custom action bar view
+                ActionBarHelper.setTwoButtonView(getSupportActionBar(),
+                        R.string.api_register_allow, R.drawable.ic_action_done,
+                        new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                // Allow
 
-                            mProviderHelper.insertApiApp(mAppSettingsFragment.getAppSettings());
-
-                            // give data through for new service call
-                            Intent resultData = extras.getParcelable(EXTRA_DATA);
-                            RemoteServiceActivity.this.setResult(RESULT_OK, resultData);
-                            RemoteServiceActivity.this.finish();
-                        }
-                    }, R.string.api_register_disallow, R.drawable.ic_action_cancel,
-                    new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            // Disallow
-                            RemoteServiceActivity.this.setResult(RESULT_CANCELED);
-                            RemoteServiceActivity.this.finish();
-                        }
-                    }
-            );
-        } else if (ACTION_CREATE_ACCOUNT.equals(action)) {
-            final String packageName = extras.getString(EXTRA_PACKAGE_NAME);
-            final String accName = extras.getString(EXTRA_ACC_NAME);
-
-            setContentView(R.layout.api_remote_create_account);
-            initToolbar();
-
-            mAccSettingsFragment = (AccountSettingsFragment) getSupportFragmentManager().findFragmentById(
-                    R.id.api_account_settings_fragment);
-
-            TextView text = (TextView) findViewById(R.id.api_remote_create_account_text);
-
-            // update existing?
-            Uri uri = KeychainContract.ApiAccounts.buildByPackageAndAccountUri(packageName, accName);
-            AccountSettings settings = mProviderHelper.getApiAccountSettings(uri);
-            if (settings == null) {
-                // create new account
-                settings = new AccountSettings(accName);
-                mUpdateExistingAccount = false;
-
-                text.setText(R.string.api_create_account_text);
-            } else {
-                // update existing account
-                mUpdateExistingAccount = true;
-
-                text.setText(R.string.api_update_account_text);
-            }
-            mAccSettingsFragment.setAccSettings(settings);
-
-            // Inflate a "Done"/"Cancel" custom action bar view
-            ActionBarHelper.setTwoButtonView(getSupportActionBar(),
-                    R.string.api_settings_save, R.drawable.ic_action_done,
-                    new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            // Save
-
-                            // user needs to select a key if it has explicitly requested (None is only allowed for new accounts)
-                            if (mUpdateExistingAccount && mAccSettingsFragment.getAccSettings().getKeyId() == Constants.key.none) {
-                                Notify.showNotify(RemoteServiceActivity.this, getString(R.string.api_register_error_select_key), Notify.Style.ERROR);
-                            } else {
-                                if (mUpdateExistingAccount) {
-                                    Uri baseUri = KeychainContract.ApiAccounts.buildBaseUri(packageName);
-                                    Uri accountUri = baseUri.buildUpon().appendEncodedPath(accName).build();
-                                    mProviderHelper.updateApiAccount(
-                                            accountUri,
-                                            mAccSettingsFragment.getAccSettings());
-                                } else {
-                                    mProviderHelper.insertApiAccount(
-                                            KeychainContract.ApiAccounts.buildBaseUri(packageName),
-                                            mAccSettingsFragment.getAccSettings());
-                                }
+                                mProviderHelper.insertApiApp(mAppSettingsFragment.getAppSettings());
 
                                 // give data through for new service call
                                 Intent resultData = extras.getParcelable(EXTRA_DATA);
                                 RemoteServiceActivity.this.setResult(RESULT_OK, resultData);
                                 RemoteServiceActivity.this.finish();
                             }
+                        }, R.string.api_register_disallow, R.drawable.ic_action_cancel,
+                        new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                // Disallow
+                                RemoteServiceActivity.this.setResult(RESULT_CANCELED);
+                                RemoteServiceActivity.this.finish();
+                            }
                         }
-                    }, R.string.api_settings_cancel, R.drawable.ic_action_cancel,
-                    new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            // Cancel
-                            RemoteServiceActivity.this.setResult(RESULT_CANCELED);
-                            RemoteServiceActivity.this.finish();
-                        }
-                    }
-            );
-
-        } else if (ACTION_SELECT_PUB_KEYS.equals(action)) {
-            long[] selectedMasterKeyIds = intent.getLongArrayExtra(EXTRA_SELECTED_MASTER_KEY_IDS);
-            boolean noUserIdsCheck = intent.getBooleanExtra(EXTRA_NO_USER_IDS_CHECK, true);
-            ArrayList<String> missingUserIds = intent
-                    .getStringArrayListExtra(EXTRA_MISSING_USER_IDS);
-            ArrayList<String> dublicateUserIds = intent
-                    .getStringArrayListExtra(EXTRA_DUPLICATE_USER_IDS);
-
-            SpannableStringBuilder ssb = new SpannableStringBuilder();
-            final SpannableString textIntro = new SpannableString(
-                    noUserIdsCheck ? getString(R.string.api_select_pub_keys_text_no_user_ids)
-                            : getString(R.string.api_select_pub_keys_text)
-            );
-            textIntro.setSpan(new StyleSpan(Typeface.BOLD), 0, textIntro.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-            ssb.append(textIntro);
-
-            if (missingUserIds != null && missingUserIds.size() > 0) {
-                ssb.append("\n\n");
-                ssb.append(getString(R.string.api_select_pub_keys_missing_text));
-                ssb.append("\n");
-                for (String userId : missingUserIds) {
-                    SpannableString ss = new SpannableString(userId + "\n");
-                    ss.setSpan(new BulletSpan(15, Color.BLACK), 0, ss.length(),
-                            Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-                    ssb.append(ss);
-                }
+                );
+                break;
             }
-            if (dublicateUserIds != null && dublicateUserIds.size() > 0) {
-                ssb.append("\n\n");
-                ssb.append(getString(R.string.api_select_pub_keys_dublicates_text));
-                ssb.append("\n");
-                for (String userId : dublicateUserIds) {
-                    SpannableString ss = new SpannableString(userId + "\n");
-                    ss.setSpan(new BulletSpan(15, Color.BLACK), 0, ss.length(),
-                            Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-                    ssb.append(ss);
+            case ACTION_CREATE_ACCOUNT: {
+                final String packageName = extras.getString(EXTRA_PACKAGE_NAME);
+                final String accName = extras.getString(EXTRA_ACC_NAME);
+
+                setContentView(R.layout.api_remote_create_account);
+                initToolbar();
+
+                mAccSettingsFragment = (AccountSettingsFragment) getSupportFragmentManager().findFragmentById(
+                        R.id.api_account_settings_fragment);
+
+                TextView text = (TextView) findViewById(R.id.api_remote_create_account_text);
+
+                // update existing?
+                Uri uri = KeychainContract.ApiAccounts.buildByPackageAndAccountUri(packageName, accName);
+                AccountSettings settings = mProviderHelper.getApiAccountSettings(uri);
+                if (settings == null) {
+                    // create new account
+                    settings = new AccountSettings(accName);
+                    mUpdateExistingAccount = false;
+
+                    text.setText(R.string.api_create_account_text);
+                } else {
+                    // update existing account
+                    mUpdateExistingAccount = true;
+
+                    text.setText(R.string.api_update_account_text);
                 }
+                mAccSettingsFragment.setAccSettings(settings);
+
+                // Inflate a "Done"/"Cancel" custom action bar view
+                ActionBarHelper.setTwoButtonView(getSupportActionBar(),
+                        R.string.api_settings_save, R.drawable.ic_action_done,
+                        new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                // Save
+
+                                // user needs to select a key if it has explicitly requested (None is only allowed for new accounts)
+                                if (mUpdateExistingAccount && mAccSettingsFragment.getAccSettings().getKeyId() == Constants.key.none) {
+                                    Notify.showNotify(RemoteServiceActivity.this, getString(R.string.api_register_error_select_key), Notify.Style.ERROR);
+                                } else {
+                                    if (mUpdateExistingAccount) {
+                                        Uri baseUri = KeychainContract.ApiAccounts.buildBaseUri(packageName);
+                                        Uri accountUri = baseUri.buildUpon().appendEncodedPath(accName).build();
+                                        mProviderHelper.updateApiAccount(
+                                                accountUri,
+                                                mAccSettingsFragment.getAccSettings());
+                                    } else {
+                                        mProviderHelper.insertApiAccount(
+                                                KeychainContract.ApiAccounts.buildBaseUri(packageName),
+                                                mAccSettingsFragment.getAccSettings());
+                                    }
+
+                                    // give data through for new service call
+                                    Intent resultData = extras.getParcelable(EXTRA_DATA);
+                                    RemoteServiceActivity.this.setResult(RESULT_OK, resultData);
+                                    RemoteServiceActivity.this.finish();
+                                }
+                            }
+                        }, R.string.api_settings_cancel, R.drawable.ic_action_cancel,
+                        new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                // Cancel
+                                RemoteServiceActivity.this.setResult(RESULT_CANCELED);
+                                RemoteServiceActivity.this.finish();
+                            }
+                        }
+                );
+
+                break;
             }
+            case ACTION_SELECT_PUB_KEYS: {
+                long[] selectedMasterKeyIds = intent.getLongArrayExtra(EXTRA_SELECTED_MASTER_KEY_IDS);
+                boolean noUserIdsCheck = intent.getBooleanExtra(EXTRA_NO_USER_IDS_CHECK, true);
+                ArrayList<String> missingUserIds = intent
+                        .getStringArrayListExtra(EXTRA_MISSING_USER_IDS);
+                ArrayList<String> dublicateUserIds = intent
+                        .getStringArrayListExtra(EXTRA_DUPLICATE_USER_IDS);
 
-            setContentView(R.layout.api_remote_select_pub_keys);
-            initToolbar();
+                SpannableStringBuilder ssb = new SpannableStringBuilder();
+                final SpannableString textIntro = new SpannableString(
+                        noUserIdsCheck ? getString(R.string.api_select_pub_keys_text_no_user_ids)
+                                : getString(R.string.api_select_pub_keys_text)
+                );
+                textIntro.setSpan(new StyleSpan(Typeface.BOLD), 0, textIntro.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                ssb.append(textIntro);
 
-            // Inflate a "Done"/"Cancel" custom action bar view
-            ActionBarHelper.setTwoButtonView(getSupportActionBar(),
-                    R.string.btn_okay, R.drawable.ic_action_done,
-                    new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            // add key ids to params Bundle for new request
-                            Intent resultData = extras.getParcelable(EXTRA_DATA);
-                            resultData.putExtra(OpenPgpApi.EXTRA_KEY_IDS,
-                                    mSelectFragment.getSelectedMasterKeyIds());
-
-                            RemoteServiceActivity.this.setResult(RESULT_OK, resultData);
-                            RemoteServiceActivity.this.finish();
-                        }
-                    }, R.string.btn_do_not_save, R.drawable.ic_action_cancel, new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            // cancel
-                            RemoteServiceActivity.this.setResult(RESULT_CANCELED);
-                            RemoteServiceActivity.this.finish();
-                        }
+                if (missingUserIds != null && missingUserIds.size() > 0) {
+                    ssb.append("\n\n");
+                    ssb.append(getString(R.string.api_select_pub_keys_missing_text));
+                    ssb.append("\n");
+                    for (String userId : missingUserIds) {
+                        SpannableString ss = new SpannableString(userId + "\n");
+                        ss.setSpan(new BulletSpan(15, Color.BLACK), 0, ss.length(),
+                                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                        ssb.append(ss);
                     }
-            );
-
-
-            // set text on view
-            TextView textView = (TextView) findViewById(R.id.api_select_pub_keys_text);
-            textView.setText(ssb, TextView.BufferType.SPANNABLE);
-
-            /* Load select pub keys fragment */
-            // Check that the activity is using the layout version with
-            // the fragment_container FrameLayout
-            if (findViewById(R.id.api_select_pub_keys_fragment_container) != null) {
-
-                // However, if we're being restored from a previous state,
-                // then we don't need to do anything and should return or else
-                // we could end up with overlapping fragments.
-                if (savedInstanceState != null) {
-                    return;
+                }
+                if (dublicateUserIds != null && dublicateUserIds.size() > 0) {
+                    ssb.append("\n\n");
+                    ssb.append(getString(R.string.api_select_pub_keys_dublicates_text));
+                    ssb.append("\n");
+                    for (String userId : dublicateUserIds) {
+                        SpannableString ss = new SpannableString(userId + "\n");
+                        ss.setSpan(new BulletSpan(15, Color.BLACK), 0, ss.length(),
+                                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                        ssb.append(ss);
+                    }
                 }
 
-                // Create an instance of the fragment
-                mSelectFragment = SelectPublicKeyFragment.newInstance(selectedMasterKeyIds);
+                setContentView(R.layout.api_remote_select_pub_keys);
+                initToolbar();
 
-                // Add the fragment to the 'fragment_container' FrameLayout
-                getSupportFragmentManager().beginTransaction()
-                        .add(R.id.api_select_pub_keys_fragment_container, mSelectFragment).commit();
-            }
-        } else if (ACTION_ERROR_MESSAGE.equals(action)) {
-            String errorMessage = intent.getStringExtra(EXTRA_ERROR_MESSAGE);
+                // Inflate a "Done"/"Cancel" custom action bar view
+                ActionBarHelper.setTwoButtonView(getSupportActionBar(),
+                        R.string.btn_okay, R.drawable.ic_action_done,
+                        new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                // add key ids to params Bundle for new request
+                                Intent resultData = extras.getParcelable(EXTRA_DATA);
+                                resultData.putExtra(OpenPgpApi.EXTRA_KEY_IDS,
+                                        mSelectFragment.getSelectedMasterKeyIds());
 
-            Spannable redErrorMessage = new SpannableString(errorMessage);
-            redErrorMessage.setSpan(new ForegroundColorSpan(Color.RED), 0, errorMessage.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-
-            setContentView(R.layout.api_remote_error_message);
-            initToolbar();
-
-            // Inflate a "Done" custom action bar view
-            ActionBarHelper.setOneButtonView(getSupportActionBar(),
-                    R.string.btn_okay, R.drawable.ic_action_done,
-                    new View.OnClickListener() {
-
-                        @Override
-                        public void onClick(View v) {
-                            RemoteServiceActivity.this.setResult(RESULT_CANCELED);
-                            RemoteServiceActivity.this.finish();
+                                RemoteServiceActivity.this.setResult(RESULT_OK, resultData);
+                                RemoteServiceActivity.this.finish();
+                            }
+                        }, R.string.btn_do_not_save, R.drawable.ic_action_cancel, new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                // cancel
+                                RemoteServiceActivity.this.setResult(RESULT_CANCELED);
+                                RemoteServiceActivity.this.finish();
+                            }
                         }
-                    }
-            );
+                );
 
-            // set text on view
-            TextView textView = (TextView) findViewById(R.id.api_app_error_message_text);
-            textView.setText(redErrorMessage);
-        } else {
-            Log.e(Constants.TAG, "Action does not exist!");
-            setResult(RESULT_CANCELED);
-            finish();
+
+                // set text on view
+                TextView textView = (TextView) findViewById(R.id.api_select_pub_keys_text);
+                textView.setText(ssb, TextView.BufferType.SPANNABLE);
+
+                /* Load select pub keys fragment */
+                // Check that the activity is using the layout version with
+                // the fragment_container FrameLayout
+                if (findViewById(R.id.api_select_pub_keys_fragment_container) != null) {
+
+                    // However, if we're being restored from a previous state,
+                    // then we don't need to do anything and should return or else
+                    // we could end up with overlapping fragments.
+                    if (savedInstanceState != null) {
+                        return;
+                    }
+
+                    // Create an instance of the fragment
+                    mSelectFragment = SelectPublicKeyFragment.newInstance(selectedMasterKeyIds);
+
+                    // Add the fragment to the 'fragment_container' FrameLayout
+                    getSupportFragmentManager().beginTransaction()
+                            .add(R.id.api_select_pub_keys_fragment_container, mSelectFragment).commit();
+                }
+                break;
+            }
+            case ACTION_ERROR_MESSAGE: {
+                String errorMessage = intent.getStringExtra(EXTRA_ERROR_MESSAGE);
+
+                Spannable redErrorMessage = new SpannableString(errorMessage);
+                redErrorMessage.setSpan(new ForegroundColorSpan(Color.RED), 0, errorMessage.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+                setContentView(R.layout.api_remote_error_message);
+                initToolbar();
+
+                // Inflate a "Done" custom action bar view
+                ActionBarHelper.setOneButtonView(getSupportActionBar(),
+                        R.string.btn_okay, R.drawable.ic_action_done,
+                        new View.OnClickListener() {
+
+                            @Override
+                            public void onClick(View v) {
+                                RemoteServiceActivity.this.setResult(RESULT_CANCELED);
+                                RemoteServiceActivity.this.finish();
+                            }
+                        }
+                );
+
+                // set text on view
+                TextView textView = (TextView) findViewById(R.id.api_app_error_message_text);
+                textView.setText(redErrorMessage);
+                break;
+            }
+            default:
+                Log.e(Constants.TAG, "Action does not exist!");
+                setResult(RESULT_CANCELED);
+                finish();
+                break;
         }
     }
 }

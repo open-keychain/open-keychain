@@ -20,7 +20,6 @@ package org.sufficientlysecure.keychain.ui;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -140,7 +139,7 @@ public class SettingsKeyServerActivity extends BaseActivity implements OnClickLi
     }
 
     private Vector<String> serverList() {
-        Vector<String> servers = new Vector<String>();
+        Vector<String> servers = new Vector<>();
         for (int i = 0; i < mEditors.getChildCount(); ++i) {
             KeyServerEditor editor = (KeyServerEditor) mEditors.getChildAt(i);
             String tmp = editor.getValue();
@@ -153,7 +152,7 @@ public class SettingsKeyServerActivity extends BaseActivity implements OnClickLi
 
     private void okClicked() {
         Intent data = new Intent();
-        Vector<String> servers = new Vector<String>();
+        Vector<String> servers = new Vector<>();
         for (int i = 0; i < mEditors.getChildCount(); ++i) {
             KeyServerEditor editor = (KeyServerEditor) mEditors.getChildAt(i);
             String tmp = editor.getValue();

@@ -15,7 +15,6 @@ import android.nfc.Tag;
 import android.nfc.tech.IsoDep;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
 import android.view.WindowManager;
 import android.widget.Toast;
 
@@ -23,13 +22,11 @@ import org.spongycastle.bcpg.HashAlgorithmTags;
 import org.spongycastle.util.encoders.Hex;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.Iso7816TLV;
 import org.sufficientlysecure.keychain.util.Log;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.util.Locale;
 
 /**
  * This class provides a communication interface to OpenPGP applications on ISO SmartCard compliant
@@ -91,33 +88,38 @@ public class NfcActivity extends BaseActivity {
             mKeyId = data.getLong(EXTRA_KEY_ID);
         }
 
-        if (ACTION_SIGN_HASH.equals(action)) {
-            mAction = action;
-            mPin = data.getString(EXTRA_PIN);
-            mHashToSign = data.getByteArray(EXTRA_NFC_HASH_TO_SIGN);
-            mHashAlgo = data.getInt(EXTRA_NFC_HASH_ALGO);
-            mServiceIntent = data.getParcelable(EXTRA_DATA);
+        switch (action) {
+            case ACTION_SIGN_HASH:
+                mAction = action;
+                mPin = data.getString(EXTRA_PIN);
+                mHashToSign = data.getByteArray(EXTRA_NFC_HASH_TO_SIGN);
+                mHashAlgo = data.getInt(EXTRA_NFC_HASH_ALGO);
+                mServiceIntent = data.getParcelable(EXTRA_DATA);
 
-            Log.d(Constants.TAG, "NfcActivity mAction: " + mAction);
-            Log.d(Constants.TAG, "NfcActivity mPin: " + mPin);
-            Log.d(Constants.TAG, "NfcActivity mHashToSign as hex: " + getHex(mHashToSign));
-            Log.d(Constants.TAG, "NfcActivity mServiceIntent: " + mServiceIntent.toString());
-        } else if (ACTION_DECRYPT_SESSION_KEY.equals(action)) {
-            mAction = action;
-            mPin = data.getString(EXTRA_PIN);
-            mEncryptedSessionKey = data.getByteArray(EXTRA_NFC_ENC_SESSION_KEY);
-            mServiceIntent = data.getParcelable(EXTRA_DATA);
+                Log.d(Constants.TAG, "NfcActivity mAction: " + mAction);
+                Log.d(Constants.TAG, "NfcActivity mPin: " + mPin);
+                Log.d(Constants.TAG, "NfcActivity mHashToSign as hex: " + getHex(mHashToSign));
+                Log.d(Constants.TAG, "NfcActivity mServiceIntent: " + mServiceIntent.toString());
+                break;
+            case ACTION_DECRYPT_SESSION_KEY:
+                mAction = action;
+                mPin = data.getString(EXTRA_PIN);
+                mEncryptedSessionKey = data.getByteArray(EXTRA_NFC_ENC_SESSION_KEY);
+                mServiceIntent = data.getParcelable(EXTRA_DATA);
 
-            Log.d(Constants.TAG, "NfcActivity mAction: " + mAction);
-            Log.d(Constants.TAG, "NfcActivity mPin: " + mPin);
-            Log.d(Constants.TAG, "NfcActivity mEncryptedSessionKey as hex: " + getHex(mEncryptedSessionKey));
-            Log.d(Constants.TAG, "NfcActivity mServiceIntent: " + mServiceIntent.toString());
-        } else if (NfcAdapter.ACTION_TAG_DISCOVERED.equals(action)) {
-            Log.e(Constants.TAG, "This should not happen! NfcActivity.onCreate() is being called instead of onNewIntent()!");
-            toast("This should not happen! Please create a new bug report that the NFC screen is restarted!");
-            finish();
-        } else {
-            Log.d(Constants.TAG, "Action not supported: " + action);
+                Log.d(Constants.TAG, "NfcActivity mAction: " + mAction);
+                Log.d(Constants.TAG, "NfcActivity mPin: " + mPin);
+                Log.d(Constants.TAG, "NfcActivity mEncryptedSessionKey as hex: " + getHex(mEncryptedSessionKey));
+                Log.d(Constants.TAG, "NfcActivity mServiceIntent: " + mServiceIntent.toString());
+                break;
+            case NfcAdapter.ACTION_TAG_DISCOVERED:
+                Log.e(Constants.TAG, "This should not happen! NfcActivity.onCreate() is being called instead of onNewIntent()!");
+                toast("This should not happen! Please create a new bug report that the NFC screen is restarted!");
+                finish();
+                break;
+            default:
+                Log.d(Constants.TAG, "Action not supported: " + action);
+                break;
         }
     }
 

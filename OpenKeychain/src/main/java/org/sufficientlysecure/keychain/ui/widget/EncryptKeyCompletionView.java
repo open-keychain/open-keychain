@@ -28,7 +28,6 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
-import android.text.SpannableStringBuilder;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -46,7 +45,6 @@ import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.ContactHelper;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
-import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.KeychainDatabase.Tables;
@@ -165,7 +163,7 @@ public class EncryptKeyCompletionView extends TokenCompleteTextView {
             setAdapter(new EncryptKeyAdapter(Collections.<EncryptionKey>emptyList()));
             return;
         }
-        ArrayList<EncryptionKey> keys = new ArrayList<EncryptionKey>();
+        ArrayList<EncryptionKey> keys = new ArrayList<>();
         while (cursor.moveToNext()) {
             try {
                 EncryptionKey key = new EncryptionKey(cursor);

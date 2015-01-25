@@ -248,7 +248,7 @@ public class KeychainProvider extends ContentProvider {
             case KEY_RINGS_UNIFIED:
             case KEY_RINGS_FIND_BY_EMAIL:
             case KEY_RINGS_FIND_BY_SUBKEY: {
-                HashMap<String, String> projectionMap = new HashMap<String, String>();
+                HashMap<String, String> projectionMap = new HashMap<>();
                 projectionMap.put(KeyRings._ID, Tables.KEYS + ".oid AS _id");
                 projectionMap.put(KeyRings.MASTER_KEY_ID, Tables.KEYS + "." + Keys.MASTER_KEY_ID);
                 projectionMap.put(KeyRings.KEY_ID, Tables.KEYS + "." + Keys.KEY_ID);
@@ -432,7 +432,7 @@ public class KeychainProvider extends ContentProvider {
             }
 
             case KEY_RING_KEYS: {
-                HashMap<String, String> projectionMap = new HashMap<String, String>();
+                HashMap<String, String> projectionMap = new HashMap<>();
                 projectionMap.put(Keys._ID, Tables.KEYS + ".oid AS _id");
                 projectionMap.put(Keys.MASTER_KEY_ID, Tables.KEYS + "." + Keys.MASTER_KEY_ID);
                 projectionMap.put(Keys.RANK, Tables.KEYS + "." + Keys.RANK);
@@ -460,7 +460,7 @@ public class KeychainProvider extends ContentProvider {
 
             case KEY_RINGS_USER_IDS:
             case KEY_RING_USER_IDS: {
-                HashMap<String, String> projectionMap = new HashMap<String, String>();
+                HashMap<String, String> projectionMap = new HashMap<>();
                 projectionMap.put(UserPackets._ID, Tables.USER_PACKETS + ".oid AS _id");
                 projectionMap.put(UserPackets.MASTER_KEY_ID, Tables.USER_PACKETS + "." + UserPackets.MASTER_KEY_ID);
                 projectionMap.put(UserPackets.TYPE, Tables.USER_PACKETS + "." + UserPackets.TYPE);
@@ -507,7 +507,7 @@ public class KeychainProvider extends ContentProvider {
 
             case KEY_RINGS_PUBLIC:
             case KEY_RING_PUBLIC: {
-                HashMap<String, String> projectionMap = new HashMap<String, String>();
+                HashMap<String, String> projectionMap = new HashMap<>();
                 projectionMap.put(KeyRingData._ID, Tables.KEY_RINGS_PUBLIC + ".oid AS _id");
                 projectionMap.put(KeyRingData.MASTER_KEY_ID, KeyRingData.MASTER_KEY_ID);
                 projectionMap.put(KeyRingData.KEY_RING_DATA, KeyRingData.KEY_RING_DATA);
@@ -525,7 +525,7 @@ public class KeychainProvider extends ContentProvider {
 
             case KEY_RINGS_SECRET:
             case KEY_RING_SECRET: {
-                HashMap<String, String> projectionMap = new HashMap<String, String>();
+                HashMap<String, String> projectionMap = new HashMap<>();
                 projectionMap.put(KeyRingData._ID, Tables.KEY_RINGS_SECRET + ".oid AS _id");
                 projectionMap.put(KeyRingData.MASTER_KEY_ID, KeyRingData.MASTER_KEY_ID);
                 projectionMap.put(KeyRingData.KEY_RING_DATA, KeyRingData.KEY_RING_DATA);
@@ -543,7 +543,7 @@ public class KeychainProvider extends ContentProvider {
 
             case KEY_RING_CERTS:
             case KEY_RING_CERTS_SPECIFIC: {
-                HashMap<String, String> projectionMap = new HashMap<String, String>();
+                HashMap<String, String> projectionMap = new HashMap<>();
                 projectionMap.put(Certs._ID, Tables.CERTS + ".oid AS " + Certs._ID);
                 projectionMap.put(Certs.MASTER_KEY_ID, Tables.CERTS + "." + Certs.MASTER_KEY_ID);
                 projectionMap.put(Certs.RANK, Tables.CERTS + "." + Certs.RANK);

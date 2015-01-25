@@ -78,7 +78,7 @@ public class CanonicalizedPublicKeyRing extends CanonicalizedKeyRing {
     public IterableIterator<CanonicalizedPublicKey> publicKeyIterator() {
         @SuppressWarnings("unchecked")
         final Iterator<PGPPublicKey> it = getRing().getPublicKeys();
-        return new IterableIterator<CanonicalizedPublicKey>(new Iterator<CanonicalizedPublicKey>() {
+        return new IterableIterator<>(new Iterator<CanonicalizedPublicKey>() {
             @Override
             public boolean hasNext() {
                 return it.hasNext();

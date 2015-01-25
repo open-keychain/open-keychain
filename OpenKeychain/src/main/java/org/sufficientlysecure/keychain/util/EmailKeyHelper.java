@@ -42,13 +42,13 @@ public class EmailKeyHelper {
 
     public static void importAll(Context context, Messenger messenger, List<String> mails) {
         // Collect all candidates as ImportKeysListEntry (set for deduplication)
-        Set<ImportKeysListEntry> entries = new HashSet<ImportKeysListEntry>();
+        Set<ImportKeysListEntry> entries = new HashSet<>();
         for (String mail : mails) {
             entries.addAll(getEmailKeys(context, mail));
         }
 
         // Put them in a list and import
-        ArrayList<ParcelableKeyRing> keys = new ArrayList<ParcelableKeyRing>(entries.size());
+        ArrayList<ParcelableKeyRing> keys = new ArrayList<>(entries.size());
         for (ImportKeysListEntry entry : entries) {
             keys.add(new ParcelableKeyRing(entry.getFingerprintHex(), entry.getKeyIdHex(), null));
         }
@@ -56,7 +56,7 @@ public class EmailKeyHelper {
     }
 
     public static Set<ImportKeysListEntry> getEmailKeys(Context context, String mail) {
-        Set<ImportKeysListEntry> keys = new HashSet<ImportKeysListEntry>();
+        Set<ImportKeysListEntry> keys = new HashSet<>();
 
         // Try _hkp._tcp SRV record first
         String[] mailparts = mail.split("@");
@@ -90,7 +90,7 @@ public class EmailKeyHelper {
     }
 
     public static List<ImportKeysListEntry> getEmailKeys(String mail, Keyserver keyServer) {
-        Set<ImportKeysListEntry> keys = new HashSet<ImportKeysListEntry>();
+        Set<ImportKeysListEntry> keys = new HashSet<>();
         try {
             for (ImportKeysListEntry key : keyServer.search(mail)) {
                 if (key.isRevoked() || key.isExpired()) continue;
@@ -103,6 +103,6 @@ public class EmailKeyHelper {
         } catch (Keyserver.QueryFailedException ignored) {
         } catch (Keyserver.QueryNeedsRepairException ignored) {
         }
-        return new ArrayList<ImportKeysListEntry>(keys);
+        return new ArrayList<>(keys);
     }
 }

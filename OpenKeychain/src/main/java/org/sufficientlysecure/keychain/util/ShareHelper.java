@@ -51,10 +51,10 @@ public class ShareHelper {
             return Intent.createChooser(prototype, title);
         }
 
-        List<LabeledIntent> targetedShareIntents = new ArrayList<LabeledIntent>();
+        List<LabeledIntent> targetedShareIntents = new ArrayList<>();
 
         List<ResolveInfo> resInfoList = mContext.getPackageManager().queryIntentActivities(prototype, 0);
-        List<ResolveInfo> resInfoListFiltered = new ArrayList<ResolveInfo>();
+        List<ResolveInfo> resInfoListFiltered = new ArrayList<>();
         if (!resInfoList.isEmpty()) {
             for (ResolveInfo resolveInfo : resInfoList) {
                 // do not add blacklisted ones
