@@ -826,6 +826,7 @@
 
     <!-- modifySecretKeyRing -->
     <string name="msg_mr">"Modifying keyring %s"</string>
+    <string name="msg_mf_error_divert_serial">"The serial number of a divert-to-card key must be 16 bytes! This is a programming error, please file a bug report!"</string>
     <string name="msg_mf_error_encode">"Encoding exception!"</string>
     <string name="msg_mf_error_fingerprint">"Actual key fingerprint does not match the expected one!"</string>
     <string name="msg_mf_error_keyid">"No key ID. This is an internal error, please file a bug report!"</string>
@@ -833,6 +834,7 @@
     <string name="msg_mf_error_master_none">"No master certificate found to operate on! (All revoked?)"</string>
     <string name="msg_mf_error_noexist_primary">"Bad primary user ID specified!"</string>
     <string name="msg_mf_error_noexist_revoke">"Bad user ID for revocation specified!"</string>
+    <string name="msg_mf_error_restricted">"Tried to execute restricted operation without passphrase! This is a programming error, please file a bug report!"</string>
     <string name="msg_mf_error_revoked_primary">"Revoked user IDs cannot be primary!"</string>
     <string name="msg_mf_error_null_expiry">"Expiry time cannot be "same as before" on subkey creation. This is a programming error, please file a bug report!"</string>
     <string name="msg_mf_error_passphrase_master">"Fatal error decrypting master key! This is likely a programming error, please file a bug report!"</string>

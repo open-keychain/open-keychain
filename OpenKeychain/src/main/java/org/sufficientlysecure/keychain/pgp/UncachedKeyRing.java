@@ -20,7 +20,6 @@ package org.sufficientlysecure.keychain.pgp;
 
 import org.spongycastle.bcpg.ArmoredOutputStream;
 import org.spongycastle.bcpg.PublicKeyAlgorithmTags;
-import org.spongycastle.bcpg.S2K;
 import org.spongycastle.bcpg.SignatureSubpacketTags;
 import org.spongycastle.bcpg.UserAttributeSubpacketTags;
 import org.spongycastle.bcpg.sig.KeyFlags;
@@ -1222,8 +1221,7 @@ public class UncachedKeyRing {
             // if this is a secret key which does not yet occur in the secret ring
             if (sKey == null) {
                 // generate a stripped secret (sub)key
-                sKey = PGPSecretKey.constructGnuDummyKey(key,
-                        S2K.GNU_PROTECTION_MODE_NO_PRIVATE_KEY);
+                sKey = PGPSecretKey.constructGnuDummyKey(key);
             }
             sKey = PGPSecretKey.replacePublicKey(sKey, key);
             return PGPSecretKeyRing.insertSecretKey(secRing, sKey);

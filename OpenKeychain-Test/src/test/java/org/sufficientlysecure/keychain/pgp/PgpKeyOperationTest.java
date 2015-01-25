@@ -702,7 +702,7 @@ public class PgpKeyOperationTest {
     public void testSubkeyStrip() throws Exception {
 
         long keyId = KeyringTestingHelper.getSubkeyId(ring, 1);
-        parcel.mChangeSubKeys.add(new SubkeyChange(keyId, true, false));
+        parcel.mChangeSubKeys.add(new SubkeyChange(keyId, true, null));
         applyModificationWithChecks(parcel, ring, onlyA, onlyB);
 
         Assert.assertEquals("one extra packet in original", 1, onlyA.size());
@@ -728,7 +728,7 @@ public class PgpKeyOperationTest {
     public void testMasterStrip() throws Exception {
 
         long keyId = ring.getMasterKeyId();
-        parcel.mChangeSubKeys.add(new SubkeyChange(keyId, true, false));
+        parcel.mChangeSubKeys.add(new SubkeyChange(keyId, true, null));
         applyModificationWithChecks(parcel, ring, onlyA, onlyB);
 
         Assert.assertEquals("one extra packet in original", 1, onlyA.size());
@@ -747,6 +747,44 @@ public class PgpKeyOperationTest {
         Assert.assertEquals("new packet secret key data should have length zero",
                 0, ((SecretKeyPacket) p).getSecretKeyData().length);
         Assert.assertNull("new packet should have no iv data", ((SecretKeyPacket) p).getIV());
+    }
+
+    @Test
+    public void testRestrictedStrip() throws Exception {
+
+        long keyId = KeyringTestingHelper.getSubkeyId(ring, 1);
+        UncachedKeyRing modified;
+
+        { // we should be able to change the stripped/divert status of subkeys without passphrase
+            parcel.reset();
+            parcel.mChangeSubKeys.add(new SubkeyChange(keyId, true, null));
+            modified = applyModificationWithChecks(parcel, ring, onlyA, onlyB, null);
+            Assert.assertEquals("one extra packet in modified", 1, onlyB.size());
+            Packet p = new BCPGInputStream(new ByteArrayInputStream(onlyB.get(0).buf)).readPacket();
+            Assert.assertEquals("new packet should have GNU_DUMMY S2K type",
+                    S2K.GNU_DUMMY_S2K, ((SecretKeyPacket) p).getS2K().getType());
+            Assert.assertEquals("new packet should have GNU_DUMMY protection mode stripped",
+                    S2K.GNU_PROTECTION_MODE_NO_PRIVATE_KEY, ((SecretKeyPacket) p).getS2K().getProtectionMode());
+        }
+
+        { // and again, changing to divert-to-card
+            parcel.reset();
+            byte[] serial = new byte[] {
+                    0x6a, 0x6f, 0x6c, 0x6f, 0x73, 0x77, 0x61, 0x67,
+                    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+            };
+            parcel.mChangeSubKeys.add(new SubkeyChange(keyId, false, serial));
+            modified = applyModificationWithChecks(parcel, ring, onlyA, onlyB, null);
+            Assert.assertEquals("one extra packet in modified", 1, onlyB.size());
+            Packet p = new BCPGInputStream(new ByteArrayInputStream(onlyB.get(0).buf)).readPacket();
+            Assert.assertEquals("new packet should have GNU_DUMMY S2K type",
+                    S2K.GNU_DUMMY_S2K, ((SecretKeyPacket) p).getS2K().getType());
+            Assert.assertEquals("new packet should have GNU_DUMMY protection mode divert-to-card",
+                    S2K.GNU_PROTECTION_MODE_DIVERT_TO_CARD, ((SecretKeyPacket) p).getS2K().getProtectionMode());
+            Assert.assertArrayEquals("new packet should have correct serial number as iv",
+                    serial, ((SecretKeyPacket) p).getIV());
+
+        }
 
     }
 
@@ -1091,6 +1129,17 @@ public class PgpKeyOperationTest {
                     3, onlyB.size());
         }
 
+    }
+
+    @Test
+    public void testRestricted () throws Exception {
+
+        CanonicalizedSecretKeyRing secretRing = new CanonicalizedSecretKeyRing(ring.getEncoded(), false, 0);
+
+        parcel.mAddUserIds.add("discord");
+        PgpKeyOperation op = new PgpKeyOperation(null);
+        PgpEditKeyResult result = op.modifySecretKeyRing(secretRing, parcel, null);
+        Assert.assertFalse("non-restricted operations should fail without passphrase", result.success());
     }
 
     private static UncachedKeyRing applyModificationWithChecks(SaveKeyringParcel parcel,

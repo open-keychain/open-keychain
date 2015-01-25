@@ -80,6 +80,23 @@ public class SaveKeyringParcel implements Parcelable {
         mRevokeSubKeys = new ArrayList<Long>();
     }
 
+    /** Returns true iff this parcel does not contain any operations which require a passphrase. */
+    public boolean isRestrictedOnly() {
+        if (mNewUnlock != null || !mAddUserIds.isEmpty() || !mAddUserAttribute.isEmpty()
+                || !mAddSubKeys.isEmpty() || mChangePrimaryUserId != null || !mRevokeSubKeys .isEmpty()
+                || !mRevokeSubKeys.isEmpty()) {
+            return false;
+        }
+
+        for (SubkeyChange change : mChangeSubKeys) {
+            if (change.mRecertify || change.mFlags != null || change.mExpiry != null) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     // performance gain for using Parcelable here would probably be negligible,
     // use Serializable instead.
     public static class SubkeyAdd implements Serializable {
@@ -114,12 +131,14 @@ public class SaveKeyringParcel implements Parcelable {
         public Integer mFlags;
         // this is a long unix timestamp, in seconds (NOT MILLISECONDS!)
         public Long mExpiry;
+        // if this flag is true, the key will be recertified even if all above
+        // values are no-ops
+        public boolean mRecertify;
         // if this flag is true, the subkey should be changed to a stripped key
         public boolean mDummyStrip;
-        // if this flag is true, the subkey should be changed to a divert-to-card key
-        public boolean mDummyDivert;
-        // if this flag is true, the key will be recertified even if the above values are no-ops
-        public boolean mRecertify;
+        // if this is non-null, the subkey will be changed to a divert-to-card
+        // key for the given serial number
+        public byte[] mDummyDivert;
 
         public SubkeyChange(long keyId) {
             mKeyId = keyId;
@@ -136,11 +155,11 @@ public class SaveKeyringParcel implements Parcelable {
             mExpiry = expiry;
         }
 
-        public SubkeyChange(long keyId, boolean dummyStrip, boolean dummyDivert) {
+        public SubkeyChange(long keyId, boolean dummyStrip, byte[] dummyDivert) {
             this(keyId, null, null);
 
             // these flags are mutually exclusive!
-            if (dummyStrip && dummyDivert) {
+            if (dummyStrip && dummyDivert != null) {
                 throw new AssertionError(
                         "cannot set strip and divert flags at the same time - this is a bug!");
             }

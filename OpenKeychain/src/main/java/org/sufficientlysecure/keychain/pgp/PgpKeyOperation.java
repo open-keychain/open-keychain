@@ -20,7 +20,6 @@ package org.sufficientlysecure.keychain.pgp;
 
 import org.spongycastle.bcpg.CompressionAlgorithmTags;
 import org.spongycastle.bcpg.HashAlgorithmTags;
-import org.spongycastle.bcpg.S2K;
 import org.spongycastle.bcpg.SymmetricKeyAlgorithmTags;
 import org.spongycastle.bcpg.sig.Features;
 import org.spongycastle.bcpg.sig.KeyFlags;
@@ -390,6 +389,9 @@ public class PgpKeyOperation {
      * with a passphrase fails, the operation will fail with an unlocking error. More specific
      * handling of errors should be done in UI code!
      *
+     * If the passphrase is null, only a restricted subset of operations will be available,
+     * namely stripping of subkeys and changing the protection mode of dummy keys.
+     *
      */
     public PgpEditKeyResult modifySecretKeyRing(CanonicalizedSecretKeyRing wsKR, SaveKeyringParcel saveParcel,
                                                String passphrase) {
@@ -428,6 +430,11 @@ public class PgpKeyOperation {
                                     masterSecretKey.getPublicKey().getFingerprint())) {
             log.add(LogType.MSG_MF_ERROR_FINGERPRINT, indent);
             return new PgpEditKeyResult(PgpEditKeyResult.RESULT_ERROR, log, null);
+        }
+
+        // If we have no passphrase, only allow restricted operation
+        if (passphrase == null) {
+            return internalRestricted(sKR, saveParcel, log);
         }
 
         // read masterKeyFlags, and use the same as before.
@@ -716,15 +723,18 @@ public class PgpKeyOperation {
                     return new PgpEditKeyResult(PgpEditKeyResult.RESULT_ERROR, log, null);
                 }
 
-                if (change.mDummyStrip || change.mDummyDivert) {
+                if (change.mDummyStrip || change.mDummyDivert != null) {
                     // IT'S DANGEROUS~
                     // no really, it is. this operation irrevocably removes the private key data from the key
                     if (change.mDummyStrip) {
-                        sKey = PGPSecretKey.constructGnuDummyKey(sKey.getPublicKey(),
-                                S2K.GNU_PROTECTION_MODE_NO_PRIVATE_KEY);
+                        sKey = PGPSecretKey.constructGnuDummyKey(sKey.getPublicKey());
                     } else {
-                        sKey = PGPSecretKey.constructGnuDummyKey(sKey.getPublicKey(),
-                                S2K.GNU_PROTECTION_MODE_DIVERT_TO_CARD);
+                        // the serial number must be 16 bytes in length
+                        if (change.mDummyDivert.length != 16) {
+                            log.add(LogType.MSG_MF_ERROR_DIVERT_SERIAL,
+                                    indent + 1, KeyFormattingUtils.convertKeyIdToHex(change.mKeyId));
+                            return new PgpEditKeyResult(PgpEditKeyResult.RESULT_ERROR, log, null);
+                        }
                     }
                     sKR = PGPSecretKeyRing.insertSecretKey(sKR, sKey);
                 }
@@ -931,6 +941,73 @@ public class PgpKeyOperation {
         return new PgpEditKeyResult(OperationResult.RESULT_OK, log, new UncachedKeyRing(sKR));
 
     }
+
+    /** This method does the actual modifications in a keyring just like internal, except it
+     * supports only the subset of operations which require no passphrase, and will error
+     * otherwise.
+     */
+    private PgpEditKeyResult internalRestricted(PGPSecretKeyRing sKR, SaveKeyringParcel saveParcel,
+                                                OperationLog log) {
+
+        int indent = 1;
+
+        progress(R.string.progress_modify, 0);
+
+        // Make sure the saveParcel includes only operations available without passphrae!
+        if (!saveParcel.isRestrictedOnly()) {
+            log.add(LogType.MSG_MF_ERROR_RESTRICTED, indent);
+            return new PgpEditKeyResult(PgpEditKeyResult.RESULT_ERROR, log, null);
+        }
+
+        // Check if we were cancelled
+        if (checkCancelled()) {
+            log.add(LogType.MSG_OPERATION_CANCELLED, indent);
+            return new PgpEditKeyResult(PgpEditKeyResult.RESULT_CANCELLED, log, null);
+        }
+
+        // The only operation we can do here:
+        // 4a. Strip secret keys, or change their protection mode (stripped/divert-to-card)
+        subProgressPush(50, 60);
+        for (int i = 0; i < saveParcel.mChangeSubKeys.size(); i++) {
+
+            progress(R.string.progress_modify_subkeychange, (i - 1) * (100 / saveParcel.mChangeSubKeys.size()));
+            SaveKeyringParcel.SubkeyChange change = saveParcel.mChangeSubKeys.get(i);
+            log.add(LogType.MSG_MF_SUBKEY_CHANGE,
+                    indent, KeyFormattingUtils.convertKeyIdToHex(change.mKeyId));
+
+            PGPSecretKey sKey = sKR.getSecretKey(change.mKeyId);
+            if (sKey == null) {
+                log.add(LogType.MSG_MF_ERROR_SUBKEY_MISSING,
+                        indent + 1, KeyFormattingUtils.convertKeyIdToHex(change.mKeyId));
+                return new PgpEditKeyResult(PgpEditKeyResult.RESULT_ERROR, log, null);
+            }
+
+            if (change.mDummyStrip || change.mDummyDivert != null) {
+                // IT'S DANGEROUS~
+                // no really, it is. this operation irrevocably removes the private key data from the key
+                if (change.mDummyStrip) {
+                    sKey = PGPSecretKey.constructGnuDummyKey(sKey.getPublicKey());
+                } else {
+                    // the serial number must be 16 bytes in length
+                    if (change.mDummyDivert.length != 16) {
+                        log.add(LogType.MSG_MF_ERROR_DIVERT_SERIAL,
+                                indent + 1, KeyFormattingUtils.convertKeyIdToHex(change.mKeyId));
+                        return new PgpEditKeyResult(PgpEditKeyResult.RESULT_ERROR, log, null);
+                    }
+                    sKey = PGPSecretKey.constructGnuDummyKey(sKey.getPublicKey(), change.mDummyDivert);
+                }
+                sKR = PGPSecretKeyRing.insertSecretKey(sKR, sKey);
+            }
+
+        }
+
+        // And we're done!
+        progress(R.string.progress_done, 100);
+        log.add(LogType.MSG_MF_SUCCESS, indent);
+        return new PgpEditKeyResult(OperationResult.RESULT_OK, log, new UncachedKeyRing(sKR));
+
+    }
+
 
     private static PGPSecretKeyRing applyNewUnlock(
             PGPSecretKeyRing sKR,

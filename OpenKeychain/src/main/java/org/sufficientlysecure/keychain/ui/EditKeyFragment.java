@@ -481,7 +481,7 @@ public class EditKeyFragment extends LoaderFragment implements
                     case EditSubkeyDialogFragment.MESSAGE_STRIP:
                         SubkeyChange change = mSaveKeyringParcel.getSubkeyChange(keyId);
                         if (change == null) {
-                            mSaveKeyringParcel.mChangeSubKeys.add(new SubkeyChange(keyId, true, false));
+                            mSaveKeyringParcel.mChangeSubKeys.add(new SubkeyChange(keyId, true, null));
                             break;
                         }
                         // toggle
