@@ -18,7 +18,7 @@
         <!-- Background for the actions section (e.g. voice, submit) -->
         <!--<item name="submitBackground">...</item>-->
         <!-- Close button icon -->
-        <!--<item name="closeIcon">...</item>-->
+        <item name="closeIcon">@drawable/ic_close_white_24dp</item>
         <!-- Search button icon -->
         <!--<item name="searchIcon">...</item>-->
         <!-- Go/commit button icon -->

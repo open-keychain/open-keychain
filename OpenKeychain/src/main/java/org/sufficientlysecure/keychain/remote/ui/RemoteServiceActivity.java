@@ -40,7 +40,6 @@ import org.sufficientlysecure.keychain.remote.AccountSettings;
 import org.sufficientlysecure.keychain.remote.AppSettings;
 import org.sufficientlysecure.keychain.ui.BaseActivity;
 import org.sufficientlysecure.keychain.ui.SelectPublicKeyFragment;
-import org.sufficientlysecure.keychain.ui.util.ActionBarHelper;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.util.Log;
 
@@ -123,8 +122,8 @@ public class RemoteServiceActivity extends BaseActivity {
                 mAppSettingsFragment.setAppSettings(settings);
 
                 // Inflate a "Done"/"Cancel" custom action bar view
-                ActionBarHelper.setTwoButtonView(getSupportActionBar(),
-                        R.string.api_register_allow, R.drawable.ic_action_done,
+                setFullScreenDialogTwoButtons(
+                        R.string.api_register_allow, R.drawable.ic_check_white_24dp,
                         new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
@@ -137,7 +136,7 @@ public class RemoteServiceActivity extends BaseActivity {
                                 RemoteServiceActivity.this.setResult(RESULT_OK, resultData);
                                 RemoteServiceActivity.this.finish();
                             }
-                        }, R.string.api_register_disallow, R.drawable.ic_action_cancel,
+                        }, R.string.api_register_disallow, R.drawable.ic_close_white_24dp,
                         new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
@@ -179,8 +178,7 @@ public class RemoteServiceActivity extends BaseActivity {
                 mAccSettingsFragment.setAccSettings(settings);
 
                 // Inflate a "Done"/"Cancel" custom action bar view
-                ActionBarHelper.setTwoButtonView(getSupportActionBar(),
-                        R.string.api_settings_save, R.drawable.ic_action_done,
+                setFullScreenDialogDoneClose(R.string.api_settings_save,
                         new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
@@ -208,7 +206,7 @@ public class RemoteServiceActivity extends BaseActivity {
                                     RemoteServiceActivity.this.finish();
                                 }
                             }
-                        }, R.string.api_settings_cancel, R.drawable.ic_action_cancel,
+                        },
                         new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
@@ -216,8 +214,7 @@ public class RemoteServiceActivity extends BaseActivity {
                                 RemoteServiceActivity.this.setResult(RESULT_CANCELED);
                                 RemoteServiceActivity.this.finish();
                             }
-                        }
-                );
+                        });
 
                 break;
             }
@@ -264,8 +261,7 @@ public class RemoteServiceActivity extends BaseActivity {
                 initToolbar();
 
                 // Inflate a "Done"/"Cancel" custom action bar view
-                ActionBarHelper.setTwoButtonView(getSupportActionBar(),
-                        R.string.btn_okay, R.drawable.ic_action_done,
+                setFullScreenDialogDoneClose(R.string.btn_okay,
                         new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
@@ -277,16 +273,15 @@ public class RemoteServiceActivity extends BaseActivity {
                                 RemoteServiceActivity.this.setResult(RESULT_OK, resultData);
                                 RemoteServiceActivity.this.finish();
                             }
-                        }, R.string.btn_do_not_save, R.drawable.ic_action_cancel, new View.OnClickListener() {
+                        },
+                        new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
                                 // cancel
                                 RemoteServiceActivity.this.setResult(RESULT_CANCELED);
                                 RemoteServiceActivity.this.finish();
                             }
-                        }
-                );
-
+                        });
 
                 // set text on view
                 TextView textView = (TextView) findViewById(R.id.api_select_pub_keys_text);
@@ -323,8 +318,7 @@ public class RemoteServiceActivity extends BaseActivity {
                 initToolbar();
 
                 // Inflate a "Done" custom action bar view
-                ActionBarHelper.setOneButtonView(getSupportActionBar(),
-                        R.string.btn_okay, R.drawable.ic_action_done,
+                setFullScreenDialogClose(
                         new View.OnClickListener() {
 
                             @Override

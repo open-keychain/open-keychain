@@ -164,7 +164,7 @@ public class SubkeysAdapter extends CursorAdapter {
                 ? mSaveKeyringParcel.getSubkeyChange(keyId)
                 : null;
 
-        if (change.mDummyStrip) {
+        if (change != null && change.mDummyStrip) {
             algorithmStr.append(", ");
             final SpannableString boldStripped = new SpannableString(
                     context.getString(R.string.key_stripped)

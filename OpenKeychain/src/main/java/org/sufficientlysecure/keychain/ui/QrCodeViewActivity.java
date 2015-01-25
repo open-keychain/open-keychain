@@ -26,7 +26,6 @@ import android.widget.ImageView;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.ui.util.ActionBarHelper;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
@@ -44,8 +43,7 @@ public class QrCodeViewActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
 
         // Inflate a "Done" custom action bar
-        ActionBarHelper.setOneButtonView(getSupportActionBar(),
-                R.string.btn_okay, R.drawable.ic_action_done,
+        setFullScreenDialogClose(
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {

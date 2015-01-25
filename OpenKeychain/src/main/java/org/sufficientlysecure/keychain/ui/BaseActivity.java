@@ -17,14 +17,21 @@
 
 package org.sufficientlysecure.keychain.ui;
 
+import android.app.Activity;
 import android.os.Bundle;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.Gravity;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.TextView;
 
 import org.sufficientlysecure.keychain.R;
 
 /**
- * Sets action bar
+ * Setups Toolbar
  */
 public abstract class BaseActivity extends ActionBarActivity {
     protected Toolbar mToolbar;
@@ -49,4 +56,75 @@ public abstract class BaseActivity extends ActionBarActivity {
     protected void setActionBarIcon(int iconRes) {
         mToolbar.setNavigationIcon(iconRes);
     }
+
+    /**
+     * Inflate custom design to look like a full screen dialog, as specified in Material Design Guidelines
+     * see http://www.google.com/design/spec/components/dialogs.html#dialogs-full-screen-dialogs
+     */
+    protected void setFullScreenDialogDoneClose(int doneText, View.OnClickListener doneOnClickListener,
+                                                View.OnClickListener cancelOnClickListener) {
+        setActionBarIcon(R.drawable.ic_close_white_24dp);
+
+        // Inflate the custom action bar view
+        final LayoutInflater inflater = (LayoutInflater) getSupportActionBar().getThemedContext()
+                .getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
+        final View customActionBarView = inflater.inflate(R.layout.full_screen_dialog, null);
+
+        TextView firstTextView = ((TextView) customActionBarView.findViewById(R.id.full_screen_dialog_done_text));
+        firstTextView.setText(doneText);
+        customActionBarView.findViewById(R.id.full_screen_dialog_done).setOnClickListener(
+                doneOnClickListener);
+
+        getSupportActionBar().setDisplayShowCustomEnabled(true);
+        getSupportActionBar().setDisplayShowTitleEnabled(true);
+        getSupportActionBar().setCustomView(customActionBarView, new ActionBar.LayoutParams(
+                ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT,
+                Gravity.END));
+        mToolbar.setNavigationOnClickListener(cancelOnClickListener);
+    }
+
+    /**
+     * Close button only
+     */
+    protected void setFullScreenDialogClose(View.OnClickListener cancelOnClickListener) {
+        setActionBarIcon(R.drawable.ic_close_white_24dp);
+        getSupportActionBar().setDisplayShowTitleEnabled(true);
+        mToolbar.setNavigationOnClickListener(cancelOnClickListener);
+    }
+
+    /**
+     * Inflate custom design with two buttons using drawables.
+     * This does not conform to the Material Design Guidelines, but we deviate here as this is used
+     * to indicate "Allow access"/"Disallow access" to the API, which must be clearly indicated
+     */
+    protected void setFullScreenDialogTwoButtons(int firstText, int firstDrawableId, View.OnClickListener firstOnClickListener,
+                                                 int secondText, int secondDrawableId, View.OnClickListener secondOnClickListener) {
+
+        // Inflate the custom action bar view
+        final LayoutInflater inflater = (LayoutInflater) getSupportActionBar().getThemedContext()
+                .getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
+        final View customActionBarView = inflater.inflate(
+                R.layout.full_screen_dialog_2, null);
+
+        TextView firstTextView = ((TextView) customActionBarView.findViewById(R.id.actionbar_done_text));
+        firstTextView.setText(firstText);
+        firstTextView.setCompoundDrawablesWithIntrinsicBounds(firstDrawableId, 0, 0, 0);
+        customActionBarView.findViewById(R.id.actionbar_done).setOnClickListener(
+                firstOnClickListener);
+        TextView secondTextView = ((TextView) customActionBarView.findViewById(R.id.actionbar_cancel_text));
+        secondTextView.setText(secondText);
+        secondTextView.setCompoundDrawablesWithIntrinsicBounds(secondDrawableId, 0, 0, 0);
+        customActionBarView.findViewById(R.id.actionbar_cancel).setOnClickListener(
+                secondOnClickListener);
+
+        // Show the custom action bar view and hide the normal Home icon and title.
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
+        getSupportActionBar().setDisplayShowHomeEnabled(false);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+        getSupportActionBar().setDisplayShowCustomEnabled(true);
+        getSupportActionBar().setCustomView(customActionBarView, new ActionBar.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+    }
+
+
 }

@@ -22,7 +22,6 @@ import android.os.Bundle;
 import android.view.View;
 
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.ui.util.ActionBarHelper;
 
 public class LogDisplayActivity extends BaseActivity {
 
@@ -31,8 +30,7 @@ public class LogDisplayActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
 
         // Inflate a "Done" custom action bar
-        ActionBarHelper.setOneButtonView(getSupportActionBar(),
-                R.string.btn_okay, R.drawable.ic_action_done,
+        setFullScreenDialogClose(
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {

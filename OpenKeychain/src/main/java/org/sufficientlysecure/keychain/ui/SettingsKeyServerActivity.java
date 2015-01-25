@@ -27,7 +27,6 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.ui.util.ActionBarHelper;
 import org.sufficientlysecure.keychain.ui.widget.Editor;
 import org.sufficientlysecure.keychain.ui.widget.Editor.EditorListener;
 import org.sufficientlysecure.keychain.ui.widget.KeyServerEditor;
@@ -51,21 +50,19 @@ public class SettingsKeyServerActivity extends BaseActivity implements OnClickLi
         super.onCreate(savedInstanceState);
 
         // Inflate a "Done"/"Cancel" custom action bar view
-        ActionBarHelper.setTwoButtonView(getSupportActionBar(), R.string.btn_okay, R.drawable.ic_action_done,
+        setFullScreenDialogDoneClose(R.string.btn_save,
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        // ok
                         okClicked();
                     }
-                }, R.string.btn_do_not_save, R.drawable.ic_action_cancel, new View.OnClickListener() {
+                },
+                new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        // cancel
                         cancelClicked();
                     }
-                }
-        );
+                });
 
         mInflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 

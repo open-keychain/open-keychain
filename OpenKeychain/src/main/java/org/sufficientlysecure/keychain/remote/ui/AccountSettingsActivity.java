@@ -27,7 +27,6 @@ import android.view.View;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.ui.BaseActivity;
-import org.sufficientlysecure.keychain.ui.util.ActionBarHelper;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.remote.AccountSettings;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
@@ -45,13 +44,17 @@ public class AccountSettingsActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
 
         // Inflate a "Done" custom action bar
-        ActionBarHelper.setOneButtonView(getSupportActionBar(),
-                R.string.api_settings_save, R.drawable.ic_action_done,
+        setFullScreenDialogDoneClose(R.string.api_settings_save,
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        // "Done"
                         save();
+                    }
+                },
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        finish();
                     }
                 });
 
@@ -129,9 +132,4 @@ public class AccountSettingsActivity extends BaseActivity {
         }
     }
 
-    @Override
-    public void onBackPressed() {
-        save();
-        super.onBackPressed();
-    }
 }

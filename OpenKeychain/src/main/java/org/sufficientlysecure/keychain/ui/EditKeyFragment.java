@@ -29,7 +29,6 @@ import android.os.Messenger;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
-import android.support.v7.app.ActionBarActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -66,7 +65,6 @@ import org.sufficientlysecure.keychain.ui.dialog.EditSubkeyDialogFragment;
 import org.sufficientlysecure.keychain.ui.dialog.EditSubkeyExpiryDialogFragment;
 import org.sufficientlysecure.keychain.ui.dialog.EditUserIdDialogFragment;
 import org.sufficientlysecure.keychain.ui.dialog.SetPassphraseDialogFragment;
-import org.sufficientlysecure.keychain.ui.util.ActionBarHelper;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.util.Log;
 
@@ -148,10 +146,8 @@ public class EditKeyFragment extends LoaderFragment implements
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-
-        // Inflate a "Done"/"Cancel" custom action bar view
-        ActionBarHelper.setTwoButtonView(((ActionBarActivity) getActivity()).getSupportActionBar(),
-                R.string.btn_save, R.drawable.ic_action_save,
+        ((EditKeyActivity) getActivity()).setFullScreenDialogDoneClose(
+                R.string.btn_save,
                 new OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -162,16 +158,13 @@ public class EditKeyFragment extends LoaderFragment implements
                             saveInDatabase(mCurrentPassphrase);
                         }
                     }
-                }, R.string.menu_key_edit_cancel, R.drawable.ic_action_cancel,
-                new OnClickListener() {
+                }, new OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        // cancel
                         getActivity().setResult(Activity.RESULT_CANCELED);
                         getActivity().finish();
                     }
-                }
-        );
+                });
 
         Uri dataUri = getArguments().getParcelable(ARG_DATA_URI);
         SaveKeyringParcel saveKeyringParcel = getArguments().getParcelable(ARG_SAVE_KEYRING_PARCEL);
@@ -393,8 +386,8 @@ public class EditKeyFragment extends LoaderFragment implements
 
                     // cache new returned passphrase!
                     mSaveKeyringParcel.mNewUnlock = new ChangeUnlockParcel(
-                        data.getString(SetPassphraseDialogFragment.MESSAGE_NEW_PASSPHRASE),
-                        null
+                            data.getString(SetPassphraseDialogFragment.MESSAGE_NEW_PASSPHRASE),
+                            null
                     );
                 }
             }
