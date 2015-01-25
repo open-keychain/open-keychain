@@ -654,6 +654,7 @@ public abstract class OperationResult implements Parcelable {
         MSG_IMPORT_FINGERPRINT_ERROR (LogLevel.ERROR, R.string.msg_import_fingerprint_error),
         MSG_IMPORT_FINGERPRINT_OK (LogLevel.DEBUG, R.string.msg_import_fingerprint_ok),
         MSG_IMPORT_ERROR (LogLevel.ERROR, R.string.msg_import_error),
+        MSG_IMPORT_ERROR_IO (LogLevel.ERROR, R.string.msg_import_error_io),
         MSG_IMPORT_PARTIAL (LogLevel.ERROR, R.string.msg_import_partial),
         MSG_IMPORT_SUCCESS (LogLevel.OK, R.string.msg_import_success),
 

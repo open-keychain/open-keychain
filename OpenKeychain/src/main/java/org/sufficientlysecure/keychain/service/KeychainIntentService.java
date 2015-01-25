@@ -403,49 +403,28 @@ public class KeychainIntentService extends IntentService implements Progressable
 
                 break;
             }
-            case ACTION_IMPORT_KEYRING:
+            case ACTION_IMPORT_KEYRING: {
 
-                try {
+                // Input
+                String keyServer = data.getString(IMPORT_KEY_SERVER);
+                ArrayList<ParcelableKeyRing> list = data.getParcelableArrayList(IMPORT_KEY_LIST);
+                ParcelableFileCache<ParcelableKeyRing> cache =
+                        new ParcelableFileCache<>(this, "key_import.pcl");
 
-                    // Input
-                    String keyServer = data.getString(IMPORT_KEY_SERVER);
-                    Iterator<ParcelableKeyRing> entries;
-                    int numEntries;
-                    if (data.containsKey(IMPORT_KEY_LIST)) {
-                        // get entries from intent
-                        ArrayList<ParcelableKeyRing> list = data.getParcelableArrayList(IMPORT_KEY_LIST);
-                        entries = list.iterator();
-                        numEntries = list.size();
-                    } else {
-                        // get entries from cached file
-                        ParcelableFileCache<ParcelableKeyRing> cache =
-                                new ParcelableFileCache<>(this, "key_import.pcl");
-                        IteratorWithSize<ParcelableKeyRing> it = cache.readCache();
-                        entries = it;
-                        numEntries = it.getSize();
-                    }
+                // Operation
+                ImportExportOperation importExportOperation = new ImportExportOperation(
+                        this, providerHelper, this, mActionCanceled);
+                // Either list or cache must be null, no guarantees otherwise.
+                ImportKeyResult result = list != null
+                        ? importExportOperation.importKeyRings(list, keyServer)
+                        : importExportOperation.importKeyRings(cache, keyServer);
 
-                    // Operation
-                    ImportExportOperation importExportOperation = new ImportExportOperation(
-                            this, providerHelper, this, mActionCanceled);
-                    ImportKeyResult result = importExportOperation.importKeyRings(entries, numEntries, keyServer);
-
-                    // Special: consolidate on secret key import (cannot be cancelled!)
-                    if (result.mSecret > 0) {
-                        // TODO move this into the import operation
-                        providerHelper.consolidateDatabaseStep1(this);
-                    }
-
-                    // Special: make sure new data is synced into contacts
-                    ContactSyncAdapterService.requestSync();
-
-                    // Result
-                    sendMessageToHandler(KeychainIntentServiceHandler.MESSAGE_OKAY, result);
-                } catch (Exception e) {
-                    sendErrorToHandler(e);
-                }
+                // Result
+                sendMessageToHandler(KeychainIntentServiceHandler.MESSAGE_OKAY, result);
 
                 break;
+
+            }
             case ACTION_SIGN_ENCRYPT:
 
                 try {
