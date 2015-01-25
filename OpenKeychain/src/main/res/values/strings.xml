@@ -907,6 +907,13 @@
     <string name="msg_ed_fetching">"Fetching key to modify (%s)"</string>
     <string name="msg_ed_success">"Key operation successful"</string>
 
+    <!-- Promote key -->
+    <string name="msg_pr">"Promoting public key to secret key"</string>
+    <string name="msg_pr_error_already_secret">"Key is already a secret key!"</string>
+    <string name="msg_pr_error_key_not_found">"Key not found!"</string>
+    <string name="msg_pr_fetching">"Fetching key to modify (%s)"</string>
+    <string name="msg_pr_success">"Key successfully promoted"</string>
+
     <!-- Other messages used in OperationLogs -->
     <string name="msg_ek_error_divert">"Editing of NFC keys is not (yet) supported!"</string>
     <string name="msg_ek_error_dummy">"Cannot edit keyring with stripped master key!"</string>

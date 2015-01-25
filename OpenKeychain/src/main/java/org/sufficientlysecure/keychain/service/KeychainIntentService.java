@@ -30,10 +30,12 @@ import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.operations.CertifyOperation;
 import org.sufficientlysecure.keychain.operations.DeleteOperation;
 import org.sufficientlysecure.keychain.operations.EditKeyOperation;
+import org.sufficientlysecure.keychain.operations.PromoteKeyOperation;
 import org.sufficientlysecure.keychain.operations.results.DeleteResult;
 import org.sufficientlysecure.keychain.operations.results.EditKeyResult;
 import org.sufficientlysecure.keychain.operations.results.ExportResult;
 import org.sufficientlysecure.keychain.operations.results.PgpEditKeyResult;
+import org.sufficientlysecure.keychain.operations.results.PromoteKeyResult;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.operations.results.CertifyResult;
 import org.sufficientlysecure.keychain.util.FileHelper;
@@ -90,6 +92,8 @@ public class KeychainIntentService extends IntentService implements Progressable
     public static final String ACTION_DECRYPT_METADATA = Constants.INTENT_PREFIX + "DECRYPT_METADATA";
 
     public static final String ACTION_EDIT_KEYRING = Constants.INTENT_PREFIX + "EDIT_KEYRING";
+
+    public static final String ACTION_PROMOTE_KEYRING = Constants.INTENT_PREFIX + "PROMOTE_KEYRING";
 
     public static final String ACTION_IMPORT_KEYRING = Constants.INTENT_PREFIX + "IMPORT_KEYRING";
     public static final String ACTION_EXPORT_KEYRING = Constants.INTENT_PREFIX + "EXPORT_KEYRING";
@@ -160,6 +164,10 @@ public class KeychainIntentService extends IntentService implements Progressable
 
     // certify key
     public static final String CERTIFY_PARCEL = "certify_parcel";
+
+    // promote key
+    public static final String PROMOTE_MASTER_KEY_ID = "promote_master_key_id";
+    public static final String PROMOTE_TYPE = "promote_type";
 
     // consolidate
     public static final String CONSOLIDATE_RECOVERY = "consolidate_recovery";
@@ -343,6 +351,18 @@ public class KeychainIntentService extends IntentService implements Progressable
             // Operation
             EditKeyOperation op = new EditKeyOperation(this, providerHelper, this, mActionCanceled);
             EditKeyResult result = op.execute(saveParcel, passphrase);
+
+            // Result
+            sendMessageToHandler(KeychainIntentServiceHandler.MESSAGE_OKAY, result);
+
+        } else if (ACTION_PROMOTE_KEYRING.equals(action)) {
+
+            // Input
+            long keyRingId = data.getInt(EXPORT_KEY_RING_MASTER_KEY_ID);
+
+            // Operation
+            PromoteKeyOperation op = new PromoteKeyOperation(this, providerHelper, this, mActionCanceled);
+            PromoteKeyResult result = op.execute(keyRingId);
 
             // Result
             sendMessageToHandler(KeychainIntentServiceHandler.MESSAGE_OKAY, result);

@@ -29,7 +29,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * create key operations in PgpKeyOperation. It takes care of fetching
  * and saving the key before and after the operation.
  *
- * @see CertifyActionsParcel
+ * @see SaveKeyringParcel
  *
  */
 public class EditKeyOperation extends BaseOperation {

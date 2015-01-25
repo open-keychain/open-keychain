@@ -77,6 +77,12 @@ public abstract class BaseOperation implements PassphraseCacheInterface {
         return mCancelled != null && mCancelled.get();
     }
 
+    protected void setPreventCancel () {
+        if (mProgressable != null) {
+            mProgressable.setPreventCancel();
+        }
+    }
+
     @Override
     public String getCachedPassphrase(long subKeyId) throws NoSecretKeyException {
         try {
