@@ -312,10 +312,10 @@ public class EncryptFilesActivity extends EncryptActivity implements EncryptActi
         // if called with an intent action, do not init drawer navigation
         if (ACTION_ENCRYPT_DATA.equals(getIntent().getAction())) {
             // lock drawer
-            deactivateDrawerNavigation();
+//            deactivateDrawerNavigation();
             // TODO: back button to key?
         } else {
-            activateDrawerNavigation(savedInstanceState);
+//            activateDrawerNavigation(savedInstanceState);
         }
 
         // Handle intent actions
@@ -325,10 +325,10 @@ public class EncryptFilesActivity extends EncryptActivity implements EncryptActi
         mUseArmor = Preferences.getPreferences(this).getDefaultAsciiArmor();
     }
 
-    @Override
-    protected void initLayout() {
-        setContentView(R.layout.encrypt_files_activity);
-    }
+//    @Override
+//    protected void initLayout() {
+//        setContentView(R.layout.encrypt_files_activity);
+//    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

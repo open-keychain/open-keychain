@@ -21,19 +21,27 @@ import android.os.Bundle;
 
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.ui.DrawerActivity;
+import org.sufficientlysecure.keychain.ui.NavDrawerActivity;
 
-public class AppsListActivity extends DrawerActivity {
+public class AppsListActivity extends NavDrawerActivity {
+
+//    @Override
+//    protected void onCreate(Bundle savedInstanceState) {
+//        super.onCreate(savedInstanceState);
+//
+//        activateDrawerNavigation(savedInstanceState);
+//    }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        activateDrawerNavigation(savedInstanceState);
-    }
-
-    @Override
-    protected void initLayout() {
+    public void init(Bundle savedInstanceState) {
+        super.init(savedInstanceState);
         setContentView(R.layout.api_apps_list_activity);
     }
+
+
+//    @Override
+//    protected void initLayout() {
+//        setContentView(R.layout.api_apps_list_activity);
+//    }
 
 }

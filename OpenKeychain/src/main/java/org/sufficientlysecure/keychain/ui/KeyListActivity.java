@@ -41,15 +41,19 @@ import org.sufficientlysecure.keychain.util.Preferences;
 
 import java.io.IOException;
 
-public class KeyListActivity extends DrawerActivity {
+import it.neokree.materialnavigationdrawer.MaterialNavigationDrawer;
+
+public class KeyListActivity extends NavDrawerActivity {
 
     public static final int REQUEST_CODE_RESULT_TO_LIST = 1;
 
     ExportHelper mExportHelper;
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+//    public void onCreate(Bundle savedInstanceState) {
+    public void init(Bundle savedInstanceState) {
+        super.init(savedInstanceState);
+//        super.onCreate(savedInstanceState);
 //        setActionBarIcon(R.drawable.ic_ab_drawer);
 
         setTitle(R.string.nav_keys);
@@ -72,13 +76,13 @@ public class KeyListActivity extends DrawerActivity {
         }
 
         // now setup navigation drawer in DrawerActivity...
-        activateDrawerNavigation(savedInstanceState);
+//        activateDrawerNavigation(savedInstanceState);
     }
 
-    @Override
-    protected void initLayout() {
-        setContentView(R.layout.key_list_activity);
-    }
+//    @Override
+//    protected void initLayout() {
+//        setContentView(R.layout.key_list_activity);
+//    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

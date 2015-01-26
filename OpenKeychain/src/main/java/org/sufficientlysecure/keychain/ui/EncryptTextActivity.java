@@ -292,10 +292,10 @@ public class EncryptTextActivity extends EncryptActivity implements EncryptActiv
         // if called with an intent action, do not init drawer navigation
         if (ACTION_ENCRYPT_TEXT.equals(getIntent().getAction())) {
             // lock drawer
-            deactivateDrawerNavigation();
+//            deactivateDrawerNavigation();
             // TODO: back button to key?
         } else {
-            activateDrawerNavigation(savedInstanceState);
+//            activateDrawerNavigation(savedInstanceState);
         }
 
         // Handle intent actions
@@ -303,10 +303,10 @@ public class EncryptTextActivity extends EncryptActivity implements EncryptActiv
         updateModeFragment();
     }
 
-    @Override
-    protected void initLayout() {
-        setContentView(R.layout.encrypt_text_activity);
-    }
+//    @Override
+//    protected void initLayout() {
+//        setContentView(R.layout.encrypt_text_activity);
+//    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
