@@ -34,7 +34,7 @@ public class CertifyActionsParcel implements Parcelable {
     final public long mMasterKeyId;
     public CertifyLevel mLevel;
 
-    public ArrayList<CertifyAction> mCertifyActions = new ArrayList<CertifyAction>();
+    public ArrayList<CertifyAction> mCertifyActions = new ArrayList<>();
 
     public CertifyActionsParcel(long masterKeyId) {
         mMasterKeyId = masterKeyId;

@@ -121,13 +121,13 @@ public class EncryptTextActivity extends EncryptActivity implements EncryptActiv
 
     @Override
     public ArrayList<Uri> getInputUris() {
-        if (mInputUris == null) mInputUris = new ArrayList<Uri>();
+        if (mInputUris == null) mInputUris = new ArrayList<>();
         return mInputUris;
     }
 
     @Override
     public ArrayList<Uri> getOutputUris() {
-        if (mOutputUris == null) mOutputUris = new ArrayList<Uri>();
+        if (mOutputUris == null) mOutputUris = new ArrayList<>();
         return mOutputUris;
     }
 
@@ -240,13 +240,14 @@ public class EncryptTextActivity extends EncryptActivity implements EncryptActiv
         sendIntent.putExtra(Intent.EXTRA_TEXT, new String(message.getData().getByteArray(KeychainIntentService.RESULT_BYTES)));
 
         if (!isModeSymmetric() && mEncryptionUserIds != null) {
-            Set<String> users = new HashSet<String>();
+            Set<String> users = new HashSet<>();
             for (String user : mEncryptionUserIds) {
                 String[] userId = KeyRing.splitUserId(user);
                 if (userId[1] != null) {
                     users.add(userId[1]);
                 }
             }
+            // pass trough email addresses as extra for email applications
             sendIntent.putExtra(Intent.EXTRA_EMAIL, users.toArray(new String[users.size()]));
         }
         return sendIntent;
@@ -288,21 +289,24 @@ public class EncryptTextActivity extends EncryptActivity implements EncryptActiv
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.encrypt_text_activity);
-
         // if called with an intent action, do not init drawer navigation
         if (ACTION_ENCRYPT_TEXT.equals(getIntent().getAction())) {
             // lock drawer
-            deactivateDrawerNavigation();
+//            deactivateDrawerNavigation();
             // TODO: back button to key?
         } else {
-            activateDrawerNavigation(savedInstanceState);
+//            activateDrawerNavigation(savedInstanceState);
         }
 
         // Handle intent actions
         handleActions(getIntent());
         updateModeFragment();
     }
+
+//    @Override
+//    protected void initLayout() {
+//        setContentView(R.layout.encrypt_text_activity);
+//    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

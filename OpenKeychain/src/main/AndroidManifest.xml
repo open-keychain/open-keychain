@@ -31,10 +31,7 @@
         For OI Filemanager it makes no difference, gpg files can't be associated
     -->
 
-    <!-- Specified in build.gradle -->
-    <!--<uses-sdk-->
-    <!--android:minSdkVersion="9"-->
-    <!--android:targetSdkVersion="19" />-->
+    <!-- SDK levels are specified in build.gradle -->
 
     <uses-feature
         android:name="android.hardware.wifi"
@@ -421,7 +418,7 @@
             android:label="@string/title_advanced_key_info">
         </activity>
         <activity
-            android:name=".ui.PreferencesActivity"
+            android:name=".ui.SettingsActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
             android:label="@string/title_preferences">
             <intent-filter>
@@ -434,7 +431,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ui.PreferencesKeyServerActivity"
+            android:name=".ui.SettingsKeyServerActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
             android:label="@string/title_key_server_preference"
             android:windowSoftInputMode="stateHidden" />

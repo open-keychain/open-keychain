@@ -137,7 +137,7 @@ public class ImportExportOperation extends BaseOperation {
         }
 
         int newKeys = 0, oldKeys = 0, badKeys = 0, secret = 0;
-        ArrayList<Long> importedMasterKeyIds = new ArrayList<Long>();
+        ArrayList<Long> importedMasterKeyIds = new ArrayList<>();
 
         boolean cancelled = false;
         int position = 0;

@@ -81,7 +81,7 @@ public class ImportKeysCloudFragment extends Fragment {
         namesAndEmails.addAll(ContactHelper.getContactMails(getActivity()));
         mQueryEditText.setThreshold(3);
         mQueryEditText.setAdapter(
-                new ArrayAdapter<String>
+                new ArrayAdapter<>
                         (getActivity(), android.R.layout.simple_spinner_dropdown_item,
                                 namesAndEmails
                         )
@@ -110,7 +110,7 @@ public class ImportKeysCloudFragment extends Fragment {
         mConfigButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent i = new Intent(mImportActivity, PreferencesActivity.class);
+                Intent i = new Intent(mImportActivity, SettingsActivity.class);
                 // GRR, for some reason I can’t set the Action or I get an incomprehensible
                 //  exception about “modern two-pane layouts”
                 // i.setAction(PreferencesActivity.ACTION_PREFS_CLOUD);

@@ -113,7 +113,7 @@ public class ImportKeysListFragment extends ListFragment implements
             return mAdapter.getSelectedEntries();
         } else {
             Log.e(Constants.TAG, "Adapter not initialized, returning empty list");
-            return new ArrayList<ImportKeysListEntry>();
+            return new ArrayList<>();
         }
 
     }

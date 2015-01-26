@@ -39,7 +39,6 @@ import android.support.v4.util.LongSparseArray;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.util.Preferences;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey.SecretKeyType;
 import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
@@ -103,7 +102,7 @@ public class PassphraseCacheService extends Service {
 
     private BroadcastReceiver mIntentReceiver;
 
-    private LongSparseArray<CachedPassphrase> mPassphraseCache = new LongSparseArray<CachedPassphrase>();
+    private LongSparseArray<CachedPassphrase> mPassphraseCache = new LongSparseArray<>();
 
     Context mContext;
 

@@ -106,8 +106,8 @@ public class ProviderHelperSaveTest {
 
         UncachedKeyRing pub = readRingFromResource("/test-keys/mailvelope_07_no_key_flags.asc");
         long keyId = pub.getMasterKeyId();
-        Assert.assertNull("key flags should be null",
-                pub.canonicalize(new OperationLog(), 0).getPublicKey().getKeyUsage());
+        Assert.assertEquals("key flags should be zero",
+                0, (long) pub.canonicalize(new OperationLog(), 0).getPublicKey().getKeyUsage());
 
         mProviderHelper.savePublicKeyRing(pub);
 
@@ -117,7 +117,8 @@ public class ProviderHelperSaveTest {
         Assert.assertEquals("master key should be encryption key", keyId, pubRing.getEncryptId());
         Assert.assertEquals("master key should be encryption key (cached)", keyId, cachedRing.getEncryptId());
 
-        Assert.assertNull("canonicalized key flags should be null", pubRing.getPublicKey().getKeyUsage());
+        Assert.assertEquals("canonicalized key flags should be zero",
+                0, (long) pubRing.getPublicKey().getKeyUsage());
         Assert.assertTrue("master key should be able to certify", pubRing.getPublicKey().canCertify());
         Assert.assertTrue("master key should be allowed to sign", pubRing.getPublicKey().canSign());
         Assert.assertTrue("master key should be able to encrypt", pubRing.getPublicKey().canEncrypt());

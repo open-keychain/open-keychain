@@ -182,7 +182,7 @@ public class CanonicalizedSecretKey extends CanonicalizedPublicKey {
      * @return
      */
     public LinkedList<Integer> getSupportedHashAlgorithms() {
-        LinkedList<Integer> supported = new LinkedList<Integer>();
+        LinkedList<Integer> supported = new LinkedList<>();
 
         if (mPrivateKeyState == PRIVATE_KEY_STATE_DIVERT_TO_CARD) {
             // No support for MD5
@@ -262,10 +262,8 @@ public class CanonicalizedSecretKey extends CanonicalizedPublicKey {
             spGen.setSignatureCreationTime(false, nfcCreationTimestamp);
             signatureGenerator.setHashedSubpackets(spGen.generate());
             return signatureGenerator;
-        } catch (PgpKeyNotFoundException e) {
+        } catch (PgpKeyNotFoundException | PGPException e) {
             // TODO: simply throw PGPException!
-            throw new PgpGeneralException("Error initializing signature!", e);
-        } catch (PGPException e) {
             throw new PgpGeneralException("Error initializing signature!", e);
         }
     }

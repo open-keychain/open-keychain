@@ -19,7 +19,6 @@
 package org.sufficientlysecure.keychain.ui;
 
 import android.annotation.TargetApi;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
@@ -31,7 +30,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.os.Messenger;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
@@ -52,7 +50,6 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.AbsListView.MultiChoiceModeListener;
 import android.widget.AdapterView;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -60,16 +57,9 @@ import android.widget.TextView;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
 import org.sufficientlysecure.keychain.operations.results.DeleteResult;
-import org.sufficientlysecure.keychain.provider.KeychainContract;
-import org.sufficientlysecure.keychain.provider.ProviderHelper;
-import org.sufficientlysecure.keychain.service.KeychainIntentService;
-import org.sufficientlysecure.keychain.operations.results.ImportKeyResult;
-import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.ExportHelper;
-import org.sufficientlysecure.keychain.util.KeyUpdateHelper;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
@@ -78,15 +68,10 @@ import org.sufficientlysecure.keychain.ui.widget.ListAwareSwipeRefreshLayout;
 import org.sufficientlysecure.keychain.ui.util.Highlighter;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.ui.util.Notify;
-import org.sufficientlysecure.keychain.util.ParcelableFileCache;
 
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 
-import edu.cmu.cylab.starslinger.exchange.ExchangeActivity;
-import edu.cmu.cylab.starslinger.exchange.ExchangeConfig;
 import se.emilsjolander.stickylistheaders.StickyListHeadersAdapter;
 import se.emilsjolander.stickylistheaders.StickyListHeadersListView;
 
@@ -109,8 +94,6 @@ public class KeyListFragment extends LoaderFragment
 
     private String mQuery;
     private SearchView mSearchView;
-
-    boolean hideMenu = false;
 
     /**
      * Load custom layout with StickyListView from library
@@ -172,8 +155,8 @@ public class KeyListFragment extends LoaderFragment
             TextView title = (TextView) getActivity().findViewById(R.id.custom_actionbar_text);
             title.setText(R.string.swipe_to_update);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-                hideMenu = true;
-                activity.invalidateOptionsMenu();
+//                hideMenu = true;
+//                activity.invalidateOptionsMenu();
             }
         } else {
             bar.setTitle(getActivity().getTitle());
@@ -184,8 +167,8 @@ public class KeyListFragment extends LoaderFragment
             bar.setDisplayShowCustomEnabled(false);
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-                hideMenu = false;
-                activity.invalidateOptionsMenu();
+//                hideMenu = false;
+//                activity.invalidateOptionsMenu();
             }
         }
     }
@@ -470,10 +453,6 @@ public class KeyListFragment extends LoaderFragment
         MenuItemCompat.setOnActionExpandListener(searchItem, new MenuItemCompat.OnActionExpandListener() {
             @Override
             public boolean onMenuItemActionExpand(MenuItem item) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-                    hideMenu = true;
-                    getActivity().invalidateOptionsMenu();
-                }
 
                 // disable swipe-to-refresh
                 // mSwipeRefreshLayout.setIsLocked(true);
@@ -485,21 +464,11 @@ public class KeyListFragment extends LoaderFragment
                 mQuery = null;
                 getLoaderManager().restartLoader(0, null, KeyListFragment.this);
 
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-                    hideMenu = false;
-                    getActivity().invalidateOptionsMenu();
-                }
                 // enable swipe-to-refresh
                 // mSwipeRefreshLayout.setIsLocked(false);
                 return true;
             }
         });
-
-        if (hideMenu) {
-            for (int i = 0; i < menu.size(); i++) {
-                menu.getItem(i).setVisible(false);
-            }
-        }
 
         super.onCreateOptionsMenu(menu, inflater);
     }
@@ -533,7 +502,7 @@ public class KeyListFragment extends LoaderFragment
         private String mQuery;
         private LayoutInflater mInflater;
 
-        private HashMap<Integer, Boolean> mSelection = new HashMap<Integer, Boolean>();
+        private HashMap<Integer, Boolean> mSelection = new HashMap<>();
 
         public KeyListAdapter(Context context, Cursor c, int flags) {
             super(context, c, flags);

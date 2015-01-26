@@ -19,7 +19,6 @@
 package org.sufficientlysecure.keychain.pgp;
 
 import org.spongycastle.openpgp.PGPKeyRing;
-import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.util.IterableIterator;
 

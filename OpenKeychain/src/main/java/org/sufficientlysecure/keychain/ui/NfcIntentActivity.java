@@ -15,7 +15,6 @@ import android.nfc.Tag;
 import android.nfc.tech.IsoDep;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
 import android.view.WindowManager;
 import android.widget.Toast;
 
@@ -36,7 +35,7 @@ import java.nio.ByteBuffer;
  * For the full specs, see http://g10code.com/docs/openpgp-card-2.0.pdf
  */
 @TargetApi(Build.VERSION_CODES.GINGERBREAD_MR1)
-public class NfcIntentActivity extends ActionBarActivity {
+public class NfcIntentActivity extends BaseActivity {
 
     // special extra for OpenPgpService
     public static final String EXTRA_DATA = "data";
@@ -53,8 +52,6 @@ public class NfcIntentActivity extends ActionBarActivity {
         Log.d(Constants.TAG, "NfcActivity.onCreate");
 
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-
-        setContentView(R.layout.nfc_activity);
 
         Intent intent = getIntent();
         Bundle data = intent.getExtras();
@@ -87,7 +84,11 @@ public class NfcIntentActivity extends ActionBarActivity {
             Log.e(Constants.TAG, "IOException!", e);
             finish();
         }
+    }
 
+    @Override
+    protected void initLayout() {
+        setContentView(R.layout.nfc_activity);
     }
 
     /**

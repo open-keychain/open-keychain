@@ -20,14 +20,12 @@ package org.sufficientlysecure.keychain.ui;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
 import android.view.View;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.ui.util.ActionBarHelper;
 
-public class SelectPublicKeyActivity extends ActionBarActivity {
+public class SelectPublicKeyActivity extends BaseActivity {
 
     // Actions for internal use only:
     public static final String ACTION_SELECT_PUBLIC_KEYS = Constants.INTENT_PREFIX
@@ -47,23 +45,19 @@ public class SelectPublicKeyActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
 
         // Inflate a "Done"/"Cancel" custom action bar view
-        ActionBarHelper.setTwoButtonView(getSupportActionBar(), R.string.btn_okay, R.drawable.ic_action_done,
+        setFullScreenDialogDoneClose(R.string.btn_okay,
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        // ok
                         okClicked();
                     }
-                }, R.string.btn_do_not_save, R.drawable.ic_action_cancel, new View.OnClickListener() {
+                },
+                new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        // cancel
                         cancelClicked();
                     }
-                }
-        );
-
-        setContentView(R.layout.select_public_key_activity);
+                });
 
         setDefaultKeyMode(DEFAULT_KEYS_SEARCH_LOCAL);
 
@@ -99,6 +93,11 @@ public class SelectPublicKeyActivity extends ActionBarActivity {
         // }
         // });
 
+    }
+
+    @Override
+    protected void initLayout() {
+        setContentView(R.layout.select_public_key_activity);
     }
 
     @Override

@@ -209,9 +209,7 @@ public class PassphraseWizardActivity extends FragmentActivity implements LockPa
                         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
                         transaction.replace(R.id.fragmentContainer, lpf).addToBackStack(null).commit();
                     }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                } catch (FormatException e) {
+                } catch (IOException | FormatException e) {
                     e.printStackTrace();
                 }
 
@@ -236,9 +234,7 @@ public class PassphraseWizardActivity extends FragmentActivity implements LockPa
                             nfc.setText(R.string.nfc_wrong_tag);
                         }
                     }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                } catch (FormatException e) {
+                } catch (IOException | FormatException e) {
                     e.printStackTrace();
                 }
             }

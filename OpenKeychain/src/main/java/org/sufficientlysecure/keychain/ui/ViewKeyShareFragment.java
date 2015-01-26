@@ -228,10 +228,7 @@ public class ViewKeyShareFragment extends LoaderFragment implements
                 }
                 startActivity(Intent.createChooser(sendIntent, title));
             }
-        } catch (PgpGeneralException e) {
-            Log.e(Constants.TAG, "error processing key!", e);
-            Notify.showNotify(getActivity(), R.string.error_key_processing, Notify.Style.ERROR);
-        } catch (IOException e) {
+        } catch (PgpGeneralException | IOException e) {
             Log.e(Constants.TAG, "error processing key!", e);
             Notify.showNotify(getActivity(), R.string.error_key_processing, Notify.Style.ERROR);
         } catch (ProviderHelper.NotFoundException e) {

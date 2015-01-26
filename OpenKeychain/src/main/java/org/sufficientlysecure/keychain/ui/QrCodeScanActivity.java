@@ -78,7 +78,11 @@ public class QrCodeScanActivity extends FragmentActivity {
             // scan using xzing's Barcode Scanner and return result parcel in OpenKeychain
 
             returnResult = true;
-            new IntentIntegrator(this).initiateScan();
+            IntentIntegrator integrator = new IntentIntegrator(this);
+            integrator.setDesiredBarcodeFormats(IntentIntegrator.QR_CODE_TYPES)
+                    .setPrompt(getString(R.string.import_qr_code_text))
+                    .setResultDisplayDuration(0)
+                    .initiateScan();
         } else if (ACTION_QR_CODE_API.equals(action)) {
             // scan using xzing's Barcode Scanner from outside OpenKeychain
 
@@ -168,7 +172,7 @@ public class QrCodeScanActivity extends FragmentActivity {
                         return;
                     }
 
-                    if ( ! result.success()) {
+                    if (!result.success()) {
                         // only return if no success...
                         Intent data = new Intent();
                         data.putExtras(returnData);
@@ -199,7 +203,7 @@ public class QrCodeScanActivity extends FragmentActivity {
         data.putString(KeychainIntentService.IMPORT_KEY_SERVER, cloudPrefs.keyserver);
 
         ParcelableKeyRing keyEntry = new ParcelableKeyRing(fingerprint, null, null);
-        ArrayList<ParcelableKeyRing> selectedEntries = new ArrayList<ParcelableKeyRing>();
+        ArrayList<ParcelableKeyRing> selectedEntries = new ArrayList<>();
         selectedEntries.add(keyEntry);
 
         data.putParcelableArrayList(KeychainIntentService.IMPORT_KEY_LIST, selectedEntries);

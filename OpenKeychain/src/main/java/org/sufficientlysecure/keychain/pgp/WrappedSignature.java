@@ -29,13 +29,13 @@ import org.spongycastle.openpgp.PGPObjectFactory;
 import org.spongycastle.openpgp.PGPPublicKey;
 import org.spongycastle.openpgp.PGPSignature;
 import org.spongycastle.openpgp.PGPSignatureList;
+import org.spongycastle.openpgp.PGPUserAttributeSubpacketVector;
 import org.spongycastle.openpgp.operator.jcajce.JcaPGPContentVerifierBuilderProvider;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.util.Log;
 
 import java.io.IOException;
-import java.security.SignatureException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -79,7 +79,7 @@ public class WrappedSignature {
     }
 
     public ArrayList<WrappedSignature> getEmbeddedSignatures() {
-        ArrayList<WrappedSignature> sigs = new ArrayList<WrappedSignature>();
+        ArrayList<WrappedSignature> sigs = new ArrayList<>();
         if (!mSig.hasSubpackets()) {
             return sigs;
         }
@@ -199,11 +199,22 @@ public class WrappedSignature {
         }
     }
 
+    boolean verifySignature(PGPPublicKey key, PGPUserAttributeSubpacketVector attribute) throws PgpGeneralException {
+        try {
+            return mSig.verifyCertification(attribute, key);
+        } catch (PGPException e) {
+            throw new PgpGeneralException("Error!", e);
+        }
+    }
+
     public boolean verifySignature(UncachedPublicKey key, byte[] rawUserId) throws PgpGeneralException {
         return verifySignature(key.getPublicKey(), rawUserId);
     }
     public boolean verifySignature(CanonicalizedPublicKey key, String uid) throws PgpGeneralException {
         return verifySignature(key.getPublicKey(), uid);
+    }
+    public boolean verifySignature(UncachedPublicKey key, WrappedUserAttribute attribute) throws PgpGeneralException {
+        return verifySignature(key.getPublicKey(), attribute.getVector());
     }
 
     public static WrappedSignature fromBytes(byte[] data) {
@@ -243,7 +254,7 @@ public class WrappedSignature {
     }
 
     public HashMap<String,String> getNotation() {
-        HashMap<String,String> result = new HashMap<String,String>();
+        HashMap<String,String> result = new HashMap<>();
 
         // If there is any notation data
         if (mSig.getHashedSubPackets() != null

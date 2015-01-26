@@ -53,7 +53,7 @@ public class CanonicalizedPublicKey extends UncachedPublicKey {
 
     public boolean canSign() {
         // if key flags subpacket is available, honor it!
-        if (getKeyUsage() != null) {
+        if (getKeyUsage() != 0) {
             return (getKeyUsage() & KeyFlags.SIGN_DATA) != 0;
         }
 
@@ -66,7 +66,7 @@ public class CanonicalizedPublicKey extends UncachedPublicKey {
 
     public boolean canCertify() {
         // if key flags subpacket is available, honor it!
-        if (getKeyUsage() != null) {
+        if (getKeyUsage() != 0) {
             return (getKeyUsage() & KeyFlags.CERTIFY_OTHER) != 0;
         }
 
@@ -79,7 +79,7 @@ public class CanonicalizedPublicKey extends UncachedPublicKey {
 
     public boolean canEncrypt() {
         // if key flags subpacket is available, honor it!
-        if (getKeyUsage() != null) {
+        if (getKeyUsage() != 0) {
             return (getKeyUsage() & (KeyFlags.ENCRYPT_COMMS | KeyFlags.ENCRYPT_STORAGE)) != 0;
         }
 
@@ -93,7 +93,7 @@ public class CanonicalizedPublicKey extends UncachedPublicKey {
 
     public boolean canAuthenticate() {
         // if key flags subpacket is available, honor it!
-        if (getKeyUsage() != null) {
+        if (getKeyUsage() != 0) {
             return (getKeyUsage() & KeyFlags.AUTHENTICATION) != 0;
         }
 

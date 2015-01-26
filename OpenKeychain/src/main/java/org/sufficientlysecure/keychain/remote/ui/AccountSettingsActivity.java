@@ -20,14 +20,13 @@ package org.sufficientlysecure.keychain.remote.ui;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.ui.util.ActionBarHelper;
+import org.sufficientlysecure.keychain.ui.BaseActivity;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.remote.AccountSettings;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
@@ -35,7 +34,7 @@ import org.sufficientlysecure.keychain.operations.results.OperationResult.LogTyp
 import org.sufficientlysecure.keychain.operations.results.SingletonResult;
 import org.sufficientlysecure.keychain.util.Log;
 
-public class AccountSettingsActivity extends ActionBarActivity {
+public class AccountSettingsActivity extends BaseActivity {
     private Uri mAccountUri;
 
     private AccountSettingsFragment mAccountSettingsFragment;
@@ -45,17 +44,20 @@ public class AccountSettingsActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
 
         // Inflate a "Done" custom action bar
-        ActionBarHelper.setOneButtonView(getSupportActionBar(),
-                R.string.api_settings_save, R.drawable.ic_action_done,
+        setFullScreenDialogDoneClose(R.string.api_settings_save,
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        // "Done"
                         save();
+                    }
+                },
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        finish();
                     }
                 });
 
-        setContentView(R.layout.api_account_settings_activity);
 
         mAccountSettingsFragment = (AccountSettingsFragment) getSupportFragmentManager().findFragmentById(
                 R.id.api_account_settings_fragment);
@@ -70,6 +72,11 @@ public class AccountSettingsActivity extends ActionBarActivity {
             Log.d(Constants.TAG, "uri: " + mAccountUri);
             loadData(mAccountUri);
         }
+    }
+
+    @Override
+    protected void initLayout() {
+        setContentView(R.layout.api_account_settings_activity);
     }
 
     @Override
@@ -125,9 +132,4 @@ public class AccountSettingsActivity extends ActionBarActivity {
         }
     }
 
-    @Override
-    public void onBackPressed() {
-        save();
-        super.onBackPressed();
-    }
 }

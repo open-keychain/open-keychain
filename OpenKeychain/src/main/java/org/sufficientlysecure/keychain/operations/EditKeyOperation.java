@@ -11,7 +11,6 @@ import org.sufficientlysecure.keychain.pgp.Progressable;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.provider.ProviderHelper.NotFoundException;
-import org.sufficientlysecure.keychain.service.CertifyActionsParcel;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
 import org.sufficientlysecure.keychain.operations.results.SaveKeyringResult;
@@ -29,7 +28,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * create key operations in PgpKeyOperation. It takes care of fetching
  * and saving the key before and after the operation.
  *
- * @see CertifyActionsParcel
+ * @see SaveKeyringParcel
  *
  */
 public class EditKeyOperation extends BaseOperation {

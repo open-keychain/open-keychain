@@ -20,14 +20,12 @@ package org.sufficientlysecure.keychain.ui;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
 import android.view.View;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.widget.ImageView;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.ui.util.ActionBarHelper;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
@@ -36,7 +34,7 @@ import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.ui.util.Notify.Style;
 import org.sufficientlysecure.keychain.ui.util.QrCodeUtils;
 
-public class QrCodeViewActivity extends ActionBarActivity {
+public class QrCodeViewActivity extends BaseActivity {
 
     private ImageView mFingerprintQrCode;
 
@@ -45,8 +43,7 @@ public class QrCodeViewActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
 
         // Inflate a "Done" custom action bar
-        ActionBarHelper.setOneButtonView(getSupportActionBar(),
-                R.string.btn_okay, R.drawable.ic_action_done,
+        setFullScreenDialogClose(
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -55,8 +52,6 @@ public class QrCodeViewActivity extends ActionBarActivity {
                     }
                 }
         );
-
-        setContentView(R.layout.qr_code_activity);
 
         Uri dataUri = getIntent().getData();
         if (dataUri == null) {
@@ -106,6 +101,11 @@ public class QrCodeViewActivity extends ActionBarActivity {
             Notify.showNotify(this, R.string.error_key_not_found, Style.ERROR);
             finish();
         }
+    }
+
+    @Override
+    protected void initLayout() {
+        setContentView(R.layout.qr_code_activity);
     }
 
     @Override

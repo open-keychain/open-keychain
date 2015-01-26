@@ -1,0 +1,8 @@
+{
+    "basePath": "~/Documents",
+    "filenameMap": {
+        "classic": "ic_action_{name}{bgSuffix}.png",
+        "fa": "ic_action_fa_{name}{bgSuffix}.png",
+        "material": "ic_{name}_{color}_{size}dp.png"
+    }
+}

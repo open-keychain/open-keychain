@@ -111,7 +111,7 @@ public class DecryptTextFragment extends DecryptFragment {
         Intent prototype = createSendIntent(text);
         String title = getString(R.string.title_share_file);
 
-        // we don't want to decrypt the decypted, no inception ;)
+        // we don't want to decrypt the decrypted, no inception ;)
         String[] blacklist = new String[]{
                 Constants.PACKAGE_NAME + ".ui.DecryptTextActivity",
                 "org.thialfihar.android.apg.ui.DecryptActivity"

@@ -18,24 +18,19 @@
 
 package org.sufficientlysecure.keychain.ui;
 
-import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
-
 import org.sufficientlysecure.keychain.R;
 
 /**
  * Signs the specified public key with the specified secret master key
  */
-public class CertifyKeyActivity extends ActionBarActivity {
+public class CertifyKeyActivity extends BaseActivity {
 
     public static final String EXTRA_RESULT = "operation_result";
     public static final String EXTRA_KEY_IDS = "extra_key_ids";
     public static final String EXTRA_CERTIFY_KEY_ID = "certify_key_id";
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
+    protected void initLayout() {
         setContentView(R.layout.certify_key_activity);
     }
 

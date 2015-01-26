@@ -29,7 +29,6 @@ import android.os.Messenger;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
-import android.support.v7.app.ActionBarActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -47,6 +46,7 @@ import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
+import org.sufficientlysecure.keychain.provider.KeychainContract.UserPackets;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.provider.ProviderHelper.NotFoundException;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
@@ -54,6 +54,7 @@ import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
 import org.sufficientlysecure.keychain.service.PassphraseCacheService;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel.ChangeUnlockParcel;
+import org.sufficientlysecure.keychain.service.SaveKeyringParcel.SubkeyChange;
 import org.sufficientlysecure.keychain.ui.adapter.SubkeysAdapter;
 import org.sufficientlysecure.keychain.ui.adapter.SubkeysAddedAdapter;
 import org.sufficientlysecure.keychain.ui.adapter.UserIdsAdapter;
@@ -64,7 +65,6 @@ import org.sufficientlysecure.keychain.ui.dialog.EditSubkeyDialogFragment;
 import org.sufficientlysecure.keychain.ui.dialog.EditSubkeyExpiryDialogFragment;
 import org.sufficientlysecure.keychain.ui.dialog.EditUserIdDialogFragment;
 import org.sufficientlysecure.keychain.ui.dialog.SetPassphraseDialogFragment;
-import org.sufficientlysecure.keychain.ui.util.ActionBarHelper;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.util.Log;
 
@@ -146,10 +146,8 @@ public class EditKeyFragment extends LoaderFragment implements
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-
-        // Inflate a "Done"/"Cancel" custom action bar view
-        ActionBarHelper.setTwoButtonView(((ActionBarActivity) getActivity()).getSupportActionBar(),
-                R.string.btn_save, R.drawable.ic_action_save,
+        ((EditKeyActivity) getActivity()).setFullScreenDialogDoneClose(
+                R.string.btn_save,
                 new OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -160,16 +158,13 @@ public class EditKeyFragment extends LoaderFragment implements
                             saveInDatabase(mCurrentPassphrase);
                         }
                     }
-                }, R.string.menu_key_edit_cancel, R.drawable.ic_action_cancel,
-                new OnClickListener() {
+                }, new OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        // cancel
                         getActivity().setResult(Activity.RESULT_CANCELED);
                         getActivity().finish();
                     }
-                }
-        );
+                });
 
         Uri dataUri = getArguments().getParcelable(ARG_DATA_URI);
         SaveKeyringParcel saveKeyringParcel = getArguments().getParcelable(ARG_SAVE_KEYRING_PARCEL);
@@ -229,10 +224,7 @@ public class EditKeyFragment extends LoaderFragment implements
             mSaveKeyringParcel = new SaveKeyringParcel(masterKeyId, keyRing.getFingerprint());
             mPrimaryUserId = keyRing.getPrimaryUserIdWithFallback();
 
-        } catch (PgpKeyNotFoundException e) {
-            finishWithError(LogType.MSG_EK_ERROR_NOT_FOUND);
-            return;
-        } catch (NotFoundException e) {
+        } catch (PgpKeyNotFoundException | NotFoundException e) {
             finishWithError(LogType.MSG_EK_ERROR_NOT_FOUND);
             return;
         }
@@ -334,7 +326,7 @@ public class EditKeyFragment extends LoaderFragment implements
 
         switch (id) {
             case LOADER_ID_USER_IDS: {
-                Uri baseUri = KeychainContract.UserIds.buildUserIdsUri(mDataUri);
+                Uri baseUri = UserPackets.buildUserIdsUri(mDataUri);
                 return new CursorLoader(getActivity(), baseUri,
                         UserIdsAdapter.USER_IDS_PROJECTION, null, null, null);
             }
@@ -394,8 +386,8 @@ public class EditKeyFragment extends LoaderFragment implements
 
                     // cache new returned passphrase!
                     mSaveKeyringParcel.mNewUnlock = new ChangeUnlockParcel(
-                        data.getString(SetPassphraseDialogFragment.MESSAGE_NEW_PASSPHRASE),
-                        null
+                            data.getString(SetPassphraseDialogFragment.MESSAGE_NEW_PASSPHRASE),
+                            null
                     );
                 }
             }
@@ -477,12 +469,13 @@ public class EditKeyFragment extends LoaderFragment implements
                         }
                         break;
                     case EditSubkeyDialogFragment.MESSAGE_STRIP:
-                        // toggle
-                        if (mSaveKeyringParcel.mStripSubKeys.contains(keyId)) {
-                            mSaveKeyringParcel.mStripSubKeys.remove(keyId);
-                        } else {
-                            mSaveKeyringParcel.mStripSubKeys.add(keyId);
+                        SubkeyChange change = mSaveKeyringParcel.getSubkeyChange(keyId);
+                        if (change == null) {
+                            mSaveKeyringParcel.mChangeSubKeys.add(new SubkeyChange(keyId, true, null));
+                            break;
                         }
+                        // toggle
+                        change.mDummyStrip = !change.mDummyStrip;
                         break;
                 }
                 getLoaderManager().getLoader(LOADER_ID_SUBKEYS).forceLoad();

@@ -27,9 +27,6 @@ import android.support.v4.app.NavUtils;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.ActionBarActivity;
-import android.text.SpannableString;
-import android.text.SpannableStringBuilder;
 import android.text.format.DateFormat;
 import android.view.MenuItem;
 import android.view.View;
@@ -37,7 +34,6 @@ import android.widget.TextView;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.pgp.CanonicalizedPublicKeyRing;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.pgp.WrappedSignature;
@@ -49,7 +45,7 @@ import org.sufficientlysecure.keychain.util.Log;
 
 import java.util.Date;
 
-public class ViewCertActivity extends ActionBarActivity
+public class ViewCertActivity extends BaseActivity
         implements LoaderManager.LoaderCallbacks<Cursor> {
 
     // These are the rows that we will retrieve.
@@ -86,8 +82,6 @@ public class ViewCertActivity extends ActionBarActivity
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
 
-        setContentView(R.layout.view_cert_activity);
-
         mSigneeKey = (TextView) findViewById(R.id.signee_key);
         mSigneeUid = (TextView) findViewById(R.id.signee_uid);
         mAlgorithm = (TextView) findViewById(R.id.algorithm);
@@ -110,6 +104,11 @@ public class ViewCertActivity extends ActionBarActivity
         }
 
         getSupportLoaderManager().initLoader(0, null, this);
+    }
+
+    @Override
+    protected void initLayout() {
+        setContentView(R.layout.view_cert_activity);
     }
 
     @Override

@@ -20,18 +20,15 @@ package org.sufficientlysecure.keychain.ui;
 
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.ActionBarActivity;
 import android.view.View;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
-import org.sufficientlysecure.keychain.ui.util.ActionBarHelper;
 import org.sufficientlysecure.keychain.util.ExportHelper;
 import org.sufficientlysecure.keychain.util.Log;
 
-public class ViewKeyAdvancedActivity extends ActionBarActivity {
+public class ViewKeyAdvancedActivity extends BaseActivity {
 
     ExportHelper mExportHelper;
     ProviderHelper mProviderHelper;
@@ -44,8 +41,7 @@ public class ViewKeyAdvancedActivity extends ActionBarActivity {
         mProviderHelper = new ProviderHelper(this);
 
         // Inflate a "Done" custom action bar
-        ActionBarHelper.setOneButtonView(getSupportActionBar(),
-                R.string.btn_okay, R.drawable.ic_action_done,
+        setFullScreenDialogClose(
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -54,8 +50,6 @@ public class ViewKeyAdvancedActivity extends ActionBarActivity {
                     }
                 }
         );
-
-        setContentView(R.layout.view_key_advanced_activity);
 
         Uri dataUri = getIntent().getData();
         if (dataUri == null) {
@@ -69,6 +63,10 @@ public class ViewKeyAdvancedActivity extends ActionBarActivity {
         startFragment(savedInstanceState, dataUri);
     }
 
+    @Override
+    protected void initLayout() {
+        setContentView(R.layout.view_key_advanced_activity);
+    }
 
     private void startFragment(Bundle savedInstanceState, Uri dataUri) {
         // However, if we're being restored from a previous state,

@@ -27,7 +27,6 @@ import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.FixedDrawerLayout;
-import android.support.v7.app.ActionBarActivity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -42,7 +41,7 @@ import android.widget.TextView;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 
-public class DrawerActivity extends ActionBarActivity {
+public abstract class DrawerActivity extends BaseActivity {
     private FixedDrawerLayout mDrawerLayout;
     private ListView mDrawerList;
     private ActionBarDrawerToggle mDrawerToggle;
@@ -179,7 +178,7 @@ public class DrawerActivity extends ActionBarActivity {
 
         switch (item.getItemId()) {
             case MENU_ID_PREFERENCE: {
-                Intent intent = new Intent(this, PreferencesActivity.class);
+                Intent intent = new Intent(this, SettingsActivity.class);
                 startActivity(intent);
                 return true;
             }

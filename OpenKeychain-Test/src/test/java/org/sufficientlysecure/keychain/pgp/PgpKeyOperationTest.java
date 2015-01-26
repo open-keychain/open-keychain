@@ -34,6 +34,8 @@ import org.spongycastle.bcpg.S2K;
 import org.spongycastle.bcpg.SecretKeyPacket;
 import org.spongycastle.bcpg.SecretSubkeyPacket;
 import org.spongycastle.bcpg.SignaturePacket;
+import org.spongycastle.bcpg.UserAttributePacket;
+import org.spongycastle.bcpg.UserAttributeSubpacket;
 import org.spongycastle.bcpg.UserIDPacket;
 import org.spongycastle.bcpg.sig.KeyFlags;
 import org.spongycastle.jce.provider.BouncyCastleProvider;
@@ -657,7 +659,8 @@ public class PgpKeyOperationTest {
         { // re-add second subkey
 
             parcel.reset();
-            parcel.mChangeSubKeys.add(new SubkeyChange(keyId, null, null));
+            // re-certify the revoked subkey
+            parcel.mChangeSubKeys.add(new SubkeyChange(keyId, true));
 
             modified = applyModificationWithChecks(parcel, modified, onlyA, onlyB);
 
@@ -699,7 +702,7 @@ public class PgpKeyOperationTest {
     public void testSubkeyStrip() throws Exception {
 
         long keyId = KeyringTestingHelper.getSubkeyId(ring, 1);
-        parcel.mStripSubKeys.add(keyId);
+        parcel.mChangeSubKeys.add(new SubkeyChange(keyId, true, null));
         applyModificationWithChecks(parcel, ring, onlyA, onlyB);
 
         Assert.assertEquals("one extra packet in original", 1, onlyA.size());
@@ -725,7 +728,7 @@ public class PgpKeyOperationTest {
     public void testMasterStrip() throws Exception {
 
         long keyId = ring.getMasterKeyId();
-        parcel.mStripSubKeys.add(keyId);
+        parcel.mChangeSubKeys.add(new SubkeyChange(keyId, true, null));
         applyModificationWithChecks(parcel, ring, onlyA, onlyB);
 
         Assert.assertEquals("one extra packet in original", 1, onlyA.size());
@@ -744,6 +747,44 @@ public class PgpKeyOperationTest {
         Assert.assertEquals("new packet secret key data should have length zero",
                 0, ((SecretKeyPacket) p).getSecretKeyData().length);
         Assert.assertNull("new packet should have no iv data", ((SecretKeyPacket) p).getIV());
+    }
+
+    @Test
+    public void testRestrictedStrip() throws Exception {
+
+        long keyId = KeyringTestingHelper.getSubkeyId(ring, 1);
+        UncachedKeyRing modified;
+
+        { // we should be able to change the stripped/divert status of subkeys without passphrase
+            parcel.reset();
+            parcel.mChangeSubKeys.add(new SubkeyChange(keyId, true, null));
+            modified = applyModificationWithChecks(parcel, ring, onlyA, onlyB, null);
+            Assert.assertEquals("one extra packet in modified", 1, onlyB.size());
+            Packet p = new BCPGInputStream(new ByteArrayInputStream(onlyB.get(0).buf)).readPacket();
+            Assert.assertEquals("new packet should have GNU_DUMMY S2K type",
+                    S2K.GNU_DUMMY_S2K, ((SecretKeyPacket) p).getS2K().getType());
+            Assert.assertEquals("new packet should have GNU_DUMMY protection mode stripped",
+                    S2K.GNU_PROTECTION_MODE_NO_PRIVATE_KEY, ((SecretKeyPacket) p).getS2K().getProtectionMode());
+        }
+
+        { // and again, changing to divert-to-card
+            parcel.reset();
+            byte[] serial = new byte[] {
+                    0x6a, 0x6f, 0x6c, 0x6f, 0x73, 0x77, 0x61, 0x67,
+                    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+            };
+            parcel.mChangeSubKeys.add(new SubkeyChange(keyId, false, serial));
+            modified = applyModificationWithChecks(parcel, ring, onlyA, onlyB, null);
+            Assert.assertEquals("one extra packet in modified", 1, onlyB.size());
+            Packet p = new BCPGInputStream(new ByteArrayInputStream(onlyB.get(0).buf)).readPacket();
+            Assert.assertEquals("new packet should have GNU_DUMMY S2K type",
+                    S2K.GNU_DUMMY_S2K, ((SecretKeyPacket) p).getS2K().getType());
+            Assert.assertEquals("new packet should have GNU_DUMMY protection mode divert-to-card",
+                    S2K.GNU_PROTECTION_MODE_DIVERT_TO_CARD, ((SecretKeyPacket) p).getS2K().getProtectionMode());
+            Assert.assertArrayEquals("new packet should have correct serial number as iv",
+                    serial, ((SecretKeyPacket) p).getIV());
+
+        }
 
     }
 
@@ -863,6 +904,70 @@ public class PgpKeyOperationTest {
                 PGPSignature.POSITIVE_CERTIFICATION, ((SignaturePacket) p).getSignatureType());
 
     }
+
+    @Test
+    public void testUserAttributeAdd() throws Exception {
+
+        {
+            parcel.mAddUserAttribute.add(WrappedUserAttribute.fromData(new byte[0]));
+            assertModifyFailure("adding an empty user attribute should fail", ring, parcel,
+                    LogType.MSG_MF_UAT_ERROR_EMPTY);
+        }
+
+        parcel.reset();
+
+        Random r = new Random();
+        int type = r.nextInt(110)+1;
+        byte[] data = new byte[r.nextInt(2000)];
+        new Random().nextBytes(data);
+
+        WrappedUserAttribute uat = WrappedUserAttribute.fromSubpacket(type, data);
+        parcel.mAddUserAttribute.add(uat);
+
+        UncachedKeyRing modified = applyModificationWithChecks(parcel, ring, onlyA, onlyB);
+
+        Assert.assertEquals("no extra packets in original", 0, onlyA.size());
+        Assert.assertEquals("exactly two extra packets in modified", 2, onlyB.size());
+
+        Assert.assertTrue("keyring must contain added user attribute",
+                modified.getPublicKey().getUnorderedUserAttributes().contains(uat));
+
+        Packet p;
+
+        p = new BCPGInputStream(new ByteArrayInputStream(onlyB.get(0).buf)).readPacket();
+        Assert.assertTrue("first new packet must be user attribute", p instanceof UserAttributePacket);
+        {
+            UserAttributeSubpacket[] subpackets = ((UserAttributePacket) p).getSubpackets();
+            Assert.assertEquals("user attribute packet must contain one subpacket",
+                    1, subpackets.length);
+            Assert.assertEquals("user attribute subpacket type must be as specified above",
+                    type, subpackets[0].getType());
+            Assert.assertArrayEquals("user attribute subpacket data must be as specified above",
+                    data, subpackets[0].getData());
+        }
+
+        p = new BCPGInputStream(new ByteArrayInputStream(onlyB.get(1).buf)).readPacket();
+        Assert.assertTrue("second new packet must be signature", p instanceof SignaturePacket);
+        Assert.assertEquals("signature type must be positive certification",
+                PGPSignature.POSITIVE_CERTIFICATION, ((SignaturePacket) p).getSignatureType());
+
+        // make sure packets can be distinguished by timestamp
+        Thread.sleep(1000);
+
+        // applying the same modification AGAIN should not add more certifications but drop those
+        // as duplicates
+        modified = applyModificationWithChecks(parcel, modified, onlyA, onlyB, passphrase, true, false);
+
+        Assert.assertEquals("duplicate modification: one extra packet in original", 1, onlyA.size());
+        Assert.assertEquals("duplicate modification: one extra packet in modified", 1, onlyB.size());
+
+        p = new BCPGInputStream(new ByteArrayInputStream(onlyA.get(0).buf)).readPacket();
+        Assert.assertTrue("lost packet must be signature", p instanceof SignaturePacket);
+        p = new BCPGInputStream(new ByteArrayInputStream(onlyB.get(0).buf)).readPacket();
+        Assert.assertTrue("new packet must be signature", p instanceof SignaturePacket);
+
+    }
+
 
     @Test
     public void testUserIdPrimary() throws Exception {
@@ -1024,6 +1129,17 @@ public class PgpKeyOperationTest {
                     3, onlyB.size());
         }
 
+    }
+
+    @Test
+    public void testRestricted () throws Exception {
+
+        CanonicalizedSecretKeyRing secretRing = new CanonicalizedSecretKeyRing(ring.getEncoded(), false, 0);
+
+        parcel.mAddUserIds.add("discord");
+        PgpKeyOperation op = new PgpKeyOperation(null);
+        PgpEditKeyResult result = op.modifySecretKeyRing(secretRing, parcel, null);
+        Assert.assertFalse("non-restricted operations should fail without passphrase", result.success());
     }
 
     private static UncachedKeyRing applyModificationWithChecks(SaveKeyringParcel parcel,

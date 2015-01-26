@@ -34,6 +34,7 @@ import org.spongycastle.openpgp.PGPSecretKeyRing;
 import org.spongycastle.openpgp.PGPSignature;
 import org.spongycastle.openpgp.PGPSignatureGenerator;
 import org.spongycastle.openpgp.PGPSignatureSubpacketGenerator;
+import org.spongycastle.openpgp.PGPUserAttributeSubpacketVector;
 import org.spongycastle.openpgp.operator.PBESecretKeyDecryptor;
 import org.spongycastle.openpgp.operator.PBESecretKeyEncryptor;
 import org.spongycastle.openpgp.operator.PGPContentSignerBuilder;
@@ -134,7 +135,7 @@ public class PgpKeyOperation {
     public PgpKeyOperation(Progressable progress) {
         super();
         if (progress != null) {
-            mProgress = new Stack<Progressable>();
+            mProgress = new Stack<>();
             mProgress.push(progress);
         }
     }
@@ -287,13 +288,11 @@ public class PgpKeyOperation {
             // build new key pair
             return new JcaPGPKeyPair(algorithm, keyGen.generateKeyPair(), new Date());
 
-        } catch(NoSuchProviderException e) {
+        } catch(NoSuchProviderException | InvalidAlgorithmParameterException e) {
             throw new RuntimeException(e);
         } catch(NoSuchAlgorithmException e) {
             log.add(LogType.MSG_CR_ERROR_UNKNOWN_ALGO, indent);
             return null;
-        } catch(InvalidAlgorithmParameterException e) {
-            throw new RuntimeException(e);
         } catch(PGPException e) {
             Log.e(Constants.TAG, "internal pgp error", e);
             log.add(LogType.MSG_CR_ERROR_INTERNAL_PGP, indent);
@@ -388,6 +387,9 @@ public class PgpKeyOperation {
      * with a passphrase fails, the operation will fail with an unlocking error. More specific
      * handling of errors should be done in UI code!
      *
+     * If the passphrase is null, only a restricted subset of operations will be available,
+     * namely stripping of subkeys and changing the protection mode of dummy keys.
+     *
      */
     public PgpEditKeyResult modifySecretKeyRing(CanonicalizedSecretKeyRing wsKR, SaveKeyringParcel saveParcel,
                                                String passphrase) {
@@ -426,6 +428,11 @@ public class PgpKeyOperation {
                                     masterSecretKey.getPublicKey().getFingerprint())) {
             log.add(LogType.MSG_MF_ERROR_FINGERPRINT, indent);
             return new PgpEditKeyResult(PgpEditKeyResult.RESULT_ERROR, log, null);
+        }
+
+        // If we have no passphrase, only allow restricted operation
+        if (passphrase == null) {
+            return internalRestricted(sKR, saveParcel, log);
         }
 
         // read masterKeyFlags, and use the same as before.
@@ -478,7 +485,7 @@ public class PgpKeyOperation {
                 PGPPublicKey modifiedPublicKey = masterPublicKey;
 
                 // 2a. Add certificates for new user ids
-                subProgressPush(15, 25);
+                subProgressPush(15, 23);
                 for (int i = 0; i < saveParcel.mAddUserIds.size(); i++) {
 
                     progress(R.string.progress_modify_adduid, (i - 1) * (100 / saveParcel.mAddUserIds.size()));
@@ -495,7 +502,7 @@ public class PgpKeyOperation {
                     @SuppressWarnings("unchecked")
                     Iterator<PGPSignature> it = modifiedPublicKey.getSignaturesForID(userId);
                     if (it != null) {
-                        for (PGPSignature cert : new IterableIterator<PGPSignature>(it)) {
+                        for (PGPSignature cert : new IterableIterator<>(it)) {
                             if (cert.getKeyID() != masterPublicKey.getKeyID()) {
                                 // foreign certificate?! error error error
                                 log.add(LogType.MSG_MF_ERROR_INTEGRITY, indent);
@@ -522,8 +529,37 @@ public class PgpKeyOperation {
                 }
                 subProgressPop();
 
-                // 2b. Add revocations for revoked user ids
-                subProgressPush(25, 40);
+                // 2b. Add certificates for new user ids
+                subProgressPush(23, 32);
+                for (int i = 0; i < saveParcel.mAddUserAttribute.size(); i++) {
+
+                    progress(R.string.progress_modify_adduat, (i - 1) * (100 / saveParcel.mAddUserAttribute.size()));
+                    WrappedUserAttribute attribute = saveParcel.mAddUserAttribute.get(i);
+
+                    switch (attribute.getType()) {
+                        // the 'none' type must not succeed
+                        case WrappedUserAttribute.UAT_NONE:
+                            log.add(LogType.MSG_MF_UAT_ERROR_EMPTY, indent);
+                            return new PgpEditKeyResult(PgpEditKeyResult.RESULT_ERROR, log, null);
+                        case WrappedUserAttribute.UAT_IMAGE:
+                            log.add(LogType.MSG_MF_UAT_ADD_IMAGE, indent);
+                            break;
+                        default:
+                            log.add(LogType.MSG_MF_UAT_ADD_UNKNOWN, indent);
+                            break;
+                    }
+
+                    PGPUserAttributeSubpacketVector vector = attribute.getVector();
+
+                    // generate and add new certificate
+                    PGPSignature cert = generateUserAttributeSignature(masterPrivateKey,
+                            masterPublicKey, vector);
+                    modifiedPublicKey = PGPPublicKey.addCertification(modifiedPublicKey, vector, cert);
+                }
+                subProgressPop();
+
+                // 2c. Add revocations for revoked user ids
+                subProgressPush(32, 40);
                 for (int i = 0; i < saveParcel.mRevokeUserIds.size(); i++) {
 
                     progress(R.string.progress_modify_revokeuid, (i - 1) * (100 / saveParcel.mRevokeUserIds.size()));
@@ -685,6 +721,27 @@ public class PgpKeyOperation {
                     return new PgpEditKeyResult(PgpEditKeyResult.RESULT_ERROR, log, null);
                 }
 
+                if (change.mDummyStrip || change.mDummyDivert != null) {
+                    // IT'S DANGEROUS~
+                    // no really, it is. this operation irrevocably removes the private key data from the key
+                    if (change.mDummyStrip) {
+                        sKey = PGPSecretKey.constructGnuDummyKey(sKey.getPublicKey());
+                    } else {
+                        // the serial number must be 16 bytes in length
+                        if (change.mDummyDivert.length != 16) {
+                            log.add(LogType.MSG_MF_ERROR_DIVERT_SERIAL,
+                                    indent + 1, KeyFormattingUtils.convertKeyIdToHex(change.mKeyId));
+                            return new PgpEditKeyResult(PgpEditKeyResult.RESULT_ERROR, log, null);
+                        }
+                    }
+                    sKR = PGPSecretKeyRing.insertSecretKey(sKR, sKey);
+                }
+
+                // This doesn't concern us any further
+                if (!change.mRecertify && (change.mExpiry == null && change.mFlags == null)) {
+                    continue;
+                }
+
                 // expiry must not be in the past
                 if (change.mExpiry != null && change.mExpiry != 0 &&
                         new Date(change.mExpiry*1000).before(new Date())) {
@@ -772,30 +829,6 @@ public class PgpKeyOperation {
 
                 pKey = PGPPublicKey.addCertification(pKey, sig);
                 sKR = PGPSecretKeyRing.insertSecretKey(sKR, PGPSecretKey.replacePublicKey(sKey, pKey));
-            }
-            subProgressPop();
-
-            // 4c. For each subkey to be stripped... do so
-            subProgressPush(65, 70);
-            for (int i = 0; i < saveParcel.mStripSubKeys.size(); i++) {
-
-                progress(R.string.progress_modify_subkeystrip, (i-1) * (100 / saveParcel.mStripSubKeys.size()));
-                long strip = saveParcel.mStripSubKeys.get(i);
-                log.add(LogType.MSG_MF_SUBKEY_STRIP,
-                        indent, KeyFormattingUtils.convertKeyIdToHex(strip));
-
-                PGPSecretKey sKey = sKR.getSecretKey(strip);
-                if (sKey == null) {
-                    log.add(LogType.MSG_MF_ERROR_SUBKEY_MISSING,
-                            indent+1, KeyFormattingUtils.convertKeyIdToHex(strip));
-                    return new PgpEditKeyResult(PgpEditKeyResult.RESULT_ERROR, log, null);
-                }
-
-                // IT'S DANGEROUS~
-                // no really, it is. this operation irrevocably removes the private key data from the key
-                sKey = PGPSecretKey.constructGnuDummyKey(sKey.getPublicKey());
-                sKR = PGPSecretKeyRing.insertSecretKey(sKR, sKey);
-
             }
             subProgressPop();
 
@@ -906,6 +939,73 @@ public class PgpKeyOperation {
         return new PgpEditKeyResult(OperationResult.RESULT_OK, log, new UncachedKeyRing(sKR));
 
     }
+
+    /** This method does the actual modifications in a keyring just like internal, except it
+     * supports only the subset of operations which require no passphrase, and will error
+     * otherwise.
+     */
+    private PgpEditKeyResult internalRestricted(PGPSecretKeyRing sKR, SaveKeyringParcel saveParcel,
+                                                OperationLog log) {
+
+        int indent = 1;
+
+        progress(R.string.progress_modify, 0);
+
+        // Make sure the saveParcel includes only operations available without passphrae!
+        if (!saveParcel.isRestrictedOnly()) {
+            log.add(LogType.MSG_MF_ERROR_RESTRICTED, indent);
+            return new PgpEditKeyResult(PgpEditKeyResult.RESULT_ERROR, log, null);
+        }
+
+        // Check if we were cancelled
+        if (checkCancelled()) {
+            log.add(LogType.MSG_OPERATION_CANCELLED, indent);
+            return new PgpEditKeyResult(PgpEditKeyResult.RESULT_CANCELLED, log, null);
+        }
+
+        // The only operation we can do here:
+        // 4a. Strip secret keys, or change their protection mode (stripped/divert-to-card)
+        subProgressPush(50, 60);
+        for (int i = 0; i < saveParcel.mChangeSubKeys.size(); i++) {
+
+            progress(R.string.progress_modify_subkeychange, (i - 1) * (100 / saveParcel.mChangeSubKeys.size()));
+            SaveKeyringParcel.SubkeyChange change = saveParcel.mChangeSubKeys.get(i);
+            log.add(LogType.MSG_MF_SUBKEY_CHANGE,
+                    indent, KeyFormattingUtils.convertKeyIdToHex(change.mKeyId));
+
+            PGPSecretKey sKey = sKR.getSecretKey(change.mKeyId);
+            if (sKey == null) {
+                log.add(LogType.MSG_MF_ERROR_SUBKEY_MISSING,
+                        indent + 1, KeyFormattingUtils.convertKeyIdToHex(change.mKeyId));
+                return new PgpEditKeyResult(PgpEditKeyResult.RESULT_ERROR, log, null);
+            }
+
+            if (change.mDummyStrip || change.mDummyDivert != null) {
+                // IT'S DANGEROUS~
+                // no really, it is. this operation irrevocably removes the private key data from the key
+                if (change.mDummyStrip) {
+                    sKey = PGPSecretKey.constructGnuDummyKey(sKey.getPublicKey());
+                } else {
+                    // the serial number must be 16 bytes in length
+                    if (change.mDummyDivert.length != 16) {
+                        log.add(LogType.MSG_MF_ERROR_DIVERT_SERIAL,
+                                indent + 1, KeyFormattingUtils.convertKeyIdToHex(change.mKeyId));
+                        return new PgpEditKeyResult(PgpEditKeyResult.RESULT_ERROR, log, null);
+                    }
+                    sKey = PGPSecretKey.constructGnuDummyKey(sKey.getPublicKey(), change.mDummyDivert);
+                }
+                sKR = PGPSecretKeyRing.insertSecretKey(sKR, sKey);
+            }
+
+        }
+
+        // And we're done!
+        progress(R.string.progress_done, 100);
+        log.add(LogType.MSG_MF_SUCCESS, indent);
+        return new PgpEditKeyResult(OperationResult.RESULT_OK, log, new UncachedKeyRing(sKR));
+
+    }
+
 
     private static PGPSecretKeyRing applyNewUnlock(
             PGPSecretKeyRing sKR,
@@ -1172,6 +1272,26 @@ public class PgpKeyOperation {
         sGen.setHashedSubpackets(hashedPacketsGen.generate());
         sGen.init(PGPSignature.POSITIVE_CERTIFICATION, masterPrivateKey);
         return sGen.generateCertification(userId, pKey);
+    }
+
+    private static PGPSignature generateUserAttributeSignature(
+            PGPPrivateKey masterPrivateKey, PGPPublicKey pKey,
+            PGPUserAttributeSubpacketVector vector)
+                throws IOException, PGPException, SignatureException {
+        PGPContentSignerBuilder signerBuilder = new JcaPGPContentSignerBuilder(
+                masterPrivateKey.getPublicKeyPacket().getAlgorithm(), HashAlgorithmTags.SHA512)
+                .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME);
+        PGPSignatureGenerator sGen = new PGPSignatureGenerator(signerBuilder);
+
+        PGPSignatureSubpacketGenerator hashedPacketsGen = new PGPSignatureSubpacketGenerator();
+        {
+            /* critical subpackets: we consider those important for a modern pgp implementation */
+            hashedPacketsGen.setSignatureCreationTime(true, new Date());
+        }
+
+        sGen.setHashedSubpackets(hashedPacketsGen.generate());
+        sGen.init(PGPSignature.POSITIVE_CERTIFICATION, masterPrivateKey);
+        return sGen.generateCertification(vector, pKey);
     }
 
     private static PGPSignature generateRevocationSignature(

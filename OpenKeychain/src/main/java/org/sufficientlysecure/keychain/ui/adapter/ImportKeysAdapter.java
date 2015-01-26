@@ -95,8 +95,8 @@ public class ImportKeysAdapter extends ArrayAdapter<ImportKeysListEntry> {
      * @see org.sufficientlysecure.keychain.operations.ImportExportOperation
      */
     public ArrayList<ImportKeysListEntry> getSelectedEntries() {
-        ArrayList<ImportKeysListEntry> result = new ArrayList<ImportKeysListEntry>();
-        ArrayList<ImportKeysListEntry> secrets = new ArrayList<ImportKeysListEntry>();
+        ArrayList<ImportKeysListEntry> result = new ArrayList<>();
+        ArrayList<ImportKeysListEntry> secrets = new ArrayList<>();
         if (mData == null) {
             return result;
         }

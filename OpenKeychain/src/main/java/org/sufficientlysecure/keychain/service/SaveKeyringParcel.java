@@ -21,6 +21,7 @@ package org.sufficientlysecure.keychain.service;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import org.sufficientlysecure.keychain.pgp.WrappedUserAttribute;
 import java.io.Serializable;
 import java.util.ArrayList;
 
@@ -49,6 +50,7 @@ public class SaveKeyringParcel implements Parcelable {
     public ChangeUnlockParcel mNewUnlock;
 
     public ArrayList<String> mAddUserIds;
+    public ArrayList<WrappedUserAttribute> mAddUserAttribute;
     public ArrayList<SubkeyAdd> mAddSubKeys;
 
     public ArrayList<SubkeyChange> mChangeSubKeys;
@@ -56,7 +58,6 @@ public class SaveKeyringParcel implements Parcelable {
 
     public ArrayList<String> mRevokeUserIds;
     public ArrayList<Long> mRevokeSubKeys;
-    public ArrayList<Long> mStripSubKeys;
 
     public SaveKeyringParcel() {
         reset();
@@ -70,13 +71,30 @@ public class SaveKeyringParcel implements Parcelable {
 
     public void reset() {
         mNewUnlock = null;
-        mAddUserIds = new ArrayList<String>();
-        mAddSubKeys = new ArrayList<SubkeyAdd>();
+        mAddUserIds = new ArrayList<>();
+        mAddUserAttribute = new ArrayList<>();
+        mAddSubKeys = new ArrayList<>();
         mChangePrimaryUserId = null;
-        mChangeSubKeys = new ArrayList<SubkeyChange>();
-        mRevokeUserIds = new ArrayList<String>();
-        mRevokeSubKeys = new ArrayList<Long>();
-        mStripSubKeys = new ArrayList<Long>();
+        mChangeSubKeys = new ArrayList<>();
+        mRevokeUserIds = new ArrayList<>();
+        mRevokeSubKeys = new ArrayList<>();
+    }
+
+    /** Returns true iff this parcel does not contain any operations which require a passphrase. */
+    public boolean isRestrictedOnly() {
+        if (mNewUnlock != null || !mAddUserIds.isEmpty() || !mAddUserAttribute.isEmpty()
+                || !mAddSubKeys.isEmpty() || mChangePrimaryUserId != null || !mRevokeSubKeys .isEmpty()
+                || !mRevokeSubKeys.isEmpty()) {
+            return false;
+        }
+
+        for (SubkeyChange change : mChangeSubKeys) {
+            if (change.mRecertify || change.mFlags != null || change.mExpiry != null) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     // performance gain for using Parcelable here would probably be negligible,
@@ -109,13 +127,26 @@ public class SaveKeyringParcel implements Parcelable {
     }
 
     public static class SubkeyChange implements Serializable {
-        public long mKeyId;
+        public final long mKeyId;
         public Integer mFlags;
         // this is a long unix timestamp, in seconds (NOT MILLISECONDS!)
         public Long mExpiry;
+        // if this flag is true, the key will be recertified even if all above
+        // values are no-ops
+        public boolean mRecertify;
+        // if this flag is true, the subkey should be changed to a stripped key
+        public boolean mDummyStrip;
+        // if this is non-null, the subkey will be changed to a divert-to-card
+        // key for the given serial number
+        public byte[] mDummyDivert;
 
         public SubkeyChange(long keyId) {
             mKeyId = keyId;
+        }
+
+        public SubkeyChange(long keyId, boolean recertify) {
+            mKeyId = keyId;
+            mRecertify = recertify;
         }
 
         public SubkeyChange(long keyId, Integer flags, Long expiry) {
@@ -124,11 +155,25 @@ public class SaveKeyringParcel implements Parcelable {
             mExpiry = expiry;
         }
 
+        public SubkeyChange(long keyId, boolean dummyStrip, byte[] dummyDivert) {
+            this(keyId, null, null);
+
+            // these flags are mutually exclusive!
+            if (dummyStrip && dummyDivert != null) {
+                throw new AssertionError(
+                        "cannot set strip and divert flags at the same time - this is a bug!");
+            }
+            mDummyStrip = dummyStrip;
+            mDummyDivert = dummyDivert;
+        }
+
         @Override
         public String toString() {
             String out = "mKeyId: " + mKeyId + ", ";
             out += "mFlags: " + mFlags + ", ";
-            out += "mExpiry: " + mExpiry;
+            out += "mExpiry: " + mExpiry + ", ";
+            out += "mDummyStrip: " + mDummyStrip + ", ";
+            out += "mDummyDivert: [" + (mDummyDivert == null ? 0 : mDummyDivert.length) + " bytes]";
 
             return out;
         }
@@ -162,6 +207,7 @@ public class SaveKeyringParcel implements Parcelable {
         mNewUnlock = source.readParcelable(getClass().getClassLoader());
 
         mAddUserIds = source.createStringArrayList();
+        mAddUserAttribute = (ArrayList<WrappedUserAttribute>) source.readSerializable();
         mAddSubKeys = (ArrayList<SubkeyAdd>) source.readSerializable();
 
         mChangeSubKeys = (ArrayList<SubkeyChange>) source.readSerializable();
@@ -169,7 +215,6 @@ public class SaveKeyringParcel implements Parcelable {
 
         mRevokeUserIds = source.createStringArrayList();
         mRevokeSubKeys = (ArrayList<Long>) source.readSerializable();
-        mStripSubKeys = (ArrayList<Long>) source.readSerializable();
     }
 
     @Override
@@ -184,6 +229,7 @@ public class SaveKeyringParcel implements Parcelable {
         destination.writeParcelable(mNewUnlock, 0);
 
         destination.writeStringList(mAddUserIds);
+        destination.writeSerializable(mAddUserAttribute);
         destination.writeSerializable(mAddSubKeys);
 
         destination.writeSerializable(mChangeSubKeys);
@@ -191,7 +237,6 @@ public class SaveKeyringParcel implements Parcelable {
 
         destination.writeStringList(mRevokeUserIds);
         destination.writeSerializable(mRevokeSubKeys);
-        destination.writeSerializable(mStripSubKeys);
     }
 
     public static final Creator<SaveKeyringParcel> CREATOR = new Creator<SaveKeyringParcel>() {
@@ -214,12 +259,12 @@ public class SaveKeyringParcel implements Parcelable {
         String out = "mMasterKeyId: " + mMasterKeyId + "\n";
         out += "mNewUnlock: " + mNewUnlock + "\n";
         out += "mAddUserIds: " + mAddUserIds + "\n";
+        out += "mAddUserAttribute: " + mAddUserAttribute + "\n";
         out += "mAddSubKeys: " + mAddSubKeys + "\n";
         out += "mChangeSubKeys: " + mChangeSubKeys + "\n";
         out += "mChangePrimaryUserId: " + mChangePrimaryUserId + "\n";
         out += "mRevokeUserIds: " + mRevokeUserIds + "\n";
-        out += "mRevokeSubKeys: " + mRevokeSubKeys + "\n";
-        out += "mStripSubKeys: " + mStripSubKeys;
+        out += "mRevokeSubKeys: " + mRevokeSubKeys;
 
         return out;
     }

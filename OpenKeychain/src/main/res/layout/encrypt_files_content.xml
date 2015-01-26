@@ -1,23 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/content_frame"
-    android:layout_marginLeft="@dimen/drawer_content_padding"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:layout_height="match_parent">
 
-    <include layout="@layout/notify_area" />
+    <include
+        android:id="@+id/toolbar"
+        layout="@layout/toolbar" />
 
-    <FrameLayout
-        android:id="@+id/encrypt_pager_mode"
+    <LinearLayout
+        android:layout_below="@id/toolbar"
+        android:id="@+id/content_frame"
+        android:layout_marginLeft="@dimen/drawer_content_padding"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical" />
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
-    <fragment
-        android:id="@+id/encrypt_file_fragment"
-        android:name="org.sufficientlysecure.keychain.ui.EncryptFilesFragment"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        <include layout="@layout/notify_area" />
 
-</LinearLayout>
+        <FrameLayout
+            android:id="@+id/encrypt_pager_mode"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" />
+
+        <fragment
+            android:id="@+id/encrypt_file_fragment"
+            android:name="org.sufficientlysecure.keychain.ui.EncryptFilesFragment"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+    </LinearLayout>
+</RelativeLayout>

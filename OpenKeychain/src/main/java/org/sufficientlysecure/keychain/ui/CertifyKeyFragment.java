@@ -49,7 +49,7 @@ import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
-import org.sufficientlysecure.keychain.provider.KeychainContract.UserIds;
+import org.sufficientlysecure.keychain.provider.KeychainContract.UserPackets;
 import org.sufficientlysecure.keychain.provider.KeychainDatabase.Tables;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.CertifyActionsParcel;
@@ -82,11 +82,11 @@ public class CertifyKeyFragment extends LoaderFragment
     private long mSignMasterKeyId = Constants.key.none;
 
     public static final String[] USER_IDS_PROJECTION = new String[]{
-            UserIds._ID,
-            UserIds.MASTER_KEY_ID,
-            UserIds.USER_ID,
-            UserIds.IS_PRIMARY,
-            UserIds.IS_REVOKED
+            UserPackets._ID,
+            UserPackets.MASTER_KEY_ID,
+            UserPackets.USER_ID,
+            UserPackets.IS_PRIMARY,
+            UserPackets.IS_REVOKED
     };
     private static final int INDEX_MASTER_KEY_ID = 1;
     private static final int INDEX_USER_ID = 2;
@@ -182,7 +182,7 @@ public class CertifyKeyFragment extends LoaderFragment
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        Uri uri = UserIds.buildUserIdsUri();
+        Uri uri = UserPackets.buildUserIdsUri();
 
         String selection, ids[];
         {
@@ -196,15 +196,15 @@ public class CertifyKeyFragment extends LoaderFragment
                 }
             }
             // put together selection string
-            selection = UserIds.IS_REVOKED + " = 0" + " AND "
-                    + Tables.USER_IDS + "." + UserIds.MASTER_KEY_ID
+            selection = UserPackets.IS_REVOKED + " = 0" + " AND "
+                    + Tables.USER_PACKETS + "." + UserPackets.MASTER_KEY_ID
                     + " IN (" + placeholders + ")";
         }
 
         return new CursorLoader(getActivity(), uri,
                 USER_IDS_PROJECTION, selection, ids,
-                Tables.USER_IDS + "." + UserIds.MASTER_KEY_ID + " ASC"
-                        + ", " + Tables.USER_IDS + "." + UserIds.USER_ID + " ASC"
+                Tables.USER_PACKETS + "." + UserPackets.MASTER_KEY_ID + " ASC"
+                        + ", " + Tables.USER_PACKETS + "." + UserPackets.USER_ID + " ASC"
         );
     }
 
@@ -234,7 +234,7 @@ public class CertifyKeyFragment extends LoaderFragment
 
         long lastMasterKeyId = 0;
         String lastName = "";
-        ArrayList<String> uids = new ArrayList<String>();
+        ArrayList<String> uids = new ArrayList<>();
 
         boolean header = true;
 

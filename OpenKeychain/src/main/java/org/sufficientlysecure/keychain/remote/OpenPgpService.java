@@ -85,9 +85,9 @@ public class OpenPgpService extends RemoteService {
         boolean missingUserIdsCheck = false;
         boolean duplicateUserIdsCheck = false;
 
-        ArrayList<Long> keyIds = new ArrayList<Long>();
-        ArrayList<String> missingUserIds = new ArrayList<String>();
-        ArrayList<String> duplicateUserIds = new ArrayList<String>();
+        ArrayList<Long> keyIds = new ArrayList<>();
+        ArrayList<String> missingUserIds = new ArrayList<>();
+        ArrayList<String> duplicateUserIds = new ArrayList<>();
         if (!noUserIdsCheck) {
             for (String email : encryptionUserIds) {
                 // try to find the key for this specific email

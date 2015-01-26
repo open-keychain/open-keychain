@@ -14,7 +14,7 @@ import org.sufficientlysecure.keychain.operations.results.SignEncryptResult;
 
 import java.util.Date;
 
-public abstract class EncryptActivity extends DrawerActivity {
+public abstract class EncryptActivity extends NavDrawerActivity {
 
     public static final int REQUEST_CODE_PASSPHRASE = 0x00008001;
     public static final int REQUEST_CODE_NFC = 0x00008002;
