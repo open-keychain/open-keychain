@@ -428,6 +428,7 @@ public class PgpSignEncrypt extends BaseOperation {
         BCPGOutputStream bcpgOut;
 
         ByteArrayOutputStream detachedByteOut = null;
+        ArmoredOutputStream detachedArmorOut = null;
         BCPGOutputStream detachedBcpgOut = null;
 
         try {
@@ -535,7 +536,12 @@ public class PgpSignEncrypt extends BaseOperation {
                 detachedByteOut = new ByteArrayOutputStream();
                 OutputStream detachedOut = detachedByteOut;
                 if (mEnableAsciiArmorOutput) {
-                    detachedOut = new ArmoredOutputStream(detachedOut);
+                    detachedArmorOut = new ArmoredOutputStream(detachedOut);
+                    if (mVersionHeader != null) {
+                        detachedArmorOut.setHeader("Version", mVersionHeader);
+                    }
+
+                    detachedOut = detachedArmorOut;
                 }
                 detachedBcpgOut = new BCPGOutputStream(detachedOut);
 
@@ -614,27 +620,38 @@ public class PgpSignEncrypt extends BaseOperation {
                     // Note that the checked key here is the master key, not the signing key
                     // (although these are always the same on Yubikeys)
                     result.setNfcData(mSignatureSubKeyId, e.hashToSign, e.hashAlgo, e.creationTimestamp, mSignaturePassphrase);
-                    Log.d(Constants.TAG, "e.hashToSign"+ Hex.toHexString(e.hashToSign));
+                    Log.d(Constants.TAG, "e.hashToSign" + Hex.toHexString(e.hashToSign));
                     return result;
                 }
             }
 
             // closing outputs
             // NOTE: closing needs to be done in the correct order!
-            // TODO: closing bcpgOut and pOut???
-            if (enableEncryption) {
-                if (enableCompression) {
+            if (encryptionOut != null) {
+                if (compressGen != null) {
                     compressGen.close();
                 }
 
                 encryptionOut.close();
             }
-            if (mEnableAsciiArmorOutput) {
+            // Note: Closing ArmoredOutputStream does not close the underlying stream
+            if (armorOut != null) {
                 armorOut.close();
             }
-
-            out.close();
-            mOutStream.close();
+            // Note: Closing ArmoredOutputStream does not close the underlying stream
+            if (detachedArmorOut != null) {
+                detachedArmorOut.close();
+            }
+            // Also closes detachedBcpgOut
+            if (detachedByteOut != null) {
+                detachedByteOut.close();
+            }
+            if (out != null) {
+                out.close();
+            }
+            if (mOutStream != null) {
+                mOutStream.close();
+            }
 
         } catch (SignatureException e) {
             log.add(LogType.MSG_SE_ERROR_SIG, indent);

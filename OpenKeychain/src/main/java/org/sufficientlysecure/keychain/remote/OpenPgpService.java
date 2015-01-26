@@ -244,7 +244,12 @@ public class OpenPgpService extends RemoteService {
 
             // Get Input- and OutputStream from ParcelFileDescriptor
             InputStream is = new ParcelFileDescriptor.AutoCloseInputStream(input);
-            OutputStream os = new ParcelFileDescriptor.AutoCloseOutputStream(output);
+            OutputStream os = null;
+            if (cleartextSign) {
+                // output stream only needed for cleartext signatures,
+                // detached signatures are returned as extra
+                os = new ParcelFileDescriptor.AutoCloseOutputStream(output);
+            }
             try {
                 long inputLength = is.available();
                 InputData inputData = new InputData(is, inputLength);
@@ -325,7 +330,9 @@ public class OpenPgpService extends RemoteService {
                 }
             } finally {
                 is.close();
-                os.close();
+                if (os != null) {
+                    os.close();
+                }
             }
         } catch (Exception e) {
             Log.d(Constants.TAG, "signImpl", e);
@@ -720,6 +727,7 @@ public class OpenPgpService extends RemoteService {
                 return signImpl(data, input, output, accSettings, true);
             } else if (OpenPgpApi.ACTION_SIGN.equals(action)) {
                 // DEPRECATED: same as ACTION_CLEARTEXT_SIGN
+                Log.w(Constants.TAG, "You are using a deprecated API call, please use ACTION_CLEARTEXT_SIGN instead of ACTION_SIGN!");
                 return signImpl(data, input, output, accSettings, true);
             } else if (OpenPgpApi.ACTION_DETACHED_SIGN.equals(action)) {
                 return signImpl(data, input, output, accSettings, false);
