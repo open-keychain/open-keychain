@@ -39,18 +39,6 @@ import java.util.ArrayList;
 public class ImportKeysListLoader
         extends AsyncTaskLoader<AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>>> {
 
-    public static class NonPgpPartException extends Exception {
-        private int mCount;
-
-        public NonPgpPartException(int count) {
-            this.mCount = count;
-        }
-
-        public int getCount() {
-            return mCount;
-        }
-    }
-
     final Context mContext;
     final InputData mInputData;
 

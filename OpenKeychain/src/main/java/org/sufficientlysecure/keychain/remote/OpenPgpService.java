@@ -563,6 +563,11 @@ public class OpenPgpService extends RemoteService {
                         }
                     }
 
+                    String charset = pgpResult.getCharset();
+                    if (charset != null) {
+                        result.putExtra(OpenPgpApi.RESULT_CHARSET, charset);
+                    }
+
                     result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_SUCCESS);
                     return result;
                 } else {

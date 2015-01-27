@@ -41,6 +41,8 @@ import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.ShareHelper;
 
+import java.io.UnsupportedEncodingException;
+
 public class DecryptTextFragment extends DecryptFragment {
     public static final String ARG_CIPHERTEXT = "ciphertext";
 
@@ -194,7 +196,18 @@ public class DecryptTextFragment extends DecryptFragment {
 
                         byte[] decryptedMessage = returnData
                                 .getByteArray(KeychainIntentService.RESULT_DECRYPTED_BYTES);
-                        mText.setText(new String(decryptedMessage));
+                        String displayMessage;
+                        if (pgpResult.getCharset() != null) {
+                            try {
+                                displayMessage = new String(decryptedMessage, pgpResult.getCharset());
+                            } catch (UnsupportedEncodingException e) {
+                                // if we can't decode properly, just fall back to utf-8
+                                displayMessage = new String(decryptedMessage);
+                            }
+                        } else {
+                            displayMessage = new String(decryptedMessage);
+                        }
+                        mText.setText(displayMessage);
 
                         pgpResult.createNotify(getActivity()).show();
 

@@ -83,6 +83,7 @@ public class PgpSignEncrypt extends BaseOperation {
     private boolean mDetachedSignature;
     private String mOriginalFilename;
     private boolean mFailOnMissingEncryptionKeyIds;
+    private String mCharset;
 
     private byte[] mNfcSignedHash = null;
     private Date mNfcCreationTimestamp = null;
@@ -121,6 +122,7 @@ public class PgpSignEncrypt extends BaseOperation {
         this.mNfcCreationTimestamp = builder.mNfcCreationTimestamp;
         this.mOriginalFilename = builder.mOriginalFilename;
         this.mFailOnMissingEncryptionKeyIds = builder.mFailOnMissingEncryptionKeyIds;
+        this.mCharset = builder.mCharset;
     }
 
     public static class Builder {
@@ -149,6 +151,7 @@ public class PgpSignEncrypt extends BaseOperation {
         private byte[] mNfcSignedHash = null;
         private Date mNfcCreationTimestamp = null;
         private boolean mFailOnMissingEncryptionKeyIds = false;
+        private String mCharset = null;
 
         public Builder(Context context, ProviderHelper providerHelper, Progressable progressable,
                        InputData data, OutputStream outStream) {
@@ -212,6 +215,11 @@ public class PgpSignEncrypt extends BaseOperation {
 
         public Builder setFailOnMissingEncryptionKeyIds(boolean failOnMissingEncryptionKeyIds) {
             mFailOnMissingEncryptionKeyIds = failOnMissingEncryptionKeyIds;
+            return this;
+        }
+
+        public Builder setCharset(String charset) {
+            mCharset = charset;
             return this;
         }
 
@@ -285,6 +293,10 @@ public class PgpSignEncrypt extends BaseOperation {
             armorOut = new ArmoredOutputStream(mOutStream);
             if (mVersionHeader != null) {
                 armorOut.setHeader("Version", mVersionHeader);
+            }
+            // if we have a charset, put it in the header
+            if (mCharset != null) {
+                armorOut.setHeader("Charset", mCharset);
             }
             out = armorOut;
         } else {

@@ -438,6 +438,60 @@ public class PgpEncryptDecryptTest {
 
     }
 
+    @Test
+    public void testForeignEncoding () throws Exception {
+        String plaintext = "ウィキペディア";
+        byte[] plaindata = plaintext.getBytes("iso-2022-jp");
+
+        { // some quick sanity checks
+            Assert.assertEquals(plaintext, new String(plaindata, "iso-2022-jp"));
+            Assert.assertNotEquals(plaintext, new String(plaindata, "utf-8"));
+        }
+
+        byte[] ciphertext;
+        { // encrypt data with a given passphrase
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            ByteArrayInputStream in = new ByteArrayInputStream(plaindata);
+
+            InputData data = new InputData(in, in.available());
+            Builder b = new PgpSignEncrypt.Builder(
+                    Robolectric.application,
+                    new ProviderHelper(Robolectric.application),
+                    null, // new DummyPassphraseCache(mPassphrase, 0L),
+                    data, out);
+
+            b.setEncryptionMasterKeyIds(new long[]{ mStaticRing1.getMasterKeyId() });
+            b.setSymmetricEncryptionAlgorithm(PGPEncryptedData.AES_128);
+            // this only works with ascii armored output!
+            b.setEnableAsciiArmorOutput(true);
+            b.setCharset("iso-2022-jp");
+            SignEncryptResult result = b.build().execute();
+            Assert.assertTrue("encryption must succeed", result.success());
+
+            ciphertext = out.toByteArray();
+        }
+
+        { // decryption with provided passphrase should yield the same result
+
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            ByteArrayInputStream in = new ByteArrayInputStream(ciphertext);
+            InputData data = new InputData(in, in.available());
+
+            PgpDecryptVerify.Builder b = builderWithFakePassphraseCache(data, out, null, null, null);
+            b.setPassphrase(mKeyPhrase1);
+            DecryptVerifyResult result = b.build().execute();
+            Assert.assertTrue("decryption with provided passphrase must succeed", result.success());
+            Assert.assertArrayEquals("decrypted ciphertext should equal plaintext bytes",
+                    out.toByteArray(), plaindata);
+            Assert.assertEquals("charset should be read correctly",
+                    "iso-2022-jp", result.getCharset());
+            Assert.assertEquals("decrypted ciphertext should equal plaintext",
+                    new String(out.toByteArray(), result.getCharset()), plaintext);
+            Assert.assertNull("signature be empty", result.getSignatureResult());
+        }
+
+    }
+
     private PgpDecryptVerify.Builder builderWithFakePassphraseCache (
             InputData data, OutputStream out,
             final String passphrase, final Long checkMasterKeyId, final Long checkSubKeyId) {
