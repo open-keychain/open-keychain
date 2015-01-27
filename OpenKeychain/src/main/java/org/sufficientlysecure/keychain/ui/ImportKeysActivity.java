@@ -115,6 +115,12 @@ public class ImportKeysActivity extends BaseActivity {
             extras = new Bundle();
         }
 
+        if (action == null) {
+            startCloudFragment(savedInstanceState, null, false);
+            startListFragment(savedInstanceState, null, null, null);
+            return;
+        }
+
         if (Intent.ACTION_VIEW.equals(action)) {
             // Android's Action when opening file associated to Keychain (see AndroidManifest.xml)
             // delegate action to ACTION_IMPORT_KEY
@@ -122,8 +128,8 @@ public class ImportKeysActivity extends BaseActivity {
         }
 
         switch (action) {
-            case ACTION_IMPORT_KEY:
-            /* Keychain's own Actions */
+            case ACTION_IMPORT_KEY: {
+                /* Keychain's own Actions */
                 startFileFragment(savedInstanceState);
 
                 if (dataUri != null) {
@@ -136,16 +142,17 @@ public class ImportKeysActivity extends BaseActivity {
                     startListFragment(savedInstanceState, importData, null, null);
                 }
                 break;
+            }
             case ACTION_IMPORT_KEY_FROM_KEYSERVER:
             case ACTION_IMPORT_KEY_FROM_KEYSERVER_AND_RETURN_TO_SERVICE:
-            case ACTION_IMPORT_KEY_FROM_KEYSERVER_AND_RETURN_RESULT:
+            case ACTION_IMPORT_KEY_FROM_KEYSERVER_AND_RETURN_RESULT: {
 
                 // only used for OpenPgpService
                 if (extras.containsKey(EXTRA_PENDING_INTENT_DATA)) {
                     mPendingIntentData = extras.getParcelable(EXTRA_PENDING_INTENT_DATA);
                 }
                 if (extras.containsKey(EXTRA_QUERY) || extras.containsKey(EXTRA_KEY_ID)) {
-                /* simple search based on query or key id */
+                    /* simple search based on query or key id */
 
                     String query = null;
                     if (extras.containsKey(EXTRA_QUERY)) {
@@ -168,10 +175,10 @@ public class ImportKeysActivity extends BaseActivity {
                         return;
                     }
                 } else if (extras.containsKey(EXTRA_FINGERPRINT)) {
-                /*
-                 * search based on fingerprint, here we can enforce a check in the end
-                 * if the right key has been downloaded
-                 */
+                    /*
+                     * search based on fingerprint, here we can enforce a check in the end
+                     * if the right key has been downloaded
+                     */
 
                     String fingerprint = extras.getString(EXTRA_FINGERPRINT);
                     if (isFingerprintValid(fingerprint)) {
@@ -191,21 +198,24 @@ public class ImportKeysActivity extends BaseActivity {
                     return;
                 }
                 break;
-            case ACTION_IMPORT_KEY_FROM_FILE:
+            }
+            case ACTION_IMPORT_KEY_FROM_FILE: {
                 // NOTE: this only displays the appropriate fragment, no actions are taken
                 startFileFragment(savedInstanceState);
 
                 // no immediate actions!
                 startListFragment(savedInstanceState, null, null, null);
                 break;
-            case ACTION_IMPORT_KEY_FROM_FILE_AND_RETURN:
+            }
+            case ACTION_IMPORT_KEY_FROM_FILE_AND_RETURN: {
                 // NOTE: this only displays the appropriate fragment, no actions are taken
                 startFileFragment(savedInstanceState);
 
                 // no immediate actions!
                 startListFragment(savedInstanceState, null, null, null);
                 break;
-            case ACTION_IMPORT_KEY_FROM_NFC:
+            }
+            case ACTION_IMPORT_KEY_FROM_NFC: {
                 // NOTE: this only displays the appropriate fragment, no actions are taken
                 startFileFragment(savedInstanceState);
                 // TODO!!!!!
@@ -213,13 +223,14 @@ public class ImportKeysActivity extends BaseActivity {
                 // no immediate actions!
                 startListFragment(savedInstanceState, null, null, null);
                 break;
-            default:
+            }
+            default: {
                 startCloudFragment(savedInstanceState, null, false);
                 startListFragment(savedInstanceState, null, null, null);
                 break;
+            }
         }
     }
-
 
     private void startListFragment(Bundle savedInstanceState, byte[] bytes, Uri dataUri, String serverQuery) {
         // However, if we're being restored from a previous state,
