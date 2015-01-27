@@ -481,7 +481,8 @@ public class OpenPgpService extends RemoteService {
             InputStream is = new ParcelFileDescriptor.AutoCloseInputStream(input);
 
             OutputStream os;
-            if (decryptMetadataOnly) {
+            // output is optional, e.g., for verifying detached signatures
+            if (decryptMetadataOnly || output == null) {
                 os = null;
             } else {
                 os = new ParcelFileDescriptor.AutoCloseOutputStream(output);
@@ -498,15 +499,17 @@ public class OpenPgpService extends RemoteService {
 
                 byte[] nfcDecryptedSessionKey = data.getByteArrayExtra(OpenPgpApi.EXTRA_NFC_DECRYPTED_SESSION_KEY);
 
+                byte[] detachedSignature = data.getByteArrayExtra(OpenPgpApi.EXTRA_DETACHED_SIGNATURE);
+
                 // allow only private keys associated with accounts of this app
                 // no support for symmetric encryption
                 builder.setPassphrase(passphrase)
                         .setAllowSymmetricDecryption(false)
                         .setAllowedKeyIds(allowedKeyIds)
                         .setDecryptMetadataOnly(decryptMetadataOnly)
-                        .setNfcState(nfcDecryptedSessionKey);
+                        .setNfcState(nfcDecryptedSessionKey)
+                        .setDetachedSignature(detachedSignature);
 
-                // TODO: currently does not support binary signed-only content
                 DecryptVerifyResult pgpResult = builder.build().execute();
 
                 if (pgpResult.isPending()) {
@@ -678,15 +681,16 @@ public class OpenPgpService extends RemoteService {
 
         // version code is required and needs to correspond to version code of service!
         // History of versions in org.openintents.openpgp.util.OpenPgpApi
-        // we support 3, 4, 5
+        // we support 3, 4, 5, 6
         if (data.getIntExtra(OpenPgpApi.EXTRA_API_VERSION, -1) != 3
                 && data.getIntExtra(OpenPgpApi.EXTRA_API_VERSION, -1) != 4
-                && data.getIntExtra(OpenPgpApi.EXTRA_API_VERSION, -1) != 5) {
+                && data.getIntExtra(OpenPgpApi.EXTRA_API_VERSION, -1) != 5
+                && data.getIntExtra(OpenPgpApi.EXTRA_API_VERSION, -1) != 6) {
             Intent result = new Intent();
             OpenPgpError error = new OpenPgpError
                     (OpenPgpError.INCOMPATIBLE_API_VERSIONS, "Incompatible API versions!\n"
                             + "used API version: " + data.getIntExtra(OpenPgpApi.EXTRA_API_VERSION, -1) + "\n"
-                            + "supported API versions: 3, 4");
+                            + "supported API versions: 3, 4, 5, 6");
             result.putExtra(OpenPgpApi.RESULT_ERROR, error);
             result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_ERROR);
             return result;
