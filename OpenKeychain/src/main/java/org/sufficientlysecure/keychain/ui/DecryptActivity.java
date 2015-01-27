@@ -34,13 +34,13 @@ import org.sufficientlysecure.keychain.ui.util.SubtleAttentionSeeker;
 
 import java.util.regex.Matcher;
 
-public class DecryptActivity extends DrawerActivity {
+public class DecryptActivity extends BaseActivity {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        activateDrawerNavigation(savedInstanceState);
+//        activateDrawerNavigation(savedInstanceState);
 
         View actionFile = findViewById(R.id.decrypt_files);
         View actionFromClipboard = findViewById(R.id.decrypt_from_clipboard);
