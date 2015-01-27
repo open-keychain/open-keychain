@@ -234,6 +234,22 @@ public class PgpDecryptVerify extends BaseOperation {
         boolean symmetricPacketFound = false;
         boolean anyPacketFound = false;
 
+        // If the input stream is armored, and there is a charset specified, take a note for later
+        // https://tools.ietf.org/html/rfc4880#page56
+        String charset = null;
+        if (in instanceof ArmoredInputStream) {
+            for (String header : ((ArmoredInputStream) in).getArmorHeaders()) {
+                String[] pieces = header.split(":", 2);
+                if (pieces.length == 2 && "charset".equalsIgnoreCase(pieces[0])) {
+                    charset = pieces[1].trim();
+                    break;
+                }
+            }
+            if (charset != null) {
+                log.add(LogType.MSG_DC_CHARSET, indent, charset);
+            }
+        }
+
         // go through all objects and find one we can decrypt
         while (it.hasNext()) {
             Object obj = it.next();
@@ -550,6 +566,7 @@ public class PgpDecryptVerify extends BaseOperation {
                 log.add(LogType.MSG_DC_OK_META_ONLY, indent);
                 DecryptVerifyResult result =
                         new DecryptVerifyResult(DecryptVerifyResult.RESULT_OK, log);
+                result.setCharset(charset);
                 result.setDecryptMetadata(metadata);
                 return result;
             }
@@ -647,6 +664,7 @@ public class PgpDecryptVerify extends BaseOperation {
                 new DecryptVerifyResult(DecryptVerifyResult.RESULT_OK, log);
         result.setDecryptMetadata(metadata);
         result.setSignatureResult(signatureResultBuilder.build());
+        result.setCharset(charset);
         return result;
 
     }
@@ -807,7 +825,7 @@ public class PgpDecryptVerify extends BaseOperation {
         while ((ch = fIn.read()) >= 0) {
             bOut.write(ch);
             if (ch == '\r' || ch == '\n') {
-                lookAhead = readPassedEOL(bOut, ch, fIn);
+                lookAhead = readPastEOL(bOut, ch, fIn);
                 break;
             }
         }
@@ -824,7 +842,7 @@ public class PgpDecryptVerify extends BaseOperation {
         do {
             bOut.write(ch);
             if (ch == '\r' || ch == '\n') {
-                lookAhead = readPassedEOL(bOut, ch, fIn);
+                lookAhead = readPastEOL(bOut, ch, fIn);
                 break;
             }
         } while ((ch = fIn.read()) >= 0);
@@ -836,7 +854,7 @@ public class PgpDecryptVerify extends BaseOperation {
         return lookAhead;
     }
 
-    private static int readPassedEOL(ByteArrayOutputStream bOut, int lastCh, InputStream fIn)
+    private static int readPastEOL(ByteArrayOutputStream bOut, int lastCh, InputStream fIn)
             throws IOException {
         int lookAhead = fIn.read();
 

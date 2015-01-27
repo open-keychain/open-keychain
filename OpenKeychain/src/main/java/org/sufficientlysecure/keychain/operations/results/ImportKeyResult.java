@@ -83,6 +83,10 @@ public class ImportKeyResult extends OperationResult {
         mImportedMasterKeyIds = source.createLongArray();
     }
 
+    public ImportKeyResult(int result, OperationLog log) {
+        this(result, log, 0, 0, 0, 0, new long[] { });
+    }
+
     public ImportKeyResult(int result, OperationLog log,
                            int newKeys, int updatedKeys, int badKeys, int secret,
                            long[] importedMasterKeyIds) {
