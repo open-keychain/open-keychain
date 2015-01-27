@@ -41,6 +41,7 @@
     <string name="title_create_key">"Create Key"</string>
     <string name="title_exchange_keys">"Exchange Keys"</string>
     <string name="title_advanced_key_info">"Advanced Key Info"</string>
+    <string name="title_keys">"Keys"</string>
 
     <!-- section -->
     <string name="section_user_ids">"Identities"</string>

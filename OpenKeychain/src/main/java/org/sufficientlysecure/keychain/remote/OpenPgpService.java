@@ -222,9 +222,10 @@ public class OpenPgpService extends RemoteService {
     }
 
     private Intent signImpl(Intent data, ParcelFileDescriptor input,
-                            ParcelFileDescriptor output, AccountSettings accSettings) {
+                            ParcelFileDescriptor output, AccountSettings accSettings,
+                            boolean cleartextSign) {
         try {
-            boolean asciiArmor = data.getBooleanExtra(OpenPgpApi.EXTRA_REQUEST_ASCII_ARMOR, true);
+            boolean asciiArmor = cleartextSign || data.getBooleanExtra(OpenPgpApi.EXTRA_REQUEST_ASCII_ARMOR, true);
 
             byte[] nfcSignedHash = data.getByteArrayExtra(OpenPgpApi.EXTRA_NFC_SIGNED_HASH);
             if (nfcSignedHash != null) {
@@ -243,7 +244,12 @@ public class OpenPgpService extends RemoteService {
 
             // Get Input- and OutputStream from ParcelFileDescriptor
             InputStream is = new ParcelFileDescriptor.AutoCloseInputStream(input);
-            OutputStream os = new ParcelFileDescriptor.AutoCloseOutputStream(output);
+            OutputStream os = null;
+            if (cleartextSign) {
+                // output stream only needed for cleartext signatures,
+                // detached signatures are returned as extra
+                os = new ParcelFileDescriptor.AutoCloseOutputStream(output);
+            }
             try {
                 long inputLength = is.available();
                 InputData inputData = new InputData(is, inputLength);
@@ -284,15 +290,14 @@ public class OpenPgpService extends RemoteService {
                         inputData, os
                 );
                 builder.setEnableAsciiArmorOutput(asciiArmor)
+                        .setCleartextSignature(cleartextSign)
+                        .setDetachedSignature(!cleartextSign)
                         .setVersionHeader(PgpHelper.getVersionForHeader(this))
                         .setSignatureHashAlgorithm(accSettings.getHashAlgorithm())
                         .setSignatureMasterKeyId(accSettings.getKeyId())
                         .setSignatureSubKeyId(sigSubKeyId)
                         .setSignaturePassphrase(passphrase)
                         .setNfcState(nfcSignedHash, nfcCreationDate);
-
-                // TODO: currently always assume cleartext input, no sign-only of binary currently!
-                builder.setCleartextInput(true);
 
                 // execute PGP operation!
                 SignEncryptResult pgpResult = builder.build().execute();
@@ -313,20 +318,22 @@ public class OpenPgpService extends RemoteService {
                                 "Encountered unhandled type of pending action not supported by API!");
                     }
                 } else if (pgpResult.success()) {
-                    // see end of method
+                    Intent result = new Intent();
+                    if (!cleartextSign) {
+                        result.putExtra(OpenPgpApi.RESULT_DETACHED_SIGNATURE, pgpResult.getDetachedSignature());
+                    }
+                    result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_SUCCESS);
+                    return result;
                 } else {
                     LogEntryParcel errorMsg = pgpResult.getLog().getLast();
                     throw new Exception(getString(errorMsg.mType.getMsgId()));
                 }
-
             } finally {
                 is.close();
-                os.close();
+                if (os != null) {
+                    os.close();
+                }
             }
-
-            Intent result = new Intent();
-            result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_SUCCESS);
-            return result;
         } catch (Exception e) {
             Log.d(Constants.TAG, "signImpl", e);
             Intent result = new Intent();
@@ -444,7 +451,9 @@ public class OpenPgpService extends RemoteService {
                                 "Encountered unhandled type of pending action not supported by API!");
                     }
                 } else if (pgpResult.success()) {
-                    // see end of method
+                    Intent result = new Intent();
+                    result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_SUCCESS);
+                    return result;
                 } else {
                     LogEntryParcel errorMsg = pgpResult.getLog().getLast();
                     throw new Exception(getString(errorMsg.mType.getMsgId()));
@@ -454,10 +463,6 @@ public class OpenPgpService extends RemoteService {
                 is.close();
                 os.close();
             }
-
-            Intent result = new Intent();
-            result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_SUCCESS);
-            return result;
         } catch (Exception e) {
             Log.d(Constants.TAG, "encryptAndSignImpl", e);
             Intent result = new Intent();
@@ -476,13 +481,13 @@ public class OpenPgpService extends RemoteService {
             InputStream is = new ParcelFileDescriptor.AutoCloseInputStream(input);
 
             OutputStream os;
-            if (decryptMetadataOnly) {
+            // output is optional, e.g., for verifying detached signatures
+            if (decryptMetadataOnly || output == null) {
                 os = null;
             } else {
                 os = new ParcelFileDescriptor.AutoCloseOutputStream(output);
             }
 
-            Intent result = new Intent();
             try {
                 String passphrase = data.getStringExtra(OpenPgpApi.EXTRA_PASSPHRASE);
                 long inputLength = is.available();
@@ -494,15 +499,17 @@ public class OpenPgpService extends RemoteService {
 
                 byte[] nfcDecryptedSessionKey = data.getByteArrayExtra(OpenPgpApi.EXTRA_NFC_DECRYPTED_SESSION_KEY);
 
+                byte[] detachedSignature = data.getByteArrayExtra(OpenPgpApi.EXTRA_DETACHED_SIGNATURE);
+
                 // allow only private keys associated with accounts of this app
                 // no support for symmetric encryption
                 builder.setPassphrase(passphrase)
                         .setAllowSymmetricDecryption(false)
                         .setAllowedKeyIds(allowedKeyIds)
                         .setDecryptMetadataOnly(decryptMetadataOnly)
-                        .setNfcState(nfcDecryptedSessionKey);
+                        .setNfcState(nfcDecryptedSessionKey)
+                        .setDetachedSignature(detachedSignature);
 
-                // TODO: currently does not support binary signed-only content
                 DecryptVerifyResult pgpResult = builder.build().execute();
 
                 if (pgpResult.isPending()) {
@@ -522,6 +529,7 @@ public class OpenPgpService extends RemoteService {
                                 "Encountered unhandled type of pending action not supported by API!");
                     }
                 } else if (pgpResult.success()) {
+                    Intent result = new Intent();
 
                     OpenPgpSignatureResult signatureResult = pgpResult.getSignatureResult();
                     if (signatureResult != null) {
@@ -563,6 +571,8 @@ public class OpenPgpService extends RemoteService {
                         result.putExtra(OpenPgpApi.RESULT_CHARSET, charset);
                     }
 
+                    result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_SUCCESS);
+                    return result;
                 } else {
                     LogEntryParcel errorMsg = pgpResult.getLog().getLast();
                     throw new Exception(getString(errorMsg.mType.getMsgId()));
@@ -573,9 +583,6 @@ public class OpenPgpService extends RemoteService {
                     os.close();
                 }
             }
-
-            result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_SUCCESS);
-            return result;
         } catch (Exception e) {
             Log.d(Constants.TAG, "decryptAndVerifyImpl", e);
             Intent result = new Intent();
@@ -674,15 +681,16 @@ public class OpenPgpService extends RemoteService {
 
         // version code is required and needs to correspond to version code of service!
         // History of versions in org.openintents.openpgp.util.OpenPgpApi
-        // we support 3, 4, 5
+        // we support 3, 4, 5, 6
         if (data.getIntExtra(OpenPgpApi.EXTRA_API_VERSION, -1) != 3
                 && data.getIntExtra(OpenPgpApi.EXTRA_API_VERSION, -1) != 4
-                && data.getIntExtra(OpenPgpApi.EXTRA_API_VERSION, -1) != 5) {
+                && data.getIntExtra(OpenPgpApi.EXTRA_API_VERSION, -1) != 5
+                && data.getIntExtra(OpenPgpApi.EXTRA_API_VERSION, -1) != 6) {
             Intent result = new Intent();
             OpenPgpError error = new OpenPgpError
                     (OpenPgpError.INCOMPATIBLE_API_VERSIONS, "Incompatible API versions!\n"
                             + "used API version: " + data.getIntExtra(OpenPgpApi.EXTRA_API_VERSION, -1) + "\n"
-                            + "supported API versions: 3, 4");
+                            + "supported API versions: 3, 4, 5, 6");
             result.putExtra(OpenPgpApi.RESULT_ERROR, error);
             result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_ERROR);
             return result;
@@ -724,33 +732,36 @@ public class OpenPgpService extends RemoteService {
             }
 
             String action = data.getAction();
-            switch (action) {
-                case OpenPgpApi.ACTION_SIGN:
-                    return signImpl(data, input, output, accSettings);
-                case OpenPgpApi.ACTION_ENCRYPT:
-                    return encryptAndSignImpl(data, input, output, accSettings, false);
-                case OpenPgpApi.ACTION_SIGN_AND_ENCRYPT:
-                    return encryptAndSignImpl(data, input, output, accSettings, true);
-                case OpenPgpApi.ACTION_DECRYPT_VERIFY: {
-                    String currentPkg = getCurrentCallingPackage();
-                    Set<Long> allowedKeyIds =
-                            mProviderHelper.getAllKeyIdsForApp(
-                                    ApiAccounts.buildBaseUri(currentPkg));
-                    return decryptAndVerifyImpl(data, input, output, allowedKeyIds, false);
-                }
-                case OpenPgpApi.ACTION_DECRYPT_METADATA: {
-                    String currentPkg = getCurrentCallingPackage();
-                    Set<Long> allowedKeyIds =
-                            mProviderHelper.getAllKeyIdsForApp(
-                                    ApiAccounts.buildBaseUri(currentPkg));
-                    return decryptAndVerifyImpl(data, input, output, allowedKeyIds, true);
-                }
-                case OpenPgpApi.ACTION_GET_KEY:
-                    return getKeyImpl(data);
-                case OpenPgpApi.ACTION_GET_KEY_IDS:
-                    return getKeyIdsImpl(data);
-                default:
-                    return null;
+            if (OpenPgpApi.ACTION_CLEARTEXT_SIGN.equals(action)) {
+                return signImpl(data, input, output, accSettings, true);
+            } else if (OpenPgpApi.ACTION_SIGN.equals(action)) {
+                // DEPRECATED: same as ACTION_CLEARTEXT_SIGN
+                Log.w(Constants.TAG, "You are using a deprecated API call, please use ACTION_CLEARTEXT_SIGN instead of ACTION_SIGN!");
+                return signImpl(data, input, output, accSettings, true);
+            } else if (OpenPgpApi.ACTION_DETACHED_SIGN.equals(action)) {
+                return signImpl(data, input, output, accSettings, false);
+            } else if (OpenPgpApi.ACTION_ENCRYPT.equals(action)) {
+                return encryptAndSignImpl(data, input, output, accSettings, false);
+            } else if (OpenPgpApi.ACTION_SIGN_AND_ENCRYPT.equals(action)) {
+                return encryptAndSignImpl(data, input, output, accSettings, true);
+            } else if (OpenPgpApi.ACTION_DECRYPT_VERIFY.equals(action)) {
+                String currentPkg = getCurrentCallingPackage();
+                Set<Long> allowedKeyIds =
+                        mProviderHelper.getAllKeyIdsForApp(
+                                ApiAccounts.buildBaseUri(currentPkg));
+                return decryptAndVerifyImpl(data, input, output, allowedKeyIds, false);
+            } else if (OpenPgpApi.ACTION_DECRYPT_METADATA.equals(action)) {
+                String currentPkg = getCurrentCallingPackage();
+                Set<Long> allowedKeyIds =
+                        mProviderHelper.getAllKeyIdsForApp(
+                                ApiAccounts.buildBaseUri(currentPkg));
+                return decryptAndVerifyImpl(data, input, output, allowedKeyIds, true);
+            } else if (OpenPgpApi.ACTION_GET_KEY.equals(action)) {
+                return getKeyImpl(data);
+            } else if (OpenPgpApi.ACTION_GET_KEY_IDS.equals(action)) {
+                return getKeyIdsImpl(data);
+            } else {
+                return null;
             }
         }
 

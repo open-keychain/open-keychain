@@ -325,10 +325,10 @@ public class EncryptFilesActivity extends EncryptActivity implements EncryptActi
         mUseArmor = Preferences.getPreferences(this).getDefaultAsciiArmor();
     }
 
-//    @Override
-//    protected void initLayout() {
-//        setContentView(R.layout.encrypt_files_activity);
-//    }
+    @Override
+    protected void initLayout() {
+        setContentView(R.layout.encrypt_files_activity);
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

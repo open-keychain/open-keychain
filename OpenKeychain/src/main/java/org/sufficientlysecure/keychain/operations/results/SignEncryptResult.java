@@ -37,6 +37,7 @@ public class SignEncryptResult extends OperationResult {
     int mNfcAlgo;
     Date mNfcTimestamp;
     String mNfcPassphrase;
+    byte[] mDetachedSignature;
 
     public long getKeyIdPassphraseNeeded() {
         return mKeyIdPassphraseNeeded;
@@ -52,6 +53,10 @@ public class SignEncryptResult extends OperationResult {
         mNfcAlgo = nfcAlgo;
         mNfcTimestamp = nfcTimestamp;
         mNfcPassphrase = passphrase;
+    }
+
+    public void setDetachedSignature(byte[] detachedSignature) {
+        mDetachedSignature = detachedSignature;
     }
 
     public long getNfcKeyId() {
@@ -74,6 +79,10 @@ public class SignEncryptResult extends OperationResult {
         return mNfcPassphrase;
     }
 
+    public byte[] getDetachedSignature() {
+        return mDetachedSignature;
+    }
+
     public boolean isPending() {
         return (mResult & RESULT_PENDING) == RESULT_PENDING;
     }
@@ -87,6 +96,7 @@ public class SignEncryptResult extends OperationResult {
         mNfcHash = source.readInt() != 0 ? source.createByteArray() : null;
         mNfcAlgo = source.readInt();
         mNfcTimestamp = source.readInt() != 0 ? new Date(source.readLong()) : null;
+        mDetachedSignature = source.readInt() != 0 ? source.createByteArray() : null;
     }
 
     public int describeContents() {
@@ -105,6 +115,12 @@ public class SignEncryptResult extends OperationResult {
         if (mNfcTimestamp != null) {
             dest.writeInt(1);
             dest.writeLong(mNfcTimestamp.getTime());
+        } else {
+            dest.writeInt(0);
+        }
+        if (mDetachedSignature != null) {
+            dest.writeInt(1);
+            dest.writeByteArray(mDetachedSignature);
         } else {
             dest.writeInt(0);
         }

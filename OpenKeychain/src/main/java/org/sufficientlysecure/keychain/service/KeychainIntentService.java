@@ -486,11 +486,6 @@ public class KeychainIntentService extends IntentService implements Progressable
                             // TODO Just silently drop the requested signature? Shouldn't we throw here?
                         }
 
-                        // this assumes that the bytes are cleartext (valid for current implementation!)
-                        if (source == IO_BYTES) {
-                            builder.setCleartextInput(true);
-                        }
-
                         SignEncryptResult result = builder.build().execute();
                         resultData.putParcelable(SignEncryptResult.EXTRA_RESULT, result);
 

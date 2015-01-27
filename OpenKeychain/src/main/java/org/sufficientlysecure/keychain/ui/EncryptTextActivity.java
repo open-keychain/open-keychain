@@ -303,10 +303,10 @@ public class EncryptTextActivity extends EncryptActivity implements EncryptActiv
         updateModeFragment();
     }
 
-//    @Override
-//    protected void initLayout() {
-//        setContentView(R.layout.encrypt_text_activity);
-//    }
+    @Override
+    protected void initLayout() {
+        setContentView(R.layout.encrypt_text_activity);
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

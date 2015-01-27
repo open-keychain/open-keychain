@@ -50,6 +50,7 @@ import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.ProgressScaler;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -78,7 +79,8 @@ public class PgpSignEncrypt extends BaseOperation {
     private int mSignatureHashAlgorithm;
     private String mSignaturePassphrase;
     private long mAdditionalEncryptId;
-    private boolean mCleartextInput;
+    private boolean mCleartextSignature;
+    private boolean mDetachedSignature;
     private String mOriginalFilename;
     private boolean mFailOnMissingEncryptionKeyIds;
     private String mCharset;
@@ -114,7 +116,8 @@ public class PgpSignEncrypt extends BaseOperation {
         this.mSignatureHashAlgorithm = builder.mSignatureHashAlgorithm;
         this.mSignaturePassphrase = builder.mSignaturePassphrase;
         this.mAdditionalEncryptId = builder.mAdditionalEncryptId;
-        this.mCleartextInput = builder.mCleartextInput;
+        this.mCleartextSignature = builder.mCleartextSignature;
+        this.mDetachedSignature = builder.mDetachedSignature;
         this.mNfcSignedHash = builder.mNfcSignedHash;
         this.mNfcCreationTimestamp = builder.mNfcCreationTimestamp;
         this.mOriginalFilename = builder.mOriginalFilename;
@@ -142,7 +145,8 @@ public class PgpSignEncrypt extends BaseOperation {
         private int mSignatureHashAlgorithm = 0;
         private String mSignaturePassphrase = null;
         private long mAdditionalEncryptId = Constants.key.none;
-        private boolean mCleartextInput = false;
+        private boolean mCleartextSignature = false;
+        private boolean mDetachedSignature = false;
         private String mOriginalFilename = "";
         private byte[] mNfcSignedHash = null;
         private Date mNfcCreationTimestamp = null;
@@ -230,14 +234,13 @@ public class PgpSignEncrypt extends BaseOperation {
             return this;
         }
 
-        /**
-         * TODO: test this option!
-         *
-         * @param cleartextInput
-         * @return
-         */
-        public Builder setCleartextInput(boolean cleartextInput) {
-            mCleartextInput = cleartextInput;
+        public Builder setCleartextSignature(boolean cleartextSignature) {
+            mCleartextSignature = cleartextSignature;
+            return this;
+        }
+
+        public Builder setDetachedSignature(boolean detachedSignature) {
+            mDetachedSignature = detachedSignature;
             return this;
         }
 
@@ -420,7 +423,7 @@ public class PgpSignEncrypt extends BaseOperation {
             updateProgress(R.string.progress_preparing_signature, 4, 100);
 
             try {
-                boolean cleartext = mCleartextInput && mEnableAsciiArmorOutput && !enableEncryption;
+                boolean cleartext = mCleartextSignature && mEnableAsciiArmorOutput && !enableEncryption;
                 signatureGenerator = signingKey.getSignatureGenerator(
                         mSignatureHashAlgorithm, cleartext, mNfcSignedHash, mNfcCreationTimestamp);
             } catch (PgpGeneralException e) {
@@ -435,6 +438,10 @@ public class PgpSignEncrypt extends BaseOperation {
         OutputStream pOut;
         OutputStream encryptionOut = null;
         BCPGOutputStream bcpgOut;
+
+        ByteArrayOutputStream detachedByteOut = null;
+        ArmoredOutputStream detachedArmorOut = null;
+        BCPGOutputStream detachedBcpgOut = null;
 
         try {
 
@@ -464,7 +471,7 @@ public class PgpSignEncrypt extends BaseOperation {
 
                 PGPLiteralDataGenerator literalGen = new PGPLiteralDataGenerator();
                 char literalDataFormatTag;
-                if (mCleartextInput) {
+                if (mCleartextSignature) {
                     literalDataFormatTag = PGPLiteralData.UTF8;
                 } else {
                     literalDataFormatTag = PGPLiteralData.BINARY;
@@ -494,7 +501,7 @@ public class PgpSignEncrypt extends BaseOperation {
                 literalGen.close();
                 indent -= 1;
 
-            } else if (enableSignature && mCleartextInput && mEnableAsciiArmorOutput) {
+            } else if (enableSignature && mCleartextSignature && mEnableAsciiArmorOutput) {
                 /* cleartext signature: sign-only of ascii text */
 
                 updateProgress(R.string.progress_signing, 8, 100);
@@ -529,11 +536,48 @@ public class PgpSignEncrypt extends BaseOperation {
                 armorOut.endClearText();
 
                 pOut = new BCPGOutputStream(armorOut);
-            } else if (enableSignature && !mCleartextInput) {
+            } else if (enableSignature && mDetachedSignature) {
+                /* detached signature */
+
+                updateProgress(R.string.progress_signing, 8, 100);
+                log.add(LogType.MSG_SE_SIGNING, indent);
+
+                InputStream in = mData.getInputStream();
+
+                // handle output stream separately for detached signatures
+                detachedByteOut = new ByteArrayOutputStream();
+                OutputStream detachedOut = detachedByteOut;
+                if (mEnableAsciiArmorOutput) {
+                    detachedArmorOut = new ArmoredOutputStream(detachedOut);
+                    if (mVersionHeader != null) {
+                        detachedArmorOut.setHeader("Version", mVersionHeader);
+                    }
+
+                    detachedOut = detachedArmorOut;
+                }
+                detachedBcpgOut = new BCPGOutputStream(detachedOut);
+
+                long alreadyWritten = 0;
+                int length;
+                byte[] buffer = new byte[1 << 16];
+                while ((length = in.read(buffer)) > 0) {
+                    // no output stream is written, no changed to original data!
+
+                    signatureGenerator.update(buffer, 0, length);
+
+                    alreadyWritten += length;
+                    if (mData.getSize() > 0) {
+                        long progress = 100 * alreadyWritten / mData.getSize();
+                        progressScaler.setProgress((int) progress, 100);
+                    }
+                }
+
+                pOut = null;
+            } else if (enableSignature && !mCleartextSignature && !mDetachedSignature) {
                 /* sign-only binary (files/data stream) */
 
                 updateProgress(R.string.progress_signing, 8, 100);
-                log.add(LogType.MSG_SE_ENCRYPTING, indent);
+                log.add(LogType.MSG_SE_SIGNING, indent);
 
                 InputStream in = mData.getInputStream();
 
@@ -568,13 +612,18 @@ public class PgpSignEncrypt extends BaseOperation {
                 literalGen.close();
             } else {
                 pOut = null;
+                // TODO: Is this log right?
                 log.add(LogType.MSG_SE_CLEARSIGN_ONLY, indent);
             }
 
             if (enableSignature) {
                 updateProgress(R.string.progress_generating_signature, 95, 100);
                 try {
-                    signatureGenerator.generate().encode(pOut);
+                    if (detachedBcpgOut != null) {
+                        signatureGenerator.generate().encode(detachedBcpgOut);
+                    } else {
+                        signatureGenerator.generate().encode(pOut);
+                    }
                 } catch (NfcSyncPGPContentSignerBuilder.NfcInteractionNeeded e) {
                     // this secret key diverts to a OpenPGP card, throw exception with hash that will be signed
                     log.add(LogType.MSG_SE_PENDING_NFC, indent);
@@ -583,27 +632,38 @@ public class PgpSignEncrypt extends BaseOperation {
                     // Note that the checked key here is the master key, not the signing key
                     // (although these are always the same on Yubikeys)
                     result.setNfcData(mSignatureSubKeyId, e.hashToSign, e.hashAlgo, e.creationTimestamp, mSignaturePassphrase);
-                    Log.d(Constants.TAG, "e.hashToSign"+ Hex.toHexString(e.hashToSign));
+                    Log.d(Constants.TAG, "e.hashToSign" + Hex.toHexString(e.hashToSign));
                     return result;
                 }
             }
 
             // closing outputs
             // NOTE: closing needs to be done in the correct order!
-            // TODO: closing bcpgOut and pOut???
-            if (enableEncryption) {
-                if (enableCompression) {
+            if (encryptionOut != null) {
+                if (compressGen != null) {
                     compressGen.close();
                 }
 
                 encryptionOut.close();
             }
-            if (mEnableAsciiArmorOutput) {
+            // Note: Closing ArmoredOutputStream does not close the underlying stream
+            if (armorOut != null) {
                 armorOut.close();
             }
-
-            out.close();
-            mOutStream.close();
+            // Note: Closing ArmoredOutputStream does not close the underlying stream
+            if (detachedArmorOut != null) {
+                detachedArmorOut.close();
+            }
+            // Also closes detachedBcpgOut
+            if (detachedByteOut != null) {
+                detachedByteOut.close();
+            }
+            if (out != null) {
+                out.close();
+            }
+            if (mOutStream != null) {
+                mOutStream.close();
+            }
 
         } catch (SignatureException e) {
             log.add(LogType.MSG_SE_ERROR_SIG, indent);
@@ -619,10 +679,22 @@ public class PgpSignEncrypt extends BaseOperation {
         updateProgress(R.string.progress_done, 100, 100);
 
         log.add(LogType.MSG_SE_OK, indent);
-        return new SignEncryptResult(SignEncryptResult.RESULT_OK, log);
-
+        SignEncryptResult result = new SignEncryptResult(SignEncryptResult.RESULT_OK, log);
+        if (detachedByteOut != null) {
+            try {
+                detachedByteOut.flush();
+                detachedByteOut.close();
+            } catch (IOException e) {
+                // silently catch
+            }
+            result.setDetachedSignature(detachedByteOut.toByteArray());
+        }
+        return result;
     }
 
+    /**
+     * Remove whitespaces on line endings
+     */
     private static void processLine(final String pLine, final ArmoredOutputStream pArmoredOutput,
                                     final PGPSignatureGenerator pSignatureGenerator)
             throws IOException, SignatureException {

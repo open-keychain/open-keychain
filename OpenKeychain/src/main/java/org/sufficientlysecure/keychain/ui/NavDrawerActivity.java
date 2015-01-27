@@ -19,9 +19,12 @@ package org.sufficientlysecure.keychain.ui;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
 
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.remote.ui.AppsListActivity;
+import org.sufficientlysecure.keychain.remote.ui.AppsListFragment;
 
 import it.neokree.materialnavigationdrawer.MaterialNavigationDrawer;
 
@@ -29,19 +32,25 @@ public abstract class NavDrawerActivity extends MaterialNavigationDrawer {
 
     @Override
     public void init(Bundle savedInstanceState) {
+        // don't open drawer on first run
+        disableLearningPattern();
+
+//        addMultiPaneSupport();
 
         // set the header image
-        this.setDrawerHeaderImage(R.drawable.mat2);
+        // create and set the header
+        View view = LayoutInflater.from(this).inflate(R.layout.custom_drawer, null);
+        setDrawerHeaderCustom(view);
 
         // create sections
-        this.addSection(newSection(getString(R.string.app_name), R.drawable.ic_vpn_key_black_24dp, new KeyListFragment()));
+        addSection(newSection(getString(R.string.title_keys), R.drawable.ic_vpn_key_black_24dp, new KeyListFragment()));
 
-        this.addSection(newSection(getString(R.string.title_encrypt_text), R.drawable.ic_lock_outline_black_24dp, new Intent(this, EncryptTextActivity.class)));
-        this.addSection(newSection(getString(R.string.title_encrypt_files), R.drawable.ic_lock_outline_black_24dp, new Intent(this, EncryptFilesActivity.class)));
-        this.addSection(newSection(getString(R.string.title_decrypt), R.drawable.ic_lock_open_black_24dp, new Intent(this, DecryptActivity.class)));
-        this.addSection(newSection(getString(R.string.title_api_registered_apps), R.drawable.ic_apps_black_24dp, new Intent(this, AppsListActivity.class)));
+        addSection(newSection(getString(R.string.title_encrypt_text), R.drawable.ic_lock_outline_black_24dp, new Intent(this, EncryptTextActivity.class)));
+        addSection(newSection(getString(R.string.title_encrypt_files), R.drawable.ic_lock_outline_black_24dp, new Intent(this, EncryptFilesActivity.class)));
+        addSection(newSection(getString(R.string.title_decrypt), R.drawable.ic_lock_open_black_24dp, new Intent(this, DecryptActivity.class)));
+        addSection(newSection(getString(R.string.title_api_registered_apps), R.drawable.ic_apps_black_24dp, new AppsListFragment()));
 
         // create bottom section
-        this.addBottomSection(newSection(getString(R.string.menu_preferences), R.drawable.ic_settings_black_24dp, new Intent(this, SettingsActivity.class)));
+        addBottomSection(newSection(getString(R.string.menu_preferences), R.drawable.ic_settings_black_24dp, new Intent(this, SettingsActivity.class)));
     }
 }
