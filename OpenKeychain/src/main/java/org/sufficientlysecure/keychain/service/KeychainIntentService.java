@@ -428,7 +428,7 @@ public class KeychainIntentService extends IntentService implements Progressable
             case ACTION_SIGN_ENCRYPT:
 
                 try {
-                /* Input */
+                    /* Input */
                     int source = data.get(SOURCE) != null ? data.getInt(SOURCE) : data.getInt(TARGET);
                     Bundle resultData = new Bundle();
 
@@ -450,11 +450,12 @@ public class KeychainIntentService extends IntentService implements Progressable
                         OutputStream outStream = createCryptOutputStream(data);
                         String originalFilename = getOriginalFilename(data);
 
-                    /* Operation */
+                        /* Operation */
                         PgpSignEncrypt.Builder builder = new PgpSignEncrypt.Builder(
                                 this, new ProviderHelper(this), this, inputData, outStream
                         );
                         builder.setEnableAsciiArmorOutput(useAsciiArmor)
+                                .setCleartextSignature(true)
                                 .setVersionHeader(PgpHelper.getVersionForHeader(this))
                                 .setCompressionId(compressionId)
                                 .setSymmetricEncryptionAlgorithm(
@@ -491,10 +492,8 @@ public class KeychainIntentService extends IntentService implements Progressable
 
                         outStream.close();
 
-                    /* Output */
-
+                        /* Output */
                         finalizeEncryptOutputStream(data, resultData, outStream);
-
                     }
 
                     Log.logDebugBundle(resultData, "resultData");
