@@ -923,6 +923,7 @@
     <string name="msg_dc_askip_no_key">"Data not encrypted with known key, skipping…"</string>
     <string name="msg_dc_askip_not_allowed">"Data not encrypted with allowed key, skipping…"</string>
     <string name="msg_dc_asym">"Found block of asymmetrically encrypted data for key %s"</string>
+    <string name="msg_dc_charset">"Found charset header: '%s'"</string>
     <string name="msg_dc_clear_data">"Processing literal data"</string>
     <string name="msg_dc_clear_decompress">"Unpacking compressed data"</string>
     <string name="msg_dc_clear_meta_file">"Filename: %s"</string>

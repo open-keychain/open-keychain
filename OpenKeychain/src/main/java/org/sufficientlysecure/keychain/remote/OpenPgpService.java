@@ -557,6 +557,12 @@ public class OpenPgpService extends RemoteService {
                             result.putExtra(OpenPgpApi.RESULT_METADATA, metadata);
                         }
                     }
+
+                    String charset = pgpResult.getCharset();
+                    if (charset != null) {
+                        result.putExtra(OpenPgpApi.RESULT_CHARSET, charset);
+                    }
+
                 } else {
                     LogEntryParcel errorMsg = pgpResult.getLog().getLast();
                     throw new Exception(getString(errorMsg.mType.getMsgId()));
