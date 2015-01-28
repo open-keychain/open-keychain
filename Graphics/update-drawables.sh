@@ -38,7 +38,7 @@ SRC_DIR=./drawables/
 # xhdpi: 64x64
 # xxhdpi: 96x96
 
-for NAME in "ic_action_nfc" "ic_action_qr_code" "ic_action_safeslinger" "ic_action_search_cloud"
+for NAME in "ic_action_nfc" "ic_action_qr_code" "ic_action_safeslinger" "ic_action_search_cloud" "ic_cloud_search_24px"
 do
 echo $NAME
 inkscape -w 32 -h 32 -e "$MDPI_DIR/$NAME.png" "$SRC_DIR/$NAME.svg"
