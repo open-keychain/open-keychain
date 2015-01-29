@@ -19,12 +19,11 @@
     <color name="primary">#4CAF50</color>
     <color name="primary_dark">#388E3C</color>
     <color name="primary_light">#C8E6C9</color>
-    <color name="accent">#536DFE</color>
+    <color name="accent">#00BCD4</color>
     <color name="primary_text">#212121</color>
     <color name="secondary_text">#727272</color>
     <color name="icons">#FFFFFF</color>
     <color name="divider">#B6B6B6</color>
-
 
     <!-- set to text colors -->
     <color name="emphasis">#212121</color>

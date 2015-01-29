@@ -14,7 +14,7 @@
         <item name="searchViewStyle">@style/MySearchViewStyle</item>
 
         <!-- Navigation Drawer library -->
-        <item name="drawerType">@integer/DRAWERTYPE_CUSTOM</item>
+        <item name="drawerType">@integer/DRAWERTYPE_IMAGE</item>
         <!-- dark action bar... -->
         <item name="theme">@style/ThemeOverlay.AppCompat.Dark.ActionBar</item>
         <!-- ...but light popup menu (white background) -->

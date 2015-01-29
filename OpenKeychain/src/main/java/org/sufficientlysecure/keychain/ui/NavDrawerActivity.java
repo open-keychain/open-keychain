@@ -38,8 +38,7 @@ public abstract class NavDrawerActivity extends MaterialNavigationDrawer {
 
         // set the header image
         // create and set the header
-        View view = LayoutInflater.from(this).inflate(R.layout.drawer_custom_header, null);
-        setDrawerHeaderCustom(view);
+        setDrawerHeaderImage(R.drawable.drawer_header);
 
         // create sections
         addSection(newSection(getString(R.string.title_keys), R.drawable.ic_vpn_key_black_24dp, new KeyListFragment()));
