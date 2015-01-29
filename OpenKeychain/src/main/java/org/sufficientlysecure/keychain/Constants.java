@@ -20,9 +20,6 @@ package org.sufficientlysecure.keychain;
 import android.os.Environment;
 
 import org.spongycastle.jce.provider.BouncyCastleProvider;
-import org.sufficientlysecure.keychain.ui.EncryptFilesActivity;
-import org.sufficientlysecure.keychain.ui.EncryptTextActivity;
-import org.sufficientlysecure.keychain.ui.MainActivity;
 
 import java.io.File;
 
@@ -87,21 +84,6 @@ public final class Constants {
     public static final class Defaults {
         public static final String KEY_SERVERS = "hkps://hkps.pool.sks-keyservers.net, hkps://pgp.mit.edu";
         public static final int PREF_VERSION = 4;
-    }
-
-    public static final class DrawerItems {
-        public static final Class KEY_LIST = MainActivity.class;
-        public static final Class ENCRYPT_TEXT = EncryptTextActivity.class;
-        public static final Class ENCRYPT_FILE = EncryptFilesActivity.class;
-        public static final Class DECRYPT = MainActivity.class;
-        public static final Class REGISTERED_APPS_LIST = MainActivity.class;
-        public static final Class[] ARRAY = new Class[]{
-                KEY_LIST,
-                ENCRYPT_TEXT,
-                ENCRYPT_FILE,
-                DECRYPT,
-                REGISTERED_APPS_LIST
-        };
     }
 
     public static final class key {
