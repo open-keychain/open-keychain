@@ -24,7 +24,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.os.Messenger;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v4.app.FragmentActivity;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
@@ -40,9 +40,9 @@ import java.io.File;
 public class ExportHelper {
     protected File mExportFile;
 
-    ActionBarActivity mActivity;
+    FragmentActivity mActivity;
 
-    public ExportHelper(ActionBarActivity activity) {
+    public ExportHelper(FragmentActivity activity) {
         super();
         this.mActivity = activity;
     }

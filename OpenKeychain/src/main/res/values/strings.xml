@@ -399,7 +399,7 @@
     <string name="import_qr_code_text">"Place your camera over the QR Code!"</string>
 
     <!-- Generic result toast -->
-    <string name="view_log">"View Log"</string>
+    <string name="view_log">"Details"</string>
     <string name="with_warnings">", with warnings"</string>
     <string name="with_cancelled">", until cancelled"</string>
 

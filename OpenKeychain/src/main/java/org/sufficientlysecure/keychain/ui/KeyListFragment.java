@@ -19,6 +19,7 @@
 package org.sufficientlysecure.keychain.ui;
 
 import android.annotation.TargetApi;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
@@ -57,7 +58,12 @@ import android.widget.TextView;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.operations.results.ConsolidateResult;
 import org.sufficientlysecure.keychain.operations.results.DeleteResult;
+import org.sufficientlysecure.keychain.operations.results.OperationResult;
+import org.sufficientlysecure.keychain.provider.KeychainContract;
+import org.sufficientlysecure.keychain.provider.KeychainDatabase;
+import org.sufficientlysecure.keychain.service.KeychainIntentService;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.ExportHelper;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
@@ -68,7 +74,9 @@ import org.sufficientlysecure.keychain.ui.widget.ListAwareSwipeRefreshLayout;
 import org.sufficientlysecure.keychain.ui.util.Highlighter;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.ui.util.Notify;
+import org.sufficientlysecure.keychain.util.Preferences;
 
+import java.io.IOException;
 import java.util.Date;
 import java.util.HashMap;
 
@@ -83,6 +91,8 @@ public class KeyListFragment extends LoaderFragment
         implements SearchView.OnQueryTextListener, AdapterView.OnItemClickListener,
         LoaderManager.LoaderCallbacks<Cursor> {
 
+    ExportHelper mExportHelper;
+
     private KeyListAdapter mAdapter;
     private StickyListHeadersListView mStickyList;
     private ListAwareSwipeRefreshLayout mSwipeRefreshLayout;
@@ -94,6 +104,14 @@ public class KeyListFragment extends LoaderFragment
 
     private String mQuery;
     private SearchView mSearchView;
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        mExportHelper = new ExportHelper(getActivity());
+
+    }
 
     /**
      * Load custom layout with StickyListView from library
@@ -438,6 +456,15 @@ public class KeyListFragment extends LoaderFragment
 
     @Override
     public void onCreateOptionsMenu(final Menu menu, final MenuInflater inflater) {
+        inflater.inflate(R.menu.key_list, menu);
+
+        if (Constants.DEBUG) {
+            menu.findItem(R.id.menu_key_list_debug_cons).setVisible(true);
+            menu.findItem(R.id.menu_key_list_debug_read).setVisible(true);
+            menu.findItem(R.id.menu_key_list_debug_write).setVisible(true);
+            menu.findItem(R.id.menu_key_list_debug_first_time).setVisible(true);
+        }
+
         // Get the searchview
         MenuItem searchItem = menu.findItem(R.id.menu_key_list_search);
 
@@ -474,6 +501,71 @@ public class KeyListFragment extends LoaderFragment
     }
 
     @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.menu_key_list_add:
+                Intent scanQrCode = new Intent(getActivity(), QrCodeScanActivity.class);
+                scanQrCode.setAction(QrCodeScanActivity.ACTION_SCAN_WITH_RESULT);
+                startActivityForResult(scanQrCode, 0);
+                return true;
+
+            case R.id.menu_key_list_search_cloud:
+                searchCloud();
+                return true;
+
+            case R.id.menu_key_list_create:
+                createKey();
+                return true;
+
+            case R.id.menu_key_list_import_existing_key:
+                Intent intentImportExisting = new Intent(getActivity(), ImportKeysActivity.class);
+                intentImportExisting.setAction(ImportKeysActivity.ACTION_IMPORT_KEY_FROM_FILE_AND_RETURN);
+                startActivityForResult(intentImportExisting, 0);
+                return true;
+
+            case R.id.menu_key_list_export:
+                mExportHelper.showExportKeysDialog(null, Constants.Path.APP_DIR_FILE, true);
+                return true;
+
+            case R.id.menu_key_list_debug_cons:
+                consolidate();
+                return true;
+
+            case R.id.menu_key_list_debug_read:
+                try {
+                    KeychainDatabase.debugBackup(getActivity(), true);
+                    Notify.showNotify(getActivity(), "Restored debug_backup.db", Notify.Style.INFO);
+                    getActivity().getContentResolver().notifyChange(KeychainContract.KeyRings.CONTENT_URI, null);
+                } catch (IOException e) {
+                    Log.e(Constants.TAG, "IO Error", e);
+                    Notify.showNotify(getActivity(), "IO Error " + e.getMessage(), Notify.Style.ERROR);
+                }
+                return true;
+
+            case R.id.menu_key_list_debug_write:
+                try {
+                    KeychainDatabase.debugBackup(getActivity(), false);
+                    Notify.showNotify(getActivity(), "Backup to debug_backup.db completed", Notify.Style.INFO);
+                } catch (IOException e) {
+                    Log.e(Constants.TAG, "IO Error", e);
+                    Notify.showNotify(getActivity(), "IO Error: " + e.getMessage(), Notify.Style.ERROR);
+                }
+                return true;
+
+            case R.id.menu_key_list_debug_first_time:
+                Preferences prefs = Preferences.getPreferences(getActivity());
+                prefs.setFirstTime(true);
+                Intent intent = new Intent(getActivity(), FirstTimeActivity.class);
+                startActivity(intent);
+                getActivity().finish();
+                return true;
+
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    @Override
     public boolean onQueryTextSubmit(String s) {
         return true;
     }
@@ -493,6 +585,77 @@ public class KeyListFragment extends LoaderFragment
             getLoaderManager().restartLoader(0, null, this);
         }
         return true;
+    }
+
+
+    private void searchCloud() {
+        Intent importIntent = new Intent(getActivity(), ImportKeysActivity.class);
+        importIntent.putExtra(ImportKeysActivity.EXTRA_QUERY, (String) null); // hack to show only cloud tab
+        startActivity(importIntent);
+    }
+
+    private void createKey() {
+        Intent intent = new Intent(getActivity(), CreateKeyActivity.class);
+        startActivityForResult(intent, 0);
+    }
+
+    private void consolidate() {
+        // Message is received after importing is done in KeychainIntentService
+        KeychainIntentServiceHandler saveHandler = new KeychainIntentServiceHandler(
+                getActivity(),
+                getString(R.string.progress_importing),
+                ProgressDialog.STYLE_HORIZONTAL) {
+            public void handleMessage(Message message) {
+                // handle messages by standard KeychainIntentServiceHandler first
+                super.handleMessage(message);
+
+                if (message.arg1 == KeychainIntentServiceHandler.MESSAGE_OKAY) {
+                    // get returned data bundle
+                    Bundle returnData = message.getData();
+                    if (returnData == null) {
+                        return;
+                    }
+                    final ConsolidateResult result =
+                            returnData.getParcelable(OperationResult.EXTRA_RESULT);
+                    if (result == null) {
+                        return;
+                    }
+
+                    result.createNotify(getActivity()).show();
+                }
+            }
+        };
+
+        // Send all information needed to service to import key in other thread
+        Intent intent = new Intent(getActivity(), KeychainIntentService.class);
+
+        intent.setAction(KeychainIntentService.ACTION_CONSOLIDATE);
+
+        // fill values for this action
+        Bundle data = new Bundle();
+
+        intent.putExtra(KeychainIntentService.EXTRA_DATA, data);
+
+        // Create a new Messenger for the communication back
+        Messenger messenger = new Messenger(saveHandler);
+        intent.putExtra(KeychainIntentService.EXTRA_MESSENGER, messenger);
+
+        // show progress dialog
+        saveHandler.showProgressDialog(getActivity());
+
+        // start service with intent
+        getActivity().startService(intent);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        // if a result has been returned, display a notify
+        if (data != null && data.hasExtra(OperationResult.EXTRA_RESULT)) {
+            OperationResult result = data.getParcelableExtra(OperationResult.EXTRA_RESULT);
+            result.createNotify(getActivity()).show();
+        } else {
+            super.onActivityResult(requestCode, resultCode, data);
+        }
     }
 
     /**

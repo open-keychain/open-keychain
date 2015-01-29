@@ -19,17 +19,22 @@ package org.sufficientlysecure.keychain.ui.util;
 
 import android.app.Activity;
 import android.content.res.Resources;
+import android.graphics.Color;
 
-import com.github.johnpersano.supertoasts.SuperCardToast;
-import com.github.johnpersano.supertoasts.SuperToast;
+import com.nispok.snackbar.Snackbar;
+import com.nispok.snackbar.Snackbar.SnackbarDuration;
+import com.nispok.snackbar.SnackbarManager;
+import com.nispok.snackbar.listeners.ActionClickListener;
 
 /**
- * @author danielhass
  * Notify wrapper which allows a more easy use of different notification libraries
  */
 public class Notify {
 
     public static enum Style {OK, WARN, INFO, ERROR}
+
+    public static final int LENGTH_INDEFINITE = 0;
+    public static final int LENGTH_LONG = 3500;
 
     /**
      * Shows a simple in-layout notification with the CharSequence given as parameter
@@ -39,21 +44,94 @@ public class Notify {
      */
     public static void showNotify(Activity activity, CharSequence text, Style style) {
 
-        SuperCardToast st = new SuperCardToast(activity);
-        st.setText(text);
-        st.setDuration(SuperToast.Duration.MEDIUM);
-        switch (style){
+        Snackbar bar = Snackbar.with(activity)
+                .text(text)
+                .duration(SnackbarDuration.LENGTH_LONG);
+
+        switch (style) {
             case OK:
-                st.setBackground(SuperToast.Background.GREEN);
                 break;
             case WARN:
-                st.setBackground(SuperToast.Background.ORANGE);
+                bar.textColor(Color.YELLOW);
                 break;
             case ERROR:
-                st.setBackground(SuperToast.Background.RED);
+                bar.textColor(Color.RED);
                 break;
         }
-        st.show();
+
+        SnackbarManager.show(bar);
+
+    }
+
+    public static Showable createNotify (Activity activity, int resId, int duration, Style style) {
+        final Snackbar bar = Snackbar.with(activity)
+                .text(resId);
+        if (duration == LENGTH_INDEFINITE) {
+            bar.duration(SnackbarDuration.LENGTH_INDEFINITE);
+        } else {
+            bar.duration(duration);
+        }
+
+        switch (style) {
+            case OK:
+                bar.actionColor(Color.GREEN);
+                break;
+            case WARN:
+                bar.textColor(Color.YELLOW);
+                break;
+            case ERROR:
+                bar.textColor(Color.RED);
+                break;
+        }
+
+        return new Showable () {
+            @Override
+            public void show() {
+                SnackbarManager.show(bar);
+            }
+        };
+    }
+
+    public static Showable createNotify(Activity activity, int resId, int duration, Style style,
+                                        final ActionListener listener, int resIdAction) {
+        return createNotify(activity, activity.getString(resId), duration, style, listener, resIdAction);
+    }
+
+    public static Showable createNotify(Activity activity, String msg, int duration, Style style,
+                                        final ActionListener listener, int resIdAction) {
+        final Snackbar bar = Snackbar.with(activity)
+                .text(msg)
+                .actionLabel(resIdAction)
+                .actionListener(new ActionClickListener() {
+                    @Override
+                    public void onActionClicked(Snackbar snackbar) {
+                        listener.onAction();
+                    }
+                });
+        if (duration == LENGTH_INDEFINITE) {
+            bar.duration(SnackbarDuration.LENGTH_INDEFINITE);
+        } else {
+            bar.duration(duration);
+        }
+
+        switch (style) {
+            case OK:
+                bar.actionColor(Color.GREEN);
+                break;
+            case WARN:
+                bar.textColor(Color.YELLOW);
+                break;
+            case ERROR:
+                bar.textColor(Color.RED);
+                break;
+        }
+
+        return new Showable () {
+            @Override
+            public void show() {
+                SnackbarManager.show(bar);
+            }
+        };
 
     }
 
@@ -67,4 +145,15 @@ public class Notify {
     public static void showNotify(Activity activity, int resId, Style style) throws Resources.NotFoundException {
         showNotify(activity, activity.getResources().getText(resId), style);
     }
+
+    public interface Showable {
+        public void show();
+
+    }
+
+    public interface ActionListener {
+        public void onAction();
+
+    }
+
 }
