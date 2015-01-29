@@ -33,6 +33,7 @@ import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.results.ImportKeyResult;
 import org.sufficientlysecure.keychain.pgp.WrappedUserAttribute;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UserPackets;
+import org.sufficientlysecure.keychain.remote.ui.AppSettingsAllowedKeys;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.ParcelableFileCache.IteratorWithSize;
 import org.sufficientlysecure.keychain.util.Preferences;
@@ -50,6 +51,7 @@ import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
 import org.sufficientlysecure.keychain.pgp.UncachedPublicKey;
 import org.sufficientlysecure.keychain.pgp.WrappedSignature;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
+import org.sufficientlysecure.keychain.provider.KeychainContract.ApiAllowedKeys;
 import org.sufficientlysecure.keychain.provider.KeychainContract.ApiApps;
 import org.sufficientlysecure.keychain.provider.KeychainContract.Certs;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRingData;
@@ -1502,6 +1504,44 @@ public class ProviderHelper {
         }
 
         return keyIds;
+    }
+
+    public Set<Long> getAllowedKeyIdsForApp(Uri uri) {
+        Set<Long> keyIds = new HashSet<>();
+
+        Cursor cursor = mContentResolver.query(uri, null, null, null, null);
+        try {
+            if (cursor != null) {
+                int keyIdColumn = cursor.getColumnIndex(KeychainContract.ApiAllowedKeys.KEY_ID);
+                while (cursor.moveToNext()) {
+                    keyIds.add(cursor.getLong(keyIdColumn));
+                }
+            }
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+
+        return keyIds;
+    }
+
+    public void saveAllowedKeyIdsForApp(Uri uri, Set<Long> allowedKeyIds)
+            throws RemoteException, OperationApplicationException {
+        ArrayList<ContentProviderOperation> ops = new ArrayList<>();
+
+        // clear table
+        ops.add(ContentProviderOperation.newDelete(uri)
+                .build());
+
+        // re-insert allowed key ids
+        for (Long keyId : allowedKeyIds) {
+            ops.add(ContentProviderOperation.newInsert(uri)
+                    .withValue(ApiAllowedKeys.KEY_ID, keyId)
+                    .build());
+        }
+
+        getContentResolver().applyBatch(KeychainContract.CONTENT_AUTHORITY, ops);
     }
 
     public Set<String> getAllFingerprints(Uri uri) {

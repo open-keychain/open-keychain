@@ -174,7 +174,8 @@ public class KeychainDatabase extends SQLiteOpenHelper {
                 + ApiAppsAllowedKeysColumns.KEY_ID + " INTEGER, "
                 + ApiAppsAllowedKeysColumns.PACKAGE_NAME + " TEXT NOT NULL, "
 
-                + "UNIQUE(" + ApiAppsAllowedKeysColumns.PACKAGE_NAME + "), "
+                + "UNIQUE(" + ApiAppsAllowedKeysColumns.KEY_ID + ", "
+                + ApiAppsAllowedKeysColumns.PACKAGE_NAME + "), "
                 + "FOREIGN KEY(" + ApiAppsAllowedKeysColumns.PACKAGE_NAME + ") REFERENCES "
                 + Tables.API_APPS + "(" + ApiAppsAllowedKeysColumns.PACKAGE_NAME + ") ON DELETE CASCADE"
                 + ")";
@@ -208,6 +209,7 @@ public class KeychainDatabase extends SQLiteOpenHelper {
         db.execSQL(CREATE_CERTS);
         db.execSQL(CREATE_API_APPS);
         db.execSQL(CREATE_API_APPS_ACCOUNTS);
+        db.execSQL(CREATE_API_APPS_ALLOWED_KEYS);
     }
 
     @Override

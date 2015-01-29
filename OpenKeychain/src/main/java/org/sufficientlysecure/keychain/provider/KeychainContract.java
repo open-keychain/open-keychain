@@ -321,12 +321,6 @@ public class KeychainContract {
         public static final String CONTENT_TYPE
                 = "vnd.android.cursor.dir/vnd.org.sufficientlysecure.keychain.provider.api_apps.allowed_keys";
 
-        /**
-         * Use if a single item is returned
-         */
-        public static final String CONTENT_ITEM_TYPE
-                = "vnd.android.cursor.item/vnd.org.sufficientlysecure.keychain.provider.api_apps.allowed_keys";
-
         public static Uri buildBaseUri(String packageName) {
             return CONTENT_URI.buildUpon().appendEncodedPath(packageName).appendPath(PATH_ALLOWED_KEYS)
                     .build();

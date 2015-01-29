@@ -231,7 +231,7 @@ public class KeychainProvider extends ContentProvider {
                 return ApiAccounts.CONTENT_ITEM_TYPE;
 
             case API_ALLOWED_KEYS:
-                return ApiAllowedKeys.CONTENT_ITEM_TYPE;
+                return ApiAllowedKeys.CONTENT_TYPE;
 
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
@@ -717,7 +717,7 @@ public class KeychainProvider extends ContentProvider {
                     db.insertOrThrow(Tables.API_APPS, null, values);
                     break;
 
-                case API_ACCOUNTS:
+                case API_ACCOUNTS: {
                     // set foreign key automatically based on given uri
                     // e.g., api_apps/com.example.app/accounts/
                     String packageName = uri.getPathSegments().get(1);
@@ -725,12 +725,21 @@ public class KeychainProvider extends ContentProvider {
 
                     db.insertOrThrow(Tables.API_ACCOUNTS, null, values);
                     break;
+                }
+                case API_ALLOWED_KEYS: {
+                    // set foreign key automatically based on given uri
+                    // e.g., api_apps/com.example.app/allowed_keys/
+                    String packageName = uri.getPathSegments().get(1);
+                    values.put(ApiAllowedKeys.PACKAGE_NAME, packageName);
 
+                    db.insertOrThrow(Tables.API_ALLOWED_KEYS, null, values);
+                    break;
+                }
                 default:
                     throw new UnsupportedOperationException("Unknown uri: " + uri);
             }
 
-            if(keyId != null) {
+            if (keyId != null) {
                 uri = KeyRings.buildGenericKeyRingUri(keyId);
                 rowUri = uri;
             }
@@ -791,6 +800,10 @@ public class KeychainProvider extends ContentProvider {
                 break;
             case API_ACCOUNTS_BY_ACCOUNT_NAME:
                 count = db.delete(Tables.API_ACCOUNTS, buildDefaultApiAccountsSelection(uri, additionalSelection),
+                        selectionArgs);
+                break;
+            case API_ALLOWED_KEYS:
+                count = db.delete(Tables.API_ALLOWED_KEYS, buildDefaultApiAllowedKeysSelection(uri, additionalSelection),
                         selectionArgs);
                 break;
             default:
@@ -883,6 +896,17 @@ public class KeychainProvider extends ContentProvider {
         return ApiAccounts.PACKAGE_NAME + "=" + packageName + " AND "
                 + ApiAccounts.ACCOUNT_NAME + "=" + accountName
                 + andSelection;
+    }
+
+    private String buildDefaultApiAllowedKeysSelection(Uri uri, String selection) {
+        String packageName = DatabaseUtils.sqlEscapeString(uri.getPathSegments().get(1));
+
+        String andSelection = "";
+        if (!TextUtils.isEmpty(selection)) {
+            andSelection = " AND (" + selection + ")";
+        }
+
+        return ApiAllowedKeys.PACKAGE_NAME + "=" + packageName + andSelection;
     }
 
 }

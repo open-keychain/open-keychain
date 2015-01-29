@@ -24,6 +24,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
@@ -39,6 +40,7 @@ public class AppSettingsActivity extends BaseActivity {
 
     private AppSettingsFragment mSettingsFragment;
     private AccountsListFragment mAccountsListFragment;
+    private AppSettingsAllowedKeys mAllowedKeysFragment;
 
     // model
     AppSettings mAppSettings;
@@ -46,6 +48,20 @@ public class AppSettingsActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        setFullScreenDialogDoneClose(R.string.api_settings_save,
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        save();
+                    }
+                },
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        finish();
+                    }
+                });
 
         mSettingsFragment = (AppSettingsFragment) getSupportFragmentManager().findFragmentById(
                 R.id.api_app_settings_fragment);
@@ -60,6 +76,10 @@ public class AppSettingsActivity extends BaseActivity {
             Log.d(Constants.TAG, "uri: " + mAppUri);
             loadData(savedInstanceState, mAppUri);
         }
+    }
+
+    private void save() {
+        mAllowedKeysFragment.saveAllowedKeys();
     }
 
     @Override
@@ -120,10 +140,12 @@ public class AppSettingsActivity extends BaseActivity {
 
         Uri accountsUri = appUri.buildUpon().appendPath(KeychainContract.PATH_ACCOUNTS).build();
         Log.d(Constants.TAG, "accountsUri: " + accountsUri);
-        startListFragment(savedInstanceState, accountsUri);
+        Uri allowedKeysUri = appUri.buildUpon().appendPath(KeychainContract.PATH_ALLOWED_KEYS).build();
+        Log.d(Constants.TAG, "allowedKeysUri: " + allowedKeysUri);
+        startListFragments(savedInstanceState, accountsUri, allowedKeysUri);
     }
 
-    private void startListFragment(Bundle savedInstanceState, Uri dataUri) {
+    private void startListFragments(Bundle savedInstanceState, Uri accountsUri, Uri allowedKeysUri) {
         // However, if we're being restored from a previous state,
         // then we don't need to do anything and should return or else
         // we could end up with overlapping fragments.
@@ -132,12 +154,16 @@ public class AppSettingsActivity extends BaseActivity {
         }
 
         // Create an instance of the fragment
-        mAccountsListFragment = AccountsListFragment.newInstance(dataUri);
+        mAccountsListFragment = AccountsListFragment.newInstance(accountsUri);
+        mAllowedKeysFragment = AppSettingsAllowedKeys.newInstance(allowedKeysUri);
 
         // Add the fragment to the 'fragment_container' FrameLayout
         // NOTE: We use commitAllowingStateLoss() to prevent weird crashes!
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.api_accounts_list_fragment, mAccountsListFragment)
+                .commitAllowingStateLoss();
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.api_allowed_keys_list_fragment, mAllowedKeysFragment)
                 .commitAllowingStateLoss();
         // do it immediately!
         getSupportFragmentManager().executePendingTransactions();
