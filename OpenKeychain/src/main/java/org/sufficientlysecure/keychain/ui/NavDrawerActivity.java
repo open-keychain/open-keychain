@@ -23,7 +23,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.remote.ui.AppsListActivity;
 import org.sufficientlysecure.keychain.remote.ui.AppsListFragment;
 
 import it.neokree.materialnavigationdrawer.MaterialNavigationDrawer;
@@ -52,5 +51,6 @@ public abstract class NavDrawerActivity extends MaterialNavigationDrawer {
 
         // create bottom section
         addBottomSection(newSection(getString(R.string.menu_preferences), R.drawable.ic_settings_black_24dp, new Intent(this, SettingsActivity.class)));
+        addBottomSection(newSection(getString(R.string.menu_help), R.drawable.ic_help_black_24dp, new Intent(this, HelpActivity.class)));
     }
 }

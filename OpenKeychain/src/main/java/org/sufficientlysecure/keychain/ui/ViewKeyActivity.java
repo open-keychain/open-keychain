@@ -188,7 +188,7 @@ public class ViewKeyActivity extends BaseActivity implements
         try {
             switch (item.getItemId()) {
                 case android.R.id.home: {
-                    Intent homeIntent = new Intent(this, KeyListActivity.class);
+                    Intent homeIntent = new Intent(this, MainActivity.class);
                     homeIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     startActivity(homeIntent);
                     return true;

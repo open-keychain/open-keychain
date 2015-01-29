@@ -13,4 +13,5 @@ python copy OpenKeychain communication black vpn_key 24
 python copy OpenKeychain action black lock_open 24
 python copy OpenKeychain action black lock_outline 24
 python copy OpenKeychain navigation black apps 24
+python copy OpenKeychain action black help 24
 python copy OpenKeychain action black settings 24

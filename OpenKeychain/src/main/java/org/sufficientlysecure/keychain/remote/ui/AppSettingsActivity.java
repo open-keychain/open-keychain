@@ -47,13 +47,6 @@ public class AppSettingsActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // let the actionbar look like Android's contact app
-//        ActionBar actionBar = getSupportActionBar();
-//        actionBar.setDisplayHomeAsUpEnabled(true);
-//        actionBar.setIcon(android.R.color.transparent);
-//        actionBar.setHomeButtonEnabled(true);
-
-
         mSettingsFragment = (AppSettingsFragment) getSupportFragmentManager().findFragmentById(
                 R.id.api_app_settings_fragment);
 

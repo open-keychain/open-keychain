@@ -92,7 +92,7 @@ public class FirstTimeActivity extends BaseActivity {
     private void finishSetup(Intent srcData) {
         Preferences prefs = Preferences.getPreferences(this);
         prefs.setFirstTime(false);
-        Intent intent = new Intent(this, KeyListActivity.class);
+        Intent intent = new Intent(this, MainActivity.class);
         // give intent through to display notify
         if (srcData != null) {
             intent.putExtras(srcData);

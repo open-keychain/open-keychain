@@ -163,7 +163,7 @@ public class SafeSlingerActivity extends BaseActivity {
                         certifyIntent.putExtra(CertifyKeyActivity.EXTRA_RESULT, result);
                         certifyIntent.putExtra(CertifyKeyActivity.EXTRA_KEY_IDS, result.getImportedMasterKeyIds());
                         certifyIntent.putExtra(CertifyKeyActivity.EXTRA_CERTIFY_KEY_ID, mMasterKeyId);
-                        startActivityForResult(certifyIntent, KeyListActivity.REQUEST_CODE_RESULT_TO_LIST);
+                        startActivityForResult(certifyIntent, 0);
 
 //                        mExchangeMasterKeyId = null;
                     }
