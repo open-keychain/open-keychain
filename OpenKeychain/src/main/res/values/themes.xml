@@ -3,18 +3,22 @@
 
     <style name="KeychainTheme" parent="KeychainTheme.Base" />
 
-    <style name="KeychainTheme.Base" parent="HoloKeychainTheme">
+    <!--<style name="KeychainTheme.Base" parent="HoloKeychainTheme">-->
+    <style name="KeychainTheme.Base" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimary</item>
+        <item name="colorAccent">@color/accent</item>
+
         <item name="android:windowNoTitle">true</item>
         <item name="windowActionBar">false</item>
         <item name="searchViewStyle">@style/MySearchViewStyle</item>
-        <item name="colorAccent">@color/accent</item>
 
         <!-- Navigation Drawer library -->
         <item name="drawerType">@integer/DRAWERTYPE_CUSTOM</item>
+        <!-- dark action bar... -->
         <item name="theme">@style/ThemeOverlay.AppCompat.Dark.ActionBar</item>
-        <item name="popupTheme">@style/Base.V21.Theme.AppCompat.Light.Dialog</item>
+        <!-- ...but light popup menu (white background) -->
+        <item name="popupTheme">@style/ThemeOverlay.AppCompat.Light</item>
         <item name="drawerColor">#fafafa</item>
         <item name="singleAccount">false</item>
         <item name="sectionStyle">@style/MaterialSectionTheme.Light</item>
