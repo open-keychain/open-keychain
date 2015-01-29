@@ -683,7 +683,7 @@ public class KeychainProvider extends ContentProvider {
                         )) {
                         throw new AssertionError("Incorrect type for user packet! This is a bug!");
                     }
-                    if (values.get(UserPacketsColumns.RANK) == 0 && values.get(UserPacketsColumns.USER_ID) == null) {
+                    if (((Number)values.get(UserPacketsColumns.RANK)).intValue() == 0 && values.get(UserPacketsColumns.USER_ID) == null) {
                         throw new AssertionError("Rank 0 user packet must be a user id!");
                     }
                     db.insertOrThrow(Tables.USER_PACKETS, null, values);
