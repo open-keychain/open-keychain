@@ -20,7 +20,6 @@ package org.sufficientlysecure.keychain;
 import android.os.Environment;
 
 import org.spongycastle.jce.provider.BouncyCastleProvider;
-import org.sufficientlysecure.keychain.ui.DecryptActivity;
 import org.sufficientlysecure.keychain.ui.EncryptFilesActivity;
 import org.sufficientlysecure.keychain.ui.EncryptTextActivity;
 import org.sufficientlysecure.keychain.ui.MainActivity;
@@ -94,7 +93,7 @@ public final class Constants {
         public static final Class KEY_LIST = MainActivity.class;
         public static final Class ENCRYPT_TEXT = EncryptTextActivity.class;
         public static final Class ENCRYPT_FILE = EncryptFilesActivity.class;
-        public static final Class DECRYPT = DecryptActivity.class;
+        public static final Class DECRYPT = MainActivity.class;
         public static final Class REGISTERED_APPS_LIST = MainActivity.class;
         public static final Class[] ARRAY = new Class[]{
                 KEY_LIST,

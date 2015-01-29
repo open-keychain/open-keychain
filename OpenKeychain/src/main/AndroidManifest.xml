@@ -86,11 +86,6 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ui.KeyListActivity"
-            android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
-            android:label="@string/app_name"
-            android:windowSoftInputMode="stateAlwaysHidden" />
-        <activity
             android:name=".ui.FirstTimeActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
             android:label="@string/app_name"
@@ -100,10 +95,10 @@
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
             android:windowSoftInputMode="stateHidden"
             android:label="@string/title_create_key"
-            android:parentActivityName=".ui.KeyListActivity">
+            android:parentActivityName=".ui.MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".ui.KeyListActivity" />
+                android:value=".ui.MainActivity" />
         </activity>
         <activity
             android:name=".ui.EditKeyActivity"
@@ -117,10 +112,10 @@
             android:name=".ui.ViewKeyActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
             android:label="@string/title_key_details"
-            android:parentActivityName=".ui.KeyListActivity">
+            android:parentActivityName=".ui.MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".ui.KeyListActivity" />
+                android:value=".ui.MainActivity" />
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
@@ -141,10 +136,10 @@
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
             android:label="@string/title_exchange_keys"
             android:windowSoftInputMode="stateHidden"
-            android:parentActivityName=".ui.KeyListActivity">
+            android:parentActivityName=".ui.MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".ui.KeyListActivity" />
+                android:value=".ui.MainActivity" />
         </activity>
         <activity
             android:name=".ui.SelectPublicKeyActivity"
@@ -204,19 +199,14 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ui.DecryptActivity"
-            android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
-            android:label="@string/title_decrypt"
-            android:windowSoftInputMode="stateHidden" />
-        <activity
             android:name=".ui.DecryptTextActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
             android:label="@string/title_decrypt"
             android:windowSoftInputMode="stateHidden"
-            android:parentActivityName=".ui.DecryptActivity">
+            android:parentActivityName=".ui.MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".ui.DecryptActivity" />
+                android:value=".ui.MainActivity" />
 
             <!-- Keychain's own Actions -->
             <!-- DECRYPT with text as extra -->
@@ -240,10 +230,10 @@
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
             android:label="@string/title_decrypt"
             android:windowSoftInputMode="stateHidden"
-            android:parentActivityName=".ui.DecryptActivity">
+            android:parentActivityName=".ui.MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".ui.DecryptActivity" />
+                android:value=".ui.MainActivity" />
 
             <!-- VIEW with mimeType application/octet-stream, application/pgp and text/pgp  -->
             <intent-filter android:label="@string/intent_send_decrypt">
@@ -446,7 +436,7 @@
             android:label="@string/title_certify_key">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".ui.KeyListActivity" />
+                android:value=".ui.MainActivity" />
         </activity>
         <activity
             android:name=".ui.QrCodeScanActivity"
@@ -653,7 +643,7 @@
             </intent-filter>
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".ui.KeyListActivity" />
+                android:value=".ui.MainActivity" />
         </activity>
         <activity
             android:name=".ui.ConsolidateDialogActivity"
@@ -719,18 +709,13 @@
             android:launchMode="singleTop"
             android:process=":remote_api" />
         <activity
-            android:name=".remote.ui.AppsListActivity"
-            android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
-            android:exported="false"
-            android:label="@string/title_api_registered_apps" />
-        <activity
             android:name=".remote.ui.AppSettingsActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
             android:exported="false">
 
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".remote.ui.AppsListActivity" />
+                android:value=".ui.MainActivity" />
         </activity>
         <activity
             android:name=".remote.ui.AccountSettingsActivity"

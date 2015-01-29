@@ -13,6 +13,6 @@
 
     </android.support.v4.widget.FixedDrawerLayout>
 
-    <include layout="@layout/decrypt_content" />
+    <include layout="@layout/decrypt_overview_fragment" />
 
 </FrameLayout>
