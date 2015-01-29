@@ -31,6 +31,7 @@ import android.net.Uri;
 import android.text.TextUtils;
 
 import org.sufficientlysecure.keychain.Constants;
+import org.sufficientlysecure.keychain.provider.KeychainContract.ApiAllowedKeys;
 import org.sufficientlysecure.keychain.provider.KeychainContract.ApiAccounts;
 import org.sufficientlysecure.keychain.provider.KeychainContract.ApiApps;
 import org.sufficientlysecure.keychain.provider.KeychainContract.Certs;
@@ -63,9 +64,10 @@ public class KeychainProvider extends ContentProvider {
     private static final int KEY_RING_CERTS_SPECIFIC = 206;
 
     private static final int API_APPS = 301;
-    private static final int API_APPS_BY_PACKAGE_NAME = 303;
-    private static final int API_ACCOUNTS = 304;
-    private static final int API_ACCOUNTS_BY_ACCOUNT_NAME = 306;
+    private static final int API_APPS_BY_PACKAGE_NAME = 302;
+    private static final int API_ACCOUNTS = 303;
+    private static final int API_ACCOUNTS_BY_ACCOUNT_NAME = 304;
+    private static final int API_ALLOWED_KEYS = 305;
 
     private static final int KEY_RINGS_FIND_BY_EMAIL = 400;
     private static final int KEY_RINGS_FIND_BY_SUBKEY = 401;
@@ -162,6 +164,8 @@ public class KeychainProvider extends ContentProvider {
          *
          * api_apps/_/accounts
          * api_apps/_/accounts/_ (account name)
+         *
+         * api_apps/_/allowed_keys
          * </pre>
          */
         matcher.addURI(authority, KeychainContract.BASE_API_APPS, API_APPS);
@@ -171,6 +175,9 @@ public class KeychainProvider extends ContentProvider {
                 + KeychainContract.PATH_ACCOUNTS, API_ACCOUNTS);
         matcher.addURI(authority, KeychainContract.BASE_API_APPS + "/*/"
                 + KeychainContract.PATH_ACCOUNTS + "/*", API_ACCOUNTS_BY_ACCOUNT_NAME);
+
+        matcher.addURI(authority, KeychainContract.BASE_API_APPS + "/*/"
+                + KeychainContract.PATH_ALLOWED_KEYS, API_ALLOWED_KEYS);
 
         return matcher;
     }
@@ -222,6 +229,9 @@ public class KeychainProvider extends ContentProvider {
 
             case API_ACCOUNTS_BY_ACCOUNT_NAME:
                 return ApiAccounts.CONTENT_ITEM_TYPE;
+
+            case API_ALLOWED_KEYS:
+                return ApiAllowedKeys.CONTENT_ITEM_TYPE;
 
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
@@ -612,6 +622,12 @@ public class KeychainProvider extends ContentProvider {
 
                 qb.appendWhere(" AND " + Tables.API_ACCOUNTS + "." + ApiAccounts.ACCOUNT_NAME + " = ");
                 qb.appendWhereEscapeString(uri.getLastPathSegment());
+
+                break;
+            case API_ALLOWED_KEYS:
+                qb.setTables(Tables.API_ALLOWED_KEYS);
+                qb.appendWhere(Tables.API_ALLOWED_KEYS + "." + ApiAccounts.PACKAGE_NAME + " = ");
+                qb.appendWhereEscapeString(uri.getPathSegments().get(1));
 
                 break;
             default:
