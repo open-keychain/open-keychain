@@ -38,7 +38,7 @@ import org.sufficientlysecure.keychain.util.Log;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-public class AppSettingsFragment extends Fragment {
+public class AppSettingsHeaderFragment extends Fragment {
 
     // model
     private AppSettings mAppSettings;

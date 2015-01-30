@@ -38,9 +38,9 @@ import org.sufficientlysecure.keychain.util.Log;
 public class AppSettingsActivity extends BaseActivity {
     private Uri mAppUri;
 
-    private AppSettingsFragment mSettingsFragment;
+    private AppSettingsHeaderFragment mSettingsFragment;
     private AccountsListFragment mAccountsListFragment;
-    private AppSettingsAllowedKeys mAllowedKeysFragment;
+    private AppSettingsAllowedKeysListFragment mAllowedKeysFragment;
 
     // model
     AppSettings mAppSettings;
@@ -63,7 +63,7 @@ public class AppSettingsActivity extends BaseActivity {
                     }
                 });
 
-        mSettingsFragment = (AppSettingsFragment) getSupportFragmentManager().findFragmentById(
+        mSettingsFragment = (AppSettingsHeaderFragment) getSupportFragmentManager().findFragmentById(
                 R.id.api_app_settings_fragment);
 
         Intent intent = getIntent();
@@ -155,7 +155,7 @@ public class AppSettingsActivity extends BaseActivity {
 
         // Create an instance of the fragment
         mAccountsListFragment = AccountsListFragment.newInstance(accountsUri);
-        mAllowedKeysFragment = AppSettingsAllowedKeys.newInstance(allowedKeysUri);
+        mAllowedKeysFragment = AppSettingsAllowedKeysListFragment.newInstance(allowedKeysUri);
 
         // Add the fragment to the 'fragment_container' FrameLayout
         // NOTE: We use commitAllowingStateLoss() to prevent weird crashes!

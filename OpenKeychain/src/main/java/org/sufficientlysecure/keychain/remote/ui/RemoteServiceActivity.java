@@ -75,7 +75,7 @@ public class RemoteServiceActivity extends BaseActivity {
     public static final String EXTRA_ERROR_MESSAGE = "error_message";
 
     // register view
-    private AppSettingsFragment mAppSettingsFragment;
+    private AppSettingsHeaderFragment mAppSettingsHeaderFragment;
     // create acc view
     private AccountSettingsFragment mAccSettingsFragment;
     // select pub keys view
@@ -115,11 +115,11 @@ public class RemoteServiceActivity extends BaseActivity {
                 setContentView(R.layout.api_remote_register_app);
                 initToolbar();
 
-                mAppSettingsFragment = (AppSettingsFragment) getSupportFragmentManager().findFragmentById(
+                mAppSettingsHeaderFragment = (AppSettingsHeaderFragment) getSupportFragmentManager().findFragmentById(
                         R.id.api_app_settings_fragment);
 
                 AppSettings settings = new AppSettings(packageName, packageSignature);
-                mAppSettingsFragment.setAppSettings(settings);
+                mAppSettingsHeaderFragment.setAppSettings(settings);
 
                 // Inflate a "Done"/"Cancel" custom action bar view
                 setFullScreenDialogTwoButtons(
@@ -129,7 +129,7 @@ public class RemoteServiceActivity extends BaseActivity {
                             public void onClick(View v) {
                                 // Allow
 
-                                mProviderHelper.insertApiApp(mAppSettingsFragment.getAppSettings());
+                                mProviderHelper.insertApiApp(mAppSettingsHeaderFragment.getAppSettings());
 
                                 // give data through for new service call
                                 Intent resultData = extras.getParcelable(EXTRA_DATA);

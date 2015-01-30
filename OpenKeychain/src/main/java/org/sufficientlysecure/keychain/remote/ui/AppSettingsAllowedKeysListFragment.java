@@ -47,7 +47,7 @@ import java.util.Iterator;
 import java.util.Set;
 import java.util.Vector;
 
-public class AppSettingsAllowedKeys extends ListFragmentWorkaround implements LoaderManager.LoaderCallbacks<Cursor> {
+public class AppSettingsAllowedKeysListFragment extends ListFragmentWorkaround implements LoaderManager.LoaderCallbacks<Cursor> {
     private static final String ARG_DATA_URI = "uri";
 
     private SelectKeyCursorAdapter mAdapter;
@@ -59,8 +59,8 @@ public class AppSettingsAllowedKeys extends ListFragmentWorkaround implements Lo
     /**
      * Creates new instance of this fragment
      */
-    public static AppSettingsAllowedKeys newInstance(Uri dataUri) {
-        AppSettingsAllowedKeys frag = new AppSettingsAllowedKeys();
+    public static AppSettingsAllowedKeysListFragment newInstance(Uri dataUri) {
+        AppSettingsAllowedKeysListFragment frag = new AppSettingsAllowedKeysListFragment();
         Bundle args = new Bundle();
 
         args.putParcelable(ARG_DATA_URI, dataUri);
