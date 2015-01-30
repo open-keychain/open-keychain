@@ -1310,7 +1310,6 @@ public class ProviderHelper {
 
             progress.setProgress(100, 100);
             log.add(LogType.MSG_CON_SUCCESS, indent);
-            indent -= 1;
 
             return new ConsolidateResult(ConsolidateResult.RESULT_OK, log);
 
@@ -1528,20 +1527,15 @@ public class ProviderHelper {
 
     public void saveAllowedKeyIdsForApp(Uri uri, Set<Long> allowedKeyIds)
             throws RemoteException, OperationApplicationException {
-        ArrayList<ContentProviderOperation> ops = new ArrayList<>();
-
-        // clear table
-        ops.add(ContentProviderOperation.newDelete(uri)
-                .build());
+        // wipe whole table of allowed keys for this account
+        mContentResolver.delete(uri, null, null);
 
         // re-insert allowed key ids
         for (Long keyId : allowedKeyIds) {
-            ops.add(ContentProviderOperation.newInsert(uri)
-                    .withValue(ApiAllowedKeys.KEY_ID, keyId)
-                    .build());
+            ContentValues values = new ContentValues();
+            values.put(ApiAllowedKeys.KEY_ID, keyId);
+            mContentResolver.insert(uri, values);
         }
-
-        getContentResolver().applyBatch(KeychainContract.CONTENT_AUTHORITY, ops);
     }
 
     public Set<String> getAllFingerprints(Uri uri) {
