@@ -104,7 +104,6 @@ public class ParcelableFileCache<E extends Parcelable> {
             throw new IOException(e);
         }
 
-        // yes this is sloppy data flow. WE WOULDN'T NEED THIS WITH TUPLE RETURN TYPES
         final int numEntries = ois.readInt();
 
         return new IteratorWithSize<E>() {

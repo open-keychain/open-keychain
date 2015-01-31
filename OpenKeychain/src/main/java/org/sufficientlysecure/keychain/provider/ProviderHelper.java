@@ -1053,6 +1053,11 @@ public class ProviderHelper {
         log.add(LogType.MSG_CON, indent);
         indent += 1;
 
+        if (mConsolidateCritical) {
+            log.add(LogType.MSG_CON_RECURSIVE, indent);
+            return new ConsolidateResult(ConsolidateResult.RESULT_OK, log);
+        }
+
         progress.setProgress(R.string.progress_con_saving, 0, 100);
 
         // The consolidate operation can never be cancelled!
@@ -1219,13 +1224,11 @@ public class ProviderHelper {
             log.add(LogType.MSG_CON_DB_CLEAR, indent);
             mContentResolver.delete(KeyRings.buildUnifiedKeyRingsUri(), null, null);
 
-            ParcelableFileCache<ParcelableKeyRing> cacheSecret =
-                    new ParcelableFileCache<>(mContext, "consolidate_secret.pcl");
-            ParcelableFileCache<ParcelableKeyRing> cachePublic =
-                    new ParcelableFileCache<>(mContext, "consolidate_public.pcl");
+            ParcelableFileCache<ParcelableKeyRing> cacheSecret, cachePublic;
 
             // Set flag that we have a cached consolidation here
             try {
+                cacheSecret = new ParcelableFileCache<>(mContext, "consolidate_secret.pcl");
                 IteratorWithSize<ParcelableKeyRing> itSecrets = cacheSecret.readCache(false);
                 int numSecrets = itSecrets.getSize();
 
@@ -1253,6 +1256,7 @@ public class ProviderHelper {
 
             try {
 
+                cachePublic = new ParcelableFileCache<>(mContext, "consolidate_public.pcl");
                 IteratorWithSize<ParcelableKeyRing> itPublics = cachePublic.readCache();
                 int numPublics = itPublics.getSize();
 

@@ -886,6 +886,7 @@
     <string name="msg_con_error_public">"Error reimporting public keys!"</string>
     <string name="msg_con_error_secret">"Error reimporting secret keys!"</string>
     <string name="msg_con_recover">"Resuming consolidation process"</string>
+    <string name="msg_con_recursive">"Skipping recursive consolidation"</string>
     <string name="msg_con_recover_unknown">"Resuming consolidation process from unknown state"</string>
     <plurals name="msg_con_reimport_public">
         <item quantity="one">"Reimporting one public key"</item>

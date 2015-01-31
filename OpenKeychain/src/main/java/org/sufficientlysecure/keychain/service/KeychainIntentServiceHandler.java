@@ -131,6 +131,7 @@ public class KeychainIntentServiceHandler extends Handler {
 
             case MESSAGE_PREVENT_CANCEL:
                 mProgressDialogFragment.setPreventCancel(true);
+                break;
 
             default:
                 Log.e(Constants.TAG, "unknown handler message!");
