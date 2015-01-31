@@ -85,6 +85,11 @@ public class KeychainContract {
         String PACKAGE_NAME = "package_name"; // foreign key to api_apps.package_name
     }
 
+    interface ApiAppsAllowedKeysColumns {
+        String KEY_ID = "key_id"; // not a database id
+        String PACKAGE_NAME = "package_name"; // foreign key to api_apps.package_name
+    }
+
     public static final String CONTENT_AUTHORITY = Constants.PACKAGE_NAME + ".provider";
 
     private static final Uri BASE_CONTENT_URI_INTERNAL = Uri
@@ -106,6 +111,7 @@ public class KeychainContract {
 
     public static final String BASE_API_APPS = "api_apps";
     public static final String PATH_ACCOUNTS = "accounts";
+    public static final String PATH_ALLOWED_KEYS = "allowed_keys";
 
     public static class KeyRings implements BaseColumns, KeysColumns, UserPacketsColumns {
         public static final String MASTER_KEY_ID = KeysColumns.MASTER_KEY_ID;
@@ -302,6 +308,22 @@ public class KeychainContract {
         public static Uri buildByPackageAndAccountUri(String packageName, String accountName) {
             return CONTENT_URI.buildUpon().appendEncodedPath(packageName).appendPath(PATH_ACCOUNTS)
                     .appendEncodedPath(accountName).build();
+        }
+    }
+
+    public static class ApiAllowedKeys implements ApiAppsAllowedKeysColumns, BaseColumns {
+        public static final Uri CONTENT_URI = BASE_CONTENT_URI_INTERNAL.buildUpon()
+                .appendPath(BASE_API_APPS).build();
+
+        /**
+         * Use if multiple items get returned
+         */
+        public static final String CONTENT_TYPE
+                = "vnd.android.cursor.dir/vnd.org.sufficientlysecure.keychain.provider.api_apps.allowed_keys";
+
+        public static Uri buildBaseUri(String packageName) {
+            return CONTENT_URI.buildUpon().appendEncodedPath(packageName).appendPath(PATH_ALLOWED_KEYS)
+                    .build();
         }
     }
 

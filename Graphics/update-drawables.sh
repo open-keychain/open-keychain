@@ -1,6 +1,7 @@
 #!/bin/bash
 
 APP_DIR=../OpenKeychain/src/main
+DRAWABLE_DIR=$APP_DIR/res/drawable
 MDPI_DIR=$APP_DIR/res/drawable-mdpi
 HDPI_DIR=$APP_DIR/res/drawable-hdpi
 XDPI_DIR=$APP_DIR/res/drawable-xhdpi
@@ -63,4 +64,10 @@ inkscape -w 48 -h 48 -e "$MDPI_DIR/$NAME.png" "$SRC_DIR/$NAME.svg"
 inkscape -w 64 -h 64 -e "$HDPI_DIR/$NAME.png" "$SRC_DIR/$NAME.svg"
 inkscape -w 96 -h 96 -e "$XDPI_DIR/$NAME.png" "$SRC_DIR/$NAME.svg"
 inkscape -w 128 -h 128 -e "$XXDPI_DIR/$NAME.png" "$SRC_DIR/$NAME.svg"
+done
+
+for NAME in "drawer_header"
+do
+echo $NAME
+inkscape -w 512 -h 288 -e "$DRAWABLE_DIR/$NAME.png" "$SRC_DIR/$NAME.svg"
 done

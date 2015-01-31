@@ -28,6 +28,7 @@ import android.provider.BaseColumns;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
+import org.sufficientlysecure.keychain.provider.KeychainContract.ApiAppsAllowedKeysColumns;
 import org.sufficientlysecure.keychain.provider.KeychainContract.ApiAppsAccountsColumns;
 import org.sufficientlysecure.keychain.provider.KeychainContract.ApiAppsColumns;
 import org.sufficientlysecure.keychain.provider.KeychainContract.CertsColumns;
@@ -52,7 +53,7 @@ import java.io.IOException;
  */
 public class KeychainDatabase extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "openkeychain.db";
-    private static final int DATABASE_VERSION = 7;
+    private static final int DATABASE_VERSION = 8;
     static Boolean apgHack = false;
     private Context mContext;
 
@@ -64,6 +65,7 @@ public class KeychainDatabase extends SQLiteOpenHelper {
         String CERTS = "certs";
         String API_APPS = "api_apps";
         String API_ACCOUNTS = "api_accounts";
+        String API_ALLOWED_KEYS = "api_allowed_keys";
     }
 
     private static final String CREATE_KEYRINGS_PUBLIC =
@@ -166,6 +168,18 @@ public class KeychainDatabase extends SQLiteOpenHelper {
                     + Tables.API_APPS + "(" + ApiAppsColumns.PACKAGE_NAME + ") ON DELETE CASCADE"
             + ")";
 
+    private static final String CREATE_API_APPS_ALLOWED_KEYS =
+            "CREATE TABLE IF NOT EXISTS " + Tables.API_ALLOWED_KEYS + " ("
+                + BaseColumns._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+                + ApiAppsAllowedKeysColumns.KEY_ID + " INTEGER, "
+                + ApiAppsAllowedKeysColumns.PACKAGE_NAME + " TEXT NOT NULL, "
+
+                + "UNIQUE(" + ApiAppsAllowedKeysColumns.KEY_ID + ", "
+                + ApiAppsAllowedKeysColumns.PACKAGE_NAME + "), "
+                + "FOREIGN KEY(" + ApiAppsAllowedKeysColumns.PACKAGE_NAME + ") REFERENCES "
+                + Tables.API_APPS + "(" + ApiAppsAllowedKeysColumns.PACKAGE_NAME + ") ON DELETE CASCADE"
+                + ")";
+
     KeychainDatabase(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
         mContext = context;
@@ -195,6 +209,7 @@ public class KeychainDatabase extends SQLiteOpenHelper {
         db.execSQL(CREATE_CERTS);
         db.execSQL(CREATE_API_APPS);
         db.execSQL(CREATE_API_APPS_ACCOUNTS);
+        db.execSQL(CREATE_API_APPS_ALLOWED_KEYS);
     }
 
     @Override
@@ -243,6 +258,15 @@ public class KeychainDatabase extends SQLiteOpenHelper {
             case 6:
                 db.execSQL("ALTER TABLE user_ids ADD COLUMN type INTEGER");
                 db.execSQL("ALTER TABLE user_ids ADD COLUMN attribute_data BLOB");
+            case 7:
+                // consolidate
+            case 8:
+                // new table for allowed key ids in API
+                try {
+                    db.execSQL(CREATE_API_APPS_ALLOWED_KEYS);
+                } catch (Exception e) {
+                    // never mind, the column probably already existed
+                }
         }
 
         // always do consolidate after upgrade

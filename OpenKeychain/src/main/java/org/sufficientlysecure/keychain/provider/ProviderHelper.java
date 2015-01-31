@@ -50,6 +50,7 @@ import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
 import org.sufficientlysecure.keychain.pgp.UncachedPublicKey;
 import org.sufficientlysecure.keychain.pgp.WrappedSignature;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
+import org.sufficientlysecure.keychain.provider.KeychainContract.ApiAllowedKeys;
 import org.sufficientlysecure.keychain.provider.KeychainContract.ApiApps;
 import org.sufficientlysecure.keychain.provider.KeychainContract.Certs;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRingData;
@@ -1312,7 +1313,6 @@ public class ProviderHelper {
 
             progress.setProgress(100, 100);
             log.add(LogType.MSG_CON_SUCCESS, indent);
-            indent -= 1;
 
             return new ConsolidateResult(ConsolidateResult.RESULT_OK, log);
 
@@ -1506,6 +1506,39 @@ public class ProviderHelper {
         }
 
         return keyIds;
+    }
+
+    public Set<Long> getAllowedKeyIdsForApp(Uri uri) {
+        Set<Long> keyIds = new HashSet<>();
+
+        Cursor cursor = mContentResolver.query(uri, null, null, null, null);
+        try {
+            if (cursor != null) {
+                int keyIdColumn = cursor.getColumnIndex(KeychainContract.ApiAllowedKeys.KEY_ID);
+                while (cursor.moveToNext()) {
+                    keyIds.add(cursor.getLong(keyIdColumn));
+                }
+            }
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+
+        return keyIds;
+    }
+
+    public void saveAllowedKeyIdsForApp(Uri uri, Set<Long> allowedKeyIds)
+            throws RemoteException, OperationApplicationException {
+        // wipe whole table of allowed keys for this account
+        mContentResolver.delete(uri, null, null);
+
+        // re-insert allowed key ids
+        for (Long keyId : allowedKeyIds) {
+            ContentValues values = new ContentValues();
+            values.put(ApiAllowedKeys.KEY_ID, keyId);
+            mContentResolver.insert(uri, values);
+        }
     }
 
     public Set<String> getAllFingerprints(Uri uri) {

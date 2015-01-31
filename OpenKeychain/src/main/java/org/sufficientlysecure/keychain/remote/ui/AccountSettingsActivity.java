@@ -58,7 +58,6 @@ public class AccountSettingsActivity extends BaseActivity {
                     }
                 });
 
-
         mAccountSettingsFragment = (AccountSettingsFragment) getSupportFragmentManager().findFragmentById(
                 R.id.api_account_settings_fragment);
 

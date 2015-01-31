@@ -28,10 +28,22 @@
 
                 <fragment
                     android:id="@+id/api_app_settings_fragment"
-                    android:name="org.sufficientlysecure.keychain.remote.ui.AppSettingsFragment"
+                    android:name="org.sufficientlysecure.keychain.remote.ui.AppSettingsHeaderFragment"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     tools:layout="@layout/api_app_settings_fragment" />
+
+                <TextView
+                    style="@style/SectionHeader"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/api_settings_allowed_keys" />
+
+                <FrameLayout
+                    android:id="@+id/api_allowed_keys_list_fragment"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical" />
 
                 <TextView
                     style="@style/SectionHeader"

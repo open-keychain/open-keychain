@@ -55,6 +55,7 @@ import org.sufficientlysecure.keychain.ui.ViewKeyActivity;
 import org.sufficientlysecure.keychain.util.InputData;
 import org.sufficientlysecure.keychain.util.Log;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
@@ -224,6 +225,8 @@ public class OpenPgpService extends RemoteService {
     private Intent signImpl(Intent data, ParcelFileDescriptor input,
                             ParcelFileDescriptor output, AccountSettings accSettings,
                             boolean cleartextSign) {
+        InputStream is = null;
+        OutputStream os = null;
         try {
             boolean asciiArmor = cleartextSign || data.getBooleanExtra(OpenPgpApi.EXTRA_REQUEST_ASCII_ARMOR, true);
 
@@ -243,96 +246,88 @@ public class OpenPgpService extends RemoteService {
             }
 
             // Get Input- and OutputStream from ParcelFileDescriptor
-            InputStream is = new ParcelFileDescriptor.AutoCloseInputStream(input);
-            OutputStream os = null;
+            is = new ParcelFileDescriptor.AutoCloseInputStream(input);
             if (cleartextSign) {
                 // output stream only needed for cleartext signatures,
                 // detached signatures are returned as extra
                 os = new ParcelFileDescriptor.AutoCloseOutputStream(output);
             }
-            try {
-                long inputLength = is.available();
-                InputData inputData = new InputData(is, inputLength);
+            long inputLength = is.available();
+            InputData inputData = new InputData(is, inputLength);
 
-                // Find the appropriate subkey to sign with
-                long sigSubKeyId;
+            // Find the appropriate subkey to sign with
+            long sigSubKeyId;
+            try {
+                CachedPublicKeyRing signingRing =
+                        new ProviderHelper(this).getCachedPublicKeyRing(accSettings.getKeyId());
+                sigSubKeyId = signingRing.getSecretSignId();
+            } catch (PgpKeyNotFoundException e) {
+                // secret key that is set for this account is deleted?
+                // show account config again!
+                return getCreateAccountIntent(data, getAccountName(data));
+            }
+
+            // get passphrase from cache, if key has "no" passphrase, this returns an empty String
+            String passphrase;
+            if (data.hasExtra(OpenPgpApi.EXTRA_PASSPHRASE)) {
+                passphrase = data.getStringExtra(OpenPgpApi.EXTRA_PASSPHRASE);
+            } else {
                 try {
-                    CachedPublicKeyRing signingRing =
-                            new ProviderHelper(this).getCachedPublicKeyRing(accSettings.getKeyId());
-                    sigSubKeyId = signingRing.getSecretSignId();
-                } catch (PgpKeyNotFoundException e) {
-                    // secret key that is set for this account is deleted?
-                    // show account config again!
+                    passphrase = PassphraseCacheService.getCachedPassphrase(getContext(),
+                            accSettings.getKeyId(), sigSubKeyId);
+                } catch (PassphraseCacheService.KeyNotFoundException e) {
+                    // should happen earlier, but return again here if it happens
                     return getCreateAccountIntent(data, getAccountName(data));
                 }
+            }
+            if (passphrase == null) {
+                // get PendingIntent for passphrase input, add it to given params and return to client
+                return getPassphraseIntent(data, sigSubKeyId);
+            }
 
-                // get passphrase from cache, if key has "no" passphrase, this returns an empty String
-                String passphrase;
-                if (data.hasExtra(OpenPgpApi.EXTRA_PASSPHRASE)) {
-                    passphrase = data.getStringExtra(OpenPgpApi.EXTRA_PASSPHRASE);
+            // sign-only
+            PgpSignEncrypt.Builder builder = new PgpSignEncrypt.Builder(
+                    this, new ProviderHelper(getContext()), null,
+                    inputData, os
+            );
+            builder.setEnableAsciiArmorOutput(asciiArmor)
+                    .setCleartextSignature(cleartextSign)
+                    .setDetachedSignature(!cleartextSign)
+                    .setVersionHeader(PgpHelper.getVersionForHeader(this))
+                    .setSignatureHashAlgorithm(accSettings.getHashAlgorithm())
+                    .setSignatureMasterKeyId(accSettings.getKeyId())
+                    .setSignatureSubKeyId(sigSubKeyId)
+                    .setSignaturePassphrase(passphrase)
+                    .setNfcState(nfcSignedHash, nfcCreationDate);
+
+            // execute PGP operation!
+            SignEncryptResult pgpResult = builder.build().execute();
+
+            if (pgpResult.isPending()) {
+                if ((pgpResult.getResult() & SignEncryptResult.RESULT_PENDING_PASSPHRASE) ==
+                        SignEncryptResult.RESULT_PENDING_PASSPHRASE) {
+                    return getPassphraseIntent(data, pgpResult.getKeyIdPassphraseNeeded());
+                } else if ((pgpResult.getResult() & SignEncryptResult.RESULT_PENDING_NFC) ==
+                        SignEncryptResult.RESULT_PENDING_NFC) {
+                    // return PendingIntent to execute NFC activity
+                    // pass through the signature creation timestamp to be used again on second execution
+                    // of PgpSignEncrypt when we have the signed hash!
+                    data.putExtra(OpenPgpApi.EXTRA_NFC_SIG_CREATION_TIMESTAMP, pgpResult.getNfcTimestamp().getTime());
+                    return getNfcSignIntent(data, pgpResult.getNfcKeyId(), pgpResult.getNfcPassphrase(), pgpResult.getNfcHash(), pgpResult.getNfcAlgo());
                 } else {
-                    try {
-                        passphrase = PassphraseCacheService.getCachedPassphrase(getContext(),
-                                accSettings.getKeyId(), sigSubKeyId);
-                    } catch (PassphraseCacheService.KeyNotFoundException e) {
-                        // should happen earlier, but return again here if it happens
-                        return getCreateAccountIntent(data, getAccountName(data));
-                    }
+                    throw new PgpGeneralException(
+                            "Encountered unhandled type of pending action not supported by API!");
                 }
-                if (passphrase == null) {
-                    // get PendingIntent for passphrase input, add it to given params and return to client
-                    return getPassphraseIntent(data, sigSubKeyId);
+            } else if (pgpResult.success()) {
+                Intent result = new Intent();
+                if (!cleartextSign) {
+                    result.putExtra(OpenPgpApi.RESULT_DETACHED_SIGNATURE, pgpResult.getDetachedSignature());
                 }
-
-                // sign-only
-                PgpSignEncrypt.Builder builder = new PgpSignEncrypt.Builder(
-                        this, new ProviderHelper(getContext()), null,
-                        inputData, os
-                );
-                builder.setEnableAsciiArmorOutput(asciiArmor)
-                        .setCleartextSignature(cleartextSign)
-                        .setDetachedSignature(!cleartextSign)
-                        .setVersionHeader(PgpHelper.getVersionForHeader(this))
-                        .setSignatureHashAlgorithm(accSettings.getHashAlgorithm())
-                        .setSignatureMasterKeyId(accSettings.getKeyId())
-                        .setSignatureSubKeyId(sigSubKeyId)
-                        .setSignaturePassphrase(passphrase)
-                        .setNfcState(nfcSignedHash, nfcCreationDate);
-
-                // execute PGP operation!
-                SignEncryptResult pgpResult = builder.build().execute();
-
-                if (pgpResult.isPending()) {
-                    if ((pgpResult.getResult() & SignEncryptResult.RESULT_PENDING_PASSPHRASE) ==
-                            SignEncryptResult.RESULT_PENDING_PASSPHRASE) {
-                        return getPassphraseIntent(data, pgpResult.getKeyIdPassphraseNeeded());
-                    } else if ((pgpResult.getResult() & SignEncryptResult.RESULT_PENDING_NFC) ==
-                            SignEncryptResult.RESULT_PENDING_NFC) {
-                        // return PendingIntent to execute NFC activity
-                        // pass through the signature creation timestamp to be used again on second execution
-                        // of PgpSignEncrypt when we have the signed hash!
-                        data.putExtra(OpenPgpApi.EXTRA_NFC_SIG_CREATION_TIMESTAMP, pgpResult.getNfcTimestamp().getTime());
-                        return getNfcSignIntent(data, pgpResult.getNfcKeyId(), pgpResult.getNfcPassphrase(), pgpResult.getNfcHash(), pgpResult.getNfcAlgo());
-                    } else {
-                        throw new PgpGeneralException(
-                                "Encountered unhandled type of pending action not supported by API!");
-                    }
-                } else if (pgpResult.success()) {
-                    Intent result = new Intent();
-                    if (!cleartextSign) {
-                        result.putExtra(OpenPgpApi.RESULT_DETACHED_SIGNATURE, pgpResult.getDetachedSignature());
-                    }
-                    result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_SUCCESS);
-                    return result;
-                } else {
-                    LogEntryParcel errorMsg = pgpResult.getLog().getLast();
-                    throw new Exception(getString(errorMsg.mType.getMsgId()));
-                }
-            } finally {
-                is.close();
-                if (os != null) {
-                    os.close();
-                }
+                result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_SUCCESS);
+                return result;
+            } else {
+                LogEntryParcel errorMsg = pgpResult.getLog().getLast();
+                throw new Exception(getString(errorMsg.mType.getMsgId()));
             }
         } catch (Exception e) {
             Log.d(Constants.TAG, "signImpl", e);
@@ -341,12 +336,29 @@ public class OpenPgpService extends RemoteService {
                     new OpenPgpError(OpenPgpError.GENERIC_ERROR, e.getMessage()));
             result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_ERROR);
             return result;
+        } finally {
+            if (is != null) {
+                try {
+                    is.close();
+                } catch (IOException e) {
+                    Log.e(Constants.TAG, "IOException when closing InputStream", e);
+                }
+            }
+            if (os != null) {
+                try {
+                    os.close();
+                } catch (IOException e) {
+                    Log.e(Constants.TAG, "IOException when closing OutputStream", e);
+                }
+            }
         }
     }
 
     private Intent encryptAndSignImpl(Intent data, ParcelFileDescriptor input,
                                       ParcelFileDescriptor output, AccountSettings accSettings,
                                       boolean sign) {
+        InputStream is = null;
+        OutputStream os = null;
         try {
             boolean asciiArmor = data.getBooleanExtra(OpenPgpApi.EXTRA_REQUEST_ASCII_ARMOR, true);
             String originalFilename = data.getStringExtra(OpenPgpApi.EXTRA_ORIGINAL_FILENAME);
@@ -372,96 +384,91 @@ public class OpenPgpService extends RemoteService {
 
             // build InputData and write into OutputStream
             // Get Input- and OutputStream from ParcelFileDescriptor
-            InputStream is = new ParcelFileDescriptor.AutoCloseInputStream(input);
-            OutputStream os = new ParcelFileDescriptor.AutoCloseOutputStream(output);
-            try {
-                long inputLength = is.available();
-                InputData inputData = new InputData(is, inputLength);
+            is = new ParcelFileDescriptor.AutoCloseInputStream(input);
+            os = new ParcelFileDescriptor.AutoCloseOutputStream(output);
 
-                PgpSignEncrypt.Builder builder = new PgpSignEncrypt.Builder(
-                        this, new ProviderHelper(getContext()), null, inputData, os
-                );
-                builder.setEnableAsciiArmorOutput(asciiArmor)
-                        .setVersionHeader(PgpHelper.getVersionForHeader(this))
-                        .setCompressionId(accSettings.getCompression())
-                        .setSymmetricEncryptionAlgorithm(accSettings.getEncryptionAlgorithm())
-                        .setEncryptionMasterKeyIds(keyIds)
-                        .setFailOnMissingEncryptionKeyIds(true)
-                        .setOriginalFilename(originalFilename)
-                        .setAdditionalEncryptId(accSettings.getKeyId()); // add acc key for encryption
+            long inputLength = is.available();
+            InputData inputData = new InputData(is, inputLength);
 
-                if (sign) {
+            PgpSignEncrypt.Builder builder = new PgpSignEncrypt.Builder(
+                    this, new ProviderHelper(getContext()), null, inputData, os
+            );
+            builder.setEnableAsciiArmorOutput(asciiArmor)
+                    .setVersionHeader(PgpHelper.getVersionForHeader(this))
+                    .setCompressionId(accSettings.getCompression())
+                    .setSymmetricEncryptionAlgorithm(accSettings.getEncryptionAlgorithm())
+                    .setEncryptionMasterKeyIds(keyIds)
+                    .setFailOnMissingEncryptionKeyIds(true)
+                    .setOriginalFilename(originalFilename)
+                    .setAdditionalEncryptId(accSettings.getKeyId()); // add acc key for encryption
 
-                    // Find the appropriate subkey to sign with
-                    long sigSubKeyId;
-                    try {
-                        CachedPublicKeyRing signingRing =
-                                new ProviderHelper(this).getCachedPublicKeyRing(accSettings.getKeyId());
-                        sigSubKeyId = signingRing.getSecretSignId();
-                    } catch (PgpKeyNotFoundException e) {
-                        // secret key that is set for this account is deleted?
-                        // show account config again!
-                        return getCreateAccountIntent(data, getAccountName(data));
-                    }
+            if (sign) {
 
-                    String passphrase;
-                    if (data.hasExtra(OpenPgpApi.EXTRA_PASSPHRASE)) {
-                        passphrase = data.getStringExtra(OpenPgpApi.EXTRA_PASSPHRASE);
-                    } else {
-                        passphrase = PassphraseCacheService.getCachedPassphrase(getContext(),
-                                accSettings.getKeyId(), sigSubKeyId);
-                    }
-                    if (passphrase == null) {
-                        // get PendingIntent for passphrase input, add it to given params and return to client
-                        return getPassphraseIntent(data, sigSubKeyId);
-                    }
-
-                    byte[] nfcSignedHash = data.getByteArrayExtra(OpenPgpApi.EXTRA_NFC_SIGNED_HASH);
-                    // carefully: only set if timestamp exists
-                    Date nfcCreationDate = null;
-                    long nfcCreationTimestamp = data.getLongExtra(OpenPgpApi.EXTRA_NFC_SIG_CREATION_TIMESTAMP, -1);
-                    if (nfcCreationTimestamp != -1) {
-                        nfcCreationDate = new Date(nfcCreationTimestamp);
-                    }
-
-                    // sign and encrypt
-                    builder.setSignatureHashAlgorithm(accSettings.getHashAlgorithm())
-                            .setSignatureMasterKeyId(accSettings.getKeyId())
-                            .setSignatureSubKeyId(sigSubKeyId)
-                            .setSignaturePassphrase(passphrase)
-                            .setNfcState(nfcSignedHash, nfcCreationDate);
+                // Find the appropriate subkey to sign with
+                long sigSubKeyId;
+                try {
+                    CachedPublicKeyRing signingRing =
+                            new ProviderHelper(this).getCachedPublicKeyRing(accSettings.getKeyId());
+                    sigSubKeyId = signingRing.getSecretSignId();
+                } catch (PgpKeyNotFoundException e) {
+                    // secret key that is set for this account is deleted?
+                    // show account config again!
+                    return getCreateAccountIntent(data, getAccountName(data));
                 }
 
-                // execute PGP operation!
-                SignEncryptResult pgpResult = builder.build().execute();
-
-                if (pgpResult.isPending()) {
-                    if ((pgpResult.getResult() & SignEncryptResult.RESULT_PENDING_PASSPHRASE) ==
-                            SignEncryptResult.RESULT_PENDING_PASSPHRASE) {
-                        return getPassphraseIntent(data, pgpResult.getKeyIdPassphraseNeeded());
-                    } else if ((pgpResult.getResult() & SignEncryptResult.RESULT_PENDING_NFC) ==
-                            SignEncryptResult.RESULT_PENDING_NFC) {
-                        // return PendingIntent to execute NFC activity
-                        // pass through the signature creation timestamp to be used again on second execution
-                        // of PgpSignEncrypt when we have the signed hash!
-                        data.putExtra(OpenPgpApi.EXTRA_NFC_SIG_CREATION_TIMESTAMP, pgpResult.getNfcTimestamp().getTime());
-                        return getNfcSignIntent(data, pgpResult.getNfcKeyId(), pgpResult.getNfcPassphrase(), pgpResult.getNfcHash(), pgpResult.getNfcAlgo());
-                    } else {
-                        throw new PgpGeneralException(
-                                "Encountered unhandled type of pending action not supported by API!");
-                    }
-                } else if (pgpResult.success()) {
-                    Intent result = new Intent();
-                    result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_SUCCESS);
-                    return result;
+                String passphrase;
+                if (data.hasExtra(OpenPgpApi.EXTRA_PASSPHRASE)) {
+                    passphrase = data.getStringExtra(OpenPgpApi.EXTRA_PASSPHRASE);
                 } else {
-                    LogEntryParcel errorMsg = pgpResult.getLog().getLast();
-                    throw new Exception(getString(errorMsg.mType.getMsgId()));
+                    passphrase = PassphraseCacheService.getCachedPassphrase(getContext(),
+                            accSettings.getKeyId(), sigSubKeyId);
+                }
+                if (passphrase == null) {
+                    // get PendingIntent for passphrase input, add it to given params and return to client
+                    return getPassphraseIntent(data, sigSubKeyId);
                 }
 
-            } finally {
-                is.close();
-                os.close();
+                byte[] nfcSignedHash = data.getByteArrayExtra(OpenPgpApi.EXTRA_NFC_SIGNED_HASH);
+                // carefully: only set if timestamp exists
+                Date nfcCreationDate = null;
+                long nfcCreationTimestamp = data.getLongExtra(OpenPgpApi.EXTRA_NFC_SIG_CREATION_TIMESTAMP, -1);
+                if (nfcCreationTimestamp != -1) {
+                    nfcCreationDate = new Date(nfcCreationTimestamp);
+                }
+
+                // sign and encrypt
+                builder.setSignatureHashAlgorithm(accSettings.getHashAlgorithm())
+                        .setSignatureMasterKeyId(accSettings.getKeyId())
+                        .setSignatureSubKeyId(sigSubKeyId)
+                        .setSignaturePassphrase(passphrase)
+                        .setNfcState(nfcSignedHash, nfcCreationDate);
+            }
+
+            // execute PGP operation!
+            SignEncryptResult pgpResult = builder.build().execute();
+
+            if (pgpResult.isPending()) {
+                if ((pgpResult.getResult() & SignEncryptResult.RESULT_PENDING_PASSPHRASE) ==
+                        SignEncryptResult.RESULT_PENDING_PASSPHRASE) {
+                    return getPassphraseIntent(data, pgpResult.getKeyIdPassphraseNeeded());
+                } else if ((pgpResult.getResult() & SignEncryptResult.RESULT_PENDING_NFC) ==
+                        SignEncryptResult.RESULT_PENDING_NFC) {
+                    // return PendingIntent to execute NFC activity
+                    // pass through the signature creation timestamp to be used again on second execution
+                    // of PgpSignEncrypt when we have the signed hash!
+                    data.putExtra(OpenPgpApi.EXTRA_NFC_SIG_CREATION_TIMESTAMP, pgpResult.getNfcTimestamp().getTime());
+                    return getNfcSignIntent(data, pgpResult.getNfcKeyId(), pgpResult.getNfcPassphrase(), pgpResult.getNfcHash(), pgpResult.getNfcAlgo());
+                } else {
+                    throw new PgpGeneralException(
+                            "Encountered unhandled type of pending action not supported by API!");
+                }
+            } else if (pgpResult.success()) {
+                Intent result = new Intent();
+                result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_SUCCESS);
+                return result;
+            } else {
+                LogEntryParcel errorMsg = pgpResult.getLog().getLast();
+                throw new Exception(getString(errorMsg.mType.getMsgId()));
             }
         } catch (Exception e) {
             Log.d(Constants.TAG, "encryptAndSignImpl", e);
@@ -470,17 +477,33 @@ public class OpenPgpService extends RemoteService {
                     new OpenPgpError(OpenPgpError.GENERIC_ERROR, e.getMessage()));
             result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_ERROR);
             return result;
+        } finally {
+            if (is != null) {
+                try {
+                    is.close();
+                } catch (IOException e) {
+                    Log.e(Constants.TAG, "IOException when closing InputStream", e);
+                }
+            }
+            if (os != null) {
+                try {
+                    os.close();
+                } catch (IOException e) {
+                    Log.e(Constants.TAG, "IOException when closing OutputStream", e);
+                }
+            }
         }
     }
 
     private Intent decryptAndVerifyImpl(Intent data, ParcelFileDescriptor input,
                                         ParcelFileDescriptor output, Set<Long> allowedKeyIds,
                                         boolean decryptMetadataOnly) {
+        InputStream is = null;
+        OutputStream os = null;
         try {
             // Get Input- and OutputStream from ParcelFileDescriptor
-            InputStream is = new ParcelFileDescriptor.AutoCloseInputStream(input);
+            is = new ParcelFileDescriptor.AutoCloseInputStream(input);
 
-            OutputStream os;
             // output is optional, e.g., for verifying detached signatures
             if (decryptMetadataOnly || output == null) {
                 os = null;
@@ -488,101 +511,95 @@ public class OpenPgpService extends RemoteService {
                 os = new ParcelFileDescriptor.AutoCloseOutputStream(output);
             }
 
-            try {
-                String passphrase = data.getStringExtra(OpenPgpApi.EXTRA_PASSPHRASE);
-                long inputLength = is.available();
-                InputData inputData = new InputData(is, inputLength);
+            String passphrase = data.getStringExtra(OpenPgpApi.EXTRA_PASSPHRASE);
+            long inputLength = is.available();
+            InputData inputData = new InputData(is, inputLength);
 
-                PgpDecryptVerify.Builder builder = new PgpDecryptVerify.Builder(
-                        this, new ProviderHelper(getContext()), null, inputData, os
-                );
+            PgpDecryptVerify.Builder builder = new PgpDecryptVerify.Builder(
+                    this, new ProviderHelper(getContext()), null, inputData, os
+            );
 
-                byte[] nfcDecryptedSessionKey = data.getByteArrayExtra(OpenPgpApi.EXTRA_NFC_DECRYPTED_SESSION_KEY);
+            byte[] nfcDecryptedSessionKey = data.getByteArrayExtra(OpenPgpApi.EXTRA_NFC_DECRYPTED_SESSION_KEY);
 
-                byte[] detachedSignature = data.getByteArrayExtra(OpenPgpApi.EXTRA_DETACHED_SIGNATURE);
+            byte[] detachedSignature = data.getByteArrayExtra(OpenPgpApi.EXTRA_DETACHED_SIGNATURE);
 
-                // allow only private keys associated with accounts of this app
-                // no support for symmetric encryption
-                builder.setPassphrase(passphrase)
-                        .setAllowSymmetricDecryption(false)
-                        .setAllowedKeyIds(allowedKeyIds)
-                        .setDecryptMetadataOnly(decryptMetadataOnly)
-                        .setNfcState(nfcDecryptedSessionKey)
-                        .setDetachedSignature(detachedSignature);
+            // allow only private keys associated with accounts of this app
+            // no support for symmetric encryption
+            builder.setPassphrase(passphrase)
+                    .setAllowSymmetricDecryption(false)
+                    .setAllowedKeyIds(allowedKeyIds)
+                    .setDecryptMetadataOnly(decryptMetadataOnly)
+                    .setNfcState(nfcDecryptedSessionKey)
+                    .setDetachedSignature(detachedSignature);
 
-                DecryptVerifyResult pgpResult = builder.build().execute();
+            DecryptVerifyResult pgpResult = builder.build().execute();
 
-                if (pgpResult.isPending()) {
-                    if ((pgpResult.getResult() & DecryptVerifyResult.RESULT_PENDING_ASYM_PASSPHRASE) ==
-                            DecryptVerifyResult.RESULT_PENDING_ASYM_PASSPHRASE) {
-                        return getPassphraseIntent(data, pgpResult.getKeyIdPassphraseNeeded());
-                    } else if ((pgpResult.getResult() & DecryptVerifyResult.RESULT_PENDING_SYM_PASSPHRASE) ==
-                            DecryptVerifyResult.RESULT_PENDING_SYM_PASSPHRASE) {
-                        throw new PgpGeneralException(
-                                "Decryption of symmetric content not supported by API!");
-                    } else if ((pgpResult.getResult() & DecryptVerifyResult.RESULT_PENDING_NFC) ==
-                            DecryptVerifyResult.RESULT_PENDING_NFC) {
-                        return getNfcDecryptIntent(
-                                data, pgpResult.getNfcSubKeyId(), pgpResult.getNfcPassphrase(), pgpResult.getNfcEncryptedSessionKey());
-                    } else {
-                        throw new PgpGeneralException(
-                                "Encountered unhandled type of pending action not supported by API!");
-                    }
-                } else if (pgpResult.success()) {
-                    Intent result = new Intent();
-
-                    OpenPgpSignatureResult signatureResult = pgpResult.getSignatureResult();
-                    if (signatureResult != null) {
-                        result.putExtra(OpenPgpApi.RESULT_SIGNATURE, signatureResult);
-
-                        if (data.getIntExtra(OpenPgpApi.EXTRA_API_VERSION, -1) < 5) {
-                            // SIGNATURE_KEY_REVOKED and SIGNATURE_KEY_EXPIRED have been added in version 5
-                            if (signatureResult.getStatus() == OpenPgpSignatureResult.SIGNATURE_KEY_REVOKED
-                                    || signatureResult.getStatus() == OpenPgpSignatureResult.SIGNATURE_KEY_EXPIRED) {
-                                signatureResult.setStatus(OpenPgpSignatureResult.SIGNATURE_ERROR);
-                            }
-                        }
-
-                        if (signatureResult.getStatus() == OpenPgpSignatureResult.SIGNATURE_KEY_MISSING) {
-                            // If signature is unknown we return an _additional_ PendingIntent
-                            // to retrieve the missing key
-                            Intent intent = new Intent(getBaseContext(), ImportKeysActivity.class);
-                            intent.setAction(ImportKeysActivity.ACTION_IMPORT_KEY_FROM_KEYSERVER_AND_RETURN_TO_SERVICE);
-                            intent.putExtra(ImportKeysActivity.EXTRA_KEY_ID, signatureResult.getKeyId());
-                            intent.putExtra(ImportKeysActivity.EXTRA_PENDING_INTENT_DATA, data);
-
-                            PendingIntent pi = PendingIntent.getActivity(getBaseContext(), 0,
-                                    intent,
-                                    PendingIntent.FLAG_CANCEL_CURRENT);
-
-                            result.putExtra(OpenPgpApi.RESULT_INTENT, pi);
-                        }
-                    }
-
-                    if (data.getIntExtra(OpenPgpApi.EXTRA_API_VERSION, -1) >= 4) {
-                        OpenPgpMetadata metadata = pgpResult.getDecryptMetadata();
-                        if (metadata != null) {
-                            result.putExtra(OpenPgpApi.RESULT_METADATA, metadata);
-                        }
-                    }
-
-                    String charset = pgpResult.getCharset();
-                    if (charset != null) {
-                        result.putExtra(OpenPgpApi.RESULT_CHARSET, charset);
-                    }
-
-                    result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_SUCCESS);
-                    return result;
+            if (pgpResult.isPending()) {
+                if ((pgpResult.getResult() & DecryptVerifyResult.RESULT_PENDING_ASYM_PASSPHRASE) ==
+                        DecryptVerifyResult.RESULT_PENDING_ASYM_PASSPHRASE) {
+                    return getPassphraseIntent(data, pgpResult.getKeyIdPassphraseNeeded());
+                } else if ((pgpResult.getResult() & DecryptVerifyResult.RESULT_PENDING_SYM_PASSPHRASE) ==
+                        DecryptVerifyResult.RESULT_PENDING_SYM_PASSPHRASE) {
+                    throw new PgpGeneralException(
+                            "Decryption of symmetric content not supported by API!");
+                } else if ((pgpResult.getResult() & DecryptVerifyResult.RESULT_PENDING_NFC) ==
+                        DecryptVerifyResult.RESULT_PENDING_NFC) {
+                    return getNfcDecryptIntent(
+                            data, pgpResult.getNfcSubKeyId(), pgpResult.getNfcPassphrase(), pgpResult.getNfcEncryptedSessionKey());
                 } else {
-                    LogEntryParcel errorMsg = pgpResult.getLog().getLast();
-                    throw new Exception(getString(errorMsg.mType.getMsgId()));
+                    throw new PgpGeneralException(
+                            "Encountered unhandled type of pending action not supported by API!");
                 }
-            } finally {
-                is.close();
-                if (os != null) {
-                    os.close();
+            } else if (pgpResult.success()) {
+                Intent result = new Intent();
+
+                OpenPgpSignatureResult signatureResult = pgpResult.getSignatureResult();
+                if (signatureResult != null) {
+                    result.putExtra(OpenPgpApi.RESULT_SIGNATURE, signatureResult);
+
+                    if (data.getIntExtra(OpenPgpApi.EXTRA_API_VERSION, -1) < 5) {
+                        // SIGNATURE_KEY_REVOKED and SIGNATURE_KEY_EXPIRED have been added in version 5
+                        if (signatureResult.getStatus() == OpenPgpSignatureResult.SIGNATURE_KEY_REVOKED
+                                || signatureResult.getStatus() == OpenPgpSignatureResult.SIGNATURE_KEY_EXPIRED) {
+                            signatureResult.setStatus(OpenPgpSignatureResult.SIGNATURE_ERROR);
+                        }
+                    }
+
+                    if (signatureResult.getStatus() == OpenPgpSignatureResult.SIGNATURE_KEY_MISSING) {
+                        // If signature is unknown we return an _additional_ PendingIntent
+                        // to retrieve the missing key
+                        Intent intent = new Intent(getBaseContext(), ImportKeysActivity.class);
+                        intent.setAction(ImportKeysActivity.ACTION_IMPORT_KEY_FROM_KEYSERVER_AND_RETURN_TO_SERVICE);
+                        intent.putExtra(ImportKeysActivity.EXTRA_KEY_ID, signatureResult.getKeyId());
+                        intent.putExtra(ImportKeysActivity.EXTRA_PENDING_INTENT_DATA, data);
+
+                        PendingIntent pi = PendingIntent.getActivity(getBaseContext(), 0,
+                                intent,
+                                PendingIntent.FLAG_CANCEL_CURRENT);
+
+                        result.putExtra(OpenPgpApi.RESULT_INTENT, pi);
+                    }
                 }
+
+                if (data.getIntExtra(OpenPgpApi.EXTRA_API_VERSION, -1) >= 4) {
+                    OpenPgpMetadata metadata = pgpResult.getDecryptMetadata();
+                    if (metadata != null) {
+                        result.putExtra(OpenPgpApi.RESULT_METADATA, metadata);
+                    }
+                }
+
+                String charset = pgpResult.getCharset();
+                if (charset != null) {
+                    result.putExtra(OpenPgpApi.RESULT_CHARSET, charset);
+                }
+
+                result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_SUCCESS);
+                return result;
+            } else {
+                LogEntryParcel errorMsg = pgpResult.getLog().getLast();
+                throw new Exception(getString(errorMsg.mType.getMsgId()));
             }
+
         } catch (Exception e) {
             Log.d(Constants.TAG, "decryptAndVerifyImpl", e);
             Intent result = new Intent();
@@ -590,6 +607,21 @@ public class OpenPgpService extends RemoteService {
                     new OpenPgpError(OpenPgpError.GENERIC_ERROR, e.getMessage()));
             result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_ERROR);
             return result;
+        } finally {
+            if (is != null) {
+                try {
+                    is.close();
+                } catch (IOException e) {
+                    Log.e(Constants.TAG, "IOException when closing InputStream", e);
+                }
+            }
+            if (os != null) {
+                try {
+                    os.close();
+                } catch (IOException e) {
+                    Log.e(Constants.TAG, "IOException when closing OutputStream", e);
+                }
+            }
         }
     }
 
@@ -720,48 +752,66 @@ public class OpenPgpService extends RemoteService {
 
         @Override
         public Intent execute(Intent data, ParcelFileDescriptor input, ParcelFileDescriptor output) {
-            Intent errorResult = checkRequirements(data);
-            if (errorResult != null) {
-                return errorResult;
-            }
+            try {
+                Intent errorResult = checkRequirements(data);
+                if (errorResult != null) {
+                    return errorResult;
+                }
 
-            String accName = getAccountName(data);
-            final AccountSettings accSettings = getAccSettings(accName);
-            if (accSettings == null) {
-                return getCreateAccountIntent(data, accName);
-            }
+                String accName = getAccountName(data);
+                final AccountSettings accSettings = getAccSettings(accName);
+                if (accSettings == null) {
+                    return getCreateAccountIntent(data, accName);
+                }
 
-            String action = data.getAction();
-            if (OpenPgpApi.ACTION_CLEARTEXT_SIGN.equals(action)) {
-                return signImpl(data, input, output, accSettings, true);
-            } else if (OpenPgpApi.ACTION_SIGN.equals(action)) {
-                // DEPRECATED: same as ACTION_CLEARTEXT_SIGN
-                Log.w(Constants.TAG, "You are using a deprecated API call, please use ACTION_CLEARTEXT_SIGN instead of ACTION_SIGN!");
-                return signImpl(data, input, output, accSettings, true);
-            } else if (OpenPgpApi.ACTION_DETACHED_SIGN.equals(action)) {
-                return signImpl(data, input, output, accSettings, false);
-            } else if (OpenPgpApi.ACTION_ENCRYPT.equals(action)) {
-                return encryptAndSignImpl(data, input, output, accSettings, false);
-            } else if (OpenPgpApi.ACTION_SIGN_AND_ENCRYPT.equals(action)) {
-                return encryptAndSignImpl(data, input, output, accSettings, true);
-            } else if (OpenPgpApi.ACTION_DECRYPT_VERIFY.equals(action)) {
-                String currentPkg = getCurrentCallingPackage();
-                Set<Long> allowedKeyIds =
-                        mProviderHelper.getAllKeyIdsForApp(
-                                ApiAccounts.buildBaseUri(currentPkg));
-                return decryptAndVerifyImpl(data, input, output, allowedKeyIds, false);
-            } else if (OpenPgpApi.ACTION_DECRYPT_METADATA.equals(action)) {
-                String currentPkg = getCurrentCallingPackage();
-                Set<Long> allowedKeyIds =
-                        mProviderHelper.getAllKeyIdsForApp(
-                                ApiAccounts.buildBaseUri(currentPkg));
-                return decryptAndVerifyImpl(data, input, output, allowedKeyIds, true);
-            } else if (OpenPgpApi.ACTION_GET_KEY.equals(action)) {
-                return getKeyImpl(data);
-            } else if (OpenPgpApi.ACTION_GET_KEY_IDS.equals(action)) {
-                return getKeyIdsImpl(data);
-            } else {
-                return null;
+                String action = data.getAction();
+                if (OpenPgpApi.ACTION_CLEARTEXT_SIGN.equals(action)) {
+                    return signImpl(data, input, output, accSettings, true);
+                } else if (OpenPgpApi.ACTION_SIGN.equals(action)) {
+                    // DEPRECATED: same as ACTION_CLEARTEXT_SIGN
+                    Log.w(Constants.TAG, "You are using a deprecated API call, please use ACTION_CLEARTEXT_SIGN instead of ACTION_SIGN!");
+                    return signImpl(data, input, output, accSettings, true);
+                } else if (OpenPgpApi.ACTION_DETACHED_SIGN.equals(action)) {
+                    return signImpl(data, input, output, accSettings, false);
+                } else if (OpenPgpApi.ACTION_ENCRYPT.equals(action)) {
+                    return encryptAndSignImpl(data, input, output, accSettings, false);
+                } else if (OpenPgpApi.ACTION_SIGN_AND_ENCRYPT.equals(action)) {
+                    return encryptAndSignImpl(data, input, output, accSettings, true);
+                } else if (OpenPgpApi.ACTION_DECRYPT_VERIFY.equals(action)) {
+                    String currentPkg = getCurrentCallingPackage();
+                    Set<Long> allowedKeyIds =
+                            mProviderHelper.getAllKeyIdsForApp(
+                                    ApiAccounts.buildBaseUri(currentPkg));
+                    return decryptAndVerifyImpl(data, input, output, allowedKeyIds, false);
+                } else if (OpenPgpApi.ACTION_DECRYPT_METADATA.equals(action)) {
+                    String currentPkg = getCurrentCallingPackage();
+                    Set<Long> allowedKeyIds =
+                            mProviderHelper.getAllKeyIdsForApp(
+                                    ApiAccounts.buildBaseUri(currentPkg));
+                    return decryptAndVerifyImpl(data, input, output, allowedKeyIds, true);
+                } else if (OpenPgpApi.ACTION_GET_KEY.equals(action)) {
+                    return getKeyImpl(data);
+                } else if (OpenPgpApi.ACTION_GET_KEY_IDS.equals(action)) {
+                    return getKeyIdsImpl(data);
+                } else {
+                    return null;
+                }
+            } finally {
+                // always close input and output file descriptors even in error cases
+                if (input != null) {
+                    try {
+                        input.close();
+                    } catch (IOException e) {
+                        Log.e(Constants.TAG, "IOException when closing input ParcelFileDescriptor", e);
+                    }
+                }
+                if (output != null) {
+                    try {
+                        output.close();
+                    } catch (IOException e) {
+                        Log.e(Constants.TAG, "IOException when closing output ParcelFileDescriptor", e);
+                    }
+                }
             }
         }
 

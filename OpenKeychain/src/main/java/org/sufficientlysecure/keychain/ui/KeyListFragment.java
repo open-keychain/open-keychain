@@ -110,7 +110,6 @@ public class KeyListFragment extends LoaderFragment
         super.onCreate(savedInstanceState);
 
         mExportHelper = new ExportHelper(getActivity());
-
     }
 
     /**
@@ -205,84 +204,82 @@ public class KeyListFragment extends LoaderFragment
         mStickyList.setFastScrollEnabled(true);
 
         /*
-         * Multi-selection is only available for Android >= 3.0
+         * Multi-selection
          */
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-            mStickyList.setFastScrollAlwaysVisible(true);
+        mStickyList.setFastScrollAlwaysVisible(true);
 
-            mStickyList.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
-            mStickyList.getWrappedList().setMultiChoiceModeListener(new MultiChoiceModeListener() {
+        mStickyList.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
+        mStickyList.getWrappedList().setMultiChoiceModeListener(new MultiChoiceModeListener() {
 
-                @Override
-                public boolean onCreateActionMode(ActionMode mode, Menu menu) {
-                    android.view.MenuInflater inflater = getActivity().getMenuInflater();
-                    inflater.inflate(R.menu.key_list_multi, menu);
-                    mActionMode = mode;
-                    return true;
-                }
+            @Override
+            public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+                android.view.MenuInflater inflater = getActivity().getMenuInflater();
+                inflater.inflate(R.menu.key_list_multi, menu);
+                mActionMode = mode;
+                return true;
+            }
 
-                @Override
-                public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
-                    return false;
-                }
+            @Override
+            public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+                return false;
+            }
 
-                @Override
-                public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+            @Override
+            public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
 
-                    // get IDs for checked positions as long array
-                    long[] ids;
+                // get IDs for checked positions as long array
+                long[] ids;
 
-                    switch (item.getItemId()) {
-                        case R.id.menu_key_list_multi_encrypt: {
-                            ids = mAdapter.getCurrentSelectedMasterKeyIds();
-                            encrypt(mode, ids);
-                            break;
-                        }
-                        case R.id.menu_key_list_multi_delete: {
-                            ids = mAdapter.getCurrentSelectedMasterKeyIds();
-                            showDeleteKeyDialog(mode, ids, mAdapter.isAnySecretSelected());
-                            break;
-                        }
-                        case R.id.menu_key_list_multi_export: {
-                            ids = mAdapter.getCurrentSelectedMasterKeyIds();
-                            ExportHelper mExportHelper = new ExportHelper((ActionBarActivity) getActivity());
-                            mExportHelper.showExportKeysDialog(ids, Constants.Path.APP_DIR_FILE,
-                                    mAdapter.isAnySecretSelected());
-                            break;
-                        }
-                        case R.id.menu_key_list_multi_select_all: {
-                            // select all
-                            for (int i = 0; i < mStickyList.getCount(); i++) {
-                                mStickyList.setItemChecked(i, true);
-                            }
-                            break;
-                        }
+                switch (item.getItemId()) {
+                    case R.id.menu_key_list_multi_encrypt: {
+                        ids = mAdapter.getCurrentSelectedMasterKeyIds();
+                        encrypt(mode, ids);
+                        break;
                     }
-                    return true;
-                }
-
-                @Override
-                public void onDestroyActionMode(ActionMode mode) {
-                    mActionMode = null;
-                    mAdapter.clearSelection();
-                }
-
-                @Override
-                public void onItemCheckedStateChanged(ActionMode mode, int position, long id,
-                                                      boolean checked) {
-                    if (checked) {
-                        mAdapter.setNewSelection(position, checked);
-                    } else {
-                        mAdapter.removeSelection(position);
+                    case R.id.menu_key_list_multi_delete: {
+                        ids = mAdapter.getCurrentSelectedMasterKeyIds();
+                        showDeleteKeyDialog(mode, ids, mAdapter.isAnySecretSelected());
+                        break;
                     }
-                    int count = mStickyList.getCheckedItemCount();
-                    String keysSelected = getResources().getQuantityString(
-                            R.plurals.key_list_selected_keys, count, count);
-                    mode.setTitle(keysSelected);
+                    case R.id.menu_key_list_multi_export: {
+                        ids = mAdapter.getCurrentSelectedMasterKeyIds();
+                        ExportHelper mExportHelper = new ExportHelper((ActionBarActivity) getActivity());
+                        mExportHelper.showExportKeysDialog(ids, Constants.Path.APP_DIR_FILE,
+                                mAdapter.isAnySecretSelected());
+                        break;
+                    }
+                    case R.id.menu_key_list_multi_select_all: {
+                        // select all
+                        for (int i = 0; i < mStickyList.getCount(); i++) {
+                            mStickyList.setItemChecked(i, true);
+                        }
+                        break;
+                    }
                 }
+                return true;
+            }
 
-            });
-        }
+            @Override
+            public void onDestroyActionMode(ActionMode mode) {
+                mActionMode = null;
+                mAdapter.clearSelection();
+            }
+
+            @Override
+            public void onItemCheckedStateChanged(ActionMode mode, int position, long id,
+                                                  boolean checked) {
+                if (checked) {
+                    mAdapter.setNewSelection(position, checked);
+                } else {
+                    mAdapter.removeSelection(position);
+                }
+                int count = mStickyList.getCheckedItemCount();
+                String keysSelected = getResources().getQuantityString(
+                        R.plurals.key_list_selected_keys, count, count);
+                mode.setTitle(keysSelected);
+            }
+
+        });
 
         // We have a menu item to show in action bar.
         setHasOptionsMenu(true);
@@ -369,9 +366,7 @@ public class KeyListFragment extends LoaderFragment
 
         // end action mode, if any
         if (mActionMode != null) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-                mActionMode.finish();
-            }
+            mActionMode.finish();
         }
 
         // The list should now be shown.
@@ -401,7 +396,6 @@ public class KeyListFragment extends LoaderFragment
         startActivity(viewIntent);
     }
 
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     protected void encrypt(ActionMode mode, long[] masterKeyIds) {
         Intent intent = new Intent(getActivity(), EncryptFilesActivity.class);
         intent.setAction(EncryptFilesActivity.ACTION_ENCRYPT_DATA);
@@ -418,7 +412,6 @@ public class KeyListFragment extends LoaderFragment
      * @param masterKeyIds
      * @param hasSecret    must contain whether the list of masterKeyIds contains a secret key or not
      */
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     public void showDeleteKeyDialog(final ActionMode mode, long[] masterKeyIds, boolean hasSecret) {
         // Can only work on singular secret keys
         if (hasSecret && masterKeyIds.length > 1) {
