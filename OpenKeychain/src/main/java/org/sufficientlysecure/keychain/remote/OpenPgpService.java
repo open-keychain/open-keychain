@@ -26,30 +26,28 @@ import android.os.ParcelFileDescriptor;
 import android.text.TextUtils;
 
 import org.openintents.openpgp.IOpenPgpService;
-import org.openintents.openpgp.OpenPgpMetadata;
 import org.openintents.openpgp.OpenPgpError;
+import org.openintents.openpgp.OpenPgpMetadata;
 import org.openintents.openpgp.OpenPgpSignatureResult;
 import org.openintents.openpgp.util.OpenPgpApi;
 import org.spongycastle.util.encoders.Hex;
-import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
-import org.sufficientlysecure.keychain.ui.NfcActivity;
 import org.sufficientlysecure.keychain.Constants;
-import org.sufficientlysecure.keychain.pgp.PgpDecryptVerify;
-import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
-import org.sufficientlysecure.keychain.provider.KeychainDatabase.Tables;
 import org.sufficientlysecure.keychain.operations.results.DecryptVerifyResult;
+import org.sufficientlysecure.keychain.operations.results.OperationResult.LogEntryParcel;
+import org.sufficientlysecure.keychain.operations.results.PgpSignEncryptResult;
+import org.sufficientlysecure.keychain.pgp.PgpDecryptVerify;
 import org.sufficientlysecure.keychain.pgp.PgpHelper;
-import org.sufficientlysecure.keychain.pgp.PgpSignEncrypt;
+import org.sufficientlysecure.keychain.pgp.PgpSignEncryptInput;
+import org.sufficientlysecure.keychain.pgp.PgpSignEncryptOperation;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainContract.ApiAccounts;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
+import org.sufficientlysecure.keychain.provider.KeychainDatabase.Tables;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.remote.ui.RemoteServiceActivity;
-import org.sufficientlysecure.keychain.service.PassphraseCacheService;
-import org.sufficientlysecure.keychain.operations.results.OperationResult.LogEntryParcel;
-import org.sufficientlysecure.keychain.operations.results.SignEncryptResult;
 import org.sufficientlysecure.keychain.ui.ImportKeysActivity;
+import org.sufficientlysecure.keychain.ui.NfcActivity;
 import org.sufficientlysecure.keychain.ui.PassphraseDialogActivity;
 import org.sufficientlysecure.keychain.ui.ViewKeyActivity;
 import org.sufficientlysecure.keychain.util.InputData;
@@ -255,60 +253,26 @@ public class OpenPgpService extends RemoteService {
             long inputLength = is.available();
             InputData inputData = new InputData(is, inputLength);
 
-            // Find the appropriate subkey to sign with
-            long sigSubKeyId;
-            try {
-                CachedPublicKeyRing signingRing =
-                        new ProviderHelper(this).getCachedPublicKeyRing(accSettings.getKeyId());
-                sigSubKeyId = signingRing.getSecretSignId();
-            } catch (PgpKeyNotFoundException e) {
-                // secret key that is set for this account is deleted?
-                // show account config again!
-                return getCreateAccountIntent(data, getAccountName(data));
-            }
-
-            // get passphrase from cache, if key has "no" passphrase, this returns an empty String
-            String passphrase;
-            if (data.hasExtra(OpenPgpApi.EXTRA_PASSPHRASE)) {
-                passphrase = data.getStringExtra(OpenPgpApi.EXTRA_PASSPHRASE);
-            } else {
-                try {
-                    passphrase = PassphraseCacheService.getCachedPassphrase(getContext(),
-                            accSettings.getKeyId(), sigSubKeyId);
-                } catch (PassphraseCacheService.KeyNotFoundException e) {
-                    // should happen earlier, but return again here if it happens
-                    return getCreateAccountIntent(data, getAccountName(data));
-                }
-            }
-            if (passphrase == null) {
-                // get PendingIntent for passphrase input, add it to given params and return to client
-                return getPassphraseIntent(data, sigSubKeyId);
-            }
-
             // sign-only
-            PgpSignEncrypt.Builder builder = new PgpSignEncrypt.Builder(
-                    this, new ProviderHelper(getContext()), null,
-                    inputData, os
-            );
-            builder.setEnableAsciiArmorOutput(asciiArmor)
+            PgpSignEncryptInput pseInput = new PgpSignEncryptInput()
+                    .setEnableAsciiArmorOutput(asciiArmor)
                     .setCleartextSignature(cleartextSign)
                     .setDetachedSignature(!cleartextSign)
                     .setVersionHeader(PgpHelper.getVersionForHeader(this))
                     .setSignatureHashAlgorithm(accSettings.getHashAlgorithm())
                     .setSignatureMasterKeyId(accSettings.getKeyId())
-                    .setSignatureSubKeyId(sigSubKeyId)
-                    .setSignaturePassphrase(passphrase)
                     .setNfcState(nfcSignedHash, nfcCreationDate);
 
             // execute PGP operation!
-            SignEncryptResult pgpResult = builder.build().execute();
+            PgpSignEncryptOperation pse = new PgpSignEncryptOperation(this, new ProviderHelper(getContext()), null);
+            PgpSignEncryptResult pgpResult = pse.execute(pseInput, inputData, os);
 
             if (pgpResult.isPending()) {
-                if ((pgpResult.getResult() & SignEncryptResult.RESULT_PENDING_PASSPHRASE) ==
-                        SignEncryptResult.RESULT_PENDING_PASSPHRASE) {
+                if ((pgpResult.getResult() & PgpSignEncryptResult.RESULT_PENDING_PASSPHRASE) ==
+                        PgpSignEncryptResult.RESULT_PENDING_PASSPHRASE) {
                     return getPassphraseIntent(data, pgpResult.getKeyIdPassphraseNeeded());
-                } else if ((pgpResult.getResult() & SignEncryptResult.RESULT_PENDING_NFC) ==
-                        SignEncryptResult.RESULT_PENDING_NFC) {
+                } else if ((pgpResult.getResult() & PgpSignEncryptResult.RESULT_PENDING_NFC) ==
+                        PgpSignEncryptResult.RESULT_PENDING_NFC) {
                     // return PendingIntent to execute NFC activity
                     // pass through the signature creation timestamp to be used again on second execution
                     // of PgpSignEncrypt when we have the signed hash!
@@ -388,45 +352,18 @@ public class OpenPgpService extends RemoteService {
             os = new ParcelFileDescriptor.AutoCloseOutputStream(output);
 
             long inputLength = is.available();
-            InputData inputData = new InputData(is, inputLength);
+            InputData inputData = new InputData(is, inputLength, originalFilename);
 
-            PgpSignEncrypt.Builder builder = new PgpSignEncrypt.Builder(
-                    this, new ProviderHelper(getContext()), null, inputData, os
-            );
-            builder.setEnableAsciiArmorOutput(asciiArmor)
+            PgpSignEncryptInput pseInput = new PgpSignEncryptInput();
+            pseInput.setEnableAsciiArmorOutput(asciiArmor)
                     .setVersionHeader(PgpHelper.getVersionForHeader(this))
                     .setCompressionId(accSettings.getCompression())
                     .setSymmetricEncryptionAlgorithm(accSettings.getEncryptionAlgorithm())
                     .setEncryptionMasterKeyIds(keyIds)
                     .setFailOnMissingEncryptionKeyIds(true)
-                    .setOriginalFilename(originalFilename)
                     .setAdditionalEncryptId(accSettings.getKeyId()); // add acc key for encryption
 
             if (sign) {
-
-                // Find the appropriate subkey to sign with
-                long sigSubKeyId;
-                try {
-                    CachedPublicKeyRing signingRing =
-                            new ProviderHelper(this).getCachedPublicKeyRing(accSettings.getKeyId());
-                    sigSubKeyId = signingRing.getSecretSignId();
-                } catch (PgpKeyNotFoundException e) {
-                    // secret key that is set for this account is deleted?
-                    // show account config again!
-                    return getCreateAccountIntent(data, getAccountName(data));
-                }
-
-                String passphrase;
-                if (data.hasExtra(OpenPgpApi.EXTRA_PASSPHRASE)) {
-                    passphrase = data.getStringExtra(OpenPgpApi.EXTRA_PASSPHRASE);
-                } else {
-                    passphrase = PassphraseCacheService.getCachedPassphrase(getContext(),
-                            accSettings.getKeyId(), sigSubKeyId);
-                }
-                if (passphrase == null) {
-                    // get PendingIntent for passphrase input, add it to given params and return to client
-                    return getPassphraseIntent(data, sigSubKeyId);
-                }
 
                 byte[] nfcSignedHash = data.getByteArrayExtra(OpenPgpApi.EXTRA_NFC_SIGNED_HASH);
                 // carefully: only set if timestamp exists
@@ -437,22 +374,22 @@ public class OpenPgpService extends RemoteService {
                 }
 
                 // sign and encrypt
-                builder.setSignatureHashAlgorithm(accSettings.getHashAlgorithm())
+                pseInput.setSignatureHashAlgorithm(accSettings.getHashAlgorithm())
                         .setSignatureMasterKeyId(accSettings.getKeyId())
-                        .setSignatureSubKeyId(sigSubKeyId)
-                        .setSignaturePassphrase(passphrase)
                         .setNfcState(nfcSignedHash, nfcCreationDate);
             }
 
+            PgpSignEncryptOperation op = new PgpSignEncryptOperation(this, new ProviderHelper(getContext()), null);
+
             // execute PGP operation!
-            SignEncryptResult pgpResult = builder.build().execute();
+            PgpSignEncryptResult pgpResult = op.execute(pseInput, inputData, os);
 
             if (pgpResult.isPending()) {
-                if ((pgpResult.getResult() & SignEncryptResult.RESULT_PENDING_PASSPHRASE) ==
-                        SignEncryptResult.RESULT_PENDING_PASSPHRASE) {
+                if ((pgpResult.getResult() & PgpSignEncryptResult.RESULT_PENDING_PASSPHRASE) ==
+                        PgpSignEncryptResult.RESULT_PENDING_PASSPHRASE) {
                     return getPassphraseIntent(data, pgpResult.getKeyIdPassphraseNeeded());
-                } else if ((pgpResult.getResult() & SignEncryptResult.RESULT_PENDING_NFC) ==
-                        SignEncryptResult.RESULT_PENDING_NFC) {
+                } else if ((pgpResult.getResult() & PgpSignEncryptResult.RESULT_PENDING_NFC) ==
+                        PgpSignEncryptResult.RESULT_PENDING_NFC) {
                     // return PendingIntent to execute NFC activity
                     // pass through the signature creation timestamp to be used again on second execution
                     // of PgpSignEncrypt when we have the signed hash!

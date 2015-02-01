@@ -3,10 +3,10 @@ package org.sufficientlysecure.keychain.operations;
 import android.content.Context;
 
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.operations.results.PromoteKeyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
 import org.sufficientlysecure.keychain.operations.results.PgpEditKeyResult;
+import org.sufficientlysecure.keychain.operations.results.PromoteKeyResult;
 import org.sufficientlysecure.keychain.operations.results.SaveKeyringResult;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedPublicKeyRing;
 import org.sufficientlysecure.keychain.pgp.Progressable;

@@ -27,8 +27,8 @@ import android.support.v4.app.FragmentManager;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.ui.dialog.ProgressDialogFragment;
-import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.ui.util.Notify;
+import org.sufficientlysecure.keychain.util.Log;
 
 public class KeychainIntentServiceHandler extends Handler {
 

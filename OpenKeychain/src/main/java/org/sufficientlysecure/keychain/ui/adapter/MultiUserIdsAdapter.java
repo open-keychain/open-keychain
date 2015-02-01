@@ -21,13 +21,13 @@ import android.content.Context;
 import android.database.Cursor;
 import android.os.Parcel;
 import android.support.v4.util.LongSparseArray;
+import android.support.v4.widget.CursorAdapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
-import android.support.v4.widget.CursorAdapter;
 import android.widget.TextView;
 
 import org.sufficientlysecure.keychain.R;

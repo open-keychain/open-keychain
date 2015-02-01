@@ -963,29 +963,43 @@
     <string name="msg_dc_unlocking">"Unlocking secret key"</string>
 
     <!-- Messages for SignEncrypt operation -->
-    <string name="msg_se_asymmetric">"Preparing public keys for encryption"</string>
-    <string name="msg_se_clearsign_only">"Signing of cleartext input not supported!"</string>
-    <string name="msg_se_compressing">"Preparing compression"</string>
-    <string name="msg_se_encrypting">"Encrypting data"</string>
-    <string name="msg_se_error_bad_passphrase">"Bad passphrase!"</string>
-    <string name="msg_se_error_io">"Encountered IO Exception during operation!"</string>
-    <string name="msg_se_error_key_sign">"Selected signing key cannot sign data!"</string>
-    <string name="msg_se_error_sign_key">"Error fetching signing key!"</string>
-    <string name="msg_se_error_nfc">"NFC data error!"</string>
-    <string name="msg_se_error_no_passphrase">"No passphrase provided!"</string>
-    <string name="msg_se_error_pgp">"Internal OpenPGP error!"</string>
-    <string name="msg_se_error_sig">"Encountered OpenPGP signature exception!"</string>
-    <string name="msg_se_error_unlock">"Unknown error unlocking key!"</string>
-    <string name="msg_se_key_ok">"Encrypting for key: %s"</string>
-    <string name="msg_se_key_unknown">"Missing key for encryption: %s"</string>
-    <string name="msg_se_key_warn">"Bad key for encryption: %s"</string>
-    <string name="msg_se_ok">"Sign/Encrypt operation successful!"</string>
-    <string name="msg_se_pending_nfc">"NFC token required, requesting user input…"</string>
-    <string name="msg_se_pending_passphrase">"Passphrase required, requesting user input…"</string>
-    <string name="msg_se_signing">"Signing data (without encryption)"</string>
-    <string name="msg_se_sigcrypting">"Encrypting data with signature"</string>
-    <string name="msg_se">"Starting sign and/or encrypt operation"</string>
-    <string name="msg_se_symmetric">"Preparing symmetric encryption"</string>
+    <string name="msg_se">"Starting sign/encrypt operation"</string>
+    <string name="msg_se_input_bytes">"Processing input from byte array"</string>
+    <string name="msg_se_input_uri">"Processing input from uri"</string>
+    <string name="msg_se_error_no_input">"No input given!"</string>
+    <string name="msg_se_error_input_uri_not_found">"Error opening Uri for reading!"</string>
+    <string name="msg_se_error_output_uri_not_found">"Error opening Uri for writing!"</string>
+    <string name="msg_se_error_too_many_inputs">"More inputs than outputs specified! This is probably a programming error, please report!"</string>
+    <string name="msg_se_warn_output_left">"Got outputs left but no inputs. This is probably a programming error, please report!"</string>
+    <string name="msg_se_success">"Sign/encrypt operation successful"</string>
+
+    <!-- Messages for PgpSignEncrypt operation -->
+    <string name="msg_pse_asymmetric">"Preparing public keys for encryption"</string>
+    <string name="msg_pse_clearsign_only">"Signing of cleartext input not supported!"</string>
+    <string name="msg_pse_compressing">"Preparing compression"</string>
+    <string name="msg_pse_encrypting">"Encrypting data"</string>
+    <string name="msg_pse_error_bad_passphrase">"Bad passphrase!"</string>
+    <string name="msg_pse_error_hash_algo">"Requested hashing algorithm is not supported by this key!"</string>
+    <string name="msg_pse_error_io">"Encountered IO Exception during operation!"</string>
+    <string name="msg_pse_error_key_sign">"Selected signing key cannot sign data!"</string>
+    <string name="msg_pse_error_sign_key">"Error fetching signing key!"</string>
+    <string name="msg_pse_error_nfc">"NFC data error!"</string>
+    <string name="msg_pse_error_no_passphrase">"No passphrase provided!"</string>
+    <string name="msg_pse_error_pgp">"Internal OpenPGP error!"</string>
+    <string name="msg_pse_error_sig">"Encountered OpenPGP signature exception!"</string>
+    <string name="msg_pse_error_unlock">"Unknown error unlocking key!"</string>
+    <string name="msg_pse_key_ok">"Encrypting for key: %s"</string>
+    <string name="msg_pse_key_unknown">"Missing key for encryption: %s"</string>
+    <string name="msg_pse_key_warn">"Bad key for encryption: %s"</string>
+    <string name="msg_pse_ok">"Sign/Encrypt operation successful!"</string>
+    <string name="msg_pse_pending_nfc">"NFC token required, requesting user input…"</string>
+    <string name="msg_pse_pending_passphrase">"Passphrase required, requesting user input…"</string>
+    <string name="msg_pse_signing">"Signing data (without encryption)"</string>
+    <string name="msg_pse_signing_cleartext">"Creating cleartext signature"</string>
+    <string name="msg_pse_signing_detached">"Creating detached signature"</string>
+    <string name="msg_pse_sigcrypting">"Encrypting data with signature"</string>
+    <string name="msg_pse">"Starting sign and/or encrypt operation"</string>
+    <string name="msg_pse_symmetric">"Preparing symmetric encryption"</string>
 
     <string name="msg_crt_certifying">"Generating certifications"</string>
     <string name="msg_crt_certify_all">"Certifying all user IDs for key %s"</string>

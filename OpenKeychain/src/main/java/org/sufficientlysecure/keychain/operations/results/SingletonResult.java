@@ -18,12 +18,7 @@
 
 package org.sufficientlysecure.keychain.operations.results;
 
-import android.app.Activity;
 import android.os.Parcel;
-
-import com.github.johnpersano.supertoasts.SuperCardToast;
-import com.github.johnpersano.supertoasts.SuperToast;
-import com.github.johnpersano.supertoasts.util.Style;
 
 /** This is a simple subclass meant to contain only a single log message. This log
  * message is also shown without a log button in the createNotify SuperToast. */

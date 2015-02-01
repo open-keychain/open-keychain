@@ -31,8 +31,8 @@ import android.net.Uri;
 import android.text.TextUtils;
 
 import org.sufficientlysecure.keychain.Constants;
-import org.sufficientlysecure.keychain.provider.KeychainContract.ApiAllowedKeys;
 import org.sufficientlysecure.keychain.provider.KeychainContract.ApiAccounts;
+import org.sufficientlysecure.keychain.provider.KeychainContract.ApiAllowedKeys;
 import org.sufficientlysecure.keychain.provider.KeychainContract.ApiApps;
 import org.sufficientlysecure.keychain.provider.KeychainContract.Certs;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRingData;

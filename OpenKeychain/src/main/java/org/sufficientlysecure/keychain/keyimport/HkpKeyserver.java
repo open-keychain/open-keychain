@@ -19,10 +19,10 @@
 package org.sufficientlysecure.keychain.keyimport;
 
 import org.sufficientlysecure.keychain.Constants;
-import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
-import org.sufficientlysecure.keychain.util.TlsHelper;
 import org.sufficientlysecure.keychain.pgp.PgpHelper;
+import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.Log;
+import org.sufficientlysecure.keychain.util.TlsHelper;
 
 import java.io.BufferedWriter;
 import java.io.IOException;

@@ -27,40 +27,36 @@ import android.os.Messenger;
 import android.os.RemoteException;
 
 import org.sufficientlysecure.keychain.Constants;
-import org.sufficientlysecure.keychain.operations.CertifyOperation;
-import org.sufficientlysecure.keychain.operations.DeleteOperation;
-import org.sufficientlysecure.keychain.operations.EditKeyOperation;
-import org.sufficientlysecure.keychain.operations.PromoteKeyOperation;
-import org.sufficientlysecure.keychain.operations.results.DeleteResult;
-import org.sufficientlysecure.keychain.operations.results.EditKeyResult;
-import org.sufficientlysecure.keychain.operations.results.ExportResult;
-import org.sufficientlysecure.keychain.operations.results.PromoteKeyResult;
-import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
-import org.sufficientlysecure.keychain.operations.results.CertifyResult;
-import org.sufficientlysecure.keychain.util.FileHelper;
-import org.sufficientlysecure.keychain.util.ParcelableFileCache.IteratorWithSize;
-import org.sufficientlysecure.keychain.util.Preferences;
 import org.sufficientlysecure.keychain.keyimport.HkpKeyserver;
 import org.sufficientlysecure.keychain.keyimport.Keyserver;
 import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
+import org.sufficientlysecure.keychain.operations.CertifyOperation;
+import org.sufficientlysecure.keychain.operations.DeleteOperation;
+import org.sufficientlysecure.keychain.operations.EditKeyOperation;
+import org.sufficientlysecure.keychain.operations.ImportExportOperation;
+import org.sufficientlysecure.keychain.operations.PromoteKeyOperation;
+import org.sufficientlysecure.keychain.operations.SignEncryptOperation;
+import org.sufficientlysecure.keychain.operations.results.CertifyResult;
+import org.sufficientlysecure.keychain.operations.results.ConsolidateResult;
+import org.sufficientlysecure.keychain.operations.results.DecryptVerifyResult;
+import org.sufficientlysecure.keychain.operations.results.DeleteResult;
+import org.sufficientlysecure.keychain.operations.results.EditKeyResult;
+import org.sufficientlysecure.keychain.operations.results.ExportResult;
+import org.sufficientlysecure.keychain.operations.results.ImportKeyResult;
+import org.sufficientlysecure.keychain.operations.results.OperationResult;
+import org.sufficientlysecure.keychain.operations.results.PromoteKeyResult;
+import org.sufficientlysecure.keychain.operations.results.SignEncryptResult;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedPublicKeyRing;
 import org.sufficientlysecure.keychain.pgp.PgpDecryptVerify;
-import org.sufficientlysecure.keychain.operations.results.DecryptVerifyResult;
-import org.sufficientlysecure.keychain.pgp.PgpHelper;
-import org.sufficientlysecure.keychain.operations.ImportExportOperation;
-import org.sufficientlysecure.keychain.pgp.PgpSignEncrypt;
 import org.sufficientlysecure.keychain.pgp.Progressable;
+import org.sufficientlysecure.keychain.pgp.SignEncryptParcel;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralMsgIdException;
-import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
-import org.sufficientlysecure.keychain.operations.results.OperationResult;
-import org.sufficientlysecure.keychain.operations.results.ConsolidateResult;
-import org.sufficientlysecure.keychain.operations.results.ImportKeyResult;
-import org.sufficientlysecure.keychain.operations.results.SignEncryptResult;
-import org.sufficientlysecure.keychain.util.ParcelableFileCache;
+import org.sufficientlysecure.keychain.util.FileHelper;
 import org.sufficientlysecure.keychain.util.InputData;
 import org.sufficientlysecure.keychain.util.Log;
+import org.sufficientlysecure.keychain.util.ParcelableFileCache;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -68,8 +64,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.Iterator;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -115,24 +109,11 @@ public class KeychainIntentService extends IntentService implements Progressable
     // possible targets:
     public static final int IO_BYTES = 1;
     public static final int IO_URI = 2;
-    public static final int IO_URIS = 3;
-
-    public static final String SELECTED_URI = "selected_uri";
 
     // encrypt
-    public static final String ENCRYPT_SIGNATURE_MASTER_ID = "secret_key_id";
-    public static final String ENCRYPT_SIGNATURE_KEY_PASSPHRASE = "secret_key_passphrase";
-    public static final String ENCRYPT_SIGNATURE_NFC_TIMESTAMP = "signature_nfc_timestamp";
-    public static final String ENCRYPT_SIGNATURE_NFC_HASH = "signature_nfc_hash";
-    public static final String ENCRYPT_USE_ASCII_ARMOR = "use_ascii_armor";
-    public static final String ENCRYPT_ENCRYPTION_KEYS_IDS = "encryption_keys_ids";
-    public static final String ENCRYPT_COMPRESSION_ID = "compression_id";
-    public static final String ENCRYPT_MESSAGE_BYTES = "message_bytes";
     public static final String ENCRYPT_DECRYPT_INPUT_URI = "input_uri";
-    public static final String ENCRYPT_INPUT_URIS = "input_uris";
     public static final String ENCRYPT_DECRYPT_OUTPUT_URI = "output_uri";
-    public static final String ENCRYPT_OUTPUT_URIS = "output_uris";
-    public static final String ENCRYPT_SYMMETRIC_PASSPHRASE = "passphrase";
+    public static final String SIGN_ENCRYPT_PARCEL = "sign_encrypt_parcel";
 
     // decrypt/verify
     public static final String DECRYPT_CIPHERTEXT_BYTES = "ciphertext_bytes";
@@ -175,9 +156,6 @@ public class KeychainIntentService extends IntentService implements Progressable
     /*
      * possible data keys as result send over messenger
      */
-
-    // encrypt
-    public static final String RESULT_BYTES = "encrypted_data";
 
     // decrypt/verify
     public static final String RESULT_DECRYPTED_BYTES = "decrypted_data";
@@ -427,83 +405,19 @@ public class KeychainIntentService extends IntentService implements Progressable
             }
             case ACTION_SIGN_ENCRYPT:
 
-                try {
-                    /* Input */
-                    int source = data.get(SOURCE) != null ? data.getInt(SOURCE) : data.getInt(TARGET);
-                    Bundle resultData = new Bundle();
+                // Input
+                SignEncryptParcel inputParcel = data.getParcelable(SIGN_ENCRYPT_PARCEL);
 
-                    long sigMasterKeyId = data.getLong(ENCRYPT_SIGNATURE_MASTER_ID);
-                    String sigKeyPassphrase = data.getString(ENCRYPT_SIGNATURE_KEY_PASSPHRASE);
+                // Operation
+                SignEncryptOperation op = new SignEncryptOperation(
+                        this, new ProviderHelper(this), this, mActionCanceled);
+                SignEncryptResult result = op.execute(inputParcel);
 
-                    byte[] nfcHash = data.getByteArray(ENCRYPT_SIGNATURE_NFC_HASH);
-                    Date nfcTimestamp = (Date) data.getSerializable(ENCRYPT_SIGNATURE_NFC_TIMESTAMP);
-
-                    String symmetricPassphrase = data.getString(ENCRYPT_SYMMETRIC_PASSPHRASE);
-
-                    boolean useAsciiArmor = data.getBoolean(ENCRYPT_USE_ASCII_ARMOR);
-                    long encryptionKeyIds[] = data.getLongArray(ENCRYPT_ENCRYPTION_KEYS_IDS);
-                    int compressionId = data.getInt(ENCRYPT_COMPRESSION_ID);
-                    int urisCount = data.containsKey(ENCRYPT_INPUT_URIS) ? data.getParcelableArrayList(ENCRYPT_INPUT_URIS).size() : 1;
-                    for (int i = 0; i < urisCount; i++) {
-                        data.putInt(SELECTED_URI, i);
-                        InputData inputData = createEncryptInputData(data);
-                        OutputStream outStream = createCryptOutputStream(data);
-                        String originalFilename = getOriginalFilename(data);
-
-                        /* Operation */
-                        PgpSignEncrypt.Builder builder = new PgpSignEncrypt.Builder(
-                                this, new ProviderHelper(this), this, inputData, outStream
-                        );
-                        builder.setEnableAsciiArmorOutput(useAsciiArmor)
-                                .setCleartextSignature(true)
-                                .setVersionHeader(PgpHelper.getVersionForHeader(this))
-                                .setCompressionId(compressionId)
-                                .setSymmetricEncryptionAlgorithm(
-                                        Preferences.getPreferences(this).getDefaultEncryptionAlgorithm())
-                                .setEncryptionMasterKeyIds(encryptionKeyIds)
-                                .setSymmetricPassphrase(symmetricPassphrase)
-                                .setOriginalFilename(originalFilename);
-
-                        try {
-
-                            // Find the appropriate subkey to sign with
-                            CachedPublicKeyRing signingRing =
-                                    new ProviderHelper(this).getCachedPublicKeyRing(sigMasterKeyId);
-                            long sigSubKeyId = signingRing.getSecretSignId();
-
-                            // Set signature settings
-                            builder.setSignatureMasterKeyId(sigMasterKeyId)
-                                    .setSignatureSubKeyId(sigSubKeyId)
-                                    .setSignaturePassphrase(sigKeyPassphrase)
-                                    .setSignatureHashAlgorithm(
-                                            Preferences.getPreferences(this).getDefaultHashAlgorithm())
-                                    .setAdditionalEncryptId(sigMasterKeyId);
-                            if (nfcHash != null && nfcTimestamp != null) {
-                                builder.setNfcState(nfcHash, nfcTimestamp);
-                            }
-
-                        } catch (PgpKeyNotFoundException e) {
-                            // encrypt-only
-                            // TODO Just silently drop the requested signature? Shouldn't we throw here?
-                        }
-
-                        SignEncryptResult result = builder.build().execute();
-                        resultData.putParcelable(SignEncryptResult.EXTRA_RESULT, result);
-
-                        outStream.close();
-
-                        /* Output */
-                        finalizeEncryptOutputStream(data, resultData, outStream);
-                    }
-
-                    Log.logDebugBundle(resultData, "resultData");
-
-                    sendMessageToHandler(KeychainIntentServiceHandler.MESSAGE_OKAY, resultData);
-                } catch (Exception e) {
-                    sendErrorToHandler(e);
-                }
+                // Result
+                sendMessageToHandler(KeychainIntentServiceHandler.MESSAGE_OKAY, result);
 
                 break;
+
             case ACTION_UPLOAD_KEYRING:
 
                 try {
@@ -620,10 +534,6 @@ public class KeychainIntentService extends IntentService implements Progressable
         return createCryptInputData(data, DECRYPT_CIPHERTEXT_BYTES);
     }
 
-    private InputData createEncryptInputData(Bundle data) throws IOException, PgpGeneralException {
-        return createCryptInputData(data, ENCRYPT_MESSAGE_BYTES);
-    }
-
     private InputData createCryptInputData(Bundle data, String bytesName) throws PgpGeneralException, IOException {
         int source = data.get(SOURCE) != null ? data.getInt(SOURCE) : data.getInt(TARGET);
         switch (source) {
@@ -636,33 +546,6 @@ public class KeychainIntentService extends IntentService implements Progressable
 
                 // InputStream
                 return new InputData(getContentResolver().openInputStream(providerUri), FileHelper.getFileSize(this, providerUri, 0));
-
-            case IO_URIS:
-                providerUri = data.<Uri>getParcelableArrayList(ENCRYPT_INPUT_URIS).get(data.getInt(SELECTED_URI));
-
-                // InputStream
-                return new InputData(getContentResolver().openInputStream(providerUri), FileHelper.getFileSize(this, providerUri, 0));
-
-            default:
-                throw new PgpGeneralException("No target choosen!");
-        }
-    }
-
-    private String getOriginalFilename(Bundle data) throws PgpGeneralException, FileNotFoundException {
-        int target = data.getInt(TARGET);
-        switch (target) {
-            case IO_BYTES:
-                return "";
-
-            case IO_URI:
-                Uri providerUri = data.getParcelable(ENCRYPT_DECRYPT_INPUT_URI);
-
-                return FileHelper.getFilename(this, providerUri);
-
-            case IO_URIS:
-                providerUri = data.<Uri>getParcelableArrayList(ENCRYPT_INPUT_URIS).get(data.getInt(SELECTED_URI));
-
-                return FileHelper.getFilename(this, providerUri);
 
             default:
                 throw new PgpGeneralException("No target choosen!");
@@ -680,18 +563,9 @@ public class KeychainIntentService extends IntentService implements Progressable
 
                 return getContentResolver().openOutputStream(providerUri);
 
-            case IO_URIS:
-                providerUri = data.<Uri>getParcelableArrayList(ENCRYPT_OUTPUT_URIS).get(data.getInt(SELECTED_URI));
-
-                return getContentResolver().openOutputStream(providerUri);
-
             default:
                 throw new PgpGeneralException("No target choosen!");
         }
-    }
-
-    private void finalizeEncryptOutputStream(Bundle data, Bundle resultData, OutputStream outStream) {
-        finalizeCryptOutputStream(data, resultData, outStream, RESULT_BYTES);
     }
 
     private void finalizeDecryptOutputStream(Bundle data, Bundle resultData, OutputStream outStream) {
@@ -706,7 +580,6 @@ public class KeychainIntentService extends IntentService implements Progressable
                 resultData.putByteArray(bytesName, output);
                 break;
             case IO_URI:
-            case IO_URIS:
                 // nothing, output was written, just send okay and verification bundle
 
                 break;

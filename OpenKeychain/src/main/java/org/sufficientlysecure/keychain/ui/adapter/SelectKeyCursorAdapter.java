@@ -30,9 +30,9 @@ import android.widget.TextView;
 
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
-import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.ui.util.Highlighter;
+import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 
 
 /**

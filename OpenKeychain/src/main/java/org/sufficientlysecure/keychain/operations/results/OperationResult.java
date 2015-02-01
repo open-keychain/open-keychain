@@ -20,15 +20,8 @@ package org.sufficientlysecure.keychain.operations.results;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.view.View;
-
-import com.nispok.snackbar.Snackbar;
-import com.nispok.snackbar.Snackbar.SnackbarDuration;
-import com.nispok.snackbar.SnackbarManager;
-import com.nispok.snackbar.listeners.ActionClickListener;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
@@ -593,28 +586,42 @@ public abstract class OperationResult implements Parcelable {
         MSG_DC_UNLOCKING (LogLevel.INFO, R.string.msg_dc_unlocking),
 
         // signencrypt
-        MSG_SE_ASYMMETRIC (LogLevel.INFO, R.string.msg_se_asymmetric),
-        MSG_SE_CLEARSIGN_ONLY (LogLevel.DEBUG, R.string.msg_se_clearsign_only),
-        MSG_SE_COMPRESSING (LogLevel.DEBUG, R.string.msg_se_compressing),
-        MSG_SE_ENCRYPTING (LogLevel.DEBUG, R.string.msg_se_encrypting),
-        MSG_SE_ERROR_BAD_PASSPHRASE (LogLevel.ERROR, R.string.msg_se_error_bad_passphrase),
-        MSG_SE_ERROR_IO (LogLevel.ERROR, R.string.msg_se_error_io),
-        MSG_SE_ERROR_SIGN_KEY(LogLevel.ERROR, R.string.msg_se_error_sign_key),
-        MSG_SE_ERROR_KEY_SIGN (LogLevel.ERROR, R.string.msg_se_error_key_sign),
-        MSG_SE_ERROR_NFC (LogLevel.ERROR, R.string.msg_se_error_nfc),
-        MSG_SE_ERROR_PGP (LogLevel.ERROR, R.string.msg_se_error_pgp),
-        MSG_SE_ERROR_SIG (LogLevel.ERROR, R.string.msg_se_error_sig),
-        MSG_SE_ERROR_UNLOCK (LogLevel.ERROR, R.string.msg_se_error_unlock),
-        MSG_SE_KEY_OK (LogLevel.OK, R.string.msg_se_key_ok),
-        MSG_SE_KEY_UNKNOWN (LogLevel.DEBUG, R.string.msg_se_key_unknown),
-        MSG_SE_KEY_WARN (LogLevel.WARN, R.string.msg_se_key_warn),
-        MSG_SE_OK (LogLevel.OK, R.string.msg_se_ok),
-        MSG_SE_PENDING_NFC (LogLevel.INFO, R.string.msg_se_pending_nfc),
-        MSG_SE_PENDING_PASSPHRASE (LogLevel.INFO, R.string.msg_se_pending_passphrase),
-        MSG_SE (LogLevel.DEBUG, R.string.msg_se),
-        MSG_SE_SIGNING (LogLevel.DEBUG, R.string.msg_se_signing),
-        MSG_SE_SIGCRYPTING (LogLevel.DEBUG, R.string.msg_se_sigcrypting),
-        MSG_SE_SYMMETRIC (LogLevel.INFO, R.string.msg_se_symmetric),
+        MSG_SE (LogLevel.START, R.string.msg_se),
+        MSG_SE_INPUT_BYTES (LogLevel.INFO, R.string.msg_se_input_bytes),
+        MSG_SE_INPUT_URI (LogLevel.INFO, R.string.msg_se_input_uri),
+        MSG_SE_ERROR_NO_INPUT (LogLevel.DEBUG, R.string.msg_se_error_no_input),
+        MSG_SE_ERROR_INPUT_URI_NOT_FOUND (LogLevel.ERROR, R.string.msg_se_error_input_uri_not_found),
+        MSG_SE_ERROR_OUTPUT_URI_NOT_FOUND (LogLevel.ERROR, R.string.msg_se_error_output_uri_not_found),
+        MSG_SE_ERROR_TOO_MANY_INPUTS (LogLevel.ERROR, R.string.msg_se_error_too_many_inputs),
+        MSG_SE_WARN_OUTPUT_LEFT (LogLevel.WARN, R.string.msg_se_warn_output_left),
+        MSG_SE_SUCCESS (LogLevel.OK, R.string.msg_se_success),
+
+        // pgpsignencrypt
+        MSG_PSE_ASYMMETRIC (LogLevel.INFO, R.string.msg_pse_asymmetric),
+        MSG_PSE_CLEARSIGN_ONLY (LogLevel.DEBUG, R.string.msg_pse_clearsign_only),
+        MSG_PSE_COMPRESSING (LogLevel.DEBUG, R.string.msg_pse_compressing),
+        MSG_PSE_ENCRYPTING (LogLevel.DEBUG, R.string.msg_pse_encrypting),
+        MSG_PSE_ERROR_BAD_PASSPHRASE (LogLevel.ERROR, R.string.msg_pse_error_bad_passphrase),
+        MSG_PSE_ERROR_HASH_ALGO (LogLevel.ERROR, R.string.msg_pse_error_hash_algo),
+        MSG_PSE_ERROR_IO (LogLevel.ERROR, R.string.msg_pse_error_io),
+        MSG_PSE_ERROR_SIGN_KEY(LogLevel.ERROR, R.string.msg_pse_error_sign_key),
+        MSG_PSE_ERROR_KEY_SIGN (LogLevel.ERROR, R.string.msg_pse_error_key_sign),
+        MSG_PSE_ERROR_NFC (LogLevel.ERROR, R.string.msg_pse_error_nfc),
+        MSG_PSE_ERROR_PGP (LogLevel.ERROR, R.string.msg_pse_error_pgp),
+        MSG_PSE_ERROR_SIG (LogLevel.ERROR, R.string.msg_pse_error_sig),
+        MSG_PSE_ERROR_UNLOCK (LogLevel.ERROR, R.string.msg_pse_error_unlock),
+        MSG_PSE_KEY_OK (LogLevel.OK, R.string.msg_pse_key_ok),
+        MSG_PSE_KEY_UNKNOWN (LogLevel.DEBUG, R.string.msg_pse_key_unknown),
+        MSG_PSE_KEY_WARN (LogLevel.WARN, R.string.msg_pse_key_warn),
+        MSG_PSE_OK (LogLevel.OK, R.string.msg_pse_ok),
+        MSG_PSE_PENDING_NFC (LogLevel.INFO, R.string.msg_pse_pending_nfc),
+        MSG_PSE_PENDING_PASSPHRASE (LogLevel.INFO, R.string.msg_pse_pending_passphrase),
+        MSG_PSE (LogLevel.DEBUG, R.string.msg_pse),
+        MSG_PSE_SIGNING (LogLevel.DEBUG, R.string.msg_pse_signing),
+        MSG_PSE_SIGNING_CLEARTEXT (LogLevel.DEBUG, R.string.msg_pse_signing_cleartext),
+        MSG_PSE_SIGNING_DETACHED (LogLevel.DEBUG, R.string.msg_pse_signing_detached),
+        MSG_PSE_SIGCRYPTING (LogLevel.DEBUG, R.string.msg_pse_sigcrypting),
+        MSG_PSE_SYMMETRIC (LogLevel.INFO, R.string.msg_pse_symmetric),
 
         MSG_CRT_CERTIFYING (LogLevel.DEBUG, R.string.msg_crt_certifying),
         MSG_CRT_CERTIFY_ALL (LogLevel.DEBUG, R.string.msg_crt_certify_all),
