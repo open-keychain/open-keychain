@@ -21,8 +21,6 @@ package org.sufficientlysecure.keychain.operations.results;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Parcel;
-import android.os.Parcelable;
-import android.view.View;
 
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.ui.LogDisplayActivity;

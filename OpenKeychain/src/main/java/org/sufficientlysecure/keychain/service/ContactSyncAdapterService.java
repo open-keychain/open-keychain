@@ -53,7 +53,7 @@ public class ContactSyncAdapterService extends Service {
 //                    new Handler.Callback() {
 //                        @Override
 //                        public boolean handleMessage(Message msg) {
-//                            Bundle data = msg.getData();
+//                            Bundle data = msg.getInputData();
 //                            switch (msg.arg1) {
 //                                case KeychainIntentServiceHandler.MESSAGE_OKAY:
 //                                    Log.d(Constants.TAG, "Syncing... Done.");

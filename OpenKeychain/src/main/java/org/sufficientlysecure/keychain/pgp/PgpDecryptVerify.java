@@ -39,7 +39,6 @@ import org.spongycastle.openpgp.jcajce.JcaPGPObjectFactory;
 import org.spongycastle.openpgp.operator.PBEDataDecryptorFactory;
 import org.spongycastle.openpgp.operator.PGPDigestCalculatorProvider;
 import org.spongycastle.openpgp.operator.PublicKeyDataDecryptorFactory;
-import org.spongycastle.openpgp.operator.jcajce.JcaKeyFingerprintCalculator;
 import org.spongycastle.openpgp.operator.jcajce.JcaPGPContentVerifierBuilderProvider;
 import org.spongycastle.openpgp.operator.jcajce.JcaPGPDigestCalculatorProviderBuilder;
 import org.spongycastle.openpgp.operator.jcajce.JcePBEDataDecryptorFactoryBuilder;
@@ -47,12 +46,12 @@ import org.spongycastle.openpgp.operator.jcajce.NfcSyncPublicKeyDataDecryptorFac
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.BaseOperation;
-import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
-import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
-import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.operations.results.DecryptVerifyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
+import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
+import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
+import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.InputData;
 import org.sufficientlysecure.keychain.util.Log;
@@ -616,6 +615,7 @@ public class PgpDecryptVerify extends BaseOperation {
             int length;
             byte[] buffer = new byte[1 << 16];
             while ((length = dataIn.read(buffer)) > 0) {
+                Log.d(Constants.TAG, "read bytes: " + length);
                 if (mOutStream != null) {
                     mOutStream.write(buffer, 0, length);
                 }

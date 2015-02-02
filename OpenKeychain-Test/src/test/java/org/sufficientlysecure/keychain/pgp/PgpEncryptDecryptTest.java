@@ -29,13 +29,12 @@ import org.spongycastle.bcpg.sig.KeyFlags;
 import org.spongycastle.jce.provider.BouncyCastleProvider;
 import org.spongycastle.openpgp.PGPEncryptedData;
 import org.sufficientlysecure.keychain.operations.results.PgpEditKeyResult;
-import org.sufficientlysecure.keychain.pgp.PgpSignEncrypt.Builder;
+import org.sufficientlysecure.keychain.operations.results.PgpSignEncryptResult;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRingData;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel.Algorithm;
 import org.sufficientlysecure.keychain.operations.results.DecryptVerifyResult;
-import org.sufficientlysecure.keychain.operations.results.SignEncryptResult;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel.ChangeUnlockParcel;
 import org.sufficientlysecure.keychain.support.KeyringTestingHelper;
 import org.sufficientlysecure.keychain.util.InputData;
@@ -131,15 +130,17 @@ public class PgpEncryptDecryptTest {
             ByteArrayOutputStream out = new ByteArrayOutputStream();
             ByteArrayInputStream in = new ByteArrayInputStream(plaintext.getBytes());
 
-            InputData data = new InputData(in, in.available());
-            Builder b = new PgpSignEncrypt.Builder(Robolectric.application,
-                    new ProviderHelper(Robolectric.application),
-                    null,
-                    data, out);
+            PgpSignEncryptOperation op = new PgpSignEncryptOperation(Robolectric.application,
+                    new ProviderHelper(Robolectric.application), null);
 
+            InputData data = new InputData(in, in.available());
+
+            PgpSignEncryptInput b = new PgpSignEncryptInput();
             b.setSymmetricPassphrase(mPassphrase);
             b.setSymmetricEncryptionAlgorithm(PGPEncryptedData.AES_128);
-            SignEncryptResult result = b.build().execute();
+
+            PgpSignEncryptResult result = op.execute(b, data, out);
+
             Assert.assertTrue("encryption must succeed", result.success());
 
             ciphertext = out.toByteArray();
@@ -210,16 +211,15 @@ public class PgpEncryptDecryptTest {
             ByteArrayOutputStream out = new ByteArrayOutputStream();
             ByteArrayInputStream in = new ByteArrayInputStream(plaintext.getBytes());
 
+            PgpSignEncryptOperation op = new PgpSignEncryptOperation(Robolectric.application,
+                    new ProviderHelper(Robolectric.application), null);
+
             InputData data = new InputData(in, in.available());
-            Builder b = new PgpSignEncrypt.Builder(
-                    Robolectric.application,
-                    new ProviderHelper(Robolectric.application),
-                    null, // new DummyPassphraseCache(mPassphrase, 0L),
-                    data, out);
+            PgpSignEncryptInput b = new PgpSignEncryptInput();
 
             b.setEncryptionMasterKeyIds(new long[]{ mStaticRing1.getMasterKeyId() });
             b.setSymmetricEncryptionAlgorithm(PGPEncryptedData.AES_128);
-            SignEncryptResult result = b.build().execute();
+            PgpSignEncryptResult result = op.execute(b, data, out);
             Assert.assertTrue("encryption must succeed", result.success());
 
             ciphertext = out.toByteArray();
@@ -286,19 +286,19 @@ public class PgpEncryptDecryptTest {
             ByteArrayOutputStream out = new ByteArrayOutputStream();
             ByteArrayInputStream in = new ByteArrayInputStream(plaintext.getBytes());
 
-            InputData data = new InputData(in, in.available());
-            Builder b = new PgpSignEncrypt.Builder(
-                    Robolectric.application,
-                    new ProviderHelper(Robolectric.application),
-                    null, // new DummyPassphraseCache(mPassphrase, 0L),
-                    data, out);
+            PgpSignEncryptOperation op = new PgpSignEncryptOperation(Robolectric.application,
+                    new ProviderHelper(Robolectric.application), null);
 
+            InputData data = new InputData(in, in.available());
+
+            PgpSignEncryptInput b = new PgpSignEncryptInput();
             b.setEncryptionMasterKeyIds(new long[] {
                     mStaticRing1.getMasterKeyId(),
                     mStaticRing2.getMasterKeyId()
             });
             b.setSymmetricEncryptionAlgorithm(PGPEncryptedData.AES_128);
-            SignEncryptResult result = b.build().execute();
+
+            PgpSignEncryptResult result = op.execute(b, data, out);
             Assert.assertTrue("encryption must succeed", result.success());
 
             ciphertext = out.toByteArray();
@@ -375,12 +375,11 @@ public class PgpEncryptDecryptTest {
             ByteArrayOutputStream out = new ByteArrayOutputStream();
             ByteArrayInputStream in = new ByteArrayInputStream(plaintext.getBytes());
 
+            PgpSignEncryptOperation op = new PgpSignEncryptOperation(Robolectric.application,
+                    new ProviderHelper(Robolectric.application), null);
+
             InputData data = new InputData(in, in.available());
-            Builder b = new PgpSignEncrypt.Builder(
-                    Robolectric.application,
-                    new ProviderHelper(Robolectric.application),
-                    null, // new DummyPassphraseCache(mPassphrase, 0L),
-                    data, out);
+            PgpSignEncryptInput b = new PgpSignEncryptInput();
 
             b.setEncryptionMasterKeyIds(new long[] {
                     mStaticRing1.getMasterKeyId(),
@@ -390,7 +389,8 @@ public class PgpEncryptDecryptTest {
             b.setSignatureSubKeyId(KeyringTestingHelper.getSubkeyId(mStaticRing1, 1));
             b.setSignaturePassphrase(mKeyPhrase1);
             b.setSymmetricEncryptionAlgorithm(PGPEncryptedData.AES_128);
-            SignEncryptResult result = b.build().execute();
+
+            PgpSignEncryptResult result = op.execute(b, data, out);
             Assert.assertTrue("encryption must succeed", result.success());
 
             ciphertext = out.toByteArray();
@@ -453,19 +453,18 @@ public class PgpEncryptDecryptTest {
             ByteArrayOutputStream out = new ByteArrayOutputStream();
             ByteArrayInputStream in = new ByteArrayInputStream(plaindata);
 
+            PgpSignEncryptOperation op = new PgpSignEncryptOperation(Robolectric.application,
+                    new ProviderHelper(Robolectric.application), null);
+
             InputData data = new InputData(in, in.available());
-            Builder b = new PgpSignEncrypt.Builder(
-                    Robolectric.application,
-                    new ProviderHelper(Robolectric.application),
-                    null, // new DummyPassphraseCache(mPassphrase, 0L),
-                    data, out);
+            PgpSignEncryptInput b = new PgpSignEncryptInput();
 
             b.setEncryptionMasterKeyIds(new long[]{ mStaticRing1.getMasterKeyId() });
             b.setSymmetricEncryptionAlgorithm(PGPEncryptedData.AES_128);
             // this only works with ascii armored output!
             b.setEnableAsciiArmorOutput(true);
             b.setCharset("iso-2022-jp");
-            SignEncryptResult result = b.build().execute();
+            PgpSignEncryptResult result = op.execute(b, data, out);
             Assert.assertTrue("encryption must succeed", result.success());
 
             ciphertext = out.toByteArray();

@@ -32,7 +32,6 @@ import java.io.IOException;
 import java.io.ObjectStreamException;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 public class WrappedUserAttribute implements Serializable {
 

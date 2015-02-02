@@ -23,9 +23,9 @@ import android.os.Parcelable;
 
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
-import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
 import org.sufficientlysecure.keychain.pgp.UncachedPublicKey;
+import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 
 import java.io.Serializable;
 import java.util.ArrayList;

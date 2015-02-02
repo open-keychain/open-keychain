@@ -20,7 +20,6 @@ package org.sufficientlysecure.keychain.util;
 import android.content.res.AssetManager;
 
 import org.sufficientlysecure.keychain.Constants;
-import org.sufficientlysecure.keychain.util.Log;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;

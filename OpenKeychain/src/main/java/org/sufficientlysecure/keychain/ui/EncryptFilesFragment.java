@@ -36,10 +36,10 @@ import android.widget.TextView;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.provider.TemporaryStorageProvider;
 import org.sufficientlysecure.keychain.ui.util.FormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.util.FileHelper;
-import org.sufficientlysecure.keychain.provider.TemporaryStorageProvider;
 
 import java.io.File;
 import java.util.HashMap;

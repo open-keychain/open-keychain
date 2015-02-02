@@ -30,13 +30,13 @@ import android.support.v4.util.LongSparseArray;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.operations.results.ImportKeyResult;
-import org.sufficientlysecure.keychain.pgp.WrappedUserAttribute;
-import org.sufficientlysecure.keychain.provider.KeychainContract.UserPackets;
-import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
-import org.sufficientlysecure.keychain.util.ParcelableFileCache.IteratorWithSize;
-import org.sufficientlysecure.keychain.util.Preferences;
 import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
+import org.sufficientlysecure.keychain.operations.ImportExportOperation;
+import org.sufficientlysecure.keychain.operations.results.ConsolidateResult;
+import org.sufficientlysecure.keychain.operations.results.ImportKeyResult;
+import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
+import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
+import org.sufficientlysecure.keychain.operations.results.SaveKeyringResult;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedPublicKey;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedPublicKeyRing;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey;
@@ -44,11 +44,11 @@ import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey.SecretKeyType;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKeyRing;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.pgp.PgpHelper;
-import org.sufficientlysecure.keychain.operations.ImportExportOperation;
 import org.sufficientlysecure.keychain.pgp.Progressable;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
 import org.sufficientlysecure.keychain.pgp.UncachedPublicKey;
 import org.sufficientlysecure.keychain.pgp.WrappedSignature;
+import org.sufficientlysecure.keychain.pgp.WrappedUserAttribute;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.provider.KeychainContract.ApiAllowedKeys;
 import org.sufficientlysecure.keychain.provider.KeychainContract.ApiApps;
@@ -56,15 +56,15 @@ import org.sufficientlysecure.keychain.provider.KeychainContract.Certs;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRingData;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.KeychainContract.Keys;
+import org.sufficientlysecure.keychain.provider.KeychainContract.UserPackets;
 import org.sufficientlysecure.keychain.remote.AccountSettings;
 import org.sufficientlysecure.keychain.remote.AppSettings;
-import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
-import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
-import org.sufficientlysecure.keychain.operations.results.ConsolidateResult;
-import org.sufficientlysecure.keychain.operations.results.SaveKeyringResult;
-import org.sufficientlysecure.keychain.util.ParcelableFileCache;
+import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.IterableIterator;
 import org.sufficientlysecure.keychain.util.Log;
+import org.sufficientlysecure.keychain.util.ParcelableFileCache;
+import org.sufficientlysecure.keychain.util.ParcelableFileCache.IteratorWithSize;
+import org.sufficientlysecure.keychain.util.Preferences;
 import org.sufficientlysecure.keychain.util.ProgressFixedScaler;
 import org.sufficientlysecure.keychain.util.ProgressScaler;
 import org.sufficientlysecure.keychain.util.Utf8Util;
@@ -1054,6 +1054,11 @@ public class ProviderHelper {
         log.add(LogType.MSG_CON, indent);
         indent += 1;
 
+        if (mConsolidateCritical) {
+            log.add(LogType.MSG_CON_RECURSIVE, indent);
+            return new ConsolidateResult(ConsolidateResult.RESULT_OK, log);
+        }
+
         progress.setProgress(R.string.progress_con_saving, 0, 100);
 
         // The consolidate operation can never be cancelled!
@@ -1220,13 +1225,11 @@ public class ProviderHelper {
             log.add(LogType.MSG_CON_DB_CLEAR, indent);
             mContentResolver.delete(KeyRings.buildUnifiedKeyRingsUri(), null, null);
 
-            ParcelableFileCache<ParcelableKeyRing> cacheSecret =
-                    new ParcelableFileCache<>(mContext, "consolidate_secret.pcl");
-            ParcelableFileCache<ParcelableKeyRing> cachePublic =
-                    new ParcelableFileCache<>(mContext, "consolidate_public.pcl");
+            ParcelableFileCache<ParcelableKeyRing> cacheSecret, cachePublic;
 
             // Set flag that we have a cached consolidation here
             try {
+                cacheSecret = new ParcelableFileCache<>(mContext, "consolidate_secret.pcl");
                 IteratorWithSize<ParcelableKeyRing> itSecrets = cacheSecret.readCache(false);
                 int numSecrets = itSecrets.getSize();
 
@@ -1254,6 +1257,7 @@ public class ProviderHelper {
 
             try {
 
+                cachePublic = new ParcelableFileCache<>(mContext, "consolidate_public.pcl");
                 IteratorWithSize<ParcelableKeyRing> itPublics = cachePublic.readCache();
                 int numPublics = itPublics.getSize();
 

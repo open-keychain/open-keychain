@@ -24,8 +24,8 @@ import android.content.pm.PackageManager.NameNotFoundException;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.util.Preferences;
 import org.sufficientlysecure.keychain.util.Log;
+import org.sufficientlysecure.keychain.util.Preferences;
 
 import java.io.File;
 import java.io.IOException;

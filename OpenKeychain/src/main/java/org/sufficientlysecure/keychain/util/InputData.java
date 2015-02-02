@@ -25,14 +25,26 @@ import java.io.InputStream;
 public class InputData {
     private PositionAwareInputStream mInputStream;
     private long mSize;
+    String mOriginalFilename;
+
+    public InputData(InputStream inputStream, long size, String originalFilename) {
+        mInputStream = new PositionAwareInputStream(inputStream);
+        mSize = size;
+        mOriginalFilename = originalFilename;
+    }
 
     public InputData(InputStream inputStream, long size) {
         mInputStream = new PositionAwareInputStream(inputStream);
         mSize = size;
+        mOriginalFilename = "";
     }
 
     public InputStream getInputStream() {
         return mInputStream;
+    }
+
+    public String getOriginalFilename () {
+        return mOriginalFilename;
     }
 
     public long getSize() {

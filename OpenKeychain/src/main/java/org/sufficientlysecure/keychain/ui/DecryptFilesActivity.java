@@ -88,7 +88,7 @@ public class DecryptFilesActivity extends BaseActivity {
             loadFragment(savedInstanceState, null, true);
         } else if (ACTION_DECRYPT_DATA.equals(action)) {
             Log.e(Constants.TAG,
-                    "Include an Uri with setData() in your Intent!");
+                    "Include an Uri with setInputData() in your Intent!");
         }
     }
 

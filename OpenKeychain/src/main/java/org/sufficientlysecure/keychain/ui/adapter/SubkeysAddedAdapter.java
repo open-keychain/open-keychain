@@ -31,8 +31,8 @@ import android.widget.TextView;
 
 import org.spongycastle.bcpg.sig.KeyFlags;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
+import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 
 import java.util.Calendar;
 import java.util.Date;
