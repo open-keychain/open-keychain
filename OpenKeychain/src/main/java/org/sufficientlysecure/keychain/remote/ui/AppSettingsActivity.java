@@ -17,6 +17,7 @@
 
 package org.sufficientlysecure.keychain.remote.ui;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
@@ -59,9 +60,10 @@ public class AppSettingsActivity extends BaseActivity {
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        finish();
+                        cancel();
                     }
                 });
+        setTitle(null);
 
         mSettingsFragment = (AppSettingsHeaderFragment) getSupportFragmentManager().findFragmentById(
                 R.id.api_app_settings_fragment);
@@ -80,6 +82,13 @@ public class AppSettingsActivity extends BaseActivity {
 
     private void save() {
         mAllowedKeysFragment.saveAllowedKeys();
+        setResult(Activity.RESULT_OK);
+        finish();
+    }
+
+    private void cancel() {
+        setResult(Activity.RESULT_CANCELED);
+        finish();
     }
 
     @Override
@@ -127,16 +136,16 @@ public class AppSettingsActivity extends BaseActivity {
         mAppSettings = new ProviderHelper(this).getApiAppSettings(appUri);
         mSettingsFragment.setAppSettings(mAppSettings);
 
-        String appName;
-        PackageManager pm = getPackageManager();
-        try {
-            ApplicationInfo ai = pm.getApplicationInfo(mAppSettings.getPackageName(), 0);
-            appName = (String) pm.getApplicationLabel(ai);
-        } catch (PackageManager.NameNotFoundException e) {
-            // fallback
-            appName = mAppSettings.getPackageName();
-        }
-        setTitle(appName);
+//        String appName;
+//        PackageManager pm = getPackageManager();
+//        try {
+//            ApplicationInfo ai = pm.getApplicationInfo(mAppSettings.getPackageName(), 0);
+//            appName = (String) pm.getApplicationLabel(ai);
+//        } catch (PackageManager.NameNotFoundException e) {
+//            // fallback
+//            appName = mAppSettings.getPackageName();
+//        }
+//        setTitle(appName);
 
         Uri accountsUri = appUri.buildUpon().appendPath(KeychainContract.PATH_ACCOUNTS).build();
         Log.d(Constants.TAG, "accountsUri: " + accountsUri);
