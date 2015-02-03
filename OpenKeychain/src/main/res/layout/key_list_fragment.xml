@@ -80,5 +80,14 @@
             fab:fab_title="Search Cloud"
             fab:fab_size="mini" />
 
+        <com.getbase.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fab_add_file"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            fab:fab_colorNormal="@color/fab"
+            fab:fab_colorPressed="@color/fab_pressed"
+            fab:fab_title="Import from File"
+            fab:fab_size="mini" />
+
     </com.getbase.floatingactionbutton.FloatingActionsMenu>
 </RelativeLayout>
