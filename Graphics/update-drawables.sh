@@ -71,3 +71,9 @@ do
 echo $NAME
 inkscape -w 512 -h 288 -e "$DRAWABLE_DIR/$NAME.png" "$SRC_DIR/$NAME.svg"
 done
+
+for NAME in "first_time_1"
+do
+echo $NAME
+inkscape -w 512 -h 512 -e "$DRAWABLE_DIR/$NAME.png" "$SRC_DIR/$NAME.svg"
+done

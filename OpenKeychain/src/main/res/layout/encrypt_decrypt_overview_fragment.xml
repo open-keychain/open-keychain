@@ -29,6 +29,11 @@
         android:drawablePadding="8dp"
         android:gravity="center_vertical" />
 
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dip"
+        android:background="?android:attr/listDivider" />
+
     <TextView
         android:id="@+id/encrypt_text"
         android:paddingLeft="8dp"
@@ -43,6 +48,11 @@
         android:drawableRight="@drawable/ic_action_copy"
         android:drawablePadding="8dp"
         android:gravity="center_vertical" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dip"
+        android:background="?android:attr/listDivider" />
 
     <TextView
         style="@style/SectionHeader"

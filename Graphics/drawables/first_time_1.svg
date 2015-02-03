@@ -14,7 +14,10 @@
    id="svg4325"
    version="1.1"
    inkscape:version="0.48.3.1 r9886"
-   sodipodi:docname="ok_start.svg">
+   sodipodi:docname="first_time_1.svg"
+   inkscape:export-filename="/home/schuerm/Projekte/OpenKeychain/Graphics/drawables/first_time_1.png"
+   inkscape:export-xdpi="90"
+   inkscape:export-ydpi="90">
   <defs
      id="defs4327" />
   <sodipodi:namedview
@@ -25,7 +28,7 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="1.979899"
-     inkscape:cx="405.16912"
+     inkscape:cx="314.76047"
      inkscape:cy="246.12576"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
@@ -54,13 +57,13 @@
      transform="translate(0,-540.36218)">
     <path
        sodipodi:type="arc"
-       style="opacity:0.59999999999999998;fill:#9933cc;fill-opacity:1;stroke:none;stroke-width:2;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       style="opacity:1;fill:#8bc34a;fill-opacity:1;stroke:none;stroke-width:2;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
        id="path4501"
        sodipodi:cx="227.53687"
        sodipodi:cy="246.58241"
        sodipodi:rx="225.51656"
        sodipodi:ry="225.51656"
-       d="m 453.05342,246.58241 a 225.51656,225.51656 0 1 1 -451.0331106,0 225.51656,225.51656 0 1 1 451.0331106,0 z"
+       d="m 453.05342,246.58241 c 0,124.54936 -100.9672,225.51656 -225.51655,225.51656 -124.54936,0 -225.5165606,-100.9672 -225.5165606,-225.51656 0,-124.54935 100.9672006,-225.516553 225.5165606,-225.516553 124.54935,0 225.51655,100.967203 225.51655,225.516553 z"
        transform="translate(28.463135,549.77977)" />
     <path
        sodipodi:type="star"
@@ -111,7 +114,7 @@
        style="color:#000000;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:#4b4f2f;stroke-width:4.12070131;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate" />
     <path
        transform="matrix(0.90538746,0,0,0.90538746,-76.624431,405.57604)"
-       d="m 316.87315,407.66223 a 9.388834,9.388834 0 1 1 -18.77767,0 9.388834,9.388834 0 1 1 18.77767,0 z"
+       d="m 316.87315,407.66223 c 0,5.18531 -4.20353,9.38884 -9.38884,9.38884 -5.18531,0 -9.38883,-4.20353 -9.38883,-9.38884 0,-5.18531 4.20352,-9.38883 9.38883,-9.38883 5.18531,0 9.38884,4.20352 9.38884,9.38883 z"
        sodipodi:ry="9.388834"
        sodipodi:rx="9.388834"
        sodipodi:cy="407.66223"
@@ -128,7 +131,7 @@
        sodipodi:cy="407.66223"
        sodipodi:rx="9.388834"
        sodipodi:ry="9.388834"
-       d="m 316.87315,407.66223 a 9.388834,9.388834 0 1 1 -18.77767,0 9.388834,9.388834 0 1 1 18.77767,0 z" />
+       d="m 316.87315,407.66223 c 0,5.18531 -4.20353,9.38884 -9.38884,9.38884 -5.18531,0 -9.38883,-4.20353 -9.38883,-9.38884 0,-5.18531 4.20352,-9.38883 9.38883,-9.38883 5.18531,0 9.38884,4.20352 9.38884,9.38883 z" />
     <g
        id="g10754"
        transform="matrix(0.83727181,0,0,0.83727181,829.92363,-416.95697)"
