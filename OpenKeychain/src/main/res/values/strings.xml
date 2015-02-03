@@ -62,6 +62,8 @@
     <string name="section_decrypt_files">"Files"</string>
     <string name="section_decrypt_text">"Text"</string>
     <string name="section_certs">"Certificates"</string>
+    <string name="section_encrypt">"Encrypt"</string>
+    <string name="section_decrypt">"Decrypt"</string>
 
     <!-- button -->
     <string name="btn_decrypt_verify_file">"Decrypt, verify, and save file"</string>
@@ -82,9 +84,11 @@
     <string name="btn_create_key">"Create key"</string>
     <string name="btn_add_files">"Add file(s)"</string>
     <string name="btn_add_share_decrypted_text">"Share decrypted text"</string>
-    <string name="btn_decrypt_clipboard">"Decrypt from clipboard"</string>
+    <string name="btn_decrypt_clipboard">"Decrypt text from clipboard"</string>
     <string name="btn_decrypt_and_verify">"and verify signatures"</string>
     <string name="btn_decrypt_files">"Decrypt files"</string>
+    <string name="btn_encrypt_files">"Encrypt files"</string>
+    <string name="btn_encrypt_text">"Encrypt text"</string>
 
     <!-- menu -->
     <string name="menu_preferences">"Settings"</string>
@@ -584,9 +588,7 @@
 
     <!-- Navigation Drawer -->
     <string name="nav_keys">"Keys"</string>
-    <string name="nav_encrypt_text">"Encrypt text"</string>
-    <string name="nav_encrypt_files">"Encrypt files"</string>
-    <string name="nav_decrypt">"Decrypt"</string>
+    <string name="nav_encrypt_decrypt">"Encrypt/Decrypt"</string>
     <string name="nav_apps">"Apps"</string>
     <string name="drawer_open">"Open navigation drawer"</string>
     <string name="drawer_close">"Close navigation drawer"</string>

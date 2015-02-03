@@ -35,10 +35,12 @@ import org.sufficientlysecure.keychain.ui.util.SubtleAttentionSeeker;
 
 import java.util.regex.Matcher;
 
-public class DecryptOverviewFragment extends Fragment {
+public class EncryptDecryptOverviewFragment extends Fragment {
 
-    View mActionFile;
-    View mActionFromClipboard;
+    View mEncryptFile;
+    View mEncryptText;
+    View mDecryptFile;
+    View mDecryptFromClipboard;
     View mClipboardIcon;
 
     @Override
@@ -49,13 +51,31 @@ public class DecryptOverviewFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.decrypt_overview_fragment, container, false);
+        View view = inflater.inflate(R.layout.encrypt_decrypt_overview_fragment, container, false);
 
-        mActionFile = view.findViewById(R.id.decrypt_files);
-        mActionFromClipboard = view.findViewById(R.id.decrypt_from_clipboard);
+        mEncryptFile = view.findViewById(R.id.encrypt_files);
+        mEncryptText = view.findViewById(R.id.encrypt_text);
+        mDecryptFile = view.findViewById(R.id.decrypt_files);
+        mDecryptFromClipboard = view.findViewById(R.id.decrypt_from_clipboard);
         mClipboardIcon = view.findViewById(R.id.clipboard_icon);
 
-        mActionFile.setOnClickListener(new View.OnClickListener() {
+        mEncryptFile.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent encrypt = new Intent(getActivity(), EncryptFilesActivity.class);
+                startActivity(encrypt);
+            }
+        });
+
+        mEncryptText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent encrypt = new Intent(getActivity(), EncryptTextActivity.class);
+                startActivity(encrypt);
+            }
+        });
+
+        mDecryptFile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent filesDecrypt = new Intent(getActivity(), DecryptFilesActivity.class);
@@ -64,7 +84,7 @@ public class DecryptOverviewFragment extends Fragment {
             }
         });
 
-        mActionFromClipboard.setOnClickListener(new View.OnClickListener() {
+        mDecryptFromClipboard.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent clipboardDecrypt = new Intent(getActivity(), DecryptTextActivity.class);

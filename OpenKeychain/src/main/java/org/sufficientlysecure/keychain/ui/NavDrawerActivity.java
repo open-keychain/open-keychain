@@ -40,10 +40,7 @@ public abstract class NavDrawerActivity extends MaterialNavigationDrawer {
 
         // create sections
         addSection(newSection(getString(R.string.title_keys), R.drawable.ic_vpn_key_black_24dp, new KeyListFragment()));
-
-        addSection(newSection(getString(R.string.title_encrypt_text), R.drawable.ic_lock_outline_black_24dp, new Intent(this, EncryptTextActivity.class)));
-        addSection(newSection(getString(R.string.title_encrypt_files), R.drawable.ic_lock_outline_black_24dp, new Intent(this, EncryptFilesActivity.class)));
-        addSection(newSection(getString(R.string.title_decrypt), R.drawable.ic_lock_open_black_24dp, new DecryptOverviewFragment()));
+        addSection(newSection(getString(R.string.nav_encrypt_decrypt), R.drawable.ic_lock_black_24dp, new EncryptDecryptOverviewFragment()));
         addSection(newSection(getString(R.string.title_api_registered_apps), R.drawable.ic_apps_black_24dp, new AppsListFragment()));
 
         // create bottom section

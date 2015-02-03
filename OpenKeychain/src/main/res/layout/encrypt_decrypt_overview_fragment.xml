@@ -12,7 +12,44 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:text="@string/section_decrypt_files" />
+        android:text="@string/section_encrypt" />
+
+    <TextView
+        android:id="@+id/encrypt_files"
+        android:paddingLeft="8dp"
+        android:paddingRight="8dp"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minHeight="?android:attr/listPreferredItemHeight"
+        android:clickable="true"
+        style="@style/SelectableItem"
+        android:text="@string/btn_encrypt_files"
+        android:drawableRight="@drawable/ic_action_collection"
+        android:drawablePadding="8dp"
+        android:gravity="center_vertical" />
+
+    <TextView
+        android:id="@+id/encrypt_text"
+        android:paddingLeft="8dp"
+        android:paddingRight="8dp"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minHeight="?android:attr/listPreferredItemHeight"
+        android:clickable="true"
+        style="@style/SelectableItem"
+        android:text="@string/btn_encrypt_text"
+        android:drawableRight="@drawable/ic_action_copy"
+        android:drawablePadding="8dp"
+        android:gravity="center_vertical" />
+
+    <TextView
+        style="@style/SectionHeader"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="@string/section_decrypt" />
 
     <TextView
         android:id="@+id/decrypt_files"
@@ -32,15 +69,7 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="1dip"
-        android:background="?android:attr/listDivider"
-        android:layout_marginBottom="8dp" />
-
-    <TextView
-        style="@style/SectionHeader"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
-        android:text="@string/section_decrypt_text" />
+        android:background="?android:attr/listDivider" />
 
     <LinearLayout
         android:id="@+id/decrypt_from_clipboard"
