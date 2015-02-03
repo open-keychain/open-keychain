@@ -15,3 +15,6 @@ python copy OpenKeychain action black lock_outline 24
 python copy OpenKeychain navigation black apps 24
 python copy OpenKeychain action black help 24
 python copy OpenKeychain action black settings 24
+
+# floating action button
+python copy OpenKeychain av white play_arrow 24

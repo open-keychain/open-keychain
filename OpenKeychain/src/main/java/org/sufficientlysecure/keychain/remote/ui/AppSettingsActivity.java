@@ -21,12 +21,18 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
 
+import com.getbase.floatingactionbutton.FloatingActionButton;
+
+import org.spongycastle.util.encoders.Hex;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
@@ -36,12 +42,21 @@ import org.sufficientlysecure.keychain.remote.AppSettings;
 import org.sufficientlysecure.keychain.ui.BaseActivity;
 import org.sufficientlysecure.keychain.util.Log;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+
 public class AppSettingsActivity extends BaseActivity {
     private Uri mAppUri;
 
-    private AppSettingsHeaderFragment mSettingsFragment;
     private AccountsListFragment mAccountsListFragment;
     private AppSettingsAllowedKeysListFragment mAllowedKeysFragment;
+
+    private TextView mAppNameView;
+    private ImageView mAppIconView;
+    private TextView mPackageName;
+    private TextView mPackageSignature;
+
+    private FloatingActionButton mStartFab;
 
     // model
     AppSettings mAppSettings;
@@ -50,23 +65,26 @@ public class AppSettingsActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setFullScreenDialogDoneClose(R.string.api_settings_save,
-                new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        save();
-                    }
-                },
-                new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        cancel();
-                    }
-                });
-        setTitle(null);
+        mAppNameView = (TextView) findViewById(R.id.api_app_settings_app_name);
+        mAppIconView = (ImageView) findViewById(R.id.api_app_settings_app_icon);
+        mPackageName = (TextView) findViewById(R.id.api_app_settings_package_name);
+        mPackageSignature = (TextView) findViewById(R.id.api_app_settings_package_signature);
+        mStartFab = (FloatingActionButton) findViewById(R.id.fab);
 
-        mSettingsFragment = (AppSettingsHeaderFragment) getSupportFragmentManager().findFragmentById(
-                R.id.api_app_settings_fragment);
+        mStartFab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startApp();
+            }
+        });
+
+        setFullScreenDialogClose(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                cancel();
+            }
+        });
+        setTitle(null);
 
         Intent intent = getIntent();
         mAppUri = intent.getData();
@@ -109,8 +127,8 @@ public class AppSettingsActivity extends BaseActivity {
             case R.id.menu_api_settings_revoke:
                 revokeAccess();
                 return true;
-            case R.id.menu_api_settings_start:
-                startApp();
+            case R.id.menu_api_save:
+                save();
                 return true;
         }
         return super.onOptionsItemSelected(item);
@@ -134,18 +152,37 @@ public class AppSettingsActivity extends BaseActivity {
 
     private void loadData(Bundle savedInstanceState, Uri appUri) {
         mAppSettings = new ProviderHelper(this).getApiAppSettings(appUri);
-        mSettingsFragment.setAppSettings(mAppSettings);
 
-//        String appName;
-//        PackageManager pm = getPackageManager();
-//        try {
-//            ApplicationInfo ai = pm.getApplicationInfo(mAppSettings.getPackageName(), 0);
-//            appName = (String) pm.getApplicationLabel(ai);
-//        } catch (PackageManager.NameNotFoundException e) {
-//            // fallback
-//            appName = mAppSettings.getPackageName();
-//        }
-//        setTitle(appName);
+        // get application name and icon from package manager
+        String appName;
+        Drawable appIcon = null;
+        PackageManager pm = getApplicationContext().getPackageManager();
+        try {
+            ApplicationInfo ai = pm.getApplicationInfo(mAppSettings.getPackageName(), 0);
+
+            appName = (String) pm.getApplicationLabel(ai);
+            appIcon = pm.getApplicationIcon(ai);
+        } catch (PackageManager.NameNotFoundException e) {
+            // fallback
+            appName = mAppSettings.getPackageName();
+        }
+        mAppNameView.setText(appName);
+        mAppIconView.setImageDrawable(appIcon);
+
+        // advanced info: package name
+        mPackageName.setText(mAppSettings.getPackageName());
+
+        // advanced info: package signature SHA-256
+        try {
+            MessageDigest md = MessageDigest.getInstance("SHA-256");
+            md.update(mAppSettings.getPackageSignature());
+            byte[] digest = md.digest();
+            String signature = new String(Hex.encode(digest));
+
+            mPackageSignature.setText(signature);
+        } catch (NoSuchAlgorithmException e) {
+            Log.e(Constants.TAG, "Should not happen!", e);
+        }
 
         Uri accountsUri = appUri.buildUpon().appendPath(KeychainContract.PATH_ACCOUNTS).build();
         Log.d(Constants.TAG, "accountsUri: " + accountsUri);

@@ -3,9 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/menu_api_settings_start"
-        android:title="@string/api_settings_start"
-        android:icon="@drawable/ic_action_play"
+        android:id="@+id/menu_api_save"
+        android:title="@string/api_settings_save"
         app:showAsAction="always" />
 
     <item

@@ -5,7 +5,7 @@
 
     <include
         android:id="@+id/toolbar"
-        layout="@layout/toolbar" />
+        layout="@layout/toolbar_standalone" />
 
     <RelativeLayout
         android:layout_below="@id/toolbar"
