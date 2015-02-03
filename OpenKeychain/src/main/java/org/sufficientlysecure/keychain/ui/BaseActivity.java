@@ -26,7 +26,6 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import org.sufficientlysecure.keychain.R;
@@ -126,13 +125,5 @@ public abstract class BaseActivity extends ActionBarActivity {
         getSupportActionBar().setCustomView(customActionBarView, new ActionBar.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
     }
-
-//    public void add() {
-//        LayoutInflater inflater = LayoutInflater.from(mToolbar.getContext());
-//        View view = inflater.inflate(R.layout.api_app_settings_fragment, null);
-//        Toolbar.LayoutParams layoutParams = new Toolbar.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-////        layoutParams.gravity = Gravity.BOTTOM;
-//        mToolbar.addView(view, layoutParams);
-//    }
 
 }

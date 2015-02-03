@@ -488,7 +488,8 @@
     <string name="api_settings_delete_account">"Delete account"</string>
     <string name="api_settings_package_name">"Package Name"</string>
     <string name="api_settings_package_signature">"SHA-256 of Package Signature"</string>
-    <string name="api_settings_accounts">"Accounts"</string>
+    <string name="api_settings_accounts">"Accounts (deprecated API)"</string>
+    <string name="api_settings_advanced">"Advanced Information"</string>
     <string name="api_settings_allowed_keys">"Allowed Keys"</string>
     <string name="api_settings_settings">"Settings"</string>
     <string name="api_settings_key">"Account key:"</string>

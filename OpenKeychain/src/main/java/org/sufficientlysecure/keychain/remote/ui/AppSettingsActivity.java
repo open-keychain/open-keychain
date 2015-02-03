@@ -21,6 +21,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
@@ -48,7 +49,6 @@ import java.security.NoSuchAlgorithmException;
 public class AppSettingsActivity extends BaseActivity {
     private Uri mAppUri;
 
-    private AccountsListFragment mAccountsListFragment;
     private AppSettingsAllowedKeysListFragment mAllowedKeysFragment;
 
     private TextView mAppNameView;
@@ -58,6 +58,11 @@ public class AppSettingsActivity extends BaseActivity {
 
     private FloatingActionButton mStartFab;
 
+    // deprecated API
+    private AccountsListFragment mAccountsListFragment;
+    private TextView mAccountsLabel;
+
+
     // model
     AppSettings mAppSettings;
 
@@ -65,6 +70,7 @@ public class AppSettingsActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        mAccountsLabel = (TextView) findViewById(R.id.api_accounts_label);
         mAppNameView = (TextView) findViewById(R.id.api_app_settings_app_name);
         mAppIconView = (ImageView) findViewById(R.id.api_app_settings_app_icon);
         mPackageName = (TextView) findViewById(R.id.api_app_settings_package_name);
@@ -199,15 +205,21 @@ public class AppSettingsActivity extends BaseActivity {
             return;
         }
 
-        // Create an instance of the fragment
-        mAccountsListFragment = AccountsListFragment.newInstance(accountsUri);
-        mAllowedKeysFragment = AppSettingsAllowedKeysListFragment.newInstance(allowedKeysUri);
+        // show accounts only if available (deprecated API)
+        Cursor cursor = getContentResolver().query(accountsUri, null, null, null, null);
+        if (cursor.moveToFirst()) {
+            mAccountsLabel.setVisibility(View.VISIBLE);
+            mAccountsListFragment = AccountsListFragment.newInstance(accountsUri);
+            // Create an instance of the fragments
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.api_accounts_list_fragment, mAccountsListFragment)
+                    .commitAllowingStateLoss();
+        }
 
+        // Create an instance of the fragments
+        mAllowedKeysFragment = AppSettingsAllowedKeysListFragment.newInstance(allowedKeysUri);
         // Add the fragment to the 'fragment_container' FrameLayout
         // NOTE: We use commitAllowingStateLoss() to prevent weird crashes!
-        getSupportFragmentManager().beginTransaction()
-                .replace(R.id.api_accounts_list_fragment, mAccountsListFragment)
-                .commitAllowingStateLoss();
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.api_allowed_keys_list_fragment, mAllowedKeysFragment)
                 .commitAllowingStateLoss();

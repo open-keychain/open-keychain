@@ -4,11 +4,11 @@
     android:layout_height="match_parent">
 
     <include
-        android:id="@+id/toolbar"
+        android:id="@+id/toolbar_include"
         layout="@layout/toolbar_standalone" />
 
     <LinearLayout
-        android:layout_below="@id/toolbar"
+        android:layout_below="@id/toolbar_include"
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent">

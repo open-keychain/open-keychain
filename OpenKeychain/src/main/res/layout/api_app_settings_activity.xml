@@ -30,11 +30,10 @@
 
         <LinearLayout
             android:layout_below="@+id/toolbar"
-            android:paddingLeft="48dp"
-            android:paddingBottom="8dp"
-            android:paddingRight="72dp"
+            android:layout_marginLeft="48dp"
+            android:layout_marginRight="72dp"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="wrap_content">
 
             <ImageView
                 android:id="@+id/api_app_settings_app_icon"
@@ -84,9 +83,11 @@
                     android:orientation="vertical" />
 
                 <TextView
+                    android:id="@+id/api_accounts_label"
                     style="@style/SectionHeader"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:visibility="gone"
                     android:text="@string/api_settings_accounts" />
 
                 <FrameLayout
@@ -94,6 +95,12 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:orientation="vertical" />
+
+                <TextView
+                    style="@style/SectionHeader"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/api_settings_advanced" />
 
                 <org.sufficientlysecure.keychain.ui.widget.FoldableLinearLayout
                     android:layout_width="match_parent"
