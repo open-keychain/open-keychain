@@ -15,12 +15,19 @@
         android:background="?attr/colorPrimaryDark"
         android:orientation="horizontal">
 
+        <ImageView
+            android:id="@+id/statusBar"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/statusMargin"
+            android:background="?attr/colorPrimary" />
+
         <android.support.v7.widget.Toolbar
             android:id="@+id/toolbar"
+            android:layout_below="@+id/statusBar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:minHeight="?attr/actionBarSize"
-            android:background="?attr/colorPrimaryDark"
+            android:background="?attr/colorPrimary"
             android:overScrollMode="always"
             app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
             app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
