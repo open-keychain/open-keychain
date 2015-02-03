@@ -38,6 +38,16 @@
     <color name="holo_gray_light">#33999999</color>
     <color name="holo_gray_bright">#33CCCCCC</color>
 
+
+    <!-- FAB -->
+    <color name="black_semi_transparent">#B2000000</color>
+    <color name="background">#e5e5e5</color>
+    <color name="half_black">#808080</color>
+    <color name="white">#fafafa</color>
+    <color name="white_pressed">#f1f1f1</color>
+    <color name="pink">#e91e63</color>
+    <color name="pink_pressed">#ec407a</color>
+
     <!--
         http://www.google.com/design/spec/style/color.html#color-color-palette
         light = normal color

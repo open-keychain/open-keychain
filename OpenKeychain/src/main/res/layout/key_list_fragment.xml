@@ -1,41 +1,84 @@
 <?xml version="1.0" encoding="utf-8"?>
-<org.sufficientlysecure.keychain.ui.widget.ListAwareSwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/key_list_swipe_container"
-    android:layout_width="match_parent"
+<RelativeLayout xmlns:fab="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_height="match_parent"
-    android:orientation="vertical">
-    <!--rebuild functionality of ListFragment -->
-    <FrameLayout
+    android:layout_width="match_parent">
+
+    <org.sufficientlysecure.keychain.ui.widget.ListAwareSwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/key_list_swipe_container"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-        <se.emilsjolander.stickylistheaders.StickyListHeadersListView
-            android:id="@+id/key_list_list"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+        <!--rebuild functionality of ListFragment -->
+        <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:clipToPadding="false"
-            android:drawSelectorOnTop="true"
-            android:fastScrollEnabled="true"
-            android:paddingBottom="16dp"
-            android:paddingLeft="16dp"
-            android:paddingRight="32dp"
-            android:scrollbarStyle="outsideOverlay" />
+            android:layout_height="match_parent">
 
-        <LinearLayout
-            android:id="@+id/key_list_empty"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:gravity="center"
-            android:orientation="vertical"
-            android:visibility="visible">
+            <se.emilsjolander.stickylistheaders.StickyListHeadersListView
+                android:id="@+id/key_list_list"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:clipToPadding="false"
+                android:drawSelectorOnTop="true"
+                android:fastScrollEnabled="true"
+                android:paddingBottom="16dp"
+                android:paddingLeft="16dp"
+                android:paddingRight="32dp"
+                android:scrollbarStyle="outsideOverlay" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+            <LinearLayout
+                android:id="@+id/key_list_empty"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
                 android:gravity="center"
-                android:text="@string/key_list_empty_text1"
-                android:textAppearance="?android:attr/textAppearanceLarge" />
+                android:orientation="vertical"
+                android:visibility="visible">
 
-        </LinearLayout>
-    </FrameLayout>
-</org.sufficientlysecure.keychain.ui.widget.ListAwareSwipeRefreshLayout>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="@string/key_list_empty_text1"
+                    android:textAppearance="?android:attr/textAppearanceLarge" />
+
+            </LinearLayout>
+        </FrameLayout>
+    </org.sufficientlysecure.keychain.ui.widget.ListAwareSwipeRefreshLayout>
+
+    <com.getbase.floatingactionbutton.FloatingActionsMenu
+        android:id="@+id/fab_main"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        fab:fab_addButtonColorNormal="@color/fab"
+        fab:fab_addButtonColorPressed="@color/fab_pressed"
+        fab:fab_addButtonSize="normal"
+        fab:fab_addButtonPlusIconColor="@color/icons"
+        fab:fab_expandDirection="up"
+        fab:fab_labelStyle="@style/FabMenuStyle"
+        android:layout_marginBottom="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginEnd="16dp">
+
+        <com.getbase.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fab_add_cloud"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            fab:fab_colorNormal="@color/fab"
+            fab:fab_colorPressed="@color/fab_pressed"
+            fab:fab_title="Scan QR Code"
+            fab:fab_size="mini" />
+
+        <com.getbase.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fab_add_qr_code"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            fab:fab_colorNormal="@color/fab"
+            fab:fab_colorPressed="@color/fab_pressed"
+            fab:fab_title="Search Cloud"
+            fab:fab_size="mini" />
+
+    </com.getbase.floatingactionbutton.FloatingActionsMenu>
+</RelativeLayout>
