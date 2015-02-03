@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="statusbar_margin">21dp</dimen>
+    <!-- 120dp + statusbar_margin -->
+    <dimen name="big_toolbar">141dp</dimen>
+</resources>
