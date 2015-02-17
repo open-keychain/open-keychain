@@ -160,9 +160,6 @@ public class PgpDecryptVerify extends BaseOperation {
 
         /**
          * If detachedSignature != null, it will be used exclusively to verify the signature
-         *
-         * @param detachedSignature
-         * @return
          */
         public Builder setDetachedSignature(byte[] detachedSignature) {
             mDetachedSignature = detachedSignature;
@@ -540,7 +537,7 @@ public class PgpDecryptVerify extends BaseOperation {
 
             PGPLiteralData literalData = (PGPLiteralData) dataChunk;
 
-            // this is the encrypted size so if we enable compression this value is wrong!
+            // reported size may be null if partial packets are involved (highly unlikely though)
             Long originalSize = literalData.getDataLengthIfAvailable();
 
             String originalFilename = literalData.getFileName();
@@ -571,7 +568,7 @@ public class PgpDecryptVerify extends BaseOperation {
                     literalData.getModificationTime().getTime(),
                     originalSize == null ? 0 : originalSize);
 
-            if (!originalFilename.equals("")) {
+            if (!"".equals(originalFilename)) {
                 log.add(LogType.MSG_DC_CLEAR_META_FILE, indent + 1, originalFilename);
             }
             log.add(LogType.MSG_DC_CLEAR_META_MIME, indent + 1,
@@ -631,9 +628,8 @@ public class PgpDecryptVerify extends BaseOperation {
                         progress = 100;
                     }
                     progressScaler.setProgress((int) progress, 100);
-                } else {
-                    // TODO: slow annealing to fake a progress?
                 }
+                // TODO: slow annealing to fake a progress?
             }
 
             if (signature != null) {
@@ -849,9 +845,8 @@ public class PgpDecryptVerify extends BaseOperation {
                         progress = 100;
                     }
                     progressScaler.setProgress((int) progress, 100);
-                } else {
-                    // TODO: slow annealing to fake a progress?
                 }
+                // TODO: slow annealing to fake a progress?
             }
 
             updateProgress(R.string.progress_verifying_signature, 90, 100);
