@@ -160,9 +160,6 @@ public class PgpDecryptVerify extends BaseOperation {
 
         /**
          * If detachedSignature != null, it will be used exclusively to verify the signature
-         *
-         * @param detachedSignature
-         * @return
          */
         public Builder setDetachedSignature(byte[] detachedSignature) {
             mDetachedSignature = detachedSignature;
@@ -540,12 +537,8 @@ public class PgpDecryptVerify extends BaseOperation {
 
             PGPLiteralData literalData = (PGPLiteralData) dataChunk;
 
-            // TODO: how to get the real original size?
-            // this is the encrypted size so if we enable compression this value is wrong!
-            long originalSize = mData.getSize() - mData.getStreamPosition();
-            if (originalSize < 0) {
-                originalSize = 0;
-            }
+            // reported size may be null if partial packets are involved (highly unlikely though)
+            Long originalSize = literalData.getDataLengthIfAvailable();
 
             String originalFilename = literalData.getFileName();
             String mimeType = null;
@@ -573,18 +566,20 @@ public class PgpDecryptVerify extends BaseOperation {
                     originalFilename,
                     mimeType,
                     literalData.getModificationTime().getTime(),
-                    originalSize);
+                    originalSize == null ? 0 : originalSize);
 
-            if (!originalFilename.equals("")) {
+            if (!"".equals(originalFilename)) {
                 log.add(LogType.MSG_DC_CLEAR_META_FILE, indent + 1, originalFilename);
             }
             log.add(LogType.MSG_DC_CLEAR_META_MIME, indent + 1,
                     mimeType);
             log.add(LogType.MSG_DC_CLEAR_META_TIME, indent + 1,
                     new Date(literalData.getModificationTime().getTime()).toString());
-            if (originalSize != 0) {
+            if (originalSize != null) {
                 log.add(LogType.MSG_DC_CLEAR_META_SIZE, indent + 1,
                         Long.toString(originalSize));
+            } else {
+                log.add(LogType.MSG_DC_CLEAR_META_SIZE_UNKNOWN, indent + 1);
             }
 
             // return here if we want to decrypt the metadata only
@@ -633,9 +628,8 @@ public class PgpDecryptVerify extends BaseOperation {
                         progress = 100;
                     }
                     progressScaler.setProgress((int) progress, 100);
-                } else {
-                    // TODO: slow annealing to fake a progress?
                 }
+                // TODO: slow annealing to fake a progress?
             }
 
             if (signature != null) {
@@ -851,9 +845,8 @@ public class PgpDecryptVerify extends BaseOperation {
                         progress = 100;
                     }
                     progressScaler.setProgress((int) progress, 100);
-                } else {
-                    // TODO: slow annealing to fake a progress?
                 }
+                // TODO: slow annealing to fake a progress?
             }
 
             updateProgress(R.string.progress_verifying_signature, 90, 100);
