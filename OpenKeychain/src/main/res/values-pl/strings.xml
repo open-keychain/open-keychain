@@ -34,6 +34,9 @@
   <string name="title_help">Pomoc</string>
   <string name="title_log_display">Logi</string>
   <string name="title_create_key">Utwórz klucz</string>
+  <string name="title_exchange_keys">Wymień klucze</string>
+  <string name="title_advanced_key_info">Zaawansowane informacje o kluczu</string>
+  <string name="title_keys">Klucze</string>
   <!--section-->
   <string name="section_user_ids">Tożsamości</string>
   <string name="section_keys">Pod-klucze</string>
@@ -52,6 +55,9 @@
   <string name="section_key_to_certify">Klucz do certyfikacji</string>
   <string name="section_decrypt_files">Pliki</string>
   <string name="section_decrypt_text">Tekst</string>
+  <string name="section_certs">Certyfikaty</string> -->
+  <string name="section_encrypt">Zaszyfruj</string>
+  <string name="section_decrypt">Odszyfruj</string>
   <!--button-->
   <string name="btn_decrypt_verify_file">Odszyfruj, weryfikuj i zapisz plik</string>
   <string name="btn_decrypt_verify_message">Odszyfruj i weryfikuj wiadomość</string>
@@ -74,6 +80,8 @@
   <string name="btn_decrypt_clipboard">Odszyfruj ze schowka</string>
   <string name="btn_decrypt_and_verify">oraz weryfikuj podpisy</string>
   <string name="btn_decrypt_files">Odszyfruj pliki</string>
+  <string name="btn_encrypt_files">Zaszyfruj pliki</string>
+  <string name="btn_encrypt_text">Zaszyfruj tekst</string>
   <!--menu-->
   <string name="menu_preferences">Ustawienia</string>
   <string name="menu_help">Pomoc</string>
@@ -347,6 +355,8 @@
   <string name="import_import">Zaimportuj wybrane klucze</string>
   <string name="import_qr_code_wrong">Kod QR zniekształcony! Spróbuj jeszcze raz!</string>
   <string name="import_qr_code_too_short_fingerprint">Odcisk klucza jest za krótki (&lt; 16 znaków)</string>
+  <string name="import_qr_code_button">Skanuj kod QR</string>
+  <string name="import_qr_code_text">Umieść kamerę przed kodem QR!</string>
   <!--Generic result toast-->
   <string name="view_log">Pokaż logi</string>
   <string name="with_warnings">, z ostrzeżeniami</string>
@@ -533,9 +543,7 @@ OSTRZEŻENIE: Jeżeli nie wiesz, czemu wyświetlił się ten komunikat, nie zezw
   <string name="view_key_expired">Ten klucz stracił swoją ważność!</string>
   <!--Navigation Drawer-->
   <string name="nav_keys">Klucze</string>
-  <string name="nav_encrypt_text">Szyfruj tekst</string>
-  <string name="nav_encrypt_files">Szyfruj pliki</string>
-  <string name="nav_decrypt">Odszyfruj</string>
+  <string name="nav_encrypt_decrypt">"Zaszyfruj/Odszyfruj"</string>
   <string name="nav_apps">Aplikacje</string>
   <string name="drawer_open">Otwórz panel nawigacji</string>
   <string name="drawer_close">Zamknij panel nawigacji</string>
