@@ -7,7 +7,7 @@
     <ImageView
         android:id="@+id/status_bar"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/statusbar_margin" />
+        android:layout_height="@dimen/statusbar_height" />
 
     <LinearLayout
         android:id="@+id/first_time_buttons"

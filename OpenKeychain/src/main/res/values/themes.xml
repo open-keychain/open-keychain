@@ -4,7 +4,7 @@
     <style name="KeychainTheme" parent="KeychainTheme.Base" />
 
     <!--<style name="KeychainTheme.Base" parent="HoloKeychainTheme">-->
-    <style name="KeychainTheme.Base" parent="Theme.AppCompat.Light.NoActionBar">
+    <style name="KeychainTheme.Base" parent="Theme.AppCompat.Light">
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/accent</item>

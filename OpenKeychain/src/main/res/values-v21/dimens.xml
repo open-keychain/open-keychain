@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <dimen name="statusbar_margin">21dp</dimen>
-    <!-- 120dp + statusbar_margin -->
+    <!--
+        Status bar height according to
+        http://www.google.com/design/spec/layout/structure.html#structure-system-bars
+    -->
+    <dimen name="statusbar_height">24dp</dimen>
+    <!-- 120dp + statusbar_height -->
     <dimen name="big_toolbar">141dp</dimen>
 </resources>
