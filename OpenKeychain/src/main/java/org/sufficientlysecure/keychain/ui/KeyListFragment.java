@@ -227,6 +227,9 @@ public class KeyListFragment extends LoaderFragment
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
+        // show app name instead of "keys" from nav drawer
+        getActivity().setTitle(R.string.app_name);
+
         mStickyList.setOnItemClickListener(this);
         mStickyList.setAreHeadersSticky(true);
         mStickyList.setDrawingListUnderStickyHeader(false);

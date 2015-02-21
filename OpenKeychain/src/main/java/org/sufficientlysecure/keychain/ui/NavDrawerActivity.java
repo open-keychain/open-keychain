@@ -24,6 +24,8 @@ import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.remote.ui.AppsListFragment;
 
 import it.neokree.materialnavigationdrawer.MaterialNavigationDrawer;
+import it.neokree.materialnavigationdrawer.elements.MaterialSection;
+import it.neokree.materialnavigationdrawer.elements.listeners.MaterialSectionListener;
 
 public abstract class NavDrawerActivity extends MaterialNavigationDrawer {
 
@@ -39,7 +41,7 @@ public abstract class NavDrawerActivity extends MaterialNavigationDrawer {
         setDrawerHeaderImage(R.drawable.drawer_header);
 
         // create sections
-        addSection(newSection(getString(R.string.app_name), R.drawable.ic_vpn_key_black_24dp, new KeyListFragment()));
+        addSection(newSection(getString(R.string.nav_keys), R.drawable.ic_vpn_key_black_24dp, new KeyListFragment()));
         addSection(newSection(getString(R.string.nav_encrypt_decrypt), R.drawable.ic_lock_black_24dp, new EncryptDecryptOverviewFragment()));
         addSection(newSection(getString(R.string.title_api_registered_apps), R.drawable.ic_apps_black_24dp, new AppsListFragment()));
 
