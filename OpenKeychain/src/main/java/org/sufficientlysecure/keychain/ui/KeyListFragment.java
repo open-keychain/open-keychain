@@ -56,6 +56,8 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.getbase.floatingactionbutton.FloatingActionButton;
+
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.results.ConsolidateResult;
@@ -105,6 +107,10 @@ public class KeyListFragment extends LoaderFragment
     private String mQuery;
     private SearchView mSearchView;
 
+    private FloatingActionButton mFabQrCode;
+    private FloatingActionButton mFabCloud;
+    private FloatingActionButton mFabFile;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -122,6 +128,29 @@ public class KeyListFragment extends LoaderFragment
 
         mStickyList = (StickyListHeadersListView) view.findViewById(R.id.key_list_list);
         mStickyList.setOnItemClickListener(this);
+
+        mFabQrCode = (FloatingActionButton) view.findViewById(R.id.fab_add_qr_code);
+        mFabCloud = (FloatingActionButton) view.findViewById(R.id.fab_add_cloud);
+        mFabFile = (FloatingActionButton) view.findViewById(R.id.fab_add_file);
+
+        mFabQrCode.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                scanQrCode();
+            }
+        });
+        mFabCloud.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                searchCloud();
+            }
+        });
+        mFabFile.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                importFile();
+            }
+        });
 
         mSwipeRefreshLayout = (ListAwareSwipeRefreshLayout) view.findViewById(R.id.key_list_swipe_container);
         mSwipeRefreshLayout.setOnRefreshListener(new NoScrollableSwipeRefreshLayout.OnRefreshListener() {
@@ -496,24 +525,9 @@ public class KeyListFragment extends LoaderFragment
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.menu_key_list_add:
-                Intent scanQrCode = new Intent(getActivity(), QrCodeScanActivity.class);
-                scanQrCode.setAction(QrCodeScanActivity.ACTION_SCAN_WITH_RESULT);
-                startActivityForResult(scanQrCode, 0);
-                return true;
-
-            case R.id.menu_key_list_search_cloud:
-                searchCloud();
-                return true;
 
             case R.id.menu_key_list_create:
                 createKey();
-                return true;
-
-            case R.id.menu_key_list_import_existing_key:
-                Intent intentImportExisting = new Intent(getActivity(), ImportKeysActivity.class);
-                intentImportExisting.setAction(ImportKeysActivity.ACTION_IMPORT_KEY_FROM_FILE_AND_RETURN);
-                startActivityForResult(intentImportExisting, 0);
                 return true;
 
             case R.id.menu_key_list_export:
@@ -585,6 +599,18 @@ public class KeyListFragment extends LoaderFragment
         Intent importIntent = new Intent(getActivity(), ImportKeysActivity.class);
         importIntent.putExtra(ImportKeysActivity.EXTRA_QUERY, (String) null); // hack to show only cloud tab
         startActivity(importIntent);
+    }
+
+    private void scanQrCode() {
+        Intent scanQrCode = new Intent(getActivity(), QrCodeScanActivity.class);
+        scanQrCode.setAction(QrCodeScanActivity.ACTION_SCAN_WITH_RESULT);
+        startActivityForResult(scanQrCode, 0);
+    }
+
+    private void importFile() {
+        Intent intentImportExisting = new Intent(getActivity(), ImportKeysActivity.class);
+        intentImportExisting.setAction(ImportKeysActivity.ACTION_IMPORT_KEY_FROM_FILE_AND_RETURN);
+        startActivityForResult(intentImportExisting, 0);
     }
 
     private void createKey() {

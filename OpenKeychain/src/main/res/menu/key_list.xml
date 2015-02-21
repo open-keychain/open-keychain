@@ -10,17 +10,6 @@
         app:showAsAction="collapseActionView|always" />
 
     <item
-        android:id="@+id/menu_key_list_search_cloud"
-        android:icon="@drawable/ic_cloud_search_24px"
-        android:title="@string/menu_search_cloud"
-        app:showAsAction="never" />
-
-    <item
-        android:id="@+id/menu_key_list_add"
-        android:title="@string/import_qr_code_button"
-        app:showAsAction="never" />
-
-    <item
         android:id="@+id/menu_key_list_export"
         android:title="@string/menu_export_all_keys"
         app:showAsAction="never" />
@@ -28,11 +17,6 @@
     <item
         android:id="@+id/menu_key_list_create"
         android:title="@string/menu_create_key"
-        app:showAsAction="never" />
-
-    <item
-        android:id="@+id/menu_key_list_import_existing_key"
-        android:title="@string/menu_import_existing_key"
         app:showAsAction="never" />
 
     <item

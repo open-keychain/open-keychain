@@ -17,3 +17,6 @@ python copy OpenKeychain action black settings 24
 
 # floating action button
 python copy OpenKeychain av white play_arrow 24
+
+# small floating action button
+python copy OpenKeychain file white folder 24
