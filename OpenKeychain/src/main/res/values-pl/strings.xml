@@ -682,6 +682,7 @@ OSTRZEŻENIE: Jeżeli nie wiesz, czemu wyświetlił się ten komunikat, nie zezw
   <string name="swipe_to_update">Pociągnij w dół, aby aktualizować z serwera kluczy</string>
   <string name="error_no_file_selected">Wybierz przynajmniej jeden plik, aby szyfrować!</string>
   <string name="key_colon">Klucz:</string>
+  <string name="btn_start_exchange">Rozpocznij wymianę</string>
   <!--First Time-->
   <string name="first_time_text1">Weź prywatność w swoje ręce używając OpenKeychain!</string>
   <string name="first_time_create_key">Utwórz mój klucz</string>
