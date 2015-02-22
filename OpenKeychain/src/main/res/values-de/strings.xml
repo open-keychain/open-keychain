@@ -536,7 +536,7 @@
   <string name="view_key_expired">Dieser Schlüssel ist nicht mehr gültig!</string>
   <!--Navigation Drawer-->
   <string name="nav_keys">Schlüssel</string>
-  <string name="nav_encrypt_decrypt">Veschlüsseln/Entschlüsseln</string>
+  <string name="nav_encrypt_decrypt">Verschlüsseln/Entschlüsseln</string>
   <string name="nav_apps">Apps</string>
   <string name="drawer_open">Menü öffnen</string>
   <string name="drawer_close">Menü schließen</string>
