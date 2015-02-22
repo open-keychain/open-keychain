@@ -67,8 +67,10 @@
     <uses-permission android:name="android.permission.READ_PROFILE" />
 
     <!-- android:allowBackup="false": Don't allow backup over adb backup or other apps! -->
+    <!-- tools:replace="android:allowBackup" is a workaround for https://github.com/geftimov/android-patternview/pull/2 -->
     <application
         android:name=".KeychainApplication"
+        tools:replace="android:allowBackup"
         android:allowBackup="false"
         android:hardwareAccelerated="true"
         android:icon="@drawable/ic_launcher"
@@ -653,12 +655,6 @@
         <activity
             android:name=".ui.PassphraseDialogActivity"
             android:theme="@android:style/Theme.NoDisplay" />
-        <activity
-            android:name="com.haibison.android.lockpattern.LockPatternActivity"
-            android:label="@string/title_unlock"
-            android:configChanges="orientation|screenSize|keyboard|keyboardHidden"
-            android:screenOrientation="user"
-            android:theme="@style/Alp.42447968.Theme.Dialog.Light" />
         <activity android:name=".ui.PassphraseWizardActivity" />
         <!--
         NOTE: singleTop is set to get NFC foreground dispatch to work.

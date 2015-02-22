@@ -7,13 +7,12 @@
     tools:context="pSontag.testopenkeychain.Passphrase">
 
 
-
     <TableLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <TableRow
-            android:layout_marginBottom="10dp">
+        <TableRow android:layout_marginBottom="10dp">
+
             <TextView
                 android:id="@+id/passphraseText"
                 android:layout_width="match_parent"
@@ -23,7 +22,7 @@
                 android:layout_gravity="center_vertical"
                 android:textAppearance="?android:attr/textAppearanceMedium"
                 android:text="@string/passphrase"
-                android:layout_weight="1"/>
+                android:layout_weight="1" />
         </TableRow>
 
         <View
@@ -32,26 +31,29 @@
             android:background="?android:attr/listDivider" />
 
         <TableRow>
+
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:padding="8dp"
                 android:layout_weight="1"
                 android:textAppearance="?android:attr/textAppearanceMedium"
-                android:text="@string/passphrase"/>
+                android:text="@string/passphrase" />
+
             <EditText
                 android:id="@+id/passphrase"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="textPassword"
                 android:padding="8dp"
-                android:layout_weight="6"/>
+                android:layout_weight="6" />
 
         </TableRow>
 
         <TableRow
             android:layout_marginTop="10dp"
             android:layout_marginBottom="10dp">
+
             <TextView
                 android:id="@+id/passphraseTextAgain"
                 android:layout_width="wrap_content"
@@ -59,7 +61,8 @@
                 android:padding="8dp"
                 android:text="@string/passphrase_again"
                 android:textAppearance="?android:attr/textAppearanceMedium"
-                android:layout_weight="1"/>
+                android:layout_weight="1" />
+
             <EditText
                 android:id="@+id/passphraseAgain"
                 android:layout_width="match_parent"
@@ -67,10 +70,11 @@
                 android:inputType="textPassword"
                 android:imeOptions="actionDone"
                 android:padding="8dp"
-                android:layout_weight="6"/>
+                android:layout_weight="6" />
 
         </TableRow>
     </TableLayout>
+
     <View
         android:layout_width="match_parent"
         android:layout_height="1dip"
@@ -80,28 +84,32 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Cancel"
-            android:onClick="cancel"
-            android:layout_weight="1"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            style="?attr/alp_42447968_button_bar_button_style"/>
-        <View
-            android:layout_width="1dip"
-            android:layout_height="50dip"
-            android:background="?android:attr/listDivider" />
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Ok"
-            android:onClick="savePassphrase"
-            android:layout_weight="1"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            style="?attr/alp_42447968_button_bar_button_style"/>
+
+        <!--<Button-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:text="Cancel"-->
+            <!--android:onClick="cancel"-->
+            <!--android:layout_weight="1"-->
+            <!--android:textAppearance="?android:attr/textAppearanceMedium"-->
+            <!--style="?attr/alp_42447968_button_bar_button_style" />-->
+
+        <!--<View-->
+            <!--android:layout_width="1dip"-->
+            <!--android:layout_height="50dip"-->
+            <!--android:background="?android:attr/listDivider" />-->
+
+        <!--<Button-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:text="Ok"-->
+            <!--android:onClick="savePassphrase"-->
+            <!--android:layout_weight="1"-->
+            <!--android:textAppearance="?android:attr/textAppearanceMedium"-->
+            <!--style="?attr/alp_42447968_button_bar_button_style" />-->
 
     </LinearLayout>
+
     <View
         android:layout_width="match_parent"
         android:layout_height="1dip"
