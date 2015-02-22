@@ -9,13 +9,13 @@
   <string name="title_encrypt_text">Chiffrer un texte</string>
   <string name="title_encrypt_files">Chiffrer des fichiers</string>
   <string name="title_decrypt">Déchiffrer</string>
-  <string name="title_unlock">Phrase de passe</string>
+  <string name="title_unlock">Déverrouiller la clef</string>
   <string name="title_add_subkey">Ajouter une sous-clef</string>
   <string name="title_edit_key">Modifier une clef</string>
-  <string name="title_preferences">Préférences</string>
+  <string name="title_preferences">Paramètres</string>
   <string name="title_cloud_search_preferences">Préférences de recherche nuagique</string>
   <string name="title_api_registered_apps">Applis</string>
-  <string name="title_key_server_preference">Préférences du serveur de clefs</string>
+  <string name="title_key_server_preference">Serveurs de clefs</string>
   <string name="title_change_passphrase">Modifier la phrase de passe</string>
   <string name="title_share_fingerprint_with">Partager l\'empreinte avec...</string>
   <string name="title_share_key">Partager la clef avec...</string>
@@ -36,6 +36,7 @@
   <string name="title_create_key">Créer une clef</string>
   <string name="title_exchange_keys">Échanger des clefs</string>
   <string name="title_advanced_key_info">Infos avancées sur les clefs</string>
+  <string name="title_keys">Clefs</string>
   <!--section-->
   <string name="section_user_ids">identités</string>
   <string name="section_keys">Sous-clefs</string>
@@ -55,6 +56,8 @@
   <string name="section_decrypt_files">Fichiers</string>
   <string name="section_decrypt_text">Texte</string>
   <string name="section_certs">Certificats</string>
+  <string name="section_encrypt">Chiffrer</string>
+  <string name="section_decrypt">Déchiffrer</string>
   <!--button-->
   <string name="btn_decrypt_verify_file">Déchiffrer, vérifier et enregistrer le fichier</string>
   <string name="btn_decrypt_verify_message">Déchiffrer et enregistrer le message</string>
@@ -74,9 +77,11 @@
   <string name="btn_create_key">Créer la clef</string>
   <string name="btn_add_files">Ajouter un/des fichier(s)</string>
   <string name="btn_add_share_decrypted_text">Partager le texte déchiffrer</string>
-  <string name="btn_decrypt_clipboard">Déchiffrer à partir du presse-papiers</string>
+  <string name="btn_decrypt_clipboard">Déchiffrer du texte à partir du presse-papiers</string>
   <string name="btn_decrypt_and_verify">et vérifier les signatures</string>
   <string name="btn_decrypt_files">Déchiffrer les fichiers</string>
+  <string name="btn_encrypt_files">Chiffrer des fichiers</string>
+  <string name="btn_encrypt_text">Chiffrer du texte</string>
   <!--menu-->
   <string name="menu_preferences">Paramètres</string>
   <string name="menu_help">Aide</string>
@@ -90,6 +95,7 @@
   <string name="menu_encrypt_to">Chiffrer vers...</string>
   <string name="menu_select_all">Tout sélectionner</string>
   <string name="menu_add_keys">Ajouter des clefs</string>
+  <string name="menu_search_cloud">Rechercher dans le nuage</string>
   <string name="menu_export_all_keys">Exporter toutes les clefs</string>
   <string name="menu_advanced">Afficher les infos avancées</string>
   <!--label-->
@@ -189,7 +195,9 @@
   <string name="passphrase_must_not_be_empty">Veuillez saisir une phrase de passe</string>
   <string name="passphrase_for_symmetric_encryption">Chriffrement symétrique.</string>
   <string name="passphrase_for">Saisir une phrase de passe pour « %s »</string>
+  <string name="pin_for">Saisir le NIP pour « %s »</string>
   <string name="yubikey_pin_for">Saisir le NIP pour accéder à la Yubikey pour « %s »</string>
+  <string name="nfc_text">Tenez la YubiKey contre le dos de votre appareil.</string>
   <string name="file_delete_confirmation">Êtes-vous certain de vouloir supprimer\n%s?</string>
   <string name="file_delete_successful">Supprimé avec succès.</string>
   <string name="no_file_selected">Choisir d\'abord un fichier.</string>
@@ -241,7 +249,7 @@
   <string name="error_could_not_extract_private_key">impossible d\'extraire la clef privée</string>
   <!--errors without preceeding Error:-->
   <string name="error_jelly_bean_needed">Il vous faut Android 4.1 pour utiliser la fonction Beam NFC d\'Android !</string>
-  <string name="error_nfc_needed">La NFC n\'est pas disponible sur votre appareil !</string>
+  <string name="error_nfc_needed">La NFC n\'est pas proposée sur votre appareil !</string>
   <string name="error_nothing_import">Aucune clef trouvée !</string>
   <string name="error_contacts_key_id_missing">Échec lors de la récupération de l\'ID de clef à partir des contacts !</string>
   <string name="error_generic_report_bug">Une erreur générique est survenue, veuillez créer un nouveau rapport de bogue pour OpenKeychain.</string>
@@ -278,9 +286,10 @@
   <string name="progress_generating_ecdh">génération d\'une nouvelle clef ECDH... </string>
   <string name="progress_modify">modification du trousseau...</string>
   <string name="progress_modify_unlock">déverrouillage du trousseau...</string>
-  <string name="progress_modify_adduid">ajout des ID d\'utilisateur...</string>
-  <string name="progress_modify_revokeuid">révocation des ID d\'utilisateur...</string>
-  <string name="progress_modify_primaryuid">changement de l\'ID d\'utilisateur principal...</string>
+  <string name="progress_modify_adduid">ajout des ID utilisateurs...</string>
+  <string name="progress_modify_adduat">ajout des attributs utilisateur...</string>
+  <string name="progress_modify_revokeuid">révocation des ID utilisateurs...</string>
+  <string name="progress_modify_primaryuid">changement de l\'ID utilisateur principal...</string>
   <string name="progress_modify_subkeychange">modification des sous-clefs...</string>
   <string name="progress_modify_subkeyrevoke">révocation des sous-clefs...</string>
   <string name="progress_modify_subkeystrip">dépouillement des sous-clefs...</string>
@@ -353,8 +362,9 @@
   <string name="import_qr_code_wrong">Code QR incorrecte ! Veuillez réessayer !</string>
   <string name="import_qr_code_too_short_fingerprint">L\'empreinte est trop courte (&lt; 16 caractères)</string>
   <string name="import_qr_code_button">Balayer le code QR</string>
+  <string name="import_qr_code_text">Placez votre appareil photo au-dessus du code QR !</string>
   <!--Generic result toast-->
-  <string name="view_log">Consulter le journal</string>
+  <string name="view_log">Détails</string>
   <string name="with_warnings">, avec des avertissements</string>
   <string name="with_cancelled">, jusqu\'à l\'annulation</string>
   <!--Import result toast-->
@@ -438,7 +448,9 @@
   <string name="api_settings_delete_account">Supprimer le compte</string>
   <string name="api_settings_package_name">Nom du paquet</string>
   <string name="api_settings_package_signature">SHA-256 de la signature du paquet</string>
-  <string name="api_settings_accounts">Comptes</string>
+  <string name="api_settings_accounts">Comptes (API dépréciée)</string>
+  <string name="api_settings_advanced">Informations avancées</string>
+  <string name="api_settings_allowed_keys">Clefs autorisées</string>
   <string name="api_settings_settings">Paramètres</string>
   <string name="api_settings_key">Clef du compte :</string>
   <string name="api_settings_accounts_empty">Aucun compte n\'est attaché à cette appli.</string>
@@ -524,9 +536,7 @@
   <string name="view_key_expired">Cette clef est expirée !</string>
   <!--Navigation Drawer-->
   <string name="nav_keys">Clefs</string>
-  <string name="nav_encrypt_text">Chiffrer un texte</string>
-  <string name="nav_encrypt_files">Chiffrer des fichiers</string>
-  <string name="nav_decrypt">Déchiffrer</string>
+  <string name="nav_encrypt_decrypt">Chiffrer/déchiffrer</string>
   <string name="nav_apps">Applis</string>
   <string name="drawer_open">Ouvrir le tiroir de navigation</string>
   <string name="drawer_close">Fermer le tiroir de navigation</string>
@@ -552,7 +562,7 @@
   <string name="msg_ip_delete_old_fail">Aucune ancienne clef de supprimée (création d\'une nouvelle ?)</string>
   <string name="msg_ip_delete_old_ok">L\'ancienne clef a été supprimée de la base de données</string>
   <string name="msg_ip_encode_fail">Échec de l\'opération causé par une erreur d\'encodage</string>
-  <string name="msg_ip_error_io_exc">Échec de l\'opération causé par une erreur d\'e/s</string>
+  <string name="msg_ip_error_io_exc">Échec de l\'opération causé par une erreur d\'E/S</string>
   <string name="msg_ip_error_op_exc">Échec de l\'opération causé par une erreur de base de données</string>
   <string name="msg_ip_error_remote_ex">Échec de l\'opération causé par une erreur interne</string>
   <string name="msg_ip">Importation du trousseau public %s</string>
@@ -615,14 +625,29 @@
     <item quantity="one">Un certificat ignoré provenant d\'une clef publique inconnue</item>
     <item quantity="other">%s certificats ignorés provenant de clefs publiques inconnues</item>
   </plurals>
-  <string name="msg_ip_uid_classifying_zero">Classification des ID d\'utilisateurs (aucune clef de confiance disponible)</string>
+  <string name="msg_ip_uid_classifying_zero">Classification des ID utilisateurs (aucune clef de confiance proposée)</string>
   <plurals name="msg_ip_uid_classifying">
-    <item quantity="one">Classification des ID d\'utilisateurs (en utilisant une clef de confiance)</item>
-    <item quantity="other">Classification des ID d\'utilisateurs (en utilisant %s clefs de confiance)</item>
+    <item quantity="one">Classification des ID utilisateurs (en utilisant une clef de confiance)</item>
+    <item quantity="other">Classification des ID utilisateurs (en utilisant %s clefs de confiance)</item>
   </plurals>
-  <string name="msg_ip_uid_reorder">Réorganisation des ID d\'utilisateurs</string>
-  <string name="msg_ip_uid_processing">Traitement de l\'ID d\'utilisateur %s</string>
-  <string name="msg_ip_uid_revoked">L\'ID d\'utilisateur est révoqué</string>
+  <string name="msg_ip_uid_reorder">Réorganisation des ID utilisateurs</string>
+  <string name="msg_ip_uid_processing">Traitement de l\'ID utilisateur %s</string>
+  <string name="msg_ip_uid_revoked">L\'ID utilisateur est révoqué</string>
+  <string name="msg_ip_uat_processing_image">Traitement de l\'attribut utilisateur de type image</string>
+  <string name="msg_ip_uat_processing_unknown">Traitement de l\'attribut utilisateur de type inconnu</string>
+  <string name="msg_ip_uat_cert_bad">Mauvais certificat rencontré !</string>
+  <string name="msg_ip_uat_cert_error">Erreur lors du traitement du certificat !</string>
+  <string name="msg_ip_uat_cert_nonrevoke">A déjà un certificat non-révocable, étape ignorée.</string>
+  <string name="msg_ip_uat_cert_old">Le certificat est plus ancien que le précédent, étape ignorée.</string>
+  <string name="msg_ip_uat_cert_new">Le certificat est plus récent, remplacement du précédent.</string>
+  <string name="msg_ip_uat_cert_good">Un bon certificat par %1$s a été trouvé</string>
+  <string name="msg_ip_uat_cert_good_revoke">Une révocation d\'un bon certificat par %1$s a été trouvée</string>
+  <plurals name="msg_ip_uat_certs_unknown">
+    <item quantity="one">Un certificat provenant d\'une clef publique inconnue est ignoré</item>
+    <item quantity="other">%s certificats provenant de clefs publiques inconnues sont ignorés</item>
+  </plurals>
+  <string name="msg_ip_uat_classifying">Organisation des attributs utilisateur</string>
+  <string name="msg_ip_uat_revoked">L\'attribut utilisateur est révoqué</string>
   <string name="msg_is_bad_type_public">Tentative d\'importer le trousseau public comme secret. Ceci est un bogue, veuillez remplir un rapport !</string>
   <string name="msg_is_bad_type_uncanon">Tentative d\'importer un trousseau sans canonicalisation. Ceci est un bogue, veuillez remplir un rapport !</string>
   <!--Import Secret log entries-->
@@ -637,6 +662,7 @@
   <string name="msg_is_subkey_nonexistent">La sous-clef %s n\'est pas disponible dans la clef secrète</string>
   <string name="msg_is_subkey_ok">Marquer la sous-clef secrète %s comme disponible</string>
   <string name="msg_is_subkey_empty">Marquer la sous-clef secrète %s comme disponible, avec une phrase de passe vide</string>
+  <string name="msg_is_subkey_pin">La sous-clef secrète %s a été marquée comme disponible, avec un NIP</string>
   <string name="msg_is_subkey_stripped">Marquer la sous-clef secrète %s comme dépouillée</string>
   <string name="msg_is_subkey_divert">Marquer la sous-clef secrète %s comme « dévier vers la carte intelligente/la NFC »</string>
   <string name="msg_is_success_identical">Le trousseau ne contient pas de nouvelle donnée, rien à faire</string>
@@ -645,17 +671,20 @@
   <string name="msg_kc_public">Canonicalisation du trousseau public %s</string>
   <string name="msg_kc_secret">Canonicalisation du trousseau secret %s</string>
   <string name="msg_kc_error_v3">Ceci est une clef OpenPGP version 3, qui a été déprécié et n\'est plus pris en charge !</string>
-  <string name="msg_kc_error_no_uid">Le trousseau n\'a pas d\'ID d\'utilisateur valide !</string>
+  <string name="msg_kc_error_no_uid">Le trousseau n\'a pas d\'ID utilisateur valide !</string>
   <string name="msg_kc_error_master_algo">La clef maîtresse utilise un algorithme (%s) inconnu ! </string>
   <string name="msg_kc_error_dup_key">La sous-clef %s se présente deux fois dans le trousseau. Le trousseau est mal formé, pas d\'importation ! </string>
   <string name="msg_kc_master">Traitement de la clef maîtresse</string>
-  <string name="msg_kc_master_bad_err">Suppression du mauvais certificat de révocation du trousseau</string>
-  <string name="msg_kc_master_bad_local">Suppression du certificat de révocation du trousseau ayant le drapeau « local »</string>
-  <string name="msg_kc_master_bad_time">Suppression du certificat de révocation du trousseau ayant une estampille temporelle dans le futur</string>
   <string name="msg_kc_master_bad_type">Suppression du certificat de clef maîtresse de type inconnu (%s)</string>
-  <string name="msg_kc_master_bad_type_uid">Suppression du certificat de l\'ID d\'utilisateur en mauvaise position</string>
-  <string name="msg_kc_master_bad">Suppression du mauvais certificat de révocation du trousseau</string>
+  <string name="msg_kc_master_bad_local">Suppression du certificat clef maîtresse ayant le drapeau « local »</string>
+  <string name="msg_kc_master_bad_err">Suppression du mauvais certificat de clef maîtresse</string>
+  <string name="msg_kc_master_bad_time">Suppression du certificat de révocation du trousseau ayant une estampille temporelle dans le futur</string>
+  <string name="msg_kc_master_bad_type_uid">Suppression du certificat de l\'ID utilisateur en mauvaise position</string>
+  <string name="msg_kc_master_bad">Suppression du mauvais certificat de clef maîtresse</string>
+  <string name="msg_kc_master_local">Suppression du certificat de clef maîtresse ayant le drapeau « local »</string>
   <string name="msg_kc_revoke_dup"> Suppression du certificat redondant de révocation du trousseau</string>
+  <string name="msg_kc_notation_dup">Suppression du certificat de notation redondant</string>
+  <string name="msg_kc_notation_empty">Suppression du certificat de notation vide</string>
   <string name="msg_kc_sub">Traitement de la sous-clef %s</string>
   <string name="msg_kc_sub_bad">Suppression du certificat invalide de liaison de la sous-clef</string>
   <string name="msg_kc_sub_bad_err">Suppression du mauvais certificat de liaison de la sous-clef</string>
@@ -685,18 +714,33 @@
     <item quantity="other">Canonicalisation du trousseau réussie, %d certificats redondants supprimés</item>
   </plurals>
   <string name="msg_kc_uid_bad_err">Suppression du mauvais auto-certificat pour l\'ID utilisateur « %s »</string>
-  <string name="msg_kc_uid_bad_local">Suppression du certificat d\'ID d\'utilisateur ayant le drapeau « local »</string>
-  <string name="msg_kc_uid_bad_time">Suppression de l\'ID d\'utilisateur ayant une estampille temporelle dans le futur</string>
-  <string name="msg_kc_uid_bad_type">Suppression du certificat d\'ID d\'utilisateur de type inconnu (%s)</string>
+  <string name="msg_kc_uid_bad_local">Suppression du certificat d\'ID utilisateur ayant le drapeau « local »</string>
+  <string name="msg_kc_uid_bad_time">Suppression de l\'ID utilisateur ayant une estampille temporelle dans le futur</string>
+  <string name="msg_kc_uid_bad_type">Suppression du certificat d\'ID utilisateur de type inconnu (%s)</string>
   <string name="msg_kc_uid_bad">Suppression du mauvais auto-certificat pour l\'ID utilisateur « %s »</string>
-  <string name="msg_kc_uid_cert_dup">Suppression de l\'auto-certificat périmé pour l\'ID d\'utilisateur « %s »</string>
-  <string name="msg_kc_uid_foreign">Suppression du certificat d\'ID d\'utilisateur étranger par « %s »</string>
-  <string name="msg_kc_uid_revoke_dup">Suppression du certificat de révocation redondant pour l\'ID d\'utilisateur « %s »</string>
-  <string name="msg_kc_uid_revoke_old">Suppression du certificat de révocation périmé pour l\'ID d\'utilisateur « %s »</string>
-  <string name="msg_kc_uid_no_cert">Aucun auto-certificat valide trouvé pour l\'ID d\'utilisateur « %s », qui est maintenant enlevé du trousseau</string>
-  <string name="msg_kc_uid_remove">Suppression de l\'ID d\'utilisateur invalide « %s »</string>
-  <string name="msg_kc_uid_dup">Suppression de l\'ID d\'utilisateur en double « %s ». La clef secrète en contenait deux. Ceci pourrait entraîner des certificats manquants !</string>
-  <string name="msg_kc_uid_warn_encoding">L\'ID d\'utilisateur ne passe pas le test UTF-8 !</string>
+  <string name="msg_kc_uid_cert_dup">Suppression de l\'auto-certificat périmé pour l\'ID utilisateur « %s »</string>
+  <string name="msg_kc_uid_foreign">Suppression du certificat d\'ID utilisateur étranger par « %s »</string>
+  <string name="msg_kc_uid_revoke_dup">Suppression du certificat de révocation redondant pour l\'ID utilisateur « %s »</string>
+  <string name="msg_kc_uid_revoke_old">Suppression du certificat de révocation périmé pour l\'ID utilisateur « %s »</string>
+  <string name="msg_kc_uid_no_cert">Aucun auto-certificat valide trouvé pour l\'ID utilisateur « %s », qui est maintenant enlevé du trousseau</string>
+  <string name="msg_kc_uid_remove">Suppression de l\'ID utilisateur invalide « %s »</string>
+  <string name="msg_kc_uid_dup">Suppression de l\'ID d\'utilisateur en double « %s ». Le trousseau en contenait deux. Ceci pourrait entraîner des certificats manquants !</string>
+  <string name="msg_kc_uid_warn_encoding">L\'ID utilisateur ne passe pas le test UTF-8 !</string>
+  <string name="msg_kc_uat_jpeg">Traitement de l\'attribut utilisateur de type JPEG</string>
+  <string name="msg_kc_uat_unknown">Traitement de l\'attribut utilisateur de type inconnu</string>
+  <string name="msg_kc_uat_bad_err">Suppression du mauvais auto-certificat pour l\'attribut utilisateur</string>
+  <string name="msg_kc_uat_bad_local">Suppression de l\'attribut utilisateur ayant le drapeau « local »</string>
+  <string name="msg_kc_uat_bad_time">Suppression de l\'attribut utilisateur ayant une estampille temporelle dans le futur</string>
+  <string name="msg_kc_uat_bad_type">Suppression du certificat d\'attribut utilisateur de type inconnu (%s)</string>
+  <string name="msg_kc_uat_bad">Suppression du mauvais auto-certificat pour l\'attribut utilisateur</string>
+  <string name="msg_kc_uat_cert_dup">Suppression de l\'auto-certificat périmé pour l\'attribut utilisateur</string>
+  <string name="msg_kc_uat_dup">Suppression de l\'attribut utilisateur en double. Le trousseau en contenait deux. Ceci pourrait entraîner des certificats manquants !</string>
+  <string name="msg_kc_uat_foreign">Suppression du certificat étranger d\'attribut utilisateur par</string>
+  <string name="msg_kc_uat_revoke_dup">Suppression du certificat de révocation redondant pour l\'attribut utilisateur</string>
+  <string name="msg_kc_uat_revoke_old">Suppression de l\'auto-certificat périmé pour l\'attribut utilisateur</string>
+  <string name="msg_kc_uat_no_cert">Aucun auto-certificat valide trouvé pour l\'attribut utilisateur, qui est maintenant enlevé du trousseau</string>
+  <string name="msg_kc_uat_remove">Suppression de l\'attribut utilisateur invalide</string>
+  <string name="msg_kc_uat_warn_encoding">L\'ID utilisateur ne passe pas le test UTF-8 !</string>
   <!--Keyring merging log entries-->
   <string name="msg_mg_error_secret_dummy">Une nouvelle sous-clef publique a été trouvée, mais la génération de sous-clef secrète factice n\'est pas prise en charge !</string>
   <string name="msg_mg_error_heterogeneous">Il a été tenté de fusionner des trousseaux avec des empreintes différentes !</string>
@@ -709,13 +753,13 @@
   <!--createSecretKeyRing-->
   <string name="msg_cr">Génération d\'une nouvelle clef maîtresse</string>
   <string name="msg_cr_error_no_master">Aucune option de clef maîtresse n\'a été spécifiée !</string>
-  <string name="msg_cr_error_no_user_id">Les trousseaux doivent être créés avec au moins un ID d\'utilisateur !</string>
+  <string name="msg_cr_error_no_user_id">Les trousseaux doivent être créés avec au moins un ID utilisateur !</string>
   <string name="msg_cr_error_no_certify">La clef maîtresse doit avoir le drapeau « certifié » !</string>
   <string name="msg_cr_error_null_expiry">L\'expiration ne peut pas être « pareille qu\'avant » à la création de la clef. Ceci est une erreur du programme, veuillez remplir un rapport de bogue !</string>
   <string name="msg_cr_error_keysize_512">La taille de la clef doit être supérieure ou égale à 512 !</string>
   <string name="msg_cr_error_no_curve">Aucune taille de clef n\'a été spécifiée ! Ceci est une erreur de programmation, veuillez remplir un rapport de bogue !</string>
   <string name="msg_cr_error_no_keysize">Aucune courbe elliptique n\'a été spécifiée ! Ceci est une erreur de programmation, veuillez remplir un rapport de bogue !</string>
-  <string name="msg_cr_error_internal_pgp">Erreur interne PGP !</string>
+  <string name="msg_cr_error_internal_pgp">Erreur interne OpenPGP !</string>
   <string name="msg_cr_error_unknown_algo">L\'algorithme choisi est inconnu ! Ceci est une erreur de programmation, veuillez remplir un rapport de bogue !</string>
   <string name="msg_cr_error_flags_dsa">Les drapeaux de clef choisis sont incorrects, DSA ne peut pas être utilisé pour le chiffrement ! </string>
   <string name="msg_cr_error_flags_elgamal">Les drapeaux de clef choisis sont incorrects, ElGamal ne peut pas être utilisé pour le chiffrement ! </string>
@@ -723,25 +767,29 @@
   <string name="msg_cr_error_flags_ecdh">Les drapeaux de clef choisis sont incorrects, ECDH ne peut pas être utilisé pour le chiffrement ! </string>
   <!--modifySecretKeyRing-->
   <string name="msg_mr">Modification du trousseau %s</string>
+  <string name="msg_mf_error_divert_serial">Le numéro de série d\'une clef diriger-vers-la-carte doit avoir 16 bytes ! Ceci est une erreur de programmation, veuillez remplir un rapport de bogue !</string>
   <string name="msg_mf_error_encode">Exception d\'encodage !</string>
   <string name="msg_mf_error_fingerprint">L\'empreinte de clef effective ne correspond pas à celle attendue !</string>
   <string name="msg_mf_error_keyid">Aucune ID de clef. Ceci est une erreur interne, veuillez remplir un rapport de bogue !</string>
   <string name="msg_mf_error_integrity">Erreur interne, le contrôle d\'intégrité a échoué !</string>
   <string name="msg_mf_error_master_none">Aucun certificat maître sur lequel se basé n\'a été trouvé ! (Tous révoqués ?)</string>
-  <string name="msg_mf_error_noexist_primary">Mauvais ID d\'utilisateur principal spécifié !</string>
-  <string name="msg_mf_error_noexist_revoke">Mauvais ID d\'utilisateur spécifié pour la révocation !</string>
-  <string name="msg_mf_error_revoked_primary">Les ID d\'utilisateurs révoqués ne peuvent pas être principaux !</string>
+  <string name="msg_mf_error_noexist_primary">Mauvais ID utilisateur principal spécifié !</string>
+  <string name="msg_mf_error_noexist_revoke">Mauvais ID utilisateur spécifié pour la révocation !</string>
+  <string name="msg_mf_error_restricted">Tentative d\'exécution d\'une opération restreinte sans phrase de passe ! Ceci est une erreur de programmation, veuillez remplir un rapport de bogue !</string>
+  <string name="msg_mf_error_revoked_primary">Les ID utilisateurs révoqués ne peuvent pas être principaux !</string>
   <string name="msg_mf_error_null_expiry">L\'expiration ne peut pas être « pareille qu\'avant » lors de la création de sous-clefs. Ceci est une erreur de programmation, veuillez remplir un rapport de bogue !</string>
   <string name="msg_mf_error_passphrase_master">Erreur fatale lors du déchiffrement de la clef maîtresse ! Ceci est probablement une erreur de programmation, veuillez remplir un rapport de bogue !</string>
-  <string name="msg_mf_error_pgp">Erreur interne de PGP !</string>
+  <string name="msg_mf_error_pgp">Erreur interne OpenPGP !</string>
   <string name="msg_mf_error_sig">Exception de signature !</string>
   <string name="msg_mf_master">Modification des certifications maîtresses</string>
-  <string name="msg_mf_passphrase">Changement de la phrase de passe pour le trousseau...</string>
+  <string name="msg_mf_notation_empty">Ajout d\'un paquet de notation vide</string>
+  <string name="msg_mf_notation_pin">Ajout d\'un paquet de notation NIP</string>
+  <string name="msg_mf_passphrase">Changement de la phrase de passe pour le trousseau</string>
   <string name="msg_mf_passphrase_key">Rechiffrement de la sous-clef %s avec la nouvelle phrase de passe</string>
   <string name="msg_mf_passphrase_empty_retry">Échec lors de la définition de la nouvelle phrase de passe, nouvel essai avec une ancienne phrase de passe vide</string>
   <string name="msg_mf_passphrase_fail">La phrase de passe de la sous-clef n\'a pas pu être changée ! (Est-elle différente des autres clefs ?)</string>
-  <string name="msg_mf_primary_replace_old">Remplacement du certificat de l\'ID d\'utilisateur principal précédent</string>
-  <string name="msg_mf_primary_new">Génération d\'un nouveau certificat pour le nouvel ID d\'utilisateur principal</string>
+  <string name="msg_mf_primary_replace_old">Remplacement du certificat de l\'ID utilisateur principal précédent</string>
+  <string name="msg_mf_primary_new">Génération d\'un nouveau certificat pour le nouvel ID utilisateur principal</string>
   <string name="msg_mf_subkey_change">Modification de la sous-clef %s</string>
   <string name="msg_mf_error_subkey_missing">Une action a été tentée sur la sous-clef manquante %s !</string>
   <string name="msg_mf_subkey_new">Ajout d\'une nouvelle sous-clef de type %s</string>
@@ -750,10 +798,13 @@
   <string name="msg_mf_subkey_revoke">Révocation de la sous-clef %s</string>
   <string name="msg_mf_subkey_strip">Dépouillement de la sous-clef %s</string>
   <string name="msg_mf_success">Trousseau modifié avec succès</string>
-  <string name="msg_mf_uid_add">Ajout de l\'ID d\'utilisateur %s</string>
-  <string name="msg_mf_uid_primary">Changement de l\'ID d\'utilisateur principal en %s</string>
-  <string name="msg_mf_uid_revoke">Révocation de l\'ID d\'utilisateur %s</string>
-  <string name="msg_mf_uid_error_empty">L\'ID d\'utilisateur ne peut pas être vide !</string>
+  <string name="msg_mf_uid_add">Ajout de l\'ID utilisateur %s</string>
+  <string name="msg_mf_uid_primary">Changement de l\'ID utilisateur principal en %s</string>
+  <string name="msg_mf_uid_revoke">Révocation de l\'ID utilisateur %s</string>
+  <string name="msg_mf_uid_error_empty">L\'ID utilisateur ne peut pas être vide !</string>
+  <string name="msg_mf_uat_error_empty">L\'attribut utilisateur ne peut pas être vide !</string>
+  <string name="msg_mf_uat_add_image">Ajout de l\'attribut utilisateur de type image</string>
+  <string name="msg_mf_uat_add_unknown">Ajout de l\'attribut utilisateur de type inconnu</string>
   <string name="msg_mf_unlock_error">Erreur lors du déverrouillage du trousseau !</string>
   <string name="msg_mf_unlock">Déverrouillage du trousseau</string>
   <!--Consolidate-->
@@ -774,6 +825,7 @@
   <string name="msg_con_error_public">Erreur lors de la réimportation des clefs publiques !</string>
   <string name="msg_con_error_secret">Erreur lors de la réimportation des clefs secrètes !</string>
   <string name="msg_con_recover">Reprise du processus de consolidation</string>
+  <string name="msg_con_recursive">Consolidation récursive ignorée</string>
   <string name="msg_con_recover_unknown">Reprise du processus de consolidation à partir d\'un état inconnu</string>
   <plurals name="msg_con_reimport_public">
     <item quantity="one">Réimportation d\'une clef publique</item>
@@ -787,6 +839,19 @@
   <string name="msg_con_reimport_secret_skip">Aucune clef secrète à réimporter, étape ignorée...</string>
   <string name="msg_con_warn_delete_public">Une exception a eu lieu lors de la suppression du fichier de cache public</string>
   <string name="msg_con_warn_delete_secret">Une exception a eu lieu lors de la suppression du fichier de cache secret</string>
+  <!--Edit Key (higher level than modify)-->
+  <string name="msg_ed">Exécution de l\'opération sur la clef</string>
+  <string name="msg_ed_caching_new">Mise en cache de la nouvelle phrase de passe</string>
+  <string name="msg_ed_error_no_parcel">SaveKeyringParcel absent ! (Ceci est un bogue, veuillez le rapporter)</string>
+  <string name="msg_ed_error_key_not_found">Clef introuvable !</string>
+  <string name="msg_ed_fetching">Obtention de la clef à modifier (%s)</string>
+  <string name="msg_ed_success">Opération sur la clef réussie</string>
+  <!--Promote key-->
+  <string name="msg_pr">Promotion de la clef publique en clef secrète</string>
+  <string name="msg_pr_error_already_secret">La clef est déjà une clef secrète !</string>
+  <string name="msg_pr_error_key_not_found">Clef introuvable !</string>
+  <string name="msg_pr_fetching">Obtention de la clef à modifier (%s)</string>
+  <string name="msg_pr_success">Clef promue avec succès</string>
   <!--Other messages used in OperationLogs-->
   <string name="msg_ek_error_divert">La modification des clefs NFC n\'est pas (encore) prise en charge !</string>
   <string name="msg_ek_error_dummy">Impossible de modifier un trousseau avec une clef maîtresse dépouillée !</string>
@@ -795,11 +860,13 @@
   <string name="msg_dc_askip_no_key">Les données ne sont pas chiffrées avec un clef connue, étape ignorée...</string>
   <string name="msg_dc_askip_not_allowed">Les données ne sont pas chiffrées avec un clef autorisée, étape ignorée...</string>
   <string name="msg_dc_asym">Un bloc de données chiffrées asymétriquement a été trouvé pour la clef %s</string>
+  <string name="msg_dc_charset">En-tête de jeu de caractère trouvé : « %s »</string>
   <string name="msg_dc_clear_data">Traitement des données littérales</string>
   <string name="msg_dc_clear_decompress">Extraction des données compressées</string>
   <string name="msg_dc_clear_meta_file">Nom de fichier : %s</string>
   <string name="msg_dc_clear_meta_mime">Type MIME : %s</string>
   <string name="msg_dc_clear_meta_size">Taille de fichier : %s</string>
+  <string name="msg_dc_clear_meta_size_unknown">La taille de fichier est inconnue</string>
   <string name="msg_dc_clear_meta_time">Heure de modification : %s</string>
   <string name="msg_dc_clear_signature_bad">La vérification de la signature n\'est PAS CORRECTE !</string>
   <string name="msg_dc_clear_signature_check">Vérification des données de signature</string>
@@ -809,11 +876,12 @@
   <string name="msg_dc_error_bad_passphrase">Erreur lors du déverrouillage de la clef, phrase de passe erronée !</string>
   <string name="msg_dc_error_extract_key">Erreur inconnue lors du déverrouillage de la clef !</string>
   <string name="msg_dc_error_integrity_check">Erreur de vérification de l\'intégrité !</string>
+  <string name="msg_dc_error_integrity_missing">Vérification de l\'intégrité absente ! Ceci peut arriver car l\'application n\'est pas à jour, ou à cause d\'une attaque par mise à niveau inférieur.</string>
   <string name="msg_dc_error_invalid_siglist">Aucune donnée de signature valide trouvée !</string>
   <string name="msg_dc_error_io">Une exception E/S a été rencontrée durant l\'opération !</string>
   <string name="msg_dc_error_no_data">Aucune donnée chiffrée n\'a été trouvée dans le flux !</string>
   <string name="msg_dc_error_no_key">Aucune donnée chiffrée avec une clef secrète connue n\'a été trouvée dans le flux !</string>
-  <string name="msg_dc_error_pgp_exception">Une exception PGP a été rencontrée durant l\'opération !</string>
+  <string name="msg_dc_error_pgp_exception">Une exception OpenPGP a été rencontrée durant l\'opération !</string>
   <string name="msg_dc_integrity_check_ok">Vérification de l\'intégrité OK !</string>
   <string name="msg_dc_ok_meta_only">Seules les métadonnées ont été demandées, déchiffrement ignoré</string>
   <string name="msg_dc_ok">OK</string>
@@ -829,35 +897,49 @@
   <string name="msg_dc_trail_unknown">Des données traînantes de type inconnu ont été rencontrées</string>
   <string name="msg_dc_unlocking">Déverrouillage de la clef secrète</string>
   <!--Messages for SignEncrypt operation-->
-  <string name="msg_se_asymmetric">Préparation de la clef secrète pour le chiffrement</string>
-  <string name="msg_se_clearsign_only">La signature d\'entrée de texte en clair n\'est pas prise en charge !</string>
-  <string name="msg_se_compressing">Préparation de la compression</string>
-  <string name="msg_se_encrypting">Chiffrement des données</string>
-  <string name="msg_se_error_bad_passphrase">Phrase de passe erronée !</string>
-  <string name="msg_se_error_io">Exception E/S rencontrée durant l\'opération !</string>
-  <string name="msg_se_error_key_sign">La clef de signature choisie ne peut pas signer les données !</string>
-  <string name="msg_se_error_sign_key">Erreur lors de la récupération de la clef de signature !</string>
-  <string name="msg_se_error_nfc">Erreur de données NFC !</string>
-  <string name="msg_se_error_no_passphrase">Aucune phrase de passe fournie !</string>
-  <string name="msg_se_error_pgp">Erreur interne PGP !</string>
-  <string name="msg_se_error_sig">Une exception de signature PGP a été rencontrée !</string>
-  <string name="msg_se_error_unlock">Erreur inconnue lors du déverrouillage de la clef !</string>
-  <string name="msg_se_key_ok">Chiffrement pour la clef : %s</string>
-  <string name="msg_se_key_unknown">Clef manquante pour le chiffrement : %s</string>
-  <string name="msg_se_key_warn">Clef erronée pour le chiffrement : %s</string>
-  <string name="msg_se_ok">Opération de signature/chiffrement réussie !</string>
-  <string name="msg_se_pending_nfc">Jeton NFC exigé, demande de saisie à l\'utilisateur...</string>
-  <string name="msg_se_pending_passphrase">Phrase de passe exigée, demande de saisie à l\'utilisateur...</string>
-  <string name="msg_se_signing">Signature des données (sans chiffrement)</string>
-  <string name="msg_se_sigcrypting">Chiffrement des données avec signature</string>
-  <string name="msg_se">Début de l\'opération de signature et/ou de chiffrement</string>
-  <string name="msg_se_symmetric">Préparation du chiffrement symétrique</string>
+  <string name="msg_se">Début de l\'opération de signature/chiffrement</string>
+  <string name="msg_se_input_bytes">Traitement de l\'entrée du tableau de bytes</string>
+  <string name="msg_se_input_uri">Traitement de l\'entrée de l\'URI</string>
+  <string name="msg_se_error_no_input">Aucune entrée donnée !</string>
+  <string name="msg_se_error_input_uri_not_found">Erreur lors de l\'ouverture de l\'URI en lecture !</string>
+  <string name="msg_se_error_output_uri_not_found">Erreur lors de l\'ouverture de l\'URI en écriture !</string>
+  <string name="msg_se_error_too_many_inputs">Plus d\'entrées spécifiées que de sorties ! Ceci est probablement une erreur de programmation, veuillez remplir un rapport de bogue !</string>
+  <string name="msg_se_warn_output_left">Il reste des sorties mais pas d\'entrée. Ceci est probablement une erreur de programmation, veuillez remplir un rapport de bogue !</string>
+  <string name="msg_se_success">Opération de signature/chiffrement réussie</string>
+  <!--Messages for PgpSignEncrypt operation-->
+  <string name="msg_pse_asymmetric">Préparation des clefs publiques pour le chiffrement</string>
+  <string name="msg_pse_clearsign_only">La signature de texte en clair n\'est pas prise en charge !</string>
+  <string name="msg_pse_compressing">Préparation de la compression</string>
+  <string name="msg_pse_encrypting">Chiffrement des données</string>
+  <string name="msg_pse_error_bad_passphrase">Phrase de passe erronée !</string>
+  <string name="msg_pse_error_hash_algo">L’algorithme de hachage demandé n\'est pas pris en charge par cette clef ! </string>
+  <string name="msg_pse_error_io">Une exception E/S a été rencontrée durant l\'opération !</string>
+  <string name="msg_pse_error_key_sign">La clef de signature choisie ne peut pas signer les données !</string>
+  <string name="msg_pse_error_sign_key">Erreur lors de la récupération de la clef de signature !</string>
+  <string name="msg_pse_error_nfc">Erreur de données NFC !</string>
+  <string name="msg_pse_error_no_passphrase">Aucune phrase de passe fournie !</string>
+  <string name="msg_pse_error_pgp">Erreur interne OpenPGP !</string>
+  <string name="msg_pse_error_sig">Une exception de signature OpenPGP a été rencontrée !</string>
+  <string name="msg_pse_error_unlock">Erreur inconnue lors du déverrouillage de la clef !</string>
+  <string name="msg_pse_key_ok">Chiffrement pour la clef : %s</string>
+  <string name="msg_pse_key_unknown">Clef manquante pour le chiffrement : %s</string>
+  <string name="msg_pse_key_warn">Clef erronée pour le chiffrement : %s</string>
+  <string name="msg_pse_ok">Opération de signature/chiffrement réussie !</string>
+  <string name="msg_pse_pending_nfc">Jeton NFC exigé, demande de saisie à l\'utilisateur...</string>
+  <string name="msg_pse_pending_passphrase">Phrase de passe exigée, demande de saisie à l\'utilisateur...</string>
+  <string name="msg_pse_signing">Signature des données (sans chiffrement)</string>
+  <string name="msg_pse_signing_cleartext">Création d\'une signature de texte en clair</string>
+  <string name="msg_pse_signing_detached">Création d\'une signature détachée</string>
+  <string name="msg_pse_sigcrypting">Chiffrement des données avec signature</string>
+  <string name="msg_pse">Début de l\'opération de signature et/ou de chiffrement</string>
+  <string name="msg_pse_symmetric">Préparation du chiffrement symétrique</string>
   <string name="msg_crt_certifying">Générations des certifications</string>
-  <string name="msg_crt_certify_all">Certification de tous les ID d\'utilisateurs pour la clef %s</string>
+  <string name="msg_crt_certify_all">Certification de tous les ID utilisateurs pour la clef %s</string>
   <plurals name="msg_crt_certify_some">
-    <item quantity="one">Certification d\'un ID d\'utilisateur pour la clef %2$s</item>
-    <item quantity="other">Certification de %1$d ID d\'utilisateurs pour la clef %2$s</item>
+    <item quantity="one">Certification d\'un ID utilisateur pour la clef %2$s</item>
+    <item quantity="other">Certification de %1$d ID utilisateurs pour la clef %2$s</item>
   </plurals>
+  <string name="msg_crt_error_self">Un auto-certificat ne peut pas être délivré ainsi !</string>
   <string name="msg_crt_error_master_not_found">Clef maîtresse introuvable !</string>
   <string name="msg_crt_error_nothing">Aucune clef certifiée !</string>
   <string name="msg_crt_error_unlock">Erreur lors du déverrouillage de la clef maîtresse !</string>
@@ -887,6 +969,7 @@
   <string name="msg_import_fingerprint_ok">Vérification de l\'empreinte OK !</string>
   <string name="msg_import_merge">Fusion des données récupérées</string>
   <string name="msg_import_error">Échec lors de l\'opération d\'importation !</string>
+  <string name="msg_import_error_io">Échec de l\'opération causé par une erreur d\'E/S !</string>
   <string name="msg_import_partial">Opération d\'importation réussie, avec des erreurs !</string>
   <string name="msg_import_success">Opération d\'importation réussie !</string>
   <plurals name="msg_export">
@@ -903,6 +986,7 @@
   <string name="msg_export_error_storage">Le stockage n\'est pas prêt pour l\'écriture !</string>
   <string name="msg_export_error_db">Erreur de base de données !</string>
   <string name="msg_export_error_io">Erreur d\'entrée/sortie !</string>
+  <string name="msg_export_error_key">Erreur lors du prétraitement des données de la clef !</string>
   <string name="msg_export_success">Opération d\'exportation réussie !</string>
   <string name="msg_del_error_empty">Rien à supprimer !</string>
   <string name="msg_del_error_multi_secret">Les clefs secrètes ne peuvent être supprimées qu\'individuellement !</string>
@@ -939,6 +1023,11 @@
   <string name="passp_cache_notif_keys">Phrases de passe mises en cache :</string>
   <string name="passp_cache_notif_clear">Effacer le cache</string>
   <string name="passp_cache_notif_pwd">Phrase de passe</string>
+  <!--First Time-->
+  <string name="first_time_text1">Reprenez le contrôle de votre confidentialité avec OpenKeychain |</string>
+  <string name="first_time_create_key">Créer ma clef</string>
+  <string name="first_time_import_key">Importer depuis un fichier</string>
+  <string name="first_time_skip">Ignorer le paramétrage</string>
   <!--unsorted-->
   <string name="section_certifier_id">Certificateur</string>
   <string name="section_cert">Détails du certificat</string>
@@ -961,7 +1050,7 @@
   <string name="title_view_cert">Voir les détails du certificat</string>
   <string name="unknown_algorithm">inconnu</string>
   <string name="can_sign_not">impossible de signer</string>
-  <string name="error_no_encrypt_subkey">Aucune sous-clef de chiffrement n\'est disponible !</string>
+  <string name="error_no_encrypt_subkey">Aucune sous-clef de chiffrement n\'est proposée !</string>
   <string name="info_no_manual_account_creation">Ne pas créer de comptes-OpenKeychain manuellement.\nPour plus d\'informations, consultez l\'Aide.</string>
   <string name="contact_show_key">Montrer la clef (%s)</string>
   <string name="swipe_to_update">Glisser vers le bas pour mettre à jour à partir du serveur de clefs</string>
@@ -969,9 +1058,31 @@
   <string name="error_multi_not_supported">L\'enregistrement des fichiers multiples n\'est pas pris en charge. Ceci est actuellement une limitation d\'Android.</string>
   <string name="key_colon">Clef :</string>
   <string name="exchange_description">Pour démarrer un échange de clef, choisir le nombre de participants du côté droit, puis cliquer sur le bouton « Démarrer l\'échange ».\n\Deux questions de plus seront posées pour s\'assurer que seuls les bons participants sont dans l\'échange et que les empreintes sont correctes.</string>
-  <!--First Time-->
-  <string name="first_time_text1">Reprenez le contrôle de votre confidentialité avec OpenKeychain |</string>
-  <string name="first_time_create_key">Créer ma clef</string>
-  <string name="first_time_import_key">Importer depuis un fichier</string>
-  <string name="first_time_skip">Ignorer le paramétrage</string>
+  <string name="user_id_none"><![CDATA[<none>]]></string>
+  <!--Passphrase wizard-->
+  <!--TODO: rename all the things!-->
+  <string name="title_unlock_method">Choisir une méthode de déverrouillage</string>
+  <!--<string name="enter_passphrase_twice">Enter passphrase twice</string>-->
+  <string name="enter_passphrase">Saisir la phrase de passe</string>
+  <string name="passphrase">Phrase de passe</string>
+  <string name="noPassphrase">Aucune phrase de passe</string>
+  <string name="no_passphrase_set">Aucune phrase de passe définie</string>
+  <string name="passphrases_match">Les phrases de passe ne correspondent pas</string>
+  <string name="passphrase_saved">Phrase de passe enregistrée</string>
+  <string name="passphrase_invalid">Phrase de passe invalide</string>
+  <string name="missing_passphrase">Phrase de passe manquante</string>
+  <string name="passphrase_again">De nouveau</string>
+  <string name="lockpattern">Schéma de verrouillage</string>
+  <string name="lockpatternNFC">NFC + schéma de verrouillage</string>
+  <string name="unlock_method">Méthode de déverrouillage</string>
+  <string name="set_passphrase">Définir la phrase de passe</string>
+  <string name="draw_lockpattern">Dessiner le schéma de verrouillage</string>
+  <string name="nfc_title">NFC</string>
+  <!--<string name="nfc_text">Please place a NFC tag near your device</string>-->
+  <string name="nfc_wrong_tag">Mauvaise balise. Veuillez ressayer.</string>
+  <string name="enable_nfc">Veuillez activer la NFC dans vos paramètres</string>
+  <string name="no_nfc_support">Cet appareil ne prends pas en charge la NFC</string>
+  <string name="nfc_write_succesful">Écrit avec succès sur la balise NFC</string>
+  <string name="unlocked">Déverrouillé</string>
+  <string name="nfc_settings">Paramètres</string>
 </resources>

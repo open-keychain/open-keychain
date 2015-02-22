@@ -9,13 +9,11 @@
   <string name="title_encrypt_text">Šifriraj besedilo</string>
   <string name="title_encrypt_files">Šifriraj datoteko</string>
   <string name="title_decrypt">Dešifriraj</string>
-  <string name="title_unlock">Geslo</string>
+  <string name="title_unlock">Odkleni ključ</string>
   <string name="title_add_subkey">Dodaj podključ</string>
   <string name="title_edit_key">Uredi ključ</string>
-  <string name="title_preferences">Nastavitve</string>
   <string name="title_cloud_search_preferences">Nastavitve iskanja v oblaku</string>
   <string name="title_api_registered_apps">Aplikacije</string>
-  <string name="title_key_server_preference">Nastavitve strežnikov</string>
   <string name="title_change_passphrase">Spremeni geslo</string>
   <string name="title_share_fingerprint_with">Deli prstni odtis z...</string>
   <string name="title_share_key">Deli ključ z...</string>
@@ -253,6 +251,7 @@
   <string name="progress_generating_elgamal">ustvarjanje novega ElGamal ključa...</string>
   <string name="progress_generating_ecdsa">ustvarjanje novega ECDSA ključa...</string>
   <string name="progress_generating_ecdh">ustvarjanje novega ECDH ključa...</string>
+  <string name="progress_modify_primaryuid">menjavam glavno identiteto uporabnika...</string>
   <string name="progress_modify_subkeychange">spreminjanje podključev...</string>
   <string name="progress_modify_subkeyrevoke">preklicevanje podključev...</string>
   <string name="progress_modify_subkeyadd">dodajanje podključev...</string>
@@ -323,7 +322,6 @@
   <string name="import_qr_code_wrong">Koda QR je deformirana! Poskusite znova!</string>
   <string name="import_qr_code_too_short_fingerprint">Prstni odtis je prekratek (&lt; 16 znakov)</string>
   <!--Generic result toast-->
-  <string name="view_log">Poglej dnevnik</string>
   <!--Import result toast-->
   <string name="import_error_nothing">Nič za uvoziti.</string>
   <string name="import_error_nothing_cancelled">Uvoz preklican.</string>
@@ -349,7 +347,6 @@
   <string name="api_settings_delete_account">Izbriši račun</string>
   <string name="api_settings_package_name">Ime paketa</string>
   <string name="api_settings_package_signature">SHA-256 podpisa paketa</string>
-  <string name="api_settings_accounts">Računi</string>
   <string name="api_settings_settings">Nastavitve</string>
   <string name="api_settings_accounts_empty">S to aplikacijo ni povezan noben račun</string>
   <string name="api_register_allow">Dovoli dostop</string>
@@ -402,9 +399,6 @@
   <string name="view_key_expired">Ta ključ je pretekel!</string>
   <!--Navigation Drawer-->
   <string name="nav_keys">Ključi</string>
-  <string name="nav_encrypt_text">Šifriraj besedilo</string>
-  <string name="nav_encrypt_files">Šifriraj datoteke</string>
-  <string name="nav_decrypt">Dešifriraj</string>
   <string name="nav_apps">Aplikacije</string>
   <string name="drawer_open">Odprite navigacijski poteznik</string>
   <string name="drawer_close">Zaprite navigacijski poteznik</string>
@@ -447,11 +441,6 @@
   <string name="msg_is_success">Zasebna zbirka ključev uspešno uvožena</string>
   <!--Keyring Canonicalization log entries-->
   <string name="msg_kc_master">Obdelujem glavni ključ...</string>
-  <string name="msg_kc_master_bad_err">Umikam slab certifikat za preklic zbirk ključev</string>
-  <string name="msg_kc_master_bad_local">Umikam certifikat za preklic zbirk ključev z oznako \"lokalno\"</string>
-  <string name="msg_kc_master_bad_time">Umikam certifikat za preklic zbirk ključev s časovno znamko v prihodnosti</string>
-  <string name="msg_kc_master_bad_type">Umikam certifikat glavnega ključa neznanega tipa (%s)</string>
-  <string name="msg_kc_master_bad">Umikam slab certifikat za preklic zbirk ključev</string>
   <string name="msg_kc_revoke_dup">Umikam odvečen certifikat za preklic zbirk ključev</string>
   <string name="msg_kc_sub">Obdelujem podključ %s</string>
   <string name="msg_kc_sub_bad">Umikam neveljaven certifikat za povezovanje podključev</string>
@@ -465,10 +454,13 @@
   <string name="msg_mf_subkey_revoke">Preklic podključa %s</string>
   <!--Consolidate-->
   <string name="msg_con_db_clear">Čiščenje podatkovne baze</string>
+  <!--Edit Key (higher level than modify)-->
+  <!--Promote key-->
   <!--Other messages used in OperationLogs-->
   <string name="msg_ek_error_not_found">Ključ ni bil najden!</string>
   <!--Messages for DecryptVerify operation-->
   <!--Messages for SignEncrypt operation-->
+  <!--Messages for PgpSignEncrypt operation-->
   <string name="msg_crt_warn_not_found">Ključ ni bil najden!</string>
   <plurals name="error_import_non_pgp_part">
     <item quantity="one">Del naložene datoteke je veljavnen objekt OpenPGP a ni ključ.</item>
@@ -481,6 +473,11 @@
   <string name="passp_cache_notif_n_keys">OpenKeychain pomni gesla: %d</string>
   <string name="passp_cache_notif_keys">Zapomnjena gesla:</string>
   <string name="passp_cache_notif_pwd">Geslo</string>
+  <!--First Time-->
+  <string name="first_time_text1">Vzemite si svojo zasebnost nazaj v svoje roke z OpenKeychain!</string>
+  <string name="first_time_create_key">Ustvari zasebni ključ</string>
+  <string name="first_time_import_key">Uvozi iz datoteke</string>
+  <string name="first_time_skip">Preskoči nastavitev</string>
   <!--unsorted-->
   <string name="section_certifier_id">Overovitelj</string>
   <string name="section_cert">Podrobnosti potrdil</string>
@@ -502,9 +499,8 @@
   <string name="error_no_encrypt_subkey">Ni nobenega podključa za šifriranje!</string>
   <string name="contact_show_key">Prikaži ključ (%s)</string>
   <string name="key_colon">Ključ:</string>
-  <!--First Time-->
-  <string name="first_time_text1">Vzemite si svojo zasebnost nazaj v svoje roke z OpenKeychain!</string>
-  <string name="first_time_create_key">Ustvari zasebni ključ</string>
-  <string name="first_time_import_key">Uvozi iz datoteke</string>
-  <string name="first_time_skip">Preskoči nastavitev</string>
+  <!--Passphrase wizard-->
+  <!--TODO: rename all the things!-->
+  <!--<string name="enter_passphrase_twice">Enter passphrase twice</string>-->
+  <!--<string name="nfc_text">Please place a NFC tag near your device</string>-->
 </resources>
