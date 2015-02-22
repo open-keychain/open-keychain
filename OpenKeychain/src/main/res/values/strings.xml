@@ -1140,6 +1140,7 @@
     <string name="error_multi_not_supported">"Saving of multiple files not supported. This is a limitation on current Android."</string>
     <string name="key_colon">"Key:"</string>
     <string name="exchange_description">"To start a key exchange, choose the number of participants on the right side, then hit the “Start exchange” button.\n\nYou will be asked two more questions to make sure only the right participants are in the exchange and their fingerprints are correct."</string>
+    <string name="btn_start_exchange">"Start exchange"</string>
     <string name="user_id_none"><![CDATA[<none>]]></string>
 
     <!-- Passphrase wizard -->

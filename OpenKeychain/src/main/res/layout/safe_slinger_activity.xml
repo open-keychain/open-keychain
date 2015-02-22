@@ -59,7 +59,7 @@
                     android:textAppearance="?android:attr/textAppearanceMedium"
                     android:layout_width="0dip"
                     android:layout_height="match_parent"
-                    android:text="Start exchange"
+                    android:text="@string/btn_start_exchange"
                     android:layout_weight="1"
                     android:gravity="center_vertical" />
 
