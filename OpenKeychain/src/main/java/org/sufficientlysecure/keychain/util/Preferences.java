@@ -172,7 +172,7 @@ public class Preferences {
     }
 
     public boolean useDefaultYubikeyPin() {
-        return mSharedPreferences.getBoolean(Pref.USE_DEFAULT_YUBIKEY_PIN, true);
+        return mSharedPreferences.getBoolean(Pref.USE_DEFAULT_YUBIKEY_PIN, false);
     }
 
     public void setUseDefaultYubikeyPin(boolean useDefaultYubikeyPin) {
