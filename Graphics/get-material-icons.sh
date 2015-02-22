@@ -20,3 +20,6 @@ python copy OpenKeychain av white play_arrow 24
 
 # small floating action button
 python copy OpenKeychain file white folder 24
+
+# multi select
+python copy OpenKeychain action white lock 24

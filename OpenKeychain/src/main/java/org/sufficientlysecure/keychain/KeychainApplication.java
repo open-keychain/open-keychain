@@ -86,7 +86,7 @@ public class KeychainApplication extends Application {
         }
 
         brandGlowEffect(getApplicationContext(),
-                getApplicationContext().getResources().getColor(R.color.emphasis));
+                getApplicationContext().getResources().getColor(R.color.primary));
 
         setupAccountAsNeeded(this);
 

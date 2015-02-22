@@ -24,8 +24,6 @@ import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.remote.ui.AppsListFragment;
 
 import it.neokree.materialnavigationdrawer.MaterialNavigationDrawer;
-import it.neokree.materialnavigationdrawer.elements.MaterialSection;
-import it.neokree.materialnavigationdrawer.elements.listeners.MaterialSectionListener;
 
 public abstract class NavDrawerActivity extends MaterialNavigationDrawer {
 

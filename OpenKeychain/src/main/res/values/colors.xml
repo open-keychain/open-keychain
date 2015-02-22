@@ -14,16 +14,16 @@
     <!-- Other colors -->
 
     <color name="primary_light">#C8E6C9</color>
-    <color name="fab">#2196F3</color>
+    <color name="fab">@color/accent</color>
     <color name="fab_pressed">#1976D2</color>
     <color name="primary_text">#212121</color>
     <color name="secondary_text">#727272</color>
     <color name="icons">#FFFFFF</color>
     <color name="divider">#B6B6B6</color>
 
-    <!-- set to text colors -->
-    <color name="emphasis">#212121</color>
-    <color name="emphasis_dark">#727272</color>
+    <color name="header_text">#212121</color>
+    <!-- item selection, search highlight -->
+    <color name="emphasis">@color/accent</color>
 
     <color name="bg_gray">#cecbce</color>
     <color name="tertiary_text_light">#808080</color>

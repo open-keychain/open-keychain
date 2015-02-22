@@ -26,7 +26,7 @@
         <item name="android:layout_marginTop">8dp</item>
         <item name="android:paddingLeft">8dp</item>
         <item name="android:textStyle">bold</item>
-        <item name="android:textColor">@color/emphasis</item>
+        <item name="android:textColor">@color/header_text</item>
         <item name="android:textSize">14sp</item>
     </style>
 
