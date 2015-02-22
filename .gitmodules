@@ -34,6 +34,3 @@
 [submodule "extern/safeslinger-exchange"]
 	path = extern/safeslinger-exchange
 	url = https://github.com/open-keychain/exchange-android
-[submodule "extern/android-lockpattern"]
-	path = extern/android-lockpattern
-	url = https://github.com/open-keychain/android-lockpattern.git
